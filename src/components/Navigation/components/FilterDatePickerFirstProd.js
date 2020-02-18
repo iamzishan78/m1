@@ -98,20 +98,20 @@ export default function FilterDatePickerFirstProd(props) {
   }, [firstProductionFromDate.check, firstProductionToDate.check, setFilterName]);
 
   const setvaluesFrom = useCallback(() => {
-    if (stateNav.firstProductionDateFrom === null) {
+    if (stateNav.firstProdDateFrom === null) {
       return;
     } else {
-      handleStartDateChang(stateNav.firstProductionDateFrom);
+      handleStartDateChang(stateNav.firstProdDateFrom);
     }
-  }, [stateNav.firstProductionDateFrom]);
+  }, [stateNav.firstProdDateFrom]);
 
   const setvaluesTo = useCallback(() => {
-    if (stateNav.firstProductionDateTo === null) {
+    if (stateNav.firstProdDateTo === null) {
       return;
     } else {
-      handleEndDateChange(stateNav.firstProductionDateTo);
+      handleEndDateChange(stateNav.firstProdDateTo);
     }
-  }, [stateNav.firstProductionDateTo]);
+  }, [stateNav.firstProdDateTo]);
 
   useEffect(() => {
     if (dateTypeName.length > 0) {
@@ -126,7 +126,7 @@ export default function FilterDatePickerFirstProd(props) {
       const formatDateReset = moment().subtract(120, 'Years');
       setStateNav(stateNav => ({
         ...stateNav,
-        firstProductionDateFrom: null
+        firstProdDateFrom: null
       }));
       handleStartDateChang(formatDateReset);
     } else {
@@ -134,11 +134,11 @@ export default function FilterDatePickerFirstProd(props) {
     let dateName = [];
     setFirstProductionFromDate({ check: true, date: formatDateAfter });
     handleStartDateChang(formatDateAfter);
-    dateName.push("FirstProd");
+    dateName.push("firstProd");
     setDateTypeName(dateName);
     setStateNav(stateNav => ({
       ...stateNav,
-      firstProductionDateFrom: formatDateAfter,
+      firstProdDateFrom: formatDateAfter,
       dateTypeName: dateName
     }));
   }
@@ -147,7 +147,7 @@ export default function FilterDatePickerFirstProd(props) {
   const handleEndDate = date => {
     if (date === null) {
       const formatDateReset = moment();
-      setStateNav(stateNav => ({ ...stateNav, firstProductionDateTo: null }));
+      setStateNav(stateNav => ({ ...stateNav, firstProdDateTo: null }));
       handleEndDateChange(formatDateReset);
       return;
     } else {
@@ -159,7 +159,7 @@ export default function FilterDatePickerFirstProd(props) {
     setDateTypeName(dateName);
     setStateNav(stateNav => ({
       ...stateNav,
-      firstProductionDateTo: newDateAfter,
+      firstProdDateTo: newDateAfter,
       dateTypeName: dateName
     }));
   }

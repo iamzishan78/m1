@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Card, TextField, Button, Typography } from "@material-ui/core";
+import CircularProgress from '@material-ui/core/CircularProgress';
 // COMPONENTS
 //import M1neralIconSvg from "../../ui_Elements/m1neralIconSvg";
 // HELPERS
@@ -104,7 +105,9 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.secondary.main,
     cursor: "pointer"
   },
-  
+  loader: {
+    marginLeft: "45%",
+  }
  
 }));
 
@@ -160,6 +163,21 @@ const SignInCard = props => {
     }
   };
 
+  const renderButtonAndLoader = (
+    props.ready ?
+      <CircularProgress color="secondary" size={28} className={classes.loader} />
+      : 
+        <Button
+          variant="outlined"
+          disableElevation
+          className={classes.button}
+          onClick={signIn}
+            >
+            Sign In
+          </Button>
+  )
+
+
   return (
     <React.Fragment>
       <Typography variant="h4" className={classes.cardTitle}>
@@ -209,16 +227,7 @@ const SignInCard = props => {
              
             
           />
-          <Button
-            variant="outlined"
-            disableElevation
-            className={classes.button}
-            onClick={signIn}
-                
-
-                      >
-            Sign In
-          </Button>
+          {renderButtonAndLoader}
           <div className={classes.secondaryInputs}>
             {/* <div>Remember Me</div> */}
             <div>Forgot Password?</div>

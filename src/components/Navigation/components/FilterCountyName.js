@@ -4,6 +4,7 @@ import Typography from "@material-ui/core/Typography";
 import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { NavigationContext } from "../NavigationContext";
 import useQueryCountiesByState from "../../../graphQL/useQueryCountiesByState";
 
@@ -14,9 +15,12 @@ const useStyles = makeStyles(theme => ({
     maxWidth: 320,
     color: "black"
   },
+  loader: {
+    marginLeft: "40%",
+  },
 }));
 
-export default function FilterCountyName({keys}) {
+export default function FilterCountyName() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
@@ -29,7 +33,7 @@ export default function FilterCountyName({keys}) {
   );
   
   useEffect(() => {
-    if (stateNav.stateName === "TX") {
+    if (stateNav.stateName === "TX"){
       queryCounties();
       if (!loading) {
         const counties =
@@ -38,18 +42,17 @@ export default function FilterCountyName({keys}) {
             : [];
            counties.filter(county => {
             const list = [];
-            for (let index = 0; index < data.counties.length; index++) {
-              const element = data.counties[index];
+            for (let index = 0; index < counties.length; index++) {
+              const element = counties[index];
               list.push(element.county);
             }
             setCountyList(list);
             }) 
-      } else {
-        // handle errors
       }
     }
+    
   }, [data, loading, queryCounties, stateNav.stateName]);
-  
+
   useEffect(()=> {
     if(countyName != null && countyName.length > 0){
       setStateNav(stateNav => ({ ...stateNav, countyName: countyName}));
@@ -58,29 +61,32 @@ export default function FilterCountyName({keys}) {
  
   return (
       <FormControl variant="outlined" className={classes.formControl}>
-        <Autocomplete
-              className={classes.maxWidth}
-              options={countyList}
-              key={keys}
-              getOptionLabel={option => option}
-              autoComplete
-              autoSelect
-              disableClearable
-              disableListWrap
-              includeInputInList
-              onChange={(event, newValue) => {
-                handleCountyNameChange(newValue);
-              }}
-              renderInput={params => (
-                <form autoComplete="off">
-                <TextField {...params} fullWidth label="County" variant="outlined"  />
-                </form>
-              )}
-              renderOption= {option =>
+          {loading ? 
+          <CircularProgress color="secondary" className={classes.loader} size={28}  />
+          :
+          <Autocomplete
+                  className={classes.maxWidth}
+                  options={countyList}
+                  getOptionLabel={option => option}
+                  autoComplete
+                  autoSelect
+                  disableClearable
+                  disableListWrap
+                  includeInputInList
+                  onChange={(event, newValue) => {
+                    handleCountyNameChange(newValue);
+                  }}
+                  renderInput={params => (
+                    <form autoComplete="off">
+                    <TextField {...params} fullWidth label="County" variant="outlined"  />
+                    </form>
+                  )}
+                  renderOption= {option =>
+                    
+                    <Typography>{option}</Typography>
+                  }
+                /> }
                 
-                <Typography>{option}</Typography>
-              }
-            />
-      </FormControl>
-  );
+          </FormControl>
+  )
 }

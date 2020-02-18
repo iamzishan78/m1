@@ -4,6 +4,7 @@ import Typography from "@material-ui/core/Typography";
 import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { NavigationContext } from "../NavigationContext";
 import useQueryAbstractBySurvey from "../../../graphQL/useQueryAbstractBySurvey";
 
@@ -13,6 +14,9 @@ const useStyles = makeStyles(theme => ({
     minWidth: 319,
     maxWidth: 320,
     color: "black"
+  },
+  loader: {
+    marginLeft: "40%",
   },
 }));
 
@@ -54,30 +58,32 @@ export default function FilterAbstract({keys}) {
   },[abstractName, setStateNav]) 
  
   return (
-      <FormControl variant="outlined" className={classes.formControl}>
-        <Autocomplete
-              className={classes.maxWidth}
-              options={abstractList}
-              getOptionLabel={option => option}
-              autoComplete
-              autoSelect
-              key={keys}
-              disableClearable
-              disableListWrap
-              includeInputInList
-              onChange={(event, newValue) => {
-                handleAbstractNameChange(newValue);
-              }}
-              renderInput={params => (
-                <form autoComplete="off">
-                <TextField {...params} fullWidth label="Abstract" variant="outlined"  />
-                </form>
-              )}
-              renderOption= {option =>
-                
-                <Typography>{option}</Typography>
-              }
-            />
-      </FormControl>
+    <FormControl variant="outlined" className={classes.formControl}>
+    {loading ? 
+      <CircularProgress color="secondary" className={classes.loader} size={28}  />
+      :
+    <Autocomplete
+          className={classes.maxWidth}
+          options={abstractList}
+          getOptionLabel={option => option}
+          autoComplete
+          autoSelect
+          disableClearable
+          disableListWrap
+          includeInputInList
+          onChange={(event, newValue) => {
+            handleAbstractNameChange(newValue);
+          }}
+          renderInput={params => (
+            <form autoComplete="off">
+            <TextField {...params} fullWidth label="Abstract" variant="outlined"  />
+            </form>
+          )}
+          renderOption= {option =>
+            
+            <Typography>{option}</Typography>
+          }
+        />}
+  </FormControl>
   );
 }
