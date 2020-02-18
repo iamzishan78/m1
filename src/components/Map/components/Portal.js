@@ -4,8 +4,11 @@ import { createPortal } from 'react-dom';
 const Portal = ({ id, children }) => {
   const el = useRef(document.getElementById(id));
   //console.log('portal called',el.current)
+  if(el.current && children){
+    return createPortal(children, el.current);
+  }
+  return
   
-  return createPortal(children, el.current);
 };
 
 export default memo(Portal);
