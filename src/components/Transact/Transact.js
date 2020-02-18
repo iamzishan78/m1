@@ -16,24 +16,27 @@ const boardStyle = {
 
 
 const laneStyle = {
-  fontFamily: "Roboto, Helvetica, Arial, sans-serif"
+ // fontFamily: "Roboto, Helvetica, Arial, sans-serif"
+ fontFamily: "Poppins"
 };
 
 const cardStyle = {
-  fontFamily: "Roboto, Helvetica, Arial, sans-serif"
+  //fontFamily: "Roboto, Helvetica, Arial, sans-serif"
+  fontFamily: "Poppins"
 };
 
 const data_file = {
   lanes: [
     {
       id: 'lane1',
-      title: 'Interested',
+      title: 'Offer Preparation',
       //label: '2/2',
       style: laneStyle,
       cardStyle: cardStyle,
       cards: [
-        {id: 'Card1', title: 'Chapman, Kyle T.', description: 'API: 42-301-4534-4556\nWell Name: Roberts 1H', label: '$93,100'},
-        {id: 'Card2', title: 'Chery, Frank', description: 'API: 42-710-4431-8390\nWell Name: Thames 1H', label: '$221,800'}
+        {id: 'Card1', title: 'THORNTON, CHARLES T', description: 'API: 4230130541\nWell Name: CHRISTOPHER -38- 4\nNRI: 0.017857\nTax Value: $10,860' , label: '$103,100'}
+        
+        
       ]
     },
     {
@@ -43,24 +46,45 @@ const data_file = {
       style: laneStyle,
       cardStyle: cardStyle,
       cards: [
-        {id: 'Card3', title: 'Avery, Jacob', description: 'API: 44-191-3212-0937\nWell Name: Jones 1H', label: '$129,320'}
+        {id: 'Card3', title: 'SMITH, JAMES E', description: 'Location: WARD, TX\nRoyalty: 20%\nAcreage: 4.83 NMA (7.728 NRA)\nPrice Per NMA: $15,000', label: '$115,900'},
+        {id: 'Card2', title: 'CHRISTOPHER, EDITH', description: 'API: 4230130541\nWell Name: CHRISTOPHER -38- 4\nNRI: 0.005952\nTax Value: $3,620', label: '$54,739'}
       ]
     },
+
     {
-      id: 'lane5',
-      title: 'Due Diligence',
+      id: 'lane3',
+      title: 'Accepted - Due Diligence',
       //label: '0/0',
       style: laneStyle,
       cardStyle: cardStyle,
-      cards: []
+      cards: [
+        {id: 'Card4', title: 'JONES, MICHAEL F', description: 'Location: UPTON, TX\nRoyalty: 12.5%\nAcreage: 10.2 NMA (10.2 NRA)\nPrice Per NMA: $32,000', label: '$326,400'}
+      ]
     },
+
     {
-      id: 'lane6',
+      id: 'lane4',
       title: 'Deal Closed',
       //label: '0/0',
       style: laneStyle,
       cardStyle: cardStyle,
-      cards: []
+      cards: [
+        {id: 'Card5', title: 'MOUSSEAU, VICKI L', description: 'Location: LEA, NM\nRoyalty: 18.75%\nAcreage: 6.7 NMA (10.05 NRA)\nPrice Per NMA: $18,000', label: '$180,900'},
+        {id: 'Card6', title: 'CANON, MICHAEL J', description: 'Location: REEVES, TX\nRoyalty: 15.625%\nAcreage: 43 NMA (53.75 NRA)\nPrice Per NMA: $32,000', label: '$571,094'}
+            ]
+    },
+    {
+      id: 'lane5',
+      title: 'Offer Rejected',
+      //label: '0/0',
+      style: laneStyle,
+      cardStyle: cardStyle,
+      cards: [
+        {id: 'Card7', title: 'SCARBOROUGH, KATHRYN', description: 'Location: LOVING, TX\nRoyalty: 12.5%\nAcreage: 3 NMA (3 NRA)\nPrice Per NMA: $19,000', label: '$ $57,000'},
+        {id: 'Card8', title: 'TRAYLOR, MARY ELIZABETH', description: 'API: 4230133032\nWell Name: PISTOL 24-24 2H\nNRI: 0.046743\nTax Value: $215,690', label: '$943,291'},
+        {id: 'Card7', title: 'KING, JACOB B', description: 'Location: REEVES, TX\nRoyalty: 20%\nAcreage: 150 NMA (240 NRA)\nPrice Per NMA: $9,500', label: '$2,280,000'},
+      ]
+       
     }
   ]
 }
@@ -127,10 +151,10 @@ export default function Transact() {
         laneDraggable={false}
         cardDraggable={true}
         collapsibleLanes={false}
-        editable={true}
+        editable={false}
         canAddLanes={false}
-        editLaneTitle={true}
-        hideCardDeleteIcon={false}
+        editLaneTitle={false}
+        hideCardDeleteIcon={true}
         onCardAdd = {handleCardAdd}
         onCardDelete = {handleCardDelete}
         onDataChange = {handleDataChange}
