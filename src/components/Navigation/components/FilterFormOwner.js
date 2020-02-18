@@ -77,25 +77,25 @@ const interestObjects = [
   {
     id: "6988a274-9414-4ccd-ad93-2b7174c9897e",
     name: "Royalty Interest",
-    text: "InterestTypeRoyaltyInterest",
+    text: "interestTypeRoyaltyInterest",
     description: "RI"
   },
   {
     id: "92c2f076-5541-4c7d-a9a1-2505f5170fb5",
     name: "Override Royalty",
-    text: "InterestTypeOverrideRoyalty",
+    text: "interestTypeOverrideRoyalty",
     description: "OR"
   },
   {
     id: "10370a7a-6feb-4bfe-9425-172b2ff2c93e",
     name: "Working Interest",
-    text: "InterestTypeWorkingInterest",
+    text: "interestTypeWorkingInterest",
     description: "WI"
   },
   {
     id: "06e65943-44ca-477a-ac3d-3e479e55b5f6",
     name: "Production Payment",
-    text: "InterestTypeProductionPayment",
+    text: "interestTypeProductionPayment",
     description: "PP"
   }
 ];
@@ -115,49 +115,49 @@ const ownerTypesObjects = [
   {
     id: "8784ca4d-b03c-47fc-be16-05e87c7389ec",
     name: "Religious Institutions",
-    text: "OwnershipTypeReligiousInstitutions",
+    text: "ownershipTypeReligiousInstitutions",
     description: "R"
   },
   {
     id: "15c3cc06-4852-49f9-a7d6-f80bd8969825",
     name: "Governmental Bodies",
-    text: "OwnershipTypeGovernmentalBodies",
+    text: "ownershipTypeGovernmentalBodies",
     description: "G"
   },
   {
     id: "8d322ffb-10b5-41f8-8c65-822f350ea483",
     name: "Non Profits",
-    text: "OwnershipTypeNonProfits",
+    text: "ownershipTypeNonProfits",
     description: "N"
   },
   {
     id: "a5de7ed6-f079-475e-a314-1a8f6c62ffca",
     name: "Trusts",
-    text: "OwnershipTypeTrusts",
+    text: "ownershipTypeTrusts",
     description: "T"
   },
   {
     id: "e42bb58b-5793-48bc-ae4e-dc83c152d422",
     name: "Corporations",
-    text: "OwnershipTypeCorporations",
+    text: "ownershipTypeCorporations",
     description: "C"
   },
   {
     id: "2cab70fe-838c-4625-81f2-bfae9afeb5ea",
     name: "Educational Institutions",
-    text: "OwnershipTypeEducationalInstitutions",
+    text: "ownershipTypeEducationalInstitutions",
     description: "E"
   },
   {
     id: "20779d6c-0c59-46a7-9ff4-19573efe5a76",
     name: "Individuals",
-    text: "OwnershipTypeIndividuals",
+    text: "ownershipTypeIndividuals",
     description: "I"
   },
   {
     id: "76c48dfe-0e5b-4ad6-9135-54db2dc76232",
     name: "Unknown",
-    text: "OwnershipTypeUnknown",
+    text: "ownershipTypeUnknown",
     description: ""
   }
 ];
@@ -227,25 +227,25 @@ export default function FilterFormOwner() {
 
         //you can pass a variable to the key because setState won't work so have to hardcode each filter. ugh
         switch (i) {
-          case "InterestTypeRoyaltyInterest":
+          case "interestTypeRoyaltyInterest":
             setStateNav(stateNav => ({
               ...stateNav,
               filterInterestTypeRoyaltyInterest: filter
             }));
             break;
-          case "InterestTypeOverrideRoyalty":
+          case "interestTypeOverrideRoyalty":
             setStateNav(stateNav => ({
               ...stateNav,
               filterInterestTypeOverrideRoyalty: filter
             }));
             break;
-          case "InterestTypeWorkingInterest":
+          case "interestTypeWorkingInterest":
             setStateNav(stateNav => ({
               ...stateNav,
               filterInterestTypeWorkingInterest: filter
             }));
             break;
-          case "InterestTypeProductionPayment":
+          case "interestTypeProductionPayment":
             setStateNav(stateNav => ({
               ...stateNav,
               filterInterestTypeProductionPayment: filter
@@ -309,49 +309,49 @@ export default function FilterFormOwner() {
         let filter = ["==", ["get", i], true];
         //you can pass a variable to the key because setState won't work so have to hardcode each filter. ugh
         switch (i) {
-          case "OwnershipTypeReligiousInstitutions":
+          case "ownershipTypeReligiousInstitutions":
             setStateNav(stateNav => ({
               ...stateNav,
               filterOwnershipTypeReligiousInstitutions: filter
             }));
             break;
-          case "OwnershipTypeGovernmentalBodies":
+          case "ownershipTypeGovernmentalBodies":
             setStateNav(stateNav => ({
               ...stateNav,
               filterOwnershipTypeGovernmentalBodies: filter
             }));
             break;
-          case "OwnershipTypeNonProfits":
+          case "ownershipTypeNonProfits":
             setStateNav(stateNav => ({
               ...stateNav,
               filterOwnershipTypeNonProfits: filter
             }));
             break;
-          case "OwnershipTypeTrusts":
+          case "ownershipTypeTrusts":
             setStateNav(stateNav => ({
               ...stateNav,
               filterOwnershipTypeTrusts: filter
             }));
             break;
-          case "OwnershipTypeCorporations":
+          case "ownershipTypeCorporations":
             setStateNav(stateNav => ({
               ...stateNav,
               filterOwnershipTypeCorporations: filter
             }));
             break;
-          case "OwnershipTypeEducationalInstitutions":
+          case "ownershipTypeEducationalInstitutions":
             setStateNav(stateNav => ({
               ...stateNav,
               filterOwnershipTypeEducationalInstitutions: filter
             }));
             break;
-          case "OwnershipTypeIndividuals":
+          case "ownershipTypeIndividuals":
             setStateNav(stateNav => ({
               ...stateNav,
               filterOwnershipTypeIndividuals: filter
             }));
             break;
-          case "OwnershipTypeUnknown":
+          case "ownershipTypeUnknown":
             setStateNav(stateNav => ({
               ...stateNav,
               filterOwnershipTypeUnknown: filter
@@ -419,7 +419,7 @@ export default function FilterFormOwner() {
             // input={<Input  id="select-multiple-chip1" />}
             renderValue={selected => (
               <div className={classes.chips} 
-                onMouseDown={(event: MouseEvent) => {
+                onMouseDown={(event) => {
                     event.stopPropagation()
                 }}
               >
@@ -464,7 +464,7 @@ export default function FilterFormOwner() {
             onChange={handleChangeOwnerType}
             // input={<Input  id="select-multiple-chip1" />}
             renderValue={selected => (
-              <div className={classes.chips} onMouseDown={(event: MouseEvent) => {
+              <div className={classes.chips} onMouseDown={(event) => {
                 event.stopPropagation()
             }}>
                 {selected.map(value => (
