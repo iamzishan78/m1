@@ -1,0 +1,18 @@
+html {
+  margin: 0px;
+  width: 100%;
+  height: 100%;
+  /* overflow-y: hidden !important; */
+}
+body {
+  margin: 0px;
+  width: 100%;
+  height: 100%;
+  /* overflow-y: hidden !important; */
+}
+#root {
+  margin: 0px;
+  width: 100%;
+  height: 100%;
+  /* overflow-y: hidden !important; */
+}

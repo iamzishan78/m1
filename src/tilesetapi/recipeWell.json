@@ -1,0 +1,13 @@
+{"recipe":
+    {
+      "version": 1,
+      "layers": {
+        "well2162020": {
+          "source": "mapbox://tileset-source/m1neral/well2162020",
+          "minzoom": 0,
+          "maxzoom": 22
+        }
+      }
+    },
+    "name": "Well 2-16-2020"
+  }

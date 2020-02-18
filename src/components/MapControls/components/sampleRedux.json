@@ -1,0 +1,8 @@
+{
+  "user": {
+    "jwt": "empty"
+  },
+  "spatialData": {
+    "features": FeatureCollection
+  }
+}

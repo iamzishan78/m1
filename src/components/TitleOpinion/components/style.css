@@ -1,0 +1,21 @@
+.MORDiv > div {
+  padding: 0;
+  width: 100%;
+}
+
+.sectionHeader > div > span {
+  font-size: 1rem !important;
+}
+
+.MuiInput-underline:before {
+  border-bottom: 0 !important;
+}
+.MuiInput-underline:hover:not():before {
+  border-bottom: 0 !important;
+}
+
+#TOmap > .mapboxgl-canvas-container,
+#TOmap canvas {
+  height: 100% !important;
+  width: 100% !important;
+}

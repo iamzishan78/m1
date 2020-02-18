@@ -1,0 +1,19 @@
+
+
+curl -X POST "https://api.mapbox.com/tilesets/v1/m1neral.wellLines/publish?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazRndzVoMXUwZHBhM2xrZGowZ3ZsOXhvIn0.iaH7VmwDOiKc2DHv5IcBdA"
+curl -X POST "https://api.mapbox.com/tilesets/v1/sources/m1neral/wellLines?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazRndzVoMXUwZHBhM2xrZGowZ3ZsOXhvIn0.iaH7VmwDOiKc2DHv5IcBdA" -F file=@/Users/donniekerr/Downloads/welllines.geojson --header "Content-Type: multipart/form-data"
+curl -X POST "https://api.mapbox.com/tilesets/v1/m1neral.wellLines?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazRndzVoMXUwZHBhM2xrZGowZ3ZsOXhvIn0.iaH7VmwDOiKc2DHv5IcBdA" -d @/Users/donniekerr/Documents/code/m1neral/src/tilesetapi/recipeWellLines.json --header "Content-Type:application/json"
+curl -X POST "https://api.mapbox.com/tilesets/v1/m1neral.wellLines/status?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazRndzVoMXUwZHBhM2xrZGowZ3ZsOXhvIn0.iaH7VmwDOiKc2DHv5IcBdA"
+
+curl -X POST "https://api.mapbox.com/tilesets/v1/sources/m1neral/well?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazRndzVoMXUwZHBhM2xrZGowZ3ZsOXhvIn0.iaH7VmwDOiKc2DHv5IcBdA" -F file=@/Users/donniekerr/Downloads/well.geojson --header "Content-Type: multipart/form-data"
+curl -X POST "https://api.mapbox.com/tilesets/v1/m1neral.well/publish?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazRndzVoMXUwZHBhM2xrZGowZ3ZsOXhvIn0.iaH7VmwDOiKc2DHv5IcBdA"
+curl -X POST "https://api.mapbox.com/tilesets/v1/m1neral.well?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazRndzVoMXUwZHBhM2xrZGowZ3ZsOXhvIn0.iaH7VmwDOiKc2DHv5IcBdA" -d @/Users/donniekerr/Documents/code/m1neral/src/tilesetapi/recipeWell.json --header "Content-Type:application/json"
+
+
+curl -X POST "https://api.mapbox.com/tilesets/v1/m1neral.wellLines2162020?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazRndzVoMXUwZHBhM2xrZGowZ3ZsOXhvIn0.iaH7VmwDOiKc2DHv5IcBdA" -d @/Users/donniekerr/Documents/code/m1neral/src/tilesetapi/recipeWellLines.json --header "Content-Type:application/json"
+curl -X POST "https://api.mapbox.com/tilesets/v1/sources/m1neral/wellLines2162020?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazRndzVoMXUwZHBhM2xrZGowZ3ZsOXhvIn0.iaH7VmwDOiKc2DHv5IcBdA" -F file=@/Users/donniekerr/Downloads/welllines.geojson --header "Content-Type: multipart/form-data"
+curl -X POST "https://api.mapbox.com/tilesets/v1/m1neral.wellLines2162020/publish?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazRndzVoMXUwZHBhM2xrZGowZ3ZsOXhvIn0.iaH7VmwDOiKc2DHv5IcBdA"
+
+curl -X POST "https://api.mapbox.com/tilesets/v1/sources/m1neral/well2162020?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazRndzVoMXUwZHBhM2xrZGowZ3ZsOXhvIn0.iaH7VmwDOiKc2DHv5IcBdA" -F file=@/Users/donniekerr/Downloads/well.geojson --header "Content-Type: multipart/form-data"
+curl -X POST "https://api.mapbox.com/tilesets/v1/m1neral.well2162020?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazRndzVoMXUwZHBhM2xrZGowZ3ZsOXhvIn0.iaH7VmwDOiKc2DHv5IcBdA" -d @/Users/donniekerr/Documents/code/m1neral/src/tilesetapi/recipeWell.json --header "Content-Type:application/json"
+curl -X POST "https://api.mapbox.com/tilesets/v1/m1neral.well2162020/publish?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazRndzVoMXUwZHBhM2xrZGowZ3ZsOXhvIn0.iaH7VmwDOiKc2DHv5IcBdA"

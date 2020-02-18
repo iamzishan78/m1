@@ -1,0 +1,13 @@
+.mapboxgl-popup {
+    margin:0px;
+    padding:0px;
+    width: 400px;
+    height: 400px;
+   background:rgba(0,0,0,0)
+    }
+    .mapboxgl-popup-content {
+        margin:0px;
+        padding:0px;
+        max-width: 400px;
+       background:rgba(0,0,0,0)
+        }
