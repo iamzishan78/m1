@@ -80,9 +80,9 @@ const data_file = {
       style: laneStyle,
       cardStyle: cardStyle,
       cards: [
-        {id: 'Card7', title: 'SCARBOROUGH, KATHRYN', description: 'Location: LOVING, TX\nRoyalty: 12.5%\nAcreage: 3 NMA (3 NRA)\nPrice Per NMA: $19,000', label: '$ $57,000'},
+        {id: 'Card7', title: 'SCARBOROUGH, KATHRYN', description: 'Location: LOVING, TX\nRoyalty: 12.5%\nAcreage: 3 NMA (3 NRA)\nPrice Per NMA: $19,000', label: '$57,000'},
         {id: 'Card8', title: 'TRAYLOR, MARY ELIZABETH', description: 'API: 4230133032\nWell Name: PISTOL 24-24 2H\nNRI: 0.046743\nTax Value: $215,690', label: '$943,291'},
-        {id: 'Card7', title: 'KING, JACOB B', description: 'Location: REEVES, TX\nRoyalty: 20%\nAcreage: 150 NMA (240 NRA)\nPrice Per NMA: $9,500', label: '$2,280,000'},
+        {id: 'Card9', title: 'KING, JACOB B', description: 'Location: REEVES, TX\nRoyalty: 20%\nAcreage: 150 NMA (240 NRA)\nPrice Per NMA: $9,500', label: '$2,280,000'},
       ]
        
     }
