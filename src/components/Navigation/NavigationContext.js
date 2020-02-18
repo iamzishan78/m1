@@ -54,9 +54,10 @@ const NavigationContextProvider = props => {
     filterInterestTypeOverrideRoyalty:null,
     filterInterestTypeWorkingInterest:null,
     filterInterestTypeProductionPayment:null,
+    filterGeography: null,
     filterGeographyState: null,
     filterGeographyCounty: null,
-    filterGeographySurvey: null,
+    filterGeographySurvey : null,
     filterGeographyAbstract: null,
     searchInputValue:null,
     statusName:[],
@@ -65,6 +66,7 @@ const NavigationContextProvider = props => {
     interestName:[],
     ownerTypeName:[],
     dateTypeName: [],
+    prodTypeName: [],
     countyName: null,
     stateName: null,
     displayStateName: null,
@@ -89,6 +91,10 @@ const NavigationContextProvider = props => {
     firstProdDateFrom: null,
     firstProdDateTo: null,
     displayFilters: null,
+    statesInFilter: null,
+    countiesInFilter: null,
+    surveysInFilter: null,
+    asbtractsInFilter: null,
   })
   return (
     <NavigationContext.Provider value={[stateNav, setStateNav]}>
