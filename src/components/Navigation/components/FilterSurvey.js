@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
 import useQuerySurveyByCounty from "../../../graphQL/useQuerySurveyByCounty";
@@ -14,9 +15,12 @@ const useStyles = makeStyles(theme => ({
     maxWidth: 320,
     color: "black"
   },
+  loader: {
+    marginLeft: "40%",
+  },
 }));
 
-export default function FilterSurvey({keys}) {
+export default function FilterSurvey({key}) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
@@ -42,7 +46,6 @@ export default function FilterSurvey({keys}) {
             if (value.survey === null || value.survey === "") {
               value.survey = "n/a";
             }
-            
               list.push(value)
           })
           let sortedList = []
@@ -51,6 +54,7 @@ export default function FilterSurvey({keys}) {
           )
           setSurveyList(sortedList)
       } else{
+        querySurveys(null);
         //handle errors
       }
     }
@@ -64,10 +68,12 @@ export default function FilterSurvey({keys}) {
 
   return (
       <FormControl variant="outlined" className={classes.formControl}>
+        {loading ? 
+          <CircularProgress color="secondary" className={classes.loader} size={28}  />
+          :
         <Autocomplete
               className={classes.maxWidth}
               options={surveyList}
-              key={keys}
               getOptionLabel={option => option}
               autoComplete
               autoSelect
@@ -87,6 +93,7 @@ export default function FilterSurvey({keys}) {
                 <Typography>{option}</Typography>
               }
             />
+        }
       </FormControl>
   );
 }

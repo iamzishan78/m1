@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function FilterStateName({keys}) {
+export default function FilterStateName() {
 
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -33,17 +33,17 @@ export default function FilterStateName({keys}) {
       setStateNav(stateNav => ({ ...stateNav, stateName: stateName, displayStateName: displayName}));
     } 
   },[displayName, setStateNav, stateName]) 
-
+  
   const handleStateNameChange = (event) => {
     setStateName(event[0])
     setDisplayName(event[1])
     setStateNav(stateNav => ({ ...stateNav, stateName: event[0], displayStateName: event[0]}));
   }
+
  
   return (
       <FormControl variant="outlined" className={classes.formControl}>
         <Autocomplete
-              key={keys}
               className={classes.maxWidth}
               options={stateNamesAb}
               getOptionLabel={option => option}
