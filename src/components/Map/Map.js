@@ -90,7 +90,7 @@ export default function Map() {
       let productionFilterCount = 0;
       let geographyFilterCount = 0;
       let filterArray = [];
-
+      
       
       if (stateNav.filterWellProfile && stateNav.filterWellProfile.length > 0) {
         filterArray.push(stateNav.filterWellProfile);
@@ -463,30 +463,31 @@ export default function Map() {
 
         geographyFilterCount += 1;
       }
-      if (stateNav.filterGeographyState && stateNav.filterGeographyState.length > 0) {
-        filterArray.push(stateNav.filterGeographyState);
-        isFilterSet = true;
+      // if (stateNav.filterGeographyState && stateNav.filterGeographyState.length > 0) {
+      //   filterArray.push(stateNav.filterGeographyState);
+      //   isFilterSet = true;
 
-        geographyFilterCount += 1;
-      }
-      if (stateNav.filterGeographyCounty && stateNav.filterGeographyCounty.length > 0) {
-        filterArray.push(stateNav.filterGeographyCounty);
-        isFilterSet = true;
+      //   geographyFilterCount += 1;
+      // }
+      // if (stateNav.filterGeographyCounty && stateNav.filterGeographyCounty.length > 0) {
+      //   filterArray.push(stateNav.filterGeographyCounty);
+      //   isFilterSet = true;
 
-        geographyFilterCount += 1;
-      }
-      if (stateNav.filterGeographySurvey && stateNav.filterGeographySurvey.length > 0) {
-        filterArray.push(stateNav.filterGeographySurvey);
-        isFilterSet = true;
+      //   geographyFilterCount += 1;
+      // }
+      // if (stateNav.filterGeographySurvey && stateNav.filterGeographySurvey.length > 0) {
+      //   filterArray.push(stateNav.filterGeographySurvey);
+      //   isFilterSet = true;
 
-        geographyFilterCount += 1;
-      }
-      if (stateNav.filterGeographyAbstract && stateNav.filterGeographyAbstract.length > 0) {
-        filterArray.push(stateNav.filterGeographyAbstract);
-        isFilterSet = true;
+      //   geographyFilterCount += 1;
+      // }
+      // if (stateNav.filterGeographyAbstract && stateNav.filterGeographyAbstract.length > 0) {
+      //   filterArray.push(stateNav.filterGeographyAbstract);
+      //   isFilterSet = true;
 
-        geographyFilterCount += 1;
-      }
+      //   geographyFilterCount += 1;
+      // }
+      
       setStateNav(state => ({ ...state, wellFilterCount: wellFilterCount }));
       setStateNav(state => ({
         ...state,
@@ -504,6 +505,7 @@ export default function Map() {
       if (isFilterSet) {
         filterArray.unshift("all");
 
+        
         console.log("all current filters", filterArray);
 
         map.setFilter("wellpoints", filterArray);

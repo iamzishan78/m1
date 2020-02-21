@@ -10,8 +10,8 @@ import stateNamesAb from "./Utils/USAStates";
 const useStyles = makeStyles(theme => ({
   formControl: {
     margin: "15px",
-    minWidth: 319,
-    maxWidth: 320,
+    minWidth: 249,
+    maxWidth: 250,
     color: "black"
   },
 }));
@@ -34,10 +34,18 @@ export default function FilterStateName() {
     } 
   },[displayName, setStateNav, stateName]) 
   
-  const handleStateNameChange = (event) => {
-    setStateName(event[0])
-    setDisplayName(event[1])
-    setStateNav(stateNav => ({ ...stateNav, stateName: event[0], displayStateName: event[0]}));
+  const handleStateNameChange = (event, e) => {
+    console.log(event, e)
+    event.preventDefault();
+    if(event.keyCode === 13){
+      event.preventDefault();
+      setStateName(e[0])
+      setDisplayName(e[1])
+      setStateNav(stateNav => ({ ...stateNav, stateName: e[0], displayStateName: e[0]}));
+    }
+    setStateName(e[0])
+    setDisplayName(e[1])
+    setStateNav(stateNav => ({ ...stateNav, stateName: e[0], displayStateName: e[0]}));
   }
 
  
@@ -53,7 +61,7 @@ export default function FilterStateName() {
               includeInputInList
               value={displayName}
               onChange={(event, newValue) => {
-                handleStateNameChange(newValue);
+                handleStateNameChange( event,newValue);
               }}
               renderInput={params =>(
                   <form autoComplete="off">

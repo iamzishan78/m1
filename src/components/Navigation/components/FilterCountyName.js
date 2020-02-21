@@ -11,8 +11,8 @@ import useQueryCountiesByState from "../../../graphQL/useQueryCountiesByState";
 const useStyles = makeStyles(theme => ({
   formControl: {
     margin: "15px",
-    minWidth: 319,
-    maxWidth: 320,
+    minWidth: 249,
+    maxWidth: 250,
     color: "black"
   },
   loader: {
@@ -49,6 +49,8 @@ export default function FilterCountyName() {
             setCountyList(list);
             }) 
       }
+    } else {
+      setCountyList([])
     }
     
   }, [data, loading, queryCounties, stateNav.stateName]);

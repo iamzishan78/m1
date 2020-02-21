@@ -115,6 +115,7 @@ export default function FilterFormProduction() {
   const [lastOilMax, setLastOilMax] = useState();
   const [lastGasMax, setLastGasMax] = useState();
   const [lastWaterMax, setLastWaterMax] = useState();
+  const [valsFirstMonths, setValsFirstMonths] = useState()
   const [cumulativeOilMin, setCumulativeOilMin] = useState();
   const [cumulativeOilMax, setCumulativeOilMax] = useState();
 
@@ -173,6 +174,7 @@ export default function FilterFormProduction() {
   // console.log(max)
   const handleChangeFirstMonths = (event, newValue) => {
     updateSliderRanges("first", newValue);
+    setValsFirstMonths(newValue);
   };
   const handleChangeLastMonths = (event, newValue) => {
     updateSliderRanges("last", newValue);
@@ -180,7 +182,7 @@ export default function FilterFormProduction() {
 
   const updateSliderRanges = (firstLast, newValue) => {
     if (firstLast === "first") {
-      console.log(newValue.props.value);
+      // console.log(newValue.props.value);
       switch (newValue.props.value) {
         case 1:
           setFirstOilMax(max.firstMonthProdOil);
@@ -319,6 +321,58 @@ export default function FilterFormProduction() {
   ) : (
     <div className={classes.displayNone}></div>
   );
+  // console.log(valsFirstMonths)
+  const renderFirstMonth = (
+    valsFirstMonths && valsFirstMonths.props.value === 1 ?
+    <TabPanel value={value} index={1} dir={theme.direction}>
+        <FormControl className={classes.inputWrapper}>
+          <Typography className={classes.inputLabel}>Oil (MBBL)</Typography>
+          <ProductionSlider
+            id="firstOil"
+            prod="Oil"
+            firstLast="first"
+            months={valueFirstMonths}
+            min={0}
+            max={firstOilMax}
+          />
+        </FormControl>
+        <FormControl className={classes.inputWrapper}>
+          <Typography
+            className={classes.inputLabel}
+            htmlFor="select-multiple-chip1"
+          >
+            Gas (MMCF)
+          </Typography>
+
+          <ProductionSlider
+            id="firstGas"
+            prod="Gas"
+            firstLast="first"
+            months={valueFirstMonths}
+            min={0}
+            max={firstGasMax}
+          />
+        </FormControl>
+        <FormControl className={classes.inputWrapper}>
+          <Typography
+            className={classes.inputLabel}
+            htmlFor="select-multiple-chip1"
+          >
+            Water (MBBL)
+          </Typography>
+
+          <ProductionSlider
+            id="firstWater"
+            prod="Water"
+            firstLast="first"
+            months={valueFirstMonths}
+            min={0}
+            max={firstWaterMax}
+          />
+        </FormControl>
+      </TabPanel> :
+      <div className={classes.displayNone}></div>
+  )
 
   return !loading ? (
     <div className={classes.root}>
@@ -389,53 +443,7 @@ export default function FilterFormProduction() {
           />
         </FormControl>
       </TabPanel>
-      <TabPanel value={value} index={1} dir={theme.direction}>
-        <FormControl className={classes.inputWrapper}>
-          <Typography className={classes.inputLabel}>Oil (MBBL)</Typography>
-          <ProductionSlider
-            id="firstOil"
-            prod="Oil"
-            firstLast="first"
-            months={valueFirstMonths}
-            min={0}
-            max={firstOilMax}
-          />
-        </FormControl>
-        <FormControl className={classes.inputWrapper}>
-          <Typography
-            className={classes.inputLabel}
-            htmlFor="select-multiple-chip1"
-          >
-            Gas (MMCF)
-          </Typography>
-
-          <ProductionSlider
-            id="firstGas"
-            prod="Gas"
-            firstLast="first"
-            months={valueFirstMonths}
-            min={0}
-            max={firstGasMax}
-          />
-        </FormControl>
-        <FormControl className={classes.inputWrapper}>
-          <Typography
-            className={classes.inputLabel}
-            htmlFor="select-multiple-chip1"
-          >
-            Water (MBBL)
-          </Typography>
-
-          <ProductionSlider
-            id="firstWater"
-            prod="Water"
-            firstLast="first"
-            months={valueFirstMonths}
-            min={0}
-            max={firstWaterMax}
-          />
-        </FormControl>
-      </TabPanel>
+      {renderFirstMonth}
       <TabPanel value={value} index={2} dir={theme.direction}>
         <FormControl className={classes.inputWrapper}>
           <Typography

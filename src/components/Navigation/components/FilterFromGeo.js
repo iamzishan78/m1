@@ -1,17 +1,21 @@
 import React, { useState, useContext, useEffect, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Chip from "@material-ui/core/Chip";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
+import Divider from '@material-ui/core/Divider';
 import { NavigationContext } from "../NavigationContext";
 import FilterStateName from "./FilterStateName";
 import FilterCountyName from "./FilterCountyName";
 import FilterSurvey from "./FilterSurvey";
 import FilterAbstract from "./FilterAbstract";
-// import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles(theme => ({
   root: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    // maxWidth: 220,
+    // minWidth: 200,
+  },
+  rootExtra: {
     display: "flex",
     flexWrap: "wrap",
     flexDirection: "column",
@@ -46,241 +50,95 @@ const useStyles = makeStyles(theme => ({
 export default function FilterFormGeo() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [filterRecall, setFilterRecall] = useState([]);
-  const [statesInFilter, setStatesInFilter] = useState(
-    stateNav.statesInFilter ? stateNav.statesInFilter : []
-  );
-  const [countyInFilter, setCountyInFilter] = useState(
-    stateNav.countyInFilter ? stateNav.countyInFilter : []
-  );
-  const [surveyInFilter, setSurveyInFilter] = useState(
-    stateNav.surveyInFilter ? stateNav.surveyInFilter : []
-  );
-  const [abstractInFilter, setAbstractInFilter] = useState(
-    stateNav.abstractInFilter ? stateNav.abstractInFilter : []
-  );
-  const [displayVals, setDisplayVals] = useState([]);
-  const [resetValueState, setResetValueState] = useState(false);
-  const [resetValueCounty, setResetValueCounty] = useState(false);
-  const [resetValueSurvey, setResetValueSurvey] = useState(false);
-  const [resetValueAbstract, setResetValueAbstract] = useState(false);
 
-  // const resetFilterState = () => {
-  //   if (stateNav.stateName && stateNav.stateName.length > 0) {
-  //     setResetValueState(!resetValueState)
-  //   }
+  // const resetFilter = () => {
+  //   setStateNav(stateNav => ({
+  //     ...stateNav,
+  //     filterGeographyState: null,
+  //     filterGeographyCounty: null,
+  //     filterGeographySurvey: null,
+  //     filterGeographyAbstract: null,
+  //     statesInFilter: null,
+  //     countyInFilter: null,
+  //     surveyInFilter: null,
+  //     abstractInFilter: null
+  //   }));
+  //   setDisplayVals([]);
   // };
 
-  // const resetFilterCounty = () => {
-  //   if (stateNav.countyName && stateNav.countyName.length > 0) {
-  //     setResetValueCounty(!resetValueCounty)
-  //   }
-  // };
-
-  // const resetFilterSurvey = () => {
-  //   if (stateNav.surveyName && stateNav.surveyName.length > 0) {
-  //     setResetValueSurvey(!resetValueSurvey)
-  //   }
-  // };
-
-  // const resetFilterAbstract = () => {
-  //   if (stateNav.abstractName && stateNav.abstractName.length > 0) {
-  //     setResetValueAbstract(!resetValueAbstract)
-  //   }
-  // };
-
-  const resetFilter = () => {
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterGeographyState: null,
-      filterGeographyCounty: null,
-      filterGeographySurvey: null,
-      filterGeographyAbstract: null,
-      statesInFilter: null,
-      countyInFilter: null,
-      surveyInFilter: null,
-      abstractInFilter: null
-    }));
-    setDisplayVals([]);
-  };
-
-  const setFilterRunning = useCallback(() => {
-    let stateFilter;
-    let countyFilter;
-    let surveyFilter;
-    let abstractFilter;
+  useEffect(() => {
+    let state;
+    let county;
+    let survey;
+    let abstract;
     let filter;
-    let filteredEl;
-    let stateElFilter;
-    let countyElFilter;
-    let surveyElFilter;
-    let abstractElFilter;
-    if (filterRecall && filterRecall.length > 0) {
-      if (filterRecall[0].length > 0) {
-        filterRecall.forEach((element, i) => {
-          element = filterRecall[i];
-          filteredEl = element.filter(n => n);
-        });
-        stateElFilter = filteredEl[0];
-        countyElFilter = filteredEl[1];
-        surveyElFilter = filteredEl[2];
-        abstractElFilter = filteredEl[3];
-      }
 
-      if (stateElFilter === undefined) {
-        stateFilter = null;
-      } else {
-        stateFilter = ["match", ["get", "state"], stateElFilter, true, false];
+    if (stateNav.stateName && stateNav.stateName.length > 0) {
+      if (stateNav.stateName !== null) {
+        state = stateNav.stateName;
       }
-      if (countyElFilter === undefined) {
-        countyFilter = null;
-      } else {
-        countyFilter = [
-          "match",
-          ["get", "county"],
-          countyElFilter,
-          true,
-          false
-        ];
+      if (stateNav.countyName !== null) {
+        county = stateNav.countyName.toString();
       }
-      if (surveyElFilter === undefined) {
-        surveyFilter = null;
-      } else {
-        surveyFilter = [
-          "match",
-          ["get", "survey"],
-          surveyElFilter,
-          true,
-          false
-        ];
+      if (stateNav.surveyName !== null) {
+        survey = stateNav.surveyName.toString();
       }
-      if (abstractElFilter === undefined) {
-        abstractFilter = null;
-      } else {
-        abstractFilter = [
-          "match",
-          ["get", "abstract"],
-          abstractElFilter,
-          true,
-          false
-        ];
+      if (stateNav.abstractName !== null) {
+        abstract = stateNav.abstractName.toString();
       }
-
+    }
+    console.log(state, county, survey, abstract);
+    if (state !== undefined) {
+      filter = ["all", ["in", "state", state]];
+    }
+    if (county !== undefined) {
+      filter = ["all", ["in", "state", state], ["in", "county", county]];
+    }
+    if (survey !== undefined) {
       filter = [
         "all",
-        ["match", ["get", "state"], stateElFilter, true, false],
-        ["match", ["get", "county"], countyElFilter, true, false],
-        ["match", ["get", "survey"], surveyFilter, true, false],
-        ["match", ["get", "abstract"], abstractFilter, true, false],
-        
+        ["in", "state", state],
+        ["in", "county", county],
+        ["in", "survey", survey]
       ];
+    }
+    if (abstract !== undefined) {
+      filter = [
+        "all",
+        ["in", "state", state],
+        ["in", "county", county],
+        ["in", "survey", survey],
+        ["in", "abstract", abstract]
+      ];
+    }
+
+    if (filter) {
+      console.log("GeoFilter change filter", filter);
+      setStateNav(stateNav => ({
+        ...stateNav,
+        filterGeography: filter
+      }));
     } else {
       filter = null;
     }
-    console.log("GeoFilter change filter", filter);
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterGeographyState: stateFilter,
-      filterGeographyCounty: countyFilter,
-      filterGeographySurvey: surveyFilter,
-      filterGeographyAbstract: abstractFilter,
-      statesInFilter: stateElFilter,
-      countyInFilter: countyElFilter,
-      surveyInFilter: surveyElFilter,
-      abstractInFilter: abstractElFilter
-    }));
-  }, [filterRecall, setStateNav]);
-
-  useEffect(() => {
-    if (filterRecall && filterRecall.length > 0) {
-      setFilterRunning();
-    }
-  }, [filterRecall, setFilterRunning]);
-
-  useEffect(() => {
-    const displayFilters = () => {
-      let displayCheck;
-      let display;
-      if (filterRecall && filterRecall.length > 0) {
-        displayCheck = filterRecall.filter(el => el !== undefined);
-        display = [...new Set(displayCheck)];
-      }
-      setDisplayVals(display);
-    };
-    if (filterRecall && filterRecall.length > 0) {
-      displayFilters();
-    }
-  }, [filterRecall]);
-
-  const filters = displayVals.map(check =>
-    <div>Filter: </div> ? (
-      <div key={check}>
-        <Chip onDelete={resetFilter} label={check} className={classes.chip} />
-      </div>
-    ) : (
-      <div>Filter: </div>
-    )
-  );
-
-  const addFilter = () => {
-    let stateFilter;
-    let countyFilter;
-    let surveyFilter;
-    let abstractFilter;
-    let filter = [];
-    if (stateNav.stateName && stateNav.stateName.length > 0) {
-      if (stateNav.stateName !== null) {
-        stateFilter = stateNav.stateName;
-      }
-      if (stateNav.countyName !== null) {
-        countyFilter = stateNav.countyName.toString();
-      }
-      if (stateNav.surveyName !== null) {
-        surveyFilter = stateNav.surveyName.toString();
-      }
-      if (stateNav.abstractName !== null) {
-        abstractFilter = stateNav.abstractName.toString();
-      }
-    } else {
-      stateFilter = null;
-      countyFilter = null;
-      surveyFilter = null;
-      abstractFilter = null;
-    }
-    filter.push(stateFilter, countyFilter, surveyFilter, abstractFilter);
-
-    setFilterRecall([...filterRecall, filter]);
-  };
+  }, [
+    setStateNav,
+    stateNav.abstractName,
+    stateNav.countyName,
+    stateNav.stateName,
+    stateNav.surveyName
+  ]);
 
   return (
     <div className={classes.row}>
       <div className={classes.root}>
-        <div>
           <FilterStateName />
-        </div>
-        <div>
           <FilterCountyName />
-        </div>
-        <div>
-          <FilterSurvey />
-        </div>
-        <div>
-          <FilterAbstract />
-        </div>
-        <div className={classes.filterButton}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={addFilter}
-            className={classes.button}
-            size="large"
-          >
-            Add Filter
-          </Button>
-        </div>
       </div>
-      <div className={classes.datesRow}>
-        {filters}
+      <Divider />
+      <div className={classes.rootExtras}>
+        <FilterSurvey />
+        <FilterAbstract />
       </div>
     </div>
   );

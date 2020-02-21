@@ -11,19 +11,22 @@ import useQueryAbstractBySurvey from "../../../graphQL/useQueryAbstractBySurvey"
 const useStyles = makeStyles(theme => ({
   formControl: {
     margin: "15px",
-    minWidth: 319,
-    maxWidth: 320,
+    minWidth: 249,
+    maxWidth: 250,
     color: "black"
   },
   loader: {
     marginLeft: "40%",
   },
+  displayNone: {
+    display: "none"
+  }
 }));
 
 export default function FilterAbstract({keys}) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-
+  const [checkForStateProps, setCheckForStateProps] = useState(false);
   const [abstractName, handleAbstractNameChange] = useState(
     stateNav.abstractName ? stateNav.abstractName : []
   );
@@ -32,6 +35,18 @@ export default function FilterAbstract({keys}) {
     stateNav.surveyName
   );
   
+  useEffect (() => {
+    if (stateNav.stateName && stateNav.stateName.length > 0) {
+      const listOfStatesWithProps = ["TX", "NM"];
+      const check = listOfStatesWithProps.includes(stateNav.stateName)
+      if (check) {
+        setCheckForStateProps(true)
+      } else{
+        setCheckForStateProps(false)
+      }
+    }
+  },[setCheckForStateProps, stateNav.stateName])
+
   useEffect(() => {
     if (stateNav.surveyName != null && stateNav.surveyName.length > 0) {
       queryAbstract();
@@ -58,6 +73,7 @@ export default function FilterAbstract({keys}) {
   },[abstractName, setStateNav]) 
  
   return (
+    checkForStateProps ?
     <FormControl variant="outlined" className={classes.formControl}>
     {loading ? 
       <CircularProgress color="secondary" className={classes.loader} size={28}  />
@@ -85,5 +101,6 @@ export default function FilterAbstract({keys}) {
           }
         />}
   </FormControl>
+  : <div className={classes.displayNone}></div>
   );
 }

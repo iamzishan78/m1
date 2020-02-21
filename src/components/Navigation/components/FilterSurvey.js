@@ -7,23 +7,27 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
 import useQuerySurveyByCounty from "../../../graphQL/useQuerySurveyByCounty";
+import { display } from "@material-ui/system";
 
 const useStyles = makeStyles(theme => ({
   formControl: {
     margin: "15px",
-    minWidth: 319,
-    maxWidth: 320,
+    minWidth: 249,
+    maxWidth: 350,
     color: "black"
   },
   loader: {
     marginLeft: "40%",
   },
+  displayNone: {
+    display: "none"
+  }
 }));
 
 export default function FilterSurvey({key}) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-
+  const [checkForStateProps, setCheckForStateProps] = useState(false);
   const [surveyName, handleSurveyNameChange] = useState(
     stateNav.surveyName ? stateNav.surveyName : []
   );
@@ -31,6 +35,18 @@ export default function FilterSurvey({key}) {
   const [querySurveys, {loading, data }] = useQuerySurveyByCounty(
     stateNav.countyName
   );
+  
+  useEffect (() => {
+    if (stateNav.stateName && stateNav.stateName.length > 0) {
+      const listOfStatesWithProps = ["TX", "NM"];
+      const check = listOfStatesWithProps.includes(stateNav.stateName)
+      if (check) {
+        setCheckForStateProps(true)
+      } else{
+        setCheckForStateProps(false)
+      }
+    }
+  },[setCheckForStateProps, stateNav.stateName])
   
   useEffect(() => {
     if (stateNav.countyName != null && stateNav.countyName.length > 0) {
@@ -67,6 +83,7 @@ export default function FilterSurvey({key}) {
   },[setStateNav, surveyName]) 
 
   return (
+    checkForStateProps ?
       <FormControl variant="outlined" className={classes.formControl}>
         {loading ? 
           <CircularProgress color="secondary" className={classes.loader} size={28}  />
@@ -95,5 +112,6 @@ export default function FilterSurvey({key}) {
             />
         }
       </FormControl>
+      : <div className={classes.displayNone}></div>
   );
 }

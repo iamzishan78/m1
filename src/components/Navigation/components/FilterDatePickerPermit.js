@@ -203,6 +203,7 @@ export default function FilterDatePickerPermit(props) {
           className={classes.datePicker}
           inputVariant="outlined"
           autoOk
+          allowKeyboardControl
           maxDate={moment().subtract(1, 'day')}
           variant="inline"
           value={selectedStartDate}
