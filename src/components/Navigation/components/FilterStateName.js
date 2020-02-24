@@ -35,17 +35,24 @@ export default function FilterStateName() {
   },[displayName, setStateNav, stateName]) 
   
   const handleStateNameChange = (event, e) => {
-    console.log(event, e)
     event.preventDefault();
+    if (e == null) {
+      event.preventDefault();
+      setStateName(null)
+      setDisplayName(null)
+      setStateNav(stateNav => ({ ...stateNav, stateName: null, displayStateName: null, filterGeography: null}));
+    } else {
+      setStateName(e[0])
+      setDisplayName(e[1])
+      setStateNav(stateNav => ({ ...stateNav, stateName: e[0], displayStateName: e[0]}));
+
+    }
     if(event.keyCode === 13){
       event.preventDefault();
       setStateName(e[0])
       setDisplayName(e[1])
       setStateNav(stateNav => ({ ...stateNav, stateName: e[0], displayStateName: e[0]}));
     }
-    setStateName(e[0])
-    setDisplayName(e[1])
-    setStateNav(stateNav => ({ ...stateNav, stateName: e[0], displayStateName: e[0]}));
   }
 
  
@@ -56,7 +63,6 @@ export default function FilterStateName() {
               options={stateNamesAb}
               getOptionLabel={option => option}
               autoSelect
-              disableClearable
               disableListWrap
               includeInputInList
               value={displayName}

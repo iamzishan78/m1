@@ -84,7 +84,7 @@ export default function FilterDatePickerSpud(props) {
     } else {
       filter = null;
     }
-    console.log("CSpud Date dates change filter", filter);
+    console.log("Spud Date dates change filter", filter);
     setStateNav(stateNav => ({ ...stateNav, filterSpudDateRange: filter }));
 }, [setStateNav, spudFromDate.date, spudToDate.date]);
 
@@ -126,7 +126,8 @@ export default function FilterDatePickerSpud(props) {
       const formatDateReset = moment().subtract(120, 'Years');
       setStateNav(stateNav => ({
         ...stateNav,
-        spudDateFrom: null
+        spudDateFrom: null,
+        filterSpudDateRange: null
       }));
       handleStartDateChang(formatDateReset);
     } else {
@@ -147,7 +148,7 @@ export default function FilterDatePickerSpud(props) {
   const handleEndDate = date => {
     if (date === null) {
       const formatDateReset = moment();
-      setStateNav(stateNav => ({ ...stateNav, spudDateTo: null }));
+      setStateNav(stateNav => ({ ...stateNav, spudDateTo: null, filterSpudDateRange: null }));
       handleEndDateChange(formatDateReset);
       return;
     } else {

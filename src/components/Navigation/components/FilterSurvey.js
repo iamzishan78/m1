@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
   formControl: {
     margin: "15px",
     minWidth: 249,
-    maxWidth: 350,
+    maxWidth: 250,
     color: "black"
   },
   loader: {
@@ -32,9 +32,7 @@ export default function FilterSurvey({key}) {
     stateNav.surveyName ? stateNav.surveyName : []
   );
   const [surveyList, setSurveyList] = useState();
-  const [querySurveys, {loading, data }] = useQuerySurveyByCounty(
-    stateNav.countyName
-  );
+  const [querySurveys, {loading, data }] = useQuerySurveyByCounty(stateNav.countyName);
   
   useEffect (() => {
     if (stateNav.stateName && stateNav.stateName.length > 0) {
@@ -45,14 +43,19 @@ export default function FilterSurvey({key}) {
       } else{
         setCheckForStateProps(false)
       }
+    } else {
+      setCheckForStateProps(false)
     }
   },[setCheckForStateProps, stateNav.stateName])
+
   
   useEffect(() => {
-    if (stateNav.countyName != null && stateNav.countyName.length > 0) {
+    if (stateNav.countyName == null) {
+      setSurveyList([]);
+    } else {
+    if (stateNav.countyName && stateNav.countyName.length > 0) {
       querySurveys();
       if(!loading){
-        console.log(data)
         const surveys =
           data && data.surveys
             ? data.surveys
@@ -69,18 +72,27 @@ export default function FilterSurvey({key}) {
             sortedList.push(survey.survey)
           )
           setSurveyList(sortedList)
-      } else{
-        querySurveys(null);
-        //handle errors
-      }
+      } 
     }
+  }
   }, [data, loading, querySurveys, stateNav.countyName]);
   
   useEffect(()=> {
+    if (surveyName == null) {
+      setStateNav(stateNav => ({ ...stateNav, surveyName: null, filterGeography: null}));
+    }
     if( surveyName != null && surveyName.length > 0){
       setStateNav(stateNav => ({ ...stateNav, surveyName: surveyName}));
     }
-  },[setStateNav, surveyName]) 
+  },[setStateNav, stateNav.surveyName, surveyName]) 
+
+  useEffect(() => {
+      if (surveyList && surveyList.length > 0) {
+         handleSurveyNameChange(surveyName)  
+      } else {
+        handleSurveyNameChange(null) 
+      }
+  }, [surveyList, surveyName])
 
   return (
     checkForStateProps ?
@@ -94,9 +106,9 @@ export default function FilterSurvey({key}) {
               getOptionLabel={option => option}
               autoComplete
               autoSelect
-              disableClearable
               disableListWrap
               includeInputInList
+              value={surveyName}
               onChange={(event, newValue) => {
                 handleSurveyNameChange(newValue);
               }}

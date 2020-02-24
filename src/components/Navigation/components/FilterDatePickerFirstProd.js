@@ -126,7 +126,8 @@ export default function FilterDatePickerFirstProd(props) {
       const formatDateReset = moment().subtract(120, 'Years');
       setStateNav(stateNav => ({
         ...stateNav,
-        firstProdDateFrom: null
+        firstProdDateFrom: null,
+        filterFirstProdDateRange: null
       }));
       handleStartDateChang(formatDateReset);
     } else {
@@ -147,7 +148,7 @@ export default function FilterDatePickerFirstProd(props) {
   const handleEndDate = date => {
     if (date === null) {
       const formatDateReset = moment();
-      setStateNav(stateNav => ({ ...stateNav, firstProdDateTo: null }));
+      setStateNav(stateNav => ({ ...stateNav, firstProdDateTo: null, filterFirstProdDateRange: null}));
       handleEndDateChange(formatDateReset);
       return;
     } else {

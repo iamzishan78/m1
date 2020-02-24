@@ -16,10 +16,10 @@ const useStyles = makeStyles({
     margin: 20,
     maxWidth: 120,
     minWidth: 118,
-    "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
-      "-webkit-appearance": "none",
-      margin: 0
-    }
+    // "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+    //   "-webkit-appearance": "none",
+    //   margin: 0
+    // }
   },
   inputMax: {
     margin: 10,
@@ -440,25 +440,6 @@ export default function ProductionSlider(props) {
     
   };
   console.log(valueMax)
-  // useEffect(() => {
-  //   const checkMin = () => {
-  //     if (valueMin >= valueMax) {
-  //       setCheck(true);
-  //     } else {
-  //       setCheck(false);
-  //     }
-  //   };
-
-  //   const checkMax = () => {
-  //     if (valueMax <= valueMin) {
-  //       return true;
-  //     } else {
-  //       return false;
-  //     }
-  //   };
-  //   checkMax();
-  //   checkMin();
-  // }, [check, valueMax, valueMin]);
 
   return (
     <div className={classes.divInput}>
@@ -466,7 +447,7 @@ export default function ProductionSlider(props) {
         className={classes.input}
         id={id}
         value={valueMinDisplay}
-        InputProps={{ inputProps: { min: 0, max: max - 1 , step:  1} }}
+        InputProps={{ inputProps: { min: 0, max: max - 1 , step:  1000} }}
         onChange={handleChangeMin}
         getAriaValueText={valueText}
         aria-labelledby="range-number"
@@ -480,7 +461,7 @@ export default function ProductionSlider(props) {
         id={id}
         value={valueMaxDisplay}
         InputLabelProps={{shrink: true}}
-        InputProps={{ inputProps: { min: 0, max: max , step: 1} }}
+        InputProps={{ inputProps: { min: 0, max: max , step: 1000} }}
         onChange={handleChangeMax}
         getAriaValueText={valueText}
         aria-labelledby="range-number"

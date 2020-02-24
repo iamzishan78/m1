@@ -126,7 +126,8 @@ export default function FilterDatePickerCompletetion(props) {
       const formatDateReset = moment().subtract(120, 'Years');
       setStateNav(stateNav => ({
         ...stateNav,
-        completetionDateFrom: null
+        completetionDateFrom: null,
+        filterCompletetionDateRange: null,
       }));
       handleStartDateChang(formatDateReset);
     } else {
@@ -147,7 +148,7 @@ export default function FilterDatePickerCompletetion(props) {
   const handleEndDate = date => {
     if (date === null) {
       const formatDateReset = moment();
-      setStateNav(stateNav => ({ ...stateNav, completetionDateTo: null }));
+      setStateNav(stateNav => ({ ...stateNav, completetionDateTo: null, filterCompletetionDateRange: null, }));
       handleEndDateChange(formatDateReset);
       return;
     } else {

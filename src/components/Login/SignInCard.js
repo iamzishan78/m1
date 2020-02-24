@@ -163,6 +163,23 @@ const SignInCard = props => {
     }
   };
 
+  const onEnterKey = e =>{    
+    if (userEmail === "" || userPassword === "") {
+      //set errorFlags
+    } else {
+      const userData = {
+        userEmail,
+        userPassword
+      };
+      const { handleSignIn } = props;
+      if(e.keyCode === 13){
+        e.preventDefault();
+        handleSignIn(userData);
+      }
+
+    }
+  }
+
   const renderButtonAndLoader = (
     props.ready ?
       <CircularProgress color="secondary" size={28} className={classes.loader} />
@@ -218,6 +235,7 @@ const SignInCard = props => {
             autoFocus={passwordFlags.autoFocus}
             className={classes.inputs}
             onChange={e => setUserPassword(e.target.value)}
+            onKeyDown={e => onEnterKey(e)}
             onBlur={() =>
               validateData("password", userPassword, setPasswordFlags)
             }

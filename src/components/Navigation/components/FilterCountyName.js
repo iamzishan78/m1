@@ -28,13 +28,15 @@ export default function FilterCountyName() {
     stateNav.countyName ? stateNav.countyName : []
   );
   const [countyList, setCountyList] = useState();
-  const [queryCounties, {loading, data }] = useQueryCountiesByState(
-    stateNav.stateName
-  );
-  
+  const [queryCounties, {loading, data }] = useQueryCountiesByState(stateNav.stateName);
+
   useEffect(() => {
-    if (stateNav.stateName === "TX"){
-      queryCounties();
+    // this check is only here beacuse Texas is the only State we have Counties for
+    if (stateNav.stateName == null){
+      setCountyList([])
+    } else {
+      if ( stateNav.stateName === "TX") {
+        queryCounties();
       if (!loading) {
         const counties =
           data && data.counties
@@ -49,18 +51,28 @@ export default function FilterCountyName() {
             setCountyList(list);
             }) 
       }
-    } else {
-      setCountyList([])
-    }
+    } 
+  }
     
   }, [data, loading, queryCounties, stateNav.stateName]);
 
   useEffect(()=> {
-    if(countyName != null && countyName.length > 0){
+    if (countyName == null ) {
+      setStateNav(stateNav => ({ ...stateNav, countyName: null, filterGeography: null})); 
+    }
+    if(countyName !== null && countyName.length > 0){
       setStateNav(stateNav => ({ ...stateNav, countyName: countyName}));
     } 
-  },[countyName, setStateNav]) 
- 
+  },[countyName, setStateNav, stateNav.countyName]) 
+
+  useEffect(() => {
+      if (countyList && countyList.length > 0) {
+         handleCountyNameChange(countyName)
+      } else{
+        handleCountyNameChange(null)
+      }
+  }, [countyList, countyName])
+
   return (
       <FormControl variant="outlined" className={classes.formControl}>
           {loading ? 
@@ -72,9 +84,9 @@ export default function FilterCountyName() {
                   getOptionLabel={option => option}
                   autoComplete
                   autoSelect
-                  disableClearable
                   disableListWrap
                   includeInputInList
+                  value={countyName}
                   onChange={(event, newValue) => {
                     handleCountyNameChange(newValue);
                   }}

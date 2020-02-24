@@ -140,7 +140,8 @@ export default function FilterDatePickerPermit(props) {
       const formatDateReset = moment().subtract(120, 'Years');
       setStateNav(stateNav => ({
         ...stateNav,
-        permitDateFrom: null
+        permitDateFrom: null,
+        filterPermitDateRange: null
       }));
       handleStartDateChang(formatDateReset);
     } else {
@@ -170,7 +171,7 @@ export default function FilterDatePickerPermit(props) {
     // if is equal it resets the date from the input
     if (date === null) {
       const formatDateReset = moment();
-      setStateNav(stateNav => ({ ...stateNav, permitDateTo: null }));
+      setStateNav(stateNav => ({ ...stateNav, permitDateTo: null , filterPermitDateRange: null}));
       handleEndDateChange(formatDateReset);
       return;
     } else {
