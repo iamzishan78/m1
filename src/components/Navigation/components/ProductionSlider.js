@@ -85,173 +85,52 @@ export default function ProductionSlider(props) {
         
         filter = null;
       } 
-      else {
-        console.log(currentValue, selectedMax)
-        if (props.firstLast && props.months && props.prod) {
-          let firstLastString = "";
-          if (props.firstLast) {
-            firstLastString = props.firstLast;
-          }
-          let prodString = "";
-          if (props.prod) {
-            prodString = props.prod;
-          }
+      // else {
+      //   console.log(currentValue, selectedMax)
+      //   if (props.firstLast && props.months && props.prod) {
+      //     let firstLastString = "";
+      //     if (props.firstLast) {
+      //       firstLastString = props.firstLast;
+      //     }
+      //     let prodString = "";
+      //     if (props.prod) {
+      //       prodString = props.prod;
+      //     }
 
-          let monthsString = "";
-          if (props.months) {
-            switch (props.months) {
-              case 1:
-                monthsString = "Month";
-                break;
-              case 3:
-                monthsString = "ThreeMonth";
-                break;
-              case 6:
-                monthsString = "SixMonth";
-                break;
-              case 12:
-                monthsString = "TwelveMonth";
-                break;
-              default:
-                monthsString = "TwelveMonth";
-              // code block
-            }
-          }
-          //api outputs a specific format for the properties of a well. Filter must match
-          let id = `${firstLastString}${monthsString}${prodString}`;
-          filter = [
-            "all",
-            [">=", ["get", id.toString()], parseInt(selectedMin)],
-            ["<=", ["get", id.toString()], parseInt(selectedMax)]
-          ];
-          console.log("add filter", filter);
+      //     let monthsString = "";
+      //     if (props.months) {
+      //       switch (props.months) {
+      //         case 1:
+      //           monthsString = "Month";
+      //           break;
+      //         case 3:
+      //           monthsString = "ThreeMonth";
+      //           break;
+      //         case 6:
+      //           monthsString = "SixMonth";
+      //           break;
+      //         case 12:
+      //           monthsString = "TwelveMonth";
+      //           break;
+      //         default:
+      //           monthsString = "TwelveMonth";
+      //         // code block
+      //       }
+      //     }
+      //     //api outputs a specific format for the properties of a well. Filter must match
+      //     let id = `${firstLastString}${monthsString}${prodString}`;
+      //     filter = [
+      //       "all",
+      //       [">=", ["get", id.toString()], parseInt(selectedMin)],
+      //       ["<=", ["get", id.toString()], parseInt(selectedMax)]
+      //     ];
+      //     console.log("add filter", filter);
 
-          console.log("production change filter", id, filter);
+      //     console.log("production change filter", id, filter);
           //setState doesn't work if you make the key a variable, like id, so I had to do this
           //all this repetiton is necessary because of this mapbox setFilter limit
-          if (id === "firstMonthWater") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterFirstMonthWater: filter
-            }));
-          } else if (id === "firstThreeMonthWater") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterFirstThreeMonthWater: filter
-            }));
-          } else if (id === "firstSixMonthWater") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterFirstSixMonthWater: filter
-            }));
-          } else if (id === "firstTwelveMonthWater") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterFirstTwelveMonthWater: filter
-            }));
-          } else if (id === "lastMonthWater") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterLastMonthWater: filter
-            }));
-          } else if (id === "lastThreeMonthWater") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterLastThreeMonthWater: filter
-            }));
-          } else if (id === "lastSixMonthWater") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterLastSixMonthWater: filter
-            }));
-          } else if (id === "lastTwelveMonthWater") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterLastTwelveMonthWater: filter
-            }));
-          } else if (id === "firstMonthGas") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterFirstMonthGas: filter
-            }));
-          } else if (id === "firstThreeMonthGas") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterFirstThreeMonthGas: filter
-            }));
-          } else if (id === "firstSixMonthGas") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterFirstSixMonthGas: filter
-            }));
-          } else if (id === "firstTwelveMonthGas") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterFirstTwelveMonthGas: filter
-            }));
-          } else if (id === "lastMonthGas") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterLastMonthGas: filter
-            }));
-          } else if (id === "lastThreeMonthGas") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterLastThreeMonthGas: filter
-            }));
-          } else if (id === "lastSixMonthGas") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterLastSixMonthGas: filter
-            }));
-          } else if (id === "lastTwelveMonthGas") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterLastTwelveMonthGas: filter
-            }));
-          } else if (id === "firstMonthOil") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterFirstMonthOil: filter
-            }));
-          } else if (id === "firstThreeMonthOil") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterFirstThreeMonthOil: filter
-            }));
-          } else if (id === "firstSixMonthOil") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterFirstSixMonthOil: filter
-            }));
-          } else if (id === "firstTwelveMonthOil") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterFirstTwelveMonthOil: filter
-            }));
-          } else if (id === "lastMonthOil") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterLastMonthOil: filter
-            }));
-          } else if (id === "lastThreeMonthOil") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterLastThreeMonthOil: filter
-            }));
-          } else if (id === "lastSixMonthOil") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterLastSixMonthOil: filter
-            }));
-          } else if (id === "lastTwelveMonthOil") {
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterLastTwelveMonthOil: filter
-            }));
-          }
-        } else {
-          let filter;
+          
+         else {
           let selectedMin = valueMin;
           let selectedMax = valueMax;
           let currentValue = [];
@@ -290,10 +169,116 @@ export default function ProductionSlider(props) {
               ...stateNav,
               filterCumulativeWater: filter
             }));
+          } else if (id === "lastTwelveMonthOil") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterLastTwelveMonthOil: filter
+            }));
+          } else if (id === "firstMonthWater") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterFirstMonthWater: filter
+            }));
+          } else if (id === "firstThreeMonthWater") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterFirstThreeMonthWater: filter
+            }));
+          } else if (id === "firstSixMonthWater") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterFirstSixMonthWater: filter
+            }));
+          } else if (id === "firstTwelveMonthWater") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterFirstTwelveMonthWater: filter
+            }));
+          } else if (id === "lastMonthWater") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterLastMonthWater: filter
+            }));
+          } else if (id === "lastSixMonthWater") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterLastSixMonthWater: filter
+            }));
+          } else if (id === "lastTwelveMonthWater") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterLastTwelveMonthWater: filter
+            }));
+          } else if (id === "firstMonthGas") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterFirstMonthGas: filter
+            }));
+          } else if (id === "firstThreeMonthGas") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterFirstThreeMonthGas: filter
+            }));
+          } else if (id === "firstSixMonthGas") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterFirstSixMonthGas: filter
+            }));
+          } else if (id === "firstTwelveMonthGas") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterFirstTwelveMonthGas: filter
+            }));
+          } else if (id === "lastMonthGas") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterLastMonthGas: filter
+            }));
+          } else if (id === "lastSixMonthGas") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterLastSixMonthGas: filter
+            }));
+          } else if (id === "lastTwelveMonthGas") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterLastTwelveMonthGas: filter
+            }));
+          } else if (id === "firstMonthOil") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterFirstMonthOil: filter
+            }));
+          } else if (id === "firstThreeMonthOil") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterFirstThreeMonthOil: filter
+            }));
+          } else if (id === "firstSixMonthOil") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterFirstSixMonthOil: filter
+            }));
+          } else if (id === "firstTwelveMonthOil") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterFirstTwelveMonthOil: filter
+            }));
+          } else if (id === "lastMonthOil") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterLastMonthOil: filter
+            }));
+          } 
+          else if (id === "lastSixMonthOil") {
+            setStateNav(stateNav => ({
+              ...stateNav,
+              filterLastSixMonthOil: filter
+            }));
           }
         }
       }
-    };
+    
     
     if (valueMin && valueMax ) {
       
@@ -339,7 +324,6 @@ export default function ProductionSlider(props) {
       }
     }
     
-
     if(stateNav.filterCumulativeWater === null) {
       return
     } else { 
@@ -351,70 +335,35 @@ export default function ProductionSlider(props) {
     if (cOil.toString() === id.toString() ) { 
       const recallMax = stateNav.filterCumulativeWater[2][2]
       setValueMaxDisplay(recallMax);
-    }}    
-
-  }, [id, stateNav.filterCumulativeGas, stateNav.filterCumulativeOil, stateNav.filterCumulativeWater]);
-
-  // const setvauesRecallMonths = useCallback(() => {
-  //   if (props.firstLast && props.months && props.prod) {
-  //     let firstLastString = "";
-  //     if (props.firstLast) {
-  //       firstLastString = props.firstLast;
-  //     }
-  //     let prodString = "";
-  //     if (props.prod) {
-  //       prodString = props.prod;
-  //     }
-
-  //     let monthsString = "";
-  //     if (props.months) {
-  //       switch (props.months) {
-  //         case 1:
-  //           monthsString = "Month";
-  //           break;
-  //         case 3:
-  //           monthsString = "ThreeMonth";
-  //           break;
-  //         case 6:
-  //           monthsString = "SixMonth";
-  //           break;
-  //         case 12:
-  //           monthsString = "TwelveMonth";
-  //           break;
-  //         default:
-  //           monthsString = "TwelveMonth";
-  //         // code block
-  //       }
-  //     }
-  //     //api outputs a specific format for the properties of a well. Filter must match
-  //   let id = `${firstLastString}${monthsString}${prodString}`;
-  //   console.log(id)
-  //   if(stateNav.filterFirstMonthWater === null) {
-  //     return
-  //   } else { 
-  //   const cOil = stateNav.filterFirstMonthWater[1][1][1];
-  //   if (cOil.toString() === id.toString() ) { 
-  //     const recallMin = stateNav.filterFirstMonthWater[1][2]
-  //     setValueMinDisplay(recallMin);
-  //   } 
-  //   if (cOil.toString() === id.toString() ) { 
-  //     const recallMax = stateNav.filterFirstMonthWater[2][2]
-  //     setValueMaxDisplay(recallMax);
-  //   }
-  //     }
-  //   }
-  // },[props.firstLast, props.months, props.prod, stateNav.filterFirstMonthWater])
-
+    }}
+    
   
+
+    if(stateNav.filterFirstMonthWater === null) {
+      return
+    } else { 
+    const cOil = stateNav.filterFirstMonthWater[1][1][1];
+    if (cOil.toString() === id.toString() ) { 
+      const recallMin = stateNav.filterFirstMonthWater[1][2]
+      setValueMinDisplay(recallMin);
+    }
+    if (cOil.toString() === id.toString() ) { 
+      const recallMax = stateNav.filterFirstMonthWater[2][2]
+      setValueMaxDisplay(recallMax);
+    }} 
+
+  }, [id, stateNav.filterCumulativeGas, stateNav.filterCumulativeOil, stateNav.filterCumulativeWater, stateNav.filterFirstMonthWater]);
+  
+  console.log(stateNav.filterFirstMonthWater, prodTypeName)
+
   useEffect(() => {
     if (prodTypeName && prodTypeName.length > 0) {
-      // console.log(prodTypeName.length , prodTypeName)
       setvaluesRecallCumulative();
-      // setvauesRecallMonths();
     }
   }, [prodTypeName, prodTypeName.length, setvaluesRecallCumulative]);
 
   const handleChangeMin = event => {
+    console.log(event.target)
     setValueMin(event.target.value);
     setValueMinDisplay(event.target.value);
     setProdTypeName(event.target.id)
@@ -439,7 +388,7 @@ export default function ProductionSlider(props) {
     }
     
   };
-  console.log(valueMax)
+ 
 
   return (
     <div className={classes.divInput}>

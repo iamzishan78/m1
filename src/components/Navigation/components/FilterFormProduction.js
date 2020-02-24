@@ -105,20 +105,25 @@ export default function FilterFormProduction() {
   const [valueFirstMonthsOil, setValueFirstMonthsOil] = useState(12);
   const [valueFirstMonthsGas, setValueFirstMonthsGas] = useState(12);
   const [valueFirstMonthsWater, setValueFirstMonthsWater] = useState(12);
-  const [valueLastMonths, setValueLastMonths] = useState(12);
+  const [valueLastMonthsOil, setValueLastMonthsOil] = useState(12);
+  const [valueLastMonthsGas, setValueLastMonthsGas] = useState(12);
+  const [valueLastMonthsWater, setValueLastMonthsWater] = useState(12);
   const [max, setMax] = useState();
   const [loading, setIsLoading] = useState(true);
   const [firstMonths, setFirstMonths] = useState(false);
   const [lastMonths, setLastMonths] = useState(false);
-  const [firstOilMax, setFirstOilMax] = useState();
-  const [firstGasMax, setFirstGasMax] = useState();
-  const [firstWaterMax, setFirstWaterMax] = useState();
-  const [lastOilMax, setLastOilMax] = useState();
-  const [lastGasMax, setLastGasMax] = useState();
-  const [lastWaterMax, setLastWaterMax] = useState();
+  // const [firstOilMax, setFirstOilMax] = useState();
+  // const [firstGasMax, setFirstGasMax] = useState();
+  // const [firstWaterMax, setFirstWaterMax] = useState();
+  // const [lastOilMax, setLastOilMax] = useState();
+  // const [lastGasMax, setLastGasMax] = useState();
+  // const [lastWaterMax, setLastWaterMax] = useState();
   const [valsFirstMonthsOil, setValsFirstMonthsOil] = useState();
   const [valsFirstMonthsGas, setValsFirstMonthsGas] = useState();
   const [valsFirstMonthsWater, setValsFirstMonthsWater] = useState();
+  const [valsLastMonthsOil, setValsLastMonthsOil] = useState();
+  const [valsLastMonthsGas, setValsLastMonthsGas] = useState();
+  const [valsLastMonthsWater, setValsLastMonthsWater] = useState();
   const [cumulativeOilMin, setCumulativeOilMin] = useState();
   const [cumulativeOilMax, setCumulativeOilMax] = useState();
 
@@ -176,7 +181,7 @@ export default function FilterFormProduction() {
 
   
   const handleChangeFirstMonthsOil = (event, newValue) => {
-    console.log(event, newValue)
+    // console.log(event, newValue)
     updateSliderRangesOil("first", newValue);
     setValsFirstMonthsOil(newValue);
   };
@@ -188,133 +193,139 @@ export default function FilterFormProduction() {
     updateSliderRangesWater("first", newValue);
     setValsFirstMonthsWater(newValue);
   };
-  // const handleChangeLastMonths = (event, newValue) => {
-  //   updateSliderRanges("last", newValue);
-  // };
+  const handleChangeLastMonthsOil = (event, newValue) => {
+    updateSliderRangesOil("last", newValue);
+    setValsLastMonthsOil(newValue)
+  };
+  const handleChangeLastMonthsGas = (event, newValue) => {
+    updateSliderRangesGas("last", newValue);
+    setValsLastMonthsGas(newValue)
+  };
+  const handleChangeLastMonthsWater = (event, newValue) => {
+    updateSliderRangesWater("last", newValue);
+    setValsLastMonthsWater(newValue)
+  };
 
   const updateSliderRangesOil = (firstLast, newValue) => {
     console.log(firstLast, newValue)
-    if (firstLast === "first") {
-      switch (newValue.props.value) {
-        case 1:
-          setFirstOilMax(max.firstMonthProdOil);
-          break;
-        case 3:
-          setFirstOilMax(max.first3MonthProdOil);
-          break;
-        case 6:
-          setFirstOilMax(max.first6MonthProdOil);
-          break;
-        case 12:
-          setFirstOilMax(max.first12MonthProdOil);
-          break;
-        default:
-          setFirstOilMax(max.first12MonthProdOil);
-      }
+    // if (firstLast === "first") {
+    //   switch (newValue.props.value) {
+    //     case 1:
+    //       setFirstOilMax(max.firstMonthProdOil);
+    //       break;
+    //     case 3:
+    //       setFirstOilMax(max.first3MonthProdOil);
+    //       break;
+    //     case 6:
+    //       setFirstOilMax(max.first6MonthProdOil);
+    //       break;
+    //     case 12:
+    //       setFirstOilMax(max.first12MonthProdOil);
+    //       break;
+    //     default:
+    //       break;
+    //   }
 
-    }
+    // }
 
-    if (firstLast === "last") {
-      switch (newValue.props.value) {
-        case 1:
-          setLastOilMax(max.lastMonthProdOil);
-          break;
-        case 3:
-          break;
-        case 6:
-          setLastOilMax(max.last6MonthProdOil);
-          break;
-        case 12:
-          setLastOilMax(max.last12MonthProdOil);
-          break;
-        default:
-          setLastOilMax(max.last12MonthProdOil);
-      }
-    }
-
+    // if (firstLast === "last") {
+    //   switch (newValue.props.value) {
+    //     case 1:
+    //       setLastOilMax(max.lastMonthProdOil);
+    //       break;
+    //     case 3:
+    //       break;
+    //     case 6:
+    //       setLastOilMax(max.last6MonthProdOil);
+    //       break;
+    //     case 12:
+    //       setLastOilMax(max.last12MonthProdOil);
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // }
     removePreviousMonthsFiltersOil(firstLast, newValue);
   };
 
   const updateSliderRangesGas = (firstLast, newValue) => {
-    if (firstLast === "first") {
-      switch (newValue.props.value) {
-        case 1:
-          setFirstGasMax(max.firstMonthProdGas);
-          break;
-        case 3:
-          setFirstGasMax(max.first3MonthProdGas);
-          break;
-        case 6:
-          setFirstGasMax(max.first6MonthProdGas);
-          break;
-        case 12:
-          setFirstGasMax(max.first12MonthProdGas);
-          break;
-        default:
-          setFirstGasMax(max.first12MonthProdGas);
-      }
-    }
+    // if (firstLast === "first") {
+    //   switch (newValue.props.value) {
+    //     case 1:
+    //       setFirstGasMax(max.firstMonthProdGas);
+    //       break;
+    //     case 3:
+    //       setFirstGasMax(max.first3MonthProdGas);
+    //       break;
+    //     case 6:
+    //       setFirstGasMax(max.first6MonthProdGas);
+    //       break;
+    //     case 12:
+    //       setFirstGasMax(max.first12MonthProdGas);
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // }
 
-    if (firstLast === "last") {
-      switch (newValue.props.value) {
-        case 1:
-          setLastGasMax(max.lastMonthProdGas);
-          break;
-        case 3:
-          break;
-        case 6:
-          setLastGasMax(max.last6MonthProdGas);
-          break;
-        case 12:
-          setLastGasMax(max.last12MonthProdGas);
-          break;
-        default:
-          setLastOilMax(max.last12MonthProdOil);
-          setLastGasMax(max.last12MonthProdGas);
-          setLastWaterMax(max.last12MonthProdWater);
-      }
-    }
+    // if (firstLast === "last") {
+    //   switch (newValue.props.value) {
+    //     case 1:
+    //       setLastGasMax(max.lastMonthProdGas);
+    //       break;
+    //     case 3:
+    //       break;
+    //     case 6:
+    //       setLastGasMax(max.last6MonthProdGas);
+    //       break;
+    //     case 12:
+    //       setLastGasMax(max.last12MonthProdGas);
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // }
 
     removePreviousMonthsFiltersGas(firstLast, newValue);
   };
 
   const updateSliderRangesWater = (firstLast, newValue) => {
-    if (firstLast === "first") {
-      switch (newValue.props.value) {
-        case 1:
-          setFirstWaterMax(max.firstMonthProdWater);
-          break;
-        case 3:
-          setFirstWaterMax(max.first3MonthProdWater);
-          break;
-        case 6:
-          setFirstWaterMax(max.first6MonthProdWater);
-          break;
-        case 12:
-          setFirstWaterMax(max.first12MonthProdWater);
-          break;
-        default:
-          setFirstWaterMax(max.first12MonthProdWater);
-      }
-    }
+    // if (firstLast === "first") {
+    //   switch (newValue.props.value) {
+    //     case 1:
+    //       setFirstWaterMax(max.firstMonthProdWater);
+    //       break;
+    //     case 3:
+    //       setFirstWaterMax(max.first3MonthProdWater);
+    //       break;
+    //     case 6:
+    //       setFirstWaterMax(max.first6MonthProdWater);
+    //       break;
+    //     case 12:
+    //       setFirstWaterMax(max.first12MonthProdWater);
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // }
 
-    if (firstLast === "last") {
-      switch (newValue.props.value) {
-        case 1:
-          setLastWaterMax(max.lastMonthProdWater);
-          break;
-        case 3:
-          break;
-        case 6:
-          setLastWaterMax(max.last6MonthProdWater);
-          break;
-        case 12:
-          setLastWaterMax(max.last12MonthProdWater);
-          break;
-        default:
-          setLastWaterMax(max.last12MonthProdWater);
-      }
-    }
+    // if (firstLast === "last") {
+    //   switch (newValue.props.value) {
+    //     case 1:
+    //       setLastWaterMax(max.lastMonthProdWater);
+    //       break;
+    //     case 3:
+    //       break;
+    //     case 6:
+    //       setLastWaterMax(max.last6MonthProdWater);
+    //       break;
+    //     case 12:
+    //       setLastWaterMax(max.last12MonthProdWater);
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // }
 
     removePreviousMonthsFiltersWater(firstLast, newValue);
   };
@@ -323,22 +334,22 @@ export default function FilterFormProduction() {
     // console.log(firstLast, newValue)
     //you have to clear out previous months since they each have separate names in stateNav (because they have separate properties in well data). Not ideal.
     //setState doesn't like a variable as the key so I had to hard code each filter name.  may be a better way.
-    let filter = null;
+    // let filter = null;
     if (firstLast === "first") {
-      setStateNav(state => ({ ...state, filterFirstMonthOil: filter }));
-      setStateNav(state => ({ ...state, filterFirstThreeMonthOil: filter }));
-      setStateNav(state => ({ ...state, filterFirstSixMonthOil: filter }));
-      setStateNav(state => ({ ...state, filterFirstTwelveMonthOil: filter }));
+      // setStateNav(state => ({ ...state, filterFirstMonthOil: filter }));
+      // setStateNav(state => ({ ...state, filterFirstThreeMonthOil: filter }));
+      // setStateNav(state => ({ ...state, filterFirstSixMonthOil: filter }));
+      // setStateNav(state => ({ ...state, filterFirstTwelveMonthOil: filter }));
       //after old cleared set new filters in productionSlider.js by reacting to new value for months and new max
       setValueFirstMonthsOil(newValue.props.value);
     } else {
-      setStateNav(state => ({ ...state, filterLastMonthOil: filter }));
-      setStateNav(state => ({ ...state, filterLastThreeMonthOil: filter }));
-      setStateNav(state => ({ ...state, filterLastSixMonthOil: filter }));
-      setStateNav(state => ({ ...state, filterLastTwelveMonthOil: filter }));
+      // setStateNav(state => ({ ...state, filterLastMonthOil: filter }));
+      // setStateNav(state => ({ ...state, filterLastThreeMonthOil: filter }));
+      // setStateNav(state => ({ ...state, filterLastSixMonthOil: filter }));
+      // setStateNav(state => ({ ...state, filterLastTwelveMonthOil: filter }));
 
       //after old cleared set new filters in productionSlider.js by reacting to new value for months and new max
-      setValueLastMonths(newValue.props.value);
+      setValueLastMonthsOil(newValue.props.value);
       // setResetToMax(true);
     }
   };
@@ -362,7 +373,7 @@ export default function FilterFormProduction() {
       setStateNav(state => ({ ...state, filterLastTwelveMonthGas: filter }));
 
       //after old cleared set new filters in productionSlider.js by reacting to new value for months and new max
-      setValueLastMonths(newValue.props.value);
+      setValueLastMonthsGas(newValue.props.value);
       // setResetToMax(true);
     }
   };
@@ -387,7 +398,7 @@ export default function FilterFormProduction() {
       setStateNav(state => ({ ...state, filterLastTwelveMonthWater: filter }));
 
       //after old cleared set new filters in productionSlider.js by reacting to new value for months and new max
-      setValueLastMonths(newValue.props.value);
+      setValueLastMonthsWater(newValue.props.value);
       // setResetToMax(true);
     }
   };
@@ -449,79 +460,170 @@ export default function FilterFormProduction() {
     <div className={classes.displayNone}></div>
   );
 
-  // const renderLastMonths = lastMonths ? (
-  //   <FormControl className={classes.formControlMonths}>
-  //     <InputLabel className={classes.inputLabelMonths}>Months</InputLabel>
-  //     <Select
-  //       className={classes.inputMonths}
-  //       id="select-last-months"
-  //       value={valueLastMonths}
-  //       onChange={handleChangeLastMonths}
-  //     >
-  //       <MenuItem value={12}>12</MenuItem>
-  //       <MenuItem value={6}>6</MenuItem>
-  //       <MenuItem value={1}>1</MenuItem>
-  //     </Select>
-  //   </FormControl>
-  // ) : (
-  //   <div className={classes.displayNone}></div>
-  // );
+  const renderLastMonthsOil = lastMonths ? (
+    <FormControl className={classes.formControlMonths}>
+      <InputLabel className={classes.inputLabelMonths}>Months</InputLabel>
+      <Select
+        className={classes.inputMonths}
+        id="select-last-months"
+        value={valueLastMonthsOil}
+        onChange={handleChangeLastMonthsOil}
+      >
+        <MenuItem value={12}>12</MenuItem>
+        <MenuItem value={6}>6</MenuItem>
+        <MenuItem value={1}>1</MenuItem>
+      </Select>
+    </FormControl>
+  ) : (
+    <div className={classes.displayNone}></div>
+  );
+
+  const renderLastMonthsGas = lastMonths ? (
+    <FormControl className={classes.formControlMonths}>
+      <InputLabel className={classes.inputLabelMonths}>Months</InputLabel>
+      <Select
+        className={classes.inputMonths}
+        id="select-last-months"
+        value={valueLastMonthsGas}
+        onChange={handleChangeLastMonthsGas}
+      >
+        <MenuItem value={12}>12</MenuItem>
+        <MenuItem value={6}>6</MenuItem>
+        <MenuItem value={1}>1</MenuItem>
+      </Select>
+    </FormControl>
+  ) : (
+    <div className={classes.displayNone}></div>
+  );
+
+  const renderLastMonthsWater = lastMonths ? (
+    <FormControl className={classes.formControlMonths}>
+      <InputLabel className={classes.inputLabelMonths}>Months</InputLabel>
+      <Select
+        className={classes.inputMonths}
+        id="select-last-months"
+        value={valueLastMonthsWater}
+        onChange={handleChangeLastMonthsWater}
+      >
+        <MenuItem value={12}>12</MenuItem>
+        <MenuItem value={6}>6</MenuItem>
+        <MenuItem value={1}>1</MenuItem>
+      </Select>
+    </FormControl>
+  ) : (
+    <div className={classes.displayNone}></div>
+  );
   // add id to match max and set vals in production slider to match so they can update
-  // console.log('1st months vals', valueFirstMonthsOil)
   const renderFirstMonthOil = (
     max && valueFirstMonthsOil  === 1 ?
         <FormControl className={classes.inputWrapper}>
           <ProductionSlider
-            id="firstMonthProdOil"
-            prod="Oil"
+            id="firstMonthOil"
             firstLast="first"
-            months={valsFirstMonthsOil}
             min={0}
             max={max.firstMonthProdOil}
           />
         </FormControl>
-      : max && valueFirstMonthsOil  === 3 ?
+    : 
+      <div className={classes.displayNone}></div>
+  )
+
+  const renderFirstThreeMonthOil = (
+     max && valueFirstMonthsOil  === 3 ?
       <FormControl className={classes.inputWrapper}>
         <ProductionSlider
-          id="first3MonthProdOil"
-          prod="Oil"
+          id="firstThreeMonthOil"
           firstLast="first"
-          months={valsFirstMonthsOil}
           min={0}
           max={max.first3MonthProdOil}
         />
       </FormControl>
-    : max && valueFirstMonthsOil  === 6 ?
+    : 
+      <div className={classes.displayNone}></div>
+  )
+
+  const renderFirstSixMonthOil = (
+    max && valueFirstMonthsOil  === 6 ?
+   <FormControl className={classes.inputWrapper}>
+     <ProductionSlider
+       id="firstSixMonthOil"
+       firstLast="first"
+       min={0}
+       max={max.first6MonthProdOil}
+     />
+   </FormControl>
+   : 
+     <div className={classes.displayNone}></div>
+ )
+
+ const renderFirstTwelveMonthOil = (
+  max && valueFirstMonthsOil  === 12 ?
+ <FormControl className={classes.inputWrapper}>
+   <ProductionSlider
+     id="firstTwelveMonthOil"
+     // prod="Oil"
+     firstLast="first"
+     // months={valsFirstMonthsOil}
+     min={0}
+     max={max.first12MonthProdOil}
+   />
+ </FormControl>
+ : 
+   <div className={classes.displayNone}></div>
+)
+
+  const renderLastMonthOil = (
+    max && valueLastMonthsOil  === 1 ?
+        <FormControl className={classes.inputWrapper}>
+          <ProductionSlider
+            id="lastMonthOil"
+            prod="Oil"
+            firstLast="last"
+            months={valsLastMonthsOil}
+            min={0}
+            max={max.lastMonthProdOil}
+          />
+        </FormControl>
+    : 
+      <div className={classes.displayNone}></div>
+  )
+  
+  const renderLastSixMonthOil = (
+    max && valueLastMonthsOil  === 6 ?
     <FormControl className={classes.inputWrapper}>
       <ProductionSlider
-        id="first6MonthProdOil"
+        id="lastSixMonthOil"
         prod="Oil"
-        firstLast="first"
-        months={valsFirstMonthsOil}
+        firstLast="last"
+        months={valsLastMonthsOil}
         min={0}
-        max={max.first6MonthProdOil}
-      />
-    </FormControl>
-    :max && valueFirstMonthsOil  === 12 ?
-    <FormControl className={classes.inputWrapper}>
-      <ProductionSlider
-        id="first12MonthProdOil"
-        prod="Oil"
-        firstLast="first"
-        months={valsFirstMonthsOil}
-        min={0}
-        max={max.first12MonthProdOil}
+        max={max.last6MonthProdOil}
       />
     </FormControl>
     : 
       <div className={classes.displayNone}></div>
   )
-  
+  const renderLastTwelveMonthOil = (
+    max && valueLastMonthsOil  === 12 ?
+    <FormControl className={classes.inputWrapper}>
+      <ProductionSlider
+        id="lastTwelveMonthOil"
+        prod="Oil"
+        firstLast="last"
+        months={valsFirstMonthsOil}
+        min={0}
+        max={max.last12MonthProdOil}
+      />
+    </FormControl>
+    : 
+      <div className={classes.displayNone}></div>
+  )
+
   const renderFirstMonthGas = (
     max && valueFirstMonthsGas  === 1 ?
         <FormControl className={classes.inputWrapper}>
           <ProductionSlider
-            id="firstMonthProdGas"
+            id="firstMonthGas"
             prod="Gas"
             firstLast="first"
             months={valsFirstMonthsGas}
@@ -529,10 +631,15 @@ export default function FilterFormProduction() {
             max={max.firstMonthProdGas}
           />
         </FormControl>
-      : max && valueFirstMonthsGas  === 3 ?
+    : 
+      <div className={classes.displayNone}></div>
+  )
+
+  const renderFirstThreeMonthGas = (
+    max && valueFirstMonthsGas  === 3 ?
       <FormControl className={classes.inputWrapper}>
         <ProductionSlider
-          id="first3MonthProdGas"
+          id="firstThreeMonthGas"
           prod="Gas"
           firstLast="first"
           months={valsFirstMonthsGas}
@@ -540,10 +647,15 @@ export default function FilterFormProduction() {
           max={max.first3MonthProdGas}
         />
       </FormControl>
-    : max && valueFirstMonthsGas  === 6 ?
+    : 
+      <div className={classes.displayNone}></div>
+  )
+
+  const renderFirstSixMonthGas = (
+    max && valueFirstMonthsGas  === 6 ?
     <FormControl className={classes.inputWrapper}>
       <ProductionSlider
-        id="first6MonthProdGas"
+        id="firstSixMonthGas"
         prod="Gas"
         firstLast="first"
         months={valsFirstMonthsGas}
@@ -551,10 +663,15 @@ export default function FilterFormProduction() {
         max={max.first6MonthProdGas}
       />
     </FormControl>
-    :max && valueFirstMonthsGas  === 12 ?
+    : 
+      <div className={classes.displayNone}></div>
+  )
+
+  const renderFirstTwelveMonthGas = (
+    max && valueFirstMonthsGas  === 12 ?
     <FormControl className={classes.inputWrapper}>
       <ProductionSlider
-        id="first12MonthProdGas"
+        id="firstTwelveMonthGas"
         prod="Gas"
         firstLast="first"
         months={valsFirstMonthsGas}
@@ -566,11 +683,59 @@ export default function FilterFormProduction() {
       <div className={classes.displayNone}></div>
   )
 
+  const renderLastMonthGas = (
+    max && valueLastMonthsGas  === 1 ?
+        <FormControl className={classes.inputWrapper}>
+          <ProductionSlider
+            id="lastMonthGas"
+            prod="Gas"
+            firstLast="last"
+            months={valsLastMonthsGas}
+            min={0}
+            max={max.lastMonthProdGas}
+          />
+        </FormControl>
+    : 
+      <div className={classes.displayNone}></div>
+  )
+
+  const renderLastSixMonthGas = (
+    max && valueLastMonthsGas === 6 ?
+    <FormControl className={classes.inputWrapper}>
+      <ProductionSlider
+        id="lastSixMonthGas"
+        prod="Gas"
+        firstLast="last"
+        months={valsLastMonthsGas}
+        min={0}
+        max={max.last6MonthProdGas}
+      />
+    </FormControl>
+    : 
+      <div className={classes.displayNone}></div>
+  )
+
+  const renderLastTwelveMonthGas = (
+    max && valueLastMonthsGas === 12 ?
+    <FormControl className={classes.inputWrapper}>
+      <ProductionSlider
+        id="lastTwelveMonthGas"
+        prod="Gas"
+        firstLast="last"
+        months={valsFirstMonthsGas}
+        min={0}
+        max={max.last12MonthProdGas}
+      />
+    </FormControl>
+    : 
+      <div className={classes.displayNone}></div>
+  )
+
   const renderFirstMonthWater = (
     max && valueFirstMonthsWater  === 1 ?
         <FormControl className={classes.inputWrapper}>
           <ProductionSlider
-            id="firstMonthProdWater"
+            id="firstMonthWater"
             prod="Water"
             firstLast="first"
             months={valsFirstMonthsWater}
@@ -578,10 +743,15 @@ export default function FilterFormProduction() {
             max={max.firstMonthProdWater}
           />
         </FormControl>
-      : max && valueFirstMonthsWater  === 3 ?
+    : 
+      <div className={classes.displayNone}></div>
+  )
+
+  const renderFirstThreeMonthWater = (
+   max && valueFirstMonthsWater  === 3 ?
       <FormControl className={classes.inputWrapper}>
         <ProductionSlider
-          id="first3MonthProdWater"
+          id="firstThreeMonthWater"
           prod="Water"
           firstLast="first"
           months={valsFirstMonthsWater}
@@ -589,10 +759,15 @@ export default function FilterFormProduction() {
           max={max.first3MonthProdWater}
         />
       </FormControl>
-    : max && valueFirstMonthsWater  === 6 ?
+    : 
+      <div className={classes.displayNone}></div>
+  )
+
+  const renderFirstSixMonthWater = (
+  max && valueFirstMonthsWater  === 6 ?
     <FormControl className={classes.inputWrapper}>
       <ProductionSlider
-        id="first6MonthProdWater"
+        id="firstSixMonthWater"
         prod="Water"
         firstLast="first"
         months={valsFirstMonthsWater}
@@ -600,10 +775,15 @@ export default function FilterFormProduction() {
         max={max.first6MonthProdWater}
       />
     </FormControl>
-    :max && valueFirstMonthsWater  === 12 ?
+    : 
+      <div className={classes.displayNone}></div>
+  )
+
+  const renderFirstTwelveMonthWater = (
+    max && valueFirstMonthsWater  === 12 ?
     <FormControl className={classes.inputWrapper}>
       <ProductionSlider
-        id="first12MonthProdWater"
+        id="firstTwelveMonthWater"
         prod="Water"
         firstLast="first"
         months={valsFirstMonthsWater}
@@ -614,9 +794,57 @@ export default function FilterFormProduction() {
     : 
       <div className={classes.displayNone}></div>
   )
+  
+  const renderLastMonthWater = (
+    max && valueLastMonthsWater  === 1 ?
+        <FormControl className={classes.inputWrapper}>
+          <ProductionSlider
+            id="lastMonthWater"
+            prod="Water"
+            firstLast="last"
+            months={valsLastMonthsWater}
+            min={0}
+            max={max.lastMonthProdWater}
+          />
+        </FormControl>
+    : 
+      <div className={classes.displayNone}></div>
+  )
 
+  const renderLastSixMonthWater = (
+    max && valueLastMonthsWater === 6 ?
+    <FormControl className={classes.inputWrapper}>
+      <ProductionSlider
+        id="lastSixMonthWater"
+        prod="Water"
+        firstLast="last"
+        months={valsLastMonthsWater}
+        min={0}
+        max={max.last6MonthProdWater}
+      />
+    </FormControl>
+    : 
+      <div className={classes.displayNone}></div>
+  )
+
+  const renderLastTwelveMonthWater = (
+   max && valueLastMonthsWater === 12 ?
+    <FormControl className={classes.inputWrapper}>
+      <ProductionSlider
+        id="lastTwelveMonthWater"
+        prod="Water"
+        firstLast="last"
+        months={valsFirstMonthsWater}
+        min={0}
+        max={max.last12MonthProdWater}
+      />
+    </FormControl>
+    : 
+      <div className={classes.displayNone}></div>
+  )
 
   return !loading ? (
+    
     <div className={classes.root}>
       <Tabs
         value={value}
@@ -688,6 +916,9 @@ export default function FilterFormProduction() {
           <Typography className={classes.inputLabel}>Oil (MBBL) </Typography>
           {renderFirstMonthsOil}
           {renderFirstMonthOil}
+          {renderFirstThreeMonthOil}
+          {renderFirstSixMonthOil}
+          {renderFirstTwelveMonthOil}
         </FormControl>
         <FormControl className={classes.inputWrapper}>
           <Typography
@@ -698,6 +929,9 @@ export default function FilterFormProduction() {
           </Typography>
           {renderFirstMonthsGas}
           {renderFirstMonthGas}
+          {renderFirstThreeMonthGas}
+          {renderFirstSixMonthGas}
+          {renderFirstTwelveMonthGas}
         </FormControl>
         <FormControl className={classes.inputWrapper}>
           <Typography
@@ -707,7 +941,10 @@ export default function FilterFormProduction() {
             Water (MBBL)
           </Typography>
           {renderFirstMonthsWater}
-          {renderFirstMonthsWater}
+          {renderFirstMonthWater}
+          {renderFirstThreeMonthWater}
+          {renderFirstSixMonthWater}
+          {renderFirstTwelveMonthWater}
         </FormControl>
       </TabPanel>
       <TabPanel value={value} index={2} dir={theme.direction}>
@@ -718,14 +955,10 @@ export default function FilterFormProduction() {
           >
             Oil (MBBL)
           </Typography>
-          <ProductionSlider
-            id="lastOil"
-            prod="Oil"
-            firstLast="last"
-            months={valueLastMonths}
-            min={0}
-            max={lastOilMax}
-          />
+          {renderLastMonthsOil}
+          {renderLastMonthOil}
+          {renderLastSixMonthOil}
+          {renderLastTwelveMonthOil}
         </FormControl>
         <FormControl className={classes.inputWrapper}>
           <Typography
@@ -734,14 +967,10 @@ export default function FilterFormProduction() {
           >
             Gas (MMCF)
           </Typography>
-          <ProductionSlider
-            id="lastGas"
-            prod="Gas"
-            firstLast="last"
-            months={valueLastMonths}
-            min={0}
-            max={lastGasMax}
-          />
+          {renderLastMonthsGas}
+          {renderLastMonthGas}
+          {renderLastSixMonthGas}
+          {renderLastTwelveMonthGas}
         </FormControl>
         <FormControl className={classes.inputWrapper}>
           <Typography
@@ -750,14 +979,10 @@ export default function FilterFormProduction() {
           >
             Water (MBBL)
           </Typography>
-          <ProductionSlider
-            id="lastWater"
-            prod="Water"
-            firstLast="last"
-            months={valueLastMonths}
-            min={0}
-            max={lastWaterMax}
-          />
+          {renderLastMonthsWater}
+          {renderLastMonthWater}
+          {renderLastSixMonthWater}
+          {renderLastTwelveMonthWater}
         </FormControl>
       </TabPanel>
     </div>

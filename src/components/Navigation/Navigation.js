@@ -462,9 +462,9 @@ export default function Navigation(props) {
     [classes.applySuccess]: applySuccess
   });
 
-  const handleClickAway = () => {
-    setOpenCard(false);
-  };
+  // const handleClickAway = () => {
+  //   setOpenFilterCard(false);
+  // };
 
   useEffect(() => {
     if (location.pathname === "/") {
@@ -514,8 +514,8 @@ export default function Navigation(props) {
         
 
   }, [location, setStateNav]);
-
-  const anchorRef = useRef(null)
+  
+  const cardRef = useRef(null);
 
   /* old filter counter moved to map.js 
   useEffect(() => {
@@ -598,6 +598,7 @@ export default function Navigation(props) {
 
   const handleFilterCardOpen = () => {
     setOpenFilterCard(true);
+    cardRef.current()
   };
   const handleFilterTabChange = (event, newValue) => {
     if (!openFilterCard) {
@@ -980,8 +981,6 @@ export default function Navigation(props) {
                 }}
               >
               </CardActions>
-              {/* <ClickAwayListener onClickAway={handleClickAway}>
-              {openCard ? ( */}
               <CardContent className={classes.cardContent}>
                 <FilterFromGeo/>
               </CardContent>
