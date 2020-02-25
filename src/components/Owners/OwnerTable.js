@@ -622,7 +622,8 @@ useEffect( () => {
                           target= {row} 
                           targetLabel="owner" 
                           targetSourceId={row.id}
-                          targetName={row.name}  />
+                          targetName={row.name} 
+                          dark />
                       </TableCell>
                     </TableRow>,
                     <TableRow key={index}>
