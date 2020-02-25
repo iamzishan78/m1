@@ -73,6 +73,12 @@ export default function FilterCountyName() {
       }
   }, [countyList, countyName])
 
+  const onEnterKey = (event) =>{   
+    if(event.keyCode === 13){
+      event.preventDefault();
+    }
+  }
+
   return (
       <FormControl variant="outlined" className={classes.formControl}>
           {loading ? 
@@ -90,6 +96,7 @@ export default function FilterCountyName() {
                   onChange={(event, newValue) => {
                     handleCountyNameChange(newValue);
                   }}
+                  onKeyDown={event  => onEnterKey(event)}
                   renderInput={params => (
                     <form autoComplete="off">
                     <TextField {...params} fullWidth label="County" variant="outlined"  />

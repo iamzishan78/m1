@@ -94,6 +94,12 @@ export default function FilterSurvey({key}) {
       }
   }, [surveyList, surveyName])
 
+  const onEnterKey = (event) =>{   
+    if(event.keyCode === 13){
+      event.preventDefault();
+    }
+  }
+
   return (
     checkForStateProps ?
       <FormControl variant="outlined" className={classes.formControl}>
@@ -112,6 +118,7 @@ export default function FilterSurvey({key}) {
               onChange={(event, newValue) => {
                 handleSurveyNameChange(newValue);
               }}
+              onKeyDown={event  => onEnterKey(event)}
               renderInput={params => (
                 <form autoComplete="off">
                 <TextField {...params} fullWidth label="Survey" variant="outlined"  />

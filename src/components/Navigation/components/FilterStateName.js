@@ -31,30 +31,30 @@ export default function FilterStateName() {
   useEffect(()=> {
     if(stateName !== null && stateName.length > 0 ){
       setStateNav(stateNav => ({ ...stateNav, stateName: stateName, displayStateName: displayName}));
-    } 
+    }  else {
+      console.log('wha')
+    }
   },[displayName, setStateNav, stateName]) 
   
   const handleStateNameChange = (event, e) => {
-    event.preventDefault();
     if (e == null) {
-      event.preventDefault();
+      // event.preventDefault();
       setStateName(null)
       setDisplayName(null)
       setStateNav(stateNav => ({ ...stateNav, stateName: null, displayStateName: null, filterGeography: null}));
     } else {
-      setStateName(e[0])
-      setDisplayName(e[1])
-      setStateNav(stateNav => ({ ...stateNav, stateName: e[0], displayStateName: e[0]}));
-
-    }
-    if(event.keyCode === 13){
-      event.preventDefault();
+      // event.preventDefault();
       setStateName(e[0])
       setDisplayName(e[1])
       setStateNav(stateNav => ({ ...stateNav, stateName: e[0], displayStateName: e[0]}));
     }
   }
 
+  const onEnterKey = (event) =>{   
+    if(event.keyCode === 13){
+      event.preventDefault();
+    }
+  }
  
   return (
       <FormControl variant="outlined" className={classes.formControl}>
@@ -69,6 +69,7 @@ export default function FilterStateName() {
               onChange={(event, newValue) => {
                 handleStateNameChange( event,newValue);
               }}
+              onKeyDown={event  => onEnterKey(event)}
               renderInput={params =>(
                   <form autoComplete="off">
                   <TextField {...params} fullWidth label="State" variant="outlined"/>

@@ -86,6 +86,12 @@ export default function FilterAbstract({ keys }) {
       }
   }, [abstractList, abstractName])
 
+  const onEnterKey = (event) =>{   
+    if(event.keyCode === 13){
+      event.preventDefault();
+    }
+  }
+
   return checkForStateProps ? (
     <FormControl variant="outlined" className={classes.formControl}>
       {loading ? (
@@ -107,6 +113,7 @@ export default function FilterAbstract({ keys }) {
           onChange={(event, newValue) => {
             handleAbstractNameChange(newValue);
           }}
+          onKeyDown={event  => onEnterKey(event)}
           renderInput={params => (
             <form autoComplete="off">
               <TextField
