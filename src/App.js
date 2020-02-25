@@ -99,7 +99,6 @@ function App() {
                 <NavigationProvider>
                   <PrivateRoute exact path="/" component={MapProvider} />
                   <Route exact path="/signup"  component={SignUpCard} />
-                  <Route exact path="/signup"  component={SignUpCard} />
                   <PrivateRoute exact path="/track" component={TrackProvider}/>
                   <PrivateRoute exact path="/transact" component={TransactProvider}/>
                   <PrivateRoute exact path="/title" component={TitleProvider}/> 

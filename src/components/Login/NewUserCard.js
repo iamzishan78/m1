@@ -7,17 +7,22 @@ import { makeStyles } from "@material-ui/core";
 import { Card, TextField, Button, Typography } from "@material-ui/core";
 // COMPONENTS
 const localStyles = makeStyles(theme => ({
+  conatiner: {
+    display: "inline-block",
+    margin: 30,
+  },
   card: {
-    width: "40vw",
-    maxWidth: "400px",
-    height: "70vh",
-    position: "fixed",
-    left: "calc(50vw - 25vw / 2)",
-    top: "calc(50vh - 70vh / 2)",
+    // width: "50vw",
+    maxWidth: 450,
+    minWidth: 445,
+    // height: "80vh",
+    // position: "fixed",
+    // left: "calc(50vw - 25vw / 2)",
+    // top: "calc(50vh - 70vh / 2)",
     backgroundColor: theme.palette.secondary.dark,
     border: `1px solid ${theme.palette.secondary.main}`,
-    display: "flex",
-    flexDirection: "column",
+    // display: "flex",
+    // flexDirection: "column",
     fontFamily: theme.typography.fontFamily
   },
   cardHeader: {
@@ -35,7 +40,7 @@ const localStyles = makeStyles(theme => ({
   },
   cardFooter: {
     height: "15%",
-   // padding: "10px 10px",
+    // padding: "10px 10px",
     color: "white",
     fontSize: ".75rem",
     textAlign: "center"
@@ -43,6 +48,10 @@ const localStyles = makeStyles(theme => ({
   inputs: {
     backgroundColor: theme.palette.background.paper,
     width: "80%"
+  },
+  links: {
+    marginTop: 10,
+    marginBottom: 30
   }
 }));
 
@@ -65,19 +74,18 @@ const NewUserCard = props => {
       userTitle,
       userPhoneNum,
       userEmail
-    //  userPassword
+      //  userPassword
     };
     props.handleNewUserSignUp(userData);
   };
 
   return (
-    <React.Fragment>
-     
-      <Typography variant="h5" className={classes.cardTitle}
-        style={{ fontSize: "2rem", top: "5%", justifyContent: "center" }}>
-      
-      </Typography> 
-
+    <div className={localClass.conatiner}>
+      {/* <Typography
+        variant="h5"
+        className={classes.cardTitle}
+        style={{ fontSize: "2rem", top: "5%", justifyContent: "center" }}
+      ></Typography> */}
       <Card color="secondary" className={localClass.card}>
         <div className={localClass.cardHeader}>
           <div style={{ marginTop: "5px", fontSize: "1rem" }}>
@@ -126,7 +134,7 @@ const NewUserCard = props => {
             value={userPhoneNum}
           />
 
-         {/* <TextField
+          {/* <TextField
             className={localClass.inputs}
             type="password"
             label="Password"
@@ -146,25 +154,35 @@ const NewUserCard = props => {
           <Button
             variant="contained"
             disableElevation
-            className={classes.button}
             onClick={signUp}
-            style={{ marginLeft: "0" }}
+            style={{color: "white",  marginTop: 30, backgroundColor: "rgba(23, 170, 221, 1)" ,  marginBottom: 15, width: "15vw"}}
           >
             Submit
           </Button>
-          <div className={classes.secondaryInputs}></div>
+          {/* <div className={classes.secondaryInputs}></div> */}
         </div>
         <div className={localClass.cardFooter}>
-          <div>By signing up, you agree to the  <a href="https://www.m1neral.com" target="_blank" className={classes.signupLink} >Terms and Conditions
-            </a></div>
           <div>
-            Already have an account?  <Link to="/" className={classes.signupLink}> Sign In
+            By signing up, you agree to the{" "}
+            <a
+              href="https://www.m1neral.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={classes.signupLink}
+            >
+              Terms and Conditions
+            </a>
+          </div>
+          <div className={localClass.links}>
+            Already have an account?{" "}
+            <Link to="/" className={classes.signupLink}>
+              {" "}
+              Sign In
             </Link>
-            
-            </div>
+          </div>
         </div>
       </Card>
-    </React.Fragment>
+    </div>
   );
 };
 export default NewUserCard;

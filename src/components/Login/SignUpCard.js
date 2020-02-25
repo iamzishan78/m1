@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+
 // STYLES
 import { makeStyles } from "@material-ui/core";
 import { useStyles } from "./styles";
@@ -14,45 +14,27 @@ const localStyles = makeStyles(theme => ({
     height: "50vh",
     backgroundColor: theme.palette.secondary.dark,
     border: `1px solid ${theme.palette.secondary.main}`,
-    display: "flex",
-    flexDirection: "column",
+    display: "inline-block",
     fontFamily: theme.typography.fontFamily,
-    margin: "1%",
-    justifyContent: "center"
+    margin: 10,
   },
   cardContainer: {
     width: "100vw",
-    position: "absolute",
-    top: "calc(50vh - 50vh / 2)",
-    display: "flex",
-    justifyContent: "center"
+    display: "block",
   },
   cardTitle: {
-    marginTop: "5%",
-    fontSize: "1.5rem",
+    marginTop: "40px",
+    fontSize: "2rem",
     justifyContent: "center"
   },
   cardInputs: {
-    height: "60%",
     padding: "2%",
-    paddingTop: "4%",
     color: "white",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  newUser : {
-    zIndex: 1000,
-    
   },
   rootNewUser: {
-    // backgroundColor: "rgba(38, 51, 81, 0.7)",
+    textAlign: "center",
     width: "100vw",
     height: "100vh"
-    },
-  opacity: {
-      height: "80vh",
-      width: "60vw",
     },
   displaNone: {
       display: "none",
@@ -60,6 +42,7 @@ const localStyles = makeStyles(theme => ({
 }));
 
 const SignUpCard = props => {
+  
   const classes = useStyles();
   const localClass = localStyles();
   const [showSignUp, setShowSignUp] = useState(false);
@@ -72,43 +55,45 @@ const SignUpCard = props => {
     console.log("userData", userData);
   };
 
+  const showForm = () => {
+    if (!showSignUp) {
+      setShowSignUp(true)
+    } else {
+      setShowSignUp(false)
+    }
+  }
+
   const renderSignupNewCard = (
     showSignUp ? 
-    <div className={localClass.opacity}>
       <NewUserCard className={localClass.newUser} handleNewUserSignUp={handleNewUserSignUp} />
-    </div>
     : <div className={localClass.displaNone} ></div>
   )
   
   const renderBody = (
     !showSignUp ? (
-      <div className={localClass.rootNewUser}>  
-        <Typography
-          variant="h5"
-          className={classes.cardTitle}
-          style={{ fontSize: "2rem", top: "13%", justifyContent: "center" }}
+        <div className={localClass.cardContainer}>
+          <Typography
+          variant="h4"
+          className={localClass.cardTitle}
         >
           Don't have an account?
         </Typography>
         <Typography
           variant="h5"
-          className={classes.cardTitle}
-          style={{ fontSize: ".9rem",paddingTop: "1.25%" , justifyContent: "center"}}
+          style={{ fontSize: ".9rem", marginTop: "15px", marginBottom: "30px"}}
         >
           Tell us your story and get started today.
         </Typography>
-        <div className={localClass.cardContainer}>
           <Card
             color="secondary"
             className={localClass.card}
-            style={{ left: "20%" }}
           >
-            <div className={classes.cardHeader}>
+            <div>
              {/*  <FontAwesomeIcon
                 icon={faHandHoldingUsd}
                 style={{ fontSize: "5.5rem" }}
               /> */}
-              <div className={localClass.cardTitle} style={{ fontSize: "2rem"}}>OWNERS</div>
+              <div className={localClass.cardTitle} style={{ color: "white",  fontSize: "2rem"}}>OWNERS</div>
             </div>
             <div className={localClass.cardInputs}>
               <Typography style={{ textAlign: "center", marginTop: "10%" }}>
@@ -116,23 +101,21 @@ const SignUpCard = props => {
                 more about what they own
               </Typography>
             </div>
-            <div className={classes.cardFooter} style={{ alignItems: "unset" }}>
               <Button
                 variant="contained"
                 disableElevation
-                className={classes.button}
+                // className={localClass.buttonDisable}
+                style={{color: "white", backgroundColor: "darkgray", marginTop: 30, marginBottom: 15 , width: "15vw"}}
                 disabled
-                style={{ color: "white", backgroundColor: "darkgray" }}
               >
                 Coming Soon!
               </Button>
-            </div>
           </Card>
   
           <Card color="secondary" className={localClass.card}>
-            <div className={classes.cardHeader}>
+            <div>
               {/* <FontAwesomeIcon icon={faUsers} style={{ fontSize: "5.5rem" }} /> */}
-              <div className={localClass.cardTitle} style={{ fontSize: "2rem"}}>BUYERS</div>
+              <div className={localClass.cardTitle} style={{ color: "white",fontSize: "2rem"}}>BUYERS</div>
             </div>
             <div className={localClass.cardInputs}>
               <Typography style={{ textAlign: "center", marginTop: "10%" }}>
@@ -140,19 +123,16 @@ const SignUpCard = props => {
                 acquisition workflows
               </Typography>
             </div>
-            <div className={classes.cardFooter} style={{ alignItems: "unset" }}>
               <Button
                 variant="contained"
                 disableElevation
-                className={classes.button}
-                onClick={() => setShowSignUp(true)}
+                style={{color: "white",  marginTop: 30, backgroundColor: "rgba(23, 170, 221, 1)" ,  marginBottom: 15, width: "15vw"}}
+                onClick={showForm}
               >
                 Sign Up
               </Button>
-            </div>
           </Card>
         </div>
-      </div>
     ) : (
       <div className={localClass.displaNone} ></div>
     ) 

@@ -381,6 +381,13 @@ const useStyles = makeStyles(theme => ({
     left: "50%",
     marginTop: -12,
     marginLeft: -12
+  }, 
+  goHome: {
+    "&:hover": {
+      width: "10vw",
+      backgroundColor: "rgba(239, 239, 239, 0.32)",
+      borderRadius:"6px",
+    }
   }
 }));
 
@@ -587,6 +594,10 @@ export default function Navigation(props) {
     setValue(0);
   };
 
+  const sendHome = () => {
+    history.push("/");
+  }
+
   /* const handleFilterCardApply = () => {
     setDisableApply(false)
   }
@@ -782,10 +793,12 @@ export default function Navigation(props) {
             </IconButton>
           </Toolbar>
         ) : (
-          <M1neralLogoSvg
-            style={{ width: "140px", padding: "20px" }}
-            variant="white"
-          />
+          <div className={classes.goHome} onClick={sendHome}>
+            <M1neralLogoSvg
+              style={{ width: "140px", padding: "20px" }}
+              variant="white"
+            />
+          </div>
         )}
       </AppBar>
 
