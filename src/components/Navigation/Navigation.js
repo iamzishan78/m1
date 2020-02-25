@@ -4,7 +4,7 @@ import { shadows } from "@material-ui/system";
 import { Paper } from "@material-ui/core";
 
 import { NavigationContext } from "./NavigationContext";
-import { AppContext} from "../../AppContext";
+import { AppContext } from "../../AppContext";
 import { useHistory, useLocation } from "react-router-dom";
 import clsx from "clsx";
 import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
@@ -21,6 +21,7 @@ import Tab from "@material-ui/core/Tab";
 import Badge from "@material-ui/core/Badge";
 import Tabs from "@material-ui/core/Tabs";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Input from "@material-ui/core/Input";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
@@ -28,7 +29,6 @@ import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
@@ -37,9 +37,8 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
 
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -71,7 +70,7 @@ import TimelineIcon from "@material-ui/icons/Timeline";
 import FolderSharedIcon from "@material-ui/icons/FolderShared";
 import PeopleOutlineIcon from "@material-ui/icons/PeopleOutline";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import DescriptionIcon from '@material-ui/icons/Description';
+import DescriptionIcon from "@material-ui/icons/Description";
 
 import FilterFormWell from "./components/FilterFormWell";
 import FilterFromGeo from "./components/FilterFromGeo";
@@ -79,7 +78,7 @@ import FilterFormOwner from "./components/FilterFormOwner";
 import FilterFormProduction from "./components/FilterFormProduction";
 import M1neralLogoSvg from "../Shared/m1neralLogoSvg";
 
-import Avatar from 'react-avatar';
+import Avatar from "react-avatar";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -88,7 +87,7 @@ const useStyles = makeStyles(theme => ({
     height: "100%"
   },
   appBar: {
-    height:"64px",
+    height: "64px",
     background: "rgba(1, 17, 51, 1.0)",
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(["width", "margin"], {
@@ -116,12 +115,12 @@ const useStyles = makeStyles(theme => ({
     flexShrink: 0,
     whiteSpace: "nowrap"
   },
-  
+
   filterTabs: {
-    paddingRight: '25px',
-    position: 'relative',
+    paddingRight: "25px",
+    position: "relative",
     left: 0
-  },  
+  },
   drawerOpen: {
     //background: 'rgba(245, 245, 245, 1.0)',
     background: "rgba(255, 255, 255, 1.0)",
@@ -178,7 +177,7 @@ const useStyles = makeStyles(theme => ({
     },
     marginRight: theme.spacing(2),
     marginLeft: 5,
-    width: '30%',
+    width: "30%",
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
       width: "30%"
@@ -224,7 +223,7 @@ const useStyles = makeStyles(theme => ({
     borderWidth: "thin",
     borderColor: "#011133",
     maxWidth: 650,
-    minWidth: 620,
+    minWidth: 620
   },
   cardTitle: {
     fontFamily: "Poppins",
@@ -265,7 +264,7 @@ const useStyles = makeStyles(theme => ({
     height: "400px",
     backgroundColor: "#fff",
     padding: "0px",
-    overflow: "scroll",
+    overflow: "scroll"
   },
   cardAction: {
     flexGrow: 1,
@@ -440,7 +439,6 @@ TabPanel.propTypes = {
 const drawerWidth = 215;
 
 export default function Navigation(props) {
-  
   const classes = useStyles();
   const theme = useTheme();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -448,7 +446,6 @@ export default function Navigation(props) {
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openFilterCard, setOpenFilterCard] = useState(false);
-  const [openCard, setOpenCard] = useState(false);
   const [value, setValue] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -462,60 +459,54 @@ export default function Navigation(props) {
     [classes.applySuccess]: applySuccess
   });
 
-  const handleClickAway = () => {
-    setOpenFilterCard(false);
-  };
-
   useEffect(() => {
     if (location.pathname === "/") {
-      setStateNav(state => ({ ...state, 
-                                  selectedMenuIndexFind: 1,
-                                  selectedMenuIndexTrack: 0,
-                                  selectedMenuIndexTransact: 0,
-                                  selectedMenuIndexTitle: 0,
-                                  selectedMenuIndexAlerts: 0,
-                                }));
-     
-    } else if(location.pathname === "/track") {
-      setStateNav(state => ({ ...state, 
-                                  selectedMenuIndexFind: 0,
-                                  selectedMenuIndexTrack: 1,
-                                  selectedMenuIndexTransact: 0,
-                                  selectedMenuIndexTitle: 0,
-                                  selectedMenuIndexAlerts: 0,
-                                }));
-      } else if(location.pathname === "/transact") {
-        setStateNav(state => ({ ...state, 
-                                  selectedMenuIndexFind: 0,
-                                  selectedMenuIndexTrack: 0,
-                                  selectedMenuIndexTransact: 1,
-                                  selectedMenuIndexTitle: 0,
-                                  selectedMenuIndexAlerts: 0,
-        }));    
-      } else if(location.pathname === "/title") {
-        setStateNav(state => ({ ...state, 
-                                  selectedMenuIndexFind: 0,
-                                  selectedMenuIndexTrack: 0,
-                                  selectedMenuIndexTransact: 0,
-                                  selectedMenuIndexTitle: 1,
-                                  selectedMenuIndexAlerts: 0,
-        }));    
-      } else if(location.pathname === "/alerts") {
-        setStateNav(state => ({ ...state, 
-                                  selectedMenuIndexFind: 0,
-                                  selectedMenuIndexTrack: 0,
-                                  selectedMenuIndexTransact: 0,
-                                  selectedMenuIndexTitle: 0,
-                                  selectedMenuIndexAlerts: 1,
-        }));    
-                  
-      
-      }
-        
-
+      setStateNav(state => ({
+        ...state,
+        selectedMenuIndexFind: 1,
+        selectedMenuIndexTrack: 0,
+        selectedMenuIndexTransact: 0,
+        selectedMenuIndexTitle: 0,
+        selectedMenuIndexAlerts: 0
+      }));
+    } else if (location.pathname === "/track") {
+      setStateNav(state => ({
+        ...state,
+        selectedMenuIndexFind: 0,
+        selectedMenuIndexTrack: 1,
+        selectedMenuIndexTransact: 0,
+        selectedMenuIndexTitle: 0,
+        selectedMenuIndexAlerts: 0
+      }));
+    } else if (location.pathname === "/transact") {
+      setStateNav(state => ({
+        ...state,
+        selectedMenuIndexFind: 0,
+        selectedMenuIndexTrack: 0,
+        selectedMenuIndexTransact: 1,
+        selectedMenuIndexTitle: 0,
+        selectedMenuIndexAlerts: 0
+      }));
+    } else if (location.pathname === "/title") {
+      setStateNav(state => ({
+        ...state,
+        selectedMenuIndexFind: 0,
+        selectedMenuIndexTrack: 0,
+        selectedMenuIndexTransact: 0,
+        selectedMenuIndexTitle: 1,
+        selectedMenuIndexAlerts: 0
+      }));
+    } else if (location.pathname === "/alerts") {
+      setStateNav(state => ({
+        ...state,
+        selectedMenuIndexFind: 0,
+        selectedMenuIndexTrack: 0,
+        selectedMenuIndexTransact: 0,
+        selectedMenuIndexTitle: 0,
+        selectedMenuIndexAlerts: 1
+      }));
+    }
   }, [location, setStateNav]);
-  
-  const cardRef = useRef(null);
 
   /* old filter counter moved to map.js 
   useEffect(() => {
@@ -540,10 +531,10 @@ export default function Navigation(props) {
     setAnchorEl(null);
   };
   const handleLogout = () => {
-   // history.push("/signin");
-   setAnchorEl(null);
-   window.sessionStorage.removeItem('user');
-   setStateApp(state => ({...state,user: null}));
+    // history.push("/signin");
+    setAnchorEl(null);
+    window.sessionStorage.removeItem("user");
+    setStateApp(state => ({ ...state, user: null }));
   };
   const handleProfileMenuOpen = event => {
     setAnchorEl(event.currentTarget);
@@ -563,7 +554,6 @@ export default function Navigation(props) {
         Logout
       </MenuItem>
       <MenuItem className={classes.userMenuItem}>Profile</MenuItem>
-      
     </Menu>
   );
 
@@ -582,10 +572,21 @@ export default function Navigation(props) {
   const handleDrawerClose = () => {
     setOpenDrawer(false);
   };
+
+  const handleFilterCardOpen = () => {
+    setOpenFilterCard(true);
+    // setAnchorEl(event.currentTarget)
+  };
   const handleFilterCardClose = () => {
     setOpenFilterCard(false);
     setValue(0);
   };
+
+  const handleClickAway = () => {
+    setOpenFilterCard(false);
+    setValue(0);
+  };
+
   /* const handleFilterCardApply = () => {
     setDisableApply(false)
   }
@@ -595,11 +596,6 @@ export default function Navigation(props) {
     setDisableApply(false)
   
   } */
-
-  const handleFilterCardOpen = () => {
-    setOpenFilterCard(true);
-    // cardRef.current()
-  };
   const handleFilterTabChange = (event, newValue) => {
     if (!openFilterCard) {
       setOpenFilterCard(true);
@@ -610,8 +606,6 @@ export default function Navigation(props) {
   const handleChangeIndex = index => {
     setValue(index);
   };
-  
-  
 
   return (
     <div className={classes.root}>
@@ -622,30 +616,30 @@ export default function Navigation(props) {
           [classes.appBarShift]: openDrawer
         })}
       >
-        {stateApp.user ? (<Toolbar>
-          {!openDrawer ? (
-            <div className={classes.toolbar}>
-              <IconButton color="secondary" onClick={handleDrawerOpen}>
-                {theme.direction === "rtl" ? <MenuIcon /> : <MenuIcon />}
-              </IconButton>
-            </div>
-          ) : null}
+        {stateApp.user ? (
+          <Toolbar>
+            {!openDrawer ? (
+              <div className={classes.toolbar}>
+                <IconButton color="secondary" onClick={handleDrawerOpen}>
+                  {theme.direction === "rtl" ? <MenuIcon /> : <MenuIcon />}
+                </IconButton>
+              </div>
+            ) : null}
 
-          {openDrawer ? (
-            <div className={classes.toolbar}>
-             <M1neralLogo/>
-              <IconButton color="secondary" onClick={handleDrawerClose}>
-                {theme.direction === "rtl" ? (
-                  <ChevronRightIcon />
-                ) : (
-                  <ChevronLeftIcon />
-                )}
-              </IconButton>
-            </div>
-          ) : null}
+            {openDrawer ? (
+              <div className={classes.toolbar}>
+                <M1neralLogo />
+                <IconButton color="secondary" onClick={handleDrawerClose}>
+                  {theme.direction === "rtl" ? (
+                    <ChevronRightIcon />
+                  ) : (
+                    <ChevronLeftIcon />
+                  )}
+                </IconButton>
+              </div>
+            ) : null}
 
-          
-    {/*       <div className={classes.search}>
+            {/*       <div className={classes.search}>
             <div className={classes.searchIcon}>
               <SearchIcon />
             </div>
@@ -664,24 +658,22 @@ export default function Navigation(props) {
           </div>
  */}
 
-
-          <FormControl className={classes.search}>
-            <div className={classes.searchIcon}>
-              {/* <InputLabel className={classes.searchIcon}> */}
+            <FormControl className={classes.search}>
+              <div className={classes.searchIcon}>
+                {/* <InputLabel className={classes.searchIcon}> */}
                 <SearchIcon />
-              {/* </InputLabel > */}
-            </div>
-            <Input
-              onChange={handleSearchInputChange}
+                {/* </InputLabel > */}
+              </div>
+              <Input
+                onChange={handleSearchInputChange}
+                placeholder="Search…"
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput
+                }}
+                inputProps={{ "aria-label": "search" }}
 
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput
-              }}
-              inputProps={{ "aria-label": "search" }}
-
-              /*
+                /*
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton aria-label="save">
@@ -689,111 +681,112 @@ export default function Navigation(props) {
                   </IconButton>
                 </InputAdornment>
               } */
-            />
-          </FormControl>
+              />
+            </FormControl>
 
+            <div className={classes.grow1} />
 
+            <div anchorEl={anchorEl} className={classes.filterTabs}>
+              <Tabs
+                value={value}
+                onChange={handleFilterTabChange}
+                variant="standard"
+                textColor="primary"
+                aria-label="tabs"
+                classes={{ indicator: classes.indicator }}
+              >
+                <Tab
+                  // disabled
+                  onClick={handleFilterCardOpen}
+                  value={0}
+                  className={classes.tab}
+                  icon={
+                    <Badge
+                      badgeContent={stateNav.geographyFilterCount}
+                      color="secondary"
+                    >
+                      <GeographicIcon color="#fff" opacity="1.0" />}
+                    </Badge>
+                  }
+                  aria-label="geography"
+                />
 
+                <Tab
+                  onClick={handleFilterCardOpen}
+                  value={1}
+                  className={classes.tab}
+                  icon={
+                    <Badge
+                      badgeContent={stateNav.wellFilterCount}
+                      color="secondary"
+                    >
+                      <WellIcon color="#fff" opacity="1.0" />
+                    </Badge>
+                  }
+                  aria-label="well"
+                />
 
-          
-          <div className={classes.grow1} />
-          <ClickAwayListener onClickAway={handleClickAway}>
-          <div className = {classes.filterTabs}>
-            <Tabs
-              value={value}
-              onChange={handleFilterTabChange}
-              variant="standard"
-              textColor="primary"
-              aria-label="tabs"
-              classes={{ indicator: classes.indicator }}
-            >
-              <Tab
-                // disabled
-                onClick={handleFilterCardOpen}
-                value={0}
-                className={classes.tab}
-                icon={
-                  <Badge
-                    badgeContent={stateNav.geographyFilterCount}
-                    color="secondary"
-                  >
-                    <GeographicIcon color="#fff" opacity="1.0" />}
-                  </Badge>
-                }
-                aria-label="geography"
-              />
-              <Tab
-                onClick={handleFilterCardOpen}
-                value={1}
-                className={classes.tab}
-                icon={
-                  <Badge
-                    badgeContent={stateNav.wellFilterCount}
-                    color="secondary"
-                  >
-                    <WellIcon color="#fff" opacity="1.0" />
-                  </Badge>
-                }
-                aria-label="well"
-              />
+                <Tab
+                  value={2}
+                  classes={{ root: classes.tab }}
+                  icon={
+                    <Badge
+                      badgeContent={stateNav.ownershipFilterCount}
+                      color="secondary"
+                    >
+                      <OwnershipIcon color="#fff" opacity="1.0" />
+                    </Badge>
+                  }
+                  aria-label="ownership"
+                />
+                <Tab
+                  value={3}
+                  classes={{ root: classes.tab }}
+                  icon={
+                    <Badge
+                      badgeContent={stateNav.productionFilterCount}
+                      color="secondary"
+                    >
+                      <ProductionIcon color="#fff" opacity="1.0" />
+                    </Badge>
+                  }
+                  aria-label="production"
+                />
+                <Tab
+                  disabled
+                  value={4}
+                  classes={{ root: classes.tab }}
+                  icon={<ValuationIcon color="#fff" opacity="0.5" />}
+                  aria-label="valuation"
+                />
+                <Tab
+                  disabled
+                  value={5}
+                  classes={{ root: classes.tab }}
+                  icon={<PredictiveIcon color="#fff" opacity="0.5" />}
+                  aria-label="predictive"
+                />
+                <Tab
+                  disabled
+                  value={6}
+                  classes={{ root: classes.tab }}
+                  icon={<LocalOfferIcon htmlColor="#fff" opacity="0.5" />}
+                  aria-label="tags"
+                />
+              </Tabs>
+            </div>
 
-              <Tab
-                value={2}
-                classes={{ root: classes.tab }}
-                icon={
-                  <Badge
-                    badgeContent={stateNav.ownershipFilterCount}
-                    color="secondary"
-                  >
-                    <OwnershipIcon color="#fff" opacity="1.0" />
-                  </Badge>
-                }
-                aria-label="ownership"
-              />
-              <Tab
-                value={3}
-                classes={{ root: classes.tab }}
-                icon={
-                  <Badge
-                    badgeContent={stateNav.productionFilterCount}
-                    color="secondary"
-                  >
-                    <ProductionIcon color="#fff" opacity="1.0" />
-                  </Badge>
-                }
-                aria-label="production"
-              />
-              <Tab
-                disabled
-                value={4}
-                classes={{ root: classes.tab }}
-                icon={<ValuationIcon color="#fff" opacity="0.5" />}
-                aria-label="valuation"
-              />
-              <Tab
-                disabled
-                value={5}
-                classes={{ root: classes.tab }}
-                icon={<PredictiveIcon color="#fff" opacity="0.5" />}
-                aria-label="predictive"
-              />
-              <Tab
-                disabled
-                value={6}
-                classes={{ root: classes.tab }}
-                icon={<LocalOfferIcon htmlColor="#fff" opacity="0.5" />}
-                aria-label="tags"
-              />
-            </Tabs>
-          </div>
-          </ClickAwayListener>
-          <Divider orientation="vertical" />
-          <IconButton onClick={handleProfileMenuOpen}>
-          <Avatar  name={stateApp.user.name} size="38" round  />
-          </IconButton>
-          
-        </Toolbar>
-        ):(  <M1neralLogoSvg style={{ width: "140px", padding: "20px" }}  variant="white" />)}
+            <Divider orientation="vertical" />
+            <IconButton onClick={handleProfileMenuOpen}>
+              <Avatar name={stateApp.user.name} size="38" round />
+            </IconButton>
+          </Toolbar>
+        ) : (
+          <M1neralLogoSvg
+            style={{ width: "140px", padding: "20px" }}
+            variant="white"
+          />
+        )}
       </AppBar>
 
       <Drawer
@@ -862,7 +855,7 @@ export default function Navigation(props) {
             }}
             button
             selected={stateNav.selectedMenuIndexTransact === 1}
-            onClick={event => handleListItemClick(event, 0, '/transact')}
+            onClick={event => handleListItemClick(event, 0, "/transact")}
             key="transact"
           >
             <ListItemIcon>
@@ -877,7 +870,7 @@ export default function Navigation(props) {
             }}
             button
             selected={stateNav.selectedMenuIndexTitle === 1}
-            onClick={event => handleListItemClick(event, 0, '/title')}
+            onClick={event => handleListItemClick(event, 0, "/title")}
             key="title"
           >
             <ListItemIcon>
@@ -888,15 +881,14 @@ export default function Navigation(props) {
         </List>
         <Divider variant="middle" className={classes.menuListBottomDivider} />
         <List className={classes.menuListBottom}>
-
-        <ListItem
+          <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected
             }}
             button
             selected={stateNav.selectedMenuIndexAlerts === 1}
-            onClick={event => handleListItemClick(event, 0, '/alerts')}
+            onClick={event => handleListItemClick(event, 0, "/alerts")}
             key="alerts"
           >
             <ListItemIcon>
@@ -904,7 +896,6 @@ export default function Navigation(props) {
             </ListItemIcon>
             <ListItemText primary="Alerts" />
           </ListItem>
-
 
           <ListItem
             classes={{
@@ -954,130 +945,135 @@ export default function Navigation(props) {
           </ListItem>
         </List>
       </Drawer>
-      
       {openFilterCard ? (
-        <div className={classes.tabPanelWrapper}>
+        <div anchorEl={anchorEl} className={classes.tabPanelWrapper}>
           <TabPanel value={value} index={0} dir={theme.direction}>
-            <Card className={classes.card}>
-              <CardHeader
-                classes={{
-                  title: classes.cardTitle,
-                  subheader: classes.subheader
-                }}
-                action={
-                  <div className={classes.actionWrapper}>
-                    <IconButton
-                      color="secondary"
-                      onClick={handleFilterCardClose}
-                    >
-                      <CloseIcon />
-                    </IconButton>
-                  </div>
-                }
-                title="Filter"
-                subheader="Geographical"
-              />
-              <CardActions
-                classes={{
-                  root: classes.cardAction
-                }}
-              >
-              </CardActions>
-              <CardContent className={classes.cardContent}>
-                <FilterFromGeo/>
-              </CardContent>
-              
-            </Card>
+            <ClickAwayListener onClickAway={handleClickAway}>
+              <Card className={classes.card}>
+                <CardHeader
+                  classes={{
+                    title: classes.cardTitle,
+                    subheader: classes.subheader
+                  }}
+                  action={
+                    <div className={classes.actionWrapper}>
+                      <IconButton
+                        color="secondary"
+                        onClick={handleFilterCardClose}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                  }
+                  title="Filter"
+                  subheader="Geographical"
+                />
+                <CardActions
+                  classes={{
+                    root: classes.cardAction
+                  }}
+                ></CardActions>
+                <CardContent className={classes.cardContent}>
+                  <FilterFromGeo />
+                </CardContent>
+              </Card>
+            </ClickAwayListener>
           </TabPanel>
           <TabPanel value={value} index={1} dir={theme.direction}>
-            <Card className={classes.card}>
-              <CardHeader
-                classes={{
-                  title: classes.cardTitle,
-                  subheader: classes.subheader
-                }}
-                action={
-                  <div className={classes.actionWrapper}>
-                    <IconButton
-                      color="secondary"
-                      onClick={handleFilterCardClose}
-                    >
-                      <CloseIcon />
-                    </IconButton>
-                  </div>
-                }
-                title="Filter"
-                subheader="Wells"
-              />
-              <CardActions
-                classes={{
-                  root: classes.cardAction
-                }}
-              ></CardActions>
-              <CardContent className={classes.cardContent}>
-                <FilterFormWell />
-              </CardContent>
-            </Card>
+            <ClickAwayListener onClickAway={handleClickAway}>
+              <Card className={classes.card}>
+                <CardHeader
+                  classes={{
+                    title: classes.cardTitle,
+                    subheader: classes.subheader
+                  }}
+                  action={
+                    <div className={classes.actionWrapper}>
+                      <IconButton
+                        color="secondary"
+                        onClick={handleFilterCardClose}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                  }
+                  title="Filter"
+                  subheader="Wells"
+                />
+                <CardActions
+                  classes={{
+                    root: classes.cardAction
+                  }}
+                ></CardActions>
+                <CardContent className={classes.cardContent}>
+                  <FilterFormWell />
+                </CardContent>
+              </Card>
+            </ClickAwayListener>
           </TabPanel>
           <TabPanel value={value} index={2} dir={theme.direction}>
-            <Card className={classes.card}>
-              <CardHeader
-                classes={{
-                  title: classes.cardTitle,
-                  subheader: classes.subheader
-                }}
-                action={
-                  <div>
-                    <IconButton
-                      color="secondary"
-                      onClick={handleFilterCardClose}
-                    >
-                      <CloseIcon />
-                    </IconButton>
-                  </div>
-                }
-                title="Filter"
-                subheader="Ownership"
-              />
-              <CardActions
-                classes={{
-                  root: classes.cardAction
-                }}
-              ></CardActions>
-              <CardContent className={classes.cardContent}>
-                <FilterFormOwner />
-              </CardContent>
-            </Card>
+            <ClickAwayListener onClickAway={handleClickAway}>
+              <Card className={classes.card}>
+                <CardHeader
+                  classes={{
+                    title: classes.cardTitle,
+                    subheader: classes.subheader
+                  }}
+                  action={
+                    <div>
+                      <IconButton
+                        color="secondary"
+                        onClick={handleFilterCardClose}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                  }
+                  title="Filter"
+                  subheader="Ownership"
+                />
+                <CardActions
+                  classes={{
+                    root: classes.cardAction
+                  }}
+                ></CardActions>
+                <CardContent className={classes.cardContent}>
+                  <FilterFormOwner />
+                </CardContent>
+              </Card>
+            </ClickAwayListener>
           </TabPanel>
           <TabPanel value={value} index={3} dir={theme.direction}>
-            <Card className={classes.card}>
-              <CardHeader
-                classes={{
-                  title: classes.cardTitle,
-                  subheader: classes.subheader
-                }}
-                action={
-                  <div>
-                    <IconButton
-                      color="secondary"
-                      onClick={handleFilterCardClose}
-                    >
-                      <CloseIcon />
-                    </IconButton>
-                  </div>
-                }
-                title="Filter"
-                subheader="Production"
-              />
-              <CardActions
-                classes={{
-                  root: classes.cardAction
-                }}
-              ></CardActions>
-              <CardContent className={classes.cardContent}>
-                <FilterFormProduction />
-              </CardContent>
-            </Card>
+            <ClickAwayListener onClickAway={handleClickAway}>
+              <Card className={classes.card}>
+                <CardHeader
+                  classes={{
+                    title: classes.cardTitle,
+                    subheader: classes.subheader
+                  }}
+                  action={
+                    <div>
+                      <IconButton
+                        color="secondary"
+                        onClick={handleFilterCardClose}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                  }
+                  title="Filter"
+                  subheader="Production"
+                />
+                <CardActions
+                  classes={{
+                    root: classes.cardAction
+                  }}
+                ></CardActions>
+                <CardContent className={classes.cardContent}>
+                  <FilterFormProduction />
+                </CardContent>
+              </Card>
+            </ClickAwayListener>
           </TabPanel>
           <TabPanel value={value} index={4} dir={theme.direction}>
             Item Five
