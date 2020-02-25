@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { TitleOpinionContext } from "../TitleOpinionContext";
 import { makeStyles } from "@material-ui/core/styles";
 import Section from "./Section";

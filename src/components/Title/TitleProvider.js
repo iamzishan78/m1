@@ -2,7 +2,6 @@ import React from 'react'
 import { TitleContextProvider } from './TitleContext'
 import { makeStyles } from '@material-ui/core/styles'
 import Title from './Title'
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles'
 const useStyles = makeStyles(theme => ({
   titleWrapper: {
     width: '100%',

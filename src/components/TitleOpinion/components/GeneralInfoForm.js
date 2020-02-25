@@ -17,13 +17,11 @@ const useStyles = makeStyles(theme => ({
   GIWrapper: {
     width: "100%",
     padding: "20px",
-    maxWidth: "900px !important"
+    maxWidth: "1200px !important"
   },
   maxWidth: { width: "100%" },
   logo: {
-    width: "94%",
-    marginRight: "3%",
-    marginLeft: "3%",
+    maxWidth: "94%",
     maxHeight: "56px"
   },
   logoGrid: {
@@ -36,8 +34,6 @@ export default function GeneralInfoForm() {
     TitleOpinionContext
   );
   const { TOData } = stateTitleOpinion;
-
-  // const [stateGeneralInfo, setStateGeneralInfo] = useState({});
 
   // useEffect(() => {
   //   ////////////////query all projects and clients from the logged user;
@@ -96,7 +92,12 @@ export default function GeneralInfoForm() {
               }}
             />
           </Grid>
-          <Grid item xs={4} className={classes.logoGrid}>
+          <Grid
+            item
+            xs={4}
+            className={classes.logoGrid}
+            style={{ textAlign: "center" }}
+          >
             <img
               className={classes.logo}
               alt="onshore logo"

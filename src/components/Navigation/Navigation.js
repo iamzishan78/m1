@@ -214,7 +214,7 @@ const useStyles = makeStyles(theme => ({
     minWidth: "750px",
     position: "absolute",
     top: "45px",
-    right: "-10px",
+    right: "0",
     zIndex: 9
   },
   card: {

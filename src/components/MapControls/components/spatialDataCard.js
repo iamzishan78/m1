@@ -150,7 +150,7 @@ export default function SpatialDataCard(props) {
   const [dataName, setDataName] = useState(shapeLabel);
   const [dataProject, setDataProject] = useState(projectName);
   const [dataNotes, setDataNotes] = useState(sdNotes);
-  const [stateMap, setStateMap] = useContext(MapContext);
+  const [stateMap] = useContext(MapContext);
 
   const inputLabel = useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);

@@ -1,15 +1,8 @@
 import React, { useContext, useState, useEffect } from "react";
 import { TitleOpinionContext } from "../TitleOpinionContext";
-import { makeStyles } from "@material-ui/core/styles";
-import ReactDataGrid from "react-data-grid";
+import ReactDataGrid from "react-data-grid-m1n-version";
 import { range } from "lodash";
-
-const useStyles = makeStyles(theme => ({
-  MSWrapper: {
-    width: "100%",
-    height: "100%"
-  }
-}));
+import "react-data-grid-m1n-version/dist/react-data-grid.css";
 
 const defaultParsePaste = str =>
   str.split(/\r\n|\n|\r/).map(row => row.split("\t"));
@@ -145,9 +138,7 @@ export default function SectionTable(props) {
   const updateRows = (startIdx, newRows) => {
     setStateTitleOpinion(stateTitleOpinion => {
       const rows = stateSectionTable.rows.slice();
-      // setStateSectionTable(stateSectionTable => {
-      //   return { ...stateSectionTable, rows: [], columns: [] };
-      // });
+
       for (let i = 0; i < newRows.length; i++) {
         if (startIdx + i < rows.length) {
           rows[startIdx + i] = { ...rows[startIdx + i], ...newRows[i] };
@@ -176,63 +167,73 @@ export default function SectionTable(props) {
   };
 
   const handleCopy = e => {
-    console.debug("handleCopy Called");
-    e.preventDefault();
-    const { topLeft, botRight } = stateSectionTable;
+    if (
+      stateTitleOpinion.lastClickedSection ===
+      props.sectionData.name + props.sectionNumber
+    ) {
+      console.debug("handleCopy Called");
+      e.preventDefault();
+      const { topLeft, botRight } = stateSectionTable;
 
-    // Loop through each row
-    const text = range(topLeft.rowIdx, botRight.rowIdx + 1)
-      .map(
-        // Loop through each column
-        rowIdx =>
-          stateSectionTable.columns
-            .slice(topLeft.colIdx, botRight.colIdx + 1)
-            .map(
-              // Grab the row values and make a text string
-              col => rowGetter(rowIdx)[col.key]
-            )
-            .join("\t")
-      )
-      .join("\n");
-    console.debug("text", text);
-    e.clipboardData.setData("text/plain", text);
+      // Loop through each row
+      const text = range(topLeft.rowIdx, botRight.rowIdx + 1)
+        .map(
+          // Loop through each column
+          rowIdx =>
+            stateSectionTable.columns
+              .slice(topLeft.colIdx, botRight.colIdx + 1)
+              .map(
+                // Grab the row values and make a text string
+                col => rowGetter(rowIdx)[col.key]
+              )
+              .join("\t")
+        )
+        .join("\n");
+      console.debug("text", text);
+      e.clipboardData.setData("text/plain", text);
+    }
   };
 
   const handlePaste = e => {
-    // console.log("pastinggggggggg");/////
-    console.debug("handlePaste Called");
-    e.preventDefault();
+    if (
+      stateTitleOpinion.lastClickedSection ===
+      props.sectionData.name + props.sectionNumber
+    ) {
+      console.debug("handlePaste Called");
+      e.preventDefault();
 
-    setStateSectionTable(stateSectionTable => {
-      return { ...stateSectionTable, pasting: true };
-    });
-    const { topLeft } = stateSectionTable;
+      setStateSectionTable(stateSectionTable => {
+        return { ...stateSectionTable, pasting: true };
+      });
+      const { topLeft } = stateSectionTable;
 
-    const newRows = [];
-    const pasteData = defaultParsePaste(e.clipboardData.getData("text/plain"));
+      const newRows = [];
+      const pasteData = defaultParsePaste(
+        e.clipboardData.getData("text/plain")
+      );
 
-    console.debug("pasteData", pasteData);
+      console.debug("pasteData", pasteData);
 
-    pasteData.forEach(row => {
-      const rowData = {};
-      // Merge the values from pasting and the keys from the columns
-      stateSectionTable.columns
-        .slice(topLeft.colIdx, topLeft.colIdx + row.length)
-        .forEach((col, j) => {
-          // Create the key-value pair for the row
-          rowData[col.key] = row[j];
-        });
-      // Push the new row to the changes
-      newRows.push(rowData);
-    });
+      pasteData.forEach(row => {
+        const rowData = {};
+        // Merge the values from pasting and the keys from the columns
+        stateSectionTable.columns
+          .slice(topLeft.colIdx, topLeft.colIdx + row.length)
+          .forEach((col, j) => {
+            // Create the key-value pair for the row
+            rowData[col.key] = row[j];
+          });
+        // Push the new row to the changes
+        newRows.push(rowData);
+      });
 
-    console.debug("newRows", newRows);
+      console.debug("newRows", newRows);
 
-    updateRows(topLeft.rowIdx, newRows);
+      updateRows(topLeft.rowIdx, newRows);
+    }
   };
 
   const onGridRowsUpdated = ({ fromRow, toRow, updated, action }) => {
-    // console.log("updatinggggggggg");///////
     console.debug("onGridRowsUpdated!", action);
     console.debug("updated", updated);
     if (action !== "COPY_PASTE") {
@@ -246,12 +247,11 @@ export default function SectionTable(props) {
         }
 
         const rows = stateSectionTable.rows.slice();
-        // for (let i = fromRow; i <= toRow; i++) {
+
         rows[stateSectionTable.topLeft.rowIdx] = {
           ...rows[stateSectionTable.topLeft.rowIdx],
           ...rigthUpdate
         };
-        // }
 
         const tempSections = [
           ...(props.MOR
@@ -275,13 +275,7 @@ export default function SectionTable(props) {
     }
   };
 
-  // useEffect(() => {
-  //   console.log("testttttttttttttt " + JSON.stringify(stateSectionTable));
-  // }, [stateSectionTable]);
-
   const setSelection = args => {
-    // console.log("selectinggggggggg");///////////
-
     setStateSectionTable({
       ...stateSectionTable,
       topLeft: {
@@ -294,8 +288,6 @@ export default function SectionTable(props) {
       }
     });
   };
-
-  let classes = useStyles(); //////
 
   return (
     <div>

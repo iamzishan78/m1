@@ -20,9 +20,7 @@ const useStyles = makeStyles(theme => ({
 export default function SimplePopover(props) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [stateTitleOpinion, setStateTitleOpinion] = useContext(
-    TitleOpinionContext
-  );
+  const [, setStateTitleOpinion] = useContext(TitleOpinionContext);
 
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
@@ -160,7 +158,8 @@ export default function SimplePopover(props) {
         </Button>
         <br />
 
-        <Modal Column={addColumn} />
+        {/* //////removed untill the use case is redefined/////// */}
+        {/* <Modal Column={addColumn} /> */}
 
         <Modal Section={addSection} />
       </Popover>

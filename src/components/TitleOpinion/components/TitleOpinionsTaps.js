@@ -50,10 +50,6 @@ const useStyles = makeStyles(theme => ({
   TOAppBar: {
     backgroundColor: "rgb(1,17,51)",
     color: "#FFFFFF"
-  },
-  aaa: {
-    padding: "0",
-    width: "100%"
   }
 }));
 
