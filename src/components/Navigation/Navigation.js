@@ -598,7 +598,7 @@ export default function Navigation(props) {
 
   const handleFilterCardOpen = () => {
     setOpenFilterCard(true);
-    cardRef.current()
+    // cardRef.current()
   };
   const handleFilterTabChange = (event, newValue) => {
     if (!openFilterCard) {
