@@ -462,9 +462,9 @@ export default function Navigation(props) {
     [classes.applySuccess]: applySuccess
   });
 
-  // const handleClickAway = () => {
-  //   setOpenFilterCard(false);
-  // };
+  const handleClickAway = () => {
+    setOpenFilterCard(false);
+  };
 
   useEffect(() => {
     if (location.pathname === "/") {
@@ -695,8 +695,9 @@ export default function Navigation(props) {
 
 
 
-
+          
           <div className={classes.grow1} />
+          <ClickAwayListener onClickAway={handleClickAway}>
           <div className = {classes.filterTabs}>
             <Tabs
               value={value}
@@ -785,6 +786,7 @@ export default function Navigation(props) {
               />
             </Tabs>
           </div>
+          </ClickAwayListener>
           <Divider orientation="vertical" />
           <IconButton onClick={handleProfileMenuOpen}>
           <Avatar  name={stateApp.user.name} size="38" round  />
