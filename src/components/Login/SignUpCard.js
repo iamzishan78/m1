@@ -40,7 +40,23 @@ const localStyles = makeStyles(theme => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center"
-  }
+  },
+  newUser : {
+    zIndex: 1000,
+    
+  },
+  rootNewUser: {
+    // backgroundColor: "rgba(38, 51, 81, 0.7)",
+    width: "100vw",
+    height: "100vh"
+    },
+  opacity: {
+      height: "80vh",
+      width: "60vw",
+    },
+  displaNone: {
+      display: "none",
+    }
 }));
 
 const SignUpCard = props => {
@@ -56,80 +72,98 @@ const SignUpCard = props => {
     console.log("userData", userData);
   };
 
-  return !showSignUp ? (
-    <React.Fragment>
-      <Typography
-        variant="h5"
-        className={classes.cardTitle}
-        style={{ fontSize: "2rem", top: "13%", justifyContent: "center" }}
-      >
-        Don't have an account?
-      </Typography>
-      <Typography
-        variant="h5"
-        className={classes.cardTitle}
-        style={{ fontSize: ".9rem",paddingTop: "1.25%" , justifyContent: "center"}}
-      >
-        Tell us your story and get started today.
-      </Typography>
-      <div className={localClass.cardContainer}>
-        <Card
-          color="secondary"
-          className={localClass.card}
-          style={{ left: "20%" }}
+  const renderSignupNewCard = (
+    showSignUp ? 
+    <div className={localClass.opacity}>
+      <NewUserCard className={localClass.newUser} handleNewUserSignUp={handleNewUserSignUp} />
+    </div>
+    : <div className={localClass.displaNone} ></div>
+  )
+  
+  const renderBody = (
+    !showSignUp ? (
+      <div className={localClass.rootNewUser}>  
+        <Typography
+          variant="h5"
+          className={classes.cardTitle}
+          style={{ fontSize: "2rem", top: "13%", justifyContent: "center" }}
         >
-          <div className={classes.cardHeader}>
-           {/*  <FontAwesomeIcon
-              icon={faHandHoldingUsd}
-              style={{ fontSize: "5.5rem" }}
-            /> */}
-            <div className={localClass.cardTitle} style={{ fontSize: "2rem"}}>OWNERS</div>
-          </div>
-          <div className={localClass.cardInputs}>
-            <Typography style={{ textAlign: "center", marginTop: "10%" }}>
-              For owners and sellers of royalties or minerals looking to learn
-              more about what they own
-            </Typography>
-          </div>
-          <div className={classes.cardFooter} style={{ alignItems: "unset" }}>
-            <Button
-              variant="contained"
-              disableElevation
-              className={classes.button}
-              disabled
-              style={{ color: "white", backgroundColor: "darkgray" }}
-            >
-              Coming Soon!
-            </Button>
-          </div>
-        </Card>
-
-        <Card color="secondary" className={localClass.card}>
-          <div className={classes.cardHeader}>
-            {/* <FontAwesomeIcon icon={faUsers} style={{ fontSize: "5.5rem" }} /> */}
-            <div className={localClass.cardTitle} style={{ fontSize: "2rem"}}>BUYERS</div>
-          </div>
-          <div className={localClass.cardInputs}>
-            <Typography style={{ textAlign: "center", marginTop: "10%" }}>
-              For buyers seeking potential deals and to streamline
-              acquisition workflows
-            </Typography>
-          </div>
-          <div className={classes.cardFooter} style={{ alignItems: "unset" }}>
-            <Button
-              variant="contained"
-              disableElevation
-              className={classes.button}
-              onClick={() => setShowSignUp(true)}
-            >
-              Sign Up
-            </Button>
-          </div>
-        </Card>
+          Don't have an account?
+        </Typography>
+        <Typography
+          variant="h5"
+          className={classes.cardTitle}
+          style={{ fontSize: ".9rem",paddingTop: "1.25%" , justifyContent: "center"}}
+        >
+          Tell us your story and get started today.
+        </Typography>
+        <div className={localClass.cardContainer}>
+          <Card
+            color="secondary"
+            className={localClass.card}
+            style={{ left: "20%" }}
+          >
+            <div className={classes.cardHeader}>
+             {/*  <FontAwesomeIcon
+                icon={faHandHoldingUsd}
+                style={{ fontSize: "5.5rem" }}
+              /> */}
+              <div className={localClass.cardTitle} style={{ fontSize: "2rem"}}>OWNERS</div>
+            </div>
+            <div className={localClass.cardInputs}>
+              <Typography style={{ textAlign: "center", marginTop: "10%" }}>
+                For owners and sellers of royalties or minerals looking to learn
+                more about what they own
+              </Typography>
+            </div>
+            <div className={classes.cardFooter} style={{ alignItems: "unset" }}>
+              <Button
+                variant="contained"
+                disableElevation
+                className={classes.button}
+                disabled
+                style={{ color: "white", backgroundColor: "darkgray" }}
+              >
+                Coming Soon!
+              </Button>
+            </div>
+          </Card>
+  
+          <Card color="secondary" className={localClass.card}>
+            <div className={classes.cardHeader}>
+              {/* <FontAwesomeIcon icon={faUsers} style={{ fontSize: "5.5rem" }} /> */}
+              <div className={localClass.cardTitle} style={{ fontSize: "2rem"}}>BUYERS</div>
+            </div>
+            <div className={localClass.cardInputs}>
+              <Typography style={{ textAlign: "center", marginTop: "10%" }}>
+                For buyers seeking potential deals and to streamline
+                acquisition workflows
+              </Typography>
+            </div>
+            <div className={classes.cardFooter} style={{ alignItems: "unset" }}>
+              <Button
+                variant="contained"
+                disableElevation
+                className={classes.button}
+                onClick={() => setShowSignUp(true)}
+              >
+                Sign Up
+              </Button>
+            </div>
+          </Card>
+        </div>
       </div>
-    </React.Fragment>
-  ) : (
-    <NewUserCard handleNewUserSignUp={handleNewUserSignUp} />
-  );
+    ) : (
+      <div className={localClass.displaNone} ></div>
+    ) 
+  )
+
+
+  return (
+    <div className={localClass.rootNewUser}> 
+    {renderBody}
+    {renderSignupNewCard}
+    </div>
+  ) 
 };
 export default SignUpCard;

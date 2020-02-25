@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import FormControl from "@material-ui/core/FormControl";
@@ -7,9 +7,8 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
-import Box from "@material-ui/core/Box";
+import TabPanel from "./Utils/TabPanel";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import PropTypes from "prop-types";
 import { NavigationContext } from "../NavigationContext";
 import ProductionSlider from "./ProductionSlider";
 
@@ -74,28 +73,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const TabPanel = props => {
-  const classes = useStyles();
-  const { children, value, index, ...other } = props;
-  // console.log(props)
-  return (
-    <div
-      className={classes.tabPanel}
-      role="tabpanel"
-      id={`full-width-tabpanel-${index}`}
-      aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box p={3}>{children}</Box>}
-    </div>
-  );
-};
 
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired
-};
 
 export default function FilterFormProduction() {
   const classes = useStyles();
@@ -181,7 +159,7 @@ export default function FilterFormProduction() {
 
   
   const handleChangeFirstMonthsOil = (event, newValue) => {
-    // console.log(event, newValue)
+    
     updateSliderRangesOil("first", newValue);
     setValsFirstMonthsOil(newValue);
   };

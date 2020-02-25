@@ -7,7 +7,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 //import M1neralIconSvg from "../../ui_Elements/m1neralIconSvg";
 // HELPERS
 import { validateData } from "./loginHelpers";
-import Autocomplete from '@material-ui/lab/Autocomplete';
+// import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const useStyles = makeStyles(theme => ({
   root: {

@@ -158,7 +158,7 @@ const NewUserCard = props => {
           <div>By signing up, you agree to the  <a href="https://www.m1neral.com" target="_blank" className={classes.signupLink} >Terms and Conditions
             </a></div>
           <div>
-            Already have an account?  <Link to="/signin" className={classes.signupLink}> Sign In
+            Already have an account?  <Link to="/" className={classes.signupLink}> Sign In
             </Link>
             
             </div>

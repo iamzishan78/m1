@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useContext,
-  useEffect,
-  useCallback
-} from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import { NavigationContext } from "../NavigationContext";
@@ -15,7 +10,7 @@ const useStyles = makeStyles({
   input: {
     margin: 20,
     maxWidth: 120,
-    minWidth: 118,
+    minWidth: 118
     // "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
     //   "-webkit-appearance": "none",
     //   margin: 0
@@ -65,8 +60,8 @@ export default function ProductionSlider(props) {
   const [max, setMax] = useState(props.max);
   const [id, setId] = useState(props.id);
   const [prodTypeName, setProdTypeName] = useState(
-    stateNav.prodTypeName ? stateNav.prodTypeName :[]
-  )
+    stateNav.prodTypeName ? stateNav.prodTypeName : []
+  );
   // const [check, setCheck] = useState(false);
 
   useEffect(() => {
@@ -77,60 +72,16 @@ export default function ProductionSlider(props) {
       let filter;
       let selectedMin = valueMin;
       let selectedMax = valueMax;
-      
-      if (
-        currentValue[0] !== selectedMin.toString() &&
-        currentValue[1] === selectedMax.toString()
-      ) {
-        
+      if (selectedMin === "" || selectedMax === "") {
         filter = null;
       } 
-      // else {
-      //   console.log(currentValue, selectedMax)
-      //   if (props.firstLast && props.months && props.prod) {
-      //     let firstLastString = "";
-      //     if (props.firstLast) {
-      //       firstLastString = props.firstLast;
-      //     }
-      //     let prodString = "";
-      //     if (props.prod) {
-      //       prodString = props.prod;
-      //     }
-
-      //     let monthsString = "";
-      //     if (props.months) {
-      //       switch (props.months) {
-      //         case 1:
-      //           monthsString = "Month";
-      //           break;
-      //         case 3:
-      //           monthsString = "ThreeMonth";
-      //           break;
-      //         case 6:
-      //           monthsString = "SixMonth";
-      //           break;
-      //         case 12:
-      //           monthsString = "TwelveMonth";
-      //           break;
-      //         default:
-      //           monthsString = "TwelveMonth";
-      //         // code block
-      //       }
-      //     }
-      //     //api outputs a specific format for the properties of a well. Filter must match
-      //     let id = `${firstLastString}${monthsString}${prodString}`;
-      //     filter = [
-      //       "all",
-      //       [">=", ["get", id.toString()], parseInt(selectedMin)],
-      //       ["<=", ["get", id.toString()], parseInt(selectedMax)]
-      //     ];
-      //     console.log("add filter", filter);
-
-      //     console.log("production change filter", id, filter);
-          //setState doesn't work if you make the key a variable, like id, so I had to do this
-          //all this repetiton is necessary because of this mapbox setFilter limit
-          
-         else {
+      else {
+        // if (
+        //   currentValue[0] !== selectedMin.toString() &&
+        //   currentValue[1] === selectedMax.toString()
+        // ) {
+        //   filter = null;
+        // } else {
           let selectedMin = valueMin;
           let selectedMax = valueMax;
           let currentValue = [];
@@ -139,7 +90,7 @@ export default function ProductionSlider(props) {
             selectedMax.toString();
           }
           currentValue.push(valueMin, valueMax);
-          console.log(currentValue, selectedMax)
+          console.log(currentValue, selectedMax);
           if (
             currentValue[0] !== selectedMin &&
             currentValue[1] !== selectedMax
@@ -269,19 +220,16 @@ export default function ProductionSlider(props) {
               ...stateNav,
               filterLastMonthOil: filter
             }));
-          } 
-          else if (id === "lastSixMonthOil") {
+          } else if (id === "lastSixMonthOil") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterLastSixMonthOil: filter
             }));
           }
         }
-      }
-    
-    
-    if (valueMin && valueMax ) {
-      
+      // }
+    }
+    if (valueMin && valueMax) {
       setFilter();
     }
   }, [
@@ -295,66 +243,71 @@ export default function ProductionSlider(props) {
   ]);
 
   const setvaluesRecallCumulative = useCallback(() => {
-    if(stateNav.filterCumulativeOil === null) {
-      return
-    } else { 
-    const cOil = stateNav.filterCumulativeOil[1][1][1];
+    if (stateNav.filterCumulativeOil === null) {
+      return;
+    } else {
+      const cOil = stateNav.filterCumulativeOil[1][1][1];
 
-    if (cOil.toString() === id.toString() ) { 
-      const recallMin = stateNav.filterCumulativeOil[1][2]
-      setValueMinDisplay(recallMin);
-    }
-    if (cOil.toString() === id.toString() ) { 
-      const recallMax = stateNav.filterCumulativeOil[2][2]
-      setValueMaxDisplay(recallMax);
-    }
-  }
-    
-    if(stateNav.filterCumulativeGas === null) {
-      return
-    } else { 
-    const cOil = stateNav.filterCumulativeGas[1][1][1];
-    if (cOil.toString() === id.toString() ) { 
-        const recallMin = stateNav.filterCumulativeGas[1][2]
+      if (cOil.toString() === id.toString()) {
+        const recallMin = stateNav.filterCumulativeOil[1][2];
         setValueMinDisplay(recallMin);
       }
-      if (cOil.toString() === id.toString() ) { 
-        const recallMax = stateNav.filterCumulativeGas[2][2]
+      if (cOil.toString() === id.toString()) {
+        const recallMax = stateNav.filterCumulativeOil[2][2];
         setValueMaxDisplay(recallMax);
       }
     }
-    
-    if(stateNav.filterCumulativeWater === null) {
-      return
-    } else { 
-    const cOil = stateNav.filterCumulativeWater[1][1][1];
-    if (cOil.toString() === id.toString() ) { 
-      const recallMin = stateNav.filterCumulativeWater[1][2]
-      setValueMinDisplay(recallMin);
-    }
-    if (cOil.toString() === id.toString() ) { 
-      const recallMax = stateNav.filterCumulativeWater[2][2]
-      setValueMaxDisplay(recallMax);
-    }}
-    
-  
 
-    if(stateNav.filterFirstMonthWater === null) {
-      return
-    } else { 
-    const cOil = stateNav.filterFirstMonthWater[1][1][1];
-    if (cOil.toString() === id.toString() ) { 
-      const recallMin = stateNav.filterFirstMonthWater[1][2]
-      setValueMinDisplay(recallMin);
+    if (stateNav.filterCumulativeGas === null) {
+      return;
+    } else {
+      const cOil = stateNav.filterCumulativeGas[1][1][1];
+      if (cOil.toString() === id.toString()) {
+        const recallMin = stateNav.filterCumulativeGas[1][2];
+        setValueMinDisplay(recallMin);
+      }
+      if (cOil.toString() === id.toString()) {
+        const recallMax = stateNav.filterCumulativeGas[2][2];
+        setValueMaxDisplay(recallMax);
+      }
     }
-    if (cOil.toString() === id.toString() ) { 
-      const recallMax = stateNav.filterFirstMonthWater[2][2]
-      setValueMaxDisplay(recallMax);
-    }} 
 
-  }, [id, stateNav.filterCumulativeGas, stateNav.filterCumulativeOil, stateNav.filterCumulativeWater, stateNav.filterFirstMonthWater]);
-  
-  console.log(stateNav.filterFirstMonthWater, prodTypeName)
+    if (stateNav.filterCumulativeWater === null) {
+      return;
+    } else {
+      const cOil = stateNav.filterCumulativeWater[1][1][1];
+      if (cOil.toString() === id.toString()) {
+        const recallMin = stateNav.filterCumulativeWater[1][2];
+        setValueMinDisplay(recallMin);
+      }
+      if (cOil.toString() === id.toString()) {
+        const recallMax = stateNav.filterCumulativeWater[2][2];
+        setValueMaxDisplay(recallMax);
+      }
+    }
+
+    if (stateNav.filterFirstMonthWater === null) {
+      return;
+    } else {
+      const cOil = stateNav.filterFirstMonthWater[1][1][1];
+      if (cOil.toString() === id.toString()) {
+        const recallMin = stateNav.filterFirstMonthWater[1][2];
+        setValueMinDisplay(recallMin);
+      }
+      if (cOil.toString() === id.toString()) {
+        const recallMax = stateNav.filterFirstMonthWater[2][2];
+        setValueMaxDisplay(recallMax);
+      }
+    }
+  }, [
+    id,
+    stateNav.filterCumulativeGas,
+    stateNav.filterCumulativeOil,
+    stateNav.filterCumulativeWater,
+    stateNav.filterFirstMonthWater
+  ]);
+
+  // console.log(stateNav.filterFirstMonthWater, prodTypeName);
 
   useEffect(() => {
     if (prodTypeName && prodTypeName.length > 0) {
@@ -363,32 +316,28 @@ export default function ProductionSlider(props) {
   }, [prodTypeName, prodTypeName.length, setvaluesRecallCumulative]);
 
   const handleChangeMin = event => {
-    console.log(event.target)
     setValueMin(event.target.value);
     setValueMinDisplay(event.target.value);
-    setProdTypeName(event.target.id)
+    setProdTypeName(event.target.id);
     setStateNav(stateNav => ({ ...stateNav, prodTypeName: event.target.id }));
   };
 
   const handleChangeMax = event => {
-    console.log(event.target)
-    if(event.target.value !== event.target.max){
-      if(event.target.value === ''){
+    if (event.target.value !== event.target.max) {
+      if (event.target.value === "") {
         setValueMax(event.target.max);
       }
-    setValueMax(event.target.value);
-    setValueMaxDisplay(event.target.value);
-    setProdTypeName(event.target.id)
-    setStateNav(stateNav => ({ ...stateNav, prodTypeName: event.target.id }));
-    } else if(event.target.value === event.target.max) {
-    setValueMax(event.target.max);
-    setValueMaxDisplay(event.target.value);
-    setProdTypeName(event.target.id)
-    setStateNav(stateNav => ({ ...stateNav, prodTypeName: event.target.id }));
+      setValueMax(event.target.value);
+      setValueMaxDisplay(event.target.value);
+      setProdTypeName(event.target.id);
+      setStateNav(stateNav => ({ ...stateNav, prodTypeName: event.target.id }));
+    } else if (event.target.value === event.target.max) {
+      setValueMax(event.target.max);
+      setValueMaxDisplay(event.target.value);
+      setProdTypeName(event.target.id);
+      setStateNav(stateNav => ({ ...stateNav, prodTypeName: event.target.id }));
     }
-    
   };
- 
 
   return (
     <div className={classes.divInput}>
@@ -396,7 +345,7 @@ export default function ProductionSlider(props) {
         className={classes.input}
         id={id}
         value={valueMinDisplay}
-        InputProps={{ inputProps: { min: 0, max: max - 1 , step:  1000} }}
+        InputProps={{ inputProps: { min: 0, max: max - 1, step: 1000 } }}
         onChange={handleChangeMin}
         getAriaValueText={valueText}
         aria-labelledby="range-number"
@@ -409,8 +358,8 @@ export default function ProductionSlider(props) {
         className={classes.input}
         id={id}
         value={valueMaxDisplay}
-        InputLabelProps={{shrink: true}}
-        InputProps={{ inputProps: { min: 0, max: max , step: 1000} }}
+        InputLabelProps={{ shrink: true }}
+        InputProps={{ inputProps: { min: 0, max: max, step: 1000 } }}
         onChange={handleChangeMax}
         getAriaValueText={valueText}
         aria-labelledby="range-number"
