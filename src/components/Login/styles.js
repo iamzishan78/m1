@@ -4,7 +4,8 @@ export const useStyles = makeStyles(theme => ({
   root: {
     padding: "0",
     width: "100%",
-    height: "100%"
+    height: "100%",
+    
   },
   notchedOutline: {
     color: "green"

@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
+import EmailSuccess from "./EmailSuccess";
 
 // STYLES
 import { useStyles } from "./styles";
 import { makeStyles } from "@material-ui/core";
 import { Card,  Button} from "@material-ui/core";
 // COMPONENTS
+
 const localStyles = makeStyles(theme => ({
   conatiner: {
     display: "inline-block",
-    margin: 30,
+    margin: 20,
   },
   card: {
     // width: "50vw",
@@ -49,17 +51,11 @@ const localStyles = makeStyles(theme => ({
   inputs: {
     backgroundColor: theme.palette.background.paper,
     width: "80%",
-    // content: "00a0",
     position: "relative",
-    transition: 'border-bottom-color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    // transition: 'border-bottom-color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
     borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
     pointerEvents: 'all',
     margin: "2% 10%",
-    "& label": {
-        zIndex: 1,
-        transform: 'translate(12px, 20px) scale(1)',
-        pointerEvents: 'none'
-    },
   },
   links: {
     marginTop: 10,
@@ -79,6 +75,7 @@ export default function  NewUserCard (props)  {
   const [userTitle, setUserTitle] = useState("");
   const [userPhoneNum, setUserPhoneNum] = useState();
   const [userEmail, setUserEmail] = useState("");
+  const [sent , setSent] = useState(false)
   //const [userPassword, setUserPassword] = useState("");
 
   useEffect(() => {}, [userEmail]);
@@ -97,29 +94,34 @@ export default function  NewUserCard (props)  {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const name = userName
-    const email = userEmail
-    const company = userCompany
+    alert("Node App Not Deployed, But Here is Your Info", userName, userCompany, userPhoneNum, userTitle, userEmail)
+    setSent(true)
+    // const name = userName
+    // const email = userEmail
+    // const company = userCompany
     // const phone = userPhoneNum
-    const title = userTitle
-    fetch("http://localhost:3002/send", {
-        method: "POST", 
-        data: {
-            name: name,   
-            email: email,
-            title: title,  
-            company: company,
-            // phone: phone,
-        }
-    }).then((response)=>{
-      console.log(response)
-        // if (response.data.msg === 'success'){
-        //     alert("Message Sent."); 
-            
-        // }else if(response.data.msg === 'fail'){
-        //     alert("Message failed to send.")
-        // }
-    }).catch(err => console.log(err))
+    // const title = userTitle
+    // fetch("http://localhost:3002/send", {
+    //     method: "POST", 
+    //     headers: {
+    //       Accept: 'application/json',
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body:JSON.stringify({
+    //         name: name,   
+    //         email: email,
+    //         title: title,  
+    //         company: company,
+    //         phone: phone,
+    //     }),
+    // }).then((response )=>{
+    //     if (response.status === 200){
+    //         setSent(true)
+
+    //     }else if(response.status !==  200){
+    //         alert("Message failed to send.")
+    //     }
+    // }).catch(err => console.log(err))
   }
   
 
@@ -132,17 +134,20 @@ export default function  NewUserCard (props)  {
         }
       }); 
 
-      if (userPhoneNum && userPhoneNum.length > 0) {
+      // if (userPhoneNum && userPhoneNum.length > 0) {
         ValidatorForm.addValidationRule('testPhone', (value) => {
           const regex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
           if(regex.test(value)) {
             return true;
+          } else {
+            return false
           }
         }); 
-      }   
+      // }   
   },[userName.length, userPhoneNum])
 
   return (
+    !sent ? 
     <div className={localClass.conatiner}>
       {/* <Typography
         variant="h5"
@@ -166,7 +171,7 @@ export default function  NewUserCard (props)  {
             className={localClass.inputs}
             type="text"
             label="Full Name"
-            // variant="filled"
+            variant="filled"
             validators={['shortName', 'required']}
             errorMessages={['this field is required', 'Name is not valid']}
             onChange={e => setUserName(e.target.value)}
@@ -176,7 +181,7 @@ export default function  NewUserCard (props)  {
             className={localClass.inputs}
             type="text"
             label="Company"
-            // variant="filled"
+            variant="filled"
             validators={['required']}
             errorMessages={['this field is required']}
             onChange={e => setUserCompany(e.target.value)}
@@ -186,7 +191,7 @@ export default function  NewUserCard (props)  {
             className={localClass.inputs}
             type="text"
             label="Title"
-            // variant="filled"
+            variant="filled"
             validators={['required']}
             errorMessages={['this field is required']}
             onChange={e => setUserTitle(e.target.value)}
@@ -196,22 +201,22 @@ export default function  NewUserCard (props)  {
             className={localClass.inputs}
             type="email"
             label="Email"
-            // variant="filled"
+            variant="filled"
             validators={['required', 'isEmail']}
             errorMessages={['this field is required']}
             onChange={e => setUserEmail(e.target.value)}
             value={userEmail}
           />
-          {/* <TextValidator
+          <TextValidator
             className={localClass.inputs}
             type="text"
             label="Phone Number"
-            // variant="filled"
+            variant="filled"
             validators={['testPhone','required']}
             errorMessages={['this field is required']}
             onChange={e => setUserPhoneNum(e.target.value)}
             value={userPhoneNum}
-          /> */}
+          />
 
           {/* <TextField
             className={localClass.inputs}
@@ -266,6 +271,7 @@ export default function  NewUserCard (props)  {
         </div>
       </Card>
     </div>
+    :   <EmailSuccess/>
   );
 };
 

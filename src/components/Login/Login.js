@@ -5,17 +5,13 @@ import gql from "graphql-tag";
 // STYLES
 import { useStyles } from "./styles";
 import {
-  Typography,
   CardMedia,
-  Card,
-  TextField,
-  Button
 } from "@material-ui/core";
 
 // COMPONENTS
-import M1neralLogoSvg from "../Shared/m1neralLogoSvg";
+// import M1neralLogoSvg from "../Shared/m1neralLogoSvg";
 import SignInCard from "./SignInCard";
-import SignUpCard from "./SignUpCard";
+// import SignUpCard from "./SignUpCard";
 //import { LOGINQUERY } from "../../graphQL/useQueryLogin";
 
 
@@ -105,7 +101,6 @@ const Login = props => {
 
   return (
     <div className={classes.myRoot}>
-
       <CardMedia
         media="img"
         image={BackgroundURI}
