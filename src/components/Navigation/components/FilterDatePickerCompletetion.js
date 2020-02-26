@@ -179,6 +179,7 @@ export default function FilterDatePickerCompletetion(props) {
           value={selectedStartDate}
           onChange={date => handleStartDate(date)}
           format="MM-DD-YYYY"
+          PopoverProps={{ disablePortal: true }}
         />
 
         <KeyboardDatePicker
@@ -188,9 +189,11 @@ export default function FilterDatePickerCompletetion(props) {
           autoOk
           variant="inline"
           maxDate={moment()}
+          disableFuture={true}
           value={selectedEndDate}
           onChange={date => handleEndDate(date)}
           format="MM-DD-YYYY"
+          PopoverProps={{ disablePortal: true }}
         />
       </div>
     </div>

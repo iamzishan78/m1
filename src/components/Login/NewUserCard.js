@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 
 // STYLES
 import { useStyles } from "./styles";
 import { makeStyles } from "@material-ui/core";
-import { Card, TextField, Button, Typography } from "@material-ui/core";
+import { Card,  Button} from "@material-ui/core";
 // COMPONENTS
 const localStyles = makeStyles(theme => ({
   conatiner: {
@@ -31,13 +32,13 @@ const localStyles = makeStyles(theme => ({
     padding: "20px 40px",
     textAlign: "center"
   },
-  cardInputs: {
-    height: "80%",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-evenly",
-    alignItems: "center"
-  },
+  // cardInputs: {
+  //   height: "80%",
+  //   display: "flex",
+  //   flexDirection: "column",
+  //   justifyContent: "space-evenly",
+  //   alignItems: "center"
+  // },
   cardFooter: {
     height: "15%",
     // padding: "10px 10px",
@@ -47,21 +48,35 @@ const localStyles = makeStyles(theme => ({
   },
   inputs: {
     backgroundColor: theme.palette.background.paper,
-    width: "80%"
+    width: "80%",
+    content: "00a0",
+    position: "relative",
+    transition: 'border-bottom-color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
+    pointerEvents: 'none',
+    margin: "2% 10%",
+    "& label": {
+        zIndex: 1,
+        transform: 'translate(12px, 20px) scale(1)',
+        pointerEvents: 'none'
+    },
   },
   links: {
     marginTop: 10,
     marginBottom: 30
+  },
+  cardForm: {
+    display: "inline",
   }
 }));
 
-const NewUserCard = props => {
+export default function  NewUserCard (props)  {
   const classes = useStyles();
   const localClass = localStyles();
   const [userName, setUserName] = useState("");
   const [userCompany, setUserCompany] = useState("");
   const [userTitle, setUserTitle] = useState("");
-  const [userPhoneNum, setUserPhoneNum] = useState("");
+  const [userPhoneNum, setUserPhoneNum] = useState();
   const [userEmail, setUserEmail] = useState("");
   //const [userPassword, setUserPassword] = useState("");
 
@@ -73,11 +88,30 @@ const NewUserCard = props => {
       userCompany,
       userTitle,
       userPhoneNum,
-      userEmail
+      userEmail,
       //  userPassword
     };
     props.handleNewUserSignUp(userData);
   };
+
+  useEffect(()=> {
+      ValidatorForm.addValidationRule('shortName', (value) => {
+        if (value && userName.length < 3 ) {
+            return false;
+        } else { 
+          return true;
+        }
+      }); 
+
+      if (userPhoneNum && userPhoneNum.length > 0) {
+        ValidatorForm.addValidationRule('testPhone', (value) => {
+          const regex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+          if(regex.test(value)) {
+            return true;
+          }
+        }); 
+      }   
+  },[userName.length, userPhoneNum])
 
   return (
     <div className={localClass.conatiner}>
@@ -92,44 +126,60 @@ const NewUserCard = props => {
             Sign up as a buyer, financial institution or energy company.
           </div>
         </div>
-        <div className={localClass.cardInputs}>
-          <TextField
+        {/* <div className={localClass.cardInputs}> */}
+        <Card className={localClass.cardForm}>
+        <ValidatorForm
+          onSubmit={signUp}
+          onError={errors => console.log(errors)}
+        >
+          <TextValidator
             className={localClass.inputs}
             type="text"
             label="Full Name"
-            variant="filled"
+            // variant="filled"
+            validators={['shortName', 'required']}
+            errorMessages={['this field is required', 'Name is not valid']}
             onChange={e => setUserName(e.target.value)}
             value={userName}
+            InputLabelProps={{}}
           />
-          <TextField
+          <TextValidator
             className={localClass.inputs}
             type="text"
             label="Company"
-            variant="filled"
+            // variant="filled"
+            validators={['required']}
+            errorMessages={['this field is required']}
             onChange={e => setUserCompany(e.target.value)}
             value={userCompany}
           />
-          <TextField
+          <TextValidator
             className={localClass.inputs}
             type="text"
             label="Title"
-            variant="filled"
+            // variant="filled"
+            validators={['required']}
+            errorMessages={['this field is required']}
             onChange={e => setUserTitle(e.target.value)}
             value={userTitle}
           />
-          <TextField
+          <TextValidator
             className={localClass.inputs}
             type="email"
             label="Email"
-            variant="filled"
+            // variant="filled"
+            validators={['required', 'isEmail']}
+            errorMessages={['this field is required']}
             onChange={e => setUserEmail(e.target.value)}
             value={userEmail}
           />
-          <TextField
+          <TextValidator
             className={localClass.inputs}
             type="text"
             label="Phone Number"
-            variant="filled"
+            // variant="filled"
+            validators={['testPhone','required']}
+            errorMessages={['this field is required']}
             onChange={e => setUserPhoneNum(e.target.value)}
             value={userPhoneNum}
           />
@@ -150,17 +200,19 @@ const NewUserCard = props => {
             // onChange={e => setUserPassword(e.target.value)}
             value={userPassword} 
           /> */}
-
+          </ValidatorForm>
+          {/* <div className={classes.secondaryInputs}></div> */}
+          </Card>
           <Button
             variant="contained"
             disableElevation
-            onClick={signUp}
-            style={{color: "white",  marginTop: 30, backgroundColor: "rgba(23, 170, 221, 1)" ,  marginBottom: 15, width: "15vw"}}
+            // onClick={signUp}
+            type="submit"
+            style={{ fontSize: "1.2em", color: "white",  marginTop: 30, backgroundColor: "rgba(23, 170, 221, 1)" ,  marginBottom: 15, width: "20vw"}}
           >
             Submit
           </Button>
-          {/* <div className={classes.secondaryInputs}></div> */}
-        </div>
+        {/* </div> */}
         <div className={localClass.cardFooter}>
           <div>
             By signing up, you agree to the{" "}
@@ -185,4 +237,4 @@ const NewUserCard = props => {
     </div>
   );
 };
-export default NewUserCard;
+

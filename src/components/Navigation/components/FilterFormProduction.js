@@ -382,13 +382,14 @@ export default function FilterFormProduction() {
   };
 
   const renderFirstMonthsOil = firstMonths ? (
-    <FormControl className={classes.formControlMonths}>
+    <FormControl id="dontClose" className={classes.formControlMonths}>
       <InputLabel className={classes.inputLabelMonths}>Months</InputLabel>
       <Select
         className={classes.inputMonths}
         id="select-first-months"
         value={valueFirstMonthsOil}
         onChange={handleChangeFirstMonthsOil}
+        MenuProps={{ disablePortal: true }}
       >
         <MenuItem value={12}>12</MenuItem>
         <MenuItem value={6}>6</MenuItem>
@@ -408,6 +409,7 @@ export default function FilterFormProduction() {
         id="select-first-months"
         value={valueFirstMonthsGas}
         onChange={handleChangeFirstMonthsGas}
+        MenuProps={{ disablePortal: true }}
       >
         <MenuItem value={12}>12</MenuItem>
         <MenuItem value={6}>6</MenuItem>
@@ -427,6 +429,7 @@ export default function FilterFormProduction() {
         id="select-first-months"
         value={valueFirstMonthsWater}
         onChange={handleChangeFirstMonthsWater}
+        MenuProps={{ disablePortal: true }}
       >
         <MenuItem value={12}>12</MenuItem>
         <MenuItem value={6}>6</MenuItem>
@@ -446,6 +449,7 @@ export default function FilterFormProduction() {
         id="select-last-months"
         value={valueLastMonthsOil}
         onChange={handleChangeLastMonthsOil}
+        MenuProps={{ disablePortal: true }}
       >
         <MenuItem value={12}>12</MenuItem>
         <MenuItem value={6}>6</MenuItem>
@@ -464,6 +468,7 @@ export default function FilterFormProduction() {
         id="select-last-months"
         value={valueLastMonthsGas}
         onChange={handleChangeLastMonthsGas}
+        MenuProps={{ disablePortal: true }}
       >
         <MenuItem value={12}>12</MenuItem>
         <MenuItem value={6}>6</MenuItem>
@@ -482,6 +487,7 @@ export default function FilterFormProduction() {
         id="select-last-months"
         value={valueLastMonthsWater}
         onChange={handleChangeLastMonthsWater}
+        MenuProps={{ disablePortal: true }}
       >
         <MenuItem value={12}>12</MenuItem>
         <MenuItem value={6}>6</MenuItem>

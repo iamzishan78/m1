@@ -961,7 +961,7 @@ export default function Navigation(props) {
       {openFilterCard ? (
         <div anchorEl={anchorEl} className={classes.tabPanelWrapper}>
           <TabPanel value={value} index={0} dir={theme.direction}>
-            <ClickAwayListener onClickAway={handleClickAway}>
+            <ClickAwayListener onClickAway={e => handleClickAway(e)}>
               <Card className={classes.card}>
                 <CardHeader
                   classes={{

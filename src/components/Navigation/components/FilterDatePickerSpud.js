@@ -179,6 +179,7 @@ export default function FilterDatePickerSpud(props) {
           value={selectedStartDate}
           onChange={date => handleStartDate(date)}
           format="MM-DD-YYYY"
+          PopoverProps={{ disablePortal: true }}
         />
 
         <KeyboardDatePicker
@@ -191,6 +192,8 @@ export default function FilterDatePickerSpud(props) {
           value={selectedEndDate}
           onChange={date => handleEndDate(date)}
           format="MM-DD-YYYY"
+          disableFuture={true}
+          PopoverProps={{ disablePortal: true }}
         />
       </div>
     </div>

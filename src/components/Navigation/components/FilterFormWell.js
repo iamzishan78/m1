@@ -67,6 +67,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const MenuProps = {
+  disablePortal: true,
   PaperProps: {
     style: {
       marginTop: "55px",
@@ -384,6 +385,7 @@ export default function FilterFormWell() {
             labelWidth={labelWidth}
             value={profileName}
             onChange={handleChangeProfile}
+            
             renderValue={selected => (
               <div
                 className={classes.chips}
