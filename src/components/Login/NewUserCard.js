@@ -49,11 +49,11 @@ const localStyles = makeStyles(theme => ({
   inputs: {
     backgroundColor: theme.palette.background.paper,
     width: "80%",
-    content: "00a0",
+    // content: "00a0",
     position: "relative",
     transition: 'border-bottom-color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
     borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
-    pointerEvents: 'none',
+    pointerEvents: 'all',
     margin: "2% 10%",
     "& label": {
         zIndex: 1,
@@ -67,6 +67,7 @@ const localStyles = makeStyles(theme => ({
   },
   cardForm: {
     display: "inline",
+    pointerEvents: "all"
   }
 }));
 
@@ -82,17 +83,45 @@ export default function  NewUserCard (props)  {
 
   useEffect(() => {}, [userEmail]);
 
-  const signUp = () => {
-    const userData = {
-      userName,
-      userCompany,
-      userTitle,
-      userPhoneNum,
-      userEmail,
-      //  userPassword
-    };
-    props.handleNewUserSignUp(userData);
-  };
+  // const signUp = () => {
+  //   const userData = {
+  //     userName,
+  //     userCompany,
+  //     userTitle,
+  //     userPhoneNum,
+  //     userEmail,
+  //     //  userPassword
+  //   };
+  //   props.handleNewUserSignUp(userData);
+  // };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const name = userName
+    const email = userEmail
+    const company = userCompany
+    // const phone = userPhoneNum
+    const title = userTitle
+    fetch("http://localhost:3002/send", {
+        method: "POST", 
+        data: {
+            name: name,   
+            email: email,
+            title: title,  
+            company: company,
+            // phone: phone,
+        }
+    }).then((response)=>{
+      console.log(response)
+        // if (response.data.msg === 'success'){
+        //     alert("Message Sent."); 
+            
+        // }else if(response.data.msg === 'fail'){
+        //     alert("Message failed to send.")
+        // }
+    }).catch(err => console.log(err))
+  }
+  
 
   useEffect(()=> {
       ValidatorForm.addValidationRule('shortName', (value) => {
@@ -129,8 +158,9 @@ export default function  NewUserCard (props)  {
         {/* <div className={localClass.cardInputs}> */}
         <Card className={localClass.cardForm}>
         <ValidatorForm
-          onSubmit={signUp}
+          onSubmit={handleSubmit}
           onError={errors => console.log(errors)}
+          method="POST"
         >
           <TextValidator
             className={localClass.inputs}
@@ -141,7 +171,6 @@ export default function  NewUserCard (props)  {
             errorMessages={['this field is required', 'Name is not valid']}
             onChange={e => setUserName(e.target.value)}
             value={userName}
-            InputLabelProps={{}}
           />
           <TextValidator
             className={localClass.inputs}
@@ -173,7 +202,7 @@ export default function  NewUserCard (props)  {
             onChange={e => setUserEmail(e.target.value)}
             value={userEmail}
           />
-          <TextValidator
+          {/* <TextValidator
             className={localClass.inputs}
             type="text"
             label="Phone Number"
@@ -182,7 +211,7 @@ export default function  NewUserCard (props)  {
             errorMessages={['this field is required']}
             onChange={e => setUserPhoneNum(e.target.value)}
             value={userPhoneNum}
-          />
+          /> */}
 
           {/* <TextField
             className={localClass.inputs}
@@ -200,9 +229,9 @@ export default function  NewUserCard (props)  {
             // onChange={e => setUserPassword(e.target.value)}
             value={userPassword} 
           /> */}
-          </ValidatorForm>
+          
           {/* <div className={classes.secondaryInputs}></div> */}
-          </Card>
+          
           <Button
             variant="contained"
             disableElevation
@@ -212,6 +241,8 @@ export default function  NewUserCard (props)  {
           >
             Submit
           </Button>
+          </ValidatorForm>
+          </Card>
         {/* </div> */}
         <div className={localClass.cardFooter}>
           <div>

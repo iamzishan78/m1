@@ -27,7 +27,7 @@ export default function FilterAbstract({ keys }) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [checkForStateProps, setCheckForStateProps] = useState(false);
-  const [abstractName, handleAbstractNameChange] = useState(
+  const [abstractName, setAbstractName] = useState(
     stateNav.abstractName ? stateNav.abstractName : []
   );
   const [abstractList, setAbstractList] = useState();
@@ -70,21 +70,20 @@ export default function FilterAbstract({ keys }) {
   }, [data, loading, queryAbstract, stateNav.surveyName]);
 
   useEffect(() => {
-    if (abstractName == null) {
-      setStateNav(stateNav => ({ ...stateNav, abstractName: null, filterGeography: null}));
-    }
     if( abstractName != null && abstractName.length > 0){
       setStateNav(stateNav => ({ ...stateNav, abstractName: abstractName}));
-    }
+    } 
   }, [abstractName, setStateNav]);
-
-  useEffect(() => {
-      if (abstractList && abstractList.length > 0) {
-         handleAbstractNameChange(abstractName)
-      } else{
-        handleAbstractNameChange(null)
-      }
-  }, [abstractList, abstractName])
+  
+  const handleAbstractNameChange = (event, e) => {
+    if (e == null) {
+      setAbstractName(null)
+      setStateNav(stateNav => ({ ...stateNav, asbtractName: null, surveyName: null, filterGeography: null}));
+    } else {
+      setAbstractName(e)
+      setStateNav(stateNav => ({ ...stateNav, asbtractName: e}));
+    }
+  }
 
   const onEnterKey = (event) =>{   
     if(event.keyCode === 13){
@@ -111,7 +110,7 @@ export default function FilterAbstract({ keys }) {
           includeInputInList
           value={abstractName}
           onChange={(event, newValue) => {
-            handleAbstractNameChange(newValue);
+            handleAbstractNameChange(event,newValue);
           }}
           onKeyDown={event  => onEnterKey(event)}
           renderInput={params => (

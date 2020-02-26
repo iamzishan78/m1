@@ -17,6 +17,7 @@ const useStyles = makeStyles(theme => ({
 export default function FilterFormGeo() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
+  
 
   useEffect(() => {
     let state;
@@ -36,7 +37,7 @@ export default function FilterFormGeo() {
     if (stateNav.abstractName !== null) {
       abstract = stateNav.abstractName;
     }
-    console.log(state, county, survey, abstract);
+
     if (state !== undefined) {
       filter = ["all", ["in", "state", state]];
     }

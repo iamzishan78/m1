@@ -28,7 +28,7 @@ export default function FilterSurvey({key}) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [checkForStateProps, setCheckForStateProps] = useState(false);
-  const [surveyName, handleSurveyNameChange] = useState(
+  const [surveyName, setSurveyName] = useState(
     stateNav.surveyName ? stateNav.surveyName : []
   );
   const [surveyList, setSurveyList] = useState();
@@ -48,7 +48,6 @@ export default function FilterSurvey({key}) {
     }
   },[setCheckForStateProps, stateNav.stateName])
 
-  
   useEffect(() => {
     if (stateNav.countyName == null) {
       setSurveyList([]);
@@ -78,21 +77,20 @@ export default function FilterSurvey({key}) {
   }, [data, loading, querySurveys, stateNav.countyName]);
   
   useEffect(()=> {
-    if (surveyName == null) {
-      setStateNav(stateNav => ({ ...stateNav, surveyName: null, filterGeography: null}));
-    }
     if( surveyName != null && surveyName.length > 0){
       setStateNav(stateNav => ({ ...stateNav, surveyName: surveyName}));
-    }
+    } 
   },[setStateNav, stateNav.surveyName, surveyName]) 
 
-  useEffect(() => {
-      if (surveyList && surveyList.length > 0) {
-         handleSurveyNameChange(surveyName)  
-      } else {
-        handleSurveyNameChange(null) 
-      }
-  }, [surveyList, surveyName])
+  const handleSurveyNameChange = (event, e) => {
+    if (e == null) {
+      setSurveyName(null)
+      setStateNav(stateNav => ({ ...stateNav, countyName: null, surveyName: null, abstractName: null , filterGeography: null}));
+    } else {
+      setSurveyName(e)
+      setStateNav(stateNav => ({ ...stateNav, surveyName: e}));
+    }
+  }
 
   const onEnterKey = (event) =>{   
     if(event.keyCode === 13){
@@ -116,7 +114,7 @@ export default function FilterSurvey({key}) {
               includeInputInList
               value={surveyName}
               onChange={(event, newValue) => {
-                handleSurveyNameChange(newValue);
+                handleSurveyNameChange( event,newValue);
               }}
               onKeyDown={event  => onEnterKey(event)}
               renderInput={params => (

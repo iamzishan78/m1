@@ -24,7 +24,7 @@ export default function FilterCountyName() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
-  const [countyName, handleCountyNameChange] = useState(
+  const [countyName, setCountyName] = useState(
     stateNav.countyName ? stateNav.countyName : []
   );
   const [countyList, setCountyList] = useState();
@@ -57,21 +57,20 @@ export default function FilterCountyName() {
   }, [data, loading, queryCounties, stateNav.stateName]);
 
   useEffect(()=> {
-    if (countyName == null ) {
-      setStateNav(stateNav => ({ ...stateNav, countyName: null, filterGeography: null})); 
-    }
     if(countyName !== null && countyName.length > 0){
       setStateNav(stateNav => ({ ...stateNav, countyName: countyName}));
     } 
   },[countyName, setStateNav, stateNav.countyName]) 
-
-  useEffect(() => {
-      if (countyList && countyList.length > 0) {
-         handleCountyNameChange(countyName)
-      } else{
-        handleCountyNameChange(null)
-      }
-  }, [countyList, countyName])
+  
+  const handleCountyNameChange = (event, e) => {
+    if (e == null) {
+      setCountyName(null)
+      setStateNav(stateNav => ({ ...stateNav, countyName: null, surveyName: null, abstractName: null , filterGeography: null}));
+    } else {
+      setCountyName(e)
+      setStateNav(stateNav => ({ ...stateNav, countyName: e}));
+    }
+  }
 
   const onEnterKey = (event) =>{   
     if(event.keyCode === 13){
@@ -94,7 +93,7 @@ export default function FilterCountyName() {
                   includeInputInList
                   value={countyName}
                   onChange={(event, newValue) => {
-                    handleCountyNameChange(newValue);
+                    handleCountyNameChange( event,newValue);
                   }}
                   onKeyDown={event  => onEnterKey(event)}
                   renderInput={params => (

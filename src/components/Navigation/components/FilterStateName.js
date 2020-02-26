@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import FormControl from "@material-ui/core/FormControl";
@@ -31,8 +31,10 @@ export default function FilterStateName() {
   useEffect(()=> {
     if(stateName !== null && stateName.length > 0 ){
       setStateNav(stateNav => ({ ...stateNav, stateName: stateName, displayStateName: displayName}));
-    }  else {
-      console.log('wha')
+      setStateName(stateName)
+      setDisplayName(displayName)
+    } else {
+      setStateNav(stateNav => ({ ...stateNav, stateName: null, displayStateName: null, countyName: null, surveyName: null, abstractName: null, filterGeography: null}));
     }
   },[displayName, setStateNav, stateName]) 
   
@@ -41,7 +43,7 @@ export default function FilterStateName() {
       // event.preventDefault();
       setStateName(null)
       setDisplayName(null)
-      setStateNav(stateNav => ({ ...stateNav, stateName: null, displayStateName: null, filterGeography: null}));
+      setStateNav(stateNav => ({ ...stateNav, stateName: null,  displayStateName: null, filterGeography: null}));
     } else {
       // event.preventDefault();
       setStateName(e[0])
