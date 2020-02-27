@@ -107,7 +107,7 @@ export default function Track() {
             >
 
         <Tab
-                value={1}
+                value={0}
                 classes={{ root: classes.tab }}
                 icon={
                   <Badge
@@ -121,7 +121,7 @@ export default function Track() {
               />
 
               <Tab
-                value={0}
+                value={1}
                 className={classes.tab}
                 icon={
                   <Badge
