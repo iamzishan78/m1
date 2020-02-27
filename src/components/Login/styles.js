@@ -13,7 +13,10 @@ export const useStyles = makeStyles(theme => ({
   
   content: {
     height: "95vh",
-    width: "100vw"
+    width: "100vw",
+    backgroundSize: "cover",
+    justifyContent: "center",
+    display: "flex"
   },
   cardTitle: {
     width: "40vw",
