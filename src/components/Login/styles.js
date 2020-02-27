@@ -12,10 +12,12 @@ export const useStyles = makeStyles(theme => ({
   },
   
   content: {
-    height: "95vh",
+    height: "100vh",
     width: "100vw",
     backgroundSize: "cover",
     justifyContent: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
     display: "flex"
   },
   cardTitle: {
@@ -95,6 +97,13 @@ export const useStyles = makeStyles(theme => ({
     color: theme.palette.secondary.main,
     cursor: "pointer"
   },
+  myRoot : {
+    width: "100vw",
+    height: "95vh",
+    display: "flex",
+    backgroundSize: "cover",
+    justifyContent: "center"
+  }
   
   // signinbutton:{
   //   backgroundColor: "rgba(23, 170, 221, 1)", 
