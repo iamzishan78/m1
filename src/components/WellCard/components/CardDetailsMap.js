@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
     height: "100%",
     overflow: "hidden !important",
     "& canvas": {
-      width: "100% !important",
+      // width: "100% !important",
       height: "100% !important"
     },
     "& .mapboxgl-canvas-container": {
