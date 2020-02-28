@@ -73,7 +73,11 @@ const availableMapStyles = [
   {
     id: "mapbox://styles/m1neral/ck722xcuj0tts1imj9gw4lymn",
     label: "Monochrome"
-  }
+  },
+  {
+    id: "mapbox://styles/m1neral/ck76duew72wk71ip92kmxqilm",
+    label: "Testinator"
+  },
 ];
 
 export default function BaseMapStyles(props) {
