@@ -34,6 +34,9 @@ import Badge from "@material-ui/core/Badge";
 import OwnersProvider from '../Owners/OwnersProvider';
 import Tags from '../Shared/Tagger';
 import Comments from '../Shared/Comments';
+import ChatIcon from '@material-ui/icons/Chat';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -67,11 +70,11 @@ const headCells = [
     { id: 'operator', numeric: false, disablePadding: false, label: 'Operator' },
     { id: 'wellType', numeric: false, disablePadding: false, label: 'Type' },
     { id: 'wellBoreProfile', numeric: false, disablePadding: false, label: 'Profile' },
-    { id: 'ownerCount', numeric: true, disablePadding: false, label: 'Ownership' },
-    { id: 'comments', numeric: false, disablePadding: false, label: 'Comments' },
-    { id: 'tags', numeric: false, disablePadding: false, label: 'Tags' },
-    { id: 'isTracked', numeric: false, disablePadding: false, label: 'Track' },
-];
+    { id: 'ownerCount', numeric: true, disablePadding: false, label: '' },
+    { id: 'comments', numeric: false, disablePadding: false, label: '' },
+    { id: 'tags', numeric: false, disablePadding: false, label: '' },
+    { id: 'isTracked', numeric: false, disablePadding: false, label: '' },
+  ];
 
 function EnhancedTableHead(props) {
   const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
@@ -235,23 +238,24 @@ const useStyles = makeStyles(theme => ({
     '&:hover': {
       background: theme.palette.secondary.main
     },
-    transform: 'rotate(180deg)',
+    //transform: 'rotate(180deg)',
   },
   expandOpenTag: {
     backgroundColor:theme.palette.secondary.main,
     '&:hover': {
       background: theme.palette.secondary.main
     },
-    transform: 'rotate(180deg)',
+    //transform: 'rotate(180deg)',
   },
   expandOpenComment: {
     backgroundColor:theme.palette.secondary.main,
     '&:hover': {
       background: theme.palette.secondary.main
     },
-    transform: 'rotate(180deg)',
+    //transform: 'rotate(180deg)',
   },
 }));
+
 
 export default function WellTable(props) {
   const classes = useStyles();
@@ -480,9 +484,12 @@ export default function WellTable(props) {
       </List>
       </div>
     ):(
+      
     <div className={classes.rootTable}>
       <Paper className={classes.paper}>
+       
        {/*  <EnhancedTableToolbar numSelected={selected.length} /> */}
+        
         <TableContainer>
           <Table
             className={classes.table}
@@ -521,14 +528,19 @@ export default function WellTable(props) {
                           inputProps={{ 'aria-labelledby': labelId }}
                         /> */}
                       </TableCell>
+
                       <TableCell component="th" id={labelId} scope="row" padding="none">
                         {row.api}
                       </TableCell>
+
                       <TableCell align="left">{row.wellName}</TableCell>
+
                       <TableCell align="left">{row.operator}</TableCell>
                       <TableCell align="left">{row.wellType}</TableCell>
                       <TableCell align="left">{row.wellBoreProfile}</TableCell>
-                      <TableCell align="left">
+                      
+                      
+                      <TableCell align="right">
                       <Badge badgeContent={row.ownerCount} color="secondary">
                       <IconButton size="medium" color="primary"
                         className={clsx(classes.expand, {
@@ -538,11 +550,14 @@ export default function WellTable(props) {
                         aria-expanded={expanded && collapsedRow === index}
                         aria-label="show owners"
                       >
-                        <ExpandMoreIcon />
+                        <PeopleAltIcon />
                       </IconButton>
                       </Badge>
                       </TableCell>
-                      <TableCell align="left">
+
+
+                      <TableCell align="right">
+                      <Badge badgeContent={0} color="secondary">
                       <IconButton size="medium" color="primary"
                         className={clsx(classes.expand, {
                           [classes.expandOpenComment]: expandedComment &&  collapsedRow === index,
@@ -551,11 +566,14 @@ export default function WellTable(props) {
                         aria-expanded={expandedComment && collapsedRow === index}
                         aria-label="show comments"
                       >
-                        <ExpandMoreIcon />
+                        <ChatIcon />
                       </IconButton>
-                     
+                      </Badge>
                       </TableCell>
-                      <TableCell align="left">
+
+
+                      <TableCell align="right">
+                      <Badge badgeContent={0} color="secondary">
                       <IconButton size="medium" color="primary"
                         className={clsx(classes.expand, {
                           [classes.expandOpenTag]: expandedTag &&  collapsedRow === index,
@@ -564,11 +582,13 @@ export default function WellTable(props) {
                         aria-expanded={expandedTag && collapsedRow === index}
                         aria-label="show tags"
                       >
-                        <ExpandMoreIcon />
+                        <LocalOfferIcon />
                       </IconButton>
-                     
+                      </Badge>
                       </TableCell>
-                      <TableCell align="left">
+
+
+                      <TableCell align="right">
                         <TrackToggleButton 
                           source={stateApp.user} 
                           sourceLabel="user" 
@@ -579,6 +599,7 @@ export default function WellTable(props) {
                           targetSourceId={row.id}
                           targetName={row.wellName}  />
                       </TableCell>
+
                     </TableRow>,
                     <TableRow key={index}>
                     <TableCell className={classes.expandedRow} colSpan={9}>
