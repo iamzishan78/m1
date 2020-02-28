@@ -60,8 +60,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const availableMapStyles = [
-  { id: "mapbox://styles/m1neral/ck6r9utau10at1ioagkpr40xc", 
-    label: "Basic" },
+  { 
+    id: "mapbox://styles/m1neral/ck6r9utau10at1ioagkpr40xc", 
+    label: "Basic" 
+  },
   {
     id: "mapbox://styles/m1neral/ck6pe50n80bfs1imr05f0hr82",
     label: "Satellite"
@@ -79,6 +81,7 @@ const availableMapStyles = [
     label: "Testinator"
   },
 ];
+
 
 export default function BaseMapStyles(props) {
   const [stateMapControls, setStateMapControls] = useContext(

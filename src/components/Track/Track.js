@@ -137,10 +137,10 @@ export default function Track() {
 
              
             </Tabs>
-            <TabPanel value={value} index={0}>
+            <TabPanel value={value} index={1}>
             <WellsProvider showList={false} parent="track"/>
             </TabPanel>
-            <TabPanel value={value} index={1}>
+            <TabPanel value={value} index={0}>
             <OwnersProvider  parent="track"/>
             </TabPanel>
         
