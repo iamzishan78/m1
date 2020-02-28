@@ -60,10 +60,19 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const availableMapStyles = [
-  { id: "mapbox://styles/m1neral/ck6r9utau10at1ioagkpr40xc", label: "Basic" },
+  { id: "mapbox://styles/m1neral/ck6r9utau10at1ioagkpr40xc", 
+    label: "Basic" },
   {
     id: "mapbox://styles/m1neral/ck6pe50n80bfs1imr05f0hr82",
     label: "Satellite"
+  },
+  {
+    id: "mapbox://styles/m1neral/ck722ye6x0ysw1ink106f1deb",
+    label: "Light"
+  },
+  {
+    id: "mapbox://styles/m1neral/ck722xcuj0tts1imj9gw4lymn",
+    label: "Monochrome"
   }
 ];
 
