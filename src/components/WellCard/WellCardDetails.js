@@ -311,7 +311,7 @@ export default function WellCardDetails(props) {
 
           <Grid item sm={12}>
             <Taps
-              tabLabels={["Well", "Owners", "Documents"]}
+              tabLabels={["Well", "Owners", "Property History", "Title","Documents"]}
               tabPanels={[
                 wellInfo(),
                 <OwnersProvider
