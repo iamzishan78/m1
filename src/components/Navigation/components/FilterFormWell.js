@@ -225,7 +225,7 @@ export default function FilterFormWell() {
     });
     let filter;
     if (profileIds.length > 0) {
-      filter = ["match", ["get", "wellBoreProfileId"], profileIds, true, false];
+      filter = ["all", ["match", ["get", "wellBoreProfileId"], profileIds, true, false]];
     } else {
       filter = null;
     }
@@ -248,7 +248,7 @@ export default function FilterFormWell() {
 
     let filter;
     if (typeIds.length > 0) {
-      filter = ["match", ["get", "wellTypeId"], typeIds, true, false];
+      filter = ["all",["match", ["get", "wellTypeId"], typeIds, true, false]];
     } else {
       filter = null;
     }
@@ -268,7 +268,7 @@ export default function FilterFormWell() {
     });
     let filter;
     if (statusIds.length > 0) {
-      filter = ["match", ["get", "wellStatusId"], statusIds, true, false];
+      filter = ["all",["match", ["get", "wellStatusId"], statusIds, true, false]];
     } else {
       filter = null;
     }
