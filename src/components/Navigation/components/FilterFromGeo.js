@@ -1,4 +1,4 @@
-import React, {useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../NavigationContext";
 import FilterStateName from "./FilterStateName";
@@ -17,7 +17,6 @@ const useStyles = makeStyles(theme => ({
 export default function FilterFormGeo() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  
 
   useEffect(() => {
     let state;
@@ -39,26 +38,30 @@ export default function FilterFormGeo() {
     }
 
     if (state !== undefined) {
-      filter = ["all", ["in", "state", state]];
+      filter = ["all", ["match", ["get", "state"], state, true, false]];
     }
     if (county !== undefined) {
-      filter = ["all", ["in", "state", state], ["in", "county", county]];
+      filter = [
+        "all",
+        ["match", ["get", "state"], state, true, false],
+        ["match", ["get", "county"], county, true, false]
+      ];
     }
     if (survey !== undefined) {
       filter = [
         "all",
-        ["in", "state", state],
-        ["in", "county", county],
-        ["in", "survey", survey]
+        ["match", ["get", "state"], state, true, false],
+        ["match", ["get", "county"], county, true, false],
+        ["match", ["get", "survey"], survey, true, false]
       ];
     }
     if (abstract !== undefined) {
       filter = [
         "all",
-        ["in", "state", state],
-        ["in", "county", county],
-        ["in", "survey", survey],
-        ["in", "abstract", abstract]
+        ["match", ["get", "state"], state, true, false],
+        ["match", ["get", "county"], county, true, false],
+        ["match", ["get", "survey"], survey, true, false],
+        ["match", ["get", "abstract"], abstract, true, false]
       ];
     }
 
