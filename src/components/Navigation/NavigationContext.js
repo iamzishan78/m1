@@ -14,6 +14,7 @@ const NavigationContextProvider = props => {
     filterWellStatus:null,
     filterOperator:null,
     filterInterest:null,
+    filterBasin: null,
     filterOwnerType:null,
     filterCumulativeOil:null,
     filterCumulativeGas:null,
@@ -50,6 +51,11 @@ const NavigationContextProvider = props => {
     filterInterestTypeOverrideRoyalty:null,
     filterInterestTypeWorkingInterest:null,
     filterInterestTypeProductionPayment:null,
+
+    // filterBasinTypePermian: null,
+    // filterBasinTypeFortWorth: null,
+    // filterBasinTypeWesternGulf: null,
+
     filterGeography: null,
     filterGeographyState: null,
     filterGeographyCounty: null,
@@ -59,7 +65,11 @@ const NavigationContextProvider = props => {
     statusName:[],
     typeName:[],
     profileName:[],
+
     interestName:[],
+
+    basinName:[],
+
     ownerTypeName:[],
     dateTypeName: [],
     prodTypeName: [],
@@ -91,6 +101,7 @@ const NavigationContextProvider = props => {
     countiesInFilter: null,
     surveysInFilter: null,
     asbtractsInFilter: null,
+
   })
   return (
     <NavigationContext.Provider value={[stateNav, setStateNav]}>
