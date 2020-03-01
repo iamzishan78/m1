@@ -10,6 +10,8 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import { useTheme, makeStyles } from '@material-ui/core/styles';
 import { VariableSizeList } from 'react-window';
 import { Typography } from '@material-ui/core';
+import Chip from '@material-ui/core/Chip';
+
 
 const useStyles = makeStyles({
     listbox: {
@@ -141,7 +143,8 @@ export default function OperatorAutoComplete() {
   
    
   return  stateNav.operators ? (
-    <Autocomplete 
+
+     <Autocomplete 
     value={stateNav.operatorName}
     onChange={(event, newValue) => {
         handleOperatorChange(newValue);
@@ -151,9 +154,7 @@ export default function OperatorAutoComplete() {
     disableListWrap
     classes={classes}
     ListboxComponent={ListboxComponent}
-   // renderGroup={renderGroup}
     options={stateNav.operators}
-    //groupBy={option => option[0].toUpperCase()}
     getOptionLabel={option => option.Name}
     renderInput={params => (
         
@@ -163,4 +164,42 @@ export default function OperatorAutoComplete() {
   />):
   (<CircularProgress color="secondary" />)
   
+
+/*   <Autocomplete 
+  //value={stateNav.operatorName}
+  onChange={(event, newValue) => {
+       handleOperatorChange(newValue);
+     }}
+  multiple
+  id="virtualize-operators"
+  options={stateNav.operators}
+  getOptionLabel={option => option.Name}
+  //defaultValue={[top100Films[13]]}
+  Operators
+  //style={{ maxWidth: 300, minWidth: 120 }}
+  //disableListWrap
+  //classes={classes}
+  //ListboxComponent={ListboxComponent}
+  // renderGroup={renderGroup}
+  //groupBy={option => option[0].toUpperCase()}
+  // renderInput={params => (
+      
+  //   <TextField {...params} variant="outlined" label="Operator" fullWidth />
+  // )}
+  // renderOption={option => <Typography noWrap>{option.Name}</Typography>}
+  renderInput={params => (
+    <TextField
+      {...params}
+      variant="outlined"
+      label="Operator"
+      placeholder="Oxy"
+      fullWidth
+    />
+  )} */
+
+// />):
+// (<CircularProgress color="secondary" />)
+
+
+
 }

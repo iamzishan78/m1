@@ -14,6 +14,10 @@ import Checkbox from "@material-ui/core/Checkbox";
 import ListItemText from "@material-ui/core/ListItemText";
 import Chip from "@material-ui/core/Chip";
 
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
+
+
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
@@ -237,6 +241,19 @@ export default function FilterFormGeo() {
 
 
 
+  const handleBasinChange = value => {
+    let filter;
+    if(value) {
+     filter = ['match', ['get', 'basin'], value, true, false]
+     setStateNav(stateNav => ({ ...stateNav, basinName:value}))
+     setBasinName(value)
+    }
+    else {
+     filter = null
+     setStateNav(stateNav => ({ ...stateNav, basinName: null}))
+    }
+     setStateNav(stateNav => ({ ...stateNav, filterBasin: filter}))
+   };
 
 
 
@@ -248,6 +265,8 @@ export default function FilterFormGeo() {
         <FilterCountyName />
         <FilterSurvey />
         <FilterAbstract />
+
+
 
         <FormControl variant="outlined" className={classes.formControl}>
           <InputLabel ref={inputLabel} htmlFor="select-multiple-chip-basin">
@@ -295,7 +314,45 @@ export default function FilterFormGeo() {
 
 
 
+
+       <FormControl variant="outlined" className={classes.formControl}>
+{/*           <InputLabel ref={inputLabel} htmlFor="select-multiple-chip-basin">
+            Basin
+          </InputLabel>  */}
        
+         <Autocomplete 
+          //value={stateNav.operatorName}
+          onChange={(event, newValue) => {
+               handleBasinChange(newValue);
+             }}
+          multiple
+          //id="virtualize-operators"
+          options={basinList}
+          //getOptionLabel={option => option.Name}
+          //defaultValue={[top100Films[13]]}
+          //Operators
+          //style={{ maxWidth: 300, minWidth: 120 }}
+          //disableListWrap
+          //classes={classes}
+          //ListboxComponent={ListboxComponent}
+          // renderGroup={renderGroup}
+          // renderInput={params => (
+              
+          //   <TextField {...params} variant="outlined" label="Operator" fullWidth />
+          // )}
+          // renderOption={option => <Typography noWrap>{option.Name}</Typography>}
+          renderInput={params => (
+            <TextField
+              {...params}
+              variant="outlined"
+              label="Jacob's Basin Filter"
+              placeholder="PERMIAN"
+              fullWidth
+            />
+          )}  />
+      </FormControl> 
+
+
       </div>
     </div>
 

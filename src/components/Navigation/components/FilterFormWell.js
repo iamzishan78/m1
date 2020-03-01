@@ -23,8 +23,8 @@ const useStyles = makeStyles(theme => ({
     flexWrap: "wrap",
     flexDirection: "column",
     justifyContent: "space-around",
-    maxWidth: 220,
-    minWidth: 200
+    //maxWidth: 220,
+    minWidth: 500
   },
   row: {
     display: "flex",
@@ -461,12 +461,15 @@ export default function FilterFormWell() {
           </Select>
         </FormControl>
       </div>
-      <div className={classes.datesRow}>
+
+      
+     <div className={classes.datesRow}>
         <FilterDatePickerPermit labelDates={"Permit"} />
         <FilterDatePickerSpud labelDates={"Spud"} />
         <FilterDatePickerCompletetion labelDates={"Completetion"} />
         <FilterDatePickerFirstProd labelDates={"First Production"} />
-      </div>
+      </div> 
+      
     </div>
   );
 }
