@@ -479,7 +479,6 @@ const operatorList = [	"1849 ENERGY PARTNERS OPRTNG LLC",
                     "OLSEN ENERGY",
                     "ORLAND OIL AND GAS",
                     "ORYAN OIL AND GAS",
-
                     "OXY",
                     "PAN AMERICAN PETROLEUM",
                     "PANTERA ENERGY COMPANY",
@@ -838,8 +837,11 @@ export default function FilterFormWell() {
 
 
   const handleOperatorChange = value => {
+    console.log(value)
+    console.log(stateNav.operatorName)
+    
     let filter;
-    if(value) {
+    if(value && value.length) {
      filter = ['match', ['get', 'operator'], value, true, false]
      setStateNav(stateNav => ({ ...stateNav, operatorName:value}))
      setOperatorName(value)
@@ -848,8 +850,9 @@ export default function FilterFormWell() {
      filter = null
      setStateNav(stateNav => ({ ...stateNav, operatorName: null}))
     }
-     setStateNav(stateNav => ({ ...stateNav, filterOperator: filter}))
+    setStateNav(stateNav => ({ ...stateNav, filterOperator: filter}))
    };
+
 
 
 
@@ -861,6 +864,7 @@ export default function FilterFormWell() {
 
       <FormControl variant="outlined" className={classes.formControl}>
          <Autocomplete 
+          //value={'oxy'}
           onChange={(event, newValue) => {
                handleOperatorChange(newValue);
              }}
@@ -874,13 +878,28 @@ export default function FilterFormWell() {
               placeholder="OXY"
               fullWidth
             />
-          )}  />
+          )}  
+          //renderOption={option => <Typography noWrap>{option.Name}</Typography>}
+          //getOptionLabel={option => option.Name}
+          //ListboxComponent={ListboxComponent}
+          disableListWrap
+          //classes={classes}
+          id="virtualize-operators"
+          style={{ maxWidth: 300, minWidth: 120 }}
+          //value={stateNav.operatorName}
+      
+            
+          
+          
+          />
       </FormControl> 
 
 
         <FormControl className={classes.formControl}>
           <OperatorAutoComplete />
         </FormControl>
+
+
         <FormControl variant="outlined" className={classes.formControl}>
           <InputLabel ref={inputLabel} htmlFor="select-multiple-chip1">
             Well Type
