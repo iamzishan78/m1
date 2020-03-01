@@ -14,6 +14,10 @@ import FilterDatePickerPermit from "./FilterDatePickerPermit";
 import FilterDatePickerCompletetion from "./FilterDatePickerCompletetion";
 import FilterDatePickerSpud from "./FilterDatePickerSpud";
 import FilterDatePickerFirstProd from "./FilterDatePickerFirstProd";
+
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
+
 const ITEM_HEIGHT = 60;
 const ITEM_PADDING_TOP = 10;
 
@@ -180,6 +184,109 @@ const statusListObjects = [
   },
 ];
 
+
+const operatorList = [	"OXY",
+                        "XTO ENERGY",
+                        "APACHE",
+                        "PIONEER NATURAL RESOURCES",
+                        "UNKNOWN",
+                        "CHEVRON",
+                        "BASA RESOURCES",
+                        "EOG RESOURCES",
+                        "SCOUT ENERGY MANAGEMENT",
+                        "EXXON MOBIL",
+                        "HILCORP ENERGY COMPANY",
+                        "DEVON ENERGY PRODUCTION COMPANY",
+                        "ENDEAVOR ENERGY RESOURCES",
+                        "CHESAPEAKE OPERATING",
+                        "UPP OPERATING LLC",
+                        "SHERIDAN PRODUCTION COMPANY",
+                        "SABINAL ENERGY OPERATING",
+                        "KINDER MORGAN PRODUCTION",
+                        "BURLINGTON RESOURCES OIL AND GAS COMPANY",
+                        "CONOCOPHILLIPS CANADA RESOURCES",
+                        "COG OPERATING",
+                        "DIAMONDBACK ENERGY",
+                        "FOUR CORNERS PETROLEUM II",
+                        "ANADARKO PETROLEUM",
+                        "BREITBURN OPERATING",
+                        "LEGACY RESERVES OPERATING",
+                        "MERIT ENERGY COMPANY",
+                        "BLACKBEARD OPERATING",
+                        "MARATHON OIL COMPANY",
+                        "ENCANA OIL AND GAS",
+                        "DENBURY ONSHORE",
+                        "BP AMERICA PRODUCTION COMPANY",
+                        "TEXACO",
+                        "CITATION OIL AND GAS",
+                        "LEWIS PETRO PROPERTIES",
+                        "SUN EXPLORATIONPRODUCTION COMPANY",
+                        "EPIC PERMIAN OPERATING",
+                        "LAYLINE ENERGY I",
+                        "ROVER PETROLEUM OPERATING",
+                        "SHELL OIL COMPANY",
+                        "AMOCO PRODUCTION COMPANY",
+                        "TEXAS PETROLEUM INVESTMENT COMPANY",
+                        "PARSLEY ENERGY OPERATIONS",
+                        "SM ENERGY COMPANY",
+                        "WALSH AND WATTS",
+                        "TEP BARNETT",
+                        "SANCHEZ ENERGY",
+                        "BRIDWELL OIL COMPANY",
+                        "AGHORN OPERATING",
+                        "WHITE KNIGHT PRODUCTION",
+                        "LAREDO PETROLEUM",
+                        "EP ENERGY E AND P COMPANY",
+                        "FASKEN OIL AND RANCH",
+                        "THOMPSON J CLEO",
+                        "ENERVEST OPERATING",
+                        "HUNT OIL COMPANY",
+                        "PANTERA ENERGY COMPANY",
+                        "TEXLAND PETROLEUM",
+                        "TXO PRODUCTION",
+                        "CROWNQUEST OPERATING",
+                        "UNIT PETROLEUM COMPANY",
+                        "EAGLERIDGE OPERATING",
+                        "URBAN OIL AND GAS GROUP",
+                        "UNITEX OIL AND GAS",
+                        "FOURPOINT ENERGY",
+                        "CCI EAST TEXAS UPSTREAM",
+                        "DISCOVERY NATURAL RESOURCES",
+                        "CONOCO",
+                        "SABINE OIL AND GAS",
+                        "CIMAREX ENERGY COMPANY",
+                        "MAGNOLIA OIL AND GAS OPERATING",
+                        "MITCHELL ENERGY",
+                        "GREAT PLAINS RESOURCES",
+                        "AVALON TX OPERATING LLC",
+                        "R2Q OPERATING",
+                        "ROCKCLIFF ENERGY OPERATING",
+                        "KILLAM OIL",
+                        "MOBIL PRODUCING TX AND NM",
+                        "VANGUARD OPERATING",
+                        "PHILLIPS PETROLEUM COMPANY",
+                        "MOBIL OIL",
+                        "RING ENERGY",
+                        "UNIDENTIFIED",
+                        "MEWBOURNE OIL COMPANY",
+                        "APV MCCAMEY",
+                        "SHERIDAN PRODUCTION CO III, LLC",
+                        "UNION OIL COMPANY OF CALIFORNIA",
+                        "CROSS TIMBERS ENERGY",
+                        "TEXACO E AND P",
+                        "STANOLIND PRODUCTION",
+                        "WAGNER OIL COMPANY",
+                        "CHOLLA PETROLEUM",
+                        "ROCKER A OPERATING COMPANY",
+                        "TEXAS OIL AND GAS",
+                        "LCS PRODUCTION COMPANY",
+                        "GULF OIL",
+                        "MURPHY EXPLORATION AND PRODUCTION COMPANY",
+                        "STEPHENS AND JOHNSON OPERATING COMPANY",
+                        ];
+
+
+
 function getStyles(name, personName, theme) {
   return {
     fontWeight:
@@ -201,6 +308,10 @@ export default function FilterFormWell() {
   );
   const [statusName, setStatusName] = React.useState(
     stateNav.statusName ? stateNav.statusName : []
+  );
+
+  const [operatorName, setOperatorName] = React.useState(
+    stateNav.operatorName ? stateNav.operatorName : []
   );
 
   const [types, setTypes] = React.useState(typesList);
@@ -325,9 +436,48 @@ export default function FilterFormWell() {
     setStateNav(stateNav => ({ ...stateNav, statusName: removeChips }));
   };
 
+
+  const handleOperatorChange = value => {
+    let filter;
+    if(value) {
+     filter = ['match', ['get', 'operator'], value, true, false]
+     setStateNav(stateNav => ({ ...stateNav, operatorName:value}))
+     setOperatorName(value)
+    }
+    else {
+     filter = null
+     setStateNav(stateNav => ({ ...stateNav, operatorName: null}))
+    }
+     setStateNav(stateNav => ({ ...stateNav, filterOperator: filter}))
+   };
+
+
+
+
+
   return (
     <div className={classes.row}>
       <div className={classes.root}>
+
+      <FormControl variant="outlined" className={classes.formControl}>
+         <Autocomplete 
+          onChange={(event, newValue) => {
+               handleOperatorChange(newValue);
+             }}
+          multiple
+          options={operatorList}
+          renderInput={params => (
+            <TextField
+              {...params}
+              variant="outlined"
+              label="Jacob's Operator Filter"
+              placeholder="OXY"
+              fullWidth
+            />
+          )}  />
+      </FormControl> 
+
+
         <FormControl className={classes.formControl}>
           <OperatorAutoComplete />
         </FormControl>
@@ -470,6 +620,7 @@ export default function FilterFormWell() {
         <FilterDatePickerFirstProd labelDates={"First Production"} />
       </div> 
       
+
     </div>
   );
 }

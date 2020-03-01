@@ -241,6 +241,10 @@ export default function FilterFormGeo() {
 
 
 
+
+
+
+
   const handleBasinChange = value => {
     let filter;
     if(value) {
@@ -316,31 +320,12 @@ export default function FilterFormGeo() {
 
 
        <FormControl variant="outlined" className={classes.formControl}>
-{/*           <InputLabel ref={inputLabel} htmlFor="select-multiple-chip-basin">
-            Basin
-          </InputLabel>  */}
-       
          <Autocomplete 
-          //value={stateNav.operatorName}
           onChange={(event, newValue) => {
                handleBasinChange(newValue);
              }}
           multiple
-          //id="virtualize-operators"
           options={basinList}
-          //getOptionLabel={option => option.Name}
-          //defaultValue={[top100Films[13]]}
-          //Operators
-          //style={{ maxWidth: 300, minWidth: 120 }}
-          //disableListWrap
-          //classes={classes}
-          //ListboxComponent={ListboxComponent}
-          // renderGroup={renderGroup}
-          // renderInput={params => (
-              
-          //   <TextField {...params} variant="outlined" label="Operator" fullWidth />
-          // )}
-          // renderOption={option => <Typography noWrap>{option.Name}</Typography>}
           renderInput={params => (
             <TextField
               {...params}

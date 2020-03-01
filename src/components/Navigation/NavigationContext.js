@@ -52,9 +52,6 @@ const NavigationContextProvider = props => {
     filterInterestTypeWorkingInterest:null,
     filterInterestTypeProductionPayment:null,
 
-    // filterBasinTypePermian: null,
-    // filterBasinTypeFortWorth: null,
-    // filterBasinTypeWesternGulf: null,
 
     filterGeography: null,
     filterGeographyState: null,
