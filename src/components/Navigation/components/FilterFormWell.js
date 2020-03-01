@@ -14,9 +14,11 @@ import FilterDatePickerPermit from "./FilterDatePickerPermit";
 import FilterDatePickerCompletetion from "./FilterDatePickerCompletetion";
 import FilterDatePickerSpud from "./FilterDatePickerSpud";
 import FilterDatePickerFirstProd from "./FilterDatePickerFirstProd";
+import OperatorFilterJ from "./OperatorFilterJ";
 
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
+
 
 const ITEM_HEIGHT = 60;
 const ITEM_PADDING_TOP = 10;
@@ -716,7 +718,6 @@ export default function FilterFormWell() {
   const [types, setTypes] = React.useState(typesList);
   const [profiles, setProfiles] = React.useState(profileList);
   const [statuses, setStatuses] = React.useState(statusList);
-  // const [typeNameFocusForm, setTypeNameFocusForm] = useState(null);
   const inputLabel = useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);
  
@@ -837,9 +838,6 @@ export default function FilterFormWell() {
 
 
   const handleOperatorChange = value => {
-    console.log(value)
-    console.log(stateNav.operatorName)
-    
     let filter;
     if(value && value.length) {
      filter = ['match', ['get', 'operator'], value, true, false]
@@ -862,38 +860,9 @@ export default function FilterFormWell() {
     <div className={classes.row}>
       <div className={classes.root}>
 
-      <FormControl variant="outlined" className={classes.formControl}>
-         <Autocomplete 
-          //value={'oxy'}
-          onChange={(event, newValue) => {
-               handleOperatorChange(newValue);
-             }}
-          multiple
-          options={operatorList}
-          renderInput={params => (
-            <TextField
-              {...params}
-              variant="outlined"
-              label="Jacob's Operator Filter"
-              placeholder="OXY"
-              fullWidth
-            />
-          )}  
-          //renderOption={option => <Typography noWrap>{option.Name}</Typography>}
-          //getOptionLabel={option => option.Name}
-          //ListboxComponent={ListboxComponent}
-          disableListWrap
-          //classes={classes}
-          id="virtualize-operators"
-          style={{ maxWidth: 300, minWidth: 120 }}
-          //value={stateNav.operatorName}
-      
-            
-          
-          
-          />
-      </FormControl> 
-
+        <FormControl className={classes.formControl}>
+          <OperatorFilterJ />
+        </FormControl>
 
         <FormControl className={classes.formControl}>
           <OperatorAutoComplete />

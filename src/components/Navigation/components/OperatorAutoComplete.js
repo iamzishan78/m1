@@ -141,7 +141,11 @@ export default function OperatorAutoComplete() {
     children: PropTypes.node,
   };
   
-   
+  // console.log('+++++++++++++++')
+  // console.log(stateNav.operatorName)
+  // console.log('--------------------')
+ 
+
   return  stateNav.operators ? (
 
      <Autocomplete 
@@ -149,6 +153,7 @@ export default function OperatorAutoComplete() {
     onChange={(event, newValue) => {
         handleOperatorChange(newValue);
       }}
+    //multiple
     id="virtualize-operators"
     style={{ maxWidth: 300, minWidth: 120 }}
     disableListWrap
@@ -164,41 +169,6 @@ export default function OperatorAutoComplete() {
   />):
   (<CircularProgress color="secondary" />)
   
-
-/*   <Autocomplete 
-  //value={stateNav.operatorName}
-  onChange={(event, newValue) => {
-       handleOperatorChange(newValue);
-     }}
-  multiple
-  id="virtualize-operators"
-  options={stateNav.operators}
-  getOptionLabel={option => option.Name}
-  //defaultValue={[top100Films[13]]}
-  Operators
-  //style={{ maxWidth: 300, minWidth: 120 }}
-  //disableListWrap
-  //classes={classes}
-  //ListboxComponent={ListboxComponent}
-  // renderGroup={renderGroup}
-  //groupBy={option => option[0].toUpperCase()}
-  // renderInput={params => (
-      
-  //   <TextField {...params} variant="outlined" label="Operator" fullWidth />
-  // )}
-  // renderOption={option => <Typography noWrap>{option.Name}</Typography>}
-  renderInput={params => (
-    <TextField
-      {...params}
-      variant="outlined"
-      label="Operator"
-      placeholder="Oxy"
-      fullWidth
-    />
-  )} */
-
-// />):
-// (<CircularProgress color="secondary" />)
 
 
 
