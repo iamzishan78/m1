@@ -624,6 +624,12 @@ export default function Map() {
 
       let zoomControl = new mapboxgl.NavigationControl();
       newMap.addControl(zoomControl, "bottom-right");
+      
+      newMap.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
+
+
+
+
 
       let Draw = new MapboxDraw({
         displayControlsDefault: false,
