@@ -627,7 +627,15 @@ export default function Map() {
       
       newMap.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
 
-
+      // Add geolocate control to the map.
+      newMap.addControl(
+        new mapboxgl.GeolocateControl({
+        positionOptions: {
+        enableHighAccuracy: true
+        },
+        trackUserLocation: true
+        })
+        , "bottom-right");
 
 
 
