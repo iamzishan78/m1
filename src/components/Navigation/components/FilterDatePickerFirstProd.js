@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
+import Grid from '@material-ui/core/Grid';
 
 // DOCUMENTATION FOR THIS COMPONENT IS ON FILTERDATEPICKERPERMIT
 const useStyles = makeStyles(theme => ({
@@ -169,19 +170,32 @@ export default function FilterDatePickerFirstProd(props) {
   return (
     <div className={classes.root}>
       <div className={classes.datesRow}>
+
+        <Grid container justify="space-around">
         <KeyboardDatePicker
           label={props.labelDates + " " + "From"}
           className={classes.datePicker}
-          inputVariant="outlined"
-          autoOk
           maxDate={moment().subtract(1, 'day')}
           variant="inline"
           value={selectedStartDate}
           onChange={date => handleStartDate(date)}
-          format="MM-DD-YYYY"
-          PopoverProps={{ disablePortal: true }}
-        />
 
+
+          // minDateMessage = 'Date should not be before minimal date'
+          // maxDateMessage = 'Date should not be after max date'
+          // disableToolbar
+          // KeybardButtonProps = {{'aria-label':'change date'}}
+          // autoOk = 'true'
+          // //inputVariant="outlined"
+          // //PopoverProps={{ disablePortal: true }}
+          // format="MM/DD/YYYY"
+          // orientation = 'landscape'
+          // margin = 'normal'
+        />
+        </Grid>
+
+
+        
         <KeyboardDatePicker
           label={props.labelDates + " " + "To"}
           className={classes.datePicker}
