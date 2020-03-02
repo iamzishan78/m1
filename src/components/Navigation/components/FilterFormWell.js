@@ -358,19 +358,19 @@ export default function FilterFormWell() {
   return (
     <div className={classes.row}>
       <div className={classes.root}>
-{/* 
+
         <FormControl className={classes.formControl}>
           <OperatorFilterJ />
-        </FormControl> */}
+        </FormControl> 
 
         <FormControl className={classes.formControl}>
           <OperatorAutoComplete />
         </FormControl>
 
 
-        {/* <FormControl variant="outlined" className={classes.formControl}>
+        <FormControl variant="outlined" className={classes.formControl}>
         <FilterWellTypeJ/>
-        </FormControl> */}
+        </FormControl> 
 
         <FormControl variant="outlined" className={classes.formControl}>
           <InputLabel ref={inputLabel} htmlFor="select-multiple-chip1">
@@ -417,9 +417,9 @@ export default function FilterFormWell() {
           </Select>
         </FormControl>
 
-        {/* <FormControl variant="outlined" className={classes.formControl}>
+        <FormControl variant="outlined" className={classes.formControl}>
         <FilterWellProfileJ/>
-        </FormControl> */}
+        </FormControl>
 
 
         <FormControl variant="outlined" className={classes.formControl}>
@@ -466,9 +466,9 @@ export default function FilterFormWell() {
           </Select>
         </FormControl>
 
-        {/* <FormControl variant="outlined" className={classes.formControl}>
+        <FormControl variant="outlined" className={classes.formControl}>
         <FilterWellStatusJ/>
-        </FormControl> */}
+        </FormControl> 
 
 
         <FormControl variant="outlined" className={classes.formControl}>
