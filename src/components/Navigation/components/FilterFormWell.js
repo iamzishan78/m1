@@ -16,6 +16,7 @@ import FilterDatePickerSpud from "./FilterDatePickerSpud";
 import FilterDatePickerFirstProd from "./FilterDatePickerFirstProd";
 import OperatorFilterJ from "./OperatorFilterJ";
 import FilterWellTypeJ from "./FilterWellTypeJ";
+import FilterWellProfileJ from "./FilterWellProfileJ";
 
 
 const ITEM_HEIGHT = 60;
@@ -413,6 +414,10 @@ export default function FilterFormWell() {
               
             ))}
           </Select>
+        </FormControl>
+
+        <FormControl variant="outlined" className={classes.formControl}>
+        <FilterWellProfileJ/>
         </FormControl>
 
 
