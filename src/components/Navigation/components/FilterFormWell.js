@@ -17,6 +17,7 @@ import FilterDatePickerFirstProd from "./FilterDatePickerFirstProd";
 import OperatorFilterJ from "./OperatorFilterJ";
 import FilterWellTypeJ from "./FilterWellTypeJ";
 import FilterWellProfileJ from "./FilterWellProfileJ";
+import FilterWellStatusJ from "./FilterWellStatusJ";
 
 
 const ITEM_HEIGHT = 60;
@@ -464,6 +465,12 @@ export default function FilterFormWell() {
             ))}
           </Select>
         </FormControl>
+
+        <FormControl variant="outlined" className={classes.formControl}>
+        <FilterWellStatusJ/>
+        </FormControl>
+
+
         <FormControl variant="outlined" className={classes.formControl}>
           <InputLabel ref={inputLabel} htmlFor="select-multiple-chip-status">
             Well Status

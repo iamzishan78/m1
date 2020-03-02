@@ -5,29 +5,29 @@ import { NavigationContext } from '../NavigationContext';
 
 
 
-const profileList = ["Directional", "Horizontal", "SideTracked", "Vertical"];
+const statusList = ["Active", "P&A", "Permit", "Shutin", "Unknown"];
 
 
 
 
 
-export default function FilterWellProfileJ() {
+export default function FilterWellStatusJ() {
     const [stateNav, setStateNav] = useContext(NavigationContext)
-    const [profileName, setProfileName] = React.useState(stateNav.profileName ? stateNav.profileName : null);
+    const [statusName, setStatusName] = React.useState(stateNav.statusName ? stateNav.statusName : null);
 
 
-    const handleProfileChange = value => {
+    const handleStatusChange = value => {
       let filter;
       if(value && value.length) {
-        filter = ['match', ['get', 'wellBoreProfile'], value, true, false]
-        setStateNav(stateNav => ({ ...stateNav, profileName:value}))
-        setProfileName(value)
+        filter = ['match', ['get', 'wellStatus'], value, true, false]
+        setStateNav(stateNav => ({ ...stateNav, statusName:value}))
+        setStatusName(value)
       }
       else {
         filter = null
-        setStateNav(stateNav => ({ ...stateNav, profileName: null}))
+        setStateNav(stateNav => ({ ...stateNav, statusName: null}))
       }
-      setStateNav(stateNav => ({ ...stateNav, filterWellProfile: filter}))
+      setStateNav(stateNav => ({ ...stateNav, filterWellStatus: filter}))
       };
   
 
@@ -37,23 +37,23 @@ export default function FilterWellProfileJ() {
    
   return (
     <Autocomplete 
-    defaultValue={stateNav.profileName}
+    defaultValue={stateNav.statusName}
     onChange={(event, newValue) => {
-         handleProfileChange(newValue);
+         handleStatusChange(newValue);
        }}
     multiple
-    options={profileList}
+    options={statusList}
     renderInput={params => (
       <TextField
         {...params}
         variant="outlined"
-        label="Jacob's Profile Filter"
-        placeholder="Horizontal..."
+        label="Jacob's Status Filter"
+        placeholder="Active..."
         fullWidth
       />
     )}  
     disableListWrap
-    id="virtualize-well-profiles"
+    id="virtualize-well-statuses"
     style={{ maxWidth: 300, minWidth: 120 }}
     />
   )
