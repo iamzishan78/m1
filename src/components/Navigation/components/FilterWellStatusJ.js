@@ -47,8 +47,8 @@ export default function FilterWellStatusJ() {
       <TextField
         {...params}
         variant="outlined"
-        label="Jacob's Status Filter"
-        placeholder="Active..."
+        label="Well Status"
+        placeholder=""
         fullWidth
       />
     )}  

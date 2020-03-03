@@ -53,8 +53,8 @@ export default function FilterWellTypeJ() {
       <TextField
         {...params}
         variant="outlined"
-        label="Jacob's Well Type Filter"
-        placeholder="Oil and Gas..."
+        label="Well Type"
+        placeholder=""
         fullWidth
       />
     )}  

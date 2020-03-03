@@ -47,8 +47,8 @@ export default function FilterWellProfileJ() {
       <TextField
         {...params}
         variant="outlined"
-        label="Jacob's Profile Filter"
-        placeholder="Horizontal..."
+        label="Well Profile"
+        placeholder=""
         fullWidth
       />
     )}  

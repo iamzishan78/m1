@@ -546,14 +546,14 @@ export default function OperatorFilterJ() {
       <TextField
         {...params}
         variant="outlined"
-        label="Jacob's Operator Filter"
-        placeholder="OXY..."
+        label="Operator"
+        placeholder=""
         fullWidth
       />
     )}  
     disableListWrap
     id="virtualize-operators"
-    style={{ maxWidth: 300, minWidth: 120 }}
+    //style={{ maxWidth: 300, minWidth: 120 }}
     />
   )
 

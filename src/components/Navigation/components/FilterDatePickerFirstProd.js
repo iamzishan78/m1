@@ -1,32 +1,38 @@
 import React, { useState, useContext, useEffect, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { KeyboardDatePicker } from "@material-ui/pickers";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
 import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
 import Grid from '@material-ui/core/Grid';
 
+
 // DOCUMENTATION FOR THIS COMPONENT IS ON FILTERDATEPICKERPERMIT
+
+
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
-    flexWrap: "wrap",
+    // flexWrap: "wrap",
     flexDirection: "column",
-    justifyContent: "space-around",
-    flexGrow: 1
+    // justifyContent: "space-around",
+    // flexGrow: 1
   },
   datesRow: {
     display: "flex",
     flexDirection: "row",
-    flex: 1,
-    flexGrow: 1
+    // flex: 1,
+    // flexGrow: 1
   },
   datePicker: {
     margin: "15px",
-    minWidth: 175,
-    maxWidth: 176,
-    "&& span": {
-      pointerEvents: "none"
-    }
+    // minWidth: 175,
+    // maxWidth: 176,
+    // "&& span": {
+    //   pointerEvents: "none"
+    // }
   },
   chips: {
     display: "flex",
@@ -172,43 +178,54 @@ export default function FilterDatePickerFirstProd(props) {
       <div className={classes.datesRow}>
 
         <Grid container justify="space-around">
+
         <KeyboardDatePicker
-          label={props.labelDates + " " + "From"}
+          //label={props.labelDates + " " + "From"}
+          label="From"
           className={classes.datePicker}
           maxDate={moment().subtract(1, 'day')}
           variant="inline"
           value={selectedStartDate}
           onChange={date => handleStartDate(date)}
+          
 
 
-          // minDateMessage = 'Date should not be before minimal date'
-          // maxDateMessage = 'Date should not be after max date'
-          // disableToolbar
-          // KeybardButtonProps = {{'aria-label':'change date'}}
-          // autoOk = 'true'
-          // //inputVariant="outlined"
-          // //PopoverProps={{ disablePortal: true }}
-          // format="MM/DD/YYYY"
-          // orientation = 'landscape'
-          // margin = 'normal'
+          minDateMessage = 'Date should not be before minimal date'
+          maxDateMessage = 'Date should not be after max date'
+          disableToolbar
+          KeybardButtonProps = {{'aria-label':'change date'}}
+          autoOk = 'true'
+          format="MM/DD/YYYY"
+          orientation = 'landscape'
+          margin = 'normal'
+
+          
         />
+
         </Grid>
 
 
         
         <KeyboardDatePicker
-          label={props.labelDates + " " + "To"}
+          //label={props.labelDates + " " + "To"}
+          label="To"
           className={classes.datePicker}
-          inputVariant="outlined"
-          autoOk
-          variant="inline"
           maxDate={moment()}
+          variant="inline"
           value={selectedEndDate}
           onChange={date => handleEndDate(date)}
-          format="MM-DD-YYYY"
-          disableFuture={true}
-          PopoverProps={{ disablePortal: true }}
-        />
+
+          minDateMessage = 'Date should not be before minimal date'
+          maxDateMessage = 'Date should not be after max date'
+          disableToolbar
+          KeybardButtonProps = {{'aria-label':'change date'}}
+          autoOk = 'true'
+          format="MM/DD/YYYY"
+          orientation = 'landscape'
+          margin = 'normal'
+          />
+        
+        
       </div>
     </div>
   );
