@@ -3,15 +3,21 @@ import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 
 export default function useQueryTitleOpinion(id) {
-  // const TitleOpinionQUERY = gql`query {
-  //   titleOpinion(TitleOpinionId:"${id}") {
-  //     Client
-  //     LegalDescription
-  //     County
-  //     State
-  //   }
-  // }`;
-  // const { data, loading, error } = useQuery(TitleOpinionQUERY);
+//   export const TITLEOPINIONQUERY = gql`
+//   query getTitleOpinion($id: ID) {
+//     titleOpinion(id: $id) {
+//       legalDescription
+//       preparedBy
+//       certifiedDate
+//       state
+//       county
+//       project
+//       client
+//       generalNotes
+//       MORSections
+//     }
+//   }
+// `;
 
   //////////////////temporary begin//////////////////////////////////////
   const data = {
@@ -478,5 +484,5 @@ export default function useQueryTitleOpinion(id) {
   return { data, loading: false };
 
   //////////////////temporary end//////////////////////////////////////
-  // return {};
+  
 }
