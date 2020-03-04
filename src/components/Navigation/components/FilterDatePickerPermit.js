@@ -7,22 +7,22 @@ import { NavigationContext } from "../NavigationContext";
 // Styles for the Material UI Components
 const useStyles = makeStyles(theme => ({
   root: {
-    display: "flex",
-    flexWrap: "wrap",
-    flexDirection: "column",
-    justifyContent: "space-around",
-    flexGrow: 1
+    // display: "flex",
+    // flexWrap: "wrap",
+    // flexDirection: "column",
+    // justifyContent: "space-around",
+    // flexGrow: 1
   },
   datesRow: {
     display: "flex",
     flexDirection: "row",
-    flex: 1,
-    flexGrow: 1
+    // flex: 1,
+    // flexGrow: 1
   },
   datePicker: {
     margin: "15px",
-    minWidth: 175,
-    maxWidth: 176,
+    // minWidth: 175,
+    // maxWidth: 176,
     "&& span": {
       pointerEvents: "none"
     }
@@ -211,6 +211,7 @@ export default function FilterDatePickerPermit(props) {
           onChange={date => handleStartDate(date)}
           format="MM-DD-YYYY"
           PopoverProps={{ disablePortal: true }}
+          fullWidth={true}
         />
 
         <KeyboardDatePicker
@@ -225,6 +226,7 @@ export default function FilterDatePickerPermit(props) {
           format="MM-DD-YYYY"
           disableFuture={true}
           PopoverProps={{ disablePortal: true }}
+          fullWidth={true}
         />
       </div>
     </div>

@@ -39,12 +39,12 @@ const useStyles = makeStyles(theme => ({
   },
   datesRow: {
     display: "flex",
-    flexWrap: "nowrap",
+    // flexWrap: "nowrap",
     flexDirection: "column",
-    flex: "1",
-    flexGrow: 2,
-    maxWidth: 400,
-    minWidth: 300
+    // flex: "1",
+    // flexGrow: 2,
+    // maxWidth: 400,
+    // minWidth: 300
   },
   formControl: {
     margin: "15px",
