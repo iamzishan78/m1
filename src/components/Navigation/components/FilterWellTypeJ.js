@@ -55,12 +55,12 @@ export default function FilterWellTypeJ() {
         variant="outlined"
         label="Well Type"
         placeholder=""
-        fullWidth
+        fullWidth={true}
       />
     )}  
     disableListWrap
     id="virtualize-well-types"
-    style={{ maxWidth: 300, minWidth: 120 }}
+    // style={{ maxWidth: 300, minWidth: 120 }}
     />
   )
 

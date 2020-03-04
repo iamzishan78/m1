@@ -49,12 +49,12 @@ export default function FilterWellStatusJ() {
         variant="outlined"
         label="Well Status"
         placeholder=""
-        fullWidth
+        fullWidth={true}
       />
     )}  
     disableListWrap
     id="virtualize-well-statuses"
-    style={{ maxWidth: 300, minWidth: 120 }}
+    // style={{ maxWidth: 300, minWidth: 120 }}
     />
   )
 }

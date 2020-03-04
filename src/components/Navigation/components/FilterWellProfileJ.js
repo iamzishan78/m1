@@ -49,12 +49,12 @@ export default function FilterWellProfileJ() {
         variant="outlined"
         label="Well Profile"
         placeholder=""
-        fullWidth
+        fullWidth={true}
       />
     )}  
     disableListWrap
     id="virtualize-well-profiles"
-    style={{ maxWidth: 300, minWidth: 120 }}
+    // style={{ maxWidth: 300, minWidth: 120 }}
     />
   )
 }

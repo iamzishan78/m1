@@ -29,8 +29,8 @@ const useStyles = makeStyles(theme => ({
     flexWrap: "wrap",
     flexDirection: "column",
     justifyContent: "space-around",
-    maxWidth: 220,
-    minWidth: 500
+    // maxWidth: 220,
+    // minWidth: 500
   },
   row: {
     display: "flex",
@@ -48,8 +48,8 @@ const useStyles = makeStyles(theme => ({
   },
   formControl: {
     margin: "15px",
-    minWidth: 120,
-    maxWidth: 300,
+    // minWidth: 120,
+    // maxWidth: 300,
     color: "black",
   },
   chips: {
