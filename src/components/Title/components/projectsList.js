@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function InteractiveList(props) {
   const classes = useStyles();
-  const [dense, setDense] = React.useState(false);
+  const [dense] = React.useState(false);
 
   return (
     <div>

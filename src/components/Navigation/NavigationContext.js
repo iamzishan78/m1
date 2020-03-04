@@ -14,6 +14,7 @@ const NavigationContextProvider = props => {
     filterWellStatus:null,
     filterOperator:null,
     filterInterest:null,
+    filterBasin: null,
     filterOwnerType:null,
     filterCumulativeOil:null,
     filterCumulativeGas:null,
@@ -23,7 +24,6 @@ const NavigationContextProvider = props => {
     filterFirstSixMonthWater:null,
     filterFirstTwelveMonthWater:null,
     filterLastMonthWater:null,
-    filterLastThreeMonthWater:null,
     filterLastSixMonthWater:null,
     filterLastTwelveMonthWater:null,
     filterFirstMonthGas:null,
@@ -31,15 +31,12 @@ const NavigationContextProvider = props => {
     filterFirstSixMonthGas:null,
     filterFirstTwelveMonthGas:null,
     filterLastMonthGas:null,
-    filterLastThreeMonthGas:null,
     filterLastSixMonthGas:null,
     filterLastTwelveMonthGas:null,
     filterFirstMonthOil:null,
-    filterFirstThreeMonthOil:null,
     filterFirstSixMonthOil:null,
     filterFirstTwelveMonthOil:null,
     filterLastMonthOil:null,
-    filterLastThreeMonthOil:null,
     filterLastSixMonthOil:null,
     filterLastTwelveMonthOil:null,
     filterOwnershipTypeReligiousInstitutions:null,
@@ -54,6 +51,8 @@ const NavigationContextProvider = props => {
     filterInterestTypeOverrideRoyalty:null,
     filterInterestTypeWorkingInterest:null,
     filterInterestTypeProductionPayment:null,
+
+
     filterGeography: null,
     filterGeographyState: null,
     filterGeographyCounty: null,
@@ -63,7 +62,11 @@ const NavigationContextProvider = props => {
     statusName:[],
     typeName:[],
     profileName:[],
+
     interestName:[],
+
+    basinName:[],
+
     ownerTypeName:[],
     dateTypeName: [],
     prodTypeName: [],
@@ -95,6 +98,7 @@ const NavigationContextProvider = props => {
     countiesInFilter: null,
     surveysInFilter: null,
     asbtractsInFilter: null,
+
   })
   return (
     <NavigationContext.Provider value={[stateNav, setStateNav]}>

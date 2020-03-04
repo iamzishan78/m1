@@ -7,22 +7,22 @@ import { NavigationContext } from "../NavigationContext";
 // Styles for the Material UI Components
 const useStyles = makeStyles(theme => ({
   root: {
-    display: "flex",
-    flexWrap: "wrap",
-    flexDirection: "column",
-    justifyContent: "space-around",
-    flexGrow: 1
+    // display: "flex",
+    // flexWrap: "wrap",
+    // flexDirection: "column",
+    // justifyContent: "space-around",
+    // flexGrow: 1
   },
   datesRow: {
     display: "flex",
     flexDirection: "row",
-    flex: 1,
-    flexGrow: 1
+    // flex: 1,
+    // flexGrow: 1
   },
   datePicker: {
     margin: "15px",
-    minWidth: 175,
-    maxWidth: 176,
+    // minWidth: 175,
+    // maxWidth: 176,
     "&& span": {
       pointerEvents: "none"
     }
@@ -140,7 +140,8 @@ export default function FilterDatePickerPermit(props) {
       const formatDateReset = moment().subtract(120, 'Years');
       setStateNav(stateNav => ({
         ...stateNav,
-        permitDateFrom: null
+        permitDateFrom: null,
+        filterPermitDateRange: null
       }));
       handleStartDateChang(formatDateReset);
     } else {
@@ -170,7 +171,7 @@ export default function FilterDatePickerPermit(props) {
     // if is equal it resets the date from the input
     if (date === null) {
       const formatDateReset = moment();
-      setStateNav(stateNav => ({ ...stateNav, permitDateTo: null }));
+      setStateNav(stateNav => ({ ...stateNav, permitDateTo: null , filterPermitDateRange: null}));
       handleEndDateChange(formatDateReset);
       return;
     } else {
@@ -203,11 +204,14 @@ export default function FilterDatePickerPermit(props) {
           className={classes.datePicker}
           inputVariant="outlined"
           autoOk
+          allowKeyboardControl
           maxDate={moment().subtract(1, 'day')}
           variant="inline"
           value={selectedStartDate}
           onChange={date => handleStartDate(date)}
           format="MM-DD-YYYY"
+          PopoverProps={{ disablePortal: true }}
+          fullWidth={true}
         />
 
         <KeyboardDatePicker
@@ -220,6 +224,9 @@ export default function FilterDatePickerPermit(props) {
           value={selectedEndDate}
           onChange={date => handleEndDate(date)}
           format="MM-DD-YYYY"
+          disableFuture={true}
+          PopoverProps={{ disablePortal: true }}
+          fullWidth={true}
         />
       </div>
     </div>

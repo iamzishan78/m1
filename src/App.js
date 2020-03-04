@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 //components
 import Login from "./components/Login/Login";
+import SignUpCard from "./components/Login/SignUpCard";
 import NavigationProvider from "./components/Navigation/NavigationProvider";
 import MapProvider from "./components/Map/MapProvider";
 import TrackProvider from "./components/Track/TrackProvider";
@@ -82,6 +83,11 @@ const PrivateRoute = ({ component, ...options }) => {
   return <Route {...options} component={finalComponent} />;
 };
 
+// const PublicRoute = ({component, ...options}) => {
+//   const [stateApp,setStateApp] = useContext(AppContext)
+//   const 
+// }
+
 function App() {
   return (
     <ApolloProvider client={client}>
@@ -92,6 +98,7 @@ function App() {
               <Switch> 
                 <NavigationProvider>
                   <PrivateRoute exact path="/" component={MapProvider} />
+                  <Route exact path="/signup"  component={SignUpCard} />
                   <PrivateRoute exact path="/track" component={TrackProvider}/>
                   <PrivateRoute exact path="/transact" component={TransactProvider}/>
                   <PrivateRoute exact path="/title" component={TitleProvider}/> 

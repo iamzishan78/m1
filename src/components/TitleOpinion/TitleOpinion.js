@@ -36,11 +36,10 @@ const useStyles = makeStyles(theme => ({
   },
   buttons: {
     marginRight: "10px !important",
-    color: "rgb(10, 29, 70)",
     width: "100px",
     color: "#FFFFFF !important",
     "&:hover": {
-      backgroundColor: '#1f2b42',
+      backgroundColor: "#1f2b42",
       border: "1px solid rgb(1,17,51)"
     }
   },
@@ -53,7 +52,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function TitleOpinion() {
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
   const [stateTitleOpinion, setStateTitleOpinion] = useContext(
     TitleOpinionContext
   );
@@ -204,10 +203,10 @@ export default function TitleOpinion() {
             </Grid>
           )}
           <Grid item xs={12} container>
-            <Grid item xs={6} sm={6} lg={5}>
+            <Grid item xs={6} sm={6} md={6} lg={5}>
               <GeneralInfoForm />
             </Grid>
-            <Grid item xs={6} sm={6} lg={7}>
+            <Grid item xs={6} sm={6} md={6} lg={7}>
               <MapShape />
             </Grid>
           </Grid>

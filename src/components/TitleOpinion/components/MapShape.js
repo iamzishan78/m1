@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function MapShape() {
-  const [stateTitleOpinion, setStateTitleOpinion] = useContext(
+  const [stateTitleOpinion] = useContext(
     TitleOpinionContext
   );
 

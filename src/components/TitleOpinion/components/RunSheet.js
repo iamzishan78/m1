@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { TitleOpinionContext } from "../TitleOpinionContext";
 import { makeStyles } from "@material-ui/core/styles";
 import Section from "./Section";
@@ -12,11 +12,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function RunSheet() {
-  const [stateTitleOpinion, setStateTitleOpinion] = useContext(
-    TitleOpinionContext
-  );
-
-  const [stateRunSheet, setStateRunSheet] = useState({});
+  const [stateTitleOpinion] = useContext(TitleOpinionContext);
 
   let classes = useStyles();
 

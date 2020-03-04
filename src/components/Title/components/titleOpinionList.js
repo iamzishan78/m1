@@ -29,8 +29,8 @@ const useStyles = makeStyles(theme => ({
 export default function InteractiveList(props) {
   const classes = useStyles();
   let history = useHistory();
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [dense, setDense] = React.useState(false);
+  const [, setStateApp] = useContext(AppContext);
+  const [dense] = React.useState(false);
 
   const handleTOClick = (e, id) => {
     e.preventDefault();

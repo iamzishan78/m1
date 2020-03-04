@@ -91,7 +91,7 @@ export default function Map() {
       let productionFilterCount = 0;
       let geographyFilterCount = 0;
       let filterArray = [];
-
+      
       
       if (stateNav.filterWellProfile && stateNav.filterWellProfile.length > 0) {
         filterArray.push(stateNav.filterWellProfile);
@@ -425,6 +425,18 @@ export default function Map() {
         isFilterSet = true;
         ownershipFilterCount += 1;
       }
+
+      if (
+        stateNav.filterBasin &&
+        stateNav.filterBasin.length > 0
+      ) {
+        filterArray.push(stateNav.filterBasin);
+        isFilterSet = true;
+        geographyFilterCount += 1;
+      }
+
+
+
       if (stateNav.filterPermitDateRange && stateNav.filterPermitDateRange.length > 0) {
         filterArray.push(stateNav.filterPermitDateRange);
         isFilterSet = true;
@@ -464,30 +476,7 @@ export default function Map() {
 
         geographyFilterCount += 1;
       }
-      if (stateNav.filterGeographyState && stateNav.filterGeographyState.length > 0) {
-        filterArray.push(stateNav.filterGeographyState);
-        isFilterSet = true;
-
-        geographyFilterCount += 1;
-      }
-      if (stateNav.filterGeographyCounty && stateNav.filterGeographyCounty.length > 0) {
-        filterArray.push(stateNav.filterGeographyCounty);
-        isFilterSet = true;
-
-        geographyFilterCount += 1;
-      }
-      if (stateNav.filterGeographySurvey && stateNav.filterGeographySurvey.length > 0) {
-        filterArray.push(stateNav.filterGeographySurvey);
-        isFilterSet = true;
-
-        geographyFilterCount += 1;
-      }
-      if (stateNav.filterGeographyAbstract && stateNav.filterGeographyAbstract.length > 0) {
-        filterArray.push(stateNav.filterGeographyAbstract);
-        isFilterSet = true;
-
-        geographyFilterCount += 1;
-      }
+      
       setStateNav(state => ({ ...state, wellFilterCount: wellFilterCount }));
       setStateNav(state => ({
         ...state,
@@ -505,6 +494,7 @@ export default function Map() {
       if (isFilterSet) {
         filterArray.unshift("all");
 
+        
         console.log("all current filters", filterArray);
 
         map.setFilter("wellpoints", filterArray);
@@ -529,7 +519,73 @@ export default function Map() {
         
       }
     }
-  }, [map, setStateNav, stateNav.asbtractName, stateNav.countyName, stateNav.filterCompletetionDateRange, stateNav.filterCumulativeGas, stateNav.filterCumulativeOil, stateNav.filterCumulativeWater, stateNav.filterFirstMonthGas, stateNav.filterFirstMonthOil, stateNav.filterFirstMonthWater, stateNav.filterFirstProdDateRange, stateNav.filterFirstSixMonthGas, stateNav.filterFirstSixMonthOil, stateNav.filterFirstSixMonthWater, stateNav.filterFirstThreeMonthGas, stateNav.filterFirstThreeMonthOil, stateNav.filterFirstThreeMonthWater, stateNav.filterFirstTwelveMonthGas, stateNav.filterFirstTwelveMonthOil, stateNav.filterFirstTwelveMonthWater, stateNav.filterGeography, stateNav.filterGeographyAbstract, stateNav.filterGeographyCounty, stateNav.filterGeographyState, stateNav.filterGeographySurvey, stateNav.filterInterestTypeOverrideRoyalty, stateNav.filterInterestTypeProductionPayment, stateNav.filterInterestTypeRoyaltyInterest, stateNav.filterInterestTypeWorkingInterest, stateNav.filterLastMonthGas, stateNav.filterLastMonthOil, stateNav.filterLastMonthWater, stateNav.filterLastSixMonthGas, stateNav.filterLastSixMonthOil, stateNav.filterLastSixMonthWater, stateNav.filterLastThreeMonthGas, stateNav.filterLastThreeMonthOil, stateNav.filterLastThreeMonthWater, stateNav.filterLastTwelveMonthGas, stateNav.filterLastTwelveMonthOil, stateNav.filterLastTwelveMonthWater, stateNav.filterOperator, stateNav.filterOwnershipTypeCorporations, stateNav.filterOwnershipTypeEducationalInstitutions, stateNav.filterOwnershipTypeGovernmentalBodies, stateNav.filterOwnershipTypeIndividuals, stateNav.filterOwnershipTypeNonProfits, stateNav.filterOwnershipTypeReligiousInstitutions, stateNav.filterOwnershipTypeTrusts, stateNav.filterOwnershipTypeUnknown, stateNav.filterPermitDateRange, stateNav.filterSpudDateRange, stateNav.filterWellProfile, stateNav.filterWellStatus, stateNav.filterWellType, stateNav.stateName, stateNav.surveyName]);
+  }, [map, setStateNav, stateNav.asbtractName, 
+        stateNav.countyName, 
+        stateNav.filterCompletetionDateRange, 
+        stateNav.filterCumulativeGas, 
+        stateNav.filterCumulativeOil, 
+        stateNav.filterCumulativeWater, 
+        stateNav.filterFirstMonthGas, 
+        stateNav.filterFirstMonthOil, 
+        stateNav.filterFirstMonthWater, 
+        stateNav.filterFirstProdDateRange, 
+        stateNav.filterFirstSixMonthGas, 
+        stateNav.filterFirstSixMonthOil, 
+        stateNav.filterFirstSixMonthWater, 
+        stateNav.filterFirstThreeMonthGas, 
+        stateNav.filterFirstThreeMonthOil, 
+        stateNav.filterFirstThreeMonthWater, 
+        stateNav.filterFirstTwelveMonthGas, 
+        stateNav.filterFirstTwelveMonthOil, 
+        stateNav.filterFirstTwelveMonthWater, 
+        stateNav.filterGeography, 
+        stateNav.filterGeographyAbstract, 
+        stateNav.filterGeographyCounty, 
+        stateNav.filterGeographyState, 
+        stateNav.filterGeographySurvey, 
+
+        stateNav.filterInterestTypeOverrideRoyalty, 
+        stateNav.filterInterestTypeProductionPayment, 
+        stateNav.filterInterestTypeRoyaltyInterest, 
+        stateNav.filterInterestTypeWorkingInterest, 
+
+        // stateNav.filterBasinTypePermian, 
+        // stateNav.filterBasinTypeWesternGulf, 
+        // stateNav.filterBasinTypeFortWorth, 
+
+    
+        stateNav.filterLastMonthGas, 
+        stateNav.filterLastMonthOil, 
+        stateNav.filterLastMonthWater, 
+        stateNav.filterLastSixMonthGas, 
+        stateNav.filterLastSixMonthOil, 
+        stateNav.filterLastSixMonthWater, 
+        stateNav.filterLastThreeMonthGas, 
+        stateNav.filterLastThreeMonthOil, 
+        stateNav.filterLastThreeMonthWater, 
+        stateNav.filterLastTwelveMonthGas, 
+        stateNav.filterLastTwelveMonthOil, 
+        stateNav.filterLastTwelveMonthWater, 
+        stateNav.filterOperator, 
+        stateNav.filterOwnershipTypeCorporations, 
+        stateNav.filterOwnershipTypeEducationalInstitutions, 
+        stateNav.filterOwnershipTypeGovernmentalBodies, 
+        stateNav.filterOwnershipTypeIndividuals, 
+        stateNav.filterOwnershipTypeNonProfits, 
+        stateNav.filterOwnershipTypeReligiousInstitutions, 
+        stateNav.filterOwnershipTypeTrusts, 
+        stateNav.filterOwnershipTypeUnknown, 
+        stateNav.filterPermitDateRange, 
+        stateNav.filterSpudDateRange, 
+        stateNav.filterWellProfile, 
+        stateNav.filterWellStatus, 
+        stateNav.filterWellType,
+
+        stateNav.filterBasin,
+
+
+        stateNav.stateName, 
+        stateNav.surveyName]);
    
 
   useEffect(() => {
@@ -570,6 +626,20 @@ export default function Map() {
 
       let zoomControl = new mapboxgl.NavigationControl();
       newMap.addControl(zoomControl, "bottom-right");
+      
+      newMap.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
+
+      // Add geolocate control to the map.
+      newMap.addControl(
+        new mapboxgl.GeolocateControl({
+        positionOptions: {
+        enableHighAccuracy: true
+        },
+        trackUserLocation: true
+        })
+        , "bottom-right");
+
+
 
       let Draw = new MapboxDraw({
         displayControlsDefault: false,

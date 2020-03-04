@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import FormControl from "@material-ui/core/FormControl";
@@ -10,8 +10,8 @@ import stateNamesAb from "./Utils/USAStates";
 const useStyles = makeStyles(theme => ({
   formControl: {
     margin: "15px",
-    minWidth: 319,
-    maxWidth: 320,
+    minWidth: 249,
+    maxWidth: 250,
     color: "black"
   },
 }));
@@ -31,15 +31,32 @@ export default function FilterStateName() {
   useEffect(()=> {
     if(stateName !== null && stateName.length > 0 ){
       setStateNav(stateNav => ({ ...stateNav, stateName: stateName, displayStateName: displayName}));
-    } 
+      setStateName(stateName)
+      setDisplayName(displayName)
+    } else {
+      setStateNav(stateNav => ({ ...stateNav, stateName: null, displayStateName: null, countyName: null, surveyName: null, abstractName: null, filterGeography: null}));
+    }
   },[displayName, setStateNav, stateName]) 
   
-  const handleStateNameChange = (event) => {
-    setStateName(event[0])
-    setDisplayName(event[1])
-    setStateNav(stateNav => ({ ...stateNav, stateName: event[0], displayStateName: event[0]}));
+  const handleStateNameChange = (event, e) => {
+    if (e == null) {
+      // event.preventDefault();
+      setStateName(null)
+      setDisplayName(null)
+      setStateNav(stateNav => ({ ...stateNav, stateName: null,  displayStateName: null, filterGeography: null}));
+    } else {
+      // event.preventDefault();
+      setStateName(e[0])
+      setDisplayName(e[1])
+      setStateNav(stateNav => ({ ...stateNav, stateName: e[0], displayStateName: e[0]}));
+    }
   }
 
+  const onEnterKey = (event) =>{   
+    if(event.keyCode === 13){
+      event.preventDefault();
+    }
+  }
  
   return (
       <FormControl variant="outlined" className={classes.formControl}>
@@ -48,13 +65,13 @@ export default function FilterStateName() {
               options={stateNamesAb}
               getOptionLabel={option => option}
               autoSelect
-              disableClearable
               disableListWrap
               includeInputInList
               value={displayName}
               onChange={(event, newValue) => {
-                handleStateNameChange(newValue);
+                handleStateNameChange( event,newValue);
               }}
+              onKeyDown={event  => onEnterKey(event)}
               renderInput={params =>(
                   <form autoComplete="off">
                   <TextField {...params} fullWidth label="State" variant="outlined"/>

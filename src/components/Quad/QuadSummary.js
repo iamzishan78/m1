@@ -45,6 +45,9 @@ const useStyles = makeStyles(theme => ({
     //flexWrap: 'wrap',
     alignContent: 'center',
     justifyContent: 'center',
+    "& .MuiTab-root" :{
+      minWidth: "90px !important"
+    }
 
   },
   tabContainer: {

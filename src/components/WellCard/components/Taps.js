@@ -6,16 +6,13 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import MOR from "./MOR";
-import RunSheet from "./RunSheet";
-
-import "./style.css";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
     <Typography
+      id="oioioi"
       component="div"
       role="tabpanel"
       hidden={value !== index}
@@ -23,7 +20,14 @@ function TabPanel(props) {
       aria-labelledby={`scrollable-auto-tab-${index}`}
       {...other}
     >
-      {value === index && <Box p={3}>{children}</Box>}
+      {value === index && (
+        <Box
+          style={{ paddingRight: "0", paddingLeft: "0" }}
+          p={3}
+        >
+          {children}
+        </Box>
+      )}
     </Typography>
   );
 }
@@ -47,15 +51,18 @@ const useStyles = makeStyles(theme => ({
     width: "100%",
     backgroundColor: theme.palette.background.paper
   },
-  TOAppBar: {
+  WellsDetailsCardAppBar: {
     backgroundColor: "rgb(1,17,51)",
     color: "#FFFFFF"
   }
 }));
 
-export default function TitleOpinionsTaps() {
+export default function Taps(props) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
+  ////tabLabels brings an array of labels////
+  ////tabPanels brings an array of panels////
+  const { tabLabels, tabPanels } = props;
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -63,7 +70,7 @@ export default function TitleOpinionsTaps() {
 
   return (
     <div className={classes.root} id="TOTaps">
-      <AppBar className={classes.TOAppBar} position="static" color="default">
+      <AppBar className={classes.WellsDetailsCardAppBar} position="static" color="default">
         <Tabs
           value={value}
           onChange={handleChange}
@@ -72,28 +79,17 @@ export default function TitleOpinionsTaps() {
           scrollButtons="auto"
           aria-label="scrollable auto tabs example"
         >
-          <Tab label="MOR" {...a11yProps(0)} />
-          <Tab label="Runsheet" {...a11yProps(1)} />
-          <Tab label="Division Order" {...a11yProps(2)} />
-          <Tab label="Associated Documents" {...a11yProps(3)} />
-          <Tab label="Internal Note" {...a11yProps(4)} />
+          {tabLabels.map((label, i) => {
+            return <Tab key={i} label={label} {...a11yProps(i)} />;
+          })}
         </Tabs>
       </AppBar>
-      <TabPanel value={value} index={0} className="MORDiv">
-        <MOR />
-      </TabPanel>
-      <TabPanel value={value} index={1} className="MORDiv">
-        <RunSheet />
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        - Coming Soon
-      </TabPanel>
-      <TabPanel value={value} index={3}>
-        --Coming Soon
-      </TabPanel>
-      <TabPanel value={value} index={4}>
-        ---Coming Soon
-      </TabPanel>
+
+      {tabPanels.map((panel, i) => (
+        <TabPanel key={i} value={value} index={i}>
+          {panel}
+        </TabPanel>
+      ))}
     </div>
   );
 }

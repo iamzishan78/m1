@@ -1,23 +1,38 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useLazyQuery } from '@apollo/react-hooks';
 import { AppContext } from "../../AppContext";
+import { makeStyles } from '@material-ui/core/styles';
 import gql from "graphql-tag";
 // STYLES
-import { useStyles } from "./styles";
+// import { useStyles } from "./styles";
 import {
-  Typography,
   CardMedia,
-  Card,
-  TextField,
-  Button
 } from "@material-ui/core";
 
 // COMPONENTS
-import M1neralLogoSvg from "../Shared/m1neralLogoSvg";
+// import M1neralLogoSvg from "../Shared/m1neralLogoSvg";
 import SignInCard from "./SignInCard";
-import SignUpCard from "./SignUpCard";
+// import SignUpCard from "./SignUpCard";
 //import { LOGINQUERY } from "../../graphQL/useQueryLogin";
 
+const useStyles = makeStyles(theme => ({
+  content: {
+    height: "100vh",
+    width: "100vw",
+    backgroundSize: "cover",
+    justifyContent: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    display: "flex!important"
+  },
+  myRoot : {
+    width: "100vw",
+    height: "95vh",
+    display: "flex!important",
+    backgroundSize: "cover",
+    justifyContent: "center"
+  }
+}));
 
 const BackgroundURI =
   "img/WellsBackgroundlogin.jpg";
@@ -37,7 +52,7 @@ const Login = props => {
   const [stateApp,setStateApp] = useContext(AppContext)
   const [userName,setUserName] = useState(null)
   const [password,setPassword] = useState(null)
-  
+  const classes = useStyles();
   const LOGINQUERY = gql`query {
     login(userName:"${userName}",password:"${password}") {
       success
@@ -64,7 +79,7 @@ const Login = props => {
 
   const [login, { loading, data }] = useLazyQuery(LOGINQUERY);
   //const { path } = props.path ? props.path : 'signin';
-  const classes = useStyles();
+  
   // const [invalidEmail, setValidEmail] = useState(true);
 
   useEffect( () => {
@@ -105,7 +120,6 @@ const Login = props => {
 
   return (
     <div className={classes.myRoot}>
-
       <CardMedia
         media="img"
         image={BackgroundURI}

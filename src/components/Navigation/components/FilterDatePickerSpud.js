@@ -7,22 +7,22 @@ import { NavigationContext } from "../NavigationContext";
 // DOCUMENTATION FOR THIS COMPONENT IS ON FILTERDATEPICKERPERMIT
 const useStyles = makeStyles(theme => ({
   root: {
-    display: "flex",
-    flexWrap: "wrap",
-    flexDirection: "column",
-    justifyContent: "space-around",
-    flexGrow: 1
+    // display: "flex",
+    // flexWrap: "wrap",
+    // flexDirection: "column",
+    // justifyContent: "space-around",
+    // flexGrow: 1
   },
   datesRow: {
     display: "flex",
     flexDirection: "row",
-    flex: 1,
-    flexGrow: 1
+    // flex: 1,
+    // flexGrow: 1
   },
   datePicker: {
     margin: "15px",
-    minWidth: 175,
-    maxWidth: 176,
+    // minWidth: 175,
+    // maxWidth: 176,
     "&& span": {
       pointerEvents: "none"
     }
@@ -84,7 +84,7 @@ export default function FilterDatePickerSpud(props) {
     } else {
       filter = null;
     }
-    console.log("CSpud Date dates change filter", filter);
+    console.log("Spud Date dates change filter", filter);
     setStateNav(stateNav => ({ ...stateNav, filterSpudDateRange: filter }));
 }, [setStateNav, spudFromDate.date, spudToDate.date]);
 
@@ -126,7 +126,8 @@ export default function FilterDatePickerSpud(props) {
       const formatDateReset = moment().subtract(120, 'Years');
       setStateNav(stateNav => ({
         ...stateNav,
-        spudDateFrom: null
+        spudDateFrom: null,
+        filterSpudDateRange: null
       }));
       handleStartDateChang(formatDateReset);
     } else {
@@ -147,7 +148,7 @@ export default function FilterDatePickerSpud(props) {
   const handleEndDate = date => {
     if (date === null) {
       const formatDateReset = moment();
-      setStateNav(stateNav => ({ ...stateNav, spudDateTo: null }));
+      setStateNav(stateNav => ({ ...stateNav, spudDateTo: null, filterSpudDateRange: null }));
       handleEndDateChange(formatDateReset);
       return;
     } else {
@@ -178,6 +179,8 @@ export default function FilterDatePickerSpud(props) {
           value={selectedStartDate}
           onChange={date => handleStartDate(date)}
           format="MM-DD-YYYY"
+          PopoverProps={{ disablePortal: true }}
+          fullWidth={true}
         />
 
         <KeyboardDatePicker
@@ -190,6 +193,9 @@ export default function FilterDatePickerSpud(props) {
           value={selectedEndDate}
           onChange={date => handleEndDate(date)}
           format="MM-DD-YYYY"
+          disableFuture={true}
+          PopoverProps={{ disablePortal: true }}
+          fullWidth={true}
         />
       </div>
     </div>

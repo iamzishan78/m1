@@ -105,9 +105,23 @@ export default function Track() {
               aria-label="tabs"
               classes={{ indicator: classes.indicator }}
             >
-              
-              <Tab
+
+        <Tab
                 value={0}
+                classes={{ root: classes.tab }}
+                icon={
+                  <Badge
+                    badgeContent={stateApp.owners ? stateApp.owners.length:0}
+                    color="secondary"
+                  >
+                    <OwnershipIcon color="#000" opacity="1.0" />
+                  </Badge>
+                }
+                aria-label="ownership"
+              />
+
+              <Tab
+                value={1}
                 className={classes.tab}
                 icon={
                   <Badge
@@ -120,25 +134,13 @@ export default function Track() {
                 aria-label="well"
               />
 
-              <Tab
-                value={1}
-                classes={{ root: classes.tab }}
-                icon={
-                  <Badge
-                    badgeContent={stateApp.owners ? stateApp.owners.length:0}
-                    color="secondary"
-                  >
-                    <OwnershipIcon color="#000" opacity="1.0" />
-                  </Badge>
-                }
-                aria-label="ownership"
-              />
+
              
             </Tabs>
-            <TabPanel value={value} index={0}>
+            <TabPanel value={value} index={1}>
             <WellsProvider showList={false} parent="track"/>
             </TabPanel>
-            <TabPanel value={value} index={1}>
+            <TabPanel value={value} index={0}>
             <OwnersProvider  parent="track"/>
             </TabPanel>
         

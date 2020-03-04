@@ -10,6 +10,8 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import { useTheme, makeStyles } from '@material-ui/core/styles';
 import { VariableSizeList } from 'react-window';
 import { Typography } from '@material-ui/core';
+import Chip from '@material-ui/core/Chip';
+
 
 const useStyles = makeStyles({
     listbox: {
@@ -139,21 +141,25 @@ export default function OperatorAutoComplete() {
     children: PropTypes.node,
   };
   
-   
+  // console.log('+++++++++++++++')
+  // console.log(stateNav.operatorName)
+  // console.log('--------------------')
+ 
+
   return  stateNav.operators ? (
-    <Autocomplete 
+
+     <Autocomplete 
     value={stateNav.operatorName}
     onChange={(event, newValue) => {
         handleOperatorChange(newValue);
       }}
+    //multiple
     id="virtualize-operators"
     style={{ maxWidth: 300, minWidth: 120 }}
     disableListWrap
     classes={classes}
     ListboxComponent={ListboxComponent}
-   // renderGroup={renderGroup}
     options={stateNav.operators}
-    //groupBy={option => option[0].toUpperCase()}
     getOptionLabel={option => option.Name}
     renderInput={params => (
         
@@ -163,4 +169,7 @@ export default function OperatorAutoComplete() {
   />):
   (<CircularProgress color="secondary" />)
   
+
+
+
 }

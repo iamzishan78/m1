@@ -133,27 +133,6 @@ export default function DrawShapes(props) {
       toggleSpatialDataCard(false);
     }
   }, [stateMap.currentFeature]);
-  // var y = {
-  //   id: "5d6c18fbc0b0663ba2040ed20498c86e",
-  //   type: "Feature",
-  //   properties: {
-  //     sdType: "",
-  //     projectName: "",
-  //     sdNotes: "",
-  //     shapeArea: "118.31 miles",
-  //     shapeCenter: [null, null],
-  //     shapeLabel: "",
-  //     shapeLabelLayer: ""
-  //   },
-  //   geometry: {
-  //     coordinates: [
-  //       [-97.47383148437652, 34.386634347399664],
-  //       [-96.2873080468762, 34.413829174481435],
-  //       [-96.92451507812635, 33.90473837382824]
-  //     ],
-  //     type: "LineString"
-  //   }
-  // };
 
   const createShapeDrawOptions = () => {
     return availableShapes.map((shape, index) => {

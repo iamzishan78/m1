@@ -39,6 +39,10 @@ import Comments from '../Shared/Comments';
 import ExpandableCardProvider from '../ExpandableCard/ExpandableCardProvider';
 import Test from '../ExpandableCard/Test';
 
+import ChatIcon from '@material-ui/icons/Chat';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
+
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -71,14 +75,9 @@ const headCells = [
   { id: 'interestType', numeric: false, disablePadding: false, label: 'Type' },
   { id: 'ownershipPercentage', numeric: true, disablePadding: false, label: 'Interest' },
   { id: 'appraisedValue', numeric: true, disablePadding: false, label: 'Appraised Value' },
- /*  { id: 'Address', numeric: true, disablePadding: false, label: 'Address' },
-  { id: 'Phone', numeric: true, disablePadding: false, label: 'Phone' },
-  { id: 'Email', numeric: true, disablePadding: false, label: 'Email' },
-  { id: 'Tag', numeric: true, disablePadding: false, label: 'Tag' }, */
-  { id: 'comments', numeric: false, disablePadding: false, label: 'Comments' },
-  { id: 'tags', numeric: false, disablePadding: false, label: 'Tags' },
-  
-  { id: 'isTracked', numeric: false, disablePadding: false, label: 'Track' },
+  { id: 'comments', numeric: false, disablePadding: false, label: '' },
+  { id: 'tags', numeric: false, disablePadding: false, label: '' },
+  { id: 'isTracked', numeric: false, disablePadding: false, label: '' },
 ];
 
 function EnhancedTableHead(props) {
@@ -101,7 +100,8 @@ function EnhancedTableHead(props) {
         {headCells.map(headCell => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
+            //align={headCell.numeric ? 'right' : 'left'}
+            align = 'left'
             padding={headCell.disablePadding ? 'none' : 'default'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -300,21 +300,21 @@ const useStyles = makeStyles(theme => ({
     '&:hover': {
       background: theme.palette.secondary.main
     },
-    transform: 'rotate(180deg)',
+    //transform: 'rotate(180deg)',
   },
   expandOpenTag: {
     backgroundColor:theme.palette.secondary.main,
     '&:hover': {
       background: theme.palette.secondary.main
     },
-    transform: 'rotate(180deg)',
+    //transform: 'rotate(180deg)',
   },
   expandOpenComment: {
     backgroundColor:theme.palette.secondary.main,
     '&:hover': {
       background: theme.palette.secondary.main
     },
-    transform: 'rotate(180deg)',
+    //transform: 'rotate(180deg)',
   }
 }));
 
@@ -638,9 +638,12 @@ useEffect( () => {
                       </TableCell>
                       <TableCell align="left">{row.ownershipType}</TableCell>
                       <TableCell align="left">{row.interestType}</TableCell>
-                      <TableCell align="right">{row.ownershipPercentage}</TableCell>
-                      <TableCell align="right">{row.appraisedValue}</TableCell>
-                      <TableCell align="left">
+                      <TableCell align="left">{row.ownershipPercentage}</TableCell>
+                      <TableCell align="left">{row.appraisedValue}</TableCell>
+                      
+                      
+                      
+                      <TableCell align="center">
                       <IconButton size="medium" color="primary"
                         className={clsx(classes.expand, {
                           [classes.expandOpenComment]: expandedComment &&  collapsedRow === index,
@@ -649,11 +652,12 @@ useEffect( () => {
                         aria-expanded={expandedComment && collapsedRow === index}
                         aria-label="show comments"
                       >
-                        <ExpandMoreIcon />
+                        <ChatIcon />
                       </IconButton>
-                     
+
+
                       </TableCell>
-                      <TableCell align="left">
+                      <TableCell align="center">
                       <IconButton size="medium" color="primary"
                         className={clsx(classes.expand, {
                           [classes.expandOpenTag]: expandedTag &&  collapsedRow === index,
@@ -662,10 +666,11 @@ useEffect( () => {
                         aria-expanded={expandedTag && collapsedRow === index}
                         aria-label="show tags"
                       >
-                        <ExpandMoreIcon />
+                        <LocalOfferIcon />
                       </IconButton>
-                     
                       </TableCell>
+
+
                       <TableCell align="center">
                         <TrackToggleButton 
                           source={stateApp.user} 
@@ -675,7 +680,8 @@ useEffect( () => {
                           target= {row} 
                           targetLabel="owner" 
                           targetSourceId={row.id}
-                          targetName={row.name}  />
+                          targetName={row.name} 
+                          dark />
                       </TableCell>
                     </TableRow>,
                     <TableRow key={index}>

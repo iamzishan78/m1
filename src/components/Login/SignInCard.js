@@ -7,7 +7,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 //import M1neralIconSvg from "../../ui_Elements/m1neralIconSvg";
 // HELPERS
 import { validateData } from "./loginHelpers";
-import Autocomplete from '@material-ui/lab/Autocomplete';
+// import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -29,20 +29,16 @@ const useStyles = makeStyles(theme => ({
     width: "100vw"
   },
   cardTitle: {
-    width: "40vw",
     maxWidth: "400px",
     color: theme.palette.secondary.contrastText,
-    position: "absolute",
-    left: "calc(50vw - 25vw / 2)",
-    top: "17%",
-    textAlign: "center"
+    display: "flex",
+    justifyContent: "center",
+    paddingTop:" 40px",
   },
   card: {
     width: "35vw",
     maxWidth: "400px",
-    height: "55vh",
     position: "fixed",
-    left: "calc(50vw - 25vw / 2)",
     top: "calc(50vh - 50vh / 2)",
     backgroundColor: theme.palette.secondary.dark,
     border: `1px solid ${theme.palette.secondary.main}`,
@@ -51,20 +47,17 @@ const useStyles = makeStyles(theme => ({
     fontFamily: theme.typography.fontFamily
   },
   cardHeader: {
-    height: "20%",
     color: "white",
-    padding: "0%",
     paddingTop: "4%",
     display: "flex",
     flexDirection: "column",
     alignItems: "center"
   },
   cardInputs: {
-    height: "60%",
+    // height: "60%",
     padding: "2%",
     paddingTop: "4%",
     color: "white",
-    alignitems: "center",
     justifyItems: "center"
 
   },
@@ -77,8 +70,7 @@ const useStyles = makeStyles(theme => ({
 
   },
   cardFooter: {
-    height: "20%",
-    padding: "2%",
+    paddingBottom: "4%",
     paddingTop: "4%",
     color: "white",
     display: "flex",
@@ -87,7 +79,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: ".75rem"
   },
   secondaryInputs: {
-    marginTop: ".5rem",
+    paddingTop: "1.5rem",
     fontSize: ".75rem",
     textAlign: "center"
   },
@@ -116,8 +108,8 @@ const M1neralIconSvg = props => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="100"
-      height="100"
+      width="50"
+      height="50"
       // viewBox="0 0 11320 2490"
       viewBox="0 0 2100 2500"
       
@@ -163,6 +155,23 @@ const SignInCard = props => {
     }
   };
 
+  const onEnterKey = e =>{    
+    if (userEmail === "" || userPassword === "") {
+      //set errorFlags
+    } else {
+      const userData = {
+        userEmail,
+        userPassword
+      };
+      const { handleSignIn } = props;
+      if(e.keyCode === 13){
+        e.preventDefault();
+        handleSignIn(userData);
+      }
+
+    }
+  }
+
   const renderButtonAndLoader = (
     props.ready ?
       <CircularProgress color="secondary" size={28} className={classes.loader} />
@@ -186,7 +195,7 @@ const SignInCard = props => {
       <Card color="secondary" style={{backgroundColor: "rgba(38, 52, 81, 1)"}}
        className={classes.card}>
         <div className={classes.cardHeader}>
-          <M1neralIconSvg   /> 
+          <M1neralIconSvg /> 
           <div style={{ marginTop: "5px", fontSize: "1.7rem" }}>Sign In</div>
         </div>
         <div className={classes.cardInputs}>
@@ -218,6 +227,7 @@ const SignInCard = props => {
             autoFocus={passwordFlags.autoFocus}
             className={classes.inputs}
             onChange={e => setUserPassword(e.target.value)}
+            onKeyDown={e => onEnterKey(e)}
             onBlur={() =>
               validateData("password", userPassword, setPasswordFlags)
             }

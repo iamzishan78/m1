@@ -1,28 +1,35 @@
 import React, { useState, useContext, useEffect, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { KeyboardDatePicker } from "@material-ui/pickers";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
 import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
+import Grid from '@material-ui/core/Grid';
+
 
 // DOCUMENTATION FOR THIS COMPONENT IS ON FILTERDATEPICKERPERMIT
+
+
 const useStyles = makeStyles(theme => ({
   root: {
-    display: "flex",
-    flexWrap: "wrap",
-    flexDirection: "column",
-    justifyContent: "space-around",
-    flexGrow: 1
+    // display: "flex",
+    // flexWrap: "wrap",
+    // flexDirection: "column",
+    // justifyContent: "space-around",
+    // flexGrow: 1
   },
   datesRow: {
     display: "flex",
     flexDirection: "row",
-    flex: 1,
-    flexGrow: 1
+    // flex: 1,
+    // flexGrow: 1
   },
   datePicker: {
     margin: "15px",
-    minWidth: 175,
-    maxWidth: 176,
+    // minWidth: 175,
+    // maxWidth: 176,
     "&& span": {
       pointerEvents: "none"
     }
@@ -126,7 +133,8 @@ export default function FilterDatePickerFirstProd(props) {
       const formatDateReset = moment().subtract(120, 'Years');
       setStateNav(stateNav => ({
         ...stateNav,
-        firstProdDateFrom: null
+        firstProdDateFrom: null,
+        filterFirstProdDateRange: null
       }));
       handleStartDateChang(formatDateReset);
     } else {
@@ -147,7 +155,7 @@ export default function FilterDatePickerFirstProd(props) {
   const handleEndDate = date => {
     if (date === null) {
       const formatDateReset = moment();
-      setStateNav(stateNav => ({ ...stateNav, firstProdDateTo: null }));
+      setStateNav(stateNav => ({ ...stateNav, firstProdDateTo: null, filterFirstProdDateRange: null}));
       handleEndDateChange(formatDateReset);
       return;
     } else {
@@ -168,29 +176,50 @@ export default function FilterDatePickerFirstProd(props) {
   return (
     <div className={classes.root}>
       <div className={classes.datesRow}>
+
         <KeyboardDatePicker
           label={props.labelDates + " " + "From"}
+          // label="From"
           className={classes.datePicker}
-          inputVariant="outlined"
-          autoOk
           maxDate={moment().subtract(1, 'day')}
           variant="inline"
           value={selectedStartDate}
           onChange={date => handleStartDate(date)}
-          format="MM-DD-YYYY"
+          
+          inputVariant="outlined"
+
+          minDateMessage = 'Date should not be before minimal date'
+          maxDateMessage = 'Date should not be after max date'
+          disableToolbar
+          KeybardButtonProps = {{'aria-label':'change date'}}
+          autoOk = 'true'
+          format="MM/DD/YYYY"
+          // orientation = 'landscape'
+          // margin = 'normal'
+          fullWidth={true}
+          
         />
 
         <KeyboardDatePicker
           label={props.labelDates + " " + "To"}
+          // label="To"
           className={classes.datePicker}
-          inputVariant="outlined"
-          autoOk
-          variant="inline"
           maxDate={moment()}
+          variant="inline"
           value={selectedEndDate}
           onChange={date => handleEndDate(date)}
-          format="MM-DD-YYYY"
-        />
+          inputVariant="outlined"
+          minDateMessage = 'Date should not be before minimal date'
+          maxDateMessage = 'Date should not be after max date'
+          disableToolbar
+          KeybardButtonProps = {{'aria-label':'change date'}}
+          autoOk = 'true'
+          format="MM/DD/YYYY"
+          // orientation = 'landscape'
+          // margin = 'normal'
+          fullWidth={true}
+          />
+
       </div>
     </div>
   );
