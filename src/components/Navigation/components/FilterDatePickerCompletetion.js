@@ -172,32 +172,43 @@ export default function FilterDatePickerCompletetion(props) {
         <KeyboardDatePicker
           label={props.labelDates + " " + "From"}
           className={classes.datePicker}
-          inputVariant="outlined"
-          autoOk
           maxDate={moment().subtract(1, 'day')}
           variant="inline"
           value={selectedStartDate}
           onChange={date => handleStartDate(date)}
-          format="MM-DD-YYYY"
-          PopoverProps={{ disablePortal: true }}
-          fullWidth={true}
+
+          //inputVariant="outlined"
+          minDateMessage = 'Date should not be before minimal date'
+          maxDateMessage = 'Date should not be after max date'
+          disableToolbar
+          KeybardButtonProps = {{'aria-label':'change date'}}
+          autoOk = 'true'
+          format="MM/DD/YYYY"
+          // orientation = 'landscape'
+          // margin = 'normal'
         />
 
         <KeyboardDatePicker
           label={props.labelDates + " " + "To"}
           className={classes.datePicker}
-          inputVariant="outlined"
-          autoOk
           variant="inline"
-          maxDate={moment()}
-          disableFuture={true}
           value={selectedEndDate}
           onChange={date => handleEndDate(date)}
-          format="MM-DD-YYYY"
-          PopoverProps={{ disablePortal: true }}
-          fullWidth={true}
+
+
+          //inputVariant="outlined"
+          minDateMessage = 'Date should not be before minimal date'
+          maxDateMessage = 'Date should not be after max date'
+          disableToolbar
+          KeybardButtonProps = {{'aria-label':'change date'}}
+          autoOk = 'true'
+          format="MM/DD/YYYY"
+          // orientation = 'landscape'
+          // margin = 'normal'
         />
       </div>
     </div>
   );
 }
+
+
