@@ -90,6 +90,7 @@ const OwnersContextProvider = props => {
   const [stateOwners, setStateOwners] = useState({
     selectedOwner: { Name: '' },
     openOwnerDetails: false,
+    showExpandableCard:false,
     wellOwners:null,
     columns:columns,
     ownerToAdd:null

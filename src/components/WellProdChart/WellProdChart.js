@@ -55,7 +55,7 @@ export default function WellProdChart(props) {
   const classes = useStyles();
   
 //graphQL
-const {data,loading,error} = useQueryWellProdHistory(stateApp.selectedWellId)
+const {data,loading,error} = useQueryWellProdHistory(stateApp.selectedWell.api)
 //const {data,loading,error} = useQueryWellProdHistory(stateMap.selectedWellApi)
 
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useContext,useState } from 'react'
 import { AppContext } from '../../AppContext'
 import { WellCardContext } from './WellCardContext'
-import { MapContext } from '../Map/MapContext'
+import { ExpandableCardContext } from '../ExpandableCard/ExpandableCardContext';
 
 //material-ui components
 import { makeStyles, useTheme } from '@material-ui/core/styles'
@@ -44,11 +44,8 @@ import { VERTEXEDGESQUERY } from '../../graphQL/useQueryVertexEdges';
 
 const useStyles = makeStyles(theme => ({
   card: {
-    width: '380px',
-    background: '#011133',
-    borderStyle: 'solid',
-    borderWidth: 'thin',
-    borderColor: '#011133'
+    overflowY:'auto !important',
+    borderStyle: 'none'
   },
   title: {
     fontFamily: 'Poppins',
@@ -95,7 +92,8 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     backgroundColor: '#fff',
-    padding: '0px'
+    overflowY:'auto',
+    
   },
   cardAction: {
     flexGrow: 1,
@@ -105,9 +103,10 @@ const useStyles = makeStyles(theme => ({
   },
   table: {
     width: '100%',
+    height:'100%',
     margin: '0px',
     padding: '0px',
-    border: '0px'
+    borderStyle: 'none'
   },
   rowGrey: {
     background: '#F6F6F6',
@@ -191,7 +190,7 @@ const formatBOE = boe => {
 
 export default function WellCard() {
   const [stateApp, setStateApp] = useContext(AppContext)
-  const [stateMap, setStateMap] = useContext(MapContext)
+  const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext)
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext)
   const [getVertexEdges, { loading:loadingGraph, data:dataGraph }] = useLazyQuery(VERTEXEDGESQUERY);
   const [target,setTarget] = useState(null)
@@ -276,8 +275,9 @@ const convertDate = unixStamp => {
   if(stateApp.selectedWell.wellStatus != "Permit"){
     return stateApp.selectedWell ? (
     <div>
-      <Card className={classes.card}>
-        <CardHeader
+      
+     <Card className={classes.card}> 
+        {/* <CardHeader
           classes={{
             title: classes.title,
             subheader: classes.subheader
@@ -316,7 +316,8 @@ const convertDate = unixStamp => {
                 : stateApp.selectedWell.operator
               : '--'
           }
-        />
+        /> */}
+        {!stateExpandableCard.expanded ? (
         <CardActions
           classes={{
             root: classes.cardAction
@@ -411,8 +412,11 @@ const convertDate = unixStamp => {
             </Typography>
           </div>
         </CardActions>
+        ):null}
         <CardContent className={classes.content}>
-          <Table className={classes.table} size="small" aria-label="well table">
+          {stateExpandableCard.expanded ? (
+           <WellCardDetails target={target} />
+          ):(<Table className={classes.table} size="small" aria-label="well table">
             <TableBody>
               <TableRow className={classes.rowGrey}>
                 <TableCell className={classes.cell1} align="left">
@@ -471,9 +475,10 @@ const convertDate = unixStamp => {
               </TableRow>
             </TableBody>
           </Table>
+          )}
         </CardContent>
       </Card>
-      <Dialog
+      {/* <Dialog
         fullScreen={fullScreen}
         fullWidth={true}
         maxWidth="xl"
@@ -486,7 +491,7 @@ const convertDate = unixStamp => {
           <WellCardDetails target={target} />
         </DialogContent>
         <DialogActions></DialogActions>
-      </Dialog>
+      </Dialog> */}
     </div>
   ) : (
     <CircularProgress color="secondary" />
@@ -496,46 +501,8 @@ else {
   {
     return stateApp.selectedWell ? (
     <div>
-      <Card className={classes.card}>
-        <CardHeader
-          classes={{
-            title: classes.title,
-            subheader: classes.subheader
-          }}
-          action={
-            <div>
-               <TrackToggleButton 
-               source={stateApp.user} 
-               sourceLabel="user" 
-               sourceSourceId={stateApp.user.id} 
-               sourceName={stateApp.user.name} 
-               target= {target} 
-               targetLabel="well" 
-               targetSourceId={stateApp.selectedWell.id}
-               targetName={stateApp.selectedWell.wellName}  />
-             {/* <IconButton onClick={handleOpenDetails} aria-label="expand">
-                <ExpandIcon viewBox="0 0 64 64" color="secondary" fontSize="small" />
-              </IconButton> */}
-              <IconButton onClick={handleCloseWellCard} aria-label="close">
-                <CloseIcon fontSize="small" color="secondary" />
-              </IconButton>
-            </div>
-          }
-          title={
-            stateApp.selectedWell.wellName
-              ? stateApp.selectedWell.wellName.length > 30
-                ? `${stateApp.selectedWell.wellName.substr(0, 30)}...`
-                : stateApp.selectedWell.wellName
-              : '--'
-          }
-          subheader={
-            stateApp.selectedWell.operator
-              ? stateApp.selectedWell.operator.length > 35
-                ? `${stateApp.selectedWell.operator.substr(0, 35)}...`
-                : stateApp.selectedWell.operator
-              : '--'
-          }
-        />
+      <Card>
+        
         <CardActions
           classes={{
             root: classes.cardAction
@@ -682,20 +649,7 @@ else {
           </div>
         </CardContent>
       </Card>
-      <Dialog
-        fullScreen={fullScreen}
-        fullWidth={true}
-        maxWidth="xl"
-        disableBackdropClick
-        disableEscapeKeyDown
-        open={stateWellCard.openWellDetails}
-        onClose={handleCloseDetails}
-      >
-        <DialogContent>
-          <WellCardDetails target={target} />
-        </DialogContent>
-        <DialogActions></DialogActions>
-      </Dialog>
+      
     </div>
   ) : (
     <CircularProgress color="secondary" />

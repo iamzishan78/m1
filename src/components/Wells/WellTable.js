@@ -34,6 +34,9 @@ import Badge from "@material-ui/core/Badge";
 import OwnersProvider from '../Owners/OwnersProvider';
 import Tags from '../Shared/Tagger';
 import Comments from '../Shared/Comments';
+import VisibilityIcon from '@material-ui/icons/Visibility'
+import ExpandableCardProvider from '../ExpandableCard/ExpandableCardProvider';
+import WellCardProvider from '../WellCard/WellCardProvider';
 import ChatIcon from '@material-ui/icons/Chat';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
@@ -278,6 +281,10 @@ export default function WellTable(props) {
   const [expandedTag, setExpandedTag] = useState(false);
   const [expandedComment, setExpandedComment] = useState(false);
   const [showList,setShowList] = useState(props.showList)
+  const [mouseX, setMouseX] = useState(null);
+  const [mouseY, setMouseY] = useState(null);
+  const [selectedRow, setSelectedRow] = React.useState();
+  const [showExpandableCard, setShowExpandableCard] = useState(false);
 
   useEffect( () => {
     setShowList(props.showList)
@@ -360,6 +367,26 @@ export default function WellTable(props) {
     setStateApp(state => ({ ...state, selectedWellId:well.id }))
     setStateApp(state => ({...state,flyTo:well}))
     
+}
+
+const handleRowClick = (e,row) => {
+  console.log(e.nativeEvent)
+  setMouseX(e.nativeEvent.clientX)
+  setMouseY(e.nativeEvent.clientY-70)
+  setSelectedRow(row)
+  setStateApp(state => ({...state,selectedWell:row}))
+ handleOpenExpandableCard()
+}
+const handleOpenExpandableCard = () => {
+  //setStateApp(state => ({...state,showExpandableCard:true}))
+  setShowExpandableCard(true)
+   
+}
+const handleCloseExpandableCard = () => {
+  
+  setShowExpandableCard(false)
+ // setStateApp(state => ({...state,showExpandableCard:true}))
+   
 }
 
  /*  useEffect( () => {
@@ -462,6 +489,7 @@ export default function WellTable(props) {
   return (
     rows && rows.length > 0 ?  showList ? (
       <div className={classes.rootList}>
+
       <List dense className={classes.wellList}  aria-label="secondary wells">
         <ListItem className={classes.subHeader} 
               key="subheader" 
@@ -486,6 +514,32 @@ export default function WellTable(props) {
     ):(
       
     <div className={classes.rootTable}>
+      {showExpandableCard ? (
+        <ExpandableCardProvider 
+        expanded={false}
+        handleCloseExpandableCard={handleCloseExpandableCard}
+        component={<WellCardProvider></WellCardProvider>}
+        title={selectedRow.wellName} 
+        subTitle={selectedRow.operator} 
+        parent="well"
+        mouseX={mouseX}
+        mouseY={mouseY}
+        position="absolute"
+        cardLeft={mouseX}
+        cardTop={mouseY}
+        zIndex={99}
+        cardWidth="380px" 
+        cardHeight="380px" 
+        cardWidthExpanded="95vw" 
+        cardHeightExpanded="90vh" 
+        source={stateApp.user}
+        sourceSourceId={stateApp.user.id}
+        sourceName={stateApp.user.name}
+        sourceLabel='user'
+        target={selectedRow}
+        targetSourceId={selectedRow.id}
+        targetName={selectedRow.wellName}
+        targetLabel='well'></ExpandableCardProvider>):null}
       <Paper className={classes.paper}>
        
        {/*  <EnhancedTableToolbar numSelected={selected.length} /> */}
@@ -523,10 +577,11 @@ export default function WellTable(props) {
                       selected={isItemSelected}
                     >
                        <TableCell padding="checkbox">
-                        {/* <Checkbox
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        /> */}
+                       <IconButton size="medium" color="primary"
+                        onClick={ (event) => handleRowClick(event,row)}
+                        aria-label="view more">
+                        <VisibilityIcon color="secondary" />
+                      </IconButton>
                       </TableCell>
 
                       <TableCell component="th" id={labelId} scope="row" padding="none">

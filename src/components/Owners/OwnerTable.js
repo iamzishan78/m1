@@ -25,6 +25,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import CheckIcon from '@material-ui/icons/Check';
+import VisibilityIcon from '@material-ui/icons/Visibility'
 
 import { OwnersContext } from './OwnersContext'
 import {AppContext} from '../../AppContext'
@@ -35,6 +36,8 @@ import { OWNERSQUERY } from '../../graphQL/useQueryOwners';
 import TrackToggleButton from '../Shared/TrackToggleButton'
 import Tags from '../Shared/Tagger';
 import Comments from '../Shared/Comments';
+import ExpandableCardProvider from '../ExpandableCard/ExpandableCardProvider';
+import Test from '../ExpandableCard/Test';
 
 import ChatIcon from '@material-ui/icons/Chat';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
@@ -329,6 +332,7 @@ export default function OwnerTable(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [source,setSource] = useState(null)
   const [rows, setRows] = React.useState([]);
+  const [selectedRow, setSelectedRow] = React.useState();
  
   const [getVertexEdges, { loading:loadingGraph, data:dataGraph }] = useLazyQuery(VERTEXEDGESQUERY);
   const [getOwners, { loading:loadingOwners, data:dataOwners }] = useLazyQuery(OWNERSQUERY);
@@ -343,6 +347,9 @@ export default function OwnerTable(props) {
   const [distinctInterestType, setDistinctInterestType] = useState([]);
   const [distinctOwnershipPercentage, setDistinctOwnershipPercentage] = useState([]);
   const [distinctAppraisedValue, setDistinctAppraisedValue] = useState([]);
+  const [showExpandableCard, setShowExpandableCard] = useState(false);
+  const [mouseX, setMouseX] = useState(null);
+  const [mouseY, setMouseY] = useState(null);
   
   //get all owners
   //get user's tracked owner ids from graphDB
@@ -528,7 +535,26 @@ useEffect( () => {
     setExpandedTag(false);
     
   };
-  
+
+  const handleRowClick = (e,row) => {
+    console.log(e)
+    console.log(e.nativeEvent)
+    setMouseX(e.nativeEvent.clientX)
+    setMouseY(e.nativeEvent.clientY-70) 
+    setSelectedRow(row)
+   handleOpenExpandableCard()
+  }
+  const handleOpenExpandableCard = () => {
+    //setStateApp(state => ({...state,showExpandableCard:true}))
+    setShowExpandableCard(true)
+     
+  }
+  const handleCloseExpandableCard = () => {
+    
+    setShowExpandableCard(false)
+   // setStateApp(state => ({...state,showExpandableCard:true}))
+     
+  }
   
   /* let rowsLen = 0;
   if(rows && rows.length > 0) {
@@ -540,6 +566,32 @@ useEffect( () => {
   return (
     rows && rows.length > 0 ?  (
     <div className={classes.root}>
+       {showExpandableCard ? (
+        <ExpandableCardProvider 
+        expanded={false}
+        handleCloseExpandableCard={handleCloseExpandableCard}
+        component={<Test hello="Owner Card Not Available"/>}
+        title={selectedRow ? selectedRow.name: null }
+        subTitle={selectedRow ? selectedRow.interestType: null }
+        parent="owner"
+        mouseX={mouseX}
+        mouseY={mouseY}
+        position="absolute"
+        cardLeft={mouseX}
+        cardTop={mouseY}
+        zIndex={101}
+        cardWidth="380px" 
+        cardHeight="380px" 
+        cardWidthExpanded="85vw" 
+        cardHeightExpanded="80vh" 
+        source={stateApp.user}
+        sourceSourceId={stateApp.user.id}
+        sourceName={stateApp.user.name}
+        sourceLabel='user'
+        target={selectedRow ? selectedRow:null}
+        targetSourceId={selectedRow ? selectedRow.id: null} 
+        targetName={selectedRow ? selectedRow.name:null}
+        targetLabel='owner'></ExpandableCardProvider>):null}
       <Paper className={classes.paper}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
@@ -567,7 +619,7 @@ useEffect( () => {
                   return ([
                     <TableRow
                       hover
-                      //onClick={event => handleClick(event, row.id)}
+                     // onClick={event => handleRowClick(event,row)}
                       role="checkbox"
                      // aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -575,10 +627,11 @@ useEffect( () => {
                      // selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
-                        {/* <Checkbox
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        /> */}
+                      <IconButton size="medium" color="primary"
+                        onClick={ (event) => handleRowClick(event,row)}
+                        aria-label="view more">
+                        <VisibilityIcon color="secondary" />
+                      </IconButton>
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none">
                         {row.name}
@@ -647,7 +700,7 @@ useEffect( () => {
                        sourceSourceId={stateApp.user.id} 
                        sourceName={stateApp.user.name} 
                        target= {row} 
-                       targetLabel="well" 
+                       targetLabel="owner" 
                        targetSourceId={row.id}
                        targetName={row.name}
                        />

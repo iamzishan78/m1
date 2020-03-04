@@ -160,8 +160,9 @@ export default function WellCardDetails(props) {
   );
 
   return stateApp.selectedWell ? (
-    <Card className={classes.card}>
-      <CardHeader
+    <Card >
+
+      {/* <CardHeader
         classes={{
           title: classes.title,
           subheader: classes.subheader
@@ -193,7 +194,7 @@ export default function WellCardDetails(props) {
         subheader={
           stateApp.selectedWell.operator ? stateApp.selectedWell.operator : "--"
         }
-      />
+      /> */}
 
       {/* <div className = {classes.cardcontain}>
         <CardActions

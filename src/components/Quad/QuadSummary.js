@@ -147,7 +147,7 @@ TabPanel.propTypes = {
 
 
 //graphQL
-const {data,loading,error} = useQueryQuadChart(stateApp.selectedWellId)
+const {data,loading,error} = useQueryQuadChart(stateApp.selectedWell.api)
 
 useEffect( () => {  
     if(!stateQuad.quadChart) {

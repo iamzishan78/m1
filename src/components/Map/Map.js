@@ -14,6 +14,7 @@ import mapboxgl from "mapbox-gl";
 import { makeStyles } from "@material-ui/core/styles";
 import MapControlsProvider from "../MapControls/MapControlsProvider";
 import WellCardProvider from "../WellCard/WellCardProvider";
+import ExpandableCardProvider from '../ExpandableCard/ExpandableCardProvider';
 import WellsProvider from "../Wells/WellsProvider";
 import Portal from "./components/Portal";
 import "./popup.css";
@@ -49,7 +50,7 @@ export default function Map() {
   const [stateMap, setStateMap] = useContext(MapContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
-
+  const [showExpandableCard, setShowExpandableCard] = useState(false);
 
   const [map, setMap] = useState(null);
   const mapEl = useRef(null);
@@ -608,6 +609,7 @@ export default function Map() {
       .addTo(map);
     //show wellcard in popup Portal
     setStateApp(state => ({ ...state, popupOpen: true }));
+    handleOpenExpandableCard()
   };
 
   useEffect(() => {
@@ -803,13 +805,10 @@ export default function Map() {
         
         console.log("clicked well lines", currentFeature);
         setStateApp(state => ({ ...state, popupOpen: false }));
+        
         setStateApp(state => ({
           ...state,
           selectedWell: currentFeature.properties
-        }));
-        setStateApp(state => ({
-          ...state,
-          selectedWellId: currentFeature.properties.api
         }));
         setStateApp(state => ({
           ...state,
@@ -857,10 +856,26 @@ export default function Map() {
 
   // console.log("---")
   // console.log(stateMap.flyTo)
-
+  const handleOpenExpandableCard = (e) => {
+    //setStateApp(state => ({...state,showExpandableCard:true}))
+    //console.log(e.nativeEvent)
+    //setMouseX(e.nativeEvent.clientX)
+   // setMouseY(e.nativeEvent.clientY-70)
+    
+    //setStateApp(state => ({...state,selectedWell:row}))
+    setShowExpandableCard(true)
+     
+  }
+  const handleCloseExpandableCard = () => {
+    
+    setShowExpandableCard(false)
+   // setStateApp(state => ({...state,showExpandableCard:true}))
+     
+  }
 
   return (
     <div className={classes.mapWrapper}>
+      
       <div className={classes.map} ref={mapEl} id="map"></div>
       <MapControlsProvider />
 
@@ -871,11 +886,40 @@ export default function Map() {
       ): null}
 
       {stateApp.popupOpen ? (
+        <div>
+        <div id="tempPopupHolder" style={{position:'absolute',top:'0px',left:'20px'}}></div>
         <Portal id="popupContainer">
-          {stateApp.selectedWell ? <WellCardProvider /> : null}
+          {showExpandableCard ? (
+        <ExpandableCardProvider 
+        expanded={false}
+        handleCloseExpandableCard={handleCloseExpandableCard}
+        component={<WellCardProvider></WellCardProvider>}
+        title={stateApp.selectedWell.wellName} 
+        subTitle={stateApp.selectedWell.operator} 
+        parent="map"
+        mouseX={0}
+        mouseY={0}
+        position="relative"
+        cardLeft={20}
+        cardTop={70}
+        zIndex={99}
+        cardWidth="380px" 
+        cardHeight="380px" 
+        cardWidthExpanded="95vw" 
+        cardHeightExpanded="90vh" 
+        source={stateApp.user}
+        sourceSourceId={stateApp.user.id}
+        sourceName={stateApp.user.name}
+        sourceLabel='user'
+        target={stateApp.selectedWell}
+        targetSourceId={stateApp.selectedWell.id}
+        targetName={stateApp.selectedWell.wellName}
+        targetLabel='well'></ExpandableCardProvider>):null}
+        {/* {stateApp.selectedWell ? <WellCardProvider /> : null} */}
         </Portal>
+        </div>
       ) : null}
-
+     
     </div>
   );
 }
