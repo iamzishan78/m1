@@ -15,6 +15,8 @@ const AppProvider = props => {
     owners: null,
     popupOpen: false, //map used in flyto
     flyTo: null, //map used in flyto
+    
+
     selectedTitleOpinionId: null, ///////////////temporary
     featureOrMapShape: {}
   });

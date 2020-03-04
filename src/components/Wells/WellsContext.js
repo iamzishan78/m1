@@ -117,6 +117,7 @@ const WellsContextProvider = props => {
   const [stateWells, setStateWells] = useState({
     selectedWell: { Name: '' },
     openWellCardDetails: false,
+    showExpandableCard:false,
     wellTable:wellTable
   })
   return (

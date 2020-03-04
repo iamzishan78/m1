@@ -32,12 +32,14 @@ export default function Tags(props) {
   const [target,setTarget] = useState(props.target)
   const [sourceVertex,setSourceVertex] = useState(null)
   const [targetVertex,setTargetVertex] = useState(null)
+  const [tagVertex,setTagVertex] = useState(null)
   const [targetSourceId,setTargetSourceId] = useState(props.targetSourceId)
   const [targetName,setTargetName] = useState(props.targetName)
   const [targetLabel,setTargetLabel] = useState(props.targetLabel)
   const [sourceName,setSourceName] = useState(props.sourceName)
   const [sourceSourceId,setSourceSourceId] = useState(props.sourceSourceId)
   const [sourceLabel,setSourceLabel] = useState(props.sourceLabel)
+  const [previousTags,setPreviousTags] = useState(null)
   
   const [publicTags,setPublicTags] = useState(props.public)
   const [selected,setSelected] = useState()
@@ -61,6 +63,23 @@ export default function Tags(props) {
     do nothing for ones in both
   */
 
+ useEffect( () => {
+
+  getTags({ variables: { 
+    public:true
+   }});
+  
+},[])
+
+useEffect( () => {
+
+  if(dataTags){
+    console.log('setprev',dataTags)
+  setPreviousTags([dataTags.tags[0],dataTags.tags[1]])
+  setSelected([dataTags.tags[0],dataTags.tags[1]])
+  }
+
+},[dataTags])
 
   useEffect( () => {
     setSourceVertex({
@@ -107,11 +126,65 @@ export default function Tags(props) {
         }
     },[props.public])
 
-    const handleChangeTags = (e,newValue) => {
-      
-      let selectedTagsArray = newValue;
-      let newTag = e.target.value;
+    const handleTagDelete = (option,index) => {
+
+      console.log('delete',option)
+
+      let currentValue = selected;
+      let newValue = currentValue.slice(0,index)
+      console.log(newValue)
       setSelected(newValue)
+
+    }
+    const handleChangeTags = (e,v) => {
+     
+      setSelected(v) 
+      if(v === 0) {
+        //an existing tag was selected
+        processSelectedTag(e.target.innerText)
+      }
+      else if (v && v.length > 0) {
+        //new tag
+       processNewTag(v)
+      }
+      else {
+        //a tag was deleted v=undefined 
+        let deletedItem;
+        if(e.target.tagName === 'svg') {
+          deletedItem = e.target.parentNode.innerText;
+        }
+        if(e.target.tagName === 'path') {
+          deletedItem = e.target.parentNode.parentNode.innerText;
+        }
+       processDeleteTag(deletedItem)
+      }
+
+  const processSelectedTag = async (tagText) => {
+      // get id of tag from getUserTags data (since MUI doesn't support array of objects in the UI control)
+      //since this tag already exists in cosmos tag collection we don't need to call upsertTag to add it
+      //create edge between user and tag (if public tag selected)
+      //create edge between tag and parent (owner, well, etc.)
+  }
+  const processNewTag = async (tagText) => {
+    //await upsertTag to cosmos
+    //use id returned from upsert to create edges
+    //await create edge between user and tag
+    //await create edge between tag and parent
+    //refresh getTags (public) if this new tag is public
+    //refresh getUserTags (private tags this user has an edge to) so they can select this tag again
+    //refresh getUserParentTags (user created tag and tag tags porent) to update the value array
+
+  }
+  const processDeleteTag = async (tagText) => {
+    //don't delete tag from cosmos 
+    //don't drop edge between user and tag so they can select it again
+    //drop edge between tag and parent since we are removing it from parent but not user
+    //don't refresh getTags (public) because we don't actually delete it
+    //don't refresn getUserTags (private) because we don't actually drop edge
+    //refresh getUserParentTags (user created tag and tag tags porent) to remove it from the value array
+
+  }
+      //getNewTags(newValue)
 
       //set tag as source for well target
       //set tag as target for user source
@@ -124,24 +197,98 @@ export default function Tags(props) {
       }) */
       
   }
+
+  const getNewTags = (selected) => {
+    let existingTags = []
+    let newTags = []
+
+      selected.forEach( (tag) => {
+
+        previousTags.forEach( (tagObject) => {
+
+            if(tagObject.tag === tag) {
+              existingTags.push(tagObject)
+            }
+            else {
+              newTags.push(tag)
+            }
+        })
+
+      })
+    console.log('existingTags',existingTags)
+    console.log('newTags',newTags)
+  }
+
+  const getDeletedTags = () => {
+
+    let deletedArray = [];
+      //compare previous tags to new selection and put deleted ones in deletedArray
+    
+        previousTags.forEach( (tagObject) => {
+          
+          selected.forEach( (tag) => {
+            if(tagObject.tag === tag) {
+              //tag still exists
+            }
+            else {
+              //tag was removed from previous
+              deletedArray.push(tagObject)
+            }
+          })
+      })
+
+  }
+  
+  const deleteTags = (deletedArray) => {
+
+    //delete from cosmos
+    
+  }
+
+  const createNewTags = (newTags) => {
+
+
+  }
+  const createEdgeForNewTags = (existingTags) => {
+    
+
+  }
+
+  const dropEdgesForPreviousTags = (previousTags) => {
+    
+
+  }
+
+  const createEdgeForExistingTags = (existingTags) => {
+    
+
+  }
+  
   
 
   return (
     <div className={classes.root}>
      
-      <Autocomplete
+     {dataTags && previousTags ? ( <Autocomplete
         multiple
         id="tags-outlined"
         onChange={(e,newValue) => {
           e.preventDefault()
             handleChangeTags(e,newValue)
         }}
-        options={tags.map(option => option.tag)}
-        defaultValue={[tags[0].tag]}
+        /* onInputChange={(e,newValue,reason) => {
+          e.preventDefault()
+            handleInputChange(e,newValue,reason)
+        }} */
+        options={dataTags.tags.map(option => option.tag)}
+        defaultValue={previousTags ? [previousTags[0].tag,previousTags[1].tag]:null}
         freeSolo
         renderTags={(value, getTagProps) =>
           value.map((option, index) => (
-            <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+            <Chip key={index}
+            variant="outlined" label={option} 
+            {...getTagProps({ index })}
+            />
           ))
         }
         renderInput={params => (
@@ -153,12 +300,12 @@ export default function Tags(props) {
             fullWidth
           />
         )}
-      />
+      />): loadingTags ? (<CircularProgress color="secondary"></CircularProgress>): (null)}
     </div>
   );
 }
 
-const tags = [
+/* const tags = [
   { tag: 'Capital Appreciation', id: "0" },
   { tag: 'Divorce', id: "1" },
   { tag: 'Eagle Ford', id: "2" },
@@ -170,4 +317,4 @@ const tags = [
   { tag: 'Permian', id: "8" },
   { tag: 'Recent Permit', id: "9" },
   { tag: 'Recent Death', id: "10" }
-];
+]; */
