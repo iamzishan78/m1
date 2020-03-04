@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
   root: {
     padding: "0",
     width: "100%",
-    height: "100%"
+    height: "100%",
   },
   notchedOutline: {
     color: "green"
@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center"
   },
   content: {
-    height: "95vh",
+    height: "100vh",
     width: "100vw"
   },
   cardTitle: {
@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
   card: {
     width: "35vw",
     maxWidth: "400px",
-    position: "fixed",
+    position: "absolute",
     top: "calc(50vh - 50vh / 2)",
     backgroundColor: theme.palette.secondary.dark,
     border: `1px solid ${theme.palette.secondary.main}`,

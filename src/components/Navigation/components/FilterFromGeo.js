@@ -25,6 +25,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "space-around",
     //flexWrap: "wrap",
     //flexGrow: 1
+    width: "100vw"
   },
   row: {
     display: "flex",
@@ -38,8 +39,8 @@ const useStyles = makeStyles(theme => ({
   },
   formControl: {
     margin: "15px",
-    minWidth: 120,
-    maxWidth: 300,
+    // minWidth: 120,
+    // maxWidth: 300,
     color: "black"
   },
   chips: {
@@ -60,8 +61,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
+// const ITEM_HEIGHT = 48;
+// const ITEM_PADDING_TOP = 8;
 const MenuProps = {
   disablePortal: true,
   PaperProps: {

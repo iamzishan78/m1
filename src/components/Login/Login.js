@@ -27,10 +27,14 @@ const useStyles = makeStyles(theme => ({
   },
   myRoot : {
     width: "100vw",
-    height: "95vh",
+    height: "100vh",
     display: "flex!important",
     backgroundSize: "cover",
-    justifyContent: "center"
+    justifyContent: "center",
+    '&::-webkit-scrollbar': {
+      width: '0 !important'
+     },
+
   }
 }));
 
