@@ -50,6 +50,16 @@ const useStyles = makeStyles(theme => ({
     textAlign: "center",
     minWidth: 199,
     maxWidth: 200,
+    marginBottom: 10,
+    marginRight: 60,
+    marginLeft: 10,
+  },
+  inputLabel2: {
+    color: "black",
+    textAlign: "center",
+    minWidth: 249,
+    maxWidth: 250,
+    marginBottom: 15
     // marginRight: 60
     // marginLeft: 10,
   },
@@ -897,9 +907,8 @@ export default function FilterFormProduction() {
           />
         </FormControl>
 
-        <FormControl className={classes.inputWrapper}>
           <Typography
-            className={classes.inputLabel}
+            className={classes.inputLabel2}
             htmlFor="select-multiple-chip1"
           >
             Jacob Cumulative H2O (MBBL)
@@ -909,7 +918,6 @@ export default function FilterFormProduction() {
             min={0}
             max={max.cumulativeOil}
           />
-        </FormControl>
 
       </TabPanel>
       <TabPanel value={value} index={1} dir={theme.direction}>
