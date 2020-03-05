@@ -11,6 +11,8 @@ import TabPanel from "./Utils/TabPanel";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { NavigationContext } from "../NavigationContext";
 import ProductionSlider from "./ProductionSlider";
+import ProductionSliderJ from "./ProductionSliderJ";
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -894,6 +896,21 @@ export default function FilterFormProduction() {
             max={max.cumulativeWater}
           />
         </FormControl>
+
+        <FormControl className={classes.inputWrapper}>
+          <Typography
+            className={classes.inputLabel}
+            htmlFor="select-multiple-chip1"
+          >
+            Jacob Cumulative H2O (MBBL)
+          </Typography>
+          <ProductionSliderJ
+            id="cumulativeWater"
+            min={0}
+            max={cumulativeOil}
+          />
+        </FormControl>
+
       </TabPanel>
       <TabPanel value={value} index={1} dir={theme.direction}>
         <FormControl className={classes.inputWrapper}>
