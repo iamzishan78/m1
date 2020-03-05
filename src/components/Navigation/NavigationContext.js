@@ -15,6 +15,7 @@ const NavigationContextProvider = props => {
     filterOperator:null,
     filterInterest:null,
     filterBasin: null,
+    filterPlay: null,
     filterOwnerType:null,
     filterCumulativeOil:null,
     filterCumulativeGas:null,
@@ -66,6 +67,7 @@ const NavigationContextProvider = props => {
     interestName:[],
 
     basinName:[],
+    playName: [],
 
     ownerTypeName:[],
     dateTypeName: [],
