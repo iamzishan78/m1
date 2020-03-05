@@ -218,7 +218,8 @@ export default function FilterDatePickerFirstProd(props) {
           // orientation = 'landscape'
           // margin = 'normal'
           PopoverProps={{ disablePortal: true }}
-          fullWidth={true}          />
+          fullWidth={true}          
+          />
 
       </div>
     </div>

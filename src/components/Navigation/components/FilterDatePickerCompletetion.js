@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
   },
   datesRow: {
     display: "flex",
-    flexDirection: "row",
+    flexDirection: "row"
     // flex: 1,
     // flexGrow: 1
   },
@@ -40,11 +40,9 @@ export default function FilterDatePickerCompletetion(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [selectedStartDate, handleStartDateChang] = useState(
-    moment().subtract(120, 'Years')
+    moment().subtract(120, "Years")
   );
-  const [selectedEndDate, handleEndDateChange] = useState(
-    moment()
-  );
+  const [selectedEndDate, handleEndDateChange] = useState(moment());
   const [completetionFromDate, setCompletetionFromDate] = useState({
     check: false,
     date: moment()
@@ -57,36 +55,50 @@ export default function FilterDatePickerCompletetion(props) {
   const [dateTypeName, setDateTypeName] = useState(
     stateNav.dateTypeName ? stateNav.dateTypeName : []
   );
- 
+
   const setFilterName = useCallback(() => {
     let filter;
-    if (completetionFromDate.date._isValid === true  && completetionToDate.date._isValid === true) {
-      const todaysDate = moment().unix()
-      const checkDate = moment(completetionToDate.date).unix()
-      const fromDate = moment(completetionFromDate.date).unix()
+    if (
+      completetionFromDate.date._isValid === true &&
+      completetionToDate.date._isValid === true
+    ) {
+      const todaysDate = moment().unix();
+      const checkDate = moment(completetionToDate.date).unix();
+      const fromDate = moment(completetionFromDate.date).unix();
       const epochMicrotimeDiff = 621355968000000000;
       const unixDateFrom = Math.round(fromDate * 1000 * 10000);
       const unixDateCheck = Math.round(checkDate * 1000 * 10000);
       const newUnixStampFrom = unixDateFrom + epochMicrotimeDiff;
       const newUnixStampTo = unixDateCheck + epochMicrotimeDiff;
-      if(checkDate === todaysDate ){
-        filter = ["all", [">=",["get", "completionDate"] ,newUnixStampFrom], ["<=",["get", "completionDate"] , newUnixStampTo]];
-      } else{
-        const fromDate = moment(completetionFromDate.date).unix()
-        const toDate =  moment(completetionToDate.date).unix()
+      if (checkDate === todaysDate) {
+        filter = [
+          "all",
+          [">=", ["get", "completionDate"], newUnixStampFrom],
+          ["<=", ["get", "completionDate"], newUnixStampTo]
+        ];
+      } else {
+        const fromDate = moment(completetionFromDate.date).unix();
+        const toDate = moment(completetionToDate.date).unix();
         const epochMicrotimeDiff = 621355968000000000;
         const unixFrom = Math.round(fromDate * 1000 * 10000);
-        const unixTo = Math.round(toDate * 1000 * 10000)
+        const unixTo = Math.round(toDate * 1000 * 10000);
         const newUnixStampFrom = unixFrom + epochMicrotimeDiff;
         const newUnixStampTo = unixTo + epochMicrotimeDiff;
-        filter = ["all", [">=", ["get", "completionDate"]  ,newUnixStampFrom], ["<=", ["get", "completionDate"] ,newUnixStampTo]];
+        filter = [
+          "all",
+          [">=", ["get", "completionDate"], newUnixStampFrom],
+          ["<=", ["get", "completionDate"], newUnixStampTo]
+        ];
       }
     } else {
       filter = null;
     }
     console.log("Completetion Range dates change filter", filter);
-    setStateNav(stateNav => ({ ...stateNav, filterCompletetionDateRange: filter }));
-}, [completetionFromDate.date, completetionToDate.date, setStateNav]);
+    setStateNav(stateNav => ({
+      ...stateNav,
+      filterCompletetionDateRange: filter
+    }));
+  }, [completetionFromDate.date, completetionToDate.date, setStateNav]);
 
   useEffect(() => {
     if (completetionFromDate.check === true) {
@@ -121,71 +133,73 @@ export default function FilterDatePickerCompletetion(props) {
   }, [setvaluesTo, dateTypeName, setvaluesFrom]);
 
   const handleStartDate = date => {
-
     if (date === null) {
-      const formatDateReset = moment().subtract(120, 'Years');
+      const formatDateReset = moment().subtract(120, "Years");
       setStateNav(stateNav => ({
         ...stateNav,
         completetionDateFrom: null,
-        filterCompletetionDateRange: null,
+        filterCompletetionDateRange: null
       }));
       handleStartDateChang(formatDateReset);
     } else {
-    const formatDateAfter = moment(date)
-    let dateName = [];
-    setCompletetionFromDate({ check: true, date: formatDateAfter });
-    handleStartDateChang(formatDateAfter);
-    dateName.push("CompletetionDate");
-    setDateTypeName(dateName);
-    setStateNav(stateNav => ({
-      ...stateNav,
-      completetionDateFrom: formatDateAfter,
-      dateTypeName: dateName
-    }));
-  }
+      const formatDateAfter = moment(date);
+      let dateName = [];
+      setCompletetionFromDate({ check: true, date: formatDateAfter });
+      handleStartDateChang(formatDateAfter);
+      dateName.push("CompletetionDate");
+      setDateTypeName(dateName);
+      setStateNav(stateNav => ({
+        ...stateNav,
+        completetionDateFrom: formatDateAfter,
+        dateTypeName: dateName
+      }));
+    }
   };
- 
+
   const handleEndDate = date => {
     if (date === null) {
       const formatDateReset = moment();
-      setStateNav(stateNav => ({ ...stateNav, completetionDateTo: null, filterCompletetionDateRange: null, }));
+      setStateNav(stateNav => ({
+        ...stateNav,
+        completetionDateTo: null,
+        filterCompletetionDateRange: null
+      }));
       handleEndDateChange(formatDateReset);
       return;
     } else {
-    const newDateAfter = moment(date)
-    let dateName = [];
-    setCompletetionToDate({ check: true, date: newDateAfter });
-    handleEndDateChange(newDateAfter);
-    dateName.push("CompletetionDate");
-    setDateTypeName(dateName);
-    setStateNav(stateNav => ({
-      ...stateNav,
-      completetionDateTo: newDateAfter,
-      dateTypeName: dateName
-    }));
-  }
+      const newDateAfter = moment(date);
+      let dateName = [];
+      setCompletetionToDate({ check: true, date: newDateAfter });
+      handleEndDateChange(newDateAfter);
+      dateName.push("CompletetionDate");
+      setDateTypeName(dateName);
+      setStateNav(stateNav => ({
+        ...stateNav,
+        completetionDateTo: newDateAfter,
+        dateTypeName: dateName
+      }));
+    }
   };
-  
+
   return (
     <div className={classes.root}>
       <div className={classes.datesRow}>
         <KeyboardDatePicker
           label={props.labelDates + " " + "From"}
           className={classes.datePicker}
-          maxDate={moment().subtract(1, 'day')}
+          maxDate={moment().subtract(1, "day")}
           variant="inline"
           value={selectedStartDate}
           onChange={date => handleStartDate(date)}
-
           //inputVariant="outlined"
-          minDateMessage = 'Date should not be before minimal date'
-          maxDateMessage = 'Date should not be after max date'
+          minDateMessage="Date should not be before minimal date"
+          maxDateMessage="Date should not be after max date"
           disableToolbar
-          KeybardButtonProps = {{'aria-label':'change date'}}
-          autoOk = 'true'
+          KeybardButtonProps={{ "aria-label": "change date" }}
+          autoOk="true"
           format="MM/DD/YYYY"
-          // orientation = 'landscape'
-          // margin = 'normal'
+          PopoverProps={{ disablePortal: true }}
+          fullWidth={true}
         />
 
         <KeyboardDatePicker
@@ -194,21 +208,17 @@ export default function FilterDatePickerCompletetion(props) {
           variant="inline"
           value={selectedEndDate}
           onChange={date => handleEndDate(date)}
-
-
           //inputVariant="outlined"
-          minDateMessage = 'Date should not be before minimal date'
-          maxDateMessage = 'Date should not be after max date'
+          minDateMessage="Date should not be before minimal date"
+          maxDateMessage="Date should not be after max date"
           disableToolbar
-          KeybardButtonProps = {{'aria-label':'change date'}}
-          autoOk = 'true'
+          KeybardButtonProps={{ "aria-label": "change date" }}
+          autoOk="true"
           format="MM/DD/YYYY"
-          // orientation = 'landscape'
-          // margin = 'normal'
+          PopoverProps={{ disablePortal: true }}
+          fullWidth={true}
         />
       </div>
     </div>
   );
 }
-
-

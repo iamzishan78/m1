@@ -11,8 +11,10 @@ import { Card, Button } from "@material-ui/core";
 
 const localStyles = makeStyles(theme => ({
   conatiner: {
-    padding: 50,
-    display: "flex",
+    paddingTop: 80,
+    margin: "0 auto",
+    height: "100%",
+    // display: "flex",
     justifyContent: "center"
   },
   card: {
@@ -52,7 +54,7 @@ const localStyles = makeStyles(theme => ({
   },
   links: {
     marginTop: 10,
-    marginBottom: 30
+    marginBottom: 20
   },
   cardForm: {
     display: "contents",
@@ -231,9 +233,9 @@ export default function NewUserCard(props) {
               style={{
                 fontSize: "1.2em",
                 color: "white",
-                marginTop: 30,
+                marginTop: 10,
                 backgroundColor: "rgba(23, 170, 221, 1)",
-                marginBottom: 15,
+                marginBottom: 5,
                 width: "20vw"
               }}
             >

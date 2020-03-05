@@ -16,21 +16,16 @@ import SignInCard from "./SignInCard";
 //import { LOGINQUERY } from "../../graphQL/useQueryLogin";
 
 const useStyles = makeStyles(theme => ({
-  content: {
-    height: "100vh",
-    width: "100vw",
-    backgroundSize: "cover",
-    justifyContent: "center",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center",
-    display: "flex!important"
-  },
   myRoot : {
     width: "100vw",
-    height: "100vh",
+    height: "100%",
     display: "flex!important",
     backgroundSize: "cover",
     justifyContent: "center",
+    backgroundImage: `url(${BackgroundURI})`,
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+
     '&::-webkit-scrollbar': {
       width: '0 !important'
      },
@@ -124,14 +119,7 @@ const Login = props => {
 
   return (
     <div className={classes.myRoot}>
-      <CardMedia
-        media="img"
-        image={BackgroundURI}
-       // alt="Oil Dereks"
-        className={classes.content}
-      >
-       <SignInCard handleSignIn={handledSignIn} ready={loading} />;
-      </CardMedia>
+       <SignInCard handleSignIn={handledSignIn} ready={loading} />
     </div>
   );
 };
