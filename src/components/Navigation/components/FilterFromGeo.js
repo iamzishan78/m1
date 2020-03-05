@@ -6,16 +6,18 @@ import FilterCountyName from "./FilterCountyName";
 import FilterSurvey from "./FilterSurvey";
 import FilterAbstract from "./FilterAbstract";
 
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
+// import InputLabel from "@material-ui/core/InputLabel";
+// import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import Checkbox from "@material-ui/core/Checkbox";
-import ListItemText from "@material-ui/core/ListItemText";
-import Chip from "@material-ui/core/Chip";
+// import Select from "@material-ui/core/Select";
+// import Checkbox from "@material-ui/core/Checkbox";
+// import ListItemText from "@material-ui/core/ListItemText";
+// import Chip from "@material-ui/core/Chip";
 
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
+// import Autocomplete from '@material-ui/lab/Autocomplete';
+// import TextField from '@material-ui/core/TextField';
+import BasinFilterJ from "./FilterBasin";
+import PlayFilterJ from "./FilterPlay";
 
 
 const useStyles = makeStyles(theme => ({
@@ -63,7 +65,7 @@ const useStyles = makeStyles(theme => ({
 
 // const ITEM_HEIGHT = 48;
 // const ITEM_PADDING_TOP = 8;
-const MenuProps = {
+/* const MenuProps = {
   disablePortal: true,
   PaperProps: {
     style: {
@@ -74,12 +76,12 @@ const MenuProps = {
       width: 250
     }
   }
-};
+}; */
 
 
 
 
-const basinList = [
+/* const basinList = [
   "PERMIAN",
   "Permian",
   "FORT WORTH",
@@ -104,9 +106,9 @@ const basinListObjects = [
     id: "Permian",
     name: "Permian",
   },
-];
+]; */
 
-
+/* 
 function getStyles(name, personName, theme) {
   return {
     fontWeight:
@@ -115,28 +117,28 @@ function getStyles(name, personName, theme) {
         : theme.typography.fontWeightMedium
   };
 }
-
+ */
 
 export default function FilterFormGeo() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const theme = useTheme();
+  // const theme = useTheme();
 
-  const [basinName, setBasinName] = React.useState(
-    stateNav.basinName ? stateNav.basinName : []
-  );
+  // const [basinName, setBasinName] = React.useState(
+  //   stateNav.basinName ? stateNav.basinName : []
+  // );
 
-  const inputLabel = useRef(null);
-  const [labelWidth, setLabelWidth] = useState(0);
+  // const inputLabel = useRef(null);
+  // const [labelWidth, setLabelWidth] = useState(0);
 
-    useEffect(() => {
-    setLabelWidth(inputLabel.current.offsetWidth);
-  }, []);
+  //   useEffect(() => {
+  //   setLabelWidth(inputLabel.current.offsetWidth);
+  // }, []);
 
-  const [basins, setBasins] = React.useState(basinList);
+  // const [basins, setBasins] = React.useState(basinList);
 
 
-  const setFilterBasin = basinNames => {
+/*   const setFilterBasin = basinNames => {
     let basinIds = [];
     basinNames.forEach(basinName => {
       basinListObjects.forEach(basinObj => {
@@ -155,7 +157,7 @@ export default function FilterFormGeo() {
     console.log("basin change filter", filter);
     setStateNav(stateNav => ({ ...stateNav, filterBasin: filter }));
   };
-
+ */
 
 
 
@@ -224,7 +226,7 @@ export default function FilterFormGeo() {
     stateNav.surveyName
   ]);
 
-
+/* 
   const handleChangeBasin = event => {
     console.log(event.target.value);
     setBasinName(event.target.value);
@@ -242,10 +244,10 @@ export default function FilterFormGeo() {
 
 
 
+ */
 
 
-
-
+/* 
   const handleBasinChange = value => {
     let filter;
     if(value) {
@@ -259,21 +261,30 @@ export default function FilterFormGeo() {
     }
      setStateNav(stateNav => ({ ...stateNav, filterBasin: filter}))
    };
-
+ */
 
 
 
   return (
     <div className={classes.row}>
       <div className={classes.root}>
-        <FilterStateName />
-        <FilterCountyName />
-        <FilterSurvey />
-        <FilterAbstract />
+
+      <FormControl variant="outlined" className={classes.formControl}>
+         <BasinFilterJ/>
+      </FormControl> 
+
+      <FormControl variant="outlined" className={classes.formControl}>
+         <PlayFilterJ/>
+      </FormControl> 
+
+      <FilterStateName />
+      <FilterCountyName />
+      <FilterSurvey />
+      <FilterAbstract />
 
 
 
-        <FormControl variant="outlined" className={classes.formControl}>
+{/*         <FormControl variant="outlined" className={classes.formControl}>
           <InputLabel ref={inputLabel} htmlFor="select-multiple-chip-basin">
             Basin
           </InputLabel>
@@ -315,28 +326,11 @@ export default function FilterFormGeo() {
               </MenuItem>
             ))}
           </Select>
-        </FormControl>
+        </FormControl> */}
 
 
 
 
-       <FormControl variant="outlined" className={classes.formControl}>
-         <Autocomplete 
-          onChange={(event, newValue) => {
-               handleBasinChange(newValue);
-             }}
-          multiple
-          options={basinList}
-          renderInput={params => (
-            <TextField
-              {...params}
-              variant="outlined"
-              label="Jacob's Basin Filter"
-              placeholder="PERMIAN"
-              fullWidth
-            />
-          )}  />
-      </FormControl> 
 
 
       </div>
