@@ -907,7 +907,7 @@ export default function FilterFormProduction() {
           <ProductionSliderJ
             id="cumulativeWater"
             min={0}
-            max={cumulativeOil}
+            max={max.cumulativeOil}
           />
         </FormControl>
 
