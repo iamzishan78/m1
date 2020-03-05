@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Card, TextField, Button, Typography } from "@material-ui/core";
 import CircularProgress from '@material-ui/core/CircularProgress';
+import ForgotPassword from './ForgotPassword';
 // COMPONENTS
 //import M1neralIconSvg from "../../ui_Elements/m1neralIconSvg";
 // HELPERS
@@ -96,6 +97,14 @@ const useStyles = makeStyles(theme => ({
     textDecoration: "none",
     color: theme.palette.secondary.main,
     cursor: "pointer"
+  },
+  passwordLink: {
+    textDecoration: "none",
+    color: "#FFFF",
+    cursor: "pointer",
+    "&:hover" : {
+      color: theme.palette.secondary.main,
+    }
   },
   loader: {
     marginLeft: "45%",
@@ -240,7 +249,7 @@ const SignInCard = props => {
           {renderButtonAndLoader}
           <div className={classes.secondaryInputs}>
             {/* <div>Remember Me</div> */}
-            <div>Forgot Password?</div>
+            <Link to="/forgotpassword" className={classes.passwordLink}>Forgot Password?</Link>
           </div>
         </div>
         <div className={classes.cardFooter}>
