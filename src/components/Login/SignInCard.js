@@ -188,9 +188,10 @@ const SignInCard = props => {
         <Button
           variant="outlined"
           disableElevation
+          type="submit"
           className={classes.button}
-          onClick={signIn}
-          onKeyDown={e => onEnterKey(e)}
+          // onClick={signIn}
+          
             >
             Sign In
           </Button>
@@ -209,6 +210,7 @@ const SignInCard = props => {
           <div style={{ marginTop: "5px", fontSize: "1.7rem" }}>Sign In</div>
         </div>
         <div className={classes.cardInputs}>
+        <form onSubmit={signIn} onKeyDown={e => onEnterKey(e)}>
           <TextField
             type="email"
             label="Email"
@@ -248,6 +250,7 @@ const SignInCard = props => {
             
           />
           {renderButtonAndLoader}
+          </form>
           <div className={classes.secondaryInputs}>
             {/* <div>Remember Me</div> */}
             <Link to="/forgotpassword" className={classes.passwordLink}>Forgot Password?</Link>
