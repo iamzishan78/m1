@@ -168,10 +168,10 @@ const ForgotPassword = props => {
         <div style={{ paddingLeft: "3vw"}}>Your Email</div>
          <TextField
            type="email"
-           label="example@mail.com"
+          //  label="email"
            variant="filled"
            error={emailFlags.error}
-        //    placeholder=""
+           placeholder="example@mail.com"
            autoFocus={emailFlags.autoFocus}
            autoComplete= "true"
            className={classes.inputs}

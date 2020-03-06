@@ -190,6 +190,7 @@ const SignInCard = props => {
           disableElevation
           className={classes.button}
           onClick={signIn}
+          onKeyDown={e => onEnterKey(e)}
             >
             Sign In
           </Button>

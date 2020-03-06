@@ -89,41 +89,41 @@ export default function NewUserCard(props) {
 
   const handleSubmit = e => {
     e.preventDefault();
-    alert(
-      "Node App Not Deployed, But Here is Your Info",
-      userName,
-      userCompany,
-      userPhoneNum,
-      userTitle,
-      userEmail
-    );
-    setSent(true);
-    // const name = userName
-    // const email = userEmail
-    // const company = userCompany
-    // const phone = userPhoneNum
-    // const title = userTitle
-    // fetch("http://localhost:3002/send", {
-    //     method: "POST",
-    //     headers: {
-    //       Accept: 'application/json',
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body:JSON.stringify({
-    //         name: name,
-    //         email: email,
-    //         title: title,
-    //         company: company,
-    //         phone: phone,
-    //     }),
-    // }).then((response )=>{
-    //     if (response.status === 200){
-    //         setSent(true)
+    // alert(
+    //   "Node App Not Deployed, But Here is Your Info",
+    //   userName,
+    //   userCompany,
+    //   userPhoneNum,
+    //   userTitle,
+    //   userEmail
+    // );
+    // setSent(true);
+    const name = userName
+    const email = userEmail
+    const company = userCompany
+    const phone = userPhoneNum
+    const title = userTitle
+    fetch("http://localhost:3002/send", {
+        method: "POST",
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body:JSON.stringify({
+            name: name,
+            email: email,
+            title: title,
+            company: company,
+            phone: phone,
+        }),
+    }).then((response )=>{
+        if (response.status === 200){
+            setSent(true)
 
-    //     }else if(response.status !==  200){
-    //         alert("Message failed to send.")
-    //     }
-    // }).catch(err => console.log(err))
+        }else if(response.status !==  200){
+            alert("Message failed to send.")
+        }
+    }).catch(err => console.log(err))
   };
 
   useEffect(() => {
