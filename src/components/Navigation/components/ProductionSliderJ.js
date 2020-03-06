@@ -115,12 +115,15 @@ export default function ProductionSlider(props) {
     stateNav.prodTypeName ? stateNav.prodTypeName : []
   );
   // const [check, setCheck] = useState(false);
+  const [value, setValue] = useState([0,props.max]);
+
 
   useEffect(() => {
     const setFilter = () => {
       let currentValue = [];
       currentValue.push(valueMin, valueMax);
       //create ids for varying months
+      
       let filter;
       let selectedMin = valueMin;
       let selectedMax = valueMax;
@@ -391,15 +394,23 @@ export default function ProductionSlider(props) {
     }
   };
 
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+  const handleChangeMouseUp = (event, newValue) => {
+    //console.log(newValue)
+    setValue(newValue);
+    //setFilter(newValue)
+  };
 
   const marks = [
     {
       value: 0,
-      label: '0',
+      label: 0,
     },
     {
-      value: 100,
-      label: '100',
+      value: max,
+      label: max,
     },
   ];
 
@@ -412,10 +423,12 @@ export default function ProductionSlider(props) {
       //track = {false}
       valueLabelDisplay="auto" 
       aria-label="pretto slider" 
-      defaultValue={[20,40]}
+      defaultValue={[0.20*max,0.40*max]}
       valueLabelDisplay='on'
       min={0}
-      max={100}
+      max={max}
+      onChange={handleChange}
+      onChangeCommitted={handleChangeMouseUp}
       marks = {marks}
         />
     </div>
