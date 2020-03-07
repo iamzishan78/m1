@@ -160,8 +160,7 @@ export default function WellCardDetails(props) {
   );
 
   return stateApp.selectedWell ? (
-    <Card >
-
+    <Card>
       {/* <CardHeader
         classes={{
           title: classes.title,
@@ -312,14 +311,22 @@ export default function WellCardDetails(props) {
 
           <Grid item sm={12}>
             <Taps
-              tabLabels={["Well", "Owners", "Property History", "Title","Documents"]}
+              tabLabels={[
+                "Well",
+                "Owners",
+                "Property History",
+                "Title",
+                "Documents"
+              ]}
               tabPanels={[
                 wellInfo(),
                 <OwnersProvider
                   selectedWell={stateApp.selectedWell}
                   parent="well"
                 />,
-                <h3>Coming Soon</h3>
+                <h3>Coming Soon-</h3>,
+                <h3>Coming Soon--</h3>,
+                <h3>Coming Soon---</h3>
               ]}
             />
           </Grid>
