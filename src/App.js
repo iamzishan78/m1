@@ -13,6 +13,7 @@ import TrackProvider from "./components/Track/TrackProvider";
 import TransactProvider from "./components/Transact/TransactProvider";
 import TitleProvider from "./components/Title/TitleProvider";
 import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider";
+import ContactsProvider from "./components/Contacts/ContactsProvider";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
 import { Redirect } from "react-router";
 
@@ -106,6 +107,7 @@ function App() {
                   <PrivateRoute exact path="/title" component={TitleProvider}/> 
                   <PrivateRoute exact path="/alerts" component={AlertsProvider}/>
                   <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider}/>
+                  <PrivateRoute exact path="/contacts" component={ContactsProvider}/>
                 </NavigationProvider>
               </Switch>
             </Router>
