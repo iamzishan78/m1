@@ -190,8 +190,8 @@ const SignInCard = props => {
           disableElevation
           type="submit"
           className={classes.button}
-          // onClick={signIn}
-          
+          onClick={signIn}
+          onKeyDown={e => onEnterKey(e)}
             >
             Sign In
           </Button>
@@ -220,7 +220,7 @@ const SignInCard = props => {
             autoFocus={emailFlags.autoFocus}
             autoComplete= "true"
             
-            
+            onKeyDown={e => onEnterKey(e)}
             className={classes.inputs}
             onChange={e => setUserEmail(e.target.value)}
             onBlur={() => validateData("email", userEmail, setEmailFlags)}
