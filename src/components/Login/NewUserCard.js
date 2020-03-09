@@ -31,13 +31,6 @@ const localStyles = makeStyles(theme => ({
     padding: "20px 40px",
     textAlign: "center"
   },
-  // cardInputs: {
-  //   height: "80%",
-  //   display: "flex",
-  //   flexDirection: "column",
-  //   justifyContent: "space-evenly",
-  //   alignItems: "center"
-  // },
   cardFooter: {
     height: "15%",
     color: "white",
@@ -52,6 +45,16 @@ const localStyles = makeStyles(theme => ({
     pointerEvents: "all",
     margin: "2% 10%"
   },
+  inputsName: {
+    backgroundColor: theme.palette.background.paper,
+    width: "39%",
+    position: "relative",
+    borderBottom: "1px solid rgba(0, 0, 0, 0.42)",
+    pointerEvents: "all",
+    margin: "1% 1%",
+    display: "inline-flex",
+    // flexDirection: "row",
+  },
   links: {
     marginTop: 10,
     marginBottom: 20
@@ -59,13 +62,16 @@ const localStyles = makeStyles(theme => ({
   cardForm: {
     display: "contents",
     pointerEvents: "all"
-  }
+  },
 }));
+
+
 
 export default function NewUserCard(props) {
   const classes = useStyles();
   const localClass = localStyles();
   const [userName, setUserName] = useState("");
+  const [userLastName, setUserlastName] = useState("");
   const [userCompany, setUserCompany] = useState("");
   const [userTitle, setUserTitle] = useState("");
   const [userPhoneNum, setUserPhoneNum] = useState();
@@ -90,15 +96,11 @@ export default function NewUserCard(props) {
   const handleSubmit = e => {
     e.preventDefault();
     alert(
-      "Node App Not Deployed, But Here is Your Info",
-      userName,
-      userCompany,
-      userPhoneNum,
-      userTitle,
-      userEmail
+      "Node App Not Deployed"
     );
     setSent(true);
     // const name = userName
+    // const lastName = userLastName
     // const email = userEmail
     // const company = userCompany
     // const phone = userPhoneNum
@@ -111,6 +113,7 @@ export default function NewUserCard(props) {
     //     },
     //     body:JSON.stringify({
     //         name: name,
+              // lastName: lastName,
     //         email: email,
     //         title: title,
     //         company: company,
@@ -128,23 +131,20 @@ export default function NewUserCard(props) {
 
   useEffect(() => {
     ValidatorForm.addValidationRule("shortName", value => {
-      if (value && userName.length < 3) {
+      if (value && userName.length < 2) {
         return false;
       } else {
         return true;
       }
     });
 
-    ValidatorForm.addValidationRule("testPhone", value => {
-      const regex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
-      if (regex.test(value)) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-  }, [userName.length, userPhoneNum]);
-
+  }, [userName.length]);
+  console.log(userName,
+    userLastName,
+    userCompany,
+    userPhoneNum,
+    userTitle,
+    userEmail)
   return !sent ? (
     <div className={localClass.conatiner}>
       <Card color="secondary" className={localClass.card}>
@@ -160,14 +160,24 @@ export default function NewUserCard(props) {
             method="POST"
           >
             <TextValidator
-              className={localClass.inputs}
+              className={localClass.inputsName}
               type="text"
-              label="Full Name"
+              label="Fist Name"
               variant="filled"
               validators={["shortName", "required"]}
               errorMessages={["this field is required", "Name is not valid"]}
               onChange={e => setUserName(e.target.value)}
               value={userName}
+            />
+            <TextValidator
+              className={localClass.inputsName}
+              type="text"
+              label="Last Name"
+              variant="filled"
+              validators={["shortName", "required"]}
+              errorMessages={["this field is required", "Last Name is not valid"]}
+              onChange={e => setUserlastName(e.target.value)}
+              value={userLastName}
             />
             <TextValidator
               className={localClass.inputs}
@@ -204,7 +214,7 @@ export default function NewUserCard(props) {
               type="text"
               label="Phone Number"
               variant="filled"
-              validators={["testPhone", "required"]}
+              validators={["required"]}
               errorMessages={["this field is required"]}
               onChange={e => setUserPhoneNum(e.target.value)}
               value={userPhoneNum}

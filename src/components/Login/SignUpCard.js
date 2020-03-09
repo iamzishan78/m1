@@ -195,7 +195,7 @@ const SignUpCard = props => {
             // className={localClass.buttonDisable}
             style={{
               color: "white",
-              backgroundColor: "darkgray",
+              backgroundColor: "rgb(98, 93, 113)",
               marginTop: 20,
               marginBottom: 15,
               width: "15vw"
