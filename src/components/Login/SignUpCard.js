@@ -32,7 +32,7 @@ const localStyles = makeStyles(theme => ({
     fontFamily: theme.typography.fontFamily
   },
   titleTop: {
-    marginTop: "80px",
+    marginTop: "25px",
     fontSize: "3em",
     color: "#FFFF",
     fontFamily: theme.typography.fontFamily

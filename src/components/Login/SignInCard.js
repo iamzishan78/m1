@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.secondary.contrastText,
     display: "flex",
     justifyContent: "center",
-    marginTop:" 80px",
+    marginTop:"20px",
   },
   card: {
     width: "35vw",

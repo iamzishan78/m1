@@ -11,7 +11,7 @@ import { Card, Button } from "@material-ui/core";
 
 const localStyles = makeStyles(theme => ({
   conatiner: {
-    paddingTop: 80,
+    paddingTop: 20,
     margin: "0 auto",
     height: "100%",
     // display: "flex",
