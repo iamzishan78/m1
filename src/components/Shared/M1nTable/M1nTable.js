@@ -367,46 +367,43 @@ export default function Contacts(props) {
   /////temporary /////
 
   const ContactExample = {
-    basic: {
-      id: "1234",
-      name: "James",
-      lastName: "Sampleton",
-      accounts: ["Widgetz.io (sample)"],
-      emails: ["jamessampleton@gmail.com"],
-      salesOwner: "Jacob Avery",
-      phones: [
-        { id: "Work", phone: "(473)-160-8265" },
-        { id: "Mobile", phone: "1-926-555-9503" }
-      ]
-    },
-    others: {
-      jobTitle: "CEO",
-      department: "Engineering",
-      status: "Qualified Lead",
-      doNotDisturb: "No",
-      addres: "1552 camp st",
-      zipcode: 92093,
-      openDealsAmount: "$ 7,000.00",
-      createAt: "11 days ago"
-    }
+    id: "1234",
+    name: "James",
+    lastName: "Sampleton",
+    account: "Widgetz.io (sample)",
+    email: "jamessampleton@gmail.com",
+    salesOwner: "Jacob Avery",
+    workPhone: "(473)-160-8265",
+    mobilePhone: "1-926-555-9503",
+    jobTitle: "CEO",
+    department: "Engineering",
+    status: "Qualified Lead",
+    doNotDisturb: "No",
+    addres: "1552 camp st",
+    zipcode: 92093,
+    openDealsAmount: "$ 7,000.00",
+    createAt: "11 days ago"
   };
 
   useEffect(() => {
     if (props.parent && props.parent === "Contacts") {
       setRows([
         {
-          id: ContactExample.basic.id,
-          name: `${ContactExample.basic.name} ${ContactExample.basic.lastName}`,
-          email: ContactExample.basic.emails[0],
-          phone: ContactExample.basic.phones[0].phone,
-          openDealsAmount: ContactExample.others.openDealsAmount,
-          salesOwner: ContactExample.basic.salesOwner,
-          createAt: ContactExample.others.createAt
+          id: ContactExample.id,
+          name: `${ContactExample.name} ${ContactExample.lastName}`,
+          email: ContactExample.email,
+          phone: ContactExample.mobilePhone,
+          openDealsAmount: ContactExample.openDealsAmount,
+          salesOwner: ContactExample.salesOwner,
+          createAt: ContactExample.createAt
         }
       ]);
       setHeader("Contacts");
       setColumns(ContactsHeadCells);
-      setAddAble(false);
+      setAddAble({
+        externalAdd: true,
+        externalAddFunction: props.externalAddFunction
+      });
     }
   }, []);
 
@@ -463,7 +460,10 @@ export default function Contacts(props) {
   //       setRows(dataContacts.contacts.results);
   //       setHeader("Contacts");
   //       setColumns(ContactsHeadCells);
-  //       setAddAble(false);
+  //       setAddAble({
+  //    externalAdd: true,
+  //    externalAddFunction: props.externalAddFunction
+  //  });
   //     } else {
   //       setRows([]);
   //     }
@@ -473,7 +473,6 @@ export default function Contacts(props) {
   /////temporary end/////
 
   ////////////Contacts end///////////////////////////////////////////////
-
   return (
     <Container maxWidth="xl" className={classes.container}>
       <TableProvider

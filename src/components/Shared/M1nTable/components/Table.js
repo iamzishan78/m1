@@ -38,6 +38,7 @@ import gql from "graphql-tag";
 import ChatIcon from "@material-ui/icons/Chat";
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";
+import { JsxEmit } from "typescript";
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -294,8 +295,10 @@ const EnhancedTableToolbar = props => {
           <Tooltip title="Add">
             <IconButton
               color="primary"
-              onClick={() => {
-                setShowAdd(true);
+              onClick={e => {
+                props.addAble.externalAdd
+                  ? props.addAble.externalAddFunction(e)
+                  : setShowAdd(true);
               }}
               aria-label="add"
             >

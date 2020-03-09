@@ -2,15 +2,16 @@ import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../AppContext";
 import { Container } from "@material-ui/core";
-import M1nTable from "../Shared/M1nTable/M1nTable";
 import ContactInfoScreen from "./components/ContactInfoScreen";
-import RightDialog from "./components/RightDialog"
+import ContactsTableAndAddDialog from "./components/ContactsTableAndAddDialog";
 
 const useStyles = makeStyles(theme => ({
   container: {
     paddingLeft: "0 !important",
     paddingRight: "0 !important",
-    height:"91.1876355%"
+    // height: "91.1876355%"
+    height: "100%"
+
   }
 }));
 
@@ -27,12 +28,11 @@ export default function Contacts() {
 
   return (
     <Container maxWidth="xl" className={classes.container}>
-      {stateApp.selectedContact===null ? (
-        <M1nTable parent="Contacts" />
+      {stateApp.selectedContact === null ? (
+        <ContactsTableAndAddDialog />
       ) : (
         <ContactInfoScreen />
       )}
-      {/* <RightDialog/> */}
     </Container>
   );
 }

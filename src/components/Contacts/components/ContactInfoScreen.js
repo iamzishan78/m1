@@ -90,28 +90,22 @@ export default function Contacts() {
   const [stateApp, setStateApp] = useContext(AppContext);
 
   const ContactExample = {
-    basic: {
-      id: "1234",
-      name: "James",
-      lastName: "Sampleton",
-      accounts: ["Widgetz.io (sample)"],
-      emails: ["jamessampleton@gmail.com"],
-      salesOwner: "Jacob Avery",
-      phones: [
-        { id: "Work", phone: "(473)-160-8265" },
-        { id: "Mobile", phone: "1-926-555-9503" }
-      ]
-    },
-    others: {
-      jobTitle: "CEO",
-      department: "Engineering",
-      status: "Qualified Lead",
-      doNotDisturb: "No",
-      addres: "1552 camp st",
-      zipcode: 92093,
-      openDealsAmount: "$ 7,000.00",
-      createAt: "11 days ago"
-    }
+    id: "1234",
+    name: "James",
+    lastName: "Sampleton",
+    account: "Widgetz.io (sample)",
+    email: "jamessampleton@gmail.com",
+    asignedTo: "Jacob Avery",
+    workPhone: "(473)-160-8265",
+    mobilePhone: "1-926-555-9503",
+    jobTitle: "CEO",
+    department: "Engineering",
+    status: "Qualified Lead",
+    doNotDisturb: "No",
+    address: "1552 camp st",
+    zipcode: 92093,
+    openDealsAmount: "$ 7,000.00",
+    createAt: "11 days ago"
   };
 
   return (
@@ -130,22 +124,20 @@ export default function Contacts() {
           >
             Contacts
           </span>
-          {` > ${ContactExample.basic.name} ${ContactExample.basic.lastName}`}
+          {` > ${ContactExample.name} ${ContactExample.lastName}`}
         </h3>
         <Grid item container>
           <Grid item xs={12} className={classes.border}>
             <div>
               <div className={classes.userIcon}>
                 <h1 className={classes.userIconText}>
-                  {`${ContactExample.basic.name[0]}${ContactExample.basic.lastName[0]}`}
+                  {`${ContactExample.name[0]}${ContactExample.lastName[0]}`}
                 </h1>
               </div>
               <div className={classes.userName}>
-                <h2>
-                  {`${ContactExample.basic.name} ${ContactExample.basic.lastName}`}
-                </h2>
+                <h2>{`${ContactExample.name} ${ContactExample.lastName}`}</h2>
                 <h4>
-                  {`${ContactExample.others.jobTitle} - ${ContactExample.basic.accounts[0]}`}
+                  {`${ContactExample.jobTitle} - ${ContactExample.account}`}
                 </h4>
               </div>
             </div>
@@ -171,76 +163,73 @@ export default function Contacts() {
             spacing={1}
           >
             <Grid item xs={3}>
-              <p className="dataLabels">Emails</p>
+              <p className="dataLabels">Email</p>
             </Grid>
             <Grid item xs={3}>
-              <p>
-                {ContactExample.basic.emails.map(email => {
-                  return `${email} `;
-                })}
-              </p>
+              <p>{ContactExample.email}</p>
             </Grid>
 
             <Grid item xs={3}>
-              <p className="dataLabels">Sales owner</p>
+              <p className="dataLabels">Assigned To</p>
             </Grid>
             <Grid item xs={3}>
-              <p>{ContactExample.basic.salesOwner}</p>
+              <p>{ContactExample.asignedTo}</p>
             </Grid>
 
-            {ContactExample.basic.phones.map(each => {
-              return (
-                <Grid container item xs={6}>
-                  <Grid item xs={6}>
-                    <p className="dataLabels">{each.id}</p>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <p>{each.phone}</p>
-                  </Grid>
-                </Grid>
-              );
-            })}
-
             <Grid item xs={3}>
-              <p className="dataLabels">Addres</p>
+              <p className="dataLabels">Mobile Phone</p>
             </Grid>
             <Grid item xs={3}>
-              <p>{ContactExample.others.addres}</p>
+              <p>{ContactExample.mobilePhone}</p>
+            </Grid>
+
+            <Grid item xs={3}>
+              <p className="dataLabels">Work Phone</p>
+            </Grid>
+            <Grid item xs={3}>
+              <p>{ContactExample.workPhone}</p>
+            </Grid>
+
+            <Grid item xs={3}>
+              <p className="dataLabels">Address</p>
+            </Grid>
+            <Grid item xs={3}>
+              <p>{ContactExample.address}</p>
             </Grid>
 
             <Grid item xs={3}>
               <p className="dataLabels">Zipcode</p>
             </Grid>
             <Grid item xs={3}>
-              <p>{ContactExample.others.zipcode}</p>
+              <p>{ContactExample.zipcode}</p>
             </Grid>
 
             <Grid item xs={3}>
               <p className="dataLabels">Job Title</p>
             </Grid>
             <Grid item xs={3}>
-              <p>{ContactExample.others.jobTitle}</p>
+              <p>{ContactExample.jobTitle}</p>
             </Grid>
 
             <Grid item xs={3}>
               <p className="dataLabels">Department</p>
             </Grid>
             <Grid item xs={3}>
-              <p>{ContactExample.others.department}</p>
+              <p>{ContactExample.department}</p>
             </Grid>
 
             <Grid item xs={3}>
               <p className="dataLabels">Status</p>
             </Grid>
             <Grid item xs={3}>
-              <p>{ContactExample.others.status}</p>
+              <p>{ContactExample.status}</p>
             </Grid>
 
             <Grid item xs={3}>
               <p className="dataLabels">Do not disturb</p>
             </Grid>
             <Grid item xs={3}>
-              <p>{ContactExample.others.doNotDisturb}</p>
+              <p>{ContactExample.doNotDisturb}</p>
             </Grid>
           </Grid>
         </Grid>
