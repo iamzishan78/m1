@@ -85,7 +85,8 @@ const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
     width: "100%",
-    height: "100%"
+    height: "100%",
+    paddingTop:"64px"
   },
   appBar: {
     height: "64px",
@@ -677,7 +678,7 @@ export default function Navigation(props) {
   };
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} >
       <CssBaseline />
       <AppBar
         position="fixed"

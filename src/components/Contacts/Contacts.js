@@ -4,6 +4,7 @@ import { AppContext } from "../../AppContext";
 import { Container } from "@material-ui/core";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import ContactInfoScreen from "./components/ContactInfoScreen";
+import RightDialog from "./components/RightDialog"
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -31,6 +32,7 @@ export default function Contacts() {
       ) : (
         <ContactInfoScreen />
       )}
+      {/* <RightDialog/> */}
     </Container>
   );
 }
