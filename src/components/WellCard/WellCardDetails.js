@@ -50,8 +50,8 @@ const useStyles = makeStyles(theme => ({
   grid: {
     // height: "100%",
     width: "auto",
-    overflowY: "auto",
-    paddingBottom: "64px"
+    // overflowY: "auto",
+    // paddingBottom: "64px"
   },
   gridItem: {
     flexGrow: 1,
