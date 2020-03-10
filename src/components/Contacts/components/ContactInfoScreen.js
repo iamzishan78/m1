@@ -104,7 +104,7 @@ export default function Contacts() {
     doNotDisturb: "No",
     address: "1552 camp st",
     zipcode: 92093,
-    openDealsAmount: "$ 7,000.00",
+    openDealsAmount: "7000",
     createAt: "11 days ago"
   };
 

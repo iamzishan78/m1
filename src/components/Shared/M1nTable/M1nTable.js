@@ -48,7 +48,8 @@ const OwnersHeadCells = [
     id: "appraisedValue",
     numeric: true,
     disablePadding: false,
-    label: "Appraised Value"
+    label: "Appraised Value",
+    money: true
   },
   { id: "comments", numeric: false, disablePadding: false, label: "" },
   { id: "tags", numeric: false, disablePadding: false, label: "" },
@@ -85,7 +86,8 @@ const ContactsHeadCells = [
     id: "openDealsAmount",
     numeric: false,
     disablePadding: false,
-    label: "Open Deals Amount"
+    label: "Open Deals Amount",
+    money: true
   },
   {
     id: "salesOwner",
@@ -381,7 +383,7 @@ export default function Contacts(props) {
     doNotDisturb: "No",
     addres: "1552 camp st",
     zipcode: 92093,
-    openDealsAmount: "$ 7,000.00",
+    openDealsAmount: "7000",
     createAt: "11 days ago"
   };
 

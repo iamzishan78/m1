@@ -384,6 +384,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+var formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD"
+});
+
 export default function SubTable(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -531,7 +536,9 @@ export default function SubTable(props) {
                                   }));
                                 }}
                               >
-                                {row[column.id]}
+                                {column.money
+                                  ? formatter.format(row[column.id])
+                                  : row[column.id]}
                               </TableCell>
                             );
                           } else {
@@ -547,7 +554,9 @@ export default function SubTable(props) {
                                   }));
                                 }}
                               >
-                                {row[column.id]}
+                                {column.money
+                                  ? formatter.format(row[column.id])
+                                  : row[column.id]}
                               </TableCell>
                             );
                           }

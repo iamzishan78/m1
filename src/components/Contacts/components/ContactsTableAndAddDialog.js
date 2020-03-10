@@ -37,6 +37,7 @@ export default function ContactsTableAndAddDialog() {
       </Button>
 
       <RightDialog
+        style={{ zIndex: "100" }}
         open={dialogOpen}
         handleClickDialogClose={handleClickDialogClose}
         width="300px"

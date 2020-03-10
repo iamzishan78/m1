@@ -95,7 +95,9 @@ const useStyles = makeStyles(theme => ({
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
-    })
+    }),
+    paddingRight: "0 !important",
+
   },
   appBarShift: {
     marginLeft: drawerWidth,
@@ -680,7 +682,7 @@ export default function Navigation(props) {
   return (
     <div className={classes.root} >
       <CssBaseline />
-      <AppBar
+      <AppBar id="tetetetet"
         position="fixed"
         className={clsx(classes.appBar, {
           [classes.appBarShift]: openDrawer
