@@ -371,18 +371,25 @@ useEffect( () => {
       //create edge between tag and parent (owner, well, etc.)
   }
   const processNewTag = async (tagText) => {
-
+    let tagToAdd;
+    publicTags.forEach( (item) => {
+      if(item.tag === tagText) {
+        tagToAdd = item
+      }
+    })
+    if(!tagToAdd) {
+      tagToAdd = {
+        tag:tagText,
+        public:false
+      }
+    }
     //await upsertTag to cosmos
     //refresh getUserTags (private tags this user has an edge to) so they can select this tag again
     upsertTag(
-      {variables: {
-        tag: {
-        tag:tagText,
-        public:false
-      },
+      { variables: {tag: tagToAdd},
      // refetchQueries: ["getUserTags"],
-      awaitRefetchQueries: true
-    }})
+     // awaitRefetchQueries: true
+    })
     //use id returned from upsert to create edges
    
     //await create edge between tag and parent
