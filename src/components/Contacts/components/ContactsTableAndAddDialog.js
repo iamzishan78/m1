@@ -8,6 +8,7 @@ import M1nTable from "../../Shared/M1nTable/M1nTable";
 import { Grid } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
+import { AppContext } from "../../../AppContext"; ///////////
 
 const useStyles = makeStyles(theme => ({
   maxWidth: {
@@ -18,6 +19,7 @@ const useStyles = makeStyles(theme => ({
 export default function ContactsTableAndAddDialog() {
   const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [stateApp, setStateApp] = useContext(AppContext); /////////
 
   const handleClickDialogOpen = e => {
     e.preventDefault();
@@ -30,14 +32,13 @@ export default function ContactsTableAndAddDialog() {
 
   return (
     <div>
-      <M1nTable parent="Contacts" externalAddFunction={handleClickDialogOpen} />
-
-      <Button color="secondary" onClick={handleClickDialogOpen}>
-        Save
-      </Button>
+      <M1nTable
+        parent="Contacts"
+        // selectedWell={stateApp.selectedWell}
+        externalAddFunction={handleClickDialogOpen}
+      />
 
       <RightDialog
-        style={{ zIndex: "100" }}
         open={dialogOpen}
         handleClickDialogClose={handleClickDialogClose}
         width="300px"
