@@ -435,6 +435,15 @@ export default function Map() {
         geographyFilterCount += 1;
       }
 
+      if (
+        stateNav.filterPlay &&
+        stateNav.filterPlay.length > 0
+      ) {
+        filterArray.push(stateNav.filterPlay);
+        isFilterSet = true;
+        geographyFilterCount += 1;
+      }
+
 
 
       if (stateNav.filterPermitDateRange && stateNav.filterPermitDateRange.length > 0) {
@@ -549,11 +558,7 @@ export default function Map() {
         stateNav.filterInterestTypeRoyaltyInterest, 
         stateNav.filterInterestTypeWorkingInterest, 
 
-        // stateNav.filterBasinTypePermian, 
-        // stateNav.filterBasinTypeWesternGulf, 
-        // stateNav.filterBasinTypeFortWorth, 
 
-    
         stateNav.filterLastMonthGas, 
         stateNav.filterLastMonthOil, 
         stateNav.filterLastMonthWater, 
@@ -582,6 +587,7 @@ export default function Map() {
         stateNav.filterWellType,
 
         stateNav.filterBasin,
+        stateNav.filterPlay,
 
 
         stateNav.stateName, 

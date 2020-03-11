@@ -318,6 +318,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+var formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD"
+});
+
 export default function OwnerTable(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext)
@@ -639,7 +644,7 @@ useEffect( () => {
                       <TableCell align="left">{row.ownershipType}</TableCell>
                       <TableCell align="left">{row.interestType}</TableCell>
                       <TableCell align="left">{row.ownershipPercentage}</TableCell>
-                      <TableCell align="left">{row.appraisedValue}</TableCell>
+                      <TableCell align="left">{formatter.format(row.appraisedValue)}</TableCell>
                       
                       
                       

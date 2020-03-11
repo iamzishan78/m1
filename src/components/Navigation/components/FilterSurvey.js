@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
   formControl: {
     margin: "15px",
     minWidth: 249,
-    maxWidth: 250,
+    // maxWidth: 250,
     color: "black"
   },
   loader: {
@@ -113,6 +113,7 @@ export default function FilterSurvey({key}) {
               disableListWrap
               includeInputInList
               value={surveyName}
+              fullWidth={true}
               onChange={(event, newValue) => {
                 handleSurveyNameChange( event,newValue);
               }}

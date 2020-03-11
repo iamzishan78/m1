@@ -15,8 +15,9 @@ const AppProvider = props => {
     owners: null,
     popupOpen: false, //map used in flyto
     flyTo: null, //map used in flyto
-    selectedTitleOpinionId: null, 
-    featureOrMapShape: {}
+    selectedTitleOpinionId: null,
+    featureOrMapShape: {},
+    selectedContact: null
   });
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>

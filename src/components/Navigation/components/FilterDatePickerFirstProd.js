@@ -186,18 +186,17 @@ export default function FilterDatePickerFirstProd(props) {
           value={selectedStartDate}
           onChange={date => handleStartDate(date)}
           
-          inputVariant="outlined"
-
+          //inputVariant="outlined"
           minDateMessage = 'Date should not be before minimal date'
           maxDateMessage = 'Date should not be after max date'
           disableToolbar
-          KeybardButtonProps = {{'aria-label':'change date'}}
+          KeyboardButtonProps = {{'aria-label':'change date'}}
           autoOk = 'true'
           format="MM/DD/YYYY"
           // orientation = 'landscape'
           // margin = 'normal'
-          fullWidth={true}
-          
+          PopoverProps={{ disablePortal: true }}
+          fullWidth={true}          
         />
 
         <KeyboardDatePicker
@@ -208,16 +207,18 @@ export default function FilterDatePickerFirstProd(props) {
           variant="inline"
           value={selectedEndDate}
           onChange={date => handleEndDate(date)}
-          inputVariant="outlined"
+
+          //inputVariant="outlined"
           minDateMessage = 'Date should not be before minimal date'
           maxDateMessage = 'Date should not be after max date'
           disableToolbar
-          KeybardButtonProps = {{'aria-label':'change date'}}
+          KeyboardButtonProps = {{'aria-label':'change date'}}
           autoOk = 'true'
           format="MM/DD/YYYY"
           // orientation = 'landscape'
           // margin = 'normal'
-          fullWidth={true}
+          PopoverProps={{ disablePortal: true }}
+          fullWidth={true}          
           />
 
       </div>

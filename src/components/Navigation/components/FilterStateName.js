@@ -11,7 +11,7 @@ const useStyles = makeStyles(theme => ({
   formControl: {
     margin: "15px",
     minWidth: 249,
-    maxWidth: 250,
+    // maxWidth: 250,
     color: "black"
   },
 }));
@@ -68,6 +68,7 @@ export default function FilterStateName() {
               disableListWrap
               includeInputInList
               value={displayName}
+              fullWidth={true}
               onChange={(event, newValue) => {
                 handleStateNameChange( event,newValue);
               }}

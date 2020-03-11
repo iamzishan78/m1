@@ -71,6 +71,7 @@ import FolderSharedIcon from "@material-ui/icons/FolderShared";
 import PeopleOutlineIcon from "@material-ui/icons/PeopleOutline";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import DescriptionIcon from "@material-ui/icons/Description";
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 import FilterFormWell from "./components/FilterFormWell";
 import FilterFromGeo from "./components/FilterFromGeo";
@@ -84,7 +85,8 @@ const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
     width: "100%",
-    height: "100%"
+    height: "100%",
+    paddingTop:"64px"
   },
   appBar: {
     height: "64px",
@@ -93,7 +95,9 @@ const useStyles = makeStyles(theme => ({
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
-    })
+    }),
+    paddingRight: "0 !important",
+
   },
   appBarShift: {
     marginLeft: drawerWidth,
@@ -151,10 +155,10 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center",
     justifyContent: "flex-end",
     padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar
+    // ...theme.mixins.toolbar
   },
   content: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   grow1: {
     flexGrow: 1
@@ -516,7 +520,8 @@ export default function Navigation(props) {
         selectedMenuIndexTrack: 0,
         selectedMenuIndexTransact: 0,
         selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0
+        selectedMenuIndexAlerts: 0,
+        selectedMenuIndexContacts: 0
       }));
     } else if (location.pathname === "/track") {
       setStateNav(state => ({
@@ -525,7 +530,8 @@ export default function Navigation(props) {
         selectedMenuIndexTrack: 1,
         selectedMenuIndexTransact: 0,
         selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0
+        selectedMenuIndexAlerts: 0,
+        selectedMenuIndexContacts: 0
       }));
     } else if (location.pathname === "/transact") {
       setStateNav(state => ({
@@ -534,7 +540,8 @@ export default function Navigation(props) {
         selectedMenuIndexTrack: 0,
         selectedMenuIndexTransact: 1,
         selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0
+        selectedMenuIndexAlerts: 0,
+        selectedMenuIndexContacts: 0
       }));
     } else if (location.pathname === "/title") {
       setStateNav(state => ({
@@ -543,8 +550,19 @@ export default function Navigation(props) {
         selectedMenuIndexTrack: 0,
         selectedMenuIndexTransact: 0,
         selectedMenuIndexTitle: 1,
-        selectedMenuIndexAlerts: 0
+        selectedMenuIndexAlerts: 0,
+        selectedMenuIndexContacts: 0
       }));
+    } else if (location.pathname === "/contacts") {
+      setStateNav(state => ({
+        ...state,
+        selectedMenuIndexFind: 0,
+        selectedMenuIndexTrack: 0,
+        selectedMenuIndexTransact: 0,
+        selectedMenuIndexTitle: 0,
+        selectedMenuIndexAlerts: 0,
+        selectedMenuIndexContacts: 1
+      }));  
     } else if (location.pathname === "/alerts") {
       setStateNav(state => ({
         ...state,
@@ -552,7 +570,8 @@ export default function Navigation(props) {
         selectedMenuIndexTrack: 0,
         selectedMenuIndexTransact: 0,
         selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 1
+        selectedMenuIndexAlerts: 1,
+        selectedMenuIndexContacts: 0
       }));
     }
   }, [location, setStateNav]);
@@ -661,9 +680,9 @@ export default function Navigation(props) {
   };
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} >
       <CssBaseline />
-      <AppBar
+      <AppBar id="tetetetet"
         position="fixed"
         className={clsx(classes.appBar, {
           [classes.appBarShift]: openDrawer
@@ -929,6 +948,26 @@ export default function Navigation(props) {
               <DescriptionIcon />
             </ListItemIcon>
             <ListItemText primary="Title" />
+          </ListItem>
+          <ListItem
+            classes={{
+              root: classes.menuListItem,
+              selected: classes.menuListItemSelected
+            }}
+            button
+            selected={stateNav.selectedMenuIndexContacts === 1}
+            onClick={event => {
+              setStateApp(stateApp => ({
+                ...stateApp,
+                selectedContact: null
+              }));
+              handleListItemClick(event, 0, "/contacts")}}
+            key="contacts"
+          >
+            <ListItemIcon>
+              <AccountCircleIcon />
+            </ListItemIcon>
+            <ListItemText primary="Contacts" />
           </ListItem>
         </List>
         <Divider variant="middle" className={classes.menuListBottomDivider} />

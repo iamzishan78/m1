@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
   formControl: {
     margin: "15px",
     minWidth: 249,
-    maxWidth: 250,
+    // maxWidth: 250,
     color: "black"
   },
   loader: {
@@ -108,6 +108,7 @@ export default function FilterAbstract({ keys }) {
           autoSelect
           disableListWrap
           includeInputInList
+          fullWidth={true}
           value={abstractName}
           onChange={(event, newValue) => {
             handleAbstractNameChange(event,newValue);

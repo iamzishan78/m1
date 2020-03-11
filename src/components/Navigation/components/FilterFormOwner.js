@@ -24,15 +24,10 @@ const useStyles = makeStyles(theme => ({
     flexWrap: "wrap",
     flexDirection: "row"
   },
-  dates: {
-    display: "flex",
-    flexWrap: "nowrap",
-    flexDirection: "row"
-  },
   formControl: {
     margin: "15px",
-    minWidth: 120,
-    maxWidth: 300,
+    // minWidth: 120,
+    // maxWidth: 300,
     color: "black"
   },
   chips: {
@@ -418,6 +413,7 @@ export default function FilterFormOwner() {
             multiple={true}
             value={interestName}
             onChange={handleChangeInterest}
+            fullWidth={true}
             // input={<Input  id="select-multiple-chip1" />}
             renderValue={selected => (
               <div className={classes.chips} 
@@ -463,6 +459,7 @@ export default function FilterFormOwner() {
             multiple={true}
             labelWidth={labelWidth}
             value={ownerTypeName}
+            fullWidth={true}
             onChange={handleChangeOwnerType}
             // input={<Input  id="select-multiple-chip1" />}
             renderValue={selected => (

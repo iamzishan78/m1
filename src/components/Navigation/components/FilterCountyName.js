@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
   formControl: {
     margin: "15px",
     minWidth: 249,
-    maxWidth: 250,
+    // maxWidth: 250,
     color: "black"
   },
   loader: {
@@ -92,6 +92,7 @@ export default function FilterCountyName() {
                   disableListWrap
                   includeInputInList
                   value={countyName}
+                  fullWidth={true}
                   onChange={(event, newValue) => {
                     handleCountyNameChange( event,newValue);
                   }}

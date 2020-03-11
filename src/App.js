@@ -6,12 +6,14 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 //components
 import Login from "./components/Login/Login";
 import SignUpCard from "./components/Login/SignUpCard";
+import ForgotPassword from "./components/Login/ForgotPassword";
 import NavigationProvider from "./components/Navigation/NavigationProvider";
 import MapProvider from "./components/Map/MapProvider";
 import TrackProvider from "./components/Track/TrackProvider";
 import TransactProvider from "./components/Transact/TransactProvider";
 import TitleProvider from "./components/Title/TitleProvider";
 import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider";
+import ContactsProvider from "./components/Contacts/ContactsProvider";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
 import { Redirect } from "react-router";
 
@@ -99,11 +101,13 @@ function App() {
                 <NavigationProvider>
                   <PrivateRoute exact path="/" component={MapProvider} />
                   <Route exact path="/signup"  component={SignUpCard} />
+                  <Route exact path="/forgotpassword"  component={ForgotPassword} />
                   <PrivateRoute exact path="/track" component={TrackProvider}/>
                   <PrivateRoute exact path="/transact" component={TransactProvider}/>
                   <PrivateRoute exact path="/title" component={TitleProvider}/> 
                   <PrivateRoute exact path="/alerts" component={AlertsProvider}/>
                   <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider}/>
+                  <PrivateRoute exact path="/contacts" component={ContactsProvider}/>
                 </NavigationProvider>
               </Switch>
             </Router>
