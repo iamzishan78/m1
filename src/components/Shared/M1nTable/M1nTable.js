@@ -1,4 +1,8 @@
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////                TO USE THIS TABLE:
+//// 1-Send to this component a prop called 'parent' with a trackOwners/trackWells/Contacts/OwnersPerWell...
+////  -if it is OwnersPerWell use case add another prop "selectedWell" with the well
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////                TO USE THIS TABLE IN A NEW USE CASE:
 //// 1-Send to this component a prop called 'parent' with a string you choose to identify your use case.
 //// 2-Define your HeadCells const, for your columns, in the HeadCells section.
@@ -6,7 +10,7 @@
 //// 4-Add at the end, but before the return line, add your own section where you will run your queries
 ////   and you will set all necessaries local states for your use case and the table,
 ////   look at the Tracked Owners section as example.
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
