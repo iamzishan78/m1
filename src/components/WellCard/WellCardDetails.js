@@ -31,7 +31,8 @@ import Taps from "./components/Taps";
 import CardDetailsMap from "./components/CardDetailsMap";
 
 import QuadProvider from "../Quad/QuadProvider";
-import OwnersProvider from "../Owners/OwnersProvider";
+// import OwnersProvider from "../Owners/OwnersProvider";
+import M1nTable from "../Shared/M1nTable/M1nTable";
 import WellProdChartProvider from "../WellProdChart/WellProdChartProvider";
 import TrackToggleButton from "../Shared/TrackToggleButton";
 import WellStatusCard from "../Shared/WellStatusCard";
@@ -320,9 +321,13 @@ export default function WellCardDetails(props) {
               ]}
               tabPanels={[
                 wellInfo(),
-                <OwnersProvider
+                // <OwnersProvider
+                //   selectedWell={stateApp.selectedWell}
+                //   parent="well"
+                // />
+                <M1nTable
+                  parent="OwnersPerWell"
                   selectedWell={stateApp.selectedWell}
-                  parent="well"
                 />,
                 <h3>Coming Soon-</h3>,
                 <h3>Coming Soon--</h3>,

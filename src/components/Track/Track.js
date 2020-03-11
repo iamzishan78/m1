@@ -1,11 +1,12 @@
-import React, { useContext,useState } from 'react';
+import React, { useContext, useState } from "react";
 import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
-import { AppContext } from '../../AppContext'
-import { TrackContext } from './TrackContext'
-import { MapContext } from '../Map/MapContext'
-import { Container } from '@material-ui/core';
-import WellsProvider from '../Wells/WellsProvider';
-import OwnersProvider from '../Owners/OwnersProvider';
+import { AppContext } from "../../AppContext";
+import { TrackContext } from "./TrackContext";
+import { MapContext } from "../Map/MapContext";
+import { Container } from "@material-ui/core";
+// import WellsProvider from '../Wells/WellsProvider';
+// import OwnersProvider from '../Owners/OwnersProvider';
+import M1nTable from "../Shared/M1nTable/M1nTable";
 import WellIcon from "../Shared/svgIcons/well";
 import OwnershipIcon from "../Shared/svgIcons/ownership";
 import Typography from "@material-ui/core/Typography";
@@ -14,14 +15,14 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import PropTypes from "prop-types";
 import Badge from "@material-ui/core/Badge";
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import CardActions from '@material-ui/core/CardActions'
-import CardHeader from '@material-ui/core/CardHeader'
-import MyLocationIcon from '@material-ui/icons/MyLocation'
-const useStyles = makeStyles(theme => ({ 
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import CardActions from "@material-ui/core/CardActions";
+import CardHeader from "@material-ui/core/CardHeader";
+import MyLocationIcon from "@material-ui/icons/MyLocation";
+const useStyles = makeStyles(theme => ({
   container: {
-    paddingTop:"10px"
+    paddingTop: "10px"
   },
   tab: {
     minWidth: "62px"
@@ -30,25 +31,25 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "rgba(23, 170, 221, 1) !important"
   },
   card: {
-    width: '100%',
-    background: '#011133',
-    borderStyle: 'solid',
-    borderWidth: 'thin',
-    borderColor: '#011133'
+    width: "100%",
+    background: "#011133",
+    borderStyle: "solid",
+    borderWidth: "thin",
+    borderColor: "#011133"
   },
   cardContent: {
-    background: '#fff',
+    background: "#fff"
   },
   title: {
-    fontFamily: 'Poppins',
-    color: '#FFFFFF',
-    fontSize: '20px'
+    fontFamily: "Poppins",
+    color: "#FFFFFF",
+    fontSize: "20px"
   },
   subheader: {
-    fontFamily: 'Poppins',
-    color: '#FFFFFF',
-    fontSize: '14px'
-  },
+    fontFamily: "Poppins",
+    color: "#FFFFFF",
+    fontSize: "14px"
+  }
 }));
 
 const TabPanel = props => {
@@ -74,15 +75,15 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired
 };
 export default function Track() {
-  const classes = useStyles()
-  const [stateApp, setStateApp] = useContext(AppContext)
+  const classes = useStyles();
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [value, setValue] = useState(0);
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
   };
-    return (
-      <Container maxWidth="xl" className={classes.container}>
-        <Card className={classes.card}>
+  return (
+    <Container maxWidth="xl" className={classes.container}>
+      <Card className={classes.card}>
         <CardHeader
           classes={{
             title: classes.title,
@@ -90,64 +91,55 @@ export default function Track() {
           }}
           title="Track"
           subheader="Wells and Owners"
-          avatar={
-            <MyLocationIcon color="secondary" />
-          }
-          
+          avatar={<MyLocationIcon color="secondary" />}
         />
-          <CardContent className={classes.cardContent}>
-     
-        <Tabs
-              value={value}
-              onChange={handleTabChange}
-              variant="standard"
-              textColor="primary"
-              aria-label="tabs"
-              classes={{ indicator: classes.indicator }}
-            >
+        <CardContent className={classes.cardContent}>
+          <Tabs
+            value={value}
+            onChange={handleTabChange}
+            variant="standard"
+            textColor="primary"
+            aria-label="tabs"
+            classes={{ indicator: classes.indicator }}
+          >
+            <Tab
+              value={0}
+              classes={{ root: classes.tab }}
+              icon={
+                <Badge
+                  badgeContent={stateApp.owners ? stateApp.owners.length : 0}
+                  color="secondary"
+                >
+                  <OwnershipIcon color="#000" opacity="1.0" />
+                </Badge>
+              }
+              aria-label="ownership"
+            />
 
-        <Tab
-                value={0}
-                classes={{ root: classes.tab }}
-                icon={
-                  <Badge
-                    badgeContent={stateApp.owners ? stateApp.owners.length:0}
-                    color="secondary"
-                  >
-                    <OwnershipIcon color="#000" opacity="1.0" />
-                  </Badge>
-                }
-                aria-label="ownership"
-              />
-
-              <Tab
-                value={1}
-                className={classes.tab}
-                icon={
-                  <Badge
-                    badgeContent={stateApp.wells ? stateApp.wells.length:0}
-                    color="secondary"
-                  >
-                    <WellIcon color="#000" opacity="1.0" />
-                  </Badge>
-                }
-                aria-label="well"
-              />
-
-
-             
-            </Tabs>
-            <TabPanel value={value} index={1}>
-            <WellsProvider showList={false} parent="track"/>
-            </TabPanel>
-            <TabPanel value={value} index={0}>
-            <OwnersProvider  parent="track"/>
-            </TabPanel>
-        
-            </CardContent>
-           
-          </Card>
-      
-      </Container>
-    );
-  }
+            <Tab
+              value={1}
+              className={classes.tab}
+              icon={
+                <Badge
+                  badgeContent={stateApp.wells ? stateApp.wells.length : 0}
+                  color="secondary"
+                >
+                  <WellIcon color="#000" opacity="1.0" />
+                </Badge>
+              }
+              aria-label="well"
+            />
+          </Tabs>
+          <TabPanel value={value} index={1}>
+            {/* <WellsProvider showList={false} parent="track"/> */}
+            <M1nTable parent="trackWells"/>
+          </TabPanel>
+          <TabPanel value={value} index={0}>
+           {/* <OwnersProvider  parent="track"/> */}
+            <M1nTable parent="trackOwners" />
+          </TabPanel>
+        </CardContent>
+      </Card>
+    </Container>
+  );
+}

@@ -1,13 +1,16 @@
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////                TO USE THIS TABLE:
+//// 1-Send to this component a prop called 'parent' with a trackOwners/trackWells/Contacts/OwnersPerWell...
+////  -if it is OwnersPerWell use case add another prop "selectedWell" with the well
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////                TO USE THIS TABLE IN A NEW USE CASE:
 //// 1-Send to this component a prop called 'parent' with a string you choose to identify your use case.
 //// 2-Define your HeadCells const, for your columns, in the HeadCells section.
 //// 3-Add your query in the queries section.
-//// 4-Add in the last useEffect of general section, the loading variable from your new query.
-//// 5-Add at the end, but before the return line, your own section where you will run your query
+//// 4-Add at the end, but before the return line, add your own section where you will run your queries
 ////   and you will set all necessaries local states for your use case and the table,
 ////   look at the Tracked Owners section as example.
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
@@ -23,9 +26,7 @@ import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
 
 const useStyles = makeStyles(theme => ({
-  container: {
-    paddingTop: "10px"
-  }
+  container: { padding: "0 !important" }
 }));
 
 ////////////HeadCells begin///////////////////////////////////////////////
@@ -114,9 +115,8 @@ export default function Contacts(props) {
   const [rows, setRows] = useState();
   const [header, setHeader] = useState(""); ////set it as "" for no header, and as null to higth the whole header row
   const [columns, setColumns] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [addAble, setAddAble] = useState(true);
-  const [ownersColumn, setOwnersColumn] = useState(false);
 
   const [source, setSource] = useState(null);
   const [sourceId, setSourceId] = useState(stateApp.user.id);
@@ -156,37 +156,20 @@ export default function Contacts(props) {
 
   ////////////General begin///////////////////////////////////////////////
   useEffect(() => {
-    if (!source) {
-      setSource({
-        sourceId: sourceId,
-        label: sourceLabel,
-        type: "vertex",
-        properties: []
-      });
-    } else {
-      getVertexEdges({
-        variables: { source: source, edgeLabel, targetLabel }
-      });
-    }
-  }, [stateApp.user, source]);
+    setSource({
+      sourceId: sourceId,
+      label: sourceLabel,
+      type: "vertex",
+      properties: []
+    });
+  }, [sourceId, sourceLabel]);
 
   useEffect(() => {
-    setLoading(
-      loadingGraph ||
-        loadingOwners ||
-        loadingContacts ||
-        loadingWellOwners ||
-        loadingTrackedContacts ||
-        loadingWells
-    );
-  }, [
-    loadingGraph,
-    loadingOwners,
-    loadingContacts,
-    loadingTrackedContacts,
-    loadingWellOwners,
-    loadingWells
-  ]);
+    setLoading(true);
+    getVertexEdges({
+      variables: { source: source, edgeLabel, targetLabel }
+    });
+  }, [stateApp.user, source]);
   ////////////General end///////////////////////////////////////////////
 
   ////////////Tracked Owners begin///////////////////////////////////////////////
@@ -200,13 +183,7 @@ export default function Contacts(props) {
   }, []);
 
   useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "trackOwners" &&
-      dataGraph &&
-      dataGraph.vertexEdges.sourceIds &&
-      dataGraph.vertexEdges.sourceIds.length > 0
-    ) {
+    if (props.parent && props.parent === "trackOwners" && dataGraph) {
       getOwners({
         variables: {
           ownerIdArray: dataGraph.vertexEdges.sourceIds,
@@ -217,14 +194,14 @@ export default function Contacts(props) {
   }, [stateApp.user, dataGraph]);
 
   useEffect(() => {
-    if (props.parent && props.parent === "trackOwners") {
-      if (dataOwners) {
+    if (props.parent && props.parent === "trackOwners" && dataOwners) {
+      if (
+        dataOwners.owners &&
+        dataOwners.owners.results &&
+        dataOwners.owners.results.length > 0
+      ) {
         dataOwners.owners.results.forEach(owner => {
-          if (
-            dataGraph &&
-            dataGraph.vertexEdges.sourceIds &&
-            dataGraph.vertexEdges.sourceIds.length > 0
-          ) {
+          if (dataGraph.vertexEdges.success) {
             dataGraph.vertexEdges.sourceIds.forEach(sourceId => {
               if (owner.id === sourceId) {
                 owner.isTracked = true;
@@ -244,6 +221,7 @@ export default function Contacts(props) {
       } else {
         setRows([]);
       }
+      setLoading(false);
     }
   }, [dataOwners]);
   ////////////Tracked Owners end///////////////////////////////////////////////
@@ -258,13 +236,7 @@ export default function Contacts(props) {
   }, []);
 
   useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "trackWells" &&
-      dataGraph &&
-      dataGraph.vertexEdges.sourceIds &&
-      dataGraph.vertexEdges.sourceIds.length > 0
-    ) {
+    if (props.parent && props.parent === "trackWells" && dataGraph) {
       getWells({
         variables: {
           wellIdArray: dataGraph.vertexEdges.sourceIds,
@@ -275,14 +247,14 @@ export default function Contacts(props) {
   }, [stateApp.user, dataGraph]);
 
   useEffect(() => {
-    if (props.parent && props.parent === "trackWells") {
-      if (dataWells) {
+    if (props.parent && props.parent === "trackWells" && dataWells) {
+      if (
+        dataWells.wells &&
+        dataWells.wells.results &&
+        dataWells.wells.results.length > 0
+      ) {
         dataWells.wells.results.forEach(well => {
-          if (
-            dataGraph &&
-            dataGraph.vertexEdges.sourceIds &&
-            dataGraph.vertexEdges.sourceIds.length > 0
-          ) {
+          if (dataGraph.vertexEdges.success) {
             dataGraph.vertexEdges.sourceIds.forEach(sourceId => {
               if (well.id === sourceId) {
                 well.isTracked = true;
@@ -295,7 +267,6 @@ export default function Contacts(props) {
         setHeader("Wells");
         setColumns(WellsHeadCells);
         setAddAble(false);
-        setOwnersColumn(true);
         setStateApp(state => ({
           ...state,
           wells: dataWells.wells.results
@@ -303,6 +274,7 @@ export default function Contacts(props) {
       } else {
         setRows([]);
       }
+      setLoading(false);
     }
   }, [dataWells]);
   ////////////Tracked Wells end///////////////////////////////////////////////
@@ -310,10 +282,9 @@ export default function Contacts(props) {
   ////////////Owners Per Well begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell") {
-      // setSourceId(stateApp.user.id);
       setSourceLabel("user");
       setEdgeLabel("tracks");
-      setTargetLabel("well");
+      setTargetLabel("owner");
     }
   }, []);
 
@@ -322,23 +293,19 @@ export default function Contacts(props) {
       props.parent &&
       props.parent === "OwnersPerWell" &&
       dataGraph &&
-      stateApp.selectedWell
+      props.selectedWell
     ) {
       getWellOwners({
-        variables: { api: stateApp.selectedWell.api }
+        variables: { api: props.selectedWell.api }
       });
     }
-  }, [stateApp.user, dataGraph, stateApp.selectedWell]);
+  }, [stateApp.user, dataGraph, props.selectedWell]);
 
   useEffect(() => {
-    if (props.parent && props.parent === "OwnersPerWell") {
-      if (dataWellOwners && dataWellOwners.wellOwners) {
+    if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
+      if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
         dataWellOwners.wellOwners.forEach(wellOwner => {
-          if (
-            dataGraph &&
-            dataGraph.vertexEdges.sourceIds &&
-            dataGraph.vertexEdges.sourceIds.length > 0
-          ) {
+          if (dataGraph.vertexEdges.success) {
             dataGraph.vertexEdges.sourceIds.forEach(sourceId => {
               if (wellOwner.id === sourceId) {
                 wellOwner.isTracked = true;
@@ -348,12 +315,13 @@ export default function Contacts(props) {
         });
 
         setRows(dataWellOwners.wellOwners);
-        setHeader(null);
+        setHeader("Owners Per Well");
         setColumns(OwnersHeadCells);
         setAddAble(true);
       } else {
         setRows([]);
       }
+      setLoading(false);
     }
   }, [dataWellOwners]);
   ////////////Owners Per Well end///////////////////////////////////////////////
@@ -406,51 +374,42 @@ export default function Contacts(props) {
         externalAdd: true,
         externalAddFunction: props.externalAddFunction
       });
+      setLoading(false);
     }
   }, []);
 
   // useEffect(() => {
-  //   if (
-  //     props.parent &&
-  //     props.parent === "Contacts" &&
-  //     dataGraph &&
-  //     dataGraph.vertexEdges.sourceIds &&
-  //     dataGraph.vertexEdges.sourceIds.length > 0
-  //   ) {
-  //     getContacts({
-  //       variables: {
-  //         contactsIdArray: dataGraph.vertexEdges.sourceIds
-  //       }
-  //     });
+  //   if (props.parent && props.parent === "Contacts" && dataGraph) {
+  //     if (dataGraph.vertexEdges.success) {
+  //       getContacts({
+  //         variables: {
+  //           contactsIdArray: dataGraph.vertexEdges.sourceIds
+  //         }
+  //       });
+  //     } else {
+  //       setRows([]);
+  //       setLoading(false);
+  //     }
   //   }
   // }, [stateApp.user, dataGraph]);
 
   // useEffect(() => {
-  //   if (props.parent && props.parent === "Contacts") {
-  //     if (!source) {
-  //       setSource({
-  //         sourceId: sourceId,
-  //         label: sourceLabel,
-  //         type: "vertex",
-  //         properties: []
-  //       });
-  //     } else {
-  //       getTrackedContacts({
-  //         variables: { source: source, edgeLabel: "tracks", targetLabel }
-  //       });
-  //     }
+  //   if (props.parent && props.parent === "Contacts" && dataContacts) {
+  //     getTrackedContacts({
+  //       variables: { source: source, edgeLabel: "tracks", targetLabel }
+  //     });
   //   }
   // }, [dataContacts]);
 
   // useEffect(() => {
-  //   if (props.parent && props.parent === "Contacts") {
-  //     if (dataContacts) {
+  //   if (props.parent && props.parent === "Contacts" && dataContacts) {
+  //     if (
+  //       dataContacts.contacts &&
+  //       dataContacts.contacts.results &&
+  //       dataContacts.contacts.results > 0
+  //     ) {
   //       dataContacts.contacts.results.forEach(contact => {
-  //         if (
-  //           dataTrackedContacts &&
-  //           dataTrackedContacts.vertexEdges.sourceIds &&
-  //           dataTrackedContacts.vertexEdges.sourceIds.length > 0
-  //         ) {
+  //         if (dataTrackedContacts&&dataTrackedContacts.success) {
   //           dataTrackedContacts.vertexEdges.sourceIds.forEach(sourceId => {
   //             if (contact.id === sourceId) {
   //               contact.isTracked = true;
@@ -463,18 +422,22 @@ export default function Contacts(props) {
   //       setHeader("Contacts");
   //       setColumns(ContactsHeadCells);
   //       setAddAble({
-  //    externalAdd: true,
-  //    externalAddFunction: props.externalAddFunction
-  //  });
+  //         externalAdd: true,
+  //         externalAddFunction: props.externalAddFunction
+  //       });
   //     } else {
   //       setRows([]);
   //     }
+  //     setLoading(false);
   //   }
   // }, [dataTrackedContacts]);
 
   /////temporary end/////
 
   ////////////Contacts end///////////////////////////////////////////////
+
+  ////////////-----Add your code section here-----///////////////////////
+
   return (
     <Container maxWidth="xl" className={classes.container}>
       <TableProvider
@@ -484,7 +447,6 @@ export default function Contacts(props) {
         loading={loading}
         addAble={addAble}
         targetLabel={targetLabel}
-        ownersColumn={ownersColumn}
       />
     </Container>
   );

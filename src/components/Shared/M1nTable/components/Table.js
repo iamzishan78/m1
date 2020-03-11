@@ -26,6 +26,10 @@ import AddIcon from "@material-ui/icons/Add";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import CheckIcon from "@material-ui/icons/Check";
 import Badge from "@material-ui/core/Badge";
+import M1nTable from "../M1nTable";
+import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
+import Test from "../../../ExpandableCard/Test";
+import WellCardProvider from "../../../WellCard/WellCardProvider";
 
 import { TableContext } from "./TableContext";
 import { AppContext } from "../../../../AppContext";
@@ -38,6 +42,7 @@ import gql from "graphql-tag";
 import ChatIcon from "@material-ui/icons/Chat";
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";
+import VisibilityIcon from "@material-ui/icons/Visibility";
 import { JsxEmit } from "typescript";
 
 function desc(a, b, orderBy) {
@@ -409,6 +414,10 @@ export default function SubTable(props) {
   const [expanded, setExpanded] = useState(false);
   const [expandedTag, setExpandedTag] = useState(false);
   const [expandedComment, setExpandedComment] = useState(false);
+  const [showExpandableCard, setShowExpandableCard] = useState(false);
+  const [mouseX, setMouseX] = useState(null);
+  const [mouseY, setMouseY] = useState(null);
+  const [selectedRow, setSelectedRow] = React.useState();
 
   useEffect(() => {
     if (stateTable.ownerToAdd) {
@@ -458,6 +467,25 @@ export default function SubTable(props) {
     setExpandedComment(false);
   };
 
+  const handleRowClick = (e, row) => {
+    console.log(e);
+    console.log(e.nativeEvent);
+    setMouseX(e.nativeEvent.clientX);
+    setMouseY(e.nativeEvent.clientY - 70);
+    setSelectedRow(row);
+    if (props.targetLabel === "well")
+      setStateApp(state => ({ ...state, selectedWell: row }));
+    handleOpenExpandableCard();
+  };
+  const handleOpenExpandableCard = () => {
+    //setStateApp(state => ({...state,showExpandableCard:true}))
+    setShowExpandableCard(true);
+  };
+  const handleCloseExpandableCard = () => {
+    setShowExpandableCard(false);
+    // setStateApp(state => ({...state,showExpandableCard:true}))
+  };
+
   /* let rowsLen = 0;
   if(rows && rows.length > 0) {
     rowsLen = rows.length
@@ -466,6 +494,63 @@ export default function SubTable(props) {
 
   return rows && rows.length > 0 ? (
     <div className={classes.root}>
+      {showExpandableCard &&
+        ((props.targetLabel === "owner" && (
+          <ExpandableCardProvider
+            expanded={false}
+            handleCloseExpandableCard={handleCloseExpandableCard}
+            component={<Test hello="Owner Card Not Available" />}
+            title={selectedRow ? selectedRow.name : null}
+            subTitle={selectedRow ? selectedRow.interestType : null}
+            parent="owner"
+            mouseX={mouseX}
+            mouseY={mouseY}
+            position="absolute"
+            cardLeft={mouseX}
+            cardTop={mouseY}
+            zIndex={101}
+            cardWidth="380px"
+            cardHeight="380px"
+            cardWidthExpanded="85vw"
+            cardHeightExpanded="80vh"
+            source={stateApp.user}
+            sourceSourceId={stateApp.user.id}
+            sourceName={stateApp.user.name}
+            sourceLabel="user"
+            target={selectedRow ? selectedRow : null}
+            targetSourceId={selectedRow ? selectedRow.id : null}
+            targetName={selectedRow ? selectedRow.name : null}
+            targetLabel="owner"
+          ></ExpandableCardProvider>
+        )) ||
+          (props.targetLabel === "well" && (
+            <ExpandableCardProvider
+              expanded={false}
+              handleCloseExpandableCard={handleCloseExpandableCard}
+              component={<WellCardProvider></WellCardProvider>}
+              title={selectedRow.wellName}
+              subTitle={selectedRow.operator}
+              parent="well"
+              mouseX={mouseX}
+              mouseY={mouseY}
+              position="absolute"
+              cardLeft={mouseX}
+              cardTop={mouseY}
+              zIndex={99}
+              cardWidth="380px"
+              cardHeight="380px"
+              cardWidthExpanded="95vw"
+              cardHeightExpanded="90vh"
+              source={stateApp.user}
+              sourceSourceId={stateApp.user.id}
+              sourceName={stateApp.user.name}
+              sourceLabel="user"
+              target={selectedRow}
+              targetSourceId={selectedRow.id}
+              targetName={selectedRow.wellName}
+              targetLabel="well"
+            ></ExpandableCardProvider>
+          )))}
       <Paper className={classes.paper}>
         {props.header !== null && (
           <EnhancedTableToolbar
@@ -508,16 +593,21 @@ export default function SubTable(props) {
                       // selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
-                        {/* <Checkbox
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        /> */}
+                        {props.targetLabel !== "contact" && (
+                          <IconButton
+                            size="medium"
+                            color="primary"
+                            onClick={event => handleRowClick(event, row)}
+                            aria-label="view more"
+                          >
+                            <VisibilityIcon color="secondary" />
+                          </IconButton>
+                        )}
                       </TableCell>
-
                       {props.columns.map((column, i) => {
                         if (
                           (props.columns.length - 3 > i &&
-                            !props.ownersColumn) ||
+                            props.targetLabel !== "well") ||
                           props.columns.length - 4 > i
                         ) {
                           if (i === 0) {
@@ -528,13 +618,17 @@ export default function SubTable(props) {
                                 id={labelId}
                                 scope="row"
                                 padding="none"
-                                onClick={event => {
-                                  event.preventDefault();
-                                  setStateApp(stateApp => ({
-                                    ...stateApp,
-                                    selectedContact: row.id
-                                  }));
-                                }}
+                                onClick={
+                                  props.targetLabel === "contact"
+                                    ? event => {
+                                        event.preventDefault();
+                                        setStateApp(stateApp => ({
+                                          ...stateApp,
+                                          selectedContact: row.id
+                                        }));
+                                      }
+                                    : null
+                                }
                               >
                                 {column.money
                                   ? formatter.format(row[column.id])
@@ -546,13 +640,17 @@ export default function SubTable(props) {
                               <TableCell
                                 key={i}
                                 align="left"
-                                onClick={event => {
-                                  event.preventDefault();
-                                  setStateApp(stateApp => ({
-                                    ...stateApp,
-                                    selectedContact: row.id
-                                  }));
-                                }}
+                                onClick={
+                                  props.targetLabel === "contact"
+                                    ? event => {
+                                        event.preventDefault();
+                                        setStateApp(stateApp => ({
+                                          ...stateApp,
+                                          selectedContact: row.id
+                                        }));
+                                      }
+                                    : null
+                                }
                               >
                                 {column.money
                                   ? formatter.format(row[column.id])
@@ -563,7 +661,7 @@ export default function SubTable(props) {
                         }
                       })}
 
-                      {props.ownersColumn && (
+                      {props.targetLabel === "well" && (
                         <TableCell align="right">
                           <Badge
                             badgeContent={row.ownerCount}
@@ -630,7 +728,11 @@ export default function SubTable(props) {
                           target={row}
                           targetLabel={props.targetLabel}
                           targetSourceId={row.id}
-                          targetName={row.name} //////////////////
+                          targetName={
+                            props.targetLabel === "well"
+                              ? row.wellName
+                              : row.name
+                          }
                           dark
                         />
                       </TableCell>
@@ -658,12 +760,21 @@ export default function SubTable(props) {
                                 target={row}
                                 targetLabel={props.targetLabel}
                                 targetSourceId={row.id}
-                                targetName={row.name}
+                                targetName={
+                                  props.targetLabel === "well"
+                                    ? row.wellName
+                                    : row.name
+                                }
                               />
                             </div>
                           ) : collapseComponent === "comments" ? (
                             <Comments></Comments>
-                          ) : null}
+                          ) : (
+                            <M1nTable
+                              selectedWell={row}
+                              parent="OwnersPerWell"
+                            />
+                          )}
                         </Collapse>
                       </TableCell>
                     </TableRow>
