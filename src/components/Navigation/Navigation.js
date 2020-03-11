@@ -214,7 +214,7 @@ const useStyles = makeStyles(theme => ({
     padding: "0px",
     margin: "0px",
     background: "rgba(1, 17, 51, 0)",
-    height: "750px",
+    // height: "750px",
     minWidth: "750px",
     position: "absolute",
     top: "45px",
