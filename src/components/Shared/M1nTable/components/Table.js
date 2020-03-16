@@ -30,6 +30,7 @@ import M1nTable from "../M1nTable";
 import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
 import Test from "../../../ExpandableCard/Test";
 import WellCardProvider from "../../../WellCard/WellCardProvider";
+import { useHistory } from "react-router-dom";
 
 import { TableContext } from "./TableContext";
 import { AppContext } from "../../../../AppContext";
@@ -37,12 +38,11 @@ import TrackToggleButton from "../../TrackToggleButton";
 import Tags from "../../Tagger";
 import Comments from "../../Comments";
 
-import gql from "graphql-tag";
-
 import ChatIcon from "@material-ui/icons/Chat";
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";
 import VisibilityIcon from "@material-ui/icons/Visibility";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { JsxEmit } from "typescript";
 
 function desc(a, b, orderBy) {
@@ -386,6 +386,11 @@ const useStyles = makeStyles(theme => ({
       background: theme.palette.secondary.main
     }
     //transform: 'rotate(180deg)',
+  },
+  cursorPointer: {
+    "&:hover": {
+      cursor: "pointer"
+    }
   }
 }));
 
@@ -396,6 +401,7 @@ var formatter = new Intl.NumberFormat("en-US", {
 
 export default function SubTable(props) {
   const classes = useStyles();
+  let history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateTable] = useContext(TableContext);
 
@@ -414,6 +420,8 @@ export default function SubTable(props) {
   const [expanded, setExpanded] = useState(false);
   const [expandedTag, setExpandedTag] = useState(false);
   const [expandedComment, setExpandedComment] = useState(false);
+  const [expandedContact, setExpandedContact] = useState(false);
+  const [expandedOwnersContacts, setExpandedOwnersContacts] = useState(false);
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [mouseX, setMouseX] = useState(null);
   const [mouseY, setMouseY] = useState(null);
@@ -450,6 +458,8 @@ export default function SubTable(props) {
     setExpandedTag(!expandedTag);
     setExpanded(false);
     setExpandedComment(false);
+    setExpandedContact(false);
+    setExpandedOwnersContacts(false);
   };
   const handleExpandClickComment = async (index, component) => {
     setCollapseComponent(component);
@@ -457,6 +467,8 @@ export default function SubTable(props) {
     setExpandedComment(!expandedComment);
     setExpanded(false);
     setExpandedTag(false);
+    setExpandedContact(false);
+    setExpandedOwnersContacts(false);
   };
 
   const handleExpandClick = async (index, component) => {
@@ -465,6 +477,28 @@ export default function SubTable(props) {
     setExpanded(!expanded);
     setExpandedTag(false);
     setExpandedComment(false);
+    setExpandedContact(false);
+    setExpandedOwnersContacts(false);
+  };
+
+  const handleExpandClickContact = async (index, component) => {
+    setCollapseComponent(component);
+    setCollapsedRow(index);
+    setExpanded(false);
+    setExpandedTag(false);
+    setExpandedComment(false);
+    setExpandedContact(!expandedContact);
+    setExpandedOwnersContacts(false);
+  };
+
+  const handleExpandClickOwnersContacts = async (index, component) => {
+    setCollapseComponent(component);
+    setCollapsedRow(index);
+    setExpanded(false);
+    setExpandedTag(false);
+    setExpandedComment(false);
+    setExpandedContact(false);
+    setExpandedOwnersContacts(!expandedOwnersContacts);
   };
 
   const handleRowClick = (e, row) => {
@@ -605,15 +639,16 @@ export default function SubTable(props) {
                         )}
                       </TableCell>
                       {props.columns.map((column, i) => {
-                        if (
-                          (props.columns.length - 3 > i &&
-                            props.targetLabel !== "well") ||
-                          props.columns.length - 4 > i
-                        ) {
+                        if (props.columns.length - 4 > i) {
                           if (i === 0) {
                             return (
                               <TableCell
                                 key={i}
+                                className={
+                                  props.targetLabel === "contact"
+                                    ? classes.cursorPointer
+                                    : null
+                                }
                                 component="th"
                                 id={labelId}
                                 scope="row"
@@ -626,6 +661,7 @@ export default function SubTable(props) {
                                           ...stateApp,
                                           selectedContact: row.id
                                         }));
+                                        history.push("/contact");
                                       }
                                     : null
                                 }
@@ -639,6 +675,11 @@ export default function SubTable(props) {
                             return (
                               <TableCell
                                 key={i}
+                                className={
+                                  props.targetLabel === "contact"
+                                    ? classes.cursorPointer
+                                    : null
+                                }
                                 align="left"
                                 onClick={
                                   props.targetLabel === "contact"
@@ -648,6 +689,7 @@ export default function SubTable(props) {
                                           ...stateApp,
                                           selectedContact: row.id
                                         }));
+                                        history.push("/contact");
                                       }
                                     : null
                                 }
@@ -681,6 +723,53 @@ export default function SubTable(props) {
                               <PeopleAltIcon />
                             </IconButton>
                           </Badge>
+                        </TableCell>
+                      )}
+
+                      {props.targetLabel === "owner" && (
+                        <TableCell align="center">
+                          <IconButton
+                            size="medium"
+                            color="primary"
+                            className={clsx(classes.expand, {
+                              [classes.expandOpenOwner]:
+                                expandedContact && collapsedRow === index
+                            })}
+                            onClick={() =>
+                              handleExpandClickContact(index, "contacts")
+                            }
+                            aria-expanded={
+                              expandedContact && collapsedRow === index
+                            }
+                            aria-label="show contacts"
+                          >
+                            <AccountCircleIcon />
+                          </IconButton>
+                        </TableCell>
+                      )}
+
+                      {props.targetLabel === "contact" && (
+                        <TableCell align="right">
+                          <IconButton
+                            size="medium"
+                            color="primary"
+                            className={clsx(classes.expand, {
+                              [classes.expandOpenOwner]:
+                                expandedOwnersContacts && collapsedRow === index
+                            })}
+                            onClick={() =>
+                              handleExpandClickOwnersContacts(
+                                index,
+                                "ownersContacts"
+                              )
+                            }
+                            aria-expanded={
+                              expandedOwnersContacts && collapsedRow === index
+                            }
+                            aria-label="show owners"
+                          >
+                            <PeopleAltIcon />
+                          </IconButton>
                         </TableCell>
                       )}
 
@@ -742,7 +831,11 @@ export default function SubTable(props) {
                         <Collapse
                           className={classes.collapseInsideRow}
                           in={
-                            (expanded || expandedTag || expandedComment) &&
+                            (expanded ||
+                              expandedTag ||
+                              expandedComment ||
+                              expandedContact ||
+                              expandedOwnersContacts) &&
                             collapsedRow === index
                           }
                           timeout="auto"
@@ -769,11 +862,15 @@ export default function SubTable(props) {
                             </div>
                           ) : collapseComponent === "comments" ? (
                             <Comments></Comments>
-                          ) : (
+                          ) : collapseComponent === "owners" ? (
                             <M1nTable
                               selectedWell={row}
                               parent="OwnersPerWell"
                             />
+                          ) : collapseComponent === "contacts" ? (
+                            <M1nTable parent="Contacts"  externalAddFunction={()=>{}}/>/////////
+                          ) : (
+                           <p> Developing </p>/////////////////////////
                           )}
                         </Collapse>
                       </TableCell>

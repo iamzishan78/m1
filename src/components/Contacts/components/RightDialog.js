@@ -1,5 +1,4 @@
 import React, { useContext, useEffect } from "react";
-import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
@@ -36,12 +35,6 @@ export default function AlertDialogSlide(props) {
         aria-labelledby="alert-dialog-slide-title"
         aria-describedby="alert-dialog-slide-description"
       >
-        {props.header && (
-          <DialogTitle id="alert-dialog-slide-title">
-            {props.header}
-          </DialogTitle>
-        )}
-
         {props.children}
       </Dialog>
     </div>

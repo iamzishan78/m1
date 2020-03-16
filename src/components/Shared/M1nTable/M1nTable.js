@@ -52,6 +52,7 @@ const OwnersHeadCells = [
     label: "Appraised Value",
     money: true
   },
+  { id: "contacts", numeric: false, disablePadding: false, label: "" },
   { id: "comments", numeric: false, disablePadding: false, label: "" },
   { id: "tags", numeric: false, disablePadding: false, label: "" },
   { id: "isTracked", numeric: false, disablePadding: false, label: "" }
@@ -102,6 +103,7 @@ const ContactsHeadCells = [
     disablePadding: false,
     label: "Create At"
   },
+  { id: "owners", numeric: false, disablePadding: false, label: "" },
   { id: "comments", numeric: false, disablePadding: false, label: "" },
   { id: "tags", numeric: false, disablePadding: false, label: "" },
   { id: "isTracked", numeric: false, disablePadding: false, label: "" }

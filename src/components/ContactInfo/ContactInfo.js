@@ -1,11 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { AppContext } from "../../../AppContext";
-import { Container, Grid } from "@material-ui/core";
+import { AppContext } from "../../AppContext";
+import { Grid } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
-import Comments from "../../Shared/Comments";
-import Tags from "../../Shared/Tagger";
+import Comments from "../Shared/Comments";
+import Tags from "../Shared/Tagger";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   Contacts: {
@@ -87,7 +88,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function Contacts() {
   const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  let history = useHistory();
+  const [stateApp] = useContext(AppContext);
 
   const ContactExample = {
     id: "1234",
@@ -115,11 +117,7 @@ export default function Contacts() {
           <span
             className={classes.Contacts}
             onClick={event => {
-              event.preventDefault();
-              setStateApp(stateApp => ({
-                ...stateApp,
-                selectedContact: null
-              }));
+              history.push("/contacts");
             }}
           >
             Contacts
