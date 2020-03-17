@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
+import { AppContext } from "../../AppContext";
 import { Link } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Card, TextField, Button, Typography } from "@material-ui/core";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ForgotPassword from './ForgotPassword';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
 // COMPONENTS
 //import M1neralIconSvg from "../../ui_Elements/m1neralIconSvg";
 // HELPERS
@@ -15,6 +20,21 @@ const useStyles = makeStyles(theme => ({
     padding: "0",
     width: "100%",
     height: "100%",
+  },
+  select: {
+    color:'white'
+  },
+  form: {
+    display:'flex',
+    flexDirection:'column',
+    justifyContent:'center'
+  },
+  formControl: {
+    display:'flex',
+    justifyContent:'center',
+    paddingLeft:'25px',
+    paddingRight:'25px'
+    
   },
   notchedOutline: {
     color: "green"
@@ -135,7 +155,9 @@ const M1neralIconSvg = props => {
 
 
 const SignInCard = props => {
+  const [stateApp,setStateApp] = useContext(AppContext)
   const classes = useStyles();
+  const [tenant, setTenant] = useState("M1neral");
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [emailFlags, setEmailFlags] = useState({
@@ -157,7 +179,8 @@ const SignInCard = props => {
     } else {
       const userData = {
         userEmail,
-        userPassword
+        userPassword,
+        tenant
       };
       const { handleSignIn } = props;
       handleSignIn(userData);
@@ -170,7 +193,8 @@ const SignInCard = props => {
     } else {
       const userData = {
         userEmail,
-        userPassword
+        userPassword,
+        tenant
       };
       const { handleSignIn } = props;
       if(e.keyCode === 13){
@@ -197,6 +221,27 @@ const SignInCard = props => {
           </Button>
   )
 
+  const handleTenantChange = (e) => {
+    setTenant(e.target.value)
+    console.log(tenant)
+    let t = e.target.value;
+    let graphQL;
+    if(t === 'M1neral') {
+      graphQL = 'https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA=='
+    }
+    else if(t === 'c1') {
+      graphQL = 'https://m1c1.azurewebsites.net/api/m1graph?code=Gq6UNc8XJrZu8SPzlI59agiJtkcaj9VToRqEY64UNUn5cDUztdA1dg=='
+    }
+    else if(t === 'c2') {
+      graphQL = 'https://m1c2.azurewebsites.net/api/m1graph?code=vkUVFWtRKPO1sL93V/cJAUtS5GmAmhzSVgeIa7UVJAb8jsg1KjWRaA=='
+    }
+    else if (t === 'm1dev') {
+      graphQL = 'https://m1graph.azurewebsites.net/api/m1graph?code=MHYChoSzLKszMTCsH9gRhPyCWGLDaU6qNFHB2YYrXHs9YXNV0BO5zA=='
+  
+    }
+    setStateApp(state => ({...state,apolloClientEndpoint:graphQL}))
+  }
+
 
   return (
     <React.Fragment>
@@ -210,7 +255,24 @@ const SignInCard = props => {
           <div style={{ marginTop: "5px", fontSize: "1.7rem" }}>Sign In</div>
         </div>
         <div className={classes.cardInputs}>
-        <form onSubmit={signIn} onKeyDown={e => onEnterKey(e)}>
+        <form className={classes.form} onSubmit={signIn} onKeyDown={e => onEnterKey(e)}>
+
+
+        <FormControl className={classes.formControl}>
+        <Select className={classes.select}  
+          labelId="tenant-label"
+          id="tenant" variant="outlined"
+          value={tenant}
+          onChange={handleTenantChange}
+        >
+          <MenuItem value="c1">Tenant 1</MenuItem>
+          <MenuItem value="c2">Tenant 2</MenuItem>
+          <MenuItem value="M1neral">M1neral</MenuItem>
+          <MenuItem value="m1dev">M1neral Dev</MenuItem>
+        </Select>
+      </FormControl>
+
+
           <TextField
             type="email"
             label="Email"

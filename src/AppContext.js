@@ -2,9 +2,12 @@ import React, { useState, createContext } from "react";
 
 const AppContext = createContext([{}, () => {}]);
 
+
+
 const AppProvider = props => {
   const [stateApp, setStateApp] = useState({
     selectedRoute: "/",
+    apolloClientEndpoint:'https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA==',
     user: null,
     wellCount: 500,
     wells: null,

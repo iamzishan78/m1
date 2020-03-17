@@ -10,7 +10,12 @@ import gql from "graphql-tag";
         name
         authToken
         authTokenExpires
-        authRefreshTokem
+        authRefreshToken
+        tenant {
+          id
+          tenant
+          graphQL
+        }
       }
       
     }

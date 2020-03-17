@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect,useState } from "react";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { AppProvider, AppContext } from "./AppContext";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
@@ -25,13 +25,9 @@ import MomentUtils from "@date-io/moment";
 import { ApolloProvider } from "@apollo/react-hooks";
 import ApolloClient from "apollo-boost";
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import { CircularProgress } from "@material-ui/core";
 
-const apolloDevEndpoint = "https://m1graph.azurewebsites.net/api/m1graph?code=MHYChoSzLKszMTCsH9gRhPyCWGLDaU6qNFHB2YYrXHs9YXNV0BO5zA==";
-const apolloEndpoint = "https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA==";
-const client = new ApolloClient({
-  uri: apolloEndpoint,
-  cache: new InMemoryCache()  
-});
+ 
 
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
 const theme = createMuiTheme({
@@ -77,6 +73,24 @@ const theme = createMuiTheme({
   }
 });
 
+
+const SetApolloClient = (props) => {
+  const [stateApp,setStateApp] = useContext(AppContext)
+  //console.log('ep',stateApp.apolloClientEndpoint)
+
+    useEffect( () => {
+      if(stateApp.apolloClientEndpoint){
+      
+         
+        props.setApolloClient(stateApp.apolloClientEndpoint)
+      
+      }
+    },[stateApp.apolloClientEndpoint])
+
+  return (null)
+  }
+
+
 const PrivateRoute = ({ component, ...options }) => {
   const [stateApp,setStateApp] = useContext(AppContext)
   
@@ -91,11 +105,30 @@ const PrivateRoute = ({ component, ...options }) => {
 // }
 
 function App() {
-  return (
-    <ApolloProvider client={client}>
+ const [apolloClient,setApolloClient] = useState(null)
+  //const apolloDevEndpoint = "https://m1graph.azurewebsites.net/api/m1graph?code=MHYChoSzLKszMTCsH9gRhPyCWGLDaU6qNFHB2YYrXHs9YXNV0BO5zA==";
+//set default to core until login is complete and we can get the tenant's endpoint
+//const apolloEndpoint = "https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA==";
+
+const updateApolloClient = (endpoint) => {
+  console.log('gql endpoint',endpoint)
+  //change from default used for login to the user's tenant
+    let apolloClient = new ApolloClient({
+      uri: endpoint,
+      cache: new InMemoryCache()  
+    });
+    setApolloClient(apolloClient)
+}
+  
+  
+  return   (
+  <AppProvider>
+    <SetApolloClient setApolloClient={updateApolloClient}/>
+    {apolloClient ? (
+    <ApolloProvider client={apolloClient}>
       <MuiThemeProvider theme={theme}>
         <MuiPickersUtilsProvider utils={MomentUtils}>
-          <AppProvider>
+         
             <Router>
               <Switch> 
                 <NavigationProvider>
@@ -111,11 +144,14 @@ function App() {
                 </NavigationProvider>
               </Switch>
             </Router>
-          </AppProvider>
+          
         </MuiPickersUtilsProvider>
       </MuiThemeProvider>
     </ApolloProvider>
-  );
+   ):(<CircularProgress></CircularProgress>)}
+  
+  </AppProvider>
+  )
 }
 
 export default App;
