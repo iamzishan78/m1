@@ -69,23 +69,23 @@ export default function WellTypeCard() {
   const [stateApp, setStateApp] = useContext(AppContext)
   const WellTypeIcon = () => {
 
-    if(stateApp.selectedWell.wellType == "Oil"){
+    if(stateApp.selectedWell.wellType == "OIL"){
       return (
         <OilDropIcon fontSize='large'/>
       );
-    } else if(stateApp.selectedWell.wellType == "Gas") {
+    } else if(stateApp.selectedWell.wellType == "GAS") {
       return (
         <GasFlameIcon fontSize='large'/>
       );
-    } else if(stateApp.selectedWell.wellType == "Oil and Gas") {
+    } else if(stateApp.selectedWell.wellType == "OIL AND GAS") {
       return (
         <OilGasIcon fontSize='large'/>
       );
-    } else if(stateApp.selectedWell.wellType == "Injection") {
+    } else if(stateApp.selectedWell.wellType == "INJECTION") {
       return (
         <WaterDropIcon fontSize='large'/>
       );
-    } else if(stateApp.selectedWell.wellType == "Water") {
+    } else if(stateApp.selectedWell.wellType == "WATER") {
       return (
         <WaterDropIcon fontSize='large'/>
       );
