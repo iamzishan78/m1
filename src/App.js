@@ -1,7 +1,7 @@
 import React, { useContext, useEffect,useState } from "react";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { AppProvider, AppContext } from "./AppContext";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, useHistory } from "react-router-dom";
 
 //components
 import Login from "./components/Login/Login";
@@ -17,7 +17,7 @@ import ContactsProvider from "./components/Contacts/ContactsProvider";
 import ContactInfo from "./components/ContactInfo/ContactInfo";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
 import { Redirect } from "react-router";
-
+import ExpiredStorage from 'expired-storage';
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
@@ -28,7 +28,7 @@ import ApolloClient from "apollo-boost";
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { CircularProgress } from "@material-ui/core";
 
- 
+
 
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
 const theme = createMuiTheme({
@@ -79,14 +79,41 @@ const SetApolloClient = (props) => {
   const [stateApp,setStateApp] = useContext(AppContext)
   //console.log('ep',stateApp.apolloClientEndpoint)
 
+  useEffect( () => {
+   
+       
+      props.setApolloClient()
+    
+    
+  },[])
+
     useEffect( () => {
+     
       if(stateApp.apolloClientEndpoint){
-      
+       // console.log('ue endpoint',stateApp.apolloClientEndpoint)
          
-        props.setApolloClient(stateApp.apolloClientEndpoint)
+        props.setApolloClientEndpoint(stateApp.apolloClientEndpoint)
       
       }
     },[stateApp.apolloClientEndpoint])
+
+    useEffect( () => {
+      if(stateApp.user){
+      
+         
+        props.setApolloClientToken(stateApp.user.authToken)
+      
+      }
+    },[stateApp.user])
+
+   /*  useEffect( () => {
+      if(stateApp.user && stateApp.apolloClientEndpoint){
+      
+         
+        props.setApolloClient(stateApp.user.authToken,stateApp.apolloClientEndpoint)
+      
+      }
+    },[stateApp.user,stateApp.apolloClientEndpoint]) */
 
   return (null)
   }
@@ -94,8 +121,10 @@ const SetApolloClient = (props) => {
 
 const PrivateRoute = ({ component, ...options }) => {
   const [stateApp,setStateApp] = useContext(AppContext)
-  
-  const finalComponent = stateApp.user ? component : Login;
+  const expiredStorage = new ExpiredStorage()
+  let isExpired = expiredStorage.isExpired("user");
+  //console.log('isExpired',isExpired)
+  const finalComponent = stateApp.user && !isExpired ? component : Login;
 
   return <Route {...options} component={finalComponent} />;
 };
@@ -107,24 +136,43 @@ const PrivateRoute = ({ component, ...options }) => {
 
 function App() {
  const [apolloClient,setApolloClient] = useState(null)
+ const [apolloClientToken,setApolloClientToken] = useState(null)
+ const [apolloClientEndpoint,setApolloClientEndpoint] = useState(null)
   //const apolloDevEndpoint = "https://m1graph.azurewebsites.net/api/m1graph?code=MHYChoSzLKszMTCsH9gRhPyCWGLDaU6qNFHB2YYrXHs9YXNV0BO5zA==";
 //set default to core until login is complete and we can get the tenant's endpoint
 //const apolloEndpoint = "https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA==";
-
-const updateApolloClient = (endpoint) => {
-  console.log('gql endpoint',endpoint)
+const updateApolloClientEndpoint = (endpoint) => {
+  //console.log('update apollo end',endpoint)
+  setApolloClientEndpoint(endpoint)
+  updateApolloClient(endpoint,apolloClientToken)
+}
+const updateApolloClientToken = (token) => {
+  setApolloClientToken(token)
+  updateApolloClient(apolloClientEndpoint,token)
+}
+const updateApolloClient = (endpoint,token) => {
+  if(endpoint){
+  console.log('endpoint',endpoint)
+  if(token){
+    console.log('token added to graphQL')
+  }
+  
   //change from default used for login to the user's tenant
     let apolloClient = new ApolloClient({
       uri: endpoint,
+      headers: {
+        authorization: token ? `Bearer ${token}` : ''
+      },
       cache: new InMemoryCache()  
     });
     setApolloClient(apolloClient)
+  }
 }
-  
-  
+
+   
   return   (
   <AppProvider>
-    <SetApolloClient setApolloClient={updateApolloClient}/>
+    <SetApolloClient setApolloClient={updateApolloClient} setApolloClientEndpoint={updateApolloClientEndpoint} setApolloClientToken={updateApolloClientToken}/>
     {apolloClient ? (
     <ApolloProvider client={apolloClient}>
       <MuiThemeProvider theme={theme}>

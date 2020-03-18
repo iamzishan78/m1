@@ -2,7 +2,8 @@ import React, { useState, useContext, useEffect } from "react";
 import { useLazyQuery,useApolloClient } from '@apollo/react-hooks';
 import { AppContext } from "../../AppContext";
 import { makeStyles } from '@material-ui/core/styles';
-
+import ExpiredStorage from 'expired-storage';
+//const expiredStorage = new ExpiredStorage();
 import gql from "graphql-tag";
 // STYLES
 // import { useStyles } from "./styles";
@@ -13,6 +14,7 @@ import {
 // COMPONENTS
 // import M1neralLogoSvg from "../Shared/m1neralLogoSvg";
 import SignInCard from "./SignInCard";
+import { useHistory } from "react-router-dom";
 // import SignUpCard from "./SignUpCard";
 //import { LOGINQUERY } from "../../graphQL/useQueryLogin";
 
@@ -79,15 +81,27 @@ const Login = props => {
 
   useEffect( () => {
     //on willmount if session is saved don't require login
-  let session = sessionStorage.getItem('user');
-  if(session) {
-    let sessionUser = JSON.parse(session)
-    setStateApp(state => ({...state,user:sessionUser}))
+  //let session = sessionStorage.getItem('user');
+  const expiredStorage = new ExpiredStorage()
+  let isExpired = expiredStorage.isExpired("user");
+  if(!isExpired) {
+    let user = expiredStorage.getItem("user");
+   // console.log('login user',user)
+    //let sessionUser = JSON.parse(user)
+    setStateApp(state => ({...state,user:user}))
     
   }
+  else {
+    setStateApp(state => ({...state,user:null}))
+    //window.sessionStorage.removeItem('user');
+    expiredStorage.clear();
+    //let history = useHistory();
+   // history.push('/')
+  }
+
   
 },[])
-
+const expiredStorage = new ExpiredStorage()
   const [login, { loading, data }] = useLazyQuery(LOGINQUERY);
   //const { path } = props.path ? props.path : 'signin';
   
@@ -96,16 +110,19 @@ const Login = props => {
   useEffect( () => {
 
     if (data) {
-      console.log('login success',data)
+      //console.log('login success',data)
       if(data.login.success){
         setStateApp(state => ({...state,user:data.login.user}))
-        window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
-        
+        //window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
+       let timeout = data.login.user.authTokenExpires;
+       //let timeout = 30;
+        expiredStorage.setItem("user", JSON.stringify(data.login.user), timeout);   
       }
       else {
         console.log('login failed',data)
         setStateApp(state => ({...state,user:null}))
-        window.sessionStorage.removeItem('user');
+       // window.sessionStorage.removeItem('user');
+        expiredStorage.clear();
         //show login failed in the future
       }
       
