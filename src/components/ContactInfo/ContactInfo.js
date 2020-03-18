@@ -249,7 +249,11 @@ export default function Contacts() {
             </Grid>
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <Comments />
+                <Comments
+                  targetLabel="contact"
+                  targetSourceId={ContactExample.id}
+                  targetName={ContactExample.name}
+                />
               </Paper>
             </Grid>
           </Grid>
