@@ -7,7 +7,7 @@ const AppContext = createContext([{}, () => {}]);
 const AppProvider = props => {
   const [stateApp, setStateApp] = useState({
     selectedRoute: "/",
-    apolloClientEndpoint:'https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA==',
+    apolloClientEndpoint:'https://m1graph.azurewebsites.net/api/m1graphql?code=0mQgwjKYS3TOX7DvDmJUNbUpCqnP4OQragGaaZVqkFdQVvkz8hRbVQ==',
     user: null,
     wellCount: 500,
     wells: null,

@@ -227,7 +227,8 @@ const SignInCard = props => {
     let t = e.target.value;
     let graphQL;
     if(t === 'M1neral') {
-      graphQL = 'https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA=='
+      //graphQL = 'https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA=='
+      graphQL =  'https://m1graph.azurewebsites.net/api/m1graphql?code=0mQgwjKYS3TOX7DvDmJUNbUpCqnP4OQragGaaZVqkFdQVvkz8hRbVQ=='
     }
     else if(t === 'c1') {
       graphQL = 'https://m1c1.azurewebsites.net/api/m1graph?code=Gq6UNc8XJrZu8SPzlI59agiJtkcaj9VToRqEY64UNUn5cDUztdA1dg=='
