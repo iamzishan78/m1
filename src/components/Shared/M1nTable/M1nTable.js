@@ -158,19 +158,25 @@ export default function Contacts(props) {
 
   ////////////General begin///////////////////////////////////////////////
   useEffect(() => {
+    if(sourceId && sourceLabel){
     setSource({
       sourceId: sourceId,
       label: sourceLabel,
       type: "vertex",
       properties: []
     });
+  }
   }, [sourceId, sourceLabel]);
 
   useEffect(() => {
     setLoading(true);
-    getVertexEdges({
-      variables: { source: source, edgeLabel, targetLabel }
-    });
+    if(source){
+      if(source.sourceId){
+      getVertexEdges({
+        variables: { source: source, edgeLabel, targetLabel }
+      });
+      }
+    }
   }, [stateApp.user, source]);
   ////////////General end///////////////////////////////////////////////
 
@@ -186,12 +192,16 @@ export default function Contacts(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners" && dataGraph) {
-      getOwners({
-        variables: {
-          ownerIdArray: dataGraph.vertexEdges.sourceIds,
-          authToken: stateApp.user.authToken
+      if(dataGraph.vertexEdges){
+        if(dataGraph.vertexEdges.sourceIds){
+        getOwners({
+          variables: {
+            ownerIdArray: dataGraph.vertexEdges.sourceIds,
+            authToken: stateApp.user.authToken
+          }
+        });
         }
-      });
+      }
     }
   }, [stateApp.user, dataGraph]);
 
@@ -239,12 +249,15 @@ export default function Contacts(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "trackWells" && dataGraph) {
+      if(dataGraph.vertexEdges){
+        if(dataGraph.vertexEdges.sourceIds){
       getWells({
         variables: {
           wellIdArray: dataGraph.vertexEdges.sourceIds,
           authToken: stateApp.user.authToken
         }
       });
+    }}
     }
   }, [stateApp.user, dataGraph]);
 

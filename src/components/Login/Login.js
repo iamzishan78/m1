@@ -86,9 +86,10 @@ const Login = props => {
   let isExpired = expiredStorage.isExpired("user");
   if(!isExpired) {
     let user = expiredStorage.getItem("user");
-   // console.log('login user',user)
-    //let sessionUser = JSON.parse(user)
-    setStateApp(state => ({...state,user:user}))
+   
+    let sessionUser = JSON.parse(user)
+    console.log('login user',sessionUser)
+    setStateApp(state => ({...state,user:sessionUser}))
     
   }
   else {

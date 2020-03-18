@@ -199,6 +199,7 @@ export default function WellCard() {
   const classes = useStyles()
 
   useEffect( () => {
+    console.log('stateApp.user',stateApp.user)
     if(!source){
       setSource({
         sourceId: stateApp.user.id,
@@ -217,6 +218,7 @@ export default function WellCard() {
   useEffect( () => {
     
       if(dataGraph) {
+        if(dataGraph.vertexEdges){
         if(dataGraph.vertexEdges.sourceIds){
           if(dataGraph.vertexEdges.sourceIds.length > 0){
             dataGraph.vertexEdges.sourceIds.forEach( (id) => {
@@ -229,6 +231,7 @@ export default function WellCard() {
             })
           }
         }
+      }
       }
     
   
