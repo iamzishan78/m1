@@ -10,6 +10,7 @@ import Tabs from "@material-ui/core/Tabs";
 import TabPanel from "./Utils/TabPanel";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { NavigationContext } from "../NavigationContext";
+import { AppContext } from "../../../AppContext.js"
 import ProductionSlider from "./ProductionSlider";
 import ProductionSliderJ from "./ProductionSliderJ";
 
@@ -91,6 +92,7 @@ export default function FilterFormProduction() {
   const classes = useStyles();
   const theme = useTheme();
   const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [appState, setAppState] = useContext(AppContext);
   const [value, setValue] = useState(0);
   const [valueFirstMonthsOil, setValueFirstMonthsOil] = useState(12);
   const [valueFirstMonthsGas, setValueFirstMonthsGas] = useState(12);
@@ -114,19 +116,7 @@ export default function FilterFormProduction() {
   const [valsLastMonthsOil, setValsLastMonthsOil] = useState();
   const [valsLastMonthsGas, setValsLastMonthsGas] = useState();
   const [valsLastMonthsWater, setValsLastMonthsWater] = useState();
-  const [cumulativeOilMin, setCumulativeOilMin] = useState();
-  const [cumulativeOilMax, setCumulativeOilMax] = useState();
-
-
-  useEffect(()=> {
-    if (stateNav.filterCumulativeOil && stateNav.filterCumulativeOil.length > 0) {
-      let valMin = stateNav.filterCumulativeOil[1][2]
-      let valMax = stateNav.filterCumulativeOil[2][2]
-      setCumulativeOilMin(valMin)  
-      setCumulativeOilMax(valMax); 
-    }
-  },[stateNav.filterCumulativeOil])
-
+ 
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
     if (newValue === 1) {
@@ -142,9 +132,7 @@ export default function FilterFormProduction() {
   };
 
   useEffect(() => {
-    let session = sessionStorage.getItem("user");
-    let info = JSON.parse(session);
-    let token = info.authToken;
+    let token =  appState.user.authToken
 
     const req = new Request(
       "https://m1-search-api.azurewebsites.net/api/v1.0/wells/ranges",
@@ -528,7 +516,7 @@ export default function FilterFormProduction() {
      max && valueFirstMonthsOil  === 3 ?
       <FormControl className={classes.inputWrapper}>
         <ProductionSlider
-          id="firstThreeMonthOil"
+          id="first3MonthOil"
           firstLast="first"
           min={0}
           max={max.first3MonthProdOil}
@@ -542,7 +530,7 @@ export default function FilterFormProduction() {
     max && valueFirstMonthsOil  === 6 ?
    <FormControl className={classes.inputWrapper}>
      <ProductionSlider
-       id="firstSixMonthOil"
+       id="first6MonthOil"
        firstLast="first"
        min={0}
        max={max.first6MonthProdOil}
@@ -556,7 +544,7 @@ export default function FilterFormProduction() {
   max && valueFirstMonthsOil  === 12 ?
  <FormControl className={classes.inputWrapper}>
    <ProductionSlider
-     id="firstTwelveMonthOil"
+     id="first12MonthOil"
      // prod="Oil"
      firstLast="first"
      // months={valsFirstMonthsOil}
@@ -588,7 +576,7 @@ export default function FilterFormProduction() {
     max && valueLastMonthsOil  === 6 ?
     <FormControl className={classes.inputWrapper}>
       <ProductionSlider
-        id="lastSixMonthOil"
+        id="last6MonthOil"
         prod="Oil"
         firstLast="last"
         months={valsLastMonthsOil}
@@ -603,7 +591,7 @@ export default function FilterFormProduction() {
     max && valueLastMonthsOil  === 12 ?
     <FormControl className={classes.inputWrapper}>
       <ProductionSlider
-        id="lastTwelveMonthOil"
+        id="last12MonthOil"
         prod="Oil"
         firstLast="last"
         months={valsFirstMonthsOil}
@@ -635,7 +623,7 @@ export default function FilterFormProduction() {
     max && valueFirstMonthsGas  === 3 ?
       <FormControl className={classes.inputWrapper}>
         <ProductionSlider
-          id="firstThreeMonthGas"
+          id="first3MonthGas"
           prod="Gas"
           firstLast="first"
           months={valsFirstMonthsGas}
@@ -651,7 +639,7 @@ export default function FilterFormProduction() {
     max && valueFirstMonthsGas  === 6 ?
     <FormControl className={classes.inputWrapper}>
       <ProductionSlider
-        id="firstSixMonthGas"
+        id="first6MonthGas"
         prod="Gas"
         firstLast="first"
         months={valsFirstMonthsGas}
@@ -667,7 +655,7 @@ export default function FilterFormProduction() {
     max && valueFirstMonthsGas  === 12 ?
     <FormControl className={classes.inputWrapper}>
       <ProductionSlider
-        id="firstTwelveMonthGas"
+        id="first12MonthGas"
         prod="Gas"
         firstLast="first"
         months={valsFirstMonthsGas}
@@ -699,7 +687,7 @@ export default function FilterFormProduction() {
     max && valueLastMonthsGas === 6 ?
     <FormControl className={classes.inputWrapper}>
       <ProductionSlider
-        id="lastSixMonthGas"
+        id="last6MonthGas"
         prod="Gas"
         firstLast="last"
         months={valsLastMonthsGas}
@@ -715,7 +703,7 @@ export default function FilterFormProduction() {
     max && valueLastMonthsGas === 12 ?
     <FormControl className={classes.inputWrapper}>
       <ProductionSlider
-        id="lastTwelveMonthGas"
+        id="last12MonthGas"
         prod="Gas"
         firstLast="last"
         months={valsFirstMonthsGas}
@@ -747,7 +735,7 @@ export default function FilterFormProduction() {
    max && valueFirstMonthsWater  === 3 ?
       <FormControl className={classes.inputWrapper}>
         <ProductionSlider
-          id="firstThreeMonthWater"
+          id="first3MonthWater"
           prod="Water"
           firstLast="first"
           months={valsFirstMonthsWater}
@@ -763,7 +751,7 @@ export default function FilterFormProduction() {
   max && valueFirstMonthsWater  === 6 ?
     <FormControl className={classes.inputWrapper}>
       <ProductionSlider
-        id="firstSixMonthWater"
+        id="first6MonthWater"
         prod="Water"
         firstLast="first"
         months={valsFirstMonthsWater}
@@ -779,7 +767,7 @@ export default function FilterFormProduction() {
     max && valueFirstMonthsWater  === 12 ?
     <FormControl className={classes.inputWrapper}>
       <ProductionSlider
-        id="firstTwelveMonthWater"
+        id="first12MonthWater"
         prod="Water"
         firstLast="first"
         months={valsFirstMonthsWater}
@@ -811,7 +799,7 @@ export default function FilterFormProduction() {
     max && valueLastMonthsWater === 6 ?
     <FormControl className={classes.inputWrapper}>
       <ProductionSlider
-        id="lastSixMonthWater"
+        id="last6MonthWater"
         prod="Water"
         firstLast="last"
         months={valsLastMonthsWater}
@@ -827,7 +815,7 @@ export default function FilterFormProduction() {
    max && valueLastMonthsWater === 12 ?
     <FormControl className={classes.inputWrapper}>
       <ProductionSlider
-        id="lastTwelveMonthWater"
+        id="last12MonthWater"
         prod="Water"
         firstLast="last"
         months={valsFirstMonthsWater}
