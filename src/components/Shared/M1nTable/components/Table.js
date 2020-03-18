@@ -31,13 +31,12 @@ import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvid
 import Test from "../../../ExpandableCard/Test";
 import WellCardProvider from "../../../WellCard/WellCardProvider";
 import { useHistory } from "react-router-dom";
-
 import { TableContext } from "./TableContext";
 import { AppContext } from "../../../../AppContext";
 import TrackToggleButton from "../../TrackToggleButton";
 import Tags from "../../Tagger";
 import Comments from "../../Comments";
-
+import Dialog from "@material-ui/core/Dialog";
 import ChatIcon from "@material-ui/icons/Chat";
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";
@@ -391,6 +390,9 @@ const useStyles = makeStyles(theme => ({
     "&:hover": {
       cursor: "pointer"
     }
+  },
+  dialog: {
+    "& .MuiCard-root": { overflow: "auto" }
   }
 }));
 
@@ -427,6 +429,8 @@ export default function SubTable(props) {
   const [mouseY, setMouseY] = useState(null);
   const [selectedRow, setSelectedRow] = React.useState();
 
+  const [openDialog, setOpenDialog] = React.useState(false);
+
   useEffect(() => {
     if (stateTable.ownerToAdd) {
       setRows([stateTable.ownerToAdd, ...rows]);
@@ -461,14 +465,15 @@ export default function SubTable(props) {
     setExpandedContact(false);
     setExpandedOwnersContacts(false);
   };
-  const handleExpandClickComment = async (index, component) => {
-    setCollapseComponent(component);
+  const handleExpandClickComment = async (index, rowData) => {
     setCollapsedRow(index);
-    setExpandedComment(!expandedComment);
+    setExpandedComment(rowData);
     setExpanded(false);
     setExpandedTag(false);
     setExpandedContact(false);
     setExpandedOwnersContacts(false);
+
+    setOpenDialog(true);
   };
 
   const handleExpandClick = async (index, component) => {
@@ -526,6 +531,13 @@ export default function SubTable(props) {
   }
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rowsLen - page * rowsPerPage); */
 
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setExpandedComment(false);
+  };
+  useEffect(() => {
+    console.log(openDialog);
+  }, [openDialog]);
   return rows && rows.length > 0 ? (
     <div className={classes.root}>
       {showExpandableCard &&
@@ -781,9 +793,15 @@ export default function SubTable(props) {
                             [classes.expandOpenComment]:
                               expandedComment && collapsedRow === index
                           })}
-                          onClick={() =>
-                            handleExpandClickComment(index, "comments")
-                          }
+                          onClick={() => {
+                            handleExpandClickComment(index, {
+                              targetSourceId: row.id,
+                              targetName:
+                                props.targetLabel === "well"
+                                  ? row.wellName
+                                  : row.name
+                            });
+                          }}
                           aria-expanded={
                             expandedComment && collapsedRow === index
                           }
@@ -827,13 +845,16 @@ export default function SubTable(props) {
                       </TableCell>
                     </TableRow>,
                     <TableRow key={index}>
-                      <TableCell className={classes.expandedRow} colSpan={9}>
+                      <TableCell
+                        className={classes.expandedRow}
+                        colSpan={props.columns.length + 1}
+                      >
                         <Collapse
                           className={classes.collapseInsideRow}
                           in={
                             (expanded ||
                               expandedTag ||
-                              expandedComment ||
+                              // expandedComment ||
                               expandedContact ||
                               expandedOwnersContacts) &&
                             collapsedRow === index
@@ -860,17 +881,29 @@ export default function SubTable(props) {
                                 }
                               />
                             </div>
-                          ) : collapseComponent === "comments" ? (
-                            <Comments></Comments>
-                          ) : collapseComponent === "owners" ? (
+                          ) : //  collapseComponent === "comments" ? (
+                          //   <Comments
+                          //     targetLabel={props.targetLabel}
+                          //     targetSourceId={row.id}
+                          //     targetName={
+                          //       props.targetLabel === "well"
+                          //         ? row.wellName
+                          //         : row.name
+                          //     }
+                          //   ></Comments>
+                          // ) :
+                          collapseComponent === "owners" ? (
                             <M1nTable
                               selectedWell={row}
                               parent="OwnersPerWell"
                             />
                           ) : collapseComponent === "contacts" ? (
-                            <M1nTable parent="Contacts"  externalAddFunction={()=>{}}/>/////////
+                            <M1nTable
+                              parent="Contacts"
+                              externalAddFunction={() => {}}
+                            />
                           ) : (
-                           <p> Developing </p>/////////////////////////
+                            <p> Developing </p> /////////////////////////
                           )}
                         </Collapse>
                       </TableCell>
@@ -891,6 +924,20 @@ export default function SubTable(props) {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         /> */}
       </Paper>
+      {expandedComment && (
+        <Dialog
+          className={classes.dialog}
+          open={openDialog}
+          onClose={handleCloseDialog}
+          fullWidth
+        >
+          <Comments
+            targetLabel={props.targetLabel}
+            targetSourceId={expandedComment.targetSourceId}
+            targetName={expandedComment.targetName}
+          ></Comments>
+        </Dialog>
+      )}
     </div>
   ) : props.loading || !rows ? (
     <CircularProgress size={80} disableShrink color="secondary" />
