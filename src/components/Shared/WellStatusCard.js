@@ -32,11 +32,11 @@ export default function WellStatusCard() {
       console.log(stateApp.selectedWell.wellStatus)
       console.log('*')
 
-      if(stateApp.selectedWell.wellStatus == "Active"){
+      if(stateApp.selectedWell.wellStatus == "ACTIVE"){
         return (
           <CheckCircleIcon fontSize='large'/>
         );
-      } else if(stateApp.selectedWell.wellStatus == "Unknown") {
+      } else if(stateApp.selectedWell.wellStatus == "UNKNOWN") {
         return (
           <QuestionIcon fontSize='large'/>
         );
