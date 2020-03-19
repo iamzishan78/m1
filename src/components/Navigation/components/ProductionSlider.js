@@ -68,7 +68,6 @@ export default function ProductionSlider(props) {
     const setFilter = () => {
       let currentValue = [];
       currentValue.push(valueMin, valueMax);
-      //create ids for varying months
       let filter;
       let selectedMin = valueMin;
       let selectedMax = valueMax;
@@ -90,7 +89,6 @@ export default function ProductionSlider(props) {
             selectedMax.toString();
           }
           currentValue.push(valueMin, valueMax);
-          console.log(currentValue, selectedMax);
           if (
             currentValue[0] !== selectedMin &&
             currentValue[1] !== selectedMax
@@ -120,7 +118,7 @@ export default function ProductionSlider(props) {
               ...stateNav,
               filterCumulativeWater: filter
             }));
-          } else if (id === "lastTwelveMonthOil") {
+          } else if (id === "last12MonthOil") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterLastTwelveMonthOil: filter
@@ -130,17 +128,17 @@ export default function ProductionSlider(props) {
               ...stateNav,
               filterFirstMonthWater: filter
             }));
-          } else if (id === "firstThreeMonthWater") {
+          } else if (id === "first3MonthWater") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterFirstThreeMonthWater: filter
             }));
-          } else if (id === "firstSixMonthWater") {
+          } else if (id === "first6MonthWater") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterFirstSixMonthWater: filter
             }));
-          } else if (id === "firstTwelveMonthWater") {
+          } else if (id === "first12MonthWater") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterFirstTwelveMonthWater: filter
@@ -150,12 +148,12 @@ export default function ProductionSlider(props) {
               ...stateNav,
               filterLastMonthWater: filter
             }));
-          } else if (id === "lastSixMonthWater") {
+          } else if (id === "last6MonthWater") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterLastSixMonthWater: filter
             }));
-          } else if (id === "lastTwelveMonthWater") {
+          } else if (id === "last12MonthWater") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterLastTwelveMonthWater: filter
@@ -165,17 +163,17 @@ export default function ProductionSlider(props) {
               ...stateNav,
               filterFirstMonthGas: filter
             }));
-          } else if (id === "firstThreeMonthGas") {
+          } else if (id === "first3MonthGas") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterFirstThreeMonthGas: filter
             }));
-          } else if (id === "firstSixMonthGas") {
+          } else if (id === "first6MonthGas") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterFirstSixMonthGas: filter
             }));
-          } else if (id === "firstTwelveMonthGas") {
+          } else if (id === "first12MonthGas") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterFirstTwelveMonthGas: filter
@@ -185,12 +183,12 @@ export default function ProductionSlider(props) {
               ...stateNav,
               filterLastMonthGas: filter
             }));
-          } else if (id === "lastSixMonthGas") {
+          } else if (id === "last6MonthGas") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterLastSixMonthGas: filter
             }));
-          } else if (id === "lastTwelveMonthGas") {
+          } else if (id === "last12MonthGas") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterLastTwelveMonthGas: filter
@@ -200,17 +198,17 @@ export default function ProductionSlider(props) {
               ...stateNav,
               filterFirstMonthOil: filter
             }));
-          } else if (id === "firstThreeMonthOil") {
+          } else if (id === "first3MonthOil") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterFirstThreeMonthOil: filter
             }));
-          } else if (id === "firstSixMonthOil") {
+          } else if (id === "first6MonthOil") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterFirstSixMonthOil: filter
             }));
-          } else if (id === "firstTwelveMonthOil") {
+          } else if (id === "first12MonthOil") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterFirstTwelveMonthOil: filter
@@ -220,7 +218,7 @@ export default function ProductionSlider(props) {
               ...stateNav,
               filterLastMonthOil: filter
             }));
-          } else if (id === "lastSixMonthOil") {
+          } else if (id === "last6MonthOil") {
             setStateNav(stateNav => ({
               ...stateNav,
               filterLastSixMonthOil: filter
@@ -232,15 +230,7 @@ export default function ProductionSlider(props) {
     if (valueMin && valueMax) {
       setFilter();
     }
-  }, [
-    id,
-    props.firstLast,
-    props.months,
-    props.prod,
-    setStateNav,
-    valueMax,
-    valueMin
-  ]);
+  }, [id, setStateNav, valueMax, valueMin]);
 
   const setvaluesRecallCumulative = useCallback(() => {
     if (stateNav.filterCumulativeOil === null) {
@@ -285,20 +275,21 @@ export default function ProductionSlider(props) {
         setValueMaxDisplay(recallMax);
       }
     }
-
-    if (stateNav.filterFirstMonthWater === null) {
-      return;
-    } else {
-      const cOil = stateNav.filterFirstMonthWater[1][1][1];
-      if (cOil.toString() === id.toString()) {
-        const recallMin = stateNav.filterFirstMonthWater[1][2];
-        setValueMinDisplay(recallMin);
-      }
-      if (cOil.toString() === id.toString()) {
-        const recallMax = stateNav.filterFirstMonthWater[2][2];
-        setValueMaxDisplay(recallMax);
-      }
-    }
+    console.log(stateNav.filterFirstMonthWater)
+    // if (stateNav.filterFirstMonthWater === null) {
+    //   return;
+    // } else {
+      
+      // const cOil = stateNav.filterFirstMonthWater[1][1][1];
+      // if (cOil.toString() === id.toString()) {
+      //   const recallMin = stateNav.filterFirstMonthWater[1][2];
+      //   setValueMinDisplay(recallMin);
+      // }
+      // if (cOil.toString() === id.toString()) {
+      //   const recallMax = stateNav.filterFirstMonthWater[2][2];
+      //   setValueMaxDisplay(recallMax);
+      // }
+    // }
   }, [
     id,
     stateNav.filterCumulativeGas,
@@ -306,8 +297,6 @@ export default function ProductionSlider(props) {
     stateNav.filterCumulativeWater,
     stateNav.filterFirstMonthWater
   ]);
-
-  // console.log(stateNav.filterFirstMonthWater, prodTypeName);
 
   useEffect(() => {
     if (prodTypeName && prodTypeName.length > 0) {
@@ -352,6 +341,7 @@ export default function ProductionSlider(props) {
         type="number"
         label="Min"
         variant="outlined"
+        
         error={valueMinDisplay > valueMaxDisplay}
       />
       <TextField

@@ -217,10 +217,12 @@ export default function FilterFormOwner() {
       ...stateNav,
       filterInterestTypeProductionPayment: filter
     }));
-
+    
     if (interestIds.length > 0) {
       interestIds.forEach(i => {
+        console.log(i)
         let filter = ["==", ["get", i], true];
+
 
         //you can pass a variable to the key because setState won't work so have to hardcode each filter. ugh
         switch (i) {

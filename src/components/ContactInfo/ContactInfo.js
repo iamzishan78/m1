@@ -232,8 +232,8 @@ export default function Contacts() {
           </Grid>
         </Grid>
       </Grid>
-      <Grid className={classes.border} style={{ height: "100%" }} item xs={3}>
-        <div>
+      <Grid className={classes.border} style={{ MinHeight: "100%" }} item xs={3}>
+        <div style={{marginBottom: "4px"}}>
           <Grid container className={classes.rightColumnGrid} spacing={1}>
             <Grid item xs={12}>
               <Paper className={classes.paper}>
