@@ -3,7 +3,7 @@ import { useMutation } from "@apollo/react-hooks";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import MyLocationIcon from "@material-ui/icons/MyLocation";
-
+import IconButton from "@material-ui/core/IconButton";
 import { AppContext } from "../../AppContext";
 import { EDGEQUERY } from "../../graphQL/useMutationCreateEdge";
 import { DROPEDGEQUERY } from "../../graphQL/useMutationDropEdge";
@@ -12,19 +12,21 @@ import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles(theme => ({
   root: {
+    width: "24px",
+    height: "24px",
     borderRadius: "50%",
     border: 0,
     color: props => (props.dark ? "rgb(1,17,51)" : "#fff"),
     backgroundColor: "transparent",
     transition: " background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
     "&:hover": {
-      backgroundColor: "#9299dd14"
+      backgroundColor: "transparent"
     }
   },
   selected: {
     backgroundColor: "transparent !important",
     "&:hover": {
-      backgroundColor: "#9299dd14 !important"
+      backgroundColor: "transparent"
     }
   },
   selected2: {
@@ -157,24 +159,26 @@ export default function TrackToggleButton(props) {
   // if (loading || loadingDrop) return <CircularProgress size={28} color="secondary"></CircularProgress>;
   //if (error || errorDrop) return <Alert severity="error">Error occurred.</Alert>;
   return (
-    <ToggleButton
-      size="small"
-      classes={{ root: classes.root, selected: classes.selected }}
-      value="check"
-      selected={selected}
-      onChange={e => {
-        e.stopPropagation();
-        e.persist();
-        handleToggle();
-      }}
-    >
-      {loading || loadingDrop ? (
-        <CircularProgress size={28} color="secondary"></CircularProgress>
-      ) : selected ? (
-        <MyLocationIcon color="secondary" />
-      ) : (
-        <MyLocationIcon />
-      )}
-    </ToggleButton>
+    <IconButton>
+      <ToggleButton
+        size="small"
+        classes={{ root: classes.root, selected: classes.selected }}
+        value="check"
+        selected={selected}
+        onChange={e => {
+          e.stopPropagation();
+          e.persist();
+          handleToggle();
+        }}
+      >
+        {loading || loadingDrop ? (
+          <CircularProgress size={28} color="secondary"></CircularProgress>
+        ) : selected ? (
+          <MyLocationIcon color="secondary" />
+        ) : (
+          <MyLocationIcon />
+        )}
+      </ToggleButton>
+    </IconButton>
   );
 }
