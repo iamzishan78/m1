@@ -240,6 +240,9 @@ const SignInCard = props => {
       graphQL = 'https://m1graph.azurewebsites.net/api/m1graph?code=MHYChoSzLKszMTCsH9gRhPyCWGLDaU6qNFHB2YYrXHs9YXNV0BO5zA=='
   
     }
+    else if (t === 'm1auth') {
+    graphQL = 'https://m1graph.azurewebsites.net/api/m1graphauth'
+    }
     setStateApp(state => ({...state,apolloClientEndpoint:graphQL}))
   }
 
@@ -270,6 +273,7 @@ const SignInCard = props => {
           <MenuItem value="c2">Tenant 2</MenuItem>
           <MenuItem value="M1neral">M1neral</MenuItem>
           <MenuItem value="m1dev">M1neral Dev</MenuItem>
+          <MenuItem value="m1auth">M1neral Auth</MenuItem>
         </Select>
       </FormControl>
 
