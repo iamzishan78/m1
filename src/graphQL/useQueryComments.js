@@ -6,6 +6,7 @@ export const COMMENTSQUERY = gql`
     comments(commentIdArray: $commentIdArray) {
       id
       comment
+      _ts
     }
   }
 `;

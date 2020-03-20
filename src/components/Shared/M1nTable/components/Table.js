@@ -393,6 +393,9 @@ const useStyles = makeStyles(theme => ({
   },
   dialog: {
     "& .MuiCard-root": { overflow: "auto" }
+  },
+  tagsDiv: {
+    margin: "8px"
   }
 }));
 
@@ -456,14 +459,14 @@ export default function SubTable(props) {
     setSelected([]);
   };
 
-  const handleExpandClickTag = async (index, component) => {
-    setCollapseComponent(component);
+  const handleExpandClickTag = async (index, rowData) => {
     setCollapsedRow(index);
-    setExpandedTag(!expandedTag);
+    setExpandedTag(rowData);
     setExpanded(false);
     setExpandedComment(false);
     setExpandedContact(false);
     setExpandedOwnersContacts(false);
+    setOpenDialog(true);
   };
   const handleExpandClickComment = async (index, rowData) => {
     setCollapsedRow(index);
@@ -472,7 +475,6 @@ export default function SubTable(props) {
     setExpandedTag(false);
     setExpandedContact(false);
     setExpandedOwnersContacts(false);
-
     setOpenDialog(true);
   };
 
@@ -534,10 +536,9 @@ export default function SubTable(props) {
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setExpandedComment(false);
+    setExpandedTag(false);
   };
-  useEffect(() => {
-    console.log(openDialog);
-  }, [openDialog]);
+
   return rows && rows.length > 0 ? (
     <div className={classes.root}>
       {showExpandableCard &&
@@ -818,7 +819,16 @@ export default function SubTable(props) {
                             [classes.expandOpenTag]:
                               expandedTag && collapsedRow === index
                           })}
-                          onClick={() => handleExpandClickTag(index, "tags")}
+                          onClick={() =>
+                            handleExpandClickTag(index, {
+                              row,
+                              targetSourceId: row.id,
+                              targetName:
+                                props.targetLabel === "well"
+                                  ? row.wellName
+                                  : row.name
+                            })
+                          }
                           aria-expanded={expandedTag && collapsedRow === index}
                           aria-label="show tags"
                         >
@@ -853,7 +863,7 @@ export default function SubTable(props) {
                           className={classes.collapseInsideRow}
                           in={
                             (expanded ||
-                              expandedTag ||
+                              // expandedTag ||
                               // expandedComment ||
                               expandedContact ||
                               expandedOwnersContacts) &&
@@ -862,26 +872,25 @@ export default function SubTable(props) {
                           timeout="auto"
                           unmountOnExit
                         >
-                          {collapseComponent === "tags" ? (
-                            <div className={classes.tagWrapper}>
-                              {/*  <Tags public={true}/> */}
-                              <Tags
-                                public={false}
-                                source={stateApp.user}
-                                sourceLabel="user"
-                                sourceSourceId={stateApp.user.id}
-                                sourceName={stateApp.user.name}
-                                target={row}
-                                targetLabel={props.targetLabel}
-                                targetSourceId={row.id}
-                                targetName={
-                                  props.targetLabel === "well"
-                                    ? row.wellName
-                                    : row.name
-                                }
-                              />
-                            </div>
-                          ) : //  collapseComponent === "comments" ? (
+                          {// collapseComponent === "tags" ? (
+                          //   <div className={classes.tagWrapper}>
+                          //     <Tags
+                          //       public={false}
+                          //       source={stateApp.user}
+                          //       sourceLabel="user"
+                          //       sourceSourceId={stateApp.user.id}
+                          //       sourceName={stateApp.user.name}
+                          //       target={row}
+                          //       targetLabel={props.targetLabel}
+                          //       targetSourceId={row.id}
+                          //       targetName={
+                          //         props.targetLabel === "well"
+                          //           ? row.wellName
+                          //           : row.name
+                          //       }
+                          //     />
+                          //   </div>
+                          // ) :  collapseComponent === "comments" ? (
                           //   <Comments
                           //     targetLabel={props.targetLabel}
                           //     targetSourceId={row.id}
@@ -924,18 +933,36 @@ export default function SubTable(props) {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         /> */}
       </Paper>
-      {expandedComment && (
+      {(expandedComment || expandedTag) && (
         <Dialog
           className={classes.dialog}
           open={openDialog}
           onClose={handleCloseDialog}
-          fullWidth
+          fullWidth={expandedComment ? true : false}
         >
-          <Comments
-            targetLabel={props.targetLabel}
-            targetSourceId={expandedComment.targetSourceId}
-            targetName={expandedComment.targetName}
-          ></Comments>
+          {expandedComment && (
+            <Comments
+              focus
+              targetLabel={props.targetLabel}
+              targetSourceId={expandedComment.targetSourceId}
+              targetName={expandedComment.targetName}
+            />
+          )}
+          {expandedTag && (
+            <div className={classes.tagsDiv}>
+              <Tags
+                public={false}
+                source={stateApp.user}
+                sourceLabel="user"
+                sourceSourceId={stateApp.user.id}
+                sourceName={stateApp.user.name}
+                target={expandedTag.row}
+                targetLabel={props.targetLabel}
+                targetSourceId={expandedTag.targetSourceId}
+                targetName={expandedTag.targetName}
+              />
+            </div>
+          )}
         </Dialog>
       )}
     </div>

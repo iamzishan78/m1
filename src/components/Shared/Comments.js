@@ -5,7 +5,6 @@ import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -15,7 +14,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import TextField from "@material-ui/core/TextField";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "react-avatar";
-import Typography from "@material-ui/core/Typography";
 import { CircularProgress } from "@material-ui/core";
 import { AppContext } from "../../AppContext";
 import { COMMENTSQUERY } from "../../graphQL/useQueryComments";
@@ -23,6 +21,7 @@ import { USERPARENTCOMMENTSQUERY } from "../../graphQL/useQueryUserParentComment
 import { UPSERTCOMMENT } from "../../graphQL/useMutationUpsertComment";
 import { EDGEQUERY } from "../../graphQL/useMutationCreateEdge";
 import { DROPEDGEQUERY } from "../../graphQL/useMutationDropEdge";
+import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -73,6 +72,25 @@ const useStyles = makeStyles(theme => ({
   },
   avatar: {
     minWidth: "50px"
+  },
+  foodText: {
+    fontSize: "10px",
+    color: "#6e6e6e",
+    margin: "0",
+    textAlign: "right",
+    float: "right",
+    marginLeft: "10px",
+    "& span": {
+      fontWeight: "bold"
+    },
+    "& .redColor": {
+      color: "rgb(240, 89, 89) !important"
+    }
+  },
+  emptyInput: {
+    "& fieldset": {
+      borderColor: "rgb(240, 89, 89) !important"
+    }
   }
 }));
 
@@ -86,6 +104,7 @@ export default function Comments(props) {
   const [targetVertex, setTargetVertex] = useState(null);
   const [commentVertex, setCommentVertex] = useState(null);
   const [dropTag, setDropTag] = useState(null);
+  const [emptyInput, setEmptyInput] = useState(false);
 
   const [
     getComments,
@@ -165,7 +184,17 @@ export default function Comments(props) {
   ///////////////////// INSERTING NEW COMMENTS ///////////////////////////////////////////////
 
   const handleEnteringComment = event => {
-    upsertComment({ variables: { comment: { comment: event.target.value } } });
+    if (
+      event.target.value
+        .split("\n")
+        .join("")
+        .trim() !== ""
+    ) {
+      upsertComment({ variables: { comment: { comment: event.target.value } } });
+      setEmptyInput(false);
+    } else {
+      setEmptyInput(true);
+    }
     setTextValue("");
   };
 
@@ -220,28 +249,78 @@ export default function Comments(props) {
 
   const handleDeleteClick = comment => {};
 
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  const compare = (a, b) => {
+    if (a._ts > b._ts) return -1;
+    if (b._ts > a._ts) return 1;
+
+    return 0;
+  };
+  commentsArray.sort(compare);
+
+  useEffect(() => {
+    if (props.focus) {
+      document.getElementById("commentInput").focus();
+    }
+  }, [props.focus]);
+
   return (
     <Card className={classes.root} variant="outlined">
       <CardHeader className={classes.header} title="Comments" />
       <CardActions>
-        <TextField
-          className={classes.textInput}
-          id="outlined-input"
-          // label="Comment"
-          variant="outlined"
-          multiline
-          rows="5"
-          onChange={e => {
-            setTextValue(e.target.value);
-          }}
-          value={textValue}
-          onKeyDown={event => {
-            if (event.key === "Enter" && !event.shiftKey) {
-              event.preventDefault();
-              handleEnteringComment(event);
-            }
-          }}
-        />
+        <Grid container>
+          <Grid item xs={12}>
+            <TextField
+              className={`${classes.textInput} ${
+                emptyInput ? classes.emptyInput : ""
+              }`}
+              id="commentInput"
+              // label="Comment"
+              variant="outlined"
+              multiline
+              rows="4"
+              onChange={e => {
+                setTextValue(e.target.value);
+                if (
+                  e.target.value
+                    .split("\n")
+                    .join("")
+                    .trim() !== "" &&
+                  emptyInput
+                ) {
+                  setEmptyInput(false);
+                }
+              }}
+              value={textValue}
+              onKeyDown={event => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  event.preventDefault();
+                  handleEnteringComment(event);
+                }
+              }}
+              onBlur={() => {
+                setEmptyInput(false);
+              }}
+            />
+          </Grid>
+          {!emptyInput ? (
+            <Grid item xs={12}>
+              <p className={classes.foodText}>
+                <span>Shift+Return</span> to add a new line
+              </p>
+              <p className={classes.foodText}>
+                <span>Return</span> to send
+              </p>
+            </Grid>
+          ) : (
+            <Grid item xs={12}>
+              <p className={classes.foodText}>
+                <span className="redColor">Required Field </span>
+              </p>
+            </Grid>
+          )}
+        </Grid>
       </CardActions>
       <CardContent className={classes.content}>
         {!loadingComments ? (
@@ -258,7 +337,16 @@ export default function Comments(props) {
                 <ListItemText
                   className={classes.listItemText}
                   primary={comment.comment}
-                  secondary={stateApp.user.name}
+                  secondary={`${stateApp.user.name} - ${new Intl.DateTimeFormat(
+                    "en-US",
+                    {
+                      year: "numeric",
+                      month: "long",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit"
+                    }
+                  ).format(comment._ts)}`}
                 />
                 <ListItemSecondaryAction>
                   <IconButton
