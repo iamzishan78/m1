@@ -7,6 +7,7 @@ import Button from "@material-ui/core/Button";
 import Comments from "../Shared/Comments";
 import Tags from "../Shared/Tagger";
 import { useHistory } from "react-router-dom";
+import Avatar from "react-avatar";
 
 const useStyles = makeStyles(theme => ({
   Contacts: {
@@ -58,21 +59,8 @@ const useStyles = makeStyles(theme => ({
     paddingRight: "15px"
   },
   userIcon: {
-    backgroundColor: "#BBF4D6",
-    width: "80px",
-    height: "80px",
     margin: "20px",
-    display: "inline-block",
-    verticalAlign: "middle",
-    borderRadius: "100%",
-    fontFamily: "Helvetica, Arial, sans-serif",
     float: "left"
-  },
-  userIconText: {
-    whiteSpace: "nowrap",
-    verticalAlign: "middle",
-    color: "#595959",
-    textAlign: "center"
   },
   userName: {
     color: "#595959",
@@ -128,9 +116,11 @@ export default function Contacts() {
           <Grid item xs={12} className={classes.border}>
             <div>
               <div className={classes.userIcon}>
-                <h1 className={classes.userIconText}>
-                  {`${ContactExample.name[0]}${ContactExample.lastName[0]}`}
-                </h1>
+                <Avatar
+                  name={`${ContactExample.name} ${ContactExample.lastName}`}
+                  size="80"
+                  round
+                />
               </div>
               <div className={classes.userName}>
                 <h2>{`${ContactExample.name} ${ContactExample.lastName}`}</h2>
@@ -232,8 +222,13 @@ export default function Contacts() {
           </Grid>
         </Grid>
       </Grid>
-      <Grid className={classes.border} style={{ MinHeight: "100%" }} item xs={3}>
-        <div style={{marginBottom: "4px"}}>
+      <Grid
+        className={classes.border}
+        style={{ MinHeight: "100%" }}
+        item
+        xs={3}
+      >
+        <div style={{ marginBottom: "4px" }}>
           <Grid container className={classes.rightColumnGrid} spacing={1}>
             <Grid item xs={12}>
               <Paper className={classes.paper}>

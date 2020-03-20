@@ -5,7 +5,6 @@ import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -15,7 +14,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import TextField from "@material-ui/core/TextField";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "react-avatar";
-import Typography from "@material-ui/core/Typography";
 import { CircularProgress } from "@material-ui/core";
 import { AppContext } from "../../AppContext";
 import { COMMENTSQUERY } from "../../graphQL/useQueryComments";
@@ -192,10 +190,7 @@ export default function Comments(props) {
         .join("")
         .trim() !== ""
     ) {
-      upsertComment({
-        variables: { comment: { comment: event.target.value } }
-      });
-
+      upsertComment({ variables: { comment: { comment: event.target.value } } });
       setEmptyInput(false);
     } else {
       setEmptyInput(true);
@@ -253,6 +248,8 @@ export default function Comments(props) {
   ///////////////////// DELETING A COMMENT ///////////////////////////////////////////////
 
   const handleDeleteClick = comment => {};
+
+  ////////////////////////////////////////////////////////////////////////////////////////
 
   const compare = (a, b) => {
     if (a._ts > b._ts) return -1;

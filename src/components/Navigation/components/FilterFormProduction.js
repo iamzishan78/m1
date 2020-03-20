@@ -8,6 +8,7 @@ import Select from "@material-ui/core/Select";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import TabPanel from "./Utils/TabPanel";
+import useQueryProdHistory from "../../../graphQL/useQueryProdRange";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { NavigationContext } from "../NavigationContext";
 import { AppContext } from "../../../AppContext.js"
@@ -100,8 +101,9 @@ export default function FilterFormProduction() {
   const [valueLastMonthsOil, setValueLastMonthsOil] = useState(12);
   const [valueLastMonthsGas, setValueLastMonthsGas] = useState(12);
   const [valueLastMonthsWater, setValueLastMonthsWater] = useState(12);
+  const [queryProdRange, {loading, data }] = useQueryProdHistory(appState.user.authToken);
   const [max, setMax] = useState();
-  const [loading, setIsLoading] = useState(true);
+  const [dataLoading, setDataLoading] = useState(false)
   const [firstMonths, setFirstMonths] = useState(false);
   const [lastMonths, setLastMonths] = useState(false);
   // const [firstOilMax, setFirstOilMax] = useState();
@@ -132,31 +134,20 @@ export default function FilterFormProduction() {
   };
 
   useEffect(() => {
-    let token =  appState.user.authToken
-
-    const req = new Request(
-      "https://m1-search-api.azurewebsites.net/api/v1.0/wells/ranges",
-      {
-        method: "GET",
-        mode: "cors",
-        headers: {
-          "M1-Correlation-Id": "997342965fd743f9a5fb16d03dfbdc7e",
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        }
+    queryProdRange()
+    if (!loading) {
+      if (data) {
+        let ranges = data.wellsRanges;
+        setMax(ranges);
+        setDataLoading(true)
       }
-    );
-    fetch(req)
-      .then(res => res.json())
-      .then(response => {
-        setMax(response);
-        console.log(response)
-        setIsLoading(false);
-      })
-      .catch(error => console.log(error));
-  }, []);
+    } else {
+      console.log("log user out")
+    }
+    
+  }, [data, loading, max, queryProdRange]);
 
+  console.log(max)
   
   const handleChangeFirstMonthsOil = (event, newValue) => {
     
@@ -827,7 +818,7 @@ export default function FilterFormProduction() {
       <div className={classes.displayNone}></div>
   )
 
-  return !loading ? (
+  return dataLoading ? (
     
     <div className={classes.root}>
       <Tabs
