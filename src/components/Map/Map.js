@@ -80,6 +80,29 @@ export default function Map() {
     }
   }, [map, stateMap.checkedLayers]);
 
+  useEffect(() => {
+    if (stateMap.checkedHeats && map) {
+      stateMap.heatLayers.forEach(l => {
+
+        l.id.forEach(k => {
+          map.setLayoutProperty(k, "visibility", "none");
+        });
+      });
+
+      if (stateMap.checkedHeats.length > 0) {
+        let layers = stateMap.checkedHeats;
+
+        layers.forEach(i => {
+          let currentLayerArray = stateMap.heatLayers[i].id;
+          currentLayerArray.forEach(j => {
+            map.setLayoutProperty(j, "visibility", "visible");
+          });
+
+        });
+      }
+    }
+  }, [map, stateMap.checkedHeats]);
+
 
   useEffect(() => {
     //applies filter when one of the filters change

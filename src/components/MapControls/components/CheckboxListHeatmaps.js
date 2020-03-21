@@ -1,57 +1,57 @@
-import React, { useContext } from 'react'
-import { withStyles, makeStyles } from '@material-ui/core/styles'
+import React, { useContext, forwardRef } from "react";
+import { withStyles, makeStyles } from "@material-ui/core/styles";
 //import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
-import ClickAwayListener from '@material-ui/core/ClickAwayListener'
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 //import List from '@material-ui/core/List';
 //import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemIcon from "@material-ui/core/ListItemIcon";
 //import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText'
-import Checkbox from '@material-ui/core/Checkbox'
+import ListItemText from "@material-ui/core/ListItemText";
+import Checkbox from "@material-ui/core/Checkbox";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 //import IconButton from '@material-ui/core/IconButton';
 //import EditIcon from '@material-ui/icons/Edit';
-import VisibilityIcon from '@material-ui/icons/Visibility'
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
-
-import { MapControlsContext } from '../MapControlsContext'
-import { MapContext } from '../../Map/MapContext'
+import { MapControlsContext } from "../MapControlsContext";
+import { MapContext } from "../../Map/MapContext";
+import { Divider } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   subHeaderItem: {
-    backgroundColor: '#011133 !important'
+    backgroundColor: "#011133 !important"
   }
-}))
+}));
 
 export default function CheckboxListHeatmaps(props) {
-  const [stateMap, setStateMap] = useContext(MapContext)
-  const [state, setState] = useContext(MapControlsContext)
-  // const theme = useTheme()
-  const classes = useStyles()
+  const [stateMapControls, setStateMapControls] = useContext(
+    MapControlsContext
+  );
+  const [stateMap, setStateMap] = useContext(MapContext);
+  //const theme = useTheme()
+  const classes = useStyles();
   const handleToggle = idx => () => {
-    const currentIndex = state.checkedHeats.indexOf(idx)
-    const newChecked = [...state.checkedHeats]
-    console.log(idx)
-    console.log('toggle stateMap.checkedHeats before',stateMap.checkedHeats)
+    console.log(idx);
+    console.log("toggle stateMap.checkedHeats before", stateMap.checkedHeats);
+    const currentIndex = stateMap.checkedHeats.indexOf(idx);
+    const newChecked = [...stateMap.checkedHeats];
 
     if (currentIndex === -1) {
-      newChecked.push(idx)
+      newChecked.push(idx);
     } else {
-      newChecked.splice(currentIndex, 1)
+      newChecked.splice(currentIndex, 1);
     }
-   // setState(state => ({ ...state, checkedHeats: newChecked }))
-    //props.changeHeatmaps(newChecked)
-    console.log('newchecked',newChecked)
+    console.log("newchecked", newChecked);
 
-    setStateMap(stateMap => ({ ...stateMap, checkedHeats: newChecked}))
-    console.log('toggle stateMap.checkedHeats after',stateMap.checkedHeats)
+    setStateMap(stateMap => ({ ...stateMap, checkedHeats: newChecked }));
 
-  }
+    console.log("toggle stateMap.checkedHeats after", stateMap.checkedHeats);
+  };
 
   const StyledMenu = withStyles({
     paper: {
-      border: '1px solid #011133'
+      border: "1px solid #011133"
     }
   })(props => (
     <Menu
@@ -60,45 +60,48 @@ export default function CheckboxListHeatmaps(props) {
       transitionDuration={0}
       getContentAnchorEl={null}
       anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'left'
+        vertical: "top",
+        horizontal: "left"
       }}
       MenuListProps={{
         disablePadding: true
       }}
       transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right'
+        vertical: "top",
+        horizontal: "right"
       }}
       {...props}
     />
-  ))
+  ));
 
   const StyledMenuItem = withStyles(theme => ({
     root: {
-      fontFamily: 'Poppins',
-      '&:hover': {
-        background: '#4B618F'
+      fontFamily: "Poppins",
+      "&:hover": {
+        background: "#4B618F"
       },
-      backgroundColor: '#263451',
-      '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+      backgroundColor: "#263451",
+      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
         color: theme.palette.common.white
         // },
       }
     }
-  }))(MenuItem)
+  }))(MenuItem);
 
   const handleClose = () => {
-    setState(state => ({ ...state, anchorEl: null }))
-  }
+    setStateMapControls(stateMapControls => ({
+      ...stateMapControls,
+      anchorEl: null
+    }));
+  };
 
   return (
     <ClickAwayListener onClickAway={handleClose}>
       <StyledMenu
-        id="checklist-heats"
-        anchorEl={state.anchorEl}
+        id="checklist-menu"
+        anchorEl={stateMapControls.anchorEl}
         keepMounted
-        open={Boolean(state.anchorEl)}
+        open={Boolean(stateMapControls.anchorEl)}
         onClose={handleClose}
       >
         <StyledMenuItem
@@ -108,39 +111,35 @@ export default function CheckboxListHeatmaps(props) {
           dense
           className={classes.subHeaderItem}
         >
-          <ListItemText primary="Heatmap Visibility" />
+          <ListItemText primary="Heatmaps" />
         </StyledMenuItem>
-        {state.heatmaps.map(layer => {
-          const labelId = `checkbox-list-label-${layer.id}`
+
+        {stateMap.heatLayers.map((layer, index) => {
+          const labelId = `checkbox-list-label-${index}`;
 
           return (
-            <StyledMenuItem
-              disableRipple
-              key={layer.idx}
-              role={undefined}
-              dense
-            >
+            <StyledMenuItem disableRipple key={index} role={undefined} dense>
               <ListItemIcon>
                 <Checkbox
                   icon={<VisibilityOffIcon htmlColor="#fff" />}
                   checkedIcon={<VisibilityIcon htmlColor="#fff" />}
                   edge="start"
                   checked={
-                    state.checkedHeats
-                      ? state.checkedHeats.indexOf(layer.idx) !== -1
+                    stateMap.checkedHeats
+                      ? stateMap.checkedHeats.indexOf(index) !== -1
                       : false
                   }
                   tabIndex={-1}
                   disableRipple
-                  inputProps={{ 'aria-labelledby': labelId }}
-                  onChange={handleToggle(layer.idx)}
+                  inputProps={{ "aria-labelledby": labelId }}
+                  onChange={handleToggle(index)}
                 />
               </ListItemIcon>
               <ListItemText id={labelId} primary={layer.name} />
             </StyledMenuItem>
-          )
+          );
         })}
       </StyledMenu>
     </ClickAwayListener>
-  )
+  );
 }

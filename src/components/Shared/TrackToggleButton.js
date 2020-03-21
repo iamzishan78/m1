@@ -12,23 +12,24 @@ import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    width: "24px",
-    height: "24px",
+    width: "48px",
+    height: "48px",
     borderRadius: "50%",
     border: 0,
     color: props => (props.dark ? "rgb(1,17,51)" : "#fff"),
-    backgroundColor: "transparent",
-    transition: " background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-    "&:hover": {
-      backgroundColor: "transparent"
-    }
-  },
-  selected: {
     backgroundColor: "transparent !important",
+    // transition: " background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
     "&:hover": {
-      backgroundColor: "transparent"
+      backgroundColor: props =>
+        props.dark ? "#dadbde !important" : "#031d40 !important"
     }
   },
+  // selected: {
+  // backgroundColor: "transparent",
+  // "&:hover": {
+  //   backgroundColor: "#dadbde"
+  // }
+  // },
   selected2: {
     color: "rgba(1, 17, 51, 0.97) !important",
     //background: "rgba(1, 17, 51, 0.97) !important"
@@ -159,26 +160,26 @@ export default function TrackToggleButton(props) {
   // if (loading || loadingDrop) return <CircularProgress size={28} color="secondary"></CircularProgress>;
   //if (error || errorDrop) return <Alert severity="error">Error occurred.</Alert>;
   return (
-    <IconButton>
-      <ToggleButton
-        size="small"
-        classes={{ root: classes.root, selected: classes.selected }}
-        value="check"
-        selected={selected}
-        onChange={e => {
-          e.stopPropagation();
-          e.persist();
-          handleToggle();
-        }}
-      >
-        {loading || loadingDrop ? (
-          <CircularProgress size={28} color="secondary"></CircularProgress>
-        ) : selected ? (
-          <MyLocationIcon color="secondary" />
-        ) : (
-          <MyLocationIcon />
-        )}
-      </ToggleButton>
-    </IconButton>
+    // <IconButton>
+    <ToggleButton
+      size="small"
+      classes={{ root: classes.root }}
+      value="check"
+      selected={selected}
+      onChange={e => {
+        e.stopPropagation();
+        e.persist();
+        handleToggle();
+      }}
+    >
+      {loading || loadingDrop ? (
+        <CircularProgress size={28} color="secondary"></CircularProgress>
+      ) : selected ? (
+        <MyLocationIcon color="secondary" />
+      ) : (
+        <MyLocationIcon />
+      )}
+    </ToggleButton>
+    // </IconButton>
   );
 }

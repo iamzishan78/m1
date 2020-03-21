@@ -21,6 +21,7 @@ import { USERPARENTCOMMENTSQUERY } from "../../graphQL/useQueryUserParentComment
 import { UPSERTCOMMENT } from "../../graphQL/useMutationUpsertComment";
 import { EDGEQUERY } from "../../graphQL/useMutationCreateEdge";
 import { DROPEDGEQUERY } from "../../graphQL/useMutationDropEdge";
+import { DROPVERTEXQUERY } from "../../graphQL/useMutationDropVertex";
 import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles(theme => ({
@@ -96,38 +97,27 @@ const useStyles = makeStyles(theme => ({
 
 export default function Comments(props) {
   const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
   const [commentsArray, setCommentsArray] = useState([]);
   const [textValue, setTextValue] = useState("");
   const [loadingComments, setLoadingComments] = useState(false);
   const [sourceVertex, setSourceVertex] = useState(null);
   const [targetVertex, setTargetVertex] = useState(null);
   const [commentVertex, setCommentVertex] = useState(null);
-  const [dropTag, setDropTag] = useState(null);
+  const [dropTag, setDropTag] = useState(false);
   const [emptyInput, setEmptyInput] = useState(false);
 
-  const [
-    getComments,
-    { loading: loadingCommentsData, data: dataComments }
-  ] = useLazyQuery(COMMENTSQUERY);
+  const [getComments, { data: dataComments }] = useLazyQuery(COMMENTSQUERY);
   const [
     getUserParentComments,
-    { loading: loadingUserParentComments, data: dataUserParentComments }
+    { data: dataUserParentComments }
   ] = useLazyQuery(USERPARENTCOMMENTSQUERY);
-
-  const [
-    upsertComment,
-    {
-      data: dataUpsertComment,
-      loading: loadingUpsertComment,
-      errorUpsertComment
-    }
-  ] = useMutation(UPSERTCOMMENT);
-  const [createGraphEdge, { data, loading, error }] = useMutation(EDGEQUERY);
-  const [
-    dropGraphEdge,
-    { data: dataDrop, loading: loadingDrop, errorDrop }
-  ] = useMutation(DROPEDGEQUERY);
+  const [upsertComment, { data: dataUpsertComment }] = useMutation(
+    UPSERTCOMMENT
+  );
+  const [createGraphEdge, {}] = useMutation(EDGEQUERY);
+  const [dropGraphEdge, {}] = useMutation(DROPEDGEQUERY);
+  const [dropGraphVertex, { data: dataDropV }] = useMutation(DROPVERTEXQUERY);
 
   useEffect(() => {
     setTargetVertex({
@@ -190,7 +180,18 @@ export default function Comments(props) {
         .join("")
         .trim() !== ""
     ) {
-      upsertComment({ variables: { comment: { comment: event.target.value } } });
+      upsertComment({
+        variables: { comment: { comment: event.target.value } }
+      }); ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // setCommentsArray([
+      //   ...commentsArray,
+      //   {
+      //     id: commentsArray.length,
+      //     comment: event.target.value.trim(),
+      //     _ts: Date.now()
+      //   }
+      // ]); //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
       setEmptyInput(false);
     } else {
       setEmptyInput(true);
@@ -242,12 +243,63 @@ export default function Comments(props) {
       if (commentVertex && sourceVertex && targetVertex) {
         createEdgeAsyncAwait(sourceVertex, commentVertex, targetVertex);
       }
+    } else {
+      removeEdgesAndCommentVertexAsyncAwait(
+        sourceVertex,
+        commentVertex,
+        targetVertex
+      );
+
+      if (dataDropV.success) {
+        /////delete the comment from sql//////////////////////////////////////////////////////////////////////////////
+      }
+      setDropTag(false);
     }
   }, [commentVertex]);
 
   ///////////////////// DELETING A COMMENT ///////////////////////////////////////////////
 
-  const handleDeleteClick = comment => {};
+  ////to remove edges between user-comment-targetObject, and drop the comment vertex
+  const removeEdgesAndCommentVertexAsyncAwait = async (
+    sourceVertex,
+    commentVertex,
+    targetVertex
+  ) => {
+    await dropGraphEdge({
+      variables: {
+        source: commentVertex,
+        target: targetVertex,
+        relationshipLabel: "commentedOn"
+      }
+    });
+
+    await dropGraphEdge({
+      variables: {
+        source: sourceVertex,
+        target: commentVertex,
+        relationshipLabel: "createdComment"
+      }
+    });
+
+    await dropGraphVertex({
+      variables: {
+        vertex: commentVertex
+      },
+      refetchQueries: ["getUserParentComments"],
+      awaitRefetchQueries: true
+    });
+  };
+
+  const handleDeleteClick = comment => {
+    setDropTag(true);
+    setCommentVertex({
+      sourceId: comment.id,
+      label: "comment",
+      name: comment.comment,
+      type: "vertex",
+      properties: []
+    });
+  };
 
   ////////////////////////////////////////////////////////////////////////////////////////
 

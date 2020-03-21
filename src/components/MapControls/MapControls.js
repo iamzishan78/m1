@@ -22,6 +22,7 @@ import CheckboxListHeatmaps from "./components/CheckboxListHeatmaps";
 import DrawShapes from "./components/DrawShapes/DrawShapes";
 import GpsFixedIcon from "@material-ui/icons/GpsFixed";
 import GpsNotFixedIcon from "@material-ui/icons/GpsNotFixed";
+import GradientIcon from "@material-ui/icons/Gradient";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -99,16 +100,11 @@ export default function MapControls(props) {
     setStateMapControls({ ...stateMapControls, openSpeedDial: true });
   };
 
-
-
-
-
   const handleFabClick = (e, action) => {
-
     setStateMapControls({
       ...stateMapControls,
       selectedControl: action,
-      anchorEl: e.currentTarget,
+      anchorEl: e.currentTarget
     });
 
     setStateMap({
@@ -116,17 +112,11 @@ export default function MapControls(props) {
       openTrack: action === "track" ? !stateMap.openTrack : stateMap.openTrack
     });
 
-
-
     if (stateMap.draw.getMode() !== "simple_select") {
       setStateApp({ ...stateApp, editDraw: false });
       stateMap.draw.changeMode("simple_select");
     }
   };
-
-
-
-
 
   const createSpeedDialActions = () => {
     const actions = [
@@ -134,17 +124,20 @@ export default function MapControls(props) {
         icon: !stateMap.openTrack ? <GpsNotFixedIcon /> : <GpsFixedIcon />,
         name: "Tracked",
         action: "track"
-      },     
+      },
       { icon: <LanguageIcon id="base" />, name: "Base Map", action: "base" },
       { icon: <LayersIcon id="layer" />, name: "Layers", action: "layer" },
+      {
+        icon: <GradientIcon id="heatMaps" />,
+        name: "Heatmaps",
+        action: "heatMaps"
+      },
       {
         icon: !stateApp.editDraw ? <EditIcon /> : <CancelIcon />,
         name: "Draw",
         action: "draw"
-      },
- 
+      }
     ];
-
 
     return actions.map(action => (
       <SpeedDialAction
@@ -164,12 +157,12 @@ export default function MapControls(props) {
 
   const openSelectedControl = () => {
     const { selectedControl } = stateMapControls;
-    switch (selectedControl) {    
+    switch (selectedControl) {
       case "base":
         return <BaseMapStyles />;
       case "layer":
         return <CheckboxList changeLayers={changeLayers} />;
-      case "heat":
+      case "heatMaps":
         return <CheckboxListHeatmaps changeHeatmaps={changeHeatmaps} />;
       case "draw":
         return <DrawShapes />;

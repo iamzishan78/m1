@@ -1,69 +1,65 @@
 import React, { useState, createContext } from "react";
 
-
 const styleLayers = [
   {
     name: "Wells",
-    id: ["wellpoints","welllines"],
+    id: ["wellpoints", "welllines"],
     idx: 0
   },
   {
     name: "Basins",
-    id: ["basinLayer",],    
+    id: ["basinLayer"],
     idx: 2
   },
   {
     name: "Pipelines",
-    id: ["pipelineLayer",],
+    id: ["pipelineLayer"],
     idx: 3
   },
   {
     name: "Land Grid",
-    id: ["surveylabels","surveyLayer"],
+    id: ["surveylabels", "surveyLayer"],
     idx: 4
   },
   {
+    name: "Rigs (User Add)",
+    id: ["rigs_layer"],
+    idx: 11
+  }
+];
+
+const heatLayers = [
+  {
     name: "Cumulative BOE",
-    id: ["wellsHeatmapBoe",],
+    id: ["wellsHeatmapBoe"],
     idx: 5
   },
   {
     name: "Last 12mo BOE",
-    id: ["wellsHeatmapLast12",],
+    id: ["wellsHeatmapLast12"],
     idx: 6
   },
   {
     name: "IP90 Oil",
-    id: ["wellsHeatmapIP90Oil",],
+    id: ["wellsHeatmapIP90Oil"],
     idx: 7
   },
   {
     name: "IP90 Gas",
-    id: ["wellsHeatmapIP90Gas",],
+    id: ["wellsHeatmapIP90Gas"],
     idx: 8
   },
   {
     name: "Recently Drilled",
-    id: ["wellsHeatmapRecentlyDrilled",],
+    id: ["wellsHeatmapRecentlyDrilled"],
     idx: 9
   },
   {
     name: "Recently Completed",
-    id: ["wellsHeatmapRecentlyCompleted",],
+    id: ["wellsHeatmapRecentlyCompleted"],
     idx: 10
-  },
-  {
-    name: "Rigs (User Add)",
-    id: ["rigs_layer",],
-    idx: 11
-  },
-
-
+  }
 ];
-
-
-
-
 
 const MapContext = createContext([{}, () => {}]);
 
@@ -71,20 +67,20 @@ const MapContextProvider = props => {
   const [stateMap, setStateMap] = useState({
     //wells:{},
     //selectedWell:null,
-    selectedWellId:null,
+    selectedWellId: null,
     selectedWellApi: null,
     //popupOpen:false,
     //styleLayers:styleLayers,
     //checkedLayers: [0,1,4],
-    checkedHeats:null,
+    checkedHeats: null,
     //selectedLayerId:null,
     //wells: {},
     selectedWell: null,
     //popupOpen: false,
     styleLayers: styleLayers,
-    heatLayers: null,
-    checkedLayers: [0,3],
-    checkedHeats: [0, 1],
+    heatLayers: heatLayers,
+    checkedLayers: [0, 3],
+    checkedHeats: [],
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,
