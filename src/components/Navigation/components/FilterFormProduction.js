@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import FormControl from "@material-ui/core/FormControl";
@@ -8,6 +8,7 @@ import Select from "@material-ui/core/Select";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import TabPanel from "./Utils/TabPanel";
+import ExpiredStorage from 'expired-storage';
 import useQueryProdHistory from "../../../graphQL/useQueryProdRange";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { NavigationContext } from "../NavigationContext";
@@ -133,19 +134,30 @@ export default function FilterFormProduction() {
     }
   };
 
+  const handleLogout = useCallback(()=> {
+    window.sessionStorage.removeItem("user");
+    const expiredStorage = new ExpiredStorage();
+    expiredStorage.clear()
+    setAppState(state => ({ ...state, user: null }));
+  },[setAppState])
+
   useEffect(() => {
     queryProdRange()
     if (!loading) {
       if (data) {
-        let ranges = data.wellsRanges;
-        setMax(ranges);
-        setDataLoading(true)
+        if (data == null) {
+          handleLogout()
+        } else {
+          let ranges = data.wellsRanges;
+          setMax(ranges);
+          setDataLoading(true)
+        }
       }
     } else {
       console.log("log user out")
     }
     
-  }, [data, loading, max, queryProdRange]);
+  }, [data, handleLogout, loading, max, queryProdRange]);
 
   console.log(max)
   
