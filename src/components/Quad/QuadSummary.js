@@ -204,13 +204,13 @@ export default function QuadSummary(props) {
                   </Typography>
                   <Typography align="center" variant="h5">
                     {stateQuad.selectedRange === 12
-                      ? tile.value12
+                      ? new Intl.NumberFormat("en-US").format(tile.value12)
                       : stateQuad.selectedRange === 6
-                      ? tile.value6
+                      ? new Intl.NumberFormat("en-US").format(tile.value6)
                       : stateQuad.selectedRange === 1
-                      ? tile.value1
+                      ? new Intl.NumberFormat("en-US").format(tile.value1)
                       : stateQuad.selectedRange === 0
-                      ? tile.cumulative
+                      ? new Intl.NumberFormat("en-US").format(tile.cumulative)
                       : "--"}
                   </Typography>
                   <Typography align="center" variant="h6">

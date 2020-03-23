@@ -51,7 +51,9 @@ export default function CheckboxListHeatmaps(props) {
 
   const StyledMenu = withStyles({
     paper: {
-      border: "1px solid #011133"
+      border: "1px solid #011133",
+      left: "unset !important",
+      right: "80px !important"
     }
   })(props => (
     <Menu
