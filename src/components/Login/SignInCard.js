@@ -228,21 +228,21 @@ const SignInCard = props => {
     let graphQL;
     if(t === 'M1neral') {
       //graphQL = 'https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA=='
-      graphQL =  'https://m1graph.azurewebsites.net/api/m1graphql?code=0mQgwjKYS3TOX7DvDmJUNbUpCqnP4OQragGaaZVqkFdQVvkz8hRbVQ=='
+      graphQL =  'https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g=='
     }
     else if(t === 'c1') {
-      graphQL = 'https://m1c1.azurewebsites.net/api/m1graph?code=Gq6UNc8XJrZu8SPzlI59agiJtkcaj9VToRqEY64UNUn5cDUztdA1dg=='
+      graphQL = 'https://m1graphql.azurewebsites.net/api/tenant1?code=q7/gFC0gYxRasZrbGWxAIIQ4voHIMT/6vLv7iTESk1cQO3ChAqHCXw=='
     }
     else if(t === 'c2') {
-      graphQL = 'https://m1c2.azurewebsites.net/api/m1graph?code=vkUVFWtRKPO1sL93V/cJAUtS5GmAmhzSVgeIa7UVJAb8jsg1KjWRaA=='
+      graphQL = 'https://m1graphql.azurewebsites.net/api/tenant2?code=XxuZEkb91cXRlu5px2VqW7O5u0XyO1kEKSAzVzBXagf01nyG7jqryg=='
     }
-    else if (t === 'm1dev') {
-      graphQL = 'https://m1graph.azurewebsites.net/api/m1graph?code=MHYChoSzLKszMTCsH9gRhPyCWGLDaU6qNFHB2YYrXHs9YXNV0BO5zA=='
+    // else if (t === 'm1dev') {
+    //   graphQL = 'https://m1graph.azurewebsites.net/api/m1graph?code=MHYChoSzLKszMTCsH9gRhPyCWGLDaU6qNFHB2YYrXHs9YXNV0BO5zA=='
   
-    }
-    else if (t === 'm1auth') {
-    graphQL = 'https://m1graph.azurewebsites.net/api/m1graphauth'
-    }
+    // }
+    // else if (t === 'm1auth') {
+    // graphQL = 'https://m1graph.azurewebsites.net/api/m1graphauth'
+    // }
     setStateApp(state => ({...state,apolloClientEndpoint:graphQL}))
   }
 
@@ -272,8 +272,8 @@ const SignInCard = props => {
           <MenuItem value="c1">Tenant 1</MenuItem>
           <MenuItem value="c2">Tenant 2</MenuItem>
           <MenuItem value="M1neral">M1neral</MenuItem>
-          <MenuItem value="m1dev">M1neral Dev</MenuItem>
-          <MenuItem value="m1auth">M1neral Auth</MenuItem>
+          {/* <MenuItem value="m1dev">M1neral Dev</MenuItem>
+          <MenuItem value="m1auth">M1neral Auth</MenuItem> */}
         </Select>
       </FormControl>
 
