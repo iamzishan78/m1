@@ -35,6 +35,7 @@ export default function ExpandableCardProvider(props) {
         targetSourceId={props.targetSourceId}
         targetName={props.targetName}
         targetLabel={props.targetLabel}
+        Api={props.Api}
         />
      
     </ExpandableCardContextProvider>

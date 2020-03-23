@@ -1,56 +1,59 @@
-import React, { useContext, forwardRef } from 'react'
-import { withStyles, makeStyles } from '@material-ui/core/styles'
+import React, { useContext, forwardRef } from "react";
+import { withStyles, makeStyles } from "@material-ui/core/styles";
 //import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
-import ClickAwayListener from '@material-ui/core/ClickAwayListener'
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 //import List from '@material-ui/core/List';
 //import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemIcon from "@material-ui/core/ListItemIcon";
 //import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText'
-import Checkbox from '@material-ui/core/Checkbox'
-import VisibilityIcon from '@material-ui/icons/Visibility'
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
+import ListItemText from "@material-ui/core/ListItemText";
+import Checkbox from "@material-ui/core/Checkbox";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 //import IconButton from '@material-ui/core/IconButton';
 //import EditIcon from '@material-ui/icons/Edit';
-import { MapControlsContext } from '../MapControlsContext'
-import { MapContext } from '../../Map/MapContext'
-import { Divider } from '@material-ui/core'
+import { MapControlsContext } from "../MapControlsContext";
+import { MapContext } from "../../Map/MapContext";
+import { Divider } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   subHeaderItem: {
-    backgroundColor: '#011133 !important'
+    backgroundColor: "#011133 !important"
   }
-}))
+}));
 
 export default function CheckboxList(props) {
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext)
-  const [stateMap, setStateMap] = useContext(MapContext)
+  const [stateMapControls, setStateMapControls] = useContext(
+    MapControlsContext
+  );
+  const [stateMap, setStateMap] = useContext(MapContext);
   //const theme = useTheme()
-  const classes = useStyles()
+  const classes = useStyles();
   const handleToggle = idx => () => {
-    console.log(idx)
-    console.log('toggle stateMap.checkedlayers before',stateMap.checkedLayers)
-    const currentIndex = stateMap.checkedLayers.indexOf(idx)
-    const newChecked = [...stateMap.checkedLayers]
+    console.log(idx);
+    console.log("toggle stateMap.checkedlayers before", stateMap.checkedLayers);
+    const currentIndex = stateMap.checkedLayers.indexOf(idx);
+    const newChecked = [...stateMap.checkedLayers];
 
     if (currentIndex === -1) {
-      newChecked.push(idx)
+      newChecked.push(idx);
     } else {
-      newChecked.splice(currentIndex, 1)
+      newChecked.splice(currentIndex, 1);
     }
-    console.log('newchecked',newChecked)
-    
-    
-    setStateMap(stateMap => ({ ...stateMap, checkedLayers: newChecked}))
+    console.log("newchecked", newChecked);
 
-    console.log('toggle stateMap.checkedlayers after',stateMap.checkedLayers)
-  }
+    setStateMap(stateMap => ({ ...stateMap, checkedLayers: newChecked }));
+
+    console.log("toggle stateMap.checkedlayers after", stateMap.checkedLayers);
+  };
 
   const StyledMenu = withStyles({
     paper: {
-      border: '1px solid #011133'
+      border: "1px solid #011133",
+      left: "unset !important",
+      right: "80px !important"
     }
   })(props => (
     <Menu
@@ -59,37 +62,40 @@ export default function CheckboxList(props) {
       transitionDuration={0}
       getContentAnchorEl={null}
       anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'left'
+        vertical: "top",
+        horizontal: "left"
       }}
       MenuListProps={{
         disablePadding: true
       }}
       transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right'
+        vertical: "top",
+        horizontal: "right"
       }}
       {...props}
     />
-  ))
+  ));
 
   const StyledMenuItem = withStyles(theme => ({
     root: {
-      fontFamily: 'Poppins',
-      '&:hover': {
-        background: '#4B618F'
+      fontFamily: "Poppins",
+      "&:hover": {
+        background: "#4B618F"
       },
-      backgroundColor: '#263451',
-      '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+      backgroundColor: "#263451",
+      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
         color: theme.palette.common.white
         // },
       }
     }
-  }))(MenuItem)
+  }))(MenuItem);
 
   const handleClose = () => {
-    setStateMapControls(stateMapControls => ({ ...stateMapControls, anchorEl: null }))
-  }
+    setStateMapControls(stateMapControls => ({
+      ...stateMapControls,
+      anchorEl: null
+    }));
+  };
 
   return (
     <ClickAwayListener onClickAway={handleClose}>
@@ -110,16 +116,11 @@ export default function CheckboxList(props) {
           <ListItemText primary="Layer Visibility" />
         </StyledMenuItem>
 
-        {stateMap.styleLayers.map((layer,index) => {
-          const labelId = `checkbox-list-label-${index}`
+        {stateMap.styleLayers.map((layer, index) => {
+          const labelId = `checkbox-list-label-${index}`;
 
           return (
-            <StyledMenuItem 
-              disableRipple
-              key={index}
-              role={undefined}
-              dense
-            >
+            <StyledMenuItem disableRipple key={index} role={undefined} dense>
               <ListItemIcon>
                 <Checkbox
                   icon={<VisibilityOffIcon htmlColor="#fff" />}
@@ -132,16 +133,15 @@ export default function CheckboxList(props) {
                   }
                   tabIndex={-1}
                   disableRipple
-                  inputProps={{ 'aria-labelledby': labelId }}
+                  inputProps={{ "aria-labelledby": labelId }}
                   onChange={handleToggle(index)}
                 />
               </ListItemIcon>
               <ListItemText id={labelId} primary={layer.name} />
             </StyledMenuItem>
-           
-          )
+          );
         })}
       </StyledMenu>
     </ClickAwayListener>
-  )
+  );
 }

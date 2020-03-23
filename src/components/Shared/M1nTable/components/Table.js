@@ -401,7 +401,8 @@ const useStyles = makeStyles(theme => ({
 
 var formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
-  currency: "USD"
+  currency: "USD",
+  maximumSignificantDigits: 21
 });
 
 export default function SubTable(props) {

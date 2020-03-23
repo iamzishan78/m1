@@ -901,7 +901,7 @@ export default function Map() {
    // setStateApp(state => ({...state,showExpandableCard:true}))
      
   }
-
+  
   return (
     <div className={classes.mapWrapper}>
       
@@ -924,7 +924,8 @@ export default function Map() {
         handleCloseExpandableCard={handleCloseExpandableCard}
         component={<WellCardProvider></WellCardProvider>}
         title={stateApp.selectedWell.wellName} 
-        subTitle={stateApp.selectedWell.operator} 
+        subTitle={stateApp.selectedWell.operator}
+        Api={stateApp.selectedWell.api}
         parent="map"
         mouseX={0}
         mouseY={0}
