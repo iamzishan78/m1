@@ -145,18 +145,16 @@ export default function FilterFormProduction() {
     queryProdRange()
     if (!loading) {
       if (data) {
-        if (data == null) {
+        let ranges = data.wellsRanges;
+        if (ranges == null) {
           handleLogout()
+          console.log("log user out")
         } else {
-          let ranges = data.wellsRanges;
           setMax(ranges);
           setDataLoading(true)
         }
       }
-    } else {
-      console.log("log user out")
-    }
-    
+    } 
   }, [data, handleLogout, loading, max, queryProdRange]);
 
   console.log(max)
