@@ -14,7 +14,7 @@ import mapboxgl from "mapbox-gl";
 import { makeStyles } from "@material-ui/core/styles";
 import MapControlsProvider from "../MapControls/MapControlsProvider";
 import WellCardProvider from "../WellCard/WellCardProvider";
-import ExpandableCardProvider from '../ExpandableCard/ExpandableCardProvider';
+import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
 import WellsProvider from "../Wells/WellsProvider";
 import Portal from "./components/Portal";
 import "./popup.css";
@@ -30,9 +30,7 @@ import { getConstantValue } from "typescript";
 
 const useStyles = makeStyles(theme => ({
   mapWrapper: {
-    width: "100%",
-    // height: "100%",
-    // overflow: "hidden !important"
+    width: "100%"
   },
   map: {
     position: "absolute",
@@ -41,6 +39,30 @@ const useStyles = makeStyles(theme => ({
     width: "100%",
     height: "100%",
     overflow: "hidden !important"
+    // "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib":{
+    //   display:"none"
+    // }
+  },
+  footerLeftLogo: {
+    position: "absolute",
+    bottom: "45px",
+    left: "7px",
+    textShadow: "1px 0 0 black, -1px 0 0 black, 0 1px 0 black, 0 -1px 0 black",
+    color: "#ffffff",
+    fontSize: "16px",
+    fontWeight: "bold",
+    opacity: "0.82",
+    "& img": {
+      padding: "2px 2px 4px 2px",
+      backgroundImage:
+        "radial-gradient(#ffffff00,rgba(0, 0, 0, 0.671), #ffffff00,  #ffffff00)",
+      position: "absolute",
+      bottom: "-40px"
+    },
+    "& p": {
+      position: "absolute",
+      left: "23px"
+    }
   }
 }));
 
@@ -49,7 +71,9 @@ export default function Map() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateMap, setStateMap] = useContext(MapContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
+  const [stateMapControls, setStateMapControls] = useContext(
+    MapControlsContext
+  );
   const [showExpandableCard, setShowExpandableCard] = useState(false);
 
   const [map, setMap] = useState(null);
@@ -60,7 +84,6 @@ export default function Map() {
   useEffect(() => {
     if (stateMap.checkedLayers && map) {
       stateMap.styleLayers.forEach(l => {
-
         l.id.forEach(k => {
           map.setLayoutProperty(k, "visibility", "none");
         });
@@ -74,7 +97,6 @@ export default function Map() {
           currentLayerArray.forEach(j => {
             map.setLayoutProperty(j, "visibility", "visible");
           });
-
         });
       }
     }
@@ -83,7 +105,6 @@ export default function Map() {
   useEffect(() => {
     if (stateMap.checkedHeats && map) {
       stateMap.heatLayers.forEach(l => {
-
         l.id.forEach(k => {
           map.setLayoutProperty(k, "visibility", "none");
         });
@@ -97,25 +118,22 @@ export default function Map() {
           currentLayerArray.forEach(j => {
             map.setLayoutProperty(j, "visibility", "visible");
           });
-
         });
       }
     }
   }, [map, stateMap.checkedHeats]);
 
-
   useEffect(() => {
     //applies filter when one of the filters change
     if (map) {
       let isFilterSet = false;
-      
+
       let wellFilterCount = 0;
       let ownershipFilterCount = 0;
       let productionFilterCount = 0;
       let geographyFilterCount = 0;
       let filterArray = [];
-      
-      
+
       if (stateNav.filterWellProfile && stateNav.filterWellProfile.length > 0) {
         filterArray.push(stateNav.filterWellProfile);
         isFilterSet = true;
@@ -449,27 +467,22 @@ export default function Map() {
         ownershipFilterCount += 1;
       }
 
-      if (
-        stateNav.filterBasin &&
-        stateNav.filterBasin.length > 0
-      ) {
+      if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
         filterArray.push(stateNav.filterBasin);
         isFilterSet = true;
         geographyFilterCount += 1;
       }
 
-      if (
-        stateNav.filterPlay &&
-        stateNav.filterPlay.length > 0
-      ) {
+      if (stateNav.filterPlay && stateNav.filterPlay.length > 0) {
         filterArray.push(stateNav.filterPlay);
         isFilterSet = true;
         geographyFilterCount += 1;
       }
 
-
-
-      if (stateNav.filterPermitDateRange && stateNav.filterPermitDateRange.length > 0) {
+      if (
+        stateNav.filterPermitDateRange &&
+        stateNav.filterPermitDateRange.length > 0
+      ) {
         filterArray.push(stateNav.filterPermitDateRange);
         isFilterSet = true;
 
@@ -508,7 +521,7 @@ export default function Map() {
 
         geographyFilterCount += 1;
       }
-      
+
       setStateNav(state => ({ ...state, wellFilterCount: wellFilterCount }));
       setStateNav(state => ({
         ...state,
@@ -522,11 +535,10 @@ export default function Map() {
         ...state,
         geographyFilterCount: geographyFilterCount
       }));
-      
+
       if (isFilterSet) {
         filterArray.unshift("all");
 
-        
         console.log("all current filters", filterArray);
 
         map.setFilter("wellpoints", filterArray);
@@ -537,9 +549,7 @@ export default function Map() {
         map.setFilter("wellsHeatmapIP90Gas", filterArray);
         map.setFilter("wellsHeatmapRecentlyDrilled", filterArray);
         map.setFilter("wellsHeatmapRecentlyCompleted", filterArray);
-
       } else {
-
         map.setFilter("wellpoints", null);
         map.setFilter("welllines", null);
         map.setFilter("wellsHeatmapBoe", null);
@@ -548,74 +558,74 @@ export default function Map() {
         map.setFilter("wellsHeatmapIP90Gas", null);
         map.setFilter("wellsHeatmapRecentlyDrilled", null);
         map.setFilter("wellsHeatmapRecentlyCompleted", null);
-        
       }
     }
-  }, [map, setStateNav, stateNav.asbtractName, 
-        stateNav.countyName, 
-        stateNav.filterCompletetionDateRange, 
-        stateNav.filterCumulativeGas, 
-        stateNav.filterCumulativeOil, 
-        stateNav.filterCumulativeWater, 
-        stateNav.filterFirstMonthGas, 
-        stateNav.filterFirstMonthOil, 
-        stateNav.filterFirstMonthWater, 
-        stateNav.filterFirstProdDateRange, 
-        stateNav.filterFirstSixMonthGas, 
-        stateNav.filterFirstSixMonthOil, 
-        stateNav.filterFirstSixMonthWater, 
-        stateNav.filterFirstThreeMonthGas, 
-        stateNav.filterFirstThreeMonthOil, 
-        stateNav.filterFirstThreeMonthWater, 
-        stateNav.filterFirstTwelveMonthGas, 
-        stateNav.filterFirstTwelveMonthOil, 
-        stateNav.filterFirstTwelveMonthWater, 
-        stateNav.filterGeography, 
-        stateNav.filterGeographyAbstract, 
-        stateNav.filterGeographyCounty, 
-        stateNav.filterGeographyState, 
-        stateNav.filterGeographySurvey, 
+  }, [
+    map,
+    setStateNav,
+    stateNav.asbtractName,
+    stateNav.countyName,
+    stateNav.filterCompletetionDateRange,
+    stateNav.filterCumulativeGas,
+    stateNav.filterCumulativeOil,
+    stateNav.filterCumulativeWater,
+    stateNav.filterFirstMonthGas,
+    stateNav.filterFirstMonthOil,
+    stateNav.filterFirstMonthWater,
+    stateNav.filterFirstProdDateRange,
+    stateNav.filterFirstSixMonthGas,
+    stateNav.filterFirstSixMonthOil,
+    stateNav.filterFirstSixMonthWater,
+    stateNav.filterFirstThreeMonthGas,
+    stateNav.filterFirstThreeMonthOil,
+    stateNav.filterFirstThreeMonthWater,
+    stateNav.filterFirstTwelveMonthGas,
+    stateNav.filterFirstTwelveMonthOil,
+    stateNav.filterFirstTwelveMonthWater,
+    stateNav.filterGeography,
+    stateNav.filterGeographyAbstract,
+    stateNav.filterGeographyCounty,
+    stateNav.filterGeographyState,
+    stateNav.filterGeographySurvey,
 
-        stateNav.filterInterestTypeOverrideRoyalty, 
-        stateNav.filterInterestTypeProductionPayment, 
-        stateNav.filterInterestTypeRoyaltyInterest, 
-        stateNav.filterInterestTypeWorkingInterest, 
+    stateNav.filterInterestTypeOverrideRoyalty,
+    stateNav.filterInterestTypeProductionPayment,
+    stateNav.filterInterestTypeRoyaltyInterest,
+    stateNav.filterInterestTypeWorkingInterest,
 
+    stateNav.filterLastMonthGas,
+    stateNav.filterLastMonthOil,
+    stateNav.filterLastMonthWater,
+    stateNav.filterLastSixMonthGas,
+    stateNav.filterLastSixMonthOil,
+    stateNav.filterLastSixMonthWater,
+    stateNav.filterLastThreeMonthGas,
+    stateNav.filterLastThreeMonthOil,
+    stateNav.filterLastThreeMonthWater,
+    stateNav.filterLastTwelveMonthGas,
+    stateNav.filterLastTwelveMonthOil,
+    stateNav.filterLastTwelveMonthWater,
+    stateNav.filterOperator,
+    stateNav.filterOwnershipTypeCorporations,
+    stateNav.filterOwnershipTypeEducationalInstitutions,
+    stateNav.filterOwnershipTypeGovernmentalBodies,
+    stateNav.filterOwnershipTypeIndividuals,
+    stateNav.filterOwnershipTypeNonProfits,
+    stateNav.filterOwnershipTypeReligiousInstitutions,
+    stateNav.filterOwnershipTypeTrusts,
+    stateNav.filterOwnershipTypeUnknown,
+    stateNav.filterPermitDateRange,
+    stateNav.filterSpudDateRange,
+    stateNav.filterWellProfile,
+    stateNav.filterWellStatus,
+    stateNav.filterWellType,
 
-        stateNav.filterLastMonthGas, 
-        stateNav.filterLastMonthOil, 
-        stateNav.filterLastMonthWater, 
-        stateNav.filterLastSixMonthGas, 
-        stateNav.filterLastSixMonthOil, 
-        stateNav.filterLastSixMonthWater, 
-        stateNav.filterLastThreeMonthGas, 
-        stateNav.filterLastThreeMonthOil, 
-        stateNav.filterLastThreeMonthWater, 
-        stateNav.filterLastTwelveMonthGas, 
-        stateNav.filterLastTwelveMonthOil, 
-        stateNav.filterLastTwelveMonthWater, 
-        stateNav.filterOperator, 
-        stateNav.filterOwnershipTypeCorporations, 
-        stateNav.filterOwnershipTypeEducationalInstitutions, 
-        stateNav.filterOwnershipTypeGovernmentalBodies, 
-        stateNav.filterOwnershipTypeIndividuals, 
-        stateNav.filterOwnershipTypeNonProfits, 
-        stateNav.filterOwnershipTypeReligiousInstitutions, 
-        stateNav.filterOwnershipTypeTrusts, 
-        stateNav.filterOwnershipTypeUnknown, 
-        stateNav.filterPermitDateRange, 
-        stateNav.filterSpudDateRange, 
-        stateNav.filterWellProfile, 
-        stateNav.filterWellStatus, 
-        stateNav.filterWellType,
+    stateNav.filterBasin,
+    stateNav.filterPlay,
 
-        stateNav.filterBasin,
-        stateNav.filterPlay,
-
-
-        stateNav.stateName, 
-        stateNav.surveyName]);
-   
+    stateNav.stateName,
+    stateNav.surveyName
+  ]);
 
   useEffect(() => {
     //sets style of map when changed in Map Controls
@@ -638,7 +648,7 @@ export default function Map() {
       .addTo(map);
     //show wellcard in popup Portal
     setStateApp(state => ({ ...state, popupOpen: true }));
-    handleOpenExpandableCard()
+    handleOpenExpandableCard();
   };
 
   useEffect(() => {
@@ -655,20 +665,19 @@ export default function Map() {
 
       let zoomControl = new mapboxgl.NavigationControl();
       newMap.addControl(zoomControl, "bottom-right");
-      
+
       newMap.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
 
       // Add geolocate control to the map.
       newMap.addControl(
         new mapboxgl.GeolocateControl({
-        positionOptions: {
-        enableHighAccuracy: true
-        },
-        trackUserLocation: true
-        })
-        , "bottom-right");
-
-
+          positionOptions: {
+            enableHighAccuracy: true
+          },
+          trackUserLocation: true
+        }),
+        "bottom-right"
+      );
 
       let Draw = new MapboxDraw({
         displayControlsDefault: false,
@@ -707,7 +716,7 @@ export default function Map() {
         });
         let currentFeature = features[0];
 
-        if(!currentFeature.properties.isTracked){
+        if (!currentFeature.properties.isTracked) {
           //add temp until it is in tileset. required for tracking well
           currentFeature.properties.isTracked = false;
         }
@@ -730,25 +739,21 @@ export default function Map() {
         createPopUp(currentFeature.properties);
       });
 
+      map.on("mousemove", "wellpoints", e => {
+        map.getCanvas().style.cursor = "pointer";
 
-
-      map.on('mousemove', 'wellpoints', (e) => {
-
-        map.getCanvas().style.cursor = 'pointer';
-        
-        
         // // Set variables equal to the current feature's magnitude, location, and time
         // var quakeMagnitude = e.features[0].properties.mag;
         // var quakeLocation = e.features[0].properties.place;
         // var quakeDate = new Date(e.features[0].properties.time);
-      
+
         // // Check whether features exist
         // if (e.features.length > 0) {
         //   // Display the magnitude, location, and time in the sidebar
         //   magDisplay.textContent = quakeMagnitude;
         //   locDisplay.textContent = quakeLocation;
         //   dateDisplay.textContent = quakeDate;
-      
+
         //   // If quakeID for the hovered feature is not null,
         //   // use removeFeatureState to reset to the default behavior
         //   if (quakeID) {
@@ -757,9 +762,9 @@ export default function Map() {
         //       id: quakeID
         //     });
         //   }
-      
+
         //   quakeID = e.features[0].id;
-      
+
         //   // When the mouse moves over the earthquakes-viz layer, update the
         //   // feature state for the feature under the mouse
         //   map.setFeatureState({
@@ -768,10 +773,9 @@ export default function Map() {
         //   }, {
         //     hover: true
         //   });
-      
+
         //}
       });
-
 
       map.on("mouseleave", "wellpoints", function() {
         // if (quakeID) {
@@ -782,39 +786,23 @@ export default function Map() {
         //     hover: false
         //   });
         // }
-        
+
         // quakeID = null;
         // // Remove the information from the previously hovered feature from the sidebar
         // magDisplay.textContent = '';
         // locDisplay.textContent = '';
         // dateDisplay.textContent = '';
         // // Reset the cursor style
-        map.getCanvas().style.cursor = '';
-      });      
-
-
-
-
-      map.on('mousemove', 'welllines', (e) => {
-        map.getCanvas().style.cursor = 'pointer';
+        map.getCanvas().style.cursor = "";
       });
 
+      map.on("mousemove", "welllines", e => {
+        map.getCanvas().style.cursor = "pointer";
+      });
 
       map.on("mouseleave", "welllines", function() {
-        map.getCanvas().style.cursor = '';
-      });      
-
-
-
-
-
-
-
-
-
-
-
-
+        map.getCanvas().style.cursor = "";
+      });
 
       map.on("click", "welllines", function(e) {
         var bbox = [
@@ -827,14 +815,14 @@ export default function Map() {
 
         let currentFeature = features[0];
 
-        if(!currentFeature.properties.isTracked){
+        if (!currentFeature.properties.isTracked) {
           //add temp until it is in tileset. required for tracking well
           currentFeature.properties.isTracked = false;
         }
-        
+
         console.log("clicked well lines", currentFeature);
         setStateApp(state => ({ ...state, popupOpen: false }));
-        
+
         setStateApp(state => ({
           ...state,
           selectedWell: currentFeature.properties
@@ -866,13 +854,11 @@ export default function Map() {
     }
   }, [map, setStateMap]);
 
-
-
   useEffect(() => {
     if (map && stateApp.flyTo) {
       //console.log('fly')
       createPopUp(stateApp.flyTo);
-     
+
       map.flyTo({
         center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
         zoom: 15,
@@ -881,75 +867,77 @@ export default function Map() {
     }
   }, [map, stateApp.flyTo]);
 
-
-
   // console.log("---")
   // console.log(stateMap.flyTo)
-  const handleOpenExpandableCard = (e) => {
+  const handleOpenExpandableCard = e => {
     //setStateApp(state => ({...state,showExpandableCard:true}))
     //console.log(e.nativeEvent)
     //setMouseX(e.nativeEvent.clientX)
-   // setMouseY(e.nativeEvent.clientY-70)
-    
+    // setMouseY(e.nativeEvent.clientY-70)
+
     //setStateApp(state => ({...state,selectedWell:row}))
-    setShowExpandableCard(true)
-     
-  }
+    setShowExpandableCard(true);
+  };
   const handleCloseExpandableCard = () => {
-    
-    setShowExpandableCard(false)
-   // setStateApp(state => ({...state,showExpandableCard:true}))
-     
-  }
-  
+    setShowExpandableCard(false);
+    // setStateApp(state => ({...state,showExpandableCard:true}))
+  };
+
   return (
     <div className={classes.mapWrapper}>
-      
       <div className={classes.map} ref={mapEl} id="map"></div>
       <MapControlsProvider />
 
       {stateMap.openTrack == true ? (
-      <div className={classes.trackLists}>
-        {<WellsProvider showList={true} parent="track"/>}
-      </div>
-      ): null}
+        <div className={classes.trackLists}>
+          {<WellsProvider showList={true} parent="track" />}
+        </div>
+      ) : null}
 
       {stateApp.popupOpen ? (
         <div>
-        <div id="tempPopupHolder" style={{position:'absolute',top:'0px',left:'20px'}}></div>
-        <Portal id="popupContainer">
-          {showExpandableCard ? (
-        <ExpandableCardProvider 
-        expanded={false}
-        handleCloseExpandableCard={handleCloseExpandableCard}
-        component={<WellCardProvider></WellCardProvider>}
-        title={stateApp.selectedWell.wellName} 
-        subTitle={stateApp.selectedWell.operator}
-        Api={stateApp.selectedWell.api}
-        parent="map"
-        mouseX={0}
-        mouseY={0}
-        position="relative"
-        cardLeft={20}
-        cardTop={70}
-        zIndex={99}
-        cardWidth="380px" 
-        cardHeight="380px" 
-        cardWidthExpanded="95vw" 
-        cardHeightExpanded="90vh" 
-        source={stateApp.user}
-        sourceSourceId={stateApp.user.id}
-        sourceName={stateApp.user.name}
-        sourceLabel='user'
-        target={stateApp.selectedWell}
-        targetSourceId={stateApp.selectedWell.id}
-        targetName={stateApp.selectedWell.wellName}
-        targetLabel='well'></ExpandableCardProvider>):null}
-        {/* {stateApp.selectedWell ? <WellCardProvider /> : null} */}
-        </Portal>
+          <div
+            id="tempPopupHolder"
+            style={{ position: "absolute", top: "0px", left: "20px" }}
+          ></div>
+          <Portal id="popupContainer">
+            {showExpandableCard ? (
+              <ExpandableCardProvider
+                expanded={false}
+                handleCloseExpandableCard={handleCloseExpandableCard}
+                component={<WellCardProvider></WellCardProvider>}
+                title={stateApp.selectedWell.wellName}
+                subTitle={stateApp.selectedWell.operator}
+                Api={stateApp.selectedWell.api}
+                parent="map"
+                mouseX={0}
+                mouseY={0}
+                position="relative"
+                cardLeft={20}
+                cardTop={70}
+                zIndex={99}
+                cardWidth="380px"
+                cardHeight="380px"
+                cardWidthExpanded="95vw"
+                cardHeightExpanded="90vh"
+                source={stateApp.user}
+                sourceSourceId={stateApp.user.id}
+                sourceName={stateApp.user.name}
+                sourceLabel="user"
+                target={stateApp.selectedWell}
+                targetSourceId={stateApp.selectedWell.id}
+                targetName={stateApp.selectedWell.wellName}
+                targetLabel="well"
+              ></ExpandableCardProvider>
+            ) : null}
+            {/* {stateApp.selectedWell ? <WellCardProvider /> : null} */}
+          </Portal>
         </div>
       ) : null}
-     
+      {/* <div className={classes.footerLeftLogo}>
+        <img src="icons/favicon-32x32.png" alt="logo" width="25" />
+        <p>m1neral</p>
+      </div> */}
     </div>
   );
 }

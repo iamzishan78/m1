@@ -7,21 +7,42 @@ const useStyles = makeStyles(theme => ({
   MSWrapper: {
     width: "100%",
     height: "100% !important",
-    // minHeight: "300px",
-    // background: "rgb(115, 115, 116)",
     overflow: "hidden !important"
   },
   map: {
     width: "100%",
     height: "100%",
-    overflow: "hidden !important"
+    overflow: "hidden !important",
+    "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib": {
+      display: "none"
+    }
+  },
+  footerLeftLogo: {
+    position: "absolute",
+    bottom: "45px",
+    zIndex: "1",
+    left: "7px",
+    textShadow: "1px 0 0 black, -1px 0 0 black, 0 1px 0 black, 0 -1px 0 black",
+    color: "#ffffff",
+    fontSize: "16px",
+    fontWeight: "bold",
+    opacity: "0.82",
+    "& img": {
+      padding: "2px 2px 4px 2px",
+      backgroundImage:
+        "radial-gradient(#ffffff00,rgba(0, 0, 0, 0.671), #ffffff00,  #ffffff00)",
+      position: "absolute",
+      bottom: "-40px"
+    },
+    "& p": {
+      position: "absolute",
+      left: "23px"
+    }
   }
 }));
 
 export default function MapShape() {
-  const [stateTitleOpinion] = useContext(
-    TitleOpinionContext
-  );
+  const [stateTitleOpinion] = useContext(TitleOpinionContext);
 
   const [map, setMap] = useState(null);
 
@@ -113,7 +134,12 @@ export default function MapShape() {
 
   return (
     <div className={classes.MSWrapper}>
-      <div className={classes.map} ref={mapEl} id="TOmap"></div>
+      <div className={classes.map} ref={mapEl} id="TOmap">
+        <div className={classes.footerLeftLogo}>
+          <img src="icons/favicon-32x32.png" alt="logo" width="25" />
+          <p>m1neral</p>
+        </div>
+      </div>
     </div>
   );
 }
