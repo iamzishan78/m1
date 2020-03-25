@@ -34,7 +34,6 @@ export default function FilterFormProduction() {
   const classes = useStyles();
   const [appState, setAppState] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext)
-  const [token, setToken] = useState(null)
   const [queryProdRange, { loading, data }] = useQueryProdHistory(appState.user.authToken);
   const [prodOptions, setProdOptions] = useState(
     stateNav.prodOptions ? stateNav.prodOptions : null
@@ -48,21 +47,10 @@ export default function FilterFormProduction() {
     const expiredStorage = new ExpiredStorage();
     expiredStorage.clear();
     setAppState(state => ({ ...state, user: null }));
-  }, [setAppState]);
+  }, [setAppState]); 
 
   useEffect(() => {
-    if (appState.user) {
-      let authToken = appState.user.authToken;
-      setToken(authToken)
-    }
-  },[appState.user])
-  
-
-  useEffect(() => {
-    if (token == null) {
-      handleLogout();
-    } else {
-      queryProdRange();
+    queryProdRange();
       if (!loading) {
         if (data) {
           let ranges = data.wellsRanges;
@@ -75,8 +63,7 @@ export default function FilterFormProduction() {
           }
         }
       }
-    }
-  }, [data, handleLogout, loading, queryProdRange, token]);
+  }, [data, handleLogout, loading, queryProdRange]);
 
   const handleSelectedValueToDisplay = (value) => {
     setProdOptions(value)
