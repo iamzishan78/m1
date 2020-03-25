@@ -34,6 +34,7 @@ export default function FilterFormProduction() {
   const classes = useStyles();
   const [appState, setAppState] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext)
+  const [token, setToken] = (null)
   const [queryProdRange, { loading, data }] = useQueryProdHistory(appState.user.authToken);
   const [prodOptions, setProdOptions] = useState(
     stateNav.prodOptions ? stateNav.prodOptions : null
@@ -49,7 +50,13 @@ export default function FilterFormProduction() {
     setAppState(state => ({ ...state, user: null }));
   }, [setAppState]);
 
-  let token = appState.user.authToken;
+  useEffect(() => {
+    if (appState.user) {
+      let authToken = appState.user.authToken;
+      setToken(authToken)
+    }
+  },[appState.user])
+  
 
   useEffect(() => {
     if (token == null) {
