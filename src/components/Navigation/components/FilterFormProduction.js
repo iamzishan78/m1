@@ -34,7 +34,7 @@ export default function FilterFormProduction() {
   const classes = useStyles();
   const [appState, setAppState] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext)
-  const [token, setToken] = (null)
+  const [token, setToken] = useState(null)
   const [queryProdRange, { loading, data }] = useQueryProdHistory(appState.user.authToken);
   const [prodOptions, setProdOptions] = useState(
     stateNav.prodOptions ? stateNav.prodOptions : null
