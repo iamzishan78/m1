@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
     bottom: "0",
     width: "100%",
     height: "100%",
-    overflow: "hidden !important"
+    overflow: "hidden !important",
     // "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib":{
     //   display:"none"
     // }
@@ -46,6 +46,7 @@ const useStyles = makeStyles(theme => ({
   footerLeftLogo: {
     position: "absolute",
     bottom: "45px",
+    zIndex: "1",
     left: "7px",
     textShadow: "1px 0 0 black, -1px 0 0 black, 0 1px 0 black, 0 -1px 0 black",
     color: "#ffffff",
@@ -885,7 +886,12 @@ export default function Map() {
 
   return (
     <div className={classes.mapWrapper}>
-      <div className={classes.map} ref={mapEl} id="map"></div>
+      <div className={classes.map} ref={mapEl} id="map">
+        {/* <div className={classes.footerLeftLogo}>
+          <img src="icons/favicon-32x32.png" alt="logo" width="25" />
+          <p>m1neral</p>
+        </div> */}
+      </div>
       <MapControlsProvider />
 
       {stateMap.openTrack == true ? (
@@ -934,10 +940,7 @@ export default function Map() {
           </Portal>
         </div>
       ) : null}
-      {/* <div className={classes.footerLeftLogo}>
-        <img src="icons/favicon-32x32.png" alt="logo" width="25" />
-        <p>m1neral</p>
-      </div> */}
+   
     </div>
   );
 }

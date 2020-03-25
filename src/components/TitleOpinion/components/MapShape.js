@@ -13,9 +13,9 @@ const useStyles = makeStyles(theme => ({
     width: "100%",
     height: "100%",
     overflow: "hidden !important",
-    "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib": {
-      display: "none"
-    }
+    // "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib": {
+    //   display: "none"
+    // }
   },
   footerLeftLogo: {
     position: "absolute",
@@ -135,10 +135,10 @@ export default function MapShape() {
   return (
     <div className={classes.MSWrapper}>
       <div className={classes.map} ref={mapEl} id="TOmap">
-        <div className={classes.footerLeftLogo}>
+        {/* <div className={classes.footerLeftLogo}>
           <img src="icons/favicon-32x32.png" alt="logo" width="25" />
           <p>m1neral</p>
-        </div>
+        </div> */}
       </div>
     </div>
   );
