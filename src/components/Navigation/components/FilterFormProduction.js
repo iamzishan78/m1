@@ -2,11 +2,11 @@ import React, { useState, useContext, useEffect, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import Chip from "@material-ui/core/Chip";
 import ExpiredStorage from "expired-storage";
 import useQueryProdHistory from "../../../graphQL/useQueryProdRange";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../../AppContext.js";
+import { NavigationContext } from "../NavigationContext";
 import FirstMonthWater from "./FilterProdComponents/FirstMonthWater";
 
 const prodListOptions = [{ name: "First Month Water" }];
@@ -33,12 +33,13 @@ const useStyles = makeStyles(theme => ({
 export default function FilterFormProduction() {
   const classes = useStyles();
   const [appState, setAppState] = useContext(AppContext);
-  const [queryProdRange, { loading, data }] = useQueryProdHistory(
-    appState.user.authToken
-  );
+  const [stateNav, setStateNav] = useContext(NavigationContext)
+  const [queryProdRange, { loading, data }] = useQueryProdHistory(appState.user.authToken);
+  const [prodOptions, setProdOptions] = useState(
+    stateNav.prodOptions ? stateNav.prodOptions : null
+  )
   const [max, setMax] = useState();
   const [dataLoading, setDataLoading] = useState(false);
-  const [displayOptionName, setDisplayOptionName] = useState(null);
   const [fmw, setFmw] = useState(false);
 
   const handleLogout = useCallback(() => {
@@ -48,46 +49,59 @@ export default function FilterFormProduction() {
     setAppState(state => ({ ...state, user: null }));
   }, [setAppState]);
 
+  let token = appState.user.authToken;
+
   useEffect(() => {
-    queryProdRange();
-    if (!loading) {
-      if (data) {
-        let ranges = data.wellsRanges;
-        if (ranges == null) {
-          handleLogout();
-          console.log("log user out");
-        } else {
-          setMax(ranges);
-          setDataLoading(true);
+    if (token == null) {
+      handleLogout();
+    } else {
+      queryProdRange();
+      if (!loading) {
+        if (data) {
+          let ranges = data.wellsRanges;
+          if (ranges == null) {
+            handleLogout();
+            console.log("log user out");
+          } else {
+            setMax(ranges);
+            setDataLoading(true);
+          }
         }
       }
     }
-  }, [data, handleLogout, loading, max, queryProdRange]);
+  }, [data, handleLogout, loading, queryProdRange, token]);
 
-  const handleSelectedValueToDisplay = (event, value) => {
-    setDisplayOptionName(value);
+  const handleSelectedValueToDisplay = (value) => {
+    setProdOptions(value)
+    setStateNav(stateNav => ({
+      ...stateNav,
+      prodOptions: value
+    }));
   };
 
-  console.log(displayOptionName, max);
+  console.log(prodOptions, max);
 
   useEffect(() => {
-    if (displayOptionName) {
-      let matchName = displayOptionName.map(option => option);
+    if (prodOptions) {
+      let matchName = prodOptions.map(option => option);
       console.log(matchName);
       if (matchName && matchName.length === 0) {
         setFmw(false);
+        setStateNav(stateNav => ({
+          ...stateNav,
+          filterFirstMonthWater: null
+        }));
       }
       matchName.forEach(element => {
-        console.log(element);
         if (element === "First Month Water") {
           setFmw(true);
         }
       });
     }
-  }, [displayOptionName]);
-  console.log(fmw);
-  const renderFMW = fmw ? (
-    <FirstMonthWater max={max.firstMonthProdWater} removeFilter={fmw} />
+  }, [prodOptions, setStateNav]);
+
+  const renderFMW = fmw && max ? (
+    <FirstMonthWater max={max.firstMonthProdWater} />
   ) : (
     <div className={classes.displayNone}></div>
   );
@@ -97,19 +111,16 @@ export default function FilterFormProduction() {
       <Autocomplete
         multiple
         options={prodListOptions.map(option => option.name)}
-        filterSelectedOptions
-        onChange={(event, value) => handleSelectedValueToDisplay(event, value)}
-        renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip label={option} {...getTagProps({ index })} />
-          ))
-        }
+        disableListWrap
+        defaultValue={stateNav.prodOptions}
+        onChange={(event, value) => handleSelectedValueToDisplay(value)}
         renderInput={params => (
           <TextField
             className={classes.autoComplete}
             {...params}
             variant="outlined"
             label="Production Filters"
+            fullWidth={true}
           />
         )}
       />

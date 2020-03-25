@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useCallback } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -7,18 +7,18 @@ import { NavigationContext } from "../../NavigationContext";
 const useStyles = makeStyles({
   input: {
     margin: 20,
-    maxWidth: 120,
-    minWidth: 118
+    maxWidth: 280,
+    minWidth: 278
   },
   divInput: {
-    display: "flex"
+    // display: "flex"
   },
   inputLabel: {
     color: "black",
     textAlign: "center",
     minWidth: 199,
     maxWidth: 200,
-    margin: 40
+    marginLeft: 20
   }
 });
 
@@ -26,7 +26,7 @@ export default function FirstMonthWater(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [valueMin, setValueMin] = useState(0);
-  const [valueMax, setValueMax] = useState(null);
+  const [valueMax, setValueMax] = useState(props.max);
   const [valueMinDisplay, setValueMinDisplay] = useState();
   const [valueMaxDisplay, setValueMaxDisplay] = useState();
   const [max, setMax] = useState(props.max);
@@ -34,97 +34,70 @@ export default function FirstMonthWater(props) {
   const [prodTypeName, setProdTypeName] = useState(
     stateNav.prodTypeName ? stateNav.prodTypeName : []
   );
+  const minRef = useRef();
+  const maxRef = useRef();
 
   useEffect(() => {
     const setFilter = () => {
-      let currentValue = [];
-      currentValue.push(valueMin, valueMax);
-      let filter;
-      let selectedMin = valueMin;
-      let selectedMax = valueMax;
-      if (selectedMin === "" || selectedMax === "") {
-        filter = null;
-      } else {
+        let filter;
         let selectedMin = valueMin;
         let selectedMax = valueMax;
-        let currentValue = [];
         if (selectedMax !== null && selectedMin !== null) {
           selectedMin.toString();
           selectedMax.toString();
+            filter = [
+                "all",
+                [">=", ["get", id.toString()], parseInt(selectedMin)],
+                ["<=", ["get", id.toString()], parseInt(selectedMax)]
+              ];
+              console.log("add filter", filter);
         }
-        currentValue.push(valueMin, valueMax);
-        if (
-          currentValue[0] !== selectedMin &&
-          currentValue[1] !== selectedMax
-        ) {
-          filter = null;
-          console.log(currentValue, selectedMax, selectedMin);
-        } else {
-          filter = [
-            "all",
-            [">=", ["get", id.toString()], parseInt(selectedMin)],
-            ["<=", ["get", id.toString()], parseInt(selectedMax)]
-          ];
-          console.log("add filter", filter);
+         else {
+            filter = null;
         }
-        if (id === "firstMonthWater") {
+    
           setStateNav(stateNav => ({
             ...stateNav,
             filterFirstMonthWater: filter
           }));
-        }
-      }
-    };
+    }
+    
     if (valueMin && valueMax) {
       setFilter();
     }
   }, [id, setStateNav, valueMax, valueMin]);
 
-  const setvaluesRecall = useCallback(() => {
-    if (stateNav.filterFirstMonthWater === null) {
-      return;
-    } else {
-      const cOil = stateNav.filterFirstMonthWater[1][1][1];
-      if (cOil.toString() === id.toString()) {
-        const recallMin = stateNav.filterFirstMonthWater[1][2];
-        setValueMinDisplay(recallMin);
-      }
-      if (cOil.toString() === id.toString()) {
-        const recallMax = stateNav.filterFirstMonthWater[2][2];
-        setValueMaxDisplay(recallMax);
-      }
-    }
-  }, [id, stateNav.filterFirstMonthWater]);
-
   useEffect(() => {
-    if (prodTypeName && prodTypeName.length > 0) {
-      setvaluesRecall();
+    const updateMin = val => valueMinDisplay === val ? null : setValueMinDisplay(val);
+    // const updateMax = val => valueMaxDisplay === val ? null : setValueMaxDisplay(val);
+    if (stateNav.filterFirstMonthWater) {
+        const recallMin = stateNav.filterFirstMonthWater[1][2];
+        updateMin(recallMin)
+        // const recallMax = stateNav.filterFirstMonthWater[2][2];
+        // // if (recallMax !== max) {
+        // //     updateMax(recallMax) 
+        // // }
     }
-  }, [prodTypeName, setvaluesRecall]);
-
+  }, [max, stateNav.filterFirstMonthWater, valueMaxDisplay, valueMinDisplay]);
+//   console.log('recallMax', valueMaxDisplay)
   const handleChangeMin = event => {
     setValueMin(event.target.value);
     setValueMinDisplay(event.target.value);
     setProdTypeName(event.target.id);
     setStateNav(stateNav => ({ ...stateNav, prodTypeName: event.target.id }));
+    if (event.target.value === "") {
+        setStateNav(stateNav => ({
+            ...stateNav,
+            filterFirstMonthWater: null
+          }));
+    }
   };
 
   const handleChangeMax = event => {
-    // if (event.target.value !== event.target.max) {
-    //   if (event.target.value === "") {
-    //     setValueMax(event.target.max);
-    //   }
     setValueMax(event.target.value);
     setValueMaxDisplay(event.target.value);
     setProdTypeName(event.target.id);
     setStateNav(stateNav => ({ ...stateNav, prodTypeName: event.target.id }));
-    // }
-    // else if (event.target.value === event.target.max) {
-    //   setValueMax(event.target.max);
-    //   setValueMaxDisplay(event.target.value);
-    //   setProdTypeName(event.target.id);
-    //   setStateNav(stateNav => ({ ...stateNav, prodTypeName: event.target.id }));
-    // }
   };
 
   return (
@@ -137,28 +110,30 @@ export default function FirstMonthWater(props) {
       </Typography>
       <TextField
         id={id}
+        inputRef={minRef}
         className={classes.input}
-        value={valueMinDisplay}
-        InputProps={{ inputProps: { min: 0, max: props.max - 1, step: 1000 } }}
+        value={valueMinDisplay || ''}
+        InputProps={{ inputProps: { min: valueMin, max: max - 1, step: 1000 } }}
         onChange={handleChangeMin}
         aria-labelledby="range-number"
         type="number"
         label="Min"
         variant="outlined"
+        fullWidth={true}
         error={valueMinDisplay > valueMaxDisplay}
       />
       <TextField
         id={id}
         className={classes.input}
-        value={valueMaxDisplay}
-        InputLabelProps={{ shrink: true }}
-        InputProps={{ inputProps: { min: 0, max: props.max, step: 1000 } }}
+        inputRef={maxRef}
+        value={valueMaxDisplay || ''}
+        InputProps={{ inputProps: { min: valueMin, max: max, step: 1000 } }}
         onChange={handleChangeMax}
         aria-labelledby="range-number"
         type="number"
         label="Max"
         variant="outlined"
-        key={id}
+        fullWidth={true}
         error={valueMinDisplay > valueMaxDisplay}
       />
     </div>

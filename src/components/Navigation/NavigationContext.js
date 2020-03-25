@@ -68,7 +68,7 @@ const NavigationContextProvider = props => {
 
     basinName:[],
     playName: [],
-
+    prodOptions: [],
     ownerTypeName:[],
     dateTypeName: [],
     prodTypeName: [],
