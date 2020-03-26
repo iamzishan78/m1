@@ -130,7 +130,7 @@ const expiredStorage = new ExpiredStorage()
     }
     
 
-  },[data])
+  },[data, expiredStorage, setStateApp])
 
   const handledSignIn = userData => {
     console.log("[Login.js] userData", userData);

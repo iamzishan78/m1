@@ -2,10 +2,6 @@ import React, { useState, useContext, useEffect, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import ExpiredStorage from "expired-storage";
-import useQueryProdHistory from "../../../graphQL/useQueryProdRange";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { AppContext } from "../../../AppContext.js";
 import { NavigationContext } from "../NavigationContext";
 import FirstMonthWater from "./FilterProdComponents/FirstMonthWater";
 
@@ -32,38 +28,12 @@ const useStyles = makeStyles(theme => ({
 
 export default function FilterFormProduction() {
   const classes = useStyles();
-  const [appState, setAppState] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext)
-  const [queryProdRange, { loading, data }] = useQueryProdHistory(appState.user.authToken);
   const [prodOptions, setProdOptions] = useState(
     stateNav.prodOptions ? stateNav.prodOptions : null
   )
-  const [max, setMax] = useState();
-  const [dataLoading, setDataLoading] = useState(false);
+
   const [fmw, setFmw] = useState(false);
-
-  const handleLogout = useCallback(() => {
-    window.sessionStorage.removeItem("user");
-    const expiredStorage = new ExpiredStorage();
-    expiredStorage.clear();
-    setAppState(state => ({ ...state, user: null }));
-  }, [setAppState]); 
-
-  useEffect(() => {
-    queryProdRange();
-      if (!loading) {
-        if (data) {
-          let ranges = data.wellsRanges;
-          if (ranges == null) {
-            handleLogout();
-            console.log("log user out");
-          } else {
-            setMax(ranges);
-            setDataLoading(true);
-          }
-        }
-      }
-  }, [data, handleLogout, loading, queryProdRange]);
 
   const handleSelectedValueToDisplay = (value) => {
     setProdOptions(value)
@@ -73,8 +43,7 @@ export default function FilterFormProduction() {
     }));
   };
 
-  console.log(prodOptions, max);
-
+ 
   useEffect(() => {
     if (prodOptions) {
       let matchName = prodOptions.map(option => option);
@@ -94,13 +63,13 @@ export default function FilterFormProduction() {
     }
   }, [prodOptions, setStateNav]);
 
-  const renderFMW = fmw && max ? (
-    <FirstMonthWater max={max.firstMonthProdWater} />
+  const renderFMW = fmw ? (
+    <FirstMonthWater />
   ) : (
     <div className={classes.displayNone}></div>
   );
 
-  return dataLoading ? (
+  return (
     <div className={classes.root}>
       <Autocomplete
         multiple
@@ -120,7 +89,5 @@ export default function FilterFormProduction() {
       />
       {renderFMW}
     </div>
-  ) : (
-    <CircularProgress color="secondary" className={classes.loader} size={75} />
-  );
+  ) 
 }

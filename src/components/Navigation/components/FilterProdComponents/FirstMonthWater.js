@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useContext, useCallback, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -7,11 +7,8 @@ import { NavigationContext } from "../../NavigationContext";
 const useStyles = makeStyles({
   input: {
     margin: 20,
-    maxWidth: 280,
-    minWidth: 278
-  },
-  divInput: {
-    // display: "flex"
+    maxWidth: "18vw",
+    minWidth: "15vw"
   },
   inputLabel: {
     color: "black",
@@ -22,119 +19,155 @@ const useStyles = makeStyles({
   }
 });
 
-export default function FirstMonthWater(props) {
+export default function FirstMonthWater() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [valueMin, setValueMin] = useState(0);
-  const [valueMax, setValueMax] = useState(props.max);
-  const [valueMinDisplay, setValueMinDisplay] = useState();
-  const [valueMaxDisplay, setValueMaxDisplay] = useState();
-  const [max, setMax] = useState(props.max);
+  const [valueMinDisplay, setValueMinDisplay] = useState("");
+  const [valueMaxDisplay, setValueMaxDisplay] = useState("");
   const [id, setId] = useState("firstMonthWater");
   const [prodTypeName, setProdTypeName] = useState(
     stateNav.prodTypeName ? stateNav.prodTypeName : []
   );
-  const minRef = useRef();
-  const maxRef = useRef();
+
+  const setFilter = useCallback(() => {
+    let filter;
+    if (!valueMinDisplay && !valueMaxDisplay) {
+      filter = null;
+    }
+    if (!valueMinDisplay && valueMaxDisplay) {
+      filter = ["all", ["<=", ["get", id.toString()], valueMaxDisplay]];
+      console.log("add filter", filter);
+    } else if (valueMinDisplay && !valueMaxDisplay) {
+      filter = ["all", [">=", ["get", id.toString()], valueMinDisplay]];
+      console.log("add filter", filter);
+    } else if (valueMinDisplay && valueMaxDisplay) {
+      if (valueMinDisplay < valueMaxDisplay) {
+        filter = [
+          "all",
+          [">=", ["get", id.toString()], valueMinDisplay],
+          ["<=", ["get", id.toString()], valueMaxDisplay]
+        ];
+        console.log("add filter", filter);
+      }
+    } else {
+      filter = null;
+    }
+
+    setStateNav(stateNav => ({
+      ...stateNav,
+      filterFirstMonthWater: filter
+    }));
+  }, [id, setStateNav, valueMaxDisplay, valueMinDisplay]);
 
   useEffect(() => {
-    const setFilter = () => {
-        let filter;
-        let selectedMin = valueMin;
-        let selectedMax = valueMax;
-        if (selectedMax !== null && selectedMin !== null) {
-          selectedMin.toString();
-          selectedMax.toString();
-            filter = [
-                "all",
-                [">=", ["get", id.toString()], parseInt(selectedMin)],
-                ["<=", ["get", id.toString()], parseInt(selectedMax)]
-              ];
-              console.log("add filter", filter);
+    const recall = () => {
+      if (!valueMinDisplay && !valueMaxDisplay) {
+        if (
+          stateNav.filterFirstMonthWater &&
+          stateNav.filterFirstMonthWater.length === 3
+        ) {
+          const recallMin = stateNav.filterFirstMonthWater[1][2];
+          const recallMax = stateNav.filterFirstMonthWater[2][2];
+          setValueMinDisplay(recallMin);
+          setValueMaxDisplay(recallMax);
         }
-         else {
-            filter = null;
+      }
+      if (!valueMaxDisplay) {
+        if (
+          stateNav.filterFirstMonthWater &&
+          stateNav.filterFirstMonthWater[1][0] === "<="
+        ) {
+          const recallMax = stateNav.filterFirstMonthWater[1][2];
+          setValueMaxDisplay(recallMax);
         }
-    
-          setStateNav(stateNav => ({
-            ...stateNav,
-            filterFirstMonthWater: filter
-          }));
-    }
-    
-    if (valueMin && valueMax) {
+      }
+      if (!valueMinDisplay) {
+        if (
+          stateNav.filterFirstMonthWater &&
+          stateNav.filterFirstMonthWater[1][0] === ">="
+        ) {
+          const recallMin = stateNav.filterFirstMonthWater[1][2];
+          setValueMinDisplay(recallMin);
+        }
+      }
+    };
+    recall();
+    return () => {
+      recall();
+    };
+  }, [stateNav.filterFirstMonthWater, valueMaxDisplay, valueMinDisplay]);
+
+  useEffect(() => {
+    if (stateNav.prodOptions) {
       setFilter();
     }
-  }, [id, setStateNav, valueMax, valueMin]);
+  }, [setFilter, stateNav.prodOptions]);
 
-  useEffect(() => {
-    const updateMin = val => valueMinDisplay === val ? null : setValueMinDisplay(val);
-    // const updateMax = val => valueMaxDisplay === val ? null : setValueMaxDisplay(val);
-    if (stateNav.filterFirstMonthWater) {
-        const recallMin = stateNav.filterFirstMonthWater[1][2];
-        updateMin(recallMin)
-        // const recallMax = stateNav.filterFirstMonthWater[2][2];
-        // // if (recallMax !== max) {
-        // //     updateMax(recallMax) 
-        // // }
-    }
-  }, [max, stateNav.filterFirstMonthWater, valueMaxDisplay, valueMinDisplay]);
-//   console.log('recallMax', valueMaxDisplay)
   const handleChangeMin = event => {
-    setValueMin(event.target.value);
-    setValueMinDisplay(event.target.value);
+    setValueMinDisplay(event.target.valueAsNumber || event.target.value);
     setProdTypeName(event.target.id);
     setStateNav(stateNav => ({ ...stateNav, prodTypeName: event.target.id }));
     if (event.target.value === "") {
-        setStateNav(stateNav => ({
-            ...stateNav,
-            filterFirstMonthWater: null
-          }));
+      setStateNav(stateNav => ({
+        ...stateNav,
+        filterFirstMonthWater: null
+      }));
     }
   };
 
   const handleChangeMax = event => {
-    setValueMax(event.target.value);
-    setValueMaxDisplay(event.target.value);
+    setValueMaxDisplay(event.target.valueAsNumber || event.target.value);
     setProdTypeName(event.target.id);
     setStateNav(stateNav => ({ ...stateNav, prodTypeName: event.target.id }));
+    if (event.target.value === "") {
+      setStateNav(stateNav => ({
+        ...stateNav,
+        filterFirstMonthWater: null
+      }));
+    }
   };
 
   return (
-    <div className={classes.divInput}>
+    <div>
       <Typography
         className={classes.inputLabel}
         htmlFor="select-multiple-chip1"
       >
-        First Month Water (MBBL)
+        First Month Water (BBL)
       </Typography>
       <TextField
         id={id}
-        inputRef={minRef}
         className={classes.input}
-        value={valueMinDisplay || ''}
-        InputProps={{ inputProps: { min: valueMin, max: max - 1, step: 1000 } }}
+        value={valueMinDisplay}
+        InputProps={{
+          inputProps: {
+            min: Number.MIN_SAFE_INTEGER,
+            max: Number.MAX_SAFE_INTEGER - 1,
+            step: 1000
+          }
+        }}
         onChange={handleChangeMin}
         aria-labelledby="range-number"
         type="number"
         label="Min"
         variant="outlined"
-        fullWidth={true}
-        error={valueMinDisplay > valueMaxDisplay}
       />
       <TextField
         id={id}
         className={classes.input}
-        inputRef={maxRef}
-        value={valueMaxDisplay || ''}
-        InputProps={{ inputProps: { min: valueMin, max: max, step: 1000 } }}
+        value={valueMaxDisplay}
+        InputProps={{
+          inputProps: {
+            min: Number.MIN_SAFE_INTEGER + 1,
+            max: Number.MAX_SAFE_INTEGER,
+            step: 1000
+          }
+        }}
         onChange={handleChangeMax}
         aria-labelledby="range-number"
         type="number"
         label="Max"
         variant="outlined"
-        fullWidth={true}
-        error={valueMinDisplay > valueMaxDisplay}
       />
     </div>
   );
