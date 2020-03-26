@@ -7,8 +7,8 @@ import { NavigationContext } from "../../NavigationContext";
 const useStyles = makeStyles({
   input: {
     margin: 20,
-    maxWidth: "18vw",
-    minWidth: "15vw"
+    maxWidth: 168,
+    minWidth: 167
   },
   inputLabel: {
     color: "black",
