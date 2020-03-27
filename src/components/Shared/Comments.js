@@ -16,13 +16,11 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "react-avatar";
 import { CircularProgress } from "@material-ui/core";
 import { AppContext } from "../../AppContext";
-import { COMMENTSQUERY } from "../../graphQL/useQueryComments";
-import { USERPARENTCOMMENTSQUERY } from "../../graphQL/useQueryUserParentComments";
+import { COMMENTSBYOBJECTIDQUERY } from "../../graphQL/useQueryCommentsByObjectId";
 import { UPSERTCOMMENT } from "../../graphQL/useMutationUpsertComment";
-import { EDGEQUERY } from "../../graphQL/useMutationCreateEdge";
-import { DROPEDGEQUERY } from "../../graphQL/useMutationDropEdge";
-import { DROPVERTEXQUERY } from "../../graphQL/useMutationDropVertex";
+import { REMOVECOMMENT } from "../../graphQL/useMutationRemoveComment";
 import Grid from "@material-ui/core/Grid";
+import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -49,9 +47,6 @@ const useStyles = makeStyles(theme => ({
   },
   listItem: {
     fontFamily: "Poppins",
-    /* '&:hover': {
-      background: '#4B618F'
-    }, */
     backgroundColor: "white",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.black
@@ -101,72 +96,53 @@ export default function Comments(props) {
   const [commentsArray, setCommentsArray] = useState([]);
   const [textValue, setTextValue] = useState("");
   const [loadingComments, setLoadingComments] = useState(false);
-  const [sourceVertex, setSourceVertex] = useState(null);
-  const [targetVertex, setTargetVertex] = useState(null);
-  const [commentVertex, setCommentVertex] = useState(null);
-  const [dropTag, setDropTag] = useState(false);
   const [emptyInput, setEmptyInput] = useState(false);
 
-  const [getComments, { data: dataComments }] = useLazyQuery(COMMENTSQUERY);
-  const [
-    getUserParentComments,
-    { data: dataUserParentComments }
-  ] = useLazyQuery(USERPARENTCOMMENTSQUERY);
-  const [upsertComment, { data: dataUpsertComment }] = useMutation(
-    UPSERTCOMMENT
+  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL); //////////////temporary while signed user fixed
+
+  const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
+    COMMENTSBYOBJECTIDQUERY
   );
-  const [createGraphEdge, {}] = useMutation(EDGEQUERY);
-  const [dropGraphEdge, {}] = useMutation(DROPEDGEQUERY);
-  const [dropGraphVertex, { data: dataDropV }] = useMutation(DROPVERTEXQUERY);
+  const [upsertComment] = useMutation(UPSERTCOMMENT);
+  const [removeComment] = useMutation(REMOVECOMMENT);
+
+  //////begin////////temporary  while signed user fixed
+
+  const [user, setUser] = useState({ _id: "" });
 
   useEffect(() => {
-    setTargetVertex({
-      sourceId: props.targetSourceId,
-      label: props.targetLabel,
-      name: props.targetName,
-      type: "vertex",
-      properties: []
-    });
-  }, [props.targetSourceId, props.targetLabel, props.targetName]);
+    if (stateApp && stateApp.user && stateApp.user.email) {
+      getUserByEmail({
+        variables: {
+          userEmail: stateApp.user.email
+        }
+      });
+    }
+  }, [stateApp.user.email]);
+
+  useEffect(() => {
+    if (dataUser && dataUser.userByEmail) {
+      setUser(dataUser.userByEmail);
+    }
+    setLoadingComments(false);
+  }, [dataUser]);
+
+  /////end/////////temporary while signed user fixed
 
   ///////////////////// START FETCHING COMMENTS DATA ////////////////////////////////////////////
 
-  //////Fetching all comments[ids] related to a logged user and a target object
   useEffect(() => {
     setLoadingComments(true);
-    getUserParentComments({
+    getCommentsByObjectId({
       variables: {
-        sourceSourceId: stateApp.user.id,
-        targetSourceId: props.targetSourceId
+        objectId: props.targetSourceId
       }
     });
-    setSourceVertex({
-      sourceId: stateApp.user.id,
-      label: "user",
-      name: stateApp.user.name,
-      type: "vertex",
-      properties: []
-    });
-  }, []);
+  }, [props.targetSourceId]);
 
-  //////Fetching the comments info in SQL cosmos from [ids]
   useEffect(() => {
-    if (dataUserParentComments && dataUserParentComments.userParentComments) {
-      getComments({
-        variables: {
-          commentIdArray: dataUserParentComments.userParentComments
-        }
-      });
-    } else {
-      setLoadingComments(false);
-      setCommentsArray([]);
-    }
-  }, [dataUserParentComments]);
-
-  ///////Setting the comments array
-  useEffect(() => {
-    if (dataComments && dataComments.comments) {
-      setCommentsArray(dataComments.comments.reverse());
+    if (dataComments && dataComments.commentsByObjectId) {
+      setCommentsArray(dataComments.commentsByObjectId);
     }
     setLoadingComments(false);
   }, [dataComments]);
@@ -181,16 +157,16 @@ export default function Comments(props) {
         .trim() !== ""
     ) {
       upsertComment({
-        variables: { comment: { comment: event.target.value } }
-      }); ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      // setCommentsArray([
-      //   ...commentsArray,
-      //   {
-      //     id: commentsArray.length,
-      //     comment: event.target.value.trim(),
-      //     _ts: Date.now()
-      //   }
-      // ]); //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        variables: {
+          comment: {
+            comment: event.target.value,
+            user: user._id,
+            commentedOn: props.targetSourceId
+          }
+        },
+        refetchQueries: ["getCommentsByObjectId"],
+        awaitRefetchQueries: true
+      });
 
       setEmptyInput(false);
     } else {
@@ -199,113 +175,23 @@ export default function Comments(props) {
     setTextValue("");
   };
 
-  ///////after new comment is upserted set CommentVertex
-  useEffect(() => {
-    if (dataUpsertComment) {
-      setCommentVertex({
-        sourceId: dataUpsertComment.upsertComment.comment.id,
-        label: "comment",
-        name: dataUpsertComment.upsertComment.comment.comment,
-        type: "vertex",
-        properties: []
-      });
-    }
-  }, [dataUpsertComment]);
-
-  ////to create edges between user-comment-targetObject
-  const createEdgeAsyncAwait = async (
-    sourceVertex,
-    commentVertex,
-    targetVertex
-  ) => {
-    await createGraphEdge({
-      variables: {
-        source: sourceVertex,
-        target: commentVertex,
-        relationshipLabel: "createdComment"
-      }
-    });
-
-    await createGraphEdge({
-      variables: {
-        source: commentVertex,
-        target: targetVertex,
-        relationshipLabel: "commentedOn"
-      },
-      refetchQueries: ["getUserParentComments"],
-      awaitRefetchQueries: true
-    });
-  };
-
-  ///////after new commentVertex is set create edges
-  useEffect(() => {
-    if (!dropTag) {
-      if (commentVertex && sourceVertex && targetVertex) {
-        createEdgeAsyncAwait(sourceVertex, commentVertex, targetVertex);
-      }
-    } else {
-      removeEdgesAndCommentVertexAsyncAwait(
-        sourceVertex,
-        commentVertex,
-        targetVertex
-      );
-
-      if (dataDropV.success) {
-        /////delete the comment from sql//////////////////////////////////////////////////////////////////////////////
-      }
-      setDropTag(false);
-    }
-  }, [commentVertex]);
-
   ///////////////////// DELETING A COMMENT ///////////////////////////////////////////////
 
-  ////to remove edges between user-comment-targetObject, and drop the comment vertex
-  const removeEdgesAndCommentVertexAsyncAwait = async (
-    sourceVertex,
-    commentVertex,
-    targetVertex
-  ) => {
-    await dropGraphEdge({
-      variables: {
-        source: commentVertex,
-        target: targetVertex,
-        relationshipLabel: "commentedOn"
-      }
-    });
-
-    await dropGraphEdge({
-      variables: {
-        source: sourceVertex,
-        target: commentVertex,
-        relationshipLabel: "createdComment"
-      }
-    });
-
-    await dropGraphVertex({
-      variables: {
-        vertex: commentVertex
-      },
-      refetchQueries: ["getUserParentComments"],
-      awaitRefetchQueries: true
-    });
-  };
-
   const handleDeleteClick = comment => {
-    setDropTag(true);
-    setCommentVertex({
-      sourceId: comment.id,
-      label: "comment",
-      name: comment.comment,
-      type: "vertex",
-      properties: []
+    removeComment({
+      variables: {
+        commentId: comment._id
+      },
+      refetchQueries: ["getCommentsByObjectId"],
+      awaitRefetchQueries: true
     });
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////
 
   const compare = (a, b) => {
-    if (a._ts > b._ts) return -1;
-    if (b._ts > a._ts) return 1;
+    if (a.ts > b.ts) return -1;
+    if (b.ts > a.ts) return 1;
 
     return 0;
   };
@@ -319,7 +205,7 @@ export default function Comments(props) {
 
   return (
     <Card className={classes.root} variant="outlined">
-      <CardHeader className={classes.header} title="Comments" />
+      {/* <CardHeader className={classes.header} title="Comments" /> */}
       <CardActions>
         <Grid container>
           <Grid item xs={12}>
@@ -328,8 +214,8 @@ export default function Comments(props) {
                 emptyInput ? classes.emptyInput : ""
               }`}
               id="commentInput"
-              // label="Comment"
               variant="outlined"
+              label="Comments"
               multiline
               rows="4"
               onChange={e => {
@@ -377,19 +263,19 @@ export default function Comments(props) {
       <CardContent className={classes.content}>
         {!loadingComments ? (
           <List className={classes.list}>
-            {commentsArray.map((comment, index) => (
+            {commentsArray.map(comment => (
               <ListItem
-                key={comment.id}
+                key={comment._id}
                 className={classes.listItem}
                 alignItems="flex-start"
               >
                 <ListItemAvatar className={classes.avatar}>
-                  <Avatar name={stateApp.user.name} size="35" round />
+                  <Avatar name={comment.user.name} size="35" round />
                 </ListItemAvatar>
                 <ListItemText
                   className={classes.listItemText}
                   primary={comment.comment}
-                  secondary={`${stateApp.user.name} - ${new Intl.DateTimeFormat(
+                  secondary={`${comment.user.name} - ${new Intl.DateTimeFormat(
                     "en-US",
                     {
                       year: "numeric",
@@ -398,7 +284,7 @@ export default function Comments(props) {
                       hour: "2-digit",
                       minute: "2-digit"
                     }
-                  ).format(comment._ts)}`}
+                  ).format(comment.ts)}`}
                 />
                 <ListItemSecondaryAction>
                   <IconButton
