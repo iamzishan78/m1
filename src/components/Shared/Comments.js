@@ -64,7 +64,10 @@ const useStyles = makeStyles(theme => ({
   },
   listItemText: {
     "& .MuiTypography-body1": { fontSize: "0.85rem" },
-    "& .MuiTypography-body2": { fontSize: "0.7rem" }
+    "& .MuiTypography-body2": { fontSize: "0.7rem" },
+    "&  p": {
+      margin: "0"
+    }
   },
   avatar: {
     minWidth: "50px"
@@ -159,8 +162,23 @@ export default function Comments(props) {
       upsertComment({
         variables: {
           comment: {
-            comment: event.target.value,
-            user: user._id,
+            comment:
+              event.target.value.trim()[
+                event.target.value.trim().length - 1
+              ] === "."
+                ? event.target.value
+                    .split("\n")
+                    .map(line => {
+                      return line.trim();
+                    })
+                    .join("\n")
+                : `${event.target.value
+                    .split("\n")
+                    .map(line => {
+                      return line.trim();
+                    })
+                    .join("\n")}.`,
+            user: user._id, //////stateApp.user._id////////temporary while signed user fixed
             commentedOn: props.targetSourceId
           }
         },
@@ -197,6 +215,10 @@ export default function Comments(props) {
   };
   commentsArray.sort(compare);
 
+  const capitalizeFirstLetter = string => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   useEffect(() => {
     if (props.focus) {
       document.getElementById("commentInput").focus();
@@ -219,7 +241,22 @@ export default function Comments(props) {
               multiline
               rows="4"
               onChange={e => {
-                setTextValue(e.target.value);
+                if (e.target.value[e.target.value.length - 1] !== `\\`) {
+                  if (e.target.value[e.target.value.length - 1] !== `\n`) {
+                    setTextValue(
+                      e.target.value
+                        .split("\n")
+                        .map(line => {
+                          return capitalizeFirstLetter(line);
+                        })
+                        .join("\n")
+                    );
+                  } else {
+                    if (e.target.value[e.target.value.length - 2] !== `\n`) {
+                      setTextValue(`${textValue}.\n`);
+                    }
+                  }
+                }
                 if (
                   e.target.value
                     .split("\n")
@@ -274,7 +311,13 @@ export default function Comments(props) {
                 </ListItemAvatar>
                 <ListItemText
                   className={classes.listItemText}
-                  primary={comment.comment}
+                  primary={
+                    <React.Fragment>
+                      {comment.comment.split("\n").map((line, i) => {
+                        return <p key={i}>{line}</p>;
+                      })}
+                    </React.Fragment>
+                  }
                   secondary={`${comment.user.name} - ${new Intl.DateTimeFormat(
                     "en-US",
                     {
