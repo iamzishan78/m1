@@ -183,13 +183,17 @@ export default function Comments(props) {
                 ? event.target.value
                     .split("\n")
                     .map(line => {
-                      return line.trim();
+                      if (line.trim() !== ".") {
+                        return line.trim();
+                      }
                     })
                     .join("\n")
                 : `${event.target.value
                     .split("\n")
                     .map(line => {
-                      return line.trim();
+                      if (line.trim() !== ".") {
+                        return line.trim();
+                      }
                     })
                     .join("\n")}.`,
             public: publicComment,
