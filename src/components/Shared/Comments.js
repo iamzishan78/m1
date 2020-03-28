@@ -342,7 +342,9 @@ export default function Comments(props) {
             {commentsArray.map(
               comment =>
                 ((publicComment && comment.public) ||
-                  (!publicComment && !comment.public)) && (
+                  (!publicComment &&
+                    !comment.public &&
+                    stateApp.user.email === comment.user.email)) && (
                   <ListItem
                     key={comment._id}
                     className={classes.listItem}
