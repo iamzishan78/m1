@@ -9,6 +9,7 @@ export const UPSERTCOMMENT = gql`
         _id
         comment
         ts
+        public
         commentedOn
         user {
           name

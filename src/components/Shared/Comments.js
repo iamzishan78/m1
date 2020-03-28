@@ -14,6 +14,9 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import TextField from "@material-ui/core/TextField";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "react-avatar";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
 import { CircularProgress } from "@material-ui/core";
 import { AppContext } from "../../AppContext";
 import { COMMENTSBYOBJECTIDQUERY } from "../../graphQL/useQueryCommentsByObjectId";
@@ -90,6 +93,16 @@ const useStyles = makeStyles(theme => ({
     "& fieldset": {
       borderColor: "rgb(240, 89, 89) !important"
     }
+  },
+  switchButtom: {
+    alignSelf: "flex-end",
+    marginRight: 0,
+    "& span.MuiTypography-body1": {
+      fontSize: "0.9rem"
+    }
+  },
+  switchTextDeselected: {
+    color: "rgb(141, 141, 141)"
   }
 }));
 
@@ -100,6 +113,7 @@ export default function Comments(props) {
   const [textValue, setTextValue] = useState("");
   const [loadingComments, setLoadingComments] = useState(false);
   const [emptyInput, setEmptyInput] = useState(false);
+  const [publicComment, setPublicComment] = useState(true);
 
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL); //////////////temporary while signed user fixed
 
@@ -178,6 +192,7 @@ export default function Comments(props) {
                       return line.trim();
                     })
                     .join("\n")}.`,
+            public: publicComment,
             user: user._id, //////stateApp.user._id////////temporary while signed user fixed
             commentedOn: props.targetSourceId
           }
@@ -230,6 +245,26 @@ export default function Comments(props) {
       {/* <CardHeader className={classes.header} title="Comments" /> */}
       <CardActions>
         <Grid container>
+          <Grid item xs={12}>
+            <FormGroup>
+              <FormControlLabel
+                className={`${classes.switchButtom} ${
+                  !publicComment ? classes.switchTextDeselected : ""
+                }`}
+                control={
+                  <Switch
+                    size="small"
+                    checked={publicComment}
+                    onChange={() => {
+                      setPublicComment(!publicComment);
+                    }}
+                  />
+                }
+                label="Public"
+                labelPlacement="start"
+              />
+            </FormGroup>
+          </Grid>
           <Grid item xs={12}>
             <TextField
               className={`${classes.textInput} ${
@@ -300,46 +335,49 @@ export default function Comments(props) {
       <CardContent className={classes.content}>
         {!loadingComments ? (
           <List className={classes.list}>
-            {commentsArray.map(comment => (
-              <ListItem
-                key={comment._id}
-                className={classes.listItem}
-                alignItems="flex-start"
-              >
-                <ListItemAvatar className={classes.avatar}>
-                  <Avatar name={comment.user.name} size="35" round />
-                </ListItemAvatar>
-                <ListItemText
-                  className={classes.listItemText}
-                  primary={
-                    <React.Fragment>
-                      {comment.comment.split("\n").map((line, i) => {
-                        return <p key={i}>{line}</p>;
-                      })}
-                    </React.Fragment>
-                  }
-                  secondary={`${comment.user.name} - ${new Intl.DateTimeFormat(
-                    "en-US",
-                    {
-                      year: "numeric",
-                      month: "long",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit"
-                    }
-                  ).format(comment.ts)}`}
-                />
-                <ListItemSecondaryAction>
-                  <IconButton
-                    edge="end"
-                    aria-label="delete"
-                    onClick={() => handleDeleteClick(comment)}
+            {commentsArray.map(
+              comment =>
+                ((publicComment && comment.public) ||
+                  (!publicComment && !comment.public)) && (
+                  <ListItem
+                    key={comment._id}
+                    className={classes.listItem}
+                    alignItems="flex-start"
                   >
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            ))}
+                    <ListItemAvatar className={classes.avatar}>
+                      <Avatar name={comment.user.name} size="35" round />
+                    </ListItemAvatar>
+                    <ListItemText
+                      className={classes.listItemText}
+                      primary={
+                        <React.Fragment>
+                          {comment.comment.split("\n").map((line, i) => {
+                            return <p key={i}>{line}</p>;
+                          })}
+                        </React.Fragment>
+                      }
+                      secondary={`${
+                        comment.user.name
+                      } - ${new Intl.DateTimeFormat("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      }).format(comment.ts)}`}
+                    />
+                    <ListItemSecondaryAction>
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={() => handleDeleteClick(comment)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                )
+            )}
           </List>
         ) : (
           <CircularProgress color="secondary"></CircularProgress>
