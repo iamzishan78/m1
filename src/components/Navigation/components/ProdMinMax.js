@@ -2,7 +2,7 @@ import React, { useState, useContext, useCallback, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
-import { NavigationContext } from "../../NavigationContext";
+import { NavigationContext } from "../NavigationContext"
 
 const useStyles = makeStyles({
   input: {
@@ -19,12 +19,16 @@ const useStyles = makeStyles({
   }
 });
 
-export default function FirstMonthWater() {
+export default function FirstMonthWater(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [valueMinDisplay, setValueMinDisplay] = useState("");
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
-  const [id, setId] = useState("firstMonthWater");
+  const [error , setError] = useState(false);
+  const [errorText, setErrorText] = useState("")
+  const [id, setId] = useState(props.id);
+  const [filterName, setFilterName] =  useState(props.filter)
+  const [name, setName] = useState(props.name)
   const [prodTypeName, setProdTypeName] = useState(
     stateNav.prodTypeName ? stateNav.prodTypeName : []
   );
@@ -55,47 +59,47 @@ export default function FirstMonthWater() {
 
     setStateNav(stateNav => ({
       ...stateNav,
-      filterFirstMonthWater: filter
+      [filterName]: filter
     }));
-  }, [id, setStateNav, valueMaxDisplay, valueMinDisplay]);
+  }, [filterName, id, setStateNav, valueMaxDisplay, valueMinDisplay]);
 
-  useEffect(() => {
-    const recall = () => {
-      if (!valueMinDisplay && !valueMaxDisplay) {
-        if (
-          stateNav.filterFirstMonthWater &&
-          stateNav.filterFirstMonthWater.length === 3
-        ) {
-          const recallMin = stateNav.filterFirstMonthWater[1][2];
-          const recallMax = stateNav.filterFirstMonthWater[2][2];
-          setValueMinDisplay(recallMin);
-          setValueMaxDisplay(recallMax);
-        }
-      }
-      if (!valueMaxDisplay) {
-        if (
-          stateNav.filterFirstMonthWater &&
-          stateNav.filterFirstMonthWater[1][0] === "<="
-        ) {
-          const recallMax = stateNav.filterFirstMonthWater[1][2];
-          setValueMaxDisplay(recallMax);
-        }
-      }
-      if (!valueMinDisplay) {
-        if (
-          stateNav.filterFirstMonthWater &&
-          stateNav.filterFirstMonthWater[1][0] === ">="
-        ) {
-          const recallMin = stateNav.filterFirstMonthWater[1][2];
-          setValueMinDisplay(recallMin);
-        }
-      }
-    };
-    recall();
-    return () => {
-      recall();
-    };
-  }, [stateNav.filterFirstMonthWater, valueMaxDisplay, valueMinDisplay]);
+  // useEffect(() => {
+  //   const recall = () => {
+  //     if (!valueMinDisplay && !valueMaxDisplay) {
+  //       if (
+  //         stateNav.filterFirstMonthWater &&
+  //         stateNav.filterFirstMonthWater.length === 3
+  //       ) {
+  //         const recallMin = stateNav.filterFirstMonthWater[1][2];
+  //         const recallMax = stateNav.filterFirstMonthWater[2][2];
+  //         setValueMinDisplay(recallMin);
+  //         setValueMaxDisplay(recallMax);
+  //       }
+  //     }
+  //     if (!valueMaxDisplay) {
+  //       if (
+  //         stateNav.filterFirstMonthWater &&
+  //         stateNav.filterFirstMonthWater[1][0] === "<="
+  //       ) {
+  //         const recallMax = stateNav.filterFirstMonthWater[1][2];
+  //         setValueMaxDisplay(recallMax);
+  //       }
+  //     }
+  //     if (!valueMinDisplay) {
+  //       if (
+  //         stateNav.filterFirstMonthWater &&
+  //         stateNav.filterFirstMonthWater[1][0] === ">="
+  //       ) {
+  //         const recallMin = stateNav.filterFirstMonthWater[1][2];
+  //         setValueMinDisplay(recallMin);
+  //       }
+  //     }
+  //   };
+  //   recall();
+  //   return () => {
+  //     recall();
+  //   };
+  // }, [stateNav.filterFirstMonthWater, valueMaxDisplay, valueMinDisplay]);
 
   useEffect(() => {
     if (stateNav.prodOptions) {
@@ -110,7 +114,7 @@ export default function FirstMonthWater() {
     if (event.target.value === "") {
       setStateNav(stateNav => ({
         ...stateNav,
-        filterFirstMonthWater: null
+        [filterName]: null
       }));
     }
   };
@@ -122,10 +126,22 @@ export default function FirstMonthWater() {
     if (event.target.value === "") {
       setStateNav(stateNav => ({
         ...stateNav,
-        filterFirstMonthWater: null
+        [filterName]: null
       }));
     }
   };
+
+  useEffect(() => {
+    if (valueMinDisplay && valueMaxDisplay) {
+      if (valueMinDisplay >= valueMaxDisplay) {
+        setError(true);
+        setErrorText("Min value is greater than Max value")
+      } else {
+        setError(false);
+        setErrorText("")
+      }
+    } 
+  },[valueMaxDisplay, valueMinDisplay])
 
   return (
     <div>
@@ -133,7 +149,7 @@ export default function FirstMonthWater() {
         className={classes.inputLabel}
         htmlFor="select-multiple-chip1"
       >
-        First Month Water (BBL)
+        {name}(BBL)
       </Typography>
       <TextField
         id={id}
@@ -168,6 +184,8 @@ export default function FirstMonthWater() {
         type="number"
         label="Max"
         variant="outlined"
+        error={error}
+        helperText={errorText}
       />
     </div>
   );
