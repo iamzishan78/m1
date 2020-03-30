@@ -12,9 +12,8 @@ const useStyles = makeStyles({
   },
   inputLabel: {
     color: "black",
-    textAlign: "center",
-    minWidth: 199,
-    maxWidth: 200,
+    minWidth: 249,
+    maxWidth: 250,
     marginLeft: 20
   }
 });
@@ -27,11 +26,20 @@ export default function FirstMonthWater(props) {
   const [error , setError] = useState(false);
   const [errorText, setErrorText] = useState("")
   const [id, setId] = useState(props.id);
+  const [type, setType] = useState("");
   const [filterName, setFilterName] =  useState(props.filter)
   const [name, setName] = useState(props.name)
   const [prodTypeName, setProdTypeName] = useState(
     stateNav.prodTypeName ? stateNav.prodTypeName : []
   );
+
+  useEffect(() => {
+    if (name.includes("Gas")) {
+      setType("(MCF)")
+    } else {
+      setType("(BBL)")
+    }
+  },[name])
 
   const setFilter = useCallback(() => {
     let filter;
@@ -63,43 +71,44 @@ export default function FirstMonthWater(props) {
     }));
   }, [filterName, id, setStateNav, valueMaxDisplay, valueMinDisplay]);
 
-  // useEffect(() => {
-  //   const recall = () => {
-  //     if (!valueMinDisplay && !valueMaxDisplay) {
-  //       if (
-  //         stateNav.filterFirstMonthWater &&
-  //         stateNav.filterFirstMonthWater.length === 3
-  //       ) {
-  //         const recallMin = stateNav.filterFirstMonthWater[1][2];
-  //         const recallMax = stateNav.filterFirstMonthWater[2][2];
-  //         setValueMinDisplay(recallMin);
-  //         setValueMaxDisplay(recallMax);
-  //       }
-  //     }
-  //     if (!valueMaxDisplay) {
-  //       if (
-  //         stateNav.filterFirstMonthWater &&
-  //         stateNav.filterFirstMonthWater[1][0] === "<="
-  //       ) {
-  //         const recallMax = stateNav.filterFirstMonthWater[1][2];
-  //         setValueMaxDisplay(recallMax);
-  //       }
-  //     }
-  //     if (!valueMinDisplay) {
-  //       if (
-  //         stateNav.filterFirstMonthWater &&
-  //         stateNav.filterFirstMonthWater[1][0] === ">="
-  //       ) {
-  //         const recallMin = stateNav.filterFirstMonthWater[1][2];
-  //         setValueMinDisplay(recallMin);
-  //       }
-  //     }
-  //   };
-  //   recall();
-  //   return () => {
-  //     recall();
-  //   };
-  // }, [stateNav.filterFirstMonthWater, valueMaxDisplay, valueMinDisplay]);
+  useEffect(() => {
+    const recall = () => {
+      let checkStateNav = stateNav[filterName]
+      if (!valueMinDisplay && !valueMaxDisplay) {
+        if (
+          checkStateNav &&
+          checkStateNav.length === 3
+        ) {
+          const recallMin = checkStateNav[1][2];
+          const recallMax = checkStateNav[2][2];
+          setValueMinDisplay(recallMin);
+          setValueMaxDisplay(recallMax);
+        }
+      }
+      if (!valueMaxDisplay) {
+        if (
+          checkStateNav &&
+          checkStateNav[1][0] === "<="
+        ) {
+          const recallMax = checkStateNav[1][2];
+          setValueMaxDisplay(recallMax);
+        }
+      }
+      if (!valueMinDisplay) {
+        if (
+          checkStateNav &&
+          checkStateNav[1][0] === ">="
+        ) {
+          const recallMin = checkStateNav[1][2];
+          setValueMinDisplay(recallMin);
+        }
+      }
+    };
+    recall();
+    return () => {
+      recall();
+    };
+  }, [filterName, stateNav, valueMaxDisplay, valueMinDisplay]);
 
   useEffect(() => {
     if (stateNav.prodOptions) {
@@ -149,7 +158,7 @@ export default function FirstMonthWater(props) {
         className={classes.inputLabel}
         htmlFor="select-multiple-chip1"
       >
-        {name}(BBL)
+        {name } {" "} {type}
       </Typography>
       <TextField
         id={id}

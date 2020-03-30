@@ -25,30 +25,30 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const listOptions = [
-  {
-    name: "First Month Water",
-    filterName: "filterFirstMonthWater",
-    id: "firstMonthWater",
-    display: false
-  },
-  {
-    name: "First Three Month Water",
-    filterName: "filterFirstThreeMonthWater",
-    id: "firstThreeMonthWater",
-    display: false
-  },
-  {
-    name: "First Six Month Water",
-    filterName: "filterFirstSixMonthWater",
-    id: "firstSixMonthWater",
-    display: false
-  },
-  {
-    name: "First Twelve Month Water",
-    filterName: "filterFirstTwelveMonthWater",
-    id: "firstTwelveMonthWater",
-    display: false
-  }
+  { name: "Cumulative Oil", filterName: "filterCumulativeOil", id: "cumulativeOil", display: false },
+  { name: "Cumulative Gas", filterName: "filterCumulativeGas", id: "cumulativeGas", display: false },
+  { name: "Cumulative Water", filterName: "filterCumulativeWater", id: "cumulativeWater", display: false },
+  { name: "First Month Oil", filterName: "filterFirstMonthOil", id: "firstMonthOil", display: false },
+  { name: "First Month Gas", filterName: "filterFirstMonthGas", id: "firstMonthGas", display: false },
+  { name: "First Month Water", filterName: "filterFirstMonthWater", id: "firstMonthWater", display: false },
+  { name: "First Three Month Oil", filterName: "filterFirstThreeMonthOil", id: "firstThreeMonthOil", display: false },
+  { name: "First Three Month Gas", filterName: "filterFirstThreeMonthGas", id: "firstThreeMonthGas", display: false },
+  { name: "First Three Month Water", filterName: "filterFirstThreeMonthWater", id: "firstThreeMonthWater", display: false},
+  { name: "First Six Month Oil", filterName: "filterFirstSixMonthOil", id: "firstSixMonthOil", display: false },
+  { name: "First Six Month Gas", filterName: "filterFirstSixMonthGas", id: "firstSixMonthGas", display: false },
+  { name: "First Six Month Water", filterName: "filterFirstSixMonthWater", id: "firstSixMonthWater", display: false },
+  { name: "First Twelve Month Oil", filterName: "filterFirstTwelveMonthOil", id: "firstTwelveMonthOil", display: false },
+  { name: "First Twelve Month Gas", filterName: "filterFirstTwelveMonthGas", id: "firstTwelveMonthGas", display: false },
+  { name: "First Twelve Month Water", filterName: "filterFirstTwelveMonthWater", id: "firstTwelveMonthWater", display: false },
+  { name: "Last Month Oil", filterName: "filterLastMonthOil", id: "lastMonthOil", display: false },
+  { name: "Last Month Gas", filterName: "filterLastMonthGas", id: "lastMonthGas",  display: false },
+  { name: "Last Month Water", filterName: "filterLastMonthWater", id: "lastMonthWater", display: false },
+  { name: "Last Six Month Oil", filterName: "filterLastSixMonthOil", id: "lastSixMonthOil", display: false },
+  { name: "Last Six Month Gas", filterName: "filterLastSixMonthGas", id: "lastSixMonthGas", display: false },
+  { name: "Last Six Month Water", filterName: "filterLastSixMonthWater", id: "lastSixMonthGas", display: false },
+  { name: "Last Twelve Month Oil", filterName: "filterLastTwelveMonthOil", id: "lastTwelveMonthOil", display: false },
+  { name: "Last Twelve Month Gas", filterName: "filterLastTwelveMonthGas", id: "lastTwelveMonthGas", display: false },
+  { name: "Last Twelve Month Water", filterName: "filterLastTwelveMonthWater", id: "lastTwelveMonthWater", display: false}
 ];
 
 export default function FilterFormProduction() {
