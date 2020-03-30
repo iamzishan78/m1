@@ -6,8 +6,15 @@ export const UPSERTCOMMENT = gql`
       success
       message
       comment {
-        id
+        _id
         comment
+        ts
+        public
+        commentedOn
+        user {
+          name
+          email
+        }
       }
     }
   }
