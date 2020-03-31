@@ -59,15 +59,39 @@ export default function FilterFormProduction() {
   );
   const [list, setList] = useState([]);
   const [optionsCopy, setOptionsCopy] = useState(null);
+
+  useEffect(() => {
+    if (!optionsCopy) {
+      const listOptionsCopy = [...listOptions];
+      setOptionsCopy(listOptionsCopy);
+    }
+    
+  },[optionsCopy])
+
   const handleSelectedValueToDisplay = value => {
     setProdOptions(value);
     setStateNav(stateNav => ({
       ...stateNav,
       prodOptions: value
     }));
-    const listOptionsCopy = [...listOptions];
-    setOptionsCopy(listOptionsCopy);
   };
+
+  useEffect(() => {
+    if (stateNav.prodOptions && optionsCopy) {
+      
+      const check = optionsCopy.map(val => val)
+      
+      const removeFilters = check.filter(name => !stateNav.prodOptions.includes(name.name))
+
+      removeFilters.forEach(element => {
+        setStateNav(stateNav => ({
+          ...stateNav,
+          [element.filterName]: null
+        }));
+      })
+      
+    } 
+  },[optionsCopy, setStateNav, stateNav.prodOptions])
 
   useEffect(() => {
     if (optionsCopy) {
@@ -88,7 +112,6 @@ export default function FilterFormProduction() {
           }
         });
       });
-
       if (optionUpdate && elementUpdate) {
         const updateState = optionsCopy.map(item =>
           compare.includes(item.name) ? { ...item, display: true } : item
@@ -99,9 +122,9 @@ export default function FilterFormProduction() {
           compare.includes(!item.name) ? { ...item, display: false } : item
         );
         setList(updateState);
-      }
-    }
-  }, [optionsCopy, prodOptions]);
+      } 
+    } 
+  }, [optionsCopy, prodOptions, stateNav.prodOptions]);
 
   const renderFMW = list
     .filter(item => item.display === true)
