@@ -12,6 +12,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { MapControlsContext } from "../MapControlsContext";
 import { MapContext } from "../../Map/MapContext";
 import { style } from "@material-ui/system";
+import mapStyles from "../../Map/components/Utils/MapStyles";
+
 
 const StyledMenu = withStyles({
   paper: {
@@ -59,28 +61,33 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const availableMapStyles = [
-  { 
-    id: "mapbox://styles/m1neral/ck6r9utau10at1ioagkpr40xc", 
-    label: "Basic" 
-  },
-  {
-    id: "mapbox://styles/m1neral/ck6pe50n80bfs1imr05f0hr82",
-    label: "Satellite"
-  },
-  {
-    id: "mapbox://styles/m1neral/ck722ye6x0ysw1ink106f1deb",
-    label: "Light"
-  },
-  {
-    id: "mapbox://styles/m1neral/ck722xcuj0tts1imj9gw4lymn",
-    label: "Monochrome"
-  },
-  {
-    id: "mapbox://styles/m1neral/ck76duew72wk71ip92kmxqilm",
-    label: "Testinator"
-  },
-];
+// const availableMapStyles = [
+//   // { 
+//   //   id: "mapbox://styles/m1neral/ck6r9utau10at1ioagkpr40xc", 
+//   //   label: "Basic" 
+//   // },
+//   { 
+//     id: "ck6r9utau10at1ioagkpr40xc", 
+//     name: "Basic" 
+//   },
+//   {
+//     id: "ck6pe50n80bfs1imr05f0hr82",
+//     name: "Satellite"
+//   },
+//   {
+//     id: "ck722ye6x0ysw1ink106f1deb",
+//     name: "Light"
+//   },
+//   {
+//     id: "ck722xcuj0tts1imj9gw4lymn",
+//     name: "Monochrome"
+//   },
+//   // {
+//   //   id: "mapbox://styles/m1neral/ck76duew72wk71ip92kmxqilm",
+//   //   name: "Testinator"
+//   // },
+// ];
+
 
 
 export default function BaseMapStyles(props) {
@@ -113,15 +120,15 @@ export default function BaseMapStyles(props) {
         <ListItemText primary="Base Map" />
       </StyledMenuItem>
 
-      {availableMapStyles.map(style => (
+      {mapStyles[0].map(style => (
         <StyledMenuItem
           key={style.id}
           onClick={() => {
-            setStateMap(state => ({ ...state, selectedLayerId: style.id }));
+            setStateMap(state => ({ ...state, selectedLayerId: "mapbox://styles/m1neral/"+style.id }));
             handleClose();
           }}
         >
-          <ListItemText primary={style.label} />
+          <ListItemText primary={style.name} />
         </StyledMenuItem>
       ))}
     </StyledMenu>
