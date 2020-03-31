@@ -25,10 +25,8 @@ const formatDateString = dateString => {
   
 
 const convertDate = unixStamp => {
-  const epochMicrotimeDiff = 621355968000000000;
-  const newUnixStamp = unixStamp - epochMicrotimeDiff;
-  const updatedUnixStamp = newUnixStamp/1000/10000;
-  const date = moment.unix(updatedUnixStamp).format("DD MMM YYYY");
+
+  const date = moment(unixStamp).format("MM/DD/YYYY");
 
   if (unixStamp === 'null') {return '--'}
   else if(unixStamp === null) {return '--'}

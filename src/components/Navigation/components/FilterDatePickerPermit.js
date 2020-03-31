@@ -67,25 +67,15 @@ export default function FilterDatePickerPermit(props) {
   const setFilterName = useCallback(() => {
       let filter;
       if (permitFromDate.date._isValid === true  && permitToDate.date._isValid === true) {
-        const todaysDate = moment().unix()
-        const checkDate = moment(permitToDate.date).unix()
-        const fromDate = moment(permitFromDate.date).unix()
-        const epochMicrotimeDiff = 621355968000000000;
-        const unixDateFrom = Math.round(fromDate * 1000 * 10000);
-        const unixDateCheck = Math.round(checkDate * 1000 * 10000);
-        const newUnixStampFrom = unixDateFrom + epochMicrotimeDiff;
-        const newUnixStampTo = unixDateCheck + epochMicrotimeDiff;
+        const todaysDate = moment().valueOf()
+        const checkDate = moment(permitToDate.date).valueOf()
+        const fromDate = moment(permitFromDate.date).valueOf()
         if(checkDate === todaysDate ){
-          filter = ["all", [">=",["get", "permitApprovedDate"] ,newUnixStampFrom], ["<=",["get", "permitApprovedDate"] , newUnixStampTo]];
+          filter = ["all", [">=",["get", "permitApprovedDate"] ,fromDate], ["<=",["get", "permitApprovedDate"] , checkDate]];
         } else{
-          const fromDate = moment(permitFromDate.date).unix()
-          const toDate =  moment(permitToDate.date).unix()
-          const epochMicrotimeDiff = 621355968000000000;
-          const unixFrom = Math.round(fromDate * 1000 * 10000);
-          const unixTo = Math.round(toDate * 1000 * 10000)
-          const newUnixStampFrom = unixFrom + epochMicrotimeDiff;
-          const newUnixStampTo = unixTo + epochMicrotimeDiff;
-          filter = ["all", [">=", ["get", "permitApprovedDate"]  ,newUnixStampFrom], ["<=", ["get", "permitApprovedDate"] ,newUnixStampTo]];
+          const fromDate = moment(permitFromDate.date).valueOf()
+          const toDate =  moment(permitToDate.date).valueOf()
+          filter = ["all", [">=", ["get", "permitApprovedDate"]  ,fromDate], ["<=", ["get", "permitApprovedDate"] ,toDate]];
         }
       } else {
         filter = null;

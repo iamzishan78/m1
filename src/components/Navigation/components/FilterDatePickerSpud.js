@@ -61,25 +61,15 @@ export default function FilterDatePickerSpud(props) {
   const setFilterName = useCallback(() => {
     let filter;
     if (spudFromDate.date._isValid === true  && spudToDate.date._isValid === true) {
-      const todaysDate = moment().unix()
-      const checkDate = moment(spudToDate.date).unix()
-      const fromDate = moment(spudFromDate.date).unix()
-      const epochMicrotimeDiff = 621355968000000000;
-      const unixDateFrom = Math.round(fromDate * 1000 * 10000);
-      const unixDateCheck = Math.round(checkDate * 1000 * 10000);
-      const newUnixStampFrom = unixDateFrom + epochMicrotimeDiff;
-      const newUnixStampTo = unixDateCheck + epochMicrotimeDiff;
+      const todaysDate = moment().valueOf()
+      const checkDate = moment(spudToDate.date).valueOf()
+      const fromDate = moment(spudFromDate.date).valueOf()
       if(checkDate === todaysDate ){
-        filter = ["all", [">=",["get", "spudDate"] ,newUnixStampFrom], ["<=",["get", "spudDate"] , newUnixStampTo]];
+        filter = ["all", [">=",["get", "spudDate"] ,fromDate], ["<=",["get", "spudDate"] , checkDate]];
       } else{
-        const fromDate = moment(spudFromDate.date).unix()
-        const toDate =  moment(spudToDate.date).unix()
-        const epochMicrotimeDiff = 621355968000000000;
-        const unixFrom = Math.round(fromDate * 1000 * 10000);
-        const unixTo = Math.round(toDate * 1000 * 10000)
-        const newUnixStampFrom = unixFrom + epochMicrotimeDiff;
-        const newUnixStampTo = unixTo + epochMicrotimeDiff;
-        filter = ["all", [">=", ["get", "spudDate"]  ,newUnixStampFrom], ["<=", ["get", "spudDate"] ,newUnixStampTo]];
+        const fromDate = moment(spudFromDate.date).valueOf()
+        const toDate =  moment(spudToDate.date).valueOf()
+        filter = ["all", [">=", ["get", "spudDate"]  ,fromDate], ["<=", ["get", "spudDate"] ,toDate]];
       }
     } else {
       filter = null;

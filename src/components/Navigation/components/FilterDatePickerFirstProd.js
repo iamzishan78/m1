@@ -68,25 +68,15 @@ export default function FilterDatePickerFirstProd(props) {
   const setFilterName = useCallback(() => {
     let filter;
     if (firstProductionFromDate.date._isValid === true  && firstProductionToDate.date._isValid === true) {
-      const todaysDate = moment().unix()
-      const checkDate = moment(firstProductionToDate.date).unix()
-      const fromDate = moment(firstProductionFromDate.date).unix()
-      const epochMicrotimeDiff = 621355968000000000;
-      const unixDateFrom = Math.round(fromDate * 1000 * 10000);
-      const unixDateCheck = Math.round(checkDate * 1000 * 10000);
-      const newUnixStampFrom = unixDateFrom + epochMicrotimeDiff;
-      const newUnixStampTo = unixDateCheck + epochMicrotimeDiff;
+      const todaysDate = moment().valueOf()
+      const checkDate = moment(firstProductionToDate.date).valueOf()
+      const fromDate = moment(firstProductionFromDate.date).valueOf()
       if(checkDate === todaysDate ){
-        filter = ["all", [">=",["get", "firstProductionDate"] ,newUnixStampFrom], ["<=",["get", "firstProductionDate"] , newUnixStampTo]];
+        filter = ["all", [">=",["get", "firstProductionDate"] ,fromDate], ["<=",["get", "firstProductionDate"] , checkDate]];
       } else{
-        const fromDate = moment(firstProductionFromDate.date).unix()
-        const toDate =  moment(firstProductionToDate.date).unix()
-        const epochMicrotimeDiff = 621355968000000000;
-        const unixFrom = Math.round(fromDate * 1000 * 10000);
-        const unixTo = Math.round(toDate * 1000 * 10000)
-        const newUnixStampFrom = unixFrom + epochMicrotimeDiff;
-        const newUnixStampTo = unixTo + epochMicrotimeDiff;
-        filter = ["all", [">=", ["get", "firstProductionDate"]  ,newUnixStampFrom], ["<=", ["get", "firstProductionDate"] ,newUnixStampTo]];
+        const fromDate = moment(firstProductionFromDate.date).valueOf()
+        const toDate =  moment(firstProductionToDate.date).valueOf()
+        filter = ["all", [">=", ["get", "firstProductionDate"]  ,fromDate], ["<=", ["get", "firstProductionDate"] ,toDate]];
       }
     } else {
       filter = null;

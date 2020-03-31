@@ -62,32 +62,22 @@ export default function FilterDatePickerCompletetion(props) {
       completetionFromDate.date._isValid === true &&
       completetionToDate.date._isValid === true
     ) {
-      const todaysDate = moment().unix();
-      const checkDate = moment(completetionToDate.date).unix();
-      const fromDate = moment(completetionFromDate.date).unix();
-      const epochMicrotimeDiff = 621355968000000000;
-      const unixDateFrom = Math.round(fromDate * 1000 * 10000);
-      const unixDateCheck = Math.round(checkDate * 1000 * 10000);
-      const newUnixStampFrom = unixDateFrom + epochMicrotimeDiff;
-      const newUnixStampTo = unixDateCheck + epochMicrotimeDiff;
+      const todaysDate = moment().valueOf();
+      const checkDate = moment(completetionToDate.date).valueOf();
+      const fromDate = moment(completetionFromDate.date).valueOf();
       if (checkDate === todaysDate) {
         filter = [
           "all",
-          [">=", ["get", "completionDate"], newUnixStampFrom],
-          ["<=", ["get", "completionDate"], newUnixStampTo]
+          [">=", ["get", "completionDate"], fromDate],
+          ["<=", ["get", "completionDate"], checkDate]
         ];
       } else {
-        const fromDate = moment(completetionFromDate.date).unix();
-        const toDate = moment(completetionToDate.date).unix();
-        const epochMicrotimeDiff = 621355968000000000;
-        const unixFrom = Math.round(fromDate * 1000 * 10000);
-        const unixTo = Math.round(toDate * 1000 * 10000);
-        const newUnixStampFrom = unixFrom + epochMicrotimeDiff;
-        const newUnixStampTo = unixTo + epochMicrotimeDiff;
+        const fromDate = moment(completetionFromDate.date).valueOf();
+        const toDate = moment(completetionToDate.date).valueOf();
         filter = [
           "all",
-          [">=", ["get", "completionDate"], newUnixStampFrom],
-          ["<=", ["get", "completionDate"], newUnixStampTo]
+          [">=", ["get", "completionDate"], fromDate],
+          ["<=", ["get", "completionDate"], toDate]
         ];
       }
     } else {
