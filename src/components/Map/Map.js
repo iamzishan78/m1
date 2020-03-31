@@ -27,6 +27,8 @@ import {
 } from "mapbox-gl-draw-circle";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import { getConstantValue } from "typescript";
+import mapStyles from "./components/Utils/MapStyles";
+
 
 const useStyles = makeStyles(theme => ({
   mapWrapper: {
@@ -652,6 +654,38 @@ export default function Map() {
     handleOpenExpandableCard();
   };
 
+/* 
+  {mapStyles[0].map(style => (
+    <StyledMenuItem
+      key={style.id}
+      onClick={() => {
+        setStateMap(state => ({ ...state, selectedLayerId: "mapbox://styles/m1neral/"+style.id }));
+        handleClose();
+      }}
+     */  
+
+
+ 
+  const SET_INITIAL_MAP_STYLE = 'Satellite';
+
+  function getIndex(value, arr, prop) {
+      for(var i = 0; i < arr.length; i++) {
+          if(arr[i][prop] === value) {
+              return i;
+          }
+      }
+      return -1; //to handle the case where the value doesn't exist
+  }
+    
+  var index = getIndex(SET_INITIAL_MAP_STYLE, mapStyles[0], 'name');
+
+  console.log("+++++++++++++")
+  console.log(index)
+  console.log(mapStyles[0][index])
+  console.log("---------")
+
+
+
   useEffect(() => {
     const initializeMap = ({ setMap, mapEl, setStateMap }) => {
       console.log("initialize");
@@ -659,9 +693,11 @@ export default function Map() {
 
       const newMap = new mapboxgl.Map({
         container: `${id}`,
-        style: "mapbox://styles/m1neral/ck6pe50n80bfs1imr05f0hr82",
+        style: "mapbox://styles/m1neral/" + mapStyles[0][index].id,
         center: [-99.90181, 31.968599],
-        zoom: 6
+        zoom: 6,
+        pitch: 0,
+        bearing: 0,
       });
 
       let zoomControl = new mapboxgl.NavigationControl();
