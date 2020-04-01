@@ -1,7 +1,7 @@
 import React, { useContext, useEffect,useState } from "react";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { AppProvider, AppContext } from "./AppContext";
-import { BrowserRouter as Router, Switch, Route, useHistory } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 
 //components
 import Login from "./components/Login/Login";
@@ -16,8 +16,6 @@ import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider
 import ContactsProvider from "./components/Contacts/ContactsProvider";
 import ContactInfo from "./components/ContactInfo/ContactInfo";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
-import NotFound from "./NotFound";
-import { Redirect } from "react-router";
 import ExpiredStorage from 'expired-storage';
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 // pick a date util library
@@ -130,10 +128,7 @@ const PrivateRoute = ({ component, ...options }) => {
   return <Route {...options} component={finalComponent} />;
 };
 
-// const PublicRoute = ({component, ...options}) => {
-//   const [stateApp,setStateApp] = useContext(AppContext)
-//   const 
-// }
+const NotFoundRedirect = () => <Redirect to='/' />
 
 function App() {
  const [apolloClient,setApolloClient] = useState(null)
@@ -192,7 +187,7 @@ const updateApolloClient = (endpoint,token) => {
                   <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider}/>
                   <PrivateRoute exact path="/contacts" component={ContactsProvider}/>
                   <PrivateRoute exact path="/contact" component={ContactInfo}/>
-                  <Route path="*" component={NotFound}/>
+                  <Route component={NotFoundRedirect}/>
                 </NavigationProvider>
               </Switch>
             </Router>

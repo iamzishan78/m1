@@ -208,7 +208,10 @@ const useStyles = makeStyles(theme => ({
     }
   },
   tab: {
-    minWidth: "62px"
+    minWidth: "62px",
+    "& span": {
+      color: "#FFFF",
+    },
   },
   tabPanelWrapper: {
     padding: "0px",
@@ -505,6 +508,9 @@ export default function Navigation(props) {
   const [loadingApply, setLoadingApply] = useState(false);
   const [applySuccess, setApplySuccess] = useState(false);
   const [disableApply, setDisableApply] = useState(true);
+  const [displayBeta, setDisplayBeta] = useState({
+    one: false , two: false , three: false
+  })
   let history = useHistory();
   let location = useLocation();
 
@@ -660,6 +666,30 @@ export default function Navigation(props) {
   const sendHome = () => {
     history.push("/");
   }
+
+  const hoverDisplayBeta = (e) => {
+    if(e.target.id === "disableOne"){
+      setDisplayBeta(displayBeta => ({...displayBeta, one: true}));
+    }
+    if(e.target.id === "disableTwo"){
+      setDisplayBeta(displayBeta => ({...displayBeta, two: true}));
+    }
+    if(e.target.id === "disableThree"){
+      setDisplayBeta(displayBeta => ({...displayBeta, three: true}));
+    }
+  };
+
+  const hoverDisplayBetaLeave = (e) => {
+    if(e.target.id === "disableOne"){
+      setDisplayBeta(displayBeta => ({...displayBeta, one: false}));
+    }
+    if(e.target.id === "disableTwo"){
+      setDisplayBeta(displayBeta => ({...displayBeta, two: false}));
+    }
+    if(e.target.id === "disableThree"){
+      setDisplayBeta(displayBeta => ({...displayBeta, three: false}));
+    }
+  };
 
   /* const handleFilterCardApply = () => {
     setDisableApply(false)
@@ -827,24 +857,30 @@ export default function Navigation(props) {
                   aria-label="production"
                 />
                 <Tab
-                  disabled
+                  onMouseEnter={e => hoverDisplayBeta(e)}
+                  onMouseLeave={e => hoverDisplayBetaLeave(e)}
+                  id="disableOne"
                   value={4}
                   classes={{ root: classes.tab }}
-                  icon={<ValuationIcon color="#fff" opacity="0.5" />}
-                  aria-label="valuation"
+                  icon={!displayBeta.one ?  <ValuationIcon color="#fff" opacity="0.5" /> : "Beta"}
+                  aria-label="valuation" 
                 />
                 <Tab
-                  disabled
+                  onMouseEnter={e => hoverDisplayBeta(e)}
+                  onMouseLeave={e => hoverDisplayBetaLeave(e)}
+                  id="disableTwo"
                   value={5}
                   classes={{ root: classes.tab }}
-                  icon={<PredictiveIcon color="#fff" opacity="0.5" />}
+                  icon={!displayBeta.two ? <PredictiveIcon color="#fff" opacity="0.5" /> : "Beta"}
                   aria-label="predictive"
                 />
                 <Tab
-                  disabled
+                  onMouseEnter={e => hoverDisplayBeta(e)}
+                  onMouseLeave={e => hoverDisplayBetaLeave(e)}
+                  id="disableThree"
                   value={6}
                   classes={{ root: classes.tab }}
-                  icon={<LocalOfferIcon htmlColor="#fff" opacity="0.5" />}
+                  icon={!displayBeta.three ? <LocalOfferIcon htmlColor="#fff" opacity="0.5" /> : "Beta"}
                   aria-label="tags"
                 />
               </Tabs>

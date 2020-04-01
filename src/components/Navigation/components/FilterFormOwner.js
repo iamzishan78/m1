@@ -193,7 +193,7 @@ export default function FilterFormOwner() {
     let interestIds = [];
     interestNames.forEach(interestName => {
       interestObjects.forEach(interestObj => {
-        if (interestObj.name == interestName) {
+        if (interestObj.name === interestName) {
           interestIds.push(interestObj.text);
         }
       });
