@@ -390,6 +390,11 @@ const useStyles = makeStyles(theme => ({
     marginTop: -12,
     marginLeft: -12
   }, 
+  beta: {
+    paddingTop:12, 
+    minWidth: 62, 
+    textAlign: "center"
+  },
   
   goHome: {
     "&:hover": {
@@ -668,6 +673,7 @@ export default function Navigation(props) {
   }
 
   const hoverDisplayBeta = (e) => {
+    // console.table(displayBeta)
     if(e.target.id === "disableOne"){
       setDisplayBeta(displayBeta => ({...displayBeta, one: true}));
     }
@@ -809,7 +815,7 @@ export default function Navigation(props) {
                       badgeContent={stateNav.geographyFilterCount}
                       color="secondary"
                     >
-                      <GeographicIcon color="#fff" opacity="1.0" />}
+                      <GeographicIcon color="#fff" opacity="1.0" />
                     </Badge>
                   }
                   aria-label="geography"
@@ -856,33 +862,39 @@ export default function Navigation(props) {
                   }
                   aria-label="production"
                 />
+                <div id="disableOne"  onMouseOver={e => hoverDisplayBeta(e)} onMouseOut={e => hoverDisplayBetaLeave(e)}>
+                {!displayBeta.one ?
                 <Tab
-                  onMouseEnter={e => hoverDisplayBeta(e)}
-                  onMouseLeave={e => hoverDisplayBetaLeave(e)}
-                  id="disableOne"
+                  disabled={true}
                   value={4}
                   classes={{ root: classes.tab }}
-                  icon={!displayBeta.one ?  <ValuationIcon color="#fff" opacity="0.5" /> : "Beta"}
+                  icon={<ValuationIcon color="#fff" opacity="0.5" />}
                   aria-label="valuation" 
                 />
+                : <div className={classes.beta}>BETA</div>}
+                </div>
+                <div id="disableTwo"  onMouseOver={e => hoverDisplayBeta(e)} onMouseOut={e => hoverDisplayBetaLeave(e)}>
+                {!displayBeta.two ?
                 <Tab
-                  onMouseEnter={e => hoverDisplayBeta(e)}
-                  onMouseLeave={e => hoverDisplayBetaLeave(e)}
-                  id="disableTwo"
+                  disabled={true}
                   value={5}
                   classes={{ root: classes.tab }}
-                  icon={!displayBeta.two ? <PredictiveIcon color="#fff" opacity="0.5" /> : "Beta"}
+                  icon={<PredictiveIcon color="#fff" opacity="0.5" />}
                   aria-label="predictive"
                 />
+                : <div className={classes.beta}>BETA</div>}
+                </div>
+                <div id="disableThree"  onMouseOver={e => hoverDisplayBeta(e)} onMouseOut={e => hoverDisplayBetaLeave(e)}>
+                {!displayBeta.three ?
                 <Tab
-                  onMouseEnter={e => hoverDisplayBeta(e)}
-                  onMouseLeave={e => hoverDisplayBetaLeave(e)}
-                  id="disableThree"
+                  disabled={true}
                   value={6}
                   classes={{ root: classes.tab }}
-                  icon={!displayBeta.three ? <LocalOfferIcon htmlColor="#fff" opacity="0.5" /> : "Beta"}
+                  icon={ <LocalOfferIcon htmlColor="#fff" opacity="0.5" />}
                   aria-label="tags"
                 />
+                : <div className={classes.beta}>BETA</div>}
+                </div>
               </Tabs>
             </div>
 

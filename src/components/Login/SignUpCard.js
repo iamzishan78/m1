@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 // STYLES
 import { makeStyles } from "@material-ui/core";
 import { useStyles } from "./styles";
-import { Card, CardMedia, Button, Typography } from "@material-ui/core";
+import { Card, Button, Typography } from "@material-ui/core";
 
 // COMPONENTS
 import NewUserCard from "./NewUserCard";
