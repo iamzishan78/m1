@@ -112,12 +112,11 @@ export default function FirstMonthWater(props) {
 
   useEffect(() => {
     if (stateNav.prodOptions) {
-      // setFilter();
+      setFilter();
     }
   }, [setFilter, stateNav.prodOptions]);
 
   const handleChangeMin = event => {
-    
     setValueMinDisplay(event.target.valueAsNumber || event.target.value);
     setProdTypeName(event.target.id);
     setStateNav(stateNav => ({ ...stateNav, prodTypeName: event.target.id }));
@@ -153,6 +152,13 @@ export default function FirstMonthWater(props) {
     } 
   },[valueMaxDisplay, valueMinDisplay])
 
+  // const allowNumbersOnly = (e)  => {
+  //   let code = (e.which) ? e.which : e.keyCode;
+  //   if (code > 31 && (code < 48 || code > 57)) {
+  //       e.preventDefault();
+  //   }
+  // }
+
   return (
     <div>
       <Typography
@@ -177,6 +183,7 @@ export default function FirstMonthWater(props) {
         type="number"
         label="Min"
         variant="outlined"
+        // onKeyPress={e => allowNumbersOnly(e) }
       />
       <TextField
         id={id}
@@ -194,6 +201,7 @@ export default function FirstMonthWater(props) {
         type="number"
         label="Max"
         variant="outlined"
+        // onKeyPress={e => allowNumbersOnly(e) }
         error={error}
         helperText={errorText}
       />

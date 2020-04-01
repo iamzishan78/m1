@@ -92,7 +92,7 @@ const Login = props => {
       expiredStorage.clear();
       history.push("/");
     }
-  }, [setStateApp]);
+  }, [history, setStateApp]);
  
   useEffect(() => {
     if (data) {

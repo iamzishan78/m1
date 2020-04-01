@@ -122,7 +122,7 @@ const PrivateRoute = ({ component, ...options }) => {
   const [stateApp,setStateApp] = useContext(AppContext)
   const expiredStorage = new ExpiredStorage()
   let isExpired = expiredStorage.isExpired("user");
-  //console.log('isExpired',isExpired)
+  
   const finalComponent = stateApp.user && !isExpired ? component : Login;
 
   return <Route {...options} component={finalComponent} />;
