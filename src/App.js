@@ -16,6 +16,7 @@ import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider
 import ContactsProvider from "./components/Contacts/ContactsProvider";
 import ContactInfo from "./components/ContactInfo/ContactInfo";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
+import NotFound from "./NotFound";
 import { Redirect } from "react-router";
 import ExpiredStorage from 'expired-storage';
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
@@ -191,6 +192,7 @@ const updateApolloClient = (endpoint,token) => {
                   <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider}/>
                   <PrivateRoute exact path="/contacts" component={ContactsProvider}/>
                   <PrivateRoute exact path="/contact" component={ContactInfo}/>
+                  <Route path="*" component={NotFound}/>
                 </NavigationProvider>
               </Switch>
             </Router>

@@ -5,7 +5,7 @@ import { NavigationContext } from '../NavigationContext';
 
 
 
-const statusList = ["Active", "P&A", "Permit", "Shutin", "Unknown"];
+const statusList = ["ACTIVE", "P&A", "PERMIT", "SHUTIN", "UNKNOWN"];
 
 
 

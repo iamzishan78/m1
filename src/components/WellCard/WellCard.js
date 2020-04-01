@@ -339,7 +339,7 @@ const convertDate = unixStamp => {
               variant="caption"
             >
               {stateApp.selectedWell.wellStatus
-                ? stateApp.selectedWell.wellStatus.toUpperCase()
+                ? stateApp.selectedWell.wellStatus
                 : '--'}
             </Typography>
           </div>
@@ -406,8 +406,8 @@ const convertDate = unixStamp => {
               className={classes.text2}
               variant="caption"
             >
-              {stateApp.selectedWell.wellBoreProfile.toUpperCase()
-                ? stateApp.selectedWell.wellBoreProfile.toUpperCase()
+              {stateApp.selectedWell.wellBoreProfile
+                ? stateApp.selectedWell.wellBoreProfile
                 : '--'}
             </Typography>
           </div>
@@ -524,7 +524,7 @@ else {
               variant="caption"
             >
               {stateApp.selectedWell.wellStatus
-                ? stateApp.selectedWell.wellStatus.toUpperCase()
+                ? stateApp.selectedWell.wellStatus
                 : '--'}
             </Typography>
           </div>

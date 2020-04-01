@@ -5,7 +5,7 @@ import { NavigationContext } from '../NavigationContext';
 
 
 
-const profileList = ["Directional", "Horizontal", "SideTracked", "Vertical"];
+const profileList = ["DIRECTIONAL", "HORIZONTAL", "SIDETRACKED", "VERTICAL"];
 
 
 

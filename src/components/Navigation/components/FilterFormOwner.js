@@ -98,14 +98,14 @@ const interestObjects = [
 ];
 
 const ownerTypesList = [
-  "Religious Institutions",
-  "Governmental Bodies",
-  "Non Profits",
-  "Trusts",
-  "Corporations",
-  "Educational Institutions",
-  "Individuals",
-  "Unknown"
+  "RELIGIOUS INSTITUTIONS",
+  "GOVERNMENTAL BODIES",
+  "NON PROFITS",
+  "TRUSTS",
+  "CORPORATIONS",
+  "EDUCATIONAL INSTITUTIONS",
+  "INDIVIDUALS",
+  "UNKNOWN"
 ];
 
 const ownerTypesObjects = [

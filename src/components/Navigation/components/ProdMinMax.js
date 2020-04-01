@@ -112,11 +112,12 @@ export default function FirstMonthWater(props) {
 
   useEffect(() => {
     if (stateNav.prodOptions) {
-      setFilter();
+      // setFilter();
     }
   }, [setFilter, stateNav.prodOptions]);
 
   const handleChangeMin = event => {
+    
     setValueMinDisplay(event.target.valueAsNumber || event.target.value);
     setProdTypeName(event.target.id);
     setStateNav(stateNav => ({ ...stateNav, prodTypeName: event.target.id }));
@@ -168,7 +169,7 @@ export default function FirstMonthWater(props) {
           inputProps: {
             min: Number.MIN_SAFE_INTEGER,
             max: Number.MAX_SAFE_INTEGER - 1,
-            step: 1000
+            step: 1000,
           }
         }}
         onChange={handleChangeMin}
@@ -185,7 +186,7 @@ export default function FirstMonthWater(props) {
           inputProps: {
             min: Number.MIN_SAFE_INTEGER + 1,
             max: Number.MAX_SAFE_INTEGER,
-            step: 1000
+            step: 1000,
           }
         }}
         onChange={handleChangeMax}

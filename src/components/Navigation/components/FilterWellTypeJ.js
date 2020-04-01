@@ -4,13 +4,13 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { NavigationContext } from '../NavigationContext';
 
 const wellTypesList = [
-  "Gas",
-  "Injection",
-  "Oil",
-  "Oil and Gas",
+  "GAS",
+  "INJECTION",
+  "OIL",
+  "OIL AND GAS",
   "P&A",
-  "Unknown",
-  "Water",
+  "UNKNOWN",
+  "WATER",
 ];
 
 
