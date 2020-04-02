@@ -121,16 +121,12 @@ export default function Tags(props) {
   useEffect(() => {
     if (dataUserAvailableTags && dataUserAvailableTags.userAvailableTags) {
       let defaultTags = [
-        "Capital Appreciation",
-        "Eagle Ford",
-        "Divorce",
-        "Recent Death",
         "High Cash Flow",
-        "Interested",
-        "Lease Change",
-        "Motivated Seller",
-        "Permian",
-        "Recent Permit"
+        "Interested Seller",
+        "Out of State Seller",
+        "Recent Death",
+        "Recent Divorce",
+        "Recently Inherited"
       ];
 
       defaultTags = defaultTags.filter(defaultTag => {
