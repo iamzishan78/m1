@@ -942,26 +942,11 @@ export default function SubTable(props) {
           fullWidth={expandedComment ? true : false}
         >
           {expandedComment && (
-            <Comments
-              focus
-              targetLabel={props.targetLabel}
-              targetSourceId={expandedComment.targetSourceId}
-              targetName={expandedComment.targetName}
-            />
+            <Comments focus targetSourceId={expandedComment.targetSourceId} />
           )}
           {expandedTag && (
             <div className={classes.tagsDiv}>
-              <Tags
-                public={false}
-                source={stateApp.user}
-                sourceLabel="user"
-                sourceSourceId={stateApp.user.id}
-                sourceName={stateApp.user.name}
-                target={expandedTag.row}
-                targetLabel={props.targetLabel}
-                targetSourceId={expandedTag.targetSourceId}
-                targetName={expandedTag.targetName}
-              />
+              <Tags targetSourceId={expandedTag.targetSourceId} />
             </div>
           )}
         </Dialog>

@@ -111,11 +111,9 @@ export default function Comments(props) {
   const [stateApp] = useContext(AppContext);
   const [commentsArray, setCommentsArray] = useState([]);
   const [textValue, setTextValue] = useState("");
-  const [loadingComments, setLoadingComments] = useState(false);
+  const [loadingComments, setLoadingComments] = useState(true);
   const [emptyInput, setEmptyInput] = useState(false);
   const [publicComment, setPublicComment] = useState(true);
-
-  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL); //////////////temporary while signed user fixed
 
   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
     COMMENTSBYOBJECTIDQUERY
@@ -125,6 +123,7 @@ export default function Comments(props) {
 
   //////begin////////temporary  while signed user fixed
 
+  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [user, setUser] = useState({ _id: "" });
 
   useEffect(() => {
@@ -141,7 +140,6 @@ export default function Comments(props) {
     if (dataUser && dataUser.userByEmail) {
       setUser(dataUser.userByEmail);
     }
-    setLoadingComments(false);
   }, [dataUser]);
 
   /////end/////////temporary while signed user fixed
@@ -164,7 +162,7 @@ export default function Comments(props) {
     setLoadingComments(false);
   }, [dataComments]);
 
-  ///////////////////// INSERTING NEW COMMENTS ///////////////////////////////////////////////
+  ///////////////////// INSERTING NEW COMMENT ///////////////////////////////////////////////
 
   const handleEnteringComment = event => {
     if (
@@ -324,7 +322,7 @@ export default function Comments(props) {
                 <span>Shift+Return</span> to add a new line
               </p>
               <p className={classes.foodText}>
-                <span>Return</span> to send
+                <span>Return</span> to save
               </p>
             </Grid>
           ) : (

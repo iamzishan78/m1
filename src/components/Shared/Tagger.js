@@ -1,497 +1,358 @@
 /* eslint-disable no-use-before-define */
-import React, { useContext,useState, useEffect } from 'react';
-import { useMutation,useLazyQuery } from "@apollo/react-hooks";
-import { AppContext } from '../../AppContext'
-import { EDGEQUERY } from '../../graphQL/useMutationCreateEdge';
-import { DROPEDGEQUERY } from '../../graphQL/useMutationDropEdge';
-import { VERTEXEDGESQUERY } from '../../graphQL/useQueryVertexEdges';
-import { TAGSQUERY } from '../../graphQL/useQueryTags';
-import { USERTAGSQUERY } from '../../graphQL/useQueryUserTags';
-import { USERPARENTTAGSQUERY } from '../../graphQL/useQueryUserParentTags';
-import { UPSERTTAG } from '../../graphQL/useMutationUpsertTag';
-import { CircularProgress } from '@material-ui/core';
-import Chip from '@material-ui/core/Chip';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-//import { graphql } from 'graphql';
+import React, { useContext, useState, useEffect } from "react";
+import { useMutation, useLazyQuery } from "@apollo/react-hooks";
+import { AppContext } from "../../AppContext";
+import { CircularProgress } from "@material-ui/core";
+import Chip from "@material-ui/core/Chip";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import { USERAVAILABLETAGSQUERY } from "../../graphQL/useQueryUserAvailableTags";
+import { TAGSBYOBJECTIDQUERY } from "../../graphQL/useQueryTagsByObjectId";
+import { UPSERTTAG } from "../../graphQL/useMutationUpsertTag";
+import { REMOVETAG } from "../../graphQL/useMutationRemoveTag";
+import Grid from "@material-ui/core/Grid";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
+import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
 const useStyles = makeStyles(theme => ({
-  root: {
+  rootDiv: {
     width: 500,
-     '& > * + *': {
-      marginTop: theme.spacing(5),
+    "& > * + *": {
+      marginTop: theme.spacing(5)
+    },
+    "& .MuiAutocomplete-clearIndicator": {
+      display: "none"
     }
   },
+  switchButtom: {
+    alignSelf: "flex-end",
+    marginRight: 0,
+    "& span.MuiTypography-body1": {
+      fontSize: "0.9rem"
+    }
+  },
+  switchTextDeselected: {
+    color: "rgb(141, 141, 141)"
+  },
+  publicLeftBottom: {
+    flexDirection: "row",
+    alignSelf: "unset",
+    margin: 0
+  }
 }));
 
 export default function Tags(props) {
-  const [stateApp,setStateApp] = useContext(AppContext)
-  const [createGraphEdge, { data,loading,error, }] = useMutation(EDGEQUERY);
-  const [dropGraphEdge, { data:dataDrop,loading:loadingDrop,errorDrop }] = useMutation(DROPEDGEQUERY);
-  const [upsertTag, { data:dataUpsertTag,loading:loadingUpsertTag,errorUpsertTag }] = useMutation(UPSERTTAG);
-  const [getVertexEdges, { loading:loadingGraph, data:dataGraph }] = useLazyQuery(VERTEXEDGESQUERY);
-  const [getTags, { loading:loadingTags, data:dataTags }] = useLazyQuery(TAGSQUERY);
-  const [getMyTags, { loading:loadingMyTags, data:dataMyTags }] = useLazyQuery(TAGSQUERY);
-  const [getParentTags, { loading:loadingParentTags, data:dataParentTags }] = useLazyQuery(TAGSQUERY);
-  const [getUserTags, { loading:loadingUserTags, data:dataUserTags }] = useLazyQuery(USERTAGSQUERY);
-  const [getUserParentTags, { loading:loadingUserParentTags, data:dataUserParentTags }] = useLazyQuery(USERPARENTTAGSQUERY);
- // const [getUserParentTags, { loading:loadingUserParentTags,data:dataUserParentTags }] = useLazyQuery(USERPARENTTAGSQUERY);
-  const [source,setSource] = useState(props.source)
-  const [target,setTarget] = useState(props.target)
-  const [sourceVertex,setSourceVertex] = useState(null)
-  const [targetVertex,setTargetVertex] = useState(null)
-  const [tagVertex,setTagVertex] = useState(null)
-  const [targetSourceId,setTargetSourceId] = useState(props.targetSourceId)
-  const [targetName,setTargetName] = useState(props.targetName)
-  const [targetLabel,setTargetLabel] = useState(props.targetLabel)
-  const [sourceName,setSourceName] = useState(props.sourceName)
-  const [sourceSourceId,setSourceSourceId] = useState(props.sourceSourceId)
-  const [sourceLabel,setSourceLabel] = useState(props.sourceLabel)
-  const [publicTags,setPublicTags] = useState(null) 
-  const [myTags,setMyTags] = useState(null) 
-  const [dropTag,setDropTag] = useState(null)
-  const [addTag,setAddTag] = useState(null)
-
-  const [userParentTags,setUserParentTags] = useState(null)
-  
-  //const [userParentTags,setPublicTags] = useState(props.public)
-  const [selected,setSelected] = useState()
-  const [label,setLabel] = useState(null)
+  const [stateApp] = useContext(AppContext);
   const classes = useStyles();
 
-  /* Steps:
-  Populate autocomplete with this user's tags
-    get user-tag ids from graph
-    get tags from cosmos using the id array
-    set tags result to autocomplete options
-  Populate existing well tags for this user
-    Get tags for current well that are also linked to user
-    set default value in autocomplete to this tag array
-  Update tags
-    onChange compare previous tags to current ones
-    call dropEdge for the ones that were removed. (tag-well only.don't delete tag or its link to the user)
-    call upsertTag to add new tags to cosmos
-    call createEdge for new user-tag link (using tag id from upsert)
-    call createEdge for the new tag-well link
-    do nothing for ones in both
-  */
+  const [tagsArray, setTagsArray] = useState([]);
+  const [userAvailableTagsArray, setUserAvailableTagsArray] = useState([]);
+  const [textValue, setTextValue] = useState("");
+  const [loadingTags, setLoadingTags] = useState(true);
+  const [addInDropDown, setAddInDropDown] = useState(false);
+  const [publicTag, setPublicTag] = useState(true);
 
- useEffect( () => {
-  //get public tags for autocomplete list
-  refreshTags()
-  
-},[])
+  const [getTagsByObjectId, { data: dataTags }] = useLazyQuery(
+    TAGSBYOBJECTIDQUERY
+  );
+  const [getUserAvailableTags, { data: dataUserAvailableTags }] = useLazyQuery(
+    USERAVAILABLETAGSQUERY
+  );
+  const [upsertTag] = useMutation(UPSERTTAG);
+  const [removeTag] = useMutation(REMOVETAG);
 
-const refreshTags = () => {
-console.log('refresh')
-   getTags({ variables: { 
-    public:true
-   }});
+  //////begin////////temporary  while signed user fixed
 
-   getUserTags({ variables: { 
-    userId:stateApp.user.id
-   }});
+  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
+  const [user, setUser] = useState({ _id: "" });
 
-   getUserParentTags({ variables: { 
-    sourceSourceId:stateApp.user.id,
-    targetSourceId:targetSourceId
-   }});
-
-}
-
-/* useEffect( () => {
-  //get public tags for autocomplete list
-  getUserParentTags({ variables: { 
-    source: sourceVertex,
-    tag: tagVertex,
-    target: targetVertex
-   }});
-  
-},[]) */
-
-useEffect( () => {
-  //after public tags results setPublicTags 
-  if(dataTags){
-    //console.log('setprev',dataTags)
-  setPublicTags(dataTags.tags)
-  }
-
-},[dataTags])
-
-useEffect( () => {
-  //after public tags results setPublicTags 
-  if(dataUserTags){
-   // console.log('user tags array',dataUserTags)
-    getMyTags({ variables: { 
-      tagIdArray:dataUserTags.userTags
-     }});
-  }
-
-},[dataUserTags])
-
-useEffect( () => {
-  //after public tags results setPublicTags 
-  if(dataUserParentTags){
-   // console.log('user parent tags array',dataUserParentTags)
-    getParentTags({ variables: { 
-      tagIdArray:dataUserParentTags.userParentTags
-     }});
-  }
-
-},[dataUserParentTags])
-
-useEffect( () => {
-  //after public tags results setPublicTags 
-  if(dataMyTags && publicTags){
-    //console.log('my',dataMyTags)
-    setMyTags(dataMyTags.tags) 
-    //add my tags to top of public tags 
-    let allTags = [];
-    publicTags.forEach( (tag) => {
-      allTags.push(tag)
-    })
-    dataMyTags.tags.forEach( (tag) => {
-      allTags.unshift(tag)
-    })
-    
-   // console.log(allTags)
-    setPublicTags(allTags)
-  }
-},[dataMyTags])
-
-useEffect( () => {
- // console.log('dpt',dataParentTags)
-  //after public tags results setPublicTags 
-  if(dataParentTags){
-    //console.log('parent tags',dataParentTags)
-    let parentTags = [];
-    if( dataParentTags.tags && dataParentTags.tags.length > 0) {
-      dataParentTags.tags.forEach( (tag) => {
-        parentTags.push(tag.tag)
-      })
-     // console.log('selected tags',parentTags)
-      //if(!userParentTags){
-       
-        setUserParentTags(parentTags)
-       // console.log('user parent tags',userParentTags)
-      //}
-      
-
-     
-    }
-   
-  }
-  
-
-},[dataParentTags])
-
-
-useEffect( () => {
-  //after new tag is upserted create edges
-    if(dataUpsertTag){
-      //console.log('new tag',dataUpsertTag)
-  
-      setTagVertex({
-        sourceId: dataUpsertTag.upsertTag.tag.id,
-        label: 'tag',
-        name: dataUpsertTag.upsertTag.tag.tag,
-        type:'vertex',
-        properties:[]
-      })
-    }
-  
-  },[dataUpsertTag])
-
-useEffect( () => {
-//after new tag is upserted create edges
-if(!dropTag){
-  if(tagVertex && sourceVertex && targetVertex){
-    
-   // console.log('new tag vertex',tagVertex)
-   // console.log('target vertex',targetVertex)
-
-    //create edge between user and tag
-      
-      createEdgeAsyncAwait(sourceVertex,tagVertex,targetVertex)
-
-          //create edge between tag and parent
-          
-      
- 
-  
-}
-}
-else {
- // console.log('dropVertex',tagVertex,targetVertex)
-  //keep edge between user and tag and don't delete tag
-        //remove edge between tag and parent/well
-        dropGraphEdge({ 
-          variables: { source:tagVertex,target:targetVertex,relationshipLabel: 'tags' },
-          refetchQueries: ["getUserTags","getParentTags","getUserParentTags"],
-          awaitRefetchQueries: true
-         });  
-}
-
-},[tagVertex,sourceVertex,targetVertex])
-
-const createEdgeAsyncAwait = async (sourceVertex,tagVertex,targetVertex) => {
-
-  await createGraphEdge({
-    variables: {
-      source: sourceVertex,
-      target: tagVertex,
-      relationshipLabel: "created"
-    },
-    refetchQueries: ["getUserTags","getParentTags","getUserParentTags"],
-    awaitRefetchQueries: true
-  });
-
-  await createGraphEdge({
-    variables: {
-      source: tagVertex,
-      target: targetVertex,
-      relationshipLabel: "tags"
-    },
-    refetchQueries: ["getUserTags","getParentTags","getUserParentTags"],
-    awaitRefetchQueries: true
-  });
-
-
-}
-
-
-useEffect( () => {
-  
-  if(data) {
-    //console.log('createEdge',data)
-
-  }
-
-  if(error) {
-    console.log('createEdge error',error)
-  }
-  
-  
-},[data,error])
-
-useEffect( () => {
-  
-  if(dataDrop) {
-    //console.log('dropEdge',dataDrop)
-    
-  }
-
-  if(errorDrop) {
-    console.log('dropEdge error',errorDrop)
-  }
-  
-  setDropTag(null)
-  
-},[dataDrop])
-
-
-  useEffect( () => {
-    setSourceVertex({
-      sourceId: sourceSourceId,
-      label: sourceLabel,
-      name: sourceName,
-      type:'vertex',
-      properties:[]
-    })
-  },[props.sourceSourceId,props.sourceLabel,props.sourceName])
-  
-  useEffect( () => {
-    setTargetVertex({
-      sourceId: targetSourceId,
-      label: targetLabel,
-      name: targetName,
-      type:'vertex',
-      properties:[]
-    })
-  },[props.targetSourceId,props.targetLabel,props.targetName])
-
-  useEffect( () => {
-    if(dropTag && targetVertex){
-      //console.log('drop',dropTag)
-      setTagVertex({
-        sourceId: dropTag.id,
-        label: 'tag',
-        name: dropTag.tag,
-        type:'vertex',
-        properties:[]
-      })
-         
-             
-      //setDropTag(null)
-    }
-  },[dropTag,targetVertex])
-
-  useEffect( () => {
-    if(addTag && targetVertex){
-      
-      setTagVertex({
-        sourceId: addTag.id,
-        label: 'tag',
-        name: addTag.tag,
-        type:'vertex',
-        properties:[]
-      })
-        //setting tagVertex fires create edge useeffect   
-        //clear
-        setAddTag(null)
-    }
-  },[addTag,targetVertex])
-
-    useEffect( () => {
-        setPublicTags(props.public)
-        if(props.public){
-            setLabel('Public Tags')
+  useEffect(() => {
+    if (stateApp && stateApp.user && stateApp.user.email) {
+      getUserByEmail({
+        variables: {
+          userEmail: stateApp.user.email
         }
-        else {
-            setLabel('Private Tags')
-        }
-    },[props.public])
+      });
+    }
+  }, [stateApp.user.email]);
 
-    
-    
+  useEffect(() => {
+    if (dataUser && dataUser.userByEmail) {
+      setUser(dataUser.userByEmail);
+    }
+  }, [dataUser]);
 
-  const processSelectedTag = async (tagText) => {
+  /////end/////////temporary while signed user fixed
 
-    let tagToAdd;
-      publicTags.forEach( (item) => {
-        if(item.tag === tagText) {
-          tagToAdd = item
-        }
-      })
-     setAddTag(tagToAdd)
-      // get id of tag from getUserTags data (since MUI doesn't support array of objects in the UI control)
-      //since this tag already exists in cosmos tag collection we don't need to call upsertTag to add it
-      //create edge between user and tag (if public tag selected)
-      //create edge between tag and parent (owner, well, etc.)
-  }
-  const processNewTag = async (tagText) => {
-    let tagToAdd;
-    publicTags.forEach( (item) => {
-      if(item.tag === tagText) {
-        tagToAdd = item
+  ///////////////////// START FETCHING TAGS DATA ////////////////////////////////////////////
+
+  ////All Object Tag For The Input
+  useEffect(() => {
+    setLoadingTags(true);
+    getTagsByObjectId({
+      variables: {
+        objectId: props.targetSourceId
       }
-    })
-    if(!tagToAdd) {
-      tagToAdd = {
-        tag:tagText,
-        public:false
+    });
+  }, [props.targetSourceId]);
+
+  useEffect(() => {
+    if (dataTags && dataTags.tagsByObjectId) {
+      setTagsArray(dataTags.tagsByObjectId);
+    }
+    setLoadingTags(false);
+  }, [dataTags]);
+
+  ////All User Available Tags For The DropDown
+  useEffect(() => {
+    //////stateApp.user._id//////////temporary
+    if (user._id !== "") {
+      getUserAvailableTags({
+        variables: {
+          userId: user._id //////stateApp.user._id//////////temporary
+        }
+      });
+    }
+  }, [user]); ////////////remove dependency//////////temporary
+
+  useEffect(() => {
+    if (dataUserAvailableTags && dataUserAvailableTags.userAvailableTags) {
+      let defaultTags = [
+        "Capital Appreciation",
+        "Eagle Ford",
+        "Divorce",
+        "Recent Death",
+        "High Cash Flow",
+        "Interested",
+        "Lease Change",
+        "Motivated Seller",
+        "Permian",
+        "Recent Permit"
+      ];
+
+      defaultTags = defaultTags.filter(defaultTag => {
+        let found;
+        tagsArray.map(tag => {
+          if (tag.tag === defaultTag) {
+            found = true;
+          }
+        });
+        return (
+          found ||
+          dataUserAvailableTags.userAvailableTags.indexOf(defaultTag) === -1
+        );
+      });
+
+      setUserAvailableTagsArray([
+        ...defaultTags,
+        ...dataUserAvailableTags.userAvailableTags
+      ]);
+    }
+  }, [dataUserAvailableTags]);
+
+  ///////////////////// INSERTING NEW TAG ///////////////////////////////////////////////
+
+  const capitalizeFirstLetter = string => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
+  const UpperAndCleanTagText = tagText => {
+    return tagText
+      .trim()
+      .split(" ")
+      .filter(word => word !== "")
+      .map(word => capitalizeFirstLetter(word))
+      .join(" ");
+  };
+
+  const NewTag = tagText => {
+    tagText = UpperAndCleanTagText(tagText);
+    if (tagText === addInDropDown && addInDropDown) {
+      tagText = UpperAndCleanTagText(textValue);
+    }
+    setTextValue("");
+
+    let found = false;
+    tagsArray.map(tag => {
+      if (tag.tag === tagText) {
+        found = true;
+      }
+    });
+    if (!found) {
+      upsertTag({
+        variables: {
+          tag: {
+            tag: tagText,
+            public: publicTag,
+            user: user._id, //////stateApp.user._id////////temporary while signed user fixed
+            taggedOn: props.targetSourceId
+          }
+        },
+        refetchQueries: ["getTagsByObjectId", "getUserAvailableTags"],
+        awaitRefetchQueries: true
+      });
+    }
+  };
+
+  ///////////////////// DELETING A TAG ///////////////////////////////////////////////
+
+  const DeleteTag = tagId => {
+    removeTag({
+      variables: {
+        tagId: tagId
+      },
+      refetchQueries: ["getTagsByObjectId", "getUserAvailableTags"],
+      awaitRefetchQueries: true
+    });
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  const handleChangeTags = (e, v) => {
+    e.persist();
+
+    if (e.key && e.key === "Enter") {
+      ////A new tag by keyboard
+      NewTag(v[v.length - 1]);
+    } else if (e.target.tagName === "svg" || e.target.tagName === "path") {
+      ////A tag was deleted
+      let TagId;
+      if (e.target.tagName === "svg") {
+        TagId = e.target.parentNode.id;
+      }
+      if (e.target.tagName === "path") {
+        TagId = e.target.parentNode.parentNode.id;
+      }
+      DeleteTag(TagId);
+    } else {
+      if (e.type === "click") {
+        ////A new tag by click on the dropdown
+        NewTag(e.target.innerText);
       }
     }
-    //await upsertTag to cosmos
-    //refresh getUserTags (private tags this user has an edge to) so they can select this tag again
-    upsertTag(
-      { variables: {tag: tagToAdd},
-     // refetchQueries: ["getUserTags"],
-     // awaitRefetchQueries: true
-    })
-    //use id returned from upsert to create edges
-   
-    //await create edge between tag and parent
-    //refresh getTags (public) if this new tag is public
-    
-    //refresh getUserParentTags (user created tag and tag tags porent) to update the value array
+  };
 
-  }
-  const processDeleteTag = async (tagText) => {
+  const cleanDropDownArray = () => {
+    const tags = tagsArray.map(tag => tag.tag);
+    const cleanArray = userAvailableTagsArray.filter(
+      tag => tags.indexOf(tag) === -1
+    );
+    cleanArray.sort();
 
-      //loop through tags to get id that goes with tagText 
-      let tagToDrop;
-      publicTags.forEach( (item) => {
-        if(item.tag === tagText) {
-          tagToDrop = item
-        }
-      })
-     // console.log('tag to drop',tagToDrop)
-    setDropTag(tagToDrop)
-    //fires off useEffect to dropVertex 
+    return { cleanArray, tags };
+  };
 
-    //don't delete tag from cosmos 
-    //don't drop edge between user and tag so they can select it again
-    //drop edge between tag and parent since we are removing it from parent but not user
-    //don't refresh getTags (public) because we don't actually delete it
-    //don't refresn getUserTags (private) because we don't actually drop edge
-    //refresh getUserParentTags (user created tag and tag tags porent) to remove it from the value array
+  const AddingAddRowToDropDown = () => {
+    const { cleanArray } = cleanDropDownArray();
 
-  }
-      //getNewTags(newValue)
-
-      //set tag as source for well target
-      //set tag as target for user source
-     /*  setTargetVertex({
-        sourceId:targetSourceId,
-        label: targetLabel,
-        name: targetName,
-        type:'vertex',
-        properties:[]
-      }) */
-      
-  
-  const handleChangeTags = (e,v) => {
-    e.persist()
-   // console.log('v',v,e)
-    setSelected(v) 
-    if(e.key && e.key === 'Enter'){
-    //if(v === 0) {
-      //an existing tag was selected
-     // processSelectedTag(e.target.innerText)
-   // }
-   // else if (v && v.length > 0) {
-      //new tag
-     processNewTag(v[v.length-1])
+    if (addInDropDown) {
+      cleanArray.unshift(addInDropDown);
     }
-    else if(e.target.tagName === 'svg' || e.target.tagName === 'path') {
-      //a tag was deleted v=undefined 
-      let deletedItem;
-      if(e.target.tagName === 'svg') {
-        deletedItem = e.target.parentNode.innerText;
-      }
-      if(e.target.tagName === 'path') {
-        deletedItem = e.target.parentNode.parentNode.innerText;
-      }
-     // console.log(deletedItem)
-     processDeleteTag(deletedItem)
+    return cleanArray;
+  };
+
+  useEffect(() => {
+    const { cleanArray, tags } = cleanDropDownArray();
+    if (
+      cleanArray.indexOf(UpperAndCleanTagText(textValue)) === -1 &&
+      tags.indexOf(UpperAndCleanTagText(textValue)) === -1 &&
+      textValue.trim() !== ""
+    ) {
+      setAddInDropDown(`Add "${UpperAndCleanTagText(textValue)}"`);
+    } else {
+      setAddInDropDown(false);
     }
-    else {
-      processSelectedTag(e.target.innerText)
-    }
-  }
+  }, [textValue]);
+
+  const TogglePublicButton = () => {
+    return (
+      <FormGroup>
+        <FormControlLabel
+          className={`${classes.switchButtom} ${
+            props.publicLeftBottom ? classes.publicLeftBottom : ""
+          } ${!publicTag ? classes.switchTextDeselected : ""}`}
+          control={
+            <Switch
+              size="small"
+              checked={publicTag}
+              onChange={() => {
+                setPublicTag(!publicTag);
+              }}
+            />
+          }
+          label="Public"
+          labelPlacement="start"
+        />
+      </FormGroup>
+    );
+  };
 
   return (
-    <div className={classes.root}>
-     
-     {publicTags ? ( <Autocomplete
-        multiple
-        id="tags-outlined"
-        onChange={(e,newValue) => {
-            handleChangeTags(e,newValue)
-        }}
-        options={publicTags.map(option => option.tag)}
-        value={userParentTags ? userParentTags:[]}
-        freeSolo
-         renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip key={index}
-            variant="outlined" label={option} 
-            {...getTagProps({ index })}
+    <div className={classes.rootDiv}>
+      {!loadingTags ? (
+        <Grid container>
+          {!props.publicLeftBottom && (
+            <Grid item xs={12}>
+              <TogglePublicButton />
+            </Grid>
+          )}
+          <Grid item xs={12}>
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              onChange={(e, newValue) => {
+                handleChangeTags(e, newValue);
+              }}
+              options={AddingAddRowToDropDown().map(option => option)}
+              value={tagsArray}
+              freeSolo
+              renderTags={(value, getTagProps) =>
+                value.map((tag, index) => {
+                  if (
+                    (publicTag && tag.public) ||
+                    (!publicTag &&
+                      !tag.public &&
+                      stateApp.user.email === tag.user.email)
+                  ) {
+                    return (
+                      <Chip
+                        key={index}
+                        id={tag._id}
+                        variant="outlined"
+                        label={tag.tag}
+                        {...getTagProps({ index })}
+                      />
+                    );
+                  }
+                })
+              }
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  label="Tags"
+                  placeholder="New..."
+                  fullWidth
+                  value={textValue}
+                  onChange={e => {
+                    setTextValue(e.target.value);
+                  }}
+                />
+              )}
             />
-          ))
-        } 
-        renderInput={params => (
-          <TextField
-            {...params}
-            variant="outlined"
-            label= {label ? label:'Tags'}
-            placeholder="New..."
-            fullWidth
-          />
-        )}
-      />): loadingTags ? (<CircularProgress color="secondary"></CircularProgress>): (null)}
+          </Grid>
+          {props.publicLeftBottom && (
+            <Grid item xs={12}>
+              <TogglePublicButton />
+            </Grid>
+          )}
+        </Grid>
+      ) : (
+        <CircularProgress color="secondary"></CircularProgress>
+      )}
     </div>
   );
 }
