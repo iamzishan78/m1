@@ -1,4 +1,3 @@
-
 import gql from "graphql-tag";
 
 export const UPSERTTAG = gql`
@@ -7,9 +6,11 @@ export const UPSERTTAG = gql`
       success
       message
       tag {
-        id
+        _id
         tag
+        ts
         public
+        taggedOn
       }
     }
   }

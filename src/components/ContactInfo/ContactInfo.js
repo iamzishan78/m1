@@ -130,17 +130,7 @@ export default function Contacts() {
               </div>
             </div>
             <div className={classes.tags}>
-              <Tags
-                public={false}
-                source={stateApp.user}
-                sourceLabel="user"
-                sourceSourceId={stateApp.user.id}
-                sourceName={stateApp.user.name}
-                target={ContactExample}
-                targetLabel={"contact"}
-                targetSourceId={ContactExample.id}
-                targetName={ContactExample.name}
-              />
+              <Tags targetSourceId={ContactExample.id} publicLeftBottom />
             </div>
           </Grid>
           <Grid
@@ -244,11 +234,7 @@ export default function Contacts() {
             </Grid>
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <Comments
-                  targetLabel="contact"
-                  targetSourceId={ContactExample.id}
-                  targetName={ContactExample.name}
-                />
+                <Comments targetSourceId={ContactExample.id} />
               </Paper>
             </Grid>
           </Grid>

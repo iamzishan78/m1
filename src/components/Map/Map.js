@@ -27,7 +27,7 @@ import {
 } from "mapbox-gl-draw-circle";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import { getConstantValue } from "typescript";
-import mapStyles from "./components/Utils/MapStyles";
+import mapStylesTemp from "./components/Utils/MapStyles";
 
 
 const useStyles = makeStyles(theme => ({
@@ -78,7 +78,7 @@ export default function Map() {
     MapControlsContext
   );
   const [showExpandableCard, setShowExpandableCard] = useState(false);
-
+  const [mapStyles,setMapStyles] = useState([]);
   const [map, setMap] = useState(null);
   const mapEl = useRef(null);
   mapboxgl.accessToken =
@@ -654,52 +654,84 @@ export default function Map() {
     handleOpenExpandableCard();
   };
 
-/* 
-  {mapStyles[0].map(style => (
-    <StyledMenuItem
-      key={style.id}
-      onClick={() => {
-        setStateMap(state => ({ ...state, selectedLayerId: "mapbox://styles/m1neral/"+style.id }));
-        handleClose();
-      }}
-     */  
+
+
+
+          useEffect(() => {
+            
+
+            const req = new Request(
+              "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
+            {
+                method: "GET",
+                mode: "cors",
+                headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+                }
+            }
+            );
+
+            const abortController = new AbortController()
+            const signal = abortController.signal
+
+            fetch(req,{signal: signal})
+              .then(results => results.json())
+              .then(data => {
+                console.log(data.slice(0,4));
+                console.log(mapStyles)
+                setMapStyles(data.slice(0,4));
+                console.log(mapStyles)
+
+              })
+
+            //clean up 
+            return function cleanup(){
+              abortController.abort()
+            }
+
+         }, []);
+    
+
+
+
 
 
  
-  const SET_INITIAL_MAP_STYLE = 'Satellite';
+        const SET_INITIAL_MAP_STYLE = 'Satellite';
+        // console.log("==========")
+        // console.log(mapStylesTemp)
+        // console.log("==========")
 
-  function getIndex(value, arr, prop) {
-      for(var i = 0; i < arr.length; i++) {
-          if(arr[i][prop] === value) {
-              return i;
+        function getIndex(value, arr, prop) {
+          for(var i = 0; i < arr.length; i++) {
+              if(arr[i][prop] === value) {
+                  return i;
+              }
           }
+          return -1; //to handle the case where the value doesn't exist
       }
-      return -1; //to handle the case where the value doesn't exist
-  }
-    
-  var index = getIndex(SET_INITIAL_MAP_STYLE, mapStyles[0], 'name');
+      
+      var index = getIndex(SET_INITIAL_MAP_STYLE, mapStylesTemp, 'name');
 
-  console.log("+++++++++++++")
-  console.log(index)
-  console.log(mapStyles[0][index])
-  console.log("---------")
 
 
 
   useEffect(() => {
+
+
     const initializeMap = ({ setMap, mapEl, setStateMap }) => {
-      console.log("initialize");
-      let id = mapEl.current.id;
-
-      const newMap = new mapboxgl.Map({
+    let id = mapEl.current.id;
+  
+ 
+    const newMap = new mapboxgl.Map({
         container: `${id}`,
-        style: "mapbox://styles/m1neral/" + mapStyles[0][index].id,
-        center: [-99.90181, 31.968599],
-        zoom: 6,
-        pitch: 0,
-        bearing: 0,
+        style: "mapbox://styles/m1neral/" + mapStylesTemp[index].id,
+        center: mapStylesTemp[index].center,
+        zoom: mapStylesTemp[index].zoom,
+        pitch: mapStylesTemp[index].pitch,
+        bearing: mapStylesTemp[index].bearing,
       });
-
       let zoomControl = new mapboxgl.NavigationControl();
       newMap.addControl(zoomControl, "bottom-right");
 
