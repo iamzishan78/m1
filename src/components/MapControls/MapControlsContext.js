@@ -21,7 +21,8 @@ const MapControlsContextProvider = props => {
     //openTrack: true,
     editDraw: false,
     map: null,
-    Draw: null
+    Draw: null,
+    mapStyleList: [],
   });
   return (
     <MapControlsContext.Provider

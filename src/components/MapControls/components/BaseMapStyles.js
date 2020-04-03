@@ -1,4 +1,10 @@
-import React, { useContext } from "react";
+import React, {
+  useContext,
+  useState,
+  useLayoutEffect,
+  useRef,
+  useEffect
+} from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 //import Button from '@material-ui/core/Button';
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
@@ -12,7 +18,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { MapControlsContext } from "../MapControlsContext";
 import { MapContext } from "../../Map/MapContext";
 import { style } from "@material-ui/system";
-import mapStyles from "../../Map/components/Utils/MapStyles";
+//import mapStyles from "../../Map/components/Utils/MapStyles";
 
 
 const StyledMenu = withStyles({
@@ -101,6 +107,51 @@ export default function BaseMapStyles(props) {
     setStateMapControls(state => ({ ...state, anchorEl: null }));
   };
 
+  const [mapStyles, setMapStyles] = useState([]);
+
+
+
+
+  useEffect(() => {
+    const req = new Request(
+      "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
+      {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+
+    fetch(req, { signal: signal })
+      .then(results => results.json())
+      .then(data => {
+        setMapStyles(data.slice(0, 4));
+      });
+
+    //clean up
+    return function cleanup() {
+      abortController.abort();
+    };
+  }, []);
+
+
+
+
+
+
+
+
+
+
+
+
+
   return (
     /* <ClickAwayListener onClickAway={handleClose}> */
     <StyledMenu
@@ -120,7 +171,7 @@ export default function BaseMapStyles(props) {
         <ListItemText primary="Base Map" />
       </StyledMenuItem>
 
-      {mapStyles[0].map(style => (
+      {mapStyles.map(style => (
         <StyledMenuItem
           key={style.id}
           onClick={() => {

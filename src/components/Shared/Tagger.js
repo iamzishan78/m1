@@ -123,7 +123,6 @@ export default function Tags(props) {
       let defaultTags = [
         "High Cash Flow",
         "Interested Seller",
-        "Out of State Seller",
         "Recent Death",
         "Recent Divorce",
         "Recently Inherited"
