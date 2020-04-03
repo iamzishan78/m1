@@ -21,11 +21,6 @@ const styleLayers = [
     id: ["surveylabels", "surveyLayer"],
     idx: 4
   },
-  {
-    name: "Rigs (User Add)",
-    id: ["rigs_layer"],
-    idx: 11
-  }
 ];
 
 const heatLayers = [

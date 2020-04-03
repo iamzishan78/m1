@@ -26,8 +26,8 @@ import {
   SimpleSelectMode
 } from "mapbox-gl-draw-circle";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
-import { getConstantValue } from "typescript";
-import mapStylesTemp from "./components/Utils/MapStyles";
+//import { getConstantValue } from "typescript";
+//import mapStylesTemp from "./components/Utils/MapStyles";
 
 const useStyles = makeStyles(theme => ({
   mapWrapper: {
@@ -653,6 +653,8 @@ export default function Map() {
     handleOpenExpandableCard();
   };
 
+
+
   useEffect(() => {
     const req = new Request(
       "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
@@ -672,8 +674,6 @@ export default function Map() {
     fetch(req, { signal: signal })
       .then(results => results.json())
       .then(data => {
-        console.log("111111111", Date.now(), data.slice(0, 4)); //////temporary///////////////////
-        console.log("222222222", Date.now(), mapStyles); //////temporary///////////////////
         setMapStyles(data.slice(0, 4));
       });
 
@@ -683,13 +683,14 @@ export default function Map() {
     };
   }, []);
 
-  useEffect(() => {
-    console.log("XXXXXXXXXXXXX", Date.now(), mapStyles); //////temporary///////////////////
-  }, [mapStyles]);
 
-  // console.log("==========")
-  // console.log(mapStylesTemp)
-  // console.log("==========")
+
+
+  // useEffect(() => {
+  //   console.log("XXXXXXXXXXXXX", Date.now(), mapStyles); //////temporary///////////////////
+  // }, [mapStyles]);
+
+
 
   function getIndex(value, arr, prop) {
     for (var i = 0; i < arr.length; i++) {
@@ -746,6 +747,10 @@ export default function Map() {
         });
         newMap.addControl(Draw);
         setStateMap({ ...stateMap, map: newMap, draw: Draw });
+        // console.log(mapStyles)
+        // setStateMapControls({ ...stateMapControls, mapStyles: mapStyles });
+        // console.log(stateMapControls.mapStyles)
+        // console.log("====================")
 
         /* let Draw = new MapboxDraw();
   newMap.addControl(Draw, 'top-left'); */
@@ -906,7 +911,7 @@ export default function Map() {
   */
       }
     }
-  }, [map, setStateMap, mapStyles]);
+  }, [map, setStateMap, setStateMapControls, mapStyles]);
 
   useEffect(() => {
     if (map && stateApp.flyTo) {
