@@ -52,8 +52,8 @@ const NavigationContextProvider = props => {
     filterInterestTypeOverrideRoyalty:null,
     filterInterestTypeWorkingInterest:null,
     filterInterestTypeProductionPayment:null,
-
-
+    filterAllInterestTypes: null,
+    filterAllOwnershipTypes:null,
     filterGeography: null,
     filterGeographyState: null,
     filterGeographyCounty: null,
