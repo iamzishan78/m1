@@ -148,16 +148,30 @@ export default function Transact() {
         style={boardStyle}
         data={data_file}
         draggable = {true}
-        laneDraggable={false}
+        laneDraggable={true}
         cardDraggable={true}
-        collapsibleLanes={false}
-        editable={false}
-        canAddLanes={false}
-        editLaneTitle={false}
-        hideCardDeleteIcon={true}
-        onCardAdd = {handleCardAdd}
-        onCardDelete = {handleCardDelete}
-        onDataChange = {handleDataChange}
+        collapsibleLanes={true}
+        editable={true}
+        canAddLanes={true}
+        editLaneTitle={true}
+        hideCardDeleteIcon={false}
+        //onCardAdd = {handleCardAdd}
+        //onCardDelete = {handleCardDelete}
+        //onDataChange = {handleDataChange}
+        // handleDragStart = {}
+        // handleDragEnd={}
+        // handleLaneDragStart
+        // onDataChange
+        // onCardClick
+        // onCardAdd
+        // onBeforeCardDelete
+        // onCardDelete
+        // onCardMoveAcrossLanes
+        // onLaneAdd
+        // onLaneDelete
+        // onLaneUpdate
+        // onLaneClick
+        // onLaneScroll
         //onCardMoveAcrossL{handleCardAdd}anes = {handleCardAdd}
         
         />

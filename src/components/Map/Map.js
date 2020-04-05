@@ -701,6 +701,8 @@ export default function Map() {
     return -1; //to handle the case where the value doesn't exist
   }
 
+
+  
   useEffect(() => {
     if (mapStyles.length > 0) {
       const SET_INITIAL_MAP_STYLE = "Satellite";
