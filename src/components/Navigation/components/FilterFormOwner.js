@@ -1,4 +1,3 @@
-
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Input from "@material-ui/core/Input";
@@ -64,10 +63,10 @@ const MenuProps = {
 };
 
 const interestList = [
-  "Royalty Interest",
-  "Override Royalty",
-  "Working Interest",
-  "Production Payment"
+  "ROYALTY INTEREST",
+  "OVERRIDE ROYALTY",
+  "WORKING INTEREST",
+  "PRODUCTION PAYMENT"
 ];
 //chips multiselect doesn't support objects, so you need two lists. one of names and one of objects to setfilters with
 const interestObjects = [
@@ -180,7 +179,6 @@ export default function FilterFormOwner() {
   );
   const [interests, setInterests] = useState(interestList);
   const [ownerTypes, setOwnerTypes] = useState(ownerTypesList);
-  
   const inputLabel = useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);
   useEffect(() => {
@@ -188,177 +186,88 @@ export default function FilterFormOwner() {
   }, []);
 
   const setFilterInterest = interestNames => {
-    //because the multi-select doesn't support objects I had to map them here
-    //we need a list of well property names to pass to the filter
-    let interestIds = [];
-    interestNames.forEach(interestName => {
-      interestObjects.forEach(interestObj => {
-        if (interestObj.name === interestName) {
-          interestIds.push(interestObj.text);
+    let filter;
+    let filters = [];
+    let check;
+    if (interestNames) {
+      check = interestNames.map(val => val);
+      check.forEach(option => {
+        if (option === "ROYALTY INTEREST") {
+          filters.push(["get", "interestTypeRoyaltyInterest"]);
+        }
+        if (option === "OVERRIDE ROYALTY") {
+          filters.push(["get", "interestTypeOverrideRoyalty"]);
+        }
+        if (option === "WORKING INTEREST") {
+          filters.push(["get", "interestTypeWorkingInterest"]);
+        }
+        if (option === "PRODUCTION PAYMENT") {
+          filters.push(["get", "interestTypeProductionPayment"]);
         }
       });
-    });
-
-    //clear all old filters before we set the new selected ones
-    let filter = null;
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterInterestTypeRoyaltyInterest: filter
-    }));
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterInterestTypeOverrideRoyalty: filter
-    }));
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterInterestTypeWorkingInterest: filter
-    }));
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterInterestTypeProductionPayment: filter
-    }));
-    
-    if (interestIds.length > 0) {
-      interestIds.forEach(i => {
-        console.log(i)
-        let filter = ["==", ["get", i], true];
-
-
-        //you can pass a variable to the key because setState won't work so have to hardcode each filter. ugh
-        switch (i) {
-          case "interestTypeRoyaltyInterest":
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterInterestTypeRoyaltyInterest: filter
-            }));
-            break;
-          case "interestTypeOverrideRoyalty":
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterInterestTypeOverrideRoyalty: filter
-            }));
-            break;
-          case "interestTypeWorkingInterest":
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterInterestTypeWorkingInterest: filter
-            }));
-            break;
-          case "interestTypeProductionPayment":
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterInterestTypeProductionPayment: filter
-            }));
-            break;
-          default:
-        }
-      });
+      if (filters && filters.length > 0) {
+        filters.unshift("any");
+        filter = filters;
+        setStateNav(stateNav => ({
+          ...stateNav,
+          filterAllInterestTypes: filter
+        }));
+      } else {
+        filter = null;
+        setStateNav(stateNav => ({
+          ...stateNav,
+          filterAllInterestTypes: filter
+        }));
+      }
     }
   };
 
   const setFilterOwnerType = ownerTypeNames => {
-    //because the multi-select doesn't support objects I had to map them here
-    //we need a list of well property names to pass to the filter
-    let typeIds = [];
-    ownerTypeNames.forEach(ownerTypeName => {
-      ownerTypesObjects.forEach(ownerTypeObj => {
-        if (ownerTypeObj.name == ownerTypeName) {
-          typeIds.push(ownerTypeObj.text);
+    let filter;
+    let filters = [];
+    let check;
+    if (ownerTypeNames) {
+      check = ownerTypeNames.map(val => val);
+      check.forEach(option => {
+        if (option === "RELIGIOUS INSTITUTIONS") {
+          filters.push(["get", "ownershipTypeReligiousInstitutions"]);
+        }
+        if (option === "GOVERNMENTAL BODIES") {
+          filters.push(["get", "ownershipTypeGovernmentalBodies"]);
+        }
+        if (option === "NON PROFITS") {
+          filters.push(["get", "ownershipTypeNonProfits"]);
+        }
+        if (option === "TRUSTS") {
+          filters.push(["get", "ownershipTypeTrusts"]);
+        }
+        if (option === "CORPORATIONS") {
+          filters.push(["get", "ownershipTypeCorporations"]);
+        }
+        if (option === "EDUCATIONAL INSTITUTIONS") {
+          filters.push(["get", "ownershipTypeEducationalInstitutions"]);
+        }
+        if (option === "INDIVIDUALS") {
+          filters.push(["get", "ownershipTypeIndividuals"]);
+        }
+        if (option === "UNKNOWN") {
+          filters.push(["get", "ownershipTypeUnknown"]);
         }
       });
-    });
-
-    //clear all old filters before we set the new selected ones
-    let filter = null;
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterOwnershipTypeReligiousInstitutions: filter
-    }));
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterOwnershipTypeGovernmentalBodies: filter
-    }));
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterOwnershipTypeNonProfits: filter
-    }));
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterOwnershipTypeTrusts: filter
-    }));
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterOwnershipTypeCorporations: filter
-    }));
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterOwnershipTypeEducationalInstitutions: filter
-    }));
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterOwnershipTypeIndividuals: filter
-    }));
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterOwnershipTypeUnknown: filter
-    }));
-
-    if (typeIds.length > 0) {
-      typeIds.forEach(i => {
-        let filter = ["==", ["get", i], true];
-        //you can pass a variable to the key because setState won't work so have to hardcode each filter. ugh
-        switch (i) {
-          case "ownershipTypeReligiousInstitutions":
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterOwnershipTypeReligiousInstitutions: filter
-            }));
-            break;
-          case "ownershipTypeGovernmentalBodies":
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterOwnershipTypeGovernmentalBodies: filter
-            }));
-            break;
-          case "ownershipTypeNonProfits":
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterOwnershipTypeNonProfits: filter
-            }));
-            break;
-          case "ownershipTypeTrusts":
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterOwnershipTypeTrusts: filter
-            }));
-            break;
-          case "ownershipTypeCorporations":
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterOwnershipTypeCorporations: filter
-            }));
-            break;
-          case "ownershipTypeEducationalInstitutions":
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterOwnershipTypeEducationalInstitutions: filter
-            }));
-            break;
-          case "ownershipTypeIndividuals":
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterOwnershipTypeIndividuals: filter
-            }));
-            break;
-          case "ownershipTypeUnknown":
-            setStateNav(stateNav => ({
-              ...stateNav,
-              filterOwnershipTypeUnknown: filter
-            }));
-            break;
-          default:
-        }
-      });
+      if (filters && filters.length > 0) {
+        filters.unshift("any");
+        filter = filters;
+        setStateNav(stateNav => ({
+          ...stateNav,
+          filterAllOwnershipTypes: filter
+        }));
+      } else {
+        filter = null;
+        setStateNav(stateNav => ({
+          ...stateNav,
+          filterAllOwnershipTypes: filter
+        }));
+      }
     }
   };
 
@@ -384,15 +293,14 @@ export default function FilterFormOwner() {
   };
 
   const deleteChipInterestName = value => () => {
-    const removeChips =  interestName.filter(chip => chip !== value);
+    const removeChips = interestName.filter(chip => chip !== value);
     setInterestName(removeChips);
     setFilterInterest(removeChips);
     setStateNav(stateNav => ({ ...stateNav, interestName: removeChips }));
   };
 
-
   const deleteChipOwnerType = value => () => {
-    const removeChips =  ownerTypeName.filter(chip => chip !== value);
+    const removeChips = ownerTypeName.filter(chip => chip !== value);
     setOwnerTypeName(removeChips);
     setFilterOwnerType(removeChips);
     setStateNav(stateNav => ({ ...stateNav, ownerTypeName: removeChips }));
@@ -418,9 +326,10 @@ export default function FilterFormOwner() {
             fullWidth={true}
             // input={<Input  id="select-multiple-chip1" />}
             renderValue={selected => (
-              <div className={classes.chips} 
-                onMouseDown={(event) => {
-                    event.stopPropagation()
+              <div
+                className={classes.chips}
+                onMouseDown={event => {
+                  event.stopPropagation();
                 }}
               >
                 {selected.map(value => (
@@ -465,9 +374,12 @@ export default function FilterFormOwner() {
             onChange={handleChangeOwnerType}
             // input={<Input  id="select-multiple-chip1" />}
             renderValue={selected => (
-              <div className={classes.chips} onMouseDown={(event) => {
-                event.stopPropagation()
-            }}>
+              <div
+                className={classes.chips}
+                onMouseDown={event => {
+                  event.stopPropagation();
+                }}
+              >
                 {selected.map(value => (
                   <Chip
                     onDelete={deleteChipOwnerType(value)}
