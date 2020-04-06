@@ -641,7 +641,7 @@ export default function SubTable(props) {
                       // selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
-                        {props.targetLabel !== "contact" && (
+                        {props.targetLabel === "well" && (
                           <IconButton
                             size="medium"
                             color="primary"
