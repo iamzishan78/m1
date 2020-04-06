@@ -267,12 +267,12 @@ const useStyles = makeStyles(theme => ({
     fontSize: 10 
   },
   betaText: {
-    position: "absolute",
+    // position: "absolute",
     fontSize: 10,
     top: 0,
     right: 0,
-    left: 40,
-    paddingTop: 8,
+    left: 15,
+    paddingLeft: 6,
   },
   avatar: {
     backgroundColor: "black",
@@ -403,14 +403,7 @@ const useStyles = makeStyles(theme => ({
     left: "50%",
     marginTop: -12,
     marginLeft: -12
-  }, 
-  beta: {
-    paddingTop:12, 
-    minWidth: 62, 
-    textAlign: "center",
-    position: "relative",
-  },
-  
+  },   
   goHome: {
     "&:hover": {
       width: "15vw",
@@ -528,9 +521,6 @@ export default function Navigation(props) {
   const [loadingApply, setLoadingApply] = useState(false);
   const [applySuccess, setApplySuccess] = useState(false);
   const [disableApply, setDisableApply] = useState(true);
-  const [displayBeta, setDisplayBeta] = useState({
-    one: false , two: false , three: false
-  })
   let history = useHistory();
   let location = useLocation();
 
@@ -686,31 +676,6 @@ export default function Navigation(props) {
   const sendHome = () => {
     history.push("/");
   }
-
-  const hoverDisplayBeta = (e) => {
-    // console.table(displayBeta)
-    if(e.target.id === "disableOne"){
-      setDisplayBeta(displayBeta => ({...displayBeta, one: true}));
-    }
-    if(e.target.id === "disableTwo"){
-      setDisplayBeta(displayBeta => ({...displayBeta, two: true}));
-    }
-    if(e.target.id === "disableThree"){
-      setDisplayBeta(displayBeta => ({...displayBeta, three: true}));
-    }
-  };
-
-  const hoverDisplayBetaLeave = (e) => {
-    if(e.target.id === "disableOne"){
-      setDisplayBeta(displayBeta => ({...displayBeta, one: false}));
-    }
-    if(e.target.id === "disableTwo"){
-      setDisplayBeta(displayBeta => ({...displayBeta, two: false}));
-    }
-    if(e.target.id === "disableThree"){
-      setDisplayBeta(displayBeta => ({...displayBeta, three: false}));
-    }
-  };
 
   /* const handleFilterCardApply = () => {
     setDisableApply(false)
@@ -877,61 +842,58 @@ export default function Navigation(props) {
                   }
                   aria-label="production"
                 />
-                <div id="disableOne"  onMouseOver={e => hoverDisplayBeta(e)} onMouseOut={e => hoverDisplayBetaLeave(e)}>
-                {!displayBeta.one ?
                 <Tab
                   disabled={true}
                   value={4}
                   classes={{ root: classes.tab }}
-                  icon={<ValuationIcon color="#fff" opacity="0.5" />}
                   aria-label="valuation" 
+                  icon={
+                    <Badge
+                      color="secondary"
+                    >
+                      <ValuationIcon color="#fff" opacity="0.5"/>
+                      <div className={classes.betaText}>
+                        BETA
+                      </div>
+                    </Badge>
+                    }
                 />
-                : <div className={classes.beta}>
-                <ValuationIcon color="#fff" opacity="0.5" />
-                <div className={classes.betaText}>
-                  BETA
-                </div>
-              </div>
-                }
-                </div>
-                <div id="disableTwo"  onMouseOver={e => hoverDisplayBeta(e)} onMouseOut={e => hoverDisplayBetaLeave(e)}>
-                {!displayBeta.two ?
                 <Tab
                   disabled={true}
                   value={5}
                   classes={{ root: classes.tab }}
-                  icon={<PredictiveIcon color="#fff" opacity="0.5" />}
+                  icon={
+                    <Badge
+                      color="secondary"
+                    >
+                      <PredictiveIcon color="#fff" opacity="0.5" />
+                      <div className={classes.betaText}>
+                        BETA
+                      </div>
+                    </Badge> 
+                    }
                   aria-label="predictive"
                 />
-                : <div className={classes.beta}>
-                  <PredictiveIcon color="#fff" opacity="0.5" />
-                  <div className={classes.betaText}>
-                    BETA
-                  </div>
-                </div>
-                }
-                </div>
-                <div id="disableThree"  onMouseOver={e => hoverDisplayBeta(e)} onMouseOut={e => hoverDisplayBetaLeave(e)}>
-                {!displayBeta.three ?
                 <Tab
                   disabled={true}
                   value={6}
                   classes={{ root: classes.tab }}
-                  icon={<LocalOfferIcon htmlColor="#fff" opacity="0.5" />}
+                  icon={
+                    <Badge
+                      color="secondary"
+                    >
+                     <LocalOfferIcon htmlColor="#fff" opacity="0.5" />
+                      <div className={classes.betaText}>
+                        BETA
+                      </div>
+                    </Badge>
+                    }
                   aria-label="tags"
                 />
-                : <div className={classes.beta}>
-                  <LocalOfferIcon htmlColor="#fff" opacity="0.5" />
-                    <div className={classes.betaText}>
-                      BETA
-                    </div>
-                  </div>
-                }
-                </div>
               </Tabs>
             </div>
 
-            <Divider orientation="vertical" />
+            <Divider style={{margin: 1}} orientation="vertical" />
             <IconButton onClick={handleProfileMenuOpen}>
               <Avatar name={stateApp.user.name} size="38" round />
             </IconButton>
