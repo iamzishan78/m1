@@ -17,31 +17,31 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   rootDiv: {
     width: 500,
     "& > * + *": {
-      marginTop: theme.spacing(5)
+      marginTop: theme.spacing(5),
     },
     "& .MuiAutocomplete-clearIndicator": {
-      display: "none"
-    }
+      display: "none",
+    },
   },
   switchButtom: {
     alignSelf: "flex-end",
     marginRight: 0,
     "& span.MuiTypography-body1": {
-      fontSize: "0.9rem"
-    }
+      fontSize: "0.9rem",
+    },
   },
   switchTextDeselected: {
-    color: "rgb(141, 141, 141)"
+    color: "rgb(141, 141, 141)",
   },
   publicLeftBottom: {
     flexDirection: "row",
     alignSelf: "unset",
-    margin: 0
-  }
+    margin: 0,
+  },
 }));
 
 export default function Tags(props) {
@@ -73,8 +73,8 @@ export default function Tags(props) {
     if (stateApp && stateApp.user && stateApp.user.email) {
       getUserByEmail({
         variables: {
-          userEmail: stateApp.user.email
-        }
+          userEmail: stateApp.user.email,
+        },
       });
     }
   }, [stateApp.user.email]);
@@ -94,8 +94,8 @@ export default function Tags(props) {
     setLoadingTags(true);
     getTagsByObjectId({
       variables: {
-        objectId: props.targetSourceId
-      }
+        objectId: props.targetSourceId,
+      },
     });
   }, [props.targetSourceId]);
 
@@ -112,8 +112,8 @@ export default function Tags(props) {
     if (user._id !== "") {
       getUserAvailableTags({
         variables: {
-          userId: user._id //////stateApp.user._id//////////temporary
-        }
+          userId: user._id, //////stateApp.user._id//////////temporary
+        },
       });
     }
   }, [user]); ////////////remove dependency//////////temporary
@@ -125,12 +125,13 @@ export default function Tags(props) {
         "Interested Seller",
         "Recent Death",
         "Recent Divorce",
-        "Recently Inherited"
+        "Recently Inherited",
+        "Out Of State Seller",
       ];
 
-      defaultTags = defaultTags.filter(defaultTag => {
+      defaultTags = defaultTags.filter((defaultTag) => {
         let found;
-        tagsArray.map(tag => {
+        tagsArray.map((tag) => {
           if (tag.tag === defaultTag) {
             found = true;
           }
@@ -143,27 +144,27 @@ export default function Tags(props) {
 
       setUserAvailableTagsArray([
         ...defaultTags,
-        ...dataUserAvailableTags.userAvailableTags
+        ...dataUserAvailableTags.userAvailableTags,
       ]);
     }
   }, [dataUserAvailableTags]);
 
   ///////////////////// INSERTING NEW TAG ///////////////////////////////////////////////
 
-  const capitalizeFirstLetter = string => {
+  const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-  const UpperAndCleanTagText = tagText => {
+  const UpperAndCleanTagText = (tagText) => {
     return tagText
       .trim()
       .split(" ")
-      .filter(word => word !== "")
-      .map(word => capitalizeFirstLetter(word))
+      .filter((word) => word !== "")
+      .map((word) => capitalizeFirstLetter(word))
       .join(" ");
   };
 
-  const NewTag = tagText => {
+  const NewTag = (tagText) => {
     tagText = UpperAndCleanTagText(tagText);
     if (tagText === addInDropDown && addInDropDown) {
       tagText = UpperAndCleanTagText(textValue);
@@ -171,7 +172,7 @@ export default function Tags(props) {
     setTextValue("");
 
     let found = false;
-    tagsArray.map(tag => {
+    tagsArray.map((tag) => {
       if (tag.tag === tagText) {
         found = true;
       }
@@ -183,24 +184,24 @@ export default function Tags(props) {
             tag: tagText,
             public: publicTag,
             user: user._id, //////stateApp.user._id////////temporary while signed user fixed
-            taggedOn: props.targetSourceId
-          }
+            taggedOn: props.targetSourceId,
+          },
         },
         refetchQueries: ["getTagsByObjectId", "getUserAvailableTags"],
-        awaitRefetchQueries: true
+        awaitRefetchQueries: true,
       });
     }
   };
 
   ///////////////////// DELETING A TAG ///////////////////////////////////////////////
 
-  const DeleteTag = tagId => {
+  const DeleteTag = (tagId) => {
     removeTag({
       variables: {
-        tagId: tagId
+        tagId: tagId,
       },
       refetchQueries: ["getTagsByObjectId", "getUserAvailableTags"],
-      awaitRefetchQueries: true
+      awaitRefetchQueries: true,
     });
   };
 
@@ -231,9 +232,9 @@ export default function Tags(props) {
   };
 
   const cleanDropDownArray = () => {
-    const tags = tagsArray.map(tag => tag.tag);
+    const tags = tagsArray.map((tag) => tag.tag);
     const cleanArray = userAvailableTagsArray.filter(
-      tag => tags.indexOf(tag) === -1
+      (tag) => tags.indexOf(tag) === -1
     );
     cleanArray.sort();
 
@@ -301,7 +302,7 @@ export default function Tags(props) {
               onChange={(e, newValue) => {
                 handleChangeTags(e, newValue);
               }}
-              options={AddingAddRowToDropDown().map(option => option)}
+              options={AddingAddRowToDropDown().map((option) => option)}
               value={tagsArray}
               freeSolo
               renderTags={(value, getTagProps) =>
@@ -324,7 +325,7 @@ export default function Tags(props) {
                   }
                 })
               }
-              renderInput={params => (
+              renderInput={(params) => (
                 <TextField
                   {...params}
                   variant="outlined"
@@ -332,7 +333,7 @@ export default function Tags(props) {
                   placeholder="New..."
                   fullWidth
                   value={textValue}
-                  onChange={e => {
+                  onChange={(e) => {
                     setTextValue(e.target.value);
                   }}
                 />

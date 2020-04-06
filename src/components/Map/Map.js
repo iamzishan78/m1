@@ -744,10 +744,10 @@ export default function Map() {
             ...state,
             selectedWellId: currentFeature.properties.api
           }));
-          setStateApp(state => ({
-            ...state,
-            selectedWellId: currentFeature.properties.api
-          }));
+          // setStateApp(state => ({
+          //   ...state,
+          //   selectedWellId: currentFeature.properties.api
+          // }));
 
           createPopUp(currentFeature.properties);
         });

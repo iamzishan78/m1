@@ -24,9 +24,11 @@ import { VERTEXEDGESQUERY } from "../../../graphQL/useQueryVertexEdges";
 import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
+import { TRACKSBYUSERANDOBJECTTYPE } from "../../../graphQL/useQueryTracksByUserAndObjectType";
+import { USERBYEMAIL } from "../../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
-const useStyles = makeStyles(theme => ({
-  container: { padding: "0 !important" }
+const useStyles = makeStyles((theme) => ({
+  container: { padding: "0 !important" },
 }));
 
 ////////////HeadCells begin///////////////////////////////////////////////
@@ -36,26 +38,26 @@ const OwnersHeadCells = [
     id: "ownershipType",
     numeric: false,
     disablePadding: false,
-    label: "Entity"
+    label: "Entity",
   },
   { id: "interestType", numeric: false, disablePadding: false, label: "Type" },
   {
     id: "ownershipPercentage",
     numeric: true,
     disablePadding: false,
-    label: "Interest"
+    label: "Interest",
   },
   {
     id: "appraisedValue",
     numeric: true,
     disablePadding: false,
     label: "Appraised Value",
-    money: true
+    money: true,
   },
   { id: "contacts", numeric: false, disablePadding: false, label: "" },
   { id: "comments", numeric: false, disablePadding: false, label: "" },
   { id: "tags", numeric: false, disablePadding: false, label: "" },
-  { id: "isTracked", numeric: false, disablePadding: false, label: "" }
+  { id: "isTracked", numeric: false, disablePadding: false, label: "" },
 ];
 
 const WellsHeadCells = [
@@ -67,12 +69,12 @@ const WellsHeadCells = [
     id: "wellBoreProfile",
     numeric: false,
     disablePadding: false,
-    label: "Profile"
+    label: "Profile",
   },
   { id: "ownerCount", numeric: true, disablePadding: false, label: "" },
   { id: "comments", numeric: false, disablePadding: false, label: "" },
   { id: "tags", numeric: false, disablePadding: false, label: "" },
-  { id: "isTracked", numeric: false, disablePadding: false, label: "" }
+  { id: "isTracked", numeric: false, disablePadding: false, label: "" },
 ];
 
 const ContactsHeadCells = [
@@ -82,31 +84,31 @@ const ContactsHeadCells = [
     id: "phone",
     numeric: false,
     disablePadding: false,
-    label: "Phone"
+    label: "Phone",
   },
   {
     id: "openDealsAmount",
     numeric: false,
     disablePadding: false,
     label: "Open Deals Amount",
-    money: true
+    money: true,
   },
   {
     id: "salesOwner",
     numeric: false,
     disablePadding: false,
-    label: "Sales Owner"
+    label: "Sales Owner",
   },
   {
     id: "createAt",
     numeric: false,
     disablePadding: false,
-    label: "Create At"
+    label: "Create At",
   },
   { id: "owners", numeric: false, disablePadding: false, label: "" },
   { id: "comments", numeric: false, disablePadding: false, label: "" },
   { id: "tags", numeric: false, disablePadding: false, label: "" },
-  { id: "isTracked", numeric: false, disablePadding: false, label: "" }
+  { id: "isTracked", numeric: false, disablePadding: false, label: "" },
 ];
 
 ////////////HeadCells end///////////////////////////////////////////////
@@ -126,15 +128,38 @@ export default function Contacts(props) {
   const [edgeLabel, setEdgeLabel] = useState(null);
   const [targetLabel, setTargetLabel] = useState(null);
 
+  //////begin////////temporary  while signed user fixed
+
+  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
+  const [user, setUser] = useState({ _id: "" });
+
+  useEffect(() => {
+    if (stateApp && stateApp.user && stateApp.user.email) {
+      getUserByEmail({
+        variables: {
+          userEmail: stateApp.user.email,
+        },
+      });
+    }
+  }, [stateApp.user.email]);
+
+  useEffect(() => {
+    if (dataUser && dataUser.userByEmail) {
+      setUser(dataUser.userByEmail);
+    }
+  }, [dataUser]);
+
+  /////end/////////temporary while signed user fixed
+
   ////////////Queries begin///////////////////////////////////////////////
   const [
     getVertexEdges,
-    { loading: loadingGraph, data: dataGraph }
+    { loading: loadingGraph, data: dataGraph },
   ] = useLazyQuery(VERTEXEDGESQUERY);
   //////////
   const [
     getOwners,
-    { loading: loadingOwners, data: dataOwners }
+    { loading: loadingOwners, data: dataOwners },
   ] = useLazyQuery(OWNERSQUERY);
   //////////
   const [getWells, { loading: loadingWells, data: dataWells }] = useLazyQuery(
@@ -143,67 +168,72 @@ export default function Contacts(props) {
   //////////
   const [
     getWellOwners,
-    { loading: loadingWellOwners, data: dataWellOwners }
+    { loading: loadingWellOwners, data: dataWellOwners },
   ] = useLazyQuery(WELLOWNERSQUERY);
   //////////
   const [
+    tracksByUserAndObjectType,
+    { loading: loadingTracks, data: dataTracks },
+  ] = useLazyQuery(TRACKSBYUSERANDOBJECTTYPE);
+  //////////
+  const [
     getTrackedContacts,
-    { loading: loadingTrackedContacts, data: dataTrackedContacts }
+    { loading: loadingTrackedContacts, data: dataTrackedContacts },
   ] = useLazyQuery(VERTEXEDGESQUERY);
   const [
     getContacts,
-    { loading: loadingContacts, data: dataContacts }
+    { loading: loadingContacts, data: dataContacts },
   ] = useLazyQuery(CONTACTSQUERY);
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
   useEffect(() => {
-    if(sourceId && sourceLabel){
-    setSource({
-      sourceId: sourceId,
-      label: sourceLabel,
-      type: "vertex",
-      properties: []
-    });
-  }
-  }, [sourceId, sourceLabel]);
+    //////stateApp.user._id////////temporary while signed user fixed
+    if (targetLabel && user._id !== "") {
+      setLoading(true);
 
-  useEffect(() => {
-    setLoading(true);
-    if(source){
-      if(source.sourceId){
-      getVertexEdges({
-        variables: { source: source, edgeLabel, targetLabel }
+      tracksByUserAndObjectType({
+        variables: {
+          userId: user._id, //////stateApp.user._id////////temporary while signed user fixed
+          objectType: targetLabel,
+        },
       });
-      }
     }
-  }, [stateApp.user, source]);
+  }, [user, targetLabel]); //////stateApp.user._id////////temporary while signed user fixed
+
   ////////////General end///////////////////////////////////////////////
 
   ////////////Tracked Owners begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners") {
-      // setSourceId(stateApp.user.id);
-      setSourceLabel("user");
-      setEdgeLabel("tracks");
       setTargetLabel("owner");
     }
   }, []);
 
   useEffect(() => {
-    if (props.parent && props.parent === "trackOwners" && dataGraph) {
-      if(dataGraph.vertexEdges){
-        if(dataGraph.vertexEdges.sourceIds){
+    if (
+      props.parent &&
+      props.parent === "trackOwners" &&
+      dataTracks &&
+      dataTracks.tracksByUserAndObjectType
+    ) {
+      if (dataTracks.tracksByUserAndObjectType.length !== 0) {
+        const tracksIdArray = dataTracks.tracksByUserAndObjectType.map(
+          (track) => track.trackOn
+        );
+
         getOwners({
           variables: {
-            ownerIdArray: dataGraph.vertexEdges.sourceIds,
-            authToken: stateApp.user.authToken
-          }
+            ownerIdArray: tracksIdArray,
+            authToken: stateApp.user.authToken,
+          },
         });
-        }
+      } else {
+        setRows([]);
+        setLoading(false);
       }
     }
-  }, [stateApp.user, dataGraph]);
+  }, [dataTracks]);
 
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners" && dataOwners) {
@@ -212,23 +242,17 @@ export default function Contacts(props) {
         dataOwners.owners.results &&
         dataOwners.owners.results.length > 0
       ) {
-        dataOwners.owners.results.forEach(owner => {
-          if (dataGraph.vertexEdges.success) {
-            dataGraph.vertexEdges.sourceIds.forEach(sourceId => {
-              if (owner.id === sourceId) {
-                owner.isTracked = true;
-              }
-            });
-          }
-        });
-
-        setRows(dataOwners.owners.results);
+        const owners = dataOwners.owners.results.map((owner) => ({
+          ...owner,
+          isTracked: true,
+        }));
+        setRows(owners);
         setHeader("Owners");
         setColumns(OwnersHeadCells);
         setAddAble(true);
-        setStateApp(state => ({
+        setStateApp((state) => ({
           ...state,
-          owners: dataOwners.owners.results
+          owners,
         }));
       } else {
         setRows([]);
@@ -241,25 +265,34 @@ export default function Contacts(props) {
   ////////////Tracked Wells begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "trackWells") {
-      setSourceLabel("user");
-      setEdgeLabel("tracks");
       setTargetLabel("well");
     }
   }, []);
 
   useEffect(() => {
-    if (props.parent && props.parent === "trackWells" && dataGraph) {
-      if(dataGraph.vertexEdges){
-        if(dataGraph.vertexEdges.sourceIds){
-      getWells({
-        variables: {
-          wellIdArray: dataGraph.vertexEdges.sourceIds,
-          authToken: stateApp.user.authToken
-        }
-      });
-    }}
+    if (
+      props.parent &&
+      props.parent === "trackWells" &&
+      dataTracks &&
+      dataTracks.tracksByUserAndObjectType
+    ) {
+      if (dataTracks.tracksByUserAndObjectType.length !== 0) {
+        const tracksIdArray = dataTracks.tracksByUserAndObjectType.map(
+          (track) => track.trackOn
+        );
+
+        getWells({
+          variables: {
+            wellIdArray: tracksIdArray,
+            authToken: stateApp.user.authToken,
+          },
+        });
+      } else {
+        setRows([]);
+        setLoading(false);
+      }
     }
-  }, [stateApp.user, dataGraph]);
+  }, [dataTracks]);
 
   useEffect(() => {
     if (props.parent && props.parent === "trackWells" && dataWells) {
@@ -268,23 +301,18 @@ export default function Contacts(props) {
         dataWells.wells.results &&
         dataWells.wells.results.length > 0
       ) {
-        dataWells.wells.results.forEach(well => {
-          if (dataGraph.vertexEdges.success) {
-            dataGraph.vertexEdges.sourceIds.forEach(sourceId => {
-              if (well.id === sourceId) {
-                well.isTracked = true;
-              }
-            });
-          }
-        });
+        const wells = dataWells.wells.results.map((well) => ({
+          ...well,
+          isTracked: true,
+        }));
 
-        setRows(dataWells.wells.results);
+        setRows(wells);
         setHeader("Wells");
         setColumns(WellsHeadCells);
         setAddAble(false);
-        setStateApp(state => ({
+        setStateApp((state) => ({
           ...state,
-          wells: dataWells.wells.results
+          wells,
         }));
       } else {
         setRows([]);
@@ -295,38 +323,32 @@ export default function Contacts(props) {
   ////////////Tracked Wells end///////////////////////////////////////////////
 
   ////////////Owners Per Well begin///////////////////////////////////////////////
+
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell") {
-      setSourceLabel("user");
-      setEdgeLabel("tracks");
       setTargetLabel("owner");
+      getWellOwners({
+        variables: { api: props.selectedWell.api },
+      });
     }
-  }, []);
+  }, [props.selectedWell]);
 
   useEffect(() => {
     if (
       props.parent &&
       props.parent === "OwnersPerWell" &&
-      dataGraph &&
-      props.selectedWell
+      dataWellOwners &&
+      dataTracks &&
+      dataTracks.tracksByUserAndObjectType
     ) {
-      getWellOwners({
-        variables: { api: props.selectedWell.api }
-      });
-    }
-  }, [stateApp.user, dataGraph, props.selectedWell]);
-
-  useEffect(() => {
-    if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
-        dataWellOwners.wellOwners.forEach(wellOwner => {
-          if (dataGraph.vertexEdges.success) {
-            dataGraph.vertexEdges.sourceIds.forEach(sourceId => {
-              if (wellOwner.id === sourceId) {
-                wellOwner.isTracked = true;
-              }
-            });
-          }
+        dataWellOwners.wellOwners.forEach((wellOwner) => {
+          wellOwner.isTracked = false;
+          dataTracks.tracksByUserAndObjectType.forEach((track) => {
+            if (wellOwner.id === track.trackOn) {
+              wellOwner.isTracked = true;
+            }
+          });
         });
 
         setRows(dataWellOwners.wellOwners);
@@ -338,14 +360,12 @@ export default function Contacts(props) {
       }
       setLoading(false);
     }
-  }, [dataWellOwners]);
+  }, [dataWellOwners, dataTracks]);
   ////////////Owners Per Well end///////////////////////////////////////////////
 
   ////////////Contacts begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "Contacts") {
-      setSourceLabel("user");
-      setEdgeLabel("userContacts");
       setTargetLabel("contact");
     }
   }, []);
@@ -367,11 +387,16 @@ export default function Contacts(props) {
     addres: "1552 camp st",
     zipcode: 92093,
     openDealsAmount: "7000",
-    createAt: "11 days ago"
+    createAt: "11 days ago",
   };
 
   useEffect(() => {
-    if (props.parent && props.parent === "Contacts") {
+    if (
+      props.parent &&
+      props.parent === "Contacts" &&
+      dataTracks &&
+      dataTracks.tracksByUserAndObjectType
+    ) {
       setRows([
         {
           id: ContactExample.id,
@@ -380,18 +405,22 @@ export default function Contacts(props) {
           phone: ContactExample.mobilePhone,
           openDealsAmount: ContactExample.openDealsAmount,
           salesOwner: ContactExample.salesOwner,
-          createAt: ContactExample.createAt
-        }
+          createAt: ContactExample.createAt,
+          isTracked:
+            dataTracks.tracksByUserAndObjectType.length !== 0 &&
+            dataTracks.tracksByUserAndObjectType[0].trackOn ===
+              ContactExample.id,
+        },
       ]);
       setHeader("Contacts");
       setColumns(ContactsHeadCells);
       setAddAble({
         externalAdd: true,
-        externalAddFunction: props.externalAddFunction
+        externalAddFunction: props.externalAddFunction,
       });
       setLoading(false);
     }
-  }, []);
+  }, [dataTracks]);
 
   // useEffect(() => {
   //   if (props.parent && props.parent === "Contacts" && dataGraph) {

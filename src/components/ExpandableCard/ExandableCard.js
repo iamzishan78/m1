@@ -12,6 +12,10 @@ import CloseIcon from "@material-ui/icons/Close";
 import ExpandIcon from "./components/svgIcons/ExpandIcon";
 import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
 
+import { useLazyQuery } from "@apollo/react-hooks";
+import { TRACKBYUSERANDOBJECTID } from "../../graphQL/useQueryTrackByUserAndObjectId";
+import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
+
 import TrackToggleButton from "../Shared/TrackToggleButton";
 import $ from "jquery";
 /* <ExpandableCard 
@@ -68,7 +72,7 @@ export default function ExpandableCard(props) {
   const [sourceLabel, setSourceLabel] = useState(props.sourceLabel);
   const theme = useTheme();
 
-  const useStyles = makeStyles(theme => ({
+  const useStyles = makeStyles((theme) => ({
     card: {
       position: position,
       left: cardLeft,
@@ -81,28 +85,77 @@ export default function ExpandableCard(props) {
       background: "#011133",
       borderStyle: "solid",
       borderWidth: "thin",
-      borderColor: "#011133"
+      borderColor: "#011133",
       //display: 'block'
     },
     title: {
       fontFamily: "Poppins",
       color: "#FFFFFF",
-      fontSize: "15px"
+      fontSize: "15px",
     },
     subheader: {
       fontFamily: "Poppins",
       color: "#FFFFFF",
-      fontSize: "11px"
+      fontSize: "11px",
     },
     content: {
       transition: "height 0.1s",
       backgroundColor: "#fff",
       padding: "0px",
       height: height,
-      overflowY: "auto"
-    }
+      overflowY: "auto",
+    },
   }));
   const classes = useStyles();
+
+  const [
+    trackByUserAndObjectId,
+    { loading: loadingTrack, data: dataTrack },
+  ] = useLazyQuery(TRACKBYUSERANDOBJECTID);
+
+  //////begin////////temporary  while signed user fixed
+
+  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
+  const [user, setUser] = useState({ _id: "" });
+
+  useEffect(() => {
+    if (stateApp && stateApp.user && stateApp.user.email) {
+      getUserByEmail({
+        variables: {
+          userEmail: stateApp.user.email,
+        },
+      });
+    }
+  }, [stateApp.user.email]);
+
+  useEffect(() => {
+    if (dataUser && dataUser.userByEmail) {
+      setUser(dataUser.userByEmail);
+    }
+  }, [dataUser]);
+
+  /////end/////////temporary while signed user fixed
+
+  useEffect(() => {
+    //////stateApp.user._id////////temporary while signed user fixed
+    if (user._id !== "" && props.targetSourceId) {
+      trackByUserAndObjectId({
+        variables: {
+          userId: user._id, //////stateApp.user._id////////temporary while signed user fixed
+          objectId: props.targetSourceId.toLowerCase(),
+        },
+      });
+    }
+  }, [user, props.targetSourceId]); //////stateApp.user._id////////temporary while signed user fixed
+
+  useEffect(() => {
+    if (dataTrack && props.target) {
+      setTarget({
+        ...props.target,
+        isTracked: dataTrack.trackByUserAndObjectId ? true : false,
+      });
+    }
+  }, [dataTrack, props.target]);
 
   useEffect(() => {
     setZidx(props.zIndex);
@@ -129,7 +182,7 @@ export default function ExpandableCard(props) {
     //setPosition('absolute')
     setCardTop("70px");
     setCardLeft("10px");
-    setStateExpandableCard(state => ({ ...state, expanded: true }));
+    setStateExpandableCard((state) => ({ ...state, expanded: true }));
   };
 
   const handleShrink = () => {
@@ -139,7 +192,7 @@ export default function ExpandableCard(props) {
     }
     setCardTop(mouseY);
     setCardLeft(mouseX);
-    setStateExpandableCard(state => ({ ...state, expanded: false }));
+    setStateExpandableCard((state) => ({ ...state, expanded: false }));
     setWidth(cardWidth);
     setHeight(cardHeight);
     // setZidx(0)
@@ -150,7 +203,7 @@ export default function ExpandableCard(props) {
       console.log("jquery close");
       $("#popupContainer").append($("#tempPopupHolder > div"));
 
-      setStateApp(state => ({ ...state, popupOpen: false }));
+      setStateApp((state) => ({ ...state, popupOpen: false }));
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
     }
@@ -167,14 +220,9 @@ export default function ExpandableCard(props) {
         action={
           <div>
             <TrackToggleButton
-              source={source}
-              sourceLabel={sourceLabel}
-              sourceSourceId={sourceSourceId}
-              sourceName={sourceName}
               target={target}
               targetLabel={targetLabel}
-              targetSourceId={targetSourceId}
-              targetName={targetName}
+              targetSourceId={targetSourceId.toLowerCase()}
             />
 
             {stateExpandableCard.expanded ? (

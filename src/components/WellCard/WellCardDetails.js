@@ -47,7 +47,7 @@ import SpudDateCard from "../Shared/SpudDateCard";
 
 //import { WellData } from './data/welldata'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   grid: {
     // height: "100%",
     width: "auto",
@@ -57,7 +57,7 @@ const useStyles = makeStyles(theme => ({
   gridItem: {
     flexGrow: 1,
     display: "flex",
-    justifyContent: "space-around"
+    justifyContent: "space-around",
   },
   card: {
     width: "100%",
@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme => ({
     background: "#011133",
     borderStyle: "solid",
     borderWidth: "thin",
-    borderColor: "#011133"
+    borderColor: "#011133",
   },
   title: {
     fontFamily: "Poppins",
@@ -80,7 +80,7 @@ const useStyles = makeStyles(theme => ({
     height: "23px",
     left: "0.45%",
     right: "39.32%",
-    top: "calc(50% - 23px/2 - 140px)"
+    top: "calc(50% - 23px/2 - 140px)",
   },
   subheader: {
     fontFamily: "Poppins",
@@ -93,25 +93,25 @@ const useStyles = makeStyles(theme => ({
     height: "17px",
     left: "0.45%",
     right: "58.31%",
-    top: "calc(50% - 17px/2 - 120px)"
+    top: "calc(50% - 17px/2 - 120px)",
   },
   iconContainer: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: "1%"
+    padding: "1%",
   },
   content: {
     height: "100%",
     backgroundColor: "#fff",
-    overflowY: "auto"
+    overflowY: "auto",
   },
   cardAction: {
     flexGrow: 1,
     display: "flex",
     justifyContent: "space-evenly",
     backgroundColor: "#fff",
-    alignItems: "right"
+    alignItems: "right",
   },
 
   cardAction2: {
@@ -120,14 +120,14 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "space-evenly",
     //justifyContent: 'left',
     backgroundColor: "#f9f9f9",
-    alignItems: "right"
+    alignItems: "right",
   },
 
   icons: {
     display: "flex",
     flexDirection: "row",
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 }));
 
 export default function WellCardDetails(props) {
@@ -143,7 +143,7 @@ export default function WellCardDetails(props) {
   }, [props.target, setTarget]);
 
   const handleCloseDetails = () => {
-    setStateWellCard(state => ({ ...state, openWellDetails: false }));
+    setStateWellCard((state) => ({ ...state, openWellDetails: false }));
   };
 
   const wellInfo = () => (
@@ -170,14 +170,9 @@ export default function WellCardDetails(props) {
         action={
           <div className={classes.icons}>
             <TrackToggleButton
-              source={stateApp.user}
-              sourceLabel="user"
-              sourceSourceId={stateApp.user.id}
-              sourceName={stateApp.user.name}
               target={target}
               targetLabel="well"
               targetSourceId={stateApp.selectedWell.id}
-              targetName={stateApp.selectedWell.wellName}
             />
             <IconButton
               color="secondary"
@@ -317,7 +312,7 @@ export default function WellCardDetails(props) {
                 "Owners",
                 "Property History",
                 "Title",
-                "Documents"
+                "Documents",
               ]}
               tabPanels={[
                 wellInfo(),
@@ -331,7 +326,7 @@ export default function WellCardDetails(props) {
                 />,
                 <h3>Coming Soon-</h3>,
                 <h3>Coming Soon--</h3>,
-                <h3>Coming Soon---</h3>
+                <h3>Coming Soon---</h3>,
               ]}
             />
           </Grid>

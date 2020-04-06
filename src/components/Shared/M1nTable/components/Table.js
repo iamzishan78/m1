@@ -61,7 +61,7 @@ function stableSort(array, cmp) {
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  return stabilizedThis.map(el => el[0]);
+  return stabilizedThis.map((el) => el[0]);
 }
 
 function getSorting(order, orderBy) {
@@ -76,24 +76,24 @@ const headCells = [
     id: "ownershipType",
     numeric: false,
     disablePadding: false,
-    label: "Entity"
+    label: "Entity",
   },
   { id: "interestType", numeric: false, disablePadding: false, label: "Type" },
   {
     id: "ownershipPercentage",
     numeric: true,
     disablePadding: false,
-    label: "Interest"
+    label: "Interest",
   },
   {
     id: "appraisedValue",
     numeric: true,
     disablePadding: false,
-    label: "Appraised Value"
+    label: "Appraised Value",
   },
   { id: "comments", numeric: false, disablePadding: false, label: "" },
   { id: "tags", numeric: false, disablePadding: false, label: "" },
-  { id: "isTracked", numeric: false, disablePadding: false, label: "" }
+  { id: "isTracked", numeric: false, disablePadding: false, label: "" },
 ];
 
 function EnhancedTableHead(props) {
@@ -105,9 +105,9 @@ function EnhancedTableHead(props) {
     numSelected,
     rowCount,
     onRequestSort,
-    headCells
+    headCells,
   } = props;
-  const createSortHandler = property => event => {
+  const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
 
@@ -123,7 +123,7 @@ function EnhancedTableHead(props) {
           /> */}
         </TableCell>
 
-        {headCells.map(headCell => (
+        {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
             //align={headCell.numeric ? 'right' : 'left'}
@@ -157,38 +157,38 @@ EnhancedTableHead.propTypes = {
   onSelectAllClick: PropTypes.func.isRequired,
   order: PropTypes.oneOf(["asc", "desc"]).isRequired,
   orderBy: PropTypes.string.isRequired,
-  rowCount: PropTypes.number.isRequired
+  rowCount: PropTypes.number.isRequired,
 };
 
-const useToolbarStyles = makeStyles(theme => ({
+const useToolbarStyles = makeStyles((theme) => ({
   root: {
     paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(1)
+    paddingRight: theme.spacing(1),
   },
   addForm: {
     margin: "15px",
     paddingLeft: "100px",
     "& > *": {
       margin: theme.spacing(1),
-      width: 200
-    }
+      width: 200,
+    },
   },
   highlight:
     theme.palette.type === "light"
       ? {
           color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85)
+          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
         }
       : {
           color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark
+          backgroundColor: theme.palette.secondary.dark,
         },
   title: {
-    flex: "1 1 100%"
-  }
+    flex: "1 1 100%",
+  },
 }));
 
-const EnhancedTableToolbar = props => {
+const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
   const { numSelected } = props;
   const [showAdd, setShowAdd] = useState(false);
@@ -199,15 +199,15 @@ const EnhancedTableToolbar = props => {
   const [appraisedValue, setAppraisedValue] = useState("");
   const [, setStateTable] = useContext(TableContext);
 
-  const addOwner = props => {
+  const addOwner = (props) => {
     let newOwner = {
       name: nameValue,
       ownershipType: entityValue,
       interestType: typeValue,
       appraisedValue: appraisedValue,
-      ownershipPercentage: interestValue
+      ownershipPercentage: interestValue,
     };
-    setStateTable(state => ({ ...state, ownerToAdd: newOwner }));
+    setStateTable((state) => ({ ...state, ownerToAdd: newOwner }));
 
     setNameValue("");
     setEntityValue("");
@@ -221,7 +221,7 @@ const EnhancedTableToolbar = props => {
       {showAdd > 0 ? (
         <form className={classes.addForm} noValidate autoComplete="off">
           <TextField
-            onChange={e => {
+            onChange={(e) => {
               setNameValue(e.target.value);
             }}
             value={nameValue}
@@ -232,7 +232,7 @@ const EnhancedTableToolbar = props => {
             inputProps={{ "aria-label": "description" }}
           />
           <TextField
-            onChange={e => {
+            onChange={(e) => {
               setEntityValue(e.target.value);
             }}
             value={entityValue}
@@ -243,7 +243,7 @@ const EnhancedTableToolbar = props => {
             inputProps={{ "aria-label": "description" }}
           />
           <TextField
-            onChange={e => {
+            onChange={(e) => {
               setTypeValue(e.target.value);
             }}
             value={typeValue}
@@ -254,7 +254,7 @@ const EnhancedTableToolbar = props => {
             inputProps={{ "aria-label": "description" }}
           />
           <TextField
-            onChange={e => {
+            onChange={(e) => {
               setInterestValue(e.target.value);
             }}
             value={interestValue}
@@ -265,7 +265,7 @@ const EnhancedTableToolbar = props => {
             inputProps={{ "aria-label": "description" }}
           />
           <TextField
-            onChange={e => {
+            onChange={(e) => {
               setAppraisedValue(e.target.value);
             }}
             value={appraisedValue}
@@ -299,7 +299,7 @@ const EnhancedTableToolbar = props => {
           <Tooltip title="Add">
             <IconButton
               color="primary"
-              onClick={e => {
+              onClick={(e) => {
                 props.addAble.externalAdd
                   ? props.addAble.externalAddFunction(e)
                   : setShowAdd(true);
@@ -316,19 +316,19 @@ const EnhancedTableToolbar = props => {
 };
 
 EnhancedTableToolbar.propTypes = {
-  numSelected: PropTypes.number.isRequired
+  numSelected: PropTypes.number.isRequired,
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%"
+    width: "100%",
   },
   paper: {
     width: "100%",
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
   },
   table: {
-    minWidth: 750
+    minWidth: 750,
   },
   visuallyHidden: {
     border: 0,
@@ -339,70 +339,70 @@ const useStyles = makeStyles(theme => ({
     padding: 0,
     position: "absolute",
     top: 20,
-    width: 1
+    width: 1,
   },
   expandedRow: {
     width: "100%",
     backgroundColor: "#fff",
     paddingBottom: 0,
-    paddingTop: 0
+    paddingTop: 0,
   },
   collapseInsideRow: {
-    width: "100%"
+    width: "100%",
   },
   tagWrapper: {
     margin: "10px",
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-around",
-    flexWrap: "nowrap"
+    flexWrap: "nowrap",
   },
   expand: {
     backgroundColor: "#efefef",
     transform: "rotate(0deg)",
     marginLeft: "auto",
     transition: theme.transitions.create("transform", {
-      duration: theme.transitions.duration.shortest
-    })
+      duration: theme.transitions.duration.shortest,
+    }),
   },
   expandOpenOwner: {
     backgroundColor: theme.palette.secondary.main,
     "&:hover": {
-      background: theme.palette.secondary.main
-    }
+      background: theme.palette.secondary.main,
+    },
     //transform: 'rotate(180deg)',
   },
   expandOpenTag: {
     backgroundColor: theme.palette.secondary.main,
     "&:hover": {
-      background: theme.palette.secondary.main
-    }
+      background: theme.palette.secondary.main,
+    },
     //transform: 'rotate(180deg)',
   },
   expandOpenComment: {
     backgroundColor: theme.palette.secondary.main,
     "&:hover": {
-      background: theme.palette.secondary.main
-    }
+      background: theme.palette.secondary.main,
+    },
     //transform: 'rotate(180deg)',
   },
   cursorPointer: {
     "&:hover": {
-      cursor: "pointer"
-    }
+      cursor: "pointer",
+    },
   },
   dialog: {
-    "& .MuiCard-root": { overflow: "auto" }
+    "& .MuiCard-root": { overflow: "auto" },
   },
   tagsDiv: {
-    margin: "8px"
-  }
+    margin: "8px",
+  },
 }));
 
 var formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
-  maximumSignificantDigits: 21
+  maximumSignificantDigits: 21,
 });
 
 export default function SubTable(props) {
@@ -451,9 +451,9 @@ export default function SubTable(props) {
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = event => {
+  const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map(n => n.Id);
+      const newSelecteds = rows.map((n) => n.Id);
       setSelected(newSelecteds);
       return;
     }
@@ -516,7 +516,7 @@ export default function SubTable(props) {
     setMouseY(e.nativeEvent.clientY - 70);
     setSelectedRow(row);
     if (props.targetLabel === "well")
-      setStateApp(state => ({ ...state, selectedWell: row }));
+      setStateApp((state) => ({ ...state, selectedWell: row }));
     handleOpenExpandableCard();
   };
   const handleOpenExpandableCard = () => {
@@ -645,7 +645,7 @@ export default function SubTable(props) {
                           <IconButton
                             size="medium"
                             color="primary"
-                            onClick={event => handleRowClick(event, row)}
+                            onClick={(event) => handleRowClick(event, row)}
                             aria-label="view more"
                           >
                             <VisibilityIcon color="secondary" />
@@ -669,11 +669,11 @@ export default function SubTable(props) {
                                 padding="none"
                                 onClick={
                                   props.targetLabel === "contact"
-                                    ? event => {
+                                    ? (event) => {
                                         event.preventDefault();
-                                        setStateApp(stateApp => ({
+                                        setStateApp((stateApp) => ({
                                           ...stateApp,
-                                          selectedContact: row.id
+                                          selectedContact: row.id,
                                         }));
                                         history.push("/contact");
                                       }
@@ -697,11 +697,11 @@ export default function SubTable(props) {
                                 align="left"
                                 onClick={
                                   props.targetLabel === "contact"
-                                    ? event => {
+                                    ? (event) => {
                                         event.preventDefault();
-                                        setStateApp(stateApp => ({
+                                        setStateApp((stateApp) => ({
                                           ...stateApp,
-                                          selectedContact: row.id
+                                          selectedContact: row.id,
                                         }));
                                         history.push("/contact");
                                       }
@@ -728,7 +728,7 @@ export default function SubTable(props) {
                               color="primary"
                               className={clsx(classes.expand, {
                                 [classes.expandOpenOwner]:
-                                  expanded && collapsedRow === index
+                                  expanded && collapsedRow === index,
                               })}
                               onClick={() => handleExpandClick(index, "owners")}
                               aria-expanded={expanded && collapsedRow === index}
@@ -747,7 +747,7 @@ export default function SubTable(props) {
                             color="primary"
                             className={clsx(classes.expand, {
                               [classes.expandOpenOwner]:
-                                expandedContact && collapsedRow === index
+                                expandedContact && collapsedRow === index,
                             })}
                             onClick={() =>
                               handleExpandClickContact(index, "contacts")
@@ -769,7 +769,8 @@ export default function SubTable(props) {
                             color="primary"
                             className={clsx(classes.expand, {
                               [classes.expandOpenOwner]:
-                                expandedOwnersContacts && collapsedRow === index
+                                expandedOwnersContacts &&
+                                collapsedRow === index,
                             })}
                             onClick={() =>
                               handleExpandClickOwnersContacts(
@@ -793,15 +794,15 @@ export default function SubTable(props) {
                           color="primary"
                           className={clsx(classes.expand, {
                             [classes.expandOpenComment]:
-                              expandedComment && collapsedRow === index
+                              expandedComment && collapsedRow === index,
                           })}
                           onClick={() => {
                             handleExpandClickComment(index, {
                               targetSourceId: row.id,
-                              targetName:
-                                props.targetLabel === "well"
-                                  ? row.wellName
-                                  : row.name
+                              // targetName:
+                              //   props.targetLabel === "well"
+                              //     ? row.wellName
+                              //     : row.name,
                             });
                           }}
                           aria-expanded={
@@ -818,16 +819,16 @@ export default function SubTable(props) {
                           color="primary"
                           className={clsx(classes.expand, {
                             [classes.expandOpenTag]:
-                              expandedTag && collapsedRow === index
+                              expandedTag && collapsedRow === index,
                           })}
                           onClick={() =>
                             handleExpandClickTag(index, {
                               row,
                               targetSourceId: row.id,
-                              targetName:
-                                props.targetLabel === "well"
-                                  ? row.wellName
-                                  : row.name
+                              // targetName:
+                              //   props.targetLabel === "well"
+                              //     ? row.wellName
+                              //     : row.name,
                             })
                           }
                           aria-expanded={expandedTag && collapsedRow === index}
@@ -839,18 +840,9 @@ export default function SubTable(props) {
 
                       <TableCell align="center">
                         <TrackToggleButton
-                          source={stateApp.user}
-                          sourceLabel="user"
-                          sourceSourceId={stateApp.user.id}
-                          sourceName={stateApp.user.name}
                           target={row}
                           targetLabel={props.targetLabel}
                           targetSourceId={row.id}
-                          targetName={
-                            props.targetLabel === "well"
-                              ? row.wellName
-                              : row.name
-                          }
                           dark
                         />
                       </TableCell>
@@ -917,7 +909,7 @@ export default function SubTable(props) {
                           )}
                         </Collapse>
                       </TableCell>
-                    </TableRow>
+                    </TableRow>,
                   ];
                 }
               )}
