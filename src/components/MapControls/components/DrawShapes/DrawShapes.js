@@ -12,7 +12,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 //import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 //import { faGripLines, faDrawPolygon } from "@fortawesome/free-solid-svg-icons";
 //import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
-import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
+//import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 // COMPONENTS
 import SpatialDataCard from "../spatialDataCard";
 // HELPERS
@@ -27,32 +27,40 @@ import { makeStyles, Icon } from "@material-ui/core";
 import polylabel from "polylabel";
 import { useHistory } from "react-router-dom";
 
+//import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+//import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
+//import { mdiShapePolygonPlus } from '@mdi/js'; 
+import {default as Cube3d} from '../../../Shared/svgIcons/cube-3d';
+
 // import { availableShapes } from "./constants";
 const DEBUG_GREEN = "background: green; color: white; border: 1px solid black";
 const DEBUG_YELLOW = "background: yellow; color: red; border: 1px solid black";
 const DEBUG_BLUE = "background: blue; color: white; border: 1px solid black";
 const DEBUG_RED = "background: red; color: white; border: 1px solid black";
 
+
+
+
 export const availableShapes = [
   {
     title: "Polygon",
-    mode: "draw_polygon"
-    // icon: "fa fa-draw-polygon"
+    mode: "draw_polygon",
+    icon: "fa fa-draw-polygon"
   },
   {
     title: "Circle",
-    mode: "drag_circle"
-    //icon: "fa fa-circle"
+    mode: "drag_circle",
+    icon: "fa fa-circle"
   },
   {
     title: "Rectangle",
-    mode: "draw_rectangle"
-    //icon: "fa fa-square"
+    mode: "draw_rectangle",
+    icon: "fa fa-square"
   },
   {
     title: "Line",
-    mode: "draw_line_string"
-    //icon: "fa fa-grip-lines"
+    mode: "draw_line_string",
+    icon: "fa fa-grip-lines"
   }
 ];
 
@@ -147,6 +155,7 @@ export default function DrawShapes(props) {
         >
           <div style={{ color: "white", paddingRight: "15px" }}>
             <Icon className={shape.icon} color="secondary" />
+            <Cube3d/>   
           </div>
           <ListItemText primary={shape.title} id={index} />
         </StyledMenuItem>
