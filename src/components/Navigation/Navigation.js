@@ -262,9 +262,11 @@ const useStyles = makeStyles(theme => ({
     top: "calc(50% - 17px/2 - 120px)"
   },
   betaSideNav: {
-    paddingBottom: 40, 
-    paddingLeft: 30, 
-    fontSize: 10 
+    paddingBottom: 35, 
+    paddingLeft: 35, 
+    paddingRight: 0,
+    fontSize: 12 ,
+    color: "rgba(0, 0, 0, 0.52) !important ",
   },
   betaText: {
     // position: "absolute",
@@ -635,6 +637,7 @@ export default function Navigation(props) {
       transformOrigin={{ vertical: "bottom", horizontal: "right" }}
       open={isMenuOpen}
       onClose={handleMenuClose}
+      
     >
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
         Logout
@@ -893,8 +896,8 @@ export default function Navigation(props) {
               </Tabs>
             </div>
 
-            <Divider style={{margin: 1}} orientation="vertical" />
-            <IconButton onClick={handleProfileMenuOpen}>
+            <Divider style={{margin: 1,}} orientation="vertical" />
+            <IconButton style={{left: "8.5px"}} onClick={handleProfileMenuOpen}>
               <Avatar name={stateApp.user.name} size="38" round />
             </IconButton>
           </Toolbar>

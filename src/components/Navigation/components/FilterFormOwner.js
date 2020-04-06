@@ -1,7 +1,7 @@
-import React, { useState, useContext} from "react";
-import { makeStyles} from "@material-ui/core/styles";
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
+import React, { useState, useContext } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@material-ui/core/TextField";
 import { NavigationContext } from "../NavigationContext";
 
 const useStyles = makeStyles(theme => ({
@@ -22,8 +22,7 @@ const useStyles = makeStyles(theme => ({
     // minWidth: 120,
     // maxWidth: 300,
     color: "black"
-  },
-
+  }
 }));
 
 const interestList = [
@@ -133,7 +132,7 @@ export default function FilterFormOwner() {
   );
   const [interests, setInterests] = useState(interestList);
   const [ownerTypes, setOwnerTypes] = useState(ownerTypesList);
- 
+
   const setFilterInterest = interestNames => {
     let filter;
     let filters = [];
@@ -237,52 +236,54 @@ export default function FilterFormOwner() {
     setStateNav(stateNav => ({
       ...stateNav,
       ownerTypeName: event
-    }));;
+    }));
   };
 
   return (
     <div className={classes.row}>
       <div className={classes.root}>
-      <Autocomplete 
-        className={classes.formControl}
-        defaultValue={interestName}
-        autoComplete={false}
-        onChange={(event, newValue) => {
+        <Autocomplete
+          className={classes.formControl}
+          defaultValue={interestName}
+          onChange={(event, newValue) => {
             handleChangeInterest(newValue);
           }}
-        multiple
-        options={interests.map(option => option)}
-        renderInput={params => (
-          <TextField
-            {...params}
-            variant="outlined"
-            label="Interest Types"
-            placeholder=""
-            fullWidth={true}
-          />
-        )}  
-        disableListWrap
-      /> 
-        <Autocomplete 
-        className={classes.formControl}
-        defaultValue={ownerTypeName}
-        onChange={(event, newValue) => {
-          handleChangeOwnerType(newValue);
+          multiple
+          options={interests.map(option => option)}
+          renderInput={params => (
+            <form autoComplete="off">
+              <TextField
+                {...params}
+                variant="outlined"
+                label="Interest Types"
+                placeholder=""
+                fullWidth={true}
+              />
+            </form>
+          )}
+          disableListWrap
+        />
+        <Autocomplete
+          className={classes.formControl}
+          defaultValue={ownerTypeName}
+          onChange={(event, newValue) => {
+            handleChangeOwnerType(newValue);
           }}
-        multiple
-        autoComplete={false}
-        options={ownerTypes.map(option => option)}
-        renderInput={params => (
-          <TextField
-            {...params}
-            variant="outlined"
-            label="Owner Types"
-            placeholder=""
-            fullWidth={true}
-          />
-        )}  
-        disableListWrap
-      />
+          multiple
+          options={ownerTypes.map(option => option)}
+          renderInput={params => (
+            <form autoComplete="off">
+              <TextField
+                {...params}
+                variant="outlined"
+                label="Owner Types"
+                placeholder=""
+                fullWidth={true}
+              />
+            </form>
+          )}
+          disableListWrap
+        />
       </div>
     </div>
   );
