@@ -246,6 +246,7 @@ export default function FilterFormOwner() {
       <Autocomplete 
         className={classes.formControl}
         defaultValue={interestName}
+        autoComplete={false}
         onChange={(event, newValue) => {
             handleChangeInterest(newValue);
           }}
@@ -269,6 +270,7 @@ export default function FilterFormOwner() {
           handleChangeOwnerType(newValue);
           }}
         multiple
+        autoComplete={false}
         options={ownerTypes.map(option => option)}
         renderInput={params => (
           <TextField
