@@ -20,6 +20,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Tab from "@material-ui/core/Tab";
 import Badge from "@material-ui/core/Badge";
 import Tabs from "@material-ui/core/Tabs";
+import Button from '@material-ui/core/Button';
 import InputAdornment from "@material-ui/core/InputAdornment";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Input from "@material-ui/core/Input";
@@ -36,6 +37,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -259,7 +261,19 @@ const useStyles = makeStyles(theme => ({
     right: "58.31%",
     top: "calc(50% - 17px/2 - 120px)"
   },
-
+  betaSideNav: {
+    paddingBottom: 40, 
+    paddingLeft: 30, 
+    fontSize: 10 
+  },
+  betaText: {
+    position: "absolute",
+    fontSize: 10,
+    top: 0,
+    right: 0,
+    left: 40,
+    paddingTop: 8,
+  },
   avatar: {
     backgroundColor: "black",
     color: "white",
@@ -393,7 +407,8 @@ const useStyles = makeStyles(theme => ({
   beta: {
     paddingTop:12, 
     minWidth: 62, 
-    textAlign: "center"
+    textAlign: "center",
+    position: "relative",
   },
   
   goHome: {
@@ -871,7 +886,13 @@ export default function Navigation(props) {
                   icon={<ValuationIcon color="#fff" opacity="0.5" />}
                   aria-label="valuation" 
                 />
-                : <div className={classes.beta}>BETA</div>}
+                : <div className={classes.beta}>
+                <ValuationIcon color="#fff" opacity="0.5" />
+                <div className={classes.betaText}>
+                  BETA
+                </div>
+              </div>
+                }
                 </div>
                 <div id="disableTwo"  onMouseOver={e => hoverDisplayBeta(e)} onMouseOut={e => hoverDisplayBetaLeave(e)}>
                 {!displayBeta.two ?
@@ -882,7 +903,13 @@ export default function Navigation(props) {
                   icon={<PredictiveIcon color="#fff" opacity="0.5" />}
                   aria-label="predictive"
                 />
-                : <div className={classes.beta}>BETA</div>}
+                : <div className={classes.beta}>
+                  <PredictiveIcon color="#fff" opacity="0.5" />
+                  <div className={classes.betaText}>
+                    BETA
+                  </div>
+                </div>
+                }
                 </div>
                 <div id="disableThree"  onMouseOver={e => hoverDisplayBeta(e)} onMouseOut={e => hoverDisplayBetaLeave(e)}>
                 {!displayBeta.three ?
@@ -890,10 +917,16 @@ export default function Navigation(props) {
                   disabled={true}
                   value={6}
                   classes={{ root: classes.tab }}
-                  icon={ <LocalOfferIcon htmlColor="#fff" opacity="0.5" />}
+                  icon={<LocalOfferIcon htmlColor="#fff" opacity="0.5" />}
                   aria-label="tags"
                 />
-                : <div className={classes.beta}>BETA</div>}
+                : <div className={classes.beta}>
+                  <LocalOfferIcon htmlColor="#fff" opacity="0.5" />
+                    <div className={classes.betaText}>
+                      BETA
+                    </div>
+                  </div>
+                }
                 </div>
               </Tabs>
             </div>
@@ -1036,6 +1069,11 @@ export default function Navigation(props) {
               <NotificationsActiveIcon />
             </ListItemIcon>
             <ListItemText primary="Alerts" />
+            <ListItemSecondaryAction>
+              <Button disabled className={classes.betaSideNav} edge="end" aria-label="BETA">
+                BETA
+              </Button>
+            </ListItemSecondaryAction>
           </ListItem>
 
           <ListItem
@@ -1052,6 +1090,11 @@ export default function Navigation(props) {
               <TimelineIcon />
             </ListItemIcon>
             <ListItemText primary="Pulse" />
+            <ListItemSecondaryAction>
+              <Button disabled className={classes.betaSideNav} edge="end" aria-label="BETA">
+                BETA
+              </Button>
+            </ListItemSecondaryAction>
           </ListItem>
 
           <ListItem
@@ -1068,6 +1111,11 @@ export default function Navigation(props) {
               <HeadsetMicIcon />
             </ListItemIcon>
             <ListItemText primary="Support" />
+            <ListItemSecondaryAction>
+              <Button disabled className={classes.betaSideNav} edge="end" aria-label="BETA">
+                BETA
+              </Button>
+            </ListItemSecondaryAction>
           </ListItem>
           <ListItem
             classes={{
@@ -1083,6 +1131,11 @@ export default function Navigation(props) {
               <DvrIcon />
             </ListItemIcon>
             <ListItemText primary="Press" />
+            <ListItemSecondaryAction>
+              <Button disabled className={classes.betaSideNav} edge="end" aria-label="BETA">
+                BETA
+              </Button>
+            </ListItemSecondaryAction>
           </ListItem>
         </List>
       </Drawer>
