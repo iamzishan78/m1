@@ -137,25 +137,29 @@ export default function Map() {
       let filterArray = [];
 
       if (stateNav.filterWellProfile && stateNav.filterWellProfile.length > 0) {
+        let total = stateNav.filterWellProfile[2].length
         filterArray.push(stateNav.filterWellProfile);
         isFilterSet = true;
 
-        wellFilterCount += 1;
+        wellFilterCount += total;
       }
       if (stateNav.filterWellType && stateNav.filterWellType.length > 0) {
+        let total = stateNav.filterWellType[2].length
         filterArray.push(stateNav.filterWellType);
         isFilterSet = true;
-        wellFilterCount += 1;
+        wellFilterCount += total;
       }
       if (stateNav.filterWellStatus && stateNav.filterWellStatus.length > 0) {
+        let total = stateNav.filterWellStatus[2].length
         filterArray.push(stateNav.filterWellStatus);
         isFilterSet = true;
-        wellFilterCount += 1;
+        wellFilterCount += total;
       }
       if (stateNav.filterOperator && stateNav.filterOperator.length > 0) {
+        let total = stateNav.filterOperator[2].length
         filterArray.push(stateNav.filterOperator);
         isFilterSet = true;
-        wellFilterCount += 1;
+        wellFilterCount += total;
       }
       if (
         stateNav.filterCumulativeOil &&
@@ -374,129 +378,39 @@ export default function Map() {
         productionFilterCount += 1;
       }
       if (
-        stateNav.filterOwnershipTypeReligiousInstitutions &&
-        stateNav.filterOwnershipTypeReligiousInstitutions.length > 0
-      ) {
-        filterArray.push(stateNav.filterOwnershipTypeReligiousInstitutions);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-      }
-      if (
-        stateNav.filterOwnershipTypeGovernmentalBodies &&
-        stateNav.filterOwnershipTypeGovernmentalBodies.length > 0
-      ) {
-        filterArray.push(stateNav.filterOwnershipTypeGovernmentalBodies);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-      }
-      if (
-        stateNav.filterOwnershipTypeNonProfits &&
-        stateNav.filterOwnershipTypeNonProfits.length > 0
-      ) {
-        filterArray.push(stateNav.filterOwnershipTypeNonProfits);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-      }
-      if (
-        stateNav.filterOwnershipTypeTrusts &&
-        stateNav.filterOwnershipTypeTrusts.length > 0
-      ) {
-        filterArray.push(stateNav.filterOwnershipTypeTrusts);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-      }
-      if (
-        stateNav.filterOwnershipTypeCorporations &&
-        stateNav.filterOwnershipTypeCorporations.length > 0
-      ) {
-        filterArray.push(stateNav.filterOwnershipTypeCorporations);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-      }
-      if (
-        stateNav.filterOwnershipTypeEducationalInstitutions &&
-        stateNav.filterOwnershipTypeEducationalInstitutions.length > 0
-      ) {
-        filterArray.push(stateNav.filterOwnershipTypeEducationalInstitutions);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-      }
-      if (
-        stateNav.filterOwnershipTypeIndividuals &&
-        stateNav.filterOwnershipTypeIndividuals.length > 0
-      ) {
-        filterArray.push(stateNav.filterOwnershipTypeIndividuals);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-      }
-      if (
-        stateNav.filterOwnershipTypeUnknown &&
-        stateNav.filterOwnershipTypeUnknown.length > 0
-      ) {
-        filterArray.push(stateNav.filterOwnershipTypeUnknown);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-      }
-      if (
         stateNav.filterAllInterestTypes &&
         stateNav.filterAllInterestTypes.length > 0
       ) {
+        let removeAny = 1;
+        let numberFiltes = stateNav.filterAllInterestTypes.length
+        let total = numberFiltes - removeAny;
         filterArray.push(stateNav.filterAllInterestTypes);
         isFilterSet = true;
-        ownershipFilterCount += 1;
+        ownershipFilterCount += total;
       }
       if (
         stateNav.filterAllOwnershipTypes &&
         stateNav.filterAllOwnershipTypes.length > 0
       ) {
-        console.log(stateNav.filterAllOwnershipTypes)
+        let removeAny = 1;
+        let numberFiltes = stateNav.filterAllOwnershipTypes.length
+        let total = numberFiltes - removeAny;
         filterArray.push(stateNav.filterAllOwnershipTypes);
         isFilterSet = true;
-        ownershipFilterCount += 1;
+        ownershipFilterCount += total;
       }
-      if (
-        stateNav.filterInterestTypeRoyaltyInterest &&
-        stateNav.filterInterestTypeRoyaltyInterest.length > 0
-      ) {
-        filterArray.push(stateNav.filterInterestTypeRoyaltyInterest);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-      }
-      if (
-        stateNav.filterInterestTypeOverrideRoyalty &&
-        stateNav.filterInterestTypeOverrideRoyalty.length > 0
-      ) {
-        filterArray.push(stateNav.filterInterestTypeOverrideRoyalty);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-      }
-      if (
-        stateNav.filterInterestTypeWorkingInterest &&
-        stateNav.filterInterestTypeWorkingInterest.length > 0
-      ) {
-        filterArray.push(stateNav.filterInterestTypeWorkingInterest);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-      }
-      if (
-        stateNav.filterInterestTypeProductionPayment &&
-        stateNav.filterInterestTypeProductionPayment.length > 0
-      ) {
-        filterArray.push(stateNav.filterInterestTypeProductionPayment);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-      }
-
       if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
+        let total = stateNav.filterBasin[2].length
         filterArray.push(stateNav.filterBasin);
         isFilterSet = true;
-        geographyFilterCount += 1;
+        geographyFilterCount += total;
       }
 
       if (stateNav.filterPlay && stateNav.filterPlay.length > 0) {
+        let total = stateNav.filterPlay[2].length
         filterArray.push(stateNav.filterPlay);
         isFilterSet = true;
-        geographyFilterCount += 1;
+        geographyFilterCount += total;
       }
 
       if (
@@ -580,7 +494,7 @@ export default function Map() {
         map.setFilter("wellsHeatmapRecentlyCompleted", null);
       }
     }
-  }, [map, setStateNav, stateNav.asbtractName, stateNav.countyName, stateNav.filterCompletetionDateRange, stateNav.filterCumulativeGas, stateNav.filterCumulativeOil, stateNav.filterCumulativeWater, stateNav.filterFirstMonthGas, stateNav.filterFirstMonthOil, stateNav.filterFirstMonthWater, stateNav.filterFirstProdDateRange, stateNav.filterFirstSixMonthGas, stateNav.filterFirstSixMonthOil, stateNav.filterFirstSixMonthWater, stateNav.filterFirstThreeMonthGas, stateNav.filterFirstThreeMonthOil, stateNav.filterFirstThreeMonthWater, stateNav.filterFirstTwelveMonthGas, stateNav.filterFirstTwelveMonthOil, stateNav.filterFirstTwelveMonthWater, stateNav.filterGeography, stateNav.filterGeographyAbstract, stateNav.filterGeographyCounty, stateNav.filterGeographyState, stateNav.filterGeographySurvey, stateNav.filterInterestTypeOverrideRoyalty, stateNav.filterInterestTypeProductionPayment, stateNav.filterInterestTypeRoyaltyInterest, stateNav.filterInterestTypeWorkingInterest, stateNav.filterLastMonthGas, stateNav.filterLastMonthOil, stateNav.filterLastMonthWater, stateNav.filterLastSixMonthGas, stateNav.filterLastSixMonthOil, stateNav.filterLastSixMonthWater, stateNav.filterLastThreeMonthGas, stateNav.filterLastThreeMonthOil, stateNav.filterLastThreeMonthWater, stateNav.filterLastTwelveMonthGas, stateNav.filterLastTwelveMonthOil, stateNav.filterLastTwelveMonthWater, stateNav.filterOperator, stateNav.filterOwnershipTypeCorporations, stateNav.filterOwnershipTypeEducationalInstitutions, stateNav.filterOwnershipTypeGovernmentalBodies, stateNav.filterOwnershipTypeIndividuals, stateNav.filterOwnershipTypeNonProfits, stateNav.filterOwnershipTypeReligiousInstitutions, stateNav.filterOwnershipTypeTrusts, stateNav.filterOwnershipTypeUnknown, stateNav.filterPermitDateRange, stateNav.filterSpudDateRange, stateNav.filterWellProfile, stateNav.filterWellStatus, stateNav.filterWellType, stateNav.filterBasin, stateNav.filterPlay, stateNav.stateName, stateNav.surveyName, stateNav.filterAllInterestTypes, stateNav.filterAllOwnershipTypes]);
+  }, [map, setStateNav, stateNav.filterAllInterestTypes, stateNav.filterAllOwnershipTypes, stateNav.filterBasin, stateNav.filterCompletetionDateRange, stateNav.filterCumulativeGas, stateNav.filterCumulativeOil, stateNav.filterCumulativeWater, stateNav.filterFirstMonthGas, stateNav.filterFirstMonthOil, stateNav.filterFirstMonthWater, stateNav.filterFirstProdDateRange, stateNav.filterFirstSixMonthGas, stateNav.filterFirstSixMonthOil, stateNav.filterFirstSixMonthWater, stateNav.filterFirstThreeMonthGas, stateNav.filterFirstThreeMonthOil, stateNav.filterFirstThreeMonthWater, stateNav.filterFirstTwelveMonthGas, stateNav.filterFirstTwelveMonthOil, stateNav.filterFirstTwelveMonthWater, stateNav.filterGeography, stateNav.filterLastMonthGas, stateNav.filterLastMonthOil, stateNav.filterLastMonthWater, stateNav.filterLastSixMonthGas, stateNav.filterLastSixMonthOil, stateNav.filterLastSixMonthWater, stateNav.filterLastThreeMonthGas, stateNav.filterLastThreeMonthOil, stateNav.filterLastThreeMonthWater, stateNav.filterLastTwelveMonthGas, stateNav.filterLastTwelveMonthOil, stateNav.filterLastTwelveMonthWater, stateNav.filterOperator, stateNav.filterPermitDateRange, stateNav.filterPlay, stateNav.filterSpudDateRange, stateNav.filterWellProfile, stateNav.filterWellStatus, stateNav.filterWellType]);
 
   useEffect(() => {
     //sets style of map when changed in Map Controls
