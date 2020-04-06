@@ -31,6 +31,10 @@ import { useHistory } from "react-router-dom";
 //import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 //import { mdiShapePolygonPlus } from '@mdi/js'; 
 import {default as Cube3d} from '../../../Shared/svgIcons/cube-3d';
+import {default as DrawPoly} from '../../../Shared/svgIcons/polygon';
+import {default as Rect} from '../../../Shared/svgIcons/rectangle';
+import ShowChartIcon from '@material-ui/icons/ShowChart';
+import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 
 // import { availableShapes } from "./constants";
 const DEBUG_GREEN = "background: green; color: white; border: 1px solid black";
@@ -45,22 +49,22 @@ export const availableShapes = [
   {
     title: "Polygon",
     mode: "draw_polygon",
-    icon: "fa fa-draw-polygon"
+    //icon: "fa fa-draw-polygon"
   },
   {
     title: "Circle",
-    mode: "drag_circle",
-    icon: "fa fa-circle"
+    mode: "draw_circle",
+    //icon: "fa fa-circle"
   },
   {
     title: "Rectangle",
     mode: "draw_rectangle",
-    icon: "fa fa-square"
+    //icon: "fa fa-square"
   },
   {
     title: "Line",
     mode: "draw_line_string",
-    icon: "fa fa-grip-lines"
+    //icon: "fa fa-grip-lines"
   }
 ];
 
@@ -155,7 +159,10 @@ export default function DrawShapes(props) {
         >
           <div style={{ color: "white", paddingRight: "15px" }}>
             <Icon className={shape.icon} color="secondary" />
-            <Cube3d/>   
+            {shape.mode === "draw_polygon" && <DrawPoly/>}
+            {shape.mode === "draw_rectangle" && <Rect/>}
+            {shape.mode === "draw_circle" && <RadioButtonUncheckedIcon fontSize='small'/>}
+            {shape.mode === "draw_line_string" && <ShowChartIcon/>}
           </div>
           <ListItemText primary={shape.title} id={index} />
         </StyledMenuItem>
