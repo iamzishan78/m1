@@ -17,6 +17,7 @@ import WellCardProvider from "../WellCard/WellCardProvider";
 import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
 import WellsProvider from "../Wells/WellsProvider";
 import Portal from "./components/Portal";
+import Cordinates from "./components/Cordinates";
 import "./popup.css";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import {
@@ -76,6 +77,8 @@ export default function Map() {
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
+  const [lng , setLng] = useState();
+  const [lat, setLat] = useState();
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [mapStyles, setMapStyles] = useState([]);
   const [map, setMap] = useState(null);
@@ -102,8 +105,8 @@ export default function Map() {
         });
       }
     }
-  }, [map, stateMap.checkedLayers]);
-
+  }, [map, stateMap.checkedLayers, stateMap.styleLayers]);
+  
   useEffect(() => {
     if (stateMap.checkedHeats && map) {
       stateMap.heatLayers.forEach(l => {
@@ -668,7 +671,6 @@ export default function Map() {
 
         map.on("mousemove", "wellpoints", e => {
           map.getCanvas().style.cursor = "pointer";
-
           // // Set variables equal to the current feature's magnitude, location, and time
           // var quakeMagnitude = e.features[0].properties.mag;
           // var quakeLocation = e.features[0].properties.place;
@@ -722,7 +724,13 @@ export default function Map() {
           // // Reset the cursor style
           map.getCanvas().style.cursor = "";
         });
-
+        map.on("mousemove",  e => {
+          // e.lngLat is the longitude, latitude geographical position of the event
+          // JSON.stringify(e.point) +
+          let coordinates =  e.lngLat.wrap()
+          setLng(coordinates.lng)
+          setLat(coordinates.lat)
+        });
         map.on("mousemove", "welllines", e => {
           map.getCanvas().style.cursor = "pointer";
         });
@@ -793,7 +801,7 @@ export default function Map() {
         speed: 0.9
       });
     }
-  }, [map, stateApp.flyTo]);
+  }, [createPopUp, map, stateApp.flyTo]);
 
   // console.log("---")
   // console.log(stateMap.flyTo)
@@ -820,7 +828,7 @@ export default function Map() {
         </div> */}
       </div>
       <MapControlsProvider />
-
+      <Cordinates long={lng} lat={lat} />
       {stateMap.openTrack == true ? (
         <div className={classes.trackLists}>
           {<WellsProvider showList={true} parent="track" />}

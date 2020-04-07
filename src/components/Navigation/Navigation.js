@@ -263,8 +263,17 @@ const useStyles = makeStyles(theme => ({
   },
   betaSideNav: {
     paddingBottom: 35, 
-    paddingLeft: 35, 
-    paddingRight: 0,
+    // paddingLeft: 0, 
+    // paddingRight: 0,
+    textTransform: "inherit",
+    right: 20,
+    fontSize: 12 ,
+    color: "rgba(0, 0, 0, 0.52) !important ",
+  },
+  betaSideNav2: {
+    paddingBottom: 35, 
+    // paddingLeft: 35, 
+    // paddingRight: 0,
     fontSize: 12 ,
     color: "rgba(0, 0, 0, 0.52) !important ",
   },
@@ -523,6 +532,7 @@ export default function Navigation(props) {
   const [loadingApply, setLoadingApply] = useState(false);
   const [applySuccess, setApplySuccess] = useState(false);
   const [disableApply, setDisableApply] = useState(true);
+  const [matchLocation, setMatchLocation] = useState(false);
   let history = useHistory();
   let location = useLocation();
 
@@ -605,6 +615,14 @@ export default function Navigation(props) {
     stateNav.profileName,
     stateNav.operatorName
   ])  */
+
+  useEffect(() => {
+    if (location.pathname === "/") {
+      setMatchLocation(true)
+    } else {
+      setMatchLocation(false)
+    }
+  },[location.pathname])
 
   const handleSearchInputChange = event => {
     console.log("input", event.currentTarget.value);
@@ -778,7 +796,7 @@ export default function Navigation(props) {
             </FormControl>
 
             <div className={classes.grow1} />
-
+            {matchLocation ? (
             <div anchorEl={anchorEl} className={classes.filterTabs}>
               <Tabs
                 value={value}
@@ -845,7 +863,7 @@ export default function Navigation(props) {
                   }
                   aria-label="production"
                 />
-                <Tab
+                {/* <Tab
                   disabled={true}
                   value={4}
                   classes={{ root: classes.tab }}
@@ -892,10 +910,13 @@ export default function Navigation(props) {
                     </Badge>
                     }
                   aria-label="tags"
-                />
-              </Tabs>
-            </div>
-
+                /> */}
+              </Tabs> 
+              
+            </div> ) : (
+              <div style={{display: "none"}}></div>
+            )
+            }
             <Divider style={{margin: 1,}} orientation="vertical" />
             <IconButton style={{left: "8.5px"}} onClick={handleProfileMenuOpen}>
               <Avatar name={stateApp.user.name} size="38" round />
@@ -1035,29 +1056,8 @@ export default function Navigation(props) {
             </ListItemIcon>
             <ListItemText primary="Alerts" />
             <ListItemSecondaryAction>
-              <Button disabled className={classes.betaSideNav} edge="end" aria-label="BETA">
-                BETA
-              </Button>
-            </ListItemSecondaryAction>
-          </ListItem>
-
-          <ListItem
-            classes={{
-              root: classes.menuListItemDisabled,
-              selected: classes.menuListItemDisabled
-            }}
-            button
-            //selected={stateNav.selectedMenuIndex === 0}
-            //onClick={event => handleListItemClick(event, 0, '/find')}
-            key="pulse"
-          >
-            <ListItemIcon>
-              <TimelineIcon />
-            </ListItemIcon>
-            <ListItemText primary="Pulse" />
-            <ListItemSecondaryAction>
-              <Button disabled className={classes.betaSideNav} edge="end" aria-label="BETA">
-                BETA
+              <Button disabled className={classes.betaSideNav} edge="end" aria-label="beta">
+                beta
               </Button>
             </ListItemSecondaryAction>
           </ListItem>
@@ -1076,11 +1076,31 @@ export default function Navigation(props) {
               <HeadsetMicIcon />
             </ListItemIcon>
             <ListItemText primary="Support" />
-            <ListItemSecondaryAction>
+            {/* <ListItemSecondaryAction>
+              <Button disabled className={classes.betaSideNav2} edge="end" aria-label="BETA">
+                BETA
+              </Button>
+            </ListItemSecondaryAction> */}
+          </ListItem>
+          <ListItem
+            classes={{
+              root: classes.menuListItemDisabled,
+              selected: classes.menuListItemDisabled
+            }}
+            button
+            //selected={stateNav.selectedMenuIndex === 0}
+            //onClick={event => handleListItemClick(event, 0, '/find')}
+            key="pulse"
+          >
+            <ListItemIcon>
+              <TimelineIcon />
+            </ListItemIcon>
+            <ListItemText primary="Pulse" />
+            {/* <ListItemSecondaryAction>
               <Button disabled className={classes.betaSideNav} edge="end" aria-label="BETA">
                 BETA
               </Button>
-            </ListItemSecondaryAction>
+            </ListItemSecondaryAction> */}
           </ListItem>
           <ListItem
             classes={{
@@ -1096,11 +1116,11 @@ export default function Navigation(props) {
               <DvrIcon />
             </ListItemIcon>
             <ListItemText primary="Press" />
-            <ListItemSecondaryAction>
+            {/* <ListItemSecondaryAction>
               <Button disabled className={classes.betaSideNav} edge="end" aria-label="BETA">
                 BETA
               </Button>
-            </ListItemSecondaryAction>
+            </ListItemSecondaryAction> */}
           </ListItem>
         </List>
       </Drawer>
