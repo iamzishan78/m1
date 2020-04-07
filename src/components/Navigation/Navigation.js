@@ -262,11 +262,11 @@ const useStyles = makeStyles(theme => ({
     top: "calc(50% - 17px/2 - 120px)"
   },
   betaSideNav: {
-    paddingBottom: 35, 
+    // paddingBottom: 35, 
     // paddingLeft: 0, 
     // paddingRight: 0,
     textTransform: "inherit",
-    right: 20,
+    right: 10,
     fontSize: 12 ,
     color: "rgba(0, 0, 0, 0.52) !important ",
   },
