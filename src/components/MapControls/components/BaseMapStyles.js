@@ -122,8 +122,8 @@ function Icon2() {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
-      width="42.072"
-      height="27.988"
+      width="90"
+      height="60"
       version="1.1"
       viewBox="0 0 42.072 27.988"
     >
@@ -229,7 +229,7 @@ export default function BaseMapStyles(props) {
           }}
         >
           <ThemeProvider theme={theme}>
-          <SvgIcon><Icon2/></SvgIcon>
+          <Icon2/>
 
           <ListItemText primary={style.name} /> 
           </ThemeProvider>
