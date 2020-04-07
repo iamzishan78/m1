@@ -30,7 +30,6 @@ import { useHistory } from "react-router-dom";
 //import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 //import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 //import { mdiShapePolygonPlus } from '@mdi/js'; 
-import {default as Cube3d} from '../../../Shared/svgIcons/cube-3d';
 import {default as DrawPoly} from '../../../Shared/svgIcons/polygon';
 import {default as Rect} from '../../../Shared/svgIcons/rectangle';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
