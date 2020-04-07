@@ -101,6 +101,7 @@ const StyledMenuHeaderItem = withStyles(theme => ({
       color: theme.palette.common.white
       // },
     },
+    width: 250,
   }
 }))(MenuItem);
 
