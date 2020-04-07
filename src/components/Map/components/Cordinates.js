@@ -7,7 +7,7 @@ const useStyles = makeStyles(theme => ({
     margin: 0,
     fontSize: 12,
     // width: 150,
-    left: "12vw",
+    left: "15vw",
     bottom: 0,
     position: "absolute",
   },
@@ -30,7 +30,7 @@ export default function Cordinates(props) {
             let latToString = props.lat.toString();
             let longToString = props.long.toString();
             let trimmedLat = latToString.length > length ? 
-            latToString.substring(0, length - 5) : latToString
+            latToString.substring(0, length - 3) : latToString
             let trimmedLong = longToString.length > length ? 
             longToString.substring(0, length - 3) : longToString
             setLng(trimmedLong)
@@ -40,8 +40,8 @@ export default function Cordinates(props) {
     
   return (
     <div className={classes.coordinates}>
-        <div className={classes.insideCoor}>Lat: {lat}</div>
-        <div className={classes.insideCoor}>Lng: {lng}</div>
+        <div className={classes.insideCoor}>Lng:{lng}</div>
+        <div className={classes.insideCoor}>Lat:{lat}</div>
     </div>
   )
 }
