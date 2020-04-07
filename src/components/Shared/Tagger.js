@@ -187,11 +187,7 @@ export default function Tags(props) {
             taggedOn: props.targetSourceId,
           },
         },
-        refetchQueries: [
-          "getTagsByObjectId",
-          "getUserAvailableTags",
-          "getTagSamples",
-        ],
+        refetchQueries: ["getTagsByObjectId", "getUserAvailableTags"],
         awaitRefetchQueries: true,
       });
     }
@@ -204,11 +200,7 @@ export default function Tags(props) {
       variables: {
         tagId: tagId,
       },
-      refetchQueries: [
-        "getTagsByObjectId",
-        "getUserAvailableTags",
-        "getTagSamples",
-      ],
+      refetchQueries: ["getTagsByObjectId", "getUserAvailableTags"],
       awaitRefetchQueries: true,
     });
   };

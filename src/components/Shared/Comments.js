@@ -25,20 +25,20 @@ import { REMOVECOMMENT } from "../../graphQL/useMutationRemoveComment";
 import Grid from "@material-ui/core/Grid";
 import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
-    backgroundColor: "#fff",
+    backgroundColor: "#fff"
   },
   title: {
-    fontSize: 10,
+    fontSize: 10
   },
   pos: {
-    marginBottom: 12,
+    marginBottom: 12
   },
   content: {
     height: "100%",
     backgroundColor: "white",
-    padding: "0 !important",
+    padding: "0 !important"
   },
   list: {
     width: "100%",
@@ -46,34 +46,34 @@ const useStyles = makeStyles((theme) => ({
     background: "rgba(255,255,255,0)",
     color: "rgba(23, 170, 221, 1)",
     overflowY: "auto",
-    padding: 0,
+    padding: 0
   },
   listItem: {
     fontFamily: "Poppins",
     backgroundColor: "white",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: theme.palette.common.black,
+      color: theme.palette.common.black
     },
     "& .MuiListItemText-secondary": {
-      color: "rgba(23, 170, 221, 1)",
-    },
+      color: "rgba(23, 170, 221, 1)"
+    }
   },
   textInput: {
-    width: "100%",
+    width: "100%"
   },
   header: {
     paddingBottom: "0",
-    "& .MuiTypography-h5": { fontSize: "1.2rem " },
+    "& .MuiTypography-h5": { fontSize: "1.2rem " }
   },
   listItemText: {
     "& .MuiTypography-body1": { fontSize: "0.85rem" },
     "& .MuiTypography-body2": { fontSize: "0.7rem" },
     "&  p": {
-      margin: "0",
-    },
+      margin: "0"
+    }
   },
   avatar: {
-    minWidth: "50px",
+    minWidth: "50px"
   },
   foodText: {
     fontSize: "10px",
@@ -83,27 +83,27 @@ const useStyles = makeStyles((theme) => ({
     float: "right",
     marginLeft: "10px",
     "& span": {
-      fontWeight: "bold",
+      fontWeight: "bold"
     },
     "& .redColor": {
-      color: "rgb(240, 89, 89) !important",
-    },
+      color: "rgb(240, 89, 89) !important"
+    }
   },
   emptyInput: {
     "& fieldset": {
-      borderColor: "rgb(240, 89, 89) !important",
-    },
+      borderColor: "rgb(240, 89, 89) !important"
+    }
   },
   switchButtom: {
     alignSelf: "flex-end",
     marginRight: 0,
     "& span.MuiTypography-body1": {
-      fontSize: "0.9rem",
-    },
+      fontSize: "0.9rem"
+    }
   },
   switchTextDeselected: {
-    color: "rgb(141, 141, 141)",
-  },
+    color: "rgb(141, 141, 141)"
+  }
 }));
 
 export default function Comments(props) {
@@ -130,8 +130,8 @@ export default function Comments(props) {
     if (stateApp && stateApp.user && stateApp.user.email) {
       getUserByEmail({
         variables: {
-          userEmail: stateApp.user.email,
-        },
+          userEmail: stateApp.user.email
+        }
       });
     }
   }, [stateApp.user.email]);
@@ -150,8 +150,8 @@ export default function Comments(props) {
     setLoadingComments(true);
     getCommentsByObjectId({
       variables: {
-        objectId: props.targetSourceId,
-      },
+        objectId: props.targetSourceId
+      }
     });
   }, [props.targetSourceId]);
 
@@ -164,8 +164,13 @@ export default function Comments(props) {
 
   ///////////////////// INSERTING NEW COMMENT ///////////////////////////////////////////////
 
-  const handleEnteringComment = (event) => {
-    if (event.target.value.split("\n").join("").trim() !== "") {
+  const handleEnteringComment = event => {
+    if (
+      event.target.value
+        .split("\n")
+        .join("")
+        .trim() !== ""
+    ) {
       upsertComment({
         variables: {
           comment: {
@@ -175,7 +180,7 @@ export default function Comments(props) {
               ] === "."
                 ? event.target.value
                     .split("\n")
-                    .map((line) => {
+                    .map(line => {
                       if (line.trim() !== ".") {
                         return line.trim();
                       }
@@ -183,7 +188,7 @@ export default function Comments(props) {
                     .join("\n")
                 : `${event.target.value
                     .split("\n")
-                    .map((line) => {
+                    .map(line => {
                       if (line.trim() !== ".") {
                         return line.trim();
                       }
@@ -191,11 +196,11 @@ export default function Comments(props) {
                     .join("\n")}.`,
             public: publicComment,
             user: user._id, //////stateApp.user._id////////temporary while signed user fixed
-            commentedOn: props.targetSourceId,
-          },
+            commentedOn: props.targetSourceId
+          }
         },
-        refetchQueries: ["getCommentsByObjectId", "getCommentsCounter"],
-        awaitRefetchQueries: true,
+        refetchQueries: ["getCommentsByObjectId"],
+        awaitRefetchQueries: true
       });
 
       setEmptyInput(false);
@@ -207,13 +212,13 @@ export default function Comments(props) {
 
   ///////////////////// DELETING A COMMENT ///////////////////////////////////////////////
 
-  const handleDeleteClick = (comment) => {
+  const handleDeleteClick = comment => {
     removeComment({
       variables: {
-        commentId: comment._id,
+        commentId: comment._id
       },
-      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter"],
-      awaitRefetchQueries: true,
+      refetchQueries: ["getCommentsByObjectId"],
+      awaitRefetchQueries: true
     });
   };
 
@@ -227,7 +232,7 @@ export default function Comments(props) {
   };
   commentsArray.sort(compare);
 
-  const capitalizeFirstLetter = (string) => {
+  const capitalizeFirstLetter = string => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
@@ -272,13 +277,13 @@ export default function Comments(props) {
               label="Comments"
               multiline
               rows="4"
-              onChange={(e) => {
+              onChange={e => {
                 if (e.target.value[e.target.value.length - 1] !== `\\`) {
                   if (e.target.value[e.target.value.length - 1] !== `\n`) {
                     setTextValue(
                       e.target.value
                         .split("\n")
-                        .map((line) => {
+                        .map(line => {
                           return capitalizeFirstLetter(line);
                         })
                         .join("\n")
@@ -290,14 +295,17 @@ export default function Comments(props) {
                   }
                 }
                 if (
-                  e.target.value.split("\n").join("").trim() !== "" &&
+                  e.target.value
+                    .split("\n")
+                    .join("")
+                    .trim() !== "" &&
                   emptyInput
                 ) {
                   setEmptyInput(false);
                 }
               }}
               value={textValue}
-              onKeyDown={(event) => {
+              onKeyDown={event => {
                 if (event.key === "Enter" && !event.shiftKey) {
                   event.preventDefault();
                   handleEnteringComment(event);
@@ -330,7 +338,7 @@ export default function Comments(props) {
         {!loadingComments ? (
           <List className={classes.list}>
             {commentsArray.map(
-              (comment) =>
+              comment =>
                 ((publicComment && comment.public) ||
                   (!publicComment &&
                     !comment.public &&
@@ -359,7 +367,7 @@ export default function Comments(props) {
                         month: "long",
                         day: "2-digit",
                         hour: "2-digit",
-                        minute: "2-digit",
+                        minute: "2-digit"
                       }).format(comment.ts)}`}
                     />
                     <ListItemSecondaryAction>
