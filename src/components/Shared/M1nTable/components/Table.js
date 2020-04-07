@@ -70,31 +70,31 @@ function getSorting(order, orderBy) {
     : (a, b) => -desc(a, b, orderBy);
 }
 
-// const headCells = [
-//   { id: "name", numeric: false, disablePadding: true, label: "Name" },
-//   {
-//     id: "ownershipType",
-//     numeric: false,
-//     disablePadding: false,
-//     label: "Entity",
-//   },
-//   { id: "interestType", numeric: false, disablePadding: false, label: "Type" },
-//   {
-//     id: "ownershipPercentage",
-//     numeric: true,
-//     disablePadding: false,
-//     label: "Interest",
-//   },
-//   {
-//     id: "appraisedValue",
-//     numeric: true,
-//     disablePadding: false,
-//     label: "Appraised Value",
-//   },
-//   { id: "comments", numeric: false, disablePadding: false, label: "" },
-//   { id: "tags", numeric: false, disablePadding: false, label: "" },
-//   { id: "isTracked", numeric: false, disablePadding: false, label: "" },
-// ];
+const headCells = [
+  { id: "name", numeric: false, disablePadding: true, label: "Name" },
+  {
+    id: "ownershipType",
+    numeric: false,
+    disablePadding: false,
+    label: "Entity",
+  },
+  { id: "interestType", numeric: false, disablePadding: false, label: "Type" },
+  {
+    id: "ownershipPercentage",
+    numeric: true,
+    disablePadding: false,
+    label: "Interest",
+  },
+  {
+    id: "appraisedValue",
+    numeric: true,
+    disablePadding: false,
+    label: "Appraised Value",
+  },
+  { id: "comments", numeric: false, disablePadding: false, label: "" },
+  { id: "tags", numeric: false, disablePadding: false, label: "" },
+  { id: "isTracked", numeric: false, disablePadding: false, label: "" },
+];
 
 function EnhancedTableHead(props) {
   const {
@@ -641,7 +641,7 @@ export default function SubTable(props) {
                       // selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
-                        {props.targetLabel === "well" && (
+                        {props.targetLabel !== "contact" && (
                           <IconButton
                             size="medium"
                             color="primary"
@@ -653,7 +653,11 @@ export default function SubTable(props) {
                         )}
                       </TableCell>
                       {props.columns.map((column, i) => {
-                        if (props.columns.length - 4 > i) {
+                        if (
+                          props.columns.length - 4 > i ||
+                          (props.columns.length - 4 === i &&
+                            props.targetLabel === "owner")
+                        ) {
                           if (i === 0) {
                             return (
                               <TableCell
@@ -717,6 +721,31 @@ export default function SubTable(props) {
                         }
                       })}
 
+                      <TableCell align="center">
+                        <IconButton
+                          size="medium"
+                          color="primary"
+                          className={clsx(classes.expand, {
+                            [classes.expandOpenTag]:
+                              expandedTag && collapsedRow === index,
+                          })}
+                          onClick={() =>
+                            handleExpandClickTag(index, {
+                              row,
+                              targetSourceId: row.id,
+                              // targetName:
+                              //   props.targetLabel === "well"
+                              //     ? row.wellName
+                              //     : row.name,
+                            })
+                          }
+                          aria-expanded={expandedTag && collapsedRow === index}
+                          aria-label="show tags"
+                        >
+                          <LocalOfferIcon />
+                        </IconButton>
+                      </TableCell>
+
                       {props.targetLabel === "well" && (
                         <TableCell align="right">
                           <Badge
@@ -740,9 +769,9 @@ export default function SubTable(props) {
                         </TableCell>
                       )}
 
-                      {props.targetLabel === "owner" && (
+                      {/* {props.targetLabel === "owner" && (
                         <TableCell align="center">
-                          {/* <IconButton
+                          <IconButton
                             size="medium"
                             color="primary"
                             className={clsx(classes.expand, {
@@ -758,9 +787,9 @@ export default function SubTable(props) {
                             aria-label="show contacts"
                           >
                             <AccountCircleIcon />
-                          </IconButton> */}
+                          </IconButton>
                         </TableCell>
-                      )}
+                      )} */}
 
                       {props.targetLabel === "contact" && (
                         <TableCell align="right">
@@ -789,53 +818,36 @@ export default function SubTable(props) {
                       )}
 
                       <TableCell align="center">
-                        <IconButton
-                          size="medium"
-                          color="primary"
-                          className={clsx(classes.expand, {
-                            [classes.expandOpenComment]:
-                              expandedComment && collapsedRow === index,
-                          })}
-                          onClick={() => {
-                            handleExpandClickComment(index, {
-                              targetSourceId: row.id,
-                              // targetName:
-                              //   props.targetLabel === "well"
-                              //     ? row.wellName
-                              //     : row.name,
-                            });
-                          }}
-                          aria-expanded={
-                            expandedComment && collapsedRow === index
+                        <Badge
+                          badgeContent={
+                            row.commentsCounter ? row.commentsCounter : null
                           }
-                          aria-label="show comments"
+                          color="secondary"
                         >
-                          <ChatIcon />
-                        </IconButton>
-                      </TableCell>
-                      <TableCell align="center">
-                        <IconButton
-                          size="medium"
-                          color="primary"
-                          className={clsx(classes.expand, {
-                            [classes.expandOpenTag]:
-                              expandedTag && collapsedRow === index,
-                          })}
-                          onClick={() =>
-                            handleExpandClickTag(index, {
-                              row,
-                              targetSourceId: row.id,
-                              // targetName:
-                              //   props.targetLabel === "well"
-                              //     ? row.wellName
-                              //     : row.name,
-                            })
-                          }
-                          aria-expanded={expandedTag && collapsedRow === index}
-                          aria-label="show tags"
-                        >
-                          <LocalOfferIcon />
-                        </IconButton>
+                          <IconButton
+                            size="medium"
+                            color="primary"
+                            className={clsx(classes.expand, {
+                              [classes.expandOpenComment]:
+                                expandedComment && collapsedRow === index,
+                            })}
+                            onClick={() => {
+                              handleExpandClickComment(index, {
+                                targetSourceId: row.id,
+                                // targetName:
+                                //   props.targetLabel === "well"
+                                //     ? row.wellName
+                                //     : row.name,
+                              });
+                            }}
+                            aria-expanded={
+                              expandedComment && collapsedRow === index
+                            }
+                            aria-label="show comments"
+                          >
+                            <ChatIcon />
+                          </IconButton>
+                        </Badge>
                       </TableCell>
 
                       <TableCell align="center">
