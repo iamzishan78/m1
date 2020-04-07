@@ -7,7 +7,7 @@
 //// 1-Send to this component a prop called 'parent' with a string you choose to identify your use case.
 //// 2-Define your HeadCells const, for your columns, in the HeadCells section.
 //// 3-Add your query in the queries section.
-//// 4-At the end, but before the return line, add your own section where you will run your queries
+//// 4-Add at the end, but before the return line, add your own section where you will run your queries
 ////   and you will set all necessaries local states for your use case and the table,
 ////   look at the Tracked Owners section as example.
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,12 +20,11 @@ import TableProvider from "./components/TableProvider";
 
 import { useLazyQuery } from "@apollo/react-hooks";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
+import { VERTEXEDGESQUERY } from "../../../graphQL/useQueryVertexEdges";
 import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
 import { TRACKSBYUSERANDOBJECTTYPE } from "../../../graphQL/useQueryTracksByUserAndObjectType";
-import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
-import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { USERBYEMAIL } from "../../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
 const useStyles = makeStyles((theme) => ({
@@ -55,7 +54,7 @@ const OwnersHeadCells = [
     label: "Appraised Value",
     money: true,
   },
-  // { id: "contacts", numeric: false, disablePadding: false, label: "" },//////////////temporary while contats are defined
+  { id: "contacts", numeric: false, disablePadding: false, label: "" },
   { id: "comments", numeric: false, disablePadding: false, label: "" },
   { id: "tags", numeric: false, disablePadding: false, label: "" },
   { id: "isTracked", numeric: false, disablePadding: false, label: "" },
@@ -153,32 +152,41 @@ export default function Contacts(props) {
   /////end/////////temporary while signed user fixed
 
   ////////////Queries begin///////////////////////////////////////////////
-
-  const [tracksByUserAndObjectType, { data: dataTracks }] = useLazyQuery(
-    TRACKSBYUSERANDOBJECTTYPE
-  );
-  const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(
-    COMMENTSCOUNTER
-  );
-  const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(TAGSAMPLES);
+  const [
+    getVertexEdges,
+    { loading: loadingGraph, data: dataGraph },
+  ] = useLazyQuery(VERTEXEDGESQUERY);
   //////////
-  const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
+  const [
+    getOwners,
+    { loading: loadingOwners, data: dataOwners },
+  ] = useLazyQuery(OWNERSQUERY);
   //////////
-  const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
-  //////////
-  const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(
-    WELLOWNERSQUERY
+  const [getWells, { loading: loadingWells, data: dataWells }] = useLazyQuery(
+    WELLSQUERY
   );
   //////////
+  const [
+    getWellOwners,
+    { loading: loadingWellOwners, data: dataWellOwners },
+  ] = useLazyQuery(WELLOWNERSQUERY);
+  //////////
+  const [
+    tracksByUserAndObjectType,
+    { loading: loadingTracks, data: dataTracks },
+  ] = useLazyQuery(TRACKSBYUSERANDOBJECTTYPE);
+  //////////
+  const [
+    getTrackedContacts,
+    { loading: loadingTrackedContacts, data: dataTrackedContacts },
+  ] = useLazyQuery(VERTEXEDGESQUERY);
   const [
     getContacts,
     { loading: loadingContacts, data: dataContacts },
   ] = useLazyQuery(CONTACTSQUERY);
-
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
-
   useEffect(() => {
     //////stateApp.user._id////////temporary while signed user fixed
     if (targetLabel && user._id !== "") {
@@ -220,12 +228,6 @@ export default function Contacts(props) {
             authToken: stateApp.user.authToken,
           },
         });
-        getCommentsCounter({
-          variables: { objectsIdsArray: tracksIdArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
-        });
-        getTagSamples({
-          variables: { objectsIdsArray: tracksIdArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
-        });
       } else {
         setRows([]);
         setLoading(false);
@@ -238,40 +240,26 @@ export default function Contacts(props) {
       if (
         dataOwners.owners &&
         dataOwners.owners.results &&
-        dataOwners.owners.results.length > 0 &&
-        dataCommentsCounter &&
-        dataCommentsCounter.commentsCounter &&
-        dataTagSamples &&
-        dataTagSamples.tagSamples
+        dataOwners.owners.results.length > 0
       ) {
-        dataOwners.owners.results.forEach((owner) => {
-          owner.isTracked = true;
-          dataCommentsCounter.commentsCounter.forEach((counter) => {
-            if (owner.id === counter._id) {
-              owner.commentsCounter = counter.total;
-            }
-          });
-          dataTagSamples.tagSamples.forEach((sample) => {
-            if (owner.id === sample._id) {
-              owner.tagSample = sample.tags;
-            }
-          });
-        });
-
-        setRows(dataOwners.owners.results);
+        const owners = dataOwners.owners.results.map((owner) => ({
+          ...owner,
+          isTracked: true,
+        }));
+        setRows(owners);
         setHeader("Owners");
         setColumns(OwnersHeadCells);
         setAddAble(true);
         setStateApp((state) => ({
           ...state,
-          owners: dataOwners.owners.results,
+          owners,
         }));
       } else {
         setRows([]);
       }
       setLoading(false);
     }
-  }, [dataOwners, dataTagSamples, dataCommentsCounter]);
+  }, [dataOwners]);
   ////////////Tracked Owners end///////////////////////////////////////////////
 
   ////////////Tracked Wells begin///////////////////////////////////////////////
@@ -299,12 +287,6 @@ export default function Contacts(props) {
             authToken: stateApp.user.authToken,
           },
         });
-        getCommentsCounter({
-          variables: { objectsIdsArray: tracksIdArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
-        });
-        getTagSamples({
-          variables: { objectsIdsArray: tracksIdArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
-        });
       } else {
         setRows([]);
         setLoading(false);
@@ -317,42 +299,27 @@ export default function Contacts(props) {
       if (
         dataWells.wells &&
         dataWells.wells.results &&
-        dataWells.wells.results.length > 0 &&
-        dataCommentsCounter &&
-        dataCommentsCounter.commentsCounter &&
-        dataTagSamples &&
-        dataTagSamples.tagSamples
+        dataWells.wells.results.length > 0
       ) {
-        dataWells.wells.results.forEach((well) => {
-          well.isTracked = true;
-          well.commentsCounter = "";
+        const wells = dataWells.wells.results.map((well) => ({
+          ...well,
+          isTracked: true,
+        }));
 
-          dataCommentsCounter.commentsCounter.forEach((counter) => {
-            if (well.id === counter._id) {
-              well.commentsCounter = counter.total;
-            }
-          });
-          dataTagSamples.tagSamples.forEach((sample) => {
-            if (well.id === sample._id) {
-              well.tagSample = sample.tags;
-            }
-          });
-        });
-
-        setRows(dataWells.wells.results);
+        setRows(wells);
         setHeader("Wells");
         setColumns(WellsHeadCells);
         setAddAble(false);
         setStateApp((state) => ({
           ...state,
-          wells: dataWells.wells.results,
+          wells,
         }));
       } else {
         setRows([]);
       }
       setLoading(false);
     }
-  }, [dataWells, dataTagSamples, dataCommentsCounter]);
+  }, [dataWells]);
   ////////////Tracked Wells end///////////////////////////////////////////////
 
   ////////////Owners Per Well begin///////////////////////////////////////////////
@@ -375,10 +342,8 @@ export default function Contacts(props) {
       dataTracks.tracksByUserAndObjectType
     ) {
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
-        const objectsIdsArray = [];
         dataWellOwners.wellOwners.forEach((wellOwner) => {
           wellOwner.isTracked = false;
-          objectsIdsArray.push(wellOwner.id);
           dataTracks.tracksByUserAndObjectType.forEach((track) => {
             if (wellOwner.id === track.trackOn) {
               wellOwner.isTracked = true;
@@ -386,53 +351,16 @@ export default function Contacts(props) {
           });
         });
 
+        setRows(dataWellOwners.wellOwners);
         setHeader("Owners Per Well");
         setColumns(OwnersHeadCells);
         setAddAble(true);
-
-        getCommentsCounter({
-          variables: { objectsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
-        });
-        getTagSamples({
-          variables: { objectsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
-        });
       } else {
-        setLoading(false);
         setRows([]);
       }
-    }
-  }, [dataWellOwners, dataTracks]);
-
-  useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "OwnersPerWell" &&
-      dataWellOwners &&
-      dataWellOwners.wellOwners &&
-      dataWellOwners.wellOwners.length > 0 &&
-      dataCommentsCounter &&
-      dataCommentsCounter.commentsCounter &&
-      dataTagSamples &&
-      dataTagSamples.tagSamples
-    ) {
-      dataWellOwners.wellOwners.forEach((wellOwner) => {
-        dataCommentsCounter.commentsCounter.forEach((counter) => {
-          if (wellOwner.id === counter._id) {
-            wellOwner.commentsCounter = counter.total;
-          }
-        });
-        dataTagSamples.tagSamples.forEach((sample) => {
-          if (wellOwner.id === sample._id) {
-            wellOwner.tagSample = sample.tags;
-          }
-        });
-      });
-
-      setRows(dataWellOwners.wellOwners);
       setLoading(false);
     }
-  }, [dataWellOwners, dataTracks, dataTagSamples, dataCommentsCounter]);
-
+  }, [dataWellOwners, dataTracks]);
   ////////////Owners Per Well end///////////////////////////////////////////////
 
   ////////////Contacts begin///////////////////////////////////////////////
