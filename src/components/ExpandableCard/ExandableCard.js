@@ -252,17 +252,17 @@ export default function ExpandableCard(props) {
             ? title.length > 30
               ? `${title.substr(0, 30)}...${
                   stateExpandableCard.expanded
-                    ? props.Api !== undefined
-                      ? `(${props.Api})`
-                      : ""
-                    : ""
+                    // ? props.Api !== undefined
+                    //   ? `(${props.Api})`
+                    //   : ""
+                    // : ""
                 }`
               : `${title} ${
                   stateExpandableCard.expanded
-                    ? props.Api !== undefined
-                      ? `(${props.Api})`
-                      : ""
-                    : ""
+                    // ? props.Api !== undefined
+                    //   ? `(${props.Api})`
+                    //   : ""
+                    // : ""
                 }`
             : "--"
         }
