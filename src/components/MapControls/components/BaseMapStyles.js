@@ -44,10 +44,6 @@ const theme = createMuiTheme({
         //alignItems: 'center',
         textAlign: 'right',
         padding: 20,
-        fontFamily: "Poppins",
-        "&:hover": {
-          background: "#4B618F"
-        },
       }
   }
 }
@@ -81,20 +77,16 @@ const StyledMenu = withStyles({
 const StyledMenuItem = withStyles(theme => ({
   root: {
     fontFamily: "Poppins",
+    color: 'white',
     "&:hover": {
       background: "#4B618F"
     },
-    //'&:focus': {
     backgroundColor: "#263451",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white
       // },
     },
-    width: 250,
-    height: 80,
-    //display: 'flex',
-    //justifyContent: 'flex-end'
-  }
+   }
 }))(MenuItem);
 
 const StyledMenuHeaderItem = withStyles(theme => ({
