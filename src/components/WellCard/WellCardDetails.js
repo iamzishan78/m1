@@ -44,6 +44,7 @@ import PermitDateCard from "../Shared/PermitDateCard";
 import ProfileCard from "../Shared/ProfileCard";
 import WellTypeCard from "../Shared/WellTypeCard";
 import SpudDateCard from "../Shared/SpudDateCard";
+import WellApiCard from "../Shared/WellApiCard";
 
 //import { WellData } from './data/welldata'
 
@@ -294,6 +295,7 @@ export default function WellCardDetails(props) {
       <CardContent className={classes.content}>
         <Grid className={classes.grid} container spacing={1}>
           <Grid item className={classes.gridItem}>
+            <WellApiCard />
             <WellTypeCard />
             <WellStatusCard />
             <Last12StatusCard />

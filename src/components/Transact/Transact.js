@@ -34,7 +34,9 @@ const data_file = {
       style: laneStyle,
       cardStyle: cardStyle,
       cards: [
-        {id: 'Card1', title: 'THORNTON, CHARLES T', description: 'API: 4230130541\nWell Name: CHRISTOPHER -38- 4\nNRI: 0.017857\nTax Value: $10,860' , label: '$103,100'}
+        {id: 'Card1', 
+        title: 'THORNTON, CHARLES T', 
+        description: 'API: 4230130541\nWell Name: CHRISTOPHER -38- 4\nNRI: 0.017857\nTax Value: $10,860' , label: '$103,100'}
         
         
       ]
