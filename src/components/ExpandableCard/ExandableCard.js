@@ -247,25 +247,34 @@ export default function ExpandableCard(props) {
             </IconButton>
           </div>
         }
+        // title={
+        //   title
+        //     ? title.length > 30
+        //       ? `${title.substr(0, 30)}...${
+        //           stateExpandableCard.expanded
+        //             // ? props.Api !== undefined
+        //             //   ? `(${props.Api})`
+        //             //   : ""
+        //             // : ""
+        //         }`
+        //       : `${title} ${
+        //           stateExpandableCard.expanded
+        //             // ? props.Api !== undefined
+        //             //   ? `(${props.Api})`
+        //             //   : ""
+        //             // : ""
+        //         }`
+        //     : "--"
+        // }
+
         title={
           title
             ? title.length > 30
-              ? `${title.substr(0, 30)}...${
-                  stateExpandableCard.expanded
-                    // ? props.Api !== undefined
-                    //   ? `(${props.Api})`
-                    //   : ""
-                    // : ""
-                }`
-              : `${title} ${
-                  stateExpandableCard.expanded
-                    // ? props.Api !== undefined
-                    //   ? `(${props.Api})`
-                    //   : ""
-                    // : ""
-                }`
+              ? `${title.substr(0, 35)}...`
+              : title
             : "--"
         }
+
         subheader={
           subTitle
             ? subTitle.length > 35
