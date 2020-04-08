@@ -6,7 +6,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "hsla(0,0%,100%,.5)",
     margin: 0,
     fontSize: 12,
-    left: "15vw",
+    left: "8vw",
     bottom: 0,
     position: "absolute",
   },
