@@ -22,6 +22,10 @@ import IconButton from '@material-ui/core/IconButton';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import MapDarkIcon from "../../Shared/svgIcons/MapDarkIcon";
+import MapSatelliteIcon from "../../Shared/svgIcons/MapSatelliteIcon";
+import MapLightIcon from "../../Shared/svgIcons/MapLightIcon";
+import MapBasicIcon from "../../Shared/svgIcons/MapBasicIcon";
 
 
 const theme = createMuiTheme({
@@ -229,7 +233,10 @@ export default function BaseMapStyles(props) {
           }}
         >
           <ThemeProvider theme={theme}>
-          <Icon2/>
+          {style.name == 'Satellite' && <MapSatelliteIcon/>}
+          {style.name == 'Light' && <MapLightIcon/>}
+          {style.name == 'Dark' && <MapDarkIcon/>}
+          {style.name == 'Basic' && <MapBasicIcon/>}
 
           <ListItemText primary={style.name} /> 
           </ThemeProvider>

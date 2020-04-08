@@ -586,8 +586,8 @@ export default function Map() {
           style: "mapbox://styles/m1neral/" + mapStyles[index].id,
           center: mapStyles[index].center,
           zoom: mapStyles[index].zoom,
-          pitch: mapStyles[index].pitch,
-          bearing: mapStyles[index].bearing
+          //pitch: mapStyles[index].pitch,
+          //bearing: mapStyles[index].bearing
         });
         let zoomControl = new mapboxgl.NavigationControl();
         newMap.addControl(zoomControl, "bottom-right");
