@@ -6,7 +6,6 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "hsla(0,0%,100%,.5)",
     margin: 0,
     fontSize: 12,
-    // width: 150,
     left: "15vw",
     bottom: 0,
     position: "absolute",
@@ -14,25 +13,19 @@ const useStyles = makeStyles(theme => ({
   insideCoor:{
     display: "inline-block",
     padding: 3,
-    // justifyContent: "space-around",
   }
 }))
 
 
-export default function Cordinates(props) {
+export default function Coordinates(props) {
     const classes = useStyles();
     const [lng, setLng] = useState();
     const [lat, setLat] = useState()
-    console.log("test")
+    
     useEffect(() => {
         if (props.long && props.lat) {
-            let length = 12;
-            let latToString = props.lat.toString();
-            let longToString = props.long.toString();
-            let trimmedLat = latToString.length > length ? 
-            latToString.substring(0, length - 3) : latToString
-            let trimmedLong = longToString.length > length ? 
-            longToString.substring(0, length - 3) : longToString
+            let trimmedLat = props.lat.toFixed(6)
+            let trimmedLong = props.long.toFixed(6)
             setLng(trimmedLong)
             setLat(trimmedLat)
         } 

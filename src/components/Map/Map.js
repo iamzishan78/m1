@@ -17,7 +17,7 @@ import WellCardProvider from "../WellCard/WellCardProvider";
 import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
 import WellsProvider from "../Wells/WellsProvider";
 import Portal from "./components/Portal";
-import Cordinates from "./components/Cordinates";
+import Coordinates from "./components/Coordinates";
 import "./popup.css";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import {
@@ -76,6 +76,9 @@ export default function Map() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
+  );
+  const [filtersDefault , setFiltersDefault] = useState(
+    stateApp.user.defaultFilters ? stateApp.user.defaultFilters: []
   );
   const [lng , setLng] = useState();
   const [lat, setLat] = useState();
@@ -139,6 +142,13 @@ export default function Map() {
       let geographyFilterCount = 0;
       let filterArray = [];
 
+      if (stateNav.defaultOn && !stateNav.filterWellStatus && !stateNav.filterWellType  && filterArray.length === 0) {
+        let defaultTypeName = ["GAS","OIL AND GAS" ,"OIL"];
+        let defaultStatusName = ["ACTIVE", "PERMIT"];
+        let defaultFiltersWellStatus = ['match', ['get', 'wellStatus'] , defaultStatusName , true, false];
+        let defaultFiltersWellType =   ['match', ['get', 'wellType'],defaultTypeName  , true, false];
+        setStateNav(stateNav => ({ ...stateNav, defaultOn: false ,statusName: defaultStatusName  ,typeName: defaultTypeName  ,filterWellStatus: defaultFiltersWellStatus, filterWellType: defaultFiltersWellType }))
+      }
       if (stateNav.filterWellProfile && stateNav.filterWellProfile.length > 0) {
         let total = stateNav.filterWellProfile[2].length
         filterArray.push(stateNav.filterWellProfile);
@@ -474,6 +484,11 @@ export default function Map() {
       }));
 
       if (isFilterSet) {
+        // if (filterArray && filterArray.length > 0 ) {
+        //   filterArray.unshift("all");
+        // } else {
+        //   defaultFilterArray.unshift("all");
+        // }
         filterArray.unshift("all");
 
         console.log("all current filters", filterArray);
@@ -828,7 +843,7 @@ export default function Map() {
         </div> */}
       </div>
       <MapControlsProvider />
-      <Cordinates long={lng} lat={lat} />
+      <Coordinates long={lng} lat={lat} />
       {stateMap.openTrack == true ? (
         <div className={classes.trackLists}>
           {<WellsProvider showList={true} parent="track" />}

@@ -1,4 +1,12 @@
 {
     "git.ignoreLimitWarning": true,
-    "git.autofetch": true
+    "git.autofetch": true,
+    "spellright.language": [
+        "en"
+    ],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext"
+    ]
 }

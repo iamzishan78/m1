@@ -3,6 +3,7 @@ import { useLazyQuery, useApolloClient } from "@apollo/react-hooks";
 import { AppContext } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpiredStorage from "expired-storage";
+import { NavigationContext } from "../Navigation/NavigationContext";
 //const expiredStorage = new ExpiredStorage();
 import gql from "graphql-tag";
 // STYLES
@@ -45,6 +46,7 @@ const BackgroundURI = "img/WellsBackgroundlogin.jpg";
 
 const Login = props => {
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
   const [userName, setUserName] = useState(null);
   const [password, setPassword] = useState(null);
   const [tenant, setTenant] = useState(null);
@@ -87,18 +89,21 @@ const Login = props => {
 
       let sessionUser = JSON.parse(user);
       setStateApp(state => ({ ...state, user: sessionUser }));
+      setStateNav(stateNav => ({ ...stateNav, defaultOn: true }))
     } else {
       setStateApp(state => ({ ...state, user: null }));
+      setStateNav(stateNav => ({ ...stateNav, defaultOn: false }))
       expiredStorage.clear();
       history.push("/");
     }
-  }, [history, setStateApp]);
+  }, [history, setStateApp, setStateNav]);
  
   useEffect(() => {
     if (data) {
       //console.log('login success',data)
       if (data.login.success) {
         setStateApp(state => ({ ...state, user: data.login.user }));
+        setStateNav(stateNav => ({ ...stateNav, defaultOn: true }))
         //window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
         expiredStorage.setItem(
           "user",
@@ -108,12 +113,13 @@ const Login = props => {
       } else {
         console.log("login failed", data);
         setStateApp(state => ({ ...state, user: null }));
+        setStateNav(stateNav => ({ ...stateNav, defaultOn: false }))
         // window.sessionStorage.removeItem('user');
         expiredStorage.clear();
         //show login failed in the future
       }
     }
-  }, [data, expiredStorage, setStateApp]);
+  }, [data, expiredStorage, setStateApp, setStateNav]);
 
   const handledSignIn = userData => {
     console.log("[Login.js] userData", userData);
