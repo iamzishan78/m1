@@ -23,7 +23,7 @@ export default function Cordinates(props) {
     const classes = useStyles();
     const [lng, setLng] = useState();
     const [lat, setLat] = useState()
-
+    console.log("test")
     useEffect(() => {
         if (props.long && props.lat) {
             let length = 12;
