@@ -3,6 +3,7 @@ import { useMutation, useLazyQuery } from "@apollo/react-hooks";
 import { makeStyles } from "@material-ui/core/styles";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import MyLocationIcon from "@material-ui/icons/MyLocation";
+import Tooltip from "@material-ui/core/Tooltip";
 import { AppContext } from "../../AppContext";
 import { TOGGLETRACK } from "../../graphQL/useMutationToggleCreateRemoveTrack";
 import { CircularProgress } from "@material-ui/core";
@@ -96,24 +97,35 @@ export default function TrackToggleButton(props) {
   };
 
   return (
-    <ToggleButton
-      size="small"
-      classes={{ root: classes.root }}
-      value="check"
-      selected={selected}
-      onChange={(e) => {
-        e.stopPropagation();
-        e.persist();
-        handleToggle();
-      }}
+    <Tooltip
+      title={`${props.target.isTracked ? "Untrack" : "Track"}${
+        props.targetLabel
+          ? " " +
+            props.targetLabel.charAt(0).toUpperCase() +
+            props.targetLabel.slice(1)
+          : ""
+      }`}
+      placement="top"
     >
-      {loading ? (
-        <CircularProgress size={28} color="secondary"></CircularProgress>
-      ) : selected ? (
-        <MyLocationIcon color="secondary" />
-      ) : (
-        <MyLocationIcon />
-      )}
-    </ToggleButton>
+      <ToggleButton
+        size="small"
+        classes={{ root: classes.root }}
+        value="check"
+        selected={selected}
+        onChange={(e) => {
+          e.stopPropagation();
+          e.persist();
+          handleToggle();
+        }}
+      >
+        {loading ? (
+          <CircularProgress size={28} color="secondary"></CircularProgress>
+        ) : selected ? (
+          <MyLocationIcon color="secondary" />
+        ) : (
+          <MyLocationIcon />
+        )}
+      </ToggleButton>
+    </Tooltip>
   );
 }

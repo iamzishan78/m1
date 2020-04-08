@@ -187,7 +187,11 @@ export default function Tags(props) {
             taggedOn: props.targetSourceId,
           },
         },
-        refetchQueries: ["getTagsByObjectId", "getUserAvailableTags"],
+        refetchQueries: [
+          "getTagsByObjectId",
+          "getUserAvailableTags",
+          "getTagSamples",
+        ],
         awaitRefetchQueries: true,
       });
     }
@@ -200,7 +204,11 @@ export default function Tags(props) {
       variables: {
         tagId: tagId,
       },
-      refetchQueries: ["getTagsByObjectId", "getUserAvailableTags"],
+      refetchQueries: [
+        "getTagsByObjectId",
+        "getUserAvailableTags",
+        "getTagSamples",
+      ],
       awaitRefetchQueries: true,
     });
   };
@@ -233,11 +241,12 @@ export default function Tags(props) {
 
   const cleanDropDownArray = () => {
     const tags = tagsArray.map((tag) => tag.tag);
-    const cleanArray = userAvailableTagsArray.filter(
+
+    let cleanArray = userAvailableTagsArray.filter(
       (tag) => tags.indexOf(tag) === -1
     );
+    cleanArray = [...new Set(cleanArray)];
     cleanArray.sort();
-
     return { cleanArray, tags };
   };
 

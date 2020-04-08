@@ -397,6 +397,20 @@ const useStyles = makeStyles((theme) => ({
   tagsDiv: {
     margin: "8px",
   },
+  TagSample: {
+    color: "rgb(1,17,51)",
+    borderRadius: "24px",
+    backgroundColor: "#EFEFEF",
+    minWidth: "48px",
+    "&:hover": {
+      backgroundColor: "#DADBDE",
+      cursor: "pointer",
+    },
+    "& p": {
+      marginLeft: "5px",
+      marginRight: "5px",
+    },
+  },
 }));
 
 var formatter = new Intl.NumberFormat("en-US", {
@@ -417,7 +431,7 @@ export default function SubTable(props) {
 
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [source, setSource] = useState(null);
   const [rows, setRows] = React.useState();
 
@@ -540,6 +554,15 @@ export default function SubTable(props) {
     setExpandedTag(false);
   };
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return rows && rows.length > 0 ? (
     <div className={classes.root}>
       {showExpandableCard &&
@@ -625,8 +648,9 @@ export default function SubTable(props) {
               headCells={props.columns}
             />
             <TableBody>
-              {stableSort(rows, getSorting(order, orderBy)).map(
-                (row, index) => {
+              {stableSort(rows, getSorting(order, orderBy))
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => {
                   //const isItemSelected = isSelected(row.id);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -653,7 +677,11 @@ export default function SubTable(props) {
                         )}
                       </TableCell>
                       {props.columns.map((column, i) => {
-                        if (props.columns.length - 4 > i) {
+                        if (
+                          props.columns.length - 4 > i ||
+                          (props.columns.length - 4 === i &&
+                            props.targetLabel === "owner")
+                        ) {
                           if (i === 0) {
                             return (
                               <TableCell
@@ -717,32 +745,88 @@ export default function SubTable(props) {
                         }
                       })}
 
-                      {props.targetLabel === "well" && (
-                        <TableCell align="right">
-                          <Badge
-                            badgeContent={row.ownerCount}
-                            color="secondary"
-                          >
+                      <TableCell>
+                        {!row.tagSample.length > 0 ? (
+                          <Tooltip title="Tags" placement="top">
                             <IconButton
                               size="medium"
                               color="primary"
                               className={clsx(classes.expand, {
-                                [classes.expandOpenOwner]:
-                                  expanded && collapsedRow === index,
+                                [classes.expandOpenTag]:
+                                  expandedTag && collapsedRow === index,
                               })}
-                              onClick={() => handleExpandClick(index, "owners")}
-                              aria-expanded={expanded && collapsedRow === index}
-                              aria-label="show owners"
+                              onClick={() =>
+                                handleExpandClickTag(index, {
+                                  row,
+                                  targetSourceId: row.id,
+                                })
+                              }
+                              aria-expanded={
+                                expandedTag && collapsedRow === index
+                              }
+                              aria-label="show tags"
                             >
-                              <PeopleAltIcon />
+                              <LocalOfferIcon />
                             </IconButton>
-                          </Badge>
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title="Tags Preview" placement="top">
+                            <Badge
+                              className={classes.TagSample}
+                              badgeContent={row.tagsCounter}
+                              color="secondary"
+                              onClick={() =>
+                                handleExpandClickTag(index, {
+                                  row,
+                                  targetSourceId: row.id,
+                                })
+                              }
+                            >
+                              <p>
+                                {`${row.tagSample.join(", ").slice(0, 25)}${
+                                  row.tagSample.join(", ").length > 25
+                                    ? "..."
+                                    : ""
+                                }`}
+                              </p>
+                            </Badge>
+                          </Tooltip>
+                        )}
+                      </TableCell>
+
+                      {props.targetLabel === "well" && (
+                        <TableCell>
+                          <Tooltip title="Owners" placement="top">
+                            <Badge
+                              badgeContent={row.ownerCount}
+                              color="secondary"
+                            >
+                              <IconButton
+                                size="medium"
+                                color="primary"
+                                className={clsx(classes.expand, {
+                                  [classes.expandOpenOwner]:
+                                    expanded && collapsedRow === index,
+                                })}
+                                onClick={() =>
+                                  handleExpandClick(index, "owners")
+                                }
+                                aria-expanded={
+                                  expanded && collapsedRow === index
+                                }
+                                aria-label="show owners"
+                              >
+                                <PeopleAltIcon />
+                              </IconButton>
+                            </Badge>
+                          </Tooltip>
                         </TableCell>
                       )}
-
-                      {props.targetLabel === "owner" && (
-                        <TableCell align="center">
-                          {/* <IconButton
+                      {/* ////temporary contact icon commented */}
+                      {/* {props.targetLabel === "owner" && (
+                        <TableCell >
+                          <Tooltip title="Contacts" placement="top">
+                          <IconButton
                             size="medium"
                             color="primary"
                             className={clsx(classes.expand, {
@@ -758,87 +842,75 @@ export default function SubTable(props) {
                             aria-label="show contacts"
                           >
                             <AccountCircleIcon />
-                          </IconButton> */}
+                          </IconButton>
+                         </Tooltip>
                         </TableCell>
-                      )}
+                      )} */}
 
                       {props.targetLabel === "contact" && (
-                        <TableCell align="right">
-                          <IconButton
-                            size="medium"
-                            color="primary"
-                            className={clsx(classes.expand, {
-                              [classes.expandOpenOwner]:
-                                expandedOwnersContacts &&
-                                collapsedRow === index,
-                            })}
-                            onClick={() =>
-                              handleExpandClickOwnersContacts(
-                                index,
-                                "ownersContacts"
-                              )
-                            }
-                            aria-expanded={
-                              expandedOwnersContacts && collapsedRow === index
-                            }
-                            aria-label="show owners"
-                          >
-                            <PeopleAltIcon />
-                          </IconButton>
+                        <TableCell>
+                          <Tooltip title="Owners" placement="top">
+                            <IconButton
+                              size="medium"
+                              color="primary"
+                              className={clsx(classes.expand, {
+                                [classes.expandOpenOwner]:
+                                  expandedOwnersContacts &&
+                                  collapsedRow === index,
+                              })}
+                              onClick={() =>
+                                handleExpandClickOwnersContacts(
+                                  index,
+                                  "ownersContacts"
+                                )
+                              }
+                              aria-expanded={
+                                expandedOwnersContacts && collapsedRow === index
+                              }
+                              aria-label="show owners"
+                            >
+                              <PeopleAltIcon />
+                            </IconButton>
+                          </Tooltip>
                         </TableCell>
                       )}
 
-                      <TableCell align="center">
-                        <IconButton
-                          size="medium"
-                          color="primary"
-                          className={clsx(classes.expand, {
-                            [classes.expandOpenComment]:
-                              expandedComment && collapsedRow === index,
-                          })}
-                          onClick={() => {
-                            handleExpandClickComment(index, {
-                              targetSourceId: row.id,
-                              // targetName:
-                              //   props.targetLabel === "well"
-                              //     ? row.wellName
-                              //     : row.name,
-                            });
-                          }}
-                          aria-expanded={
-                            expandedComment && collapsedRow === index
-                          }
-                          aria-label="show comments"
-                        >
-                          <ChatIcon />
-                        </IconButton>
-                      </TableCell>
-                      <TableCell align="center">
-                        <IconButton
-                          size="medium"
-                          color="primary"
-                          className={clsx(classes.expand, {
-                            [classes.expandOpenTag]:
-                              expandedTag && collapsedRow === index,
-                          })}
-                          onClick={() =>
-                            handleExpandClickTag(index, {
-                              row,
-                              targetSourceId: row.id,
-                              // targetName:
-                              //   props.targetLabel === "well"
-                              //     ? row.wellName
-                              //     : row.name,
-                            })
-                          }
-                          aria-expanded={expandedTag && collapsedRow === index}
-                          aria-label="show tags"
-                        >
-                          <LocalOfferIcon />
-                        </IconButton>
+                      <TableCell>
+                        <Tooltip title="Comments" placement="top">
+                          <Badge
+                            badgeContent={
+                              row.commentsCounter ? row.commentsCounter : null
+                            }
+                            color="secondary"
+                          >
+                            <IconButton
+                              size="medium"
+                              color="primary"
+                              className={clsx(classes.expand, {
+                                [classes.expandOpenComment]:
+                                  expandedComment && collapsedRow === index,
+                              })}
+                              onClick={() => {
+                                handleExpandClickComment(index, {
+                                  targetSourceId: row.id,
+                                  // targetName:
+                                  //   props.targetLabel === "well"
+                                  //     ? row.wellName
+                                  //     : row.name,
+                                });
+                              }}
+                              aria-expanded={
+                                expandedComment && collapsedRow === index
+                              }
+                              aria-label="show comments"
+                            >
+                              <ChatIcon />
+                            </IconButton>
+                          </Badge>
+                        </Tooltip>
                       </TableCell>
 
-                      <TableCell align="center">
+                      <TableCell>
                         <TrackToggleButton
                           target={row}
                           targetLabel={props.targetLabel}
@@ -865,66 +937,73 @@ export default function SubTable(props) {
                           timeout="auto"
                           unmountOnExit
                         >
-                          {// collapseComponent === "tags" ? (
-                          //   <div className={classes.tagWrapper}>
-                          //     <Tags
-                          //       public={false}
-                          //       source={stateApp.user}
-                          //       sourceLabel="user"
-                          //       sourceSourceId={stateApp.user.id}
-                          //       sourceName={stateApp.user.name}
-                          //       target={row}
-                          //       targetLabel={props.targetLabel}
-                          //       targetSourceId={row.id}
-                          //       targetName={
-                          //         props.targetLabel === "well"
-                          //           ? row.wellName
-                          //           : row.name
-                          //       }
-                          //     />
-                          //   </div>
-                          // ) :  collapseComponent === "comments" ? (
-                          //   <Comments
-                          //     targetLabel={props.targetLabel}
-                          //     targetSourceId={row.id}
-                          //     targetName={
-                          //       props.targetLabel === "well"
-                          //         ? row.wellName
-                          //         : row.name
-                          //     }
-                          //   ></Comments>
-                          // ) :
-                          collapseComponent === "owners" ? (
-                            <M1nTable
-                              selectedWell={row}
-                              parent="OwnersPerWell"
-                            />
-                          ) : collapseComponent === "contacts" ? (
-                            <M1nTable
-                              parent="Contacts"
-                              externalAddFunction={() => {}}
-                            />
-                          ) : (
-                            <p> Developing </p> /////////////////////////
-                          )}
+                          {
+                            // collapseComponent === "tags" ? (
+                            //   <div className={classes.tagWrapper}>
+                            //     <Tags
+                            //       public={false}
+                            //       source={stateApp.user}
+                            //       sourceLabel="user"
+                            //       sourceSourceId={stateApp.user.id}
+                            //       sourceName={stateApp.user.name}
+                            //       target={row}
+                            //       targetLabel={props.targetLabel}
+                            //       targetSourceId={row.id}
+                            //       targetName={
+                            //         props.targetLabel === "well"
+                            //           ? row.wellName
+                            //           : row.name
+                            //       }
+                            //     />
+                            //   </div>
+                            // ) :  collapseComponent === "comments" ? (
+                            //   <Comments
+                            //     targetLabel={props.targetLabel}
+                            //     targetSourceId={row.id}
+                            //     targetName={
+                            //       props.targetLabel === "well"
+                            //         ? row.wellName
+                            //         : row.name
+                            //     }
+                            //   ></Comments>
+                            // ) :
+                            collapseComponent === "owners" ? (
+                              <M1nTable
+                                selectedWell={row}
+                                parent="OwnersPerWell"
+                              />
+                            ) : collapseComponent === "contacts" ? (
+                              <M1nTable
+                                parent="Contacts"
+                                externalAddFunction={() => {}}
+                              />
+                            ) : (
+                              <p> Developing </p> /////////////////////////
+                            )
+                          }
                         </Collapse>
                       </TableCell>
                     </TableRow>,
                   ];
-                }
-              )}
+                })}
             </TableBody>
           </Table>
         </TableContainer>
-        {/* <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+        <TablePagination
+          rowsPerPageOptions={
+            props.rows.length > 25
+              ? [10, 25, 100]
+              : props.rows.length > 10
+              ? [10, 25]
+              : [10]
+          }
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
-        /> */}
+        />
       </Paper>
       {(expandedComment || expandedTag) && (
         <Dialog
