@@ -3,7 +3,8 @@ import React, {
   useState,
   useLayoutEffect,
   useRef,
-  useEffect
+  useEffect,
+  useCallback
 } from "react";
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
@@ -16,7 +17,8 @@ import MapControlsProvider from "../MapControls/MapControlsProvider";
 import WellCardProvider from "../WellCard/WellCardProvider";
 import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
 import WellsProvider from "../Wells/WellsProvider";
-import Portal from "./components/Portal";
+import Portal from '@material-ui/core/Portal';
+import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
 import "./popup.css";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
@@ -66,6 +68,12 @@ const useStyles = makeStyles(theme => ({
       position: "absolute",
       left: "23px"
     }
+  },
+  portal: {
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)"
   }
 }));
 
@@ -82,6 +90,9 @@ export default function Map() {
   );
   const [lng , setLng] = useState();
   const [lat, setLat] = useState();
+  // const [pageX, setPageX] =useState();
+  // const [pageY, setPageY] =useState();
+  const container = useRef(null);
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [mapStyles, setMapStyles] = useState([]);
   const [map, setMap] = useState(null);
@@ -512,7 +523,7 @@ export default function Map() {
         map.setFilter("wellsHeatmapRecentlyCompleted", null);
       }
     }
-  }, [map, setStateNav, stateNav.filterAllInterestTypes, stateNav.filterAllOwnershipTypes, stateNav.filterBasin, stateNav.filterCompletetionDateRange, stateNav.filterCumulativeGas, stateNav.filterCumulativeOil, stateNav.filterCumulativeWater, stateNav.filterFirstMonthGas, stateNav.filterFirstMonthOil, stateNav.filterFirstMonthWater, stateNav.filterFirstProdDateRange, stateNav.filterFirstSixMonthGas, stateNav.filterFirstSixMonthOil, stateNav.filterFirstSixMonthWater, stateNav.filterFirstThreeMonthGas, stateNav.filterFirstThreeMonthOil, stateNav.filterFirstThreeMonthWater, stateNav.filterFirstTwelveMonthGas, stateNav.filterFirstTwelveMonthOil, stateNav.filterFirstTwelveMonthWater, stateNav.filterGeography, stateNav.filterLastMonthGas, stateNav.filterLastMonthOil, stateNav.filterLastMonthWater, stateNav.filterLastSixMonthGas, stateNav.filterLastSixMonthOil, stateNav.filterLastSixMonthWater, stateNav.filterLastThreeMonthGas, stateNav.filterLastThreeMonthOil, stateNav.filterLastThreeMonthWater, stateNav.filterLastTwelveMonthGas, stateNav.filterLastTwelveMonthOil, stateNav.filterLastTwelveMonthWater, stateNav.filterOperator, stateNav.filterPermitDateRange, stateNav.filterPlay, stateNav.filterSpudDateRange, stateNav.filterWellProfile, stateNav.filterWellStatus, stateNav.filterWellType]);
+  }, [map, setStateNav, stateNav.defaultOn, stateNav.filterAllInterestTypes, stateNav.filterAllOwnershipTypes, stateNav.filterBasin, stateNav.filterCompletetionDateRange, stateNav.filterCumulativeGas, stateNav.filterCumulativeOil, stateNav.filterCumulativeWater, stateNav.filterFirstMonthGas, stateNav.filterFirstMonthOil, stateNav.filterFirstMonthWater, stateNav.filterFirstProdDateRange, stateNav.filterFirstSixMonthGas, stateNav.filterFirstSixMonthOil, stateNav.filterFirstSixMonthWater, stateNav.filterFirstThreeMonthGas, stateNav.filterFirstThreeMonthOil, stateNav.filterFirstThreeMonthWater, stateNav.filterFirstTwelveMonthGas, stateNav.filterFirstTwelveMonthOil, stateNav.filterFirstTwelveMonthWater, stateNav.filterGeography, stateNav.filterLastMonthGas, stateNav.filterLastMonthOil, stateNav.filterLastMonthWater, stateNav.filterLastSixMonthGas, stateNav.filterLastSixMonthOil, stateNav.filterLastSixMonthWater, stateNav.filterLastThreeMonthGas, stateNav.filterLastThreeMonthOil, stateNav.filterLastThreeMonthWater, stateNav.filterLastTwelveMonthGas, stateNav.filterLastTwelveMonthOil, stateNav.filterLastTwelveMonthWater, stateNav.filterOperator, stateNav.filterPermitDateRange, stateNav.filterPlay, stateNav.filterSpudDateRange, stateNav.filterWellProfile, stateNav.filterWellStatus, stateNav.filterWellType]);
 
   useEffect(() => {
     //sets style of map when changed in Map Controls
@@ -523,22 +534,24 @@ export default function Map() {
     }
   }, [map, stateMap.selectedLayerId]);
 
-  const createPopUp = currentFeature => {
+  // const createPopUp = currentFeature => {
+    
+  // };
+
+  const createPopUp = useCallback((currentFeature) => {
     let coordinates = [currentFeature.longitude, currentFeature.latitude];
     let popUps = document.getElementsByClassName("mapboxgl-popup");
-
     if (popUps[0]) popUps[0].remove();
-
-    let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
-      .setLngLat(coordinates)
-      .setHTML(`<div id="popupContainer"></div>`)
-      .addTo(map);
-    //show wellcard in popup Portal
+    // create DOM element for the marker;
+    let popup = new mapboxgl.Popup({ offset: 23, closeOnClick: false })
+    .setLngLat(coordinates)
+    .setHTML(`<div id="popupContainer"></div>`)
+    .addTo(map);
+    
+    // //show wellcard in popup Portal
     setStateApp(state => ({ ...state, popupOpen: true }));
     handleOpenExpandableCard();
-  };
-
-
+  },[map, setStateApp]) 
 
   useEffect(() => {
     const req = new Request(
@@ -653,8 +666,8 @@ export default function Map() {
         map.on("click", "wellpoints", function(e) {
           //console.log('click event', e)
           var bbox = [
-            [e.point.x - 10, e.point.y - 10],
-            [e.point.x + 10, e.point.y + 10]
+            [e.point.x - 1, e.point.y - 10],
+            [e.point.x + 10, e.point.y + 1]
           ];
           let features = map.queryRenderedFeatures(bbox, {
             layers: ["wellpoints"]
@@ -741,11 +754,11 @@ export default function Map() {
         });
         map.on("mousemove",  e => {
           // e.lngLat is the longitude, latitude geographical position of the event
-          // JSON.stringify(e.point) +
           let coordinates =  e.lngLat.wrap()
           setLng(coordinates.lng)
           setLat(coordinates.lat)
         });
+        
         map.on("mousemove", "welllines", e => {
           map.getCanvas().style.cursor = "pointer";
         });
@@ -836,7 +849,7 @@ export default function Map() {
 
   return (
     <div className={classes.mapWrapper}>
-      <div className={classes.map} ref={mapEl} id="map">
+      <div className={classes.map}  ref={mapEl} id="map">
         {/* <div className={classes.footerLeftLogo}>
           <img src="icons/favicon-32x32.png" alt="logo" width="25" />
           <p>m1neral</p>
@@ -844,19 +857,20 @@ export default function Map() {
       </div>
       <MapControlsProvider />
       <Coordinates long={lng} lat={lat} />
+      <div  className={classes.portal} ref={container} />
       {stateMap.openTrack == true ? (
         <div className={classes.trackLists}>
           {<WellsProvider showList={true} parent="track" />}
         </div>
       ) : null}
-
+      <Portal container={container.current}>
       {stateApp.popupOpen ? (
         <div>
-          <div
+          {/* <div
             id="tempPopupHolder"
             style={{ position: "absolute", top: "0px", left: "20px" }}
-          ></div>
-          <Portal id="popupContainer">
+          ></div> */}
+          <PortalD id="popupContainer" >
             {showExpandableCard ? (
               <ExpandableCardProvider
                 expanded={false}
@@ -887,9 +901,10 @@ export default function Map() {
               ></ExpandableCardProvider>
             ) : null}
             {/* {stateApp.selectedWell ? <WellCardProvider /> : null} */}
-          </Portal>
+          </PortalD>
         </div>
       ) : null}
+      </Portal>
     </div>
   );
 }
