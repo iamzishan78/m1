@@ -543,7 +543,7 @@ export default function Map() {
     let popUps = document.getElementsByClassName("mapboxgl-popup");
     if (popUps[0]) popUps[0].remove();
     // create DOM element for the marker;
-    let popup = new mapboxgl.Popup({ offset: 23, closeOnClick: false })
+    let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
     .setLngLat(coordinates)
     .setHTML(`<div id="popupContainer"></div>`)
     .addTo(map);
