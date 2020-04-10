@@ -18,7 +18,6 @@ const MapControlsContextProvider = props => {
     layers: layers,
     heatmaps: null,
     selectedBaseMap: "",
-    //openTrack: true,
     editDraw: false,
     map: null,
     Draw: null,

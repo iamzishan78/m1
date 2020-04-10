@@ -60,18 +60,10 @@ const MapContext = createContext([{}, () => {}]);
 
 const MapContextProvider = props => {
   const [stateMap, setStateMap] = useState({
-    //wells:{},
-    //selectedWell:null,
     selectedWellId: null,
     selectedWellApi: null,
-    //popupOpen:false,
-    //styleLayers:styleLayers,
-    //checkedLayers: [0,1,4],
     checkedHeats: null,
-    //selectedLayerId:null,
-    //wells: {},
     selectedWell: null,
-    //popupOpen: false,
     styleLayers: styleLayers,
     heatLayers: heatLayers,
     checkedLayers: [0, 3],
@@ -80,7 +72,7 @@ const MapContextProvider = props => {
     openWellDetails: false,
     sourceLoaded: false,
     openTrack: false,
-    //flyTo: null,
+    toggle3d: false,
     map: null,
     draw: null,
     currentFeature: undefined

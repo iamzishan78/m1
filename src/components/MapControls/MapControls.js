@@ -114,6 +114,12 @@ export default function MapControls(props) {
       openTrack: action === "track" ? !stateMap.openTrack : stateMap.openTrack
     });
 
+    setStateMap({
+      ...stateMap,
+      toggle3d: action === "threed" ? !stateMap.toggle3d : stateMap.toggle3d
+    });
+    console.log(stateMap.toggle3d)
+
     if (stateMap.draw.getMode() !== "simple_select") {
       setStateApp({ ...stateApp, editDraw: false });
       stateMap.draw.changeMode("simple_select");
@@ -140,7 +146,7 @@ export default function MapControls(props) {
         action: "draw"
       },
       {
-        icon: <Cube3d id="threed" />,
+        icon: <Cube3d/>,
         name: "Toggle 3D",
         action: "threed"
       },

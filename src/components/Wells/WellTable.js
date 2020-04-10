@@ -495,27 +495,7 @@ const handleCloseExpandableCard = () => {
    
 }
 
- /*  useEffect( () => {
-   
-    if(props.parent){
-      if(props.parent === 'track'){
-     
-        if(dataWells) {
-             
-            setStateApp(state => ({...state,wells:dataWells.wells.results}))
-            setRows(dataWells.wells.results)
-          }
-          else {
-            setRows([])
-          }
-            
-      }
-      else {
-          
-            setRows([])
-      }
-    }
-  },[dataWells,props.parent]) */
+
 
 
   const handleRequestSort = (event, property) => {
@@ -533,29 +513,6 @@ const handleCloseExpandableCard = () => {
     setSelected([]);
   };
 
-  /* const handleClick = (event,row) => {
-    setStateApp(state => ({...state,selectedWell:row}))
-    
-    const selectedIndex = selected.indexOf(row.id);
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, row.id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      );
-    }
-
-    setSelected(newSelected);
-    
-    
-  }; */
 
   const handleExpandClick = async (index,component) => {
     setCollapseComponent(component)
@@ -584,12 +541,6 @@ const handleCloseExpandableCard = () => {
 
   
   const isSelected = Id => selected.indexOf(Id) !== -1;
-  
-  /* let rowsLen = 0;
-  if(rows && rows.length > 0) {
-    rowsLen = rows.length
-  }
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rowsLen - page * rowsPerPage); */
   
 
   return (

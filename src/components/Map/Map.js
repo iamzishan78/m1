@@ -647,22 +647,27 @@ export default function Map() {
         });
         newMap.addControl(Draw);
         setStateMap({ ...stateMap, map: newMap, draw: Draw });
-        // console.log(mapStyles)
-        // setStateMapControls({ ...stateMapControls, mapStyles: mapStyles });
-        // console.log(stateMapControls.mapStyles)
-        // console.log("====================")
 
-        /* let Draw = new MapboxDraw();
-  newMap.addControl(Draw, 'top-left'); */
 
         newMap.on("load", function(e) {
           setMap(newMap);
         });
+
+
       };
 
       if (!map) {
         initializeMap({ setMap, mapEl, setStateMap });
       } else {
+
+
+        console.log('threed state', stateMap.toggle3d)
+
+        if (stateMap.toggle3d === true) {
+          map.setPitch(70)
+          map.setBearing(20)
+        }
+
         map.on("click", "wellpoints", function(e) {
           //console.log('click event', e)
           var bbox = [
@@ -699,59 +704,12 @@ export default function Map() {
 
         map.on("mousemove", "wellpoints", e => {
           map.getCanvas().style.cursor = "pointer";
-          // // Set variables equal to the current feature's magnitude, location, and time
-          // var quakeMagnitude = e.features[0].properties.mag;
-          // var quakeLocation = e.features[0].properties.place;
-          // var quakeDate = new Date(e.features[0].properties.time);
-
-          // // Check whether features exist
-          // if (e.features.length > 0) {
-          //   // Display the magnitude, location, and time in the sidebar
-          //   magDisplay.textContent = quakeMagnitude;
-          //   locDisplay.textContent = quakeLocation;
-          //   dateDisplay.textContent = quakeDate;
-
-          //   // If quakeID for the hovered feature is not null,
-          //   // use removeFeatureState to reset to the default behavior
-          //   if (quakeID) {
-          //     map.removeFeatureState({
-          //       source: "earthquakes",
-          //       id: quakeID
-          //     });
-          //   }
-
-          //   quakeID = e.features[0].id;
-
-          //   // When the mouse moves over the earthquakes-viz layer, update the
-          //   // feature state for the feature under the mouse
-          //   map.setFeatureState({
-          //     source: 'earthquakes',
-          //     id: quakeID,
-          //   }, {
-          //     hover: true
-          //   });
-
-          //}
         });
 
         map.on("mouseleave", "wellpoints", function() {
-          // if (quakeID) {
-          //   map.setFeatureState({
-          //     source: 'earthquakes',
-          //     id: quakeID
-          //   }, {
-          //     hover: false
-          //   });
-          // }
-
-          // quakeID = null;
-          // // Remove the information from the previously hovered feature from the sidebar
-          // magDisplay.textContent = '';
-          // locDisplay.textContent = '';
-          // dateDisplay.textContent = '';
-          // // Reset the cursor style
           map.getCanvas().style.cursor = "";
         });
+
         map.on("mousemove",  e => {
           // e.lngLat is the longitude, latitude geographical position of the event
           let coordinates =  e.lngLat.wrap()
@@ -762,7 +720,7 @@ export default function Map() {
         map.on("mousemove", "welllines", e => {
           map.getCanvas().style.cursor = "pointer";
         });
-
+        
         map.on("mouseleave", "welllines", function() {
           map.getCanvas().style.cursor = "";
         });
@@ -796,24 +754,6 @@ export default function Map() {
           }));
           createPopUp(currentFeature.properties);
         });
-
-        /* 
-  //this extracts the data from the tileset and adds it to WellList.   
-  //when map is loaded.  some functions can't work until map is loaded
-  
-   map.on('styledata', () => {
-   //extracts features from tileset. this doesn't work well due to performance problems getting data out of the layer
-   
-    let features = map.queryRenderedFeatures({ layers: ['wellpoints'] });
-     console.log('features',features.length)
-    if (features.length > 0) {
-    
-     setStateNav(state => ({ ...state, uniqueWellFeatures:features }))
-       
-    }
-  
-  })  
-  */
       }
     }
   }, [map, setStateMap, setStateMapControls, mapStyles]);
