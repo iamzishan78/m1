@@ -9,6 +9,7 @@ function MapLightIcon() {
       height="60"
       version="1.1"
       viewBox="0 0 1654 1102.667"
+      
     >
       <image
         width="1654"

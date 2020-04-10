@@ -40,6 +40,8 @@ import WellCardProvider from '../WellCard/WellCardProvider';
 import ChatIcon from '@material-ui/icons/Chat';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
+import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAndObjectType";
+
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -273,8 +275,8 @@ export default function WellTable(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [source,setSource] = useState(null)
   const [rows, setRows] = React.useState([]);
-  const [getVertexEdges, { loading:loadingGraph, data:dataGraph }] = useLazyQuery(VERTEXEDGESQUERY);
-  const [getWells, { loading, data:dataWells }] = useLazyQuery(WELLSQUERY);
+  //const [getVertexEdges, { loading:loadingGraph, data:dataGraph }] = useLazyQuery(VERTEXEDGESQUERY);
+  //const [getWells, { loading, data:dataWells }] = useLazyQuery(WELLSQUERY);
   const [collapsedRow,setCollapsedRow] = useState(null)
   const [collapseComponent,setCollapseComponent] = useState('owner');
   const [expanded, setExpanded] = useState(false);
@@ -285,78 +287,179 @@ export default function WellTable(props) {
   const [mouseY, setMouseY] = useState(null);
   const [selectedRow, setSelectedRow] = React.useState();
   const [showExpandableCard, setShowExpandableCard] = useState(false);
+  const [targetLabel, setTargetLabel] = useState(null);
+  const [tracksByUserAndObjectType, { data: dataTracks }] = useLazyQuery(
+    TRACKSBYUSERANDOBJECTTYPE
+  );
+  const [user, setUser] = useState({ _id: "" });
+  const [loading, setLoading] = useState(true);
+  const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
+
 
   useEffect( () => {
     setShowList(props.showList)
   },[props.showList,setShowList])
 
-  useEffect( () => {
-    if(!source){
-      setSource({
-        sourceId: stateApp.user.id,
-        label: 'user',
-        name: stateApp.user.name,
-        type:'vertex',
-        properties:[]
-      })
-    }
-    getVertexEdges({variables: {'source':source,'edgeLabel':"tracks",'targetLabel':"well"}})
-  },[stateApp.user,source])
+  // useEffect( () => {
+  //   if(!source){
+  //     setSource({
+  //       sourceId: stateApp.user.id,
+  //       label: 'user',
+  //       name: stateApp.user.name,
+  //       type:'vertex',
+  //       properties:[]
+  //     })
+  //   }
+  //   getVertexEdges({variables: {'source':source,'edgeLabel':"tracks",'targetLabel':"well"}})
+  // },[stateApp.user,source])
 
-  useEffect( () => {
-    if(props.parent){
-    if(props.parent === 'track'){
+
+
+  // //////////////
+  // useEffect( () => {
+  //   if(props.parent){
+  //   if(props.parent === 'track'){
       
-      if(dataGraph) {
-        if(dataGraph.vertexEdges.sourceIds){
-          if(dataGraph.vertexEdges.sourceIds.length > 0){
-              getWells({variables: {'wellIdArray':dataGraph.vertexEdges.sourceIds,'authToken':stateApp.user.authToken}})
-          }
-        }
+  //     if(dataGraph) {
+  //       if(dataGraph.vertexEdges.sourceIds){
+  //         if(dataGraph.vertexEdges.sourceIds.length > 0){
+  //             getWells({variables: {'wellIdArray':dataGraph.vertexEdges.sourceIds,'authToken':stateApp.user.authToken}})
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+  // },[stateApp.user,dataGraph,props.parent])
+
+  //  useEffect( () => {
+   
+  //   if(props.parent){
+  //   if(props.parent === 'track'){
+     
+  //       if(dataWells && dataGraph) {
+           
+  //           if(dataWells.wells) {
+              
+  //               dataWells.wells.results.forEach( (well) => {
+                
+  //                   if(dataGraph.vertexEdges.sourceIds){
+  //                     if(dataGraph.vertexEdges.sourceIds.length > 0){
+  //                       dataGraph.vertexEdges.sourceIds.forEach( (sourceId) => {
+  //                         if(well.id === sourceId) {
+  //                           well.isTracked = true
+  //                         }})
+  //                     }
+  //                   }
+  //             })
+              
+  //             setRows(dataWells.wells.results)
+  //             setStateApp(state => ({...state,wells:dataWells.wells.results}))
+  //         }
+  //         else {
+  //           setRows([])
+  //         }
+            
+  //       }
+  //       else {
+          
+  //           setRows([])
+  //       }
+     
+
+  //   }
+    
+  // }
+  // },[dataWells,dataGraph,props.parent]) 
+
+
+  useEffect(() => {
+    if (props.parent && props.parent === "trackWells") {
+      setTargetLabel("well");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "trackWells" &&
+      dataTracks &&
+      dataTracks.tracksByUserAndObjectType
+    ) {
+      if (dataTracks.tracksByUserAndObjectType.length !== 0) {
+        const tracksIdArray = dataTracks.tracksByUserAndObjectType.map(
+          (track) => track.trackOn
+        );
+
+        getWells({
+          variables: {
+            wellIdArray: tracksIdArray,
+            authToken: stateApp.user.authToken,
+          },
+        });
+        // getCommentsCounter({
+        //   variables: { objectsIdsArray: tracksIdArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+        // });
+        // getTagSamples({
+        //   variables: { objectsIdsArray: tracksIdArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+        // });
+      } else {
+        setRows([]);
+        setLoading(false);
       }
     }
-  }
-  },[stateApp.user,dataGraph,props.parent])
+  }, [dataTracks]);
 
-   useEffect( () => {
-   
-    if(props.parent){
-    if(props.parent === 'track'){
-     
-        if(dataWells && dataGraph) {
-           
-            if(dataWells.wells) {
-              
-                dataWells.wells.results.forEach( (well) => {
-                
-                    if(dataGraph.vertexEdges.sourceIds){
-                      if(dataGraph.vertexEdges.sourceIds.length > 0){
-                        dataGraph.vertexEdges.sourceIds.forEach( (sourceId) => {
-                          if(well.id === sourceId) {
-                            well.isTracked = true
-                          }})
-                      }
-                    }
-              })
-              
-              setRows(dataWells.wells.results)
-              setStateApp(state => ({...state,wells:dataWells.wells.results}))
-          }
-          else {
-            setRows([])
-          }
-            
-        }
-        else {
-          
-            setRows([])
-        }
-     
+  // useEffect(() => {
+  //   if (props.parent && props.parent === "trackWells" && dataWells) {
+  //     if (
+  //       dataWells.wells &&
+  //       dataWells.wells.results &&
+  //       dataWells.wells.results.length > 0 &&
+  //       dataCommentsCounter &&
+  //       dataCommentsCounter.commentsCounter &&
+  //       dataTagSamples &&
+  //       dataTagSamples.tagSamples
+  //     ) {
+  //       dataWells.wells.results.forEach((well) => {
+  //         well.isTracked = true;
+  //         well.commentsCounter = "";
+  //         well.tagSample = [];
+  //         well.tagsCounter = "";
 
-    }
-    
-  }
-  },[dataWells,dataGraph,props.parent]) 
+  //         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+  //           if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+  //             well.commentsCounter =
+  //               dataCommentsCounter.commentsCounter[i].total;
+  //             break;
+  //           }
+  //         }
+  //         for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+  //           if (well.id === dataTagSamples.tagSamples[i]._id) {
+  //             well.tagSample = dataTagSamples.tagSamples[i].tags;
+  //             well.tagsCounter = dataTagSamples.tagSamples[i].total;
+  //             break;
+  //           }
+  //         }
+  //       });
+
+  //       setRows(dataWells.wells.results);
+  //       setHeader("Wells");
+  //       setColumns(WellsHeadCells);
+  //       setAddAble(false);
+  //       setStateApp((state) => ({
+  //         ...state,
+  //         wells: dataWells.wells.results,
+  //       }));
+  //     } else {
+  //       setRows([]);
+  //     }
+  //     setLoading(false);
+  //   }
+  // }, [dataWells, dataTagSamples, dataCommentsCounter]);
+
+
+//////
+
 
 
   const handleListClick = (well) => {
@@ -694,7 +797,7 @@ const handleCloseExpandableCard = () => {
       </Paper>
      
     </div>) 
-    : loading || loadingGraph ? (<CircularProgress size={80} disableShrink color="secondary" />)
+    : loading ? (<CircularProgress size={80} disableShrink color="secondary" />)
     :(<Skeleton variant="rect" height={300}><Typography variant="button">Not Available</Typography></Skeleton>)
   );
 }

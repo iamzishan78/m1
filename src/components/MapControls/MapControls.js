@@ -23,6 +23,8 @@ import DrawShapes from "./components/DrawShapes/DrawShapes";
 import GpsFixedIcon from "@material-ui/icons/GpsFixed";
 import GpsNotFixedIcon from "@material-ui/icons/GpsNotFixed";
 import GradientIcon from "@material-ui/icons/Gradient";
+import {default as Cube3d} from '../Shared/svgIcons/cube-3d';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -136,7 +138,12 @@ export default function MapControls(props) {
         icon: !stateApp.editDraw ? <EditIcon /> : <CancelIcon />,
         name: "Draw",
         action: "draw"
-      }
+      },
+      {
+        icon: <Cube3d id="threed" />,
+        name: "Toggle 3D",
+        action: "threed"
+      },
     ];
 
     return actions.map(action => (

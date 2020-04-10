@@ -70,31 +70,6 @@ function getSorting(order, orderBy) {
     : (a, b) => -desc(a, b, orderBy);
 }
 
-// const headCells = [
-//   { id: "name", numeric: false, disablePadding: true, label: "Name" },
-//   {
-//     id: "ownershipType",
-//     numeric: false,
-//     disablePadding: false,
-//     label: "Entity",
-//   },
-//   { id: "interestType", numeric: false, disablePadding: false, label: "Type" },
-//   {
-//     id: "ownershipPercentage",
-//     numeric: true,
-//     disablePadding: false,
-//     label: "Interest",
-//   },
-//   {
-//     id: "appraisedValue",
-//     numeric: true,
-//     disablePadding: false,
-//     label: "Appraised Value",
-//   },
-//   { id: "comments", numeric: false, disablePadding: false, label: "" },
-//   { id: "tags", numeric: false, disablePadding: false, label: "" },
-//   { id: "isTracked", numeric: false, disablePadding: false, label: "" },
-// ];
 
 function EnhancedTableHead(props) {
   const {
