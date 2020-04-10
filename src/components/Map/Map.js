@@ -41,10 +41,10 @@ const useStyles = makeStyles(theme => ({
     bottom: "0",
     width: "100%",
     height: "100%",
-    overflow: "hidden !important"
-    // "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib":{
-    //   display:"none"
-    // }
+    overflow: "hidden !important",
+    "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib":{
+      display:"none"
+    }
   },
   footerLeftLogo: {
     position: "absolute",
@@ -835,10 +835,10 @@ export default function Map() {
       <Portal container={container.current}>
       {stateApp.popupOpen ? (
         <div>
-          {/* <div
+          <div
             id="tempPopupHolder"
             style={{ position: "absolute", top: "0px", left: "20px" }}
-          ></div> */}
+          ></div>
           <PortalD id="popupContainer" >
             {showExpandableCard ? (
               <ExpandableCardProvider
