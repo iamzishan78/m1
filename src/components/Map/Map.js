@@ -621,17 +621,31 @@ export default function Map() {
         newMap.addControl(zoomControl, "bottom-right");
 
         newMap.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
-
-        // Add geolocate control to the map.
+        
+        // newMap.addControl(
+        //   new mapboxgl.MapboxGeocoder({
+        //   accessToken: "sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
+        //   }));
+        // // Add geolocate control to the map.
+        
         newMap.addControl(
           new mapboxgl.GeolocateControl({
             positionOptions: {
               enableHighAccuracy: true
             },
-            trackUserLocation: true
+            trackUserLocation: true,
+            showAccuracyCircle: true
           }),
           "bottom-right"
         );
+
+
+        newMap.addControl(
+          new mapboxgl.ScaleControl({
+            maxWidth: 80,
+            unit: 'imperial'
+          }),"bottom-right");
+      
 
         let Draw = new MapboxDraw({
           displayControlsDefault: false,
@@ -663,14 +677,18 @@ export default function Map() {
 
         console.log('threed state', stateMap.toggle3d)
 
-        if (stateMap.toggle3d === true) {
+
+
+      if (stateMap.toggle3d === true) {
           map.setPitch(70)
           map.setBearing(20)
         }
-        else{
+      else{
           map.setPitch(0)
           map.setBearing(0)          
         }
+
+
 
         map.on("click", "wellpoints", function(e) {
           //console.log('click event', e)
@@ -729,6 +747,8 @@ export default function Map() {
           map.getCanvas().style.cursor = "";
         });
 
+
+          
         map.on("click", "welllines", function(e) {
           var bbox = [
             [e.point.x - 10, e.point.y - 10],
