@@ -407,6 +407,9 @@ export default function WellTable(props) {
         setLoading(false);
       }
     }
+    console.log('tracks', dataTracks)
+    console.log('wells', dataWells)
+
   }, [dataTracks]);
 
   // useEffect(() => {
@@ -590,9 +593,10 @@ const handleCloseExpandableCard = () => {
   
 
   return (
-    rows && rows.length > 0 ?  showList ? (
+    //rows && rows.length > 0 ?  
+    //showList ? 
+    (
       <div className={classes.rootList}>
-
       <List dense className={classes.wellList}  aria-label="secondary wells">
         <ListItem className={classes.subHeader} 
               key="subheader" 
@@ -614,190 +618,191 @@ const handleCloseExpandableCard = () => {
         
       </List>
       </div>
-    ):(
+      )
+      //:([])
       
-    <div className={classes.rootTable}>
-      {showExpandableCard ? (
-        <ExpandableCardProvider 
-        expanded={false}
-        handleCloseExpandableCard={handleCloseExpandableCard}
-        component={<WellCardProvider></WellCardProvider>}
-        title={selectedRow.wellName} 
-        subTitle={selectedRow.operator} 
-        parent="well"
-        mouseX={mouseX}
-        mouseY={mouseY}
-        position="absolute"
-        cardLeft={mouseX}
-        cardTop={mouseY}
-        zIndex={99}
-        cardWidth="380px" 
-        cardHeight="380px" 
-        cardWidthExpanded="95vw" 
-        cardHeightExpanded="90vh" 
-        source={stateApp.user}
-        sourceSourceId={stateApp.user.id}
-        sourceName={stateApp.user.name}
-        sourceLabel='user'
-        target={selectedRow}
-        targetSourceId={selectedRow.id}
-        targetName={selectedRow.wellName}
-        targetLabel='well'></ExpandableCardProvider>):null}
-      <Paper className={classes.paper}>
+    // <div className={classes.rootTable}>
+    //   {showExpandableCard ? (
+    //     <ExpandableCardProvider 
+    //     expanded={false}
+    //     handleCloseExpandableCard={handleCloseExpandableCard}
+    //     component={<WellCardProvider></WellCardProvider>}
+    //     title={selectedRow.wellName} 
+    //     subTitle={selectedRow.operator} 
+    //     parent="well"
+    //     mouseX={mouseX}
+    //     mouseY={mouseY}
+    //     position="absolute"
+    //     cardLeft={mouseX}
+    //     cardTop={mouseY}
+    //     zIndex={99}
+    //     cardWidth="380px" 
+    //     cardHeight="380px" 
+    //     cardWidthExpanded="95vw" 
+    //     cardHeightExpanded="90vh" 
+    //     source={stateApp.user}
+    //     sourceSourceId={stateApp.user.id}
+    //     sourceName={stateApp.user.name}
+    //     sourceLabel='user'
+    //     target={selectedRow}
+    //     targetSourceId={selectedRow.id}
+    //     targetName={selectedRow.wellName}
+    //     targetLabel='well'></ExpandableCardProvider>):null}
+    //   <Paper className={classes.paper}>
        
-       {/*  <EnhancedTableToolbar numSelected={selected.length} /> */}
+    //    {/*  <EnhancedTableToolbar numSelected={selected.length} /> */}
         
-        <TableContainer>
-          <Table
-            className={classes.table}
-            aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
-            aria-label="enhanced table"
-          >
-            <EnhancedTableHead
-              classes={classes}
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-            />
-            <TableBody>
-              {stableSort(rows, getSorting(order, orderBy))
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row.id);
-                  const labelId = `enhanced-table-checkbox-${index}`;
+    //     <TableContainer>
+    //       <Table
+    //         className={classes.table}
+    //         aria-labelledby="tableTitle"
+    //         size={dense ? 'small' : 'medium'}
+    //         aria-label="enhanced table"
+    //       >
+    //         <EnhancedTableHead
+    //           classes={classes}
+    //           numSelected={selected.length}
+    //           order={order}
+    //           orderBy={orderBy}
+    //           onSelectAllClick={handleSelectAllClick}
+    //           onRequestSort={handleRequestSort}
+    //           rowCount={rows.length}
+    //         />
+    //         <TableBody>
+    //           {stableSort(rows, getSorting(order, orderBy))
+    //             .map((row, index) => {
+    //               const isItemSelected = isSelected(row.id);
+    //               const labelId = `enhanced-table-checkbox-${index}`;
 
-                  return ([
-                    <TableRow
-                      hover
-                     // onClick={event => handleClick(event, row,index)}
-                     // role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.id}
-                      selected={isItemSelected}
-                    >
-                       <TableCell padding="checkbox">
-                       <IconButton size="medium" color="primary"
-                        onClick={ (event) => handleRowClick(event,row)}
-                        aria-label="view more">
-                        <VisibilityIcon color="secondary" />
-                      </IconButton>
-                      </TableCell>
+    //               return ([
+    //                 <TableRow
+    //                   hover
+    //                  // onClick={event => handleClick(event, row,index)}
+    //                  // role="checkbox"
+    //                   aria-checked={isItemSelected}
+    //                   tabIndex={-1}
+    //                   key={row.id}
+    //                   selected={isItemSelected}
+    //                 >
+    //                    <TableCell padding="checkbox">
+    //                    <IconButton size="medium" color="primary"
+    //                     onClick={ (event) => handleRowClick(event,row)}
+    //                     aria-label="view more">
+    //                     <VisibilityIcon color="secondary" />
+    //                   </IconButton>
+    //                   </TableCell>
 
-                      <TableCell component="th" id={labelId} scope="row" padding="none">
-                        {row.api}
-                      </TableCell>
+    //                   <TableCell component="th" id={labelId} scope="row" padding="none">
+    //                     {row.api}
+    //                   </TableCell>
 
-                      <TableCell align="left">{row.wellName}</TableCell>
+    //                   <TableCell align="left">{row.wellName}</TableCell>
 
-                      <TableCell align="left">{row.operator}</TableCell>
-                      <TableCell align="left">{row.wellType}</TableCell>
-                      <TableCell align="left">{row.wellBoreProfile}</TableCell>
+    //                   <TableCell align="left">{row.operator}</TableCell>
+    //                   <TableCell align="left">{row.wellType}</TableCell>
+    //                   <TableCell align="left">{row.wellBoreProfile}</TableCell>
                       
                       
-                      <TableCell align="right">
-                      <Badge badgeContent={row.ownerCount} color="secondary">
-                      <IconButton size="medium" color="primary"
-                        className={clsx(classes.expand, {
-                          [classes.expandOpenOwner]:expanded &&  collapsedRow === index,
-                        })}
-                        onClick={ () => handleExpandClick(index,'owners')}
-                        aria-expanded={expanded && collapsedRow === index}
-                        aria-label="show owners"
-                      >
-                        <PeopleAltIcon />
-                      </IconButton>
-                      </Badge>
-                      </TableCell>
+    //                   <TableCell align="right">
+    //                   <Badge badgeContent={row.ownerCount} color="secondary">
+    //                   <IconButton size="medium" color="primary"
+    //                     className={clsx(classes.expand, {
+    //                       [classes.expandOpenOwner]:expanded &&  collapsedRow === index,
+    //                     })}
+    //                     onClick={ () => handleExpandClick(index,'owners')}
+    //                     aria-expanded={expanded && collapsedRow === index}
+    //                     aria-label="show owners"
+    //                   >
+    //                     <PeopleAltIcon />
+    //                   </IconButton>
+    //                   </Badge>
+    //                   </TableCell>
 
 
-                      <TableCell align="right">
-                      <Badge badgeContent={0} color="secondary">
-                      <IconButton size="medium" color="primary"
-                        className={clsx(classes.expand, {
-                          [classes.expandOpenComment]: expandedComment &&  collapsedRow === index,
-                        })}
-                        onClick={ () => handleExpandClickComment(index,'comments')}
-                        aria-expanded={expandedComment && collapsedRow === index}
-                        aria-label="show comments"
-                      >
-                        <ChatIcon />
-                      </IconButton>
-                      </Badge>
-                      </TableCell>
+    //                   <TableCell align="right">
+    //                   <Badge badgeContent={0} color="secondary">
+    //                   <IconButton size="medium" color="primary"
+    //                     className={clsx(classes.expand, {
+    //                       [classes.expandOpenComment]: expandedComment &&  collapsedRow === index,
+    //                     })}
+    //                     onClick={ () => handleExpandClickComment(index,'comments')}
+    //                     aria-expanded={expandedComment && collapsedRow === index}
+    //                     aria-label="show comments"
+    //                   >
+    //                     <ChatIcon />
+    //                   </IconButton>
+    //                   </Badge>
+    //                   </TableCell>
 
 
-                      <TableCell align="right">
-                      <Badge badgeContent={0} color="secondary">
-                      <IconButton size="medium" color="primary"
-                        className={clsx(classes.expand, {
-                          [classes.expandOpenTag]: expandedTag &&  collapsedRow === index,
-                        })}
-                        onClick={ () => handleExpandClickTag(index,'tags')}
-                        aria-expanded={expandedTag && collapsedRow === index}
-                        aria-label="show tags"
-                      >
-                        <LocalOfferIcon />
-                      </IconButton>
-                      </Badge>
-                      </TableCell>
+    //                   <TableCell align="right">
+    //                   <Badge badgeContent={0} color="secondary">
+    //                   <IconButton size="medium" color="primary"
+    //                     className={clsx(classes.expand, {
+    //                       [classes.expandOpenTag]: expandedTag &&  collapsedRow === index,
+    //                     })}
+    //                     onClick={ () => handleExpandClickTag(index,'tags')}
+    //                     aria-expanded={expandedTag && collapsedRow === index}
+    //                     aria-label="show tags"
+    //                   >
+    //                     <LocalOfferIcon />
+    //                   </IconButton>
+    //                   </Badge>
+    //                   </TableCell>
 
 
-                      <TableCell align="right">
-                        <TrackToggleButton 
-                          source={stateApp.user} 
-                          sourceLabel="user" 
-                          sourceSourceId={stateApp.user.id} 
-                          sourceName={stateApp.user.name} 
-                          target= {row} 
-                          targetLabel="well" 
-                          targetSourceId={row.id}
-                          targetName={row.wellName}  />
-                      </TableCell>
+    //                   <TableCell align="right">
+    //                     <TrackToggleButton 
+    //                       source={stateApp.user} 
+    //                       sourceLabel="user" 
+    //                       sourceSourceId={stateApp.user.id} 
+    //                       sourceName={stateApp.user.name} 
+    //                       target= {row} 
+    //                       targetLabel="well" 
+    //                       targetSourceId={row.id}
+    //                       targetName={row.wellName}  />
+    //                   </TableCell>
 
-                    </TableRow>,
-                    <TableRow key={index}>
-                    <TableCell className={classes.expandedRow} colSpan={9}>
-                      <Collapse  className={classes.collapseInsideRow}
-                        in={(expanded || expandedTag || expandedComment) && collapsedRow === index}
-                        timeout="auto"
-                        unmountOnExit
-                      >
-                       {collapseComponent === 'tags' ? (
-                       <div className={classes.tagWrapper}>
-                      {/*  <Tags public={true}/> */}
-                       <Tags public={false}
-                       source={stateApp.user} 
-                       sourceLabel="user" 
-                       sourceSourceId={stateApp.user.id} 
-                       sourceName={stateApp.user.name} 
-                       target= {row} 
-                       targetLabel="well" 
-                       targetSourceId={row.id}
-                       targetName={row.wellName}
-                       />
-                       </div>
-                       )
-                       : collapseComponent === 'comments' ? (
-                        <Comments></Comments>
-                       ):(<OwnersProvider selectedWell={row} parent="well"/>)}
-                      </Collapse>
-                    </TableCell>
-                  </TableRow>
-                  ]);
-                })}
+    //                 </TableRow>,
+    //                 <TableRow key={index}>
+    //                 <TableCell className={classes.expandedRow} colSpan={9}>
+    //                   <Collapse  className={classes.collapseInsideRow}
+    //                     in={(expanded || expandedTag || expandedComment) && collapsedRow === index}
+    //                     timeout="auto"
+    //                     unmountOnExit
+    //                   >
+    //                    {collapseComponent === 'tags' ? (
+    //                    <div className={classes.tagWrapper}>
+    //                   {/*  <Tags public={true}/> */}
+    //                    <Tags public={false}
+    //                    source={stateApp.user} 
+    //                    sourceLabel="user" 
+    //                    sourceSourceId={stateApp.user.id} 
+    //                    sourceName={stateApp.user.name} 
+    //                    target= {row} 
+    //                    targetLabel="well" 
+    //                    targetSourceId={row.id}
+    //                    targetName={row.wellName}
+    //                    />
+    //                    </div>
+    //                    )
+    //                    : collapseComponent === 'comments' ? (
+    //                     <Comments></Comments>
+    //                    ):(<OwnersProvider selectedWell={row} parent="well"/>)}
+    //                   </Collapse>
+    //                 </TableCell>
+    //               </TableRow>
+    //               ]);
+    //             })}
               
-            </TableBody>
-          </Table>
-        </TableContainer>
+    //         </TableBody>
+    //       </Table>
+    //     </TableContainer>
        
-      </Paper>
+    //   </Paper>
      
-    </div>) 
-    : loading ? (<CircularProgress size={80} disableShrink color="secondary" />)
-    :(<Skeleton variant="rect" height={300}><Typography variant="button">Not Available</Typography></Skeleton>)
+    // // </div>) 
+    // : loading ? (<CircularProgress size={80} disableShrink color="secondary" />)
+    // :(<Skeleton variant="rect" height={300}><Typography variant="button">Not Available</Typography></Skeleton>)
   );
 }
