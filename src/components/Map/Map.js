@@ -29,8 +29,7 @@ import {
   SimpleSelectMode
 } from "mapbox-gl-draw-circle";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
-//import { getConstantValue } from "typescript";
-//import mapStylesTemp from "./components/Utils/MapStyles";
+//import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
 const useStyles = makeStyles(theme => ({
   mapWrapper: {
@@ -617,10 +616,21 @@ export default function Map() {
           //pitch: mapStyles[index].pitch,
           //bearing: mapStyles[index].bearing
         });
-        let zoomControl = new mapboxgl.NavigationControl();
-        newMap.addControl(zoomControl, "bottom-right");
+        
 
-        newMap.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
+        newMap.addControl(
+          new mapboxgl.ScaleControl({
+            maxWidth: 80,
+            unit: 'imperial'
+          }),"bottom-right");
+      
+        newMap.addControl(
+          new mapboxgl.NavigationControl()
+          , "bottom-right");
+
+        newMap.addControl(
+          new mapboxgl.FullscreenControl()
+          , "bottom-right");
         
         // newMap.addControl(
         //   new mapboxgl.MapboxGeocoder({
@@ -628,6 +638,7 @@ export default function Map() {
         //   }));
         // // Add geolocate control to the map.
         
+
         newMap.addControl(
           new mapboxgl.GeolocateControl({
             positionOptions: {
@@ -640,12 +651,6 @@ export default function Map() {
         );
 
 
-        newMap.addControl(
-          new mapboxgl.ScaleControl({
-            maxWidth: 80,
-            unit: 'imperial'
-          }),"bottom-right");
-      
 
         let Draw = new MapboxDraw({
           displayControlsDefault: false,
