@@ -667,6 +667,10 @@ export default function Map() {
           map.setPitch(70)
           map.setBearing(20)
         }
+        else{
+          map.setPitch(0)
+          map.setBearing(0)          
+        }
 
         map.on("click", "wellpoints", function(e) {
           //console.log('click event', e)
@@ -756,7 +760,7 @@ export default function Map() {
         });
       }
     }
-  }, [map, setStateMap, setStateMapControls, mapStyles]);
+  }, [map, setStateMap, setStateMapControls, mapStyles,stateMap.toggle3d]);
 
   useEffect(() => {
     if (map && stateApp.flyTo) {
