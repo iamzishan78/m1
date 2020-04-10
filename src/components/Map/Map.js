@@ -48,25 +48,25 @@ const useStyles = makeStyles(theme => ({
   },
   footerLeftLogo: {
     position: "absolute",
-    bottom: "45px",
+    bottom: "5px",
     zIndex: "1",
-    left: "7px",
-    textShadow: "1px 0 0 black, -1px 0 0 black, 0 1px 0 black, 0 -1px 0 black",
-    color: "#ffffff",
-    fontSize: "16px",
-    fontWeight: "bold",
-    opacity: "0.82",
-    "& img": {
-      padding: "2px 2px 4px 2px",
-      backgroundImage:
-        "radial-gradient(#ffffff00,rgba(0, 0, 0, 0.671), #ffffff00,  #ffffff00)",
-      position: "absolute",
-      bottom: "-40px"
-    },
-    "& p": {
-      position: "absolute",
-      left: "23px"
-    }
+    left: "10px",
+    //textShadow: "1px 0 0 black, -1px 0 0 black, 0 1px 0 black, 0 -1px 0 black",
+    // color: "#ffffff",
+    // fontSize: "16px",
+    // fontWeight: "bold",
+    // opacity: "0.82",
+    // "& img": {
+    //   padding: "2px 2px 4px 2px",
+    //   backgroundImage:
+    //     "radial-gradient(#ffffff00,rgba(0, 0, 0, 0.671), #ffffff00,  #ffffff00)",
+    //   position: "absolute",
+    //   bottom: "-40px"
+    //},
+    // "& p": {
+    //   position: "absolute",
+    //   left: "23px"
+    // }
   },
   portal: {
     position: "fixed",
@@ -819,10 +819,9 @@ export default function Map() {
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map}  ref={mapEl} id="map">
-        {/* <div className={classes.footerLeftLogo}>
-          <img src="icons/favicon-32x32.png" alt="logo" width="25" />
-          <p>m1neral</p>
-        </div> */}
+        <div className={classes.footerLeftLogo}>
+          <img src="icons/M1LogoWhiteTransparent.png" alt="logo" width="150" />
+        </div> 
       </div>
       <MapControlsProvider />
       <Coordinates long={lng} lat={lat} />
