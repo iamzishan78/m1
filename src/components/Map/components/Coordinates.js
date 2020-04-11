@@ -5,9 +5,9 @@ const useStyles = makeStyles(theme => ({
     padding: "0 5px",
     backgroundColor: "hsla(0,0%,100%,.5)",
     margin: 0,
-    fontSize: 12,
-    left: "8vw",
-    bottom: 0,
+    fontSize: 10,
+    right: "9vw",
+    bottom: '12px',
     position: "absolute",
   },
   insideCoor:{
