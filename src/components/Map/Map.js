@@ -30,6 +30,8 @@ import {
 } from "mapbox-gl-draw-circle";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import * as MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
+
 
 const useStyles = makeStyles(theme => ({
   mapWrapper: {
