@@ -543,7 +543,7 @@ export default function Map() {
     let coordinates = [currentFeature.longitude, currentFeature.latitude];
     let popUps = document.getElementsByClassName("mapboxgl-popup");
     if (popUps[0]) popUps[0].remove();
-    // create DOM element for the marker;
+
     let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
     .setLngLat(coordinates)
     .setHTML(`<div id="popupContainer"></div>`)
@@ -585,10 +585,6 @@ export default function Map() {
 
 
 
-  // useEffect(() => {
-  //   console.log("XXXXXXXXXXXXX", Date.now(), mapStyles); //////temporary///////////////////
-  // }, [mapStyles]);
-
 
 
   function getIndex(value, arr, prop) {
@@ -615,8 +611,8 @@ export default function Map() {
           style: "mapbox://styles/m1neral/" + mapStyles[index].id,
           center: mapStyles[index].center,
           zoom: mapStyles[index].zoom,
-          //pitch: mapStyles[index].pitch,
-          //bearing: mapStyles[index].bearing
+          pitch: mapStyles[index].pitch,
+          bearing: mapStyles[index].bearing
         });
         
 
@@ -648,7 +644,6 @@ export default function Map() {
 
         newMap.addControl(
           new MapboxGeocoder({
-          //accessToken: "sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
           accessToken: mapboxgl.accessToken,
           mapboxgl: mapboxgl
         })
@@ -709,6 +704,8 @@ export default function Map() {
             layers: ["wellpoints"]
           });
           let currentFeature = features[0];
+          //let currentFeature.features = e.features;
+          //let currentFeature.lngLat = e.lngLat;
 
           if (!currentFeature.properties.isTracked) {
             //add temp until it is in tileset. required for tracking well
@@ -725,13 +722,17 @@ export default function Map() {
             ...state,
             selectedWellId: currentFeature.properties.api
           }));
-          // setStateApp(state => ({
-          //   ...state,
-          //   selectedWellId: currentFeature.properties.api
-          // }));
 
           createPopUp(currentFeature.properties);
+          map.resize()
+
         });
+
+
+
+
+
+
 
         map.on("mousemove", "wellpoints", e => {
           map.getCanvas().style.cursor = "pointer";
@@ -804,20 +805,13 @@ export default function Map() {
     }
   }, [createPopUp, map, stateApp.flyTo]);
 
-  // console.log("---")
-  // console.log(stateMap.flyTo)
-  const handleOpenExpandableCard = e => {
-    //setStateApp(state => ({...state,showExpandableCard:true}))
-    //console.log(e.nativeEvent)
-    //setMouseX(e.nativeEvent.clientX)
-    // setMouseY(e.nativeEvent.clientY-70)
 
-    //setStateApp(state => ({...state,selectedWell:row}))
+  const handleOpenExpandableCard = e => {
     setShowExpandableCard(true);
   };
+
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
-    // setStateApp(state => ({...state,showExpandableCard:true}))
   };
 
   return (
