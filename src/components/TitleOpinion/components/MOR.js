@@ -5,16 +5,19 @@ import Section from "./Section";
 import SectionTable from "./SectionTable";
 import TextField from "@material-ui/core/TextField";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   MSWrapper: {
     width: "100%",
-    height: "100%"
+    height: "100%",
   },
   genNoteClass: {
     width: "98%",
     margin: "16px !important",
-    marginRight: "250px !important"
-  }
+    marginRight: "250px !important",
+    "& .MuiInput-underline:before": {
+      borderBottom: "0",
+    },
+  },
 }));
 
 export default function MOR() {
@@ -39,7 +42,7 @@ export default function MOR() {
                 : true
             }
           >
-            <SectionTable sectionData={section} sectionNumber={i} MOR={true}/>
+            <SectionTable sectionData={section} sectionNumber={i} MOR={true} />
           </Section>
         );
       })}
@@ -52,19 +55,19 @@ export default function MOR() {
           className={`${classes.genNoteClass}`}
           id="genNotes"
           multiline
-          onClick={e => {
+          onClick={(e) => {
             e.preventDefault();
             document.getElementById("genNotes").focus();
           }}
           value={stateTitleOpinion.TOData.generalNotes}
-          onChange={e => {
+          onChange={(e) => {
             setStateTitleOpinion({
               ...stateTitleOpinion,
               edited: true,
               TOData: {
                 ...stateTitleOpinion.TOData,
-                generalNotes: e.target.value
-              }
+                generalNotes: e.target.value,
+              },
             });
           }}
         />

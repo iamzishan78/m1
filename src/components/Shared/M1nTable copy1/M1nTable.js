@@ -34,210 +34,82 @@ const useStyles = makeStyles((theme) => ({
 
 ////////////HeadCells begin///////////////////////////////////////////////
 const OwnersHeadCells = [
+  { id: "name", numeric: false, disablePadding: true, label: "Name" },
   {
-    name: "id",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-  { name: "name", label: "Name" },
-  {
-    name: "ownershipType",
+    id: "ownershipType",
+    numeric: false,
+    disablePadding: false,
     label: "Entity",
   },
-  { name: "interestType", label: "Type" },
+  { id: "interestType", numeric: false, disablePadding: false, label: "Type" },
   {
-    name: "ownershipPercentage",
+    id: "ownershipPercentage",
+    numeric: true,
+    disablePadding: false,
     label: "Interest",
   },
   {
-    name: "appraisedValue",
+    id: "appraisedValue",
+    numeric: true,
+    disablePadding: false,
     label: "Appraised Value",
+    money: true,
   },
-  {
-    name: "tags",
-    label: "Tags",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-    },
-  },
-  {
-    name: "commentsCounter",
-    label: "Comments",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-    },
-  },
-  {
-    name: "isTracked",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  { id: "tags", numeric: false, disablePadding: false, label: "Tags" },
+  // { id: "contacts", numeric: false, disablePadding: false, label: "Contacts" },//////////////temporary while contats are defined
+  { id: "comments", numeric: false, disablePadding: false, label: "Comments" },
+  { id: "isTracked", numeric: false, disablePadding: false, label: "" },
 ];
 
 const WellsHeadCells = [
+  { id: "api", numeric: false, disablePadding: false, label: "API" },
+  { id: "wellName", numeric: false, disablePadding: false, label: "Well" },
+  { id: "operator", numeric: false, disablePadding: false, label: "Operator" },
+  { id: "wellType", numeric: false, disablePadding: false, label: "Type" },
   {
-    name: "id",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-  { name: "api", label: "API" },
-  { name: "wellName", label: "Well" },
-  { name: "operator", label: "Operator" },
-  { name: "wellType", label: "Type" },
-  {
-    name: "wellBoreProfile",
+    id: "wellBoreProfile",
+    numeric: false,
+    disablePadding: false,
     label: "Profile",
   },
-  {
-    name: "tags",
-    label: "Tags",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-    },
-  },
-  {
-    name: "ownerCount",
-    label: "Owners",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-    },
-  },
-  {
-    name: "commentsCounter",
-    label: "Comments",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-    },
-  },
-  {
-    name: "isTracked",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  { id: "tags", numeric: false, disablePadding: false, label: "Tags" },
+  { id: "ownerCount", numeric: true, disablePadding: false, label: "Owners" },
+  { id: "comments", numeric: false, disablePadding: false, label: "Comments" },
+  { id: "isTracked", numeric: false, disablePadding: false, label: "" },
 ];
 
 const ContactsHeadCells = [
+  { id: "name", numeric: false, disablePadding: true, label: "Name" },
+  { id: "email", numeric: false, disablePadding: false, label: "Email" },
   {
-    name: "_id",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-  { name: "name", label: "Name" },
-  { name: "email", label: "Email" },
-  {
-    name: "phone",
+    id: "phone",
+    numeric: false,
+    disablePadding: false,
     label: "Phone",
   },
   {
-    name: "openDealsAmount",
+    id: "openDealsAmount",
+    numeric: false,
+    disablePadding: false,
     label: "Open Deals Amount",
     money: true,
   },
   {
-    name: "salesOwner",
+    id: "salesOwner",
+    numeric: false,
+    disablePadding: false,
     label: "Sales Owner",
   },
   {
-    name: "createAt",
+    id: "createAt",
+    numeric: false,
+    disablePadding: false,
     label: "Create At",
   },
-  {
-    name: "tags",
-    label: "Tags",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-    },
-  },
-  // {
-  //   name: "owners",
-  //   label: "Owners",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //   },
-  // },
-  {
-    name: "commentsCounter",
-    label: "Comments",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-    },
-  },
-  {
-    name: "isTracked",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  { id: "tags", numeric: false, disablePadding: false, label: "Tags" },
+  { id: "owners", numeric: false, disablePadding: false, label: "Owners" },
+  { id: "comments", numeric: false, disablePadding: false, label: "Comments" },
+  { id: "isTracked", numeric: false, disablePadding: false, label: "" },
 ];
 
 ////////////HeadCells end///////////////////////////////////////////////
@@ -374,8 +246,9 @@ export default function Contacts(props) {
       ) {
         dataOwners.owners.results.forEach((owner) => {
           owner.isTracked = true;
-          owner.commentsCounter = 0;
-          owner.tags = [[], 0];
+          owner.commentsCounter = "";
+          owner.tagSample = [];
+          owner.tagsCounter = "";
 
           for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
             if (owner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -386,11 +259,8 @@ export default function Contacts(props) {
           }
           for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
             if (owner.id === dataTagSamples.tagSamples[i]._id) {
-              owner.tags = [
-                dataTagSamples.tagSamples[i].tags,
-                dataTagSamples.tagSamples[i].total,
-              ];
-
+              owner.tagSample = dataTagSamples.tagSamples[i].tags;
+              owner.tagsCounter = dataTagSamples.tagSamples[i].total;
               break;
             }
           }
@@ -399,7 +269,7 @@ export default function Contacts(props) {
         setRows(dataOwners.owners.results);
         setHeader("Owners");
         setColumns(OwnersHeadCells);
-        setAddAble(false);
+        setAddAble(true);
         setStateApp((state) => ({
           ...state,
           owners: dataOwners.owners.results,
@@ -463,8 +333,9 @@ export default function Contacts(props) {
       ) {
         dataWells.wells.results.forEach((well) => {
           well.isTracked = true;
-          well.commentsCounter = 0;
-          well.tags = [[], 0];
+          well.commentsCounter = "";
+          well.tagSample = [];
+          well.tagsCounter = "";
 
           for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
             if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -475,11 +346,8 @@ export default function Contacts(props) {
           }
           for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
             if (well.id === dataTagSamples.tagSamples[i]._id) {
-              well.tags = [
-                dataTagSamples.tagSamples[i].tags,
-                dataTagSamples.tagSamples[i].total,
-              ];
-
+              well.tagSample = dataTagSamples.tagSamples[i].tags;
+              well.tagsCounter = dataTagSamples.tagSamples[i].total;
               break;
             }
           }
@@ -542,7 +410,7 @@ export default function Contacts(props) {
 
         setHeader("Owners Per Well");
         setColumns(OwnersHeadCells);
-        setAddAble(false);
+        setAddAble(true);
 
         getCommentsCounter({
           variables: { objectsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
@@ -570,8 +438,9 @@ export default function Contacts(props) {
       dataTagSamples.tagSamples
     ) {
       dataWellOwners.wellOwners.forEach((wellOwner) => {
-        wellOwner.commentsCounter = 0;
-        wellOwner.tags = [[], 0];
+        wellOwner.commentsCounter = "";
+        wellOwner.tagSample = [];
+        wellOwner.tagsCounter = "";
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (wellOwner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -583,11 +452,8 @@ export default function Contacts(props) {
 
         for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
           if (wellOwner.id === dataTagSamples.tagSamples[i]._id) {
-            wellOwner.tags = [
-              dataTagSamples.tagSamples[i].tags,
-              dataTagSamples.tagSamples[i].total,
-            ];
-
+            wellOwner.tagSample = dataTagSamples.tagSamples[i].tags;
+            wellOwner.tagsCounter = dataTagSamples.tagSamples[i].total;
             break;
           }
         }
@@ -615,7 +481,7 @@ export default function Contacts(props) {
   /////temporary /////
 
   const ContactExample = {
-    _id: "1234",
+    id: "1234",
     name: "James",
     lastName: "Sampleton",
     account: "Widgetz.io (sample)",
@@ -629,7 +495,7 @@ export default function Contacts(props) {
     doNotDisturb: "No",
     addres: "1552 camp st",
     zipcode: 92093,
-    openDealsAmount: "$7,000",
+    openDealsAmount: "7000",
     createAt: "11 days ago",
   };
 
@@ -646,7 +512,7 @@ export default function Contacts(props) {
     ) {
       setRows([
         {
-          _id: ContactExample._id,
+          id: ContactExample.id,
           name: `${ContactExample.name} ${ContactExample.lastName}`,
           email: ContactExample.email,
           phone: ContactExample.mobilePhone,
@@ -656,21 +522,19 @@ export default function Contacts(props) {
           isTracked:
             dataTracks.tracksByUserAndObjectType.length !== 0 &&
             dataTracks.tracksByUserAndObjectType[0].trackOn ===
-              ContactExample._id
-              ? true
-              : false,
+              ContactExample.id,
           commentsCounter:
             dataCommentsCounter.commentsCounter.length > 0
               ? dataCommentsCounter.commentsCounter[0].total
-              : 0,
-          tags: [
+              : "",
+          tagSample:
             dataTagSamples.tagSamples.length > 0
               ? dataTagSamples.tagSamples[0].tags
-              : [],
+              : "",
+          tagsCounter:
             dataTagSamples.tagSamples.length > 0
               ? dataTagSamples.tagSamples[0].total
-              : 0,
-          ],
+              : "",
         },
       ]);
       setHeader("Contacts");
