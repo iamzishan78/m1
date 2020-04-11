@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
     top: "64px",
     bottom: "0",
     width: "100%",
-    height: "100%",
+    height: "calc(100% - 64px)",
     overflow: "hidden !important",
     "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib":{
       display:"none"
