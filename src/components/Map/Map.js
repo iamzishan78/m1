@@ -29,7 +29,7 @@ import {
   SimpleSelectMode
 } from "mapbox-gl-draw-circle";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
-//import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import * as MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
 const useStyles = makeStyles(theme => ({
   mapWrapper: {
@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
   },
   map: {
     position: "absolute",
-    top: "0",
+    top: "64px",
     bottom: "0",
     width: "100%",
     height: "100%",
@@ -632,13 +632,7 @@ export default function Map() {
           new mapboxgl.FullscreenControl()
           , "bottom-right");
         
-        // newMap.addControl(
-        //   new mapboxgl.MapboxGeocoder({
-        //   accessToken: "sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
-        //   }));
-        // // Add geolocate control to the map.
-        
-
+      
         newMap.addControl(
           new mapboxgl.GeolocateControl({
             positionOptions: {
@@ -649,6 +643,14 @@ export default function Map() {
           }),
           "bottom-right"
         );
+
+        newMap.addControl(
+          new MapboxGeocoder({
+          //accessToken: "sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
+          accessToken: mapboxgl.accessToken,
+          mapboxgl: mapboxgl
+        })
+          ,"top-left");
 
 
 

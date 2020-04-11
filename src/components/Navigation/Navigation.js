@@ -92,6 +92,7 @@ const useStyles = makeStyles(theme => ({
   },
   appBar: {
     height: "64px",
+    //height: '5.5',
     background: "rgba(1, 17, 51, 1.0)",
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(["width", "margin"], {
