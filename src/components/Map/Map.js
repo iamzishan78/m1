@@ -615,6 +615,12 @@ export default function Map() {
           bearing: mapStyles[index].bearing
         });
         
+        /// optimized interactions w/ map
+        newMap.scrollZoom.enable()
+        newMap.dragPan.enable();
+        newMap.dragRotate.enable();
+        newMap.keyboard.enable();
+        newMap.doubleClickZoom.disable();
 
         newMap.addControl(
           new mapboxgl.ScaleControl({
@@ -759,6 +765,12 @@ export default function Map() {
           map.setPitch(0)
           map.setBearing(0)          
         }
+
+
+      // additional map interactions 
+      // for some reason these do not work when initializing but do here 
+      map.boxZoom.enable()
+      map.touchZoomRotate.enable();
 
 
 
