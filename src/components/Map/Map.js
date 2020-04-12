@@ -642,10 +642,78 @@ export default function Map() {
           "bottom-right"
         );
 
+
+        var customData = {
+          'features': [
+          {
+          'type': 'Feature',
+          'properties': {
+          'title': 'Well: Hancock "A"7',
+          },
+          'geometry': {
+          'coordinates': [-98.453338, 33.71002],
+          'type': 'Point'
+          }
+          },
+          {
+          'type': 'Feature',
+          'properties': {
+          'title': 'M1NERAL',
+          'description': "A lakefront park on Chicago's south side"
+          },
+          'geometry': {
+          'coordinates': [-95.363557, 29.759138],
+          'type': 'Point'
+          }
+          },
+          {
+            'type': 'Feature',
+            'properties': {
+            'title': 'Jacob Avery',
+            'description':
+            "A large park in Chicago's Austin neighborhood"
+            },
+            'geometry': {
+            'coordinates': [-95.096123, 29.537716],
+            'type': 'Point'
+            }
+            }
+            ],
+            'type': 'FeatureCollection'
+            };
+
+
+        
+        function forwardGeocoder(query) {
+          var matchingFeatures = [];
+          for (var i = 0; i < customData.features.length; i++) {
+          var feature = customData.features[i];
+          // handle queries with different capitalization than the source data by calling toLowerCase()
+          if (
+          feature.properties.title
+          .toLowerCase()
+          .search(query.toLowerCase()) !== -1
+          ) {
+          // add a tree emoji as a prefix for custom data results
+          // using carmen geojson format: https://github.com/mapbox/carmen/blob/master/carmen-geojson.md
+          feature['place_name'] = '🌲 ' + feature.properties.title;
+          feature['center'] = feature.geometry.coordinates;
+          feature['place_type'] = ['park'];
+          matchingFeatures.push(feature);
+          }
+          }
+          return matchingFeatures;
+          }
+
+
         newMap.addControl(
           new MapboxGeocoder({
           accessToken: mapboxgl.accessToken,
-          mapboxgl: mapboxgl
+          mapboxgl: mapboxgl,
+          localGeocoder: forwardGeocoder,
+          //types: 'poi',
+          //placeholder: 'Enter Search'
+          zoom: 18,
         })
           ,"top-left");
 
