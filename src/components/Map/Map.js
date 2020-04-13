@@ -32,6 +32,7 @@ import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import * as MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
 
+import "./Map.css"
 
 const useStyles = makeStyles(theme => ({
   mapWrapper: {
@@ -71,11 +72,11 @@ const useStyles = makeStyles(theme => ({
     // }
   },
   portal: {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
+    position: "absolute",
+    top: "45%",
+    left: "47%",
     transform: "translate(-50%, -50%)"
-  }
+  },
 }));
 
 export default function Map() {
@@ -91,8 +92,7 @@ export default function Map() {
   );
   const [lng , setLng] = useState();
   const [lat, setLat] = useState();
-  // const [pageX, setPageX] =useState();
-  // const [pageY, setPageY] =useState();
+  const [transform, setTransform] = useState("transform: inherit");
   const container = useRef(null);
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [mapStyles, setMapStyles] = useState([]);
@@ -142,6 +142,14 @@ export default function Map() {
       }
     }
   }, [map, stateMap.checkedHeats]);
+
+  useEffect(() => {
+    if (showExpandableCard) {
+      setTransform("transform: none")
+    } else {
+      setTransform("transform: inherit")
+    }
+  },[showExpandableCard])
 
   useEffect(() => {
     //applies filter when one of the filters change
@@ -903,19 +911,19 @@ export default function Map() {
       </div>
       <MapControlsProvider />
       <Coordinates long={lng} lat={lat} />
-      <div  className={classes.portal} ref={container} />
+      <div id="tempPopupHolder"  className={classes.portal} ref={container} />
       {stateMap.openTrack == true ? (
         <div className={classes.trackLists}>
           {<WellsProvider showList={true} parent="track" />}
         </div>
       ) : null}
-      <Portal container={container.current}>
+      <Portal   container={container.current}>
       {stateApp.popupOpen ? (
         <div>
           <div
             id="tempPopupHolder"
-            style={{ position: "absolute", top: "0px", left: "20px" }}
-          ></div>
+            style={{ position: "inherit", top: 0, left: 0, right: 0 , bottom: 0, height: "100%"}}
+          ></div> */}
           <PortalD id="popupContainer" >
             {showExpandableCard ? (
               <ExpandableCardProvider

@@ -49,6 +49,8 @@ import { green } from "@material-ui/core/colors";
 //icons
 import CloseIcon from "@material-ui/icons/Close";
 import SearchIcon from "@material-ui/icons/Search";
+import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
+import SettingsIcon from '@material-ui/icons/Settings';
 import MyLocationIcon from "@material-ui/icons/MyLocation";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import GeographicIcon from "../Shared/svgIcons/geographic";
@@ -79,6 +81,7 @@ import FilterFormWell from "./components/FilterFormWell";
 import FilterFromGeo from "./components/FilterFromGeo";
 import FilterFormOwner from "./components/FilterFormOwner";
 import FilterFormProduction from "./components/FilterFormProduction";
+import FilterDefaults from "./components/FilterDefaults"
 import M1neralLogoSvg from "../Shared/m1neralLogoSvg";
 
 import Avatar from "react-avatar";
@@ -798,7 +801,7 @@ export default function Navigation(props) {
 
             <div className={classes.grow1} />
             {matchLocation ? (
-            <div anchorEl={anchorEl} className={classes.filterTabs}>
+            <div ref={anchorEl} className={classes.filterTabs}>
               <Tabs
                 value={value}
                 onChange={handleFilterTabChange}
@@ -864,9 +867,22 @@ export default function Navigation(props) {
                   }
                   aria-label="production"
                 />
+                <Tab
+                  value={4}
+                  classes={{ root: classes.tab }}
+                  icon={
+                    <Badge
+                      badgeContent={stateNav.defaultFiltersUserFiltersCount}
+                      color="secondary"
+                    >
+                      <SettingsIcon style={{height: 32, width: 32}}  opacity="1.0" />
+                    </Badge>
+                  }
+                  aria-label="filter settings"
+                />
                 {/* <Tab
                   disabled={true}
-                  value={4}
+                  value={5}
                   classes={{ root: classes.tab }}
                   aria-label="valuation" 
                   icon={
@@ -882,7 +898,7 @@ export default function Navigation(props) {
                 />
                 <Tab
                   disabled={true}
-                  value={5}
+                  value={6}
                   classes={{ root: classes.tab }}
                   icon={
                     <Badge
@@ -898,7 +914,7 @@ export default function Navigation(props) {
                 />
                 <Tab
                   disabled={true}
-                  value={6}
+                  value={7}
                   classes={{ root: classes.tab }}
                   icon={
                     <Badge
@@ -1256,7 +1272,36 @@ export default function Navigation(props) {
             </ClickAwayListener>
           </TabPanel>
           <TabPanel value={value} index={4} dir={theme.direction}>
-            Item Five
+          <ClickAwayListener onClickAway={handleClickAway}>
+              <Card className={classes.card}>
+                <CardHeader
+                  classes={{
+                    title: classes.cardTitle,
+                    subheader: classes.subheader
+                  }}
+                  action={
+                    <div>
+                      <IconButton
+                        color="secondary"
+                        onClick={handleFilterCardClose}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                  }
+                  title="Filters"
+                  subheader="Defaults"
+                />
+                <CardActions
+                  classes={{
+                    root: classes.cardAction
+                  }}
+                ></CardActions>
+                <CardContent className={classes.cardContent}>
+                <FilterDefaults/>
+                </CardContent>
+              </Card>
+            </ClickAwayListener>
           </TabPanel>
           <TabPanel value={value} index={5} dir={theme.direction}>
             Item Six
