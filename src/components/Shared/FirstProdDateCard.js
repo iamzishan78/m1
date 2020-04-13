@@ -25,7 +25,7 @@ const formatDateString = dateString => {
   
 
 const convertDate = unixStamp => {
-  const date = moment(unixStamp).format("MM/DD/YYYY");
+  const date = moment.utc(unixStamp).format("MM/DD/YYYY");
 
   if (unixStamp === 'null') {return '--'}
   else if(unixStamp === null) {return '--'}

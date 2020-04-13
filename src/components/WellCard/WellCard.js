@@ -260,7 +260,7 @@ export default function WellCard() {
   };
 
   const convertDate = (unixStamp) => {
-    const date = moment(unixStamp).format("MM/DD/YYYY");
+    const date = moment.utc(unixStamp).format("MM/DD/YYYY");
 
     if (unixStamp === "null") {
       return "--";
@@ -453,100 +453,6 @@ export default function WellCard() {
           aria-describedby="simple-modal-description"
           > */}
         <Card className={classes.card}>
-        <CardActions classes={{root: classes.cardAction,}}>
-              <div className={classes.iconContainer}>
-                <WellIcon
-                  htmlColor="black"
-                  viewBox="0 0 32 31"
-                  fontSize="large"
-                />
-
-                <Typography
-                  align="center"
-                  className={classes.text1}
-                  variant="subtitle2"
-                >
-                  Well Status
-                </Typography>
-                <Typography
-                  align="center"
-                  className={classes.text2}
-                  variant="caption"
-                >
-                  {stateApp.selectedWell.wellStatus
-                    ? stateApp.selectedWell.wellStatus
-                    : "--"}
-                </Typography>
-              </div>
-
-              <div className={classes.iconContainer}>
-                <ProductionIcon
-                  htmlColor="black"
-                  viewBox="0 0 39 31"
-                  fontSize="large"
-                />
-                <Typography
-                  align="center"
-                  className={classes.text1}
-                  variant="subtitle2"
-                >
-                  Last 12 Prod
-                </Typography>
-                <Typography
-                  align="center"
-                  className={classes.text2}
-                  variant="caption"
-                >
-                  {`${formatBOE(stateApp.selectedWell.lastTwelveMonthBOE)} BOE`}
-                </Typography>
-              </div>
-              <div className={classes.iconContainer}>
-                <OwnershipIcon
-                  htmlColor="black"
-                  viewBox="0 0 45 31"
-                  fontSize="large"
-                />
-                <Typography
-                  align="center"
-                  className={classes.text1}
-                  variant="subtitle2"
-                >
-                  Owners
-                </Typography>
-                <Typography
-                  align="center"
-                  className={classes.text2}
-                  variant="caption"
-                >
-                  {stateApp.selectedWell.ownerCount
-                    ? stateApp.selectedWell.ownerCount
-                    : "--"}
-                </Typography>
-              </div>
-              <div className={classes.iconContainer}>
-                <Avatar variant="circle" className={classes.avatar}>
-                  {stateApp.selectedWell.wellBoreProfile
-                    ? stateApp.selectedWell.wellBoreProfile.substring(0, 1)
-                    : "H"}{" "}
-                </Avatar>
-                <Typography
-                  align="center"
-                  className={classes.text1}
-                  variant="subtitle2"
-                >
-                  Profile
-                </Typography>
-                <Typography
-                  align="center"
-                  className={classes.text2}
-                  variant="caption"
-                >
-                  {stateApp.selectedWell.wellBoreProfile
-                    ? stateApp.selectedWell.wellBoreProfile
-                    : "--"}
-                </Typography>
-              </div>
-            </CardActions>
           {/* <CardHeader
           classes={{
             title: classes.title,

@@ -70,6 +70,7 @@ export default function FilterDatePickerPermit(props) {
         const todaysDate = moment().valueOf()
         const checkDate = moment(permitToDate.date).valueOf()
         const fromDate = moment(permitFromDate.date).valueOf()
+        console.log(fromDate)
         if(checkDate === todaysDate ){
           filter = ["all", [">=",["get", "permitApprovedDate"] ,fromDate], ["<=",["get", "permitApprovedDate"] , checkDate]];
         } else{
