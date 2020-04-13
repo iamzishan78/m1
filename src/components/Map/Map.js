@@ -9,7 +9,7 @@ import React, {
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
-
+import Popover from '@material-ui/core/Popover';
 import { MapContext } from "./MapContext";
 import mapboxgl from "mapbox-gl";
 import { makeStyles } from "@material-ui/core/styles";
@@ -32,7 +32,7 @@ import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import * as MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
 
-import "./Map.css"
+// import "./Map.css"
 
 const useStyles = makeStyles(theme => ({
   mapWrapper: {
@@ -97,6 +97,7 @@ export default function Map() {
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [mapStyles, setMapStyles] = useState([]);
   const [map, setMap] = useState(null);
+  const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
   const mapEl = useRef(null);
   mapboxgl.accessToken =
     "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJjanYycGJxbG8yN3JsM3lsYTdnMXZoeHh1In0.tTNECYKDPtcrzivWTiZcIQ";
@@ -149,6 +150,7 @@ export default function Map() {
     } else {
       setTransform("transform: inherit")
     }
+    
   },[showExpandableCard])
 
   useEffect(() => {
@@ -895,11 +897,15 @@ export default function Map() {
 
 
   const handleOpenExpandableCard = e => {
+
+    setAnchorElPoPOver(container.current);
     setShowExpandableCard(true);
   };
 
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
+    setAnchorElPoPOver(null);
+    setStateApp(state => ({ ...state, expandedCard: false }));
   };
 
   return (
@@ -920,12 +926,12 @@ export default function Map() {
       <Portal   container={container.current}>
       {stateApp.popupOpen ? (
         <div>
-          <div
+          {/* <div
             id="tempPopupHolder"
             style={{ position: "inherit", top: 0, left: 0, right: 0 , bottom: 0, height: "100%"}}
-          ></div> */}
+          ></div>  */}
           <PortalD id="popupContainer" >
-            {showExpandableCard ? (
+            {showExpandableCard && !stateApp.expandedCard ? (
               <ExpandableCardProvider
                 expanded={false}
                 handleCloseExpandableCard={handleCloseExpandableCard}
@@ -953,7 +959,49 @@ export default function Map() {
                 targetName={stateApp.selectedWell.wellName}
                 targetLabel="well"
               ></ExpandableCardProvider>
-            ) : null}
+            ) : 
+            <Popover
+              open={stateApp.expandedCard}
+              anchorEl={anchorElPoPOver}
+              BackdropProps={{invisible: false }}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+            >
+            <ExpandableCardProvider
+              expanded={true}
+              handleCloseExpandableCard={handleCloseExpandableCard}
+              component={<WellCardProvider></WellCardProvider>}
+              title={stateApp.selectedWell.wellName}
+              subTitle={stateApp.selectedWell.operator}
+              Api={stateApp.selectedWell.api}
+              parent="map"
+              mouseX={0}
+              mouseY={0}
+              position="relative"
+              cardLeft={"0px"}
+              cardTop={"0px"}
+              zIndex={99}
+              cardWidth="380px"
+              cardHeight="380px"
+              cardWidthExpanded="inherit"
+              cardHeightExpanded="inherit"
+              source={stateApp.user}
+              sourceSourceId={stateApp.user.id}
+              sourceName={stateApp.user.name}
+              sourceLabel="user"
+              target={stateApp.selectedWell}
+              targetSourceId={stateApp.selectedWell.id}
+              targetName={stateApp.selectedWell.wellName}
+              targetLabel="well"
+            ></ExpandableCardProvider>
+            </Popover>
+            }
             {/* {stateApp.selectedWell ? <WellCardProvider /> : null} */}
           </PortalD>
         </div>

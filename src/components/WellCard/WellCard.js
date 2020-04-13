@@ -272,47 +272,12 @@ export default function WellCard() {
       return date;
     }
   };
-
-  if (stateApp.selectedWell.wellStatus != "Permit") {
+ 
+  if (stateApp.selectedWell.wellStatus !== "Permit") {
     return stateApp.selectedWell ? (
-      <div>
-        <Card className={classes.card}>
-          {/* <CardHeader
-          classes={{
-            title: classes.title,
-            subheader: classes.subheader
-          }}
-          action={
-            <div>
-               <TrackToggleButton 
-               target= {target} 
-               targetLabel="well" 
-               targetSourceId={stateApp.selectedWell.id} />
-               
-           <IconButton onClick={handleOpenDetails} aria-label="expand">
-                <ExpandIcon viewBox="0 0 64 64" color="secondary" fontSize="small" />
-              </IconButton>
-              <IconButton onClick={handleCloseWellCard} aria-label="close">
-                <CloseIcon fontSize="small" color="secondary" />
-              </IconButton>
-            </div>
-          }
-          title={
-            stateApp.selectedWell.wellName
-              ? stateApp.selectedWell.wellName.length > 30
-                ? `${stateApp.selectedWell.wellName.substr(0, 30)}...`
-                : stateApp.selectedWell.wellName
-              : '--'
-          }
-          subheader={
-            stateApp.selectedWell.operator
-              ? stateApp.selectedWell.operator.length > 35
-                ? `${stateApp.selectedWell.operator.substr(0, 35)}...`
-                : stateApp.selectedWell.operator
-              : '--'
-          }
-        /> */}
-          {!stateExpandableCard.expanded ? (
+        !stateExpandableCard.expanded ? (
+          <div>
+          <Card>
             <CardActions
               classes={{
                 root: classes.cardAction,
@@ -411,11 +376,7 @@ export default function WellCard() {
                 </Typography>
               </div>
             </CardActions>
-          ) : null}
-          <CardContent className={classes.content}>
-            {stateExpandableCard.expanded ? (
-              <WellCardDetails target={target} />
-            ) : (
+            <CardContent className={classes.content}>
               <Table
                 className={classes.table}
                 size="small"
@@ -479,37 +440,20 @@ export default function WellCard() {
                   </TableRow>
                 </TableBody>
               </Table>
-            )}
           </CardContent>
-        </Card>
-        {/* <Dialog
-        fullScreen={fullScreen}
-        fullWidth={true}
-        maxWidth="xl"
-        disableBackdropClick
-        disableEscapeKeyDown
-        open={stateWellCard.openWellDetails}
-        onClose={handleCloseDetails}
-      >
-        <DialogContent>
-          <WellCardDetails target={target} />
-        </DialogContent>
-        <DialogActions></DialogActions>
-      </Dialog> */}
-      </div>
-    ) : (
-      <CircularProgress color="secondary" />
-    );
-  } else {
-    {
-      return stateApp.selectedWell ? (
+          </Card>
+          </div>
+          ) : (
         <div>
-          <Card>
-            <CardActions
-              classes={{
-                root: classes.cardAction,
-              }}
-            >
+          {/* <Modal
+          style={{overflow: "auto"}}
+          open={stateExpandableCard.expanded}
+          // onClose={handleClose}
+          aria-labelledby="simple-modal-title"
+          aria-describedby="simple-modal-description"
+          > */}
+        <Card className={classes.card}>
+        <CardActions classes={{root: classes.cardAction,}}>
               <div className={classes.iconContainer}>
                 <WellIcon
                   htmlColor="black"
@@ -536,6 +480,50 @@ export default function WellCard() {
               </div>
 
               <div className={classes.iconContainer}>
+                <ProductionIcon
+                  htmlColor="black"
+                  viewBox="0 0 39 31"
+                  fontSize="large"
+                />
+                <Typography
+                  align="center"
+                  className={classes.text1}
+                  variant="subtitle2"
+                >
+                  Last 12 Prod
+                </Typography>
+                <Typography
+                  align="center"
+                  className={classes.text2}
+                  variant="caption"
+                >
+                  {`${formatBOE(stateApp.selectedWell.lastTwelveMonthBOE)} BOE`}
+                </Typography>
+              </div>
+              <div className={classes.iconContainer}>
+                <OwnershipIcon
+                  htmlColor="black"
+                  viewBox="0 0 45 31"
+                  fontSize="large"
+                />
+                <Typography
+                  align="center"
+                  className={classes.text1}
+                  variant="subtitle2"
+                >
+                  Owners
+                </Typography>
+                <Typography
+                  align="center"
+                  className={classes.text2}
+                  variant="caption"
+                >
+                  {stateApp.selectedWell.ownerCount
+                    ? stateApp.selectedWell.ownerCount
+                    : "--"}
+                </Typography>
+              </div>
+              <div className={classes.iconContainer}>
                 <Avatar variant="circle" className={classes.avatar}>
                   {stateApp.selectedWell.wellBoreProfile
                     ? stateApp.selectedWell.wellBoreProfile.substring(0, 1)
@@ -559,7 +547,43 @@ export default function WellCard() {
                 </Typography>
               </div>
             </CardActions>
-            <CardContent className={classes.content}>
+          {/* <CardHeader
+          classes={{
+            title: classes.title,
+            subheader: classes.subheader
+          }}
+          action={
+            <div>
+               <TrackToggleButton 
+               target= {target} 
+               targetLabel="well" 
+               targetSourceId={stateApp.selectedWell.id} />
+               
+           <IconButton onClick={handleOpenDetails} aria-label="expand">
+                <ExpandIcon viewBox="0 0 64 64" color="secondary" fontSize="small" />
+              </IconButton>
+              <IconButton onClick={handleCloseWellCard} aria-label="close">
+                <CloseIcon fontSize="small" color="secondary" />
+              </IconButton>
+            </div>
+          }
+          title={
+            stateApp.selectedWell.wellName
+              ? stateApp.selectedWell.wellName.length > 30
+                ? `${stateApp.selectedWell.wellName.substr(0, 30)}...`
+                : stateApp.selectedWell.wellName
+              : '--'
+          }
+          subheader={
+            stateApp.selectedWell.operator
+              ? stateApp.selectedWell.operator.length > 35
+                ? `${stateApp.selectedWell.operator.substr(0, 35)}...`
+                : stateApp.selectedWell.operator
+              : '--'
+          }
+        /> */}
+          <CardContent className={classes.content}>
+              <WellCardDetails target={target} />
               <Table
                 className={classes.table}
                 size="small"
@@ -567,16 +591,6 @@ export default function WellCard() {
               >
                 <TableBody>
                   <TableRow className={classes.rowGrey}>
-                    <TableCell className={classes.cell1} align="left">
-                      Permit #
-                    </TableCell>
-                    <TableCell className={classes.cell2} align="right">
-                      {stateApp.selectedWell.permitNumber
-                        ? stateApp.selectedWell.permitNumber
-                        : "--"}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow className={classes.rowWhite}>
                     <TableCell className={classes.cell1} align="left">
                       API
                     </TableCell>
@@ -586,7 +600,7 @@ export default function WellCard() {
                         : "--"}
                     </TableCell>
                   </TableRow>
-                  <TableRow className={classes.rowGrey}>
+                  <TableRow className={classes.rowWhite}>
                     <TableCell className={classes.cell1} align="left">
                       Well Type
                     </TableCell>
@@ -596,70 +610,49 @@ export default function WellCard() {
                         : "--"}
                     </TableCell>
                   </TableRow>
-                  {/*               <TableRow className={classes.rowWhite}>
-                <TableCell className={classes.cell1} align="left">
-                  Submitted Date
-                </TableCell>
-                <TableCell className={classes.cell2} align="right">
-                  {stateApp.selectedWell.permitSubmitDate
-                    ? stateApp.selectedWell.permitSubmitDate
-                    : '--'}
-                </TableCell>
-              </TableRow> */}
-                  <TableRow className={classes.rowWhite}>
+                  <TableRow className={classes.rowGrey}>
                     <TableCell className={classes.cell1} align="left">
-                      Approved Date
+                      Permit Date
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
+                      {" "}
                       {convertDate(stateApp.selectedWell.permitApprovedDate)}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow className={classes.rowWhite}>
+                    <TableCell className={classes.cell1} align="left">
+                      Spud Date
+                    </TableCell>
+                    <TableCell className={classes.cell2} align="right">
+                      {" "}
+                      {convertDate(stateApp.selectedWell.spudDate)}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowGrey}>
                     <TableCell className={classes.cell1} align="left">
-                      Measured Depth [ft]
+                      Completion Date
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {stateApp.selectedWell.measuredDepth
-                        ? stateApp.selectedWell.measuredDepth
-                        : "--"}
+                      {" "}
+                      {convertDate(stateApp.selectedWell.completionDate)}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowWhite}>
                     <TableCell className={classes.cell1} align="left">
-                      Lateral Length [ft]
+                      First Prod Date
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {stateApp.selectedWell.lateralLength
-                        ? stateApp.selectedWell.lateralLength
-                        : "--"}
+                      {convertDate(stateApp.selectedWell.firstProductionDate)}
                     </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
-              <div>
-                <Link
-                  href="http://webapps2.rrc.texas.gov/EWA/drillingPermitsQueryAction.do"
-                  onClick={() => {
-                    console.info("I'm a button.");
-                  }}
-                  variant="body2"
-                  target="_blank"
-                >
-                  <Typography
-                    align="center"
-                    variant="subtitle2"
-                    className={classes.link_permit}
-                  >
-                    RRC Permit Search Tool
-                  </Typography>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      ) : (
-        <CircularProgress color="secondary" />
-      );
-    }
+          </CardContent>
+         </Card>
+        {/* </Modal> */}
+      </div>
+    ) ) : (
+      <CircularProgress color="secondary" />
+    );  
   }
 }

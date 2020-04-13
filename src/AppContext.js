@@ -17,6 +17,7 @@ const AppProvider = props => {
     selectedOwner: null,
     owners: null,
     popupOpen: false, //map used in flyto
+    expandedCard: false,
     flyTo: null, //map used in flyto
     selectedTitleOpinionId: null,
     featureOrMapShape: {},

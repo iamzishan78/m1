@@ -179,8 +179,9 @@ export default function ExpandableCard(props) {
     setHeight(cardHeightExpanded);
     //setZidx(9)
     //setPosition('absolute')
-    setCardTop("70px");
-    setCardLeft("10px");
+    setCardTop(0);
+    setCardLeft(0);
+    setStateApp(state => ({ ...state, expandedCard: true }));
     setStateExpandableCard((state) => ({ ...state, expanded: true }));
   };
 
