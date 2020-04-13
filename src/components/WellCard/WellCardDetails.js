@@ -312,9 +312,9 @@ export default function WellCardDetails(props) {
               tabLabels={[
                 "Well",
                 "Owners",
-                "Property History",
-                "Title",
-                "Documents",
+                // "Property History",
+                // "Title",
+                // "Documents",
               ]}
               tabPanels={[
                 wellInfo(),
