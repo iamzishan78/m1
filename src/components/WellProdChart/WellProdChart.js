@@ -81,54 +81,61 @@ useEffect( () => {
     var series = chart.series.push(new am4charts.LineSeries());
     series.dataFields.valueY = "gas";
     series.dataFields.dateX = "reportDate";
-    series.tooltipText = "Gas {Gas}"
-    series.strokeWidth = 2;
-    series.stroke = am4core.color("#e57373");
-    series.minBulletDistance = 15;
+    //series.tooltipText = "Gas {Gas}"
+    series.strokeWidth = 3;
+    series.connect = false;
+    series.tensionX = 0.8;
+    //series.stroke = am4core.color("#e57373");
+    //series.minBulletDistance = 15;
 
     var seriesOil = chart.series.push(new am4charts.LineSeries());
     seriesOil.dataFields.valueY = "oil";
     seriesOil.dataFields.dateX = "reportDate";
-    seriesOil.tooltipText = "Oil {Oil}"
-    seriesOil.strokeWidth = 2;
-    seriesOil.stroke = am4core.color("#81c784");
-    seriesOil.minBulletDistance = 15;
+    //seriesOil.tooltipText = "Oil {Oil}"
+    seriesOil.strokeWidth = 3;
+    seriesOil.connect = false;
+    seriesOil.tensionX = 0.8;
+    //seriesOil.stroke = am4core.color("#81c784");
+    //seriesOil.minBulletDistance = 15;
 
     var seriesWater = chart.series.push(new am4charts.LineSeries());
     seriesWater.dataFields.valueY = "water";
     seriesWater.dataFields.dateX = "reportDate";
-    seriesWater.tooltipText = "Water {Water}"
-    seriesWater.strokeWidth = 2;
-    seriesWater.stroke = am4core.color("#64b5f6");
-    seriesWater.minBulletDistance = 15;
+    //seriesWater.tooltipText = "Water {Water}"
+    seriesWater.strokeWidth = 3;
+    seriesWater.connect = false;
+    seriesWater.tensionX = 0.8;
+    //series.fillOpacity = 0.2;
+    //seriesWater.stroke = am4core.color("#64b5f6");
+    //seriesWater.minBulletDistance = 15;
   
     // Drop-shaped tooltips
-    series.tooltip.background.cornerRadius = 20;
-    series.tooltip.background.strokeOpacity = 0;
-   //  series.tooltip.background.fill = am4core.color("#e57373");
-    series.tooltip.pointerOrientation = "vertical";
-    series.tooltip.label.minWidth = 40;
-    series.tooltip.label.minHeight = 40;
-    series.tooltip.label.textAlign = "middle";
-    series.tooltip.label.textValign = "middle";
+  //   series.tooltip.background.cornerRadius = 20;
+  //   series.tooltip.background.strokeOpacity = 0;
+  //  //  series.tooltip.background.fill = am4core.color("#e57373");
+  //   series.tooltip.pointerOrientation = "vertical";
+  //   series.tooltip.label.minWidth = 40;
+  //   series.tooltip.label.minHeight = 40;
+  //   series.tooltip.label.textAlign = "middle";
+  //   series.tooltip.label.textValign = "middle";
 
-    seriesOil.tooltip.background.cornerRadius = 20;
-    seriesOil.tooltip.background.strokeOpacity = 0;
-    //seriesOil.tooltip.label.fill = am4core.color("#81c784");
-    seriesOil.tooltip.pointerOrientation = "vertical";
-    seriesOil.tooltip.label.minWidth = 40;
-    seriesOil.tooltip.label.minHeight = 40;
-    seriesOil.tooltip.label.textAlign = "middle";
-    seriesOil.tooltip.label.textValign = "middle";
+  //   seriesOil.tooltip.background.cornerRadius = 20;
+  //   seriesOil.tooltip.background.strokeOpacity = 0;
+  //   //seriesOil.tooltip.label.fill = am4core.color("#81c784");
+  //   seriesOil.tooltip.pointerOrientation = "vertical";
+  //   seriesOil.tooltip.label.minWidth = 40;
+  //   seriesOil.tooltip.label.minHeight = 40;
+  //   seriesOil.tooltip.label.textAlign = "middle";
+  //   seriesOil.tooltip.label.textValign = "middle";
 
-    seriesWater.tooltip.background.cornerRadius = 20;
-    seriesWater.tooltip.background.strokeOpacity = 0;
-    //seriesWater.tooltip.label.fill = am4core.color("#64b5f6");
-    seriesWater.tooltip.pointerOrientation = "vertical";
-    seriesWater.tooltip.label.minWidth = 40;
-    seriesWater.tooltip.label.minHeight = 40;
-    seriesWater.tooltip.label.textAlign = "middle";
-    seriesWater.tooltip.label.textValign = "middle";
+  //   seriesWater.tooltip.background.cornerRadius = 20;
+  //   seriesWater.tooltip.background.strokeOpacity = 0;
+  //   //seriesWater.tooltip.label.fill = am4core.color("#64b5f6");
+  //   seriesWater.tooltip.pointerOrientation = "vertical";
+  //   seriesWater.tooltip.label.minWidth = 40;
+  //   seriesWater.tooltip.label.minHeight = 40;
+  //   seriesWater.tooltip.label.textAlign = "middle";
+  //   seriesWater.tooltip.label.textValign = "middle";
 
 
     
@@ -163,10 +170,10 @@ useEffect( () => {
     chart.cursor.xAxis = dateAxis;
     chart.cursor.snapToSeries = series;
     
-    // Create vertical scrollbar and place it before the value axis
-    //chart.scrollbarY = new am4core.Scrollbar();
-    //chart.scrollbarY.parent = chart.leftAxesContainer;
-    //chart.scrollbarY.toBack();
+    // // Create vertical scrollbar and place it before the value axis
+    // chart.scrollbarY = new am4core.Scrollbar();
+    // chart.scrollbarY.parent = chart.leftAxesContainer;
+    // chart.scrollbarY.toBack();
     
     // Create a horizontal scrollbar with previe and place it underneath the date axis
     chart.scrollbarX = new am4charts.XYChartScrollbar();
