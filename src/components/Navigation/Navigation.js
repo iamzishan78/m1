@@ -227,7 +227,12 @@ const useStyles = makeStyles((theme) => ({
         height: "23px",
         top: "5px",
       },
-      "& .mapboxgl-ctrl-geocoder--button": { background: "#ffffff00" },
+      "& .mapboxgl-ctrl-geocoder--button": {
+        background: "#ffffff00",
+        "&:hover": {
+          background: "#ffffff00",
+        },
+      },
     },
   },
   searchIcon: {
@@ -808,7 +813,7 @@ export default function Navigation(props) {
           </div>
  */}
 
-            <div className={classes.search} id="xoxoxox">
+            <div className={classes.search}>
               <div className={classes.searchInput} id="searchBar" />
             </div>
 

@@ -941,12 +941,12 @@ export default function Map() {
       return () => {
         var list = document.getElementById("searchBar");
         if (list.childNodes.length > 0) {
-          map.removeControl(geocoder);
-          // list.removeChild(list.childNodes[0]);
+          // map.removeControl(geocoder);
+          list.removeChild(list.childNodes[0]);
         }
       };
     }
-  }, [map]);
+  }, [map, geocoder]);
 
   useEffect(() => {
     if (map && stateApp.flyTo) {
