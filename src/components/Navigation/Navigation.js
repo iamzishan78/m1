@@ -773,11 +773,9 @@ export default function Navigation(props) {
           </div>
  */}
 
-            <FormControl className={classes.search}>
+{/*             <FormControl className={classes.search}>
               <div className={classes.searchIcon}>
-                {/* <InputLabel className={classes.searchIcon}> */}
                 <SearchIcon />
-                {/* </InputLabel > */}
               </div>
               <Input
                 onChange={handleSearchInputChange}
@@ -787,18 +785,9 @@ export default function Navigation(props) {
                   input: classes.inputInput
                 }}
                 inputProps={{ "aria-label": "search" }}
-
-                /*
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton aria-label="save">
-                    <SaveIcon color="primary" />
-                  </IconButton>
-                </InputAdornment>
-              } */
               />
             </FormControl>
-
+ */}
             <div className={classes.grow1} />
             {matchLocation ? (
             <div ref={anchorEl} className={classes.filterTabs}>
