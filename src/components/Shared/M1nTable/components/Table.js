@@ -86,7 +86,7 @@ var formatter = new Intl.NumberFormat("en-US", {
 export default function SubTable(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [rows, setRows] = useState([]);
+  const [rows, setRows] = useState();
   const [columns, setColumns] = useState([]);
 
   const [colInd, setColInd] = useState();
