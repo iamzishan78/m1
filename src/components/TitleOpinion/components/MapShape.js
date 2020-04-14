@@ -19,25 +19,25 @@ const useStyles = makeStyles(theme => ({
   },
   footerLeftLogo: {
     position: "absolute",
-    bottom: "45px",
+    bottom: "5px",
     zIndex: "1",
-    left: "7px",
-    textShadow: "1px 0 0 black, -1px 0 0 black, 0 1px 0 black, 0 -1px 0 black",
-    color: "#ffffff",
-    fontSize: "16px",
-    fontWeight: "bold",
-    opacity: "0.82",
-    "& img": {
-      padding: "2px 2px 4px 2px",
-      backgroundImage:
-        "radial-gradient(#ffffff00,rgba(0, 0, 0, 0.671), #ffffff00,  #ffffff00)",
-      position: "absolute",
-      bottom: "-40px"
-    },
-    "& p": {
-      position: "absolute",
-      left: "23px"
-    }
+    left: "10px",
+    // textShadow: "1px 0 0 black, -1px 0 0 black, 0 1px 0 black, 0 -1px 0 black",
+    // color: "#ffffff",
+    // fontSize: "16px",
+    // fontWeight: "bold",
+    // opacity: "0.82",
+    // "& img": {
+    //   padding: "2px 2px 4px 2px",
+    //   backgroundImage:
+    //     "radial-gradient(#ffffff00,rgba(0, 0, 0, 0.671), #ffffff00,  #ffffff00)",
+    //   position: "absolute",
+    //   bottom: "-40px"
+    // },
+    // "& p": {
+    //   position: "absolute",
+    //   left: "23px"
+    //}
   }
 }));
 
@@ -83,6 +83,11 @@ export default function MapShape() {
           }
         });
       });
+
+      //newMap.setLayoutProperty('wellpoints', 'visibility', 'none');
+
+
+
 
       //Fit a map to the shape bounds
       const boundsShape = () => {
@@ -135,9 +140,9 @@ export default function MapShape() {
   return (
     <div className={classes.MSWrapper}>
       <div className={classes.map} ref={mapEl} id="TOmap">
-{/*        <div className={classes.footerLeftLogo}>
-          <img src={require("./components/Shared/pngImages/M1LogoWhiteTransparent.png")} />
-        </div>  */}
+        <div className={classes.footerLeftLogo}>
+          <img src="icons/M1LogoWhiteTransparent.png" alt="logo" width="75" />
+        </div> 
       </div>
     </div>
   );
