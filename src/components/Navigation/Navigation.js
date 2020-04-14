@@ -50,7 +50,7 @@ import { green } from "@material-ui/core/colors";
 import CloseIcon from "@material-ui/icons/Close";
 import SearchIcon from "@material-ui/icons/Search";
 import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
-import SettingsIcon from "@material-ui/icons/Settings";
+import SettingsIcon from '@material-ui/icons/Settings';
 import MyLocationIcon from "@material-ui/icons/MyLocation";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import GeographicIcon from "../Shared/svgIcons/geographic";

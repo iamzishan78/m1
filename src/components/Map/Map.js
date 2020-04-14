@@ -622,9 +622,10 @@ export default function Map() {
       let coordinates = [currentFeature.longitude, currentFeature.latitude];
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
-
+      console.log(popUps)
       let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
+        .setMaxWidth("none")
         .setHTML(`<div id="popupContainer"></div>`)
         .addTo(map);
 
@@ -1044,13 +1045,15 @@ export default function Map() {
                 <Popover
                   open={stateApp.expandedCard}
                   anchorEl={anchorElPoPOver}
+                  anchorReference="anchorEl"
+                  style={{width: "100%", right:30, left: "-30px"}}
                   BackdropProps={{ invisible: false }}
                   anchorOrigin={{
-                    vertical: "bottom",
+                    vertical: "center",
                     horizontal: "center",
                   }}
                   transformOrigin={{
-                    vertical: "top",
+                    vertical: "center",
                     horizontal: "center",
                   }}
                 >

@@ -490,69 +490,6 @@ export default function WellCard() {
         /> */}
           <CardContent className={classes.content}>
               <WellCardDetails target={target} />
-              <Table
-                className={classes.table}
-                size="small"
-                aria-label="well table"
-              >
-                <TableBody>
-                  <TableRow className={classes.rowGrey}>
-                    <TableCell className={classes.cell1} align="left">
-                      API
-                    </TableCell>
-                    <TableCell className={classes.cell2} align="right">
-                      {stateApp.selectedWell.api
-                        ? stateApp.selectedWell.api
-                        : "--"}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow className={classes.rowWhite}>
-                    <TableCell className={classes.cell1} align="left">
-                      Well Type
-                    </TableCell>
-                    <TableCell className={classes.cell2} align="right">
-                      {stateApp.selectedWell.wellType
-                        ? stateApp.selectedWell.wellType
-                        : "--"}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow className={classes.rowGrey}>
-                    <TableCell className={classes.cell1} align="left">
-                      Permit Date
-                    </TableCell>
-                    <TableCell className={classes.cell2} align="right">
-                      {" "}
-                      {convertDate(stateApp.selectedWell.permitApprovedDate)}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow className={classes.rowWhite}>
-                    <TableCell className={classes.cell1} align="left">
-                      Spud Date
-                    </TableCell>
-                    <TableCell className={classes.cell2} align="right">
-                      {" "}
-                      {convertDate(stateApp.selectedWell.spudDate)}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow className={classes.rowGrey}>
-                    <TableCell className={classes.cell1} align="left">
-                      Completion Date
-                    </TableCell>
-                    <TableCell className={classes.cell2} align="right">
-                      {" "}
-                      {convertDate(stateApp.selectedWell.completionDate)}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow className={classes.rowWhite}>
-                    <TableCell className={classes.cell1} align="left">
-                      First Prod Date
-                    </TableCell>
-                    <TableCell className={classes.cell2} align="right">
-                      {convertDate(stateApp.selectedWell.firstProductionDate)}
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
           </CardContent>
          </Card>
         {/* </Modal> */}
