@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 ////////////HeadCells begin///////////////////////////////////////////////
-const OwnersHeadCells = [
+const TrackedOwnersHeadCells = [
   {
     name: "id",
     options: {
@@ -62,18 +62,28 @@ const OwnersHeadCells = [
   },
   {
     name: "tags",
-    label: "Tags",
+    label: "Tags ",
     options: {
-      filter: false,
-      searchable: false,
       sort: false,
       download: false,
       print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
     },
   },
   {
     name: "commentsCounter",
-    label: "Comments",
+    label: " ",
     options: {
       filter: false,
       searchable: false,
@@ -87,10 +97,10 @@ const OwnersHeadCells = [
     label: " ",
     options: {
       filter: false,
+      sort: false,
       searchable: false,
       download: false,
       print: false,
-      viewColumns: false,
     },
   },
 ];
@@ -118,18 +128,28 @@ const WellsHeadCells = [
   },
   {
     name: "tags",
-    label: "Tags",
+    label: "Tags ",
     options: {
-      filter: false,
-      searchable: false,
       sort: false,
       download: false,
       print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
     },
   },
   {
     name: "ownerCount",
-    label: "Owners",
+    label: " ",
     options: {
       filter: false,
       searchable: false,
@@ -140,7 +160,7 @@ const WellsHeadCells = [
   },
   {
     name: "commentsCounter",
-    label: "Comments",
+    label: " ",
     options: {
       filter: false,
       searchable: false,
@@ -154,10 +174,90 @@ const WellsHeadCells = [
     label: " ",
     options: {
       filter: false,
+      sort: false,
       searchable: false,
       download: false,
       print: false,
+    },
+  },
+];
+
+const OwnersPerWellHeadCells = [
+  {
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
       viewColumns: false,
+    },
+  },
+  { name: "name", label: "Name" },
+  {
+    name: "ownershipType",
+    label: "Entity",
+  },
+  { name: "interestType", label: "Type" },
+  {
+    name: "ownershipPercentage",
+    label: "Interest",
+  },
+  {
+    name: "appraisedValue",
+    label: "Appraised Value",
+  },
+  {
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
+  },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+    },
+  },
+  {
+    name: "isTracked",
+    label: "Track",
+    options: {
+      searchable: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: ["Tracked", "Untracked"],
+        logic(tracked, filterVal) {
+          return !(
+            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+            (filterVal.indexOf("Untracked") >= 0 && !tracked)
+          );
+        },
+      },
+      filterType: "dropdown",
     },
   },
 ];
@@ -196,13 +296,23 @@ const ContactsHeadCells = [
   },
   {
     name: "tags",
-    label: "Tags",
+    label: "Tags ",
     options: {
-      filter: false,
-      searchable: false,
       sort: false,
       download: false,
       print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
     },
   },
   // {
@@ -218,7 +328,7 @@ const ContactsHeadCells = [
   // },
   {
     name: "commentsCounter",
-    label: "Comments",
+    label: " ",
     options: {
       filter: false,
       searchable: false,
@@ -229,13 +339,21 @@ const ContactsHeadCells = [
   },
   {
     name: "isTracked",
-    label: " ",
+    label: "Track",
     options: {
-      filter: false,
       searchable: false,
       download: false,
       print: false,
-      viewColumns: false,
+      filterOptions: {
+        names: ["Tracked", "Untracked"],
+        logic(tracked, filterVal) {
+          return !(
+            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+            (filterVal.indexOf("Untracked") >= 0 && !tracked)
+          );
+        },
+      },
+      filterType: "dropdown",
     },
   },
 ];
@@ -384,6 +502,7 @@ export default function Contacts(props) {
               break;
             }
           }
+
           for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
             if (owner.id === dataTagSamples.tagSamples[i]._id) {
               owner.tags = [
@@ -396,9 +515,44 @@ export default function Contacts(props) {
           }
         });
 
+        let availableTags = [];
+        dataTagSamples.tagSamples.map((sample) => {
+          availableTags = [...availableTags, ...sample.tags];
+        });
+        const cleanAvailableTags = [...new Set(availableTags)];
+
         setRows(dataOwners.owners.results);
         setHeader("Owners");
-        setColumns(OwnersHeadCells);
+        setColumns(
+          cleanAvailableTags.length > 0
+            ? TrackedOwnersHeadCells.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
+                    },
+                  };
+                }
+                return column;
+              })
+            : TrackedOwnersHeadCells.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })
+        );
         setAddAble(false);
         setStateApp((state) => ({
           ...state,
@@ -485,9 +639,44 @@ export default function Contacts(props) {
           }
         });
 
+        let availableTags = [];
+        dataTagSamples.tagSamples.map((sample) => {
+          availableTags = [...availableTags, ...sample.tags];
+        });
+        const cleanAvailableTags = [...new Set(availableTags)];
+
         setRows(dataWells.wells.results);
         setHeader("Wells");
-        setColumns(WellsHeadCells);
+        setColumns(
+          cleanAvailableTags.length > 0
+            ? WellsHeadCells.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
+                    },
+                  };
+                }
+                return column;
+              })
+            : WellsHeadCells.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })
+        );
         setAddAble(false);
         setStateApp((state) => ({
           ...state,
@@ -541,7 +730,6 @@ export default function Contacts(props) {
         });
 
         setHeader("Owners Per Well");
-        setColumns(OwnersHeadCells);
         setAddAble(false);
 
         getCommentsCounter({
@@ -593,6 +781,42 @@ export default function Contacts(props) {
         }
       });
 
+      let availableTags = [];
+      dataTagSamples.tagSamples.map((sample) => {
+        availableTags = [...availableTags, ...sample.tags];
+      });
+      const cleanAvailableTags = [...new Set(availableTags)];
+
+      setColumns(
+        cleanAvailableTags.length > 0
+          ? OwnersPerWellHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
+                  },
+                };
+              }
+              return column;
+            })
+          : OwnersPerWellHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
+      );
       setRows(dataWellOwners.wellOwners);
       setLoading(false);
     }
@@ -673,8 +897,44 @@ export default function Contacts(props) {
           ],
         },
       ]);
+
+      let availableTags = [];
+      dataTagSamples.tagSamples.map((sample) => {
+        availableTags = [...availableTags, ...sample.tags];
+      });
+      const cleanAvailableTags = [...new Set(availableTags)];
+
       setHeader("Contacts");
-      setColumns(ContactsHeadCells);
+      setColumns(
+        cleanAvailableTags.length > 0
+          ? ContactsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
+                  },
+                };
+              }
+              return column;
+            })
+          : ContactsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
+      );
       setAddAble({
         externalAdd: true,
         externalAddFunction: props.externalAddFunction,

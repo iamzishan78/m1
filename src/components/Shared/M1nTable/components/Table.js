@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     color: "rgb(1,17,51)",
     borderRadius: "12px",
     width: "100%",
-    maxWidth: "150px",
+    maxWidth: "180px",
     // backgroundColor: "#EFEFEF",
     minWidth: "80px",
     "&:hover": {
@@ -68,6 +68,9 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "rgba(255, 255, 255, 0)",
     },
   },
+  noCommentsIcon: {
+    color: "darkgrey",
+  },
 }));
 
 var formatter = new Intl.NumberFormat("en-US", {
@@ -93,7 +96,9 @@ export default function SubTable(props) {
   const [selectedRow, setSelectedRow] = useState();
 
   useEffect(() => {
-    setRows(props.rows);
+    if (props.rows) {
+      setRows([...props.rows]);
+    }
   }, [props.rows]);
 
   ////setting all icons columns/////
@@ -121,12 +126,17 @@ export default function SubTable(props) {
             ...column.options,
             customBodyRender: (value, tableMeta, updateValue) => {
               return (
-                <Tooltip title="Comments" placement="top">
+                <Tooltip
+                  title={!value || value === 0 ? "Add Comments" : "Comments"}
+                  placement="top"
+                >
                   <Badge badgeContent={value ? value : null} color="secondary">
                     <IconButton
                       size="medium"
                       color="primary"
                       className={`${classes.icons} ${
+                        !value || value === 0 ? classes.noCommentsIcon : ""
+                      } ${
                         colInd === tableMeta.columnIndex &&
                         rowInd === tableMeta.rowIndex
                           ? classes.iconSelected
@@ -198,13 +208,17 @@ export default function SubTable(props) {
             ...column.options,
             customBodyRender: (value, tableMeta, updateValue) => {
               return (
-                <Tooltip title="Tags" placement="top">
+                <Tooltip
+                  title={value[1] === 0 ? "Add Tags" : "Tags"}
+                  placement="top"
+                >
                   <Badge
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "left",
-                    }}
-                    className={classes.TagSample}
+                    className={`${classes.TagSample} ${
+                      colInd === tableMeta.columnIndex &&
+                      rowInd === tableMeta.rowIndex
+                        ? classes.iconSelected
+                        : ""
+                    }`}
                     badgeContent={value[1]}
                     color="secondary"
                     onClick={() => {
@@ -222,7 +236,7 @@ export default function SubTable(props) {
                         <p className="two">...</p>
                       </React.Fragment>
                     ) : (
-                      <p className="three">Not Tags</p>
+                      <p className="three">No Tags</p>
                     )}
                   </Badge>
                 </Tooltip>
@@ -240,9 +254,8 @@ export default function SubTable(props) {
           };
         }
       });
+      setColumns([...props.columns]);
     }
-
-    setColumns(props.columns);
   }, [props.columns, props.rows, colInd, rowInd]);
 
   const handleExpandClick = async (cIndex, rIndex, id, type) => {
@@ -289,11 +302,11 @@ export default function SubTable(props) {
     filterType: "multiselect",
     rowsPerPageOptions:
       props.rows && props.rows.length > 100
-        ? [10, 25, 100, props.rows.length]
+        ? [10, 25, 100, 1000]
         : props.rows && props.rows.length > 25
-        ? [10, 25, props.rows.length]
+        ? [10, 25, 100]
         : props.rows && props.rows.length > 10
-        ? [10, props.rows.length]
+        ? [10, 25]
         : [],
 
     selectableRows: "none",
