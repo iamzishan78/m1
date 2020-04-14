@@ -74,9 +74,11 @@ export default function TitleOpinionsTaps() {
         >
           <Tab label="MOR" {...a11yProps(0)} />
           <Tab label="Runsheet" {...a11yProps(1)} />
-          <Tab label="Division Order" {...a11yProps(2)} />
+
+{/*           <Tab label="Division Order" {...a11yProps(2)} />
           <Tab label="Associated Documents" {...a11yProps(3)} />
-          <Tab label="Internal Note" {...a11yProps(4)} />
+          <Tab label="Internal Note" {...a11yProps(4)} /> */}
+
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0} className="MORDiv">
@@ -85,6 +87,7 @@ export default function TitleOpinionsTaps() {
       <TabPanel value={value} index={1} className="MORDiv">
         <RunSheet />
       </TabPanel>
+
       <TabPanel value={value} index={2}>
         - Coming Soon
       </TabPanel>
@@ -94,6 +97,7 @@ export default function TitleOpinionsTaps() {
       <TabPanel value={value} index={4}>
         ---Coming Soon
       </TabPanel>
+      
     </div>
   );
 }
