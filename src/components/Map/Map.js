@@ -564,6 +564,8 @@ export default function Map() {
     handleOpenExpandableCard();
   },[map, setStateApp]) 
 
+
+  
   useEffect(() => {
     const req = new Request(
       "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
@@ -763,8 +765,8 @@ export default function Map() {
       } else {
 
 
-        console.log('threed state', stateMap.toggle3d)
-
+      //map.setLayoutProperty('wellpoints', 'visibility', 'visible');
+      //map.setLayoutProperty('welllines', 'visibility', 'visible');
 
 
       if (stateMap.toggle3d === true) {
