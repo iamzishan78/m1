@@ -31,6 +31,10 @@ const useStyles = makeStyles((theme) => ({
   },
   iconSelected: {
     backgroundColor: theme.palette.secondary.main,
+    color: "#011133 !important",
+    "& p": {
+      color: "#011133 !important",
+    },
   },
   TagSample: {
     color: "rgb(1,17,51)",

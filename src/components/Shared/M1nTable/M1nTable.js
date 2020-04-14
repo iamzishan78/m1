@@ -90,6 +90,7 @@ const TrackedOwnersHeadCells = [
       sort: false,
       download: false,
       print: false,
+      viewColumns: false,
     },
   },
   {
@@ -101,6 +102,7 @@ const TrackedOwnersHeadCells = [
       searchable: false,
       download: false,
       print: false,
+      viewColumns: false,
     },
   },
 ];
@@ -156,6 +158,7 @@ const WellsHeadCells = [
       sort: false,
       download: false,
       print: false,
+      viewColumns: false,
     },
   },
   {
@@ -167,6 +170,7 @@ const WellsHeadCells = [
       sort: false,
       download: false,
       print: false,
+      viewColumns: false,
     },
   },
   {
@@ -178,6 +182,7 @@ const WellsHeadCells = [
       searchable: false,
       download: false,
       print: false,
+      viewColumns: false,
     },
   },
 ];
@@ -239,6 +244,7 @@ const OwnersPerWellHeadCells = [
       sort: false,
       download: false,
       print: false,
+      viewColumns: false,
     },
   },
   {
@@ -335,6 +341,7 @@ const ContactsHeadCells = [
       sort: false,
       download: false,
       print: false,
+      viewColumns: false,
     },
   },
   {
