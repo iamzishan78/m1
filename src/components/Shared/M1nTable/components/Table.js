@@ -101,7 +101,11 @@ export default function SubTable(props) {
 
   useEffect(() => {
     if (props.rows) {
-      setRows([...props.rows]);
+      setRows([
+        ...props.rows.sort((a, b) => {
+          return b.isTracked - a.isTracked;
+        }),
+      ]);
     }
   }, [props.rows]);
 
