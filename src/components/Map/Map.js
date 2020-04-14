@@ -97,6 +97,7 @@ export default function Map() {
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [mapStyles, setMapStyles] = useState([]);
   const [map, setMap] = useState(null);
+  const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
   const mapEl = useRef(null);
   mapboxgl.accessToken =
@@ -797,10 +798,14 @@ export default function Map() {
           zoom: 18,
         });
 
-        if (document.getElementById("searchBar")) {
+        if (
+          document.getElementById("searchBar") &&
+          document.getElementById("searchBar").childNodes.length === 0
+        ) {
           document
             .getElementById("searchBar")
             .appendChild(geocoder.onAdd(newMap));
+          setGeocoder(geocoder);
         }
 
         let Draw = new MapboxDraw({
@@ -930,6 +935,18 @@ export default function Map() {
       }
     }
   }, [map, setStateMap, setStateMapControls, mapStyles, stateMap.toggle3d]);
+
+  useEffect(() => {
+    if (map && geocoder) {
+      return () => {
+        var list = document.getElementById("searchBar");
+        if (list.childNodes.length > 0) {
+          map.removeControl(geocoder);
+          // list.removeChild(list.childNodes[0]);
+        }
+      };
+    }
+  }, [map]);
 
   useEffect(() => {
     if (map && stateApp.flyTo) {

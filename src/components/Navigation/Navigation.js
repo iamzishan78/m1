@@ -227,6 +227,7 @@ const useStyles = makeStyles((theme) => ({
         height: "23px",
         top: "5px",
       },
+      "& .mapboxgl-ctrl-geocoder--button": { background: "#ffffff00" },
     },
   },
   searchIcon: {
