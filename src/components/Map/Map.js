@@ -777,6 +777,17 @@ export default function Map() {
           return matchingFeatures;
         }
 
+        // newMap.addControl(
+        //   new MapboxGeocoder({
+        //   accessToken: mapboxgl.accessToken,
+        //   mapboxgl: mapboxgl,
+        //   localGeocoder: forwardGeocoder,
+        //   //types: 'poi',
+        //   //placeholder: 'Enter Search'
+        //   zoom: 18,
+        // })
+        //   ,"top-left");
+
         var geocoder = new MapboxGeocoder({
           accessToken: mapboxgl.accessToken,
           mapboxgl: mapboxgl,
@@ -785,9 +796,12 @@ export default function Map() {
           //placeholder: 'Enter Search'
           zoom: 18,
         });
-    
-        if( document.getElementById("searchBar"))
-        {document.getElementById("searchBar").appendChild(geocoder.onAdd(map));}
+
+        if (document.getElementById("searchBar")) {
+          document
+            .getElementById("searchBar")
+            .appendChild(geocoder.onAdd(newMap));
+        }
 
         let Draw = new MapboxDraw({
           displayControlsDefault: false,
