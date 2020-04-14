@@ -67,15 +67,15 @@ export default function FilterDatePickerPermit(props) {
   const setFilterName = useCallback(() => {
       let filter;
       if (permitFromDate.date._isValid === true  && permitToDate.date._isValid === true) {
-        const todaysDate = moment().valueOf()
-        const checkDate = moment(permitToDate.date).valueOf()
-        const fromDate = moment(permitFromDate.date).valueOf()
-        console.log(fromDate)
+        const todaysDate = moment.parseZone().valueOf()
+        const checkDate = moment.parseZone(permitToDate.date).utc(true).valueOf()
+        const fromDate = moment.parseZone(permitFromDate.date).utc(true).valueOf()
+        console.log("utc", fromDate,permitToDate.date )
         if(checkDate === todaysDate ){
           filter = ["all", [">=",["get", "permitApprovedDate"] ,fromDate], ["<=",["get", "permitApprovedDate"] , checkDate]];
         } else{
-          const fromDate = moment(permitFromDate.date).valueOf()
-          const toDate =  moment(permitToDate.date).valueOf()
+          const fromDate = moment.parseZone(permitFromDate.date).utc(true).valueOf()
+          const toDate =  moment.parseZone(permitToDate.date).utc(true).valueOf()
           filter = ["all", [">=", ["get", "permitApprovedDate"]  ,fromDate], ["<=", ["get", "permitApprovedDate"] ,toDate]];
         }
       } else {

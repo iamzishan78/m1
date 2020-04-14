@@ -62,9 +62,9 @@ export default function FilterDatePickerCompletetion(props) {
       completetionFromDate.date._isValid === true &&
       completetionToDate.date._isValid === true
     ) {
-      const todaysDate = moment().valueOf();
-      const checkDate = moment(completetionToDate.date).valueOf();
-      const fromDate = moment(completetionFromDate.date).valueOf();
+      const todaysDate = moment.parseZone().utc(true).valueOf();
+      const checkDate = moment.parseZone(completetionToDate.date).utc(true).valueOf();
+      const fromDate = moment.parseZone(completetionFromDate.date.utc(true)).valueOf();
       if (checkDate === todaysDate) {
         filter = [
           "all",
@@ -72,8 +72,8 @@ export default function FilterDatePickerCompletetion(props) {
           ["<=", ["get", "completionDate"], checkDate]
         ];
       } else {
-        const fromDate = moment(completetionFromDate.date).valueOf();
-        const toDate = moment(completetionToDate.date).valueOf();
+        const fromDate = moment.parseZone(completetionFromDate.date).utc(true).valueOf();
+        const toDate = moment.parseZone(completetionToDate.date).utc(true).valueOf();
         filter = [
           "all",
           [">=", ["get", "completionDate"], fromDate],

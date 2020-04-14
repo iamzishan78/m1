@@ -68,14 +68,14 @@ export default function FilterDatePickerFirstProd(props) {
   const setFilterName = useCallback(() => {
     let filter;
     if (firstProductionFromDate.date._isValid === true  && firstProductionToDate.date._isValid === true) {
-      const todaysDate = moment().valueOf()
-      const checkDate = moment(firstProductionToDate.date).valueOf()
-      const fromDate = moment(firstProductionFromDate.date).valueOf()
+      const todaysDate = moment.parseZone().utc(true).valueOf();
+      const checkDate = moment.parseZone(firstProductionToDate.date).utc(true).valueOf()
+      const fromDate = moment.parseZone(firstProductionFromDate.date).utc(true).valueOf()
       if(checkDate === todaysDate ){
         filter = ["all", [">=",["get", "firstProductionDate"] ,fromDate], ["<=",["get", "firstProductionDate"] , checkDate]];
       } else{
-        const fromDate = moment(firstProductionFromDate.date).valueOf()
-        const toDate =  moment(firstProductionToDate.date).valueOf()
+        const fromDate = moment.parseZone(firstProductionFromDate.date).utc(true).valueOf()
+        const toDate =  moment.parseZone(firstProductionToDate.date).utc(true).valueOf()
         filter = ["all", [">=", ["get", "firstProductionDate"]  ,fromDate], ["<=", ["get", "firstProductionDate"] ,toDate]];
       }
     } else {
