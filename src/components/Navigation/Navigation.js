@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect, useRef } from "react";
 import { borders } from "@material-ui/system";
 import { shadows } from "@material-ui/system";
 import { Paper } from "@material-ui/core";
-import ExpiredStorage from 'expired-storage';
+import ExpiredStorage from "expired-storage";
 import { NavigationContext } from "./NavigationContext";
 import { AppContext } from "../../AppContext";
 import { useHistory, useLocation } from "react-router-dom";
@@ -20,7 +20,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Tab from "@material-ui/core/Tab";
 import Badge from "@material-ui/core/Badge";
 import Tabs from "@material-ui/core/Tabs";
-import Button from '@material-ui/core/Button';
+import Button from "@material-ui/core/Button";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Input from "@material-ui/core/Input";
@@ -37,7 +37,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -49,8 +49,8 @@ import { green } from "@material-ui/core/colors";
 //icons
 import CloseIcon from "@material-ui/icons/Close";
 import SearchIcon from "@material-ui/icons/Search";
-import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
-import SettingsIcon from '@material-ui/icons/Settings';
+import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
+import SettingsIcon from "@material-ui/icons/Settings";
 import MyLocationIcon from "@material-ui/icons/MyLocation";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import GeographicIcon from "../Shared/svgIcons/geographic";
@@ -75,23 +75,23 @@ import FolderSharedIcon from "@material-ui/icons/FolderShared";
 import PeopleOutlineIcon from "@material-ui/icons/PeopleOutline";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import DescriptionIcon from "@material-ui/icons/Description";
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 
 import FilterFormWell from "./components/FilterFormWell";
 import FilterFromGeo from "./components/FilterFromGeo";
 import FilterFormOwner from "./components/FilterFormOwner";
 import FilterFormProduction from "./components/FilterFormProduction";
-import FilterDefaults from "./components/FilterDefaults"
+import FilterDefaults from "./components/FilterDefaults";
 import M1neralLogoSvg from "../Shared/m1neralLogoSvg";
 
 import Avatar from "react-avatar";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     width: "100%",
     height: "100%",
-    paddingTop:"64px"
+    paddingTop: "64px",
   },
   appBar: {
     height: "64px",
@@ -100,36 +100,35 @@ const useStyles = makeStyles(theme => ({
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
+      duration: theme.transitions.duration.leavingScreen,
     }),
     paddingRight: "0 !important",
-
   },
   appBarShift: {
     marginLeft: drawerWidth,
     /* width: `calc(100% - ${drawerWidth}px)`, */
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen
-    })
+      duration: theme.transitions.duration.enteringScreen,
+    }),
   },
   menuButton: {
-    marginRight: 36
+    marginRight: 36,
   },
   hide: {
-    display: "none"
+    display: "none",
   },
   drawer: {
     background: "rgba(1, 17, 51, 1.0)",
     width: drawerWidth,
     flexShrink: 0,
-    whiteSpace: "nowrap"
+    whiteSpace: "nowrap",
   },
 
   filterTabs: {
     paddingRight: "25px",
     position: "relative",
-    left: 0
+    left: 0,
   },
   drawerOpen: {
     //background: 'rgba(245, 245, 245, 1.0)',
@@ -140,18 +139,18 @@ const useStyles = makeStyles(theme => ({
     //boxShadow: "1px 0px 100vw black",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen
-    })
+      duration: theme.transitions.duration.enteringScreen,
+    }),
   },
   drawerClose: {
     background: "rgba(1, 17, 51, 1.0)",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
+      duration: theme.transitions.duration.leavingScreen,
     }),
     overflowX: "hidden",
     /*width: theme.spacing(8) + 1,*/
-    width: "0%"
+    width: "0%",
     /*[theme.breakpoints.up('sm')]: {
       width: theme.spacing(8) + 1
     }*/
@@ -167,31 +166,68 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
   },
   grow1: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   grow2: {
-    flexGrow: 2
+    flexGrow: 2,
   },
   title: {
     display: "none",
     [theme.breakpoints.up("sm")]: {
-      display: "block"
-    }
+      display: "block",
+    },
   },
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
     backgroundColor: fade(theme.palette.common.white, 0.15),
     "&:hover": {
-      backgroundColor: fade(theme.palette.common.white, 0.25)
+      backgroundColor: fade(theme.palette.common.white, 0.25),
     },
     marginRight: theme.spacing(2),
     marginLeft: 5,
     width: "30%",
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
-      width: "30%"
-    }
+      width: "30%",
+    },
+  },
+  searchInput: {
+    width: "100%",
+    height: "100%",
+    "& .mapboxgl-ctrl-geocoder": {
+      backgroundColor: fade(theme.palette.common.white, 0),
+      borderRadius: theme.shape.borderRadius,
+      height: "100%",
+      width: "100%",
+      maxWidth: "100%",
+      "&:hover": {
+        // backgroundColor: fade(theme.palette.common.white, 0.25),
+      },
+      "& .mapboxgl-ctrl-geocoder--input": {
+        borderRadius: theme.shape.borderRadius,
+        width: "100%",
+        color: "#ffffff",
+        height: "35px",
+        fontSize: "17px",
+        "&::placeholder": {
+          color: "#788092",
+          textDecoration: "bold",
+        },
+        "&:-ms-input-placeholder": {
+          color: "#788092",
+        },
+        "&::-ms-input-placeholder": {
+          color: "#788092",
+        },
+      },
+      "& .mapboxgl-ctrl-geocoder--icon-search": {
+        fill: "#ffffff",
+        width: "23px",
+        height: "23px",
+        top: "5px",
+      },
+    },
   },
   searchIcon: {
     width: theme.spacing(7),
@@ -200,18 +236,18 @@ const useStyles = makeStyles(theme => ({
     pointerEvents: "none",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   inputRoot: {
-    color: "inherit"
+    color: "inherit",
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 7),
     transition: theme.transitions.create("width"),
     width: "100%",
     [theme.breakpoints.up("md")]: {
-      width: 200
-    }
+      width: 200,
+    },
   },
   tab: {
     minWidth: "62px",
@@ -228,7 +264,7 @@ const useStyles = makeStyles(theme => ({
     position: "absolute",
     top: "45px",
     right: "0",
-    zIndex: 9
+    zIndex: 9,
   },
   card: {
     background: "#011133",
@@ -236,7 +272,7 @@ const useStyles = makeStyles(theme => ({
     borderWidth: "thin",
     borderColor: "#011133",
     maxWidth: 650,
-    minWidth: 620
+    minWidth: 620,
   },
   cardTitle: {
     fontFamily: "Poppins",
@@ -250,7 +286,7 @@ const useStyles = makeStyles(theme => ({
     height: "23px",
     left: "0.46%",
     right: "39.32%",
-    top: "calc(50% - 23px/2 - 140px)"
+    top: "calc(50% - 23px/2 - 140px)",
   },
   subheader: {
     fontFamily: "Poppins",
@@ -263,22 +299,22 @@ const useStyles = makeStyles(theme => ({
     height: "17px",
     left: "0.46%",
     right: "58.31%",
-    top: "calc(50% - 17px/2 - 120px)"
+    top: "calc(50% - 17px/2 - 120px)",
   },
   betaSideNav: {
-    // paddingBottom: 35, 
-    // paddingLeft: 0, 
+    // paddingBottom: 35,
+    // paddingLeft: 0,
     // paddingRight: 0,
     textTransform: "inherit",
     right: 10,
-    fontSize: 12 ,
+    fontSize: 12,
     color: "rgba(0, 0, 0, 0.52) !important ",
   },
   betaSideNav2: {
-    paddingBottom: 35, 
-    // paddingLeft: 35, 
+    paddingBottom: 35,
+    // paddingLeft: 35,
     // paddingRight: 0,
-    fontSize: 12 ,
+    fontSize: 12,
     color: "rgba(0, 0, 0, 0.52) !important ",
   },
   betaText: {
@@ -294,22 +330,22 @@ const useStyles = makeStyles(theme => ({
     color: "white",
     width: "38px",
     height: "38px",
-    margin: "0px"
+    margin: "0px",
   },
   cardContent: {
     height: "400px",
     backgroundColor: "#fff",
     padding: "0px",
-    overflow: "scroll"
+    overflow: "scroll",
   },
   cardAction: {
     flexGrow: 1,
     display: "flex",
     justifyContent: "space-evenly",
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
   },
   indicator: {
-    backgroundColor: "rgba(23, 170, 221, 1) !important"
+    backgroundColor: "rgba(23, 170, 221, 1) !important",
   },
   menuList: {
     paddingTop: "5%",
@@ -317,7 +353,7 @@ const useStyles = makeStyles(theme => ({
     position: "relative",
     width: drawerWidth - 1,
 
-    top: "0%"
+    top: "0%",
   },
   menuListBottom: {
     //display: 'flex',
@@ -326,12 +362,12 @@ const useStyles = makeStyles(theme => ({
     position: "absolute",
     width: drawerWidth - 1,
 
-    bottom: "0vh"
+    bottom: "0vh",
     //minHeight: '100vh'
   },
   menuListBottomDivider: {
     position: "relative",
-    bottom: "100%"
+    bottom: "100%",
   },
   menuListItem: {
     paddingBottom: "5%",
@@ -340,13 +376,12 @@ const useStyles = makeStyles(theme => ({
     marginTop: "0%",
     paddingLeft: "17%",
     "&:hover": {
-      backgroundColor: "Light Grey"
+      backgroundColor: "Light Grey",
     },
     backgroundColor: theme.primary,
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: "rgba(35,55,77,1)"
-    }
-
+      color: "rgba(35,55,77,1)",
+    },
   },
 
   menuListItemDisabled: {
@@ -356,20 +391,20 @@ const useStyles = makeStyles(theme => ({
     marginTop: "0%",
     paddingLeft: "17%",
     "&:hover": {
-      backgroundColor: "Light Grey"
+      backgroundColor: "Light Grey",
     },
     backgroundColor: theme.primary,
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: "rgba(128,136,153,0.4)"
-    }
+      color: "rgba(128,136,153,0.4)",
+    },
   },
 
   menuListItemSelected: {
     backgroundColor: "rgba(198, 210, 225, 0) !important",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: "rgba(23,170,221,1.0)",
-      fontWeight: "bold"
-    }
+      fontWeight: "bold",
+    },
   },
   avatarUser: {
     fontFamily: "Poppins",
@@ -377,29 +412,29 @@ const useStyles = makeStyles(theme => ({
     width: "28px",
     height: "28px",
     color: "#fff",
-    backgroundColor: "rgba(23, 170, 221, 1)"
+    backgroundColor: "rgba(23, 170, 221, 1)",
   },
   badge: {
-    backgroundColor: "red"
+    backgroundColor: "red",
   },
   userMenuItem: {
-    color: "black"
+    color: "black",
   },
   actionWrapper: {
     flexGrow: 1,
     display: "flex",
-    justifyContent: "space-evenly"
+    justifyContent: "space-evenly",
   },
   applyWrapper: {
     margin: theme.spacing(1),
 
-    position: "relative"
+    position: "relative",
   },
   applySuccess: {
     backgroundColor: green[500],
     "&:hover": {
-      backgroundColor: green[700]
-    }
+      backgroundColor: green[700],
+    },
   },
 
   overlay: {
@@ -408,7 +443,7 @@ const useStyles = makeStyles(theme => ({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "rgba(0,0,0,0.2)"
+    backgroundColor: "rgba(0,0,0,0.2)",
   },
 
   applyProgress: {
@@ -417,28 +452,28 @@ const useStyles = makeStyles(theme => ({
     top: "50%",
     left: "50%",
     marginTop: -12,
-    marginLeft: -12
-  },   
+    marginLeft: -12,
+  },
   goHome: {
     "&:hover": {
       width: "15vw",
       // backgroundColor: "rgba(239, 239, 239, 0.32)",
       opacity: 1,
       // borderRadius:"6px",
-      animation: '$mui-ripple-enter 2s ease-in-out',
+      animation: "$mui-ripple-enter 2s ease-in-out",
+    },
   },
-},
-  '@keyframes mui-ripple-enter': {
-    '0%': {
+  "@keyframes mui-ripple-enter": {
+    "0%": {
       opacity: 0.1,
     },
-    '100%': {
+    "100%": {
       opacity: 0.9,
     },
   },
 }));
 
-const M1neralLogoDrawer = props => (
+const M1neralLogoDrawer = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 11320 2490"
@@ -467,7 +502,7 @@ const M1neralLogo = styled(M1neralLogoDrawer)`
   width: 130px;
 `;
 
-const M1neralLogoNavNoAuth = props => (
+const M1neralLogoNavNoAuth = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 11320 2490"
@@ -497,7 +532,7 @@ const M1neralLogo2 = styled(M1neralLogoNavNoAuth)`
   padding: 20px;
 `;
 
-const TabPanel = props => {
+const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
 
   return (
@@ -517,7 +552,7 @@ const TabPanel = props => {
 TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired
+  value: PropTypes.any.isRequired,
 };
 
 const drawerWidth = 215;
@@ -541,69 +576,69 @@ export default function Navigation(props) {
   let location = useLocation();
 
   const applyButtonClass = clsx({
-    [classes.applySuccess]: applySuccess
+    [classes.applySuccess]: applySuccess,
   });
 
   useEffect(() => {
     if (location.pathname === "/") {
-      setStateNav(state => ({
+      setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 1,
         selectedMenuIndexTrack: 0,
         selectedMenuIndexTransact: 0,
         selectedMenuIndexTitle: 0,
         selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0
+        selectedMenuIndexContacts: 0,
       }));
     } else if (location.pathname === "/track") {
-      setStateNav(state => ({
+      setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,
         selectedMenuIndexTrack: 1,
         selectedMenuIndexTransact: 0,
         selectedMenuIndexTitle: 0,
         selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0
+        selectedMenuIndexContacts: 0,
       }));
     } else if (location.pathname === "/transact") {
-      setStateNav(state => ({
+      setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,
         selectedMenuIndexTrack: 0,
         selectedMenuIndexTransact: 1,
         selectedMenuIndexTitle: 0,
         selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0
+        selectedMenuIndexContacts: 0,
       }));
     } else if (location.pathname === "/title") {
-      setStateNav(state => ({
+      setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,
         selectedMenuIndexTrack: 0,
         selectedMenuIndexTransact: 0,
         selectedMenuIndexTitle: 1,
         selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0
+        selectedMenuIndexContacts: 0,
       }));
     } else if (location.pathname === "/contacts") {
-      setStateNav(state => ({
+      setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,
         selectedMenuIndexTrack: 0,
         selectedMenuIndexTransact: 0,
         selectedMenuIndexTitle: 0,
         selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 1
-      }));  
+        selectedMenuIndexContacts: 1,
+      }));
     } else if (location.pathname === "/alerts") {
-      setStateNav(state => ({
+      setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,
         selectedMenuIndexTrack: 0,
         selectedMenuIndexTransact: 0,
         selectedMenuIndexTitle: 0,
         selectedMenuIndexAlerts: 1,
-        selectedMenuIndexContacts: 0
+        selectedMenuIndexContacts: 0,
       }));
     }
   }, [location, setStateNav]);
@@ -622,17 +657,17 @@ export default function Navigation(props) {
 
   useEffect(() => {
     if (location.pathname === "/") {
-      setMatchLocation(true)
+      setMatchLocation(true);
     } else {
-      setMatchLocation(false)
+      setMatchLocation(false);
     }
-  },[location.pathname])
+  }, [location.pathname]);
 
-  const handleSearchInputChange = event => {
+  const handleSearchInputChange = (event) => {
     console.log("input", event.currentTarget.value);
-    setStateNav(state => ({
+    setStateNav((state) => ({
       ...state,
-      searchInputValue: event.currentTarget.value
+      searchInputValue: event.currentTarget.value,
     }));
   };
   const handleMenuClose = () => {
@@ -643,10 +678,10 @@ export default function Navigation(props) {
     setAnchorEl(null);
     window.sessionStorage.removeItem("user");
     const expiredStorage = new ExpiredStorage();
-    expiredStorage.clear()
-    setStateApp(state => ({ ...state, user: null }));
+    expiredStorage.clear();
+    setStateApp((state) => ({ ...state, user: null }));
   };
-  const handleProfileMenuOpen = event => {
+  const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const menuId = "primary-search-account-menu";
@@ -659,7 +694,6 @@ export default function Navigation(props) {
       transformOrigin={{ vertical: "bottom", horizontal: "right" }}
       open={isMenuOpen}
       onClose={handleMenuClose}
-      
     >
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
         Logout
@@ -672,7 +706,7 @@ export default function Navigation(props) {
     handleRouteChange(path);
     handleDrawerClose();
   };
-  const handleRouteChange = path => {
+  const handleRouteChange = (path) => {
     history.push(path);
   };
 
@@ -700,7 +734,7 @@ export default function Navigation(props) {
 
   const sendHome = () => {
     history.push("/");
-  }
+  };
 
   /* const handleFilterCardApply = () => {
     setDisableApply(false)
@@ -718,17 +752,17 @@ export default function Navigation(props) {
     setValue(newValue);
   };
 
-  const handleChangeIndex = index => {
+  const handleChangeIndex = (index) => {
     setValue(index);
   };
 
   return (
-    <div className={classes.root} >
+    <div className={classes.root}>
       <CssBaseline />
-      <AppBar id="tetetetet"
+      <AppBar
         position="fixed"
         className={clsx(classes.appBar, {
-          [classes.appBarShift]: openDrawer
+          [classes.appBarShift]: openDrawer,
         })}
       >
         {stateApp.user ? (
@@ -773,7 +807,11 @@ export default function Navigation(props) {
           </div>
  */}
 
-{/*             <FormControl className={classes.search}>
+            <div className={classes.search} id="xoxoxox">
+              <div className={classes.searchInput} id="searchBar" />
+            </div>
+
+            {/*             <FormControl className={classes.search}>
               <div className={classes.searchIcon}>
                 <SearchIcon />
               </div>
@@ -790,86 +828,89 @@ export default function Navigation(props) {
  */}
             <div className={classes.grow1} />
             {matchLocation ? (
-            <div ref={anchorEl} className={classes.filterTabs}>
-              <Tabs
-                value={value}
-                onChange={handleFilterTabChange}
-                variant="standard"
-                textColor="primary"
-                aria-label="tabs"
-                classes={{ indicator: classes.indicator }}
-              >
-                <Tab
-                  // disabled
-                  onClick={handleFilterCardOpen}
-                  value={0}
-                  className={classes.tab}
-                  icon={
-                    <Badge
-                      badgeContent={stateNav.geographyFilterCount}
-                      color="secondary"
-                    >
-                      <GeographicIcon color="#fff" opacity="1.0" />
-                    </Badge>
-                  }
-                  aria-label="geography"
-                />
+              <div ref={anchorEl} className={classes.filterTabs}>
+                <Tabs
+                  value={value}
+                  onChange={handleFilterTabChange}
+                  variant="standard"
+                  textColor="primary"
+                  aria-label="tabs"
+                  classes={{ indicator: classes.indicator }}
+                >
+                  <Tab
+                    // disabled
+                    onClick={handleFilterCardOpen}
+                    value={0}
+                    className={classes.tab}
+                    icon={
+                      <Badge
+                        badgeContent={stateNav.geographyFilterCount}
+                        color="secondary"
+                      >
+                        <GeographicIcon color="#fff" opacity="1.0" />
+                      </Badge>
+                    }
+                    aria-label="geography"
+                  />
 
-                <Tab
-                  onClick={handleFilterCardOpen}
-                  value={1}
-                  className={classes.tab}
-                  icon={
-                    <Badge
-                      badgeContent={stateNav.wellFilterCount}
-                      color="secondary"
-                    >
-                      <WellIcon color="#fff" opacity="1.0" />
-                    </Badge>
-                  }
-                  aria-label="well"
-                />
+                  <Tab
+                    onClick={handleFilterCardOpen}
+                    value={1}
+                    className={classes.tab}
+                    icon={
+                      <Badge
+                        badgeContent={stateNav.wellFilterCount}
+                        color="secondary"
+                      >
+                        <WellIcon color="#fff" opacity="1.0" />
+                      </Badge>
+                    }
+                    aria-label="well"
+                  />
 
-                <Tab
-                  value={2}
-                  classes={{ root: classes.tab }}
-                  icon={
-                    <Badge
-                      badgeContent={stateNav.ownershipFilterCount}
-                      color="secondary"
-                    >
-                      <OwnershipIcon color="#fff" opacity="1.0" />
-                    </Badge>
-                  }
-                  aria-label="ownership"
-                />
-                <Tab
-                  value={3}
-                  classes={{ root: classes.tab }}
-                  icon={
-                    <Badge
-                      badgeContent={stateNav.productionFilterCount}
-                      color="secondary"
-                    >
-                      <ProductionIcon color="#fff" opacity="1.0" />
-                    </Badge>
-                  }
-                  aria-label="production"
-                />
-                <Tab
-                  value={4}
-                  classes={{ root: classes.tab }}
-                  icon={
-                    <Badge
-                      badgeContent={stateNav.defaultFiltersUserFiltersCount}
-                      color="secondary"
-                    >
-                      <SettingsIcon style={{height: 32, width: 32}}  opacity="1.0" />
-                    </Badge>
-                  }
-                  aria-label="filter settings"
-                />
-                {/* <Tab
+                  <Tab
+                    value={2}
+                    classes={{ root: classes.tab }}
+                    icon={
+                      <Badge
+                        badgeContent={stateNav.ownershipFilterCount}
+                        color="secondary"
+                      >
+                        <OwnershipIcon color="#fff" opacity="1.0" />
+                      </Badge>
+                    }
+                    aria-label="ownership"
+                  />
+                  <Tab
+                    value={3}
+                    classes={{ root: classes.tab }}
+                    icon={
+                      <Badge
+                        badgeContent={stateNav.productionFilterCount}
+                        color="secondary"
+                      >
+                        <ProductionIcon color="#fff" opacity="1.0" />
+                      </Badge>
+                    }
+                    aria-label="production"
+                  />
+                  <Tab
+                    value={4}
+                    classes={{ root: classes.tab }}
+                    icon={
+                      <Badge
+                        badgeContent={stateNav.defaultFiltersUserFiltersCount}
+                        color="secondary"
+                      >
+                        <SettingsIcon
+                          style={{ height: 32, width: 32 }}
+                          opacity="1.0"
+                        />
+                      </Badge>
+                    }
+                    aria-label="filter settings"
+                  />
+                  {/* <Tab
                   disabled={true}
                   value={5}
                   classes={{ root: classes.tab }}
@@ -917,20 +958,22 @@ export default function Navigation(props) {
                     }
                   aria-label="tags"
                 /> */}
-              </Tabs> 
-              
-            </div> ) : (
-              <div style={{display: "none"}}></div>
-            )
-            }
-            <Divider style={{margin: 1,}} orientation="vertical" />
-            <IconButton style={{left: "8.5px"}} onClick={handleProfileMenuOpen}>
+                </Tabs>
+              </div>
+            ) : (
+              <div style={{ display: "none" }}></div>
+            )}
+            <Divider style={{ margin: 1 }} orientation="vertical" />
+            <IconButton
+              style={{ left: "8.5px" }}
+              onClick={handleProfileMenuOpen}
+            >
               <Avatar name={stateApp.user.name} size="38" round />
             </IconButton>
           </Toolbar>
         ) : (
           <div className={classes.goHome} onClick={sendHome}>
-            <M1neralLogo2/>
+            <M1neralLogo2 />
           </div>
         )}
       </AppBar>
@@ -940,13 +983,13 @@ export default function Navigation(props) {
         anchor="left"
         className={clsx(classes.drawer, {
           [classes.drawerOpen]: openDrawer,
-          [classes.drawerClose]: !openDrawer
+          [classes.drawerClose]: !openDrawer,
         })}
         classes={{
           paper: clsx({
             [classes.drawerOpen]: openDrawer,
-            [classes.drawerClose]: !openDrawer
-          })
+            [classes.drawerClose]: !openDrawer,
+          }),
         }}
         open={openDrawer}
       >
@@ -965,11 +1008,11 @@ export default function Navigation(props) {
           <ListItem
             classes={{
               root: classes.menuListItem,
-              selected: classes.menuListItemSelected
+              selected: classes.menuListItemSelected,
             }}
             button
             selected={stateNav.selectedMenuIndexFind === 1}
-            onClick={event => handleListItemClick(event, 0, "/")}
+            onClick={(event) => handleListItemClick(event, 0, "/")}
             key="home"
           >
             <ListItemIcon>
@@ -981,11 +1024,11 @@ export default function Navigation(props) {
           <ListItem
             classes={{
               root: classes.menuListItem,
-              selected: classes.menuListItemSelected
+              selected: classes.menuListItemSelected,
             }}
             button
             selected={stateNav.selectedMenuIndexTrack === 1}
-            onClick={event => handleListItemClick(event, 0, "/track")}
+            onClick={(event) => handleListItemClick(event, 0, "/track")}
             key="track"
           >
             <ListItemIcon>
@@ -997,11 +1040,11 @@ export default function Navigation(props) {
           <ListItem
             classes={{
               root: classes.menuListItem,
-              selected: classes.menuListItemSelected
+              selected: classes.menuListItemSelected,
             }}
             button
             selected={stateNav.selectedMenuIndexTransact === 1}
-            onClick={event => handleListItemClick(event, 0, "/transact")}
+            onClick={(event) => handleListItemClick(event, 0, "/transact")}
             key="transact"
           >
             <ListItemIcon>
@@ -1012,11 +1055,11 @@ export default function Navigation(props) {
           <ListItem
             classes={{
               root: classes.menuListItem,
-              selected: classes.menuListItemSelected
+              selected: classes.menuListItemSelected,
             }}
             button
             selected={stateNav.selectedMenuIndexTitle === 1}
-            onClick={event => handleListItemClick(event, 0, "/title")}
+            onClick={(event) => handleListItemClick(event, 0, "/title")}
             key="title"
           >
             <ListItemIcon>
@@ -1027,16 +1070,17 @@ export default function Navigation(props) {
           <ListItem
             classes={{
               root: classes.menuListItem,
-              selected: classes.menuListItemSelected
+              selected: classes.menuListItemSelected,
             }}
             button
             selected={stateNav.selectedMenuIndexContacts === 1}
-            onClick={event => {
-              setStateApp(stateApp => ({
+            onClick={(event) => {
+              setStateApp((stateApp) => ({
                 ...stateApp,
-                selectedContact: null
+                selectedContact: null,
               }));
-              handleListItemClick(event, 0, "/contacts")}}
+              handleListItemClick(event, 0, "/contacts");
+            }}
             key="contacts"
           >
             <ListItemIcon>
@@ -1050,11 +1094,11 @@ export default function Navigation(props) {
           <ListItem
             classes={{
               root: classes.menuListItem,
-              selected: classes.menuListItemSelected
+              selected: classes.menuListItemSelected,
             }}
             button
             selected={stateNav.selectedMenuIndexAlerts === 1}
-            onClick={event => handleListItemClick(event, 0, "/alerts")}
+            onClick={(event) => handleListItemClick(event, 0, "/alerts")}
             key="alerts"
           >
             <ListItemIcon>
@@ -1062,7 +1106,12 @@ export default function Navigation(props) {
             </ListItemIcon>
             <ListItemText primary="Alerts" />
             <ListItemSecondaryAction>
-              <Button disabled className={classes.betaSideNav} edge="end" aria-label="beta">
+              <Button
+                disabled
+                className={classes.betaSideNav}
+                edge="end"
+                aria-label="beta"
+              >
                 beta
               </Button>
             </ListItemSecondaryAction>
@@ -1071,7 +1120,7 @@ export default function Navigation(props) {
           <ListItem
             classes={{
               root: classes.menuListItemDisabled,
-              selected: classes.menuListItemSelected
+              selected: classes.menuListItemSelected,
             }}
             button
             //selected={stateNav.selectedMenuIndex === 1}
@@ -1091,7 +1140,7 @@ export default function Navigation(props) {
           <ListItem
             classes={{
               root: classes.menuListItemDisabled,
-              selected: classes.menuListItemDisabled
+              selected: classes.menuListItemDisabled,
             }}
             button
             //selected={stateNav.selectedMenuIndex === 0}
@@ -1111,7 +1160,7 @@ export default function Navigation(props) {
           <ListItem
             classes={{
               root: classes.menuListItemDisabled,
-              selected: classes.menuListItemSelected
+              selected: classes.menuListItemSelected,
             }}
             button
             //selected={stateNav.selectedMenuIndex === 1}
@@ -1133,12 +1182,12 @@ export default function Navigation(props) {
       {openFilterCard ? (
         <div anchorEl={anchorEl} className={classes.tabPanelWrapper}>
           <TabPanel value={value} index={0} dir={theme.direction}>
-            <ClickAwayListener onClickAway={e => handleClickAway(e)}>
+            <ClickAwayListener onClickAway={(e) => handleClickAway(e)}>
               <Card className={classes.card}>
                 <CardHeader
                   classes={{
                     title: classes.cardTitle,
-                    subheader: classes.subheader
+                    subheader: classes.subheader,
                   }}
                   action={
                     <div className={classes.actionWrapper}>
@@ -1155,7 +1204,7 @@ export default function Navigation(props) {
                 />
                 <CardActions
                   classes={{
-                    root: classes.cardAction
+                    root: classes.cardAction,
                   }}
                 ></CardActions>
                 <CardContent className={classes.cardContent}>
@@ -1170,7 +1219,7 @@ export default function Navigation(props) {
                 <CardHeader
                   classes={{
                     title: classes.cardTitle,
-                    subheader: classes.subheader
+                    subheader: classes.subheader,
                   }}
                   action={
                     <div className={classes.actionWrapper}>
@@ -1187,7 +1236,7 @@ export default function Navigation(props) {
                 />
                 <CardActions
                   classes={{
-                    root: classes.cardAction
+                    root: classes.cardAction,
                   }}
                 ></CardActions>
                 <CardContent className={classes.cardContent}>
@@ -1202,7 +1251,7 @@ export default function Navigation(props) {
                 <CardHeader
                   classes={{
                     title: classes.cardTitle,
-                    subheader: classes.subheader
+                    subheader: classes.subheader,
                   }}
                   action={
                     <div>
@@ -1219,7 +1268,7 @@ export default function Navigation(props) {
                 />
                 <CardActions
                   classes={{
-                    root: classes.cardAction
+                    root: classes.cardAction,
                   }}
                 ></CardActions>
                 <CardContent className={classes.cardContent}>
@@ -1234,7 +1283,7 @@ export default function Navigation(props) {
                 <CardHeader
                   classes={{
                     title: classes.cardTitle,
-                    subheader: classes.subheader
+                    subheader: classes.subheader,
                   }}
                   action={
                     <div>
@@ -1251,7 +1300,7 @@ export default function Navigation(props) {
                 />
                 <CardActions
                   classes={{
-                    root: classes.cardAction
+                    root: classes.cardAction,
                   }}
                 ></CardActions>
                 <CardContent className={classes.cardContent}>
@@ -1261,12 +1310,12 @@ export default function Navigation(props) {
             </ClickAwayListener>
           </TabPanel>
           <TabPanel value={value} index={4} dir={theme.direction}>
-          <ClickAwayListener onClickAway={handleClickAway}>
+            <ClickAwayListener onClickAway={handleClickAway}>
               <Card className={classes.card}>
                 <CardHeader
                   classes={{
                     title: classes.cardTitle,
-                    subheader: classes.subheader
+                    subheader: classes.subheader,
                   }}
                   action={
                     <div>
@@ -1283,11 +1332,11 @@ export default function Navigation(props) {
                 />
                 <CardActions
                   classes={{
-                    root: classes.cardAction
+                    root: classes.cardAction,
                   }}
                 ></CardActions>
                 <CardContent className={classes.cardContent}>
-                <FilterDefaults/>
+                  <FilterDefaults />
                 </CardContent>
               </Card>
             </ClickAwayListener>

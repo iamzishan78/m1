@@ -4,12 +4,12 @@ import React, {
   useLayoutEffect,
   useRef,
   useEffect,
-  useCallback
+  useCallback,
 } from "react";
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
-import Popover from '@material-ui/core/Popover';
+import Popover from "@material-ui/core/Popover";
 import { MapContext } from "./MapContext";
 import mapboxgl from "mapbox-gl";
 import { makeStyles } from "@material-ui/core/styles";
@@ -17,7 +17,7 @@ import MapControlsProvider from "../MapControls/MapControlsProvider";
 import WellCardProvider from "../WellCard/WellCardProvider";
 import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
 import WellsProvider from "../Wells/WellsProvider";
-import Portal from '@material-ui/core/Portal';
+import Portal from "@material-ui/core/Portal";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
 import "./popup.css";
@@ -26,17 +26,17 @@ import {
   CircleMode,
   DragCircleMode,
   DirectMode,
-  SimpleSelectMode
+  SimpleSelectMode,
 } from "mapbox-gl-draw-circle";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
-import * as MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
+import * as MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 // import "./Map.css"
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   mapWrapper: {
-    width: "100%"
+    width: "100%",
   },
   map: {
     position: "absolute",
@@ -45,9 +45,9 @@ const useStyles = makeStyles(theme => ({
     width: "100%",
     height: "calc(100% - 64px)",
     overflow: "hidden !important",
-    "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib":{
-      display:"none"
-    }
+    "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib": {
+      display: "none",
+    },
   },
   footerLeftLogo: {
     position: "absolute",
@@ -75,7 +75,7 @@ const useStyles = makeStyles(theme => ({
     position: "absolute",
     top: "45%",
     left: "47%",
-    transform: "translate(-50%, -50%)"
+    transform: "translate(-50%, -50%)",
   },
 }));
 
@@ -87,10 +87,10 @@ export default function Map() {
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
-  const [filtersDefault , setFiltersDefault] = useState(
-    stateApp.user.defaultFilters ? stateApp.user.defaultFilters: []
+  const [filtersDefault, setFiltersDefault] = useState(
+    stateApp.user.defaultFilters ? stateApp.user.defaultFilters : []
   );
-  const [lng , setLng] = useState();
+  const [lng, setLng] = useState();
   const [lat, setLat] = useState();
   const [transform, setTransform] = useState("transform: inherit");
   const container = useRef(null);
@@ -104,8 +104,8 @@ export default function Map() {
 
   useEffect(() => {
     if (stateMap.checkedLayers && map) {
-      stateMap.styleLayers.forEach(l => {
-        l.id.forEach(k => {
+      stateMap.styleLayers.forEach((l) => {
+        l.id.forEach((k) => {
           map.setLayoutProperty(k, "visibility", "none");
         });
       });
@@ -113,20 +113,20 @@ export default function Map() {
       if (stateMap.checkedLayers.length > 0) {
         let layers = stateMap.checkedLayers;
 
-        layers.forEach(i => {
+        layers.forEach((i) => {
           let currentLayerArray = stateMap.styleLayers[i].id;
-          currentLayerArray.forEach(j => {
+          currentLayerArray.forEach((j) => {
             map.setLayoutProperty(j, "visibility", "visible");
           });
         });
       }
     }
   }, [map, stateMap.checkedLayers, stateMap.styleLayers]);
-  
+
   useEffect(() => {
     if (stateMap.checkedHeats && map) {
-      stateMap.heatLayers.forEach(l => {
-        l.id.forEach(k => {
+      stateMap.heatLayers.forEach((l) => {
+        l.id.forEach((k) => {
           map.setLayoutProperty(k, "visibility", "none");
         });
       });
@@ -134,9 +134,9 @@ export default function Map() {
       if (stateMap.checkedHeats.length > 0) {
         let layers = stateMap.checkedHeats;
 
-        layers.forEach(i => {
+        layers.forEach((i) => {
           let currentLayerArray = stateMap.heatLayers[i].id;
-          currentLayerArray.forEach(j => {
+          currentLayerArray.forEach((j) => {
             map.setLayoutProperty(j, "visibility", "visible");
           });
         });
@@ -146,12 +146,11 @@ export default function Map() {
 
   useEffect(() => {
     if (showExpandableCard) {
-      setTransform("transform: none")
+      setTransform("transform: none");
     } else {
-      setTransform("transform: inherit")
+      setTransform("transform: inherit");
     }
-    
-  },[showExpandableCard])
+  }, [showExpandableCard]);
 
   useEffect(() => {
     //applies filter when one of the filters change
@@ -164,34 +163,58 @@ export default function Map() {
       let geographyFilterCount = 0;
       let filterArray = [];
 
-      if (stateNav.defaultOn && !stateNav.filterWellStatus && !stateNav.filterWellType  && filterArray.length === 0) {
-        let defaultTypeName = ["GAS","OIL AND GAS" ,"OIL"];
+      if (
+        stateNav.defaultOn &&
+        !stateNav.filterWellStatus &&
+        !stateNav.filterWellType &&
+        filterArray.length === 0
+      ) {
+        let defaultTypeName = ["GAS", "OIL AND GAS", "OIL"];
         let defaultStatusName = ["ACTIVE", "PERMIT"];
-        let defaultFiltersWellStatus = ['match', ['get', 'wellStatus'] , defaultStatusName , true, false];
-        let defaultFiltersWellType =   ['match', ['get', 'wellType'],defaultTypeName  , true, false];
-        setStateNav(stateNav => ({ ...stateNav, defaultOn: false ,statusName: defaultStatusName  ,typeName: defaultTypeName  ,filterWellStatus: defaultFiltersWellStatus, filterWellType: defaultFiltersWellType }))
+        let defaultFiltersWellStatus = [
+          "match",
+          ["get", "wellStatus"],
+          defaultStatusName,
+          true,
+          false,
+        ];
+        let defaultFiltersWellType = [
+          "match",
+          ["get", "wellType"],
+          defaultTypeName,
+          true,
+          false,
+        ];
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          defaultOn: false,
+          statusName: defaultStatusName,
+          typeName: defaultTypeName,
+          filterWellStatus: defaultFiltersWellStatus,
+          filterWellType: defaultFiltersWellType,
+        }));
       }
       if (stateNav.filterWellProfile && stateNav.filterWellProfile.length > 0) {
-        let total = stateNav.filterWellProfile[2].length
+        let total = stateNav.filterWellProfile[2].length;
         filterArray.push(stateNav.filterWellProfile);
         isFilterSet = true;
 
         wellFilterCount += total;
       }
       if (stateNav.filterWellType && stateNav.filterWellType.length > 0) {
-        let total = stateNav.filterWellType[2].length
+        let total = stateNav.filterWellType[2].length;
         filterArray.push(stateNav.filterWellType);
         isFilterSet = true;
         wellFilterCount += total;
       }
       if (stateNav.filterWellStatus && stateNav.filterWellStatus.length > 0) {
-        let total = stateNav.filterWellStatus[2].length
+        let total = stateNav.filterWellStatus[2].length;
         filterArray.push(stateNav.filterWellStatus);
         isFilterSet = true;
         wellFilterCount += total;
       }
       if (stateNav.filterOperator && stateNav.filterOperator.length > 0) {
-        let total = stateNav.filterOperator[2].length
+        let total = stateNav.filterOperator[2].length;
         filterArray.push(stateNav.filterOperator);
         isFilterSet = true;
         wellFilterCount += total;
@@ -417,7 +440,7 @@ export default function Map() {
         stateNav.filterAllInterestTypes.length > 0
       ) {
         let removeAny = 1;
-        let numberFiltes = stateNav.filterAllInterestTypes.length
+        let numberFiltes = stateNav.filterAllInterestTypes.length;
         let total = numberFiltes - removeAny;
         filterArray.push(stateNav.filterAllInterestTypes);
         isFilterSet = true;
@@ -428,21 +451,21 @@ export default function Map() {
         stateNav.filterAllOwnershipTypes.length > 0
       ) {
         let removeAny = 1;
-        let numberFiltes = stateNav.filterAllOwnershipTypes.length
+        let numberFiltes = stateNav.filterAllOwnershipTypes.length;
         let total = numberFiltes - removeAny;
         filterArray.push(stateNav.filterAllOwnershipTypes);
         isFilterSet = true;
         ownershipFilterCount += total;
       }
       if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
-        let total = stateNav.filterBasin[2].length
+        let total = stateNav.filterBasin[2].length;
         filterArray.push(stateNav.filterBasin);
         isFilterSet = true;
         geographyFilterCount += total;
       }
 
       if (stateNav.filterPlay && stateNav.filterPlay.length > 0) {
-        let total = stateNav.filterPlay[2].length
+        let total = stateNav.filterPlay[2].length;
         filterArray.push(stateNav.filterPlay);
         isFilterSet = true;
         geographyFilterCount += total;
@@ -491,18 +514,18 @@ export default function Map() {
         geographyFilterCount += 1;
       }
 
-      setStateNav(state => ({ ...state, wellFilterCount: wellFilterCount }));
-      setStateNav(state => ({
+      setStateNav((state) => ({ ...state, wellFilterCount: wellFilterCount }));
+      setStateNav((state) => ({
         ...state,
-        ownershipFilterCount: ownershipFilterCount
+        ownershipFilterCount: ownershipFilterCount,
       }));
-      setStateNav(state => ({
+      setStateNav((state) => ({
         ...state,
-        productionFilterCount: productionFilterCount
+        productionFilterCount: productionFilterCount,
       }));
-      setStateNav(state => ({
+      setStateNav((state) => ({
         ...state,
-        geographyFilterCount: geographyFilterCount
+        geographyFilterCount: geographyFilterCount,
       }));
 
       if (isFilterSet) {
@@ -534,7 +557,51 @@ export default function Map() {
         map.setFilter("wellsHeatmapRecentlyCompleted", null);
       }
     }
-  }, [map, setStateNav, stateNav.defaultOn, stateNav.filterAllInterestTypes, stateNav.filterAllOwnershipTypes, stateNav.filterBasin, stateNav.filterCompletetionDateRange, stateNav.filterCumulativeGas, stateNav.filterCumulativeOil, stateNav.filterCumulativeWater, stateNav.filterFirstMonthGas, stateNav.filterFirstMonthOil, stateNav.filterFirstMonthWater, stateNav.filterFirstProdDateRange, stateNav.filterFirstSixMonthGas, stateNav.filterFirstSixMonthOil, stateNav.filterFirstSixMonthWater, stateNav.filterFirstThreeMonthGas, stateNav.filterFirstThreeMonthOil, stateNav.filterFirstThreeMonthWater, stateNav.filterFirstTwelveMonthGas, stateNav.filterFirstTwelveMonthOil, stateNav.filterFirstTwelveMonthWater, stateNav.filterGeography, stateNav.filterLastMonthGas, stateNav.filterLastMonthOil, stateNav.filterLastMonthWater, stateNav.filterLastSixMonthGas, stateNav.filterLastSixMonthOil, stateNav.filterLastSixMonthWater, stateNav.filterLastThreeMonthGas, stateNav.filterLastThreeMonthOil, stateNav.filterLastThreeMonthWater, stateNav.filterLastTwelveMonthGas, stateNav.filterLastTwelveMonthOil, stateNav.filterLastTwelveMonthWater, stateNav.filterOperator, stateNav.filterPermitDateRange, stateNav.filterPlay, stateNav.filterSpudDateRange, stateNav.filterWellProfile, stateNav.filterWellStatus, stateNav.filterWellType]);
+  }, [
+    map,
+    setStateNav,
+    stateNav.defaultOn,
+    stateNav.filterAllInterestTypes,
+    stateNav.filterAllOwnershipTypes,
+    stateNav.filterBasin,
+    stateNav.filterCompletetionDateRange,
+    stateNav.filterCumulativeGas,
+    stateNav.filterCumulativeOil,
+    stateNav.filterCumulativeWater,
+    stateNav.filterFirstMonthGas,
+    stateNav.filterFirstMonthOil,
+    stateNav.filterFirstMonthWater,
+    stateNav.filterFirstProdDateRange,
+    stateNav.filterFirstSixMonthGas,
+    stateNav.filterFirstSixMonthOil,
+    stateNav.filterFirstSixMonthWater,
+    stateNav.filterFirstThreeMonthGas,
+    stateNav.filterFirstThreeMonthOil,
+    stateNav.filterFirstThreeMonthWater,
+    stateNav.filterFirstTwelveMonthGas,
+    stateNav.filterFirstTwelveMonthOil,
+    stateNav.filterFirstTwelveMonthWater,
+    stateNav.filterGeography,
+    stateNav.filterLastMonthGas,
+    stateNav.filterLastMonthOil,
+    stateNav.filterLastMonthWater,
+    stateNav.filterLastSixMonthGas,
+    stateNav.filterLastSixMonthOil,
+    stateNav.filterLastSixMonthWater,
+    stateNav.filterLastThreeMonthGas,
+    stateNav.filterLastThreeMonthOil,
+    stateNav.filterLastThreeMonthWater,
+    stateNav.filterLastTwelveMonthGas,
+    stateNav.filterLastTwelveMonthOil,
+    stateNav.filterLastTwelveMonthWater,
+    stateNav.filterOperator,
+    stateNav.filterPermitDateRange,
+    stateNav.filterPlay,
+    stateNav.filterSpudDateRange,
+    stateNav.filterWellProfile,
+    stateNav.filterWellStatus,
+    stateNav.filterWellType,
+  ]);
 
   useEffect(() => {
     //sets style of map when changed in Map Controls
@@ -546,26 +613,27 @@ export default function Map() {
   }, [map, stateMap.selectedLayerId]);
 
   // const createPopUp = currentFeature => {
-    
+
   // };
 
-  const createPopUp = useCallback((currentFeature) => {
-    let coordinates = [currentFeature.longitude, currentFeature.latitude];
-    let popUps = document.getElementsByClassName("mapboxgl-popup");
-    if (popUps[0]) popUps[0].remove();
+  const createPopUp = useCallback(
+    (currentFeature) => {
+      let coordinates = [currentFeature.longitude, currentFeature.latitude];
+      let popUps = document.getElementsByClassName("mapboxgl-popup");
+      if (popUps[0]) popUps[0].remove();
 
-    let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
-    .setLngLat(coordinates)
-    .setHTML(`<div id="popupContainer"></div>`)
-    .addTo(map);
-    
-    // //show wellcard in popup Portal
-    setStateApp(state => ({ ...state, popupOpen: true }));
-    handleOpenExpandableCard();
-  },[map, setStateApp]) 
+      let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+        .setLngLat(coordinates)
+        .setHTML(`<div id="popupContainer"></div>`)
+        .addTo(map);
 
+      // //show wellcard in popup Portal
+      setStateApp((state) => ({ ...state, popupOpen: true }));
+      handleOpenExpandableCard();
+    },
+    [map, setStateApp]
+  );
 
-  
   useEffect(() => {
     const req = new Request(
       "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
@@ -574,8 +642,8 @@ export default function Map() {
         mode: "cors",
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       }
     );
 
@@ -583,8 +651,8 @@ export default function Map() {
     const signal = abortController.signal;
 
     fetch(req, { signal: signal })
-      .then(results => results.json())
-      .then(data => {
+      .then((results) => results.json())
+      .then((data) => {
         setMapStyles(data.slice(0, 4));
       });
 
@@ -593,11 +661,6 @@ export default function Map() {
       abortController.abort();
     };
   }, []);
-
-
-
-
-
 
   function getIndex(value, arr, prop) {
     for (var i = 0; i < arr.length; i++) {
@@ -608,8 +671,6 @@ export default function Map() {
     return -1; //to handle the case where the value doesn't exist
   }
 
-
-  
   useEffect(() => {
     if (mapStyles.length > 0) {
       const SET_INITIAL_MAP_STYLE = "Satellite";
@@ -624,11 +685,11 @@ export default function Map() {
           center: mapStyles[index].center,
           zoom: mapStyles[index].zoom,
           pitch: mapStyles[index].pitch,
-          bearing: mapStyles[index].bearing
+          bearing: mapStyles[index].bearing,
         });
-        
+
         /// optimized interactions w/ map
-        newMap.scrollZoom.enable()
+        newMap.scrollZoom.enable();
         newMap.dragPan.enable();
         newMap.dragRotate.enable();
         newMap.keyboard.enable();
@@ -637,105 +698,96 @@ export default function Map() {
         newMap.addControl(
           new mapboxgl.ScaleControl({
             maxWidth: 80,
-            unit: 'imperial'
-          }),"bottom-right");
-      
-        newMap.addControl(
-          new mapboxgl.NavigationControl()
-          , "bottom-right");
-
-        newMap.addControl(
-          new mapboxgl.FullscreenControl()
-          , "bottom-right");
-        
-      
-        newMap.addControl(
-          new mapboxgl.GeolocateControl({
-            positionOptions: {
-              enableHighAccuracy: true
-            },
-            trackUserLocation: true,
-            showAccuracyCircle: true
+            unit: "imperial",
           }),
           "bottom-right"
         );
 
+        newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
+
+        newMap.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
+
+        newMap.addControl(
+          new mapboxgl.GeolocateControl({
+            positionOptions: {
+              enableHighAccuracy: true,
+            },
+            trackUserLocation: true,
+            showAccuracyCircle: true,
+          }),
+          "bottom-right"
+        );
 
         var customData = {
-          'features': [
-          {
-          'type': 'Feature',
-          'properties': {
-          'title': 'Well: Hancock "A"7',
-          },
-          'geometry': {
-          'coordinates': [-98.453338, 33.71002],
-          'type': 'Point'
-          }
-          },
-          {
-          'type': 'Feature',
-          'properties': {
-          'title': 'M1NERAL',
-          'description': "A lakefront park on Chicago's south side"
-          },
-          'geometry': {
-          'coordinates': [-95.363557, 29.759138],
-          'type': 'Point'
-          }
-          },
-          {
-            'type': 'Feature',
-            'properties': {
-            'title': 'Jacob Avery',
-            'description':
-            "A large park in Chicago's Austin neighborhood"
+          features: [
+            {
+              type: "Feature",
+              properties: {
+                title: 'Well: Hancock "A"7',
+              },
+              geometry: {
+                coordinates: [-98.453338, 33.71002],
+                type: "Point",
+              },
             },
-            'geometry': {
-            'coordinates': [-95.096123, 29.537716],
-            'type': 'Point'
-            }
-            }
-            ],
-            'type': 'FeatureCollection'
-            };
+            {
+              type: "Feature",
+              properties: {
+                title: "M1NERAL",
+                description: "A lakefront park on Chicago's south side",
+              },
+              geometry: {
+                coordinates: [-95.363557, 29.759138],
+                type: "Point",
+              },
+            },
+            {
+              type: "Feature",
+              properties: {
+                title: "Jacob Avery",
+                description: "A large park in Chicago's Austin neighborhood",
+              },
+              geometry: {
+                coordinates: [-95.096123, 29.537716],
+                type: "Point",
+              },
+            },
+          ],
+          type: "FeatureCollection",
+        };
 
-
-        
         function forwardGeocoder(query) {
           var matchingFeatures = [];
           for (var i = 0; i < customData.features.length; i++) {
-          var feature = customData.features[i];
-          // handle queries with different capitalization than the source data by calling toLowerCase()
-          if (
-          feature.properties.title
-          .toLowerCase()
-          .search(query.toLowerCase()) !== -1
-          ) {
-          // add a tree emoji as a prefix for custom data results
-          // using carmen geojson format: https://github.com/mapbox/carmen/blob/master/carmen-geojson.md
-          feature['place_name'] = '🌲 ' + feature.properties.title;
-          feature['center'] = feature.geometry.coordinates;
-          feature['place_type'] = ['park'];
-          matchingFeatures.push(feature);
-          }
+            var feature = customData.features[i];
+            // handle queries with different capitalization than the source data by calling toLowerCase()
+            if (
+              feature.properties.title
+                .toLowerCase()
+                .search(query.toLowerCase()) !== -1
+            ) {
+              // add a tree emoji as a prefix for custom data results
+              // using carmen geojson format: https://github.com/mapbox/carmen/blob/master/carmen-geojson.md
+              feature["place_name"] = "🌲 " + feature.properties.title;
+              feature["center"] = feature.geometry.coordinates;
+              feature["place_type"] = ["park"];
+              matchingFeatures.push(feature);
+            }
           }
           return matchingFeatures;
-          }
+        }
 
-
-        newMap.addControl(
-          new MapboxGeocoder({
+        var geocoder = new MapboxGeocoder({
           accessToken: mapboxgl.accessToken,
           mapboxgl: mapboxgl,
           localGeocoder: forwardGeocoder,
           //types: 'poi',
           //placeholder: 'Enter Search'
           zoom: 18,
-        })
-          ,"top-left");
-
-
+        });
+    
+        if( document.getElementById("searchBar"))
+        {document.getElementById("searchBar").appendChild(geocoder.onAdd(map));}
 
         let Draw = new MapboxDraw({
           displayControlsDefault: false,
@@ -746,54 +798,44 @@ export default function Map() {
             drag_circle: DragCircleMode,
             direct_select: DirectMode,
             simple_select: SimpleSelectMode,
-            draw_rectangle: DrawRectangle
-          }
+            draw_rectangle: DrawRectangle,
+          },
         });
         newMap.addControl(Draw);
         setStateMap({ ...stateMap, map: newMap, draw: Draw });
 
-
-        newMap.on("load", function(e) {
+        newMap.on("load", function (e) {
           setMap(newMap);
         });
-
-
       };
 
       if (!map) {
         initializeMap({ setMap, mapEl, setStateMap });
       } else {
+        //map.setLayoutProperty('wellpoints', 'visibility', 'visible');
+        //map.setLayoutProperty('welllines', 'visibility', 'visible');
 
-
-      //map.setLayoutProperty('wellpoints', 'visibility', 'visible');
-      //map.setLayoutProperty('welllines', 'visibility', 'visible');
-
-
-      if (stateMap.toggle3d === true) {
-          map.setPitch(70)
-          map.setBearing(20)
-        }
-      else{
-          map.setPitch(0)
-          map.setBearing(0)          
+        if (stateMap.toggle3d === true) {
+          map.setPitch(70);
+          map.setBearing(20);
+        } else {
+          map.setPitch(0);
+          map.setBearing(0);
         }
 
+        // additional map interactions
+        // for some reason these do not work when initializing but do here
+        map.boxZoom.enable();
+        map.touchZoomRotate.enable();
 
-      // additional map interactions 
-      // for some reason these do not work when initializing but do here 
-      map.boxZoom.enable()
-      map.touchZoomRotate.enable();
-
-
-
-        map.on("click", "wellpoints", function(e) {
+        map.on("click", "wellpoints", function (e) {
           //console.log('click event', e)
           var bbox = [
             [e.point.x - 1, e.point.y - 10],
-            [e.point.x + 10, e.point.y + 1]
+            [e.point.x + 10, e.point.y + 1],
           ];
           let features = map.queryRenderedFeatures(bbox, {
-            layers: ["wellpoints"]
+            layers: ["wellpoints"],
           });
           let currentFeature = features[0];
           //let currentFeature.features = e.features;
@@ -805,59 +847,50 @@ export default function Map() {
           }
 
           console.log("clicked well point", currentFeature);
-          setStateApp(state => ({ ...state, popupOpen: false }));
-          setStateApp(state => ({
+          setStateApp((state) => ({ ...state, popupOpen: false }));
+          setStateApp((state) => ({
             ...state,
-            selectedWell: currentFeature.properties
+            selectedWell: currentFeature.properties,
           }));
-          setStateApp(state => ({
+          setStateApp((state) => ({
             ...state,
-            selectedWellId: currentFeature.properties.api
+            selectedWellId: currentFeature.properties.api,
           }));
 
           createPopUp(currentFeature.properties);
-          map.resize()
-
+          map.resize();
         });
 
-
-
-
-
-
-
-        map.on("mousemove", "wellpoints", e => {
+        map.on("mousemove", "wellpoints", (e) => {
           map.getCanvas().style.cursor = "pointer";
         });
 
-        map.on("mouseleave", "wellpoints", function() {
+        map.on("mouseleave", "wellpoints", function () {
           map.getCanvas().style.cursor = "";
         });
 
-        map.on("mousemove",  e => {
+        map.on("mousemove", (e) => {
           // e.lngLat is the longitude, latitude geographical position of the event
-          let coordinates =  e.lngLat.wrap()
-          setLng(coordinates.lng)
-          setLat(coordinates.lat)
+          let coordinates = e.lngLat.wrap();
+          setLng(coordinates.lng);
+          setLat(coordinates.lat);
         });
-        
-        map.on("mousemove", "welllines", e => {
+
+        map.on("mousemove", "welllines", (e) => {
           map.getCanvas().style.cursor = "pointer";
         });
-        
-        map.on("mouseleave", "welllines", function() {
+
+        map.on("mouseleave", "welllines", function () {
           map.getCanvas().style.cursor = "";
         });
 
-
-          
-        map.on("click", "welllines", function(e) {
+        map.on("click", "welllines", function (e) {
           var bbox = [
             [e.point.x - 10, e.point.y - 10],
-            [e.point.x + 10, e.point.y + 10]
+            [e.point.x + 10, e.point.y + 10],
           ];
           let features = map.queryRenderedFeatures(bbox, {
-            layers: ["welllines"]
+            layers: ["welllines"],
           });
 
           let currentFeature = features[0];
@@ -868,21 +901,21 @@ export default function Map() {
           }
 
           console.log("clicked well lines", currentFeature);
-          setStateApp(state => ({ ...state, popupOpen: false }));
+          setStateApp((state) => ({ ...state, popupOpen: false }));
 
-          setStateApp(state => ({
+          setStateApp((state) => ({
             ...state,
-            selectedWell: currentFeature.properties
+            selectedWell: currentFeature.properties,
           }));
-          setStateApp(state => ({
+          setStateApp((state) => ({
             ...state,
-            selectedWellId: currentFeature.properties.api
+            selectedWellId: currentFeature.properties.api,
           }));
           createPopUp(currentFeature.properties);
         });
       }
     }
-  }, [map, setStateMap, setStateMapControls, mapStyles,stateMap.toggle3d]);
+  }, [map, setStateMap, setStateMapControls, mapStyles, stateMap.toggle3d]);
 
   useEffect(() => {
     if (map && stateApp.flyTo) {
@@ -892,14 +925,12 @@ export default function Map() {
       map.flyTo({
         center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
         zoom: 15,
-        speed: 0.9
+        speed: 0.9,
       });
     }
   }, [createPopUp, map, stateApp.flyTo]);
 
-
-  const handleOpenExpandableCard = e => {
-
+  const handleOpenExpandableCard = (e) => {
     setAnchorElPoPOver(container.current);
     setShowExpandableCard(true);
   };
@@ -907,129 +938,124 @@ export default function Map() {
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
     setAnchorElPoPOver(null);
-    setStateApp(state => ({ ...state, expandedCard: false }));
+    setStateApp((state) => ({ ...state, expandedCard: false }));
   };
 
+  useEffect(() => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src =
+      "//api.usersnap.com/load/64ab8ea7-9417-41a0-b565-eb7ad69da871.js";
+    script.async = true;
 
+    var x = document.getElementsByTagName("script")[0];
+    x.parentNode.insertBefore(script, x);
 
+    document.body.appendChild(script);
 
-
- useEffect(() => {
-  var script = document.createElement('script');
-  script.type = "text/javascript";
-  script.src = '//api.usersnap.com/load/64ab8ea7-9417-41a0-b565-eb7ad69da871.js';
-  script.async = true;
-
-  var x = document.getElementsByTagName('script')[0];
-  x.parentNode.insertBefore(script, x);
-
-  document.body.appendChild(script);
-
-  return () => {
-    document.body.removeChild(script);
-  }
-}, []);
-
-
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   return (
     <div className={classes.mapWrapper}>
-      <div className={classes.map}  ref={mapEl} id="map">
+      <div className={classes.map} ref={mapEl} id="map">
         <div className={classes.footerLeftLogo}>
           <img src="icons/M1LogoWhiteTransparent.png" alt="logo" width="150" />
-        </div> 
+        </div>
       </div>
       <MapControlsProvider />
       <Coordinates long={lng} lat={lat} />
-      <div id="tempPopupHolder"  className={classes.portal} ref={container} />
+      <div id="tempPopupHolder" className={classes.portal} ref={container} />
       {stateMap.openTrack == true ? (
         <div className={classes.trackLists}>
           {<WellsProvider showList={true} parent="track" />}
         </div>
       ) : null}
-      <Portal   container={container.current}>
-      {stateApp.popupOpen ? (
-        <div>
-          {/* <div
+      <Portal container={container.current}>
+        {stateApp.popupOpen ? (
+          <div>
+            {/* <div
             id="tempPopupHolder"
             style={{ position: "inherit", top: 0, left: 0, right: 0 , bottom: 0, height: "100%"}}
           ></div>  */}
-          <PortalD id="popupContainer" >
-            {showExpandableCard && !stateApp.expandedCard ? (
-              <ExpandableCardProvider
-                expanded={false}
-                handleCloseExpandableCard={handleCloseExpandableCard}
-                component={<WellCardProvider></WellCardProvider>}
-                title={stateApp.selectedWell.wellName}
-                subTitle={stateApp.selectedWell.operator}
-                Api={stateApp.selectedWell.api}
-                parent="map"
-                mouseX={0}
-                mouseY={0}
-                position="relative"
-                cardLeft={20}
-                cardTop={70}
-                zIndex={99}
-                cardWidth="380px"
-                cardHeight="380px"
-                cardWidthExpanded="95vw"
-                cardHeightExpanded="90vh"
-                source={stateApp.user}
-                sourceSourceId={stateApp.user.id}
-                sourceName={stateApp.user.name}
-                sourceLabel="user"
-                target={stateApp.selectedWell}
-                targetSourceId={stateApp.selectedWell.id}
-                targetName={stateApp.selectedWell.wellName}
-                targetLabel="well"
-              ></ExpandableCardProvider>
-            ) : 
-            <Popover
-              open={stateApp.expandedCard}
-              anchorEl={anchorElPoPOver}
-              BackdropProps={{invisible: false }}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
-            >
-            <ExpandableCardProvider
-              expanded={true}
-              handleCloseExpandableCard={handleCloseExpandableCard}
-              component={<WellCardProvider></WellCardProvider>}
-              title={stateApp.selectedWell.wellName}
-              subTitle={stateApp.selectedWell.operator}
-              Api={stateApp.selectedWell.api}
-              parent="map"
-              mouseX={0}
-              mouseY={0}
-              position="relative"
-              cardLeft={"0px"}
-              cardTop={"0px"}
-              zIndex={99}
-              cardWidth="380px"
-              cardHeight="380px"
-              cardWidthExpanded="inherit"
-              cardHeightExpanded="inherit"
-              source={stateApp.user}
-              sourceSourceId={stateApp.user.id}
-              sourceName={stateApp.user.name}
-              sourceLabel="user"
-              target={stateApp.selectedWell}
-              targetSourceId={stateApp.selectedWell.id}
-              targetName={stateApp.selectedWell.wellName}
-              targetLabel="well"
-            ></ExpandableCardProvider>
-            </Popover>
-            }
-            {/* {stateApp.selectedWell ? <WellCardProvider /> : null} */}
-          </PortalD>
-        </div>
-      ) : null}
+            <PortalD id="popupContainer">
+              {showExpandableCard && !stateApp.expandedCard ? (
+                <ExpandableCardProvider
+                  expanded={false}
+                  handleCloseExpandableCard={handleCloseExpandableCard}
+                  component={<WellCardProvider></WellCardProvider>}
+                  title={stateApp.selectedWell.wellName}
+                  subTitle={stateApp.selectedWell.operator}
+                  Api={stateApp.selectedWell.api}
+                  parent="map"
+                  mouseX={0}
+                  mouseY={0}
+                  position="relative"
+                  cardLeft={20}
+                  cardTop={70}
+                  zIndex={99}
+                  cardWidth="380px"
+                  cardHeight="380px"
+                  cardWidthExpanded="95vw"
+                  cardHeightExpanded="90vh"
+                  source={stateApp.user}
+                  sourceSourceId={stateApp.user.id}
+                  sourceName={stateApp.user.name}
+                  sourceLabel="user"
+                  target={stateApp.selectedWell}
+                  targetSourceId={stateApp.selectedWell.id}
+                  targetName={stateApp.selectedWell.wellName}
+                  targetLabel="well"
+                ></ExpandableCardProvider>
+              ) : (
+                <Popover
+                  open={stateApp.expandedCard}
+                  anchorEl={anchorElPoPOver}
+                  BackdropProps={{ invisible: false }}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "center",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                >
+                  <ExpandableCardProvider
+                    expanded={true}
+                    handleCloseExpandableCard={handleCloseExpandableCard}
+                    component={<WellCardProvider></WellCardProvider>}
+                    title={stateApp.selectedWell.wellName}
+                    subTitle={stateApp.selectedWell.operator}
+                    Api={stateApp.selectedWell.api}
+                    parent="map"
+                    mouseX={0}
+                    mouseY={0}
+                    position="relative"
+                    cardLeft={"0px"}
+                    cardTop={"0px"}
+                    zIndex={99}
+                    cardWidth="380px"
+                    cardHeight="380px"
+                    cardWidthExpanded="inherit"
+                    cardHeightExpanded="inherit"
+                    source={stateApp.user}
+                    sourceSourceId={stateApp.user.id}
+                    sourceName={stateApp.user.name}
+                    sourceLabel="user"
+                    target={stateApp.selectedWell}
+                    targetSourceId={stateApp.selectedWell.id}
+                    targetName={stateApp.selectedWell.wellName}
+                    targetLabel="well"
+                  ></ExpandableCardProvider>
+                </Popover>
+              )}
+              {/* {stateApp.selectedWell ? <WellCardProvider /> : null} */}
+            </PortalD>
+          </div>
+        ) : null}
       </Portal>
     </div>
   );
