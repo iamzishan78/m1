@@ -709,20 +709,29 @@ export default function Map() {
 
         newMap.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
 
-        // newMap.addControl(
-        //   new mapboxgl.GeolocateControl({
-        //     positionOptions: {
-        //       enableHighAccuracy: true,
-        //     },
-        //     fitBoundsOptions: {
-        //       maxZoom: 24,
-        //     },
-        //     trackUserLocation: false,
-        //     showAccuracyCircle: true,
-        //     showUserLocation: true,
-        //   }),
-        //   "bottom-right"
-        // );
+        var geoLocate = new mapboxgl.GeolocateControl({
+          positionOptions: {
+            enableHighAccuracy: true,
+          },
+          fitBoundsOptions: {
+            maxZoom: 24,
+          },
+          trackUserLocation: false,
+          showAccuracyCircle: true,
+          showUserLocation: true,
+        });
+        newMap.addControl(geoLocate,'bottom-right');
+        geoLocate.on('geolocate', function(e) {
+          newMap.flyTo({
+           center:[e.coords.longitude, e.coords.latitude], 
+           zoom: 14, 
+           pitch: 80,
+           bearing: 20,
+           speed: 0.4,
+         });
+      });
+
+
 
         var customData = {
           features: [
@@ -851,6 +860,13 @@ export default function Map() {
         // for some reason these do not work when initializing but do here
         map.boxZoom.enable();
         map.touchZoomRotate.enable();
+
+
+
+
+
+
+
 
         map.on("click", "wellpoints", function (e) {
           //console.log('click event', e)
