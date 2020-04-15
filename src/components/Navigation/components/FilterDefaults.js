@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
     padding: '2px 6px',
     display: 'flex',
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 18,
   },
   paparMain: {
     boxShadow: "none",
