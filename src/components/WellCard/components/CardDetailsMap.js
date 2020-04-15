@@ -114,24 +114,24 @@ export default function CardDetailsMap() {
         const newMap = new mapboxgl.Map({
           container: `${id}`,
           style: "mapbox://styles/m1neral/" + mapStyles[index].id,
-          center: mapStyles[index].center,
-          zoom: mapStyles[index].zoom,
-          pitch: mapStyles[index].pitch,
-          bearing: mapStyles[index].bearing
+          //center: mapStyles[index].center,
+          //zoom: mapStyles[index].zoom,
+          pitch: 70,
+          bearing: 20,
         });
         
         /// optimized interactions w/ map
-        newMap.scrollZoom.enable()
-        newMap.dragPan.enable();
-        newMap.dragRotate.enable();
-        newMap.keyboard.enable();
-        newMap.doubleClickZoom.disable();
+        // newMap.scrollZoom.enable()
+        // newMap.dragPan.enable();
+        // newMap.dragRotate.enable();
+        // newMap.keyboard.enable();
+        // newMap.doubleClickZoom.disable();
 
-        newMap.addControl(
-          new mapboxgl.ScaleControl({
-            maxWidth: 80,
-            unit: 'imperial'
-          }),"bottom-right");
+        // newMap.addControl(
+        //   new mapboxgl.ScaleControl({
+        //     maxWidth: 80,
+        //     unit: 'imperial'
+        //   }),"bottom-right");
       
       
 
@@ -161,9 +161,9 @@ export default function CardDetailsMap() {
 
 
 
-        newMap.on("load", function(e) {
-          setMap(newMap);
-        });
+        // newMap.on("load", function(e) {
+        //   setMap(newMap);
+        // });
 
 
 
@@ -182,8 +182,8 @@ export default function CardDetailsMap() {
 
       // additional map interactions 
       // for some reason these do not work when initializing but do here 
-      map.boxZoom.enable()
-      map.touchZoomRotate.enable();
+      // map.boxZoom.enable()
+      // map.touchZoomRotate.enable();
 
 
 
