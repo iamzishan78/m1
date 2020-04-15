@@ -978,6 +978,8 @@ export default function Map() {
         center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
         zoom: 15,
         speed: 0.9,
+        pitch: 70,
+        bearing: 20,
       });
     }
   }, [createPopUp, map, stateApp.flyTo]);

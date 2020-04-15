@@ -40,8 +40,6 @@ import WellCardProvider from '../WellCard/WellCardProvider';
 import ChatIcon from '@material-ui/icons/Chat';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
-import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAndObjectType";
-
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -275,8 +273,8 @@ export default function WellTable(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [source,setSource] = useState(null)
   const [rows, setRows] = React.useState([]);
-  //const [getVertexEdges, { loading:loadingGraph, data:dataGraph }] = useLazyQuery(VERTEXEDGESQUERY);
-  //const [getWells, { loading, data:dataWells }] = useLazyQuery(WELLSQUERY);
+  const [getVertexEdges, { loading:loadingGraph, data:dataGraph }] = useLazyQuery(VERTEXEDGESQUERY);
+  const [getWells, { loading, data:dataWells }] = useLazyQuery(WELLSQUERY);
   const [collapsedRow,setCollapsedRow] = useState(null)
   const [collapseComponent,setCollapseComponent] = useState('owner');
   const [expanded, setExpanded] = useState(false);
@@ -287,182 +285,78 @@ export default function WellTable(props) {
   const [mouseY, setMouseY] = useState(null);
   const [selectedRow, setSelectedRow] = React.useState();
   const [showExpandableCard, setShowExpandableCard] = useState(false);
-  const [targetLabel, setTargetLabel] = useState(null);
-  const [tracksByUserAndObjectType, { data: dataTracks }] = useLazyQuery(
-    TRACKSBYUSERANDOBJECTTYPE
-  );
-  const [user, setUser] = useState({ _id: "" });
-  const [loading, setLoading] = useState(true);
-  const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
-
 
   useEffect( () => {
     setShowList(props.showList)
   },[props.showList,setShowList])
 
-  // useEffect( () => {
-  //   if(!source){
-  //     setSource({
-  //       sourceId: stateApp.user.id,
-  //       label: 'user',
-  //       name: stateApp.user.name,
-  //       type:'vertex',
-  //       properties:[]
-  //     })
-  //   }
-  //   getVertexEdges({variables: {'source':source,'edgeLabel':"tracks",'targetLabel':"well"}})
-  // },[stateApp.user,source])
-
-
-
-  // //////////////
-  // useEffect( () => {
-  //   if(props.parent){
-  //   if(props.parent === 'track'){
-      
-  //     if(dataGraph) {
-  //       if(dataGraph.vertexEdges.sourceIds){
-  //         if(dataGraph.vertexEdges.sourceIds.length > 0){
-  //             getWells({variables: {'wellIdArray':dataGraph.vertexEdges.sourceIds,'authToken':stateApp.user.authToken}})
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-  // },[stateApp.user,dataGraph,props.parent])
-
-  //  useEffect( () => {
-   
-  //   if(props.parent){
-  //   if(props.parent === 'track'){
-     
-  //       if(dataWells && dataGraph) {
-           
-  //           if(dataWells.wells) {
-              
-  //               dataWells.wells.results.forEach( (well) => {
-                
-  //                   if(dataGraph.vertexEdges.sourceIds){
-  //                     if(dataGraph.vertexEdges.sourceIds.length > 0){
-  //                       dataGraph.vertexEdges.sourceIds.forEach( (sourceId) => {
-  //                         if(well.id === sourceId) {
-  //                           well.isTracked = true
-  //                         }})
-  //                     }
-  //                   }
-  //             })
-              
-  //             setRows(dataWells.wells.results)
-  //             setStateApp(state => ({...state,wells:dataWells.wells.results}))
-  //         }
-  //         else {
-  //           setRows([])
-  //         }
-            
-  //       }
-  //       else {
-          
-  //           setRows([])
-  //       }
-     
-
-  //   }
-    
-  // }
-  // },[dataWells,dataGraph,props.parent]) 
-
-
-  useEffect(() => {
-    if (props.parent && props.parent === "trackWells") {
-      setTargetLabel("well");
+  useEffect( () => {
+    if(!source){
+      setSource({
+        sourceId: stateApp.user.id,
+        label: 'user',
+        name: stateApp.user.name,
+        type:'vertex',
+        properties:[]
+      })
     }
-  }, []);
+    getVertexEdges({variables: {'source':source,'edgeLabel':"tracks",'targetLabel':"well"}})
+  },[stateApp.user,source])
 
-  useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "trackWells" &&
-      dataTracks &&
-      dataTracks.tracksByUserAndObjectType
-    ) {
-      if (dataTracks.tracksByUserAndObjectType.length !== 0) {
-        const tracksIdArray = dataTracks.tracksByUserAndObjectType.map(
-          (track) => track.trackOn
-        );
-
-        getWells({
-          variables: {
-            wellIdArray: tracksIdArray,
-            authToken: stateApp.user.authToken,
-          },
-        });
-        // getCommentsCounter({
-        //   variables: { objectsIdsArray: tracksIdArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
-        // });
-        // getTagSamples({
-        //   variables: { objectsIdsArray: tracksIdArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
-        // });
-      } else {
-        setRows([]);
-        setLoading(false);
+  useEffect( () => {
+    if(props.parent){
+    if(props.parent === 'track'){
+      
+      if(dataGraph) {
+        if(dataGraph.vertexEdges.sourceIds){
+          if(dataGraph.vertexEdges.sourceIds.length > 0){
+              getWells({variables: {'wellIdArray':dataGraph.vertexEdges.sourceIds,'authToken':stateApp.user.authToken}})
+          }
+        }
       }
     }
-    console.log('tracks', dataTracks)
-    console.log('wells', dataWells)
+  }
+  },[stateApp.user,dataGraph,props.parent])
 
-  }, [dataTracks]);
+   useEffect( () => {
+   
+    if(props.parent){
+    if(props.parent === 'track'){
+     
+        if(dataWells && dataGraph) {
+           
+            if(dataWells.wells) {
+              
+                dataWells.wells.results.forEach( (well) => {
+                
+                    if(dataGraph.vertexEdges.sourceIds){
+                      if(dataGraph.vertexEdges.sourceIds.length > 0){
+                        dataGraph.vertexEdges.sourceIds.forEach( (sourceId) => {
+                          if(well.id === sourceId) {
+                            well.isTracked = true
+                          }})
+                      }
+                    }
+              })
+              
+              setRows(dataWells.wells.results)
+              setStateApp(state => ({...state,wells:dataWells.wells.results}))
+          }
+          else {
+            setRows([])
+          }
+            
+        }
+        else {
+          
+            setRows([])
+        }
+     
 
-  // useEffect(() => {
-  //   if (props.parent && props.parent === "trackWells" && dataWells) {
-  //     if (
-  //       dataWells.wells &&
-  //       dataWells.wells.results &&
-  //       dataWells.wells.results.length > 0 &&
-  //       dataCommentsCounter &&
-  //       dataCommentsCounter.commentsCounter &&
-  //       dataTagSamples &&
-  //       dataTagSamples.tagSamples
-  //     ) {
-  //       dataWells.wells.results.forEach((well) => {
-  //         well.isTracked = true;
-  //         well.commentsCounter = "";
-  //         well.tagSample = [];
-  //         well.tagsCounter = "";
-
-  //         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-  //           if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
-  //             well.commentsCounter =
-  //               dataCommentsCounter.commentsCounter[i].total;
-  //             break;
-  //           }
-  //         }
-  //         for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-  //           if (well.id === dataTagSamples.tagSamples[i]._id) {
-  //             well.tagSample = dataTagSamples.tagSamples[i].tags;
-  //             well.tagsCounter = dataTagSamples.tagSamples[i].total;
-  //             break;
-  //           }
-  //         }
-  //       });
-
-  //       setRows(dataWells.wells.results);
-  //       setHeader("Wells");
-  //       setColumns(WellsHeadCells);
-  //       setAddAble(false);
-  //       setStateApp((state) => ({
-  //         ...state,
-  //         wells: dataWells.wells.results,
-  //       }));
-  //     } else {
-  //       setRows([]);
-  //     }
-  //     setLoading(false);
-  //   }
-  // }, [dataWells, dataTagSamples, dataCommentsCounter]);
-
-
-//////
-
+    }
+    
+  }
+  },[dataWells,dataGraph,props.parent]) 
 
 
   const handleListClick = (well) => {
@@ -495,7 +389,27 @@ const handleCloseExpandableCard = () => {
    
 }
 
-
+ /*  useEffect( () => {
+   
+    if(props.parent){
+      if(props.parent === 'track'){
+     
+        if(dataWells) {
+             
+            setStateApp(state => ({...state,wells:dataWells.wells.results}))
+            setRows(dataWells.wells.results)
+          }
+          else {
+            setRows([])
+          }
+            
+      }
+      else {
+          
+            setRows([])
+      }
+    }
+  },[dataWells,props.parent]) */
 
 
   const handleRequestSort = (event, property) => {
@@ -513,6 +427,29 @@ const handleCloseExpandableCard = () => {
     setSelected([]);
   };
 
+  /* const handleClick = (event,row) => {
+    setStateApp(state => ({...state,selectedWell:row}))
+    
+    const selectedIndex = selected.indexOf(row.id);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, row.id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1),
+      );
+    }
+
+    setSelected(newSelected);
+    
+    
+  }; */
 
   const handleExpandClick = async (index,component) => {
     setCollapseComponent(component)
@@ -542,12 +479,17 @@ const handleCloseExpandableCard = () => {
   
   const isSelected = Id => selected.indexOf(Id) !== -1;
   
+  /* let rowsLen = 0;
+  if(rows && rows.length > 0) {
+    rowsLen = rows.length
+  }
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rowsLen - page * rowsPerPage); */
+  
 
   return (
-    //rows && rows.length > 0 ?  
-    //showList ? 
-    (
+    rows && rows.length > 0 ?  showList ? (
       <div className={classes.rootList}>
+
       <List dense className={classes.wellList}  aria-label="secondary wells">
         <ListItem className={classes.subHeader} 
               key="subheader" 
@@ -569,191 +511,190 @@ const handleCloseExpandableCard = () => {
         
       </List>
       </div>
-      )
-      //:([])
+    ):(
       
-    // <div className={classes.rootTable}>
-    //   {showExpandableCard ? (
-    //     <ExpandableCardProvider 
-    //     expanded={false}
-    //     handleCloseExpandableCard={handleCloseExpandableCard}
-    //     component={<WellCardProvider></WellCardProvider>}
-    //     title={selectedRow.wellName} 
-    //     subTitle={selectedRow.operator} 
-    //     parent="well"
-    //     mouseX={mouseX}
-    //     mouseY={mouseY}
-    //     position="absolute"
-    //     cardLeft={mouseX}
-    //     cardTop={mouseY}
-    //     zIndex={99}
-    //     cardWidth="380px" 
-    //     cardHeight="380px" 
-    //     cardWidthExpanded="95vw" 
-    //     cardHeightExpanded="90vh" 
-    //     source={stateApp.user}
-    //     sourceSourceId={stateApp.user.id}
-    //     sourceName={stateApp.user.name}
-    //     sourceLabel='user'
-    //     target={selectedRow}
-    //     targetSourceId={selectedRow.id}
-    //     targetName={selectedRow.wellName}
-    //     targetLabel='well'></ExpandableCardProvider>):null}
-    //   <Paper className={classes.paper}>
+    <div className={classes.rootTable}>
+      {showExpandableCard ? (
+        <ExpandableCardProvider 
+        expanded={false}
+        handleCloseExpandableCard={handleCloseExpandableCard}
+        component={<WellCardProvider></WellCardProvider>}
+        title={selectedRow.wellName} 
+        subTitle={selectedRow.operator} 
+        parent="well"
+        mouseX={mouseX}
+        mouseY={mouseY}
+        position="absolute"
+        cardLeft={mouseX}
+        cardTop={mouseY}
+        zIndex={99}
+        cardWidth="380px" 
+        cardHeight="380px" 
+        cardWidthExpanded="95vw" 
+        cardHeightExpanded="90vh" 
+        source={stateApp.user}
+        sourceSourceId={stateApp.user.id}
+        sourceName={stateApp.user.name}
+        sourceLabel='user'
+        target={selectedRow}
+        targetSourceId={selectedRow.id}
+        targetName={selectedRow.wellName}
+        targetLabel='well'></ExpandableCardProvider>):null}
+      <Paper className={classes.paper}>
        
-    //    {/*  <EnhancedTableToolbar numSelected={selected.length} /> */}
+       {/*  <EnhancedTableToolbar numSelected={selected.length} /> */}
         
-    //     <TableContainer>
-    //       <Table
-    //         className={classes.table}
-    //         aria-labelledby="tableTitle"
-    //         size={dense ? 'small' : 'medium'}
-    //         aria-label="enhanced table"
-    //       >
-    //         <EnhancedTableHead
-    //           classes={classes}
-    //           numSelected={selected.length}
-    //           order={order}
-    //           orderBy={orderBy}
-    //           onSelectAllClick={handleSelectAllClick}
-    //           onRequestSort={handleRequestSort}
-    //           rowCount={rows.length}
-    //         />
-    //         <TableBody>
-    //           {stableSort(rows, getSorting(order, orderBy))
-    //             .map((row, index) => {
-    //               const isItemSelected = isSelected(row.id);
-    //               const labelId = `enhanced-table-checkbox-${index}`;
+        <TableContainer>
+          <Table
+            className={classes.table}
+            aria-labelledby="tableTitle"
+            size={dense ? 'small' : 'medium'}
+            aria-label="enhanced table"
+          >
+            <EnhancedTableHead
+              classes={classes}
+              numSelected={selected.length}
+              order={order}
+              orderBy={orderBy}
+              onSelectAllClick={handleSelectAllClick}
+              onRequestSort={handleRequestSort}
+              rowCount={rows.length}
+            />
+            <TableBody>
+              {stableSort(rows, getSorting(order, orderBy))
+                .map((row, index) => {
+                  const isItemSelected = isSelected(row.id);
+                  const labelId = `enhanced-table-checkbox-${index}`;
 
-    //               return ([
-    //                 <TableRow
-    //                   hover
-    //                  // onClick={event => handleClick(event, row,index)}
-    //                  // role="checkbox"
-    //                   aria-checked={isItemSelected}
-    //                   tabIndex={-1}
-    //                   key={row.id}
-    //                   selected={isItemSelected}
-    //                 >
-    //                    <TableCell padding="checkbox">
-    //                    <IconButton size="medium" color="primary"
-    //                     onClick={ (event) => handleRowClick(event,row)}
-    //                     aria-label="view more">
-    //                     <VisibilityIcon color="secondary" />
-    //                   </IconButton>
-    //                   </TableCell>
+                  return ([
+                    <TableRow
+                      hover
+                     // onClick={event => handleClick(event, row,index)}
+                     // role="checkbox"
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={row.id}
+                      selected={isItemSelected}
+                    >
+                       <TableCell padding="checkbox">
+                       <IconButton size="medium" color="primary"
+                        onClick={ (event) => handleRowClick(event,row)}
+                        aria-label="view more">
+                        <VisibilityIcon color="secondary" />
+                      </IconButton>
+                      </TableCell>
 
-    //                   <TableCell component="th" id={labelId} scope="row" padding="none">
-    //                     {row.api}
-    //                   </TableCell>
+                      <TableCell component="th" id={labelId} scope="row" padding="none">
+                        {row.api}
+                      </TableCell>
 
-    //                   <TableCell align="left">{row.wellName}</TableCell>
+                      <TableCell align="left">{row.wellName}</TableCell>
 
-    //                   <TableCell align="left">{row.operator}</TableCell>
-    //                   <TableCell align="left">{row.wellType}</TableCell>
-    //                   <TableCell align="left">{row.wellBoreProfile}</TableCell>
+                      <TableCell align="left">{row.operator}</TableCell>
+                      <TableCell align="left">{row.wellType}</TableCell>
+                      <TableCell align="left">{row.wellBoreProfile}</TableCell>
                       
                       
-    //                   <TableCell align="right">
-    //                   <Badge badgeContent={row.ownerCount} color="secondary">
-    //                   <IconButton size="medium" color="primary"
-    //                     className={clsx(classes.expand, {
-    //                       [classes.expandOpenOwner]:expanded &&  collapsedRow === index,
-    //                     })}
-    //                     onClick={ () => handleExpandClick(index,'owners')}
-    //                     aria-expanded={expanded && collapsedRow === index}
-    //                     aria-label="show owners"
-    //                   >
-    //                     <PeopleAltIcon />
-    //                   </IconButton>
-    //                   </Badge>
-    //                   </TableCell>
+                      <TableCell align="right">
+                      <Badge badgeContent={row.ownerCount} color="secondary">
+                      <IconButton size="medium" color="primary"
+                        className={clsx(classes.expand, {
+                          [classes.expandOpenOwner]:expanded &&  collapsedRow === index,
+                        })}
+                        onClick={ () => handleExpandClick(index,'owners')}
+                        aria-expanded={expanded && collapsedRow === index}
+                        aria-label="show owners"
+                      >
+                        <PeopleAltIcon />
+                      </IconButton>
+                      </Badge>
+                      </TableCell>
 
 
-    //                   <TableCell align="right">
-    //                   <Badge badgeContent={0} color="secondary">
-    //                   <IconButton size="medium" color="primary"
-    //                     className={clsx(classes.expand, {
-    //                       [classes.expandOpenComment]: expandedComment &&  collapsedRow === index,
-    //                     })}
-    //                     onClick={ () => handleExpandClickComment(index,'comments')}
-    //                     aria-expanded={expandedComment && collapsedRow === index}
-    //                     aria-label="show comments"
-    //                   >
-    //                     <ChatIcon />
-    //                   </IconButton>
-    //                   </Badge>
-    //                   </TableCell>
+                      <TableCell align="right">
+                      <Badge badgeContent={0} color="secondary">
+                      <IconButton size="medium" color="primary"
+                        className={clsx(classes.expand, {
+                          [classes.expandOpenComment]: expandedComment &&  collapsedRow === index,
+                        })}
+                        onClick={ () => handleExpandClickComment(index,'comments')}
+                        aria-expanded={expandedComment && collapsedRow === index}
+                        aria-label="show comments"
+                      >
+                        <ChatIcon />
+                      </IconButton>
+                      </Badge>
+                      </TableCell>
 
 
-    //                   <TableCell align="right">
-    //                   <Badge badgeContent={0} color="secondary">
-    //                   <IconButton size="medium" color="primary"
-    //                     className={clsx(classes.expand, {
-    //                       [classes.expandOpenTag]: expandedTag &&  collapsedRow === index,
-    //                     })}
-    //                     onClick={ () => handleExpandClickTag(index,'tags')}
-    //                     aria-expanded={expandedTag && collapsedRow === index}
-    //                     aria-label="show tags"
-    //                   >
-    //                     <LocalOfferIcon />
-    //                   </IconButton>
-    //                   </Badge>
-    //                   </TableCell>
+                      <TableCell align="right">
+                      <Badge badgeContent={0} color="secondary">
+                      <IconButton size="medium" color="primary"
+                        className={clsx(classes.expand, {
+                          [classes.expandOpenTag]: expandedTag &&  collapsedRow === index,
+                        })}
+                        onClick={ () => handleExpandClickTag(index,'tags')}
+                        aria-expanded={expandedTag && collapsedRow === index}
+                        aria-label="show tags"
+                      >
+                        <LocalOfferIcon />
+                      </IconButton>
+                      </Badge>
+                      </TableCell>
 
 
-    //                   <TableCell align="right">
-    //                     <TrackToggleButton 
-    //                       source={stateApp.user} 
-    //                       sourceLabel="user" 
-    //                       sourceSourceId={stateApp.user.id} 
-    //                       sourceName={stateApp.user.name} 
-    //                       target= {row} 
-    //                       targetLabel="well" 
-    //                       targetSourceId={row.id}
-    //                       targetName={row.wellName}  />
-    //                   </TableCell>
+                      <TableCell align="right">
+                        <TrackToggleButton 
+                          source={stateApp.user} 
+                          sourceLabel="user" 
+                          sourceSourceId={stateApp.user.id} 
+                          sourceName={stateApp.user.name} 
+                          target= {row} 
+                          targetLabel="well" 
+                          targetSourceId={row.id}
+                          targetName={row.wellName}  />
+                      </TableCell>
 
-    //                 </TableRow>,
-    //                 <TableRow key={index}>
-    //                 <TableCell className={classes.expandedRow} colSpan={9}>
-    //                   <Collapse  className={classes.collapseInsideRow}
-    //                     in={(expanded || expandedTag || expandedComment) && collapsedRow === index}
-    //                     timeout="auto"
-    //                     unmountOnExit
-    //                   >
-    //                    {collapseComponent === 'tags' ? (
-    //                    <div className={classes.tagWrapper}>
-    //                   {/*  <Tags public={true}/> */}
-    //                    <Tags public={false}
-    //                    source={stateApp.user} 
-    //                    sourceLabel="user" 
-    //                    sourceSourceId={stateApp.user.id} 
-    //                    sourceName={stateApp.user.name} 
-    //                    target= {row} 
-    //                    targetLabel="well" 
-    //                    targetSourceId={row.id}
-    //                    targetName={row.wellName}
-    //                    />
-    //                    </div>
-    //                    )
-    //                    : collapseComponent === 'comments' ? (
-    //                     <Comments></Comments>
-    //                    ):(<OwnersProvider selectedWell={row} parent="well"/>)}
-    //                   </Collapse>
-    //                 </TableCell>
-    //               </TableRow>
-    //               ]);
-    //             })}
+                    </TableRow>,
+                    <TableRow key={index}>
+                    <TableCell className={classes.expandedRow} colSpan={9}>
+                      <Collapse  className={classes.collapseInsideRow}
+                        in={(expanded || expandedTag || expandedComment) && collapsedRow === index}
+                        timeout="auto"
+                        unmountOnExit
+                      >
+                       {collapseComponent === 'tags' ? (
+                       <div className={classes.tagWrapper}>
+                      {/*  <Tags public={true}/> */}
+                       <Tags public={false}
+                       source={stateApp.user} 
+                       sourceLabel="user" 
+                       sourceSourceId={stateApp.user.id} 
+                       sourceName={stateApp.user.name} 
+                       target= {row} 
+                       targetLabel="well" 
+                       targetSourceId={row.id}
+                       targetName={row.wellName}
+                       />
+                       </div>
+                       )
+                       : collapseComponent === 'comments' ? (
+                        <Comments></Comments>
+                       ):(<OwnersProvider selectedWell={row} parent="well"/>)}
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                  ]);
+                })}
               
-    //         </TableBody>
-    //       </Table>
-    //     </TableContainer>
+            </TableBody>
+          </Table>
+        </TableContainer>
        
-    //   </Paper>
+      </Paper>
      
-    // // </div>) 
-    // : loading ? (<CircularProgress size={80} disableShrink color="secondary" />)
-    // :(<Skeleton variant="rect" height={300}><Typography variant="button">Not Available</Typography></Skeleton>)
+    </div>) 
+    : loading || loadingGraph ? (<CircularProgress size={80} disableShrink color="secondary" />)
+    :(<Skeleton variant="rect" height={300}><Typography variant="button">Not Available</Typography></Skeleton>)
   );
 }

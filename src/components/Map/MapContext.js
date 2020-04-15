@@ -136,7 +136,7 @@ const MapContextProvider = props => {
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,
-    openTrack: false,
+    openTrack: true,
     toggle3d: false,
     map: null,
     draw: null,
