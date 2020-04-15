@@ -977,9 +977,8 @@ export default function Map() {
       map.flyTo({
         center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
         zoom: 15,
-        speed: 0.9,
+        speed: 0.5,
         pitch: 70,
-        bearing: 20,
       });
     }
   }, [createPopUp, map, stateApp.flyTo]);
