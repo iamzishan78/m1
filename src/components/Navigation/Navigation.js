@@ -50,7 +50,8 @@ import { green } from "@material-ui/core/colors";
 import CloseIcon from "@material-ui/icons/Close";
 import SearchIcon from "@material-ui/icons/Search";
 import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
-import SettingsIcon from '@material-ui/icons/Settings';
+// import SettingsIcon from '@material-ui/icons/Settings';
+import SettingsIcon from "./components/Utils/SettingsIcon";
 import MyLocationIcon from "@material-ui/icons/MyLocation";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import GeographicIcon from "../Shared/svgIcons/geographic";
@@ -908,10 +909,11 @@ export default function Navigation(props) {
                         badgeContent={stateNav.defaultFiltersUserFiltersCount}
                         color="secondary"
                       >
-                        <SettingsIcon
+                        {/* <SettingsIcon
                           style={{ height: 32, width: 32 }}
                           opacity="1.0"
-                        />
+                        /> */}
+                        <SettingsIcon />
                       </Badge>
                     }
                     aria-label="filter settings"

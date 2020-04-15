@@ -65,7 +65,8 @@ const NavigationContextProvider = props => {
     profileName:[],
 
     interestName:[],
-
+    defaultOn: null,
+    m1neralDefaultFilters: null,
     basinName:[],
     playName: [],
     prodOptions: [],

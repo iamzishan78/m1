@@ -186,11 +186,16 @@ export default function Map() {
           true,
           false,
         ];
+        const m1neralDefaults = [
+          defaultFiltersWellStatus,
+          defaultFiltersWellType
+        ]
         setStateNav((stateNav) => ({
           ...stateNav,
           defaultOn: false,
           statusName: defaultStatusName,
           typeName: defaultTypeName,
+          m1neralDefaultFilters: m1neralDefaults,
           filterWellStatus: defaultFiltersWellStatus,
           filterWellType: defaultFiltersWellType,
         }));
