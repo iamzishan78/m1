@@ -709,16 +709,20 @@ export default function Map() {
 
         newMap.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
 
-        newMap.addControl(
-          new mapboxgl.GeolocateControl({
-            positionOptions: {
-              enableHighAccuracy: true,
-            },
-            trackUserLocation: true,
-            showAccuracyCircle: true,
-          }),
-          "bottom-right"
-        );
+        // newMap.addControl(
+        //   new mapboxgl.GeolocateControl({
+        //     positionOptions: {
+        //       enableHighAccuracy: true,
+        //     },
+        //     fitBoundsOptions: {
+        //       maxZoom: 24,
+        //     },
+        //     trackUserLocation: false,
+        //     showAccuracyCircle: true,
+        //     showUserLocation: true,
+        //   }),
+        //   "bottom-right"
+        // );
 
         var customData = {
           features: [
