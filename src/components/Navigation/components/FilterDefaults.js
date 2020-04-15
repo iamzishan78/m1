@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     maxWidth: "160px",
     padding: "6px 12px",
-    marginLeft:" 22vw",
+    marginLeft:"18vw",
     color: "rgba(0, 0, 0, 0.54)",
     boxShadow: "none",
     backgroundColor: "inherit",
@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
     padding: '2px 6px',
     display: 'flex',
     alignItems: 'center',
-    marginTop: 18,
+    marginTop: 20,
   },
   paparMain: {
     boxShadow: "none",
