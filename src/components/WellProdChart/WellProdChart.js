@@ -11,7 +11,8 @@ import Skeleton from '@material-ui/lab/Skeleton'
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-import am4themes_dark from "@amcharts/amcharts4/themes/dark";
+import am4themes_dark from "@amcharts/amcharts4/themes/dark";import * as am4plugins_annotation from "@amcharts/amcharts4/plugins/annotation"; 
+
 import { Typography } from '@material-ui/core';
 
 am4core.useTheme(am4themes_animated);
@@ -233,6 +234,8 @@ chart.cursor = new am4charts.XYCursor();
 
     // Enable export
     chart.exporting.menu = new am4core.ExportMenu();
+    var annotation = chart.plugins.push(new am4plugins_annotation.Annotation());
+
 
     setChart(chart);
   }
