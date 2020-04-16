@@ -185,6 +185,7 @@ export default function Map() {
       let ownershipFilterCount = 0;
       let productionFilterCount = 0;
       let geographyFilterCount = 0;
+      let totalCount = 0;
       let filterArray = [];
 
       if (
@@ -239,6 +240,11 @@ export default function Map() {
         filterArray.push(stateNav.filterWellType);
         isFilterSet = true;
         wellFilterCount += total;
+      }
+      if (stateNav.filterOwnerCount && stateNav.filterOwnerCount.length > 0) {
+        filterArray.push(stateNav.filterOwnerCount);
+        isFilterSet = true;
+        ownershipFilterCount += 1;
       }
       if (stateNav.filterWellStatus && stateNav.filterWellStatus.length > 0) {
         let total = stateNav.filterWellStatus[2].length;
@@ -547,26 +553,19 @@ export default function Map() {
         geographyFilterCount += 1;
       }
 
-      setStateNav((state) => ({ ...state, wellFilterCount: wellFilterCount }));
-      setStateNav((state) => ({
-        ...state,
-        ownershipFilterCount: ownershipFilterCount,
-      }));
       setStateNav((state) => ({
         ...state,
         productionFilterCount: productionFilterCount,
-      }));
-      setStateNav((state) => ({
-        ...state,
         geographyFilterCount: geographyFilterCount,
+        ownershipFilterCount: ownershipFilterCount,
+        wellFilterCount: wellFilterCount,
+        totalFilterCount: totalCount,
       }));
 
       if (isFilterSet) {
-        // if (filterArray && filterArray.length > 0 ) {
-        //   filterArray.unshift("all");
-        // } else {
-        //   defaultFilterArray.unshift("all");
-        // }
+        let total = wellFilterCount + ownershipFilterCount + productionFilterCount + geographyFilterCount
+        totalCount += total;
+        console.log(totalCount, total)
         filterArray.unshift("all");
 
         console.log("all current filters", filterArray);
@@ -590,51 +589,7 @@ export default function Map() {
         map.setFilter("wellsHeatmapRecentlyCompleted", null);
       }
     }
-  }, [
-    map,
-    setStateNav,
-    stateNav.defaultOn,
-    stateNav.filterAllInterestTypes,
-    stateNav.filterAllOwnershipTypes,
-    stateNav.filterBasin,
-    stateNav.filterCompletetionDateRange,
-    stateNav.filterCumulativeGas,
-    stateNav.filterCumulativeOil,
-    stateNav.filterCumulativeWater,
-    stateNav.filterFirstMonthGas,
-    stateNav.filterFirstMonthOil,
-    stateNav.filterFirstMonthWater,
-    stateNav.filterFirstProdDateRange,
-    stateNav.filterFirstSixMonthGas,
-    stateNav.filterFirstSixMonthOil,
-    stateNav.filterFirstSixMonthWater,
-    stateNav.filterFirstThreeMonthGas,
-    stateNav.filterFirstThreeMonthOil,
-    stateNav.filterFirstThreeMonthWater,
-    stateNav.filterFirstTwelveMonthGas,
-    stateNav.filterFirstTwelveMonthOil,
-    stateNav.filterFirstTwelveMonthWater,
-    stateNav.filterGeography,
-    stateNav.filterLastMonthGas,
-    stateNav.filterLastMonthOil,
-    stateNav.filterLastMonthWater,
-    stateNav.filterLastSixMonthGas,
-    stateNav.filterLastSixMonthOil,
-    stateNav.filterLastSixMonthWater,
-    stateNav.filterLastThreeMonthGas,
-    stateNav.filterLastThreeMonthOil,
-    stateNav.filterLastThreeMonthWater,
-    stateNav.filterLastTwelveMonthGas,
-    stateNav.filterLastTwelveMonthOil,
-    stateNav.filterLastTwelveMonthWater,
-    stateNav.filterOperator,
-    stateNav.filterPermitDateRange,
-    stateNav.filterPlay,
-    stateNav.filterSpudDateRange,
-    stateNav.filterWellProfile,
-    stateNav.filterWellStatus,
-    stateNav.filterWellType,
-  ]);
+  }, [map, setStateNav, stateNav.defaultOn, stateNav.filterAllInterestTypes, stateNav.filterAllOwnershipTypes, stateNav.filterBasin, stateNav.filterCompletetionDateRange, stateNav.filterCumulativeGas, stateNav.filterCumulativeOil, stateNav.filterCumulativeWater, stateNav.filterFirstMonthGas, stateNav.filterFirstMonthOil, stateNav.filterFirstMonthWater, stateNav.filterFirstProdDateRange, stateNav.filterFirstSixMonthGas, stateNav.filterFirstSixMonthOil, stateNav.filterFirstSixMonthWater, stateNav.filterFirstThreeMonthGas, stateNav.filterFirstThreeMonthOil, stateNav.filterFirstThreeMonthWater, stateNav.filterFirstTwelveMonthGas, stateNav.filterFirstTwelveMonthOil, stateNav.filterFirstTwelveMonthWater, stateNav.filterGeography, stateNav.filterLastMonthGas, stateNav.filterLastMonthOil, stateNav.filterLastMonthWater, stateNav.filterLastSixMonthGas, stateNav.filterLastSixMonthOil, stateNav.filterLastSixMonthWater, stateNav.filterLastThreeMonthGas, stateNav.filterLastThreeMonthOil, stateNav.filterLastThreeMonthWater, stateNav.filterLastTwelveMonthGas, stateNav.filterLastTwelveMonthOil, stateNav.filterLastTwelveMonthWater, stateNav.filterOperator, stateNav.filterOwnerCount, stateNav.filterPermitDateRange, stateNav.filterPlay, stateNav.filterSpudDateRange, stateNav.filterWellProfile, stateNav.filterWellStatus, stateNav.filterWellType]);
 
   useEffect(() => {
     //sets style of map when changed in Map Controls

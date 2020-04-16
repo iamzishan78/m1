@@ -904,15 +904,12 @@ export default function Navigation(props) {
                   <Tab
                     value={4}
                     classes={{ root: classes.tab }}
+                    style={{paddingTop: 10}}
                     icon={
                       <Badge
-                        badgeContent={stateNav.defaultFiltersUserFiltersCount}
+                        badgeContent={stateNav.totalFilterCount}
                         color="secondary"
                       >
-                        {/* <SettingsIcon
-                          style={{ height: 32, width: 32 }}
-                          opacity="1.0"
-                        /> */}
                         <SettingsIcon />
                       </Badge>
                     }

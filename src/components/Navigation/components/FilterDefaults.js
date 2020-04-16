@@ -90,7 +90,7 @@ const useStyles = makeStyles(theme => ({
     padding: 2,
   },
   deleteButton: {
-    marginLeft: "20%"
+    marginLeft: "30%"
   },
   listLabel: {
     padding: "6px 30px",
