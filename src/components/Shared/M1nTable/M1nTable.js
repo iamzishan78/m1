@@ -377,11 +377,6 @@ export default function Contacts(props) {
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [addAble, setAddAble] = useState(true);
-
-  const [source, setSource] = useState(null);
-  const [sourceId, setSourceId] = useState(stateApp.user.id);
-  const [sourceLabel, setSourceLabel] = useState(null);
-  const [edgeLabel, setEdgeLabel] = useState(null);
   const [targetLabel, setTargetLabel] = useState(null);
 
   //////begin////////temporary  while signed user fixed

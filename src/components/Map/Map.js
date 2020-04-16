@@ -16,7 +16,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import MapControlsProvider from "../MapControls/MapControlsProvider";
 import WellCardProvider from "../WellCard/WellCardProvider";
 import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
-import WellsProvider from "../Wells/WellsProvider";
+// import WellsProvider from "../Wells/WellsProvider";
 import Portal from "@material-ui/core/Portal";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
@@ -1049,11 +1049,11 @@ export default function Map() {
       <MapControlsProvider />
       <Coordinates long={lng} lat={lat} />
       <div id="tempPopupHolder" className={classes.portal} ref={container} />
-      {stateMap.openTrack == true ? (
+      {/* {stateMap.openTrack == true ? (
         <div className={classes.trackLists}>
           {<WellsProvider showList={true} parent="track" />}
         </div>
-      ) : null}
+      ) : null} */}
       <Portal container={container.current}>
         {stateApp.popupOpen ? (
           <div>

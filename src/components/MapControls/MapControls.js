@@ -20,13 +20,13 @@ import BaseMapStyles from "./components/BaseMapStyles";
 import CheckboxList from "./components/CheckboxList";
 import CheckboxListHeatmaps from "./components/CheckboxListHeatmaps";
 import DrawShapes from "./components/DrawShapes/DrawShapes";
+import TrackedWellsMapCard from "./components/TrackedWellsMapCard";
 import GpsFixedIcon from "@material-ui/icons/GpsFixed";
 import GpsNotFixedIcon from "@material-ui/icons/GpsNotFixed";
 import GradientIcon from "@material-ui/icons/Gradient";
-import {default as Cube3d} from '../Shared/svgIcons/cube-3d';
+import { default as Cube3d } from "../Shared/svgIcons/cube-3d";
 
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     // backgroundColor:'rgba(1, 17, 51, 0.97)',
     borderRadius: "50%",
@@ -35,12 +35,12 @@ const useStyles = makeStyles(theme => ({
     color: "lightGray",
     "&:hover": {
       color: "#fff",
-      background: "rgba(1, 17, 51, 1.0)"
-    }
+      background: "rgba(1, 17, 51, 1.0)",
+    },
   },
   selected: {
     color: "lightGray !important",
-    background: "rgba(1, 17, 51, 0.0) !important"
+    background: "rgba(1, 17, 51, 0.0) !important",
   },
   speedDial: {
     position: "absolute",
@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
     right: theme.spacing(2),
     backgroundColor: "rgba(1, 17, 51, 0.0)",
     padding: "0px",
-    zIndex: 5
+    zIndex: 5,
   },
   menuIcon: {
     padding: "0px",
@@ -57,29 +57,29 @@ const useStyles = makeStyles(theme => ({
     color: "lightGray",
     "&:hover": {
       color: "#fff",
-      background: "rgba(1, 17, 51, 1.0)"
-    }
+      background: "rgba(1, 17, 51, 1.0)",
+    },
   },
   speedIcon: {
     backgroundColor: "rgba(1, 17, 51, 0.97)",
     color: "lightGray",
     "&:hover": {
       color: "#fff",
-      background: "rgba(1, 17, 51, 1.0)"
-    }
+      background: "rgba(1, 17, 51, 1.0)",
+    },
   },
   fab: {
     backgroundColor: "rgba(1, 17, 51, 0.97)",
     color: "lightGray",
     "&:hover": {
       color: "#fff",
-      background: "rgba(1, 17, 51, 1.0)"
-    }
+      background: "rgba(1, 17, 51, 1.0)",
+    },
   },
   toggleButton: {
     backgroundColor: "rgba(1, 17, 51, 0)",
-    border: "0px"
-  }
+    border: "0px",
+  },
 }));
 
 export default function MapControls(props) {
@@ -91,10 +91,10 @@ export default function MapControls(props) {
   const classes = useStyles();
   const { changeHeatmaps, changeLayers } = props;
 
-  const toggleSpeedDial = event => {
+  const toggleSpeedDial = (event) => {
     setStateMapControls({
       ...stateMapControls,
-      openSpeedDial: !stateMapControls.openSpeedDial
+      openSpeedDial: !stateMapControls.openSpeedDial,
     });
   };
 
@@ -103,22 +103,30 @@ export default function MapControls(props) {
   };
 
   const handleFabClick = (e, action) => {
+    let anchorEl = e.currentTarget;
+    if (action === "track") {
+      anchorEl = null;
+      if (stateMapControls.selectedControl === "track") {
+        action = null;
+      }
+    }
+
     setStateMapControls({
       ...stateMapControls,
       selectedControl: action,
-      anchorEl: e.currentTarget
+      anchorEl: anchorEl,
     });
+
+    // setStateMap({
+    //   ...stateMap,
+    //   openTrack: action === "track" ? !stateMap.openTrack : stateMap.openTrack,
+    // });
 
     setStateMap({
       ...stateMap,
-      openTrack: action === "track" ? !stateMap.openTrack : stateMap.openTrack
+      toggle3d: action === "threed" ? !stateMap.toggle3d : stateMap.toggle3d,
     });
-
-    setStateMap({
-      ...stateMap,
-      toggle3d: action === "threed" ? !stateMap.toggle3d : stateMap.toggle3d
-    });
-    console.log(stateMap.toggle3d)
+    // console.log(stateMap.toggle3d);
 
     if (stateMap.draw.getMode() !== "simple_select") {
       setStateApp({ ...stateApp, editDraw: false });
@@ -129,39 +137,39 @@ export default function MapControls(props) {
   const createSpeedDialActions = () => {
     const actions = [
       {
-        icon: !stateMap.openTrack ? <GpsNotFixedIcon /> : <GpsFixedIcon />,
+        icon: stateMapControls.selectedControl !== "track" ? <GpsNotFixedIcon /> : <GpsFixedIcon />,
         name: "Tracked",
-        action: "track"
+        action: "track",
       },
       { icon: <LanguageIcon id="base" />, name: "Base Map", action: "base" },
       { icon: <LayersIcon id="layer" />, name: "Layers", action: "layer" },
       {
         icon: <GradientIcon id="heatMaps" />,
         name: "Heatmaps",
-        action: "heatMaps"
+        action: "heatMaps",
       },
       {
         icon: !stateApp.editDraw ? <EditIcon /> : <CancelIcon />,
         name: "Draw",
-        action: "draw"
+        action: "draw",
       },
       {
-        icon: <Cube3d/>,
+        icon: <Cube3d />,
         name: "Toggle 3D",
-        action: "threed"
+        action: "threed",
       },
     ];
 
-    return actions.map(action => (
+    return actions.map((action) => (
       <SpeedDialAction
         classes={{
-          fab: classes.fab
+          fab: classes.fab,
         }}
         id={action.name}
         key={action.name}
         icon={action.icon}
         tooltipTitle={action.name}
-        onClick={e => {
+        onClick={(e) => {
           handleFabClick(e, action.action);
         }}
       />
@@ -179,6 +187,8 @@ export default function MapControls(props) {
         return <CheckboxListHeatmaps changeHeatmaps={changeHeatmaps} />;
       case "draw":
         return <DrawShapes />;
+      case "track":
+        return <TrackedWellsMapCard />;
       default:
         return null;
     }
