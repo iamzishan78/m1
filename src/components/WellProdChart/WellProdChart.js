@@ -81,69 +81,6 @@ useEffect( () => {
   //valueAxis.logarithmic = true;
 
 
-// // Create series
-// function createAxisAndSeries(field, name, opposite, bullet) {
-//   var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-//   if(chart.yAxes.indexOf(valueAxis) != 0){
-//   	valueAxis.syncWithAxis = chart.yAxes.getIndex(0);
-//   }
-  
-//   var series = chart.series.push(new am4charts.LineSeries());
-//   series.dataFields.valueY = field;
-//   series.dataFields.dateX = "date";
-//   series.strokeWidth = 2;
-//   series.yAxis = valueAxis;
-//   series.name = name;
-//   series.tooltipText = "{name}: [bold]{valueY}[/]";
-//   series.tensionX = 0.8;
-//   series.showOnInit = true;
-  
-//   var interfaceColors = new am4core.InterfaceColorSet();
-  
-//   switch(bullet) {
-//     case "triangle":
-//       var bullet = series.bullets.push(new am4charts.Bullet());
-//       bullet.width = 12;
-//       bullet.height = 12;
-//       bullet.horizontalCenter = "middle";
-//       bullet.verticalCenter = "middle";
-//       var triangle = bullet.createChild(am4core.Triangle);
-//       triangle.stroke = interfaceColors.getFor("background");
-//       triangle.strokeWidth = 2;
-//       triangle.direction = "top";
-//       triangle.width = 12;
-//       triangle.height = 12;
-//       break;
-//     case "rectangle":
-//       var bullet = series.bullets.push(new am4charts.Bullet());
-//       bullet.width = 10;
-//       bullet.height = 10;
-//       bullet.horizontalCenter = "middle";
-//       bullet.verticalCenter = "middle";
-//       var rectangle = bullet.createChild(am4core.Rectangle);
-//       rectangle.stroke = interfaceColors.getFor("background");
-//       rectangle.strokeWidth = 2;
-//       rectangle.width = 10;
-//       rectangle.height = 10;
-//       break;
-//     default:
-//       var bullet = series.bullets.push(new am4charts.CircleBullet());
-//       bullet.circle.stroke = interfaceColors.getFor("background");
-//       bullet.circle.strokeWidth = 2;
-//       break;
-//   }
-  
-//   valueAxis.renderer.line.strokeOpacity = 1;
-//   valueAxis.renderer.line.strokeWidth = 2;
-//   valueAxis.renderer.line.stroke = series.stroke;
-//   valueAxis.renderer.labels.template.fill = series.stroke;
-//   valueAxis.renderer.opposite = opposite;
-// }
-
-// createAxisAndSeries("visits", "Visits", false, "circle");
-// createAxisAndSeries("views", "Views", true, "triangle");
-// createAxisAndSeries("hits", "Hits", true, "rectangle");
-
 
 
 // Add legend
@@ -182,7 +119,7 @@ chart.cursor = new am4charts.XYCursor();
     valueAxis.renderer.line.strokeWidth = 1;
     valueAxis.renderer.line.stroke = series.stroke;
     valueAxis.renderer.labels.template.fill = series.stroke;
-    valueAxis.renderer.opposite = false;
+    valueAxis.renderer.opposite = true;
 
     var bullet = series.bullets.push(new am4charts.CircleBullet());
     bullet.stroke = new am4core.InterfaceColorSet().getFor("background");
@@ -192,6 +129,11 @@ chart.cursor = new am4charts.XYCursor();
 
     var bullethover = bullet.states.create("hover");
     bullethover.properties.scale = 1.3;
+
+    series.tooltip.getFillFromObject = false;
+    series.tooltip.background.fill = am4core.color("#e57373");
+
+
 
 
 
@@ -216,7 +158,23 @@ chart.cursor = new am4charts.XYCursor();
     valueAxis.renderer.line.strokeWidth = 1;
     valueAxis.renderer.line.stroke = seriesOil.stroke;
     valueAxis.renderer.labels.template.fill = seriesOil.stroke;
-    valueAxis.renderer.opposite = false;
+    valueAxis.renderer.opposite = true;
+
+    var bulletOil = seriesOil.bullets.push(new am4charts.CircleBullet());
+    bulletOil.stroke = new am4core.InterfaceColorSet().getFor("background");
+    bulletOil.circle.strokeWidth = 2;
+    bulletOil.circle.radius = 4;
+    bulletOil.circle.fill = am4core.color("#64b5f6");
+
+    var bullethoverOil = bulletOil.states.create("hover");
+    bullethoverOil.properties.scale = 1.3;
+
+    seriesOil.tooltip.getFillFromObject = false;
+    seriesOil.tooltip.background.fill = am4core.color("#81c784");
+
+
+
+
 
     var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
     if(chart.yAxes.indexOf(valueAxis) != 0){
@@ -239,57 +197,7 @@ chart.cursor = new am4charts.XYCursor();
     valueAxis.renderer.line.strokeWidth = 1;
     valueAxis.renderer.line.stroke = seriesWater.stroke;
     valueAxis.renderer.labels.template.fill = seriesWater.stroke;
-    valueAxis.renderer.opposite = false;
-
-
-
-    // //Drop-shaped tooltips
-    // series.tooltip.background.cornerRadius = 20;
-    // series.tooltip.background.strokeOpacity = 0;
-    // series.tooltip.background.fill = am4core.color("#e57373");
-    // series.tooltip.pointerOrientation = "vertical";
-    // series.tooltip.label.minWidth = 40;
-    // series.tooltip.label.minHeight = 40;
-    // series.tooltip.label.textAlign = "middle";
-    // series.tooltip.label.textValign = "middle";
-
-    // seriesOil.tooltip.background.cornerRadius = 20;
-    // seriesOil.tooltip.background.strokeOpacity = 0;
-    // seriesOil.tooltip.label.fill = am4core.color("#81c784");
-    // seriesOil.tooltip.pointerOrientation = "vertical";
-    // seriesOil.tooltip.label.minWidth = 40;
-    // seriesOil.tooltip.label.minHeight = 40;
-    // seriesOil.tooltip.label.textAlign = "middle";
-    // seriesOil.tooltip.label.textValign = "middle";
-
-    // seriesWater.tooltip.background.cornerRadius = 20;
-    // seriesWater.tooltip.background.strokeOpacity = 0;
-    // seriesWater.tooltip.label.fill = am4core.color("#64b5f6");
-    // seriesWater.tooltip.pointerOrientation = "vertical";
-    // seriesWater.tooltip.label.minWidth = 40;
-    // seriesWater.tooltip.label.minHeight = 40;
-    // seriesWater.tooltip.label.textAlign = "middle";
-    // seriesWater.tooltip.label.textValign = "middle";
-
-
-    
-
-
-    var bulletOil = seriesOil.bullets.push(new am4charts.Bullet());
-    bulletOil.stroke = new am4core.InterfaceColorSet().getFor("background");
-    bulletOil.width = 10;
-    bulletOil.height = 10;
-    bulletOil.horizontalCenter = "middle";
-    bulletOil.verticalCenter = "middle";
-    bulletOil.fill = am4core.color("#81c784");
-
-    
-    // var rectangle = bullet.createChild(am4core.Rectangle);
-    // rectangle.stroke = new am4core.InterfaceColorSet().getFor("background");
-    // rectangle.strokeWidth = 2;
-    // rectangle.width = 10;
-    // rectangle.height = 10;
-
+    valueAxis.renderer.opposite = true;
 
     var bulletWater = seriesWater.bullets.push(new am4charts.CircleBullet());
     bulletWater.stroke = new am4core.InterfaceColorSet().getFor("background");
@@ -297,26 +205,20 @@ chart.cursor = new am4charts.XYCursor();
     bulletWater.circle.radius = 4;
     bulletWater.circle.fill = am4core.color("#64b5f6");
 
-
-    
-
-    var bullethoverOil = bulletOil.states.create("hover");
-    bullethoverOil.properties.scale = 1.3;
-
     var bullethoverWater = bulletWater.states.create("hover");
     bullethoverWater.properties.scale = 1.3;
-    
-    // // Make a panning cursor
-    // chart.cursor = new am4charts.XYCursor();
-    // chart.cursor.behavior = "panXY";
-    // chart.cursor.xAxis = dateAxis;
-    // chart.cursor.snapToSeries = series;
-    
+
+    seriesWater.tooltip.getFillFromObject = false;
+    seriesWater.tooltip.background.fill = am4core.color("#64b5f6");
+
+
+
+
 
 
     // Create vertical scrollbar and place it before the value axis
     chart.scrollbarY = new am4core.Scrollbar();
-    chart.scrollbarY.parent = chart.rightAxesContainer;
+    chart.scrollbarY.parent = chart.leftAxesContainer;
     chart.scrollbarY.toBack();
     
     // Create a horizontal scrollbar with previe and place it underneath the date axis
@@ -327,15 +229,16 @@ chart.cursor = new am4charts.XYCursor();
     chart.scrollbarX.parent = chart.bottomAxesContainer;
     
     dateAxis.start = 0.8;
-    //dateAxis.start = 0;
     dateAxis.keepSelection = true;
+
+    // // Enable export
+    // chart.exporting.menu = new am4core.ExportMenu();
 
     setChart(chart);
   }
   else {
    
     if(data) {
-     
         let wellProdHistory = data.wellProdHistory;
         setStateWellProdChart(state => ({...state,wellProdHistory:wellProdHistory}))
     }
@@ -344,7 +247,6 @@ chart.cursor = new am4charts.XYCursor();
   return () => {
     console.log('will unmount');
     if(chart){
-      //chart.dispose();
       am4core.disposeAllCharts();
     }
    
