@@ -109,7 +109,7 @@ const StyledMenuHeaderItem = withStyles(theme => ({
       color: theme.palette.common.white
       // },
     },
-    width: 250,
+    //width: 250,
   }
 }))(MenuItem);
 
@@ -308,51 +308,6 @@ export default function BaseMapStyles(props) {
           );
         })}
     </StyledMenu>
-
-      {/* <StyledMenu
-        id="checklist-menu"
-        anchorEl={stateMapControls.anchorEl}
-        keepMounted
-        open={Boolean(stateMapControls.anchorEl)}
-        onClose={handleClose}
-      >
-        <StyledMenuItem
-          disableRipple
-          key="subheader"
-          role={undefined}
-          dense
-          className={classes.subHeaderItem}
-        >
-          <ListItemText primary="Layer Visibility" />
-        </StyledMenuItem>
-
- 
-        {stateMap.styleLayers.map((layer, index) => {
-          const labelId = `checkbox-list-label-${index}`;
-
-          return (
-            <StyledMenuItem disableRipple key={index} role={undefined} dense>
-              <ListItemIcon>
-                <Checkbox
-                  icon={<VisibilityOffIcon htmlColor="#fff" />}
-                  checkedIcon={<VisibilityIcon htmlColor="#fff" />}
-                  edge="start"
-                  checked={
-                    stateMap.checkedLayers
-                      ? stateMap.checkedLayers.indexOf(index) !== -1
-                      : false
-                  }
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ "aria-labelledby": labelId }}
-                  onChange={handleToggle(index)}
-                />
-              </ListItemIcon>
-              <ListItemText id={labelId} primary={layer.name} />
-            </StyledMenuItem>
-          );
-        })}
-      </StyledMenu> */}
     </ClickAwayListener>
 
 
