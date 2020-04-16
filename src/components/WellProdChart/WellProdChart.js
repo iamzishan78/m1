@@ -231,8 +231,8 @@ chart.cursor = new am4charts.XYCursor();
     dateAxis.start = 0.8;
     dateAxis.keepSelection = true;
 
-    // // Enable export
-    // chart.exporting.menu = new am4core.ExportMenu();
+    // Enable export
+    chart.exporting.menu = new am4core.ExportMenu();
 
     setChart(chart);
   }
