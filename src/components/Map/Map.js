@@ -1099,7 +1099,7 @@ export default function Map() {
                   open={stateApp.expandedCard}
                   anchorEl={anchorElPoPOver}
                   anchorReference="anchorEl"
-                  style={{width: "100%", right:30, left: "-30px"}}
+                  style={{width: "100%",}} //right:30, left: "-30px"}}
                   BackdropProps={{ invisible: false }}
                   anchorOrigin={{
                     vertical: "center",
@@ -1121,13 +1121,13 @@ export default function Map() {
                     mouseX={0}
                     mouseY={0}
                     position="relative"
-                    cardLeft={"0px"}
-                    cardTop={"0px"}
+                    //cardLeft={"0px"}
+                    //cardTop={"0px"}
                     zIndex={99}
-                    cardWidth="380px"
-                    cardHeight="380px"
-                    cardWidthExpanded="inherit"
-                    cardHeightExpanded="inherit"
+                    //cardWidth="inherit"
+                    //cardHeight="inherit"
+                    cardWidthExpanded="95vw"
+                    cardHeightExpanded="95vh"
                     source={stateApp.user}
                     sourceSourceId={stateApp.user.id}
                     sourceName={stateApp.user.name}
@@ -1139,7 +1139,6 @@ export default function Map() {
                   ></ExpandableCardProvider>
                 </Popover>
               )}
-              {/* {stateApp.selectedWell ? <WellCardProvider /> : null} */}
             </PortalD>
           </div>
         ) : null}
