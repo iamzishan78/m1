@@ -26,7 +26,11 @@ import MapDarkIcon from "../../Shared/svgIcons/MapDarkIcon";
 import MapSatelliteIcon from "../../Shared/svgIcons/MapSatelliteIcon";
 import MapLightIcon from "../../Shared/svgIcons/MapLightIcon";
 import MapBasicIcon from "../../Shared/svgIcons/MapBasicIcon";
-
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import Checkbox from "@material-ui/core/Checkbox";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 
 const theme = createMuiTheme({
   overrides: {
@@ -159,6 +163,23 @@ export default function BaseMapStyles(props) {
 
   const [mapStyles, setMapStyles] = useState([]);
 
+  const handleToggle = idx => () => {
+    console.log(idx);
+    console.log("toggle stateMap.checkedBaseLayers before", stateMap.baseMapLayers);
+    const currentIndex = stateMap.checkedBaseLayers.indexOf(idx);
+    const newChecked = [...stateMap.checkedBaseLayers];
+
+    if (currentIndex === -1) {
+      newChecked.push(idx);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+    console.log("newchecked", newChecked);
+
+    setStateMap(stateMap => ({ ...stateMap, checkedBaseLayers: newChecked }));
+
+    console.log("toggle stateMap.checkedBaseLayers after", stateMap.checkedBaseLayers);
+  };
 
 
 
@@ -203,7 +224,7 @@ export default function BaseMapStyles(props) {
 
 
   return (
-    /* <ClickAwayListener onClickAway={handleClose}> */
+    <ClickAwayListener onClickAway={handleClose}> 
     <StyledMenu
       id="customized-menu"
       anchorEl={stateMapControls.anchorEl}
@@ -243,9 +264,97 @@ export default function BaseMapStyles(props) {
 
 
 
+
+
+
         </StyledMenuItem>
+
+
+
       ))}
+          <StyledMenuItem
+          //disableRipple
+          //key="subheader"
+          //role={undefined}
+          dense
+          //className={classes.subHeaderItem}
+        >
+          <ListItemText primary="Map Layers" />
+        </StyledMenuItem>
+
+{stateMap.baseMapLayers.map((layer, index) => {
+          const labelId = `checkbox-list-label-${index}`;
+
+          return (
+            <StyledMenuItem disableRipple key={index} role={undefined} dense>
+              <ListItemIcon>
+                <Checkbox
+                  icon={<VisibilityOffIcon htmlColor="#fff" />}
+                  checkedIcon={<VisibilityIcon htmlColor="#fff" />}
+                  edge="start"
+                  checked={
+                    stateMap.checkedBaseLayers
+                      ? stateMap.checkedBaseLayers.indexOf(index) !== -1
+                      : false
+                  }
+                  tabIndex={-1}
+                  disableRipple
+                  inputProps={{ "aria-labelledby": labelId }}
+                  onChange={handleToggle(index)}
+                />
+              </ListItemIcon>
+              <ListItemText id={labelId} primary={layer.name} />
+            </StyledMenuItem>
+          );
+        })}
     </StyledMenu>
-    /* </ClickAwayListener> */
+
+      {/* <StyledMenu
+        id="checklist-menu"
+        anchorEl={stateMapControls.anchorEl}
+        keepMounted
+        open={Boolean(stateMapControls.anchorEl)}
+        onClose={handleClose}
+      >
+        <StyledMenuItem
+          disableRipple
+          key="subheader"
+          role={undefined}
+          dense
+          className={classes.subHeaderItem}
+        >
+          <ListItemText primary="Layer Visibility" />
+        </StyledMenuItem>
+
+ 
+        {stateMap.styleLayers.map((layer, index) => {
+          const labelId = `checkbox-list-label-${index}`;
+
+          return (
+            <StyledMenuItem disableRipple key={index} role={undefined} dense>
+              <ListItemIcon>
+                <Checkbox
+                  icon={<VisibilityOffIcon htmlColor="#fff" />}
+                  checkedIcon={<VisibilityIcon htmlColor="#fff" />}
+                  edge="start"
+                  checked={
+                    stateMap.checkedLayers
+                      ? stateMap.checkedLayers.indexOf(index) !== -1
+                      : false
+                  }
+                  tabIndex={-1}
+                  disableRipple
+                  inputProps={{ "aria-labelledby": labelId }}
+                  onChange={handleToggle(index)}
+                />
+              </ListItemIcon>
+              <ListItemText id={labelId} primary={layer.name} />
+            </StyledMenuItem>
+          );
+        })}
+      </StyledMenu> */}
+    </ClickAwayListener>
+
+
   );
 }

@@ -145,6 +145,29 @@ export default function Map() {
     }
   }, [map, stateMap.checkedHeats]);
 
+
+  useEffect(() => {
+    if (stateMap.checkedBaseLayers && map) {
+      stateMap.baseMapLayers.forEach((l) => {
+        l.id.forEach((k) => {
+          map.setLayoutProperty(k, "visibility", "none");
+        });
+      });
+
+      if (stateMap.checkedBaseLayers.length > 0) {
+        let layers = stateMap.checkedBaseLayers;
+
+        layers.forEach((i) => {
+          let currentLayerArray = stateMap.baseMapLayers[i].id;
+          currentLayerArray.forEach((j) => {
+            map.setLayoutProperty(j, "visibility", "visible");
+          });
+        });
+      }
+    }
+  }, [map, stateMap.checkedBaseLayers]);
+  
+
   useEffect(() => {
     if (showExpandableCard) {
       setTransform("transform: none");

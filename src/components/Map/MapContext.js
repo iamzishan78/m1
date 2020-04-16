@@ -55,70 +55,73 @@ const heatLayers = [
     idx: 10
   },
 
-  {
-    name: "Map Labels",
-    id: ["country-label","state-label","settlement-major-label",
-          "settlement-minor-label","settlement-subdivision-label",
-        "airport-label","transit-label","poi-label",
-          ],
-    idx: 11
-  },
+];
 
-  {
-    name: "Roads",
-    id: ['ferry-aerialway-label','road-exit-shield',
-          'road-number-shield','road-label','aerialway',
-        'bridge-oneway-arrow-white','bridge-motorway-trunk-2',
-        'bridge-major-link-2','bridge-motorway-trunk-2-case',
-        'bridge-major-link-2-case','bridge-pedestrian',
-        'bridge-steps','bridge-path','road-pedestrian','road-steps',
-        'road-path','tunnel-pedestrian','tunnel-steps','tunnel-path',
-        'bridge-motorway-trunk','bridge-oneway-arrow-blue',
-        'bridge-primary-secondary-tertiary',
-        'bridge-street-minor', 'bridge-major-link',
-        'bridge-motorway-trunk-case','bridge-major-link-case',
-        'bridge-primary-secondary-tertiary-case',
-        'bridge-street-minor-case','bridge-street-minor-low',
-        'road-oneway-arrow-white','road-motorway-trunk','road-oneway-arrow-blue',
-        'road-primary','road-secondary-tertiary','road-street','road-minor','road-major-link',
-        'road-motorway-trunk-case','road-major-link-case','road-primary-case',
-        'road-secondary-tertiary-case', 'road-street-case','road-minor-case',
-        'road-minor-low','tunney-oneway-arrow-white','tunnel-motorway-trunk',
-        'tunnel-oneway-arrow-blue','tunnel-primary-secondary-tertiary',
-        'tunnel-street-minor','tunnel-major-link',
-        'tunnel-motorway-trunk-case','tunnel-major-link-case',
-        'tunnel-primary-secondary-tertiary-case',
-        'tunnel-street-minor-case','tunnel-street-minor-low'],
-    idx: 12
-  },
 
-  {
-    name: "Borders",
-    id: ['admin-0-boundary-disputed','admin-0-boundary','admin-1-boundary',
-          'admin-0-boundary-bg','admin-1-boundary-bg'],
-    idx: 13
-  },
+const baseMapLayers = [
+{
+  name: "Map Labels",
+  id: ["country-label","state-label","settlement-major-label",
+        "settlement-minor-label","settlement-subdivision-label",
+      "airport-label","transit-label","poi-label",
+        ],
+  idx: 11
+},
 
-  {
-    name: "Buildings",
-    id: ["building-extrusion"],
-    idx: 14
-  },
+{
+  name: "Roads",
+  id: ['ferry-aerialway-label','road-exit-shield',
+        'road-number-shield','road-label','aerialway',
+      'bridge-oneway-arrow-white','bridge-motorway-trunk-2',
+      'bridge-major-link-2','bridge-motorway-trunk-2-case',
+      'bridge-major-link-2-case','bridge-pedestrian',
+      'bridge-steps','bridge-path','road-pedestrian','road-steps',
+      'road-path','tunnel-pedestrian','tunnel-steps','tunnel-path',
+      'bridge-motorway-trunk','bridge-oneway-arrow-blue',
+      'bridge-primary-secondary-tertiary',
+      'bridge-street-minor', 'bridge-major-link',
+      'bridge-motorway-trunk-case','bridge-major-link-case',
+      'bridge-primary-secondary-tertiary-case',
+      'bridge-street-minor-case','bridge-street-minor-low',
+      'road-oneway-arrow-white','road-motorway-trunk','road-oneway-arrow-blue',
+      'road-primary','road-secondary-tertiary','road-street','road-minor','road-major-link',
+      'road-motorway-trunk-case','road-major-link-case','road-primary-case',
+      'road-secondary-tertiary-case', 'road-street-case','road-minor-case',
+      'road-minor-low','tunney-oneway-arrow-white','tunnel-motorway-trunk',
+      'tunnel-oneway-arrow-blue','tunnel-primary-secondary-tertiary',
+      'tunnel-street-minor','tunnel-major-link',
+      'tunnel-motorway-trunk-case','tunnel-major-link-case',
+      'tunnel-primary-secondary-tertiary-case',
+      'tunnel-street-minor-case','tunnel-street-minor-low'],
+  idx: 12
+},
 
-  {
-    name: "Water",
-    id: ["water-point-label","water-line-label","waterway-label",
-        ,],
-    idx: 15
-  },
+{
+  name: "Borders",
+  id: ['admin-0-boundary-disputed','admin-0-boundary','admin-1-boundary',
+        'admin-0-boundary-bg','admin-1-boundary-bg'],
+  idx: 13
+},
 
-  {
-    name: "Land",
-    id: ["natural-point-label","natural-line-label",
-        'land-structure-line','land-structure-polygon',],
-    idx: 16
-  },
+{
+  name: "Buildings",
+  id: ["building-extrusion"],
+  idx: 14
+},
 
+{
+  name: "Water",
+  id: ["water-point-label","water-line-label","waterway-label",
+      ,],
+  idx: 15
+},
+
+{
+  name: "Land",
+  id: ["natural-point-label","natural-line-label",
+      'land-structure-line','land-structure-polygon',],
+  idx: 16
+},
 ];
 
 const MapContext = createContext([{}, () => {}]);
@@ -131,8 +134,10 @@ const MapContextProvider = props => {
     selectedWell: null,
     styleLayers: styleLayers,
     heatLayers: heatLayers,
+    baseMapLayers: baseMapLayers,
     checkedLayers: [],
     checkedHeats: [],
+    checkedBaseLayers: [],
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,
