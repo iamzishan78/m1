@@ -179,8 +179,8 @@ export default function ExpandableCard(props) {
     setHeight(cardHeightExpanded);
     //setZidx(9)
     //setPosition('absolute')
-    setCardTop(0);
-    setCardLeft(0);
+    //setCardTop(0);
+    //setCardLeft(0);
     setStateApp(state => ({ ...state, expandedCard: true }));
     setStateExpandableCard((state) => ({ ...state, expanded: true }));
   };
@@ -192,11 +192,14 @@ export default function ExpandableCard(props) {
     setCardTop(mouseY);
     setCardLeft(mouseX);
     setStateExpandableCard((state) => ({ ...state, expanded: false }));
+    setStateApp(state => ({ ...state, expandedCard: false }));
     setWidth(cardWidth);
     setHeight(cardHeight);
-    // setZidx(0)
-    //setPosition('relative')
+
+   // {showExpandableCard && !stateApp.expandedCard ? (
+
   };
+
   const handleClose = () => {
     if (parent === "map" && $("#tempPopupHolder").length) {
       console.log("jquery close");
@@ -204,8 +207,8 @@ export default function ExpandableCard(props) {
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
     }
-    //setStateApp(state => ({...state,showExpandableCard:false}))
     props.handleCloseExpandableCard();
+    setStateApp((state) => ({ ...state, popupOpen: true }));
 
     //if EC is inside map popup you need to close it
   };
@@ -225,7 +228,7 @@ export default function ExpandableCard(props) {
             {stateExpandableCard.expanded ? (
               <IconButton
                 color="secondary"
-                onClick={handleShrink}
+                onClick={handleShrink}  
                 aria-label="shrink"
               >
                 <ShrinkIcon viewBox="0 0 64 64" fontSize="small" />

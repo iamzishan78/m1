@@ -873,17 +873,10 @@ export default function Map() {
             currentFeature.properties.isTracked = false;
           }
 
-          console.log("clicked well point", currentFeature);
+          //console.log("clicked well point", currentFeature);
           setStateApp((state) => ({ ...state, popupOpen: false }));
-          setStateApp((state) => ({
-            ...state,
-            selectedWell: currentFeature.properties,
-          }));
-          setStateApp((state) => ({
-            ...state,
-            selectedWellId: currentFeature.properties.api,
-          }));
-
+          setStateApp((state) => ({...state,selectedWell: currentFeature.properties,}));
+          setStateApp((state) => ({...state,selectedWellId: currentFeature.properties.api,}));
           createPopUp(currentFeature.properties);
           map.resize();
         });
@@ -1021,7 +1014,8 @@ export default function Map() {
             style={{ position: "inherit", top: 0, left: 0, right: 0 , bottom: 0, height: "100%"}}
           ></div>  */}
             <PortalD id="popupContainer">
-              {showExpandableCard && !stateApp.expandedCard ? (
+
+             {showExpandableCard && !stateApp.expandedCard ? (
                 <ExpandableCardProvider
                   expanded={false}
                   handleCloseExpandableCard={handleCloseExpandableCard}
@@ -1050,7 +1044,8 @@ export default function Map() {
                   targetLabel="well"
                 ></ExpandableCardProvider>
               ) : (
-                <Popover
+                
+                 <Popover
                   open={stateApp.expandedCard}
                   anchorEl={anchorElPoPOver}
                   anchorReference="anchorEl"
@@ -1064,7 +1059,8 @@ export default function Map() {
                     vertical: "center",
                     horizontal: "center",
                   }}
-                >
+                > 
+                  
                   <ExpandableCardProvider
                     expanded={true}
                     handleCloseExpandableCard={handleCloseExpandableCard}
@@ -1076,11 +1072,11 @@ export default function Map() {
                     mouseX={0}
                     mouseY={0}
                     position="relative"
-                    //cardLeft={"0px"}
-                    //cardTop={"0px"}
+                    // cardLeft={"0px"}
+                    // cardTop={"0px"}
                     zIndex={99}
-                    //cardWidth="inherit"
-                    //cardHeight="inherit"
+                    // cardWidth="380px"
+                    // cardHeight="380px"
                     cardWidthExpanded="95vw"
                     cardHeightExpanded="95vh"
                     source={stateApp.user}
@@ -1092,8 +1088,8 @@ export default function Map() {
                     targetName={stateApp.selectedWell.wellName}
                     targetLabel="well"
                   ></ExpandableCardProvider>
-                </Popover>
-              )}
+                 </Popover>
+               )} 
             </PortalD>
           </div>
         ) : null}
