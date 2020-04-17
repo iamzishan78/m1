@@ -39,6 +39,7 @@ const styleLayers = [
 
 ];
 
+
 const heatLayers = [
   {
     name: "Cumulative BOE",
