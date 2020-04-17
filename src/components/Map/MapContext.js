@@ -21,6 +21,22 @@ const styleLayers = [
     id: ["surveylabels", "surveyLayer"],
     idx: 4,
   },
+  {
+    name: "Area of Interest",
+    id: [],
+    idx: 5,
+  },
+  {
+    name: "Parcels",
+    id: [],
+    idx: 6,
+  },
+  {
+    name: "Title",
+    id: [],
+    idx: 7,
+  },
+
 ];
 
 const heatLayers = [
