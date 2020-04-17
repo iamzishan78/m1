@@ -1,33 +1,22 @@
-import React, { useContext } from "react";
+////////////////////////////////////////////////////////////////////////////////
+//////////react-trello info: https://github.com/rcdexta/react-trello  //////////
+////////////////////////////////////////////////////////////////////////////////
+
+import React, { useContext, useState, useEffect } from "react";
+import { useMutation, useLazyQuery } from "@apollo/react-hooks";
+
 import Board from "react-trello";
 import { makeStyles } from "@material-ui/core/styles";
 import { TransactContext } from "./TransactContext";
-
-const boardStyle = {
-  backgroundColor: " #eeeeee",
-  //overflow: 'scroll',
-  //height: '100vh !important',
-  //width: '100vw !important',
-};
-
-// const laneStyle = {
-//   // fontFamily: "Roboto, Helvetica, Arial, sans-serif"
-//   fontFamily: "Poppins",
-// };
-
-// const cardStyle = {
-//   //fontFamily: "Roboto, Helvetica, Arial, sans-serif"
-//   fontFamily: "Poppins",
-// };
+import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
+import { UPDATETRANSACTION } from "../../graphQL/useMutationUpdateTransaction";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const data_file = {
   lanes: [
     {
       id: "lane1",
       title: "Offer Preparation",
-      //label: '2/2',
-      // style: laneStyle,
-      // cardStyle: cardStyle,
       cards: [
         {
           id: "Card1",
@@ -41,9 +30,6 @@ const data_file = {
     {
       id: "lane2",
       title: "Offer Extended",
-      //label: '0/0',
-      // style: laneStyle,
-      // cardStyle: cardStyle,
       cards: [
         {
           id: "Card3",
@@ -61,13 +47,9 @@ const data_file = {
         },
       ],
     },
-
     {
       id: "lane3",
       title: "Accepted - Due Diligence",
-      //label: '0/0',
-      // style: laneStyle,
-      // cardStyle: cardStyle,
       cards: [
         {
           id: "Card4",
@@ -78,13 +60,9 @@ const data_file = {
         },
       ],
     },
-
     {
       id: "lane4",
       title: "Deal Closed",
-      //label: '0/0',
-      // style: laneStyle,
-      // cardStyle: cardStyle,
       cards: [
         {
           id: "Card5",
@@ -105,9 +83,7 @@ const data_file = {
     {
       id: "lane5",
       title: "Offer Rejected",
-      //label: '0/0',
-      // style: laneStyle,
-      // cardStyle: cardStyle,
+
       cards: [
         {
           id: "Card7",
@@ -137,53 +113,56 @@ const data_file = {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    //width: '100vh',
     height: "100%",
-    //overflow: 'auto',
   },
   list: {
-    //height:'100vh',
-    //width: '100vw',
     overflowX: "auto !important",
     height: "100%",
-
-    //position: 'relative'
-    //overflowX:'hidden',
-    //overflowY: 'hidden',
-    //position:'absolute',
-    //top:'250px',
-    //left:'82px',
-    //zIndex:4,
-    //background:'rgba(255,255,255,0)',
-    //color: 'rgba(23, 170, 221, 1)'
   },
 }));
-
-const handleCardAdd = (event) => {
-  console.log("card add");
-  console.log(event);
-};
-
-const handleDataChange = (event) => {
-  console.log("card data change");
-  console.log(event);
-};
-
-const handleCardDelete = (event) => {
-  console.log("card delete");
-  console.log(event);
-};
 
 export default function Transact() {
   const classes = useStyles();
   const [stateTransact, setStateTransact] = useContext(TransactContext);
+  const [transactData, setTransactData] = useState();
+  const [id, setId] = useState();
 
-  return (
-    <div  className={classes.root}>
+  const [getTransactionData, { loading, data }] = useLazyQuery(TRANSACTIONDATA);
+  const [updateTransaction] = useMutation(UPDATETRANSACTION);
+
+  useEffect(() => {
+    getTransactionData();
+  }, []);
+
+  useEffect(() => {
+    if (data && data.transactionData && data.transactionData.allData) {
+      setTransactData(data.transactionData.allData);
+      setId(data.transactionData._id);
+    }
+  }, [data]);
+
+  const handleDataChange = (newData) => {
+    updateTransaction({
+      variables: {
+        transactionId: id,
+        transaction: { allData: newData },
+      },
+      refetchQueries: ["getTransactionData"],
+      awaitRefetchQueries: true,
+    });
+  };
+
+  const handleCardClick = (cardId, metadata, laneId) => {
+    console.log("mmm");
+    console.log(laneId);
+  };
+
+  return !loading && data && transactData ? (
+    <div className={classes.root}>
       <Board
         className={classes.list}
-        style={boardStyle}
-        data={data_file}
+        style={{ backgroundColor: " #eeeeee" }}
+        data={transactData}
         draggable={true}
         laneDraggable={true}
         cardDraggable={true}
@@ -192,14 +171,16 @@ export default function Transact() {
         canAddLanes={true}
         editLaneTitle={true}
         hideCardDeleteIcon={false}
+        onDataChange={handleDataChange}
+        onCardClick={handleCardClick}
+        // components={{ Card: CustomCard }}
+
         //onCardAdd = {handleCardAdd}
         //onCardDelete = {handleCardDelete}
-        //onDataChange = {handleDataChange}
         // handleDragStart = {}
         // handleDragEnd={}
         // handleLaneDragStart
         // onDataChange
-        // onCardClick
         // onCardAdd
         // onBeforeCardDelete
         // onCardDelete
@@ -209,8 +190,10 @@ export default function Transact() {
         // onLaneUpdate
         // onLaneClick
         // onLaneScroll
-        //onCardMoveAcrossL{handleCardAdd}anes = {handleCardAdd}
+        //onCardMoveAcrossLanes
       />
     </div>
+  ) : (
+    <CircularProgress size={80} disableShrink color="secondary" />
   );
 }

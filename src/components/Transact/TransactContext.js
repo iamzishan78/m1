@@ -1,18 +1,14 @@
-import React, { useState, createContext } from 'react'
+import React, { useState, createContext } from "react";
 
-const TransactContext = createContext([{}, () => {}])
+const TransactContext = createContext([{}, () => {}]);
 
-const TransactContextProvider = props => {
-  const [stateTransact, setStateTransact] = useState({
-    //wells:{},
-    //selectedWell:null,
-    laneCount: null, 
-  })
+const TransactContextProvider = (props) => {
+  const [stateTransact, setStateTransact] = useState({});
   return (
     <TransactContext.Provider value={[stateTransact, setStateTransact]}>
       {props.children}
     </TransactContext.Provider>
-  )
-}
+  );
+};
 
-export { TransactContext, TransactContextProvider }
+export { TransactContext, TransactContextProvider };
