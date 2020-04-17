@@ -373,7 +373,7 @@ export default function Contacts(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, setRows] = useState();
-  const [header, setHeader] = useState(""); ////set it as "" for no header, and as null to higth the whole header row
+  const [header, setHeader] = useState("");
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [addAble, setAddAble] = useState(true);
