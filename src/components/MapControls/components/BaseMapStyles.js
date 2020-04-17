@@ -164,8 +164,8 @@ export default function BaseMapStyles(props) {
   const [mapStyles, setMapStyles] = useState([]);
 
   const handleToggle = idx => () => {
-    console.log(idx);
-    console.log("toggle stateMap.checkedBaseLayers before", stateMap.baseMapLayers);
+    //console.log(idx);
+    //console.log("toggle stateMap.checkedBaseLayers before", stateMap.baseMapLayers);
     const currentIndex = stateMap.checkedBaseLayers.indexOf(idx);
     const newChecked = [...stateMap.checkedBaseLayers];
 
@@ -174,11 +174,11 @@ export default function BaseMapStyles(props) {
     } else {
       newChecked.splice(currentIndex, 1);
     }
-    console.log("newchecked", newChecked);
+    //console.log("newchecked", newChecked);
 
     setStateMap(stateMap => ({ ...stateMap, checkedBaseLayers: newChecked }));
 
-    console.log("toggle stateMap.checkedBaseLayers after", stateMap.checkedBaseLayers);
+    //console.log("toggle stateMap.checkedBaseLayers after", stateMap.checkedBaseLayers);
   };
 
 
@@ -249,16 +249,18 @@ export default function BaseMapStyles(props) {
           role={undefined}
           //className={classes.subHeaderItem}
           onClick={() => {
-            setStateMap(state => ({ ...state, selectedLayerId: "mapbox://styles/m1neral/"+style.id }));
+            //setStateMap(state => ({ ...state, selectedLayerId: "mapbox://styles/m1neral/"+style.id }));
+            setStateMap(stateMap => ({ ...stateMap, restartMap: true }));
             handleClose();
+
           }}
         >
+
           <ThemeProvider theme={theme}>
           {style.name == 'Satellite' && <MapSatelliteIcon/>}
           {style.name == 'Light' && <MapLightIcon/>}
           {style.name == 'Dark' && <MapDarkIcon/>}
           {style.name == 'Basic' && <MapBasicIcon/>}
-
           <ListItemText primary={style.name} /> 
           </ThemeProvider>
 

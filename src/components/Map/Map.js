@@ -743,7 +743,7 @@ export default function Map() {
 
   useEffect(() => {
     setMap(null);
-  }, [stateMap.restartMap]);
+  }, [!stateMap.restartMap]);
 
   function getIndex(value, arr, prop) {
     for (var i = 0; i < arr.length; i++) {
@@ -771,6 +771,8 @@ export default function Map() {
           pitch: mapStyles[index].pitch,
           bearing: mapStyles[index].bearing,
         });
+
+        //setStateMap(stateMap => ({ ...stateMap, restartMap: false }));
 
         /// optimized interactions w/ map
         newMap.scrollZoom.enable();
@@ -1067,22 +1069,22 @@ export default function Map() {
     setStateApp((state) => ({ ...state, expandedCard: false }));
   };
 
-  useEffect(() => {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src =
-      "//api.usersnap.com/load/64ab8ea7-9417-41a0-b565-eb7ad69da871.js";
-    script.async = true;
+  // useEffect(() => {
+  //   var script = document.createElement("script");
+  //   script.type = "text/javascript";
+  //   script.src =
+  //     "//api.usersnap.com/load/64ab8ea7-9417-41a0-b565-eb7ad69da871.js";
+  //   script.async = true;
 
-    var x = document.getElementsByTagName("script")[0];
-    x.parentNode.insertBefore(script, x);
+  //   var x = document.getElementsByTagName("script")[0];
+  //   x.parentNode.insertBefore(script, x);
 
-    document.body.appendChild(script);
+  //   document.body.appendChild(script);
 
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+  //   return () => {
+  //     document.body.removeChild(script);
+  //   };
+  // }, []);
 
   return (
     <div className={classes.mapWrapper}>
