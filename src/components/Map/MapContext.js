@@ -86,7 +86,7 @@ const baseMapLayers = [
       "transit-label",
       "poi-label",
     ],
-    idx: 11,
+    //idx: 1,
   },
 
   {
@@ -148,7 +148,7 @@ const baseMapLayers = [
       "tunnel-street-minor-case",
       "tunnel-street-minor-low",
     ],
-    idx: 12,
+    //idx: 2,
   },
 
   {
@@ -160,19 +160,19 @@ const baseMapLayers = [
       "admin-0-boundary-bg",
       "admin-1-boundary-bg",
     ],
-    idx: 13,
+    idx: 3,
   },
 
   {
     name: "Buildings",
     id: ["building-extrusion"],
-    idx: 14,
+    //idx: 4,
   },
 
   {
     name: "Water",
     id: ["water-point-label", "water-line-label", "waterway-label", ,],
-    idx: 15,
+    //idx: 5,
   },
 
   {
@@ -183,7 +183,7 @@ const baseMapLayers = [
       "land-structure-line",
       "land-structure-polygon",
     ],
-    idx: 16,
+    //idx: 6,
   },
 ];
 
@@ -198,9 +198,9 @@ const MapContextProvider = (props) => {
     styleLayers: styleLayers,
     heatLayers: heatLayers,
     baseMapLayers: baseMapLayers,
-    checkedLayers: [],
+    checkedLayers: [0,3],
     checkedHeats: [],
-    checkedBaseLayers: [],
+    checkedBaseLayers: [0,1,2,3,4,5],
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,
