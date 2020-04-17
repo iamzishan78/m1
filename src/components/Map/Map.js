@@ -31,6 +31,8 @@ import {
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import * as MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import M1Geocoder from "./components/CustomGeocode.js";
+import DeckGL, { GeoJsonLayer } from "deck.gl";
 
 // import "./Map.css"
 
@@ -100,6 +102,54 @@ export default function Map() {
   const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
   const mapEl = useRef(null);
+
+
+
+  //////////////////////////////
+  const mapRef = useRef(null);
+  const [searchResultLayer, setSearchResultsLayer] = useState(null);
+
+  const [viewport, setViewport] = useState({
+    latitude: 37.7577,
+    longitude: -122.4376,
+    zoom: 8
+  });
+
+  const handleViewportChange = newViewport => {
+    setViewport({ ...viewport, ...newViewport });
+  };
+
+  const handleGeocoderViewportChange = viewport => {
+    const geocoderDefaultOverrides = { transitionDuration: 1000 };
+
+    return handleViewportChange({
+      ...viewport,
+      ...geocoderDefaultOverrides
+    });
+  };
+
+
+
+  const handleOnResult = event => {
+    console.log(event.result);
+    setSearchResultsLayer(
+      new GeoJsonLayer({
+        id: "search-result",
+        data: event.result.geometry,
+        getFillColor: [255, 0, 0, 128],
+        getRadius: 1000,
+        pointRadiusMinPixels: 10,
+        pointRadiusMaxPixels: 10
+      })
+    );
+  };
+
+  console.log(viewport);
+///////////////
+
+
+
+
   mapboxgl.accessToken =
     "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJjanYycGJxbG8yN3JsM3lsYTdnMXZoeHh1In0.tTNECYKDPtcrzivWTiZcIQ";
 
@@ -994,6 +1044,15 @@ export default function Map() {
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
+      
+{/*       {<M1Geocoder
+          mapRef={mapEl}
+          onResult={handleOnResult}
+          onViewportChange={handleGeocoderViewportChange}
+          position="top-left"
+          mapboxApiAccessToken={mapboxgl.accessToken}
+        />} */}
+
         <div className={classes.footerLeftLogo}>
           <img src="icons/M1LogoWhiteTransparent.png" alt="logo" width="150" />
         </div>
@@ -1094,6 +1153,7 @@ export default function Map() {
           </div>
         ) : null}
       </Portal>
+
     </div>
   );
 }

@@ -165,7 +165,7 @@ chart.cursor = new am4charts.XYCursor();
     bulletOil.stroke = new am4core.InterfaceColorSet().getFor("background");
     bulletOil.circle.strokeWidth = 2;
     bulletOil.circle.radius = 4;
-    bulletOil.circle.fill = am4core.color("#64b5f6");
+    bulletOil.circle.fill = am4core.color("#81c784");
 
     var bullethoverOil = bulletOil.states.create("hover");
     bullethoverOil.properties.scale = 1.3;

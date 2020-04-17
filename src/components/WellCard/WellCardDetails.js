@@ -3,6 +3,8 @@ import { AppContext } from "../../AppContext";
 import { WellCardContext } from "./WellCardContext";
 import { MapContext } from "./../Map/MapContext";
 import { makeStyles } from "@material-ui/core/styles";
+import { withStyles } from '@material-ui/core/styles';
+import { purple } from '@material-ui/core/colors';
 
 //material-ui components
 import Grid from "@material-ui/core/Grid";
@@ -45,6 +47,10 @@ import ProfileCard from "../Shared/ProfileCard";
 import WellTypeCard from "../Shared/WellTypeCard";
 import SpudDateCard from "../Shared/SpudDateCard";
 import WellApiCard from "../Shared/WellApiCard";
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+
 
 //import { WellData } from './data/welldata'
 
@@ -131,6 +137,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
+
+
+
+
 export default function WellCardDetails(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
@@ -143,9 +154,67 @@ export default function WellCardDetails(props) {
     }
   }, [props.target, setTarget]);
 
-  const handleCloseDetails = () => {
-    setStateWellCard((state) => ({ ...state, openWellDetails: false }));
+
+  // const handleCloseDetails = () => {
+  //   setStateWellCard((state) => ({ ...state, openWellDetails: false }));
+  // };
+
+  const [state, setState] = React.useState({
+    checkedOil: true,
+    checkedGas: true,
+    checkedWater: true,
+    checkedMulti: false,
+    checkedLog: false,
+
+  });
+
+  const handleChange = (event) => {
+    setState({ ...state, [event.target.name]: event.target.checked });
   };
+
+
+  const OilSwitch = withStyles({
+    switchBase: {
+      color: "#81c784",
+      '&$checked': {
+        color: "#81c784",
+      },
+      '&$checked + $track': {
+        backgroundColor: "#81c784",
+      },
+    },
+    checked: {},
+    track: {},
+  })(Switch);
+
+  const GasSwitch = withStyles({
+    switchBase: {
+      color: "#e57373",
+      '&$checked': {
+        color: "#e57373",
+      },
+      '&$checked + $track': {
+        backgroundColor: "#e57373",
+      },
+    },
+    checked: {},
+    track: {},
+  })(Switch);
+
+  const WaterSwitch = withStyles({
+    switchBase: {
+      color: "#64b5f6",
+      '&$checked': {
+        color: "#64b5f6",
+      },
+      '&$checked + $track': {
+        backgroundColor: "#64b5f6",
+      },
+    },
+    checked: {},
+    track: {},
+  })(Switch);
+
 
   const wellInfo = () => (
     <Grid id="vivivi" container spacing={2}>
@@ -156,7 +225,48 @@ export default function WellCardDetails(props) {
         <CardDetailsMap />
       </Grid>
       <Grid item xs={12}>
+
+        <FormControlLabel
+          control={<OilSwitch 
+                    checked={state.checkedOil} 
+                    onChange={handleChange} 
+                    name="checkedOil"
+                    />}
+          label="Oil"
+        />
+
+        <FormControlLabel
+          control={
+            <GasSwitch
+              checked={state.checkedGas}
+              onChange={handleChange}
+              name="checkedGas"
+              color="#e57373"
+            />}
+          label="Gas"
+        />
+        <FormControlLabel  
+            control={<WaterSwitch 
+                      checked={state.checkedWater}
+                      onChange={handleChange} 
+                      name="checkedWater"
+                      />} 
+            label="Water" />
+
+        <FormControlLabel
+          control={<Switch 
+                    checked={state.checkedMulti}
+                    onChange={handleChange} 
+                    name="checkedMulti"
+                    color = "primary"
+                     />} 
+          label="Multi-Axes" />
+
+        <FormControlLabel disabled control={<Switch />} label="Log Scale" />
+
         <WellProdChartProvider />
+
+
       </Grid>
     </Grid>
   );
