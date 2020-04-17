@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../NavigationContext";
 import Paper from '@material-ui/core/Paper';
@@ -44,7 +44,6 @@ const useStyles = makeStyles(theme => ({
   },
   user: {
     fontSize: 12,
-    padding: "1px 20px",
     color: "rgba(23, 170, 221, 1)",
   },
   rootDiv: {
@@ -78,22 +77,29 @@ const useStyles = makeStyles(theme => ({
     },
   }, 
   chip: {
-    padding: 3,
+    padding: "3px 10px",
     textAlign: "center",
+    fontWeight: "600",
   },
   chipContainer:{
     height: "100%",
-    margin: 10,
+    margin: "6px 6px",
   },
   chipRow: {
     display: "inline-flex",
-    padding: 2,
+    padding: "3px 10px",
   },
   deleteButton: {
     marginLeft: "30%"
   },
   listLabel: {
     padding: "6px 30px",
+  },
+  listItemContainer: {
+    display: "inherit",
+    "&:hover" : {
+      color: "transparent",
+    }
   }
 
 }));
@@ -102,13 +108,13 @@ const useStyles = makeStyles(theme => ({
 export default function FilterDedaults() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [tabsValue, setTabsValue] = useState(0);
+  const [tabsValue, setTabsValue] = useState(1);
   const [filters, setFilters] = useState(null);
   const [savedFilters, setSavedFilters] = useState(null);
   const [checkBoxActive, setCheckBoxActive] = useState(false);
   const [checkBoxDefault, setCheckBoxDefault] = useState(false);
   const [dateCreated, setDateCreated] = useState(new Date());
-  const [filterWellType, setFilterWellType] = useState(false);
+  const [filterType, setFilterType] = useState(null);
   const [saveSearchName, setSaveSearchName] = useState('');
   const [user, setUser] = useState('');
   const classes = useStyles();
@@ -138,11 +144,12 @@ export default function FilterDedaults() {
       defaultFiltersArgs = stateNav.m1neralDefaultFilters.map(elm => elm);
       setCheckBoxDefault(defaultFiltersArgs[0].default)
       setCheckBoxActive(defaultFiltersArgs[0].on)
-      defaultFilters = defaultFiltersArgs[0].filters.map(el => el)
-      filtersDefaultArr.push(defaultFilters)
-      m1neralSavedFilters.push(defaultFiltersArgs[0].name)
-      setSavedFilters(m1neralSavedFilters)
-      setFilterWellType(true)
+      if (defaultFiltersArgs[0].filters) {
+        defaultFilters = defaultFiltersArgs[0].filters.map(el => el)
+        filtersDefaultArr.push(defaultFilters)
+        m1neralSavedFilters.push(defaultFiltersArgs[0].name)
+        setSavedFilters(m1neralSavedFilters)
+      }
     }
 
     if (stateNav) {
@@ -153,13 +160,27 @@ export default function FilterDedaults() {
       mapStateNav.filter(element => {
         if (element && element[1].length > 1) {
           if (element[0].includes("filter")) {
-            saveFilters.push(element);
+            return saveFilters.push(element);
           }
         }
       })
       filtersStateNav = saveFilters;
-      if (filtersStateNav && filtersStateNav.length > 1) {
+      if (filtersStateNav && filtersStateNav.length > 0) {
         setFilters(filtersStateNav)
+        const getFilterType = () => {
+          filtersStateNav.map(item => {
+            if (item[1][1][1].includes("well")) {
+              setFilterType("Well")
+            }
+            if (item[1][1].includes("interest")) {
+              setFilterType("Interest")
+            }
+            if (item[1][1].includes("ownership")) {
+              setFilterType("Owner")
+            }
+          })
+        }
+        getFilterType()
       }
     }
   }, [stateNav]);
@@ -176,8 +197,28 @@ export default function FilterDedaults() {
     if (string.includes("well")) {
       return string.replace("well", " ")
     }
+    if (string.includes("interest")) {
+      return string.replace("interest", " ")
+    }
+    if (string.includes("ownership")) {
+      return string.replace("ownership", " ")
+    }
   }
- 
+
+  const deleteFilter = () => {
+    if (savedFilters[0] === "M1neral Default Filters") {
+      const m1neralDefaults = [
+        { 
+          name: "M1neral Default Filters",
+          filters: null,
+          on: false,
+          default: false,
+        },
+      ];
+      setStateNav(stateNav => ({ ...stateNav, m1neralDefaultFilters: m1neralDefaults }));
+    }
+  }
+
   return (
     <div>
       <Paper square>
@@ -224,7 +265,13 @@ export default function FilterDedaults() {
           {savedFilters ? savedFilters.map( el => 
             <div key={el}>
               <ListItem button>
-                <ListItemText className={classes.listItem} primary={"Saved Search:" + "  " + el} />
+                <ListItemText className={classes.listItem} primary={(
+                  <section>
+                    <div>{"Saved Search:" + "  " + el}</div>
+                    <div className={classes.user}>{user} - {dateCreated.toDateString()}</div>
+                  </section>
+                )} 
+                />
                 <Checkbox
                   className={classes.checkBox}
                   checked={checkBoxDefault}
@@ -241,11 +288,11 @@ export default function FilterDedaults() {
                   onChange={filterOnOff}
                   inputProps={{ 'aria-label': 'Active checkbox' }}
                 />
-                <IconButton aria-label="delete">
+                <IconButton onClick={deleteFilter} aria-label="delete">
                   <DeleteIcon />
                 </IconButton>
               </ListItem>
-              <div className={classes.user}>{user} - {dateCreated.toDateString()}</div>
+              
               <Divider />
             </div>
           ) : null} 
@@ -255,39 +302,49 @@ export default function FilterDedaults() {
       {tabsValue === 1 ? 
       <Paper className={classes.paparMain} square>
         <List  aria-label="mailbox folders">
-        {filterWellType ? 
             <div>
-              <div className={classes.listLabel}>Well</div>
-              <ListItem button>
-              {filters ? filters.map( el => 
-              <Chip
-                key={el}
-                className={classes.chipContainer}
-                label={(
-                  <section>
-                    <div className={classes.chip}>{removeNameFromType(el[1][1][1])}</div>
-                    {el[1].length === 5 && el[1][2].map(val =>
-                        <div className={classes.chipRow}>{val}</div> 
-                      )
-                    }
-                    {/* {el[1].length === 2 && el[1][1][1].map(val =>
-                        // <div className={classes.chipRow}>{val}</div> 
-                      )
-                    } */}
-                    
-                  </section>
-                )}
-                onClick={console.log(el)}
-                onDelete={ e => console.log(e)}
-              />
-              ) : null} 
-              <IconButton className={classes.deleteButton}  aria-label="delete">
-                <HighlightOffIcon />
-              </IconButton>
+              <div className={classes.listLabel}>{filterType}</div>
+              {filters ? filters.map( elm => 
+              <ListItem className={classes.listItemContainer} button>
+                {elm[1].length === 5 ? 
+                  elm[1][2].map(el =>  
+                      <Chip
+                      key={el}
+                      className={classes.chipContainer}
+                      label={(
+                        <section>
+                          <div className={classes.chip}>{removeNameFromType(elm[1][1][1])}</div>
+                          <div className={classes.chipRow}>{el}</div>
+                        </section>
+                        )}
+                      // onClick={console.log("")}
+                      // onDelete={ e => console.log(e)}
+                    />
+                  )
+                 : null}
+                {elm[1].length === 2 ? 
+                  elm[1][1].map(el =>  
+                      <Chip
+                      key={el}
+                      className={classes.chipContainer}
+                      label={(
+                        <section>
+                          <div className={classes.chip}>{removeNameFromType(elm[1][1][1])}</div>
+                          <div className={classes.chipRow}>{el}</div>
+                        </section>
+                        )}
+                      // onClick={console.log("")}
+                      // onDelete={ e => console.log(e)}
+                    />
+                  )
+                 : null}
+              <Button className={classes.deleteButton} endIcon={<HighlightOffIcon />}  aria-label="delete">
+                Clear All
+              </Button>
               </ListItem>
+            ) : null}
               <Divider />
             </div>
-            : null}
         </List>
       </Paper>
       : null}

@@ -202,7 +202,7 @@ export default function WellCard() {
   const classes = useStyles();
 
   useEffect(() => {
-    console.log("stateApp.user", stateApp.user);
+    // console.log("stateApp.user", stateApp.user);
     if (!source) {
       setSource({
         sourceId: stateApp.user.id,
@@ -272,7 +272,7 @@ export default function WellCard() {
       return date;
     }
   };
- 
+  console.log(stateApp.selectedWell)
   if (stateApp.selectedWell.wellStatus !== "Permit") {
     return stateApp.selectedWell ? (
         !stateExpandableCard.expanded ? (
