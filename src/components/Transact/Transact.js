@@ -11,6 +11,7 @@ import { TransactContext } from "./TransactContext";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { UPDATETRANSACTION } from "../../graphQL/useMutationUpdateTransaction";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Dialog from "./components/dialog";
 import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
 const data_file = {
@@ -128,6 +129,8 @@ export default function Transact() {
   const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [transactData, setTransactData] = useState();
   const [id, setId] = useState();
+  const [cardId, setCardId] = useState();
+  const [laneId, setLaneId] = useState();
 
   const [getTransactionData, { loading, data }] = useLazyQuery(TRANSACTIONDATA);
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
@@ -185,12 +188,22 @@ export default function Transact() {
   };
 
   const handleCardClick = (cardId, metadata, laneId) => {
-    console.log("mmm");
-    console.log(laneId);
+    setCardId(cardId);
+    setLaneId(laneId);
+    setStateTransact((stateTransact) => ({
+      ...stateTransact,
+      openDialog: true,
+    }));
   };
 
   return !loading && data && transactData ? (
     <div className={classes.root}>
+      <Dialog
+        cardId={cardId}
+        laneId={laneId}
+        transactData={transactData}
+        handleDataChange={handleDataChange}
+      />
       <Board
         className={classes.list}
         style={{ backgroundColor: " #eeeeee" }}
