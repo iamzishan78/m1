@@ -36,9 +36,7 @@ const styleLayers = [
     id: [],
     idx: 7,
   },
-
 ];
-
 
 const heatLayers = [
   {
@@ -198,9 +196,9 @@ const MapContextProvider = (props) => {
     styleLayers: styleLayers,
     heatLayers: heatLayers,
     baseMapLayers: baseMapLayers,
-    checkedLayers: [0,3],
+    checkedLayers: [0, 3],
     checkedHeats: [],
-    checkedBaseLayers: [0,1,2,3,4,5],
+    checkedBaseLayers: [0, 1, 2, 3, 4, 5],
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,
@@ -209,6 +207,7 @@ const MapContextProvider = (props) => {
     map: null,
     draw: null,
     currentFeature: undefined,
+    restartMap: false,
   });
   return (
     <MapContext.Provider value={[stateMap, setStateMap]}>

@@ -1,10 +1,11 @@
 import gql from "graphql-tag";
 
 export const TRANSACTIONDATA = gql`
-  query getTransactionData {
-    transactionData {
+  query getTransactionData($userId: ID) {
+    transactionData(userId: $userId) {
       _id
       allData
+      user
     }
   }
 `;

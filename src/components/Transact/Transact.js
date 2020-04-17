@@ -4,13 +4,14 @@
 
 import React, { useContext, useState, useEffect } from "react";
 import { useMutation, useLazyQuery } from "@apollo/react-hooks";
-
+import { AppContext } from "../../AppContext";
 import Board from "react-trello";
 import { makeStyles } from "@material-ui/core/styles";
 import { TransactContext } from "./TransactContext";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { UPDATETRANSACTION } from "../../graphQL/useMutationUpdateTransaction";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
 const data_file = {
   lanes: [
@@ -123,6 +124,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Transact() {
   const classes = useStyles();
+  const [stateApp] = useContext(AppContext);
   const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [transactData, setTransactData] = useState();
   const [id, setId] = useState();
@@ -130,9 +132,39 @@ export default function Transact() {
   const [getTransactionData, { loading, data }] = useLazyQuery(TRANSACTIONDATA);
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
 
+  //////begin////////temporary  while signed user fixed
+
+  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
+  const [user, setUser] = useState({ _id: "" });
+
   useEffect(() => {
-    getTransactionData();
-  }, []);
+    if (stateApp && stateApp.user && stateApp.user.email) {
+      getUserByEmail({
+        variables: {
+          userEmail: stateApp.user.email,
+        },
+      });
+    }
+  }, [stateApp.user.email]);
+
+  useEffect(() => {
+    if (dataUser && dataUser.userByEmail) {
+      setUser(dataUser.userByEmail);
+    }
+  }, [dataUser]);
+
+  /////end/////////temporary while signed user fixed
+
+  useEffect(() => {
+    //////stateApp.user._id//////////temporary
+    if (user._id !== "") {
+      getTransactionData({
+        variables: {
+          userId: user._id, //////stateApp.user._id//////////temporary
+        },
+      });
+    }
+  }, [user]); ////////////remove dependency//////////temporary
 
   useEffect(() => {
     if (data && data.transactionData && data.transactionData.allData) {
@@ -145,7 +177,7 @@ export default function Transact() {
     updateTransaction({
       variables: {
         transactionId: id,
-        transaction: { allData: newData },
+        transaction: { allData: newData, user: user._id },
       },
       refetchQueries: ["getTransactionData"],
       awaitRefetchQueries: true,
@@ -173,7 +205,6 @@ export default function Transact() {
         hideCardDeleteIcon={false}
         onDataChange={handleDataChange}
         onCardClick={handleCardClick}
-        // components={{ Card: CustomCard }}
 
         //onCardAdd = {handleCardAdd}
         //onCardDelete = {handleCardDelete}
