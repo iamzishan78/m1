@@ -31,7 +31,7 @@ import {
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import * as MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import M1Geocoder from "./components/CustomGeocode.js";
+//import M1Geocoder from "./components/CustomGeocode.js";
 import DeckGL, { GeoJsonLayer } from "deck.gl";
 
 // import "./Map.css"
