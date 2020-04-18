@@ -4,6 +4,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { NavigationContext } from "../NavigationContext";
 import FilterOwnerCount from "./FilterOwnerCount";
+import FilterOwnerConfidence from "./FilterOwnerConfidence";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -286,6 +287,7 @@ export default function FilterFormOwner() {
           disableListWrap
         />
       <FilterOwnerCount/>
+      <FilterOwnerConfidence/>
       </div>
     </div>
   );
