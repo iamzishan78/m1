@@ -1,5 +1,7 @@
 import React, { useEffect,useContext,useState } from 'react';
 import {WellProdChartContext} from './WellProdChartContext';
+import {WellCardContext} from '../WellCard/WellCardContext';
+
 import {AppContext} from '../../AppContext';
 import useQueryWellProdHistory from '../../graphQL/useQueryProdHistory';
 //material-ui components
@@ -54,7 +56,10 @@ export default function WellProdChart(props) {
   const [dataLoading,setDataLoading] = useState(false)
   const [dataError,setDataError] = useState(false)
   const classes = useStyles();
-  
+  const [stateWellCard ,setStateWellCard] = useContext(WellCardContext);
+
+
+
 //graphQL
 const {data,loading,error} = useQueryWellProdHistory(stateApp.selectedWell.api)
 //const {data,loading,error} = useQueryWellProdHistory(stateMap.selectedWellApi)
@@ -75,21 +80,20 @@ useEffect( () => {
   var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
   dateAxis.renderer.minGridDistance = 50;
 
-  // var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-  // if(chart.yAxes.indexOf(valueAxis) != 0){
-  // 	valueAxis.syncWithAxis = chart.yAxes.getIndex(0);
+  // if(!stateWellCard.chartToggleMultiAxis){
+  //   var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+  //   //valueAxis.logarithmic = true;
   // }
-  //valueAxis.logarithmic = true;
 
 
+  var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
 
 
-// Add legend
-chart.legend = new am4charts.Legend();
+  // Add legend
+  chart.legend = new am4charts.Legend();
 
-// Add cursor
-chart.cursor = new am4charts.XYCursor();
-
+  // Add cursor
+  chart.cursor = new am4charts.XYCursor();
 
 
 
@@ -97,9 +101,13 @@ chart.cursor = new am4charts.XYCursor();
 
     
     // Create gas series 
+    if(stateWellCard.chartToggleGas){
+
+    if(stateWellCard.chartToggleMultiAxis){
     var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
     if(chart.yAxes.indexOf(valueAxis) != 0){
       valueAxis.syncWithAxis = chart.yAxes.getIndex(0);
+    }
     }
 
     var series = chart.series.push(new am4charts.LineSeries());
@@ -114,13 +122,15 @@ chart.cursor = new am4charts.XYCursor();
     series.showOnInit = true;
     series.name = 'Gas';
     series.tooltipText = "Gas: [bold]{valueY}[/]";
+    
+    if(stateWellCard.chartToggleMultiAxis){
     series.yAxis = valueAxis;
-
     valueAxis.renderer.line.strokeOpacity = 1;
     valueAxis.renderer.line.strokeWidth = 1;
     valueAxis.renderer.line.stroke = series.stroke;
     valueAxis.renderer.labels.template.fill = series.stroke;
     valueAxis.renderer.opposite = true;
+    }
 
     var bullet = series.bullets.push(new am4charts.CircleBullet());
     bullet.stroke = new am4core.InterfaceColorSet().getFor("background");
@@ -135,13 +145,18 @@ chart.cursor = new am4charts.XYCursor();
     series.tooltip.background.fill = am4core.color("#e57373");
 
 
+  }
 
 
+  if(stateWellCard.chartToggleOil){
 
+    if(stateWellCard.chartToggleMultiAxis){
     var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
     if(chart.yAxes.indexOf(valueAxis) != 0){
       valueAxis.syncWithAxis = chart.yAxes.getIndex(0);
     }
+    }
+
     var seriesOil = chart.series.push(new am4charts.LineSeries());
     seriesOil.dataFields.valueY = "oil";
     seriesOil.dataFields.dateX = "reportDate";
@@ -154,12 +169,15 @@ chart.cursor = new am4charts.XYCursor();
     seriesOil.showOnInit = true;
     seriesOil.name = 'Oil';
     seriesOil.tooltipText = "Oil: [bold]{valueY}[/]";
+
+    if(stateWellCard.chartToggleMultiAxis){
     seriesOil.yAxis = valueAxis;
     valueAxis.renderer.line.strokeOpacity = 1;
     valueAxis.renderer.line.strokeWidth = 1;
     valueAxis.renderer.line.stroke = seriesOil.stroke;
     valueAxis.renderer.labels.template.fill = seriesOil.stroke;
     valueAxis.renderer.opposite = true;
+    }
 
     var bulletOil = seriesOil.bullets.push(new am4charts.CircleBullet());
     bulletOil.stroke = new am4core.InterfaceColorSet().getFor("background");
@@ -172,15 +190,19 @@ chart.cursor = new am4charts.XYCursor();
 
     seriesOil.tooltip.getFillFromObject = false;
     seriesOil.tooltip.background.fill = am4core.color("#81c784");
+  }
 
 
 
+  if(stateWellCard.chartToggleWater){
 
-
+    if(stateWellCard.chartToggleMultiAxis){
     var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
     if(chart.yAxes.indexOf(valueAxis) != 0){
       valueAxis.syncWithAxis = chart.yAxes.getIndex(0);
     }
+    }
+
     var seriesWater = chart.series.push(new am4charts.LineSeries());
     seriesWater.dataFields.valueY = "water";
     seriesWater.dataFields.dateX = "reportDate";
@@ -193,12 +215,15 @@ chart.cursor = new am4charts.XYCursor();
     seriesWater.showOnInit = true;
     seriesWater.name = 'Water';
     seriesWater.tooltipText = "Water: [bold]{valueY}[/]";
+
+    if(stateWellCard.chartToggleMultiAxis){
     seriesWater.yAxis = valueAxis;
     valueAxis.renderer.line.strokeOpacity = 1;
     valueAxis.renderer.line.strokeWidth = 1;
     valueAxis.renderer.line.stroke = seriesWater.stroke;
     valueAxis.renderer.labels.template.fill = seriesWater.stroke;
     valueAxis.renderer.opposite = true;
+    }
 
     var bulletWater = seriesWater.bullets.push(new am4charts.CircleBullet());
     bulletWater.stroke = new am4core.InterfaceColorSet().getFor("background");
@@ -212,7 +237,7 @@ chart.cursor = new am4charts.XYCursor();
     seriesWater.tooltip.getFillFromObject = false;
     seriesWater.tooltip.background.fill = am4core.color("#64b5f6");
 
-
+  }
 
 
 
@@ -224,12 +249,12 @@ chart.cursor = new am4charts.XYCursor();
     
     // Create a horizontal scrollbar with previe and place it underneath the date axis
     chart.scrollbarX = new am4charts.XYChartScrollbar();
-    chart.scrollbarX.series.push(series);
-    chart.scrollbarX.series.push(seriesOil);
-    chart.scrollbarX.series.push(seriesWater);
+    if(stateWellCard.chartToggleGas){chart.scrollbarX.series.push(series)};
+    if(stateWellCard.chartToggleOil){chart.scrollbarX.series.push(seriesOil)};
+    if(stateWellCard.chartToggleWater){chart.scrollbarX.series.push(seriesWater)};
     chart.scrollbarX.parent = chart.bottomAxesContainer;
     
-    dateAxis.start = 0.8;
+    dateAxis.start = 0;
     dateAxis.keepSelection = true;
 
     // Enable export
@@ -247,6 +272,11 @@ chart.cursor = new am4charts.XYCursor();
     }
     
   }
+
+
+
+
+
   return () => {
     console.log('will unmount');
     if(chart){
@@ -254,7 +284,12 @@ chart.cursor = new am4charts.XYCursor();
     }
    
   }
-},[stateWellProdChart.wellProdHistory,data])
+},[stateWellProdChart.wellProdHistory,
+    data,
+    stateWellCard.chartToggleOil,
+    stateWellCard.chartToggleGas,
+    stateWellCard.chartToggleWater,
+    stateWellCard.chartToggleMultiAxis])
 
 
 

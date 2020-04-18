@@ -155,22 +155,23 @@ export default function WellCardDetails(props) {
   }, [props.target, setTarget]);
 
 
-  // const handleCloseDetails = () => {
-  //   setStateWellCard((state) => ({ ...state, openWellDetails: false }));
-  // };
 
-  const [state, setState] = React.useState({
-    checkedOil: true,
-    checkedGas: true,
-    checkedWater: true,
-    checkedMulti: false,
-    checkedLog: false,
-
-  });
-
-  const handleChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.checked });
+  const handleChangeOil = (event) => {
+    setStateWellCard({ ...stateWellCard, chartToggleOil: event.target.checked });
   };
+
+  const handleChangeGas = (event) => {
+    setStateWellCard({ ...stateWellCard, chartToggleGas: event.target.checked });
+  };
+
+  const handleChangeWater = (event) => {
+    setStateWellCard({ ...stateWellCard, chartToggleWater: event.target.checked });
+  };
+
+  const handleChangeMultiAxis = (event) => {
+    setStateWellCard({ ...stateWellCard, chartToggleMultiAxis: event.target.checked });
+  };
+
 
 
   const OilSwitch = withStyles({
@@ -228,9 +229,9 @@ export default function WellCardDetails(props) {
 
         <FormControlLabel
           control={<OilSwitch 
-                    checked={state.checkedOil} 
-                    onChange={handleChange} 
-                    name="checkedOil"
+                    checked={stateWellCard.chartToggleOil} 
+                    onChange={handleChangeOil} 
+                    //name="chartToggleOil"
                     />}
           label="Oil"
         />
@@ -238,8 +239,8 @@ export default function WellCardDetails(props) {
         <FormControlLabel
           control={
             <GasSwitch
-              checked={state.checkedGas}
-              onChange={handleChange}
+              checked={stateWellCard.chartToggleGas}
+              onChange={handleChangeGas}
               name="checkedGas"
               color="#e57373"
             />}
@@ -247,17 +248,16 @@ export default function WellCardDetails(props) {
         />
         <FormControlLabel  
             control={<WaterSwitch 
-                      checked={state.checkedWater}
-                      onChange={handleChange} 
+                      checked={stateWellCard.chartToggleWater}
+                      onChange={handleChangeWater} 
                       name="checkedWater"
                       />} 
             label="Water" />
 
         <FormControlLabel
           control={<Switch 
-                    checked={state.checkedMulti}
-                    onChange={handleChange} 
-                    name="checkedMulti"
+                    checked={stateWellCard.chartToggleMultiAxis}
+                    onChange={handleChangeMultiAxis} 
                     color = "primary"
                      />} 
           label="Multi-Axes" />

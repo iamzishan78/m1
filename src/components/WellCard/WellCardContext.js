@@ -8,7 +8,12 @@ const WellCardContextProvider = props => {
   const [stateWellCard, setStateWellCard] = useState({
     selectedWell: { WellName: '' },
     openWellDetails: false,
-    chartData:chartData
+    chartData:chartData,
+    chartToggleOil: true, 
+    chartToggleGas: true, 
+    chartToggleWater: true, 
+    chartToggleMultiAxis: false, 
+
   })
   return (
     <WellCardContext.Provider value={[stateWellCard, setStateWellCard]}>
