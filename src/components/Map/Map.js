@@ -1089,7 +1089,7 @@ export default function Map() {
   //var scale = 'scale(1)';
   //document.body.style.webkitTransform =  scale;  
 
-  document.body.style.zoom = (window.innerWidth / window.outerWidth)*0.8
+  //document.body.style.zoom = (window.innerWidth / window.outerWidth)*0.8
 
   return (
 
