@@ -1086,7 +1086,13 @@ export default function Map() {
   //   };
   // }, []);
 
+  //var scale = 'scale(1)';
+  //document.body.style.webkitTransform =  scale;  
+
+  document.body.style.zoom = (window.innerWidth / window.outerWidth)*0.8
+
   return (
+
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
         {/*       {<M1Geocoder
