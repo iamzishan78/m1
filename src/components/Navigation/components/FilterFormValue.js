@@ -5,6 +5,8 @@ import { NavigationContext } from "../NavigationContext";
 import ProdMinMax from "./ProdMinMax";
 import FormControl from "@material-ui/core/FormControl";
 import FilterOwnerAppraisalValue from "./FilterOwnerAppraisalValue";
+import FilterWellAppraisal from "./FilterWellAppraisal";
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -119,10 +121,11 @@ export default function FilterFormProduction() {
   return (
     <div className={classes.root}>
 
+    <FilterWellAppraisal />
+
     <FormControl className={classes.formControl}>
-      <FilterOwnerAppraisalValue />
+    <FilterOwnerAppraisalValue />
     </FormControl> 
-  
 
     </div>
   );
