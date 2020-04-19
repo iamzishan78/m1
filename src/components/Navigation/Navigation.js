@@ -84,6 +84,9 @@ import FilterFormOwner from "./components/FilterFormOwner";
 import FilterFormProduction from "./components/FilterFormProduction";
 import FilterDefaults from "./components/FilterDefaults";
 import M1neralLogoSvg from "../Shared/m1neralLogoSvg";
+import FilterFormValue from "./components/FilterFormValue";
+import FilterFormTags from "./components/FilterFormTags";
+import FilterFormAI from "./components/FilterFormAI";
 
 import Avatar from "react-avatar";
 
@@ -846,7 +849,7 @@ export default function Navigation(props) {
                 >
                   <Tab
                     // disabled
-                    onClick={handleFilterCardOpen}
+                    //onClick={handleFilterCardOpen}
                     value={0}
                     className={classes.tab}
                     icon={
@@ -861,7 +864,7 @@ export default function Navigation(props) {
                   />
 
                   <Tab
-                    onClick={handleFilterCardOpen}
+                    //onClick={handleFilterCardOpen}
                     value={1}
                     className={classes.tab}
                     icon={
@@ -901,8 +904,58 @@ export default function Navigation(props) {
                     }
                     aria-label="production"
                   />
+                <Tab
+                 // disabled={true}
+                  value={4}
+                  classes={{ root: classes.tab }}
+                  aria-label="Value" 
+                  icon={
+                    // <Badge
+                    //   color="secondary"
+                    // >
+                      <ValuationIcon color="#fff" opacity="1"/>
+                      // <div className={classes.betaText}>
+                      //   BETA
+                      // </div>
+                    // </Badge>
+                    }
+                    aria-label="value"
+                />
+
+                <Tab
+                  //disabled={true}
+                  value={5}
+                  classes={{ root: classes.tab }}
+                  icon={
+                    // <Badge
+                    //   color="secondary"
+                    // >
+                     <LocalOfferIcon htmlColor="#fff" opacity="1" />
+                    //   <div className={classes.betaText}>
+                    //     BETA
+                    //   </div>
+                    // </Badge>
+                    }
+                  aria-label="tags"
+                />
+                <Tab
+                  //disabled={true}
+                  value={6}
+                  classes={{ root: classes.tab }}
+                  icon={
+                    // <Badge
+                    //   color="secondary"
+                    // >
+                      <PredictiveIcon color="#fff" opacity="1" />
+                    //  <div className={classes.betaText}>
+                    //     beta
+                    //   </div> 
+                    // </Badge> 
+                    }
+                  aria-label="ai"
+                />
                   <Tab
-                    value={4}
+                    value={7}
                     classes={{ root: classes.tab }}
                     style={{paddingTop: 10}}
                     icon={
@@ -915,55 +968,8 @@ export default function Navigation(props) {
                     }
                     aria-label="filter settings"
                   />
-                  {/* <Tab
-                  disabled={true}
-                  value={5}
-                  classes={{ root: classes.tab }}
-                  aria-label="valuation" 
-                  icon={
-                    <Badge
-                      color="secondary"
-                    >
-                      <ValuationIcon color="#fff" opacity="0.5"/>
-                      <div className={classes.betaText}>
-                        BETA
-                      </div>
-                    </Badge>
-                    }
-                />
-                <Tab
-                  disabled={true}
-                  value={6}
-                  classes={{ root: classes.tab }}
-                  icon={
-                    <Badge
-                      color="secondary"
-                    >
-                      <PredictiveIcon color="#fff" opacity="0.5" />
-                      <div className={classes.betaText}>
-                        BETA
-                      </div>
-                    </Badge> 
-                    }
-                  aria-label="predictive"
-                />
-                <Tab
-                  disabled={true}
-                  value={7}
-                  classes={{ root: classes.tab }}
-                  icon={
-                    <Badge
-                      color="secondary"
-                    >
-                     <LocalOfferIcon htmlColor="#fff" opacity="0.5" />
-                      <div className={classes.betaText}>
-                        BETA
-                      </div>
-                    </Badge>
-                    }
-                  aria-label="tags"
-                /> */}
                 </Tabs>
+                
               </div>
             ) : (
               <div style={{ display: "none" }}></div>
@@ -1314,7 +1320,105 @@ export default function Navigation(props) {
               </Card>
             </ClickAwayListener>
           </TabPanel>
+
+
           <TabPanel value={value} index={4} dir={theme.direction}>
+            <ClickAwayListener onClickAway={handleClickAway}>
+              <Card className={classes.card}>
+                <CardHeader
+                  classes={{
+                    title: classes.cardTitle,
+                    subheader: classes.subheader,
+                  }}
+                  action={
+                    <div>
+                      <IconButton
+                        color="secondary"
+                        onClick={handleFilterCardClose}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                  }
+                  title="Filters"
+                  subheader="Value"
+                />
+                <CardActions
+                  classes={{
+                    root: classes.cardAction,
+                  }}
+                ></CardActions>
+                <CardContent className={classes.cardContent}>
+                  <FilterFormValue />
+                </CardContent>
+              </Card>
+            </ClickAwayListener>
+          </TabPanel>
+          <TabPanel value={value} index={5} dir={theme.direction}>
+            <ClickAwayListener onClickAway={handleClickAway}>
+              <Card className={classes.card}>
+                <CardHeader
+                  classes={{
+                    title: classes.cardTitle,
+                    subheader: classes.subheader,
+                  }}
+                  action={
+                    <div>
+                      <IconButton
+                        color="secondary"
+                        onClick={handleFilterCardClose}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                  }
+                  title="Filters"
+                  subheader="Tags"
+                />
+                <CardActions
+                  classes={{
+                    root: classes.cardAction,
+                  }}
+                ></CardActions>
+                <CardContent className={classes.cardContent}>
+                  <FilterFormTags />
+                </CardContent>
+              </Card>
+            </ClickAwayListener>
+          </TabPanel>
+          <TabPanel value={value} index={6} dir={theme.direction}>
+            <ClickAwayListener onClickAway={handleClickAway}>
+              <Card className={classes.card}>
+                <CardHeader
+                  classes={{
+                    title: classes.cardTitle,
+                    subheader: classes.subheader,
+                  }}
+                  action={
+                    <div>
+                      <IconButton
+                        color="secondary"
+                        onClick={handleFilterCardClose}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                  }
+                  title="Filters"
+                  subheader="AI"
+                />
+                <CardActions
+                  classes={{
+                    root: classes.cardAction,
+                  }}
+                ></CardActions>
+                <CardContent className={classes.cardContent}>
+                  <FilterFormAI />
+                </CardContent>
+              </Card>
+            </ClickAwayListener>
+          </TabPanel>
+          <TabPanel value={value} index={7} dir={theme.direction}>
             <ClickAwayListener onClickAway={handleClickAway}>
               <Card className={classes.card}>
                 <CardHeader
@@ -1346,15 +1450,7 @@ export default function Navigation(props) {
               </Card>
             </ClickAwayListener>
           </TabPanel>
-          <TabPanel value={value} index={5} dir={theme.direction}>
-            Item Six
-          </TabPanel>
-          <TabPanel value={value} index={6} dir={theme.direction}>
-            Item Seven
-          </TabPanel>
-          <TabPanel value={value} index={7} dir={theme.direction}>
-            Item eight
-          </TabPanel>
+
         </div>
       ) : null}
       <main className={classes.content}>

@@ -4,7 +4,6 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { NavigationContext } from "../NavigationContext";
 import FilterOwnerCount from "./FilterOwnerCount";
-import FilterOwnerConfidence from "./FilterOwnerConfidence";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,32 +33,6 @@ const interestList = [
   "PRODUCTION PAYMENT"
 ];
 
-// const interestObjects = [
-//   {
-//     id: "6988a274-9414-4ccd-ad93-2b7174c9897e",
-//     name: "Royalty Interest",
-//     text: "interestTypeRoyaltyInterest",
-//     description: "RI"
-//   },
-//   {
-//     id: "92c2f076-5541-4c7d-a9a1-2505f5170fb5",
-//     name: "Override Royalty",
-//     text: "interestTypeOverrideRoyalty",
-//     description: "OR"
-//   },
-//   {
-//     id: "10370a7a-6feb-4bfe-9425-172b2ff2c93e",
-//     name: "Working Interest",
-//     text: "interestTypeWorkingInterest",
-//     description: "WI"
-//   },
-//   {
-//     id: "06e65943-44ca-477a-ac3d-3e479e55b5f6",
-//     name: "Production Payment",
-//     text: "interestTypeProductionPayment",
-//     description: "PP"
-//   }
-// ];
 
 const ownerTypesList = [
   "RELIGIOUS INSTITUTIONS",
@@ -72,56 +45,6 @@ const ownerTypesList = [
   "UNKNOWN"
 ];
 
-// const ownerTypesObjects = [
-//   {
-//     id: "8784ca4d-b03c-47fc-be16-05e87c7389ec",
-//     name: "Religious Institutions",
-//     text: "ownershipTypeReligiousInstitutions",
-//     description: "R"
-//   },
-//   {
-//     id: "15c3cc06-4852-49f9-a7d6-f80bd8969825",
-//     name: "Governmental Bodies",
-//     text: "ownershipTypeGovernmentalBodies",
-//     description: "G"
-//   },
-//   {
-//     id: "8d322ffb-10b5-41f8-8c65-822f350ea483",
-//     name: "Non Profits",
-//     text: "ownershipTypeNonProfits",
-//     description: "N"
-//   },
-//   {
-//     id: "a5de7ed6-f079-475e-a314-1a8f6c62ffca",
-//     name: "Trusts",
-//     text: "ownershipTypeTrusts",
-//     description: "T"
-//   },
-//   {
-//     id: "e42bb58b-5793-48bc-ae4e-dc83c152d422",
-//     name: "Corporations",
-//     text: "ownershipTypeCorporations",
-//     description: "C"
-//   },
-//   {
-//     id: "2cab70fe-838c-4625-81f2-bfae9afeb5ea",
-//     name: "Educational Institutions",
-//     text: "ownershipTypeEducationalInstitutions",
-//     description: "E"
-//   },
-//   {
-//     id: "20779d6c-0c59-46a7-9ff4-19573efe5a76",
-//     name: "Individuals",
-//     text: "ownershipTypeIndividuals",
-//     description: "I"
-//   },
-//   {
-//     id: "76c48dfe-0e5b-4ad6-9135-54db2dc76232",
-//     name: "Unknown",
-//     text: "ownershipTypeUnknown",
-//     description: ""
-//   }
-// ];
 
 export default function FilterFormOwner() {
   const classes = useStyles();
@@ -287,7 +210,6 @@ export default function FilterFormOwner() {
           disableListWrap
         />
       <FilterOwnerCount/>
-      <FilterOwnerConfidence/>
       </div>
     </div>
   );
