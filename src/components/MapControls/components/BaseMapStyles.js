@@ -3,7 +3,7 @@ import React, {
   useState,
   useLayoutEffect,
   useRef,
-  useEffect
+  useEffect,
 } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Menu from "@material-ui/core/Menu";
@@ -15,13 +15,13 @@ import { style } from "@material-ui/system";
 //import mapStyles from "../../Map/components/Utils/MapStyles";
 //import Satellite_Image from '../../Shared/pngImages/Satellite.PNG';
 import { Icon } from "@material-ui/core";
-import SvgIcon from '@material-ui/core/SvgIcon';
-import IconButton from '@material-ui/core/IconButton';
+import SvgIcon from "@material-ui/core/SvgIcon";
+import IconButton from "@material-ui/core/IconButton";
 //import createMuiTheme from "@material-ui/styles/createMuiTheme";
 //import MuiThemeProvider from "@material-ui/styles/MuiThemeProvider";
-import { createMuiTheme } from '@material-ui/core/styles';
-import { ThemeProvider } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { createMuiTheme } from "@material-ui/core/styles";
+import { ThemeProvider } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
 import MapDarkIcon from "../../Shared/svgIcons/MapDarkIcon";
 import MapSatelliteIcon from "../../Shared/svgIcons/MapSatelliteIcon";
 import MapLightIcon from "../../Shared/svgIcons/MapLightIcon";
@@ -41,7 +41,7 @@ const theme = createMuiTheme({
         //padding: 10,
         //display: 'flex',
         //alignItems: 'center',
-      }
+      },
     },
     MuiListItemText: {
       root: {
@@ -50,18 +50,18 @@ const theme = createMuiTheme({
         //padding: 10,
         //display: 'flex',
         //alignItems: 'center',
-        textAlign: 'right',
+        textAlign: "right",
         padding: 20,
-      }
-  }
-}
+      },
+    },
+  },
 });
 
 const StyledMenu = withStyles({
   paper: {
-    border: "1px solid #011133"
-  }
-})(props => (
+    border: "1px solid #011133",
+  },
+})((props) => (
   <Menu
     elevation={0}
     variant="menu"
@@ -69,61 +69,55 @@ const StyledMenu = withStyles({
     getContentAnchorEl={null}
     anchorOrigin={{
       vertical: "top",
-      horizontal: "left"
+      horizontal: "left",
     }}
     MenuListProps={{
-      disablePadding: true
+      disablePadding: true,
     }}
     transformOrigin={{
       vertical: "top",
-      horizontal: "right"
+      horizontal: "right",
     }}
     {...props}
   />
 ));
 
-const StyledMenuItem = withStyles(theme => ({
+const StyledMenuItem = withStyles((theme) => ({
   root: {
     fontFamily: "Poppins",
-    color: 'white',
+    color: "white",
     "&:hover": {
-      background: "#4B618F"
+      background: "#4B618F",
     },
     backgroundColor: "#263451",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: theme.palette.common.white
+      color: theme.palette.common.white,
       // },
     },
-   }
+  },
 }))(MenuItem);
 
-const StyledMenuHeaderItem = withStyles(theme => ({
+const StyledMenuHeaderItem = withStyles((theme) => ({
   root: {
     fontFamily: "Poppins",
     "&:hover": {
-      background: "#4B618F"
+      background: "#4B618F",
     },
     //'&:focus': {
     backgroundColor: "#263451",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: theme.palette.common.white
+      color: theme.palette.common.white,
       // },
     },
     //width: 250,
-  }
+  },
 }))(MenuItem);
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
-    backgroundColor: "#011133 !important"
-  }
+    backgroundColor: "#011133 !important",
+  },
 }));
-
-
-
-
-
-
 
 function Icon2() {
   return (
@@ -147,9 +141,6 @@ function Icon2() {
   );
 }
 
-
-
-
 export default function BaseMapStyles(props) {
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
@@ -158,12 +149,12 @@ export default function BaseMapStyles(props) {
   //const theme = useTheme()
   const classes = useStyles();
   const handleClose = () => {
-    setStateMapControls(state => ({ ...state, anchorEl: null }));
+    setStateMapControls((state) => ({ ...state, anchorEl: null }));
   };
 
   const [mapStyles, setMapStyles] = useState([]);
 
-  const handleToggle = idx => () => {
+  const handleToggle = (idx) => () => {
     //console.log(idx);
     //console.log("toggle stateMap.checkedBaseLayers before", stateMap.baseMapLayers);
     const currentIndex = stateMap.checkedBaseLayers.indexOf(idx);
@@ -176,12 +167,10 @@ export default function BaseMapStyles(props) {
     }
     //console.log("newchecked", newChecked);
 
-    setStateMap(stateMap => ({ ...stateMap, checkedBaseLayers: newChecked }));
+    setStateMap((stateMap) => ({ ...stateMap, checkedBaseLayers: newChecked }));
 
     //console.log("toggle stateMap.checkedBaseLayers after", stateMap.checkedBaseLayers);
   };
-
-
 
   useEffect(() => {
     const req = new Request(
@@ -191,8 +180,8 @@ export default function BaseMapStyles(props) {
         mode: "cors",
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       }
     );
 
@@ -200,8 +189,8 @@ export default function BaseMapStyles(props) {
     const signal = abortController.signal;
 
     fetch(req, { signal: signal })
-      .then(results => results.json())
-      .then(data => {
+      .then((results) => results.json())
+      .then((data) => {
         setMapStyles(data.slice(0, 4));
       });
 
@@ -211,70 +200,50 @@ export default function BaseMapStyles(props) {
     };
   }, []);
 
-
-
-
-
-
-
-
-
-
-
-
-
   return (
-    <ClickAwayListener onClickAway={handleClose}> 
-    <StyledMenu
-      id="customized-menu"
-      anchorEl={stateMapControls.anchorEl}
-      keepMounted
-      open={Boolean(stateMapControls.anchorEl)}
-      onClose={handleClose}
-    >
-      <StyledMenuHeaderItem
-        disableRipple
-        key="subheader"
-        role={undefined}
-        dense
-        className={classes.subHeaderItem}
+    <ClickAwayListener onClickAway={handleClose}>
+      <StyledMenu
+        id="customized-menu"
+        anchorEl={stateMapControls.anchorEl}
+        keepMounted
+        open={Boolean(stateMapControls.anchorEl)}
+        onClose={handleClose}
       >
-        <ListItemText primary="Base Map" />
-      </StyledMenuHeaderItem>
-
-      {mapStyles.map(style => (
-        <StyledMenuItem
+        <StyledMenuHeaderItem
           disableRipple
-          key={style.id}
+          key="subheader"
           role={undefined}
-          //className={classes.subHeaderItem}
-          onClick={() => {
-            //setStateMap(state => ({ ...state, selectedLayerId: "mapbox://styles/m1neral/"+style.id }));
-            setStateMap(stateMap => ({ ...stateMap, restartMap: !stateMap.restartMap }));
-            handleClose();
-
-          }}
+          dense
+          className={classes.subHeaderItem}
         >
+          <ListItemText primary="Base Map" />
+        </StyledMenuHeaderItem>
 
-          <ThemeProvider theme={theme}>
-          {style.name == 'Satellite' && <MapSatelliteIcon/>}
-          {style.name == 'Light' && <MapLightIcon/>}
-          {style.name == 'Dark' && <MapDarkIcon/>}
-          {style.name == 'Basic' && <MapBasicIcon/>}
-          <ListItemText primary={style.name} /> 
-          </ThemeProvider>
-
-
-
-
-
-
-        </StyledMenuItem>
-
-
-
-      ))}
+        {mapStyles.map((style) => (
           <StyledMenuItem
+            disableRipple
+            key={style.id}
+            role={undefined}
+            //className={classes.subHeaderItem}
+            onClick={() => {
+              //setStateMap(state => ({ ...state, selectedLayerId: "mapbox://styles/m1neral/"+style.id }));
+              setStateMap((stateMap) => ({
+                ...stateMap,
+                mapStyle: style.name,
+              }));
+              handleClose();
+            }}
+          >
+            <ThemeProvider theme={theme}>
+              {style.name == "Satellite" && <MapSatelliteIcon />}
+              {style.name == "Light" && <MapLightIcon />}
+              {style.name == "Dark" && <MapDarkIcon />}
+              {style.name == "Basic" && <MapBasicIcon />}
+              <ListItemText primary={style.name} />
+            </ThemeProvider>
+          </StyledMenuItem>
+        ))}
+        <StyledMenuItem
           //disableRipple
           //key="subheader"
           //role={undefined}
@@ -284,7 +253,7 @@ export default function BaseMapStyles(props) {
           <ListItemText primary="Map Layers" />
         </StyledMenuItem>
 
-{stateMap.baseMapLayers.map((layer, index) => {
+        {stateMap.baseMapLayers.map((layer, index) => {
           const labelId = `checkbox-list-label-${index}`;
 
           return (
@@ -309,9 +278,7 @@ export default function BaseMapStyles(props) {
             </StyledMenuItem>
           );
         })}
-    </StyledMenu>
+      </StyledMenu>
     </ClickAwayListener>
-
-
   );
 }

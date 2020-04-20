@@ -207,7 +207,7 @@ const MapContextProvider = (props) => {
     map: null,
     draw: null,
     currentFeature: undefined,
-    restartMap: false,
+    mapStyle: "Satellite",
   });
   return (
     <MapContext.Provider value={[stateMap, setStateMap]}>

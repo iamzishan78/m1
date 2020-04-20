@@ -758,7 +758,7 @@ export default function Map() {
 
   useEffect(() => {
     setMap(null);
-  }, [stateMap.restartMap]);
+  }, [stateMap.mapStyle]);
 
   function getIndex(value, arr, prop) {
     for (var i = 0; i < arr.length; i++) {
@@ -771,8 +771,8 @@ export default function Map() {
 
   useEffect(() => {
     if (mapStyles.length > 0) {
-      const SET_INITIAL_MAP_STYLE = "Satellite";
-      var index = getIndex(SET_INITIAL_MAP_STYLE, mapStyles, "name");
+      // const SET_INITIAL_MAP_STYLE = "Satellite";
+      var index = getIndex(stateMap.mapStyle, mapStyles, "name");
 
       const initializeMap = ({ setMap, mapEl, setStateMap }) => {
         let id = mapEl.current.id;
