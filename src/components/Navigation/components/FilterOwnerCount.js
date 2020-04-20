@@ -19,7 +19,8 @@ const useStyles = makeStyles({
     marginLeft: 20
   },
   noOwners: {
-    padding: "6px 0px"
+    padding: "6px 0px",
+    display: "flex",
   },
   noOwnersToggle:{
     marginLeft: 20,
@@ -31,8 +32,7 @@ export default function FilterOwnerCount() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [valueMinDisplay, setValueMinDisplay] = useState("");
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
-  const [noOwners , setNoOwners] = useState(false)
-  const [owners , setOwners] = useState(false)
+  const [noOwners , setNoOwners] = useState(false);
   const [ownerCountWell, setOwnerCountWell] = useState(
     stateNav.ownerCountWell ? stateNav.ownerCountWell : []
   );
@@ -138,24 +138,7 @@ export default function FilterOwnerCount() {
   const toggleNoOwners = () => {
     setNoOwners(noOwners => !noOwners)
   } 
-
-  const toggleOwners = () => {
-    setOwners(owners => !owners)
-  }
   
-  useEffect(() => {
-    let filter;
-    if (owners) {
-      filter = ["any",[ "get", "hasOwner"]] 
-    } else {
-      filter = null;
-    }
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterHasOwners: filter
-    }));
-  },[owners, setStateNav])
-
   useEffect(() => {
     let filter;
     if (noOwners) {
@@ -169,6 +152,12 @@ export default function FilterOwnerCount() {
     }));
   },[noOwners, setStateNav])
 
+  useEffect(() => {
+    if (stateNav.filterNoOwnerCount && stateNav.filterNoOwnerCount.length > 1) {
+      setNoOwners(true)
+    }
+  },[stateNav.filterNoOwnerCount])
+  
   return (
     <div>
       <Typography
@@ -220,28 +209,12 @@ export default function FilterOwnerCount() {
           className={classes.inputLabel}
           htmlFor="select-multiple-chip1"
         >
-          Show No Owner Wells
+          Wells With No Owners
         </Typography>
         <Switch
           className={classes.noOwnersToggle}
           checked={noOwners}
           onChange={toggleNoOwners}
-          color="primary"
-          name="checked"
-          inputProps={{ 'aria-label': 'primary checkbox' }}
-        />
-      </div>
-      <div className={classes.noOwners}>
-        <Typography
-          className={classes.inputLabel}
-          htmlFor="select-multiple-chip1"
-        >
-          Show Wells With Owners
-        </Typography>
-        <Switch
-          className={classes.noOwnersToggle}
-          checked={owners}
-          onChange={toggleOwners}
           color="primary"
           name="checked"
           inputProps={{ 'aria-label': 'primary checkbox' }}
