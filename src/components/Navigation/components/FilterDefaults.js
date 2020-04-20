@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useState, useCallback } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../NavigationContext";
 import Paper from '@material-ui/core/Paper';
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import List from '@material-ui/core/List';
-import Chip from '@material-ui/core/Chip';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
@@ -16,7 +15,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
 import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import FilterDefaultList from "./FilterDefaultList";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from '@material-ui/core/Button';
 
@@ -77,9 +76,8 @@ const useStyles = makeStyles(theme => ({
     },
   }, 
   chip: {
-    padding: "3px 10px",
-    textAlign: "center",
-    fontWeight: "600",
+    padding: "3px 20px",
+    fontSize: 12,
   },
   chipContainer:{
     height: "100%",
@@ -87,13 +85,15 @@ const useStyles = makeStyles(theme => ({
   },
   chipRow: {
     display: "inline-flex",
-    padding: "3px 10px",
+    padding: "3px 0px",
   },
   deleteButton: {
-    marginLeft: "30%"
+    marginLeft: "0%"
   },
   listLabel: {
     padding: "6px 30px",
+    display: "inline-flex",
+    marginRight: "70%",
   },
   listItemContainer: {
     display: "inherit",
@@ -109,12 +109,20 @@ export default function FilterDedaults() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [tabsValue, setTabsValue] = useState(1);
-  const [filters, setFilters] = useState(null);
+  const [filtersProd, setFiltersProd] = useState(null);
+  const [filtersGeo, setFiltersGeo] = useState(null);
+  const [filtersOwner, setFiltersOwner] = useState(null);
+  const [filtersInterest, setFiltersInterest] = useState(null);
+  const [filtersWell, setFiltersWell] = useState(null);
   const [savedFilters, setSavedFilters] = useState(null);
   const [checkBoxActive, setCheckBoxActive] = useState(false);
   const [checkBoxDefault, setCheckBoxDefault] = useState(false);
   const [dateCreated, setDateCreated] = useState(new Date());
-  const [filterType, setFilterType] = useState(null);
+  const [filterTypeWell, setFilterTypeWell] = useState(null);
+  const [filterTypeOwner, setFilterTypeOwner] = useState(null);
+  const [filterTypeInterest, setFilterTypeInterest] = useState(null);
+  const [filterTypeProdcution, setFilterTypeProduction] = useState(null);
+  const [filterTypeGeography, setFilterTypeGeography] = useState(null);
   const [saveSearchName, setSaveSearchName] = useState('');
   const [user, setUser] = useState('');
   const classes = useStyles();
@@ -166,19 +174,64 @@ export default function FilterDedaults() {
       })
       filtersStateNav = saveFilters;
       if (filtersStateNav && filtersStateNav.length > 0) {
-        setFilters(filtersStateNav)
         const getFilterType = () => {
+          let wellArr = [];
+          let geoArr = [];
+          let ownerArr = [];
+          let interestArr = [];
+          let prodArr = [];
           filtersStateNav.map(item => {
-            if (item[1][1][1].includes("well")) {
-              setFilterType("Well")
+            console.log(item) 
+            if (item[0].includes("Operator")) {
+              setFilterTypeWell("Well")
+              wellArr.push(item)
             }
-            if (item[1][1].includes("interest")) {
-              setFilterType("Interest")
+            if (item[0].includes("Well")) {
+              setFilterTypeWell("Well")
+              wellArr.push(item)
             }
-            if (item[1][1].includes("ownership")) {
-              setFilterType("Owner")
+            if (item[0].includes("Date")) {
+              setFilterTypeWell("Well")
+              wellArr.push(item)
+            }
+            if (item[0].includes("Owner")) {
+              setFilterTypeOwner("Owner")
+              ownerArr.push(item)
+            }
+            if (item[0].includes("Interest")) {
+              setFilterTypeInterest("Interest")
+              interestArr.push(item)
+            }
+            if (item[0].includes("Geography")) {
+              setFilterTypeGeography("Geography")
+              geoArr.push(item)
+            }
+            if (item[0].includes("Basin")) {
+              setFilterTypeGeography("Geography")
+              geoArr.push(item)
+            }
+            if (item[0].includes("Play")) {
+              setFilterTypeGeography("Geography")
+              geoArr.push(item)
+            }
+            if (item[0].includes("Gas")) {
+              setFilterTypeProduction("Production")
+              prodArr.push(item)
+            }
+            if (item[0].includes("Oil")) {
+              setFilterTypeProduction("Production")
+              prodArr.push(item)
+            }
+            if (item[0].includes("Water")) {
+              setFilterTypeProduction("Production")
+              prodArr.push(item)
             }
           })
+          setFiltersGeo(geoArr);
+          setFiltersInterest(interestArr);
+          setFiltersOwner(ownerArr);
+          setFiltersProd(prodArr);
+          setFiltersWell(wellArr);
         }
         getFilterType()
       }
@@ -191,18 +244,6 @@ export default function FilterDedaults() {
 
   const selectDefault = () => {
     setCheckBoxDefault(checkBoxDefault => !checkBoxDefault)
-  }
-
-  const removeNameFromType = (string) => {  
-    if (string.includes("well")) {
-      return string.replace("well", " ")
-    }
-    if (string.includes("interest")) {
-      return string.replace("interest", " ")
-    }
-    if (string.includes("ownership")) {
-      return string.replace("ownership", " ")
-    }
   }
 
   const deleteFilter = () => {
@@ -292,61 +333,40 @@ export default function FilterDedaults() {
                   <DeleteIcon />
                 </IconButton>
               </ListItem>
-              
               <Divider />
             </div>
           ) : null} 
         </List>
       </Paper>
       : null}
-      {tabsValue === 1 ? 
-      <Paper className={classes.paparMain} square>
-        <List  aria-label="mailbox folders">
-            <div>
-              <div className={classes.listLabel}>{filterType}</div>
-              {filters ? filters.map( elm => 
-              <ListItem className={classes.listItemContainer} button>
-                {elm[1].length === 5 ? 
-                  elm[1][2].map(el =>  
-                      <Chip
-                      key={el}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                          <div className={classes.chip}>{removeNameFromType(elm[1][1][1])}</div>
-                          <div className={classes.chipRow}>{el}</div>
-                        </section>
-                        )}
-                      // onClick={console.log("")}
-                      // onDelete={ e => console.log(e)}
-                    />
-                  )
-                 : null}
-                {elm[1].length === 2 ? 
-                  elm[1][1].map(el =>  
-                      <Chip
-                      key={el}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                          <div className={classes.chip}>{removeNameFromType(elm[1][1][1])}</div>
-                          <div className={classes.chipRow}>{el}</div>
-                        </section>
-                        )}
-                      // onClick={console.log("")}
-                      // onDelete={ e => console.log(e)}
-                    />
-                  )
-                 : null}
-              <Button className={classes.deleteButton} endIcon={<HighlightOffIcon />}  aria-label="delete">
-                Clear All
-              </Button>
-              </ListItem>
-            ) : null}
-              <Divider />
-            </div>
-        </List>
-      </Paper>
+      {tabsValue === 1 ?
+        <div> 
+          <div> 
+            {filterTypeWell ?      
+              <FilterDefaultList type={filterTypeWell} filters={filtersWell} />
+            : null}
+          </div>
+          <div>
+            {filterTypeGeography?
+              <FilterDefaultList type={filterTypeGeography} filters={filtersGeo} />  
+            : null}
+          </div>
+          <div>
+            {filterTypeInterest ?
+              <FilterDefaultList type={filterTypeInterest} filters={filtersInterest} />
+            : null}
+          </div>
+          <div>
+            {filterTypeOwner ?
+              <FilterDefaultList type={filterTypeOwner} filters={filtersOwner} />
+            : null}
+          </div>
+          <div>
+            {filterTypeProdcution ?
+              <FilterDefaultList type={filterTypeProdcution} filters={filtersProd} />
+            : null } 
+          </div>
+        </div>
       : null}
     </div>
   );
