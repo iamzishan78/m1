@@ -41,6 +41,8 @@ const NavigationContextProvider = props => {
     filterLastMonthOil:null,
     filterLastSixMonthOil:null,
     filterLastTwelveMonthOil:null,
+    filterNoOwnerCount: null,
+    filterHasOwners: null,
     // filterOwnershipTypeReligiousInstitutions:null,
     // filterOwnershipTypeGovernmentalBodies:null,
     // filterOwnershipTypeNonProfits:null,

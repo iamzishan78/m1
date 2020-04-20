@@ -287,6 +287,16 @@ export default function Map() {
         isFilterSet = true;
         ownershipFilterCount += 1;
       }
+      if (stateNav.filterNoOwnerCount && stateNav.filterNoOwnerCount.length > 0) {
+        filterArray.push(stateNav.filterNoOwnerCount);
+        isFilterSet = true;
+        ownershipFilterCount += 1;
+      }
+      if (stateNav.filterHasOwners && stateNav.filterHasOwners.length > 0) {
+        filterArray.push(stateNav.filterHasOwners);
+        isFilterSet = true;
+        ownershipFilterCount += 1;
+      }
       if (stateNav.filterWellStatus && stateNav.filterWellStatus.length > 0) {
         let total = stateNav.filterWellStatus[2].length;
         filterArray.push(stateNav.filterWellStatus);
@@ -679,6 +689,8 @@ export default function Map() {
     stateNav.filterWellProfile,
     stateNav.filterWellStatus,
     stateNav.filterWellType,
+    stateNav.filterNoOwnerCount,
+    stateNav.filterHasOwners,
   ]);
 
   useEffect(() => {

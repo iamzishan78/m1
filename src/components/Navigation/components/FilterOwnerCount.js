@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import NumberFormat from "react-number-format";
+import Switch from '@material-ui/core/Switch';
 import { NavigationContext } from "../NavigationContext";
 
 const useStyles = makeStyles({
@@ -16,6 +17,12 @@ const useStyles = makeStyles({
     minWidth: 249,
     maxWidth: 250,
     marginLeft: 20
+  },
+  noOwners: {
+    padding: "6px 0px"
+  },
+  noOwnersToggle:{
+    marginLeft: 20,
   }
 });
 
@@ -24,9 +31,8 @@ export default function FilterOwnerCount() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [valueMinDisplay, setValueMinDisplay] = useState("");
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
-  const [error, setError] = useState(false);
-  const [errorText, setErrorText] = useState("");
-  const [type, setType] = useState("");
+  const [noOwners , setNoOwners] = useState(false)
+  const [owners , setOwners] = useState(false)
   const [ownerCountWell, setOwnerCountWell] = useState(
     stateNav.ownerCountWell ? stateNav.ownerCountWell : []
   );
@@ -45,14 +51,12 @@ export default function FilterOwnerCount() {
       filter = ["all", [">=", ["get", "ownerCount"], min]];
       console.log("add filter", filter);
     } else if (min && max) {
-      if (min < max) {
         filter = [
           "all",
           [">=", ["get", "ownerCount"], min],
           ["<=", ["get", "ownerCount"], max]
         ];
         console.log("add filter", filter);
-      }
     } 
     else {
       filter = null;
@@ -124,24 +128,46 @@ export default function FilterOwnerCount() {
     }
   };
 
-  useEffect(() => {
-    if (valueMinDisplay && valueMaxDisplay) {
-      if (valueMinDisplay >= valueMaxDisplay) {
-        setError(true);
-        setErrorText("Min value is greater than Max value");
-      } else {
-        setError(false);
-        setErrorText("");
-      }
-    }
-  }, [valueMaxDisplay, valueMinDisplay]);
-
   const allowNumbersOnly = e => {
     let code = e.which ? e.which : e.keyCode;
     if (code > 31 && (code < 48 || code > 57)) {
       e.preventDefault();
     }
   };
+
+  const toggleNoOwners = () => {
+    setNoOwners(noOwners => !noOwners)
+  } 
+
+  const toggleOwners = () => {
+    setOwners(owners => !owners)
+  }
+  
+  useEffect(() => {
+    let filter;
+    if (owners) {
+      filter = ["any",[ "get", "hasOwner"]] 
+    } else {
+      filter = null;
+    }
+    setStateNav(stateNav => ({
+      ...stateNav,
+      filterHasOwners: filter
+    }));
+  },[owners, setStateNav])
+
+  useEffect(() => {
+    let filter;
+    if (noOwners) {
+      filter = ["any",["==",[ "get", "hasOwner"], false]] 
+    } else {
+      filter = null;
+    }
+    setStateNav(stateNav => ({
+      ...stateNav,
+      filterNoOwnerCount: filter
+    }));
+  },[noOwners, setStateNav])
 
   return (
     <div>
@@ -182,8 +208,6 @@ export default function FilterOwnerCount() {
         label="Max"
         variant="outlined"
         onKeyPress={e => allowNumbersOnly(e)}
-        error={error}
-        helperText={errorText}
         InputProps={{
           inputProps: {
             min: 0,
@@ -191,6 +215,38 @@ export default function FilterOwnerCount() {
           }
         }}
       />
+      <div className={classes.noOwners}>
+        <Typography
+          className={classes.inputLabel}
+          htmlFor="select-multiple-chip1"
+        >
+          Show No Owner Wells
+        </Typography>
+        <Switch
+          className={classes.noOwnersToggle}
+          checked={noOwners}
+          onChange={toggleNoOwners}
+          color="primary"
+          name="checked"
+          inputProps={{ 'aria-label': 'primary checkbox' }}
+        />
+      </div>
+      <div className={classes.noOwners}>
+        <Typography
+          className={classes.inputLabel}
+          htmlFor="select-multiple-chip1"
+        >
+          Show Wells With Owners
+        </Typography>
+        <Switch
+          className={classes.noOwnersToggle}
+          checked={owners}
+          onChange={toggleOwners}
+          color="primary"
+          name="checked"
+          inputProps={{ 'aria-label': 'primary checkbox' }}
+        />
+      </div>
     </div>
   );
 }
