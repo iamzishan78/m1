@@ -92,6 +92,7 @@ export default function TransactDialog(props) {
           }}
         />
         <TextField
+          //   autoFocus
           margin="dense"
           value={description}
           label="Description"

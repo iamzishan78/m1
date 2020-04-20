@@ -250,7 +250,7 @@ export default function BaseMapStyles(props) {
           //className={classes.subHeaderItem}
           onClick={() => {
             //setStateMap(state => ({ ...state, selectedLayerId: "mapbox://styles/m1neral/"+style.id }));
-            setStateMap(stateMap => ({ ...stateMap, restartMap: true }));
+            setStateMap(stateMap => ({ ...stateMap, restartMap: !stateMap.restartMap }));
             handleClose();
 
           }}

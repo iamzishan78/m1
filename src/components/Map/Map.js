@@ -287,7 +287,10 @@ export default function Map() {
         isFilterSet = true;
         ownershipFilterCount += 1;
       }
-      if (stateNav.filterNoOwnerCount && stateNav.filterNoOwnerCount.length > 0) {
+      if (
+        stateNav.filterNoOwnerCount &&
+        stateNav.filterNoOwnerCount.length > 0
+      ) {
         filterArray.push(stateNav.filterNoOwnerCount);
         isFilterSet = true;
         ownershipFilterCount += 1;
@@ -755,7 +758,7 @@ export default function Map() {
 
   useEffect(() => {
     setMap(null);
-  }, [!stateMap.restartMap]);
+  }, [stateMap.restartMap]);
 
   function getIndex(value, arr, prop) {
     for (var i = 0; i < arr.length; i++) {
@@ -1052,6 +1055,13 @@ export default function Map() {
           // map.removeControl(geocoder);
           list.removeChild(list.childNodes[0]);
         }
+
+        var mapList = document.getElementById("map");
+        if (mapList.childNodes.length > 1) {
+          mapList.removeChild(mapList.childNodes[1]);
+          mapList.removeChild(mapList.childNodes[1]);
+          mapList.removeChild(mapList.childNodes[1]);
+        }
       };
     }
   }, [map, geocoder]);
@@ -1099,12 +1109,11 @@ export default function Map() {
   // }, []);
 
   //var scale = 'scale(1)';
-  //document.body.style.webkitTransform =  scale;  
+  //document.body.style.webkitTransform =  scale;
 
   //document.body.style.zoom = (window.innerWidth / window.outerWidth)*0.8
 
   return (
-
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
         {/*       {<M1Geocoder
