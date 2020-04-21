@@ -50,7 +50,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-export default function FilterDedaultList(props) {
+export default function FilterDedaultListWell(props) {
   const [filtersTypeArr, setFiltersTypeArr] = useState(null);
   const [filterNameType, setFilterNameType] = useState(null);
   const classes = useStyles();
@@ -61,7 +61,7 @@ export default function FilterDedaultList(props) {
         setFilterNameType(props.type)
     }
   },[props])
-
+  
   const removeNameFromType = (string) => { 
     if (string.includes("well")) {
       return string.replace("well", " ")

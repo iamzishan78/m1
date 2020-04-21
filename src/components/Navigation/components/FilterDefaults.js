@@ -15,7 +15,11 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
 import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
-import FilterDefaultList from "./FilterDefaultList";
+import FilterDefaultListWell from "./FilterDefaultListWell";
+import FilterDefaultListGeo from "./FilterDefaultListGeo";
+import FilterDefaultListInterest from "./FilterDefaultListInterest";
+import FilterDefaultListOwner from "./FilterDefaultListOwner";
+import FilterDefaultListProd from "./FilterDefaultListProd"
 import { makeStyles } from "@material-ui/core/styles";
 import Button from '@material-ui/core/Button';
 
@@ -177,11 +181,11 @@ export default function FilterDedaults() {
         const getFilterType = () => {
           let wellArr = [];
           let geoArr = [];
+          let geoArr1 = [];
           let ownerArr = [];
           let interestArr = [];
           let prodArr = [];
-          filtersStateNav.map(item => {
-            console.log(item) 
+          filtersStateNav.map(item => { 
             if (item[0].includes("Operator")) {
               setFilterTypeWell("Well")
               wellArr.push(item)
@@ -208,11 +212,11 @@ export default function FilterDedaults() {
             }
             if (item[0].includes("Basin")) {
               setFilterTypeGeography("Geography")
-              geoArr.push(item)
+              geoArr1.push(item)
             }
             if (item[0].includes("Play")) {
               setFilterTypeGeography("Geography")
-              geoArr.push(item)
+              geoArr1.push(item)
             }
             if (item[0].includes("Gas")) {
               setFilterTypeProduction("Production")
@@ -227,7 +231,7 @@ export default function FilterDedaults() {
               prodArr.push(item)
             }
           })
-          setFiltersGeo(geoArr);
+          setFiltersGeo([geoArr, geoArr1]);
           setFiltersInterest(interestArr);
           setFiltersOwner(ownerArr);
           setFiltersProd(prodArr);
@@ -343,27 +347,27 @@ export default function FilterDedaults() {
         <div> 
           <div> 
             {filterTypeWell ?      
-              <FilterDefaultList type={filterTypeWell} filters={filtersWell} />
+              <FilterDefaultListWell type={filterTypeWell} filters={filtersWell} />
             : null}
           </div>
           <div>
             {filterTypeGeography?
-              <FilterDefaultList type={filterTypeGeography} filters={filtersGeo} />  
+              <FilterDefaultListGeo type={filterTypeGeography} filters={filtersGeo} />  
             : null}
           </div>
           <div>
             {filterTypeInterest ?
-              <FilterDefaultList type={filterTypeInterest} filters={filtersInterest} />
+              <FilterDefaultListInterest type={filterTypeInterest} filters={filtersInterest} />
             : null}
           </div>
           <div>
             {filterTypeOwner ?
-              <FilterDefaultList type={filterTypeOwner} filters={filtersOwner} />
+              <FilterDefaultListOwner type={filterTypeOwner} filters={filtersOwner} />
             : null}
           </div>
           <div>
             {filterTypeProdcution ?
-              <FilterDefaultList type={filterTypeProdcution} filters={filtersProd} />
+              <FilterDefaultListProd type={filterTypeProdcution} filters={filtersProd} />
             : null } 
           </div>
         </div>
