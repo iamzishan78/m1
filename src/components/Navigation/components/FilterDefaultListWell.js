@@ -76,9 +76,9 @@ export default function FilterDedaultListWell(props) {
         return string.replace("operator", "Operator")
     }
     if (Array.isArray(string)) {
-        if (string[1].includes("permitApprove")) {
+        if (string[1].includes("permitApprovedDate")) {
             let str = string[1].toString();
-            return str.replace("permitApprove", "Permit")
+            return str.replace("permitApprovedDate", "Permit Date")
         }
     }
     if (Array.isArray(string)) {
@@ -150,12 +150,12 @@ export default function FilterDedaultListWell(props) {
                  elm[1].length === 3 ? 
                   elm[1].filter(item => item !== "all").map(el => 
                       <Chip
-                      key={el}
+                      key={el[2]}
                       className={classes.chipContainer}
                       label={(
                         <section>
-                            <div className={classes.chip}>{removeNameFromType(elm[1][1][1])}</div>
-                            <div className={classes.chipRow}>{convertDate(el[2])}</div>
+                          <div className={classes.chip}>{removeNameFromType(elm[1][1][1])} {el[0] === ">=" ? "From" : "To"}</div>
+                          <div className={classes.chipRow}>{convertDate(el[2])}</div>
                         </section>
                         )}
                       onDelete={e => console.log("e")}

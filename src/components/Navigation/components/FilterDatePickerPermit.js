@@ -67,10 +67,10 @@ export default function FilterDatePickerPermit(props) {
   const setFilterName = useCallback(() => {
       let filter;
       if (permitFromDate.date._isValid === true  && permitToDate.date._isValid === true) {
-        const todaysDate = moment.parseZone().valueOf()
+        const todaysDate = moment.parseZone().utc(true).valueOf()
         const checkDate = moment.parseZone(permitToDate.date).utc(true).valueOf()
         const fromDate = moment.parseZone(permitFromDate.date).utc(true).valueOf()
-        console.log("utc", fromDate,permitToDate.date )
+       
         if(checkDate === todaysDate ){
           filter = ["all", [">=",["get", "permitApprovedDate"] ,fromDate], ["<=",["get", "permitApprovedDate"] , checkDate]];
         } else{
@@ -122,7 +122,6 @@ export default function FilterDatePickerPermit(props) {
       setvaluesTo();
     }
   }, [setvaluesTo, dateTypeName, setvaluesFrom]);
-
   // function to handle the date changes
   const handleStartDate = date => {
     // moments js and react quick rerenders make the input to become a null as soon as 1 number is delted
@@ -155,7 +154,6 @@ export default function FilterDatePickerPermit(props) {
     }));
   }
   };
-  console.log("%c Date! ", "background: #222; color: #bada55", dateTypeName, stateNav.filterPermitDateRange);
 
   const handleEndDate = date => {
     // moments js and react quick rerenders make the input to become a null as soon as 1 number is delted

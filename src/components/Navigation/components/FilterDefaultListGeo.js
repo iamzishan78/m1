@@ -54,7 +54,7 @@ export default function FilterDedaultListGeo(props) {
   useEffect(() => {
     if (props) {
       setFiltersTypeArr(props.filters[1]);
-      setFiltersTypeArrSCSA(props.filters[0])
+      setFiltersTypeArrSCSA(props.filters[0]);
       setFilterNameType(props.type);
     }
   }, [props]);
@@ -80,7 +80,7 @@ export default function FilterDedaultListGeo(props) {
       return string.replace("abstract", "Abstract");
     }
   };
-  console.log(filtersTypeArr)
+  console.log(filtersTypeArr);
   return (
     <div>
       <Paper className={classes.paparMain} square>
@@ -97,25 +97,27 @@ export default function FilterDedaultListGeo(props) {
             <ListItem className={classes.listItemContainer} button>
               {filtersTypeArr
                 ? filtersTypeArr.map((elm) =>
-                    elm[1].length === 5 ? (
-                      elm[1][2].map((el) => (
-                        <Chip
-                          key={el}
-                          className={classes.chipContainer}
-                          label={
-                            <section>
-                              <div className={classes.chip}>
-                                {removeNameFromType(elm[1][1][1])}
-                              </div>
-                              <div className={classes.chipRow}>{el}</div>
-                            </section>
-                          }
-                          onDelete={(e) => console.log("e")}
-                        />
-                      ))
-                    ) : null )
-                    : null }
-                    {filtersTypeArrSCSA ? filtersTypeArrSCSA.map((ele) => 
+                    elm[1].length === 5
+                      ? elm[1][2].map((el) => (
+                          <Chip
+                            key={el}
+                            className={classes.chipContainer}
+                            label={
+                              <section>
+                                <div className={classes.chip}>
+                                  {removeNameFromType(elm[1][1][1])}
+                                </div>
+                                <div className={classes.chipRow}>{el}</div>
+                              </section>
+                            }
+                            onDelete={(e) => console.log("e")}
+                          />
+                        ))
+                      : null
+                  )
+                : null}
+              {filtersTypeArrSCSA
+                ? filtersTypeArrSCSA.map((ele) =>
                     ele[1][1] && ele[1][1].length === 5 ? (
                       <Chip
                         key={ele[1][1][2]}
@@ -132,9 +134,11 @@ export default function FilterDedaultListGeo(props) {
                         }
                         onDelete={(e) => console.log(ele)}
                       />
-                    ) :  null 
-                    ): null }
-                    {filtersTypeArrSCSA ? filtersTypeArrSCSA.map((elem) => 
+                    ) : null
+                  )
+                : null}
+              {filtersTypeArrSCSA
+                ? filtersTypeArrSCSA.map((elem) =>
                     elem[1][2] && elem[1][2].length === 5 ? (
                       <Chip
                         key={elem[1][2][2]}
@@ -151,9 +155,11 @@ export default function FilterDedaultListGeo(props) {
                         }
                         onDelete={(e) => console.log(elem)}
                       />
-                    ) :  null )
-                    : null }
-                    {filtersTypeArrSCSA ? filtersTypeArrSCSA.map((elemt) => 
+                    ) : null
+                  )
+                : null}
+              {filtersTypeArrSCSA
+                ? filtersTypeArrSCSA.map((elemt) =>
                     elemt[1][3] && elemt[1][3].length === 5 ? (
                       <Chip
                         key={elemt[1][3][2]}
@@ -170,27 +176,26 @@ export default function FilterDedaultListGeo(props) {
                         }
                         onDelete={(e) => console.log(elemt)}
                       />
-                    ) :  null )
-                    : null }
-                    {filtersTypeArrSCSA ? filtersTypeArrSCSA.map((e) => 
+                    ) : null
+                  )
+                : null}
+              {filtersTypeArrSCSA
+                ? filtersTypeArrSCSA.map((e) =>
                     e[1][4] && e[1][4].length === 5 ? (
                       <Chip
                         key={e[1][4][2]}
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>
-                              {e[1][4][1][1]}
-                            </div>
-                            <div className={classes.chipRow}>
-                              {e[1][4][2]}
-                            </div>
+                            <div className={classes.chip}>{e[1][4][1][1]}</div>
+                            <div className={classes.chipRow}>{e[1][4][2]}</div>
                           </section>
                         }
                         onDelete={(e) => console.log(e)}
                       />
-                    ) :  null )
-                    : null }   
+                    ) : null
+                  )
+                : null}
             </ListItem>
             <Divider />
           </div>

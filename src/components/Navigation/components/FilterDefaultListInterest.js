@@ -1,22 +1,20 @@
-import React, {useEffect, useState,} from "react";
-import Paper from '@material-ui/core/Paper';
-import List from '@material-ui/core/List';
-import Chip from '@material-ui/core/Chip';
-import ListItem from '@material-ui/core/ListItem';
-import Divider from '@material-ui/core/Divider';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import React, { useEffect, useState } from "react";
+import Paper from "@material-ui/core/Paper";
+import List from "@material-ui/core/List";
+import Chip from "@material-ui/core/Chip";
+import ListItem from "@material-ui/core/ListItem";
+import Divider from "@material-ui/core/Divider";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { makeStyles } from "@material-ui/core/styles";
-import Button from '@material-ui/core/Button';
+import Button from "@material-ui/core/Button";
 
-
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paparMain: {
     boxShadow: "none",
-    padding: '2px 6px',
+    padding: "2px 6px",
   },
   listItem: {
-    margin: 4, 
+    margin: 4,
     flex: "1 1 auto",
     justifyContent: "space-between",
     minWidth: 278,
@@ -24,7 +22,7 @@ const useStyles = makeStyles(theme => ({
   chip: {
     textAlign: "center",
   },
-  chipContainer:{
+  chipContainer: {
     height: "100%",
     margin: "6px 6px",
   },
@@ -41,13 +39,11 @@ const useStyles = makeStyles(theme => ({
   },
   listItemContainer: {
     display: "inherit",
-    "&:hover" : {
+    "&:hover": {
       color: "transparent",
-    }
-  }
-
+    },
+  },
 }));
-
 
 export default function FilterDedaultListInterest(props) {
   const [filtersTypeArr, setFiltersTypeArr] = useState(null);
@@ -56,100 +52,123 @@ export default function FilterDedaultListInterest(props) {
 
   useEffect(() => {
     if (props) {
-        setFiltersTypeArr(props.filters)
-        setFilterNameType(props.type)
+      setFiltersTypeArr(props.filters);
+      setFilterNameType(props.type);
     }
-  },[props])
+  }, [props]);
 
-  const removeNameFromType = (string) => { 
-      console.log(string)
+  const removeNameFromType = (string) => {
+    console.log(string);
     if (string.includes("interestTypeOverrideRoyalty")) {
-      return string.replace("interestTypeOverrideRoyalty", "Override Royalty ")
+      return string.replace("interestTypeOverrideRoyalty", "Override Royalty ");
     }
     if (string.includes("interestTypeProductionPayment")) {
-      return string.replace("interestTypeProductionPayment", "Production Payment")
+      return string.replace(
+        "interestTypeProductionPayment",
+        "Production Payment"
+      );
     }
     if (string.includes("interestTypeWorkingInterest")) {
-      return string.replace("interestTypeWorkingInterest", "Working Interest")
+      return string.replace("interestTypeWorkingInterest", "Working Interest");
     }
     if (string.includes("interestTypeRoyaltyInterest")) {
-        return string.replace("interestTypeRoyaltyInterest", "Royalty Interest")
+      return string.replace("interestTypeRoyaltyInterest", "Royalty Interest");
     }
-  }
+  };
 
   return (
-    <div> 
+    <div>
       <Paper className={classes.paparMain} square>
-        <List  aria-label="mailbox folders">
-            <div>
-                <div className={classes.listLabel}>{filterNameType}</div>
-                <Button className={classes.deleteButton} endIcon={<HighlightOffIcon />}  aria-label="delete">
-                    Clear All
-                </Button> 
-                <ListItem  className={classes.listItemContainer} button>
-                {filtersTypeArr ? filtersTypeArr.map( elm =>
-                    elm[1][1]  ? 
+        <List aria-label="mailbox folders">
+          <div>
+            <div className={classes.listLabel}>{filterNameType}</div>
+            <Button
+              className={classes.deleteButton}
+              endIcon={<HighlightOffIcon />}
+              aria-label="delete"
+            >
+              Clear All
+            </Button>
+            <ListItem className={classes.listItemContainer} button>
+              {filtersTypeArr
+                ? filtersTypeArr.map((elm) =>
+                    elm[1][1] ? (
                       <Chip
-                      key={elm[1]}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                            <div className={classes.chip}>Type</div>    
-                            <div className={classes.chipRow}>{removeNameFromType(elm[1][1][1])}</div>
-                        </section>
-                        )}
-                      onDelete={e => console.log("e")}
-                    />
-                    : null
-                )  : null}
-                {filtersTypeArr ? filtersTypeArr.map( elm =>
-                    elm[1][2]  ? 
+                        key={elm[1]}
+                        className={classes.chipContainer}
+                        label={
+                          <section>
+                            <div className={classes.chip}>Type</div>
+                            <div className={classes.chipRow}>
+                              {removeNameFromType(elm[1][1][1])}
+                            </div>
+                          </section>
+                        }
+                        onDelete={(e) => console.log("e")}
+                      />
+                    ) : null
+                  )
+                : null}
+              {filtersTypeArr
+                ? filtersTypeArr.map((elm) =>
+                    elm[1][2] ? (
                       <Chip
-                      key={elm[2]}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                            <div className={classes.chip}>Type</div>    
-                            <div className={classes.chipRow}>{removeNameFromType(elm[1][2][1])}</div>
-                        </section>
-                        )}
-                      onDelete={e => console.log('e')}
-                    />
-                    : null
-                )  : null}
-                {filtersTypeArr ? filtersTypeArr.map( elm =>
-                    elm[1][3]  ? 
+                        key={elm[2]}
+                        className={classes.chipContainer}
+                        label={
+                          <section>
+                            <div className={classes.chip}>Type</div>
+                            <div className={classes.chipRow}>
+                              {removeNameFromType(elm[1][2][1])}
+                            </div>
+                          </section>
+                        }
+                        onDelete={(e) => console.log("e")}
+                      />
+                    ) : null
+                  )
+                : null}
+              {filtersTypeArr
+                ? filtersTypeArr.map((elm) =>
+                    elm[1][3] ? (
                       <Chip
-                      key={elm[3]}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                            <div className={classes.chip}>Type</div>    
-                            <div className={classes.chipRow}>{removeNameFromType(elm[1][3][1])}</div>
-                        </section>
-                        )}
-                      onDelete={e => console.log('e')}
-                    />
-                    : null
-                )  : null}
-                {filtersTypeArr ? filtersTypeArr.map( elm =>
-                    elm[1][4]  ? 
+                        key={elm[3]}
+                        className={classes.chipContainer}
+                        label={
+                          <section>
+                            <div className={classes.chip}>Type</div>
+                            <div className={classes.chipRow}>
+                              {removeNameFromType(elm[1][3][1])}
+                            </div>
+                          </section>
+                        }
+                        onDelete={(e) => console.log("e")}
+                      />
+                    ) : null
+                  )
+                : null}
+              {filtersTypeArr
+                ? filtersTypeArr.map((elm) =>
+                    elm[1][4] ? (
                       <Chip
-                      key={elm[4]}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                            <div className={classes.chip}>Type</div>    
-                            <div className={classes.chipRow}>{removeNameFromType(elm[1][4][1])}</div>
-                        </section>
-                        )}
-                      onDelete={e => console.log('e')}
-                    />
-                    : null
-                )  : null}
-              </ListItem>
-              <Divider />
-            </div>
+                        key={elm[4]}
+                        className={classes.chipContainer}
+                        label={
+                          <section>
+                            <div className={classes.chip}>Type</div>
+                            <div className={classes.chipRow}>
+                              {removeNameFromType(elm[1][4][1])}
+                            </div>
+                          </section>
+                        }
+                        onDelete={(e) => console.log("e")}
+                      />
+                    ) : null
+                  )
+                : null}
+            </ListItem>
+            <Divider />
+          </div>
         </List>
       </Paper>
     </div>

@@ -57,49 +57,36 @@ export default function FilterDefaultListProd(props) {
   useEffect(() => {
     if (props) {
         setFilterNameType(props.type)
-        setFiltersTypeArr(props.filters)
+        setFiltersTypeArr(props.filters)   
     }
   },[props])
- 
+  
   const removeNameFromType = (string) => { 
-    if (string.includes("ownershipTypeEducationalInstitutions")) {
-      return string.replace("ownershipTypeEducationalInstitutions", "Educational Institutions")
+      console.log(string)
+    if (string.includes("cumulativeWater")) {
+      return string.replace("cumulativeWater", "Cumulative H2O")
     }
-    if (string.includes("ownershipTypeReligiousInstitutions")) {
-      return string.replace("ownershipTypeReligiousInstitutions", "Religious Institutions")
+    if (string.includes("cumulativeOil")) {
+        return string.replace("cumulativeOil", "Cumulative Oil")
     }
-    if (string.includes("ownershipTypeTrusts")) {
-      return string.replace("ownershipTypeTrusts", "Trusts")
+    if (string.includes("cumulativeGas")) {
+        return string.replace("cumulativeGas", "Cumulative Gas")
     }
-    if (string.includes("ownershipTypeNonProfits")) {
-        return string.replace("ownershipTypeNonProfits", "Non Profits")
+    if (string.includes("firstThreeMonthGas")) {
+        return string.replace("firstThreeMonthGas", "1st 3 Months Gas")
     }
-    if (string.includes("ownershipTypeCorporations")) {
-        return string.replace("ownershipTypeCorporations", "Corporations")
-      }
-      if (string.includes("ownershipTypeGovernmentalBodies")) {
-        return string.replace("ownershipTypeGovernmentalBodies", "Governmental Bodies")
-      }
-      if (string.includes("ownershipTypeIndividuals")) {
-        return string.replace("ownershipTypeIndividuals", "Individuals")
-      }
-      if (string.includes("ownershipTypeUnknown")) {
-          return string.replace("ownershipTypeUnknown", "Unknown")
-      }
-      if (string.includes("<=")) {
-        return string.replace("<=", "Max")
-        }
-        if (string.includes(">=")) {
-            return string.replace(">=", "Min")
-            }  
-
-      
+    if (string.includes("firstMonthOil")) {
+        return string.replace("firstMonthOil", "1st Month Oil")
+    }
+    if (string.includes("firstSixMonthOil")) {
+        return string.replace("firstSixMonthOil", "1st 6 Months Oil")
+    }
   }
 
   return (
     <div> 
       <Paper className={classes.paparMain} square>
-        {/* <List  aria-label="mailbox folders">
+        <List  aria-label="mailbox folders">
             <div>
                 <div className={classes.listLabel}>{filterNameType}</div>
                 <Button className={classes.deleteButton} endIcon={<HighlightOffIcon />}  aria-label="delete">
@@ -107,174 +94,24 @@ export default function FilterDefaultListProd(props) {
                 </Button> 
                 <ListItem  className={classes.listItemContainer} button>
                 {filtersTypeArr ? filtersTypeArr.map( elm =>
-                    elm[0] === "filterNoOwnerCount" ?
+                    elm[1].filter(item => item !== "all").map(el => 
                     <Chip
-                      key={elm[1]}
+                      key={el[2]}
                       className={classes.chipContainer}
                       label={(
                         <section>
-                            <div className={classes.chip}>Type</div>    
-                            <div className={classes.chipRow}>No Owenrs</div>
+                            <div className={classes.chip}>{removeNameFromType(el[1][1])}{el[0] === ">=" ? "Min" : "Max"} </div>    
+                      <div className={classes.chipRow}>{el[2]}</div>
                         </section>
                         )}
                       onDelete={e => console.log("e")}
                     />
-                    : null
+                    )
                 )  : null}   
-                {filtersTypeArr ? filtersTypeArr.map( elm =>
-                    elm[0] === "filterOwnerCount" && elm[1][1] ?
-                      <Chip
-                      key={elm[1]}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                            <div className={classes.chip}>{removeNameFromType(elm[1][1][0])}</div>    
-                            <div className={classes.chipRow}>{elm[1][1][2]}</div>
-                        </section>
-                        )}
-                      onDelete={e => console.log("e")}
-                    />
-                    : null
-                )  : null}
-                {filtersTypeArr ? filtersTypeArr.map( elm =>
-                    elm[0] === "filterOwnerCount" && elm[1][2] ?
-                      <Chip
-                      key={elm[2]}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                            <div className={classes.chip}>{removeNameFromType(elm[1][2][0])}</div>    
-                            <div className={classes.chipRow}>{elm[1][2][2]}</div>
-                        </section>
-                        )}
-                      onDelete={e => console.log("e")}
-                    />
-                    : null
-                )  : null}
-                {filtersTypeArr ? filtersTypeArr.map( elm =>
-                    elm[0] === "filterAllOwnershipTypes" && elm[1][1]  ? 
-                      <Chip
-                      key={elm[1]}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                            <div className={classes.chip}>Type</div>    
-                            <div className={classes.chipRow}>{removeNameFromType(elm[1][1][1])}</div>
-                        </section>
-                        )}
-                      onDelete={e => console.log("e")}
-                    />
-                    : null
-                )  : null}
-                {filtersTypeArr ? filtersTypeArr.map( elm =>
-                    elm[0] === "filterAllOwnershipTypes" && elm[1][2]  ? 
-                      <Chip
-                      key={elm[2]}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                            <div className={classes.chip}>Type</div>    
-                            <div className={classes.chipRow}>{removeNameFromType(elm[1][2][1])}</div>
-                        </section>
-                        )}
-                      onDelete={e => console.log('e')}
-                    />
-                    : null
-                )  : null}
-                {filtersTypeArr ? filtersTypeArr.map( elm =>
-                    elm[0] === "filterAllOwnershipTypes" && elm[1][3]  ? 
-                      <Chip
-                      key={elm[3]}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                            <div className={classes.chip}>Type</div>    
-                            <div className={classes.chipRow}>{removeNameFromType(elm[1][3][1])}</div>
-                        </section>
-                        )}
-                      onDelete={e => console.log('e')}
-                    />
-                    : null
-                )  : null}
-                {filtersTypeArr ? filtersTypeArr.map( elm =>
-                    elm[0] === "filterAllOwnershipTypes" && elm[1][4]  ? 
-                      <Chip
-                      key={elm[4]}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                            <div className={classes.chip}>Type</div>    
-                            <div className={classes.chipRow}>{removeNameFromType(elm[1][4][1])}</div>
-                        </section>
-                        )}
-                      onDelete={e => console.log('e')}
-                    />
-                    : null
-                )  : null}
-                {filtersTypeArr ? filtersTypeArr.map( elm =>
-                    elm[0] === "filterAllOwnershipTypes" && elm[1][5]  ? 
-                      <Chip
-                      key={elm[5]}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                            <div className={classes.chip}>Type</div>    
-                            <div className={classes.chipRow}>{removeNameFromType(elm[1][5][1])}</div>
-                        </section>
-                        )}
-                      onDelete={e => console.log('e')}
-                    />
-                    : null
-                )  : null}
-                {filtersTypeArr ? filtersTypeArr.map( elm =>
-                    elm[0] === "filterAllOwnershipTypes" && elm[1][6]  ? 
-                      <Chip
-                      key={elm[6]}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                            <div className={classes.chip}>Type</div>    
-                            <div className={classes.chipRow}>{removeNameFromType(elm[1][6][1])}</div>
-                        </section>
-                        )}
-                      onDelete={e => console.log('e')}
-                    />
-                    : null
-                )  : null}
-                {filtersTypeArr ? filtersTypeArr.map( elm =>
-                    elm[0] === "filterAllOwnershipTypes" && elm[1][7]  ? 
-                      <Chip
-                      key={elm[7]}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                            <div className={classes.chip}>Type</div>    
-                            <div className={classes.chipRow}>{removeNameFromType(elm[1][7][1])}</div>
-                        </section>
-                        )}
-                      onDelete={e => console.log('e')}
-                    />
-                    : null
-                )  : null}
-                {filtersTypeArr ? filtersTypeArr.map( elm =>
-                    elm[0] === "filterAllOwnershipTypes" && elm[1][8]  ? 
-                      <Chip
-                      key={elm[8]}
-                      className={classes.chipContainer}
-                      label={(
-                        <section>
-                            <div className={classes.chip}>Type</div>    
-                            <div className={classes.chipRow}>{removeNameFromType(elm[1][8][1])}</div>
-                        </section>
-                        )}
-                      onDelete={e => console.log('e')}
-                    />
-                    : null
-                )  : null}
               </ListItem>
               <Divider />
             </div>
-        </List> */}
+        </List>
       </Paper>
     </div>
   );
