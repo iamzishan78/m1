@@ -11,8 +11,8 @@ import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////t
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "48px",
-    height: "48px",
+    width: (props) => (props.iconZiseSmall ? "30px" : "48px"),
+    height: (props) => (props.iconZiseSmall ? "30px" : "48px"),
     borderRadius: "50%",
     border: 0,
     color: (props) => (props.dark ? "rgb(1,17,51)" : "#fff"),

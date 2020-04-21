@@ -1,8 +1,6 @@
 import React, { useEffect, useContext, useState } from "react";
 import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "./ExpandableCardContext";
-
-//material-ui components
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
@@ -11,31 +9,14 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import ExpandIcon from "./components/svgIcons/ExpandIcon";
 import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
-
+import Tooltip from "@material-ui/core/Tooltip";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { TRACKBYUSERANDOBJECTID } from "../../graphQL/useQueryTrackByUserAndObjectId";
 import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
-
+import TaggerWithIcon from "../Shared/TaggerWithIcon";
+import CommentsWithIcon from "../Shared/CommentsWithIcon";
 import TrackToggleButton from "../Shared/TrackToggleButton";
 import $ from "jquery";
-/* <ExpandableCard 
-  expanded={false}
-  component={<Test hello="hello world"/>}
-  title="My Titlle" 
-  subTitle="My Sub Title"
-  cardWidth={300} 
-  chardHeight={300} 
-  cardWidthExpanded={600}
-  cardHeightExpanded={600}
-  source={stateApp.user}
-  sourceSourceId={stateApp.user.id}
-  sourceName={stateApp.user.name}
-  sourceLabel='user'
-  target={row}
-  targetSourceId={row.id}
-  targetName={row.name}
-  targetLabel='owner' />
-*/
 
 export default function ExpandableCard(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -93,6 +74,9 @@ export default function ExpandableCard(props) {
       color: "#FFFFFF",
       fontSize: "15px",
     },
+    headerIcons: {
+      paddingTop: "10px",
+    },
     subheader: {
       fontFamily: "Poppins",
       color: "#FFFFFF",
@@ -104,6 +88,11 @@ export default function ExpandableCard(props) {
       padding: "0px",
       height: height,
       overflowY: "auto",
+    },
+    icons: {
+      "&:hover": {
+        backgroundColor: "#031d40",
+      },
     },
   }));
   const classes = useStyles();
@@ -181,7 +170,7 @@ export default function ExpandableCard(props) {
     //setPosition('absolute')
     //setCardTop(0);
     //setCardLeft(0);
-    setStateApp(state => ({ ...state, expandedCard: true }));
+    setStateApp((state) => ({ ...state, expandedCard: true }));
     setStateExpandableCard((state) => ({ ...state, expanded: true }));
   };
 
@@ -192,12 +181,11 @@ export default function ExpandableCard(props) {
     setCardTop(mouseY);
     setCardLeft(mouseX);
     setStateExpandableCard((state) => ({ ...state, expanded: false }));
-    setStateApp(state => ({ ...state, expandedCard: false }));
+    setStateApp((state) => ({ ...state, expandedCard: false }));
     setWidth(cardWidth);
     setHeight(cardHeight);
 
-   // {showExpandableCard && !stateApp.expandedCard ? (
-
+    // {showExpandableCard && !stateApp.expandedCard ? (
   };
 
   const handleClose = () => {
@@ -214,37 +202,61 @@ export default function ExpandableCard(props) {
   };
 
   return (
-    <Card className={classes.card}>
+    <Card className={classes.card} id="xoxxoxox">
       <CardHeader
         classes={{ title: classes.title, subheader: classes.subheader }}
         action={
-          <div>
+          <div className={classes.headerIcons}>
+            <CommentsWithIcon
+              objectId={targetSourceId.toLowerCase()}
+              iconZiseSmall={!stateExpandableCard.expanded}
+            />
+
+            <TaggerWithIcon
+              objectId={targetSourceId.toLowerCase()}
+              iconZiseSmall={!stateExpandableCard.expanded}
+            />
+
             <TrackToggleButton
               target={target}
               targetLabel={targetLabel}
               targetSourceId={targetSourceId.toLowerCase()}
+              iconZiseSmall={!stateExpandableCard.expanded}
             />
 
             {stateExpandableCard.expanded ? (
-              <IconButton
-                color="secondary"
-                onClick={handleShrink}  
-                aria-label="shrink"
-              >
-                <ShrinkIcon viewBox="0 0 64 64" fontSize="small" />
-              </IconButton>
-            ) : (
-              <IconButton onClick={handleExpand} aria-label="expand">
-                <ExpandIcon
-                  viewBox="0 0 64 64"
+              <Tooltip title={"Shrink"} placement="top">
+                <IconButton
                   color="secondary"
-                  fontSize="small"
-                />
-              </IconButton>
+                  onClick={handleShrink}
+                  aria-label="shrink"
+                  className={classes.icons}
+                >
+                  <ShrinkIcon viewBox="0 0 64 64" />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <Tooltip title={"Expand"} placement="top">
+                <IconButton
+                  size="small"
+                  onClick={handleExpand}
+                  aria-label="expand"
+                  className={classes.icons}
+                >
+                  <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                </IconButton>
+              </Tooltip>
             )}
-            <IconButton onClick={handleClose} aria-label="close">
-              <CloseIcon fontSize="small" color="secondary" />
-            </IconButton>
+            <Tooltip title={"Close"} placement="top">
+              <IconButton
+                size={stateExpandableCard.expanded ? "medium" : "small"}
+                onClick={handleClose}
+                aria-label="close"
+                className={classes.icons}
+              >
+                <CloseIcon color="secondary" />
+              </IconButton>
+            </Tooltip>
           </div>
         }
         // title={
@@ -274,7 +286,6 @@ export default function ExpandableCard(props) {
               : title
             : "--"
         }
-
         subheader={
           subTitle
             ? subTitle.length > 35
