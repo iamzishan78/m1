@@ -23,8 +23,7 @@ const useStyles = makeStyles(theme => ({
     minWidth: 278,
   },
   chip: {
-    padding: "3px 20px",
-    fontSize: 12,
+    textAlign: "center",
   },
   chipContainer:{
     height: "100%",
@@ -32,15 +31,14 @@ const useStyles = makeStyles(theme => ({
   },
   chipRow: {
     display: "inline-flex",
-    padding: "3px 0px",
+    padding: "1px 0px",
   },
   deleteButton: {
-    marginLeft: "0%"
+    float: "right",
   },
   listLabel: {
     padding: "6px 30px",
     display: "inline-flex",
-    marginRight: "70%",
   },
   listItemContainer: {
     display: "inherit",
@@ -83,6 +81,24 @@ export default function FilterDedaultList(props) {
             return str.replace("permitApprove", "Permit")
         }
     }
+    if (Array.isArray(string)) {
+        if (string[1].includes("spudDate")) {
+            let str = string[1].toString();
+            return str.replace("spudDate", "Spud Date")
+        }
+    }
+    if (Array.isArray(string)) {
+        if (string[1].includes("firstProductionDate")) {
+            let str = string[1].toString();
+            return str.replace("firstProductionDate", "Production Date")
+        }
+    }
+    if (Array.isArray(string)) {
+        if (string[1].includes("completionDate")) {
+            let str = string[1].toString();
+            return str.replace("completionDate", "Completion Date")
+        }
+    }
   }
 
   const convertDate = unixStamp => {
@@ -95,55 +111,59 @@ export default function FilterDedaultList(props) {
       <Paper className={classes.paparMain} square>
         <List  aria-label="mailbox folders">
             <div>
-              <div className={classes.listLabel}>{filterNameType}</div>
-              <Button className={classes.deleteButton} endIcon={<HighlightOffIcon />}  aria-label="delete"/>
-              {filtersTypeArr ? filtersTypeArr.map( elm => 
-              <ListItem  key={elm} className={classes.listItemContainer} button>
-                <div className={classes.chip}>{removeNameFromType(elm[1][1][1])}</div>
-                {elm[1].length === 5 ? 
+                <div className={classes.listLabel}>{filterNameType}</div>
+                <Button className={classes.deleteButton} endIcon={<HighlightOffIcon />}  aria-label="delete">
+                    Clear All
+                </Button> 
+                <ListItem  className={classes.listItemContainer} button>
+                {filtersTypeArr ? (filtersTypeArr.map( elm =>
+                elm[1].length === 5  ? 
                   elm[1][2].map(el =>  
                       <Chip
                       key={el}
                       className={classes.chipContainer}
                       label={(
                         <section>
-                          <div className={classes.chipRow}>{el}</div>
+                            <div className={classes.chip}>{removeNameFromType(elm[1][1][1])}</div>    
+                            <div className={classes.chipRow}>{el}</div>
                         </section>
                         )}
                       onDelete={e => console.log('e')}
                     />
                   )
-                 : null}
-                {elm[1].length === 2 ? 
+                 :
+                elm[1].length === 2 ? 
                   elm[1][1].map(el =>  
                       <Chip
                       key={el}
                       className={classes.chipContainer}
                       label={(
                         <section>
-                          <div className={classes.chipRow}>{el}</div>
+                            <div className={classes.chip}>{removeNameFromType(elm[1][1][1])}</div>
+                            <div className={classes.chipRow}>{el}</div>
                         </section>
                         )}
                       onDelete={e => console.log("e")}
                     />
                   )
-                 : null}
-                 {elm[1].length === 3 ? 
+                 : 
+                 elm[1].length === 3 ? 
                   elm[1].filter(item => item !== "all").map(el => 
                       <Chip
                       key={el}
                       className={classes.chipContainer}
                       label={(
                         <section>
-                          <div className={classes.chipRow}>{convertDate(el[2])}</div>
+                            <div className={classes.chip}>{removeNameFromType(elm[1][1][1])}</div>
+                            <div className={classes.chipRow}>{convertDate(el[2])}</div>
                         </section>
                         )}
                       onDelete={e => console.log("e")}
                     />
                   )
-                 : null}
+                 : null)
+                ):( null)}
               </ListItem>
-            ) : null}
               <Divider />
             </div>
         </List>
