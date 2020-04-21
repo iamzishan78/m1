@@ -27,10 +27,10 @@ const useStyles = makeStyles(theme => ({
     //width:'800px',
    // height:'400px',
    width:'auto',
-   height:'700px',
+   height:'600px',
    paddingTop: '2%',
   //  paddingRight: '8%',
-   position: 'center'
+   position: 'relative'
   
     /* display: 'flex',
     flexWrap: 'wrap',
@@ -257,12 +257,15 @@ useEffect( () => {
     dateAxis.start = 0;
     dateAxis.keepSelection = true;
 
-    // Enable export
+
     chart.exporting.menu = new am4core.ExportMenu();
+    chart.exporting.menu.align = "right";
+    chart.exporting.menu.verticalAlign = "top";
     var annotation = chart.plugins.push(new am4plugins_annotation.Annotation());
-
-
     setChart(chart);
+        // Enable export
+
+    
   }
   else {
    

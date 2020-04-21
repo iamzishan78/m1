@@ -65,6 +65,14 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     display: "flex",
     justifyContent: "space-around",
+    paddingBottom: "10px",
+    paddingTop: "10px",
+  },
+  gridItemGrey: {
+    flexGrow: 1,
+    display: "flex",
+    justifyContent: "space-around",
+    background: '#f6f6f6',
   },
   card: {
     width: "100%",
@@ -109,9 +117,9 @@ const useStyles = makeStyles((theme) => ({
     padding: "1%",
   },
   content: {
-    height: "100%",
+    height: "93vh",
     backgroundColor: "#fff",
-    overflowY: "auto",
+    //overflowY: "auto",
   },
   cardAction: {
     flexGrow: 1,
@@ -135,6 +143,13 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
   },
+  toggle: {
+    // float: "right",
+    // position: 'relative',
+    // right: '10px',
+    paddingBottom: "5px",
+    paddingLeft: "25px"
+  }
 }));
 
 
@@ -218,193 +233,69 @@ export default function WellCardDetails(props) {
 
 
   const wellInfo = () => (
-    <Grid id="vivivi" container spacing={2}>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <QuadProvider />
-      </Grid>
-      <Grid item xs={12} sm={6} md={8} lg={9}>
-        <CardDetailsMap />
-      </Grid>
-      <Grid item xs={12}>
+    <Grid container spacing={2}>
+        <Grid item xs={12} sm={3}>
+          <QuadProvider />
+        </Grid>
+        <Grid item xs={12} sm={9}>
+            <Grid item xs={12} >
+                <div className={classes.toggle} >
+                <FormControlLabel
+                  control={<OilSwitch 
+                            checked={stateWellCard.chartToggleOil} 
+                            onChange={handleChangeOil} 
+                            //name="chartToggleOil"
+                            />}
+                  label="Oil"
+                />
+              <FormControlLabel
+                control={
+                  <GasSwitch
+                    checked={stateWellCard.chartToggleGas}
+                    onChange={handleChangeGas}
+                    name="checkedGas"
+                    color="#e57373"
+                  />}
+                label="Gas"
+              />
+              <FormControlLabel
+                  control={<WaterSwitch 
+                            checked={stateWellCard.chartToggleWater}
+                            onChange={handleChangeWater} 
+                            name="checkedWater"
+                            />} 
+                  label="Water" />
 
-        <FormControlLabel
-          control={<OilSwitch 
-                    checked={stateWellCard.chartToggleOil} 
-                    onChange={handleChangeOil} 
-                    //name="chartToggleOil"
-                    />}
-          label="Oil"
-        />
+              <FormControlLabel
+                control={<Switch 
+                          checked={stateWellCard.chartToggleMultiAxis}
+                          onChange={handleChangeMultiAxis} 
+                          color = "primary"
+                          />} 
+                label="Multi-Axes" />
 
-        <FormControlLabel
-          control={
-            <GasSwitch
-              checked={stateWellCard.chartToggleGas}
-              onChange={handleChangeGas}
-              name="checkedGas"
-              color="#e57373"
-            />}
-          label="Gas"
-        />
-        <FormControlLabel  
-            control={<WaterSwitch 
-                      checked={stateWellCard.chartToggleWater}
-                      onChange={handleChangeWater} 
-                      name="checkedWater"
-                      />} 
-            label="Water" />
+              <FormControlLabel  disabled control={<Switch />} label="Log Scale" />
+              </div>
 
-        <FormControlLabel
-          control={<Switch 
-                    checked={stateWellCard.chartToggleMultiAxis}
-                    onChange={handleChangeMultiAxis} 
-                    color = "primary"
-                     />} 
-          label="Multi-Axes" />
-
-        <FormControlLabel disabled control={<Switch />} label="Log Scale" />
-
-        <WellProdChartProvider />
-
-
-      </Grid>
+            </Grid>
+            <Grid item xs={12} >
+              <WellProdChartProvider />            
+            </Grid>
+        </Grid>
     </Grid>
+
+
+
+
+
+
+
   );
 
   return stateApp.selectedWell ? (
     <Card>
-      {/* <CardHeader
-        classes={{
-          title: classes.title,
-          subheader: classes.subheader
-        }}
-        action={
-          <div className={classes.icons}>
-            <TrackToggleButton
-              target={target}
-              targetLabel="well"
-              targetSourceId={stateApp.selectedWell.id}
-            />
-            <IconButton
-              color="secondary"
-              onClick={handleCloseDetails}
-              aria-label="shrink"
-            >
-              <ShrinkIcon viewBox="0 0 64 64" fontSize="small" />
-            </IconButton>
-          </div>
-        }
-        title={
-          stateApp.selectedWell.wellName ? stateApp.selectedWell.wellName : "--"
-        }
-        subheader={
-          stateApp.selectedWell.operator ? stateApp.selectedWell.operator : "--"
-        }
-      /> */}
-
-      {/* <div className = {classes.cardcontain}>
-        <CardActions
-          classes={{
-            root: classes.cardAction2
-          }}
-        >
-          
-
-
-          <div className={classes.iconContainer}>
-            <WellIcon htmlColor="black" viewBox="0 0 32 31" fontSize="large" />
-
-            <Typography
-              align="center"
-              className={classes.text1}
-              variant="subtitle2"
-            >
-              Well Status
-            </Typography>
-            <Typography
-              align="center"
-              className={classes.text2}
-              variant="caption"
-            >
-              {stateApp.selectedWell.WellStatus
-                ? stateApp.selectedWell.WellStatus.toUpperCase()
-                : '--'}
-            </Typography>
-          </div>
-
-          <div className={classes.iconContainer}>
-            <ProductionIcon
-              htmlColor="black"
-              viewBox="0 0 39 31"
-              fontSize="large"
-            />
-            <Typography
-              align="center"
-              className={classes.text1}
-              variant="subtitle2"
-            >
-              Last 12 Prod
-            </Typography>
-            <Typography
-              align="center"
-              className={classes.text2}
-              variant="caption"
-            >
-              {`${formatBOE(stateApp.selectedWell.LastTwelveMonthBOE)} BOE`}
-            </Typography>
-          </div>
-          <div className={classes.iconContainer}>
-            <OwnershipIcon
-              htmlColor="black"
-              viewBox="0 0 45 31"
-              fontSize="large"
-            />
-            <Typography
-              align="center"
-              className={classes.text1}
-              variant="subtitle2"
-            >
-              Owners
-            </Typography>
-            <Typography
-              align="center"
-              className={classes.text2}
-              variant="caption"
-            >
-              {stateApp.selectedWell.OwnerCount
-                ? stateApp.selectedWell.OwnerCount
-                : '--'}
-            </Typography>
-          </div>
-          <div className={classes.iconContainer}>
-            <Avatar variant="circle" className={classes.avatar}>
-              {stateApp.selectedWell.WellBoreProfile
-                ? stateApp.selectedWell.WellBoreProfile.substring(0, 1)
-                : 'H'}{' '}
-            </Avatar>
-            <Typography
-              align="center"
-              className={classes.text1}
-              variant="subtitle2"
-            >
-              Profile
-            </Typography>
-            <Typography
-              align="center"
-              className={classes.text2}
-              variant="caption"
-            >
-              {stateApp.selectedWell.WellBoreProfile
-                ? stateApp.selectedWell.WellBoreProfile
-                : '--'}
-            </Typography>
-          </div> 
-        </CardActions>
-        </div>*/}
-
       <CardContent className={classes.content}>
-        <Grid className={classes.grid} container spacing={1}>
-          <Grid item className={classes.gridItem}>
+          <Grid item className={classes.gridItemGrey}>
             <WellApiCard />
             <WellTypeCard />
             <WellStatusCard />
@@ -415,7 +306,11 @@ export default function WellCardDetails(props) {
             <SpudDateCard />
             <CompletionDateCard />
             <FirstProdDateCard />
-          </Grid>
+        </Grid>
+
+        <Grid  item className={classes.gridItem}>
+          <CardDetailsMap/>
+        </Grid>
 
           <Grid item sm={12}>
             <Taps
@@ -428,21 +323,17 @@ export default function WellCardDetails(props) {
               ]}
               tabPanels={[
                 wellInfo(),
-                // <OwnersProvider
-                //   selectedWell={stateApp.selectedWell}
-                //   parent="well"
-                // />
                 <M1nTable
                   parent="OwnersPerWell"
                   selectedWell={stateApp.selectedWell}
                 />,
-                <h3>Coming Soon-</h3>,
-                <h3>Coming Soon--</h3>,
-                <h3>Coming Soon---</h3>,
+                // <h3>Coming Soon-</h3>,
+                // <h3>Coming Soon--</h3>,
+                // <h3>Coming Soon---</h3>,
               ]}
             />
           </Grid>
-        </Grid>
+
       </CardContent>
     </Card>
   ) : null;

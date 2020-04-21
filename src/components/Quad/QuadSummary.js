@@ -43,10 +43,10 @@ const useStyles = makeStyles(theme => ({
   },
   gridContainer: {
     width: "auto",
-    //height: 'auto'
+    height: 'auto',
     paddingBottom: "4px",
-    //display: 'flex',
-    //flexWrap: 'wrap',
+    display: 'flex',
+    flexWrap: 'wrap',
     alignContent: "center",
     justifyContent: "center"
   },
@@ -194,7 +194,11 @@ export default function QuadSummary(props) {
           </Tabs>
         </AppBar>
 
-        <GridList cellHeight="auto" cols={2} className={classes.gridList}>
+        <GridList 
+          //cellHeight="auto" 
+          cellHeight = "300"
+          cols={2} 
+          className={classes.gridList}>
           {stateQuad.quadChart.map(tile => (
             <GridListTile cols={1} rows={1} key={tile.metric}>
               <Card className={classes.card}>

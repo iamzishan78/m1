@@ -70,6 +70,8 @@ export default function Taps(props) {
 
   return (
     <div className={classes.root} id="TOTaps">
+
+
       <AppBar className={classes.WellsDetailsCardAppBar} position="static" color="default">
         <Tabs
           value={value}
@@ -90,6 +92,9 @@ export default function Taps(props) {
           {panel}
         </TabPanel>
       ))}
+
+
+
     </div>
   );
 }
