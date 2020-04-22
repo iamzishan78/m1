@@ -118,20 +118,16 @@ export default function MapControls(props) {
       anchorEl: anchorEl,
     });
 
-    // setStateMap({
-    //   ...stateMap,
-    //   openTrack: action === "track" ? !stateMap.openTrack : stateMap.openTrack,
-    // });
-
     setStateMap({
       ...stateMap,
       toggle3d: action === "threed" ? !stateMap.toggle3d : stateMap.toggle3d,
-    });
-
-    setStateMap({
-      ...stateMap,
       toggleZoomOut: action === "zoomout" ? !stateMap.toggleZoomOut : stateMap.toggleZoomOut,
     });
+
+    // setStateMap({
+    //   ...stateMap,
+    //   toggleZoomOut: action === "zoomout" ? !stateMap.toggleZoomOut : stateMap.toggleZoomOut,
+    // });
 
     if (stateMap.draw.getMode() !== "simple_select") {
       setStateApp({ ...stateApp, editDraw: false });

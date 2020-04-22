@@ -822,7 +822,20 @@ export default function Map() {
   }, []);
 
   useEffect(() => {
-    setMap(null);
+    if(map){
+
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        mapVars: {...stateApp.mapVars,
+          zoom: map.getZoom(),
+          center: map.getCenter(),
+          pitch: map.getPitch(),
+          bearing: map.getBearing(),
+        },
+      })); 
+      
+      setMap(null);
+    }
   }, [stateApp.mapVars.styleId]);
 
   function getIndex(value, arr, prop) {
