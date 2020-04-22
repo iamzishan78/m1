@@ -131,7 +131,7 @@ export default function FilterDedaults() {
   const [user, setUser] = useState('');
   const classes = useStyles();
 
-
+  console.log(stateNav)
   useEffect(() => {
     let name;
     if (stateApp) {

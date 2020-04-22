@@ -308,17 +308,20 @@ export default function Map() {
         isFilterSet = true;
 
         wellFilterCount += total;
+        totalCount += total;
       }
       if (stateNav.filterWellType && stateNav.filterWellType.length > 0) {
         let total = stateNav.filterWellType[2].length;
         filterArray.push(stateNav.filterWellType);
         isFilterSet = true;
         wellFilterCount += total;
+        totalCount += total;
       }
       if (stateNav.filterOwnerCount && stateNav.filterOwnerCount.length > 0) {
         filterArray.push(stateNav.filterOwnerCount);
         isFilterSet = true;
         ownershipFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterNoOwnerCount &&
@@ -327,23 +330,27 @@ export default function Map() {
         filterArray.push(stateNav.filterNoOwnerCount);
         isFilterSet = true;
         ownershipFilterCount += 1;
+        totalCount += 1;
       }
       if (stateNav.filterHasOwners && stateNav.filterHasOwners.length > 0) {
         filterArray.push(stateNav.filterHasOwners);
         isFilterSet = true;
         ownershipFilterCount += 1;
+        totalCount += 1;
       }
       if (stateNav.filterWellStatus && stateNav.filterWellStatus.length > 0) {
         let total = stateNav.filterWellStatus[2].length;
         filterArray.push(stateNav.filterWellStatus);
         isFilterSet = true;
         wellFilterCount += total;
+        totalCount += total;
       }
       if (stateNav.filterOperator && stateNav.filterOperator.length > 0) {
         let total = stateNav.filterOperator[2].length;
         filterArray.push(stateNav.filterOperator);
         isFilterSet = true;
         wellFilterCount += total;
+        totalCount += total;
       }
       if (
         stateNav.filterCumulativeOil &&
@@ -352,6 +359,7 @@ export default function Map() {
         filterArray.push(stateNav.filterCumulativeOil);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterCumulativeGas &&
@@ -360,6 +368,7 @@ export default function Map() {
         filterArray.push(stateNav.filterCumulativeGas);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterCumulativeWater &&
@@ -368,6 +377,7 @@ export default function Map() {
         filterArray.push(stateNav.filterCumulativeWater);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterFirstMonthWater &&
@@ -376,6 +386,7 @@ export default function Map() {
         filterArray.push(stateNav.filterFirstMonthWater);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterFirstThreeMonthWater &&
@@ -384,6 +395,7 @@ export default function Map() {
         filterArray.push(stateNav.filterFirstThreeMonthWater);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterFirstSixMonthWater &&
@@ -392,6 +404,7 @@ export default function Map() {
         filterArray.push(stateNav.filterFirstSixMonthWater);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterFirstTwelveMonthWater &&
@@ -400,6 +413,7 @@ export default function Map() {
         filterArray.push(stateNav.filterFirstTwelveMonthWater);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterLastMonthWater &&
@@ -408,6 +422,7 @@ export default function Map() {
         filterArray.push(stateNav.filterLastMonthWater);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterLastThreeMonthWater &&
@@ -416,6 +431,7 @@ export default function Map() {
         filterArray.push(stateNav.filterLastThreeMonthWater);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterLastSixMonthWater &&
@@ -424,6 +440,7 @@ export default function Map() {
         filterArray.push(stateNav.filterLastSixMonthWater);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterLastTwelveMonthWater &&
@@ -432,6 +449,7 @@ export default function Map() {
         filterArray.push(stateNav.filterLastTwelveMonthWater);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterFirstMonthGas &&
@@ -440,6 +458,7 @@ export default function Map() {
         filterArray.push(stateNav.filterFirstMonthGas);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterFirstThreeMonthGas &&
@@ -448,6 +467,7 @@ export default function Map() {
         filterArray.push(stateNav.filterFirstThreeMonthGas);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterFirstSixMonthGas &&
@@ -456,6 +476,7 @@ export default function Map() {
         filterArray.push(stateNav.filterFirstSixMonthGas);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterFirstTwelveMonthGas &&
@@ -464,6 +485,7 @@ export default function Map() {
         filterArray.push(stateNav.filterFirstTwelveMonthGas);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterLastMonthGas &&
@@ -472,6 +494,7 @@ export default function Map() {
         filterArray.push(stateNav.filterLastMonthGas);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterLastThreeMonthGas &&
@@ -480,6 +503,7 @@ export default function Map() {
         filterArray.push(stateNav.filterLastThreeMonthGas);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterLastSixMonthGas &&
@@ -488,6 +512,7 @@ export default function Map() {
         filterArray.push(stateNav.filterLastSixMonthGas);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterLastTwelveMonthGas &&
@@ -496,6 +521,7 @@ export default function Map() {
         filterArray.push(stateNav.filterLastTwelveMonthGas);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterFirstMonthOil &&
@@ -504,6 +530,7 @@ export default function Map() {
         filterArray.push(stateNav.filterFirstMonthOil);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterFirstThreeMonthOil &&
@@ -512,6 +539,7 @@ export default function Map() {
         filterArray.push(stateNav.filterFirstThreeMonthOil);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterFirstSixMonthOil &&
@@ -520,6 +548,7 @@ export default function Map() {
         filterArray.push(stateNav.filterFirstSixMonthOil);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterFirstTwelveMonthOil &&
@@ -528,6 +557,7 @@ export default function Map() {
         filterArray.push(stateNav.filterFirstTwelveMonthOil);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterLastMonthOil &&
@@ -536,6 +566,7 @@ export default function Map() {
         filterArray.push(stateNav.filterLastMonthOil);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterLastThreeMonthOil &&
@@ -544,6 +575,7 @@ export default function Map() {
         filterArray.push(stateNav.filterLastThreeMonthOil);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterLastSixMonthOil &&
@@ -552,6 +584,7 @@ export default function Map() {
         filterArray.push(stateNav.filterLastSixMonthOil);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterLastTwelveMonthOil &&
@@ -560,6 +593,7 @@ export default function Map() {
         filterArray.push(stateNav.filterLastTwelveMonthOil);
         isFilterSet = true;
         productionFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterAllInterestTypes &&
@@ -571,6 +605,7 @@ export default function Map() {
         filterArray.push(stateNav.filterAllInterestTypes);
         isFilterSet = true;
         ownershipFilterCount += total;
+        totalCount += total;
       }
       if (
         stateNav.filterAllOwnershipTypes &&
@@ -582,12 +617,14 @@ export default function Map() {
         filterArray.push(stateNav.filterAllOwnershipTypes);
         isFilterSet = true;
         ownershipFilterCount += total;
+        totalCount += total;
       }
       if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
         let total = stateNav.filterBasin[2].length;
         filterArray.push(stateNav.filterBasin);
         isFilterSet = true;
         geographyFilterCount += total;
+        totalCount += total;
       }
 
       if (stateNav.filterPlay && stateNav.filterPlay.length > 0) {
@@ -595,6 +632,7 @@ export default function Map() {
         filterArray.push(stateNav.filterPlay);
         isFilterSet = true;
         geographyFilterCount += total;
+        totalCount += total;
       }
 
       if (
@@ -603,7 +641,7 @@ export default function Map() {
       ) {
         filterArray.push(stateNav.filterPermitDateRange);
         isFilterSet = true;
-
+        totalCount += 1;
         wellFilterCount += 1;
       }
       if (
@@ -612,7 +650,7 @@ export default function Map() {
       ) {
         filterArray.push(stateNav.filterSpudDateRange);
         isFilterSet = true;
-
+        totalCount += 1;
         wellFilterCount += 1;
       }
       if (
@@ -621,7 +659,7 @@ export default function Map() {
       ) {
         filterArray.push(stateNav.filterCompletetionDateRange);
         isFilterSet = true;
-
+        totalCount += 1;
         wellFilterCount += 1;
       }
       if (
@@ -630,13 +668,13 @@ export default function Map() {
       ) {
         filterArray.push(stateNav.filterFirstProdDateRange);
         isFilterSet = true;
-
+        totalCount += 1;
         wellFilterCount += 1;
       }
       if (stateNav.filterGeography && stateNav.filterGeography.length > 0) {
         filterArray.push(stateNav.filterGeography);
         isFilterSet = true;
-
+        totalCount += 1;
         geographyFilterCount += 1;
       }
 
@@ -650,13 +688,6 @@ export default function Map() {
       }));
 
       if (isFilterSet) {
-        let total =
-          wellFilterCount +
-          ownershipFilterCount +
-          productionFilterCount +
-          geographyFilterCount;
-        totalCount += total;
-        console.log(totalCount, total);
         filterArray.unshift("all");
 
         console.log("all current filters", filterArray);
