@@ -792,7 +792,7 @@ export default function Map() {
 
   useEffect(() => {
     setMap(null);
-  }, [stateMap.mapStyle]);
+  }, [stateApp.mapVars.styleId]);
 
   function getIndex(value, arr, prop) {
     for (var i = 0; i < arr.length; i++) {
@@ -814,6 +814,8 @@ export default function Map() {
         var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
         console.log('tileset api loaded - style selected', stateMap.mapStyle)
 
+        console.log(stateApp.mapVars)
+
         const newMap = new mapboxgl.Map({
           container: `${id}`,
           style: "mapbox://styles/m1neral/" + mapStyles[index].id,
@@ -824,13 +826,7 @@ export default function Map() {
         });
 
         console.log('new map generated')
-        
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          mapVars: {...stateApp.mapVars,
-            mapElement: mapEl,
-          },
-        })); 
+
 
         /// optimized interactions w/ map
         newMap.scrollZoom.enable();
@@ -838,6 +834,8 @@ export default function Map() {
         newMap.dragRotate.enable();
         newMap.keyboard.enable();
         newMap.doubleClickZoom.disable();
+        newMap.boxZoom.enable();
+        newMap.touchZoomRotate.enable();
 
         newMap.addControl(
           new mapboxgl.ScaleControl({
@@ -989,21 +987,20 @@ export default function Map() {
         console.log('initialize map finish')
       } 
       else {
-        //map.setLayoutProperty('wellpoints', 'visibility', 'visible');
-        //map.setLayoutProperty('welllines', 'visibility', 'visible');
         console.log('map extra components start')
-        if (stateMap.toggle3d === true) {
-          map.setPitch(70);
-          map.setBearing(20);
-        } else {
-          map.setPitch(0);
-          map.setBearing(0);
-        }
+
+        // if (stateMap.toggle3d === true) {
+        //   map.setPitch(70);
+        //   map.setBearing(20);
+        // } else {
+        //   map.setPitch(0);
+        //   map.setBearing(0);
+        // }
 
         // additional map interactions
         // for some reason these do not work when initializing but do here
-        map.boxZoom.enable();
-        map.touchZoomRotate.enable();
+        // map.boxZoom.enable();
+        // map.touchZoomRotate.enable();
 
         map.on("click", "wellpoints", function (e) {
           //console.log('click event', e)
@@ -1114,6 +1111,9 @@ export default function Map() {
         var center = map.getCenter();
         var pitch = map.getPitch();
         var bearing = map.getBearing();
+
+        console.log(stateApp.mapVars)
+        console.log("**************************")
 
         setStateApp((stateApp) => ({
           ...stateApp,

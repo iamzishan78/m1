@@ -11,6 +11,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import { MapControlsContext } from "../MapControlsContext";
 import { MapContext } from "../../Map/MapContext";
+import { AppContext } from "../../../AppContext";
+
 import { style } from "@material-ui/system";
 //import mapStyles from "../../Map/components/Utils/MapStyles";
 //import Satellite_Image from '../../Shared/pngImages/Satellite.PNG';
@@ -146,6 +148,8 @@ export default function BaseMapStyles(props) {
     MapControlsContext
   );
   const [stateMap, setStateMap] = useContext(MapContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
+
   //const theme = useTheme()
   const classes = useStyles();
   const handleClose = () => {
@@ -168,6 +172,8 @@ export default function BaseMapStyles(props) {
     //console.log("newchecked", newChecked);
 
     setStateMap((stateMap) => ({ ...stateMap, checkedBaseLayers: newChecked }));
+
+
 
     //console.log("toggle stateMap.checkedBaseLayers after", stateMap.checkedBaseLayers);
   };
@@ -227,10 +233,20 @@ export default function BaseMapStyles(props) {
             //className={classes.subHeaderItem}
             onClick={() => {
               //setStateMap(state => ({ ...state, selectedLayerId: "mapbox://styles/m1neral/"+style.id }));
-              setStateMap((stateMap) => ({
-                ...stateMap,
-                mapStyle: style.name,
-              }));
+
+              // setStateMap((stateMap) => ({
+              //   ...stateMap,
+              //   mapStyle: style.name,
+              // }));
+
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                mapVars: {...stateApp.mapVars,
+                  styleId: style.name,
+          
+                },
+              })); 
+
               handleClose();
             }}
           >
