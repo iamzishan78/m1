@@ -21,6 +21,19 @@ const AppProvider = (props) => {
     selectedTitleOpinionId: null,
     featureOrMapShape: {},
     selectedContact: null,
+    mapVars: {
+      zoom: 5.88,
+      center: [
+        -100,
+        30
+        ],
+      pitch: 0,
+      bearing: 0,
+      mapStyle: null, 
+      styleId: 'Satellite',
+      mapElement: null,
+      },
+    mapElement: null,
   });
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>

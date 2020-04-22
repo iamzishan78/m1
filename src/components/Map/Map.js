@@ -810,19 +810,27 @@ export default function Map() {
 
       const initializeMap = ({ setMap, mapEl, setStateMap }) => {
         let id = mapEl.current.id;
-        var index = getIndex(stateMap.mapStyle, mapStyles, "name");
+
+        var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
         console.log('tileset api loaded - style selected', stateMap.mapStyle)
 
         const newMap = new mapboxgl.Map({
           container: `${id}`,
           style: "mapbox://styles/m1neral/" + mapStyles[index].id,
-          center: mapStyles[index].center,
-          zoom: mapStyles[index].zoom,
-          pitch: mapStyles[index].pitch,
-          bearing: mapStyles[index].bearing,
+          center: stateApp.mapVars.center,
+          zoom: stateApp.mapVars.zoom,
+          pitch: stateApp.mapVars.pitch,
+          bearing: stateApp.mapVars.bearing,
         });
+
         console.log('new map generated')
-        //setStateMap(stateMap => ({ ...stateMap, restartMap: false }));
+        
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          mapVars: {...stateApp.mapVars,
+            mapElement: mapEl,
+          },
+        })); 
 
         /// optimized interactions w/ map
         newMap.scrollZoom.enable();
@@ -1096,6 +1104,30 @@ export default function Map() {
         }
 
         console.log('begin map unmount')
+
+        console.log('zoom',map.getZoom())
+        console.log('center',map.getCenter())
+        console.log('pitch',map.getPitch())
+        console.log('bearing',map.getBearing())
+
+        var zoom = map.getZoom();
+        var center = map.getCenter();
+        var pitch = map.getPitch();
+        var bearing = map.getBearing();
+
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          mapVars: {...stateApp.mapVars,
+            zoom: zoom,
+            center: center,
+            pitch: pitch,
+            bearing: bearing,
+          },
+        })); 
+
+        console.log('save map state variables')
+        console.log(stateApp.mapVars)
+
         var mapList = document.getElementById("map");
         console.log(mapList.childNodes)
         if (mapList.childNodes.length > 1) {
@@ -1175,11 +1207,6 @@ export default function Map() {
       <MapControlsProvider />
       <Coordinates long={lng} lat={lat} />
       <div id="tempPopupHolder" className={classes.portal} ref={container} />
-      {/* {stateMap.openTrack == true ? (
-        <div className={classes.trackLists}>
-          {<WellsProvider showList={true} parent="track" />}
-        </div>
-      ) : null} */}
       <Portal container={container.current}>
         {stateApp.popupOpen ? (
           <div>
