@@ -824,8 +824,6 @@ export default function Navigation(props) {
             <CardHeader
               className={classes.trackHeader}
               title="Track"
-              // subheader="Wells and Owners"
-              avatar={<MyLocationIcon color="secondary" />}
             />
             ): null}
             {/*       <div className={classes.search}>
