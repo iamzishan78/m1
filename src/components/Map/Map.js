@@ -833,7 +833,7 @@ export default function Map() {
           bearing: map.getBearing(),
         },
       })); 
-      
+
       setMap(null);
     }
   }, [stateApp.mapVars.styleId]);
@@ -1207,15 +1207,30 @@ export default function Map() {
         speed: 0.5,
       });
 
-      // setStateApp((stateApp) => ({
-      //   ...stateApp,
-      //   mapVars: {...stateApp.mapVars,
-      //     zoom: map.getZoom(),
-      //     center: map.getCenter(),
-      //     pitch: map.getPitch(),
-      //     bearing: map.getBearing(),
-      //   },
-      // })); 
+      let flying = null;
+
+      map.on('flystart', function(){
+        flying = true;
+      });
+      map.on('flyend', function(){
+        flying = false;
+      });
+      map.on('moveend', function(e){
+        if(flying){
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            mapVars: {...stateApp.mapVars,
+              zoom: map.getZoom(),
+              center: map.getCenter(),
+              pitch: map.getPitch(),
+              bearing: map.getBearing(),
+            },
+          })); 
+          map.fire('flyend'); 
+        }
+     });
+
+
 
       setStateMap((stateMap) => ({ ...stateMap, toggleZoomOut: null }));
 
