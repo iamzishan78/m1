@@ -144,14 +144,6 @@ export default function CheckboxList(props) {
           <ListItemIcon>
             {/* <InboxIcon /> */}
           </ListItemIcon>
-          <ListItemText primary="Base Map Layers" />
-          {open ? <ExpandLess /> : <ExpandMore />}
-        </StyledListItem>
-
-        <StyledListItem button onClick={handleClick}>
-          <ListItemIcon>
-            {/* <InboxIcon /> */}
-          </ListItemIcon>
           <ListItemText primary="M1neral Layers" />
           {open ? <ExpandLess /> : <ExpandMore />}
         </StyledListItem>
@@ -186,14 +178,6 @@ export default function CheckboxList(props) {
             // </StyledMenuItem> 
           );
         })}
-
-        <StyledListItem button onClick={handleClick}>
-          <ListItemIcon>
-            {/* <InboxIcon /> */}
-          </ListItemIcon>
-          <ListItemText primary="Heatmaps" />
-          {open ? <ExpandLess /> : <ExpandMore />}
-        </StyledListItem>
 
         <StyledListItem button onClick={handleClick}>
           <ListItemIcon>

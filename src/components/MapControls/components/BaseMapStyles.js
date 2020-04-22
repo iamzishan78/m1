@@ -12,7 +12,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { MapControlsContext } from "../MapControlsContext";
 import { MapContext } from "../../Map/MapContext";
 import { AppContext } from "../../../AppContext";
-
+import RoomIcon from '@material-ui/icons/Room';
+import LayersIcon from '@material-ui/icons/Layers';
 import { style } from "@material-ui/system";
 //import mapStyles from "../../Map/components/Utils/MapStyles";
 //import Satellite_Image from '../../Shared/pngImages/Satellite.PNG';
@@ -33,6 +34,11 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Checkbox from "@material-ui/core/Checkbox";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import Collapse from '@material-ui/core/Collapse';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
 
 const theme = createMuiTheme({
   overrides: {
@@ -119,6 +125,10 @@ const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important",
   },
+  nested: {
+    paddingLeft: theme.spacing(6),
+    paddingRight: theme.spacing(6),
+  },
 }));
 
 function Icon2() {
@@ -157,7 +167,10 @@ export default function BaseMapStyles(props) {
   };
 
   const [mapStyles, setMapStyles] = useState([]);
-
+  const [open, setOpen] = React.useState(true);
+  const handleClick = () => {
+    setOpen(!open);
+  };
   const handleToggle = (idx) => () => {
     //console.log(idx);
     //console.log("toggle stateMap.checkedBaseLayers before", stateMap.baseMapLayers);
@@ -177,6 +190,35 @@ export default function BaseMapStyles(props) {
 
     //console.log("toggle stateMap.checkedBaseLayers after", stateMap.checkedBaseLayers);
   };
+
+  const StyledListItem = withStyles(theme => ({
+    root: {
+      fontFamily: "Poppins",
+      "&:hover": {
+        background: "#4B618F"
+      },
+      backgroundColor: "#263451",
+      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+        color: theme.palette.common.white
+        // },
+      }
+    }
+  }))(ListItem);
+
+  const StyledListItem2 = withStyles(theme => ({
+    root: {
+      fontFamily: "Poppins",
+      "&:hover": {
+        background: "#a3b2cf"
+      },
+      backgroundColor: "#4B618F",
+      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+        color: theme.palette.common.white
+        // },
+      }
+    }
+  }))(ListItem);
+
 
   useEffect(() => {
     const req = new Request(
@@ -259,7 +301,7 @@ export default function BaseMapStyles(props) {
             </ThemeProvider>
           </StyledMenuItem>
         ))}
-        <StyledMenuItem
+        {/* <StyledMenuItem
           //disableRipple
           //key="subheader"
           //role={undefined}
@@ -267,13 +309,24 @@ export default function BaseMapStyles(props) {
           //className={classes.subHeaderItem}
         >
           <ListItemText primary="Map Layers" />
-        </StyledMenuItem>
+        </StyledMenuItem> */}
+
+        <StyledListItem2 button onClick={handleClick}>
+          <ListItemIcon>
+            <LayersIcon />
+          </ListItemIcon>
+          <ListItemText primary="Map Layers" />
+          {open ? <ExpandLess /> : <ExpandMore />}
+        </StyledListItem2>
+
 
         {stateMap.baseMapLayers.map((layer, index) => {
           const labelId = `checkbox-list-label-${index}`;
 
           return (
-            <StyledMenuItem disableRipple key={index} role={undefined} dense>
+            //<StyledMenuItem disableRipple key={index} role={undefined} dense>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+            <StyledListItem button className={classes.nested}>
               <ListItemIcon>
                 <Checkbox
                   icon={<VisibilityOffIcon htmlColor="#fff" />}
@@ -291,7 +344,8 @@ export default function BaseMapStyles(props) {
                 />
               </ListItemIcon>
               <ListItemText id={labelId} primary={layer.name} />
-            </StyledMenuItem>
+            </StyledListItem>
+            </Collapse>
           );
         })}
       </StyledMenu>
