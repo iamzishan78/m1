@@ -1,6 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
 import { AppContext } from "../../AppContext";
+import { NavigationContext } from "../Navigation/NavigationContext";
 import { TrackContext } from "./TrackContext";
 import { MapContext } from "../Map/MapContext";
 import { Container } from "@material-ui/core";
@@ -76,15 +77,24 @@ TabPanel.propTypes = {
 };
 export default function Track() {
   const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [value, setValue] = useState(0);
-  const handleTabChange = (event, newValue) => {
-    setValue(newValue);
-  };
+  // const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
+  // const [value, setValue] = useState(null);
+  
+  // useEffect(() => {
+  //   if (stateNav.trackTabsValue) {
+  //     const handleTabChange = (e) => {
+  //       console.log(e)
+  //       setValue(e);
+  //     };
+  //     handleTabChange(stateNav.trackTabsValue)
+  //   }
+  // },[stateNav.trackTabsValue])
+  // console.log(value, stateNav.trackTabsValue)
   return (
     <Container maxWidth="xl" className={classes.container}>
       <Card className={classes.card}>
-        <CardHeader
+        {/* <CardHeader
           classes={{
             title: classes.title,
             subheader: classes.subheader
@@ -92,11 +102,11 @@ export default function Track() {
           title="Track"
           // subheader="Wells and Owners"
           avatar={<MyLocationIcon color="secondary" />}
-        />
-        <CardContent className={classes.cardContent}>
-          <Tabs
-            value={value}
-            onChange={handleTabChange}
+        /> */}
+        {/* <CardContent className={classes.cardContent}> */}
+          {/* <Tabs
+            value={stateNav.trackTabsValue}
+            // onChange={handleTabChange}
             variant="standard"
             textColor="primary"
             aria-label="tabs"
@@ -129,17 +139,18 @@ export default function Track() {
               }
               aria-label="well"
             />
-          </Tabs>
-          <TabPanel value={value} index={1}>
+          </Tabs>  */}
+          {/* <TabPanel value={value} index={1}> */}
             {/* <WellsProvider showList={false} parent="track"/> */}
-            <M1nTable parent="trackWells"/>
-          </TabPanel>
-          <TabPanel value={value} index={0}>
+
+            {stateNav.trackTabsValue === 1 ? <M1nTable parent="trackWells"/> : null}
+          {/* </TabPanel>
+          <TabPanel value={value} index={0}> */}
            {/* <OwnersProvider  parent="track"/> */}
-            <M1nTable parent="trackOwners" />
-          </TabPanel>
-        </CardContent>
-      </Card>
+           {stateNav.trackTabsValue === 0 ?  <M1nTable parent="trackOwners" /> : null} 
+          {/* </TabPanel> */}
+       {/* </CardContent> */}
+      </Card> 
     </Container>
   );
 }

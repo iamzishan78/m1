@@ -97,7 +97,7 @@ export default function FilterDatePickerPermit(props) {
 
   const setvaluesFrom = useCallback(() => {
     // Check for the null date and if it is return
-    if (stateNav.permitDateFrom === null) {
+    if (stateNav.permitDateFrom == null) {
       return;
     } else {
       // else recall date from statenav context so display again 
@@ -107,7 +107,7 @@ export default function FilterDatePickerPermit(props) {
 
   const setvaluesTo = useCallback(() => {
     // Check for the null date and if it is return
-    if (stateNav.permitDateTo === null) {
+    if (stateNav.permitDateTo == null) {
       // else recall date from statenav context so display again 
       return;
     } else {
@@ -126,7 +126,7 @@ export default function FilterDatePickerPermit(props) {
   const handleStartDate = date => {
     // moments js and react quick rerenders make the input to become a null as soon as 1 number is delted
     // if is equal it resets the date from the input
-    if (date === null) {
+    if (date == null) {
       const formatDateReset = moment().subtract(120, 'Years');
       setStateNav(stateNav => ({
         ...stateNav,

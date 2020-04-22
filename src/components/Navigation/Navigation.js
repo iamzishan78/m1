@@ -464,6 +464,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: -12,
     marginLeft: -12,
   },
+  trackHeader: {
+    "& span": {
+      fontSize: 20,
+    }
+  },
   goHome: {
     "&:hover": {
       width: "15vw",
@@ -582,6 +587,7 @@ export default function Navigation(props) {
   const [applySuccess, setApplySuccess] = useState(false);
   const [disableApply, setDisableApply] = useState(true);
   const [matchLocation, setMatchLocation] = useState(false);
+  const [matchTrack, setMatchTrack] = useState(false);
   let history = useHistory();
   let location = useLocation();
 
@@ -589,6 +595,14 @@ export default function Navigation(props) {
     [classes.applySuccess]: applySuccess,
   });
 
+  const [valueTabsTrack, setValueTabsTrack] = useState(0);
+  const handleTabChange = (event, newValue) => {
+    setValueTabsTrack(newValue);
+    setStateNav(stateNav => ({
+      trackTabsValue: newValue
+    }))
+  };
+  
   useEffect(() => {
     if (location.pathname === "/") {
       setStateNav((state) => ({
@@ -664,6 +678,14 @@ export default function Navigation(props) {
     stateNav.profileName,
     stateNav.operatorName
   ])  */
+
+  useEffect(() => {
+    if (location.pathname === "/track") {
+      setMatchTrack(true);
+    } else {
+      setMatchTrack(false);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     if (location.pathname === "/") {
@@ -798,6 +820,14 @@ export default function Navigation(props) {
               </div>
             ) : null}
 
+            { matchTrack ? ( 
+            <CardHeader
+              className={classes.trackHeader}
+              title="Track"
+              // subheader="Wells and Owners"
+              avatar={<MyLocationIcon color="secondary" />}
+            />
+            ): null}
             {/*       <div className={classes.search}>
             <div className={classes.searchIcon}>
               <SearchIcon />
@@ -837,6 +867,50 @@ export default function Navigation(props) {
             </FormControl>
  */}
             <div className={classes.grow1} />
+            {matchTrack ? (
+              <div ref={anchorEl} className={classes.filterTabs}>
+                <Tabs
+                  value={valueTabsTrack}
+                  onChange={handleTabChange}
+                  variant="standard"
+                  textColor="primary"
+                  aria-label="tabs"
+                  classes={{ indicator: classes.indicator }}
+                >
+                  <Tab
+                    //onClick={handleFilterCardOpen}
+                    value={0}
+                    className={classes.tab}
+                    icon={
+                      <Badge
+                        badgeContent={stateApp.owners ? stateApp.owners.length : 0}
+                        color="secondary"
+                      >
+                        <OwnershipIcon color="#fff" opacity="1.0" />
+                      </Badge>
+                    }
+                    aria-label="well"
+                  />
+                  <Tab
+                    // disabled
+                    //onClick={handleFilterCardOpen}
+                    value={1}
+                    className={classes.tab}
+                    icon={
+                      <Badge
+                        badgeContent={stateApp.wells ? stateApp.wells.length : 0}
+                        color="secondary"
+                      >
+                        <WellIcon color="#fff" opacity="1.0" />
+                      </Badge>
+                    }
+                    aria-label="geography"
+                  />
+                </Tabs>              
+              </div>
+            ) : (
+              <div style={{ display: "none" }}></div>
+            )}
             {matchLocation ? (
               <div ref={anchorEl} className={classes.filterTabs}>
                 <Tabs
