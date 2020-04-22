@@ -17,6 +17,12 @@ import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import { MapControlsContext } from "../MapControlsContext";
 import { MapContext } from "../../Map/MapContext";
 import { Divider } from "@material-ui/core";
+import Collapse from '@material-ui/core/Collapse';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+
 
 const useStyles = makeStyles(theme => ({
   subHeaderItem: {
@@ -31,6 +37,10 @@ export default function CheckboxList(props) {
   const [stateMap, setStateMap] = useContext(MapContext);
   //const theme = useTheme()
   const classes = useStyles();
+  const [open, setOpen] = React.useState(true);
+  const handleClick = () => {
+    setOpen(!open);
+  };
   const handleToggle = idx => () => {
     console.log(idx);
     console.log("toggle stateMap.checkedlayers before", stateMap.checkedLayers);
@@ -90,6 +100,20 @@ export default function CheckboxList(props) {
     }
   }))(MenuItem);
 
+  const StyledListItem = withStyles(theme => ({
+    root: {
+      fontFamily: "Poppins",
+      "&:hover": {
+        background: "#4B618F"
+      },
+      backgroundColor: "#263451",
+      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+        color: theme.palette.common.white
+        // },
+      }
+    }
+  }))(ListItem);
+
   const handleClose = () => {
     setStateMapControls(stateMapControls => ({
       ...stateMapControls,
@@ -116,11 +140,30 @@ export default function CheckboxList(props) {
           <ListItemText primary="Layer Visibility" />
         </StyledMenuItem>
 
+        <StyledListItem button onClick={handleClick}>
+          <ListItemIcon>
+            {/* <InboxIcon /> */}
+          </ListItemIcon>
+          <ListItemText primary="Base Map Layers" />
+          {open ? <ExpandLess /> : <ExpandMore />}
+        </StyledListItem>
+
+        <StyledListItem button onClick={handleClick}>
+          <ListItemIcon>
+            {/* <InboxIcon /> */}
+          </ListItemIcon>
+          <ListItemText primary="M1neral Layers" />
+          {open ? <ExpandLess /> : <ExpandMore />}
+        </StyledListItem>
+
         {stateMap.styleLayers.map((layer, index) => {
           const labelId = `checkbox-list-label-${index}`;
 
           return (
-            <StyledMenuItem disableRipple key={index} role={undefined} dense>
+            // <StyledMenuItem disableRipple key={index} role={undefined} dense>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+
+            <StyledListItem>
               <ListItemIcon>
                 <Checkbox
                   icon={<VisibilityOffIcon htmlColor="#fff" />}
@@ -138,9 +181,28 @@ export default function CheckboxList(props) {
                 />
               </ListItemIcon>
               <ListItemText id={labelId} primary={layer.name} />
-            </StyledMenuItem>
+              </StyledListItem>  
+              </Collapse>
+            // </StyledMenuItem> 
           );
         })}
+
+        <StyledListItem button onClick={handleClick}>
+          <ListItemIcon>
+            {/* <InboxIcon /> */}
+          </ListItemIcon>
+          <ListItemText primary="Heatmaps" />
+          {open ? <ExpandLess /> : <ExpandMore />}
+        </StyledListItem>
+
+        <StyledListItem button onClick={handleClick}>
+          <ListItemIcon>
+            {/* <InboxIcon /> */}
+          </ListItemIcon>
+          <ListItemText primary="User Defined" />
+          {open ? <ExpandLess /> : <ExpandMore />}
+        </StyledListItem>
+
       </StyledMenu>
     </ClickAwayListener>
   );

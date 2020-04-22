@@ -36,6 +36,11 @@ const styleLayers = [
     id: [],
     idx: 7,
   },
+  {
+    name: "Permits",
+    id: [],
+    idx: 8,
+  },
 ];
 
 const heatLayers = [
