@@ -103,54 +103,57 @@ export default function Map() {
   const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
   const mapEl = useRef(null);
 
-  //////////////////////////////
-  const mapRef = useRef(null);
-  const [searchResultLayer, setSearchResultsLayer] = useState(null);
+  // //////////////////////////////
+  // const mapRef = useRef(null);
+  // const [searchResultLayer, setSearchResultsLayer] = useState(null);
 
-  const [viewport, setViewport] = useState({
-    latitude: 37.7577,
-    longitude: -122.4376,
-    zoom: 8,
-  });
+  // const [viewport, setViewport] = useState({
+  //   latitude: 37.7577,
+  //   longitude: -122.4376,
+  //   zoom: 8,
+  // });
 
-  const handleViewportChange = (newViewport) => {
-    setViewport({ ...viewport, ...newViewport });
-  };
+  // const handleViewportChange = (newViewport) => {
+  //   setViewport({ ...viewport, ...newViewport });
+  // };
 
-  const handleGeocoderViewportChange = (viewport) => {
-    const geocoderDefaultOverrides = { transitionDuration: 1000 };
+  // const handleGeocoderViewportChange = (viewport) => {
+  //   const geocoderDefaultOverrides = { transitionDuration: 1000 };
 
-    return handleViewportChange({
-      ...viewport,
-      ...geocoderDefaultOverrides,
-    });
-  };
+  //   return handleViewportChange({
+  //     ...viewport,
+  //     ...geocoderDefaultOverrides,
+  //   });
+  // };
 
-  const handleOnResult = (event) => {
-    console.log(event.result);
-    setSearchResultsLayer(
-      new GeoJsonLayer({
-        id: "search-result",
-        data: event.result.geometry,
-        getFillColor: [255, 0, 0, 128],
-        getRadius: 1000,
-        pointRadiusMinPixels: 10,
-        pointRadiusMaxPixels: 10,
-      })
-    );
-  };
+  // const handleOnResult = (event) => {
+  //   console.log(event.result);
+  //   setSearchResultsLayer(
+  //     new GeoJsonLayer({
+  //       id: "search-result",
+  //       data: event.result.geometry,
+  //       getFillColor: [255, 0, 0, 128],
+  //       getRadius: 1000,
+  //       pointRadiusMinPixels: 10,
+  //       pointRadiusMaxPixels: 10,
+  //     })
+  //   );
+  // };
 
-  console.log(viewport);
-  ///////////////
+  // console.log(viewport);
+  // ///////////////
 
   mapboxgl.accessToken =
     "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJjanYycGJxbG8yN3JsM3lsYTdnMXZoeHh1In0.tTNECYKDPtcrzivWTiZcIQ";
 
   useEffect(() => {
+    console.log('layer ue start')
     if (stateMap.checkedLayers && map) {
       stateMap.styleLayers.forEach((l) => {
         l.id.forEach((k) => {
-          map.setLayoutProperty(k, "visibility", "none");
+          if(map.getLayer(k)){
+            map.setLayoutProperty(k, "visibility", "none");
+          }
         });
       });
 
@@ -160,18 +163,29 @@ export default function Map() {
         layers.forEach((i) => {
           let currentLayerArray = stateMap.styleLayers[i].id;
           currentLayerArray.forEach((j) => {
-            map.setLayoutProperty(j, "visibility", "visible");
+            var mapLayer = map.getLayer(j)
+            if(typeof mapLayer !== 'undefined'){
+              if(map.getLayer(j)){
+                map.setLayoutProperty(j, "visibility", "visible");
+              }
+            }
           });
         });
       }
     }
+    console.log('layers added')
   }, [map, stateMap.checkedLayers, stateMap.styleLayers]);
 
+
+
   useEffect(() => {
+    console.log('heatmap layer ue start')
     if (stateMap.checkedHeats && map) {
       stateMap.heatLayers.forEach((l) => {
         l.id.forEach((k) => {
-          map.setLayoutProperty(k, "visibility", "none");
+          if(map.getLayer(k)){
+            map.setLayoutProperty(k, "visibility", "none");
+          }
         });
       });
 
@@ -181,18 +195,28 @@ export default function Map() {
         layers.forEach((i) => {
           let currentLayerArray = stateMap.heatLayers[i].id;
           currentLayerArray.forEach((j) => {
-            map.setLayoutProperty(j, "visibility", "visible");
+            if(map.getLayer(j)){
+              map.setLayoutProperty(j, "visibility", "visible");
+            }
           });
         });
       }
     }
+    console.log('heatmap layers added')
   }, [map, stateMap.checkedHeats]);
 
+
+
+
   useEffect(() => {
+    console.log('basemap layer ue start')
     if (stateMap.checkedBaseLayers && map) {
+
       stateMap.baseMapLayers.forEach((l) => {
         l.id.forEach((k) => {
-          map.setLayoutProperty(k, "visibility", "none");
+          if(map.getLayer(k)){
+            map.setLayoutProperty(k, "visibility", "none");
+          }
         });
       });
 
@@ -202,12 +226,20 @@ export default function Map() {
         layers.forEach((i) => {
           let currentLayerArray = stateMap.baseMapLayers[i].id;
           currentLayerArray.forEach((j) => {
-            map.setLayoutProperty(j, "visibility", "visible");
+            // var mapLayer = map.getLayer(j)
+            // console.log(mapLayer)
+            if(map.getLayer(j)){
+              map.setLayoutProperty(j, "visibility", "visible");
+            }
           });
         });
       }
     }
+    console.log('basemap layers added')
   }, [map, stateMap.checkedBaseLayers]);
+
+
+
 
   useEffect(() => {
     if (showExpandableCard) {
@@ -218,6 +250,7 @@ export default function Map() {
   }, [showExpandableCard]);
 
   useEffect(() => {
+    console.log('filter ue start')
     //applies filter when one of the filters change
     if (map) {
       let isFilterSet = false;
@@ -647,6 +680,7 @@ export default function Map() {
         map.setFilter("wellsHeatmapRecentlyCompleted", null);
       }
     }
+    console.log('filters applied')
   }, [
     map,
     setStateNav,
@@ -770,13 +804,14 @@ export default function Map() {
   }
 
   useEffect(() => {
+    console.log('map ue start')
     if (mapStyles.length > 0) {
       // const SET_INITIAL_MAP_STYLE = "Satellite";
-      var index = getIndex(stateMap.mapStyle, mapStyles, "name");
 
       const initializeMap = ({ setMap, mapEl, setStateMap }) => {
         let id = mapEl.current.id;
-        console.log("mapppppppppppppppppppppppp");
+        var index = getIndex(stateMap.mapStyle, mapStyles, "name");
+        console.log('tileset api loaded - style selected', stateMap.mapStyle)
 
         const newMap = new mapboxgl.Map({
           container: `${id}`,
@@ -786,7 +821,7 @@ export default function Map() {
           pitch: mapStyles[index].pitch,
           bearing: mapStyles[index].bearing,
         });
-
+        console.log('new map generated')
         //setStateMap(stateMap => ({ ...stateMap, restartMap: false }));
 
         /// optimized interactions w/ map
@@ -936,16 +971,19 @@ export default function Map() {
 
         newMap.on("load", function (e) {
           setMap(newMap);
+          console.log('set new map complete',newMap.loaded())
         });
       };
 
       if (!map) {
+        console.log('initialize map start')
         initializeMap({ setMap, mapEl, setStateMap });
-        console.log("have map");
-      } else {
+        console.log('initialize map finish')
+      } 
+      else {
         //map.setLayoutProperty('wellpoints', 'visibility', 'visible');
         //map.setLayoutProperty('welllines', 'visibility', 'visible');
-        console.log("no map");
+        console.log('map extra components start')
         if (stateMap.toggle3d === true) {
           map.setPitch(70);
           map.setBearing(20);
@@ -1043,6 +1081,7 @@ export default function Map() {
           }));
           createPopUp(currentFeature.properties);
         });
+        console.log('map extra components complete')
       }
     }
   }, [map, setStateMap, setStateMapControls, mapStyles, stateMap.toggle3d]);
@@ -1056,12 +1095,17 @@ export default function Map() {
           list.removeChild(list.childNodes[0]);
         }
 
+        console.log('begin map unmount')
         var mapList = document.getElementById("map");
+        console.log(mapList.childNodes)
         if (mapList.childNodes.length > 1) {
           mapList.removeChild(mapList.childNodes[1]);
           mapList.removeChild(mapList.childNodes[1]);
           mapList.removeChild(mapList.childNodes[1]);
         }
+        console.log(mapList.childNodes)
+        console.log('end map unmount')
+
       };
     }
   }, [map, geocoder]);
