@@ -75,11 +75,65 @@ export default function FilterDefaultListProd(props) {
     if (string.includes("firstThreeMonthGas")) {
         return string.replace("firstThreeMonthGas", "1st 3 Months Gas")
     }
+    if (string.includes("firstThreeMonthOil")) {
+        return string.replace("firstThreeMonthOil", "1st 3 Months Oil")
+    }
+    if (string.includes("firstThreeMonthWater")) {
+        return string.replace("firstThreeMonthWater", "1st 3 Months H2O")
+    }
     if (string.includes("firstMonthOil")) {
         return string.replace("firstMonthOil", "1st Month Oil")
     }
+    if (string.includes("firstMonthGas")) {
+        return string.replace("firstMonthGas", "1st Month Gas")
+    }
+    if (string.includes("firstMonthWater")) {
+        return string.replace("firstMonthWater", "1st Month H2O")
+    }
     if (string.includes("firstSixMonthOil")) {
         return string.replace("firstSixMonthOil", "1st 6 Months Oil")
+    }
+    if (string.includes("firstSixMonthGas")) {
+        return string.replace("firstSixMonthGas", "1st 6 Months Gas")
+    }
+    if (string.includes("firstSixMonthWater")) {
+        return string.replace("firstSixMonthWater", "1st 6 Months H2O")
+    }
+    if (string.includes("firstTwelveMonthOil")) {
+        return string.replace("firstTwelveMonthOil", "1st 12 Months Oil")
+    }
+    if (string.includes("firstTwelveMonthGas")) {
+        return string.replace("firstTwelveMonthGas", "1st 12 Months Gas")
+    }
+    if (string.includes("firstTwelveMonthWater")) {
+        return string.replace("firstTwelveMonthWater", "1st 12 Months H2O")
+    }
+    if (string.includes("lastMonthOil")) {
+        return string.replace("lastMonthOil", "Last Month Oil")
+    }
+    if (string.includes("lastMonthGas")) {
+        return string.replace("lastMonthGas", "Last Month Gas")
+    }
+    if (string.includes("lastMonthWater")) {
+        return string.replace("lastMonthWater", "Last Month H2O")
+    }
+    if (string.includes("lastSixMonthOil")) {
+        return string.replace("lastSixMonthOil", "Last 6 Months Oil")
+    }
+    if (string.includes("lastSixMonthGas")) {
+        return string.replace("lastSixMonthGas", "Last 6 Months Gas")
+    }
+    if (string.includes("lastSixMonthWater")) {
+        return string.replace("lastSixMonthWater", "Last 6 Months H2O")
+    }
+    if (string.includes("lastTwelveMonthOil")) {
+        return string.replace("lastTwelveMonthOil", "Last 12 Months Oil")
+    }
+    if (string.includes("lastTwelveMonthGas")) {
+        return string.replace("lastTwelveMonthGas", "Last 12 Months Gas")
+    }
+    if (string.includes("lastTwelveMonthWater")) {
+        return string.replace("lastTwelveMonthWater", "Last 12 Months H2O")
     }
   }
 
@@ -100,7 +154,7 @@ export default function FilterDefaultListProd(props) {
                       className={classes.chipContainer}
                       label={(
                         <section>
-                            <div className={classes.chip}>{removeNameFromType(el[1][1])}{el[0] === ">=" ? "Min" : "Max"} </div>    
+                            <div className={classes.chip}>{removeNameFromType(el[1][1])}{" "}{el[0] === ">=" ? "Min" : "Max"} </div>    
                       <div className={classes.chipRow}>{el[2]}</div>
                         </section>
                         )}
