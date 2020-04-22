@@ -203,17 +203,11 @@ const MapContextProvider = (props) => {
     openWellDetails: false,
     sourceLoaded: false,
     // openTrack: true,
-    toggle3d: false,
+    toggle3d: null,
+    toggleZoomOut: null,
     map: null,
     draw: null,
     currentFeature: undefined,
-    mapStyle: "Satellite",
-    mapPitch: 0,
-    mapZoom: 6,
-    mapBearing: 0,
-    mapCenter: [-97,33],
-    mapStyleID: 'Satellite',
-    mapElement: null,
   });
   return (
     <MapContext.Provider value={[stateMap, setStateMap]}>

@@ -1181,6 +1181,35 @@ export default function Map() {
   }, [createPopUp, map, stateApp.flyTo]);
 
 
+  useEffect(() => {
+    if (map && stateMap.toggleZoomOut) {
+
+      if(stateMap.toggleZoomOut === true){
+
+      map.flyTo({
+        center: {lng: -89.03855405373304, lat: 42.05696383539612},
+        zoom: 5.88,
+        pitch: 0,
+        bearing: 0,        
+        speed: 0.5,
+      });
+
+      // setStateApp((stateApp) => ({
+      //   ...stateApp,
+      //   mapVars: {...stateApp.mapVars,
+      //     zoom: map.getZoom(),
+      //     center: map.getCenter(),
+      //     pitch: map.getPitch(),
+      //     bearing: map.getBearing(),
+      //   },
+      // })); 
+
+      setStateMap((stateMap) => ({ ...stateMap, toggleZoomOut: null }));
+
+      }
+    }
+  }, [stateMap.toggleZoomOut]);
+
 
 
   useEffect(() => {

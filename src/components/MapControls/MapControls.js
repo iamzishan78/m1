@@ -25,6 +25,7 @@ import GpsFixedIcon from "@material-ui/icons/GpsFixed";
 import GpsNotFixedIcon from "@material-ui/icons/GpsNotFixed";
 import GradientIcon from "@material-ui/icons/Gradient";
 import { default as Cube3d } from "../Shared/svgIcons/cube-3d";
+import AspectRatioOutlinedIcon from '@material-ui/icons/AspectRatioOutlined';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -126,7 +127,11 @@ export default function MapControls(props) {
       ...stateMap,
       toggle3d: action === "threed" ? !stateMap.toggle3d : stateMap.toggle3d,
     });
-    // console.log(stateMap.toggle3d);
+
+    setStateMap({
+      ...stateMap,
+      toggleZoomOut: action === "zoomout" ? !stateMap.toggleZoomOut : stateMap.toggleZoomOut,
+    });
 
     if (stateMap.draw.getMode() !== "simple_select") {
       setStateApp({ ...stateApp, editDraw: false });
@@ -158,6 +163,11 @@ export default function MapControls(props) {
         name: "Toggle 3D",
         action: "threed",
       },
+      {
+        icon: <AspectRatioOutlinedIcon />,
+        name: "Toggle Zoom Out",
+        action: "zoomout",
+      },      
     ];
 
     return actions.map((action) => (
