@@ -1020,13 +1020,6 @@ export default function Map() {
       else {
         console.log('map extra components start')
 
-        // if (stateMap.toggle3d === true) {
-        //   map.setPitch(70);
-        //   map.setBearing(20);
-        // } else {
-        //   map.setPitch(0);
-        //   map.setBearing(0);
-        // }
 
         // additional map interactions
         // for some reason these do not work when initializing but do here
@@ -1120,7 +1113,7 @@ export default function Map() {
         console.log('map extra components complete')
       }
     }
-  }, [map, setStateMap, setStateMapControls, mapStyles, stateMap.toggle3d]);
+  }, [map, setStateMap, setStateMapControls, mapStyles]);
 
   useEffect(() => {
     if (map && geocoder) {
@@ -1186,6 +1179,42 @@ export default function Map() {
       });
     }
   }, [createPopUp, map, stateApp.flyTo]);
+
+
+
+
+  useEffect(() => {
+    if (map && stateMap.toggle3d) {
+
+        if (stateMap.toggle3d === true) {
+
+          if(map.getPitch()==0 && map.getBearing()==0){
+            map.setPitch(70);
+            map.setBearing(20);
+          } else {
+            map.setPitch(0);
+            map.setBearing(0);
+          }
+
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            mapVars: {...stateApp.mapVars,
+              zoom: map.getZoom(),
+              center: map.getCenter(),
+              pitch: map.getPitch(),
+              bearing: map.getBearing(),
+            },
+          })); 
+          setStateMap((stateMap) => ({ ...stateMap, toggle3d: null }));
+        }
+
+    }
+  }, [stateMap.toggle3d]);
+
+
+
+
+
 
   const handleOpenExpandableCard = (e) => {
     setAnchorElPoPOver(container.current);
