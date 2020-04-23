@@ -17,6 +17,8 @@ import Badge from "@material-ui/core/Badge";
 import ChatIcon from "@material-ui/icons/Chat";
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import M1nTable from "../M1nTable";
+import WellIcon from "../../svgIcons/well";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,7 +43,6 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "12px",
     width: "100%",
     maxWidth: "180px",
-    // backgroundColor: "#EFEFEF",
     minWidth: "80px",
     "&:hover": {
       backgroundColor: "#DADBDE",
@@ -75,6 +76,17 @@ const useStyles = makeStyles((theme) => ({
   noCommentsIcon: {
     color: "darkgrey",
   },
+  table: {
+    "& .MuiTableRow-root": {
+      cursor: "zoom-in",
+    },
+    "& .MuiTableRow-head": {
+      cursor: "default",
+    },
+    "& .MuiTableRow-footer": {
+      cursor: "default",
+    },
+  },
 }));
 
 var formatter = new Intl.NumberFormat("en-US", {
@@ -84,6 +96,7 @@ var formatter = new Intl.NumberFormat("en-US", {
 });
 
 export default function SubTable(props) {
+  let history = useHistory();
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, setRows] = useState();
@@ -95,9 +108,10 @@ export default function SubTable(props) {
   const [openDialog, setOpenDialog] = useState(false);
 
   const [showExpandableCard, setShowExpandableCard] = useState(false);
-  const [mouseX, setMouseX] = useState(null);
-  const [mouseY, setMouseY] = useState(null);
   const [selectedRow, setSelectedRow] = useState();
+  const [subComponent, setSubComponent] = useState(null);
+  const [title, setTitle] = useState("");
+  const [subTitle, setSubTitle] = useState("");
 
   useEffect(() => {
     if (props.rows) {
@@ -113,154 +127,423 @@ export default function SubTable(props) {
   useEffect(() => {
     if (props.columns) {
       props.columns.forEach((column) => {
-        if (column.name === "isTracked") {
-          column.options = {
-            ...column.options,
-            customBodyRender: (value, tableMeta, updateValue) => {
-              return (
-                <TrackToggleButton
-                  target={{ isTracked: value }}
-                  targetLabel={props.targetLabel}
-                  targetSourceId={tableMeta.rowData[0]}
-                  dark
-                />
-              );
-            },
-          };
-        }
+        switch (column.name) {
+          case "isTracked":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <TrackToggleButton
+                      target={{ isTracked: value }}
+                      targetLabel={props.targetLabel}
+                      targetSourceId={tableMeta.rowData[0]}
+                      dark
+                    />
+                  );
+                },
+              };
+            }
 
-        if (column.name === "commentsCounter") {
-          column.options = {
-            ...column.options,
-            customBodyRender: (value, tableMeta, updateValue) => {
-              return (
-                <Tooltip
-                  title={!value || value === 0 ? "Add Comments" : "Comments"}
-                  placement="top"
-                >
-                  <Badge badgeContent={value ? value : null} color="secondary">
-                    <IconButton
-                      size="medium"
-                      color="primary"
-                      className={`${classes.icons} ${
-                        !value || value === 0 ? classes.noCommentsIcon : ""
-                      } ${
-                        colInd === tableMeta.columnIndex &&
-                        rowInd === tableMeta.rowIndex
-                          ? classes.iconSelected
-                          : ""
-                      }`}
-                      onClick={() => {
-                        handleExpandClick(
-                          tableMeta.columnIndex,
-                          tableMeta.rowIndex,
-                          tableMeta.rowData[0],
-                          "comment"
-                        );
-                      }}
-                      aria-label="show comments"
+            break;
+          case "commentsCounter":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <Tooltip
+                      title={
+                        !value || value === 0 ? "Add Comments" : "Comments"
+                      }
+                      placement="top"
                     >
-                      <ChatIcon />
-                    </IconButton>
-                  </Badge>
-                </Tooltip>
-              );
-            },
-          };
-        }
-
-        if (column.name === "ownerCount") {
-          column.options = {
-            ...column.options,
-            customBodyRender: (value, tableMeta, updateValue) => {
-              return (
-                <Tooltip
-                  title={value ? "Owners" : "Not Available"}
-                  placement="top"
-                >
-                  <Badge badgeContent={value ? value : null} color="secondary">
-                    <IconButton
-                      size="medium"
-                      color="primary"
-                      className={`${classes.icons} ${
-                        !value ? classes.noOwnersIcon : ""
-                      } ${
-                        colInd === tableMeta.columnIndex &&
-                        rowInd === tableMeta.rowIndex
-                          ? classes.iconSelected
-                          : ""
-                      }`}
-                      onClick={() => {
-                        if (value && value > 0) {
+                      <Badge
+                        badgeContent={value ? value : null}
+                        color="secondary"
+                      >
+                        <IconButton
+                          size="medium"
+                          color="primary"
+                          className={`${classes.icons} ${
+                            !value || value === 0 ? classes.noCommentsIcon : ""
+                          } ${
+                            colInd === tableMeta.columnIndex &&
+                            rowInd === tableMeta.rowIndex
+                              ? classes.iconSelected
+                              : ""
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleExpandClick(
+                              tableMeta.columnIndex,
+                              tableMeta.rowIndex,
+                              tableMeta.rowData[0],
+                              "comment"
+                            );
+                          }}
+                          aria-label="show comments"
+                        >
+                          <ChatIcon />
+                        </IconButton>
+                      </Badge>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
+          case "wellsCounter":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <Tooltip
+                      title={value ? "Wells" : "Not Available"}
+                      placement="top"
+                    >
+                      <Badge
+                        badgeContent={value ? value : null}
+                        color="secondary"
+                      >
+                        <IconButton
+                          size="medium"
+                          color="primary"
+                          className={`${classes.icons} ${
+                            !value ? classes.noOwnersIcon : ""
+                          } ${
+                            colInd === tableMeta.columnIndex &&
+                            rowInd === tableMeta.rowIndex
+                              ? classes.iconSelected
+                              : ""
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (value && value > 0) {
+                              handleExpandClick(
+                                tableMeta.columnIndex,
+                                tableMeta.rowIndex,
+                                tableMeta.rowData[1],
+                                "well"
+                              );
+                            }
+                          }}
+                          aria-label="show owners"
+                        >
+                          <WellIcon
+                            color={value && value !== 0 ? "#000" : "darkgrey"}
+                            opacity="1.0"
+                            small
+                          />
+                        </IconButton>
+                      </Badge>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
+          case "ownerCount":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <Tooltip
+                      title={value ? "Owners" : "Not Available"}
+                      placement="top"
+                    >
+                      <Badge
+                        badgeContent={value ? value : null}
+                        color="secondary"
+                      >
+                        <IconButton
+                          size="medium"
+                          color="primary"
+                          className={`${classes.icons} ${
+                            !value ? classes.noOwnersIcon : ""
+                          } ${
+                            colInd === tableMeta.columnIndex &&
+                            rowInd === tableMeta.rowIndex
+                              ? classes.iconSelected
+                              : ""
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (value && value > 0) {
+                              handleExpandClick(
+                                tableMeta.columnIndex,
+                                tableMeta.rowIndex,
+                                tableMeta.rowData[1],
+                                "owner"
+                              );
+                            }
+                          }}
+                          aria-label="show owners"
+                        >
+                          <PeopleAltIcon />
+                        </IconButton>
+                      </Badge>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
+          case "tags":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <Tooltip
+                      title={value[1] === 0 ? "Add Tags" : "Tags"}
+                      placement="top"
+                    >
+                      <Badge
+                        className={`${classes.TagSample} ${
+                          colInd === tableMeta.columnIndex &&
+                          rowInd === tableMeta.rowIndex
+                            ? classes.iconSelected
+                            : ""
+                        }`}
+                        badgeContent={value[1]}
+                        color="secondary"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
                           handleExpandClick(
                             tableMeta.columnIndex,
                             tableMeta.rowIndex,
-                            tableMeta.rowData[1],
-                            "owner"
+                            tableMeta.rowData[0],
+                            "tag"
                           );
-                        }
-                      }}
-                      aria-label="show owners"
-                    >
-                      <PeopleAltIcon />
-                    </IconButton>
-                  </Badge>
-                </Tooltip>
-              );
-            },
-          };
+                        }}
+                      >
+                        {value[0] && value[0].length > 0 ? (
+                          <React.Fragment>
+                            <p className="first">{value[0].join(", ")}</p>
+                            <p className="two">...</p>
+                          </React.Fragment>
+                        ) : (
+                          <p className="three">No Tags</p>
+                        )}
+                      </Badge>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
+          default:
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return column.name === "appraisedValue"
+                    ? formatter.format(value)
+                    : value;
+                },
+              };
+            }
+            break;
         }
 
-        if (column.name === "tags") {
-          column.options = {
-            ...column.options,
-            customBodyRender: (value, tableMeta, updateValue) => {
-              return (
-                <Tooltip
-                  title={value[1] === 0 ? "Add Tags" : "Tags"}
-                  placement="top"
-                >
-                  <Badge
-                    className={`${classes.TagSample} ${
-                      colInd === tableMeta.columnIndex &&
-                      rowInd === tableMeta.rowIndex
-                        ? classes.iconSelected
-                        : ""
-                    }`}
-                    badgeContent={value[1]}
-                    color="secondary"
-                    onClick={() => {
-                      handleExpandClick(
-                        tableMeta.columnIndex,
-                        tableMeta.rowIndex,
-                        tableMeta.rowData[0],
-                        "tag"
-                      );
-                    }}
-                  >
-                    {value[0] && value[0].length > 0 ? (
-                      <React.Fragment>
-                        <p className="first">{value[0].join(", ")}</p>
-                        <p className="two">...</p>
-                      </React.Fragment>
-                    ) : (
-                      <p className="three">No Tags</p>
-                    )}
-                  </Badge>
-                </Tooltip>
-              );
-            },
-          };
-        }
+        // if (column.name === "isTracked") {
+        //   column.options = {
+        //     ...column.options,
+        //     customBodyRender: (value, tableMeta, updateValue) => {
+        //       return (
+        //         <TrackToggleButton
+        //           target={{ isTracked: value }}
+        //           targetLabel={props.targetLabel}
+        //           targetSourceId={tableMeta.rowData[0]}
+        //           dark
+        //         />
+        //       );
+        //     },
+        //   };
+        // }
 
-        if (column.name === "appraisedValue") {
-          column.options = {
-            ...column.options,
-            customBodyRender: (value, tableMeta, updateValue) => {
-              return formatter.format(value);
-            },
-          };
-        }
+        // if (column.name === "commentsCounter") {
+        //   column.options = {
+        //     ...column.options,
+        //     customBodyRender: (value, tableMeta, updateValue) => {
+        //       return (
+        //         <Tooltip
+        //           title={!value || value === 0 ? "Add Comments" : "Comments"}
+        //           placement="top"
+        //         >
+        //           <Badge badgeContent={value ? value : null} color="secondary">
+        //             <IconButton
+        //               size="medium"
+        //               color="primary"
+        //               className={`${classes.icons} ${
+        //                 !value || value === 0 ? classes.noCommentsIcon : ""
+        //               } ${
+        //                 colInd === tableMeta.columnIndex &&
+        //                 rowInd === tableMeta.rowIndex
+        //                   ? classes.iconSelected
+        //                   : ""
+        //               }`}
+        //               onClick={() => {
+        //                 handleExpandClick(
+        //                   tableMeta.columnIndex,
+        //                   tableMeta.rowIndex,
+        //                   tableMeta.rowData[0],
+        //                   "comment"
+        //                 );
+        //               }}
+        //               aria-label="show comments"
+        //             >
+        //               <ChatIcon />
+        //             </IconButton>
+        //           </Badge>
+        //         </Tooltip>
+        //       );
+        //     },
+        //   };
+        // }
+
+        // if (column.name === "wellsCounter") {
+        //   column.options = {
+        //     ...column.options,
+        //     customBodyRender: (value, tableMeta, updateValue) => {
+        //       return (
+        //         <Tooltip
+        //           title={value ? "Wells" : "Not Available"}
+        //           placement="top"
+        //         >
+        //           <Badge badgeContent={value ? value : null} color="secondary">
+        //             <IconButton
+        //               size="medium"
+        //               color="primary"
+        //               className={`${classes.icons} ${
+        //                 !value ? classes.noOwnersIcon : ""
+        //               } ${
+        //                 colInd === tableMeta.columnIndex &&
+        //                 rowInd === tableMeta.rowIndex
+        //                   ? classes.iconSelected
+        //                   : ""
+        //               }`}
+        //               onClick={() => {
+        //                 if (value && value > 0) {
+        //                   handleExpandClick(
+        //                     tableMeta.columnIndex,
+        //                     tableMeta.rowIndex,
+        //                     tableMeta.rowData[1],
+        //                     "well"
+        //                   );
+        //                 }
+        //               }}
+        //               aria-label="show owners"
+        //             >
+        //               <WellIcon
+        //                 color={value && value !== 0 ? "#000" : "darkgrey"}
+        //                 opacity="1.0"
+        //                 small
+        //               />
+        //             </IconButton>
+        //           </Badge>
+        //         </Tooltip>
+        //       );
+        //     },
+        //   };
+        // }
+
+        // if (column.name === "ownerCount") {
+        //   column.options = {
+        //     ...column.options,
+        //     customBodyRender: (value, tableMeta, updateValue) => {
+        //       return (
+        //         <Tooltip
+        //           title={value ? "Owners" : "Not Available"}
+        //           placement="top"
+        //         >
+        //           <Badge badgeContent={value ? value : null} color="secondary">
+        //             <IconButton
+        //               size="medium"
+        //               color="primary"
+        //               className={`${classes.icons} ${
+        //                 !value ? classes.noOwnersIcon : ""
+        //               } ${
+        //                 colInd === tableMeta.columnIndex &&
+        //                 rowInd === tableMeta.rowIndex
+        //                   ? classes.iconSelected
+        //                   : ""
+        //               }`}
+        //               onClick={() => {
+        //                 if (value && value > 0) {
+        //                   handleExpandClick(
+        //                     tableMeta.columnIndex,
+        //                     tableMeta.rowIndex,
+        //                     tableMeta.rowData[1],
+        //                     "owner"
+        //                   );
+        //                 }
+        //               }}
+        //               aria-label="show owners"
+        //             >
+        //               <PeopleAltIcon />
+        //             </IconButton>
+        //           </Badge>
+        //         </Tooltip>
+        //       );
+        //     },
+        //   };
+        // }
+
+        // if (column.name === "tags") {
+        //   column.options = {
+        //     ...column.options,
+        //     customBodyRender: (value, tableMeta, updateValue) => {
+        //       return (
+        //         <Tooltip
+        //           title={value[1] === 0 ? "Add Tags" : "Tags"}
+        //           placement="top"
+        //         >
+        //           <Badge
+        //             className={`${classes.TagSample} ${
+        //               colInd === tableMeta.columnIndex &&
+        //               rowInd === tableMeta.rowIndex
+        //                 ? classes.iconSelected
+        //                 : ""
+        //             }`}
+        //             badgeContent={value[1]}
+        //             color="secondary"
+        //             onClick={() => {
+        //               handleExpandClick(
+        //                 tableMeta.columnIndex,
+        //                 tableMeta.rowIndex,
+        //                 tableMeta.rowData[0],
+        //                 "tag"
+        //               );
+        //             }}
+        //           >
+        //             {value[0] && value[0].length > 0 ? (
+        //               <React.Fragment>
+        //                 <p className="first">{value[0].join(", ")}</p>
+        //                 <p className="two">...</p>
+        //               </React.Fragment>
+        //             ) : (
+        //               <p className="three">No Tags</p>
+        //             )}
+        //           </Badge>
+        //         </Tooltip>
+        //       );
+        //     },
+        //   };
+        // }
+
+        // if (column.name === "appraisedValue") {
+        //   column.options = {
+        //     ...column.options,
+        //     customBodyRender: (value, tableMeta, updateValue) => {
+        //       return formatter.format(value);
+        //     },
+        //   };
+        // }
       });
       setColumns([...props.columns]);
     }
@@ -280,16 +563,6 @@ export default function SubTable(props) {
     setExpandedObjectId(null);
   };
 
-  const handleRowClick = (e, row) => {
-    console.log(e);
-    console.log(e.nativeEvent);
-    setMouseX(e.nativeEvent.clientX);
-    setMouseY(e.nativeEvent.clientY - 70);
-    setSelectedRow(row);
-    if (props.targetLabel === "well")
-      setStateApp((state) => ({ ...state, selectedWell: row }));
-    handleOpenExpandableCard();
-  };
   const handleOpenExpandableCard = () => {
     setShowExpandableCard(true);
   };
@@ -318,69 +591,40 @@ export default function SubTable(props) {
         : [],
 
     selectableRows: "none",
+
+    onRowClick: (rowData, { dataIndex, rowIndex }) => {
+      setSelectedRow(rows[dataIndex]);
+
+      if (props.targetLabel === "owner") {
+        setSubComponent(<Test hello="Owner Card Not Available" />);
+        setTitle(rows[dataIndex].name);
+        setSubTitle(rows[dataIndex].interestType);
+        handleOpenExpandableCard();
+      }
+
+      if (props.targetLabel === "well") {
+        setStateApp((state) => ({ ...state, selectedWellId: rowData[0] }));
+        setStateApp((state) => ({ ...state, selectedWell: rows[dataIndex] }));
+        setSubComponent(<WellCardProvider></WellCardProvider>);
+        setTitle(rows[dataIndex].wellName);
+        setSubTitle(rows[dataIndex].operator);
+        handleOpenExpandableCard();
+      }
+
+      if (props.targetLabel === "contact") {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedContact: rows[dataIndex].id,
+        }));
+        history.push("/contact");
+      }
+    },
   };
 
   return rows && rows.length > 0 ? (
     <div className={classes.root}>
-      {showExpandableCard &&
-        ((props.targetLabel === "owner" && (
-          <ExpandableCardProvider
-            expanded={false}
-            handleCloseExpandableCard={handleCloseExpandableCard}
-            component={<Test hello="Owner Card Not Available" />}
-            title={selectedRow ? selectedRow.name : null}
-            subTitle={selectedRow ? selectedRow.interestType : null}
-            parent="owner"
-            mouseX={mouseX}
-            mouseY={mouseY}
-            position="absolute"
-            cardLeft={mouseX}
-            cardTop={mouseY}
-            zIndex={101}
-            cardWidth="380px"
-            cardHeight="380px"
-            cardWidthExpanded="85vw"
-            cardHeightExpanded="80vh"
-            source={stateApp.user}
-            sourceSourceId={stateApp.user.id}
-            sourceName={stateApp.user.name}
-            sourceLabel="user"
-            target={selectedRow ? selectedRow : null}
-            targetSourceId={selectedRow ? selectedRow.id : null}
-            targetName={selectedRow ? selectedRow.name : null}
-            targetLabel="owner"
-          ></ExpandableCardProvider>
-        )) ||
-          (props.targetLabel === "well" && (
-            <ExpandableCardProvider
-              expanded={false}
-              handleCloseExpandableCard={handleCloseExpandableCard}
-              component={<WellCardProvider></WellCardProvider>}
-              title={selectedRow.wellName}
-              subTitle={selectedRow.operator}
-              parent="well"
-              mouseX={mouseX}
-              mouseY={mouseY}
-              position="absolute"
-              cardLeft={mouseX}
-              cardTop={mouseY}
-              zIndex={99}
-              cardWidth="380px"
-              cardHeight="380px"
-              cardWidthExpanded="95vw"
-              cardHeightExpanded="90vh"
-              source={stateApp.user}
-              sourceSourceId={stateApp.user.id}
-              sourceName={stateApp.user.name}
-              sourceLabel="user"
-              target={selectedRow}
-              targetSourceId={selectedRow.id}
-              targetName={selectedRow.wellName}
-              targetLabel="well"
-            ></ExpandableCardProvider>
-          )))}
-
       <MUIDataTable
+        className={classes.table}
         title={props.header}
         data={rows}
         columns={columns}
@@ -390,13 +634,19 @@ export default function SubTable(props) {
       {openDialog && (
         <Dialog
           className={classes.dialog}
-          open={openDialog}
+          open={openDialog ? true : false}
           onClose={handleCloseDialog}
           fullWidth={
-            openDialog === "comment" || openDialog === "owner" ? true : false
+            openDialog === "comment" ||
+            openDialog === "owner" ||
+            openDialog === "well"
+              ? true
+              : false
           }
           maxWidth={
-            openDialog === "owner" || openDialog === "ownerContacts"
+            openDialog === "owner" ||
+            openDialog === "ownerContacts" ||
+            openDialog === "well"
               ? "md"
               : "sm"
           }
@@ -419,6 +669,34 @@ export default function SubTable(props) {
           {openDialog === "ownerContacts" && (
             <M1nTable parent="Contacts" externalAddFunction={() => {}} />
           )}
+        </Dialog>
+      )}
+
+      {showExpandableCard && (
+        <Dialog
+          fullWidth
+          maxWidth="xl"
+          open={showExpandableCard}
+          onClose={handleCloseExpandableCard}
+        >
+          <ExpandableCardProvider
+            expanded={true}
+            handleCloseExpandableCard={handleCloseExpandableCard}
+            component={subComponent}
+            title={title}
+            subTitle={subTitle}
+            parent="table"
+            mouseX={0}
+            mouseY={0}
+            position="relative"
+            cardLeft={"0"}
+            cardTop={"0"}
+            zIndex={1201}
+            cardWidthExpanded="100%"
+            cardHeightExpanded="100%"
+            targetSourceId={selectedRow.id}
+            targetLabel={props.targetLabel}
+          />
         </Dialog>
       )}
     </div>

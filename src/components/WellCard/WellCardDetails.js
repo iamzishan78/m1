@@ -3,8 +3,8 @@ import { AppContext } from "../../AppContext";
 import { WellCardContext } from "./WellCardContext";
 import { MapContext } from "./../Map/MapContext";
 import { makeStyles } from "@material-ui/core/styles";
-import { withStyles } from '@material-ui/core/styles';
-import { purple } from '@material-ui/core/colors';
+import { withStyles } from "@material-ui/core/styles";
+import { purple } from "@material-ui/core/colors";
 
 //material-ui components
 import Grid from "@material-ui/core/Grid";
@@ -48,10 +48,9 @@ import ProfileCard from "../Shared/ProfileCard";
 import WellTypeCard from "../Shared/WellTypeCard";
 import SpudDateCard from "../Shared/SpudDateCard";
 import WellApiCard from "../Shared/WellApiCard";
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
 
 //import { WellData } from './data/welldata'
 
@@ -73,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     display: "flex",
     justifyContent: "space-around",
-    background: '#f6f6f6',
+    background: "#f6f6f6",
   },
   card: {
     width: "100%",
@@ -149,14 +148,9 @@ const useStyles = makeStyles((theme) => ({
     // position: 'relative',
     // right: '10px',
     paddingBottom: "5px",
-    paddingLeft: "25px"
-  }
+    paddingLeft: "25px",
+  },
 }));
-
-
-
-
-
 
 export default function WellCardDetails(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -170,33 +164,41 @@ export default function WellCardDetails(props) {
     }
   }, [props.target, setTarget]);
 
-
-
   const handleChangeOil = (event) => {
-    setStateWellCard({ ...stateWellCard, chartToggleOil: event.target.checked });
+    setStateWellCard({
+      ...stateWellCard,
+      chartToggleOil: event.target.checked,
+    });
   };
 
   const handleChangeGas = (event) => {
-    setStateWellCard({ ...stateWellCard, chartToggleGas: event.target.checked });
+    setStateWellCard({
+      ...stateWellCard,
+      chartToggleGas: event.target.checked,
+    });
   };
 
   const handleChangeWater = (event) => {
-    setStateWellCard({ ...stateWellCard, chartToggleWater: event.target.checked });
+    setStateWellCard({
+      ...stateWellCard,
+      chartToggleWater: event.target.checked,
+    });
   };
 
   const handleChangeMultiAxis = (event) => {
-    setStateWellCard({ ...stateWellCard, chartToggleMultiAxis: event.target.checked });
+    setStateWellCard({
+      ...stateWellCard,
+      chartToggleMultiAxis: event.target.checked,
+    });
   };
-
-
 
   const OilSwitch = withStyles({
     switchBase: {
       color: "#81c784",
-      '&$checked': {
+      "&$checked": {
         color: "#81c784",
       },
-      '&$checked + $track': {
+      "&$checked + $track": {
         backgroundColor: "#81c784",
       },
     },
@@ -207,10 +209,10 @@ export default function WellCardDetails(props) {
   const GasSwitch = withStyles({
     switchBase: {
       color: "#e57373",
-      '&$checked': {
+      "&$checked": {
         color: "#e57373",
       },
-      '&$checked + $track': {
+      "&$checked + $track": {
         backgroundColor: "#e57373",
       },
     },
@@ -221,10 +223,10 @@ export default function WellCardDetails(props) {
   const WaterSwitch = withStyles({
     switchBase: {
       color: "#64b5f6",
-      '&$checked': {
+      "&$checked": {
         color: "#64b5f6",
       },
-      '&$checked + $track': {
+      "&$checked + $track": {
         backgroundColor: "#64b5f6",
       },
     },
@@ -232,110 +234,110 @@ export default function WellCardDetails(props) {
     track: {},
   })(Switch);
 
-
   const wellInfo = () => (
     <Grid container spacing={2}>
-        <Grid item xs={12} sm={3}>
-          <QuadProvider />
-        </Grid>
-        <Grid item xs={12} sm={9}>
-            <Grid item xs={12} >
-                <div className={classes.toggle} >
-                <FormControlLabel
-                  control={<OilSwitch 
-                            checked={stateWellCard.chartToggleOil} 
-                            onChange={handleChangeOil} 
-                            //name="chartToggleOil"
-                            />}
-                  label="Oil"
+      <Grid item xs={12} sm={3}>
+        <QuadProvider />
+      </Grid>
+      <Grid item xs={12} sm={9}>
+        <Grid item xs={12}>
+          <div className={classes.toggle}>
+            <FormControlLabel
+              control={
+                <OilSwitch
+                  checked={stateWellCard.chartToggleOil}
+                  onChange={handleChangeOil}
+                  //name="chartToggleOil"
                 />
-              <FormControlLabel
-                control={
-                  <GasSwitch
-                    checked={stateWellCard.chartToggleGas}
-                    onChange={handleChangeGas}
-                    name="checkedGas"
-                    color="#e57373"
-                  />}
-                label="Gas"
-              />
-              <FormControlLabel
-                  control={<WaterSwitch 
-                            checked={stateWellCard.chartToggleWater}
-                            onChange={handleChangeWater} 
-                            name="checkedWater"
-                            />} 
-                  label="Water" />
+              }
+              label="Oil"
+            />
+            <FormControlLabel
+              control={
+                <GasSwitch
+                  checked={stateWellCard.chartToggleGas}
+                  onChange={handleChangeGas}
+                  name="checkedGas"
+                  color="secondary"
+                  // color="#e57373"//invalid color
+                />
+              }
+              label="Gas"
+            />
+            <FormControlLabel
+              control={
+                <WaterSwitch
+                  checked={stateWellCard.chartToggleWater}
+                  onChange={handleChangeWater}
+                  name="checkedWater"
+                />
+              }
+              label="Water"
+            />
 
-              <FormControlLabel
-                control={<Switch 
-                          checked={stateWellCard.chartToggleMultiAxis}
-                          onChange={handleChangeMultiAxis} 
-                          color = "primary"
-                          />} 
-                label="Multi-Axes" />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={stateWellCard.chartToggleMultiAxis}
+                  onChange={handleChangeMultiAxis}
+                  color="primary"
+                />
+              }
+              label="Multi-Axes"
+            />
 
-              <FormControlLabel  disabled control={<Switch />} label="Log Scale" />
-              </div>
-
-            </Grid>
-            <Grid item xs={12} >
-              <WellProdChartProvider />            
-            </Grid>
+            <FormControlLabel disabled control={<Switch />} label="Log Scale" />
+          </div>
         </Grid>
+        <Grid item xs={12}>
+          <WellProdChartProvider />
+        </Grid>
+      </Grid>
     </Grid>
-
-
-
-
-
-
-
   );
 
   return stateApp.selectedWell ? (
     <Card>
       <CardContent className={classes.content}>
-          <Grid item className={classes.gridItemGrey}>
-            <WellApiCard />
-            <WellTypeCard />
-            <WellStatusCard />
-            <Last12StatusCard />
-            <OwnerNumCard />
-            <ProfileCard />
-            <PermitDateCard />
-            <SpudDateCard />
-            <CompletionDateCard />
-            <FirstProdDateCard />
+        <Grid item className={classes.gridItemGrey}>
+          <WellApiCard />
+          <WellTypeCard />
+          <WellStatusCard />
+          <Last12StatusCard />
+          <OwnerNumCard />
+          <ProfileCard />
+          <PermitDateCard />
+          <SpudDateCard />
+          <CompletionDateCard />
+          <FirstProdDateCard />
         </Grid>
 
-        <Grid  item className={classes.gridItem}>
-          <TableSummary/>
-          <CardDetailsMap/>
+        <Grid item className={classes.gridItem}>
+          <TableSummary />
+          <CardDetailsMap />
         </Grid>
 
-          <Grid item sm={12}>
-            <Taps
-              tabLabels={[
-                "Well",
-                "Owners",
-                // "Property History",
-                // "Title",
-                // "Documents",
-              ]}
-              tabPanels={[
-                wellInfo(),
-                <M1nTable
-                  parent="OwnersPerWell"
-                  selectedWell={stateApp.selectedWell}
-                />,
-                // <h3>Coming Soon-</h3>,
-                // <h3>Coming Soon--</h3>,
-                // <h3>Coming Soon---</h3>,
-              ]}
-            />
-          </Grid>
-
+        <Grid item sm={12}>
+          <Taps
+            tabLabels={[
+              "Well",
+              "Owners",
+              // "Property History",
+              // "Title",
+              // "Documents",
+            ]}
+            tabPanels={[
+              wellInfo(),
+              <M1nTable
+                parent="OwnersPerWell"
+                selectedWell={stateApp.selectedWell}
+              />,
+              // <h3>Coming Soon-</h3>,
+              // <h3>Coming Soon--</h3>,
+              // <h3>Coming Soon---</h3>,
+            ]}
+          />
+        </Grid>
       </CardContent>
     </Card>
   ) : null;

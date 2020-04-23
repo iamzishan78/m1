@@ -23,34 +23,24 @@ export default function ExpandableCard(props) {
   const [stateExpandableCard, setStateExpandableCard] = useContext(
     ExpandableCardContext
   );
-  const [expanded, setExpanded] = useState(props.expanded);
-  const [title, setTitle] = useState(props.title);
-  const [subTitle, setSubTitle] = useState(props.subTitle);
-  const [parent, setParent] = useState(props.parent);
-  const [cardWidth, setCardWidth] = useState(props.cardWidth);
-  const [cardWidthExpanded, setCardWidthExpanded] = useState(
-    props.cardWidthExpanded
-  );
-  const [mouseX, setMouseX] = useState(props.mouseX);
-  const [mouseY, setMouseY] = useState(props.mouseY);
-  const [position, setPosition] = useState(props.position);
-  const [cardHeight, setCardHeight] = useState(props.cardHeight);
+  const [title] = useState(props.title);
+  const [subTitle] = useState(props.subTitle);
+  const [parent] = useState(props.parent);
+  const [cardWidth] = useState(props.cardWidth);
+  const [cardWidthExpanded] = useState(props.cardWidthExpanded);
+  const [mouseX] = useState(props.mouseX);
+  const [mouseY] = useState(props.mouseY);
+  const [position] = useState(props.position);
+  const [cardHeight] = useState(props.cardHeight);
   const [zIdx, setZidx] = useState(props.zIndex);
   const [cardLeft, setCardLeft] = useState(props.cardLeft);
   const [cardTop, setCardTop] = useState(props.cardTop);
-  const [cardHeightExpanded, setCardHeightExpanded] = useState(
-    props.cardHeightExpanded
-  );
+  const [cardHeightExpanded] = useState(props.cardHeightExpanded);
   const [width, setWidth] = useState(props.cardWidth);
   const [height, setHeight] = useState(props.cardHeight);
-  const [source, setSource] = useState(props.source);
-  const [target, setTarget] = useState(props.target);
-  const [targetSourceId, setTargetSourceId] = useState(props.targetSourceId);
-  const [targetName, setTargetName] = useState(props.targetName);
-  const [targetLabel, setTargetLabel] = useState(props.targetLabel);
-  const [sourceName, setSourceName] = useState(props.sourceName);
-  const [sourceSourceId, setSourceSourceId] = useState(props.sourceSourceId);
-  const [sourceLabel, setSourceLabel] = useState(props.sourceLabel);
+  const [target, setTarget] = useState({});
+  const [targetSourceId] = useState(props.targetSourceId);
+  const [targetLabel] = useState(props.targetLabel);
   const theme = useTheme();
 
   const useStyles = makeStyles((theme) => ({
@@ -76,6 +66,9 @@ export default function ExpandableCard(props) {
     },
     headerIcons: {
       paddingTop: "10px",
+      "& .MuiBadge-anchorOriginTopRightRectangle": {
+        right: "10px",
+      },
     },
     subheader: {
       fontFamily: "Poppins",
@@ -138,13 +131,12 @@ export default function ExpandableCard(props) {
   }, [user, props.targetSourceId]); //////stateApp.user._id////////temporary while signed user fixed
 
   useEffect(() => {
-    if (dataTrack && props.target) {
+    if (dataTrack) {
       setTarget({
-        ...props.target,
         isTracked: dataTrack.trackByUserAndObjectId ? true : false,
       });
     }
-  }, [dataTrack, props.target]);
+  }, [dataTrack]);
 
   useEffect(() => {
     setZidx(props.zIndex);
@@ -202,7 +194,7 @@ export default function ExpandableCard(props) {
   };
 
   return (
-    <Card className={classes.card} id="xoxxoxox">
+    <Card className={classes.card}>
       <CardHeader
         classes={{ title: classes.title, subheader: classes.subheader }}
         action={
@@ -224,29 +216,31 @@ export default function ExpandableCard(props) {
               iconZiseSmall={!stateExpandableCard.expanded}
             />
 
-            {stateExpandableCard.expanded ? (
-              <Tooltip title={"Shrink"} placement="top">
-                <IconButton
-                  color="secondary"
-                  onClick={handleShrink}
-                  aria-label="shrink"
-                  className={classes.icons}
-                >
-                  <ShrinkIcon viewBox="0 0 64 64" />
-                </IconButton>
-              </Tooltip>
-            ) : (
-              <Tooltip title={"Expand"} placement="top">
-                <IconButton
-                  size="small"
-                  onClick={handleExpand}
-                  aria-label="expand"
-                  className={classes.icons}
-                >
-                  <ExpandIcon viewBox="0 0 64 64" color="secondary" />
-                </IconButton>
-              </Tooltip>
-            )}
+            {stateExpandableCard.expanded
+              ? parent !== "table" && (
+                  <Tooltip title={"Shrink"} placement="top">
+                    <IconButton
+                      color="secondary"
+                      onClick={handleShrink}
+                      aria-label="shrink"
+                      className={classes.icons}
+                    >
+                      <ShrinkIcon viewBox="0 0 64 64" />
+                    </IconButton>
+                  </Tooltip>
+                )
+              : parent !== "table" && (
+                  <Tooltip title={"Expand"} placement="top">
+                    <IconButton
+                      size="small"
+                      onClick={handleExpand}
+                      aria-label="expand"
+                      className={classes.icons}
+                    >
+                      <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                )}
             <Tooltip title={"Close"} placement="top">
               <IconButton
                 size={stateExpandableCard.expanded ? "medium" : "small"}

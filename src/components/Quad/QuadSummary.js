@@ -195,8 +195,8 @@ export default function QuadSummary(props) {
         </AppBar>
 
         <GridList 
-          //cellHeight="auto" 
-          cellHeight = "300"
+          cellHeight="auto" 
+          // cellHeight = "300"//invalid prop
           cols={2} 
           className={classes.gridList}>
           {stateQuad.quadChart.map(tile => (
