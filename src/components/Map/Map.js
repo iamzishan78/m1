@@ -103,45 +103,6 @@ export default function Map() {
   const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
   const mapEl = useRef(null);
 
-  // //////////////////////////////
-  // const mapRef = useRef(null);
-  // const [searchResultLayer, setSearchResultsLayer] = useState(null);
-
-  // const [viewport, setViewport] = useState({
-  //   latitude: 37.7577,
-  //   longitude: -122.4376,
-  //   zoom: 8,
-  // });
-
-  // const handleViewportChange = (newViewport) => {
-  //   setViewport({ ...viewport, ...newViewport });
-  // };
-
-  // const handleGeocoderViewportChange = (viewport) => {
-  //   const geocoderDefaultOverrides = { transitionDuration: 1000 };
-
-  //   return handleViewportChange({
-  //     ...viewport,
-  //     ...geocoderDefaultOverrides,
-  //   });
-  // };
-
-  // const handleOnResult = (event) => {
-  //   console.log(event.result);
-  //   setSearchResultsLayer(
-  //     new GeoJsonLayer({
-  //       id: "search-result",
-  //       data: event.result.geometry,
-  //       getFillColor: [255, 0, 0, 128],
-  //       getRadius: 1000,
-  //       pointRadiusMinPixels: 10,
-  //       pointRadiusMaxPixels: 10,
-  //     })
-  //   );
-  // };
-
-  // console.log(viewport);
-  // ///////////////
 
   mapboxgl.accessToken =
     "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJjanYycGJxbG8yN3JsM3lsYTdnMXZoeHh1In0.tTNECYKDPtcrzivWTiZcIQ";
@@ -974,16 +935,6 @@ export default function Map() {
           return matchingFeatures;
         }
 
-        // newMap.addControl(
-        //   new MapboxGeocoder({
-        //   accessToken: mapboxgl.accessToken,
-        //   mapboxgl: mapboxgl,
-        //   localGeocoder: forwardGeocoder,
-        //   //types: 'poi',
-        //   //placeholder: 'Enter Search'
-        //   zoom: 18,
-        // })
-        //   ,"top-left");
 
         var geocoder = new MapboxGeocoder({
           accessToken: mapboxgl.accessToken,
