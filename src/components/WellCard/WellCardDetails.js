@@ -31,6 +31,7 @@ import ProductionIcon from "./components/svgIcons/ProductionIcon";
 import OwnershipIcon from "./components/svgIcons/OwnershipIcon";
 import Taps from "./components/Taps";
 import CardDetailsMap from "./components/CardDetailsMap";
+import TableSummary from "./components/TableSummary";
 
 import QuadProvider from "../Quad/QuadProvider";
 // import OwnersProvider from "../Owners/OwnersProvider";
@@ -309,6 +310,7 @@ export default function WellCardDetails(props) {
         </Grid>
 
         <Grid  item className={classes.gridItem}>
+          <TableSummary/>
           <CardDetailsMap/>
         </Grid>
 
