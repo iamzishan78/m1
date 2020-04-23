@@ -23,10 +23,10 @@ const AppProvider = (props) => {
     selectedContact: null,
     mapVars: {
       zoom: 5.88,
-      center: {lng: -89.03855405373304, lat: 42.05696383539612},
+      center: {lng: -98.8, lat: 31.6},
       pitch: 0,
       bearing: 0,
-      styleId: 'Satellite',
+      styleId: 'Basic',
       },
   });
   return (

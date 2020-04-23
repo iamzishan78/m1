@@ -22,24 +22,28 @@ const styleLayers = [
     idx: 4,
   },
   {
-    name: "Area of Interest",
+    name: "Permits",
     id: [],
     idx: 5,
   },
+];
+
+
+const userDefinedLayers = [
   {
     name: "Parcels",
     id: [],
-    idx: 6,
+    idx: 0,
   },
   {
     name: "Title",
     id: [],
-    idx: 7,
+    idx: 1,
   },
   {
-    name: "Permits",
+    name: "Area of Interest",
     id: [],
-    idx: 8,
+    idx: 2,
   },
 ];
 
@@ -201,9 +205,11 @@ const MapContextProvider = (props) => {
     styleLayers: styleLayers,
     heatLayers: heatLayers,
     baseMapLayers: baseMapLayers,
+    userDefinedLayers: userDefinedLayers,
     checkedLayers: [0, 3],
     checkedHeats: [],
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
+    checkedUserDefinedLayers: [],
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,

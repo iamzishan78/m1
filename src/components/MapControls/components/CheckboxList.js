@@ -22,12 +22,18 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
+import LayersIcon from '@material-ui/icons/Layers';
+
 
 
 const useStyles = makeStyles(theme => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important"
-  }
+  },
+  nested: {
+    paddingLeft: theme.spacing(6),
+    paddingRight: theme.spacing(6),
+  },
 }));
 
 export default function CheckboxList(props) {
@@ -38,8 +44,13 @@ export default function CheckboxList(props) {
   //const theme = useTheme()
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
+  const [openUD, setOpenUD] = React.useState(true);
+
   const handleClick = () => {
     setOpen(!open);
+  };
+  const handleClickUD = () => {
+    setOpenUD(!openUD);
   };
   const handleToggle = idx => () => {
     console.log(idx);
@@ -114,6 +125,20 @@ export default function CheckboxList(props) {
     }
   }))(ListItem);
 
+  const StyledListItem2 = withStyles(theme => ({
+    root: {
+      fontFamily: "Poppins",
+      "&:hover": {
+        background: "#a3b2cf"
+      },
+      backgroundColor: "#4B618F",
+      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+        color: theme.palette.common.white
+        // },
+      }
+    }
+  }))(ListItem);
+
   const handleClose = () => {
     setStateMapControls(stateMapControls => ({
       ...stateMapControls,
@@ -140,13 +165,13 @@ export default function CheckboxList(props) {
           <ListItemText primary="Layer Visibility" />
         </StyledMenuItem>
 
-        <StyledListItem button onClick={handleClick}>
+        <StyledListItem2 button onClick={handleClick}>
           <ListItemIcon>
-            {/* <InboxIcon /> */}
+            <LayersIcon />
           </ListItemIcon>
           <ListItemText primary="M1neral Layers" />
           {open ? <ExpandLess /> : <ExpandMore />}
-        </StyledListItem>
+        </StyledListItem2>
 
         {stateMap.styleLayers.map((layer, index) => {
           const labelId = `checkbox-list-label-${index}`;
@@ -155,7 +180,7 @@ export default function CheckboxList(props) {
             // <StyledMenuItem disableRipple key={index} role={undefined} dense>
             <Collapse in={open} timeout="auto" unmountOnExit>
 
-            <StyledListItem>
+            <StyledListItem button className={classes.nested}>
               <ListItemIcon>
                 <Checkbox
                   icon={<VisibilityOffIcon htmlColor="#fff" />}
@@ -179,13 +204,45 @@ export default function CheckboxList(props) {
           );
         })}
 
-        <StyledListItem button onClick={handleClick}>
+        <StyledListItem2 button onClick={handleClickUD}>
           <ListItemIcon>
-            {/* <InboxIcon /> */}
+            <LayersIcon />
           </ListItemIcon>
           <ListItemText primary="User Defined" />
-          {open ? <ExpandLess /> : <ExpandMore />}
-        </StyledListItem>
+          {openUD ? <ExpandLess /> : <ExpandMore />}
+        </StyledListItem2>
+
+        {stateMap.userDefinedLayers.map((layer, index) => {
+          const labelId = `checkbox-list-label-${index}`;
+
+          return (
+            // <StyledMenuItem disableRipple key={index} role={undefined} dense>
+            <Collapse in={openUD} timeout="auto" unmountOnExit>
+
+            <StyledListItem button className={classes.nested}>
+              <ListItemIcon>
+                <Checkbox
+                  icon={<VisibilityOffIcon htmlColor="#fff" />}
+                  checkedIcon={<VisibilityIcon htmlColor="#fff" />}
+                  edge="start"
+                  checked={
+                    stateMap.checkedUserDefinedLayers
+                      ? stateMap.checkedUserDefinedLayers.indexOf(index) !== -1
+                      : false
+                  }
+                  tabIndex={-1}
+                  disableRipple
+                  inputProps={{ "aria-labelledby": labelId }}
+                  //onChange={handleToggle(index)}
+                />
+              </ListItemIcon>
+              <ListItemText id={labelId} primary={layer.name} />
+              </StyledListItem>  
+              </Collapse>
+            // </StyledMenuItem> 
+          );
+        })}
+
 
       </StyledMenu>
     </ClickAwayListener>
