@@ -30,9 +30,6 @@ export default function FirstMonthWater(props) {
   const [type, setType] = useState("");
   const [filterName, setFilterName] = useState(props.filter);
   const [name, setName] = useState(props.name);
-  const [prodTypeName, setProdTypeName] = useState(
-    stateNav.prodTypeName ? stateNav.prodTypeName : []
-  );
 
   useEffect(() => {
     if (name.includes("Gas")) {
@@ -112,8 +109,6 @@ export default function FirstMonthWater(props) {
 
   const handleChangeMin = event => {
     setValueMinDisplay(event.target.value.replace(/,/g, ""));
-    setProdTypeName(event.target.id);
-    setStateNav(stateNav => ({ ...stateNav, prodTypeName: event.target.id }));
     if (event.target.value === "") {
       setStateNav(stateNav => ({
         ...stateNav,
@@ -124,8 +119,6 @@ export default function FirstMonthWater(props) {
 
   const handleChangeMax = event => {
     setValueMaxDisplay(event.target.value.replace(/,/g, ""));
-    setProdTypeName(event.target.id);
-    setStateNav(stateNav => ({ ...stateNav, prodTypeName: event.target.id }));
     if (event.target.value === "") {
       setStateNav(stateNav => ({
         ...stateNav,

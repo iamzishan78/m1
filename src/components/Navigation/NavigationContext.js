@@ -76,7 +76,6 @@ const NavigationContextProvider = props => {
     prodOptions: [],
     ownerTypeName:[],
     dateTypeName: [],
-    prodTypeName: [],
     countyName: null,
     stateName: null,
     displayStateName: null,

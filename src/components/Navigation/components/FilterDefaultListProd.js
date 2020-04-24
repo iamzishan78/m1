@@ -29,8 +29,8 @@ const useStyles = makeStyles(theme => ({
     margin: "6px 6px",
   },
   chipRow: {
-    display: "inline-flex",
     padding: "1px 0px",
+    textAlign: "center",
   },
   deleteButton: {
     float: "right",
@@ -62,7 +62,6 @@ export default function FilterDefaultListProd(props) {
   },[props])
   
   const removeNameFromType = (string) => { 
-      console.log(string)
     if (string.includes("cumulativeWater")) {
       return string.replace("cumulativeWater", "Cumulative H2O")
     }
@@ -137,8 +136,14 @@ export default function FilterDefaultListProd(props) {
     }
   }
 
+  const removeChip = (e, filter) => () => {
+    const { deleteChip } = props;
+    deleteChip(e, filter);
+  };
+
   return (
     <div> 
+      {filtersTypeArr && filtersTypeArr.length > 0 ? (
       <Paper className={classes.paparMain} square>
         <List  aria-label="mailbox folders">
             <div>
@@ -155,10 +160,10 @@ export default function FilterDefaultListProd(props) {
                       label={(
                         <section>
                             <div className={classes.chip}>{removeNameFromType(el[1][1])}{" "}{el[0] === ">=" ? "Min" : "Max"} </div>    
-                      <div className={classes.chipRow}>{el[2]}</div>
+                            <div className={classes.chipRow}>{el[2]}</div>
                         </section>
                         )}
-                      onDelete={e => console.log("e")}
+                      onDelete={removeChip(el[2], elm[0])}
                     />
                     )
                 )  : null}   
@@ -167,6 +172,7 @@ export default function FilterDefaultListProd(props) {
             </div>
         </List>
       </Paper>
+       ) : null}
     </div>
   );
 }

@@ -53,12 +53,16 @@ export default function FilterDedaultListGeo(props) {
 
   useEffect(() => {
     if (props) {
-      setFiltersTypeArr(props.filters[1]);
-      setFiltersTypeArrSCSA(props.filters[0]);
+      if (props.filters[1].length > 0) {
+        setFiltersTypeArr(props.filters[1]);
+      }
+      if (props.filters[0].length > 0) {
+        setFiltersTypeArrSCSA(props.filters[0]);
+      }
       setFilterNameType(props.type);
     }
   }, [props]);
-
+  
   const removeNameFromType = (string) => {
     if (string.includes("basin")) {
       return string.replace("basin", "Basin");

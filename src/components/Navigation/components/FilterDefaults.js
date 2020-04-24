@@ -21,6 +21,33 @@ import FilterDefaultListOwner from "./FilterDefaultListOwner";
 import FilterDefaultListProd from "./FilterDefaultListProd";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
+ 
+const prodListOptions = [
+  { name : "Cumulative  -  Oil"},
+  { name : "Cumulative  -  Gas"},
+  { name : "Cumulative  -  Water"},
+  { name : "First Month  -  Oil"},
+  { name : "First Month  -  Gas" },
+  { name : "First Month  -  Water"},
+  { name : "First Three Months  -  Oil"},
+  { name : "First Three Months  -  Gas"},
+  { name : "First Three Months  -  Water"},
+  { name : "First Six Months  -  Oil"},
+  { name : "First Six Months  -  Gas"},
+  { name : "First Six Months  -  Water"},
+  { name : "First Twelve Months  -  Oil"},
+  { name : "First Twelve Months  -  Gas"},
+  { name : "First Twelve Months  -  Water"},
+  { name : "Last Month  -  Oil"},
+  { name : "Last Month  -  Gas"},
+  { name : "Last Month  -  Water"},
+  { name : "Last Six Months  -  Oil"},
+  { name : "Last Six Months  -  Gas"},
+  { name : "Last Six Months  -  Water"},
+  { name : "Last Twelve Months  -  Oil"},
+  { name : "Last Twelve Months  -  Gas"},
+  { name : "Last Twelve Months  -  Water"}
+];
 
 const useStyles = makeStyles((theme) => ({
   save: {
@@ -126,7 +153,6 @@ export default function FilterDedaults() {
   const [dateCreated, setDateCreated] = useState(new Date());
   const [filterTypeWell, setFilterTypeWell] = useState(null);
   const [filterTypeOwner, setFilterTypeOwner] = useState(null);
-  const [filterTypeInterest, setFilterTypeInterest] = useState(null);
   const [filterTypeProdcution, setFilterTypeProduction] = useState(null);
   const [filterTypeGeography, setFilterTypeGeography] = useState(null);
   const [saveSearchName, setSaveSearchName] = useState("");
@@ -205,7 +231,7 @@ export default function FilterDedaults() {
             ownerArr.push(item);
           }
           if (item[0].includes("Interest")) {
-            setFilterTypeInterest("Interest");
+            setFilterTypeOwner("Owner");
             interestArr.push(item);
           }
           if (item[0].includes("Geography")) {
@@ -234,14 +260,28 @@ export default function FilterDedaults() {
           }
         });
       }
-      setFiltersGeo([geoArr, geoArr1]);
-      setFiltersOwner([ownerArr, interestArr]);
+      if (geoArr1.length > 0) {
+        setFiltersGeo([geoArr, geoArr1]);
+      } else if (geoArr.length > 0) {
+        setFiltersGeo([geoArr, geoArr1]);
+      }
+      else {
+        setFiltersGeo(null);
+      }
+
+      if (ownerArr.length > 0) {
+        setFiltersOwner([ownerArr, interestArr]);
+      } else if (interestArr.length > 0) {
+        setFiltersOwner([ownerArr, interestArr]);
+      }
+      else {
+        setFiltersOwner(null);
+      }
       setFiltersProd(prodArr);
       setFiltersWell(wellArr);
     }
   }, [stateNav]);
-  // console.log("copy", stateNavCopy)
-  // console.log(filtersWell)
+ 
   const deleteChipWell = (item, name) => {
     if (stateNav[name] && stateNav[name].length === 5) {
       let copy;
@@ -308,77 +348,77 @@ export default function FilterDedaults() {
       }));
     }
   };
-  console.log(stateNavCopy)
-
   // State County Survey Abstract 
   const deleteChipGeoSCSA = (item, name) => {
-    console.log(item, name);
-    if (stateNav[name] && stateNav[name].length === 5) {
-      let copy;
-      let removeItemState; 
-      let removeItemCounty; 
-      let removeItemSurvey;
-      let removeItemAbstract;
-      let removeItemStateDisplay;
-      let itemRemove = stateNav[name];
-      copy = [...stateNav[name]];
-      if (copy.length === 2) {
-        itemRemove.splice(1, 1);
-      }
-      if (copy.length === 3) {
-        itemRemove.splice(2, 1);
-      }
-      if (copy.length === 4) {
-        itemRemove.splice(3, 1);
-        
-      }
-      if (copy.length === 5) {
-        itemRemove.splice(4, 1);
-      }
-      
+    let copy;
+    let removeItemState; 
+    let removeItemCounty; 
+    let removeItemSurvey;
+    let removeItemAbstract;
+    let removeItemStateDisplay;
+    let itemRemove = stateNav[name];
+    copy = [...stateNav[name]];
+    if (copy && copy[1].length === 5) {        
       if (copy[1].length > 0) {
         removeItemState = item;
         removeItemStateDisplay = null;
       }
-      if (copy[2].length > 0) {
-        removeItemCounty = item;
-      }
-      if (copy[3].length > 0) {
-        removeItemSurvey = item;
-      }
-      if (copy[4].length > 0) {
-        removeItemAbstract = item;
-      }
-      
+
       for (let index = 0; index < copy.length; index++) {
         const element = copy[index];
         if (element[2] === item) {
           copy.splice(index, 1);
         }
       }
-      console.log(copy)
-      if (copy.length > 1) {
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          [name]: copy,
-          stateName: removeItemState,
-          displayStateName: removeItemStateDisplay,
-          countyName: removeItemCounty,
-          surveyName: removeItemSurvey, 
-          abstractName: removeItemAbstract,
-        }));
-      } else {
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          [name]: null,
-          countyName: null,
-          stateName: null,
-          displayStateName: null,
-          surveyName: null, 
-          abstractName: null,
-        }));
-      }
+      
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        [name]: null,
+        stateName: null,
+        displayStateName: null,
+      }));
     }
+    if (copy && copy[2].length === 5) { 
+      console.log('here', copy)       
+      if (copy[2].length > 0) {
+        removeItemCounty = item;
+      }
+      for (let index = 0; index < copy.length; index++) {
+        const element = copy[index];
+        if (element[2] === item) {
+          copy.splice(index, 1);
+        }
+      }
+     
+      // setStateNav((stateNav) => ({
+      //   ...stateNav,
+      //   [name]: copy,
+      //   countyName: null,
+      // }));
+    }
+
+
+        // if (copy.length > 5) {
+        //   setStateNav((stateNav) => ({
+        //     ...stateNav,
+        //     [name]: copy,
+        //     stateName: removeItemState,
+        //     displayStateName: removeItemStateDisplay,
+        //     countyName: removeItemCounty,
+        //     surveyName: removeItemSurvey, 
+        //     abstractName: removeItemAbstract,
+        //   }));
+        // } else {
+        //   setStateNav((stateNav) => ({
+        //     ...stateNav,
+        //     [name]: null,
+        //     countyName: null,
+        //     stateName: null,
+        //     displayStateName: null,
+        //     surveyName: null, 
+        //     abstractName: null,
+        //   }));
+        // }
   }
 
   // Basin And PLay 
@@ -414,11 +454,158 @@ export default function FilterDedaults() {
   };
 
   const deleteChipOwner = (item) => {
-    console.log(item);
-  };
 
-  const deleteChipProd = (item,) => {
-    console.log(item);
+    if (stateNav.filterNoOwnerCount && stateNav.filterNoOwnerCount.length > 0) {
+        if (item === "noOwners") {
+          setStateNav((stateNav) => ({
+            ...stateNav,
+            filterNoOwnerCount: null,
+          }));
+        }
+    }
+    if(stateNav.filterOwnerCount && stateNav.filterOwnerCount.length > 0){
+      let copy;
+      copy = [...stateNav.filterOwnerCount];
+
+      for (let index = 0; index < copy.length; index++) {
+        const element = copy[index];
+        if (element[0] === item) {
+          copy.splice(index, 1);
+        }
+      }
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        filterOwnerCount: copy,
+      }));
+
+      if (copy.length === 1) {
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          filterOwnerCount: null,
+        }));
+      }
+    }
+    if (stateNav.filterAllOwnershipTypes && stateNav.filterAllOwnershipTypes.length > 0 ) {
+      let copy;
+      let itemRemove = stateNav.interestName;
+      let i = itemRemove.indexOf(item);
+      if (item === "ownershipTypeReligiousInstitutions") {
+        itemRemove.splice(i, 1);
+      }
+      if (item === "ownershipTypeGovernmentalBodies") {
+        itemRemove.splice(i, 1);
+      }
+      if (item === "ownershipTypeNonProfits") {
+        itemRemove.splice(i, 1);
+      }
+      if (item === "ownershipTypeTrusts") {
+        itemRemove.splice(i, 1);
+      }
+      if (item === "ownershipTypeCorporations") {
+        itemRemove.splice(i, 1);
+      }
+      if (item === "ownershipTypeEducationalInstitutions") {
+        itemRemove.splice(i, 1);
+      }
+      if (item === "ownershipTypeIndividuals") {
+        itemRemove.splice(i, 1);
+      }
+      if (item === "ownershipTypeUnknown") {
+        itemRemove.splice(i, 1);
+      }
+    
+      copy = [...stateNav.filterAllOwnershipTypes];
+
+      for (let index = 0; index < copy.length; index++) {
+        const element = copy[index];
+        if (element.includes(item)) {
+          copy.splice(index, 1);
+        }
+      }
+      // console.log(copy)
+      if (copy.length > 1) {
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          filterAllOwnershipTypes: copy,
+          ownerTypeName: itemRemove,
+        }));
+      } else {
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          filterAllOwnershipTypes: null,
+          ownerTypeName: [],
+        }));
+      }
+    }
+  };
+  console.log("//////stateNav",stateNavCopy)
+
+  const matchProdOption = (string) => {
+    console.log(string)
+    let list = prodListOptions;
+    let match = list.map(el => el.name)
+    if (match.includes(string) ) {
+      console.log("yes")
+    }
+  }
+ 
+  const removeFitlerFromProdName = (string) => {
+    if (string.includes("filterCumulative")) {
+      return string.replace("filterCumulative", "Cumulative  - ");
+    }
+    if (string.includes("filterFirstMonth")) {
+      return string.replace("filterFirstMonth", "First Month  - ");
+    }
+    if (string.includes("filterFirstThreeMonth")) {
+      return string.replace("filterFirstThreeMonth", "First Three Months  - ");
+    }
+    if (string.includes("filterFirstSixMonth")) {
+      return string.replace("filterFirstSixMonth", "First Six Months  - ");
+    }
+    if (string.includes("filterFirstTwelveMonth")) {
+      return string.replace("filterFirstTwelveMonth", "First Twelve Months  - ");
+    }
+    
+    if (string.includes("filterLastTwelveMonth")) {
+      return string.replace("filterLastTwelveMonth", "Last Twelve Months  - ");
+    }
+    if (string.includes("filterLastSixMonth")) {
+      return string.replace("filterLastSixMonth", "Last Six Months  - ");
+    }
+    if (string.includes("filterLastMonth")) {
+      return string.replace("filterLastMonth", "Last Month  - ");
+    }
+  }
+  
+
+  const deleteChipProd = (item,name) => {
+    console.log(item, name)
+    if(stateNav[name] && stateNav[name].length > 0){
+      let copy;
+      copy = [...stateNav[name]];
+
+      for (let index = 0; index < copy.length; index++) {
+        const element = copy[index];
+        if (element[2] === item) {
+          copy.splice(index, 1);
+        }
+      }
+
+      let compare = removeFitlerFromProdName(name);
+      let match = matchProdOption(compare);
+      console.log(compare)
+      // setStateNav((stateNav) => ({
+      //   ...stateNav,
+      //   [name]: copy,
+      // }));
+
+      // if (copy.length === 1) {
+      //   setStateNav((stateNav) => ({
+      //     ...stateNav,
+      //     [name]: null,
+      //   }));
+      // }
+    }
   };
 
   const deleteChipInterest = (item) => {
