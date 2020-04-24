@@ -76,9 +76,10 @@ const useStyles = makeStyles((theme) => ({
     top: "0",
     left: "0",
     paddingTop: "7px",
+    borderBottom:"1px solid rgb(190, 190, 190)"
   },
   gridWidthScroll: {
-    height: "72.5vh",
+    height: "calc(100% - 88px)",
     overflow: "auto",
   },
   card: {

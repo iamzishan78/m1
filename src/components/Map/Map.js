@@ -1290,7 +1290,6 @@ export default function Map() {
                   component={<WellCardProvider></WellCardProvider>}
                   title={stateApp.selectedWell.wellName}
                   subTitle={stateApp.selectedWell.operator}
-                  Api={stateApp.selectedWell.api}
                   parent="map"
                   mouseX={0}
                   mouseY={0}
@@ -1298,17 +1297,11 @@ export default function Map() {
                   cardLeft={20}
                   cardTop={70}
                   zIndex={99}
-                  cardWidth="370px"
-                  cardHeight="350px"
+                  cardWidth="360px"
+                  cardHeight="330px"
                   cardWidthExpanded="95vw"
                   cardHeightExpanded="90vh"
-                  source={stateApp.user}
-                  sourceSourceId={stateApp.user.id}
-                  sourceName={stateApp.user.name}
-                  sourceLabel="user"
-                  target={stateApp.selectedWell}
                   targetSourceId={stateApp.selectedWell.id}
-                  targetName={stateApp.selectedWell.wellName}
                   targetLabel="well"
                 ></ExpandableCardProvider>
               ) : (
@@ -1333,7 +1326,6 @@ export default function Map() {
                     component={<WellCardProvider></WellCardProvider>}
                     title={stateApp.selectedWell.wellName}
                     subTitle={stateApp.selectedWell.operator}
-                    Api={stateApp.selectedWell.api}
                     parent="map"
                     mouseX={0}
                     mouseY={0}
@@ -1345,13 +1337,7 @@ export default function Map() {
                     // cardHeight="380px"
                     cardWidthExpanded="95vw"
                     cardHeightExpanded="95vh"
-                    source={stateApp.user}
-                    sourceSourceId={stateApp.user.id}
-                    sourceName={stateApp.user.name}
-                    sourceLabel="user"
-                    target={stateApp.selectedWell}
                     targetSourceId={stateApp.selectedWell.id}
-                    targetName={stateApp.selectedWell.wellName}
                     targetLabel="well"
                   ></ExpandableCardProvider>
                 </Popover>

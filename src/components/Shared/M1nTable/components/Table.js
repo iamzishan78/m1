@@ -87,6 +87,11 @@ const useStyles = makeStyles((theme) => ({
   //     cursor: "default",
   //   },
   // },
+  dialogExpCard: {
+    "& .MuiDialog-paperScrollPaper": {
+      height: "100%",
+    },
+  },
 }));
 
 var formatter = new Intl.NumberFormat("en-US", {
@@ -479,6 +484,7 @@ export default function SubTable(props) {
 
       {showExpandableCard && (
         <Dialog
+          className={classes.dialogExpCard}
           fullWidth
           maxWidth="xl"
           open={showExpandableCard}

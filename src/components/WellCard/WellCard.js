@@ -44,8 +44,9 @@ import { VERTEXEDGESQUERY } from "../../graphQL/useQueryVertexEdges";
 
 const useStyles = makeStyles((theme) => ({
   card: {
-    overflowY: "auto !important",
+    // overflowY: "auto !important",
     borderStyle: "none",
+    height: "100%",
   },
   title: {
     fontFamily: "Poppins",
@@ -93,7 +94,8 @@ const useStyles = makeStyles((theme) => ({
   content: {
     backgroundColor: "#fff",
     // overflowY: "auto",
-    padding: "0",
+    padding: "0 !important",
+    height: "100%",
   },
   cardAction: {
     flexGrow: 1,
@@ -277,7 +279,7 @@ export default function WellCard() {
   if (stateApp.selectedWell.wellStatus !== "Permit") {
     return stateApp.selectedWell ? (
       !stateExpandableCard.expanded ? (
-        <div>
+        <div style={{ height: "100%" }}>
           <Card>
             <CardActions
               classes={{
@@ -445,7 +447,7 @@ export default function WellCard() {
           </Card>
         </div>
       ) : (
-        <div>
+        <div style={{ height: "100%" }}>
           {/* <Modal
           style={{overflow: "auto"}}
           open={stateExpandableCard.expanded}

@@ -78,9 +78,12 @@ export default function ExpandableCard(props) {
     content: {
       transition: "height 0.1s",
       backgroundColor: "#fff",
-      padding: "0px",
+      padding: "0 !important",
       height: height,
       overflowY: "auto",
+      height: stateExpandableCard.expanded
+        ? "calc(100% - 82px)"
+        : "fit-content",
     },
     icons: {
       "&:hover": {
@@ -183,12 +186,17 @@ export default function ExpandableCard(props) {
   const handleClose = () => {
     if (parent === "map" && $("#tempPopupHolder").length) {
       console.log("jquery close");
-      setStateApp((state) => ({ ...state, popupOpen: false }));
+      // setStateApp((state) => ({ ...state, popupOpen: false }));
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
     }
     props.handleCloseExpandableCard();
-    setStateApp((state) => ({ ...state, popupOpen: true }));
+    // setStateApp((state) => ({ ...state, popupOpen: true }));
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+      expandedCard: false,
+    }));
 
     //if EC is inside map popup you need to close it
   };
@@ -196,6 +204,7 @@ export default function ExpandableCard(props) {
   return (
     <Card className={classes.card}>
       <CardHeader
+        id="detailCardHeader"
         classes={{ title: classes.title, subheader: classes.subheader }}
         action={
           <div className={classes.headerIcons}>
@@ -258,15 +267,15 @@ export default function ExpandableCard(props) {
         //     ? title.length > 30
         //       ? `${title.substr(0, 30)}...${
         //           stateExpandableCard.expanded
-        //             // ? props.Api !== undefined
-        //             //   ? `(${props.Api})`
+        //             // ? props. !== undefined
+        //             //   ? `(${props.})`
         //             //   : ""
         //             // : ""
         //         }`
         //       : `${title} ${
         //           stateExpandableCard.expanded
-        //             // ? props.Api !== undefined
-        //             //   ? `(${props.Api})`
+        //             // ? props. !== undefined
+        //             //   ? `(${props.})`
         //             //   : ""
         //             // : ""
         //         }`
