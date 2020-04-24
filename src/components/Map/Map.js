@@ -103,16 +103,15 @@ export default function Map() {
   const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
   const mapEl = useRef(null);
 
-
   mapboxgl.accessToken =
     "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJjanYycGJxbG8yN3JsM3lsYTdnMXZoeHh1In0.tTNECYKDPtcrzivWTiZcIQ";
 
   useEffect(() => {
-    console.log('layer ue start')
+    console.log("layer ue start");
     if (stateMap.checkedLayers && map) {
       stateMap.styleLayers.forEach((l) => {
         l.id.forEach((k) => {
-          if(map.getLayer(k)){
+          if (map.getLayer(k)) {
             map.setLayoutProperty(k, "visibility", "none");
           }
         });
@@ -124,9 +123,9 @@ export default function Map() {
         layers.forEach((i) => {
           let currentLayerArray = stateMap.styleLayers[i].id;
           currentLayerArray.forEach((j) => {
-            var mapLayer = map.getLayer(j)
-            if(typeof mapLayer !== 'undefined'){
-              if(map.getLayer(j)){
+            var mapLayer = map.getLayer(j);
+            if (typeof mapLayer !== "undefined") {
+              if (map.getLayer(j)) {
                 map.setLayoutProperty(j, "visibility", "visible");
               }
             }
@@ -134,17 +133,15 @@ export default function Map() {
         });
       }
     }
-    console.log('layers added')
+    console.log("layers added");
   }, [map, stateMap.checkedLayers, stateMap.styleLayers]);
 
-
-
   useEffect(() => {
-    console.log('heatmap layer ue start')
+    console.log("heatmap layer ue start");
     if (stateMap.checkedHeats && map) {
       stateMap.heatLayers.forEach((l) => {
         l.id.forEach((k) => {
-          if(map.getLayer(k)){
+          if (map.getLayer(k)) {
             map.setLayoutProperty(k, "visibility", "none");
           }
         });
@@ -156,26 +153,22 @@ export default function Map() {
         layers.forEach((i) => {
           let currentLayerArray = stateMap.heatLayers[i].id;
           currentLayerArray.forEach((j) => {
-            if(map.getLayer(j)){
+            if (map.getLayer(j)) {
               map.setLayoutProperty(j, "visibility", "visible");
             }
           });
         });
       }
     }
-    console.log('heatmap layers added')
+    console.log("heatmap layers added");
   }, [map, stateMap.checkedHeats]);
 
-
-
-
   useEffect(() => {
-    console.log('basemap layer ue start')
+    console.log("basemap layer ue start");
     if (stateMap.checkedBaseLayers && map) {
-
       stateMap.baseMapLayers.forEach((l) => {
         l.id.forEach((k) => {
-          if(map.getLayer(k)){
+          if (map.getLayer(k)) {
             map.setLayoutProperty(k, "visibility", "none");
           }
         });
@@ -189,18 +182,15 @@ export default function Map() {
           currentLayerArray.forEach((j) => {
             // var mapLayer = map.getLayer(j)
             // console.log(mapLayer)
-            if(map.getLayer(j)){
+            if (map.getLayer(j)) {
               map.setLayoutProperty(j, "visibility", "visible");
             }
           });
         });
       }
     }
-    console.log('basemap layers added')
+    console.log("basemap layers added");
   }, [map, stateMap.checkedBaseLayers]);
-
-
-
 
   useEffect(() => {
     if (showExpandableCard) {
@@ -211,7 +201,7 @@ export default function Map() {
   }, [showExpandableCard]);
 
   useEffect(() => {
-    console.log('filter ue start')
+    console.log("filter ue start");
     //applies filter when one of the filters change
     if (map) {
       let isFilterSet = false;
@@ -672,7 +662,7 @@ export default function Map() {
         map.setFilter("wellsHeatmapRecentlyCompleted", null);
       }
     }
-    console.log('filters applied')
+    console.log("filters applied");
   }, [
     map,
     setStateNav,
@@ -783,17 +773,17 @@ export default function Map() {
   }, []);
 
   useEffect(() => {
-    if(map){
-
+    if (map) {
       setStateApp((stateApp) => ({
         ...stateApp,
-        mapVars: {...stateApp.mapVars,
+        mapVars: {
+          ...stateApp.mapVars,
           zoom: map.getZoom(),
           center: map.getCenter(),
           pitch: map.getPitch(),
           bearing: map.getBearing(),
         },
-      })); 
+      }));
 
       setMap(null);
     }
@@ -809,7 +799,7 @@ export default function Map() {
   }
 
   useEffect(() => {
-    console.log('map ue start')
+    console.log("map ue start");
     if (mapStyles.length > 0) {
       // const SET_INITIAL_MAP_STYLE = "Satellite";
 
@@ -817,9 +807,9 @@ export default function Map() {
         let id = mapEl.current.id;
 
         var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
-        console.log('tileset api loaded - style selected', stateMap.mapStyle)
+        console.log("tileset api loaded - style selected", stateMap.mapStyle);
 
-        console.log(stateApp.mapVars)
+        console.log(stateApp.mapVars);
 
         const newMap = new mapboxgl.Map({
           container: `${id}`,
@@ -830,8 +820,7 @@ export default function Map() {
           bearing: stateApp.mapVars.bearing,
         });
 
-        console.log('new map generated')
-
+        console.log("new map generated");
 
         /// optimized interactions w/ map
         newMap.scrollZoom.enable();
@@ -935,7 +924,6 @@ export default function Map() {
           return matchingFeatures;
         }
 
-
         var geocoder = new MapboxGeocoder({
           accessToken: mapboxgl.accessToken,
           mapboxgl: mapboxgl,
@@ -972,18 +960,16 @@ export default function Map() {
 
         newMap.on("load", function (e) {
           setMap(newMap);
-          console.log('set new map complete',newMap.loaded())
+          console.log("set new map complete", newMap.loaded());
         });
       };
 
       if (!map) {
-        console.log('initialize map start')
+        console.log("initialize map start");
         initializeMap({ setMap, mapEl, setStateMap });
-        console.log('initialize map finish')
-      } 
-      else {
-        console.log('map extra components start')
-
+        console.log("initialize map finish");
+      } else {
+        console.log("map extra components start");
 
         // additional map interactions
         // for some reason these do not work when initializing but do here
@@ -1074,7 +1060,7 @@ export default function Map() {
           }));
           createPopUp(currentFeature.properties);
         });
-        console.log('map extra components complete')
+        console.log("map extra components complete");
       }
     }
   }, [map, setStateMap, setStateMapControls, mapStyles]);
@@ -1088,44 +1074,44 @@ export default function Map() {
           list.removeChild(list.childNodes[0]);
         }
 
-        console.log('begin map unmount')
+        console.log("begin map unmount");
 
-        console.log('zoom',map.getZoom())
-        console.log('center',map.getCenter())
-        console.log('pitch',map.getPitch())
-        console.log('bearing',map.getBearing())
+        console.log("zoom", map.getZoom());
+        console.log("center", map.getCenter());
+        console.log("pitch", map.getPitch());
+        console.log("bearing", map.getBearing());
 
         var zoom = map.getZoom();
         var center = map.getCenter();
         var pitch = map.getPitch();
         var bearing = map.getBearing();
 
-        console.log(stateApp.mapVars)
-        console.log("**************************")
+        console.log(stateApp.mapVars);
+        console.log("**************************");
 
         setStateApp((stateApp) => ({
           ...stateApp,
-          mapVars: {...stateApp.mapVars,
+          mapVars: {
+            ...stateApp.mapVars,
             zoom: zoom,
             center: center,
             pitch: pitch,
             bearing: bearing,
           },
-        })); 
+        }));
 
-        console.log('save map state variables')
-        console.log(stateApp.mapVars)
+        console.log("save map state variables");
+        console.log(stateApp.mapVars);
 
         var mapList = document.getElementById("map");
-        console.log(mapList.childNodes)
+        console.log(mapList.childNodes);
         if (mapList.childNodes.length > 1) {
           mapList.removeChild(mapList.childNodes[1]);
           mapList.removeChild(mapList.childNodes[1]);
           mapList.removeChild(mapList.childNodes[1]);
         }
-        console.log(mapList.childNodes)
-        console.log('end map unmount')
-
+        console.log(mapList.childNodes);
+        console.log("end map unmount");
       };
     }
   }, [map, geocoder]);
@@ -1144,85 +1130,71 @@ export default function Map() {
     }
   }, [createPopUp, map, stateApp.flyTo]);
 
-
   useEffect(() => {
     if (map && stateMap.toggleZoomOut) {
+      if (stateMap.toggleZoomOut === true) {
+        map.flyTo({
+          center: { lng: -98.8, lat: 31.6 },
+          zoom: 5.88,
+          pitch: 0,
+          bearing: 0,
+          speed: 0.5,
+        });
 
-      if(stateMap.toggleZoomOut === true){
+        let flying = null;
 
-      map.flyTo({
-        center: {lng: -98.8, lat: 31.6},
-        zoom: 5.88,
-        pitch: 0,
-        bearing: 0,        
-        speed: 0.5,
-      });
+        map.on("flystart", function () {
+          flying = true;
+        });
+        map.on("flyend", function () {
+          flying = false;
+        });
+        map.on("moveend", function (e) {
+          if (flying) {
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              mapVars: {
+                ...stateApp.mapVars,
+                zoom: map.getZoom(),
+                center: map.getCenter(),
+                pitch: map.getPitch(),
+                bearing: map.getBearing(),
+              },
+            }));
+            map.fire("flyend");
+          }
+        });
 
-      let flying = null;
-
-      map.on('flystart', function(){
-        flying = true;
-      });
-      map.on('flyend', function(){
-        flying = false;
-      });
-      map.on('moveend', function(e){
-        if(flying){
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            mapVars: {...stateApp.mapVars,
-              zoom: map.getZoom(),
-              center: map.getCenter(),
-              pitch: map.getPitch(),
-              bearing: map.getBearing(),
-            },
-          })); 
-          map.fire('flyend'); 
-        }
-     });
-
-
-
-      setStateMap((stateMap) => ({ ...stateMap, toggleZoomOut: null }));
-
+        setStateMap((stateMap) => ({ ...stateMap, toggleZoomOut: null }));
       }
     }
   }, [stateMap.toggleZoomOut]);
 
-
-
   useEffect(() => {
     if (map && stateMap.toggle3d) {
-
-        if (stateMap.toggle3d === true) {
-
-          if(map.getPitch()==0 && map.getBearing()==0){
-            map.setPitch(70);
-            map.setBearing(20);
-          } else {
-            map.setPitch(0);
-            map.setBearing(0);
-          }
-
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            mapVars: {...stateApp.mapVars,
-              zoom: map.getZoom(),
-              center: map.getCenter(),
-              pitch: map.getPitch(),
-              bearing: map.getBearing(),
-            },
-          })); 
-          setStateMap((stateMap) => ({ ...stateMap, toggle3d: null }));
+      if (stateMap.toggle3d === true) {
+        if (map.getPitch() == 0 && map.getBearing() == 0) {
+          map.setPitch(70);
+          map.setBearing(20);
+        } else {
+          map.setPitch(0);
+          map.setBearing(0);
         }
 
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          mapVars: {
+            ...stateApp.mapVars,
+            zoom: map.getZoom(),
+            center: map.getCenter(),
+            pitch: map.getPitch(),
+            bearing: map.getBearing(),
+          },
+        }));
+        setStateMap((stateMap) => ({ ...stateMap, toggle3d: null }));
+      }
     }
   }, [stateMap.toggle3d]);
-
-
-
-
-
 
   const handleOpenExpandableCard = (e) => {
     setAnchorElPoPOver(container.current);
@@ -1298,7 +1270,7 @@ export default function Map() {
                   cardTop={70}
                   zIndex={99}
                   cardWidth="360px"
-                  cardHeight="330px"
+                  cardHeight="333px"
                   cardWidthExpanded="95vw"
                   cardHeightExpanded="90vh"
                   targetSourceId={stateApp.selectedWell.id}
