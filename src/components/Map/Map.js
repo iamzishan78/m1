@@ -1298,8 +1298,8 @@ export default function Map() {
                   cardLeft={20}
                   cardTop={70}
                   zIndex={99}
-                  cardWidth="380px"
-                  cardHeight="380px"
+                  cardWidth="370px"
+                  cardHeight="350px"
                   cardWidthExpanded="95vw"
                   cardHeightExpanded="90vh"
                   source={stateApp.user}

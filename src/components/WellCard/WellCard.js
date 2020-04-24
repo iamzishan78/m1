@@ -92,7 +92,8 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     backgroundColor: "#fff",
-    overflowY: "auto",
+    // overflowY: "auto",
+    padding: "0",
   },
   cardAction: {
     flexGrow: 1,
@@ -272,11 +273,11 @@ export default function WellCard() {
       return date;
     }
   };
-  console.log(stateApp.selectedWell)
+  console.log(stateApp.selectedWell);
   if (stateApp.selectedWell.wellStatus !== "Permit") {
     return stateApp.selectedWell ? (
-        !stateExpandableCard.expanded ? (
-          <div>
+      !stateExpandableCard.expanded ? (
+        <div>
           <Card>
             <CardActions
               classes={{
@@ -440,10 +441,10 @@ export default function WellCard() {
                   </TableRow>
                 </TableBody>
               </Table>
-          </CardContent>
+            </CardContent>
           </Card>
-          </div>
-          ) : (
+        </div>
+      ) : (
         <div>
           {/* <Modal
           style={{overflow: "auto"}}
@@ -452,8 +453,8 @@ export default function WellCard() {
           aria-labelledby="simple-modal-title"
           aria-describedby="simple-modal-description"
           > */}
-        <Card className={classes.card}>
-          {/* <CardHeader
+          <Card className={classes.card}>
+            {/* <CardHeader
           classes={{
             title: classes.title,
             subheader: classes.subheader
@@ -488,14 +489,15 @@ export default function WellCard() {
               : '--'
           }
         /> */}
-          <CardContent className={classes.content}>
+            <CardContent className={classes.content}>
               <WellCardDetails target={target} />
-          </CardContent>
-         </Card>
-        {/* </Modal> */}
-      </div>
-    ) ) : (
+            </CardContent>
+          </Card>
+          {/* </Modal> */}
+        </div>
+      )
+    ) : (
       <CircularProgress color="secondary" />
-    );  
+    );
   }
 }

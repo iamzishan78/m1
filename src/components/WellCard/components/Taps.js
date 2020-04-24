@@ -22,7 +22,7 @@ function TabPanel(props) {
     >
       {value === index && (
         <Box
-          style={{ paddingRight: "0", paddingLeft: "0" }}
+          style={{ paddingRight: "0", paddingLeft: "0", paddingBottom: "0" }}
           p={3}
         >
           {children}
@@ -35,26 +35,26 @@ function TabPanel(props) {
 TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired
+  value: PropTypes.any.isRequired,
 };
 
 function a11yProps(index) {
   return {
     id: `scrollable-auto-tab-${index}`,
-    "aria-controls": `scrollable-auto-tabpanel-${index}`
+    "aria-controls": `scrollable-auto-tabpanel-${index}`,
   };
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
     width: "100%",
-    backgroundColor: theme.palette.background.paper
+    backgroundColor: theme.palette.background.paper,
   },
   WellsDetailsCardAppBar: {
     backgroundColor: "rgb(1,17,51)",
-    color: "#FFFFFF"
-  }
+    color: "#FFFFFF",
+  },
 }));
 
 export default function Taps(props) {
@@ -70,9 +70,11 @@ export default function Taps(props) {
 
   return (
     <div className={classes.root} id="TOTaps">
-
-
-      <AppBar className={classes.WellsDetailsCardAppBar} position="static" color="default">
+      <AppBar
+        className={classes.WellsDetailsCardAppBar}
+        position="static"
+        color="default"
+      >
         <Tabs
           value={value}
           onChange={handleChange}
@@ -92,9 +94,6 @@ export default function Taps(props) {
           {panel}
         </TabPanel>
       ))}
-
-
-
     </div>
   );
 }

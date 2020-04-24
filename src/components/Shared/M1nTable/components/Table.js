@@ -76,17 +76,17 @@ const useStyles = makeStyles((theme) => ({
   noCommentsIcon: {
     color: "darkgrey",
   },
-  table: {
-    "& .MuiTableRow-root": {
-      cursor: "zoom-in",
-    },
-    "& .MuiTableRow-head": {
-      cursor: "default",
-    },
-    "& .MuiTableRow-footer": {
-      cursor: "default",
-    },
-  },
+  // table: {
+  //   "& .MuiTableRow-root": {
+  //     cursor: "zoom-in",
+  //   },
+  //   "& .MuiTableRow-head": {
+  //     cursor: "default",
+  //   },
+  //   "& .MuiTableRow-footer": {
+  //     cursor: "default",
+  //   },
+  // },
 }));
 
 var formatter = new Intl.NumberFormat("en-US", {
@@ -349,201 +349,6 @@ export default function SubTable(props) {
             }
             break;
         }
-
-        // if (column.name === "isTracked") {
-        //   column.options = {
-        //     ...column.options,
-        //     customBodyRender: (value, tableMeta, updateValue) => {
-        //       return (
-        //         <TrackToggleButton
-        //           target={{ isTracked: value }}
-        //           targetLabel={props.targetLabel}
-        //           targetSourceId={tableMeta.rowData[0]}
-        //           dark
-        //         />
-        //       );
-        //     },
-        //   };
-        // }
-
-        // if (column.name === "commentsCounter") {
-        //   column.options = {
-        //     ...column.options,
-        //     customBodyRender: (value, tableMeta, updateValue) => {
-        //       return (
-        //         <Tooltip
-        //           title={!value || value === 0 ? "Add Comments" : "Comments"}
-        //           placement="top"
-        //         >
-        //           <Badge badgeContent={value ? value : null} color="secondary">
-        //             <IconButton
-        //               size="medium"
-        //               color="primary"
-        //               className={`${classes.icons} ${
-        //                 !value || value === 0 ? classes.noCommentsIcon : ""
-        //               } ${
-        //                 colInd === tableMeta.columnIndex &&
-        //                 rowInd === tableMeta.rowIndex
-        //                   ? classes.iconSelected
-        //                   : ""
-        //               }`}
-        //               onClick={() => {
-        //                 handleExpandClick(
-        //                   tableMeta.columnIndex,
-        //                   tableMeta.rowIndex,
-        //                   tableMeta.rowData[0],
-        //                   "comment"
-        //                 );
-        //               }}
-        //               aria-label="show comments"
-        //             >
-        //               <ChatIcon />
-        //             </IconButton>
-        //           </Badge>
-        //         </Tooltip>
-        //       );
-        //     },
-        //   };
-        // }
-
-        // if (column.name === "wellsCounter") {
-        //   column.options = {
-        //     ...column.options,
-        //     customBodyRender: (value, tableMeta, updateValue) => {
-        //       return (
-        //         <Tooltip
-        //           title={value ? "Wells" : "Not Available"}
-        //           placement="top"
-        //         >
-        //           <Badge badgeContent={value ? value : null} color="secondary">
-        //             <IconButton
-        //               size="medium"
-        //               color="primary"
-        //               className={`${classes.icons} ${
-        //                 !value ? classes.noOwnersIcon : ""
-        //               } ${
-        //                 colInd === tableMeta.columnIndex &&
-        //                 rowInd === tableMeta.rowIndex
-        //                   ? classes.iconSelected
-        //                   : ""
-        //               }`}
-        //               onClick={() => {
-        //                 if (value && value > 0) {
-        //                   handleExpandClick(
-        //                     tableMeta.columnIndex,
-        //                     tableMeta.rowIndex,
-        //                     tableMeta.rowData[1],
-        //                     "well"
-        //                   );
-        //                 }
-        //               }}
-        //               aria-label="show owners"
-        //             >
-        //               <WellIcon
-        //                 color={value && value !== 0 ? "#000" : "darkgrey"}
-        //                 opacity="1.0"
-        //                 small
-        //               />
-        //             </IconButton>
-        //           </Badge>
-        //         </Tooltip>
-        //       );
-        //     },
-        //   };
-        // }
-
-        // if (column.name === "ownerCount") {
-        //   column.options = {
-        //     ...column.options,
-        //     customBodyRender: (value, tableMeta, updateValue) => {
-        //       return (
-        //         <Tooltip
-        //           title={value ? "Owners" : "Not Available"}
-        //           placement="top"
-        //         >
-        //           <Badge badgeContent={value ? value : null} color="secondary">
-        //             <IconButton
-        //               size="medium"
-        //               color="primary"
-        //               className={`${classes.icons} ${
-        //                 !value ? classes.noOwnersIcon : ""
-        //               } ${
-        //                 colInd === tableMeta.columnIndex &&
-        //                 rowInd === tableMeta.rowIndex
-        //                   ? classes.iconSelected
-        //                   : ""
-        //               }`}
-        //               onClick={() => {
-        //                 if (value && value > 0) {
-        //                   handleExpandClick(
-        //                     tableMeta.columnIndex,
-        //                     tableMeta.rowIndex,
-        //                     tableMeta.rowData[1],
-        //                     "owner"
-        //                   );
-        //                 }
-        //               }}
-        //               aria-label="show owners"
-        //             >
-        //               <PeopleAltIcon />
-        //             </IconButton>
-        //           </Badge>
-        //         </Tooltip>
-        //       );
-        //     },
-        //   };
-        // }
-
-        // if (column.name === "tags") {
-        //   column.options = {
-        //     ...column.options,
-        //     customBodyRender: (value, tableMeta, updateValue) => {
-        //       return (
-        //         <Tooltip
-        //           title={value[1] === 0 ? "Add Tags" : "Tags"}
-        //           placement="top"
-        //         >
-        //           <Badge
-        //             className={`${classes.TagSample} ${
-        //               colInd === tableMeta.columnIndex &&
-        //               rowInd === tableMeta.rowIndex
-        //                 ? classes.iconSelected
-        //                 : ""
-        //             }`}
-        //             badgeContent={value[1]}
-        //             color="secondary"
-        //             onClick={() => {
-        //               handleExpandClick(
-        //                 tableMeta.columnIndex,
-        //                 tableMeta.rowIndex,
-        //                 tableMeta.rowData[0],
-        //                 "tag"
-        //               );
-        //             }}
-        //           >
-        //             {value[0] && value[0].length > 0 ? (
-        //               <React.Fragment>
-        //                 <p className="first">{value[0].join(", ")}</p>
-        //                 <p className="two">...</p>
-        //               </React.Fragment>
-        //             ) : (
-        //               <p className="three">No Tags</p>
-        //             )}
-        //           </Badge>
-        //         </Tooltip>
-        //       );
-        //     },
-        //   };
-        // }
-
-        // if (column.name === "appraisedValue") {
-        //   column.options = {
-        //     ...column.options,
-        //     customBodyRender: (value, tableMeta, updateValue) => {
-        //       return formatter.format(value);
-        //     },
-        //   };
-        // }
       });
       setColumns([...props.columns]);
     }

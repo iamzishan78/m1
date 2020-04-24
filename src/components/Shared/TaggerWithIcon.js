@@ -87,15 +87,17 @@ export default function TaggerWithIcon(props) {
         placement="top"
       >
         <Badge
-          badgeContent={tagsCounter}
+          badgeContent={props.iconZiseSmall ? null : tagsCounter}
           color="secondary"
-          variant={props.iconZiseSmall ? "dot" : "standard"}
+          // variant={props.iconZiseSmall ? "dot" : "standard"}
         >
           <IconButton
             size={props.iconZiseSmall ? "small" : "medium"}
             color="primary"
             className={`${classes.icons}  ${
-              openDialog ? classes.iconSelected : ""
+              openDialog || (tagsCounter && tagsCounter > 0)
+                ? classes.iconSelected
+                : ""
             }`}
             onClick={() => {
               setOpenDialog(true);

@@ -66,13 +66,20 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-around",
     paddingBottom: "10px",
-    paddingTop: "10px",
   },
   gridItemGrey: {
     flexGrow: 1,
     display: "flex",
     justifyContent: "space-around",
     background: "#f6f6f6",
+    position: "relative",
+    top: "0",
+    left: "0",
+    paddingTop: "7px",
+  },
+  gridWidthScroll: {
+    height: "72.5vh",
+    overflow: "auto",
   },
   card: {
     width: "100%",
@@ -117,9 +124,10 @@ const useStyles = makeStyles((theme) => ({
     padding: "1%",
   },
   content: {
-    height: "93vh",
+    // height: "93vh",
     backgroundColor: "#fff",
     //overflowY: "auto",
+    padding: "16px",
   },
   cardAction: {
     flexGrow: 1,
@@ -297,48 +305,51 @@ export default function WellCardDetails(props) {
   );
 
   return stateApp.selectedWell ? (
-    <Card>
-      <CardContent className={classes.content}>
-        <Grid item className={classes.gridItemGrey}>
-          <WellApiCard />
-          <WellTypeCard />
-          <WellStatusCard />
-          <Last12StatusCard />
-          <OwnerNumCard />
-          <ProfileCard />
-          <PermitDateCard />
-          <SpudDateCard />
-          <CompletionDateCard />
-          <FirstProdDateCard />
-        </Grid>
+    <React.Fragment>
+      <Grid item sm={12} className={classes.gridItemGrey}>
+        <WellApiCard />
+        <WellTypeCard />
+        <WellStatusCard />
+        <Last12StatusCard />
+        <OwnerNumCard />
+        <ProfileCard />
+        <PermitDateCard />
+        <SpudDateCard />
+        <CompletionDateCard />
+        <FirstProdDateCard />
+      </Grid>
+      <Grid item sm={12} className={classes.gridWidthScroll}>
+        <Card style={{ margin: "10px" }}>
+          <CardContent className={classes.content}>
+            <Grid item className={classes.gridItem}>
+              <TableSummary />
+              <CardDetailsMap />
+            </Grid>
 
-        <Grid item className={classes.gridItem}>
-          <TableSummary />
-          <CardDetailsMap />
-        </Grid>
-
-        <Grid item sm={12}>
-          <Taps
-            tabLabels={[
-              "Well",
-              "Owners",
-              // "Property History",
-              // "Title",
-              // "Documents",
-            ]}
-            tabPanels={[
-              wellInfo(),
-              <M1nTable
-                parent="OwnersPerWell"
-                selectedWell={stateApp.selectedWell}
-              />,
-              // <h3>Coming Soon-</h3>,
-              // <h3>Coming Soon--</h3>,
-              // <h3>Coming Soon---</h3>,
-            ]}
-          />
-        </Grid>
-      </CardContent>
-    </Card>
+            <Grid item sm={12}>
+              <Taps
+                tabLabels={[
+                  "Well",
+                  "Owners",
+                  // "Property History",
+                  // "Title",
+                  // "Documents",
+                ]}
+                tabPanels={[
+                  wellInfo(),
+                  <M1nTable
+                    parent="OwnersPerWell"
+                    selectedWell={stateApp.selectedWell}
+                  />,
+                  // <h3>Coming Soon-</h3>,
+                  // <h3>Coming Soon--</h3>,
+                  // <h3>Coming Soon---</h3>,
+                ]}
+              />
+            </Grid>
+          </CardContent>
+        </Card>
+      </Grid>
+    </React.Fragment>
   ) : null;
 }
