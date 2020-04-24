@@ -48,14 +48,41 @@ const useStyles = makeStyles((theme) => ({
 export default function FilterDedaultListInterest(props) {
   const [filtersTypeArr, setFiltersTypeArr] = useState(null);
   const [filterNameType, setFilterNameType] = useState(null);
+  const [filtersTypeArrInterest, setFiltersTypeArrInterest] = useState(null);
+
   const classes = useStyles();
 
   useEffect(() => {
     if (props) {
       setFilterNameType(props.type);
-      setFiltersTypeArr(props.filters);
+      setFiltersTypeArr(props.filters[0]);
+      setFiltersTypeArrInterest(props.filters[1]);
     }
   }, [props]);
+
+  const removeNameFromTypeInterest = (string) => {
+    // console.log(string);
+    if (string.includes("interestTypeOverrideRoyalty")) {
+      return string.replace("interestTypeOverrideRoyalty", "Override Royalty ");
+    }
+    if (string.includes("interestTypeProductionPayment")) {
+      return string.replace(
+        "interestTypeProductionPayment",
+        "Production Payment"
+      );
+    }
+    if (string.includes("interestTypeWorkingInterest")) {
+      return string.replace("interestTypeWorkingInterest", "Working Interest");
+    }
+    if (string.includes("interestTypeRoyaltyInterest")) {
+      return string.replace("interestTypeRoyaltyInterest", "Royalty Interest");
+    }
+  };
+
+  const removeChipInterest = (e) => () => {
+    const { deleteChipInterest } = props;
+    deleteChipInterest(e);
+  };
 
   const removeNameFromType = (string) => {
     if (string.includes("ownershipTypeEducationalInstitutions")) {
@@ -101,6 +128,7 @@ export default function FilterDedaultListInterest(props) {
 
   return (
     <div>
+      {props.filters && props.filters.length > 0 ? (
       <Paper className={classes.paparMain} square>
         <List aria-label="mailbox folders">
           <div>
@@ -113,6 +141,82 @@ export default function FilterDedaultListInterest(props) {
               Clear All
             </Button>
             <ListItem className={classes.listItemContainer} button>
+            {filtersTypeArrInterest
+                  ? filtersTypeArrInterest.map((elm) =>
+                      elm[1][1] ? (
+                        <Chip
+                          key={elm[1]}
+                          className={classes.chipContainer}
+                          label={
+                            <section>
+                              <div className={classes.chip}>Interest Type</div>
+                              <div className={classes.chipRow}>
+                                {removeNameFromTypeInterest(elm[1][1][1])}
+                              </div>
+                            </section>
+                          }
+                          onDelete={removeChipInterest(elm[1][1][1])}
+                        />
+                      ) : null
+                    )
+                  : null}
+                {filtersTypeArrInterest
+                  ? filtersTypeArrInterest.map((elm) =>
+                      elm[1][2] ? (
+                        <Chip
+                          key={elm[2]}
+                          className={classes.chipContainer}
+                          label={
+                            <section>
+                              <div className={classes.chip}>Interest Type</div>
+                              <div className={classes.chipRow}>
+                                {removeNameFromTypeInterest(elm[1][2][1])}
+                              </div>
+                            </section>
+                          }
+                          onDelete={removeChipInterest(elm[1][2][1])}
+                        />
+                      ) : null
+                    )
+                  : null}
+                {filtersTypeArrInterest
+                  ? filtersTypeArrInterest.map((elm) =>
+                      elm[1][3] ? (
+                        <Chip
+                          key={elm[3]}
+                          className={classes.chipContainer}
+                          label={
+                            <section>
+                              <div className={classes.chip}>Interest Type</div>
+                              <div className={classes.chipRow}>
+                                {removeNameFromTypeInterest(elm[1][3][1])}
+                              </div>
+                            </section>
+                          }
+                          onDelete={removeChipInterest(elm[1][3][1])}
+                        />
+                      ) : null
+                    )
+                  : null}
+                {filtersTypeArrInterest
+                  ? filtersTypeArrInterest.map((elm) =>
+                      elm[1][4] ? (
+                        <Chip
+                          key={elm[4]}
+                          className={classes.chipContainer}
+                          label={
+                            <section>
+                              <div className={classes.chip}>Interest Type</div>
+                              <div className={classes.chipRow}>
+                                {removeNameFromTypeInterest(elm[1][4][1])}
+                              </div>
+                            </section>
+                          }
+                          onDelete={removeChipInterest(elm[1][4][1])}
+                        />
+                      ) : null
+                    )
+                  : null}
               {filtersTypeArr
                 ? filtersTypeArr.map((elm) =>
                     elm[0] === "filterNoOwnerCount" ? (
@@ -121,7 +225,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Type</div>
+                            <div className={classes.chip}>Owenr Type</div>
                             <div className={classes.chipRow}>No Owenrs</div>
                           </section>
                         }
@@ -180,7 +284,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Type</div>
+                            <div className={classes.chip}>Owenr Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(elm[1][1][1])}
                             </div>
@@ -199,7 +303,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Type</div>
+                            <div className={classes.chip}>Owenr Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(elm[1][2][1])}
                             </div>
@@ -218,7 +322,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Type</div>
+                            <div className={classes.chip}>Owenr Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(elm[1][3][1])}
                             </div>
@@ -237,7 +341,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Type</div>
+                            <div className={classes.chip}>Owenr Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(elm[1][4][1])}
                             </div>
@@ -256,7 +360,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Type</div>
+                            <div className={classes.chip}>Owenr Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(elm[1][5][1])}
                             </div>
@@ -275,7 +379,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Type</div>
+                            <div className={classes.chip}>Owenr Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(elm[1][6][1])}
                             </div>
@@ -294,7 +398,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Type</div>
+                            <div className={classes.chip}>Owenr Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(elm[1][7][1])}
                             </div>
@@ -313,7 +417,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Type</div>
+                            <div className={classes.chip}>Owenr Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(elm[1][8][1])}
                             </div>
@@ -329,6 +433,8 @@ export default function FilterDedaultListInterest(props) {
           </div>
         </List>
       </Paper>
+      )
+      : null}
     </div>
   );
 }

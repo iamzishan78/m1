@@ -84,6 +84,11 @@ export default function FilterDedaultListGeo(props) {
     const { deleteChip } = props;
     deleteChip(e, name);
   };
+
+  const removeChipSCSA = (e, name) => () => {
+    const { deleteChipGeoSCSA } = props;
+    deleteChipGeoSCSA(e, name);
+  };
  
   return (
     <div>
@@ -137,7 +142,7 @@ export default function FilterDedaultListGeo(props) {
                             </div>
                           </section>
                         }
-                        onDelete={removeChip(ele[1][1][2], ele[0])}
+                        onDelete={removeChipSCSA(ele[1][1][2], ele[0])}
                       />
                     ) : null
                   )
@@ -158,7 +163,7 @@ export default function FilterDedaultListGeo(props) {
                             </div>
                           </section>
                         }
-                        onDelete={(e) => console.log(elem)}
+                        onDelete={removeChipSCSA(elem[1][2][2], elem[0])}
                       />
                     ) : null
                   )
@@ -179,7 +184,7 @@ export default function FilterDedaultListGeo(props) {
                             </div>
                           </section>
                         }
-                        onDelete={(e) => console.log(elemt)}
+                        onDelete={removeChipSCSA(elemt[1][3][2], elemt[0])}
                       />
                     ) : null
                   )
@@ -196,7 +201,7 @@ export default function FilterDedaultListGeo(props) {
                             <div className={classes.chipRow}>{e[1][4][2]}</div>
                           </section>
                         }
-                        onDelete={(e) => console.log(e)}
+                        onDelete={removeChipSCSA(e[1][4][2], e[0])}
                       />
                     ) : null
                   )

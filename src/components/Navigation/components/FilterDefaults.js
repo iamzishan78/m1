@@ -17,7 +17,6 @@ import TextField from "@material-ui/core/TextField";
 import SearchIcon from "@material-ui/icons/Search";
 import FilterDefaultListWell from "./FilterDefaultListWell";
 import FilterDefaultListGeo from "./FilterDefaultListGeo";
-import FilterDefaultListInterest from "./FilterDefaultListInterest";
 import FilterDefaultListOwner from "./FilterDefaultListOwner";
 import FilterDefaultListProd from "./FilterDefaultListProd";
 import { makeStyles } from "@material-ui/core/styles";
@@ -105,6 +104,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const ButtonInTabs = ({ className, onClick, children }) => {
+  return <Button className={className} onClick={onClick} children={children} aria-label="save"
+  variant="contained"
+  disableElevation={true}
+  startIcon={<BookmarkBorderIcon />} />;
+};
+
 export default function FilterDedaults() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -113,7 +119,6 @@ export default function FilterDedaults() {
   const [filtersProd, setFiltersProd] = useState(null);
   const [filtersGeo, setFiltersGeo] = useState(null);
   const [filtersOwner, setFiltersOwner] = useState(null);
-  const [filtersInterest, setFiltersInterest] = useState(null);
   const [filtersWell, setFiltersWell] = useState(null);
   const [savedFilters, setSavedFilters] = useState(null);
   const [checkBoxActive, setCheckBoxActive] = useState(false);
@@ -230,8 +235,7 @@ export default function FilterDedaults() {
         });
       }
       setFiltersGeo([geoArr, geoArr1]);
-      setFiltersInterest(interestArr);
-      setFiltersOwner(ownerArr);
+      setFiltersOwner([ownerArr, interestArr]);
       setFiltersProd(prodArr);
       setFiltersWell(wellArr);
     }
@@ -305,8 +309,80 @@ export default function FilterDedaults() {
     }
   };
   console.log(stateNavCopy)
-  const deleteChipGeo = (item, name) => {
+
+  // State County Survey Abstract 
+  const deleteChipGeoSCSA = (item, name) => {
     console.log(item, name);
+    if (stateNav[name] && stateNav[name].length === 5) {
+      let copy;
+      let removeItemState; 
+      let removeItemCounty; 
+      let removeItemSurvey;
+      let removeItemAbstract;
+      let removeItemStateDisplay;
+      let itemRemove = stateNav[name];
+      copy = [...stateNav[name]];
+      if (copy.length === 2) {
+        itemRemove.splice(1, 1);
+      }
+      if (copy.length === 3) {
+        itemRemove.splice(2, 1);
+      }
+      if (copy.length === 4) {
+        itemRemove.splice(3, 1);
+        
+      }
+      if (copy.length === 5) {
+        itemRemove.splice(4, 1);
+      }
+      
+      if (copy[1].length > 0) {
+        removeItemState = item;
+        removeItemStateDisplay = null;
+      }
+      if (copy[2].length > 0) {
+        removeItemCounty = item;
+      }
+      if (copy[3].length > 0) {
+        removeItemSurvey = item;
+      }
+      if (copy[4].length > 0) {
+        removeItemAbstract = item;
+      }
+      
+      for (let index = 0; index < copy.length; index++) {
+        const element = copy[index];
+        if (element[2] === item) {
+          copy.splice(index, 1);
+        }
+      }
+      console.log(copy)
+      if (copy.length > 1) {
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          [name]: copy,
+          stateName: removeItemState,
+          displayStateName: removeItemStateDisplay,
+          countyName: removeItemCounty,
+          surveyName: removeItemSurvey, 
+          abstractName: removeItemAbstract,
+        }));
+      } else {
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          [name]: null,
+          countyName: null,
+          stateName: null,
+          displayStateName: null,
+          surveyName: null, 
+          abstractName: null,
+        }));
+      }
+    }
+  }
+
+  // Basin And PLay 
+  const deleteChipGeo = (item, name) => {
     if (stateNav[name] && stateNav[name].length === 5) {
       let copy;
       let type;
@@ -422,16 +498,14 @@ export default function FilterDedaults() {
         >
           <Tab value={0} label="Saved Search" />
           <Tab value={1} label="Current Search" />
-          <Button
+          <ButtonInTabs
+
             className={classes.save}
-            aria-label="save"
-            variant="contained"
-            disableElevation={true}
-            value={2}
-            startIcon={<BookmarkBorderIcon />}
+            
+            // {...buttonProps}
           >
             Save
-          </Button>
+          </ButtonInTabs>
         </Tabs>
       </Paper>
       {tabsValue === 0 ? (
@@ -511,17 +585,9 @@ export default function FilterDedaults() {
             {filtersGeo && filterTypeGeography ? (
               <FilterDefaultListGeo
                 deleteChip={deleteChipGeo}
+                deleteChipGeoSCSA={deleteChipGeoSCSA}
                 type={filterTypeGeography}
                 filters={filtersGeo}
-              />
-            ) : null}
-          </div>
-          <div>
-            {filtersInterest && filterTypeInterest ? (
-              <FilterDefaultListInterest
-                deleteChip={deleteChipInterest}
-                type={filterTypeInterest}
-                filters={filtersInterest}
               />
             ) : null}
           </div>
@@ -531,6 +597,7 @@ export default function FilterDedaults() {
                 deleteChip={deleteChipOwner}
                 type={filterTypeOwner}
                 filters={filtersOwner}
+                deleteChipInterest={deleteChipInterest}
               />
             ) : null}
           </div>

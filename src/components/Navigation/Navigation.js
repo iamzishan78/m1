@@ -1233,7 +1233,7 @@ export default function Navigation(props) {
         </List>
       </Drawer>
       {openFilterCard ? (
-        <div anchorEl={anchorEl} className={classes.tabPanelWrapper}>
+        <div ref={anchorEl} className={classes.tabPanelWrapper}>
           <TabPanel value={value} index={0} dir={theme.direction}>
             <ClickAwayListener onClickAway={(e) => handleClickAway(e)}>
               <Card className={classes.card}>
