@@ -468,21 +468,23 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   goHome: {
-    // "&:hover": {
-    //   // width: "15vw",
-    //   // backgroundColor: "rgba(239, 239, 239, 0.32)",
-    //   // opacity: 1,
-    //   // borderRadius:"6px",
-    //   // animation: "$mui-ripple-enter 2s ease-in-out",
-    // },
-  // },
-  // "@keyframes mui-ripple-enter": {
-  //   "0%": {
-  //     opacity: 0.1,
-  //   },
-  //   "100%": {
-  //     opacity: 0.9,
-  //   },
+    // alignItems: "center",
+    // justifyItems: "center"
+  },
+  homeButton: {
+    backgroundColor: theme.palette.secondary.main,
+    // width: "150px",
+    position: 'absolute',
+    top: '0px',
+    height: '35px',
+    right: "0px",
+    // marginLeft: "30%",
+    // marginTop: "1.5%",
+    marginRight: "15px",
+    marginTop: '15px',
+    color: theme.palette.secondary.contrastText,
+    alignItems: "center",
+    justifyItems: "center"
   },
 }));
 
@@ -1025,8 +1027,25 @@ export default function Navigation(props) {
             </IconButton>
           </Toolbar>
         ) : (
-          <div className={classes.goHome} onClick={sendHome}>
+          <div 
+            //className={classes.goHome} onClick={sendHome}
+            >
             <M1neralLogo2 />
+            <div 
+            //className={classes.homeButton}
+            >
+            <Button
+            variant="contained"
+            disableElevation
+            type="submit"
+            className={classes.homeButton}
+            color="primary"
+            // onClick={signIn}
+            // onKeyDown={e => onEnterKey(e)}
+              >
+              Help?
+            </Button>
+          </div>
           </div>
         )}
       </AppBar>
