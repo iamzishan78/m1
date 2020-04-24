@@ -58,8 +58,9 @@ const useStyles = makeStyles(theme => ({
     // maxWidth: "400px",
     // position: "absolute",
     // top: "calc((50vh - 64px) / 2)",
-    backgroundColor: theme.palette.secondary.dark,
+    // backgroundColor: theme.palette.secondary.dark,
     // border: `1px solid ${theme.palette.secondary.main}`,
+    backgroundColor: "#011133",
     display: "flex",
     flexDirection: "column",
     fontFamily: theme.typography.fontFamily

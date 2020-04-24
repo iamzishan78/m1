@@ -370,7 +370,6 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "15%",
     position: "absolute",
     width: drawerWidth - 1,
-
     bottom: "0vh",
     //minHeight: '100vh'
   },
@@ -469,21 +468,21 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   goHome: {
-    "&:hover": {
-      width: "15vw",
-      // backgroundColor: "rgba(239, 239, 239, 0.32)",
-      opacity: 1,
-      // borderRadius:"6px",
-      animation: "$mui-ripple-enter 2s ease-in-out",
-    },
-  },
-  "@keyframes mui-ripple-enter": {
-    "0%": {
-      opacity: 0.1,
-    },
-    "100%": {
-      opacity: 0.9,
-    },
+    // "&:hover": {
+    //   // width: "15vw",
+    //   // backgroundColor: "rgba(239, 239, 239, 0.32)",
+    //   // opacity: 1,
+    //   // borderRadius:"6px",
+    //   // animation: "$mui-ripple-enter 2s ease-in-out",
+    // },
+  // },
+  // "@keyframes mui-ripple-enter": {
+  //   "0%": {
+  //     opacity: 0.1,
+  //   },
+  //   "100%": {
+  //     opacity: 0.9,
+  //   },
   },
 }));
 
