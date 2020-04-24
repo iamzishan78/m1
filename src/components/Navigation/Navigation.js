@@ -99,7 +99,6 @@ const useStyles = makeStyles((theme) => ({
   },
   appBar: {
     height: "64px",
-    //height: '5.5',
     background: "rgba(1, 17, 51, 1.0)",
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(["width", "margin"], {
@@ -820,50 +819,20 @@ export default function Navigation(props) {
               </div>
             ) : null}
 
+
             { matchTrack ? ( 
             <CardHeader
               className={classes.trackHeader}
               title="Track"
             />
             ): null}
-            {/*       <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
-            </div>
-            <div>
-            <Input
-              onChange={handleSearchInputChange}
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput
-              }}
-              inputProps={{ "aria-label": "search" }}
 
-            />
-            </div>
-          </div>
- */}
 
             <div className={classes.search}>
               <div className={classes.searchInput} id="searchBar" />
             </div>
 
-            {/*             <FormControl className={classes.search}>
-              <div className={classes.searchIcon}>
-                <SearchIcon />
-              </div>
-              <Input
-                onChange={handleSearchInputChange}
-                placeholder="Search…"
-                classes={{
-                  root: classes.inputRoot,
-                  input: classes.inputInput
-                }}
-                inputProps={{ "aria-label": "search" }}
-              />
-            </FormControl>
- */}
+
             <div className={classes.grow1} />
             {matchTrack ? (
               <div ref={anchorEl} className={classes.filterTabs}>

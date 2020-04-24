@@ -17,9 +17,9 @@ import { validateData } from "./loginHelpers";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    padding: "0",
-    width: "100%",
-    height: "100%",
+    // padding: "0",
+    // width: "100%",
+    // height: "100%",
   },
   select: {
     color:'white'
@@ -37,49 +37,46 @@ const useStyles = makeStyles(theme => ({
     
   },
   notchedOutline: {
-    color: "green"
+    // color: "green"
   },
-  appBar: {
-    height: "64px",
-    background: theme.palette.primary.main,
-    display: "flex",
-    alignItems: "center"
-  },
+
   content: {
-    height: "100vh",
-    width: "100vw"
+    // height: "100vh",
+    // width: "100vw"
   },
   cardTitle: {
-    maxWidth: "400px",
-    color: theme.palette.secondary.contrastText,
-    display: "flex",
-    justifyContent: "center",
-    marginTop:"20px",
+    // maxWidth: "400px",
+    // color: theme.palette.secondary.contrastText,
+    // display: "flex",
+    // justifyContent: "center",
+    // marginTop:"20px",
   },
   card: {
-    width: "35vw",
-    maxWidth: "400px",
-    position: "absolute",
-    top: "calc(50vh - 50vh / 2)",
+    width: "400px",
+    height: "400px",
+    //paddingLeft: '40px',
+    // maxWidth: "400px",
+    // position: "absolute",
+    // top: "calc((50vh - 64px) / 2)",
     backgroundColor: theme.palette.secondary.dark,
-    border: `1px solid ${theme.palette.secondary.main}`,
+    // border: `1px solid ${theme.palette.secondary.main}`,
     display: "flex",
     flexDirection: "column",
     fontFamily: theme.typography.fontFamily
   },
   cardHeader: {
-    color: "white",
-    paddingTop: "4%",
+    // color: "white",
+    // paddingTop: "4%",
     display: "flex",
     flexDirection: "column",
     alignItems: "center"
   },
   cardInputs: {
-    // height: "60%",
+    height: "60%",
     padding: "2%",
     paddingTop: "4%",
-    color: "white",
-    justifyItems: "center"
+    //color: "white",
+    // justifyItems: "center"
 
   },
   inputs: {
@@ -91,23 +88,23 @@ const useStyles = makeStyles(theme => ({
 
   },
   cardFooter: {
-    paddingBottom: "4%",
-    paddingTop: "4%",
-    color: "white",
+    // paddingBottom: "4%",
+    // paddingTop: "4%",
+    // color: "white",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     fontSize: ".75rem"
   },
   secondaryInputs: {
-    paddingTop: "1.5rem",
-    fontSize: ".75rem",
+    // paddingTop: "1.5rem",
+    // fontSize: ".75rem",
     textAlign: "center"
   },
   button: {
     backgroundColor: theme.palette.secondary.main,
-    width: "40%",
-    marginLeft: "30%",
+    width: "150px",
+    // marginLeft: "30%",
     marginTop: "1.5%",
     color: theme.palette.secondary.contrastText,
     alignItems: "center",
@@ -120,15 +117,15 @@ const useStyles = makeStyles(theme => ({
   },
   passwordLink: {
     textDecoration: "none",
-    color: "#FFFF",
+    //color: "#FFFF",
     cursor: "pointer",
     "&:hover" : {
       color: theme.palette.secondary.main,
     }
   },
   loader: {
-    marginLeft: "45%",
-  }
+    // marginLeft: "45%",
+  },
  
 }));
 
@@ -248,34 +245,42 @@ const SignInCard = props => {
 
 
   return (
-    <React.Fragment>
-      <Typography variant="h4" className={classes.cardTitle}>
+    // <React.Fragment>
+    <div>
+      {/* <Typography variant="h4" className={classes.cardTitle}>
         Welcome Back!
-      </Typography>
-      <Card color="secondary" style={{backgroundColor: "rgba(38, 52, 81, 1)"}}
-       className={classes.card}>
+      </Typography> */}
+
+      <Card 
+        // color="secondary" 
+        // style={{backgroundColor: "rgba(38, 52, 81, 1)"}}
+        className={classes.card}>
+
         <div className={classes.cardHeader}>
-          <M1neralIconSvg /> 
-          <div style={{ marginTop: "5px", fontSize: "1.7rem" }}>Sign In</div>
+          {/* <M1neralIconSvg />  */}
+          <div 
+            style={{ marginTop: "5px", fontSize: "1.7rem" }}
+            >
+              Sign In
+            </div>
         </div>
+
         <div className={classes.cardInputs}>
         <form className={classes.form} onSubmit={signIn} onKeyDown={e => onEnterKey(e)}>
 
 
         <FormControl className={classes.formControl}>
-        <Select className={classes.select}  
-          labelId="tenant-label"
-          id="tenant" variant="outlined"
-          value={tenant}
-          onChange={handleTenantChange}
-        >
-          <MenuItem value="c1">Tenant 1</MenuItem>
-          <MenuItem value="c2">Tenant 2</MenuItem>
-          <MenuItem value="M1neral">M1neral</MenuItem>
-          {/* <MenuItem value="m1dev">M1neral Dev</MenuItem>
-          <MenuItem value="m1auth">M1neral Auth</MenuItem> */}
-        </Select>
-      </FormControl>
+          <Select className={classes.select}  
+            labelId="tenant-label"
+            id="tenant" variant="outlined"
+            value={tenant}
+            onChange={handleTenantChange}
+          >
+            <MenuItem value="c1">Tenant 1</MenuItem>
+            <MenuItem value="c2">Tenant 2</MenuItem>
+            <MenuItem value="M1neral">M1neral</MenuItem>
+          </Select>
+        </FormControl>
 
 
           <TextField
@@ -332,7 +337,11 @@ const SignInCard = props => {
           </div>
         </div>
       </Card>
-    </React.Fragment>
+
+
+
+    </div>
+    // </React.Fragment>
   );
 };
 export default SignInCard;
