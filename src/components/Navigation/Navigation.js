@@ -541,8 +541,10 @@ const M1neralLogoNavNoAuth = (props) => (
   </svg>
 );
 const M1neralLogo2 = styled(M1neralLogoNavNoAuth)`
-  width: 190px;
-  padding: 20px;
+  width: 130px;
+  padding-top: 20px;
+  padding-left: 15px;
+  // padding: 20px;
 `;
 
 const TabPanel = (props) => {
