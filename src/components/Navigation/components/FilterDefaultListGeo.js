@@ -60,7 +60,6 @@ export default function FilterDedaultListGeo(props) {
   }, [props]);
 
   const removeNameFromType = (string) => {
-    console.log(string);
     if (string.includes("basin")) {
       return string.replace("basin", "Basin");
     }
@@ -80,9 +79,15 @@ export default function FilterDedaultListGeo(props) {
       return string.replace("abstract", "Abstract");
     }
   };
-  console.log(filtersTypeArr);
+  
+  const removeChip = (e, name) => () => {
+    const { deleteChip } = props;
+    deleteChip(e, name);
+  };
+ 
   return (
     <div>
+      {props.filters && props.filters.length > 0 ? (
       <Paper className={classes.paparMain} square>
         <List aria-label="mailbox folders">
           <div>
@@ -110,7 +115,7 @@ export default function FilterDedaultListGeo(props) {
                                 <div className={classes.chipRow}>{el}</div>
                               </section>
                             }
-                            onDelete={(e) => console.log("e")}
+                            onDelete={removeChip(el,elm[0])}
                           />
                         ))
                       : null
@@ -132,7 +137,7 @@ export default function FilterDedaultListGeo(props) {
                             </div>
                           </section>
                         }
-                        onDelete={(e) => console.log(ele)}
+                        onDelete={removeChip(ele[1][1][2], ele[0])}
                       />
                     ) : null
                   )
@@ -187,7 +192,7 @@ export default function FilterDedaultListGeo(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>{e[1][4][1][1]}</div>
+                            <div className={classes.chip}>{removeNameFromType(e[1][4][1][1])}</div>
                             <div className={classes.chipRow}>{e[1][4][2]}</div>
                           </section>
                         }
@@ -201,6 +206,8 @@ export default function FilterDedaultListGeo(props) {
           </div>
         </List>
       </Paper>
+      )
+      : null}
     </div>
   );
 }

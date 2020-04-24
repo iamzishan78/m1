@@ -58,7 +58,7 @@ export default function FilterDedaultListInterest(props) {
   }, [props]);
 
   const removeNameFromType = (string) => {
-    console.log(string);
+    // console.log(string);
     if (string.includes("interestTypeOverrideRoyalty")) {
       return string.replace("interestTypeOverrideRoyalty", "Override Royalty ");
     }
@@ -76,101 +76,108 @@ export default function FilterDedaultListInterest(props) {
     }
   };
 
+  const removeChip = (e) => () => {
+    const { deleteChip } = props;
+    deleteChip(e);
+  };
+
   return (
     <div>
-      <Paper className={classes.paparMain} square>
-        <List aria-label="mailbox folders">
-          <div>
-            <div className={classes.listLabel}>{filterNameType}</div>
-            <Button
-              className={classes.deleteButton}
-              endIcon={<HighlightOffIcon />}
-              aria-label="delete"
-            >
-              Clear All
-            </Button>
-            <ListItem className={classes.listItemContainer} button>
-              {filtersTypeArr
-                ? filtersTypeArr.map((elm) =>
-                    elm[1][1] ? (
-                      <Chip
-                        key={elm[1]}
-                        className={classes.chipContainer}
-                        label={
-                          <section>
-                            <div className={classes.chip}>Type</div>
-                            <div className={classes.chipRow}>
-                              {removeNameFromType(elm[1][1][1])}
-                            </div>
-                          </section>
-                        }
-                        onDelete={(e) => console.log("e")}
-                      />
-                    ) : null
-                  )
-                : null}
-              {filtersTypeArr
-                ? filtersTypeArr.map((elm) =>
-                    elm[1][2] ? (
-                      <Chip
-                        key={elm[2]}
-                        className={classes.chipContainer}
-                        label={
-                          <section>
-                            <div className={classes.chip}>Type</div>
-                            <div className={classes.chipRow}>
-                              {removeNameFromType(elm[1][2][1])}
-                            </div>
-                          </section>
-                        }
-                        onDelete={(e) => console.log("e")}
-                      />
-                    ) : null
-                  )
-                : null}
-              {filtersTypeArr
-                ? filtersTypeArr.map((elm) =>
-                    elm[1][3] ? (
-                      <Chip
-                        key={elm[3]}
-                        className={classes.chipContainer}
-                        label={
-                          <section>
-                            <div className={classes.chip}>Type</div>
-                            <div className={classes.chipRow}>
-                              {removeNameFromType(elm[1][3][1])}
-                            </div>
-                          </section>
-                        }
-                        onDelete={(e) => console.log("e")}
-                      />
-                    ) : null
-                  )
-                : null}
-              {filtersTypeArr
-                ? filtersTypeArr.map((elm) =>
-                    elm[1][4] ? (
-                      <Chip
-                        key={elm[4]}
-                        className={classes.chipContainer}
-                        label={
-                          <section>
-                            <div className={classes.chip}>Type</div>
-                            <div className={classes.chipRow}>
-                              {removeNameFromType(elm[1][4][1])}
-                            </div>
-                          </section>
-                        }
-                        onDelete={(e) => console.log("e")}
-                      />
-                    ) : null
-                  )
-                : null}
-            </ListItem>
-            <Divider />
-          </div>
-        </List>
-      </Paper>
+      {filtersTypeArr && filtersTypeArr.length > 0 ? (
+        <Paper className={classes.paparMain} square>
+          <List aria-label="mailbox folders">
+            <div>
+              <div className={classes.listLabel}>{filterNameType}</div>
+              <Button
+                className={classes.deleteButton}
+                endIcon={<HighlightOffIcon />}
+                aria-label="delete"
+              >
+                Clear All
+              </Button>
+              <ListItem className={classes.listItemContainer} button>
+                {filtersTypeArr
+                  ? filtersTypeArr.map((elm) =>
+                      elm[1][1] ? (
+                        <Chip
+                          key={elm[1]}
+                          className={classes.chipContainer}
+                          label={
+                            <section>
+                              <div className={classes.chip}>Type</div>
+                              <div className={classes.chipRow}>
+                                {removeNameFromType(elm[1][1][1])}
+                              </div>
+                            </section>
+                          }
+                          onDelete={removeChip(elm[1][1][1])}
+                        />
+                      ) : null
+                    )
+                  : null}
+                {filtersTypeArr
+                  ? filtersTypeArr.map((elm) =>
+                      elm[1][2] ? (
+                        <Chip
+                          key={elm[2]}
+                          className={classes.chipContainer}
+                          label={
+                            <section>
+                              <div className={classes.chip}>Type</div>
+                              <div className={classes.chipRow}>
+                                {removeNameFromType(elm[1][2][1])}
+                              </div>
+                            </section>
+                          }
+                          onDelete={removeChip(elm[1][2][1])}
+                        />
+                      ) : null
+                    )
+                  : null}
+                {filtersTypeArr
+                  ? filtersTypeArr.map((elm) =>
+                      elm[1][3] ? (
+                        <Chip
+                          key={elm[3]}
+                          className={classes.chipContainer}
+                          label={
+                            <section>
+                              <div className={classes.chip}>Type</div>
+                              <div className={classes.chipRow}>
+                                {removeNameFromType(elm[1][3][1])}
+                              </div>
+                            </section>
+                          }
+                          onDelete={removeChip(elm[1][3][1])}
+                        />
+                      ) : null
+                    )
+                  : null}
+                {filtersTypeArr
+                  ? filtersTypeArr.map((elm) =>
+                      elm[1][4] ? (
+                        <Chip
+                          key={elm[4]}
+                          className={classes.chipContainer}
+                          label={
+                            <section>
+                              <div className={classes.chip}>Type</div>
+                              <div className={classes.chipRow}>
+                                {removeNameFromType(elm[1][4][1])}
+                              </div>
+                            </section>
+                          }
+                          onDelete={removeChip(elm[1][4][1])}
+                        />
+                      ) : null
+                    )
+                  : null}
+              </ListItem>
+              <Divider />
+            </div>
+          </List>
+        </Paper>
+      ) : null}
     </div>
   );
 }
