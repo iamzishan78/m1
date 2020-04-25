@@ -1,7 +1,14 @@
 import React, { useState, useEffect,useContext } from "react";
 import { AppContext } from "../../AppContext";
 import { Link } from "react-router-dom";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import {
+  fade,
+  ThemeProvider,
+  withStyles,
+  makeStyles,
+  createMuiTheme,
+} from '@material-ui/core/styles';
+import InputBase from '@material-ui/core/InputBase';
 import { Card, TextField, Button, Typography } from "@material-ui/core";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ForgotPassword from './ForgotPassword';
@@ -25,13 +32,13 @@ const useStyles = makeStyles(theme => ({
     color:'white'
   },
   form: {
-    display:'flex',
-    flexDirection:'column',
-    justifyContent:'center'
+    // display:'flex',
+    // flexDirection:'column',
+    // justifyContent:'center'
   },
   formControl: {
     display:'flex',
-    justifyContent:'center',
+    // justifyContent:'center',
     paddingLeft:'25px',
     paddingRight:'25px'
     
@@ -53,7 +60,7 @@ const useStyles = makeStyles(theme => ({
   },
   card: {
     width: "400px",
-    height: "400px",
+    height: "475px",
     //paddingLeft: '40px',
     // maxWidth: "400px",
     // position: "absolute",
@@ -61,21 +68,21 @@ const useStyles = makeStyles(theme => ({
     // backgroundColor: theme.palette.secondary.dark,
     // border: `1px solid ${theme.palette.secondary.main}`,
     backgroundColor: "#011133",
-    display: "flex",
-    flexDirection: "column",
+    // display: "flex",
+    // flexDirection: "column",
     fontFamily: theme.typography.fontFamily
   },
   cardHeader: {
     // color: "white",
     // paddingTop: "4%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
+    // display: "flex",
+    // flexDirection: "column",
+    // alignItems: "center"
   },
   cardInputs: {
-    height: "60%",
-    padding: "2%",
-    paddingTop: "4%",
+    // height: "60%",
+    // padding: "2%",
+    // paddingTop: "4%",
     //color: "white",
     // justifyItems: "center"
 
@@ -84,32 +91,39 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.paper,
     width: "80%",
     margin: "2% 10%",
-    justifyItems: "center"
+    // justifyItems: "center"
   
 
   },
   cardFooter: {
-    // paddingBottom: "4%",
-    // paddingTop: "4%",
-    // color: "white",
+    paddingBottom: "4%",
+    paddingTop: "4%",
+    color: "white",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     fontSize: ".75rem"
   },
   secondaryInputs: {
-    // paddingTop: "1.5rem",
-    // fontSize: ".75rem",
+    paddingTop: "1.5rem",
+    fontSize: ".75rem",
     textAlign: "center"
+  },
+  margin: {
+    // margin: theme.spacing(1),
+    // float: 'left'
   },
   button: {
     backgroundColor: theme.palette.secondary.main,
-    width: "150px",
+    width: "125px",
+    height: "50px",
     // marginLeft: "30%",
-    marginTop: "1.5%",
+    marginTop: "30px",
     color: theme.palette.secondary.contrastText,
-    alignItems: "center",
-    justifyItems: "center"
+    // alignItems: "center",
+    // justifyItems: "center"
+    float: 'left',
+    marginLeft: '63px',
   },
   signupLink: {
     textDecoration: "none",
@@ -129,6 +143,53 @@ const useStyles = makeStyles(theme => ({
   },
  
 }));
+
+
+
+const BootstrapInput = withStyles((theme) => ({
+  root: {
+    'label + &': {
+      marginTop: theme.spacing(3),
+    },
+  },
+  input: {
+    borderRadius: 4,
+    // position: 'relative',
+    backgroundColor: theme.palette.common.white,
+    border: '1px solid #ced4da',
+    fontSize: 16,
+    width: '250px',
+    padding: '10px 12px',
+    marginLeft: '0',
+    marginTop: '10px',
+    transition: theme.transitions.create(['border-color', 'box-shadow']),
+    // Use the system font instead of the default Roboto font.
+    fontFamily: [
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
+
+    '&:hover': {
+      backgroundColor: '#fff',
+    },
+
+    '&$focused': {
+      backgroundColor: '#fff',
+      boxShadow: `${fade(theme.palette.primary.main, 0.25)} 0 0 0 2px`,
+      borderColor: theme.palette.primary.main,
+    },
+  },
+}))(InputBase);
+
+
 
 
 const M1neralIconSvg = props => {
@@ -246,28 +307,29 @@ const SignInCard = props => {
 
 
   return (
-    // <React.Fragment>
     <div>
-      {/* <Typography variant="h4" className={classes.cardTitle}>
-        Welcome Back!
-      </Typography> */}
-
-      <Card 
-        // color="secondary" 
-        // style={{backgroundColor: "rgba(38, 52, 81, 1)"}}
-        className={classes.card}>
-
+      <Card className={classes.card}>
         <div className={classes.cardHeader}>
-          {/* <M1neralIconSvg />  */}
           <div 
-            style={{ marginTop: "5px", fontSize: "1.7rem" }}
+            style={{ 
+              marginTop: "55px", 
+              fontSize: '24px',
+              fontWeight: '900',
+              fontFamily: "Tahoma, Geneva, sans-serif",
+              textAlign: 'left',
+              paddingLeft: '65px',
+              color: 'white' }}
             >
-              Sign In
+              Sign in
             </div>
         </div>
 
         <div className={classes.cardInputs}>
-        <form className={classes.form} onSubmit={signIn} onKeyDown={e => onEnterKey(e)}>
+
+          
+        {/* <form 
+          // className={classes.form} 
+          onSubmit={signIn} onKeyDown={e => onEnterKey(e)}> */}
 
 
         <FormControl className={classes.formControl}>
@@ -283,49 +345,74 @@ const SignInCard = props => {
           </Select>
         </FormControl>
 
+        <div 
+            style={{ 
+              marginTop: "15px", 
+              fontSize: '14px',
+              fontWeight: '900',
+              fontFamily: "Tahoma, Geneva, sans-serif",
+              color: 'white',
+              textAlign: 'left',
+              paddingLeft: '65px' }}
+            >
+            EMAIL
+        </div>
 
-          <TextField
-            type="email"
-            label="Email"
-            variant="filled"
-            error={emailFlags.error}
-            placeholder={emailFlags.placeholder}
-            autoFocus={emailFlags.autoFocus}
-            autoComplete= "true"
-            
-            onKeyDown={e => onEnterKey(e)}
-            className={classes.inputs}
-            onChange={e => setUserEmail(e.target.value)}
-            onBlur={() => validateData("email", userEmail, setEmailFlags)}
-            value={userEmail}
-        
-          
-          
-          />
+          {/* <FormControl className={classes.margin}> */}
+            <BootstrapInput 
+                type="email"
+                // label="Email"
+                variant="outlined"
+                error={emailFlags.error}
+                placeholder={emailFlags.placeholder}
+                autoFocus={emailFlags.autoFocus}
+                autoComplete= "true"
+                onKeyDown={e => onEnterKey(e)}
+                // className={classes.inputs}
+                onChange={e => setUserEmail(e.target.value)}
+                onBlur={() => validateData("email", userEmail, setEmailFlags)}
+                value={userEmail}
+                />
+          {/* </FormControl> */}
 
-          <TextField
-            type="password"
-            label="Password"
-            variant="filled"
-            error={passwordFlags.error}
-            placeholder={passwordFlags.placeholder}
-            autoFocus={passwordFlags.autoFocus}
-            className={classes.inputs}
-            onChange={e => setUserPassword(e.target.value)}
-            onKeyDown={e => onEnterKey(e)}
-            onBlur={() =>
-              validateData("password", userPassword, setPasswordFlags)
-            }
-            //autoComplete="current-password"
-            value={userPassword}
-            autoComplete= "true"
-             
-            
-          />
-          {renderButtonAndLoader}
-          </form>
+
+          <div 
+            style={{ 
+              marginTop: "30px", 
+              fontSize: '14px',
+              fontWeight: '900',
+              fontFamily: "Tahoma, Geneva, sans-serif",
+              color: 'white',
+              textAlign: 'left',
+              paddingLeft: '65px' }}            
+            >
+            PASSWORD
+          </div>
+
+          {/* <FormControl className={classes.margin}> */}
+            <BootstrapInput 
+                defaultValue="" 
+                type="password"
+                // label="Password"
+                variant="filled"
+                error={passwordFlags.error}
+                placeholder={passwordFlags.placeholder}
+                autoFocus={passwordFlags.autoFocus}
+                // className={classes.inputs}
+                onChange={e => setUserPassword(e.target.value)}
+                onKeyDown={e => onEnterKey(e)}
+                onBlur={() =>
+                  validateData("password", userPassword, setPasswordFlags)
+                }
+                //autoComplete="current-password"
+                value={userPassword}
+                autoComplete= "true"
+                />
+          {/* </FormControl> */}
+
+        <div>
+        {renderButtonAndLoader}
           <div className={classes.secondaryInputs}>
-            {/* <div>Remember Me</div> */}
             <Link to="/forgotpassword" className={classes.passwordLink}>Forgot Password?</Link>
           </div>
         </div>
@@ -337,12 +424,12 @@ const SignInCard = props => {
             </Link>
           </div>
         </div>
+        </div>
+
+
       </Card>
-
-
-
     </div>
-    // </React.Fragment>
+
   );
 };
 export default SignInCard;

@@ -14,6 +14,8 @@ import NewUserCard from "./NewUserCard";
 
 const localStyles = makeStyles(theme => ({
   myRoot: {
+    justifyContent: 'center'
+
     // width: "100vw",
     // height: "100%",
     
@@ -61,7 +63,7 @@ const localStyles = makeStyles(theme => ({
   },
   signInCard: {
     width: 250,
-    height: 350,
+    height: 400,
     //minWidth: 445,
     //padding: 20,
     //backgroundColor: theme.palette.secondary.dark,
@@ -385,7 +387,10 @@ const Login = props => {
             </div>
           </div>
           <div className={localClass.cardInputs}>
-            <Typography style={{ textAlign: "center", paddingTop: "5%" }}>
+            <Typography style={{ 
+                  textAlign: "center", 
+                  padding: "11%", 
+                  }}>
               For owners and sellers of royalties or minerals looking to learn
               more about what they own
             </Typography>
@@ -393,13 +398,13 @@ const Login = props => {
           <Button
             variant="contained"
             disableElevation
-            // className={localClass.buttonDisable}
             style={{
               color: "white",
-              backgroundColor: "rgb(98, 93, 113)",
-              marginTop: 20,
-              marginBottom: 15,
-              width: "15vw"
+              backgroundColor: "rgba(23, 170, 221, 1)",
+              width: "150px",
+              display: 'flex',
+              alignItems: 'center',
+              
             }}
             disabled
           >
@@ -425,7 +430,7 @@ const Login = props => {
           <div className={localClass.cardInputs}>
             <Typography style={{ 
               textAlign: "center", 
-              paddingTop: "5%" }}>
+              padding: "10%" }}>
               For buyers seeking potential deals and to streamline acquisition
               workflows
             </Typography>
@@ -435,10 +440,10 @@ const Login = props => {
             disableElevation
             style={{
               color: "white",
-              marginTop: 20,
               backgroundColor: "rgba(23, 170, 221, 1)",
-              marginBottom: 15,
-              width: "15vw"
+              width: "150px",
+              display: 'flex',
+              alignItems: 'center',
             }}
             onClick={showForm}
           >
@@ -462,20 +467,22 @@ const Login = props => {
             </div>
           </div>
           <div className={localClass.cardInputs}>
-            <Typography style={{ textAlign: "center", paddingTop: "5%" }}>
+            <Typography style={{ textAlign: "center", padding: "10%" }}>
               For buyers seeking potential deals and to streamline acquisition
               workflows
             </Typography>
           </div>
+          
           <Button
             variant="contained"
             disableElevation
             style={{
               color: "white",
-              marginTop: 20,
               backgroundColor: "rgba(23, 170, 221, 1)",
-              marginBottom: 15,
-              width: "15vw"
+              width: "150px",
+              display: 'flex',
+              alignItems: 'center',
+
             }}
             onClick={showForm}
           >
