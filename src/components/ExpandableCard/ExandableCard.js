@@ -58,6 +58,9 @@ export default function ExpandableCard(props) {
       borderWidth: "thin",
       borderColor: "#011133",
       //display: 'block'
+      "& .MuiCardHeader-action": {
+        alignSelf: "auto",
+      },
     },
     title: {
       fontFamily: "Poppins",
@@ -65,9 +68,10 @@ export default function ExpandableCard(props) {
       fontSize: "15px",
     },
     headerIcons: {
-      paddingTop: "10px",
+      // paddingTop: "10px",
       "& .MuiBadge-anchorOriginTopRightRectangle": {
         right: "10px",
+        top: "5px",
       },
     },
     subheader: {
@@ -82,7 +86,7 @@ export default function ExpandableCard(props) {
       height: height,
       overflowY: "auto",
       height: stateExpandableCard.expanded
-        ? "calc(100% - 82px)"
+        ? "calc(100% - 72px)"
         : "fit-content",
     },
     icons: {

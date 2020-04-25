@@ -1269,8 +1269,8 @@ export default function Map() {
                   cardLeft={20}
                   cardTop={70}
                   zIndex={99}
-                  cardWidth="360px"
-                  cardHeight="333px"
+                  cardWidth="350px"
+                  cardHeight="350px"
                   cardWidthExpanded="95vw"
                   cardHeightExpanded="90vh"
                   targetSourceId={stateApp.selectedWell.id}
