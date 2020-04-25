@@ -96,8 +96,8 @@ const useStyles = makeStyles(theme => ({
 
   },
   cardFooter: {
-    paddingBottom: "4%",
-    paddingTop: "4%",
+    paddingBottom: "0px",
+    paddingTop: "45px",
     color: "white",
     display: "flex",
     flexDirection: "column",
@@ -105,9 +105,10 @@ const useStyles = makeStyles(theme => ({
     fontSize: ".75rem"
   },
   secondaryInputs: {
-    paddingTop: "1.5rem",
+    paddingTop: "5px",
     fontSize: ".75rem",
-    textAlign: "center"
+    textAlign: "left",
+    marginLeft: '65px',
   },
   margin: {
     // margin: theme.spacing(1),
@@ -118,12 +119,12 @@ const useStyles = makeStyles(theme => ({
     width: "125px",
     height: "50px",
     // marginLeft: "30%",
-    marginTop: "30px",
+    marginTop: "35px",
     color: theme.palette.secondary.contrastText,
     // alignItems: "center",
     // justifyItems: "center"
     float: 'left',
-    marginLeft: '63px',
+    marginLeft: '60px',
   },
   signupLink: {
     textDecoration: "none",
@@ -159,7 +160,7 @@ const BootstrapInput = withStyles((theme) => ({
     border: '1px solid #ced4da',
     fontSize: 16,
     width: '250px',
-    padding: '10px 12px',
+    padding: '10px',
     marginLeft: '0',
     marginTop: '10px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
@@ -409,12 +410,12 @@ const SignInCard = props => {
                 autoComplete= "true"
                 />
           {/* </FormControl> */}
-
-        <div>
-        {renderButtonAndLoader}
           <div className={classes.secondaryInputs}>
             <Link to="/forgotpassword" className={classes.passwordLink}>Forgot Password?</Link>
           </div>
+
+        {renderButtonAndLoader}
+
         </div>
         <div className={classes.cardFooter}>
           <div>Don't have an account?</div>
@@ -423,7 +424,6 @@ const SignInCard = props => {
               Sign Up Here
             </Link>
           </div>
-        </div>
         </div>
 
 
