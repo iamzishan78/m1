@@ -17,35 +17,18 @@ const localStyles = makeStyles(theme => ({
     justifyContent: 'center',
     display: "flex",
     flexDirection: "column",
-    // width: "100vw",
-    // height: "100%",
-    
     display: "flex!important",
     justifyContent: "center",
-
-    // backgroundSize: "cover",
-    // backgroundImage: `url(${BackgroundURI})`,
-    // backgroundRepeat: "no-repeat",
-    // backgroundPosition: "center",
-    // backgroundColor: "#F8F8F8"
-
-    // "&::-webkit-scrollbar": {
-    //   width: "0 !important",
-    // }
   },
   footer: {
     backgroundSize: "cover",
-    // backgroundImage: `url(${BackgroundURI})`,
-    // backgroundRepeat: "no-repeat",
     backgroundPosition: "center",
     backgroundColor: "#011133",
     display: "flex",
     flexDirection: "column",
-    //justifyContent: 'center',
     alignItems: 'center',
   },
   headerWords: {
-    //maxWidth: "400px",
     color: "#333",
     display: "flex",
     justifyContent: "center",
@@ -362,7 +345,7 @@ const Login = props => {
     <div className={localClass.displaNone}></div>
   );
 
-  
+
   // const showForm = () => {
   //   if (!showSignUp) {
   //     setShowSignUp(true);

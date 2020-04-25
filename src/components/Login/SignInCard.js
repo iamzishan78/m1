@@ -333,7 +333,7 @@ const SignInCard = props => {
           onSubmit={signIn} onKeyDown={e => onEnterKey(e)}> */}
 
 
-        <FormControl className={classes.formControl}>
+        {/* <FormControl className={classes.formControl}>
           <Select className={classes.select}  
             labelId="tenant-label"
             id="tenant" variant="outlined"
@@ -344,7 +344,7 @@ const SignInCard = props => {
             <MenuItem value="c2">Tenant 2</MenuItem>
             <MenuItem value="M1neral">M1neral</MenuItem>
           </Select>
-        </FormControl>
+        </FormControl> */}
 
         <div 
             style={{ 
@@ -359,7 +359,6 @@ const SignInCard = props => {
             EMAIL
         </div>
 
-          {/* <FormControl className={classes.margin}> */}
             <BootstrapInput 
                 type="email"
                 // label="Email"
@@ -374,7 +373,6 @@ const SignInCard = props => {
                 onBlur={() => validateData("email", userEmail, setEmailFlags)}
                 value={userEmail}
                 />
-          {/* </FormControl> */}
 
 
           <div 

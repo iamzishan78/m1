@@ -2,14 +2,18 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import EmailSuccess from "./EmailSuccess";
-
-// STYLES
-import { useStyles } from "./styles";
-import { makeStyles } from "@material-ui/core";
+import {
+  fade,
+  ThemeProvider,
+  withStyles,
+  makeStyles,
+  createMuiTheme,
+} from '@material-ui/core/styles';
+import InputBase from '@material-ui/core/InputBase';
 import { Card, Button } from "@material-ui/core";
 // COMPONENTS
 
-const localStyles = makeStyles(theme => ({
+const useStyles = makeStyles(theme => ({
   conatiner: {
     paddingTop: 20,
     margin: "0 auto",
@@ -18,8 +22,9 @@ const localStyles = makeStyles(theme => ({
     justifyContent: "center"
   },
   card: {
-    maxWidth: 450,
-    minWidth: 445,
+    //maxWidth: 450,
+    //minWidth: 445,
+    width: 500,
     backgroundColor: theme.palette.secondary.dark,
     border: `1px solid ${theme.palette.secondary.main}`,
     display: "flex",
@@ -66,10 +71,53 @@ const localStyles = makeStyles(theme => ({
 }));
 
 
+const BootstrapInput = withStyles((theme) => ({
+  root: {
+    'label + &': {
+      marginTop: theme.spacing(3),
+    },
+  },
+  input: {
+    borderRadius: 4,
+    // position: 'relative',
+    backgroundColor: theme.palette.common.white,
+    border: '1px solid #ced4da',
+    fontSize: 16,
+    width: '325px',
+    padding: '10px',
+    marginLeft: '75px',
+    marginTop: '10px',
+    transition: theme.transitions.create(['border-color', 'box-shadow']),
+    // Use the system font instead of the default Roboto font.
+    fontFamily: [
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
+
+    '&:hover': {
+      backgroundColor: '#fff',
+    },
+
+    '&$focused': {
+      backgroundColor: '#fff',
+      boxShadow: `${fade(theme.palette.primary.main, 0.25)} 0 0 0 2px`,
+      borderColor: theme.palette.primary.main,
+    },
+  },
+}))(InputBase);
+
+
 
 export default function NewUserCard(props) {
   const classes = useStyles();
-  const localClass = localStyles();
   const [userName, setUserName] = useState("");
   const [userLastName, setUserlastName] = useState("");
   const [userCompany, setUserCompany] = useState("");
@@ -81,52 +129,12 @@ export default function NewUserCard(props) {
 
   useEffect(() => {}, [userEmail]);
 
-  // const signUp = () => {
-  //   const userData = {
-  //     userName,
-  //     userCompany,
-  //     userTitle,
-  //     userPhoneNum,
-  //     userEmail,
-  //     //  userPassword
-  //   };
-  //   props.handleNewUserSignUp(userData);
-  // };
-
   const handleSubmit = e => {
     e.preventDefault();
     alert(
       "Node App Not Deployed"
     );
     setSent(true);
-    // const name = userName
-    // const lastName = userLastName
-    // const email = userEmail
-    // const company = userCompany
-    // const phone = userPhoneNum
-    // const title = userTitle
-    // fetch("http://localhost:3002/send", {
-    //     method: "POST",
-    //     headers: {
-    //       Accept: 'application/json',
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body:JSON.stringify({
-    //         name: name,
-              // lastName: lastName,
-    //         email: email,
-    //         title: title,
-    //         company: company,
-    //         phone: phone,
-    //     }),
-    // }).then((response )=>{
-    //     if (response.status === 200){
-    //         setSent(true)
-
-    //     }else if(response.status !==  200){
-    //         alert("Message failed to send.")
-    //     }
-    // }).catch(err => console.log(err))
   };
 
   useEffect(() => {
@@ -146,21 +154,193 @@ export default function NewUserCard(props) {
     userTitle,
     userEmail)
   return !sent ? (
-    <div className={localClass.conatiner}>
-      <Card color="secondary" className={localClass.card}>
-        <div className={localClass.cardHeader}>
+    <div className={classes.conatiner}>
+      <Card color="secondary" className={classes.card}>
+        <div className={classes.cardHeader}>
           <div style={{ marginTop: "5px", fontSize: "1rem" }}>
             Sign up as a buyer, financial institution or energy company.
           </div>
         </div>
-        <Card className={localClass.cardForm}>
-          <ValidatorForm
+        <Card className={classes.cardForm}>
+
+
+        <div 
+            style={{ 
+              marginTop: "15px", 
+              fontSize: '14px',
+              fontWeight: '900',
+              fontFamily: "Tahoma, Geneva, sans-serif",
+              color: 'white',
+              textAlign: 'left',
+              paddingLeft: '65px' }}
+            >
+            FIRST NAME
+        </div>
+
+        <BootstrapInput 
+                type="fname"
+                // label="Email"
+                variant="outlined"
+                // error={emailFlags.error}
+                // placeholder={emailFlags.placeholder}
+                // autoFocus={emailFlags.autoFocus}
+                autoComplete= "true"
+                // onKeyDown={e => onEnterKey(e)}
+                // className={classes.inputs}
+                // onChange={e => setUserEmail(e.target.value)}
+                // onBlur={() => validateData("email", userEmail, setEmailFlags)}
+                value={userEmail}
+                />
+
+
+<div 
+            style={{ 
+              marginTop: "15px", 
+              fontSize: '14px',
+              fontWeight: '900',
+              fontFamily: "Tahoma, Geneva, sans-serif",
+              color: 'white',
+              textAlign: 'left',
+              paddingLeft: '65px' }}
+            >
+            LAST NAME
+        </div>
+
+        <BootstrapInput 
+                type="lname"
+                // label="Email"
+                variant="outlined"
+                // error={emailFlags.error}
+                // placeholder={emailFlags.placeholder}
+                // autoFocus={emailFlags.autoFocus}
+                autoComplete= "true"
+                // onKeyDown={e => onEnterKey(e)}
+                // className={classes.inputs}
+                // onChange={e => setUserEmail(e.target.value)}
+                // onBlur={() => validateData("email", userEmail, setEmailFlags)}
+                value={userEmail}
+                />                
+
+
+        <div 
+            style={{ 
+              marginTop: "15px", 
+              fontSize: '14px',
+              fontWeight: '900',
+              fontFamily: "Tahoma, Geneva, sans-serif",
+              color: 'white',
+              textAlign: 'left',
+              paddingLeft: '65px' }}
+            >
+            EMAIL
+        </div>
+
+        <BootstrapInput 
+                type="email"
+                // label="Email"
+                variant="outlined"
+                // error={emailFlags.error}
+                // placeholder={emailFlags.placeholder}
+                // autoFocus={emailFlags.autoFocus}
+                autoComplete= "true"
+                // onKeyDown={e => onEnterKey(e)}
+                // className={classes.inputs}
+                onChange={e => setUserEmail(e.target.value)}
+                // onBlur={() => validateData("email", userEmail, setEmailFlags)}
+                value={userEmail}
+                />
+
+<div 
+            style={{ 
+              marginTop: "15px", 
+              fontSize: '14px',
+              fontWeight: '900',
+              fontFamily: "Tahoma, Geneva, sans-serif",
+              color: 'white',
+              textAlign: 'left',
+              paddingLeft: '65px' }}
+            >
+            COMPANY NAME
+        </div>
+
+        <BootstrapInput 
+                type="company"
+                // label="Email"
+                variant="outlined"
+                // error={emailFlags.error}
+                // placeholder={emailFlags.placeholder}
+                // autoFocus={emailFlags.autoFocus}
+                autoComplete= "true"
+                // onKeyDown={e => onEnterKey(e)}
+                // className={classes.inputs}
+                // onChange={e => setUserEmail(e.target.value)}
+                // onBlur={() => validateData("email", userEmail, setEmailFlags)}
+                value={userEmail}
+                />
+
+<div 
+            style={{ 
+              marginTop: "15px", 
+              fontSize: '14px',
+              fontWeight: '900',
+              fontFamily: "Tahoma, Geneva, sans-serif",
+              color: 'white',
+              textAlign: 'left',
+              paddingLeft: '65px' }}
+            >
+            MOBILE PHONE
+        </div>
+
+        <BootstrapInput 
+                type="mobile"
+                // label="Email"
+                variant="outlined"
+                // error={emailFlags.error}
+                // placeholder={emailFlags.placeholder}
+                // autoFocus={emailFlags.autoFocus}
+                autoComplete= "true"
+                // onKeyDown={e => onEnterKey(e)}
+                // className={classes.inputs}
+                // onChange={e => setUserEmail(e.target.value)}
+                // onBlur={() => validateData("email", userEmail, setEmailFlags)}
+                value={userEmail}
+                />
+                <div 
+            style={{ 
+              marginTop: "15px", 
+              fontSize: '14px',
+              fontWeight: '900',
+              fontFamily: "Tahoma, Geneva, sans-serif",
+              color: 'white',
+              textAlign: 'left',
+              paddingLeft: '65px' }}
+            >
+            OFFICE PHONE
+        </div>
+
+        <BootstrapInput 
+                type="office"
+                // label="Email"
+                variant="outlined"
+                // error={emailFlags.error}
+                // placeholder={emailFlags.placeholder}
+                // autoFocus={emailFlags.autoFocus}
+                autoComplete= "true"
+                // onKeyDown={e => onEnterKey(e)}
+                // className={classes.inputs}
+                // onChange={e => setUserEmail(e.target.value)}
+                // onBlur={() => validateData("email", userEmail, setEmailFlags)}
+                value={userEmail}
+                />
+
+
+          {/* <ValidatorForm
             onSubmit={handleSubmit}
             onError={errors => console.log(errors)}
             method="POST"
           >
             <TextValidator
-              className={localClass.inputsName}
+              className={classes.inputsName}
               type="text"
               label="Fist Name"
               variant="filled"
@@ -170,7 +350,7 @@ export default function NewUserCard(props) {
               value={userName}
             />
             <TextValidator
-              className={localClass.inputsName}
+              className={classes.inputsName}
               type="text"
               label="Last Name"
               variant="filled"
@@ -180,7 +360,7 @@ export default function NewUserCard(props) {
               value={userLastName}
             />
             <TextValidator
-              className={localClass.inputs}
+              className={classes.inputs}
               type="text"
               label="Company"
               variant="filled"
@@ -190,7 +370,7 @@ export default function NewUserCard(props) {
               value={userCompany}
             />
             <TextValidator
-              className={localClass.inputs}
+              className={classes.inputs}
               type="text"
               label="Title"
               variant="filled"
@@ -200,7 +380,7 @@ export default function NewUserCard(props) {
               value={userTitle}
             />
             <TextValidator
-              className={localClass.inputs}
+              className={classes.inputs}
               type="email"
               label="Email"
               variant="filled"
@@ -210,7 +390,7 @@ export default function NewUserCard(props) {
               value={userEmail}
             />
             <TextValidator
-              className={localClass.inputs}
+              className={classes.inputs}
               type="text"
               label="Phone Number"
               variant="filled"
@@ -219,23 +399,6 @@ export default function NewUserCard(props) {
               onChange={e => setUserPhoneNum(e.target.value)}
               value={userPhoneNum}
             />
-
-            {/* <TextField
-            className={localClass.inputs}
-            type="password"
-            label="Password"
-            variant="filled"
-            onChange={e => setUserPassword(e.target.value)}
-            value={userPassword}
-          />
-          <TextField
-            className={localClass.inputs}
-            type="password"
-            label="Confirm Password"
-            variant="filled"
-            // onChange={e => setUserPassword(e.target.value)}
-            value={userPassword} 
-          /> */}
             <Button
               variant="contained"
               disableElevation
@@ -251,9 +414,11 @@ export default function NewUserCard(props) {
             >
               Submit
             </Button>
-          </ValidatorForm>
+          </ValidatorForm> */}
+
+
         </Card>
-        <div className={localClass.cardFooter}>
+        <div className={classes.cardFooter}>
           <div>
             By signing up, you agree to the{" "}
             <a
@@ -265,7 +430,7 @@ export default function NewUserCard(props) {
               Terms and Conditions
             </a>
           </div>
-          <div className={localClass.links}>
+          <div className={classes.links}>
             Already have an account?{" "}
             <Link to="/" className={classes.signupLink}>
               {" "}
