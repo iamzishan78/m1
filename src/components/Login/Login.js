@@ -14,13 +14,14 @@ import NewUserCard from "./NewUserCard";
 
 const localStyles = makeStyles(theme => ({
   myRoot: {
-    justifyContent: 'center'
-
+    justifyContent: 'center',
+    display: "flex",
+    flexDirection: "column",
     // width: "100vw",
     // height: "100%",
     
-    // display: "flex!important",
-    // justifyContent: "center",
+    display: "flex!important",
+    justifyContent: "center",
 
     // backgroundSize: "cover",
     // backgroundImage: `url(${BackgroundURI})`,
@@ -31,6 +32,17 @@ const localStyles = makeStyles(theme => ({
     // "&::-webkit-scrollbar": {
     //   width: "0 !important",
     // }
+  },
+  footer: {
+    backgroundSize: "cover",
+    // backgroundImage: `url(${BackgroundURI})`,
+    // backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    backgroundColor: "#011133",
+    display: "flex",
+    flexDirection: "column",
+    //justifyContent: 'center',
+    alignItems: 'center',
   },
   headerWords: {
     //maxWidth: "400px",
@@ -64,6 +76,7 @@ const localStyles = makeStyles(theme => ({
   signInCard: {
     width: 250,
     height: 400,
+    marginBottom: 50,
     //minWidth: 445,
     //padding: 20,
     //backgroundColor: theme.palette.secondary.dark,
@@ -402,9 +415,8 @@ const Login = props => {
               color: "white",
               backgroundColor: "rgba(23, 170, 221, 1)",
               width: "150px",
-              display: 'flex',
-              alignItems: 'center',
-              
+              float: 'left',
+              marginLeft: '50px' 
             }}
             disabled
           >
@@ -442,9 +454,8 @@ const Login = props => {
               color: "white",
               backgroundColor: "rgba(23, 170, 221, 1)",
               width: "150px",
-              display: 'flex',
-              alignItems: 'center',
-            }}
+              float: 'left',
+              marginLeft: '50px'            }}
             onClick={showForm}
           >
             Sign Up
@@ -480,9 +491,8 @@ const Login = props => {
               color: "white",
               backgroundColor: "rgba(23, 170, 221, 1)",
               width: "150px",
-              display: 'flex',
-              alignItems: 'center',
-
+              float: 'left',
+              marginLeft: '50px' 
             }}
             onClick={showForm}
           >
@@ -490,6 +500,7 @@ const Login = props => {
           </Button>
         </Card>
         </div>
+
 
       </div>
     </>
@@ -507,6 +518,22 @@ const Login = props => {
         {renderBody}
         {renderSignupNewCard}
       </div>
+
+      <div className={localClass.footer}>
+        <div>M1neral Logo</div>
+        <div>708 Main St.</div>
+        <div>Houston, TX 77002</div>
+        <div>346-242-0408</div>
+        <div>line</div>
+        <div>Sign in</div>
+        <div>Sign up</div>
+        <div>Support</div>
+        <div>copywright</div>
+        <div>terms of service | Privacy Policy</div>
+
+
+      </div>
+
 
     </div>
   );

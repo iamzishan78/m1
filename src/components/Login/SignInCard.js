@@ -60,7 +60,7 @@ const useStyles = makeStyles(theme => ({
   },
   card: {
     width: "400px",
-    height: "475px",
+    height: "515px",
     //paddingLeft: '40px',
     // maxWidth: "400px",
     // position: "absolute",
@@ -278,7 +278,7 @@ const SignInCard = props => {
           onKeyDown={e => onEnterKey(e)}
             >
             Sign In
-          </Button>
+        </Button>
   )
 
   const handleTenantChange = (e) => {
