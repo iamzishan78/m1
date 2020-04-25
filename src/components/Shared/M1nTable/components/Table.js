@@ -406,7 +406,7 @@ export default function SubTable(props) {
       setSelectedRow(rows[dataIndex]);
 
       if (props.targetLabel === "owner") {
-        setSubComponent(<Test hello="Owner Card Not Available" />);
+        setSubComponent(<Test hello="Owner Card Not Available" />);/////////////////////////
         setTitle(rows[dataIndex].name);
         setSubTitle(rows[dataIndex].interestType);
         handleOpenExpandableCard();
@@ -488,7 +488,7 @@ export default function SubTable(props) {
           fullWidth
           maxWidth="xl"
           open={showExpandableCard}
-          onClose={handleCloseExpandableCard}
+          // onClose={handleCloseExpandableCard}
         >
           <ExpandableCardProvider
             expanded={true}
