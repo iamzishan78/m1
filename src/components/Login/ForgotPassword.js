@@ -90,9 +90,9 @@ const useStyles = makeStyles(theme => ({
     display: "flex!important",
     backgroundSize: "cover",
     justifyContent: "center",
-    backgroundImage: `url(${BackgroundURI})`,
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center",
+    // backgroundImage: `url(${BackgroundURI})`,
+    // backgroundRepeat: "no-repeat",
+    // backgroundPosition: "center",
     '&::-webkit-scrollbar': {
       width: '0 !important'
      },
