@@ -115,28 +115,37 @@ const useStyles = makeStyles(theme => ({
     // float: 'left'
   },
   button: {
-    backgroundColor: theme.palette.secondary.main,
+    // backgroundColor: theme.palette.secondary.main,
+    backgroundColor: '#e4a773',
     width: "125px",
     height: "50px",
     // marginLeft: "30%",
     marginTop: "35px",
-    color: theme.palette.secondary.contrastText,
+    color: "#011133",
     // alignItems: "center",
     // justifyItems: "center"
     float: 'left',
     marginLeft: '60px',
+    "&:hover" : {
+      // color: '#e4a773',
+      backgroundColor: '#f0cfb3',
+
+    },
   },
   signupLink: {
     textDecoration: "none",
     color: theme.palette.secondary.main,
-    cursor: "pointer"
+    cursor: "pointer",
+    "&:hover" : {
+      color: '#e4a773',
+    }
   },
   passwordLink: {
     textDecoration: "none",
-    //color: "#FFFF",
+    color: theme.palette.secondary.main,
     cursor: "pointer",
     "&:hover" : {
-      color: theme.palette.secondary.main,
+      color: '#e4a773',
     }
   },
   loader: {
