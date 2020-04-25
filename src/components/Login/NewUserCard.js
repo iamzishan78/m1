@@ -399,7 +399,10 @@ export default function NewUserCard(props) {
               onChange={e => setUserPhoneNum(e.target.value)}
               value={userPhoneNum}
             />
-            <Button
+
+          </ValidatorForm> */}
+
+          <Button
               variant="contained"
               disableElevation
               type="submit"
@@ -414,8 +417,6 @@ export default function NewUserCard(props) {
             >
               Submit
             </Button>
-          </ValidatorForm> */}
-
 
         </Card>
         <div className={classes.cardFooter}>

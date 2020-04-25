@@ -60,7 +60,7 @@ const useStyles = makeStyles(theme => ({
   },
   card: {
     width: "400px",
-    height: "515px",
+    height: "500px",
     //paddingLeft: '40px',
     // maxWidth: "400px",
     // position: "absolute",
@@ -313,7 +313,7 @@ const SignInCard = props => {
         <div className={classes.cardHeader}>
           <div 
             style={{ 
-              marginTop: "55px", 
+              marginTop: "75px", 
               fontSize: '24px',
               fontWeight: '900',
               fontFamily: "Tahoma, Geneva, sans-serif",
@@ -348,7 +348,7 @@ const SignInCard = props => {
 
         <div 
             style={{ 
-              marginTop: "15px", 
+              marginTop: "25px", 
               fontSize: '14px',
               fontWeight: '900',
               fontFamily: "Tahoma, Geneva, sans-serif",
