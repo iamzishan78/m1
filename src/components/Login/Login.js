@@ -351,6 +351,8 @@ const Login = props => {
         return <SignUpCard handleSignIn={handledSignIn} />;
     }
   }; */
+
+
   const renderSignupNewCard = showSignUp ? (
     <NewUserCard
       className={localClass.newUser}
@@ -359,6 +361,16 @@ const Login = props => {
   ) : (
     <div className={localClass.displaNone}></div>
   );
+
+  
+  // const showForm = () => {
+  //   if (!showSignUp) {
+  //     setShowSignUp(true);
+  //   } else {
+  //     setShowSignUp(false);
+  //   }
+  // };
+
 
   const renderBody = !showSignUp ? (
     <>
@@ -372,7 +384,38 @@ const Login = props => {
       <div className={localClass.cardContainer}>
       <SignInCard handleSignIn={handledSignIn} ready={loading} />
       <Card color="secondary" className={localClass.supportCard}>
-        
+        <div>
+        <Typography style={{ 
+              textAlign: "left", 
+              }}>
+          Have questions? We're here to help. 
+          </Typography>
+
+        </div>
+        <div>
+        <Typography style={{ 
+              textAlign: "left", 
+               }}>
+          Our support team is available seven days a week 
+          to answer any questions you might have. 
+          </Typography>
+        </div>
+        <div>
+        <Button
+            variant="contained"
+            disableElevation
+            style={{
+              color: "white",
+              backgroundColor: "rgba(23, 170, 221, 1)",
+              width: "200px",
+              float: 'left',
+              marginLeft: '50px' 
+            }}
+            disabled
+          >
+            Contact Support
+          </Button>
+        </div>
       </Card>
       </div>
       

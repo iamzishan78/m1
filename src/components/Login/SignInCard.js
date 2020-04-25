@@ -420,7 +420,9 @@ const SignInCard = props => {
         <div className={classes.cardFooter}>
           <div>Don't have an account?</div>
           <div>
-            <Link to="/signup" className={classes.signupLink}>
+            <Link 
+              // to="/signup" 
+              className={classes.signupLink}>
               Sign Up Here
             </Link>
           </div>
