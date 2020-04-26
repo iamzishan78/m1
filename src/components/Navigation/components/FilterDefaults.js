@@ -351,74 +351,79 @@ export default function FilterDedaults() {
   // State County Survey Abstract 
   const deleteChipGeoSCSA = (item, name) => {
     let copy;
-    let removeItemState; 
-    let removeItemCounty; 
-    let removeItemSurvey;
-    let removeItemAbstract;
-    let removeItemStateDisplay;
-    let itemRemove = stateNav[name];
+   
     copy = [...stateNav[name]];
-    if (copy && copy[1].length === 5) {        
-      if (copy[1].length > 0) {
-        removeItemState = item;
-        removeItemStateDisplay = null;
-      }
-
+    if (copy && copy[1] && copy[1].length === 5 ) {        
+      
       for (let index = 0; index < copy.length; index++) {
         const element = copy[index];
-        if (element[2] === item) {
-          copy.splice(index, 1);
+        if (element[1][1] === "state") {
+          if (element[2] === item) {
+            copy.splice(0, copy.length);
+            setStateNav((stateNav) => ({
+              ...stateNav,
+              [name]: null,
+              stateName: null,
+              displayStateName: null,
+            }));
+          }
         }
       }
       
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        [name]: null,
-        stateName: null,
-        displayStateName: null,
-      }));
     }
-    if (copy && copy[2].length === 5) { 
-      console.log('here', copy)       
-      if (copy[2].length > 0) {
-        removeItemCounty = item;
-      }
+    if (copy && copy[2] && copy[2].length === 5) {      
+      
       for (let index = 0; index < copy.length; index++) {
         const element = copy[index];
-        if (element[2] === item) {
-          copy.splice(index, 1);
+        if (element[1][1] === "county") {
+          if (element[2] === item) {
+            copy.splice(index, copy.length);
+            setStateNav((stateNav) => ({
+              ...stateNav,
+              [name]: copy,
+              countyName: null,
+              surveyName: null,
+              abstractName: null,
+            }));
+          }
         }
       }
-     
-      // setStateNav((stateNav) => ({
-      //   ...stateNav,
-      //   [name]: copy,
-      //   countyName: null,
-      // }));
     }
 
+    if (copy && copy[3] && copy[3].length === 5) {      
+      
+      for (let index = 0; index < copy.length; index++) {
+        const element = copy[index];
+        if (element[1][1] === "survey") {
+          if (element[2] === item) {
+            copy.splice(index, copy.length);
+            setStateNav((stateNav) => ({
+              ...stateNav,
+              [name]: copy,
+              surveyName: null,
+              abstractName: null,
+            }));
+          }
+        }
+      }
+    }
 
-        // if (copy.length > 5) {
-        //   setStateNav((stateNav) => ({
-        //     ...stateNav,
-        //     [name]: copy,
-        //     stateName: removeItemState,
-        //     displayStateName: removeItemStateDisplay,
-        //     countyName: removeItemCounty,
-        //     surveyName: removeItemSurvey, 
-        //     abstractName: removeItemAbstract,
-        //   }));
-        // } else {
-        //   setStateNav((stateNav) => ({
-        //     ...stateNav,
-        //     [name]: null,
-        //     countyName: null,
-        //     stateName: null,
-        //     displayStateName: null,
-        //     surveyName: null, 
-        //     abstractName: null,
-        //   }));
-        // }
+    if (copy && copy[4] && copy[4].length === 5) {      
+      
+      for (let index = 0; index < copy.length; index++) {
+        const element = copy[index];
+        if (element[1][1] === "abstract") {
+          if (element[2] === item) {
+            copy.splice(index, copy.length);
+            setStateNav((stateNav) => ({
+              ...stateNav,
+              [name]: copy,
+              abstractName: null,
+            }));
+          }
+        }
+      }
+    }
   }
 
   // Basin And PLay 
@@ -522,7 +527,7 @@ export default function FilterDedaults() {
           copy.splice(index, 1);
         }
       }
-      // console.log(copy)
+
       if (copy.length > 1) {
         setStateNav((stateNav) => ({
           ...stateNav,
@@ -538,48 +543,45 @@ export default function FilterDedaults() {
       }
     }
   };
-  console.log("//////stateNav",stateNavCopy)
-
+ 
   const matchProdOption = (string) => {
-    console.log(string)
     let list = prodListOptions;
     let match = list.map(el => el.name)
     if (match.includes(string) ) {
-      console.log("yes")
+      return string;
     }
   }
  
   const removeFitlerFromProdName = (string) => {
     if (string.includes("filterCumulative")) {
-      return string.replace("filterCumulative", "Cumulative  - ");
+      return string.replace("filterCumulative", "Cumulative  -  ");
     }
     if (string.includes("filterFirstMonth")) {
-      return string.replace("filterFirstMonth", "First Month  - ");
+      return string.replace("filterFirstMonth", "First Month  -  ");
     }
     if (string.includes("filterFirstThreeMonth")) {
-      return string.replace("filterFirstThreeMonth", "First Three Months  - ");
+      return string.replace("filterFirstThreeMonth", "First Three Months  -  ");
     }
     if (string.includes("filterFirstSixMonth")) {
-      return string.replace("filterFirstSixMonth", "First Six Months  - ");
+      return string.replace("filterFirstSixMonth", "First Six Months  -  ");
     }
     if (string.includes("filterFirstTwelveMonth")) {
-      return string.replace("filterFirstTwelveMonth", "First Twelve Months  - ");
+      return string.replace("filterFirstTwelveMonth", "First Twelve Months  -  ");
     }
     
     if (string.includes("filterLastTwelveMonth")) {
-      return string.replace("filterLastTwelveMonth", "Last Twelve Months  - ");
+      return string.replace("filterLastTwelveMonth", "Last Twelve Months  -  ");
     }
     if (string.includes("filterLastSixMonth")) {
-      return string.replace("filterLastSixMonth", "Last Six Months  - ");
+      return string.replace("filterLastSixMonth", "Last Six Months  -  ");
     }
     if (string.includes("filterLastMonth")) {
-      return string.replace("filterLastMonth", "Last Month  - ");
+      return string.replace("filterLastMonth", "Last Month  -  ");
     }
   }
   
 
   const deleteChipProd = (item,name) => {
-    console.log(item, name)
     if(stateNav[name] && stateNav[name].length > 0){
       let copy;
       copy = [...stateNav[name]];
@@ -593,18 +595,25 @@ export default function FilterDedaults() {
 
       let compare = removeFitlerFromProdName(name);
       let match = matchProdOption(compare);
-      console.log(compare)
-      // setStateNav((stateNav) => ({
-      //   ...stateNav,
-      //   [name]: copy,
-      // }));
+      let findItem = stateNav.prodOptions;
+      for (let index = 0; index < findItem.length; index++) {
+        const element = findItem[index];
+        if (element === match) {
+          findItem.splice(index, 1);
+        }
+      }
+  
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        [name]: copy,
+      }));
 
-      // if (copy.length === 1) {
-      //   setStateNav((stateNav) => ({
-      //     ...stateNav,
-      //     [name]: null,
-      //   }));
-      // }
+      if (copy.length === 1) {
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          [name]: null,
+        }));
+      }
     }
   };
 
@@ -649,6 +658,65 @@ export default function FilterDedaults() {
       }
     }
   };
+
+  const removeAllWell = () => {
+    if (filtersWell && filterTypeWell) {
+      let name;
+      stateNavCopy.map(el => {
+        if (el[0].includes("Well")) {
+          name = el[0];
+        }
+        if (el[0].includes("Operator")) {
+          name = el[0];
+        }
+        if (el[0].includes("Date")) {
+          name = el[0];
+        }
+        if (el[0].includes("Date")) {
+          name = el[0];
+        }
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          typeName: null,
+          statusName: null,
+          operatorName: null,
+          profileName: null,
+          [name]: null
+        }))
+      })
+    }
+  }
+
+  const removeAllGeo = () => {
+    if (filtersGeo && filterTypeGeography) {
+      let name;
+      // stateNavCopy.map(el => {
+      //   if (el[0].includes("Well")) {
+      //     name = el[0];
+      //     setStateNav((stateNav) => ({
+      //       ...stateNav,
+      //       typeName: null,
+      //       statusName: null,
+      //       operatorName: null,
+      //       profileName: null,
+      //       [name]: null
+      //     }))
+      //   }
+      // })
+    }
+  }
+
+  const removeAllProd = () => {
+    if (filtersProd && filterTypeProdcution) {
+      console.log(stateNavCopy)
+    }
+  }
+
+  const removeAllOwner = () => {
+    if (filtersOwner && filterTypeOwner) {
+      console.log(stateNavCopy)
+    }
+  }
 
   const filterOnOff = () => {
     setCheckBoxActive((checkBoxActive) => !checkBoxActive);
@@ -765,6 +833,7 @@ export default function FilterDedaults() {
                 deleteChip={deleteChipWell}
                 type={filterTypeWell}
                 filters={filtersWell}
+                removeAll={removeAllWell}
               />
             ) : null}
           </div>
@@ -775,6 +844,7 @@ export default function FilterDedaults() {
                 deleteChipGeoSCSA={deleteChipGeoSCSA}
                 type={filterTypeGeography}
                 filters={filtersGeo}
+                removeAll={removeAllGeo}
               />
             ) : null}
           </div>
@@ -785,6 +855,7 @@ export default function FilterDedaults() {
                 type={filterTypeOwner}
                 filters={filtersOwner}
                 deleteChipInterest={deleteChipInterest}
+                removeAll={removeAllOwner}
               />
             ) : null}
           </div>
@@ -794,6 +865,7 @@ export default function FilterDedaults() {
                 deleteChip={deleteChipProd}
                 type={filterTypeProdcution}
                 filters={filtersProd}
+                removeAll={removeAllProd}
               />
             ) : null}
           </div>

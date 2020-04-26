@@ -101,6 +101,11 @@ export default function FilterDedaultListWell(props) {
     deleteChip(e, name);
   };
 
+  const removeAllFilters = () => {
+    const { removeAll } = props;
+    removeAll();
+  };
+
   return (
     <div>
       {filtersTypeArr && filtersTypeArr.length > 0 ? (
@@ -112,6 +117,7 @@ export default function FilterDedaultListWell(props) {
                 className={classes.deleteButton}
                 endIcon={<HighlightOffIcon />}
                 aria-label="delete"
+                onClick={removeAllFilters}
               >
                 Clear All
               </Button>
