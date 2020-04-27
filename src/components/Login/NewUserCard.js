@@ -11,6 +11,8 @@ import {
 } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import { Card, Button } from "@material-ui/core";
+import Paper from '@material-ui/core/Paper';
+
 // COMPONENTS
 
 const useStyles = makeStyles(theme => ({

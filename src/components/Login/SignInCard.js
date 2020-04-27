@@ -20,89 +20,37 @@ import MenuItem from '@material-ui/core/MenuItem';
 //import M1neralIconSvg from "../../ui_Elements/m1neralIconSvg";
 // HELPERS
 import { validateData } from "./loginHelpers";
+import Paper from '@material-ui/core/Paper';
+
 // import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    // padding: "0",
-    // width: "100%",
-    // height: "100%",
   },
   select: {
     color:'white'
   },
-  form: {
-    // display:'flex',
-    // flexDirection:'column',
-    // justifyContent:'center'
-  },
-  formControl: {
-    display:'flex',
-    // justifyContent:'center',
-    paddingLeft:'25px',
-    paddingRight:'25px'
-    
-  },
-  notchedOutline: {
-    // color: "green"
-  },
-
-  content: {
-    // height: "100vh",
-    // width: "100vw"
-  },
-  cardTitle: {
-    // maxWidth: "400px",
-    // color: theme.palette.secondary.contrastText,
-    // display: "flex",
-    // justifyContent: "center",
-    // marginTop:"20px",
-  },
   card: {
-    width: "400px",
+    width: "425px",
     height: "500px",
-    //paddingLeft: '40px',
-    // maxWidth: "400px",
-    // position: "absolute",
-    // top: "calc((50vh - 64px) / 2)",
-    // backgroundColor: theme.palette.secondary.dark,
-    // border: `1px solid ${theme.palette.secondary.main}`,
+    backgroundColor: theme.palette.secondary.dark,
     backgroundColor: "#011133",
-    // display: "flex",
-    // flexDirection: "column",
     fontFamily: theme.typography.fontFamily
   },
-  cardHeader: {
-    // color: "white",
-    // paddingTop: "4%",
-    // display: "flex",
-    // flexDirection: "column",
-    // alignItems: "center"
-  },
-  cardInputs: {
-    // height: "60%",
-    // padding: "2%",
-    // paddingTop: "4%",
-    //color: "white",
-    // justifyItems: "center"
 
-  },
   inputs: {
     backgroundColor: theme.palette.background.paper,
     width: "80%",
     margin: "2% 10%",
-    // justifyItems: "center"
-  
-
   },
   cardFooter: {
     paddingBottom: "0px",
     paddingTop: "45px",
     color: "white",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    fontSize: ".75rem"
+    fontSize: ".75rem",
+    float: 'left',
+    marginLeft: '30px',
+
   },
   secondaryInputs: {
     paddingTop: "5px",
@@ -110,26 +58,16 @@ const useStyles = makeStyles(theme => ({
     textAlign: "left",
     marginLeft: '65px',
   },
-  margin: {
-    // margin: theme.spacing(1),
-    // float: 'left'
-  },
   button: {
-    // backgroundColor: theme.palette.secondary.main,
     backgroundColor: '#e4a773',
     width: "125px",
     height: "50px",
-    // marginLeft: "30%",
     marginTop: "35px",
     color: "#011133",
-    // alignItems: "center",
-    // justifyItems: "center"
     float: 'left',
     marginLeft: '60px',
     "&:hover" : {
-      // color: '#e4a773',
       backgroundColor: '#f0cfb3',
-
     },
   },
   signupLink: {
@@ -148,10 +86,6 @@ const useStyles = makeStyles(theme => ({
       color: '#e4a773',
     }
   },
-  loader: {
-    // marginLeft: "45%",
-  },
- 
 }));
 
 
@@ -164,16 +98,15 @@ const BootstrapInput = withStyles((theme) => ({
   },
   input: {
     borderRadius: 4,
-    // position: 'relative',
     backgroundColor: theme.palette.common.white,
     border: '1px solid #ced4da',
     fontSize: 16,
-    width: '250px',
+    width: '275px',
+    // height: 30,
     padding: '10px',
-    marginLeft: '0',
+    //marginLeft: '100',
     marginTop: '10px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
-    // Use the system font instead of the default Roboto font.
     fontFamily: [
       '-apple-system',
       'BlinkMacSystemFont',
@@ -187,40 +120,20 @@ const BootstrapInput = withStyles((theme) => ({
       '"Segoe UI Symbol"',
     ].join(','),
 
-    '&:hover': {
-      backgroundColor: '#fff',
-    },
+    // '&:hover': {
+    //   backgroundColor: '#fff',
+    // },
 
-    '&$focused': {
-      backgroundColor: '#fff',
-      boxShadow: `${fade(theme.palette.primary.main, 0.25)} 0 0 0 2px`,
-      borderColor: theme.palette.primary.main,
-    },
+    // '&$focused': {
+    //   backgroundColor: '#fff',
+    //   boxShadow: `${fade(theme.palette.primary.main, 0.25)} 0 0 0 2px`,
+    //   borderColor: theme.palette.secondary.main,
+    // },
   },
 }))(InputBase);
 
 
 
-
-const M1neralIconSvg = props => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="50"
-      height="50"
-      // viewBox="0 0 11320 2490"
-      viewBox="0 0 2100 2500"
-      
-    >
-      <g fill="none" fillRule="evenodd" stroke="none" strokeWidth="1">
-        <path
-          fill="#12ABE0"
-          d="M1396 1823c-201 202-528 202-729 0-15-15-30-31-43-48l-366 366c14 16 29 31 44 47 403 402 1056 402 1459 0 356-356 397-908 124-1309l-379 378c80 188 43 413-110 566zm-839-163c-80-188-43-413 110-566 201-201 528-201 729 0 16 15 30 32 43 48l366-366c-14-16-29-31-44-47L1032 0 302 729c-356 356-397 908-124 1309l379-378zm292-384c101-100 264-100 365 0 101 101 101 264 0 365s-264 101-365 0c-100-101-100-264 0-365z"
-        ></path>
-      </g>
-    </svg>
-  );
-};
 
 
 const SignInCard = props => {
@@ -318,8 +231,10 @@ const SignInCard = props => {
 
   return (
     <div>
-      <Card className={classes.card}>
-        <div className={classes.cardHeader}>
+      <Card
+        square = {true}
+        className = {classes.card}
+          >
           <div 
             style={{ 
               marginTop: "75px", 
@@ -332,28 +247,7 @@ const SignInCard = props => {
             >
               Sign in
             </div>
-        </div>
 
-        <div className={classes.cardInputs}>
-
-          
-        {/* <form 
-          // className={classes.form} 
-          onSubmit={signIn} onKeyDown={e => onEnterKey(e)}> */}
-
-
-        {/* <FormControl className={classes.formControl}>
-          <Select className={classes.select}  
-            labelId="tenant-label"
-            id="tenant" variant="outlined"
-            value={tenant}
-            onChange={handleTenantChange}
-          >
-            <MenuItem value="c1">Tenant 1</MenuItem>
-            <MenuItem value="c2">Tenant 2</MenuItem>
-            <MenuItem value="M1neral">M1neral</MenuItem>
-          </Select>
-        </FormControl> */}
 
         <div 
             style={{ 
@@ -363,21 +257,17 @@ const SignInCard = props => {
               fontFamily: "Tahoma, Geneva, sans-serif",
               color: 'white',
               textAlign: 'left',
-              paddingLeft: '65px' }}
+              marginLeft: '65px' }}
             >
             EMAIL
         </div>
 
             <BootstrapInput 
-                type="email"
-                // label="Email"
-                variant="outlined"
                 error={emailFlags.error}
                 placeholder={emailFlags.placeholder}
                 autoFocus={emailFlags.autoFocus}
                 autoComplete= "true"
                 onKeyDown={e => onEnterKey(e)}
-                // className={classes.inputs}
                 onChange={e => setUserEmail(e.target.value)}
                 onBlur={() => validateData("email", userEmail, setEmailFlags)}
                 value={userEmail}
@@ -392,51 +282,42 @@ const SignInCard = props => {
               fontFamily: "Tahoma, Geneva, sans-serif",
               color: 'white',
               textAlign: 'left',
-              paddingLeft: '65px' }}            
+              marginLeft: '65px' }}            
             >
             PASSWORD
           </div>
 
-          {/* <FormControl className={classes.margin}> */}
             <BootstrapInput 
                 defaultValue="" 
-                type="password"
-                // label="Password"
-                variant="filled"
                 error={passwordFlags.error}
                 placeholder={passwordFlags.placeholder}
                 autoFocus={passwordFlags.autoFocus}
-                // className={classes.inputs}
                 onChange={e => setUserPassword(e.target.value)}
                 onKeyDown={e => onEnterKey(e)}
                 onBlur={() =>
                   validateData("password", userPassword, setPasswordFlags)
                 }
-                //autoComplete="current-password"
                 value={userPassword}
                 autoComplete= "true"
                 />
-          {/* </FormControl> */}
+
           <div className={classes.secondaryInputs}>
             <Link to="/forgotpassword" className={classes.passwordLink}>Forgot Password?</Link>
           </div>
 
         {renderButtonAndLoader}
 
-        </div>
         <div className={classes.cardFooter}>
-          <div>Don't have an account?</div>
+          Don't have an account?
           <div>
             <Link 
-              // to="/signup" 
               className={classes.signupLink}>
               Sign Up Here
             </Link>
           </div>
         </div>
 
-
-      </Card>
+        </Card>
     </div>
 
   );

@@ -1,7 +1,13 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useLazyQuery, useApolloClient } from "@apollo/react-hooks";
 import { AppContext } from "../../AppContext";
-import { makeStyles } from "@material-ui/core/styles";
+import {
+  fade,
+  ThemeProvider,
+  withStyles,
+  makeStyles,
+  createMuiTheme,
+} from '@material-ui/core/styles';
 import ExpiredStorage from "expired-storage";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import gql from "graphql-tag";
@@ -9,15 +15,18 @@ import SignInCard from "./SignInCard";
 import { useHistory } from "react-router-dom";
 import { Card, TextField, Button, Typography } from "@material-ui/core";
 import NewUserCard from "./NewUserCard";
-
+import Paper from '@material-ui/core/Paper';
+import InputLabel from '@material-ui/core/InputLabel';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { Link } from "react-router-dom";
+import { validateData } from "./loginHelpers";
+import InputBase from '@material-ui/core/InputBase';
 
 
 const localStyles = makeStyles(theme => ({
   myRoot: {
-    justifyContent: 'center',
     display: "flex",
     flexDirection: "column",
-    display: "flex!important",
     justifyContent: "center",
   },
   footer: {
@@ -58,14 +67,14 @@ const localStyles = makeStyles(theme => ({
   },
   signInCard: {
     width: 250,
-    height: 400,
+    height: '400px',
     marginBottom: 50,
     //minWidth: 445,
     //padding: 20,
     //backgroundColor: theme.palette.secondary.dark,
     border: '1px solid #A9A9A9' ,
-    display: "flex",
-    flexDirection: "column",
+    //display: "flex",
+    //flexDirection: "column",
     fontFamily: theme.typography.fontFamily,
     "&:hover": {
       //background: "#ffffff00",
@@ -74,10 +83,9 @@ const localStyles = makeStyles(theme => ({
     },
   },
   supportCard: {
-    //maxWidth: 450,
     width: 400,
+    height: 500,
     backgroundColor: '#f6fafb',
-    //border: `1px solid ${theme.palette.secondary.main}`,
     display: "flex",
     flexDirection: "column",
     fontFamily: theme.typography.fontFamily
@@ -133,92 +141,346 @@ const localStyles = makeStyles(theme => ({
      },
   },
     cardContainer: {
+    // display: "flex",
+    // justifyContent: "center"
     display: "flex",
-    justifyContent: "center"
+    flexDirection: "row",
+    justifyContent: "center",
   },
   signInCardContainer: {
     paddingRight: 10,
     paddingLeft: 10
-  }
+  },
+  card: {
+    width: "425px",
+    height: "500px",
+    // paddingLeft: '40px',
+    // maxWidth: "400px",
+    // position: "absolute",
+    // left: 0,
+    // top: "calc((50vh - 64px) / 2)",
+    backgroundColor: theme.palette.secondary.dark,
+    // border: `1px solid ${theme.palette.secondary.main}`,
+    backgroundColor: "#011133",
+    // display: "flex",
+    // flexDirection: "column",
+    fontFamily: theme.typography.fontFamily
+  },
 }));
 
 const BackgroundURI = "img/WellsBackgroundlogin.jpg";
 
 
+const useStyles = makeStyles(theme => ({
+  root: {
+  },
+  select: {
+    color:'white'
+  },
+  form: {
+  },
+  formControl: {
+    //display:'flex',
+    //paddingLeft:'25px',
+    //paddingRight:'25px'
+    
+  },
+  notchedOutline: {
+  },
+  content: {
+  },
+  cardTitle: {
+    // maxWidth: "400px",
+    // color: theme.palette.secondary.contrastText,
+    // display: "flex",
+    // justifyContent: "center",
+    // marginTop:"20px",
+  },
+  card: {
+    width: "425px",
+    height: "500px",
+    // paddingLeft: '40px',
+    // maxWidth: "400px",
+    // position: "absolute",
+    // left: 0,
+    // top: "calc((50vh - 64px) / 2)",
+    backgroundColor: theme.palette.secondary.dark,
+    // border: `1px solid ${theme.palette.secondary.main}`,
+    backgroundColor: "#011133",
+    // display: "flex",
+    // flexDirection: "column",
+    fontFamily: theme.typography.fontFamily
+  },
+  cardHeader: {
+    // color: "white",
+    // paddingTop: "4%",
+    // display: "flex",
+    // flexDirection: "column",
+    // alignItems: "center"
+  },
+  cardInputs: {
+    // height: "60%",
+    // padding: "2%",
+    // paddingTop: "4%",
+    //color: "white",
+    // justifyItems: "center"
+
+  },
+  inputs: {
+    backgroundColor: theme.palette.background.paper,
+    width: "80%",
+    margin: "2% 10%",
+    // justifyItems: "center"
+  
+
+  },
+  cardFooter: {
+    paddingBottom: "0px",
+    paddingTop: "45px",
+    color: "white",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    fontSize: ".75rem"
+  },
+  secondaryInputs: {
+    paddingTop: "5px",
+    fontSize: ".75rem",
+    textAlign: "left",
+    marginLeft: '65px',
+  },
+  margin: {
+    // margin: theme.spacing(1),
+    // float: 'left'
+  },
+  button: {
+    // backgroundColor: theme.palette.secondary.main,
+    backgroundColor: '#e4a773',
+    width: "125px",
+    height: "50px",
+    // marginLeft: "30%",
+    marginTop: "35px",
+    color: "#011133",
+    // alignItems: "center",
+    // justifyItems: "center"
+    float: 'left',
+    marginLeft: '60px',
+    "&:hover" : {
+      // color: '#e4a773',
+      backgroundColor: '#f0cfb3',
+
+    },
+  },
+  signupLink: {
+    textDecoration: "none",
+    color: theme.palette.secondary.main,
+    cursor: "pointer",
+    "&:hover" : {
+      color: '#e4a773',
+    }
+  },
+  passwordLink: {
+    textDecoration: "none",
+    color: theme.palette.secondary.main,
+    cursor: "pointer",
+    "&:hover" : {
+      color: '#e4a773',
+    }
+  },
+  loader: {
+    // marginLeft: "45%",
+  },
+ 
+}));
+
+
+
 const BuyersSvg = props => {
   return (
     <svg
-      viewBox="0 0 96 96"
+    xmlns="http://www.w3.org/2000/svg"
+    width="120"
+    height="120"
+    overflow="hidden"
+    viewBox="0 0 508 508"
+  >
+                <defs>
+        <filter
+          id="c"
+          width="129.3%"
+          height="140.8%"
+          filterUnits="objectBoundingBox"
+        >
+          <feOffset
+            dx="15"
+            dy="15"
+            in="SourceAlpha"
+            result="shadowOffsetOuter1"
+          ></feOffset>
+          <feColorMatrix
+            in="shadowOffsetOuter1"
+            result="shadowMatrixOuter1"
+            values="0 0 0 0 0.447058824 0 0 0 0 0.635294118 0 0 0 0 0.435294118 0 0 0 0.3 0"
+          ></feColorMatrix>
+          <feMerge>
+            <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+            <feMergeNode in="SourceGraphic"></feMergeNode>
+          </feMerge>
+        </filter>
+      </defs>
+
+    <path
+      fill="#404040"
+      strokeWidth="1"
+      d="M102.5 98.3v131.1h98.3V98.3h-98.3zM184.4 213h-65.5v-98.3h65.5V213z"
+      filter="url(#c)"      
+    ></path>
+    <path
+      fill="#404040"
+      strokeWidth="1"
+      d="M233.5 98.3H348.2V114.69999999999999H233.5z"
+      filter="url(#c)"      
+    ></path>
+    <path
+      fill="#404040"
+      strokeWidth="1"
+      d="M233.5 155.7H348.2V172.1H233.5z"
+      filter="url(#c)"      
+    ></path>
+    <path
+      fill="#404040"
+      strokeWidth="1"
+      d="M233.5 213H348.2V229.4H233.5z"
+      filter="url(#c)"      
+    ></path>
+    <path
+      fill="#404040"
+      strokeWidth="1"
+      d="M102.4 270.4H348.20000000000005V286.79999999999995H102.4z"
+      filter="url(#c)"      
+    ></path>
+    <path
+      fill="#404040"
+      strokeWidth="1"
+      d="M102.4 327.7H290.9V344.09999999999997H102.4z"
+      filter="url(#c)"      
+    ></path>
+    <path
+      fill="#404040"
+      strokeWidth="1"
+      d="M102.4 426.1H217.10000000000002V442.5H102.4z"
+      filter="url(#c)"      
+    ></path>
+    <path
+      fill="#404040"
+      strokeWidth="1"
+      d="M491.9 225c-13.7-13.6-40.2-17.8-57.9 0l-36.6 36.6V49.2h-49.2V0H4.1v458.8h49.2V508h344.1V377.5l94.5-94.5c16-16 16-42 0-58zM53.3 442.5H20.5V16.4h311.4v32.8H53.3v393.3zm16.4 49.1V65.5H381V278L246.8 412.2l-14.5 72.4 72.4-14.5 76.2-76.3v97.8H69.7zM266 416.2l23.2-23.2 34.8 34.8-23.3 23.2-34.7-34.8zm18.1 41.3l-30.9 6.2 6.2-30.9 24.7 24.7zm51.4-41.3l-34.8-34.8 139-139.1 34.8 34.8-139 139.1zm149.6-151.7L452.5 232c9.1-4.1 20.6-2.6 27.8 4.7 7.6 7.5 9.1 18.7 4.8 27.8z"
+      filter="url(#c)"      
+    ></path>
+    <path
+      fill="#404040"
+      strokeWidth="1"
+      d="M375.65 292.146H457.549V308.546H375.65z"
+      transform="rotate(-45.001 416.598 300.353)"
+      filter="url(#c)"      
+    ></path>
+  </svg>
+  );
+};
+
+
+const OperatorSvg = props => {
+  return (
+    <svg
       xmlns="http://www.w3.org/2000/svg"
-      xlink="http://www.w3.org/1999/xlink"
-      width="150"
-      height="150"
-      // viewBox="0 0 11320 2490"
-      // id="Icons_BoardRoom"
-      // overflow="hidden"
+      x="0"
+      y="0"
+      width = "120"
+      height = "150"
+      version="1.1"
+      viewBox="0 0 57 57"
+      xmlSpace="preserve"
     >
+            <defs>
+        <filter
+          id="b"
+          width="109.3%"
+          height="110.8%"
+          filterUnits="objectBoundingBox"
+        >
+          <feOffset
+            dx="1"
+            dy="2"
+            in="SourceAlpha"
+            result="shadowOffsetOuter1"
+          ></feOffset>
+          <feColorMatrix
+            in="shadowOffsetOuter1"
+            result="shadowMatrixOuter1"
+            values="0 0 0 0 0.447058824 0 0 0 0 0.635294118 0 0 0 0 0.435294118 0 0 0 0.3 0"
+          ></feColorMatrix>
+          <feMerge>
+            <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+            <feMergeNode in="SourceGraphic"></feMergeNode>
+          </feMerge>
+        </filter>
+      </defs>
       <path
         fill="#333"
-        d="M21 32.19C23.7614 32.19 26 29.9514 26 27.19 26 24.4286 23.7614 22.19 21 22.19 18.2386 22.19 16 24.4286 16 27.19 16 29.9514 18.2386 32.19 21 32.19Z"
-      />
-      <path
-        fill="#333"
-        d="M27.52 43.52C27.951 43.8309 28.4686 43.9988 29 44L36 44C37.3807 44 38.5 42.8807 38.5 41.5 38.5 40.1193 37.3807 39 36 39L29.82 39 25.06 35.51C24.0205 34.0817 22.2962 33.3187 20.54 33.51 17.9526 33.8317 16.0245 36.0531 16.07 38.66L16.07 53C16.07 55.7614 18.3086 58 21.07 58L26 58 26 58 32 58 32 70.72C32 72.1007 33.1193 73.22 34.5 73.22 35.8807 73.22 37 72.1007 37 70.72L37 55.47C37 54.0893 35.8807 52.97 34.5 52.97L26 52.97 26 42.39Z"
-      />
-      <path
-        fill="#333"
-        d="M75 32.19C77.7614 32.19 80 29.9514 80 27.19 80 24.4286 77.7614 22.19 75 22.19 72.2386 22.19 70 24.4286 70 27.19 70 29.9514 72.2386 32.19 75 32.19Z"
-      />
-      <path
-        fill="#333"
-        d="M75.46 33.46C73.7038 33.2687 71.9795 34.0317 70.94 35.46L66.18 39 60 39C58.6193 39 57.5 40.1193 57.5 41.5 57.5 42.8807 58.6193 44 60 44L67 44C67.5314 43.9988 68.049 43.8309 68.48 43.52L70 42.39 70 53 61.53 53C60.1493 53 59.03 54.1193 59.03 55.5L59.03 70.72C59.03 72.1007 60.1493 73.22 61.53 73.22 62.9107 73.22 64.03 72.1007 64.03 70.72L64.03 58 70.03 58 70.03 58 74.91 58C77.6714 58 79.91 55.7614 79.91 53L79.91 38.61C79.9567 36.0098 78.0394 33.791 75.46 33.46Z"
-      />
-      <path
-        fill="#333"
-        d="M65 46 31 46C29.8954 46 29 46.8954 29 48 29 49.1046 29.8954 50 31 50L46 50 46 70 40 70 40 74 56 74 56 70 50 70 50 50 65 50C66.1046 50 67 49.1046 67 48 67 46.8954 66.1046 46 65 46Z"
-      />
-      <path
-        fill="#333"
-        d="M28 60 14 60 14 40C14 38.8954 13.1046 38 12 38 10.8954 38 10 38.8954 10 40L10 62C10 63.1046 10.8954 64 12 64L18 64 18 70 14 70 14 74 26 74 26 70 22 70 22 64 28 64C29.1046 64 30 63.1046 30 62 30 60.8954 29.1046 60 28 60Z"
-      />
-      <path
-        fill="#333"
-        d="M84 38.5C82.8954 38.5 82 39.3954 82 40.5L82 60 68 60C66.8954 60 66 60.8954 66 62 66 63.1046 66.8954 64 68 64L74 64 74 70 70 70 70 74 82 74 82 70 78 70 78 64 84 64C85.1046 64 86 63.1046 86 62L86 40.5C86 39.3954 85.1046 38.5 84 38.5Z"
-      />
+        d="M52.3 29.4h.6c1.2 0 2.2-.7 2.6-1.8l1.3-3.2c.1-.3.2-.7.2-1.1v-10c0-1.6-1.3-2.8-2.9-2.9h-1.9c-1.2 0-2.3.8-2.7 1.9l-5.1-2.1c-.5-2.1-2.4-3.6-4.6-3.6-.8 0-1.6.2-2.4.7L20.9.2c-1.4-.6-3.1.1-3.7 1.5-.6 1.4.1 3.1 1.5 3.7l.3.2v20.1c-1.5.3-2.8 1.3-3.4 2.8h-3.3c-.8 0-1.6.4-2.1 1l-5.6 6.4c-.5.5-.7 1.2-.7 1.9v12.6h-1c-1.6 0-2.8 1.3-2.9 2.9v1C0 55.7 1.3 57 2.9 57h51.3c1.6 0 2.8-1.3 2.9-2.9v-1c0-1.6-1.3-2.8-2.9-2.9h-5.7v-1c0-1.6-1.3-2.8-2.9-2.9v-3.8h1.9v-1.9h-1.9v-1l-2.1-14.3h1.2v-1.9h-1.4L42 15.6c.1 0 .2-.1.2-.1l7.1 3v8.1c.1 1.6 1.4 2.8 3 2.8zm-1-16.1c0-.5.4-1 1-1h1.9c.5 0 1 .4 1 1v10.1c0 .1 0 .2-.1.4L53.8 27c-.1.4-.5.6-.9.6h-.6c-.5 0-1-.4-1-1V13.3zm-8.5-1.9c0 1.6-1.3 2.9-2.9 2.9-1.6 0-2.9-1.3-2.9-2.9s1.3-2.9 2.9-2.9c1.6 0 2.9 1.3 2.9 2.9zM18.9 2.5c.2-.5.8-.7 1.3-.5L36 8.7c-.4.5-.6 1.1-.7 1.7L19.4 3.7c-.5-.2-.7-.7-.5-1.2zm16.4 10c.3 1.3 1.2 2.5 2.5 3.1l-1.2 8.1h-1.4v1.9h1.2l-2.1 14.1v1.1h-1.9v1.9h1.9v3.8c-1.6 0-2.8 1.3-2.9 2.9v1h-7.6v-8.6h1.9a6.7 6.7 0 000-13.4h-1.4c-.6-1.4-1.9-2.4-3.4-2.8V6.4l14.4 6.1zM21.9 50.3H10.5V39.9c0-.5.4-1 1-1H21c.5 0 1 .4 1 1v10.4zM20 27.5c1.6 0 2.9 1.3 2.9 2.9 0 1.6-1.3 2.9-2.9 2.9-1.6 0-2.9-1.3-2.9-2.9 0-1.6 1.3-2.9 2.9-2.9zM5.7 37.8c0-.2.1-.5.2-.6l5.6-6.4c.2-.2.4-.3.7-.3h2.9c0 2.6 2.1 4.8 4.8 4.8s4.8-2.1 4.8-4.8h1c2.6 0 4.8 2.1 4.8 4.8 0 2.6-2.1 4.8-4.8 4.8h-1.9c0-1.6-1.3-2.8-2.9-2.9h-9.5c-1.6 0-2.8 1.3-2.9 2.9v10.5H5.7V37.8zm48.5 14.4c.5 0 1 .4 1 1v1c0 .5-.4 1-1 1H2.9c-.5 0-1-.4-1-1v-1c0-.5.4-1 1-1h51.3zm-7.6-2.8v1H33.3v-1c0-.5.4-1 1-1h11.4c.4 0 .9.5.9 1zm-2.9-2.9h-7.6v-3.8h7.6v3.8zm0-6.5v.9h-7.6V40l2.1-14.3h3.4L43.7 40zm-2.4-16.3h-2.8l1.1-7.6h.6l1.1 7.6zm2.5-9.6c.4-.5.6-1.1.7-1.7l4.8 2.1v2.1l-5.5-2.5z"
+        filter="url(#b)"      
+      ></path>
     </svg>
   );
 };
 
+
 const SellersSvg = props => {
   return (
     <svg
-      viewBox="0 0 96 96"
       xmlns="http://www.w3.org/2000/svg"
-      xlink="http://www.w3.org/1999/xlink"
-      width="135"
-      height="135"
-      // viewBox="0 0 11320 2490"
-      // id="Icons_BoardRoom"
-      // overflow="hidden"
+      width="144"
+      height="123"
+      viewBox="0 0 144 123"
     >
-      <circle 
+      <defs>
+        <filter
+          id="a"
+          width="109.3%"
+          height="110.8%"
+          x="-4.6%"
+          y="-5.4%"
+          filterUnits="objectBoundingBox"
+        >
+          <feOffset
+            dx="3"
+            dy="3"
+            in="SourceAlpha"
+            result="shadowOffsetOuter1"
+          ></feOffset>
+          <feColorMatrix
+            in="shadowOffsetOuter1"
+            result="shadowMatrixOuter1"
+            values="0 0 0 0 0.447058824 0 0 0 0 0.635294118 0 0 0 0 0.435294118 0 0 0 0.3 0"
+          ></feColorMatrix>
+          <feMerge>
+            <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+            <feMergeNode in="SourceGraphic"></feMergeNode>
+          </feMerge>
+        </filter>
+      </defs>
+      <path
         fill="#333"
-        cx="30.5" cy="44.6" r="9" />
-      <path 
-        fill="#333"
-        d="M72.5 88 72.5 79C72.5369 77.5751 71.862 76.2254 70.7 75.4 68.1096 73.3725 65.1055 71.9387 61.9 71.2 59.4966 70.4775 57.0086 70.0741 54.5 70 51.9855 70.0078 49.4881 70.4127 47.1 71.2 43.94 72.065 40.9599 73.4874 38.3 75.4 37.1718 76.2539 36.5062 77.5851 36.5 79L36.5 88Z" />
-      <circle 
-        fill="#333"
-        cx="54.5" cy="58.6" r="9" />
-      <path 
-        fill="#333"
-        d="M35.9 72.2 35.9 72.2C38.7079 70.1961 41.8121 68.644 45.1 67.6 42.8259 65.2303 41.5388 62.0841 41.5 58.8L41.5 58.4C40.3317 57.9105 39.1283 57.5094 37.9 57.2 35.4966 56.4775 33.0086 56.074 30.5 56 27.9855 56.0077 25.4881 56.4127 23.1 57.2 19.9721 58.1495 17.0054 59.5654 14.3 61.4 13.138 62.2254 12.4631 63.5751 12.5 65L12.5 74 34.1 74C34.5958 73.3042 35.2042 72.6958 35.9 72.2Z" />
-      <path 
-        fill="#333"
-        d="M81.35 8 43.58 8C42.4241 8.011 41.4944 8.95407 41.5 10.11L41.5 35.86C41.4779 37.0196 42.3999 37.9776 43.5595 37.9997 43.5663 37.9998 43.5732 37.9999 43.58 38L49.58 38 49.58 46.44 57.87 38 81.35 38C82.5075 37.989 83.44 37.0476 83.44 35.89L83.44 10.11C83.4401 8.95245 82.5075 8.01097 81.35 8ZM62.29 34.25C61.0639 34.2499 60.0701 33.2559 60.0702 32.0298 60.0703 30.8037 61.0643 29.8099 62.2904 29.81 63.5047 29.8101 64.4936 30.7858 64.51 32 64.5321 33.2203 63.5607 34.2276 62.3404 34.2497 62.3236 34.25 62.3068 34.2501 62.29 34.25ZM63.72 25.1 63.72 28.25 60.87 28.25 60.87 22.36 62.29 22.36C64.77 22.36 66.37 20.91 66.37 18.68 66.4091 16.4712 64.6502 14.6489 62.4414 14.6098 62.391 14.6089 62.3405 14.609 62.29 14.61 60.2333 14.4189 58.4111 15.9312 58.22 17.9879 58.1986 18.2181 58.1986 18.4498 58.22 18.68L58.22 18.93 55.37 18.93 55.37 18.68C55.154 15.069 57.9062 11.9666 61.5172 11.7506 61.7746 11.7352 62.0326 11.735 62.29 11.75 66.0729 11.7056 69.1756 14.7362 69.22 18.5191 69.2206 18.5727 69.2206 18.6264 69.22 18.68 69.3171 21.9183 66.9349 24.6991 63.72 25.1Z" />
+        fillRule="evenodd"
+        d="M21.293 48.075h23.26v35.53a178.983 178.983 0 00-23.26 6.044V48.075zM32.83 12.18c6.41 0 11.54 1.831 11.54 4.212v11.355H21.293V16.391c0-2.38 5.127-4.212 11.537-4.212zM21.293 44.412h23.26V31.41h-23.26v13.003zm37.728-2.93h29.301l8.608 9.523H50.413l8.608-9.523zm25.638 39.376V62.91c0-1.1-.73-1.832-1.831-1.832H64.515c-1.099 0-1.831.733-1.831 1.832v18.13c-5.13.366-10.073 1.099-14.652 1.831V54.668H99.13v28.388c-4.397-.916-9.34-1.832-14.47-2.198zm-3.663-.183c-1.646 0-3.296-.183-5.128-.183-3.294 0-6.41.183-9.521.366V64.74h14.65v15.934zm21.613-47.251c0-5.86 8.606-20.512 13.55-28.204 4.764 7.508 13.555 22.343 13.555 28.204 0 6.776-5.128 12.453-11.723 13.37V33.606l6.044-6.044c.735-.732.735-1.831 0-2.564-.73-.732-1.831-.732-2.562 0l-3.482 3.48v-8.242c0-1.099-.73-1.831-1.831-1.831-1.097 0-1.832.732-1.832 1.831v15.568l-3.477-3.48c-.733-.733-1.832-.733-2.564 0-.735.732-.735 1.831 0 2.564l6.041 6.044v5.86c-6.59-.916-11.719-6.593-11.719-13.37zm-89.19 85.71h.366c.915 0 1.646-.732 1.831-1.464 1.646-10.44 8.79-20.146 14.102-26.74 5.859-1.648 13.37-3.479 21.611-4.761-6.595 6.96-14.836 17.948-16.85 30.951-.182.916.55 2.015 1.466 2.015h.366c.916 0 1.648-.733 1.832-1.465 2.197-14.286 12.82-26.19 19.23-32.234 5.86-.732 11.904-1.098 18.314-1.098-7.144 6.959-16.483 18.68-18.68 32.782-.184.916.547 2.015 1.463 2.015h.368c.916 0 1.648-.733 1.831-1.465 2.38-15.018 13.553-27.106 20.327-33.332 5.313.183 10.44.915 15.386 2.014-6.96 7.509-14.834 18.498-16.85 30.768-.182.916.549 2.015 1.464 2.015h.367c.915 0 1.65-.733 1.831-1.465 2.017-12.27 10.441-23.26 17.399-30.402a164.853 164.853 0 0114.104 4.212c-5.313 6.96-11.172 15.934-12.64 25.64-.18.916.552 2.015 1.468 2.015h.364c.916 0 1.65-.733 1.832-1.465 1.467-9.157 7.325-17.948 12.638-24.908 4.76 1.832 16.573 7.51 19.688 9.157.182.183.548.183.916.183.733 0 1.282-.366 1.648-.915.55-.916.184-2.015-.732-2.381-3.482-1.832-16.025-7.692-21.52-9.89v-38.46c8.608-.916 15.385-8.241 15.385-17.032S119.64 3.388 118.176.824c-.732-1.099-2.382-1.099-3.113 0-1.65 2.381-15.567 23.809-15.567 32.6 0 8.79 6.776 16.116 15.382 17.032v36.995c-3.478-1.282-7.326-2.38-11.353-3.48V52.837c0-.55-.185-.916-.551-1.282 0 0 0-.183-.182-.183L91.07 38.369c-.364-.367-.915-.55-1.28-.55H59.021c-.551 0-1.099.183-1.284.55l-8.789 9.706V16.391c0-5.494-7.694-7.875-15.203-7.875-7.507 0-16.114 2.381-16.114 7.875v74.54c-2.564.915-16.394 8.058-16.575 8.058-.916.366-1.282 1.465-.916 2.38.367.917 1.466 1.283 2.381.917 0 0 15.657-7.692 20.97-9.524-4.945 6.593-10.073 15.018-11.538 24.175-.185 1.099.55 2.015 1.465 2.198z"
+        filter="url(#a)"
+      ></path>
     </svg>
   );
 };
+
+
+
 
 
 const Login = props => {
@@ -226,11 +488,30 @@ const Login = props => {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [userName, setUserName] = useState(null);
   const [password, setPassword] = useState(null);
-  const [tenant, setTenant] = useState(null);
+  const classes = useStyles();
+
   //const classes = useStyles();
   let history = useHistory();
   const localClass = localStyles();  
   const [showSignUp, setShowSignUp] = useState(false);
+  const [tenant, setTenant] = useState("M1neral");
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+  const [emailFlags, setEmailFlags] = useState({
+    error: false,
+    placeholder: null,
+    autoFocus: false
+  });
+  const [passwordFlags, setPasswordFlags] = useState({
+    error: false,
+    placeholder: null,
+    autoFocus: false
+  });
+
+  useEffect(() => {}, [userEmail, userPassword]);
+
+
+  
 
 
 
@@ -307,6 +588,7 @@ const Login = props => {
     setPassword(userData.userPassword);
     setTenant(userData.tenant);
     login();
+
   };
 
   
@@ -334,6 +616,128 @@ const Login = props => {
         return <SignUpCard handleSignIn={handledSignIn} />;
     }
   }; */
+
+
+  
+  const signIn = () => {
+    if (userEmail === "" || userPassword === "") {
+      //set errorFlags
+    } else {
+      const userData = {
+        userEmail,
+        userPassword,
+        tenant
+      };
+      const { handleSignIn } = props;
+      handleSignIn(userData);
+    }
+  };
+
+  const onEnterKey = e =>{    
+    if (userEmail === "" || userPassword === "") {
+      //set errorFlags
+    } else {
+      const userData = {
+        userEmail,
+        userPassword,
+        tenant
+      };
+      const { handleSignIn } = props;
+      if(e.keyCode === 13){
+        e.preventDefault();
+        handleSignIn(userData);
+      }
+
+    }
+  }
+
+
+  const BootstrapInput = withStyles((theme) => ({
+    root: {
+      'label + &': {
+        marginTop: theme.spacing(3),
+      },
+    },
+    input: {
+      borderRadius: 4,
+      // position: 'relative',
+      backgroundColor: theme.palette.common.white,
+      border: '1px solid #ced4da',
+      fontSize: 16,
+      width: '250px',
+      padding: '10px',
+      marginLeft: '0',
+      marginTop: '10px',
+      transition: theme.transitions.create(['border-color', 'box-shadow']),
+      // Use the system font instead of the default Roboto font.
+      fontFamily: [
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        'Roboto',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+      ].join(','),
+  
+      '&:hover': {
+        backgroundColor: '#fff',
+      },
+  
+      '&$focused': {
+        backgroundColor: '#fff',
+        boxShadow: `${fade(theme.palette.primary.main, 0.25)} 0 0 0 2px`,
+        borderColor: theme.palette.primary.main,
+      },
+    },
+  }))(InputBase);
+  
+  
+  
+
+  const renderButtonAndLoader = (
+    props.ready ?
+      <CircularProgress color="secondary" size={28} className={classes.loader} />
+      : 
+        <Button
+          variant="outlined"
+          disableElevation
+          type="submit"
+          className={classes.button}
+          onClick={signIn}
+          onKeyDown={e => onEnterKey(e)}
+            >
+            Sign In
+        </Button>
+  )
+
+  const handleTenantChange = (e) => {
+    setTenant(e.target.value)
+    console.log(tenant)
+    let t = e.target.value;
+    let graphQL;
+    if(t === 'M1neral') {
+      //graphQL = 'https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA=='
+      graphQL =  'https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g=='
+    }
+    else if(t === 'c1') {
+      graphQL = 'https://m1graphql.azurewebsites.net/api/tenant1?code=q7/gFC0gYxRasZrbGWxAIIQ4voHIMT/6vLv7iTESk1cQO3ChAqHCXw=='
+    }
+    else if(t === 'c2') {
+      graphQL = 'https://m1graphql.azurewebsites.net/api/tenant2?code=XxuZEkb91cXRlu5px2VqW7O5u0XyO1kEKSAzVzBXagf01nyG7jqryg=='
+    }
+    // else if (t === 'm1dev') {
+    //   graphQL = 'https://m1graph.azurewebsites.net/api/m1graph?code=MHYChoSzLKszMTCsH9gRhPyCWGLDaU6qNFHB2YYrXHs9YXNV0BO5zA=='
+  
+    // }
+    // else if (t === 'm1auth') {
+    // graphQL = 'https://m1graph.azurewebsites.net/api/m1graphauth'
+    // }
+    setStateApp(state => ({...state,apolloClientEndpoint:graphQL}))
+  }
 
 
   const renderSignupNewCard = showSignUp ? (
@@ -365,8 +769,122 @@ const Login = props => {
       </div>
 
       <div className={localClass.cardContainer}>
+        
+      {/* <div>
       <SignInCard handleSignIn={handledSignIn} ready={loading} />
-      <Card color="secondary" className={localClass.supportCard}>
+      </div> */}
+{/* 
+      <Paper 
+        elevation = {0}
+        square = {true}
+        className={localClass.card}
+        > */}
+
+  {/* <div 
+          //className={classes.cardHeader}
+          >
+          <div 
+            style={{ 
+              marginTop: "75px", 
+              fontSize: '24px',
+              fontWeight: '900',
+              fontFamily: "Tahoma, Geneva, sans-serif",
+              textAlign: 'left',
+              paddingLeft: '65px',
+              color: 'white' }}
+            >
+              Sign in
+            </div>
+        </div>
+
+        <div className={classes.cardInputs}>
+
+
+        <div 
+            style={{ 
+              marginTop: "25px", 
+              fontSize: '14px',
+              fontWeight: '900',
+              fontFamily: "Tahoma, Geneva, sans-serif",
+              color: 'white',
+              textAlign: 'left',
+              paddingLeft: '65px' }}
+            >
+            EMAIL
+        </div>
+
+            <BootstrapInput 
+                type="email"
+                label="Email"
+                error={emailFlags.error}
+                placeholder={emailFlags.placeholder}
+                autoFocus={emailFlags.autoFocus}
+                autoComplete= "true"
+                onKeyDown={e => onEnterKey(e)}
+                onChange={e => setUserEmail(e.target.value)}
+                onBlur={() => validateData("email", userEmail, setEmailFlags)}
+                value={userEmail}
+                />
+
+
+          <div 
+            style={{ 
+              marginTop: "30px", 
+              fontSize: '14px',
+              fontWeight: '900',
+              fontFamily: "Tahoma, Geneva, sans-serif",
+              color: 'white',
+              textAlign: 'left',
+              paddingLeft: '65px' }}            
+            >
+            PASSWORD
+          </div>
+
+            <BootstrapInput 
+                defaultValue="" 
+                type="password"
+                error={passwordFlags.error}
+                placeholder={passwordFlags.placeholder}
+                autoFocus={passwordFlags.autoFocus}
+                autoComplete= "true"
+                onChange={e => setUserPassword(e.target.value)}
+                onKeyDown={e => onEnterKey(e)}
+                onBlur={() =>
+                  validateData("password", userPassword, setPasswordFlags)
+                }
+                value={userPassword}
+                />
+
+          <div className={classes.secondaryInputs}>
+            <Link to="/forgotpassword" className={classes.passwordLink}>Forgot Password?</Link>
+          </div>
+
+        {renderButtonAndLoader}
+
+        </div>
+        <div className={classes.cardFooter}>
+          <div>Don't have an account?</div>
+          <div>
+            <Link 
+              // to="/signup" 
+              className={classes.signupLink}>
+              Sign Up Here
+            </Link>
+          </div>
+        </div> */}
+
+
+      <SignInCard handleSignIn={handledSignIn} ready={loading} />
+
+      {/* </Paper> */}
+      
+      <div>
+
+
+      <Paper 
+        elevation = {0}
+        square={true}
+      color="secondary" className={localClass.supportCard}>
         <div>
         <Typography style={{ 
               textAlign: "left", 
@@ -399,8 +917,10 @@ const Login = props => {
             Contact Support
           </Button>
         </div>
-      </Card>
+      </Paper>
       </div>
+      </div>
+
       
       <div>
       <Typography  className={localClass.headerWords}>
@@ -413,7 +933,10 @@ const Login = props => {
 
       <div className={localClass.cardContainer}>
         <div className={localClass.signInCardContainer}>
-        <Card color="secondary" className={localClass.signInCard}>
+        <Paper 
+        elevation = {1}
+        square={true}
+        color="secondary" className={localClass.signInCard}>
           <div>
             <SellersSvg />
             <div
@@ -422,7 +945,7 @@ const Login = props => {
                 // color: "white", 
                 fontSize: "2rem", paddingTop: "4%" }}
             >
-              OWNERS
+              LAND OWNERS
             </div>
           </div>
           <div className={localClass.cardInputs}>
@@ -446,13 +969,16 @@ const Login = props => {
             }}
             disabled
           >
-            Coming Soon!
+            SIGN UP
           </Button>
-        </Card>
+        </Paper>
         </div>
 
         <div className={localClass.signInCardContainer}>
-        <Card color="secondary" className={localClass.signInCard}>
+        <Paper 
+        elevation = {1}
+        square={true}
+        color="secondary" className={localClass.signInCard}>
           <div>
             {/* <FontAwesomeIcon icon={faUsers} style={{ fontSize: "5.5rem" }} /> */}
             <BuyersSvg />
@@ -462,7 +988,7 @@ const Login = props => {
                 // color: "white", 
                 fontSize: "2rem" }}
             >
-              BUYERS
+              MINERAL BUYERS
             </div>
           </div>
           <div className={localClass.cardInputs}>
@@ -486,31 +1012,36 @@ const Login = props => {
           >
             Sign Up
           </Button>
-        </Card>
+        </Paper>
         </div>
 
         <div className={localClass.signInCardContainer}>
-        <Card color="secondary" className={localClass.signInCard}>
+        <Paper 
+        id = "op_card"
+        elevation = {1}
+        square={true}
+        color="secondary" className={localClass.signInCard}>
           <div>
             {/* <FontAwesomeIcon icon={faUsers} style={{ fontSize: "5.5rem" }} /> */}
-            <BuyersSvg />
+            <OperatorSvg />
             <div
               className={localClass.cardTitle}
               style={{ 
                 // color: "white", 
                 fontSize: "2rem" }}
             >
-              BUYERS
+              OPERATORS
             </div>
           </div>
           <div className={localClass.cardInputs}>
             <Typography style={{ textAlign: "center", padding: "10%" }}>
-              For buyers seeking potential deals and to streamline acquisition
-              workflows
+              For upstream and midstream operating companies looking to streamline
+              land acquisition workflows
             </Typography>
           </div>
           
           <Button
+            id = "op_button"
             variant="contained"
             disableElevation
             style={{
@@ -518,17 +1049,22 @@ const Login = props => {
               backgroundColor: "rgba(23, 170, 221, 1)",
               width: "150px",
               float: 'left',
-              marginLeft: '50px' 
+              marginLeft: '50px',
+              "&:hover" : {
+                backgroundColor: '#f0cfb3',
+              },
             }}
             onClick={showForm}
           >
             Sign Up
           </Button>
-        </Card>
+        </Paper>
+
         </div>
 
 
       </div>
+
     </>
   ) : (
     <div className={localClass.displaNone}></div>
