@@ -17,16 +17,17 @@ import Paper from '@material-ui/core/Paper';
 
 const useStyles = makeStyles(theme => ({
   conatiner: {
-    paddingTop: 20,
-    margin: "0 auto",
-    height: "100%",
-    // display: "flex",
-    justifyContent: "center"
+    // paddingTop: 20,
+    // margin: "0 auto",
+    // height: "100%",
+    // // display: "flex",
+    // justifyContent: "center"
   },
   card: {
     //maxWidth: 450,
     //minWidth: 445,
-    width: 500,
+    width: '500px',
+    height: '700px',
     backgroundColor: theme.palette.secondary.dark,
     border: `1px solid ${theme.palette.secondary.main}`,
     display: "flex",
@@ -43,6 +44,18 @@ const useStyles = makeStyles(theme => ({
     color: "white",
     fontSize: ".75rem",
     textAlign: "center"
+  },
+  button: {
+    backgroundColor: '#e4a773',
+    width: "125px",
+    height: "50px",
+    marginTop: "35px",
+    color: "#011133",
+    float: 'left',
+    marginLeft: '60px',
+    "&:hover" : {
+      backgroundColor: '#f0cfb3',
+    },
   },
   inputs: {
     backgroundColor: theme.palette.background.paper,
@@ -157,13 +170,18 @@ export default function NewUserCard(props) {
     userEmail)
   return !sent ? (
     <div className={classes.conatiner}>
-      <Card color="secondary" className={classes.card}>
-        <div className={classes.cardHeader}>
+      <Card  
+        square={true}
+        elevation={0}
+        color="secondary" className={classes.card}>
+
+        {/* <div className={classes.cardHeader}>
           <div style={{ marginTop: "5px", fontSize: "1rem" }}>
             Sign up as a buyer, financial institution or energy company.
           </div>
-        </div>
-        <Card className={classes.cardForm}>
+        </div> */}
+
+        {/* <Card className={classes.cardForm}> */}
 
 
         <div 
@@ -290,7 +308,7 @@ export default function NewUserCard(props) {
               textAlign: 'left',
               paddingLeft: '65px' }}
             >
-            MOBILE PHONE
+            PHONE
         </div>
 
         <BootstrapInput 
@@ -307,7 +325,9 @@ export default function NewUserCard(props) {
                 // onBlur={() => validateData("email", userEmail, setEmailFlags)}
                 value={userEmail}
                 />
-                <div 
+
+
+                {/* <div 
             style={{ 
               marginTop: "15px", 
               fontSize: '14px',
@@ -333,7 +353,7 @@ export default function NewUserCard(props) {
                 // onChange={e => setUserEmail(e.target.value)}
                 // onBlur={() => validateData("email", userEmail, setEmailFlags)}
                 value={userEmail}
-                />
+                /> */}
 
 
           {/* <ValidatorForm
@@ -405,22 +425,17 @@ export default function NewUserCard(props) {
           </ValidatorForm> */}
 
           <Button
-              variant="contained"
-              disableElevation
-              type="submit"
-              style={{
-                fontSize: "1.2em",
-                color: "white",
-                marginTop: 10,
-                backgroundColor: "rgba(23, 170, 221, 1)",
-                marginBottom: 5,
-                width: "20vw"
-              }}
-            >
-              Submit
+            variant="outlined"
+            disableElevation
+            type="submit"
+            className={classes.button}
+            //onClick={signIn}
+            //onKeyDown={e => onEnterKey(e)}
+              >
+                REQUEST ACCESS
             </Button>
 
-        </Card>
+        {/* </Card> */}
         <div className={classes.cardFooter}>
           <div>
             By signing up, you agree to the{" "}

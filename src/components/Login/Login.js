@@ -73,8 +73,8 @@ const localStyles = makeStyles(theme => ({
     },
   },
   supportCard: {
-    width: '425px',
-    height: '500px',
+    width: '500px',
+    height: '700px',
     backgroundColor: '#f6fafb',
     display: "flex",
     flexDirection: "column",
@@ -731,7 +731,32 @@ const Login = props => {
 
 
   const renderSignupNewCard = showSignUp ? (
+    <div>
+    <div>
+    <Typography variant="h4" style={{marginBottom: '10px'}} className={localClass.headerWords} >
+      Close more deals in far less time. 
+    </Typography>
+    </div>
 
+    <div>
+    <Typography style={{ 
+            marginTop: "5px", 
+            marginBottom: '50px',
+            fontSize: '24px',
+            paddingLeft: '50px',
+            paddingRight: '50px',
+            fontFamily: "Tahoma, Geneva, sans-serif",
+            // textAlign: 'left',
+            // paddingLeft: '65px',
+            // paddingRight: '45px',
+            color: '#011133' ,
+             }}>
+      M1neral's platform allows you to identify more opportunities, manage interactions with 
+      landowners, and streamline acquisition workflows all in a single location. 
+      </Typography>
+    </div>
+
+    
     <div className={localClass.cardContainer}>
 
     <NewUserCard
@@ -742,10 +767,10 @@ const Login = props => {
 
 
 
-    <Paper 
+    <Card 
       elevation = {0}
       square={true}
-    color="secondary" className={localClass.supportCard}>
+      color="secondary" className={localClass.supportCard}>
       <div>
       <Typography style={{ 
             marginTop: "75px", 
@@ -854,9 +879,10 @@ const Login = props => {
           Contact Support
         </Button>
       </div> */}
-    </Paper>
+    </Card>
     </div>
 
+    </div>
 
 
 
@@ -882,10 +908,16 @@ const Login = props => {
   const renderBody = !showSignUp ? (
     <>
 
+      <div>
+      <Typography variant="h4" className={localClass.headerWords}>
+        Welcome back!
+      </Typography>
+      </div>
 
 
       <div className={localClass.cardContainer}>
         
+
 
 
       <SignInCard handleSignIn={handledSignIn} ready={loading} />
@@ -956,11 +988,7 @@ const Login = props => {
       
     <div className={localClass.myRoot}>
 
-      <div>
-      <Typography variant="h4" className={localClass.headerWords}>
-        Welcome back!
-      </Typography>
-      </div>
+
 
       <div className={localClass.rootNewUser}>
         {renderBody}
