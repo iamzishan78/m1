@@ -32,7 +32,6 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center"
   },
   cardInputs: {
-    // height: "60%",
     padding: "2%",
     paddingTop: "10%",
     paddingBottom: "20%",
@@ -90,9 +89,6 @@ const useStyles = makeStyles(theme => ({
     display: "flex!important",
     backgroundSize: "cover",
     justifyContent: "center",
-    // backgroundImage: `url(${BackgroundURI})`,
-    // backgroundRepeat: "no-repeat",
-    // backgroundPosition: "center",
     '&::-webkit-scrollbar': {
       width: '0 !important'
      },

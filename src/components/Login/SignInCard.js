@@ -243,7 +243,8 @@ const SignInCard = props => {
               fontFamily: "Tahoma, Geneva, sans-serif",
               textAlign: 'left',
               paddingLeft: '65px',
-              color: 'white' }}
+              color: 'white' 
+            }}
             >
               Sign in
             </div>
