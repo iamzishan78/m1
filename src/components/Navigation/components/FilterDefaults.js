@@ -581,7 +581,7 @@ export default function FilterDedaults() {
   }
   
 
-  const deleteChipProd = (item,name) => {
+  const deleteChipProd = (item,name, filter) => {
     if(stateNav[name] && stateNav[name].length > 0){
       let copy;
       copy = [...stateNav[name]];
@@ -593,16 +593,17 @@ export default function FilterDedaults() {
         }
       }
 
-      let compare = removeFitlerFromProdName(name);
-      let match = matchProdOption(compare);
-      let findItem = stateNav.prodOptions;
-      for (let index = 0; index < findItem.length; index++) {
-        const element = findItem[index];
-        if (element === match) {
-          findItem.splice(index, 1);
+      if (filter && filter[1], filter[1].length === 2) {
+        let compare = removeFitlerFromProdName(name);
+        let match = matchProdOption(compare);
+        let findItem = stateNav.prodOptions;
+        for (let index = 0; index < findItem.length; index++) {
+          const element = findItem[index];
+          if (element === match) {
+            findItem.splice(index, 1);
+          }
         }
       }
-  
       setStateNav((stateNav) => ({
         ...stateNav,
         [name]: copy,
@@ -658,63 +659,99 @@ export default function FilterDedaults() {
       }
     }
   };
-
+  
   const removeAllWell = () => {
     if (filtersWell && filterTypeWell) {
-      let name;
-      stateNavCopy.map(el => {
-        if (el[0].includes("Well")) {
-          name = el[0];
-        }
-        if (el[0].includes("Operator")) {
-          name = el[0];
-        }
-        if (el[0].includes("Date")) {
-          name = el[0];
-        }
-        if (el[0].includes("Date")) {
-          name = el[0];
-        }
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          typeName: null,
-          statusName: null,
-          operatorName: null,
-          profileName: null,
-          [name]: null
-        }))
-      })
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        filterCompletetionDateRange: null,
+        filterFirstProdDateRange: null,
+        filterPermitDateRange: null,
+        firstProdDateFrom: null,
+        firstProdDateTo: null,
+        filterSpudDateRange: null,
+        filterWellProfile: null,
+        filterWellStatus: null,
+        filterWellType: null,
+        filterOperator: null,
+        completetionDateFrom: null,
+        completetionDateTo: null,
+        dateTypeName : [],
+        operatorName: null,
+        profileName: null,
+        spudDateFrom: null,
+        spudDateTo: null,
+        statusName: [],
+        typeName: [],
+      }))
     }
   }
 
   const removeAllGeo = () => {
     if (filtersGeo && filterTypeGeography) {
-      let name;
-      // stateNavCopy.map(el => {
-      //   if (el[0].includes("Well")) {
-      //     name = el[0];
-      //     setStateNav((stateNav) => ({
-      //       ...stateNav,
-      //       typeName: null,
-      //       statusName: null,
-      //       operatorName: null,
-      //       profileName: null,
-      //       [name]: null
-      //     }))
-      //   }
-      // })
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        basinName:[],
+        playName: [],
+        countyName: null,
+        stateName: null,
+        displayStateName: null,
+        surveyName: null, 
+        abstractName: null,
+        filterGeography: null,
+        filterBasin: null,
+        filterPlay: null,
+      }))
     }
   }
 
   const removeAllProd = () => {
     if (filtersProd && filterTypeProdcution) {
-      console.log(stateNavCopy)
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          prodOptions: [],
+          filterCumulativeOil:null,
+          filterCumulativeGas:null,
+          filterCumulativeWater:null,
+          filterFirstMonthWater:null,
+          filterFirstThreeMonthWater:null,
+          filterFirstSixMonthWater:null,
+          filterFirstTwelveMonthWater:null,
+          filterLastMonthWater:null,
+          filterLastSixMonthWater:null,
+          filterLastTwelveMonthWater:null,
+          filterFirstMonthGas:null,
+          filterFirstThreeMonthGas:null,
+          filterFirstSixMonthGas:null,
+          filterFirstTwelveMonthGas:null,
+          filterLastMonthGas:null,
+          filterLastSixMonthGas:null,
+          filterLastTwelveMonthGas:null,
+          filterFirstMonthOil:null,
+          filterFirstSixMonthOil:null,
+          filterFirstTwelveMonthOil:null,
+          filterLastMonthOil:null,
+          filterLastSixMonthOil:null,
+          filterLastTwelveMonthOil:null,
+        }))
     }
   }
 
   const removeAllOwner = () => {
     if (filtersOwner && filterTypeOwner) {
-      console.log(stateNavCopy)
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        interestName: [],
+        ownerTypeName: [],
+        ownerCountWell: [],
+        filterOwnerType:null,
+        filterOwnerCount: null,
+        filterNoOwnerCount: null,
+        filterAllInterestTypes: null,
+        filterAllOwnershipTypes:null,
+        filterHasOwners: null,
+      }))
+      
     }
   }
 

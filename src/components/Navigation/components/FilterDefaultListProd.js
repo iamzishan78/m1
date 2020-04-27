@@ -136,9 +136,14 @@ export default function FilterDefaultListProd(props) {
       return string.replace("lastTwelveMonthWater", "Last 12Mo H2O -")
   }
 }
-  const removeChip = (e, filter) => () => {
+  const removeChip = (e, filter, el) => () => {
     const { deleteChip } = props;
-    deleteChip(e, filter);
+    deleteChip(e, filter, el);
+  };
+
+  const removeAllFilters = () => {
+    const { removeAll } = props;
+    removeAll();
   };
 
   return (
@@ -148,7 +153,7 @@ export default function FilterDefaultListProd(props) {
         <List  aria-label="mailbox folders">
             <div>
                 <div className={classes.listLabel}>{filterNameType}</div>
-                <Button className={classes.deleteButton} endIcon={<HighlightOffIcon />}  aria-label="delete">
+                <Button className={classes.deleteButton} endIcon={<HighlightOffIcon />} onClick={removeAllFilters}  aria-label="delete">
                     Clear All
                 </Button> 
                 <ListItem  className={classes.listItemContainer} button>
@@ -163,7 +168,7 @@ export default function FilterDefaultListProd(props) {
                             <div className={classes.chipRow}>{el[2]}</div>
                         </section>
                         )}
-                      onDelete={removeChip(el[2], elm[0])}
+                      onDelete={removeChip(el[2], elm[0], elm)}
                     />
                     )
                 )  : null}   

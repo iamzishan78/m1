@@ -88,9 +88,9 @@ export default function FilterOwnerConfidence() {
         }
       }
     };
-    recall();
+    // recall();
     return () => {
-      recall();
+      // recall();
     };
   }, [stateNav, valueMaxDisplay, valueMinDisplay]);
 
@@ -105,10 +105,10 @@ export default function FilterOwnerConfidence() {
     //setOwnerCountWell(event.target.id);
     //setStateNav(stateNav => ({ ...stateNav, ownerCountWell: event.target.id }));
     if (event.target.value === "") {
-      setStateNav(stateNav => ({
-        ...stateNav,
-        filterOwnerCount: null
-      }));
+      // setStateNav(stateNav => ({
+      //   ...stateNav,
+      //   filterOwnerCount: null
+      // }));
     }
   };
 
@@ -117,10 +117,10 @@ export default function FilterOwnerConfidence() {
     //setOwnerCountWell(event.target.id);
     //setStateNav(stateNav => ({ ...stateNav, ownerCountWell: event.target.id }));
     if (event.target.value === "") {
-      setStateNav(stateNav => ({
-        ...stateNav,
-        filterOwnerCount: null
-      }));
+      // setStateNav(stateNav => ({
+      //   ...stateNav,
+      //   filterOwnerCount: null
+      // }));
     }
   };
 

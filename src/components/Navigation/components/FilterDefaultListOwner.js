@@ -131,6 +131,11 @@ export default function FilterDedaultListInterest(props) {
     }
   };
 
+  const removeAllFilters = () => {
+    const { removeAll } = props;
+    removeAll();
+  };
+
   return (
     <div>
       {props.filters && props.filters.length > 0 ? (
@@ -142,6 +147,7 @@ export default function FilterDedaultListInterest(props) {
               className={classes.deleteButton}
               endIcon={<HighlightOffIcon />}
               aria-label="delete"
+              onClick={removeAllFilters} 
             >
               Clear All
             </Button>

@@ -35,7 +35,7 @@ export default function FilterCountyName() {
     if (stateNav.stateName == null){
       setCountyList([])
     } else {
-      if ( stateNav.stateName === "TX") {
+      if ( stateNav.stateName) {
         queryCounties();
       if (!loading) {
         const counties =

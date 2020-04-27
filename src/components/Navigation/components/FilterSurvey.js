@@ -36,7 +36,7 @@ export default function FilterSurvey({key}) {
   
   useEffect (() => {
     if (stateNav.stateName && stateNav.stateName.length > 0) {
-      const listOfStatesWithProps = ["TX", "NM"];
+      const listOfStatesWithProps = ["TX"];
       const check = listOfStatesWithProps.includes(stateNav.stateName)
       if (check) {
         setCheckForStateProps(true)

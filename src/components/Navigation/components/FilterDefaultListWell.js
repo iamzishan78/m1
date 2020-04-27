@@ -59,6 +59,9 @@ export default function FilterDedaultListWell(props) {
   }, [props]);
 
   const removeNameFromType = (string) => {
+    if (string.includes("wellBoreProfile")) {
+      return string.replace("wellBoreProfile", "Bore Profile");
+    }
     if (string.includes("well")) {
       return string.replace("well", " ");
     }

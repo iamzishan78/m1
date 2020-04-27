@@ -93,6 +93,11 @@ export default function FilterDedaultListGeo(props) {
     const { deleteChipGeoSCSA } = props;
     deleteChipGeoSCSA(e, name);
   };
+
+  const removeAllFilters = () => {
+    const { removeAll } = props;
+    removeAll();
+  };
  
   return (
     <div>
@@ -105,6 +110,7 @@ export default function FilterDedaultListGeo(props) {
               className={classes.deleteButton}
               endIcon={<HighlightOffIcon />}
               aria-label="delete"
+              onClick={removeAllFilters}
             >
               Clear All
             </Button>
