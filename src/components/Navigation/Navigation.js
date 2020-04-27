@@ -1304,7 +1304,7 @@ export default function Navigation(props) {
                     </div>
                   }
                   title="Filter"
-                  subheader="Wells"
+                  subheader="Well"
                 />
                 <CardActions
                   classes={{

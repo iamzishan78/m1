@@ -63,19 +63,19 @@ export default function FilterDedaultListInterest(props) {
   const removeNameFromTypeInterest = (string) => {
     // console.log(string);
     if (string.includes("interestTypeOverrideRoyalty")) {
-      return string.replace("interestTypeOverrideRoyalty", "Override Royalty ");
+      return string.replace("interestTypeOverrideRoyalty", "OVERRIDE");
     }
     if (string.includes("interestTypeProductionPayment")) {
       return string.replace(
         "interestTypeProductionPayment",
-        "Production Payment"
+        "PRODUCTION PAYMENT"
       );
     }
     if (string.includes("interestTypeWorkingInterest")) {
-      return string.replace("interestTypeWorkingInterest", "Working Interest");
+      return string.replace("interestTypeWorkingInterest", "WORKING INTEREST");
     }
     if (string.includes("interestTypeRoyaltyInterest")) {
-      return string.replace("interestTypeRoyaltyInterest", "Royalty Interest");
+      return string.replace("interestTypeRoyaltyInterest", "ROYALTY");
     }
   };
 
@@ -93,41 +93,41 @@ export default function FilterDedaultListInterest(props) {
     if (string.includes("ownershipTypeEducationalInstitutions")) {
       return string.replace(
         "ownershipTypeEducationalInstitutions",
-        "Educational Institutions"
+        "EDUCATIONAL INSTITUTIONS"
       );
     }
     if (string.includes("ownershipTypeReligiousInstitutions")) {
       return string.replace(
         "ownershipTypeReligiousInstitutions",
-        "Religious Institutions"
+        "RELIGIOUS INSTITUTIONS"
       );
     }
     if (string.includes("ownershipTypeTrusts")) {
-      return string.replace("ownershipTypeTrusts", "Trusts");
+      return string.replace("ownershipTypeTrusts", "TRUSTS");
     }
     if (string.includes("ownershipTypeNonProfits")) {
-      return string.replace("ownershipTypeNonProfits", "Non Profits");
+      return string.replace("ownershipTypeNonProfits", "NON PROFITS");
     }
     if (string.includes("ownershipTypeCorporations")) {
-      return string.replace("ownershipTypeCorporations", "Corporations");
+      return string.replace("ownershipTypeCorporations", "COMPANIES");
     }
     if (string.includes("ownershipTypeGovernmentalBodies")) {
       return string.replace(
         "ownershipTypeGovernmentalBodies",
-        "Governmental Bodies"
+        "GOVERNMENTAL BODIES"
       );
     }
     if (string.includes("ownershipTypeIndividuals")) {
-      return string.replace("ownershipTypeIndividuals", "Individuals");
+      return string.replace("ownershipTypeIndividuals", "INDIVIDUALS");
     }
     if (string.includes("ownershipTypeUnknown")) {
-      return string.replace("ownershipTypeUnknown", "Unknown");
+      return string.replace("ownershipTypeUnknown", "UNKNOWN");
     }
     if (string.includes("<=")) {
-      return string.replace("<=", "Max");
+      return string.replace("<=", "Max Owner Count");
     }
     if (string.includes(">=")) {
-      return string.replace(">=", "Min");
+      return string.replace(">=", "Min Owner Count");
     }
   };
 
@@ -230,8 +230,8 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Owenr Type</div>
-                            <div className={classes.chipRow}>No Owenrs</div>
+                            <div className={classes.chip}>Wells w/o Owners</div>
+                            <div className={classes.chipRow}>TRUE</div>
                           </section>
                         }
                         onDelete={removeChipOwner("noOwners")}
@@ -289,7 +289,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Owenr Type</div>
+                            <div className={classes.chip}>Owner Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(a[1][1][1])}
                             </div>
@@ -308,7 +308,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Owenr Type</div>
+                            <div className={classes.chip}>Owner Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(o[1][2][1])}
                             </div>
@@ -327,7 +327,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Owenr Type</div>
+                            <div className={classes.chip}>Owner Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(l[1][3][1])}
                             </div>
@@ -346,7 +346,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Owenr Type</div>
+                            <div className={classes.chip}>Owner Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(m[1][4][1])}
                             </div>
@@ -365,7 +365,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Owenr Type</div>
+                            <div className={classes.chip}>Owner Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(el[1][5][1])}
                             </div>
@@ -384,7 +384,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Owenr Type</div>
+                            <div className={classes.chip}>Owner Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(em[1][6][1])}
                             </div>
@@ -403,7 +403,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Owenr Type</div>
+                            <div className={classes.chip}>Owner Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(elment[1][7][1])}
                             </div>
@@ -422,7 +422,7 @@ export default function FilterDedaultListInterest(props) {
                         className={classes.chipContainer}
                         label={
                           <section>
-                            <div className={classes.chip}>Owenr Type</div>
+                            <div className={classes.chip}>Owner Type</div>
                             <div className={classes.chipRow}>
                               {removeNameFromType(e[1][8][1])}
                             </div>
