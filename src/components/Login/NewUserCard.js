@@ -183,6 +183,19 @@ export default function NewUserCard(props) {
 
         {/* <Card className={classes.cardForm}> */}
 
+        <div 
+            style={{ 
+              marginTop: "75px", 
+              fontSize: '24px',
+              fontWeight: '900',
+              fontFamily: "Tahoma, Geneva, sans-serif",
+              textAlign: 'left',
+              paddingLeft: '65px',
+              color: 'white' 
+            }}
+            >
+              Get in touch
+            </div>
 
         <div 
             style={{ 

@@ -74,6 +74,14 @@ const localStyles = makeStyles(theme => ({
   },
   supportCard: {
     width: '500px',
+    height: '500px',
+    backgroundColor: '#f6fafb',
+    display: "flex",
+    flexDirection: "column",
+    fontFamily: theme.typography.fontFamily
+  },
+  signUpSupportCard: {
+    width: '500px',
     height: '700px',
     backgroundColor: '#f6fafb',
     display: "flex",
@@ -577,7 +585,7 @@ const Login = props => {
 
 
 
-  const renderSignUpControls = (
+  const renderSignUpControls = !showSignUp ? (
     <>     
       <div>
       <Typography  className={localClass.headerWords}>
@@ -723,6 +731,161 @@ const Login = props => {
       </div>
 
     </>
+  ) : (
+    <div className={localClass.displaNone}></div>
+  );
+
+
+
+
+  const renderSignInControls = showSignUp ? (
+    <>     
+      <div>
+      <Typography  className={localClass.headerWords}>
+        Already have an account? 
+      </Typography>
+      <Typography  className={localClass.smallerWords}>
+        Login to the Mineral Intelligence Platform
+      </Typography>
+    </div>
+
+      <div className={localClass.cardContainer}>
+        <div className={localClass.signInCardContainer}>
+        <Paper 
+        elevation = {0}
+        square={true}
+        color="secondary" className={localClass.signInCard}>
+          <div>
+            <div  style={{
+                marginTop: '20px',
+                marginBottom: '15px'
+            }}>
+            <SellersSvg />
+            </div>
+
+            <div
+              className={localClass.cardTitle}
+              style={{ 
+                color: "#011133", 
+                fontSize: "24px"}}
+            >
+              LAND OWNERS
+            </div>
+          </div>
+          <div className={localClass.cardInputs}>
+            <Typography style={{ 
+                  textAlign: "center", 
+                  color: '#011133',
+                  padding: "11%", 
+                  }}>
+              For owners and sellers of royalties or minerals looking to learn
+              more about what they own
+            </Typography>
+          </div>
+          <Button
+            variant="outline"
+            disableElevation
+            type = 'submit'
+            className={classes.buttonLower}
+          >
+            SIGN IN
+          </Button>
+        </Paper>
+        </div>
+
+        <div className={localClass.signInCardContainer}>
+        <Paper 
+        elevation = {0}
+        square={true}
+        color="secondary" className={localClass.signInCard}>
+          <div>
+
+          <div  style={{
+                marginTop: '20px',
+                marginLeft: '20px',
+                marginBottom: '20px'
+            }}>
+            <BuyersSvg />
+            </div>
+            <div
+              className={localClass.cardTitle}
+              style={{ 
+                color: "#011133", 
+                fontSize: "24px" }}
+            >
+              MINERAL BUYERS
+            </div>
+          </div>
+          <div className={localClass.cardInputs}>
+            <Typography style={{ 
+              textAlign: "center", 
+              color: '#011133',
+              padding: "10%" }}>
+              For buyers seeking potential deals and to streamline acquisition
+              workflows
+            </Typography>
+          </div>
+          <Button
+            variant="contained"
+            disableElevation
+            className={classes.buttonLower}
+            onClick={showForm}
+          >
+            Sign IN
+          </Button>
+        </Paper>
+        </div>
+
+        <div className={localClass.signInCardContainer}>
+        <Paper 
+        id = "op_card"
+        elevation = {0}
+        square={true}
+        color="secondary" className={localClass.signInCard}>
+          <div>
+          <div  style={{
+                marginTop: '5px',
+                marginBottom: '5px'
+            }}>
+            <OperatorSvg />
+            </div>
+            <div
+              className={localClass.cardTitle}
+              style={{ 
+                color: "#011133", 
+                fontSize: "24px" }}
+            >
+              OPERATORS
+            </div>
+          </div>
+          <div className={localClass.cardInputs}>
+            <Typography style={{ textAlign: "center", 
+                                  color: '#011133',
+                                  padding: "10%" }}>
+              For operating companies looking to streamline
+              land acquisition workflows
+            </Typography>
+          </div>
+          
+          <Button
+            id = "op_button"
+            variant="contained"
+            disableElevation
+            className={classes.buttonLower}
+            onClick={showForm}
+          >
+            Sign IN
+          </Button>
+        </Paper>
+
+        </div>
+
+
+      </div>
+
+    </>
+  ) : (
+    <div className={localClass.displaNone}></div>
   );
 
 
@@ -770,7 +933,7 @@ const Login = props => {
     <Card 
       elevation = {0}
       square={true}
-      color="secondary" className={localClass.supportCard}>
+      color="secondary" className={localClass.signUpSupportCard}>
       <div>
       <Typography style={{ 
             marginTop: "75px", 
@@ -984,6 +1147,19 @@ const Login = props => {
     <div className={localClass.displaNone}></div>
   );
 
+
+
+  
+
+  const renderNoAcct = !showSignUp ? (
+    <>
+
+
+    </>
+  ) : (
+    <div className={localClass.displaNone}></div>
+  );
+
   return (
       
     <div className={localClass.myRoot}>
@@ -997,6 +1173,8 @@ const Login = props => {
 
       <div className={localClass.rootNewUser}>
         {renderSignUpControls}
+        {renderSignInControls}
+
       </div>
 
 
