@@ -13,23 +13,15 @@ import InputBase from '@material-ui/core/InputBase';
 import { Card, Button } from "@material-ui/core";
 import Paper from '@material-ui/core/Paper';
 
-// COMPONENTS
 
 const useStyles = makeStyles(theme => ({
   conatiner: {
-    // paddingTop: 20,
-    // margin: "0 auto",
-    // height: "100%",
-    // // display: "flex",
-    // justifyContent: "center"
   },
   card: {
-    //maxWidth: 450,
-    //minWidth: 445,
     width: '500px',
-    height: '700px',
+    height: '675px',
     backgroundColor: theme.palette.secondary.dark,
-    border: `1px solid ${theme.palette.secondary.main}`,
+    //border: `1px solid ${theme.palette.secondary.main}`,
     display: "flex",
     flexDirection: "column",
     fontFamily: theme.typography.fontFamily
@@ -43,19 +35,30 @@ const useStyles = makeStyles(theme => ({
     height: "15%",
     color: "white",
     fontSize: ".75rem",
-    textAlign: "center"
+    textAlign: "left",
+    marginLeft: '65px',
+    // float: 'left'
   },
   button: {
     backgroundColor: '#e4a773',
-    width: "125px",
+    width: "225px",
     height: "50px",
-    marginTop: "35px",
+    marginTop: "25px",
     color: "#011133",
     float: 'left',
-    marginLeft: '60px',
+    marginLeft: '65px',
+    marginBottom: '15px',
     "&:hover" : {
       backgroundColor: '#f0cfb3',
     },
+  },
+  link: {
+    textDecoration: "none",
+    color: theme.palette.secondary.main,
+    cursor: "pointer",
+    "&:hover" : {
+      color: '#e4a773',
+    }
   },
   inputs: {
     backgroundColor: theme.palette.background.paper,
@@ -73,7 +76,6 @@ const useStyles = makeStyles(theme => ({
     pointerEvents: "all",
     margin: "1% 1%",
     display: "inline-flex",
-    // flexDirection: "row",
   },
   links: {
     marginTop: 10,
@@ -98,9 +100,10 @@ const BootstrapInput = withStyles((theme) => ({
     backgroundColor: theme.palette.common.white,
     border: '1px solid #ced4da',
     fontSize: 16,
-    width: '325px',
+    width: '350px',
     padding: '10px',
-    marginLeft: '75px',
+    marginLeft: '65px',
+    marginRight: "10px",
     marginTop: '10px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     // Use the system font instead of the default Roboto font.
@@ -456,14 +459,15 @@ export default function NewUserCard(props) {
               href="https://www.m1neral.com"
               target="_blank"
               rel="noopener noreferrer"
-              className={classes.signupLink}
+              style={{marginLeft: '10px'}} 
+              className={classes.link}
             >
               Terms and Conditions
             </a>
           </div>
           <div className={classes.links}>
             Already have an account?{" "}
-            <Link to="/" className={classes.signupLink}>
+            <Link to="/" style={{marginLeft: '10px'}} className={classes.link}>
               {" "}
               Sign In
             </Link>

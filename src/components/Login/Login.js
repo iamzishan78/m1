@@ -82,7 +82,7 @@ const localStyles = makeStyles(theme => ({
   },
   signUpSupportCard: {
     width: '500px',
-    height: '700px',
+    height: '675px',
     backgroundColor: '#f6fafb',
     display: "flex",
     flexDirection: "column",
