@@ -575,90 +575,10 @@ const Login = props => {
 
 
 
-  const renderSignupNewCard = showSignUp ? (
-    <NewUserCard
-      className={localClass.newUser}
-      handleNewUserSignUp={handleNewUserSignUp}
-    />
-  ) : (
-    <div className={localClass.displaNone}></div>
-  );
 
 
-
-
-  const renderBody = !showSignUp ? (
-    <>
-
-    <div>
-      <Typography variant="h4" className={localClass.headerWords}>
-        Welcome back!
-      </Typography>
-      </div>
-
-      <div className={localClass.cardContainer}>
-        
-
-
-      <SignInCard handleSignIn={handledSignIn} ready={loading} />
-
-      
-      <div>
-
-
-      <Paper 
-        elevation = {0}
-        square={true}
-      color="secondary" className={localClass.supportCard}>
-        <div>
-        <Typography style={{ 
-              marginTop: "75px", 
-              fontSize: '24px',
-              fontWeight: '900',
-              fontFamily: "Tahoma, Geneva, sans-serif",
-              textAlign: 'left',
-              paddingLeft: '65px',
-              paddingRight: '45px',
-              color: '#011133' 
-              }}>
-          Have questions about your account? Need help signing up? 
-          </Typography>
-
-        </div>
-        <div>
-        <Typography style={{ 
-              marginTop: "25px", 
-              fontSize: '18px',
-              fontFamily: "Tahoma, Geneva, sans-serif",
-              textAlign: 'left',
-              paddingLeft: '65px',
-              paddingRight: '45px',
-              color: '#011133' 
-               }}>
-          Our support team is available and ready to help with any questions
-          that you might have. 
-          </Typography>
-        </div>
-        <div>
-        <Button
-            variant="contained"
-            disableElevation
-            type="submit"
-            style={{
-              float: 'left',
-              marginTop: "35px",
-              marginLeft: '65px',
-            }}
-            color="secondary"
-          >
-            Contact Support
-          </Button>
-        </div>
-      </Paper>
-      </div>
-      </div>
-
-      
+  const renderSignUpControls = (
+    <>     
       <div>
       <Typography  className={localClass.headerWords}>
         Don't have an account? 
@@ -803,6 +723,231 @@ const Login = props => {
       </div>
 
     </>
+  );
+
+
+
+
+
+
+  const renderSignupNewCard = showSignUp ? (
+
+    <div className={localClass.cardContainer}>
+
+    <NewUserCard
+      className={localClass.newUser}
+      handleNewUserSignUp={handleNewUserSignUp}
+    />
+
+
+
+
+    <Paper 
+      elevation = {0}
+      square={true}
+    color="secondary" className={localClass.supportCard}>
+      <div>
+      <Typography style={{ 
+            marginTop: "75px", 
+            fontSize: '24px',
+            fontWeight: '900',
+            fontFamily: "Tahoma, Geneva, sans-serif",
+            textAlign: 'left',
+            paddingLeft: '65px',
+            paddingRight: '45px',
+            color: '#011133' 
+            }}>
+        Why M1neral? 
+        </Typography>
+
+      </div>
+      <div>
+      <Typography style={{ 
+            marginTop: "25px", 
+            fontSize: '18px',
+            fontFamily: "Tahoma, Geneva, sans-serif",
+            textAlign: 'left',
+            paddingLeft: '65px',
+            paddingRight: '45px',
+            color: '#011133' ,            
+            fontWeight: 600,
+             }}>
+        Connect the dots on a single platform. 
+        </Typography>
+        <Typography style={{ 
+            marginTop: "25px", 
+            fontSize: '18px',
+            fontFamily: "Tahoma, Geneva, sans-serif",
+            textAlign: 'left',
+            paddingLeft: '65px',
+            paddingRight: '45px',
+            color: '#011133' ,
+             }}>
+        Search across datasets such as production, ownership, and valuation in a single place. Quick and easy. 
+        </Typography>
+      </div>
+
+      <div>
+      <Typography style={{ 
+            marginTop: "25px", 
+            fontSize: '18px',
+            fontFamily: "Tahoma, Geneva, sans-serif",
+            textAlign: 'left',
+            paddingLeft: '65px',
+            paddingRight: '45px',
+            color: '#011133' ,
+            fontWeight: 600,
+             }}>
+        Fit for purpose workflow tools. 
+        </Typography>
+        <Typography style={{ 
+            marginTop: "25px", 
+            fontSize: '18px',
+            fontFamily: "Tahoma, Geneva, sans-serif",
+            textAlign: 'left',
+            paddingLeft: '65px',
+            paddingRight: '45px',
+            color: '#011133' 
+             }}>
+        Streamline your business process from deal sourcing to offer management
+        to due-diligence with a built for purpose workflow solution. 
+        </Typography>
+      </div>
+      <div>
+      <Typography style={{ 
+            marginTop: "25px", 
+            fontSize: '18px',
+            fontFamily: "Tahoma, Geneva, sans-serif",
+            textAlign: 'left',
+            paddingLeft: '65px',
+            paddingRight: '45px',
+            color: '#011133',
+            fontWeight: 600,
+             }}>
+        Support when you need it most. 
+        </Typography>
+        <Typography style={{ 
+            marginTop: "25px", 
+            fontSize: '18px',
+            fontFamily: "Tahoma, Geneva, sans-serif",
+            textAlign: 'left',
+            paddingLeft: '65px',
+            paddingRight: '45px',
+            color: '#011133' 
+             }}>
+        We are here and ready to answer any questions you 
+        have along the way.  
+        </Typography>
+      </div>
+      {/* <div>
+      <Button
+          variant="contained"
+          disableElevation
+          type="submit"
+          style={{
+            float: 'left',
+            marginTop: "35px",
+            marginLeft: '65px',
+          }}
+          color="secondary"
+        >
+          Contact Support
+        </Button>
+      </div> */}
+    </Paper>
+    </div>
+
+
+
+
+
+  ) : (
+    <div className={localClass.displaNone}></div>
+  );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  const renderBody = !showSignUp ? (
+    <>
+
+
+
+      <div className={localClass.cardContainer}>
+        
+
+
+      <SignInCard handleSignIn={handledSignIn} ready={loading} />
+
+      
+      <div>
+
+
+      <Paper 
+        elevation = {0}
+        square={true}
+      color="secondary" className={localClass.supportCard}>
+        <div>
+        <Typography style={{ 
+              marginTop: "75px", 
+              fontSize: '24px',
+              fontWeight: '900',
+              fontFamily: "Tahoma, Geneva, sans-serif",
+              textAlign: 'left',
+              paddingLeft: '65px',
+              paddingRight: '45px',
+              color: '#011133' 
+              }}>
+          Have questions about your account? Need help signing up? 
+          </Typography>
+
+        </div>
+        <div>
+        <Typography style={{ 
+              marginTop: "25px", 
+              fontSize: '18px',
+              fontFamily: "Tahoma, Geneva, sans-serif",
+              textAlign: 'left',
+              paddingLeft: '65px',
+              paddingRight: '45px',
+              color: '#011133' 
+               }}>
+          Our support team is available and ready to help with any questions
+          that you might have. 
+          </Typography>
+        </div>
+        <div>
+        <Button
+            variant="contained"
+            disableElevation
+            type="submit"
+            style={{
+              float: 'left',
+              marginTop: "35px",
+              marginLeft: '65px',
+            }}
+            color="secondary"
+          >
+            Contact Support
+          </Button>
+        </div>
+      </Paper>
+      </div>
+      </div>
+
+      
+    </>
   ) : (
     <div className={localClass.displaNone}></div>
   );
@@ -811,12 +956,30 @@ const Login = props => {
       
     <div className={localClass.myRoot}>
 
-
+      <div>
+      <Typography variant="h4" className={localClass.headerWords}>
+        Welcome back!
+      </Typography>
+      </div>
 
       <div className={localClass.rootNewUser}>
         {renderBody}
         {renderSignupNewCard}
       </div>
+
+      <div className={localClass.rootNewUser}>
+        {renderSignUpControls}
+      </div>
+
+
+
+
+
+
+
+
+
+
 
       <div className={localClass.footer}>
         <div><M1neralLogo2/></div>

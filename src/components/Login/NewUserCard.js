@@ -176,7 +176,7 @@ export default function NewUserCard(props) {
               textAlign: 'left',
               paddingLeft: '65px' }}
             >
-            FIRST NAME
+            FULL NAME
         </div>
 
         <BootstrapInput 
@@ -194,7 +194,7 @@ export default function NewUserCard(props) {
                 value={userEmail}
                 />
 
-
+{/* 
 <div 
             style={{ 
               marginTop: "15px", 
@@ -221,7 +221,7 @@ export default function NewUserCard(props) {
                 // onChange={e => setUserEmail(e.target.value)}
                 // onBlur={() => validateData("email", userEmail, setEmailFlags)}
                 value={userEmail}
-                />                
+                />                 */}
 
 
         <div 

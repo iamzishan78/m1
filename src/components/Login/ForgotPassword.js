@@ -156,8 +156,10 @@ const ForgotPassword = props => {
       !resetPasswordBool ?
       <Card color="secondary" style={{backgroundColor: "rgba(38, 52, 81, 1)"}}
       className={classes.card}>
+        
        <div className={classes.cardHeader}>
          <M1neralIconSvg style={{ marginTop: "10px" }} /> 
+
          <div style={{ marginTop: "20px", fontSize: "1.7rem" }}>Reset Password</div>
        </div>
        <div className={classes.cardInputs}>
