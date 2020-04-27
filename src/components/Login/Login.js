@@ -214,6 +214,15 @@ const useStyles = makeStyles(theme => ({
       color: '#e4a773',
     }
   },
+  cardFooter: {
+    paddingBottom: "5px",
+    paddingTop: "5px",
+    color: "white",
+    fontSize: ".75rem",
+    //float: 'left',
+    //marginLeft: '30px',
+
+  },
  
 }));
 
@@ -433,6 +442,7 @@ const M1neralLogoNavNoAuth = (props) => (
 const M1neralLogo2 = styled(M1neralLogoNavNoAuth)`
   width: 200px;
   padding-top: 50px;
+  padding-bottom: 50px;
 `;
 
 
@@ -811,12 +821,24 @@ const Login = props => {
       <div className={localClass.footer}>
         <div><M1neralLogo2/></div>
 
-        <Typography variant="h4" className={localClass.headerWords}>
-            (c) 2020 M1neral, LLC
-        </Typography>
-        <div>(c) 2020 M1neral, LLC</div>
-        <div>terms of service | Privacy Policy</div>
+        <div style={{ 
+                color: "#fff", 
+                }}>
+        (c) 2020 M1neral, LLC
+        </div>
 
+        <div style={{ 
+                color: "#fff", 
+                }}>
+        Terms of Service
+        </div>
+
+        <div style={{ 
+                color: "#fff", 
+                marginBottom: '50px',
+                }}>
+        Privacy Policy
+        </div>
 
       </div>
 
