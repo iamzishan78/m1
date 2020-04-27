@@ -640,7 +640,6 @@ export default function Map() {
 
       if (isFilterSet) {
         filterArray.unshift("all");
-
         console.log("all current filters", filterArray);
 
         map.setFilter("wellpoints", filterArray);

@@ -1,12 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../NavigationContext";
+import { useHistory, useLocation } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
+import Popover from "@material-ui/core/Popover";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import Switch from '@material-ui/core/Switch';
 import Divider from "@material-ui/core/Divider";
 import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
@@ -19,6 +22,7 @@ import FilterDefaultListWell from "./FilterDefaultListWell";
 import FilterDefaultListGeo from "./FilterDefaultListGeo";
 import FilterDefaultListOwner from "./FilterDefaultListOwner";
 import FilterDefaultListProd from "./FilterDefaultListProd";
+import SaveFilters from "./SaveFilters";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
  
@@ -123,6 +127,9 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-flex",
     marginRight: "70%",
   },
+  switch: {
+    marginRight: 50,
+  },
   listItemContainer: {
     display: "inherit",
     "&:hover": {
@@ -141,13 +148,17 @@ const ButtonInTabs = ({ className, onClick, children }) => {
 export default function FilterDedaults() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [tabsValue, setTabsValue] = useState(1);
+  const [tabsValue, setTabsValue] = useState(0);
+  const [currentFilters, setCurrentFilters] = useState(null);
   const [stateNavCopy, setStateNavCopy] = useState(null);
   const [filtersProd, setFiltersProd] = useState(null);
   const [filtersGeo, setFiltersGeo] = useState(null);
   const [filtersOwner, setFiltersOwner] = useState(null);
   const [filtersWell, setFiltersWell] = useState(null);
   const [savedFilters, setSavedFilters] = useState(null);
+  const [currentUserFilters, setCurrentUserFiltes] = useState(
+    stateNav.currentUserFilters ? stateNav.currentUserFilters : []
+  );
   const [checkBoxActive, setCheckBoxActive] = useState(false);
   const [checkBoxDefault, setCheckBoxDefault] = useState(false);
   const [dateCreated, setDateCreated] = useState(new Date());
@@ -157,8 +168,10 @@ export default function FilterDedaults() {
   const [filterTypeGeography, setFilterTypeGeography] = useState(null);
   const [saveSearchName, setSaveSearchName] = useState("");
   const [user, setUser] = useState("");
+  const [showSavePopOver ,setShowSavePopOver] = useState(false);
+  // const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
   const classes = useStyles();
-
+ 
   useEffect(() => {
     let name;
     if (stateApp) {
@@ -170,7 +183,7 @@ export default function FilterDedaults() {
   const handleChange = (event, newValue) => {
     setTabsValue(newValue);
   };
-
+  
   useEffect(() => {
     let saveFilters = [];
     let filtersStateNav;
@@ -196,6 +209,7 @@ export default function FilterDedaults() {
         ([k, v], i) => !!v && v.length > 0
       );
       setStateNavCopy([...stateNavActiveProperties]);
+      
       let mapStateNav = stateNavActiveProperties.map((val) => val);
       mapStateNav.filter((element) =>
         element && element[1].length > 1
@@ -213,6 +227,7 @@ export default function FilterDedaults() {
       let interestArr = [];
       let prodArr = [];
       if (filtersStateNav && filtersStateNav.length > 0) {
+        
         filtersStateNav.map((item) => {
           if (item[0].includes("Operator")) {
             setFilterTypeWell("Well");
@@ -281,7 +296,7 @@ export default function FilterDedaults() {
       setFiltersWell(wellArr);
     }
   }, [stateNav]);
- 
+
   const deleteChipWell = (item, name) => {
     if (stateNav[name] && stateNav[name].length === 5) {
       let copy;
@@ -593,7 +608,7 @@ export default function FilterDedaults() {
         }
       }
 
-      if (filter && filter[1], filter[1].length === 2) {
+      if (filter && filter[1] && filter[1].length === 2) {
         let compare = removeFitlerFromProdName(name);
         let match = matchProdOption(compare);
         let findItem = stateNav.prodOptions;
@@ -763,20 +778,18 @@ export default function FilterDedaults() {
     setCheckBoxDefault((checkBoxDefault) => !checkBoxDefault);
   };
 
+  const saveFilters = () => {
+    setShowSavePopOver(true);
+    // setStateApp(state => ({ ...state, user:  }));
+  }
+
+  const closePopoverSaveFilters = () => {
+    setShowSavePopOver(false)
+  }
+
   const deleteFilter = () => {
     if (savedFilters[0] === "M1neral Default Filters") {
-      const m1neralDefaults = [
-        {
-          name: "M1neral Default Filters",
-          filters: null,
-          on: false,
-          default: false,
-        },
-      ];
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        m1neralDefaultFilters: m1neralDefaults,
-      }));
+        alert("M1neral Default filters Can't be deleted")
     }
   };
 
@@ -791,14 +804,25 @@ export default function FilterDedaults() {
           <Tab value={0} label="Saved Search" />
           <Tab value={1} label="Current Search" />
           <ButtonInTabs
-
             className={classes.save}
-            
-            // {...buttonProps}
+            onClick={saveFilters}
           >
             Save
           </ButtonInTabs>
         </Tabs>
+        {showSavePopOver ? 
+        <Popover
+          open={showSavePopOver}
+          anchorReference="anchorPosition"
+          anchorPosition={{ top: 100, left: 400 }}
+          style={{ width: "100%" }} 
+          BackdropProps={{ invisible: false }}
+          disablePortal={true}
+          // PaperProps={{ disablePortal: true }}
+        >
+          <SaveFilters user={user} filters={stateNavCopy} close={closePopoverSaveFilters}/>
+        </Popover>
+      :null}
       </Paper>
       {tabsValue === 0 ? (
         <Paper className={classes.paparMain} square>
@@ -843,13 +867,13 @@ export default function FilterDedaults() {
                         disableRipple={true}
                         inputProps={{ "aria-label": "Default checkbox" }}
                       />
-                      <Checkbox
-                        className={classes.checkBox}
+                      <Switch
+                        className={classes.switch}
                         checked={checkBoxActive}
-                        color="primary"
-                        disableRipple={true}
                         onChange={filterOnOff}
-                        inputProps={{ "aria-label": "Active checkbox" }}
+                        color="secondary"
+                        name="checked"
+                        inputProps={{ 'aria-label': 'primary checkbox' }}
                       />
                       <IconButton onClick={deleteFilter} aria-label="delete">
                         <DeleteIcon />
