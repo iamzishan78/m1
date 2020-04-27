@@ -45,7 +45,7 @@ const listOptions = [
   { name: "Last Month  -  Water", filterName: "filterLastMonthWater", id: "lastMonthWater", display: false },
   { name: "Last Six Months  -  Oil", filterName: "filterLastSixMonthOil", id: "lastSixMonthOil", display: false },
   { name: "Last Six Months  -  Gas", filterName: "filterLastSixMonthGas", id: "lastSixMonthGas", display: false },
-  { name: "Last Six Months  -  Water", filterName: "filterLastSixMonthWater", id: "lastSixMonthGas", display: false },
+  { name: "Last Six Months  -  Water", filterName: "filterLastSixMonthWater", id: "lastSixMonthWater", display: false },
   { name: "Last Twelve Months  -  Oil", filterName: "filterLastTwelveMonthOil", id: "lastTwelveMonthOil", display: false },
   { name: "Last Twelve Months  -  Gas", filterName: "filterLastTwelveMonthGas", id: "lastTwelveMonthGas", display: false },
   { name: "Last Twelve Months  -  Water", filterName: "filterLastTwelveMonthWater", id: "lastTwelveMonthWater", display: false}

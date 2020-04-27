@@ -62,80 +62,80 @@ export default function FilterDefaultListProd(props) {
   },[props])
   
   const removeNameFromType = (string) => { 
-    if (string.includes("cumulativeWater")) {
-      return string.replace("cumulativeWater", "Cumulative H2O")
-    }
-    if (string.includes("cumulativeOil")) {
-        return string.replace("cumulativeOil", "Cumulative Oil")
-    }
-    if (string.includes("cumulativeGas")) {
-        return string.replace("cumulativeGas", "Cumulative Gas")
-    }
-    if (string.includes("firstThreeMonthGas")) {
-        return string.replace("firstThreeMonthGas", "1st 3 Months Gas")
-    }
-    if (string.includes("firstThreeMonthOil")) {
-        return string.replace("firstThreeMonthOil", "1st 3 Months Oil")
-    }
-    if (string.includes("firstThreeMonthWater")) {
-        return string.replace("firstThreeMonthWater", "1st 3 Months H2O")
-    }
-    if (string.includes("firstMonthOil")) {
-        return string.replace("firstMonthOil", "1st Month Oil")
-    }
-    if (string.includes("firstMonthGas")) {
-        return string.replace("firstMonthGas", "1st Month Gas")
-    }
-    if (string.includes("firstMonthWater")) {
-        return string.replace("firstMonthWater", "1st Month H2O")
-    }
-    if (string.includes("firstSixMonthOil")) {
-        return string.replace("firstSixMonthOil", "1st 6 Months Oil")
-    }
-    if (string.includes("firstSixMonthGas")) {
-        return string.replace("firstSixMonthGas", "1st 6 Months Gas")
-    }
-    if (string.includes("firstSixMonthWater")) {
-        return string.replace("firstSixMonthWater", "1st 6 Months H2O")
-    }
-    if (string.includes("firstTwelveMonthOil")) {
-        return string.replace("firstTwelveMonthOil", "1st 12 Months Oil")
-    }
-    if (string.includes("firstTwelveMonthGas")) {
-        return string.replace("firstTwelveMonthGas", "1st 12 Months Gas")
-    }
-    if (string.includes("firstTwelveMonthWater")) {
-        return string.replace("firstTwelveMonthWater", "1st 12 Months H2O")
-    }
-    if (string.includes("lastMonthOil")) {
-        return string.replace("lastMonthOil", "Last Month Oil")
-    }
-    if (string.includes("lastMonthGas")) {
-        return string.replace("lastMonthGas", "Last Month Gas")
-    }
-    if (string.includes("lastMonthWater")) {
-        return string.replace("lastMonthWater", "Last Month H2O")
-    }
-    if (string.includes("lastSixMonthOil")) {
-        return string.replace("lastSixMonthOil", "Last 6 Months Oil")
-    }
-    if (string.includes("lastSixMonthGas")) {
-        return string.replace("lastSixMonthGas", "Last 6 Months Gas")
-    }
-    if (string.includes("lastSixMonthWater")) {
-        return string.replace("lastSixMonthWater", "Last 6 Months H2O")
-    }
-    if (string.includes("lastTwelveMonthOil")) {
-        return string.replace("lastTwelveMonthOil", "Last 12 Months Oil")
-    }
-    if (string.includes("lastTwelveMonthGas")) {
-        return string.replace("lastTwelveMonthGas", "Last 12 Months Gas")
-    }
-    if (string.includes("lastTwelveMonthWater")) {
-        return string.replace("lastTwelveMonthWater", "Last 12 Months H2O")
-    }
+    console.log(string)
+  if (string.includes("cumulativeWater")) {
+    return string.replace("cumulativeWater", "Cum H2O -")
   }
-
+  if (string.includes("cumulativeOil")) {
+      return string.replace("cumulativeOil", "Cum Oil -")
+  }
+  if (string.includes("cumulativeGas")) {
+      return string.replace("cumulativeGas", "Cum Gas -")
+  }
+  if (string.includes("firstThreeMonthGas")) {
+      return string.replace("firstThreeMonthGas", "First 3Mo Gas -")
+  }
+  if (string.includes("firstThreeMonthOil")) {
+      return string.replace("firstThreeMonthOil", "First 3Mo Oil -")
+  }
+  if (string.includes("firstThreeMonthWater")) {
+      return string.replace("firstThreeMonthWater", "First 3Mo H2O -")
+  }
+  if (string.includes("firstMonthOil")) {
+      return string.replace("firstMonthOil", "First Month Oil -")
+  }
+  if (string.includes("firstMonthGas")) {
+      return string.replace("firstMonthGas", "First Month Gas -")
+  }
+  if (string.includes("firstMonthWater")) {
+      return string.replace("firstMonthWater", "First Month H2O -")
+  }
+  if (string.includes("firstSixMonthOil")) {
+      return string.replace("firstSixMonthOil", "First 6Mo Oil -")
+  }
+  if (string.includes("firstSixMonthGas")) {
+      return string.replace("firstSixMonthGas", "First 6Mo Gas -")
+  }
+  if (string.includes("firstSixMonthWater")) {
+      return string.replace("firstSixMonthWater", "First 6Mo H2O -")
+  }
+  if (string.includes("firstTwelveMonthOil")) {
+      return string.replace("firstTwelveMonthOil", "First 12Mo Oil -")
+  }
+  if (string.includes("firstTwelveMonthGas")) {
+      return string.replace("firstTwelveMonthGas", "First 12Mo Gas -")
+  }
+  if (string.includes("firstTwelveMonthWater")) {
+      return string.replace("firstTwelveMonthWater", "First 12Mo H2O -")
+  }
+  if (string.includes("lastMonthOil")) {
+      return string.replace("lastMonthOil", "Last Month Oil -")
+  }
+  if (string.includes("lastMonthGas")) {
+      return string.replace("lastMonthGas", "Last Month Gas -")
+  }
+  if (string.includes("lastMonthWater")) {
+      return string.replace("lastMonthWater", "Last Month H2O -")
+  }
+  if (string.includes("lastSixMonthOil")) {
+      return string.replace("lastSixMonthOil", "Last 6Mo Oil -")
+  }
+  if (string.includes("lastSixMonthGas")) {
+      return string.replace("lastSixMonthGas", "Last 6Mo Gas -")
+  }
+  if (string.includes("lastSixMonthWater")) {
+      return string.replace("lastSixMonthWater", "Last 6Mo H2O -")
+  }
+  if (string.includes("lastTwelveMonthOil")) {
+      return string.replace("lastTwelveMonthOil", "Last 12Mo Oil -")
+  }
+  if (string.includes("lastTwelveMonthGas")) {
+      return string.replace("lastTwelveMonthGas", "Last 12Mo Gas -")
+  }
+  if (string.includes("lastTwelveMonthWater")) {
+      return string.replace("lastTwelveMonthWater", "Last 12Mo H2O -")
+  }
+}
   const removeChip = (e, filter) => () => {
     const { deleteChip } = props;
     deleteChip(e, filter);
