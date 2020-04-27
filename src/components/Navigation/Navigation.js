@@ -1401,7 +1401,7 @@ export default function Navigation(props) {
                       </IconButton>
                     </div>
                   }
-                  title="Filters"
+                  title="Filter"
                   subheader="Value"
                 />
                 <CardActions
@@ -1433,7 +1433,7 @@ export default function Navigation(props) {
                       </IconButton>
                     </div>
                   }
-                  title="Filters"
+                  title="Filter"
                   subheader="Tags"
                 />
                 <CardActions
@@ -1465,8 +1465,8 @@ export default function Navigation(props) {
                       </IconButton>
                     </div>
                   }
-                  title="Filters"
-                  subheader="AI"
+                  title="Filter"
+                  subheader="Artificial Intelligence"
                 />
                 <CardActions
                   classes={{
@@ -1497,8 +1497,8 @@ export default function Navigation(props) {
                       </IconButton>
                     </div>
                   }
-                  title="Filters"
-                  subheader="Defaults"
+                  title="Filter"
+                  subheader="Advanced Search"
                 />
                 <CardActions
                   classes={{
