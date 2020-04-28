@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     maxWidth: "160px",
     padding: "6px 12px",
-    marginLeft: "18vw",
+    marginLeft: 245,
     color: "rgba(0, 0, 0, 0.54)",
     boxShadow: "none",
     backgroundColor: "inherit",
@@ -856,7 +856,7 @@ export default function FilterDedaults() {
                         className={classes.listItem}
                         primary={
                           <section>
-                            <div>{"Saved Search:" + "  " + el}</div>
+                            <div>{el}</div>
                             <div className={classes.user}>
                               {user} - {dateCreated.toDateString()}
                             </div>
