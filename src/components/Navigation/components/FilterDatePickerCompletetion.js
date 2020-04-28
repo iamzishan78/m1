@@ -64,13 +64,19 @@ export default function FilterDatePickerCompletetion(props) {
     ) {
       const checkDate = moment.parseZone(completetionToDate.date).utc(true).valueOf();
       const fromDate = moment.parseZone(completetionFromDate.date.utc(true)).valueOf();
-      if (completetionFromDate.check) {
+      if (completetionFromDate.check && !completetionToDate.check) {
         filter = [
           "all",
           [">=", ["get", "completionDate"], fromDate],
           ["<=", ["get", "completionDate"], checkDate]
         ];
-      } else {
+      } else if (!completetionFromDate.check && completetionToDate.check) {
+        let checkDate = moment().subtract(120, 'Years')
+        let fromDate = moment.parseZone(checkDate).utc(true).valueOf()
+        const toDate =  moment.parseZone(completetionToDate.date).utc(true).valueOf()
+        filter = ["all", [">=",["get", "completionDate"] ,fromDate], ["<=",["get", "completionDate"] , toDate]];
+      }
+      else {
         const fromDate = moment.parseZone(completetionFromDate.date).utc(true).valueOf();
         const toDate = moment.parseZone(completetionToDate.date).utc(true).valueOf();
         filter = [

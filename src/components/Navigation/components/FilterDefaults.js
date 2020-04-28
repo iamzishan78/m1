@@ -780,7 +780,6 @@ export default function FilterDedaults() {
 
   const saveFilters = () => {
     setShowSavePopOver(true);
-    // setStateApp(state => ({ ...state, user:  }));
   }
 
   const closePopoverSaveFilters = () => {

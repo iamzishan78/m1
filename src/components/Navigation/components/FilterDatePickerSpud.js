@@ -63,9 +63,15 @@ export default function FilterDatePickerSpud(props) {
     if (spudFromDate.date._isValid === true  && spudToDate.date._isValid === true) {
       const checkDate = moment.parseZone(spudToDate.date).utc(true).valueOf()
       const fromDate = moment.parseZone(spudFromDate.date).utc(true).valueOf()
-      if(spudFromDate.check){
+      if(spudFromDate.check && !spudToDate.check){
         filter = ["all", [">=",["get", "spudDate"] ,fromDate], ["<=",["get", "spudDate"] , checkDate]];
-      } else{
+      } else if (!spudFromDate.check && spudToDate.check) {
+        let checkDate = moment().subtract(120, 'Years')
+        let fromDate = moment.parseZone(checkDate).utc(true).valueOf()
+        const toDate =  moment.parseZone(spudToDate.date).utc(true).valueOf()
+        filter = ["all", [">=",["get", "spudDate"] ,fromDate], ["<=",["get", "spudDate"] , toDate]];
+      }
+      else{
         const fromDate = moment.parseZone(spudFromDate.date).utc(true).valueOf()
         const toDate =  moment.parseZone(spudToDate.date).utc(true).valueOf()
         filter = ["all", [">=", ["get", "spudDate"]  ,fromDate], ["<=", ["get", "spudDate"] ,toDate]];
@@ -75,7 +81,7 @@ export default function FilterDatePickerSpud(props) {
     }
     console.log("Spud Date dates change filter", filter);
     setStateNav(stateNav => ({ ...stateNav, filterSpudDateRange: filter }));
-}, [setStateNav, spudFromDate.date, spudToDate.date]);
+}, [setStateNav, spudFromDate.check, spudFromDate.date, spudToDate.check, spudToDate.date]);
 
   useEffect(() => {
     if (spudFromDate.check === true) {

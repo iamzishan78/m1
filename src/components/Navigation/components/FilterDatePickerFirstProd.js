@@ -70,9 +70,15 @@ export default function FilterDatePickerFirstProd(props) {
     if (firstProductionFromDate.date._isValid === true  && firstProductionToDate.date._isValid === true) {
       const checkDate = moment.parseZone(firstProductionToDate.date).utc(true).valueOf()
       const fromDate = moment.parseZone(firstProductionFromDate.date).utc(true).valueOf()
-      if(firstProductionFromDate.check){
+      if(firstProductionFromDate.check && !firstProductionToDate.check){
         filter = ["all", [">=",["get", "firstProductionDate"] ,fromDate], ["<=",["get", "firstProductionDate"] , checkDate]];
-      } else{
+      } else if (!firstProductionFromDate.check && firstProductionToDate.check) {
+        let checkDate = moment().subtract(120, 'Years')
+        let fromDate = moment.parseZone(checkDate).utc(true).valueOf()
+        const toDate =  moment.parseZone(firstProductionToDate.date).utc(true).valueOf()
+        filter = ["all", [">=",["get", "firstProductionDate"] ,fromDate], ["<=",["get", "firstProductionDate"] , toDate]];
+      }
+      else{
         const fromDate = moment.parseZone(firstProductionFromDate.date).utc(true).valueOf()
         const toDate =  moment.parseZone(firstProductionToDate.date).utc(true).valueOf()
         filter = ["all", [">=", ["get", "firstProductionDate"]  ,fromDate], ["<=", ["get", "firstProductionDate"] ,toDate]];

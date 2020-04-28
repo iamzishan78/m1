@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { NavigationContext } from "../NavigationContext";
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from "@material-ui/core/Paper";
 import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
@@ -33,6 +34,11 @@ const useStyles = makeStyles((theme) => ({
     float: "right",
     padding: "3px 30px",
   },
+  loader: {
+    marginLeft: "45%",
+    marginBottom: 8,
+    marginTop: 20,
+  }
 }));
 
 export default function SaveFilters(props) {
@@ -41,6 +47,9 @@ export default function SaveFilters(props) {
   const [filterList, setFilterList] = useState(null);
   const [filters, setFilters] = useState(null);
   const [dateCreated, setDateCreated] = useState(new Date());
+  const [saveOrUpdtae, setSaveOrUpdate] = useState("");
+  const [savedCompleted, setSavedCompleted] =useState(false);
+  const [completedSaving, setCompletedSaving] = useState(false)
   const classes = useStyles();
 
   useEffect(() => {
@@ -55,16 +64,24 @@ export default function SaveFilters(props) {
 
   const save = () => {
     let filterInfo = {
-       user: props.user,
-       created: dateCreated.toDateString(),
-       filters: filters
+      name: saveSearch,
+      user: props.user,
+      created: dateCreated.toDateString(),
+      filters: filters,
+      on: false,
+      default: false,
     }
-      alert(
-          JSON.stringify(filterInfo)
-      )
+    console.log(filterInfo)
+    setCompletedSaving(true)
+    
   }
 
-  console.log(props.filters)
+  useEffect(() => {
+    if (completedSaving) {
+      setSavedCompleted(true)
+    }
+  },[completedSaving])
+
   return (
     <Paper className={classes.paper}>
       <IconButton
@@ -107,10 +124,20 @@ export default function SaveFilters(props) {
         // style={{ maxWidth: 300, minWidth: 120 }}
       />
       <Divider />
+      {!savedCompleted && completedSaving ? 
+       <CircularProgress color="secondary" size={40} className={classes.loader} />
+      : null}
+      {savedCompleted && savedCompleted ? <div className={classes.label}>{saveSearch} {" "} Have Been Saved</div> : null}
       <div className={classes.buttonDiv}>
-        <Button onClick={save} fullWidth={true} variant="contained" color="secondary">
+        {!completedSaving ? (
+        <Button onClick={save} disabled={completedSaving} variant="contained" color="secondary">
           Save Search
         </Button>
+        ):( 
+        <Button onClick={props.close} fullWidth={true} variant="contained" color="secondary">
+        Close
+        </Button>
+        )}
       </div>
     </Paper>
   );

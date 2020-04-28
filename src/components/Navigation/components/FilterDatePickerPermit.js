@@ -91,9 +91,15 @@ export default function FilterDatePickerPermit(props) {
       if (permitFromDate.date._isValid === true  && permitToDate.date._isValid === true) {
         const checkDate = moment.parseZone(permitToDate.date).utc(true).valueOf()
         const fromDate = moment.parseZone(permitFromDate.date).utc(true).valueOf()
-        if(permitFromDate.check){
+        if(permitFromDate.check && !permitToDate.check){
           filter = ["all", [">=",["get", "permitApprovedDate"] ,fromDate], ["<=",["get", "permitApprovedDate"] , checkDate]];
-        } else{
+        } else if (permitToDate.check &&  !permitFromDate.check ) {
+          let checkDate = moment().subtract(120, 'Years')
+          let fromDate = moment.parseZone(checkDate).utc(true).valueOf()
+          const toDate =  moment.parseZone(permitToDate.date).utc(true).valueOf()
+          filter = ["all", [">=",["get", "permitApprovedDate"] ,fromDate], ["<=",["get", "permitApprovedDate"] , toDate]];
+        }
+        else{
           const fromDate = moment.parseZone(permitFromDate.date).utc(true).valueOf()
           const toDate =  moment.parseZone(permitToDate.date).utc(true).valueOf()
           filter = ["all", [">=", ["get", "permitApprovedDate"]  ,fromDate], ["<=", ["get", "permitApprovedDate"] ,toDate]];
@@ -103,7 +109,7 @@ export default function FilterDatePickerPermit(props) {
       }
       console.log("Permit Range dates change filter", filter);
       setStateNav(stateNav => ({ ...stateNav, filterPermitDateRange: filter }));
-  }, [permitFromDate.check, permitFromDate.date, permitToDate.date, setStateNav]);
+  }, [permitFromDate.check, permitFromDate.date, permitToDate.check, permitToDate.date, setStateNav]);
 
   useEffect(() => {
     // check if value of the check are true to run the filter
@@ -114,7 +120,6 @@ export default function FilterDatePickerPermit(props) {
       setFilterName();
     }
   }, [permitFromDate.check, permitToDate.check, setFilterName]);
-
   // effect to run if the array has some values to recall the dates
   useEffect(() => {
     if (dateTypeName.length > 0) {
