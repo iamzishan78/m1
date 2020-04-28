@@ -46,18 +46,10 @@ const theme = createMuiTheme({
       root: {
         width: 90,
         height: 60,
-        //padding: 10,
-        //display: 'flex',
-        //alignItems: 'center',
       },
     },
     MuiListItemText: {
       root: {
-        //width: 90,
-        //height: 60,
-        //padding: 10,
-        //display: 'flex',
-        //alignItems: 'center',
         textAlign: "right",
         padding: 20,
       },
@@ -111,13 +103,10 @@ const StyledMenuHeaderItem = withStyles((theme) => ({
     "&:hover": {
       background: "#4B618F",
     },
-    //'&:focus': {
     backgroundColor: "#263451",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white,
-      // },
     },
-    //width: 250,
   },
 }))(MenuItem);
 
@@ -239,7 +228,7 @@ export default function BaseMapStyles(props) {
     fetch(req, { signal: signal })
       .then((results) => results.json())
       .then((data) => {
-        setMapStyles(data.slice(0, 4));
+        setMapStyles(data.slice(0, 5));
       });
 
     //clean up
