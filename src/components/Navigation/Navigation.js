@@ -867,7 +867,7 @@ export default function Navigation(props) {
             { matchTrack ? ( 
             <CardHeader
               className={classes.trackHeader}
-              title="Track"
+              //title="Track"
             />
             ): null}
 
