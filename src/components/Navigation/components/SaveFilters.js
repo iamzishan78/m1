@@ -38,7 +38,12 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "45%",
     marginBottom: 8,
     marginTop: 20,
-  }
+  },
+  savedMessage: {
+    padding: "10px 40px",
+    fontWeight: 600,
+    textAlign: "center",
+  },
 }));
 
 export default function SaveFilters(props) {
@@ -71,7 +76,7 @@ export default function SaveFilters(props) {
       on: false,
       default: false,
     }
-    console.log(filterInfo)
+
     setCompletedSaving(true)
     
   }
@@ -127,14 +132,14 @@ export default function SaveFilters(props) {
       {!savedCompleted && completedSaving ? 
        <CircularProgress color="secondary" size={40} className={classes.loader} />
       : null}
-      {savedCompleted && savedCompleted ? <div className={classes.label}>{saveSearch} {" "} Have Been Saved</div> : null}
+      {savedCompleted && savedCompleted ? <div className={classes.savedMessage}>{saveSearch} {" "} Have Been Saved</div> : null}
       <div className={classes.buttonDiv}>
         {!completedSaving ? (
         <Button onClick={save} disabled={completedSaving} variant="contained" color="secondary">
           Save Search
         </Button>
         ):( 
-        <Button onClick={props.close} fullWidth={true} variant="contained" color="secondary">
+        <Button onClick={props.close} variant="contained" color="secondary">
         Close
         </Button>
         )}

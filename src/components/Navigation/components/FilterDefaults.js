@@ -174,9 +174,14 @@ export default function FilterDedaults() {
  
   useEffect(() => {
     let name;
+    let filters;
     if (stateApp) {
       name = stateApp.user.name;
       setUser(name);
+      // if (condition) {
+      //   filters = stateApp.user.filtersSaveTest
+      //   setSavedFilters(filters)
+      // }
     }
   }, [stateApp]);
 

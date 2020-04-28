@@ -31,6 +31,7 @@ import {
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import * as MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import DefaultFiltersTest from "./filtersDefaultTest"
 //import M1Geocoder from "./components/CustomGeocode.js";
 import DeckGL, { GeoJsonLayer } from "deck.gl";
 
@@ -1230,6 +1231,7 @@ export default function Map() {
 
   return (
     <div className={classes.mapWrapper}>
+      {/* <DefaultFiltersTest/> */}
       <div className={classes.map} ref={mapEl} id="map">
         {/*       {<M1Geocoder
           mapRef={mapEl}
