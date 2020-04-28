@@ -770,7 +770,7 @@ export default function Navigation(props) {
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
         Logout
       </MenuItem>
-      <MenuItem className={classes.userMenuItem}>Profile</MenuItem>
+      {/* <MenuItem className={classes.userMenuItem}>Profile</MenuItem> */}
     </Menu>
   );
 
