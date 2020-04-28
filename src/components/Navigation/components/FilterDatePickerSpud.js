@@ -61,10 +61,9 @@ export default function FilterDatePickerSpud(props) {
   const setFilterName = useCallback(() => {
     let filter;
     if (spudFromDate.date._isValid === true  && spudToDate.date._isValid === true) {
-      const todaysDate = moment.parseZone().utc(true).valueOf();
       const checkDate = moment.parseZone(spudToDate.date).utc(true).valueOf()
       const fromDate = moment.parseZone(spudFromDate.date).utc(true).valueOf()
-      if(checkDate === todaysDate ){
+      if(spudFromDate.check){
         filter = ["all", [">=",["get", "spudDate"] ,fromDate], ["<=",["get", "spudDate"] , checkDate]];
       } else{
         const fromDate = moment.parseZone(spudFromDate.date).utc(true).valueOf()
@@ -92,6 +91,7 @@ export default function FilterDatePickerSpud(props) {
       return;
     } else {
       handleStartDateChang(stateNav.spudDateFrom);
+      setSpudFromDate({ check: true, date: stateNav.spudDateFrom });
     }
   }, [stateNav.spudDateFrom]);
 
@@ -100,6 +100,7 @@ export default function FilterDatePickerSpud(props) {
       return;
     } else {
       handleEndDateChange(stateNav.spudDateTo);
+      setSpudToDate({ check: true, date: stateNav.spudDateTo });
     }
   }, [stateNav.spudDateTo]);
 

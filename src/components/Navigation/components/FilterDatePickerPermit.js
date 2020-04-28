@@ -63,15 +63,35 @@ export default function FilterDatePickerPermit(props) {
   const [dateTypeName, setDateTypeName] = useState(
     stateNav.dateTypeName ? stateNav.dateTypeName : []
   );
+
+  const setvaluesFrom = useCallback(() => {
+    // Check for the null date and if it is return
+    if (stateNav.permitDateFrom == null) {
+      return;
+    } else {
+      // else recall date from statenav context so display again 
+      handleStartDateChang(stateNav.permitDateFrom);
+      setPermitFromDate({ check: true, date: stateNav.permitDateFrom });
+    }
+  }, [stateNav.permitDateFrom]);
+
+  const setvaluesTo = useCallback(() => {
+    // Check for the null date and if it is return
+    if (stateNav.permitDateTo == null) {
+      // else recall date from statenav context so display again 
+      return;
+    } else {
+      handleEndDateChange(stateNav.permitDateTo);
+      setPermitToDate({ check: true, date: stateNav.permitDateTo });
+    }
+  }, [stateNav.permitDateTo]);
   
   const setFilterName = useCallback(() => {
       let filter;
       if (permitFromDate.date._isValid === true  && permitToDate.date._isValid === true) {
-        const todaysDate = moment.parseZone().utc(true).valueOf()
         const checkDate = moment.parseZone(permitToDate.date).utc(true).valueOf()
         const fromDate = moment.parseZone(permitFromDate.date).utc(true).valueOf()
-       
-        if(checkDate === todaysDate ){
+        if(permitFromDate.check){
           filter = ["all", [">=",["get", "permitApprovedDate"] ,fromDate], ["<=",["get", "permitApprovedDate"] , checkDate]];
         } else{
           const fromDate = moment.parseZone(permitFromDate.date).utc(true).valueOf()
@@ -83,7 +103,7 @@ export default function FilterDatePickerPermit(props) {
       }
       console.log("Permit Range dates change filter", filter);
       setStateNav(stateNav => ({ ...stateNav, filterPermitDateRange: filter }));
-  }, [permitFromDate.date, permitToDate.date, setStateNav]);
+  }, [permitFromDate.check, permitFromDate.date, permitToDate.date, setStateNav]);
 
   useEffect(() => {
     // check if value of the check are true to run the filter
@@ -94,26 +114,6 @@ export default function FilterDatePickerPermit(props) {
       setFilterName();
     }
   }, [permitFromDate.check, permitToDate.check, setFilterName]);
-
-  const setvaluesFrom = useCallback(() => {
-    // Check for the null date and if it is return
-    if (stateNav.permitDateFrom == null) {
-      return;
-    } else {
-      // else recall date from statenav context so display again 
-      handleStartDateChang(stateNav.permitDateFrom);
-    }
-  }, [stateNav.permitDateFrom]);
-
-  const setvaluesTo = useCallback(() => {
-    // Check for the null date and if it is return
-    if (stateNav.permitDateTo == null) {
-      // else recall date from statenav context so display again 
-      return;
-    } else {
-      handleEndDateChange(stateNav.permitDateTo);
-    }
-  }, [stateNav.permitDateTo]);
 
   // effect to run if the array has some values to recall the dates
   useEffect(() => {

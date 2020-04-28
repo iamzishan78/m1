@@ -68,10 +68,9 @@ export default function FilterDatePickerFirstProd(props) {
   const setFilterName = useCallback(() => {
     let filter;
     if (firstProductionFromDate.date._isValid === true  && firstProductionToDate.date._isValid === true) {
-      const todaysDate = moment.parseZone().utc(true).valueOf();
       const checkDate = moment.parseZone(firstProductionToDate.date).utc(true).valueOf()
       const fromDate = moment.parseZone(firstProductionFromDate.date).utc(true).valueOf()
-      if(checkDate === todaysDate ){
+      if(firstProductionFromDate.check){
         filter = ["all", [">=",["get", "firstProductionDate"] ,fromDate], ["<=",["get", "firstProductionDate"] , checkDate]];
       } else{
         const fromDate = moment.parseZone(firstProductionFromDate.date).utc(true).valueOf()
@@ -83,7 +82,7 @@ export default function FilterDatePickerFirstProd(props) {
     }
     console.log("FirstProduction Range dates change filter", filter);
     setStateNav(stateNav => ({ ...stateNav, filterFirstProdDateRange: filter }));
-}, [firstProductionFromDate.date, firstProductionToDate.date, setStateNav]);
+}, [firstProductionFromDate.check, firstProductionFromDate.date, firstProductionToDate.date, setStateNav]);
 
   useEffect(() => {
     if (firstProductionFromDate.check === true) {
@@ -99,6 +98,7 @@ export default function FilterDatePickerFirstProd(props) {
       return;
     } else {
       handleStartDateChang(stateNav.firstProdDateFrom);
+      setFirstProductionFromDate({ check: true, date: stateNav.firstProdDateFrom });
     }
   }, [stateNav.firstProdDateFrom]);
 
@@ -107,6 +107,7 @@ export default function FilterDatePickerFirstProd(props) {
       return;
     } else {
       handleEndDateChange(stateNav.firstProdDateTo);
+      setFirstProductionToDate({ check: true, date: stateNav.firstProdDateTo });
     }
   }, [stateNav.firstProdDateTo]);
 
