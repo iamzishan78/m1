@@ -80,18 +80,22 @@ export default function DefaultFiltersTest() {
     const [stateApp, setStateApp] = useContext(AppContext);
 
     useEffect(() => {
-        if (stateApp.user) {
-            const filters = [];
-            filters.push(test1, test2, test3)
-            setStateApp((state) => ({
-            ...state,
-            user: {filtersSaveTest: filters },
-            })) 
-        }
+      const setFilters = () => {
+        const filters = [];
+        filters.push(test1, test2, test3)
+        console.log("heoajfae")
+        setStateApp((state) => ({
+        ...state,
+        filters:  filters ,
+        })) 
+      }
+      if (stateApp.user.authToken) {
+        setFilters()
+      }
     },[setStateApp, stateApp.user])
    
   return (
-    <div></div>
+  <div></div>
   )
 
 }

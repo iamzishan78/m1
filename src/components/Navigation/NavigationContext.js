@@ -106,6 +106,7 @@ const NavigationContextProvider = props => {
     asbtractsInFilter: null,
     trackTabsValue: 0,
     currentUserFilters: null,
+    filterHasOwnerCount: null,
   })
   return (
     <NavigationContext.Provider value={[stateNav, setStateNav]}>

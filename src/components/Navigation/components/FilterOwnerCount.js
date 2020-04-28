@@ -33,6 +33,7 @@ export default function FilterOwnerCount() {
   const [valueMinDisplay, setValueMinDisplay] = useState("");
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
   const [noOwners , setNoOwners] = useState(false);
+  const [owners , setOwners] = useState(false);
   const [ownerCountWell, setOwnerCountWell] = useState(
     stateNav.ownerCountWell ? stateNav.ownerCountWell : []
   );
@@ -138,6 +139,10 @@ export default function FilterOwnerCount() {
   const toggleNoOwners = () => {
     setNoOwners(noOwners => !noOwners)
   } 
+
+  const toggleOwners = () => {
+    setOwners(owners => !owners)
+  }
   
   useEffect(() => {
     let filter;
@@ -151,6 +156,19 @@ export default function FilterOwnerCount() {
       filterNoOwnerCount: filter
     }));
   },[noOwners, setStateNav])
+
+  useEffect(() => {
+    let filter;
+    if (owners) {
+      filter = ["any",["==",[ "get", "hasOwner"], true]] 
+    } else {
+      filter = null;
+    }
+    setStateNav(stateNav => ({
+      ...stateNav,
+      filterHasOwnerCount: filter
+    }));
+  },[noOwners, owners, setStateNav])
 
   useEffect(() => {
     if (stateNav.filterNoOwnerCount && stateNav.filterNoOwnerCount.length > 1) {
@@ -215,6 +233,22 @@ export default function FilterOwnerCount() {
           className={classes.noOwnersToggle}
           checked={noOwners}
           onChange={toggleNoOwners}
+          color="primary"
+          name="checked"
+          inputProps={{ 'aria-label': 'primary checkbox' }}
+        />
+      </div>
+      <div className={classes.noOwners}>
+        <Typography
+          className={classes.inputLabel}
+          htmlFor="select-multiple-chip1"
+        >
+          Wells With Owners
+        </Typography>
+        <Switch
+          className={classes.noOwnersToggle}
+          checked={owners}
+          onChange={toggleOwners}
           color="primary"
           name="checked"
           inputProps={{ 'aria-label': 'primary checkbox' }}

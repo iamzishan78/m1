@@ -246,6 +246,23 @@ export default function FilterDedaultListInterest(props) {
                   )
                 : null}
               {filtersTypeArr
+                ? filtersTypeArr.map((c) =>
+                    c[0] === "filterHasOwnerCount" ? (
+                      <Chip
+                        key={c[1]}
+                        className={classes.chipContainer}
+                        label={
+                          <section>
+                            <div className={classes.chip}>Wells With Owners</div>
+                            <div className={classes.chipRow}>TRUE</div>
+                          </section>
+                        }
+                        onDelete={removeChipOwner("hasOwners")}
+                      />
+                    ) : null
+                  )
+                : null}
+              {filtersTypeArr
                 ? filtersTypeArr.map((v) =>
                     v[0] === "filterOwnerCount" && v[1][1] ? (
                       <Chip

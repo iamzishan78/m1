@@ -175,17 +175,13 @@ export default function FilterDedaults() {
  
   useEffect(() => {
     let name;
-    let filters;
     if (stateApp) {
       name = stateApp.user.name;
-      setUser(name);
-      // if (condition) {
-      //   filters = stateApp.user.filtersSaveTest
-      //   setSavedFilters(filters)
-      // }
+      setUser(name);      
     }
   }, [stateApp]);
 
+console.log(savedFilters)
   const handleChange = (event, newValue) => {
     setTabsValue(newValue);
   };
@@ -194,6 +190,7 @@ export default function FilterDedaults() {
     let saveFilters = [];
     let filtersStateNav;
     let defaultFiltersArgs;
+    let defaultFiltersStateApp;
     let defaultFilters;
     let filtersDefaultArr = [];
     let m1neralSavedFilters = [];
@@ -202,11 +199,12 @@ export default function FilterDedaults() {
       defaultFiltersArgs = stateNav.m1neralDefaultFilters.map((elm) => elm);
       setCheckBoxDefault(defaultFiltersArgs[0].default);
       setCheckBoxActive(defaultFiltersArgs[0].on);
+      defaultFiltersStateApp = stateApp.filters.map(el => el[0].name)
       if (defaultFiltersArgs[0].filters) {
         defaultFilters = defaultFiltersArgs[0].filters.map((el) => el);
         filtersDefaultArr.push(defaultFilters);
         m1neralSavedFilters.push(defaultFiltersArgs[0].name);
-        setSavedFilters(m1neralSavedFilters);
+        setSavedFilters([m1neralSavedFilters, defaultFiltersStateApp]);
       }
     }
 
@@ -301,7 +299,7 @@ export default function FilterDedaults() {
       setFiltersProd(prodArr);
       setFiltersWell(wellArr);
     }
-  }, [stateNav]);
+  }, [stateApp.filters, stateNav]);
 
   const deleteChipWell = (item, name) => {
     if (stateNav[name] && stateNav[name].length === 5) {
@@ -489,6 +487,14 @@ export default function FilterDedaults() {
           }));
         }
     }
+    if (stateNav.filterHasOwnerCount && stateNav.filterHasOwnerCount.length > 0) {
+      if (item === "hasOwners") {
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          filterHasOwnerCount: null,
+        }));
+      }
+  }
     if(stateNav.filterOwnerCount && stateNav.filterOwnerCount.length > 0){
       let copy;
       copy = [...stateNav.filterOwnerCount];
@@ -771,6 +777,7 @@ export default function FilterDedaults() {
         filterAllInterestTypes: null,
         filterAllOwnershipTypes:null,
         filterHasOwners: null,
+        filterHasOwnerCount: null
       }))
       
     }
@@ -850,7 +857,7 @@ export default function FilterDedaults() {
           </div>
           <List aria-label="mailbox folders">
             {savedFilters
-              ? savedFilters.map((el) => (
+              ? savedFilters[1].map((el) => (
                   <div key={el}>
                     <ListItem button>
                       <ListItemText

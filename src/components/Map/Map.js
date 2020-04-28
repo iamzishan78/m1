@@ -284,6 +284,15 @@ export default function Map() {
         ownershipFilterCount += 1;
         totalCount += 1;
       }
+      if (
+        stateNav.filterHasOwnerCount &&
+        stateNav.filterHasOwnerCount.length > 0
+      ) {
+        filterArray.push(stateNav.filterHasOwnerCount);
+        isFilterSet = true;
+        ownershipFilterCount += 1;
+        totalCount += 1;
+      }
       if (stateNav.filterHasOwners && stateNav.filterHasOwners.length > 0) {
         filterArray.push(stateNav.filterHasOwners);
         isFilterSet = true;
@@ -710,6 +719,7 @@ export default function Map() {
     stateNav.filterWellType,
     stateNav.filterNoOwnerCount,
     stateNav.filterHasOwners,
+    stateNav.filterHasOwnerCount
   ]);
 
   useEffect(() => {
@@ -1231,8 +1241,8 @@ export default function Map() {
 
   return (
     <div className={classes.mapWrapper}>
-      {/* <DefaultFiltersTest/> */}
       <div className={classes.map} ref={mapEl} id="map">
+        {map ? <DefaultFiltersTest/> : null}
         {/*       {<M1Geocoder
           mapRef={mapEl}
           onResult={handleOnResult}
@@ -1240,7 +1250,7 @@ export default function Map() {
           position="top-left"
           mapboxApiAccessToken={mapboxgl.accessToken}
         />} */}
-
+        
         <div className={classes.footerLeftLogo}>
           <img src="icons/M1LogoWhiteTransparent.png" alt="logo" width="150" />
         </div>
