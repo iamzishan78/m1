@@ -12,7 +12,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    width: 548,
+    width: 350,
   },
   header: {
     padding: "10px 30px",
@@ -33,6 +33,9 @@ const useStyles = makeStyles((theme) => ({
   close: {
     float: "right",
     padding: "3px 30px",
+    "&:hover": {
+      backgroundColor: "transparent",
+    },
   },
   loader: {
     marginLeft: "45%",
@@ -93,6 +96,8 @@ export default function SaveFilters(props) {
         color="secondary"
         onClick={props.close}
         className={classes.close}
+        disableFocusRipple={true}
+        disableRipple={true}
       >
         <CloseIcon fontSize="large" />
       </IconButton>
@@ -132,7 +137,7 @@ export default function SaveFilters(props) {
       {!savedCompleted && completedSaving ? 
        <CircularProgress color="secondary" size={40} className={classes.loader} />
       : null}
-      {savedCompleted && savedCompleted ? <div className={classes.savedMessage}>{saveSearch} {" "} Have Been Saved</div> : null}
+      {savedCompleted && savedCompleted ? <div className={classes.savedMessage}>{saveSearch} {" "} Successfully Saved</div> : null}
       <div className={classes.buttonDiv}>
         {!completedSaving ? (
         <Button onClick={save} disabled={completedSaving} variant="contained" color="secondary">

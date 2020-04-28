@@ -56,14 +56,15 @@ const prodListOptions = [
 const useStyles = makeStyles((theme) => ({
   save: {
     display: "flex",
-    maxWidth: "160px",
+    width: "100%",
+    justifyContent: "flex-end",
     padding: "6px 12px",
-    marginLeft: 245,
+    marginRight: 10,
     color: "rgba(0, 0, 0, 0.54)",
     boxShadow: "none",
     backgroundColor: "inherit",
     "&:hover": {
-      backgroundColor: "white",
+      backgroundColor: "transparent",
     },
   },
   input: {
@@ -818,11 +819,11 @@ export default function FilterDedaults() {
         <Popover
           open={showSavePopOver}
           anchorReference="anchorPosition"
-          anchorPosition={{ top: 100, left: 400 }}
-          style={{ width: "100%" }} 
+          anchorPosition={{ left: 450 , top: 100}}
+          anchorOrigin="center"
+          style={{ width: "100%"}} 
           BackdropProps={{ invisible: false }}
           disablePortal={true}
-          // PaperProps={{ disablePortal: true }}
         >
           <SaveFilters user={user} filters={stateNavCopy} close={closePopoverSaveFilters}/>
         </Popover>
