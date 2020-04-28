@@ -167,7 +167,7 @@ export default function BaseMapStyles(props) {
   };
 
   const [mapStyles, setMapStyles] = useState([]);
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const handleClick = () => {
     setOpen(!open);
   };
