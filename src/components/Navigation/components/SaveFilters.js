@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { NavigationContext } from "../NavigationContext";
+import { AppContext } from "../../../AppContext";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from "@material-ui/core/Paper";
 import Divider from "@material-ui/core/Divider";
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SaveFilters(props) {
-  // const [stateNav, setStateNav] = useContext(NavigationContext)
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [saveSearch, setSaveSearch] = useState("");
   const [filterList, setFilterList] = useState(null);
   const [filters, setFilters] = useState(null);
@@ -79,9 +79,8 @@ export default function SaveFilters(props) {
       on: false,
       default: false,
     }
-
     setCompletedSaving(true)
-    
+    setStateApp(stateApp => ({...stateApp, filtersMockDb: [filterInfo] }))
   }
 
   useEffect(() => {
@@ -124,7 +123,7 @@ export default function SaveFilters(props) {
           <TextField
             {...params}
             variant="outlined"
-            label="Saved Filters"
+            label="Saved Searches"
             placeholder=""
             fullWidth={true}
           />
@@ -133,7 +132,6 @@ export default function SaveFilters(props) {
         id="virtualize-well-profiles"
         // style={{ maxWidth: 300, minWidth: 120 }}
       />
-      <Divider />
       {!savedCompleted && completedSaving ? 
        <CircularProgress color="secondary" size={40} className={classes.loader} />
       : null}

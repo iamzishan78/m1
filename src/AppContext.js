@@ -20,6 +20,8 @@ const AppProvider = (props) => {
     flyTo: null, //map used in flyto
     selectedTitleOpinionId: null,
     featureOrMapShape: {},
+    filters: [],
+    filtersMockDb: null,
     selectedContact: null,
     mapVars: {
       zoom: 5.88,

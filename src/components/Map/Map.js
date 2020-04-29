@@ -199,26 +199,27 @@ export default function Map() {
         !stateNav.filterWellType &&
         filterArray.length === 0
       ) {
-        let defaultTypeName = ["GAS", "OIL AND GAS", "OIL"];
-        let defaultStatusName = ["ACTIVE", "PERMIT"];
-        let defaultFiltersWellStatus = [
+        let defaultTypeName = ["typeName",["GAS", "OIL AND GAS", "OIL"]];
+        let defaultStatusName = ["statusName",["ACTIVE", "PERMIT"]];
+        let defaultFiltersWellStatus = ["filterWellStatus",[
           "match",
           ["get", "wellStatus"],
-          defaultStatusName,
+          defaultStatusName[1],
           true,
           false,
-        ];
-        let defaultFiltersWellType = [
+        ]];
+        let defaultFiltersWellType = ["filterWellType",[
           "match",
           ["get", "wellType"],
-          defaultTypeName,
+          defaultTypeName[1],
           true,
           false,
-        ];
+        ]];
         const m1neralDefaults = [
           {
             name: "M1neral Default Filters",
             filters: [defaultFiltersWellStatus, defaultFiltersWellType],
+            types:[defaultTypeName, defaultStatusName],
             on: true,
             default: true,
           },
@@ -226,11 +227,11 @@ export default function Map() {
         setStateNav((stateNav) => ({
           ...stateNav,
           defaultOn: false,
-          statusName: defaultStatusName,
-          typeName: defaultTypeName,
+          statusName: defaultStatusName[1],
+          typeName: defaultTypeName[1],
           m1neralDefaultFilters: m1neralDefaults,
-          filterWellStatus: defaultFiltersWellStatus,
-          filterWellType: defaultFiltersWellType,
+          filterWellStatus: defaultFiltersWellStatus[1],
+          filterWellType: defaultFiltersWellType[1],
         }));
       }
       if (stateNav.filterWellProfile && stateNav.filterWellProfile.length > 0) {

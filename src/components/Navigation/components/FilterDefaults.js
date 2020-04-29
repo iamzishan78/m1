@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../NavigationContext";
-import { useHistory, useLocation } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
 import Popover from "@material-ui/core/Popover";
 import Tabs from "@material-ui/core/Tabs";
@@ -160,8 +159,10 @@ export default function FilterDedaults() {
   const [currentUserFilters, setCurrentUserFiltes] = useState(
     stateNav.currentUserFilters ? stateNav.currentUserFilters : []
   );
-  const [checkBoxActive, setCheckBoxActive] = useState(false);
-  const [checkBoxDefault, setCheckBoxDefault] = useState(false);
+  const [checkBoxActiveM1neral, setCheckBoxActiveM1neral] = useState(null);
+  const [checkBoxDefaultM1neral, setCheckBoxDefaultM1neral] = useState(null);
+  const [checkBoxActive, setCheckBoxActive] = useState(null);
+  const [checkBoxDefault, setCheckBoxDefault] = useState(null);
   const [dateCreated, setDateCreated] = useState(new Date());
   const [filterTypeWell, setFilterTypeWell] = useState(null);
   const [filterTypeOwner, setFilterTypeOwner] = useState(null);
@@ -170,7 +171,8 @@ export default function FilterDedaults() {
   const [saveSearchName, setSaveSearchName] = useState("");
   const [user, setUser] = useState("");
   const [showSavePopOver ,setShowSavePopOver] = useState(false);
-  // const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
+  const [filtersFromDb, setFiltersFromDb] = useState(null);
+  const [typesFromDb, setTypesFromDb] = useState(null);
   const classes = useStyles();
  
   useEffect(() => {
@@ -181,10 +183,37 @@ export default function FilterDedaults() {
     }
   }, [stateApp]);
 
-console.log(savedFilters)
   const handleChange = (event, newValue) => {
     setTabsValue(newValue);
   };
+
+  useEffect(() => {
+    let typeName; 
+    let types;
+    let filterName;
+    let filter;
+    if (filtersFromDb && filtersFromDb.length > 0) {
+      let mapping = filtersFromDb.map(el => {
+        filterName = el[0];
+        filter = el[1];
+      });
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        [filterName]:filter,
+      }))
+    }
+
+    if (typesFromDb && typesFromDb.length > 0) {
+      let mappingTypes = typesFromDb.map(el => {
+        typeName = el[0];
+        types = el[1];
+      });
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        [typeName]:types,
+      }))
+    }
+  },[filtersFromDb, setStateNav, typesFromDb])
   
   useEffect(() => {
     let saveFilters = [];
@@ -197,13 +226,23 @@ console.log(savedFilters)
 
     if (stateNav.m1neralDefaultFilters) {
       defaultFiltersArgs = stateNav.m1neralDefaultFilters.map((elm) => elm);
-      setCheckBoxDefault(defaultFiltersArgs[0].default);
-      setCheckBoxActive(defaultFiltersArgs[0].on);
+      setCheckBoxDefaultM1neral(defaultFiltersArgs[0].default);
+      setCheckBoxActiveM1neral(defaultFiltersArgs[0].on);
       defaultFiltersStateApp = stateApp.filters.map(el => el[0].name)
       if (defaultFiltersArgs[0].filters) {
         defaultFilters = defaultFiltersArgs[0].filters.map((el) => el);
         filtersDefaultArr.push(defaultFilters);
         m1neralSavedFilters.push(defaultFiltersArgs[0].name);
+        let filtersOnOffObj = {};
+        let filtersDefaultsOnOffObj = {}
+        for (let index = 0; index < defaultFiltersStateApp.length; index++) {
+          const element = defaultFiltersStateApp[index];
+          let formatElement = element.split(" ").join("")
+          filtersOnOffObj[formatElement] =  false;
+          filtersDefaultsOnOffObj[formatElement] =  false;
+        }
+        setCheckBoxActive(filtersOnOffObj)
+        setCheckBoxDefault(filtersDefaultsOnOffObj)
         setSavedFilters([m1neralSavedFilters, defaultFiltersStateApp]);
       }
     }
@@ -783,12 +822,55 @@ console.log(savedFilters)
     }
   }
 
-  const filterOnOff = () => {
-    setCheckBoxActive((checkBoxActive) => !checkBoxActive);
+  const formatString = string => {
+    return string.split(" ").join("")
+  }
+
+  const filterOnOff = e => {
+    const target = e.target;
+    const name = target.name;
+    let filtersFromSate = [...stateApp.filters];
+    let filtersToSet;
+    let typesToSet;
+    let filtersName;
+    for (let index = 0; index < filtersFromSate.length; index++) {
+      const element = filtersFromSate[index];
+      filtersName = element[0].name;
+      if (name === filtersName.split(" ").join("")) {
+        filtersToSet = element[0].filters;
+        typesToSet = element[0].types;
+      }
+    }
+    // let newState = checkBoxActive;
+    let obj = checkBoxActive
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+         if (key !== name) {
+          obj[key] = false;
+         } else {
+          obj[key] = !obj[key]
+         }
+      }
+    }
+    setCheckBoxActive(obj);
+    setFiltersFromDb(filtersToSet);
+    setTypesFromDb(typesToSet);
   };
 
-  const selectDefault = () => {
-    setCheckBoxDefault((checkBoxDefault) => !checkBoxDefault);
+  const selectDefault = (e) => {
+    const target = e.target;
+    const name = target.name;
+    let obj = {...checkBoxDefault}
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+         if (key !== name) {
+          obj[key] = false;
+         } else {
+          obj[key] = !obj[key]
+         }
+      }
+    }
+    setCheckBoxDefault(obj);
   };
 
   const saveFilters = () => {
@@ -873,18 +955,19 @@ console.log(savedFilters)
                       />
                       <Checkbox
                         className={classes.checkBox}
-                        checked={checkBoxDefault}
-                        onChange={selectDefault}
+                        checked={checkBoxDefault[el.split(" ").join("")]}
+                        onChange={e => selectDefault(e)}
                         color="primary"
+                        name={formatString(el)}
                         disableRipple={true}
                         inputProps={{ "aria-label": "Default checkbox" }}
                       />
                       <Switch
                         className={classes.switch}
-                        checked={checkBoxActive}
-                        onChange={filterOnOff}
+                        checked={checkBoxActive[el.split(" ").join("")]}
+                        onChange={e => filterOnOff(e)}
                         color="secondary"
-                        name="checked"
+                        name={formatString(el)}
                         inputProps={{ 'aria-label': 'primary checkbox' }}
                       />
                       <IconButton onClick={deleteFilter} aria-label="delete">

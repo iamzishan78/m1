@@ -1,58 +1,60 @@
 import React, {useContext, useEffect} from 'react';
 import { AppContext } from "../../AppContext";
 
-let defaultTypeName = ["GAS", "OIL"];
-let defaultStatusName = ["ACTIVE", "PERMIT"];
-let defaultTypeName2 = ["OIL"];
-let defaultStatusName2 = ["ACTIVE", "PERMIT"];
-let defaultTypeName3 = ["GAS"];
-let defaultStatusName3 = ["ACTIVE", "PERMIT"];
-let defaultFiltersWellStatus = [
+let defaultTypeName = ["typeName",["GAS", "OIL AND GAS", "OIL"]];
+let defaultStatusName = ["statusName",["ACTIVE", "PERMIT"]];
+let defaultTypeName2 = ["typeName",["OIL"]];
+let defaultStatusName2 = ["statusName",["PERMIT"]];;
+let defaultTypeName3 = ["typeName",["GAS"]];
+let defaultStatusName3 = ["statusName",["ACTIVE"]];
+
+let defaultFiltersWellStatus = ["filterWellStatus",[
   "match",
   ["get", "wellStatus"],
-  defaultStatusName,
+  defaultStatusName[1],
   true,
   false,
-];
-let defaultFiltersWellType = [
+]]
+let defaultFiltersWellType = ["filterWellType",[
   "match",
   ["get", "wellType"],
-  defaultTypeName,
+  defaultTypeName[1],
   true,
   false,
-];
-let defaultFiltersWellStatus2 = [
-    "match",
-    ["get", "wellStatus"],
-    defaultStatusName2,
-    true,
-    false,
-  ];
-  let defaultFiltersWellType2 = [
-    "match",
-    ["get", "wellType"],
-    defaultTypeName2,
-    true,
-    false,
-  ];
-  let defaultFiltersWellStatus3 = [
-    "match",
-    ["get", "wellStatus"],
-    defaultStatusName3,
-    true,
-    false,
-  ];
-  let defaultFiltersWellType3 = [
+]];
+let defaultFiltersWellStatus2 = ["filterWellStatus",[
+  "match",
+  ["get", "wellStatus"],
+  defaultStatusName2[1],
+  true,
+  false,
+]]
+  let defaultFiltersWellType2 = ["filterWellType",[
     "match",
     ["get", "wellType"],
-    defaultTypeName3,
+    defaultTypeName2[1],
     true,
     false,
-  ];
+  ]];
+  let defaultFiltersWellStatus3 = ["filterWellStatus",[
+    "match",
+    ["get", "wellStatus"],
+    defaultStatusName3[1],
+    true,
+    false,
+  ]]
+  let defaultFiltersWellType3 = ["filterWellType",[
+    "match",
+    ["get", "wellType"],
+    defaultTypeName3[1],
+    true,
+    false,
+  ]];
 const test1 = [
   {
     name: "Test 1 Default Filters",
     filters: [defaultFiltersWellStatus, defaultFiltersWellType],
+    types:[defaultTypeName, defaultStatusName],
     on: false,
     default: false,
   },
@@ -62,6 +64,7 @@ const test2 = [
     {
       name: "Test 2  Default Filters",
       filters: [defaultFiltersWellStatus2, defaultFiltersWellType2],
+      types:[defaultTypeName2, defaultStatusName2],
       on: false,
       default: false,
     },
@@ -71,6 +74,7 @@ const test3 = [
     {
       name: "Test 3 Default Filters",
       filters: [defaultFiltersWellStatus3, defaultFiltersWellType3],
+      types:[defaultTypeName3, defaultStatusName3],
       on: false,
       default: false,
     },
@@ -81,18 +85,21 @@ export default function DefaultFiltersTest() {
 
     useEffect(() => {
       const setFilters = () => {
-        const filters = [];
-        filters.push(test1, test2, test3)
-        console.log("heoajfae")
-        setStateApp((state) => ({
-        ...state,
-        filters:  filters ,
-        })) 
+          let filters = [];
+          if (stateApp.filtersMockDb) {
+            let saved = stateApp.filtersMockDb;
+            filters.push(saved)
+          }
+          filters.push(test1,test2,test3)
+          setStateApp((state) => ({
+          ...state,
+          filters:  filters ,
+          }))
       }
       if (stateApp.user.authToken) {
         setFilters()
       }
-    },[setStateApp, stateApp.user])
+    },[stateApp.filtersMockDb, stateApp.user.authToken])
    
   return (
   <div></div>
