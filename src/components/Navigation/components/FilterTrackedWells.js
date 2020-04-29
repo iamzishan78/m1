@@ -124,7 +124,7 @@ export default function FilterOwnerCount() {
         console.log('track wells',dataWells)
 
         const idArray = dataWells.wells.results.map(
-          (item) => item.id
+          (item) => item.api
         )
         const latArray = dataWells.wells.results.map(
           (item) => item.latitude
@@ -159,25 +159,25 @@ export default function FilterOwnerCount() {
 
 
 
-  const handleListClick = (well) => {
-    setStateApp((state) => ({ ...state, popupOpen: false }));
-    setStateApp((state) => ({ ...state, selectedWell: well }));
-    setStateApp((state) => ({ ...state, selectedWellId: well.id }));
-    setStateApp((state) => ({ ...state, flyTo: well }));
-  };
+  // const handleListClick = (well) => {
+  //   setStateApp((state) => ({ ...state, popupOpen: false }));
+  //   setStateApp((state) => ({ ...state, selectedWell: well }));
+  //   setStateApp((state) => ({ ...state, selectedWellId: well.id }));
+  //   setStateApp((state) => ({ ...state, flyTo: well }));
+  // };
 
 
 
-  const handleIdChange = value => {
-    let filter;
-    if(value && value.length) {
-      filter = ['match', ['get', 'id'], value, true, false]
-    }
-    else {
-      filter = null
-    }
-    setStateNav(stateNav => ({ ...stateNav, filterTrackedWells: filter}))
-    };
+  // const handleIdChange = value => {
+  //   let filter;
+  //   if(value && value.length) {
+  //     filter = ['match', ['get', 'id'], value, true, false]
+  //   }
+  //   else {
+  //     filter = null
+  //   }
+  //   setStateNav(stateNav => ({ ...stateNav, filterTrackedWells: filter}))
+  //   };
 
 
 
@@ -206,7 +206,7 @@ export default function FilterOwnerCount() {
     let filter;
   
     if(idArray && idArray.length) {
-      filter = ['match', ['get', 'id'], idArray, true, false]
+      filter = ['match', ['get', 'api'], idArray, true, false]
     }
     else {
       filter = null
