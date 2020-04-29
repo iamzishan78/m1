@@ -213,7 +213,6 @@ export default function MapControls(props) {
             className={classes.menuIcon}
           />
         }
-        //onClose={handleClose}
         onOpen={handleOpen}
         open={stateMapControls.openSpeedDial}
         direction="down"

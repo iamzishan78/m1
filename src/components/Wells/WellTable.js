@@ -67,17 +67,17 @@ function getSorting(order, orderBy) {
   return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
 
-const headCells = [
-    { id: 'api', numeric: false, disablePadding: false, label: 'API' },
-    { id: 'wellName', numeric: false, disablePadding: false, label: 'Well' },
-    { id: 'operator', numeric: false, disablePadding: false, label: 'Operator' },
-    { id: 'wellType', numeric: false, disablePadding: false, label: 'Type' },
-    { id: 'wellBoreProfile', numeric: false, disablePadding: false, label: 'Profile' },
-    { id: 'ownerCount', numeric: true, disablePadding: false, label: '' },
-    { id: 'comments', numeric: false, disablePadding: false, label: '' },
-    { id: 'tags', numeric: false, disablePadding: false, label: '' },
-    { id: 'isTracked', numeric: false, disablePadding: false, label: '' },
-  ];
+// const headCells = [
+//     { id: 'api', numeric: false, disablePadding: false, label: 'API' },
+//     { id: 'wellName', numeric: false, disablePadding: false, label: 'Well' },
+//     { id: 'operator', numeric: false, disablePadding: false, label: 'Operator' },
+//     { id: 'wellType', numeric: false, disablePadding: false, label: 'Type' },
+//     { id: 'wellBoreProfile', numeric: false, disablePadding: false, label: 'Profile' },
+//     { id: 'ownerCount', numeric: true, disablePadding: false, label: '' },
+//     { id: 'comments', numeric: false, disablePadding: false, label: '' },
+//     { id: 'tags', numeric: false, disablePadding: false, label: '' },
+//     { id: 'isTracked', numeric: false, disablePadding: false, label: '' },
+//   ];
 
 function EnhancedTableHead(props) {
   const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
@@ -286,77 +286,77 @@ export default function WellTable(props) {
   const [selectedRow, setSelectedRow] = React.useState();
   const [showExpandableCard, setShowExpandableCard] = useState(false);
 
-  useEffect( () => {
-    setShowList(props.showList)
-  },[props.showList,setShowList])
+  // useEffect( () => {
+  //   setShowList(props.showList)
+  // },[props.showList,setShowList])
 
-  useEffect( () => {
-    if(!source){
-      setSource({
-        sourceId: stateApp.user.id,
-        label: 'user',
-        name: stateApp.user.name,
-        type:'vertex',
-        properties:[]
-      })
-    }
-    getVertexEdges({variables: {'source':source,'edgeLabel':"tracks",'targetLabel':"well"}})
-  },[stateApp.user,source])
+  // useEffect( () => {
+  //   if(!source){
+  //     setSource({
+  //       sourceId: stateApp.user.id,
+  //       label: 'user',
+  //       name: stateApp.user.name,
+  //       type:'vertex',
+  //       properties:[]
+  //     })
+  //   }
+  //   getVertexEdges({variables: {'source':source,'edgeLabel':"tracks",'targetLabel':"well"}})
+  // },[stateApp.user,source])
 
-  useEffect( () => {
-    if(props.parent){
-    if(props.parent === 'track'){
+  // useEffect( () => {
+  //   if(props.parent){
+  //   if(props.parent === 'track'){
       
-      if(dataGraph) {
-        if(dataGraph.vertexEdges.sourceIds){
-          if(dataGraph.vertexEdges.sourceIds.length > 0){
-              getWells({variables: {'wellIdArray':dataGraph.vertexEdges.sourceIds,'authToken':stateApp.user.authToken}})
-          }
-        }
-      }
-    }
-  }
-  },[stateApp.user,dataGraph,props.parent])
+  //     if(dataGraph) {
+  //       if(dataGraph.vertexEdges.sourceIds){
+  //         if(dataGraph.vertexEdges.sourceIds.length > 0){
+  //             getWells({variables: {'wellIdArray':dataGraph.vertexEdges.sourceIds,'authToken':stateApp.user.authToken}})
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+  // },[stateApp.user,dataGraph,props.parent])
 
-   useEffect( () => {
+  //  useEffect( () => {
    
-    if(props.parent){
-    if(props.parent === 'track'){
+  //   if(props.parent){
+  //   if(props.parent === 'track'){
      
-        if(dataWells && dataGraph) {
+  //       if(dataWells && dataGraph) {
            
-            if(dataWells.wells) {
+  //           if(dataWells.wells) {
               
-                dataWells.wells.results.forEach( (well) => {
+  //               dataWells.wells.results.forEach( (well) => {
                 
-                    if(dataGraph.vertexEdges.sourceIds){
-                      if(dataGraph.vertexEdges.sourceIds.length > 0){
-                        dataGraph.vertexEdges.sourceIds.forEach( (sourceId) => {
-                          if(well.id === sourceId) {
-                            well.isTracked = true
-                          }})
-                      }
-                    }
-              })
+  //                   if(dataGraph.vertexEdges.sourceIds){
+  //                     if(dataGraph.vertexEdges.sourceIds.length > 0){
+  //                       dataGraph.vertexEdges.sourceIds.forEach( (sourceId) => {
+  //                         if(well.id === sourceId) {
+  //                           well.isTracked = true
+  //                         }})
+  //                     }
+  //                   }
+  //             })
               
-              setRows(dataWells.wells.results)
-              setStateApp(state => ({...state,wells:dataWells.wells.results}))
-          }
-          else {
-            setRows([])
-          }
+  //             setRows(dataWells.wells.results)
+  //             setStateApp(state => ({...state,wells:dataWells.wells.results}))
+  //         }
+  //         else {
+  //           setRows([])
+  //         }
             
-        }
-        else {
+  //       }
+  //       else {
           
-            setRows([])
-        }
+  //           setRows([])
+  //       }
      
 
-    }
+  //   }
     
-  }
-  },[dataWells,dataGraph,props.parent]) 
+  // }
+  // },[dataWells,dataGraph,props.parent]) 
 
 
   const handleListClick = (well) => {

@@ -10,6 +10,7 @@ import OperatorFilterJ from "./OperatorFilterJ";
 import FilterWellTypeJ from "./FilterWellTypeJ";
 import FilterWellProfileJ from "./FilterWellProfileJ";
 import FilterWellStatusJ from "./FilterWellStatusJ";
+import FilterTrackedWells from "./FilterTrackedWells";
 
 
 // const ITEM_HEIGHT = 60;
@@ -111,6 +112,7 @@ export default function FilterFormWell() {
         <FilterDatePickerFirstProd labelDates={"First Production"} />
       </div> 
       
+      <FilterTrackedWells/>
 
     </div>
   );

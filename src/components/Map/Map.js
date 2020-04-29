@@ -16,7 +16,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import MapControlsProvider from "../MapControls/MapControlsProvider";
 import WellCardProvider from "../WellCard/WellCardProvider";
 import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
-// import WellsProvider from "../Wells/WellsProvider";
 import Portal from "@material-ui/core/Portal";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
@@ -32,10 +31,6 @@ import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import * as MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import DefaultFiltersTest from "./filtersDefaultTest"
-//import M1Geocoder from "./components/CustomGeocode.js";
-import DeckGL, { GeoJsonLayer } from "deck.gl";
-
-// import "./Map.css"
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -57,22 +52,6 @@ const useStyles = makeStyles((theme) => ({
     bottom: "5px",
     zIndex: "1",
     left: "10px",
-    //textShadow: "1px 0 0 black, -1px 0 0 black, 0 1px 0 black, 0 -1px 0 black",
-    // color: "#ffffff",
-    // fontSize: "16px",
-    // fontWeight: "bold",
-    // opacity: "0.82",
-    // "& img": {
-    //   padding: "2px 2px 4px 2px",
-    //   backgroundImage:
-    //     "radial-gradient(#ffffff00,rgba(0, 0, 0, 0.671), #ffffff00,  #ffffff00)",
-    //   position: "absolute",
-    //   bottom: "-40px"
-    //},
-    // "& p": {
-    //   position: "absolute",
-    //   left: "23px"
-    // }
   },
   portal: {
     position: "absolute",
@@ -284,6 +263,17 @@ export default function Map() {
         ownershipFilterCount += 1;
         totalCount += 1;
       }
+      if (
+        
+        stateNav.filterTrackedWells &&
+        stateNav.filterTrackedWells.length > 0
+      ) {
+        filterArray.push(stateNav.filterTrackedWells);
+        isFilterSet = true;
+        wellFilterCount += 1;
+        totalCount += 1;
+      }
+
       if (
         stateNav.filterHasOwnerCount &&
         stateNav.filterHasOwnerCount.length > 0
@@ -719,7 +709,8 @@ export default function Map() {
     stateNav.filterWellType,
     stateNav.filterNoOwnerCount,
     stateNav.filterHasOwners,
-    stateNav.filterHasOwnerCount
+    stateNav.filterHasOwnerCount,
+    stateNav.filterTrackedWells,
   ]);
 
   useEffect(() => {
@@ -1242,15 +1233,7 @@ export default function Map() {
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
-        {map ? <DefaultFiltersTest/> : null}
-        {/*       {<M1Geocoder
-          mapRef={mapEl}
-          onResult={handleOnResult}
-          onViewportChange={handleGeocoderViewportChange}
-          position="top-left"
-          mapboxApiAccessToken={mapboxgl.accessToken}
-        />} */}
-        
+        {map ? <DefaultFiltersTest/> : null}        
         <div className={classes.footerLeftLogo}>
           <img src="icons/M1LogoWhiteTransparent.png" alt="logo" width="150" />
         </div>
@@ -1261,10 +1244,6 @@ export default function Map() {
       <Portal container={container.current}>
         {stateApp.popupOpen ? (
           <div>
-            {/* <div
-            id="tempPopupHolder"
-            style={{ position: "inherit", top: 0, left: 0, right: 0 , bottom: 0, height: "100%"}}
-          ></div>  */}
             <PortalD id="popupContainer">
               {showExpandableCard && !stateApp.expandedCard ? (
                 <ExpandableCardProvider

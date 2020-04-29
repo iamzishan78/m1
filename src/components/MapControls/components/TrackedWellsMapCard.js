@@ -125,6 +125,8 @@ export default function TrackedWellsMapCard(props) {
         dataWells.wells.results &&
         dataWells.wells.results.length > 0
       ) {
+
+        console.log(dataWells)
         setRows(dataWells.wells.results);
 
         setStateApp((state) => ({
