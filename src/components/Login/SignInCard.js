@@ -21,8 +21,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 // HELPERS
 import { validateData } from "./loginHelpers";
 import Paper from '@material-ui/core/Paper';
-
-// import Autocomplete from '@material-ui/lab/Autocomplete';
+//import autocomplete from '@material-ui/lab/Autocomplete';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -300,6 +299,7 @@ const SignInCard = props => {
                 }
                 value={userPassword}
                 autoComplete= "true"
+                type="password"
                 />
 
           <div className={classes.secondaryInputs}>

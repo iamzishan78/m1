@@ -37,13 +37,14 @@ const localStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     alignItems: 'center',
+    paddingBottom: '1%'
   },
   headerWords: {
     color: "#011133",
     display: "flex",
     justifyContent: "center",
     marginTop:"40px",
-    marginBottom: "40px",
+    marginBottom: "20px",
     fontSize: '48px',
     fontWeight: '900',
     fontFamily: "Tahoma, Geneva, sans-serif",	
@@ -66,7 +67,7 @@ const localStyles = makeStyles(theme => ({
     width: '250px',
     height: '410px',
     marginBottom: 50,
-    border: '1px solid #011133' ,
+    border: '1px solid #f0f4f5' ,
     fontFamily: theme.typography.fontFamily,
     "&:hover": {
       border: `3px solid #f0cfb3`,
@@ -75,7 +76,7 @@ const localStyles = makeStyles(theme => ({
   supportCard: {
     width: '500px',
     height: '500px',
-    backgroundColor: '#f6fafb',
+    backgroundColor: '#e8eced',
     display: "flex",
     flexDirection: "column",
     fontFamily: theme.typography.fontFamily
@@ -83,7 +84,7 @@ const localStyles = makeStyles(theme => ({
   signUpSupportCard: {
     width: '500px',
     height: '675px',
-    backgroundColor: '#f6fafb',
+    backgroundColor: '#e8eced',
     display: "flex",
     flexDirection: "column",
     fontFamily: theme.typography.fontFamily
@@ -450,7 +451,7 @@ const M1neralLogoNavNoAuth = (props) => (
 const M1neralLogo2 = styled(M1neralLogoNavNoAuth)`
   width: 200px;
   padding-top: 50px;
-  padding-bottom: 50px;
+  padding-bottom: 20px;
 `;
 
 
@@ -592,7 +593,7 @@ const Login = props => {
         Don't have an account? 
       </Typography>
       <Typography  className={localClass.smallerWords}>
-        Get started today
+        Sign up and get started today
       </Typography>
     </div>
 
@@ -1193,21 +1194,21 @@ const Login = props => {
         <div style={{ 
                 color: "#fff", 
                 }}>
-        (c) 2020 M1neral, LLC
+        © 2020 M1neral, LLC. All Rights Reserved.
         </div>
 
         <div style={{ 
                 color: "#fff", 
                 }}>
-        Terms of Service
+        Terms of Service | Privacy Policy
         </div>
 
-        <div style={{ 
+        {/* <div style={{ 
                 color: "#fff", 
                 marginBottom: '50px',
                 }}>
         Privacy Policy
-        </div>
+        </div> */}
 
       </div>
 
