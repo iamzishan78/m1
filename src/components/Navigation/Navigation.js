@@ -486,6 +486,21 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyItems: "center"
   },
+  trackButton: {
+    backgroundColor: theme.palette.secondary.main,
+    // width: "150px",
+    position: 'relative',
+    top: '0px',
+    height: '35px',
+    // right: "0px",
+    // marginLeft: "30%",
+    // marginTop: "1.5%",
+    marginRight: "15px",
+    marginTop: '6px',
+    color: theme.palette.secondary.contrastText,
+    // alignItems: "center",
+    // justifyItems: "center"
+  },
 }));
 
 const M1neralLogoDrawer = (props) => (
@@ -878,8 +893,25 @@ export default function Navigation(props) {
 
 
             <div className={classes.grow1} />
+            
+            
+            
             {matchTrack ? (
-              <div ref={anchorEl} className={classes.filterTabs}>
+
+              <div styles={{
+                // display: "flex",
+                // flexDirection: "column",
+                // justifyContent: "center",              
+                }}>
+
+
+
+              <div ref={anchorEl} 
+                  className={classes.filterTabs}
+                  >
+
+            
+              
                 <Tabs
                   value={valueTabsTrack}
                   onChange={handleTabChange}
@@ -888,6 +920,32 @@ export default function Navigation(props) {
                   aria-label="tabs"
                   classes={{ indicator: classes.indicator }}
                 >
+
+                <Button
+                variant="contained"
+                disableElevation
+                type="submit"
+                className={classes.trackButton}
+                color="primary"
+                // onClick={signIn}
+                // onKeyDown={e => onEnterKey(e)}
+                  >
+                  EXPORT REPORT
+                </Button>
+
+                <Button
+                variant="contained"
+                disableElevation
+                type="submit"
+                style={{marginRight: '40px'}}
+                className={classes.trackButton}
+                color="primary"
+                // onClick={signIn}
+                // onKeyDown={e => onEnterKey(e)}
+                  >
+                  SEND MAILERS
+                </Button>
+
                   <Tab
                     //onClick={handleFilterCardOpen}
                     value={0}
@@ -917,7 +975,11 @@ export default function Navigation(props) {
                     }
                     aria-label="geography"
                   />
-                </Tabs>              
+                </Tabs>    
+
+
+
+                </div>
               </div>
             ) : (
               <div style={{ display: "none" }}></div>
