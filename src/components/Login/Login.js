@@ -74,7 +74,7 @@ const localStyles = makeStyles(theme => ({
     },
   },
   supportCard: {
-    width: '500px',
+    width: '425px',
     height: '500px',
     backgroundColor: '#e8eced',
     display: "flex",
