@@ -22,6 +22,8 @@ const AppProvider = (props) => {
     featureOrMapShape: {},
     filters: [],
     filtersMockDb: null,
+    filtersOnOff: null,
+    filtersDefaultOnoff: null,
     selectedContact: null,
     trackFilterOn: null,
     mapVars: {

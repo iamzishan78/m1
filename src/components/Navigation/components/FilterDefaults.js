@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../NavigationContext";
 import Paper from "@material-ui/core/Paper";
@@ -149,26 +149,22 @@ export default function FilterDedaults() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [tabsValue, setTabsValue] = useState(0);
-  const [currentFilters, setCurrentFilters] = useState(null);
   const [stateNavCopy, setStateNavCopy] = useState(null);
   const [filtersProd, setFiltersProd] = useState(null);
   const [filtersGeo, setFiltersGeo] = useState(null);
   const [filtersOwner, setFiltersOwner] = useState(null);
   const [filtersWell, setFiltersWell] = useState(null);
   const [savedFilters, setSavedFilters] = useState(null);
-  const [currentUserFilters, setCurrentUserFiltes] = useState(
-    stateNav.currentUserFilters ? stateNav.currentUserFilters : []
-  );
-  const [checkBoxActiveM1neral, setCheckBoxActiveM1neral] = useState(null);
-  const [checkBoxDefaultM1neral, setCheckBoxDefaultM1neral] = useState(null);
-  const [checkBoxActive, setCheckBoxActive] = useState(null);
-  const [checkBoxDefault, setCheckBoxDefault] = useState(null);
+  const [checkBoxActiveM1neral, setCheckBoxActiveM1neral] = useState(stateNav.m1neralDefaultFilters[0].on);
+  const [checkBoxDefaultM1neral, setCheckBoxDefaultM1neral] = useState(stateNav.m1neralDefaultFilters[0].default);
+  const [checkBoxActive, setCheckBoxActive] = useState(stateApp.filtersOnOff);
+  const [checkBoxDefault, setCheckBoxDefault] = useState(stateApp.filtersDefaultOnoff);
   const [dateCreated, setDateCreated] = useState(new Date());
   const [filterTypeWell, setFilterTypeWell] = useState(null);
   const [filterTypeOwner, setFilterTypeOwner] = useState(null);
   const [filterTypeProdcution, setFilterTypeProduction] = useState(null);
   const [filterTypeGeography, setFilterTypeGeography] = useState(null);
-  const [saveSearchName, setSaveSearchName] = useState("");
+  // const [saveSearchName, setSaveSearchName] = useState("");
   const [user, setUser] = useState("");
   const [showSavePopOver ,setShowSavePopOver] = useState(false);
   const [filtersFromDb, setFiltersFromDb] = useState(null);
@@ -190,59 +186,43 @@ export default function FilterDedaults() {
   useEffect(() => {
     let typeName; 
     let types;
-    let filterName;
+    let filtersName;
     let filter;
     if (filtersFromDb && filtersFromDb.length > 0) {
-      let mapping = filtersFromDb.map(el => {
-        filterName = el[0];
-        filter = el[1];
+      filtersFromDb.forEach(element => {
+        filtersName = element[0]; 
+        filter = element[1];
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          [filtersName]:filter,
+        }))
       });
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        [filterName]:filter,
-      }))
     }
 
     if (typesFromDb && typesFromDb.length > 0) {
-      let mappingTypes = typesFromDb.map(el => {
+      typesFromDb.forEach(el => {
         typeName = el[0];
         types = el[1];
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          [typeName]:types,
+        }))
       });
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        [typeName]:types,
-      }))
     }
   },[filtersFromDb, setStateNav, typesFromDb])
-  
+
   useEffect(() => {
     let saveFilters = [];
     let filtersStateNav;
     let defaultFiltersArgs;
     let defaultFiltersStateApp;
-    let defaultFilters;
-    let filtersDefaultArr = [];
     let m1neralSavedFilters = [];
 
     if (stateNav.m1neralDefaultFilters) {
       defaultFiltersArgs = stateNav.m1neralDefaultFilters.map((elm) => elm);
-      setCheckBoxDefaultM1neral(defaultFiltersArgs[0].default);
-      setCheckBoxActiveM1neral(defaultFiltersArgs[0].on);
       defaultFiltersStateApp = stateApp.filters.map(el => el[0].name)
       if (defaultFiltersArgs[0].filters) {
-        defaultFilters = defaultFiltersArgs[0].filters.map((el) => el);
-        filtersDefaultArr.push(defaultFilters);
         m1neralSavedFilters.push(defaultFiltersArgs[0].name);
-        let filtersOnOffObj = {};
-        let filtersDefaultsOnOffObj = {}
-        for (let index = 0; index < defaultFiltersStateApp.length; index++) {
-          const element = defaultFiltersStateApp[index];
-          let formatElement = element.split(" ").join("")
-          filtersOnOffObj[formatElement] =  false;
-          filtersDefaultsOnOffObj[formatElement] =  false;
-        }
-        setCheckBoxActive(filtersOnOffObj)
-        setCheckBoxDefault(filtersDefaultsOnOffObj)
         setSavedFilters([m1neralSavedFilters, defaultFiltersStateApp]);
       }
     }
@@ -827,50 +807,150 @@ export default function FilterDedaults() {
   }
 
   const filterOnOff = e => {
-    const target = e.target;
-    const name = target.name;
-    let filtersFromSate = [...stateApp.filters];
-    let filtersToSet;
-    let typesToSet;
-    let filtersName;
-    for (let index = 0; index < filtersFromSate.length; index++) {
-      const element = filtersFromSate[index];
-      filtersName = element[0].name;
-      if (name === filtersName.split(" ").join("")) {
-        filtersToSet = element[0].filters;
-        typesToSet = element[0].types;
+    if (e) {
+      const target = e.target;
+      const name = target.name;
+      const checked = target.checked;
+      let filtersFromSate = [...stateApp.filters];
+      let filtersTorRemove = [...stateNavCopy];
+      let removeFilters;
+      let filtersToSet;
+      let typesToSet;
+      let filtersName;
+      for (let index = 0; index < filtersFromSate.length; index++) {
+        const element = filtersFromSate[index];
+        filtersName = element[0].name;
+        if (name === filtersName.split(" ").join("")) {
+          filtersToSet = element[0].filters;
+          typesToSet = element[0].types;
+        }
+      }
+      if (checked) {
+        let NoMatchName;
+        let findNames = Object.keys(checkBoxActive).map(e => e)
+        findNames.forEach(i => {
+          if(i !== name){
+            NoMatchName = i;
+            setCheckBoxActive((checkBoxActive) => ({
+              ...checkBoxActive,
+              [name]: true,
+              [NoMatchName]: false
+            }));
+          }
+        })
+        setFiltersFromDb(filtersToSet);
+        setTypesFromDb(typesToSet);
+        setCheckBoxActiveM1neral(false)
+      } else {
+        let findNames = Object.keys(checkBoxActive).map(e => e)
+        findNames.forEach(i => {
+          setCheckBoxActive((checkBoxActive) => ({
+            ...checkBoxActive,
+            [i]: false
+          }));
+        })
+        removeFilters = filtersTorRemove.map(el => el[0]).filter(e => e !== "m1neralDefaultFilters");
+        removeFilters.forEach(element => {
+          setStateNav((stateNav) => ({
+            ...stateNav,
+            [element]: null
+          }))
+        });
+        setFiltersFromDb(null);
+        setTypesFromDb(null);
+        setCheckBoxActiveM1neral(false)
       }
     }
-    // let newState = checkBoxActive;
-    let obj = checkBoxActive
-    for (var key in obj) {
-      if (obj.hasOwnProperty(key)) {
-         if (key !== name) {
-          obj[key] = false;
-         } else {
-          obj[key] = !obj[key]
-         }
-      }
-    }
-    setCheckBoxActive(obj);
-    setFiltersFromDb(filtersToSet);
-    setTypesFromDb(typesToSet);
   };
-
+ 
   const selectDefault = (e) => {
     const target = e.target;
     const name = target.name;
-    let obj = {...checkBoxDefault}
-    for (var key in obj) {
-      if (obj.hasOwnProperty(key)) {
-         if (key !== name) {
-          obj[key] = false;
-         } else {
-          obj[key] = !obj[key]
-         }
-      }
+    const checked = target.checked;
+    if (checked) {
+      let NoMatchName;
+      let findNames = Object.keys(checkBoxDefault).map(e => e)
+        findNames.forEach(i => {
+          if(i !== name){
+            NoMatchName = i;
+            setCheckBoxDefault((checkBoxDefault) => ({
+              ...setCheckBoxDefault,
+              [name]: true,
+              [NoMatchName]: false
+            }));
+          }
+        })
+      setCheckBoxDefaultM1neral(false)
+    } else {
+      let findNames = Object.keys(checkBoxDefault).map(e => e)
+        findNames.forEach(i => {
+            setCheckBoxDefault((checkBoxDefault) => ({
+              ...setCheckBoxDefault,
+              [i]: false,
+            }));
+        })
+      setCheckBoxDefaultM1neral(true)
     }
-    setCheckBoxDefault(obj);
+  };
+
+  const filterOnOffM1neral = () => {
+    if (checkBoxActiveM1neral === true) {
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        statusName: [],
+        typeName: [],
+        filterWellStatus: null,
+        filterWellType: null,
+      }));
+      setCheckBoxActiveM1neral(false)
+      setFiltersFromDb(null);
+      setTypesFromDb(null);
+    } else {
+      let m1neralDefault = stateNav.m1neralDefaultFilters.map((elm) => elm);
+      let types;
+      let filters;
+      m1neralDefault.forEach(element => {
+        filters = element.filters;
+        types = element.types;
+      });
+      filters.forEach(e => {
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          [e[0]]: e[1],
+        }));
+      })
+      types.forEach(e => {
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          [e[0]]: e[1],
+        }));
+      })
+      let findNames = Object.keys(checkBoxActive).map(e => e)
+        findNames.forEach(i => {
+          setCheckBoxActive((checkBoxActive) => ({
+            ...checkBoxActive,
+            [i]: false
+          }));
+      })
+      setCheckBoxActiveM1neral(true);
+      setFiltersFromDb(null);
+      setTypesFromDb(null);
+    }
+  };
+
+  const selectDefaultM1neral = () => {
+    if (checkBoxDefaultM1neral === true) {
+      setCheckBoxDefaultM1neral(false);
+    } else {
+      setCheckBoxDefaultM1neral(true);
+      let findNames = Object.keys(checkBoxDefault).map(e => e)
+      findNames.forEach(i => {
+          setCheckBoxDefault((checkBoxDefault) => ({
+            ...setCheckBoxDefault,
+            [i]: false,
+          }));
+      })
+    }
   };
 
   const saveFilters = () => {
@@ -909,12 +989,11 @@ export default function FilterDedaults() {
           open={showSavePopOver}
           anchorReference="anchorPosition"
           anchorPosition={{ left: 450 , top: 100}}
-          anchorOrigin="center"
           style={{ width: "100%"}} 
           BackdropProps={{ invisible: false }}
           disablePortal={true}
         >
-          <SaveFilters user={user} filters={stateNavCopy} close={closePopoverSaveFilters}/>
+          <SaveFilters user={user} filterList={filtersFromDb} filters={stateNavCopy} close={closePopoverSaveFilters}/>
         </Popover>
       :null}
       </Paper>
@@ -937,8 +1016,46 @@ export default function FilterDedaults() {
             <ListItem className={classes.listItemLabel}>Active</ListItem>
             <ListItem className={classes.listItemLabel}>Delete</ListItem>
           </div>
-          <List aria-label="mailbox folders">
-            {savedFilters
+          <List>
+          {savedFilters && savedFilters[0]
+              ? savedFilters[0].map((el) => (
+                  <div key={el}>
+                    <ListItem button>
+                      <ListItemText
+                        className={classes.listItem}
+                        primary={
+                          <section>
+                            <div>{el}</div>
+                            <div className={classes.user}>
+                              {user} - {dateCreated.toDateString()}
+                            </div>
+                          </section>
+                        }
+                      />
+                      <Checkbox
+                        className={classes.checkBox}
+                        checked={checkBoxDefaultM1neral}
+                        onChange={selectDefaultM1neral}
+                        color="primary"
+                        disableRipple={true}
+                        inputProps={{ "aria-label": "Default checkbox" }}
+                      />
+                      <Switch
+                        className={classes.switch}
+                        checked={checkBoxActiveM1neral}
+                        onChange={filterOnOffM1neral}
+                        color="secondary"
+                        inputProps={{ 'aria-label': 'primary checkbox' }}
+                      />
+                      <IconButton onClick={deleteFilter} aria-label="delete">
+                        <DeleteIcon />
+                      </IconButton>
+                    </ListItem>
+                    <Divider />
+                  </div>
+                ))
+              : null}
+            {savedFilters && savedFilters[1]
               ? savedFilters[1].map((el) => (
                   <div key={el}>
                     <ListItem button>

@@ -1,9 +1,9 @@
 import React, {useContext, useEffect} from 'react';
 import { AppContext } from "../../AppContext";
 
-let defaultTypeName = ["typeName",["GAS", "OIL AND GAS", "OIL"]];
+let defaultTypeName = ["typeName",["OIL AND GAS", "OIL"]];
 let defaultStatusName = ["statusName",["ACTIVE", "PERMIT"]];
-let defaultTypeName2 = ["typeName",["OIL"]];
+let defaultTypeName2 = ["typeName",["OIL", "GAS"]];
 let defaultStatusName2 = ["statusName",["PERMIT"]];;
 let defaultTypeName3 = ["typeName",["GAS"]];
 let defaultStatusName3 = ["statusName",["ACTIVE"]];
@@ -86,21 +86,32 @@ export default function DefaultFiltersTest() {
     useEffect(() => {
       const setFilters = () => {
           let filters = [];
+          let filtersOnOffObj= {};
+          let filtersDefaultsOnOffObj = {};
+
           if (stateApp.filtersMockDb) {
             let saved = stateApp.filtersMockDb;
             filters.push(saved)
           }
           filters.push(test1,test2,test3)
+          for (let index = 0; index < filters.length; index++) {
+            const element = filters[index];
+            let formatElement = element[0].name.split(" ").join("")
+            filtersOnOffObj[formatElement] =  false;
+            filtersDefaultsOnOffObj[formatElement] =  false;
+          }
           setStateApp((state) => ({
           ...state,
           filters:  filters ,
+          filtersOnOff: filtersOnOffObj,
+          filtersDefaultOnoff: filtersDefaultsOnOffObj
           }))
       }
       if (stateApp.user.authToken) {
         setFilters()
       }
     },[stateApp.filtersMockDb, stateApp.user.authToken])
-   
+
   return (
   <div></div>
   )

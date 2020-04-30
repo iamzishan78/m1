@@ -52,27 +52,55 @@ const useStyles = makeStyles((theme) => ({
 export default function SaveFilters(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [saveSearch, setSaveSearch] = useState("");
+  const [upDateSearch, setUpdateSearch] = useState("");
+  const [errorTextField, setErrorTextField] = useState(false);
+  const [errorText, setErrorText] = useState("");
   const [filterList, setFilterList] = useState(null);
   const [filters, setFilters] = useState(null);
-  const [dateCreated, setDateCreated] = useState(new Date());
-  const [saveOrUpdtae, setSaveOrUpdate] = useState("");
+  const [dateCreated, setDateCreated] = useState();
   const [savedCompleted, setSavedCompleted] =useState(false);
   const [completedSaving, setCompletedSaving] = useState(false)
   const classes = useStyles();
-
+  
   useEffect(() => {
     if (props.filters) {
         setFilters(props.filters)
+        setDateCreated(new Date())
     }
-  },[props.filters])
+  },[filterList, props.filterList, props.filters])
   
+  useEffect(() => {
+    if (stateApp.filters) {
+      let findNames = stateApp.filters;
+      let name;
+      let Names = [];
+      findNames.forEach(e => {
+        name = e[0].name;
+        Names.push(name)
+      })
+      setFilterList(Names);
+    }
+  },[stateApp.filters])
+
+  useEffect(() => {
+    if ( saveSearch && saveSearch.length <= 2) {
+      setErrorTextField(true);
+      setErrorText("Name is to short")
+    } else {
+      setErrorTextField(false);
+      setErrorText("")
+    }
+  },[saveSearch])
+
   const handleFilterName = (e) => {
-      setSaveSearch(e.target.value)
+      let name = e.target.value;
+      let format = name.charAt(0).toUpperCase() + name.slice(1)
+      setSaveSearch(format)
   }
 
   const save = () => {
     let filterInfo = {
-      name: saveSearch,
+      name: saveSearch ? saveSearch : upDateSearch,
       user: props.user,
       created: dateCreated.toDateString(),
       filters: filters,
@@ -80,7 +108,13 @@ export default function SaveFilters(props) {
       default: false,
     }
     setCompletedSaving(true)
-    setStateApp(stateApp => ({...stateApp, filtersMockDb: [filterInfo] }))
+    if (!saveSearch) {
+      alert(
+        JSON.stringify(filterInfo)
+      )
+    } else {
+      setStateApp(stateApp => ({...stateApp, filtersMockDb: [filterInfo] }))
+    }
   }
 
   useEffect(() => {
@@ -88,6 +122,10 @@ export default function SaveFilters(props) {
       setSavedCompleted(true)
     }
   },[completedSaving])
+
+  const handleChangeFilterList = newVal => {
+    setUpdateSearch(newVal)
+  }
 
   return (
     <Paper className={classes.paper}>
@@ -109,16 +147,17 @@ export default function SaveFilters(props) {
         inputProps={{ "aria-label": "save search" }}
         value={saveSearch}
         onChange={e => handleFilterName(e)}
+        error={errorTextField}
+        helperText={errorText}
         required
       />
       <div className={classes.label}>Update Existing Search</div>
       <Autocomplete
         className={classes.input}
-        // defaultValue={stateNav.profileName}
-        // onChange={(event, newValue) => {
-        //     handleProfileChange(newValue);
-        // }}
-        // options={profileList}
+        onChange={(event, newValue) => {
+            handleChangeFilterList(newValue);
+        }}
+        options={filterList}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -130,7 +169,6 @@ export default function SaveFilters(props) {
         )}
         disableListWrap
         id="virtualize-well-profiles"
-        // style={{ maxWidth: 300, minWidth: 120 }}
       />
       {!savedCompleted && completedSaving ? 
        <CircularProgress color="secondary" size={40} className={classes.loader} />
