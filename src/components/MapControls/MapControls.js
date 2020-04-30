@@ -124,11 +124,6 @@ export default function MapControls(props) {
       toggleZoomOut: action === "zoomout" ? !stateMap.toggleZoomOut : stateMap.toggleZoomOut,
     });
 
-    // setStateMap({
-    //   ...stateMap,
-    //   toggleZoomOut: action === "zoomout" ? !stateMap.toggleZoomOut : stateMap.toggleZoomOut,
-    // });
-
     if (stateMap.draw.getMode() !== "simple_select") {
       setStateApp({ ...stateApp, editDraw: false });
       stateMap.draw.changeMode("simple_select");

@@ -23,6 +23,7 @@ const AppProvider = (props) => {
     filters: [],
     filtersMockDb: null,
     selectedContact: null,
+    trackFilterOn: null,
     mapVars: {
       zoom: 5.88,
       center: { lng: -98.8, lat: 31.6 },

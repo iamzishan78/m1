@@ -1,8 +1,6 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
-import NumberFormat from "react-number-format";
 import Switch from '@material-ui/core/Switch';
 import { NavigationContext } from "../NavigationContext";
 import { useLazyQuery } from "@apollo/react-hooks";
@@ -10,7 +8,8 @@ import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { TRACKSBYUSERANDOBJECTTYPE } from "../../../graphQL/useQueryTracksByUserAndObjectType";
 import { USERBYEMAIL } from "../../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 import { AppContext } from "../../../AppContext";
-import { isTemplateExpression } from "typescript";
+import { MapControlsContext } from "../../MapControls/MapControlsContext";
+
 
 const useStyles = makeStyles({
   input: {
@@ -36,16 +35,24 @@ const useStyles = makeStyles({
 export default function FilterOwnerCount() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [valueMinDisplay, setValueMinDisplay] = useState("");
-  const [valueMaxDisplay, setValueMaxDisplay] = useState("");
-  const [noOwners , setNoOwners] = useState(false);
-  const [owners , setOwners] = useState(false);
+  // const [valueMinDisplay, setValueMinDisplay] = useState("");
+  // const [valueMaxDisplay, setValueMaxDisplay] = useState("");
+  // const [noOwners , setNoOwners] = useState(false);
+  // const [owners , setOwners] = useState(false);
+
+
   const [tracks , setTracks] = useState(false);
   const [idArray , setIdArray] = useState(null);
+  const [firstWell , setFirstWell] = useState(null);
 
-  const [ownerCountWell, setOwnerCountWell] = useState(
-    stateNav.ownerCountWell ? stateNav.ownerCountWell : []
+  // const [ownerCountWell, setOwnerCountWell] = useState(
+  //   stateNav.ownerCountWell ? stateNav.ownerCountWell : []
+  // );
+
+  const [stateMapControls, setStateMapControls] = useContext(
+    MapControlsContext
   );
+
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = useState(true);
@@ -113,6 +120,15 @@ export default function FilterOwnerCount() {
     }
   }, [dataTracks]);
 
+
+  const handleListClick = (well) => {
+    setStateApp((state) => ({ ...state, popupOpen: false }));
+    setStateApp((state) => ({ ...state, selectedWell: well }));
+    setStateApp((state) => ({ ...state, selectedWellId: well.id }));
+    setStateApp((state) => ({ ...state, flyTo: well }));
+  };
+
+
   useEffect(() => {
     if (dataWells) {
       if (
@@ -121,25 +137,25 @@ export default function FilterOwnerCount() {
         dataWells.wells.results.length > 0
       ) {
 
-        console.log('track wells',dataWells)
 
         const idArray = dataWells.wells.results.map(
           (item) => item.api
         )
-        const latArray = dataWells.wells.results.map(
-          (item) => item.latitude
-        )
-        const longArray = dataWells.wells.results.map(
-          (item) => item.longitude
-        )
 
-        console.log('track well id',idArray)
-        console.log('track well lat',latArray)
-        console.log('track well long',longArray)
-        console.log('track well long',Math.min(...longArray))
+        // const latArray = dataWells.wells.results.map(
+        //   (item) => item.latitude
+        // )
+        // const longArray = dataWells.wells.results.map(
+        //   (item) => item.longitude
+        // )
+
+        // console.log('track well id',idArray)
+        // console.log('track well lat',latArray)
+        // console.log('track well long',longArray)
+        // console.log('track well long',Math.min(...longArray))
 
         setIdArray(idArray);
-
+        setFirstWell(dataWells.wells.results);
         setRows(dataWells.wells.results);
 
         setStateApp((state) => ({
@@ -203,6 +219,7 @@ export default function FilterOwnerCount() {
   
   useEffect(() => {
 
+    if(idArray){
     let filter;
   
     if(idArray && idArray.length) {
@@ -213,32 +230,20 @@ export default function FilterOwnerCount() {
     }
 
     setStateNav(stateNav => ({ ...stateNav, filterTrackedWells: filter}))
+    setStateApp(stateApp => ({ ...stateApp, trackFilterOn: true}))
+    handleListClick(rows[0])
+    // setStateApp(stateApp => ({ ...stateApp, trackFilterOn: true}))
+    // setStateMapControls({
+    //   ...stateMapControls,
+    //   selectedControl: 'track',
+    // });
 
-
-
+  }
 
   },[tracks, setStateNav])
 
 
 
-  useEffect(() => {
-    let filter;
-    if (owners) {
-      filter = ["any",["==",[ "get", "hasOwner"], true]] 
-    } else {
-      filter = null;
-    }
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterHasOwnerCount: filter
-    }));
-  },[noOwners, owners, setStateNav])
-
-  useEffect(() => {
-    if (stateNav.filterNoOwnerCount && stateNav.filterNoOwnerCount.length > 1) {
-      setNoOwners(true)
-    }
-  },[stateNav.filterNoOwnerCount])
   
   return (
     <div>

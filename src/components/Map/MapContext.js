@@ -213,7 +213,6 @@ const MapContextProvider = (props) => {
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,
-    // openTrack: true,
     toggle3d: null,
     toggleZoomOut: null,
     map: null,

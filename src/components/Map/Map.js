@@ -988,15 +988,12 @@ export default function Map() {
             layers: ["wellpoints"],
           });
           let currentFeature = features[0];
-          //let currentFeature.features = e.features;
-          //let currentFeature.lngLat = e.lngLat;
 
           if (!currentFeature.properties.isTracked) {
             //add temp until it is in tileset. required for tracking well
             currentFeature.properties.isTracked = false;
           }
 
-          //console.log("clicked well point", currentFeature);
           setStateApp((state) => ({ ...state, popupOpen: false }));
           setStateApp((state) => ({
             ...state,
@@ -1063,6 +1060,64 @@ export default function Map() {
           createPopUp(currentFeature.properties);
         });
         console.log("map extra components complete");
+
+
+
+
+
+        
+        map.addSource('points', {
+          'type': 'geojson',
+          'data': {
+          'type': 'FeatureCollection',
+          'features': [
+          {
+          // feature for Mapbox DC
+          'type': 'Feature',
+          'geometry': {
+          'type': 'Point',
+          'coordinates': [
+          -77.03238901390978,
+          38.913188059745586
+          ]
+          },
+          'properties': {
+          'title': 'Mapbox DC',
+          'icon': 'monument'
+          }
+          },
+          {
+          // feature for Mapbox SF
+          'type': 'Feature',
+          'geometry': {
+          'type': 'Point',
+          'coordinates': [-122.414, 37.776]
+          },
+          'properties': {
+          'title': 'Mapbox SF',
+          'icon': 'harbor'
+          }
+          }
+          ]
+          }
+          });
+
+          map.addLayer({
+            'id': 'points',
+            'type': 'symbol',
+            'source': 'points',
+            'layout': {
+            // get the icon name from the source's "icon" property
+            // concatenate the name to get an icon from the style's sprite sheet
+            'icon-image': ['concat', ['get', 'icon'], '-15'],
+            // get the title name from the source's "title" property
+            'text-field': ['get', 'title'],
+            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+            'text-offset': [0, 0.6],
+            'text-anchor': 'top'
+            }
+            });
+
       }
     }
   }, [map, setStateMap, setStateMapControls, mapStyles]);
@@ -1123,14 +1178,21 @@ export default function Map() {
       //console.log('fly')
       createPopUp(stateApp.flyTo);
 
+      var zVal=15;
+      if(stateApp.trackFilterOn){
+        zVal = 11;
+      }
+
       map.flyTo({
         center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
-        zoom: 15,
+        zoom: zVal,
         speed: 0.5,
-        pitch: 70,
+        // pitch: 70,
       });
+
     }
   }, [createPopUp, map, stateApp.flyTo]);
+
 
   useEffect(() => {
     if (map && stateMap.toggleZoomOut) {
@@ -1148,9 +1210,11 @@ export default function Map() {
         map.on("flystart", function () {
           flying = true;
         });
+
         map.on("flyend", function () {
           flying = false;
         });
+
         map.on("moveend", function (e) {
           if (flying) {
             setStateApp((stateApp) => ({
