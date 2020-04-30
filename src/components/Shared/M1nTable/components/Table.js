@@ -3,6 +3,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
 import WellCardProvider from "../../../WellCard/WellCardProvider";
 import OwnersDetailCard from "../../../OwnersDetailCard/OwnersDetailCard";
+import ContactInfo from "../../../ContactInfo/ContactInfo";
 import { AppContext } from "../../../../AppContext";
 import Tags from "../../Tagger";
 import Comments from "../../Comments";
@@ -511,6 +512,7 @@ export default function SubTable(props) {
               className={classes.addIcon}
               onClick={(e) => {
                 e.stopPropagation();
+                //////////////////////////////////////////////////////////////
               }}
             >
               <AddCircleOutlineRoundedIcon />
@@ -544,7 +546,11 @@ export default function SubTable(props) {
           ...stateApp,
           selectedContact: rows[dataIndex].id,
         }));
-        history.push("/contact");
+        // history.push("/contact");
+        setSubComponent(<ContactInfo />);
+        setTitle(rows[dataIndex].name);
+        setSubTitle(rows[dataIndex].email);
+        handleOpenExpandableCard();
       }
     },
   };
@@ -638,7 +644,11 @@ export default function SubTable(props) {
             zIndex={1201}
             cardWidthExpanded="100%"
             cardHeightExpanded="100%"
-            targetSourceId={selectedRow.id}
+            targetSourceId={
+              props.targetLabel === "owner" || props.targetLabel === "well"
+                ? selectedRow.id
+                : selectedRow._id
+            }
             targetLabel={props.targetLabel}
           />
         </Dialog>

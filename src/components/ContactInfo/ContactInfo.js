@@ -101,7 +101,7 @@ export default function Contacts() {
   return (
     <Grid container spacing={0} style={{ height: "100%" }}>
       <Grid item xs={9}>
-        <h3 className={`${classes.topBar} ${classes.border}`}>
+        {/* <h3 className={`${classes.topBar} ${classes.border}`}>
           <span
             className={classes.Contacts}
             onClick={event => {
@@ -111,7 +111,7 @@ export default function Contacts() {
             Contacts
           </span>
           {` > ${ContactExample.name} ${ContactExample.lastName}`}
-        </h3>
+        </h3> */}
         <Grid item container>
           <Grid item xs={12} className={classes.border}>
             <div>
