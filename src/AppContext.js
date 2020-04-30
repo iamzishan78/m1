@@ -25,11 +25,11 @@ const AppProvider = (props) => {
     selectedContact: null,
     mapVars: {
       zoom: 5.88,
-      center: {lng: -98.8, lat: 31.6},
+      center: { lng: -98.8, lat: 31.6 },
       pitch: 0,
       bearing: 0,
-      styleId: 'Basic',
-      },
+      styleId: "Basic",
+    },
   });
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>

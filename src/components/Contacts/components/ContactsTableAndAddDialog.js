@@ -17,10 +17,16 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   maxWidth: {
-    width: "100%"
-  }
+    width: "100%",
+  },
+  divTable: {
+    paddingTop: "10px",
+    paddingBottom: "10px",
+    paddingLeft: "32px",
+    paddingRight: "32px",
+  },
 }));
 
 export default function ContactsTableAndAddDialog() {
@@ -44,7 +50,7 @@ export default function ContactsTableAndAddDialog() {
     city: "",
     state: "",
     zipcode: "",
-    assignedTo: ""
+    assignedTo: "",
   });
 
   const emptyStates = () => {
@@ -61,22 +67,22 @@ export default function ContactsTableAndAddDialog() {
       city: "",
       state: "",
       zipcode: "",
-      assignedTo: ""
+      assignedTo: "",
     });
   };
 
-  const handleClickDialogOpen = e => {
+  const handleClickDialogOpen = (e) => {
     e.preventDefault();
     setDialogOpen(true);
   };
-  const handleClickDialogClose = e => {
+  const handleClickDialogClose = (e) => {
     e.preventDefault();
     setDialogOpen(false);
     setIfNewContact();
     emptyStates();
   };
 
-  const handleClickAdd = e => {
+  const handleClickAdd = (e) => {
     e.preventDefault();
 
     /////addddddd{}
@@ -100,13 +106,13 @@ export default function ContactsTableAndAddDialog() {
 
   const [
     getWellOwners,
-    { loading: loadingWellOwners, data: dataWellOwners }
+    { loading: loadingWellOwners, data: dataWellOwners },
   ] = useLazyQuery(WELLOWNERSQUERY);
 
   useEffect(() => {
     if (wellAPI !== "") {
       getWellOwners({
-        variables: { api: wellAPI }
+        variables: { api: wellAPI },
       });
     }
   }, [wellAPI]);
@@ -123,7 +129,7 @@ export default function ContactsTableAndAddDialog() {
               multiline
               variant="outlined"
               value={wellAPI}
-              onChange={e => {
+              onChange={(e) => {
                 setOwnerName("");
                 setWellAPI(e.target.value);
               }}
@@ -138,7 +144,7 @@ export default function ContactsTableAndAddDialog() {
                   ? dataWellOwners.wellOwners
                   : []
               }
-              getOptionLabel={option => (option.name ? option.name : "")}
+              getOptionLabel={(option) => (option.name ? option.name : "")}
               autoComplete
               autoSelect
               disableClearable
@@ -148,7 +154,7 @@ export default function ContactsTableAndAddDialog() {
               onChange={(e, newValue) => {
                 setOwnerName(newValue === null ? "" : newValue);
               }}
-              renderInput={params => (
+              renderInput={(params) => (
                 <TextField
                   {...params}
                   label="Owners"
@@ -166,12 +172,12 @@ export default function ContactsTableAndAddDialog() {
 
   return (
     <div>
-      <M1nTable
-        parent="Contacts"
-        // selectedWell={stateApp.selectedWell}
-        externalAddFunction={handleClickDialogOpen}
-      />
-
+      <div className={classes.divTable}>
+        <M1nTable
+          parent="Contacts"
+          externalAddFunction={handleClickDialogOpen}
+        />
+      </div>
       <RightDialog
         open={dialogOpen}
         handleClickDialogClose={handleClickDialogClose}
@@ -181,10 +187,8 @@ export default function ContactsTableAndAddDialog() {
           Add a Contact
           <FormControl component="fieldset">
             <RadioGroup
-              // aria-label="gender"
-              // name="gender1"
               value={ifNewContact}
-              onChange={e => {
+              onChange={(e) => {
                 setIfNewContact(e.target.value);
               }}
             >
@@ -213,10 +217,10 @@ export default function ContactsTableAndAddDialog() {
                   multiline
                   variant="outlined"
                   value={newContact.name}
-                  onChange={e => {
+                  onChange={(e) => {
                     setNewContact({
                       ...newContact,
-                      name: e.target.value
+                      name: e.target.value,
                     });
                   }}
                 />
@@ -229,10 +233,10 @@ export default function ContactsTableAndAddDialog() {
                   multiline
                   variant="outlined"
                   value={newContact.lastName}
-                  onChange={e => {
+                  onChange={(e) => {
                     setNewContact({
                       ...newContact,
-                      lastName: e.target.value
+                      lastName: e.target.value,
                     });
                   }}
                 />
@@ -245,10 +249,10 @@ export default function ContactsTableAndAddDialog() {
                   multiline
                   variant="outlined"
                   value={newContact.email}
-                  onChange={e => {
+                  onChange={(e) => {
                     setNewContact({
                       ...newContact,
-                      email: e.target.value
+                      email: e.target.value,
                     });
                   }}
                 />
@@ -261,10 +265,10 @@ export default function ContactsTableAndAddDialog() {
                   multiline
                   variant="outlined"
                   value={newContact.phone}
-                  onChange={e => {
+                  onChange={(e) => {
                     setNewContact({
                       ...newContact,
-                      phone: e.target.value
+                      phone: e.target.value,
                     });
                   }}
                 />
@@ -277,10 +281,10 @@ export default function ContactsTableAndAddDialog() {
                   multiline
                   variant="outlined"
                   value={newContact.mobilePhone}
-                  onChange={e => {
+                  onChange={(e) => {
                     setNewContact({
                       ...newContact,
-                      mobilePhone: e.target.value
+                      mobilePhone: e.target.value,
                     });
                   }}
                 />
@@ -293,10 +297,10 @@ export default function ContactsTableAndAddDialog() {
                   multiline
                   variant="outlined"
                   value={newContact.address}
-                  onChange={e => {
+                  onChange={(e) => {
                     setNewContact({
                       ...newContact,
-                      address: e.target.value
+                      address: e.target.value,
                     });
                   }}
                 />
@@ -309,10 +313,10 @@ export default function ContactsTableAndAddDialog() {
                   multiline
                   variant="outlined"
                   value={newContact.address2}
-                  onChange={e => {
+                  onChange={(e) => {
                     setNewContact({
                       ...newContact,
-                      address2: e.target.value
+                      address2: e.target.value,
                     });
                   }}
                 />
@@ -325,10 +329,10 @@ export default function ContactsTableAndAddDialog() {
                   multiline
                   variant="outlined"
                   value={newContact.city}
-                  onChange={e => {
+                  onChange={(e) => {
                     setNewContact({
                       ...newContact,
-                      city: e.target.value
+                      city: e.target.value,
                     });
                   }}
                 />
@@ -341,10 +345,10 @@ export default function ContactsTableAndAddDialog() {
                   multiline
                   variant="outlined"
                   value={newContact.state}
-                  onChange={e => {
+                  onChange={(e) => {
                     setNewContact({
                       ...newContact,
-                      state: e.target.value
+                      state: e.target.value,
                     });
                   }}
                 />
@@ -357,10 +361,10 @@ export default function ContactsTableAndAddDialog() {
                   multiline
                   variant="outlined"
                   value={newContact.zipcode}
-                  onChange={e => {
+                  onChange={(e) => {
                     setNewContact({
                       ...newContact,
-                      zipcode: e.target.value
+                      zipcode: e.target.value,
                     });
                   }}
                 />
@@ -373,10 +377,10 @@ export default function ContactsTableAndAddDialog() {
                   multiline
                   variant="outlined"
                   value={newContact.assignedTo}
-                  onChange={e => {
+                  onChange={(e) => {
                     setNewContact({
                       ...newContact,
-                      assignedTo: e.target.value
+                      assignedTo: e.target.value,
                     });
                   }}
                 />

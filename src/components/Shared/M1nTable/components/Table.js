@@ -1,8 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
-import Test from "../../../ExpandableCard/Test";
 import WellCardProvider from "../../../WellCard/WellCardProvider";
+import OwnersDetailCard from "../../../OwnersDetailCard/OwnersDetailCard";
 import { AppContext } from "../../../../AppContext";
 import Tags from "../../Tagger";
 import Comments from "../../Comments";
@@ -18,6 +18,8 @@ import ChatIcon from "@material-ui/icons/Chat";
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import M1nTable from "../M1nTable";
 import WellIcon from "../../svgIcons/well";
+import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
+import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -92,6 +94,7 @@ const useStyles = makeStyles((theme) => ({
       height: "100%",
     },
   },
+  addIcon: { "& :hover": { color: "#011133" } },
 }));
 
 var formatter = new Intl.NumberFormat("en-US", {
@@ -229,7 +232,7 @@ export default function SubTable(props) {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
-                                tableMeta.rowData[1],
+                                tableMeta.rowData[0],
                                 "well"
                               );
                             }
@@ -241,6 +244,51 @@ export default function SubTable(props) {
                             opacity="1.0"
                             small
                           />
+                        </IconButton>
+                      </Badge>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
+          case "contactsCounter":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <Tooltip
+                      title={value || value === 0 ? "Contacts" : "Add Contact"}
+                      placement="top"
+                    >
+                      <Badge
+                        badgeContent={value ? value : null}
+                        color="secondary"
+                      >
+                        <IconButton
+                          size="medium"
+                          color="primary"
+                          className={`${classes.icons} ${
+                            !value || value === 0 ? classes.noCommentsIcon : ""
+                          } ${
+                            colInd === tableMeta.columnIndex &&
+                            rowInd === tableMeta.rowIndex
+                              ? classes.iconSelected
+                              : ""
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleExpandClick(
+                              tableMeta.columnIndex,
+                              tableMeta.rowIndex,
+                              tableMeta.rowData[0],
+                              "ownerContacts"
+                            );
+                          }}
+                          aria-label="show contacs"
+                        >
+                          <ContactPhoneIcon />
                         </IconButton>
                       </Badge>
                     </Tooltip>
@@ -280,7 +328,7 @@ export default function SubTable(props) {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
-                                tableMeta.rowData[1],
+                                tableMeta.rowData[2],
                                 "owner"
                               );
                             }
@@ -296,6 +344,51 @@ export default function SubTable(props) {
               };
             }
             break;
+
+          case "owners": //ownerPerContactCount
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <Tooltip
+                      title={value.length > 0 ? "Owners" : "Add Owner"}
+                      placement="top"
+                    >
+                      <Badge
+                        badgeContent={value.length > 0 ? value.length : null}
+                        color="secondary"
+                      >
+                        <IconButton
+                          size="medium"
+                          color="primary"
+                          className={`${classes.icons}  ${
+                            colInd === tableMeta.columnIndex &&
+                            rowInd === tableMeta.rowIndex
+                              ? classes.iconSelected
+                              : ""
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleExpandClick(
+                              tableMeta.columnIndex,
+                              tableMeta.rowIndex,
+                              value,
+                              "ownersPerContacts"
+                            );
+                          }}
+                          aria-label="show owners"
+                        >
+                          <PeopleAltIcon />
+                        </IconButton>
+                      </Badge>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
+
           case "tags":
             {
               column.options = {
@@ -401,12 +494,37 @@ export default function SubTable(props) {
         : [],
 
     selectableRows: "none",
-
+    customToolbar: () => {
+      return (
+        props.addAble && (
+          <Tooltip
+            title={`Add${
+              props.targetLabel
+                ? " " +
+                  props.targetLabel.charAt(0).toUpperCase() +
+                  props.targetLabel.slice(1)
+                : ""
+            }`}
+          >
+            <IconButton
+              size="medium"
+              className={classes.addIcon}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              <AddCircleOutlineRoundedIcon />
+            </IconButton>
+          </Tooltip>
+        )
+      );
+    },
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
       setSelectedRow(rows[dataIndex]);
 
       if (props.targetLabel === "owner") {
-        setSubComponent(<Test hello="Owner Card Not Available" />);/////////////////////////
+        setStateApp((state) => ({ ...state, selectedOwner: rows[dataIndex] }));
+        setSubComponent(<OwnersDetailCard />); /////////////////////////
         setTitle(rows[dataIndex].name);
         setSubTitle(rows[dataIndex].interestType);
         handleOpenExpandableCard();
@@ -415,7 +533,7 @@ export default function SubTable(props) {
       if (props.targetLabel === "well") {
         setStateApp((state) => ({ ...state, selectedWellId: rowData[0] }));
         setStateApp((state) => ({ ...state, selectedWell: rows[dataIndex] }));
-        setSubComponent(<WellCardProvider></WellCardProvider>);
+        setSubComponent(<WellCardProvider />);
         setTitle(rows[dataIndex].wellName);
         setSubTitle(rows[dataIndex].operator);
         handleOpenExpandableCard();
@@ -431,7 +549,8 @@ export default function SubTable(props) {
     },
   };
 
-  return rows && rows.length > 0 ? (
+  return (rows && rows.length > 0 && !props.addAble) ||
+    (rows && props.addAble) ? (
     <div className={classes.root}>
       <MUIDataTable
         className={classes.table}
@@ -449,15 +568,18 @@ export default function SubTable(props) {
           fullWidth={
             openDialog === "comment" ||
             openDialog === "owner" ||
-            openDialog === "well"
+            openDialog === "well" ||
+            openDialog === "ownerContacts" ||
+            openDialog === "ownersPerContacts"
               ? true
               : false
           }
           maxWidth={
             openDialog === "owner" ||
             openDialog === "ownerContacts" ||
+            openDialog === "ownersPerContacts" ||
             openDialog === "well"
-              ? "md"
+              ? "lg"
               : "sm"
           }
         >
@@ -477,7 +599,18 @@ export default function SubTable(props) {
           )}
 
           {openDialog === "ownerContacts" && (
-            <M1nTable parent="Contacts" externalAddFunction={() => {}} />
+            <M1nTable
+              parent="ownerContacts"
+              ownerId={expandedObjectId}
+              externalAddFunction={() => {}}
+            />
+          )}
+          {openDialog === "ownersPerContacts" && (
+            <M1nTable
+              parent="ownersPerContacts"
+              ownersIdsArray={expandedObjectId}
+              externalAddFunction={() => {}}
+            />
           )}
         </Dialog>
       )}

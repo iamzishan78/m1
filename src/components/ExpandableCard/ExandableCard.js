@@ -52,7 +52,7 @@ export default function ExpandableCard(props) {
       WebkitTransform: "translateZ(0)",
       transition: "width 0.1s, height 0.1s, left 0.1s, top 0.1s",
       width: width,
-      height: height,
+      height: props.expanded ? height : null,
       background: "#011133",
       borderStyle: "solid",
       borderWidth: "thin",
