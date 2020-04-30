@@ -233,11 +233,111 @@ const OwnersPerWellHeadCells = [
     name: "ownershipType",
     label: "Entity",
   },
-  // { name: "interestType", label: "Type" },
-  // {
-  //   name: "ownershipPercentage",
-  //   label: "Interest",
-  // },
+  { name: "interestType", label: "Type" },
+  {
+    name: "ownershipPercentage",
+    label: "Interest",
+  },
+  {
+    name: "appraisedValue",
+    label: "Appraised Value",
+  },
+  {
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
+  },
+  {
+    name: "contactsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "wellsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isTracked",
+    label: "Track",
+    options: {
+      searchable: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: ["Tracked", "Untracked"],
+        logic(tracked, filterVal) {
+          return !(
+            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+            (filterVal.indexOf("Untracked") >= 0 && !tracked)
+          );
+        },
+      },
+      filterType: "dropdown",
+    },
+  },
+];
+
+const OwnersPerContactsHeadCells = [
+  {
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  { name: "name", label: "Name" },
+  {
+    name: "ownershipType",
+    label: "Entity",
+  },
   {
     name: "appraisedValue",
     label: "Appraised Value",
@@ -548,6 +648,7 @@ export default function Contacts(props) {
       } else {
         setRows([]);
         setLoading(false);
+        setAddAble(false);
       }
     }
   }, [dataTracks]);
@@ -684,6 +785,7 @@ export default function Contacts(props) {
       } else {
         setRows([]);
         setLoading(false);
+        setAddAble(false);
       }
     }
   }, [dataTracks]);
@@ -768,6 +870,7 @@ export default function Contacts(props) {
         }));
       } else {
         setRows([]);
+        setAddAble(false);
       }
       setLoading(false);
     }
@@ -828,6 +931,7 @@ export default function Contacts(props) {
       } else {
         setLoading(false);
         setRows([]);
+        setAddAble(false);
       }
     }
   }, [dataWellOwners, dataTracks]);
@@ -1046,7 +1150,7 @@ export default function Contacts(props) {
 
       setColumns(
         cleanAvailableTags.length > 0
-          ? OwnersPerWellHeadCells.map((column) => {
+          ? OwnersPerContactsHeadCells.map((column) => {
               if (column.name === "tags") {
                 return {
                   ...column,
@@ -1061,7 +1165,7 @@ export default function Contacts(props) {
               }
               return column;
             })
-          : OwnersPerWellHeadCells.map((column) => {
+          : OwnersPerContactsHeadCells.map((column) => {
               if (column.name === "tags") {
                 return {
                   ...column,
