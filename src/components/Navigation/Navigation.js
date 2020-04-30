@@ -597,9 +597,9 @@ const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
 `;
 
 const M1neralLogoLogin = styled(M1neralLogoNavNoAuth)`
-  width: 130px;
-  padding-top: 20px;
-  padding-left: 15px;
+  width: 190px;
+  padding-top: 12.5px;
+  padding-left: 35px;
 `;
 
 const TabPanel = (props) => {
