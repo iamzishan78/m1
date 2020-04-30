@@ -598,7 +598,7 @@ const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
 
 const M1neralLogoLogin = styled(M1neralLogoNavNoAuth)`
   width: 190px;
-  padding-top: 12.5px;
+  padding-top: 15px;
   padding-left: 35px;
 `;
 
