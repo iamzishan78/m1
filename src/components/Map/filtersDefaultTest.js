@@ -1,6 +1,6 @@
 import React, {useContext, useEffect} from 'react';
 import { AppContext } from "../../AppContext";
-
+/// test filters
 let defaultTypeName = ["typeName",["OIL AND GAS", "OIL"]];
 let defaultStatusName = ["statusName",["ACTIVE", "PERMIT"]];
 let defaultTypeName2 = ["typeName",["OIL", "GAS"]];
@@ -79,32 +79,42 @@ const test3 = [
       default: false,
     },
 ];
-
+//// end of test filters
 export default function DefaultFiltersTest() {
     const [stateApp, setStateApp] = useContext(AppContext);
 
     useEffect(() => {
+      // funtion to set the filters up
       const setFilters = () => {
+          // local none state variables
           let filters = [];
           let updateFilters;
           let filtersOnOffObj= {};
           let filtersDefaultsOnOffObj = {};
           let saved;
           if (stateApp.filtersMockDb) {
+            // stateApp.filtersMockDb is where we store new filtes array modified
+            // in filterDefault file updates delete & updated
             saved = stateApp.filtersMockDb;
           }
           if (stateApp.filtersAdd) {
+            //when a new filter combo is saved stateApp.filtersAdd is where its stored
+            // we add it to the filters array 
             let newFilter = stateApp.filtersAdd;
             filters.push(newFilter)
           }
-          saved && saved.length > 0 ? updateFilters = saved : filters.push(test1,test2,test3) ;
+          // check if save exsist other wise add test filters
+          saved && saved.length > 0 ? updateFilters = saved : filters.push(test1,test2,test3);
+          // loop below takes the lenght of the filters array and creates 
+          // 2 object with the name and false value to creat the state in 
+          // filter default for the filter list display checkbox and switch
           for (let index = 0; index < filters.length; index++) {
             const element = filters[index];
             let formatElement = element[0].name.split(" ").join("")
             filtersOnOffObj[formatElement] =  false;
             filtersDefaultsOnOffObj[formatElement] =  false;
           }
-          
+          // condition to see what to pass as an update to the filters in state nav context
           if (updateFilters && updateFilters.length > 0) {
             setStateApp((state) => ({
               ...state,
@@ -121,12 +131,15 @@ export default function DefaultFiltersTest() {
               }))
           }
       }
+      // flag to run the function 
       if (stateApp.user.authToken) {
         setFilters()
       }
+      // Do not include setStateApp in the dependency array it will break
     },[stateApp.filtersAdd, stateApp.filtersMockDb, stateApp.user.authToken])
 
   return (
+    /// empty div rendered on the map so it triggers the useEffect above
   <div></div>
   )
 

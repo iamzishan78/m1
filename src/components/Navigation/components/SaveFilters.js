@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../../AppContext";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from "@material-ui/core/Paper";
-import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -63,14 +62,16 @@ export default function SaveFilters(props) {
   const classes = useStyles();
   
   useEffect(() => {
+    // effect to get filters from parent and set the date
     if (props.filters) {
         setFilters(props.filters)
         setDateCreated(new Date())
     }
-  },[filterList, props.filterList, props.filters])
+  },[props.filterList, props.filters])
   
   
   useEffect(() => {
+    // validation and error message effect
     if ( saveSearch && saveSearch.length <= 2) {
       setErrorTextField(true);
       setErrorText("Name is to short")
@@ -81,12 +82,15 @@ export default function SaveFilters(props) {
   },[saveSearch])
 
   const handleFilterName = (e) => {
+      // set the name of the filter and make the 1st letter a capital letter
       let name = e.target.value;
       let format = name.charAt(0).toUpperCase() + name.slice(1)
       setSaveSearch(format)
   }
 
   const save = () => {
+    // create the filter object with state and props 
+    // to be saved to the db 
     let filterInfo = {
       name: saveSearch ? saveSearch : upDateSearch,
       user: props.user,
@@ -95,28 +99,37 @@ export default function SaveFilters(props) {
       on: true,
       default: false,
     }
+    // flag to say we started the saving proccess waiting for a response
     setCompletedSaving(true)
+    // response  gotten and its good
+
+    // currently with out saving we are just alerting when updated
+    // or passing it to context
     if (!saveSearch) {
+      /// pass filters to context 
+      // setStateApp(stateApp => ({...stateApp, filtersAdd: [filterInfo] }))
       alert(
         JSON.stringify(filterInfo)
       )
     } else {
+      // set error message
       setStateApp(stateApp => ({...stateApp, filtersAdd: [filterInfo] }))
     }
   }
-  console.log(stateApp.filtersMockDb ,
-    stateApp.filtersAdd)
+
   useEffect(() => {
+    // wait for response 
     if (completedSaving) {
       setSavedCompleted(true)
     }
   },[completedSaving])
-
+  // onchange for filter list
   const handleChangeFilterList = newVal => {
     setUpdateSearch(newVal)
   }
 
   useEffect(() => {
+    // set names for filter list
     if (stateApp.filters) {
       let findNames = stateApp.filters;
       let name;
