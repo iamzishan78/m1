@@ -2,7 +2,8 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../NavigationContext";
 import Paper from "@material-ui/core/Paper";
-import Popover from "@material-ui/core/Popover";
+// import Popover from "@material-ui/core/Popover";
+import DialogE from "./Utils/DialogE";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import List from "@material-ui/core/List";
@@ -1016,16 +1017,9 @@ export default function FilterDedaults() {
           </ButtonInTabs>
         </Tabs>
         {showSavePopOver ? 
-        <Popover
-          open={showSavePopOver}
-          anchorReference="anchorPosition"
-          anchorPosition={{ left: 450 , top: 100}}
-          style={{ width: "100%"}} 
-          BackdropProps={{ invisible: false }}
-          disablePortal={true}
-        >
+        <DialogE open={saveFilters} close={closePopoverSaveFilters}>
           <SaveFilters user={user} filterList={filtersFromDb} filters={stateNavCopy} close={closePopoverSaveFilters}/>
-        </Popover>
+        </DialogE>
       :null}
       </Paper>
       {tabsValue === 0 ? (
