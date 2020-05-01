@@ -86,31 +86,45 @@ export default function DefaultFiltersTest() {
     useEffect(() => {
       const setFilters = () => {
           let filters = [];
+          let updateFilters;
           let filtersOnOffObj= {};
           let filtersDefaultsOnOffObj = {};
-
+          let saved;
           if (stateApp.filtersMockDb) {
-            let saved = stateApp.filtersMockDb;
-            filters.push(saved)
+            saved = stateApp.filtersMockDb;
           }
-          filters.push(test1,test2,test3)
+          if (stateApp.filtersAdd) {
+            let newFilter = stateApp.filtersAdd;
+            filters.push(newFilter)
+          }
+          saved && saved.length > 0 ? updateFilters = saved : filters.push(test1,test2,test3) ;
           for (let index = 0; index < filters.length; index++) {
             const element = filters[index];
             let formatElement = element[0].name.split(" ").join("")
             filtersOnOffObj[formatElement] =  false;
             filtersDefaultsOnOffObj[formatElement] =  false;
           }
-          setStateApp((state) => ({
-          ...state,
-          filters:  filters ,
-          filtersOnOff: filtersOnOffObj,
-          filtersDefaultOnoff: filtersDefaultsOnOffObj
-          }))
+          
+          if (updateFilters && updateFilters.length > 0) {
+            setStateApp((state) => ({
+              ...state,
+              filters:  updateFilters ,
+              filtersOnOff: filtersOnOffObj,
+              filtersDefaultOnoff: filtersDefaultsOnOffObj
+              }))
+          } else {
+            setStateApp((state) => ({
+              ...state,
+              filters:  filters ,
+              filtersOnOff: filtersOnOffObj,
+              filtersDefaultOnoff: filtersDefaultsOnOffObj
+              }))
+          }
       }
       if (stateApp.user.authToken) {
         setFilters()
       }
-    },[stateApp.filtersMockDb, stateApp.user.authToken])
+    },[stateApp.filtersAdd, stateApp.filtersMockDb, stateApp.user.authToken])
 
   return (
   <div></div>

@@ -96,6 +96,8 @@ const NavigationContextProvider = props => {
     trackTabsValue: 0,
     currentUserFilters: null,
     filterHasOwnerCount: null,
+    m1neralDefaultsOnOff: true,
+    m1neralCehckOnOff: true,
   })
   return (
     <NavigationContext.Provider value={[stateNav, setStateNav]}>

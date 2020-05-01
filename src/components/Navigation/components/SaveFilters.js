@@ -69,19 +69,7 @@ export default function SaveFilters(props) {
     }
   },[filterList, props.filterList, props.filters])
   
-  useEffect(() => {
-    if (stateApp.filters) {
-      let findNames = stateApp.filters;
-      let name;
-      let Names = [];
-      findNames.forEach(e => {
-        name = e[0].name;
-        Names.push(name)
-      })
-      setFilterList(Names);
-    }
-  },[stateApp.filters])
-
+  
   useEffect(() => {
     if ( saveSearch && saveSearch.length <= 2) {
       setErrorTextField(true);
@@ -104,7 +92,7 @@ export default function SaveFilters(props) {
       user: props.user,
       created: dateCreated.toDateString(),
       filters: filters,
-      on: false,
+      on: true,
       default: false,
     }
     setCompletedSaving(true)
@@ -113,10 +101,11 @@ export default function SaveFilters(props) {
         JSON.stringify(filterInfo)
       )
     } else {
-      setStateApp(stateApp => ({...stateApp, filtersMockDb: [filterInfo] }))
+      setStateApp(stateApp => ({...stateApp, filtersAdd: [filterInfo] }))
     }
   }
-
+  console.log(stateApp.filtersMockDb ,
+    stateApp.filtersAdd)
   useEffect(() => {
     if (completedSaving) {
       setSavedCompleted(true)
@@ -126,6 +115,19 @@ export default function SaveFilters(props) {
   const handleChangeFilterList = newVal => {
     setUpdateSearch(newVal)
   }
+
+  useEffect(() => {
+    if (stateApp.filters) {
+      let findNames = stateApp.filters;
+      let name;
+      let Names = [];
+      findNames.forEach(e => {
+        name = e[0].name;
+        Names.push(name)
+      })
+      setFilterList(Names);
+    }
+  },[stateApp.filters])
 
   return (
     <Paper className={classes.paper}>

@@ -78,6 +78,8 @@ export default function Map() {
   const container = useRef(null);
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [mapStyles, setMapStyles] = useState([]);
+  const [defaultsCheckOnOff, setDefaultsCheckOnOff] = useState(true);
+  const [m1neralCheckOnOff, setM1neralCheckOnOff] = useState(true);
   const [map, setMap] = useState(null);
   const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
@@ -181,6 +183,15 @@ export default function Map() {
   }, [showExpandableCard]);
 
   useEffect(() => {
+    if (stateNav.m1neralDefaultsOnOff) {
+      setDefaultsCheckOnOff(defaultsCheckOnOff => !defaultsCheckOnOff)
+    }
+    if (stateNav.m1neralCehckOnOff) {
+      setM1neralCheckOnOff(m1neralCheckOnOff => ! m1neralCheckOnOff)
+    }
+  },[stateNav.m1neralCehckOnOff, stateNav.m1neralDefaultsOnOff])
+
+  useEffect(() => {
     console.log("filter ue start");
     //applies filter when one of the filters change
     if (map) {
@@ -220,8 +231,8 @@ export default function Map() {
             name: "M1neral Default Filters",
             filters: [defaultFiltersWellStatus, defaultFiltersWellType],
             types:[defaultTypeName, defaultStatusName],
-            on: true,
-            default: true,
+            on: m1neralCheckOnOff,
+            default: defaultsCheckOnOff,
           },
         ];
         setStateNav((stateNav) => ({

@@ -652,10 +652,10 @@ export default function Navigation(props) {
 
   const [valueTabsTrack, setValueTabsTrack] = useState(0);
   const handleTabChange = (event, newValue) => {
-    setValueTabsTrack(newValue);
-    setStateNav(stateNav => ({
-      trackTabsValue: newValue
-    }))
+      setValueTabsTrack(newValue);
+      setStateNav(stateNav => ({
+        trackTabsValue: newValue
+      }))
   };
   
   useEffect(() => {
@@ -788,7 +788,7 @@ export default function Navigation(props) {
       {/* <MenuItem className={classes.userMenuItem}>Profile</MenuItem> */}
     </Menu>
   );
-
+ 
   const handleListItemClick = (event, index, path) => {
     handleRouteChange(path);
     handleDrawerClose();
@@ -1102,10 +1102,10 @@ export default function Navigation(props) {
                   aria-label="ai"
                 />
                   <Tab
-                    value={7}
-                    classes={{ root: classes.tab }}
-                    style={{paddingTop: 10}}
-                    icon={
+                  value={7}
+                  classes={{ root: classes.tab }}
+                  style={{paddingTop: 10}}
+                  icon={
                       <Badge
                         badgeContent={stateNav.totalFilterCount}
                         color="secondary"
@@ -1113,10 +1113,9 @@ export default function Navigation(props) {
                         <SettingsIcon />
                       </Badge>
                     }
-                    aria-label="filter settings"
+                  aria-label="filter settings"
                   />
-                </Tabs>
-                
+              </Tabs>
               </div>
             ) : (
               <div style={{ display: "none" }}></div>
@@ -1609,7 +1608,7 @@ export default function Navigation(props) {
                   }}
                 ></CardActions>
                 <CardContent className={classes.cardContent}>
-                  <FilterDefaults />
+                  <FilterDefaults />  
                 </CardContent>
               </Card>
             </ClickAwayListener>

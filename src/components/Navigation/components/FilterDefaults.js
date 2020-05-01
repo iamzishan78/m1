@@ -155,10 +155,10 @@ export default function FilterDedaults() {
   const [filtersOwner, setFiltersOwner] = useState(null);
   const [filtersWell, setFiltersWell] = useState(null);
   const [savedFilters, setSavedFilters] = useState(null);
-  const [checkBoxActiveM1neral, setCheckBoxActiveM1neral] = useState(stateNav.m1neralDefaultFilters[0].on);
-  const [checkBoxDefaultM1neral, setCheckBoxDefaultM1neral] = useState(stateNav.m1neralDefaultFilters[0].default);
-  const [checkBoxActive, setCheckBoxActive] = useState(stateApp.filtersOnOff);
-  const [checkBoxDefault, setCheckBoxDefault] = useState(stateApp.filtersDefaultOnoff);
+  const [checkBoxActiveM1neral, setCheckBoxActiveM1neral] = useState(null);
+  const [checkBoxDefaultM1neral, setCheckBoxDefaultM1neral] = useState(null);
+  const [checkBoxActive, setCheckBoxActive] = useState(null);
+  const [checkBoxDefault, setCheckBoxDefault] = useState(null);
   const [dateCreated, setDateCreated] = useState(new Date());
   const [filterTypeWell, setFilterTypeWell] = useState(null);
   const [filterTypeOwner, setFilterTypeOwner] = useState(null);
@@ -182,6 +182,17 @@ export default function FilterDedaults() {
   const handleChange = (event, newValue) => {
     setTabsValue(newValue);
   };
+
+  useEffect(() => {
+    if (stateApp.filtersOnOff && stateApp.filtersDefaultOnoff) {
+      setCheckBoxActive(stateApp.filtersOnOff)
+      setCheckBoxDefault(stateApp.filtersDefaultOnoff)
+    }
+    if (stateNav.m1neralDefaultFilters) {
+      setCheckBoxActiveM1neral(stateNav.m1neralDefaultsOnOff)
+      setCheckBoxDefaultM1neral(stateNav.m1neralCehckOnOff)
+    }
+  },[stateApp.filtersDefaultOnoff, stateApp.filtersOnOff, stateNav.m1neralCehckOnOff, stateNav.m1neralDefaultFilters, stateNav.m1neralDefaultsOnOff])
 
   useEffect(() => {
     let typeName; 
@@ -901,6 +912,7 @@ export default function FilterDedaults() {
         typeName: [],
         filterWellStatus: null,
         filterWellType: null,
+        m1neralDefaultsOnOff: false,
       }));
       setCheckBoxActiveM1neral(false)
       setFiltersFromDb(null);
@@ -932,6 +944,10 @@ export default function FilterDedaults() {
             [i]: false
           }));
       })
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        m1neralDefaultsOnOff: true,
+      }));
       setCheckBoxActiveM1neral(true);
       setFiltersFromDb(null);
       setTypesFromDb(null);
@@ -961,10 +977,25 @@ export default function FilterDedaults() {
     setShowSavePopOver(false)
   }
 
-  const deleteFilter = () => {
+  const deleteFilterM1neral = () => {
     if (savedFilters[0] === "M1neral Default Filters") {
         alert("M1neral Default filters Can't be deleted")
     }
+  };
+
+  const deleteFilter = (e, name) => {
+    let findNameToRemove =[...stateApp.filters];
+    let itemToRemove;
+    let item;
+    let updatedFilters;
+    findNameToRemove.forEach(el => {
+      itemToRemove = el[0].name;
+      if (itemToRemove === name) {
+        item = el[0].name;
+      }
+    });
+    updatedFilters = findNameToRemove.filter(element => element[0].name  !== itemToRemove);
+    setStateApp(stateApp => ({...stateApp, filtersMockDb: updatedFilters }))
   };
 
   return (
@@ -1017,7 +1048,8 @@ export default function FilterDedaults() {
             <ListItem className={classes.listItemLabel}>Delete</ListItem>
           </div>
           <List>
-          {savedFilters && savedFilters[0]
+          {checkBoxDefaultM1neral  ?( 
+          savedFilters && savedFilters[0]
               ? savedFilters[0].map((el) => (
                   <div key={el}>
                     <ListItem button>
@@ -1047,15 +1079,17 @@ export default function FilterDedaults() {
                         color="secondary"
                         inputProps={{ 'aria-label': 'primary checkbox' }}
                       />
-                      <IconButton onClick={deleteFilter} aria-label="delete">
+                      <IconButton disabled={true} onClick={deleteFilterM1neral} aria-label="delete">
                         <DeleteIcon />
                       </IconButton>
                     </ListItem>
                     <Divider />
                   </div>
                 ))
-              : null}
-            {savedFilters && savedFilters[1]
+              : null
+              ): (null)}
+            {checkBoxActive && checkBoxDefault ?( 
+            savedFilters && savedFilters[1]
               ? savedFilters[1].map((el) => (
                   <div key={el}>
                     <ListItem button>
@@ -1087,14 +1121,15 @@ export default function FilterDedaults() {
                         name={formatString(el)}
                         inputProps={{ 'aria-label': 'primary checkbox' }}
                       />
-                      <IconButton onClick={deleteFilter} aria-label="delete">
+                      <IconButton onClick={ e => deleteFilter(e, el)} aria-label="delete">
                         <DeleteIcon />
                       </IconButton>
                     </ListItem>
                     <Divider />
                   </div>
                 ))
-              : null}
+              : null
+            ): (null)}
           </List>
         </Paper>
       ) : null}

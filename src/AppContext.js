@@ -22,6 +22,7 @@ const AppProvider = (props) => {
     featureOrMapShape: {},
     filters: [],
     filtersMockDb: null,
+    filtersAdd: null,
     filtersOnOff: null,
     filtersDefaultOnoff: null,
     selectedContact: null,
