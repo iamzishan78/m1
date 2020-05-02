@@ -320,9 +320,13 @@ const useStyles = makeStyles((theme) => ({
     color: "rgba(0, 0, 0, 0.52) !important ",
   },
   betaSideNav2: {
-    paddingBottom: 35,
-    // paddingLeft: 35,
+    // paddingBottom: 35,
+    // paddingLeft: 0,
     // paddingRight: 0,
+    textTransform: "inherit",
+    position: 'relative',
+    // left: 10,
+    left: 20,
     fontSize: 12,
     color: "rgba(0, 0, 0, 0.52) !important ",
   },
@@ -1225,6 +1229,16 @@ export default function Navigation(props) {
               <ShoppingCartIcon />
             </ListItemIcon>
             <ListItemText primary="Transact" />
+            <ListItemSecondaryAction>
+              <Button
+                disabled
+                className={classes.betaSideNav}
+                edge="end"
+                aria-label="beta"
+              >
+                beta
+              </Button>
+            </ListItemSecondaryAction>
           </ListItem>
           <ListItem
             classes={{
@@ -1261,25 +1275,35 @@ export default function Navigation(props) {
               <AccountCircleIcon />
             </ListItemIcon>
             <ListItemText primary="Contacts" />
+            <ListItemSecondaryAction>
+              <Button
+                disabled
+                className={classes.betaSideNav2}
+                edge="end"
+                aria-label="beta"
+              >
+                beta
+              </Button>
+            </ListItemSecondaryAction>
           </ListItem>
         </List>
         <Divider variant="middle" className={classes.menuListBottomDivider} />
         <List className={classes.menuListBottom}>
           <ListItem
             classes={{
-              root: classes.menuListItem,
+              root: classes.menuListItemDisabled,
               selected: classes.menuListItemSelected,
             }}
             button
             selected={stateNav.selectedMenuIndexAlerts === 1}
-            onClick={(event) => handleListItemClick(event, 0, "/alerts")}
+            //onClick={(event) => handleListItemClick(event, 0, "/alerts")}
             key="alerts"
           >
             <ListItemIcon>
               <NotificationsActiveIcon />
             </ListItemIcon>
             <ListItemText primary="Alerts" />
-            <ListItemSecondaryAction>
+            {/* <ListItemSecondaryAction>
               <Button
                 disabled
                 className={classes.betaSideNav}
@@ -1288,7 +1312,7 @@ export default function Navigation(props) {
               >
                 beta
               </Button>
-            </ListItemSecondaryAction>
+            </ListItemSecondaryAction> */}
           </ListItem>
 
           <ListItem
