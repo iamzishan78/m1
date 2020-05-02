@@ -70,12 +70,12 @@ export default function TransactDialog(props) {
       fullWidth
       maxWidth="xs"
     >
-      <DialogTitle id="form-dialog-title">Update Card</DialogTitle>
+      <DialogTitle id="form-dialog-title">Deal Information</DialogTitle>
       <DialogContent>
         <TextField
           margin="dense"
           value={title}
-          label="Title"
+          label="Owner Name"
           fullWidth
           //   required
           onChange={(e) => {
@@ -85,7 +85,7 @@ export default function TransactDialog(props) {
         <TextField
           margin="dense"
           value={label}
-          label="Label"
+          label="Offer Price"
           fullWidth
           onChange={(e) => {
             setLabel(e.target.value);
@@ -95,7 +95,7 @@ export default function TransactDialog(props) {
           //   autoFocus
           margin="dense"
           value={description}
-          label="Description"
+          label="Offer Details"
           fullWidth
           multiline
           //   required
