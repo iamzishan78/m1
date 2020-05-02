@@ -10,11 +10,7 @@ import OperatorFilterJ from "./OperatorFilterJ";
 import FilterWellTypeJ from "./FilterWellTypeJ";
 import FilterWellProfileJ from "./FilterWellProfileJ";
 import FilterWellStatusJ from "./FilterWellStatusJ";
-import FilterTrackedWells from "./FilterTrackedWells";
 
-
-// const ITEM_HEIGHT = 60;
-// const ITEM_PADDING_TOP = 10;
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -22,8 +18,6 @@ const useStyles = makeStyles(theme => ({
     flexWrap: "wrap",
     flexDirection: "column",
     justifyContent: "space-around",
-    // maxWidth: 220,
-    // minWidth: 500
   },
   row: {
     display: "flex",
@@ -32,17 +26,10 @@ const useStyles = makeStyles(theme => ({
   },
   datesRow: {
     display: "flex",
-    // flexWrap: "nowrap",
     flexDirection: "column",
-    // flex: "1",
-    // flexGrow: 2,
-    // maxWidth: 400,
-    // minWidth: 300
   },
   formControl: {
     margin: "15px",
-    // minWidth: 120,
-    // maxWidth: 300,
     color: "black",
   },
   chips: {
@@ -112,8 +99,6 @@ export default function FilterFormWell() {
         <FilterDatePickerFirstProd labelDates={"First Production"} />
       </div> 
       
-      <FilterTrackedWells/>
-
     </div>
   );
 }

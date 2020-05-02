@@ -125,12 +125,6 @@ export default function FilterOwnerCount() {
   }, [dataTracks]);
 
 
-  // const handleListClick = (well) => {
-  //   setStateApp((state) => ({ ...state, popupOpen: false }));
-  //   setStateApp((state) => ({ ...state, selectedWell: well }));
-  //   setStateApp((state) => ({ ...state, selectedWellId: well.id }));
-  //   setStateApp((state) => ({ ...state, flyTo: well }));
-  // };
 
 
   useEffect(() => {
@@ -141,41 +135,11 @@ export default function FilterOwnerCount() {
         dataWells.wells.results.length > 0
       ) {
 
-
         const idArray = dataWells.wells.results.map(
           (item) => item.api
         )
 
-        // const latArray = dataWells.wells.results.map(
-        //   (item) => item.latitude
-        // )
-        // const longArray = dataWells.wells.results.map(
-        //   (item) => item.longitude
-        // )
-
-        // console.log('track well id',idArray)
-        // console.log('track well lat',latArray)
-        // console.log('track well long',longArray)
-        // console.log('track well long',Math.min(...longArray))
-
         setIdArray(idArray);
-        // setStateMap(trackFilterOn: true)
-
-
-        // setFirstWell(dataWells.wells.results);
-        // setRows(dataWells.wells.results);
-
-        // setStateApp((state) => ({
-        //   ...state,
-        //   wells: dataWells.wells.results,
-        // }));
-
-        // setStateMap({
-        //   ...stateMap,
-        //   toggle3d: action === "threed" ? !stateMap.toggle3d : stateMap.toggle3d,
-        //   toggleZoomOut: action === "zoomout" ? !stateMap.toggleZoomOut : stateMap.toggleZoomOut,
-        // });
-
 
       } else {
         setRows([]);
@@ -186,47 +150,9 @@ export default function FilterOwnerCount() {
 
 
 
-
-
-  // const handleListClick = (well) => {
-  //   setStateApp((state) => ({ ...state, popupOpen: false }));
-  //   setStateApp((state) => ({ ...state, selectedWell: well }));
-  //   setStateApp((state) => ({ ...state, selectedWellId: well.id }));
-  //   setStateApp((state) => ({ ...state, flyTo: well }));
-  // };
-
-
-
-  // const handleIdChange = value => {
-  //   let filter;
-  //   if(value && value.length) {
-  //     filter = ['match', ['get', 'id'], value, true, false]
-  //   }
-  //   else {
-  //     filter = null
-  //   }
-  //   setStateNav(stateNav => ({ ...stateNav, filterTrackedWells: filter}))
-  //   };
-
-
-
-
-
-
-
-
-
-
-
-
-
   const toggleTracks = () => {
     setTracks(tracks => !tracks)
   }
-
-
-
-
 
 
   
@@ -242,36 +168,14 @@ export default function FilterOwnerCount() {
       filter = null
     }
 
-    console.log('id array', idArray)
-    // setStateMap(stateMap => ({ ...stateMap, toggleTrackFilter: true}))
     setStateNav(stateNav => ({ ...stateNav, filterTrackedWells: filter}))
-    
-    // setStateApp(stateApp => ({ ...stateApp, 
-    //                               trackedWellarray: idArray,
-    //                               trackFilterOn: true,
-    //                             }))
-
-     setStateApp({
+    setStateApp({
           ...stateApp,
           trackedWellArray: dataWells,
           trackFilterOn: true,
         });
 
-    // handleListClick(rows[0])
-    // setStateApp(stateApp => ({ ...stateApp, trackFilterOn: true}))
-    // setStateMapControls({
-    //   ...stateMapControls,
-    //   selectedControl: 'track',
-    // });
-    
-    // setStateMap((state) => ({
-    //   ...state,
-    //   toggleTrackFilter: true,
-    //   trackedWellArray: idArray,
-    // }));
-
   }
-
   },[tracks])
 
 

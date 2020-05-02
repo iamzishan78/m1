@@ -992,18 +992,19 @@ export default function Map() {
         map.on("click", "wellpoints", function (e) {
           //console.log('click event', e)
           var bbox = [
-            [e.point.x - 1, e.point.y - 10],
-            [e.point.x + 10, e.point.y + 1],
+            [e.point.x - 10, e.point.y - 10],
+            [e.point.x + 10, e.point.y + 10],
           ];
           let features = map.queryRenderedFeatures(bbox, {
             layers: ["wellpoints"],
           });
           let currentFeature = features[0];
+          console.log('current feature', currentFeature)
 
-          if (!currentFeature.properties.isTracked) {
-            //add temp until it is in tileset. required for tracking well
-            currentFeature.properties.isTracked = false;
-          }
+          // if (!currentFeature.properties.isTracked) {
+          //   //add temp until it is in tileset. required for tracking well
+          //   currentFeature.properties.isTracked = false;
+          // }
 
           setStateApp((state) => ({ ...state, popupOpen: false }));
           setStateApp((state) => ({
@@ -1052,10 +1053,10 @@ export default function Map() {
 
           let currentFeature = features[0];
 
-          if (!currentFeature.properties.isTracked) {
-            //add temp until it is in tileset. required for tracking well
-            currentFeature.properties.isTracked = false;
-          }
+          // if (!currentFeature.properties.isTracked) {
+          //   //add temp until it is in tileset. required for tracking well
+          //   currentFeature.properties.isTracked = false;
+          // }
 
           console.log("clicked well lines", currentFeature);
           setStateApp((state) => ({ ...state, popupOpen: false }));
@@ -1090,12 +1091,12 @@ export default function Map() {
           list.removeChild(list.childNodes[0]);
         }
 
-        console.log("begin map unmount");
+        // console.log("begin map unmount");
 
-        console.log("zoom", map.getZoom());
-        console.log("center", map.getCenter());
-        console.log("pitch", map.getPitch());
-        console.log("bearing", map.getBearing());
+        // console.log("zoom", map.getZoom());
+        // console.log("center", map.getCenter());
+        // console.log("pitch", map.getPitch());
+        // console.log("bearing", map.getBearing());
 
         var zoom = map.getZoom();
         var center = map.getCenter();
@@ -1235,7 +1236,7 @@ export default function Map() {
 
 
 
-  
+
   useEffect(() => {
     ///////////////// EFFECT FOR SHOWING TRACKED WELLS /////////////////
 
@@ -1246,7 +1247,8 @@ export default function Map() {
         && stateApp.trackedWellArray
           ) {
 
-        
+        console.log('array ',stateApp.trackedWellArray )
+
         const makeGeoJSON = (data) => {
           return {
             type: 'FeatureCollection',
@@ -1269,16 +1271,16 @@ export default function Map() {
         const myGeoJSONData = makeGeoJSON(stateApp.trackedWellArray.wells.results);
         
 
-        map.addSource('points', {
+        map.addSource('track_well_points_source', {
           'type': 'geojson',
           'data': myGeoJSONData,
           });
 
 
         map.addLayer({
-            'id': 'points',
+            'id': 'track_well_points_layer',
             'type': 'circle',
-            'source': 'points',
+            'source': 'track_well_points_source',
             "paint":{
               "circle-radius":5,
               "circle-color":
@@ -1298,6 +1300,53 @@ export default function Map() {
                     Math.min(...latArray)], 
                     [Math.max(...longArray), 
                       Math.max(...latArray)]];
+
+
+
+        map.on("click", "track_well_points_layer", function (e) {
+          
+          // var bbox = [
+          //   [e.point.x - 10, e.point.y - 10],
+          //   [e.point.x + 10, e.point.y + 10],
+          // ];
+
+          // let features = map.querySourceFeatures(bbox, {
+          //   layers: ["wellpoints"],
+          // });
+
+          let features = map.querySourceFeatures('composite');
+          console.log('current feat',features)
+
+          // let currentFeature = features[0];
+          // console.log('feats',features)
+
+          // if (!currentFeature.properties.isTracked) {
+          //   //add temp until it is in tileset. required for tracking well
+          //   currentFeature.properties.isTracked = false;
+          // }
+
+          // setStateApp((state) => ({ ...state, popupOpen: false }));
+          // setStateApp((state) => ({
+          //   ...state,
+          //   selectedWell: currentFeature.properties,
+          // }));
+          // setStateApp((state) => ({
+          //   ...state,
+          //   selectedWellId: currentFeature.properties.api,
+          // }));
+          // createPopUp(currentFeature.properties);
+          // map.resize();
+        });
+
+        map.on("mousemove", "track_well_points_layer", (e) => {
+          map.getCanvas().style.cursor = "pointer";
+        });
+
+        map.on("mouseleave", "track_well_points_layer", function () {
+          map.getCanvas().style.cursor = "";
+        });
+
+
 
         map.fitBounds(bbox, {
           padding: {top: 50, bottom:50, left: 50, right: 50},

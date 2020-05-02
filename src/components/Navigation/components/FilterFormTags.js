@@ -5,6 +5,7 @@ import { NavigationContext } from "../NavigationContext";
 import ProdMinMax from "./ProdMinMax";
 import FilterTags from "./FilterTags";
 import FormControl from "@material-ui/core/FormControl";
+import FilterTrackedWells from "./FilterTrackedWells";
 
 
 const useStyles = makeStyles(theme => ({
@@ -123,7 +124,9 @@ export default function FilterFormProduction() {
     <FormControl className={classes.formControl}>
       <FilterTags />
     </FormControl> 
-  
+    <FormControl className={classes.formControl}>
+      <FilterTrackedWells/>
+    </FormControl> 
 
     </div>
   );
