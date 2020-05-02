@@ -1213,26 +1213,10 @@ export default function Navigation(props) {
               <MyLocationIcon />
             </ListItemIcon>
             <ListItemText primary="Track" />
-          </ListItem>
-
-          <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexTransact === 1}
-            onClick={(event) => handleListItemClick(event, 0, "/transact")}
-            key="transact"
-          >
-            <ListItemIcon>
-              <ShoppingCartIcon />
-            </ListItemIcon>
-            <ListItemText primary="Transact" />
             <ListItemSecondaryAction>
               <Button
                 disabled
-                className={classes.betaSideNav}
+                className={classes.betaSideNav2}
                 edge="end"
                 aria-label="beta"
               >
@@ -1240,21 +1224,8 @@ export default function Navigation(props) {
               </Button>
             </ListItemSecondaryAction>
           </ListItem>
-          <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexTitle === 1}
-            onClick={(event) => handleListItemClick(event, 0, "/title")}
-            key="title"
-          >
-            <ListItemIcon>
-              <DescriptionIcon />
-            </ListItemIcon>
-            <ListItemText primary="Title" />
-          </ListItem>
+
+
           <ListItem
             classes={{
               root: classes.menuListItem,
@@ -1286,6 +1257,56 @@ export default function Navigation(props) {
               </Button>
             </ListItemSecondaryAction>
           </ListItem>
+
+
+
+
+
+          <ListItem
+            classes={{
+              root: classes.menuListItem,
+              selected: classes.menuListItemSelected,
+            }}
+            button
+            selected={stateNav.selectedMenuIndexTransact === 1}
+            onClick={(event) => handleListItemClick(event, 0, "/transact")}
+            key="transact"
+          >
+            <ListItemIcon>
+              <ShoppingCartIcon />
+            </ListItemIcon>
+            <ListItemText primary="Transact" />
+            <ListItemSecondaryAction>
+              <Button
+                disabled
+                className={classes.betaSideNav}
+                edge="end"
+                aria-label="beta"
+              >
+                beta
+              </Button>
+            </ListItemSecondaryAction>
+          </ListItem>
+
+
+
+          <ListItem
+            classes={{
+              root: classes.menuListItemDisabled,
+              selected: classes.menuListItemSelected,
+            }}
+            button
+            selected={stateNav.selectedMenuIndexTitle === 1}
+            //onClick={(event) => handleListItemClick(event, 0, "/title")}
+            key="title"
+          >
+            <ListItemIcon>
+              <DescriptionIcon />
+            </ListItemIcon>
+            <ListItemText primary="Title" />
+          </ListItem>
+
+         
         </List>
         <Divider variant="middle" className={classes.menuListBottomDivider} />
         <List className={classes.menuListBottom}>
