@@ -27,6 +27,7 @@ const AppProvider = (props) => {
     filtersDefaultOnoff: null,
     selectedContact: null,
     trackFilterOn: null,
+    trackedWellArray: [],
     mapVars: {
       zoom: 5.88,
       center: { lng: -98.8, lat: 31.6 },

@@ -1076,58 +1076,6 @@ export default function Map() {
 
 
 
-        
-        map.addSource('points', {
-          'type': 'geojson',
-          'data': {
-          'type': 'FeatureCollection',
-          'features': [
-          {
-          // feature for Mapbox DC
-          'type': 'Feature',
-          'geometry': {
-          'type': 'Point',
-          'coordinates': [
-          -77.03238901390978,
-          38.913188059745586
-          ]
-          },
-          'properties': {
-          'title': 'Mapbox DC',
-          'icon': 'monument'
-          }
-          },
-          {
-          // feature for Mapbox SF
-          'type': 'Feature',
-          'geometry': {
-          'type': 'Point',
-          'coordinates': [-122.414, 37.776]
-          },
-          'properties': {
-          'title': 'Mapbox SF',
-          'icon': 'harbor'
-          }
-          }
-          ]
-          }
-          });
-
-          map.addLayer({
-            'id': 'points',
-            'type': 'symbol',
-            'source': 'points',
-            'layout': {
-            // get the icon name from the source's "icon" property
-            // concatenate the name to get an icon from the style's sprite sheet
-            'icon-image': ['concat', ['get', 'icon'], '-15'],
-            // get the title name from the source's "title" property
-            'text-field': ['get', 'title'],
-            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-            'text-offset': [0, 0.6],
-            'text-anchor': 'top'
-            }
-            });
 
       }
     }
@@ -1184,7 +1132,17 @@ export default function Map() {
     }
   }, [map, geocoder]);
 
+
+
+
+
+
+
+
   useEffect(() => {
+    ////// USE EFFECT TO MANAGE THE FLY TO FEATURE 
+
+
     if (map && stateApp.flyTo) {
       //console.log('fly')
       createPopUp(stateApp.flyTo);
@@ -1272,6 +1230,86 @@ export default function Map() {
       }
     }
   }, [stateMap.toggle3d]);
+
+
+
+
+
+  
+  useEffect(() => {
+    ///////////////// EFFECT FOR SHOWING TRACKED WELLS /////////////////
+
+
+
+    if (map 
+        && stateApp.trackFilterOn
+        && stateApp.trackedWellArray
+          ) {
+
+        
+        const makeGeoJSON = (data) => {
+          return {
+            type: 'FeatureCollection',
+            features: data.map(feature => {
+              return {
+                "type": "Feature",
+                "properties": {
+                  // "id": feature.id,
+                  // "value": feature.value
+                },
+                "geometry": {
+                  "type": "Point",
+                  "coordinates": [feature.longitude, feature.latitude]
+                }
+              }
+            })
+          }
+        };
+        
+        const myGeoJSONData = makeGeoJSON(stateApp.trackedWellArray.wells.results);
+        
+
+        map.addSource('points', {
+          'type': 'geojson',
+          'data': myGeoJSONData,
+          });
+
+
+        map.addLayer({
+            'id': 'points',
+            'type': 'circle',
+            'source': 'points',
+            "paint":{
+              "circle-radius":5,
+              "circle-color":
+                    'yellow'
+            },
+            });
+
+
+        const latArray = stateApp.trackedWellArray.wells.results.map(
+          (item) => item.latitude
+        )
+        const longArray = stateApp.trackedWellArray.wells.results.map(
+          (item) => item.longitude
+        )
+      
+        var bbox = [[Math.min(...longArray), 
+                    Math.min(...latArray)], 
+                    [Math.max(...longArray), 
+                      Math.max(...latArray)]];
+
+        map.fitBounds(bbox, {
+          padding: {top: 50, bottom:50, left: 50, right: 50},
+          // maxZoom: 15
+          // linear: true
+        });
+
+    }
+  }, [stateApp.trackFilterOn]);
+
+
+
 
   const handleOpenExpandableCard = (e) => {
     setAnchorElPoPOver(container.current);

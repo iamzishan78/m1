@@ -9,6 +9,7 @@ import { TRACKSBYUSERANDOBJECTTYPE } from "../../../graphQL/useQueryTracksByUser
 import { USERBYEMAIL } from "../../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 import { AppContext } from "../../../AppContext";
 import { MapControlsContext } from "../../MapControls/MapControlsContext";
+import { MapContext } from "../../Map/MapContext";
 
 
 const useStyles = makeStyles({
@@ -52,6 +53,9 @@ export default function FilterOwnerCount() {
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
+
+  const [stateMap, setStateMap] = useContext(MapContext);
+
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, setRows] = React.useState([]);
@@ -121,12 +125,12 @@ export default function FilterOwnerCount() {
   }, [dataTracks]);
 
 
-  const handleListClick = (well) => {
-    setStateApp((state) => ({ ...state, popupOpen: false }));
-    setStateApp((state) => ({ ...state, selectedWell: well }));
-    setStateApp((state) => ({ ...state, selectedWellId: well.id }));
-    setStateApp((state) => ({ ...state, flyTo: well }));
-  };
+  // const handleListClick = (well) => {
+  //   setStateApp((state) => ({ ...state, popupOpen: false }));
+  //   setStateApp((state) => ({ ...state, selectedWell: well }));
+  //   setStateApp((state) => ({ ...state, selectedWellId: well.id }));
+  //   setStateApp((state) => ({ ...state, flyTo: well }));
+  // };
 
 
   useEffect(() => {
@@ -155,13 +159,22 @@ export default function FilterOwnerCount() {
         // console.log('track well long',Math.min(...longArray))
 
         setIdArray(idArray);
-        setFirstWell(dataWells.wells.results);
-        setRows(dataWells.wells.results);
+        // setStateMap(trackFilterOn: true)
 
-        setStateApp((state) => ({
-          ...state,
-          wells: dataWells.wells.results,
-        }));
+
+        // setFirstWell(dataWells.wells.results);
+        // setRows(dataWells.wells.results);
+
+        // setStateApp((state) => ({
+        //   ...state,
+        //   wells: dataWells.wells.results,
+        // }));
+
+        // setStateMap({
+        //   ...stateMap,
+        //   toggle3d: action === "threed" ? !stateMap.toggle3d : stateMap.toggle3d,
+        //   toggleZoomOut: action === "zoomout" ? !stateMap.toggleZoomOut : stateMap.toggleZoomOut,
+        // });
 
 
       } else {
@@ -229,18 +242,37 @@ export default function FilterOwnerCount() {
       filter = null
     }
 
+    console.log('id array', idArray)
+    // setStateMap(stateMap => ({ ...stateMap, toggleTrackFilter: true}))
     setStateNav(stateNav => ({ ...stateNav, filterTrackedWells: filter}))
-    setStateApp(stateApp => ({ ...stateApp, trackFilterOn: true}))
-    handleListClick(rows[0])
+    
+    // setStateApp(stateApp => ({ ...stateApp, 
+    //                               trackedWellarray: idArray,
+    //                               trackFilterOn: true,
+    //                             }))
+
+     setStateApp({
+          ...stateApp,
+          trackedWellArray: dataWells,
+          trackFilterOn: true,
+        });
+
+    // handleListClick(rows[0])
     // setStateApp(stateApp => ({ ...stateApp, trackFilterOn: true}))
     // setStateMapControls({
     //   ...stateMapControls,
     //   selectedControl: 'track',
     // });
+    
+    // setStateMap((state) => ({
+    //   ...state,
+    //   toggleTrackFilter: true,
+    //   trackedWellArray: idArray,
+    // }));
 
   }
 
-  },[tracks, setStateNav])
+  },[tracks])
 
 
 
