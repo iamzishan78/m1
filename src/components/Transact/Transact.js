@@ -18,7 +18,7 @@ const data_file = {
   lanes: [
     {
       id: "lane1",
-      title: "Offer Preparation",
+      title: "Offers in Progress",
       cards: [
         {
           id: "Card1",
@@ -31,22 +31,22 @@ const data_file = {
     },
     {
       id: "lane2",
-      title: "Offer Extended",
+      title: "Offer Sent to Owner",
       cards: [
-        {
-          id: "Card3",
-          title: "SMITH, JAMES E",
-          description:
-            "Location: WARD, TX\nRoyalty: 20%\nAcreage: 4.83 NMA (7.728 NRA)\nPrice Per NMA: $15,000",
-          label: "$115,900",
-        },
-        {
-          id: "Card2",
-          title: "CHRISTOPHER, EDITH",
-          description:
-            "API: 4230130541\nWell Name: CHRISTOPHER -38- 4\nNRI: 0.005952\nTax Value: $3,620",
-          label: "$54,739",
-        },
+        // {
+        //   id: "Card3",
+        //   title: "SMITH, JAMES E",
+        //   description:
+        //     "Location: WARD, TX\nRoyalty: 20%\nAcreage: 4.83 NMA (7.728 NRA)\nPrice Per NMA: $15,000",
+        //   label: "$115,900",
+        // },
+        // {
+        //   id: "Card2",
+        //   title: "CHRISTOPHER, EDITH",
+        //   description:
+        //     "API: 4230130541\nWell Name: CHRISTOPHER -38- 4\nNRI: 0.005952\nTax Value: $3,620",
+        //   label: "$54,739",
+        // },
       ],
     },
     {
@@ -211,7 +211,7 @@ export default function Transact() {
         draggable={true}
         laneDraggable={true}
         cardDraggable={true}
-        collapsibleLanes={true}
+        collapsibleLanes={false}
         editable={true}
         canAddLanes={true}
         editLaneTitle={true}
