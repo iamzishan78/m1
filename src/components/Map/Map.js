@@ -1145,19 +1145,13 @@ export default function Map() {
 
 
     if (map && stateApp.flyTo) {
-      //console.log('fly')
-      createPopUp(stateApp.flyTo);
 
-      var zVal=15;
-      if(stateApp.trackFilterOn){
-        zVal = 11;
-      }
+      var zVal=12;
 
       map.flyTo({
         center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
         zoom: zVal,
         speed: 0.5,
-        // pitch: 70,
       });
 
     }
@@ -1205,6 +1199,9 @@ export default function Map() {
       }
     }
   }, [stateMap.toggleZoomOut]);
+
+
+
 
   useEffect(() => {
     if (map && stateMap.toggle3d) {
@@ -1256,8 +1253,12 @@ export default function Map() {
               return {
                 "type": "Feature",
                 "properties": {
-                  // "id": feature.id,
-                  // "value": feature.value
+                  "api": feature.api,
+                  "id": feature.id,
+                  "latitude": feature.latitude,
+                  "longitude": feature.longitude,
+                  "operator": feature.operator,
+                  "WellName": feature.wellName,
                 },
                 "geometry": {
                   "type": "Point",
@@ -1296,25 +1297,20 @@ export default function Map() {
           (item) => item.longitude
         )
       
-        var bbox = [[Math.min(...longArray), 
-                    Math.min(...latArray)], 
-                    [Math.max(...longArray), 
-                      Math.max(...latArray)]];
-
 
 
         map.on("click", "track_well_points_layer", function (e) {
           
-          // var bbox = [
-          //   [e.point.x - 10, e.point.y - 10],
-          //   [e.point.x + 10, e.point.y + 10],
-          // ];
+          var bbox = [
+            [e.point.x - 10, e.point.y - 10],
+            [e.point.x + 10, e.point.y + 10],
+          ];
 
-          // let features = map.querySourceFeatures(bbox, {
-          //   layers: ["wellpoints"],
-          // });
+          let features = map.queryRenderedFeatures (bbox, {
+            layers: ["track_well_points_layer"],
+          });
 
-          let features = map.querySourceFeatures('composite');
+          // let features = map.querySourceFeatures('composite');
           console.log('current feat',features)
 
           // let currentFeature = features[0];
@@ -1336,6 +1332,9 @@ export default function Map() {
           // }));
           // createPopUp(currentFeature.properties);
           // map.resize();
+
+          setStateApp((state) => ({ ...state, flyTo: features[0].properties }));
+
         });
 
         map.on("mousemove", "track_well_points_layer", (e) => {
@@ -1346,6 +1345,11 @@ export default function Map() {
           map.getCanvas().style.cursor = "";
         });
 
+
+        var bbox = [[Math.min(...longArray), 
+          Math.min(...latArray)], 
+          [Math.max(...longArray), 
+            Math.max(...latArray)]];
 
 
         map.fitBounds(bbox, {
