@@ -326,7 +326,29 @@ const useStyles = makeStyles((theme) => ({
     textTransform: "inherit",
     position: 'relative',
     // left: 10,
-    left: 20,
+    left: 10,
+    fontSize: 12,
+    color: "rgba(0, 0, 0, 0.52) !important ",
+  },
+  betaSideNav3: {
+    // paddingBottom: 35,
+    // paddingLeft: 0,
+    // paddingRight: 0,
+    textTransform: "inherit",
+    // position: 'relative',
+    // left: 10,
+    left: 15,
+    fontSize: 12,
+    color: "rgba(0, 0, 0, 0.52) !important ",
+  },
+  betaSideNav4: {
+    // paddingBottom: 35,
+    // paddingLeft: 0,
+    // paddingRight: 0,
+    textTransform: "inherit",
+    position: 'relative',
+    // left: 10,
+    left: -10,
     fontSize: 12,
     color: "rgba(0, 0, 0, 0.52) !important ",
   },
@@ -629,7 +651,7 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 };
 
-const drawerWidth = 215;
+const drawerWidth = '225px';
 
 export default function Navigation(props) {
   const classes = useStyles();
@@ -1213,16 +1235,16 @@ export default function Navigation(props) {
               <MyLocationIcon />
             </ListItemIcon>
             <ListItemText primary="Track" />
-            <ListItemSecondaryAction>
+            {/* <ListItemSecondaryAction>
               <Button
                 disabled
-                className={classes.betaSideNav2}
+                className={classes.betaSideNav4}
                 edge="end"
                 aria-label="beta"
               >
                 beta
               </Button>
-            </ListItemSecondaryAction>
+            </ListItemSecondaryAction> */}
           </ListItem>
 
 
@@ -1249,7 +1271,7 @@ export default function Navigation(props) {
             <ListItemSecondaryAction>
               <Button
                 disabled
-                className={classes.betaSideNav2}
+                className={classes.betaSideNav3}
                 edge="end"
                 aria-label="beta"
               >
@@ -1279,7 +1301,7 @@ export default function Navigation(props) {
             <ListItemSecondaryAction>
               <Button
                 disabled
-                className={classes.betaSideNav}
+                className={classes.betaSideNav2}
                 edge="end"
                 aria-label="beta"
               >
