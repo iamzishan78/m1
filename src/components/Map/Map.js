@@ -266,6 +266,12 @@ export default function Map() {
         ownershipFilterCount += 1;
         totalCount += 1;
       }
+      if (stateNav.filterOwnerConfidence && stateNav.filterOwnerConfidence.length > 0) {
+        filterArray.push(stateNav.filterOwnerConfidence);
+        isFilterSet = true;
+        // ownershipFilterCount += 1;
+        // totalCount += 1;
+      }
       if (
         stateNav.filterNoOwnerCount &&
         stateNav.filterNoOwnerCount.length > 0
@@ -723,6 +729,7 @@ export default function Map() {
     stateNav.filterHasOwners,
     stateNav.filterHasOwnerCount,
     stateNav.filterTrackedWells,
+    stateNav.filterOwnerConfidence,
   ]);
 
   useEffect(() => {

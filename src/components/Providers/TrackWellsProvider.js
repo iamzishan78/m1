@@ -2,54 +2,43 @@ import React, { useState, useContext, useCallback, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Switch from '@material-ui/core/Switch';
-import { NavigationContext } from "../NavigationContext";
+// import { NavigationContext } from "../NavigationContext";
 import { useLazyQuery } from "@apollo/react-hooks";
-import { WELLSQUERY } from "../../../graphQL/useQueryWells";
-import { TRACKSBYUSERANDOBJECTTYPE } from "../../../graphQL/useQueryTracksByUserAndObjectType";
-import { USERBYEMAIL } from "../../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
-import { AppContext } from "../../../AppContext";
-import { MapControlsContext } from "../../MapControls/MapControlsContext";
-import { MapContext } from "../../Map/MapContext";
-import SimpleUserTable from "../../Providers/TrackWellsProvider";
+import { WELLSQUERY } from "../../graphQL/useQueryWells";
+import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAndObjectType";
+import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
+import { AppContext } from "../../AppContext";
 
-
-const useStyles = makeStyles({
-  input: {
-    margin: 20,
-    maxWidth: 168,
-    minWidth: 167
-  },
-  inputLabel: {
-    color: "black",
-    minWidth: 249,
-    maxWidth: 250,
-    marginLeft: 20
-  },
-  noOwners: {
-    padding: "6px 0px",
-    display: "flex",
-  },
-  noOwnersToggle:{
-    marginLeft: 20,
-  }
-});
-
-
-const data2 = SimpleUserTable;
+// import { MapControlsContext } from "../../MapControls/MapControlsContext";
+// import { MapContext } from "../../Map/MapContext";
 
 
 
-export default function FilterOwnerCount() {
-  const classes = useStyles();
-  const [stateNav, setStateNav] = useContext(NavigationContext);
+
+
+
+const SimpleUserTable = (props) => {
+
+//   const [stateNav, setStateNav] = useContext(NavigationContext);
+  // const [valueMinDisplay, setValueMinDisplay] = useState("");
+  // const [valueMaxDisplay, setValueMaxDisplay] = useState("");
+  // const [noOwners , setNoOwners] = useState(false);
+  // const [owners , setOwners] = useState(false);
+
+
   const [tracks , setTracks] = useState(false);
   const [idArray , setIdArray] = useState(null);
   const [firstWell , setFirstWell] = useState(null);
-  const [stateMapControls, setStateMapControls] = useContext(
-    MapControlsContext
-  );
 
-  const [stateMap, setStateMap] = useContext(MapContext);
+  // const [ownerCountWell, setOwnerCountWell] = useState(
+  //   stateNav.ownerCountWell ? stateNav.ownerCountWell : []
+  // );
+
+//   const [stateMapControls, setStateMapControls] = useContext(
+//     MapControlsContext
+//   );
+
+//   const [stateMap, setStateMap] = useContext(MapContext);
 
 
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -145,55 +134,14 @@ export default function FilterOwnerCount() {
 
 
 
-  const toggleTracks = () => {
-    setTracks(tracks => !tracks)
-  }
 
 
-  
-  useEffect(() => {
+//   export default mapStyles[0];
 
-    if(idArray){
-    let filter;
-  
-    if(idArray && idArray.length) {
-      filter = ['match', ['get', 'api'], idArray, true, false]
-    }
-    else {
-      filter = null
-    }
+  return (dataWells)
 
-    setStateNav(stateNav => ({ ...stateNav, filterTrackedWells: filter}))
-    setStateApp({
-          ...stateApp,
-          trackedWellArray: dataWells,
-          trackFilterOn: true,
-        });
-
-  }
-  },[tracks])
-
-
-
-  
-  return (
-    <div>
-      <div className={classes.noOwners}>
-        <Typography
-          className={classes.inputLabel}
-          htmlFor="select-multiple-chip1"
-        >
-        Tracked Wells
-        </Typography>
-        <Switch
-          className={classes.noOwnersToggle}
-          checked={tracks}
-          onChange={toggleTracks}
-          color="primary"
-          name="checked"
-          inputProps={{ 'aria-label': 'primary checkbox' }}
-        />
-      </div>
-    </div>
-  );
 }
+
+console.log('SIMPLE USER TABLE', SimpleUserTable)
+
+export default SimpleUserTable

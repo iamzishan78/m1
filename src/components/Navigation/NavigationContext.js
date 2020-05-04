@@ -42,6 +42,7 @@ const NavigationContextProvider = props => {
     filterLastSixMonthOil:null,
     filterLastTwelveMonthOil:null,
     filterNoOwnerCount: null,
+    filterOwnerConfidence: null,
     filterHasOwners: null,
     filterTrackedWells: null,
     filterAllInterestTypes: null,
