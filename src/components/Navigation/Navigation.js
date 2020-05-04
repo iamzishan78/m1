@@ -318,7 +318,7 @@ const useStyles = makeStyles((theme) => ({
   },
   betaSideNav2: {
     textTransform: "inherit",
-    position: 'relative',
+    position: "relative",
     left: 7,
     fontSize: 12,
     color: "rgba(0, 0, 0, 0.52) !important ",
@@ -331,7 +331,7 @@ const useStyles = makeStyles((theme) => ({
   },
   betaSideNav4: {
     textTransform: "inherit",
-    position: 'relative',
+    position: "relative",
     left: -10,
     fontSize: 12,
     color: "rgba(0, 0, 0, 0.52) !important ",
@@ -472,27 +472,27 @@ const useStyles = makeStyles((theme) => ({
   trackHeader: {
     "& span": {
       fontSize: 20,
-    }
+    },
   },
   homeButton: {
     backgroundColor: theme.palette.secondary.main,
-    position: 'absolute',
-    top: '0px',
-    height: '35px',
+    position: "absolute",
+    top: "0px",
+    height: "35px",
     right: "0px",
     marginRight: "15px",
-    marginTop: '15px',
+    marginTop: "15px",
     color: theme.palette.secondary.contrastText,
     alignItems: "center",
-    justifyItems: "center"
+    justifyItems: "center",
   },
   trackButton: {
     backgroundColor: theme.palette.secondary.main,
-    position: 'relative',
-    top: '0px',
-    height: '35px',
+    position: "relative",
+    top: "0px",
+    height: "35px",
     marginRight: "15px",
-    marginTop: '6px',
+    marginTop: "6px",
     color: theme.palette.secondary.contrastText,
   },
 }));
@@ -523,11 +523,9 @@ const M1neralLogoDrawer = (props) => (
   </svg>
 );
 
-
 const M1neralLogo = styled(M1neralLogoDrawer)`
   width: 130px;
 `;
-
 
 const M1neralLogoNavNoAuth = (props) => (
   <svg
@@ -589,7 +587,7 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 };
 
-const drawerWidth = '225px';
+const drawerWidth = "225px";
 
 export default function Navigation(props) {
   const classes = useStyles();
@@ -616,12 +614,12 @@ export default function Navigation(props) {
 
   const [valueTabsTrack, setValueTabsTrack] = useState(0);
   const handleTabChange = (event, newValue) => {
-      setValueTabsTrack(newValue);
-      setStateNav(stateNav => ({
-        trackTabsValue: newValue
-      }))
+    setValueTabsTrack(newValue);
+    setStateNav((stateNav) => ({
+      trackTabsValue: newValue,
+    }));
   };
-  
+
   useEffect(() => {
     if (location.pathname === "/") {
       setStateNav((state) => ({
@@ -752,7 +750,7 @@ export default function Navigation(props) {
       {/* <MenuItem className={classes.userMenuItem}>Profile</MenuItem> */}
     </Menu>
   );
- 
+
   const handleListItemClick = (event, index, path) => {
     handleRouteChange(path);
     handleDrawerClose();
@@ -824,8 +822,7 @@ export default function Navigation(props) {
                   {theme.direction === "rtl" ? <MenuIcon /> : <MenuIcon />}
                 </IconButton>
 
-                <M1neralLogoWhiteLetters/>
-
+                <M1neralLogoWhiteLetters />
               </div>
             ) : null}
 
@@ -842,107 +839,97 @@ export default function Navigation(props) {
               </div>
             ) : null}
 
-
-            { matchTrack ? ( 
-            <CardHeader
-              className={classes.trackHeader}
-              //title="Track"
-            />
-            ): null}
-
+            {matchTrack ? (
+              <CardHeader
+                className={classes.trackHeader}
+                //title="Track"
+              />
+            ) : null}
 
             <div className={classes.search}>
               <div className={classes.searchInput} id="searchBar" />
             </div>
 
-
             <div className={classes.grow1} />
-            
-            
-            
+
             {matchTrack ? (
-
-              <div styles={{
-                // display: "flex",
-                // flexDirection: "column",
-                // justifyContent: "center",              
-                }}>
-
-
-
-              <div ref={anchorEl} 
-                  className={classes.filterTabs}
+              <div
+                styles={
+                  {
+                    // display: "flex",
+                    // flexDirection: "column",
+                    // justifyContent: "center",
+                  }
+                }
+              >
+                <div ref={anchorEl} className={classes.filterTabs}>
+                  <Tabs
+                    value={valueTabsTrack}
+                    onChange={handleTabChange}
+                    variant="standard"
+                    textColor="primary"
+                    aria-label="tabs"
+                    classes={{ indicator: classes.indicator }}
                   >
+                    <Button
+                      variant="contained"
+                      disableElevation
+                      type="submit"
+                      className={classes.trackButton}
+                      color="primary"
+                      // onClick={signIn}
+                      // onKeyDown={e => onEnterKey(e)}
+                    >
+                      EXPORT REPORT
+                    </Button>
 
-            
-              
-                <Tabs
-                  value={valueTabsTrack}
-                  onChange={handleTabChange}
-                  variant="standard"
-                  textColor="primary"
-                  aria-label="tabs"
-                  classes={{ indicator: classes.indicator }}
-                >
+                    <Button
+                      variant="contained"
+                      disableElevation
+                      type="submit"
+                      style={{ marginRight: "40px" }}
+                      className={classes.trackButton}
+                      color="primary"
+                      // onClick={signIn}
+                      // onKeyDown={e => onEnterKey(e)}
+                    >
+                      SEND MAILERS
+                    </Button>
 
-                <Button
-                variant="contained"
-                disableElevation
-                type="submit"
-                className={classes.trackButton}
-                color="primary"
-                // onClick={signIn}
-                // onKeyDown={e => onEnterKey(e)}
-                  >
-                  EXPORT REPORT
-                </Button>
-
-                <Button
-                variant="contained"
-                disableElevation
-                type="submit"
-                style={{marginRight: '40px'}}
-                className={classes.trackButton}
-                color="primary"
-                // onClick={signIn}
-                // onKeyDown={e => onEnterKey(e)}
-                  >
-                  SEND MAILERS
-                </Button>
-
-                  <Tab
-                    //onClick={handleFilterCardOpen}
-                    value={0}
-                    className={classes.tab}
-                    icon={
-                      <Badge
-                        badgeContent={stateApp.owners ? stateApp.owners.length : 0}
-                        color="secondary"
-                      >
-                        <OwnershipIcon color="#fff" opacity="1.0" />
-                      </Badge>
-                    }
-                    aria-label="well"
-                  />
-                  <Tab
-                    // disabled
-                    //onClick={handleFilterCardOpen}
-                    value={1}
-                    className={classes.tab}
-                    icon={
-                      <Badge
-                        badgeContent={stateApp.wells ? stateApp.wells.length : 0}
-                        color="secondary"
-                      >
-                        <WellIcon color="#fff" opacity="1.0" />
-                      </Badge>
-                    }
-                    aria-label="geography"
-                  />
-                </Tabs>    
-
-
-
+                    <Tab
+                      //onClick={handleFilterCardOpen}
+                      value={0}
+                      className={classes.tab}
+                      icon={
+                        <Badge
+                          badgeContent={
+                            stateApp.owners ? stateApp.owners.length : 0
+                          }
+                          color="secondary"
+                        >
+                          <OwnershipIcon color="#fff" opacity="1.0" />
+                        </Badge>
+                      }
+                      aria-label="well"
+                    />
+                    <Tab
+                      // disabled
+                      //onClick={handleFilterCardOpen}
+                      value={1}
+                      className={classes.tab}
+                      icon={
+                        <Badge
+                          badgeContent={
+                            stateApp.wells ? stateApp.wells.length : 0
+                          }
+                          color="secondary"
+                        >
+                          <WellIcon color="#fff" opacity="1.0" />
+                        </Badge>
+                      }
+                      aria-label="geography"
+                    />
+                  </Tabs>
                 </div>
               </div>
             ) : (
@@ -1015,61 +1002,61 @@ export default function Navigation(props) {
                     }
                     aria-label="production"
                   />
-                <Tab
-                 // disabled={true}
-                  value={4}
-                  classes={{ root: classes.tab }}
-                  aria-label="Value" 
-                  icon={
-                    // <Badge
-                    //   color="secondary"
-                    // >
-                      <ValuationIcon color="#fff" opacity="1"/>
+                  <Tab
+                    // disabled={true}
+                    value={4}
+                    classes={{ root: classes.tab }}
+                    aria-label="Value"
+                    icon={
+                      // <Badge
+                      //   color="secondary"
+                      // >
+                      <ValuationIcon color="#fff" opacity="1" />
                       // <div className={classes.betaText}>
                       //   BETA
                       // </div>
-                    // </Badge>
+                      // </Badge>
                     }
                     aria-label="value"
-                />
+                  />
 
-                <Tab
-                  //disabled={true}
-                  value={5}
-                  classes={{ root: classes.tab }}
-                  icon={
-                    // <Badge
-                    //   color="secondary"
-                    // >
-                     <LocalOfferIcon htmlColor="#fff" opacity="1" />
-                    //   <div className={classes.betaText}>
-                    //     BETA
-                    //   </div>
-                    // </Badge>
-                    }
-                  aria-label="tags"
-                />
-                <Tab
-                  //disabled={true}
-                  value={6}
-                  classes={{ root: classes.tab }}
-                  icon={
-                    // <Badge
-                    //   color="secondary"
-                    // >
-                      <PredictiveIcon color="#fff" opacity="1" />
-                    //  <div className={classes.betaText}>
-                    //     beta
-                    //   </div> 
-                    // </Badge> 
-                    }
-                  aria-label="ai"
-                />
                   <Tab
-                  value={7}
-                  classes={{ root: classes.tab }}
-                  style={{paddingTop: 10}}
-                  icon={
+                    //disabled={true}
+                    value={5}
+                    classes={{ root: classes.tab }}
+                    icon={
+                      // <Badge
+                      //   color="secondary"
+                      // >
+                      <LocalOfferIcon htmlColor="#fff" opacity="1" />
+                      //   <div className={classes.betaText}>
+                      //     BETA
+                      //   </div>
+                      // </Badge>
+                    }
+                    aria-label="tags"
+                  />
+                  <Tab
+                    //disabled={true}
+                    value={6}
+                    classes={{ root: classes.tab }}
+                    icon={
+                      // <Badge
+                      //   color="secondary"
+                      // >
+                      <PredictiveIcon color="#fff" opacity="1" />
+                      //  <div className={classes.betaText}>
+                      //     beta
+                      //   </div>
+                      // </Badge>
+                    }
+                    aria-label="ai"
+                  />
+                  <Tab
+                    value={7}
+                    classes={{ root: classes.tab }}
+                    style={{ paddingTop: 10 }}
+                    icon={
                       <Badge
                         badgeContent={stateNav.totalFilterCount}
                         color="secondary"
@@ -1077,9 +1064,9 @@ export default function Navigation(props) {
                         <SettingsIcon />
                       </Badge>
                     }
-                  aria-label="filter settings"
+                    aria-label="filter settings"
                   />
-              </Tabs>
+                </Tabs>
               </div>
             ) : (
               <div style={{ display: "none" }}></div>
@@ -1093,25 +1080,25 @@ export default function Navigation(props) {
             </IconButton>
           </Toolbar>
         ) : (
-          <div 
-            //className={classes.goHome} onClick={sendHome}
-            >
-            <M1neralLogoLogin/>
-            <div 
+          <div
+          //className={classes.goHome} onClick={sendHome}
+          >
+            <M1neralLogoLogin />
+            <div
             //className={classes.homeButton}
             >
-            <Button
-            variant="contained"
-            disableElevation
-            type="submit"
-            className={classes.homeButton}
-            color="primary"
-            // onClick={signIn}
-            // onKeyDown={e => onEnterKey(e)}
+              <Button
+                variant="contained"
+                disableElevation
+                type="submit"
+                className={classes.homeButton}
+                color="primary"
+                // onClick={signIn}
+                // onKeyDown={e => onEnterKey(e)}
               >
-              Help?
-            </Button>
-          </div>
+                Help?
+              </Button>
+            </div>
           </div>
         )}
       </AppBar>
@@ -1185,7 +1172,6 @@ export default function Navigation(props) {
             </ListItemSecondaryAction> */}
           </ListItem>
 
-
           <ListItem
             classes={{
               root: classes.menuListItem,
@@ -1218,10 +1204,6 @@ export default function Navigation(props) {
             </ListItemSecondaryAction>
           </ListItem>
 
-
-
-
-
           <ListItem
             classes={{
               root: classes.menuListItem,
@@ -1248,8 +1230,6 @@ export default function Navigation(props) {
             </ListItemSecondaryAction>
           </ListItem>
 
-
-
           <ListItem
             classes={{
               root: classes.menuListItemDisabled,
@@ -1265,8 +1245,6 @@ export default function Navigation(props) {
             </ListItemIcon>
             <ListItemText primary="Title" />
           </ListItem>
-
-         
         </List>
         <Divider variant="middle" className={classes.menuListBottomDivider} />
         <List className={classes.menuListBottom}>
@@ -1489,7 +1467,6 @@ export default function Navigation(props) {
             </ClickAwayListener>
           </TabPanel>
 
-
           <TabPanel value={value} index={4} dir={theme.direction}>
             <ClickAwayListener onClickAway={handleClickAway}>
               <Card className={classes.card}>
@@ -1613,12 +1590,11 @@ export default function Navigation(props) {
                   }}
                 ></CardActions>
                 <CardContent className={classes.cardContent}>
-                  <FilterDefaults />  
+                  <FilterDefaults />
                 </CardContent>
               </Card>
             </ClickAwayListener>
           </TabPanel>
-
         </div>
       ) : null}
       <main className={classes.content}>

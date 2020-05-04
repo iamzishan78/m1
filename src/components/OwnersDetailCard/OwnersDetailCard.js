@@ -1,11 +1,9 @@
 import React, { useContext } from "react";
 import { AppContext } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
-import Taps from "./components/Taps";
+import Taps from "../Shared/Taps";
 import OwnerDetailsCardMap from "./components/OwnerDetailsCardMap";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 
@@ -22,7 +20,7 @@ export default function WellCard() {
   return stateApp.selectedOwner ? (
     <Grid container className={classes.gridWidthScroll} spacing={0}>
       <Grid item sm={12}>
-        <OwnerDetailsCardMap />
+        <OwnerDetailsCardMap/>
       </Grid>
 
       <Grid item sm={12}>

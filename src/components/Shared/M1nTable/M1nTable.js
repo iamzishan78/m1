@@ -567,14 +567,25 @@ export default function Contacts(props) {
   ////////////Queries begin///////////////////////////////////////////////
 
   const [tracksByUserAndObjectType, { data: dataTracks }] = useLazyQuery(
-    TRACKSBYUSERANDOBJECTTYPE
+    TRACKSBYUSERANDOBJECTTYPE,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
   const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(
-    COMMENTSCOUNTER
+    COMMENTSCOUNTER,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
-  const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(TAGSAMPLES);
+  const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(TAGSAMPLES, {
+    fetchPolicy: "cache-and-network",
+  });
   const [getContactsCounter, { data: dataContactsCounter }] = useLazyQuery(
-    CONTACSCOUNTER
+    CONTACSCOUNTER,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
   //////////
   const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
@@ -586,10 +597,15 @@ export default function Contacts(props) {
   );
   //////////
   const [getContactsByOwnerId, { data: dataContactsByOwnerId }] = useLazyQuery(
-    CONTACTSBYOWNERSID
+    CONTACTSBYOWNERSID,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
   //////////
-  const [getContacts, { data: dataContacts }] = useLazyQuery(CONTACTSQUERY);
+  const [getContacts, { data: dataContacts }] = useLazyQuery(CONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
 
   ////////////Queries end///////////////////////////////////////////////
 
@@ -745,6 +761,7 @@ export default function Contacts(props) {
         }));
       } else {
         setRows([]);
+        setAddAble(false);
       }
       setLoading(false);
     }
@@ -1019,10 +1036,17 @@ export default function Contacts(props) {
               return column;
             })
       );
+
       setRows(dataWellOwners.wellOwners);
       setLoading(false);
     }
-  }, [dataWellOwners, dataTracks, dataTagSamples, dataCommentsCounter]);
+  }, [
+    dataWellOwners,
+    dataTracks,
+    dataTagSamples,
+    dataCommentsCounter,
+    dataContactsCounter,
+  ]);
 
   ////////////Owners Per Well end///////////////////////////////////////////////
 
@@ -1041,7 +1065,7 @@ export default function Contacts(props) {
         },
       });
     }
-  }, []);
+  }, [props.ownersIdsArray]);
 
   useEffect(() => {
     if (
@@ -1076,7 +1100,7 @@ export default function Contacts(props) {
         });
 
         setHeader("Well Owners Per Contact");
-        setAddAble(true);
+        setAddAble(false);
 
         getCommentsCounter({
           variables: { objectsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
@@ -1090,6 +1114,7 @@ export default function Contacts(props) {
       } else {
         setLoading(false);
         setRows([]);
+        setAddAble(false);
       }
     }
   }, [dataOwners, dataTracks]);
@@ -1181,20 +1206,26 @@ export default function Contacts(props) {
       setRows(dataOwners.owners.results);
       setLoading(false);
     }
-  }, [dataOwners, dataTracks, dataTagSamples, dataCommentsCounter]);
+  }, [
+    dataOwners,
+    dataTracks,
+    dataTagSamples,
+    dataCommentsCounter,
+    dataContactsCounter,
+  ]);
 
   ////////////Owners Per Contact end///////////////////////////////////////////////
 
   ////////////Contacts Per Owner begin///////////////////////////////////////////////
 
   useEffect(() => {
-    if (props.parent && props.parent === "ownerContacts") {
+    if (props.parent && props.parent === "ownerContacts" && props.ownerId) {
       setTargetLabel("contact");
       getContactsByOwnerId({
         variables: { objectId: props.ownerId },
       });
     }
-  }, [props.selectedWell]);
+  }, [props.ownerId]);
 
   useEffect(() => {
     if (
@@ -1226,9 +1257,8 @@ export default function Contacts(props) {
             }
           }
         });
-
         setHeader("Owner's Contacts");
-        setAddAble(true);
+        setAddAble({ parent: props.ownerId });
 
         getCommentsCounter({
           variables: { objectsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
@@ -1239,6 +1269,7 @@ export default function Contacts(props) {
       } else {
         setLoading(false);
         setRows([]);
+        setAddAble({ parent: props.ownerId });
       }
     }
   }, [dataContactsByOwnerId, dataTracks]);
@@ -1329,7 +1360,7 @@ export default function Contacts(props) {
       setTargetLabel("contact");
       getContacts();
     }
-  }, [props.selectedWell]);
+  }, []);
 
   useEffect(() => {
     if (
@@ -1360,7 +1391,7 @@ export default function Contacts(props) {
         });
 
         setHeader("Contacts");
-        setAddAble(true);
+        setAddAble({ parent: false });
 
         getCommentsCounter({
           variables: { objectsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
@@ -1371,6 +1402,7 @@ export default function Contacts(props) {
       } else {
         setLoading(false);
         setRows([]);
+        setAddAble({ parent: false });
       }
     }
   }, [dataContacts, dataTracks]);
@@ -1447,7 +1479,7 @@ export default function Contacts(props) {
               return column;
             })
       );
-      setRows(dataContacts.contacts);
+      setRows([...dataContacts.contacts]);
       setLoading(false);
     }
   }, [dataContacts, dataTracks, dataTagSamples, dataCommentsCounter]);

@@ -21,6 +21,7 @@ import M1nTable from "../M1nTable";
 import WellIcon from "../../svgIcons/well";
 import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
 import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRounded";
+import AddContactDialogContent from "./SubComponents/AddContactDialogContent";
 import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -96,6 +97,15 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   addIcon: { "& :hover": { color: "#011133" } },
+  cellDataDiv: {
+    padding: "10px",
+    borderRadius: "7px",
+    width: "fit-content",
+    cursor: "text",
+    "&:hover": {
+      backgroundColor: "#fff !important",
+    },
+  },
 }));
 
 var formatter = new Intl.NumberFormat("en-US", {
@@ -440,9 +450,23 @@ export default function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  return column.name === "appraisedValue"
-                    ? formatter.format(value)
-                    : value;
+                  if (value === "" || value === null) {
+                    return value;
+                  }
+
+                  return (
+                    <div
+                      className={classes.cellDataDiv}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    >
+                      {column.name === "appraisedValue"
+                        ? formatter.format(value)
+                        : value}
+                    </div>
+                  );
                 },
               };
             }
@@ -474,15 +498,6 @@ export default function SubTable(props) {
     setShowExpandableCard(false);
   };
 
-  const AddIconClickHandeler = (e) => {
-    if (props.addAble.externalAdd) {
-      props.addAble.externalAddFunction(e);
-    }
-
-    // props.addAble.externalAdd
-    //   ?props.addAble.externalAdd
-    //   : ; //add here your "add funtion" to add inside the table
-  };
   const options = {
     filterType: "multiselect",
     rowsPerPageOptions:
@@ -495,9 +510,11 @@ export default function SubTable(props) {
         : [],
 
     selectableRows: "none",
+
     customToolbar: () => {
       return (
         props.addAble && (
+          //////Add Icon/////////////////////////
           <Tooltip
             title={`Add${
               props.targetLabel
@@ -512,7 +529,7 @@ export default function SubTable(props) {
               className={classes.addIcon}
               onClick={(e) => {
                 e.stopPropagation();
-                //////////////////////////////////////////////////////////////
+                handleExpandClick(null, null, null, "add");
               }}
             >
               <AddCircleOutlineRoundedIcon />
@@ -526,7 +543,7 @@ export default function SubTable(props) {
 
       if (props.targetLabel === "owner") {
         setStateApp((state) => ({ ...state, selectedOwner: rows[dataIndex] }));
-        setSubComponent(<OwnersDetailCard />); /////////////////////////
+        setSubComponent(<OwnersDetailCard />);
         setTitle(rows[dataIndex].name);
         setSubTitle(rows[dataIndex].interestType);
         handleOpenExpandableCard();
@@ -581,11 +598,14 @@ export default function SubTable(props) {
               : false
           }
           maxWidth={
-            openDialog === "owner" ||
-            openDialog === "ownerContacts" ||
-            openDialog === "ownersPerContacts" ||
-            openDialog === "well"
+            openDialog === "ownerContacts"
+              ? "xl"
+              : openDialog === "owner" ||
+                openDialog === "ownersPerContacts" ||
+                openDialog === "well"
               ? "lg"
+              : openDialog === "add"
+              ? "xs"
               : "sm"
           }
         >
@@ -618,6 +638,13 @@ export default function SubTable(props) {
               externalAddFunction={() => {}}
             />
           )}
+
+          {openDialog === "add" && props.targetLabel === "contact" && (
+            <AddContactDialogContent
+              onClose={handleCloseDialog}
+              parent={props.addAble.parent}
+            />
+          )}
         </Dialog>
       )}
 
@@ -627,7 +654,7 @@ export default function SubTable(props) {
           fullWidth
           maxWidth="xl"
           open={showExpandableCard}
-          // onClose={handleCloseExpandableCard}
+          onClose={handleCloseExpandableCard}
         >
           <ExpandableCardProvider
             expanded={true}
@@ -655,7 +682,9 @@ export default function SubTable(props) {
       )}
     </div>
   ) : props.loading || !rows ? (
-    <CircularProgress size={80} disableShrink color="secondary" />
+    <div style={{ padding: "15px" }}>
+      <CircularProgress size={80} disableShrink color="secondary" />
+    </div>
   ) : (
     <Skeleton variant="rect" height={300}>
       <Typography variant="button">Not Available</Typography>

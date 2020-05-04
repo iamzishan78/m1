@@ -188,19 +188,20 @@ export default function ExpandableCard(props) {
   };
 
   const handleClose = () => {
-    if (parent === "map" && $("#tempPopupHolder").length) {
-      console.log("jquery close");
-      // setStateApp((state) => ({ ...state, popupOpen: false }));
-      let popUps = document.getElementsByClassName("mapboxgl-popup");
-      if (popUps[0]) popUps[0].remove();
+    if (parent === "map") {
+      if ($("#tempPopupHolder").length) {
+        console.log("jquery close");
+        let popUps = document.getElementsByClassName("mapboxgl-popup");
+        if (popUps[0]) popUps[0].remove();
+      }
+
+      setStateApp((state) => ({
+        ...state,
+        popupOpen: false,
+      }));
     }
+
     props.handleCloseExpandableCard();
-    // setStateApp((state) => ({ ...state, popupOpen: true }));
-    setStateApp((state) => ({
-      ...state,
-      popupOpen: false,
-      expandedCard: false,
-    }));
 
     //if EC is inside map popup you need to close it
   };

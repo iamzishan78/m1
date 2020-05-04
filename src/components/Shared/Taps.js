@@ -12,7 +12,6 @@ function TabPanel(props) {
 
   return (
     <Typography
-      id="oioioi"
       component="div"
       role="tabpanel"
       hidden={value !== index}
@@ -21,10 +20,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box
-          style={{ paddingRight: "0", paddingLeft: "0", paddingBottom: "0" }}
-          p={3}
-        >
+        <Box style={{ padding: "0", margin: "10px" }} p={3}>
           {children}
         </Box>
       )}
@@ -60,16 +56,20 @@ const useStyles = makeStyles((theme) => ({
 export default function Taps(props) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
-  ////tabLabels brings an array of labels////
-  ////tabPanels brings an array of panels////
+  ////props.tabLabels brings an array of labels////
+  ////props.tabPanels brings an array of panels////
+  ////props.whichTapIsActive is an optional function to return the active index////
   const { tabLabels, tabPanels } = props;
 
   const handleChange = (event, newValue) => {
+    if (props.whichTapIsActive) {
+      props.whichTapIsActive(newValue);
+    }
     setValue(newValue);
   };
 
   return (
-    <div className={classes.root} id="TOTaps">
+    <div className={classes.root} id="M1nTaps">
       <AppBar
         className={classes.WellsDetailsCardAppBar}
         position="static"

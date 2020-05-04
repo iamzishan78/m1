@@ -71,23 +71,23 @@ export default function ContactsTableAndAddDialog() {
     });
   };
 
-  const handleClickDialogOpen = (e) => {
-    e.preventDefault();
-    setDialogOpen(true);
-  };
-  const handleClickDialogClose = (e) => {
-    e.preventDefault();
-    setDialogOpen(false);
-    setIfNewContact();
-    emptyStates();
-  };
+  // const handleClickDialogOpen = (e) => {
+  //   e.preventDefault();
+  //   setDialogOpen(true);
+  // };
+  // const handleClickDialogClose = (e) => {
+  //   e.preventDefault();
+  //   setDialogOpen(false);
+  //   setIfNewContact();
+  //   emptyStates();
+  // };
 
-  const handleClickAdd = (e) => {
-    e.preventDefault();
+  // const handleClickAdd = (e) => {
+  //   e.preventDefault();
 
-    /////addddddd{}
-    handleClickDialogClose(e);
-  };
+  //   /////addddddd{}
+  //   handleClickDialogClose(e);
+  // };
 
   useEffect(() => {
     if (
@@ -117,68 +117,67 @@ export default function ContactsTableAndAddDialog() {
     }
   }, [wellAPI]);
 
-  const ifNewContactFromOwner = () => {
-    return (
-      <div>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField
-              size="small"
-              className={classes.maxWidth}
-              label="Well API Number"
-              multiline
-              variant="outlined"
-              value={wellAPI}
-              onChange={(e) => {
-                setOwnerName("");
-                setWellAPI(e.target.value);
-              }}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Autocomplete
-              size="small"
-              className={classes.maxWidth}
-              options={
-                dataWellOwners && dataWellOwners.wellOwners
-                  ? dataWellOwners.wellOwners
-                  : []
-              }
-              getOptionLabel={(option) => (option.name ? option.name : "")}
-              autoComplete
-              autoSelect
-              disableClearable
-              includeInputInList
-              value={ownerName}
-              disabled={!dataWellOwners}
-              onChange={(e, newValue) => {
-                setOwnerName(newValue === null ? "" : newValue);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Owners"
-                  variant="outlined"
-                  fullWidth
-                  multiline
-                />
-              )}
-            />
-          </Grid>
-        </Grid>
-      </div>
-    );
-  };
+  // const ifNewContactFromOwner = () => {
+  //   return (
+  //     <div>
+  //       <Grid container spacing={2}>
+  //         <Grid item xs={12}>
+  //           <TextField
+  //             size="small"
+  //             className={classes.maxWidth}
+  //             label="Well API Number"
+  //             multiline
+  //             variant="outlined"
+  //             value={wellAPI}
+  //             onChange={(e) => {
+  //               setOwnerName("");
+  //               setWellAPI(e.target.value);
+  //             }}
+  //           />
+  //         </Grid>
+  //         <Grid item xs={12}>
+  //           <Autocomplete
+  //             size="small"
+  //             className={classes.maxWidth}
+  //             options={
+  //               dataWellOwners && dataWellOwners.wellOwners
+  //                 ? dataWellOwners.wellOwners
+  //                 : []
+  //             }
+  //             getOptionLabel={(option) => (option.name ? option.name : "")}
+  //             autoComplete
+  //             autoSelect
+  //             disableClearable
+  //             includeInputInList
+  //             value={ownerName}
+  //             disabled={!dataWellOwners}
+  //             onChange={(e, newValue) => {
+  //               setOwnerName(newValue === null ? "" : newValue);
+  //             }}
+  //             renderInput={(params) => (
+  //               <TextField
+  //                 {...params}
+  //                 label="Owners"
+  //                 variant="outlined"
+  //                 fullWidth
+  //                 multiline
+  //               />
+  //             )}
+  //           />
+  //         </Grid>
+  //       </Grid>
+  //     </div>
+  //   );
+  // };
 
   return (
     <div>
       <div className={classes.divTable}>
         <M1nTable
           parent="Contacts"
-          externalAddFunction={handleClickDialogOpen}
         />
       </div>
-      <RightDialog
+      {/* <RightDialog
         open={dialogOpen}
         handleClickDialogClose={handleClickDialogClose}
         width="300px"
@@ -402,7 +401,7 @@ export default function ContactsTableAndAddDialog() {
             </Button>
           )}
         </DialogActions>
-      </RightDialog>
+      </RightDialog> */}
     </div>
   );
 }

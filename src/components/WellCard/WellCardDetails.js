@@ -29,7 +29,7 @@ import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
 import TrackIcon from "./components/svgIcons/TrackIcon";
 import ProductionIcon from "./components/svgIcons/ProductionIcon";
 import OwnershipIcon from "./components/svgIcons/OwnershipIcon";
-import Taps from "./components/Taps";
+import Taps from "../Shared/Taps";
 import CardDetailsMap from "./components/CardDetailsMap";
 import TableSummary from "./components/TableSummary";
 

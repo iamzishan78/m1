@@ -124,7 +124,7 @@ export default function OwnerDetailsCardMap() {
 
   return (
     <div className={classes.MSWrapper}>
-      <div className={classes.map} ref={mapEl} id="ownerDetailsCardMap">
+      <div className={classes.map} ref={mapEl} id={`ownerDetailsCardMap`}>
         <div className={classes.footerLeftLogo}>
           <img src="icons/M1LogoWhiteTransparent.png" alt="logo" width="75" />
         </div>
