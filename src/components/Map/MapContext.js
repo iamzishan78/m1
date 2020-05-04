@@ -4,27 +4,22 @@ const styleLayers = [
   {
     name: "Wells",
     id: ["wellpoints", "welllines"],
-    idx: 0,
   },
   {
     name: "Basins",
     id: ["basinLayer"],
-    idx: 2,
   },
   {
     name: "Pipelines",
     id: ["pipelineLayer"],
-    idx: 3,
   },
   {
     name: "Land Grid",
     id: ["surveylabels", "surveyLayer"],
-    idx: 4,
   },
   {
     name: "Permits",
     id: [],
-    idx: 5,
   },
 ];
 
@@ -33,19 +28,29 @@ const userDefinedLayers = [
   {
     name: "Parcels",
     id: [],
-    idx: 0,
   },
   {
     name: "Title",
     id: [],
-    idx: 1,
   },
   {
     name: "Area of Interest",
     id: [],
-    idx: 2,
+  },
+  {
+    name: "Tracked Wells",
+    id: [],
+  },
+  {
+    name: "Tracked Owners",
+    id: [],
+  },
+  {
+    name: "Tag Layer",
+    id: [],
   },
 ];
+
 
 const heatLayers = [
   {
@@ -93,7 +98,6 @@ const baseMapLayers = [
       "transit-label",
       "poi-label",
     ],
-    //idx: 1,
   },
 
   {
@@ -155,7 +159,6 @@ const baseMapLayers = [
       "tunnel-street-minor-case",
       "tunnel-street-minor-low",
     ],
-    //idx: 2,
   },
 
   {
@@ -167,19 +170,16 @@ const baseMapLayers = [
       "admin-0-boundary-bg",
       "admin-1-boundary-bg",
     ],
-    idx: 3,
   },
 
   {
     name: "Buildings",
     id: ["building-extrusion"],
-    //idx: 4,
   },
 
   {
     name: "Water",
     id: ["water-point-label", "water-line-label", "waterway-label", ,],
-    //idx: 5,
   },
 
   {
@@ -190,7 +190,6 @@ const baseMapLayers = [
       "land-structure-line",
       "land-structure-polygon",
     ],
-    //idx: 6,
   },
 ];
 
