@@ -4,6 +4,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { NavigationContext } from "../NavigationContext";
 import FilterOwnerCount from "./FilterOwnerCount";
+import FilterOwnerInterestSum from "./FilterOwnerInterestSum";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -210,6 +211,7 @@ export default function FilterFormOwner() {
           disableListWrap
         />
       <FilterOwnerCount/>
+      <FilterOwnerInterestSum/>
       </div>
     </div>
   );

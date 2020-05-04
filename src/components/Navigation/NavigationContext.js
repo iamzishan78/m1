@@ -52,6 +52,7 @@ const NavigationContextProvider = props => {
     filterGeographyCounty: null,
     filterGeographySurvey : null,
     filterGeographyAbstract: null,
+    filterOwnerWellInterestSum: null,
     filterOwnerCount: null,
     searchInputValue:null,
     statusName:[],

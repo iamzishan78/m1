@@ -34,9 +34,10 @@ export default function FilterOwnerCount() {
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
   const [noOwners , setNoOwners] = useState(false);
   const [owners , setOwners] = useState(false);
-  const [ownerCountWell, setOwnerCountWell] = useState(
-    stateNav.ownerCountWell ? stateNav.ownerCountWell : []
+  const [ownerWellInterestSum, setOwnerWellInterestSum] = useState(
+    stateNav.ownerWellInterestSum ? stateNav.ownerWellInterestSum : []
   );
+
 
   const setFilter = useCallback(() => {
     let filter;
@@ -46,16 +47,16 @@ export default function FilterOwnerCount() {
       filter = null;
     }
     if (!min && max) {
-      filter = ["all", ["<=", ["get", "ownerCount"], max]];
+      filter = ["all", ["<=", ["get", "ownerInterestSum"], max]];
       console.log("add filter", filter);
     } else if (min && !max) {
-      filter = ["all", [">=", ["get", "ownerCount"], min]];
+      filter = ["all", [">=", ["get", "ownerInterestSum"], min]];
       console.log("add filter", filter);
     } else if (min && max) {
         filter = [
           "all",
-          [">=", ["get", "ownerCount"], min],
-          ["<=", ["get", "ownerCount"], max]
+          [">=", ["get", "ownerInterestSum"], min],
+          ["<=", ["get", "ownerInterestSum"], max]
         ];
         console.log("add filter", filter);
     } 
@@ -65,13 +66,13 @@ export default function FilterOwnerCount() {
 
     setStateNav(stateNav => ({
       ...stateNav,
-      filterOwnerCount: filter
+      filterOwnerWellInterestSum: filter
     }));
   }, [setStateNav, valueMaxDisplay, valueMinDisplay]);
 
   useEffect(() => {
     const recall = () => {
-      let checkStateNav = stateNav.filterOwnerCount;
+      let checkStateNav = stateNav.filterOwnerWellInterestSum;
       if (!valueMinDisplay && !valueMaxDisplay) {
         if (checkStateNav && checkStateNav.length === 3) {
           const recallMin = checkStateNav[1][2];
@@ -100,31 +101,31 @@ export default function FilterOwnerCount() {
   }, [stateNav, valueMaxDisplay, valueMinDisplay]);
 
   useEffect(() => {
-    if (stateNav.ownerCountWell) {
+    if (stateNav.ownerWellInterestSum) {
       setFilter();
     }
-  }, [setFilter, stateNav.ownerCountWell]);
+  }, [setFilter, stateNav.ownerWellInterestSum]);
 
   const handleChangeMin = event => {
     setValueMinDisplay(event.target.value.replace(/,/g, ""));
-    setOwnerCountWell(event.target.id);
-    setStateNav(stateNav => ({ ...stateNav, ownerCountWell: event.target.id }));
+    setOwnerWellInterestSum(event.target.id);
+    setStateNav(stateNav => ({ ...stateNav, ownerWellInterestSum: event.target.id }));
     if (event.target.value === "") {
       setStateNav(stateNav => ({
         ...stateNav,
-        filterOwnerCount: null
+        filterOwnerWellInterestSum: null
       }));
     }
   };
 
   const handleChangeMax = event => {
     setValueMaxDisplay(event.target.value.replace(/,/g, ""));
-    setOwnerCountWell(event.target.id);
-    setStateNav(stateNav => ({ ...stateNav, ownerCountWell: event.target.id }));
+    setOwnerWellInterestSum(event.target.id);
+    setStateNav(stateNav => ({ ...stateNav, ownerWellInterestSum: event.target.id }));
     if (event.target.value === "") {
       setStateNav(stateNav => ({
         ...stateNav,
-        filterOwnerCount: null
+        filterOwnerWellInterestSum: null
       }));
     }
   };
@@ -136,88 +137,53 @@ export default function FilterOwnerCount() {
     }
   };
 
-  const toggleNoOwners = () => {
-    setNoOwners(noOwners => !noOwners)
-  } 
+  // const toggleNoOwners = () => {
+  //   setNoOwners(noOwners => !noOwners)
+  // } 
 
-  const toggleOwners = () => {
-    setOwners(owners => !owners)
-  }
+  // const toggleOwners = () => {
+  //   setOwners(owners => !owners)
+  // }
   
-  useEffect(() => {
-    let filter;
-    if (noOwners) {
-      filter = ["any",["==",[ "get", "hasOwner"], false]] 
-    } else {
-      filter = null;
-    }
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterNoOwnerCount: filter
-    }));
-  },[noOwners, setStateNav])
+  // useEffect(() => {
+  //   let filter;
+  //   if (noOwners) {
+  //     filter = ["any",["==",[ "get", "hasOwner"], false]] 
+  //   } else {
+  //     filter = null;
+  //   }
+  //   setStateNav(stateNav => ({
+  //     ...stateNav,
+  //     filterOwnerWellInterestSum: filter
+  //   }));
+  // },[noOwners, setStateNav])
+
+  // useEffect(() => {
+  //   let filter;
+  //   if (owners) {
+  //     filter = ["any",["==",[ "get", "hasOwner"], true]] 
+  //   } else {
+  //     filter = null;
+  //   }
+  //   setStateNav(stateNav => ({
+  //     ...stateNav,
+  //     filterOwnerWellInterestSum: filter
+  //   }));
+  // },[noOwners, owners, setStateNav])
 
   useEffect(() => {
-    let filter;
-    if (owners) {
-      filter = ["any",["==",[ "get", "hasOwner"], true]] 
-    } else {
-      filter = null;
-    }
-    setStateNav(stateNav => ({
-      ...stateNav,
-      filterHasOwnerCount: filter
-    }));
-  },[noOwners, owners, setStateNav])
-
-  useEffect(() => {
-    if (stateNav.filterNoOwnerCount && stateNav.filterNoOwnerCount.length > 1) {
+    if (stateNav.filterOwnerWellInterestSum && stateNav.filterOwnerWellInterestSum.length > 1) {
       setNoOwners(true)
     }
-  },[stateNav.filterNoOwnerCount])
+  },[stateNav.filterOwnerWellInterestSum])
   
   return (
     <div>
-
-        <div className={classes.noOwners}>
-        <Typography
-          className={classes.inputLabel}
-          htmlFor="select-multiple-chip1"
-        >
-          Wells With No Owners
-        </Typography>
-        <Switch
-          className={classes.noOwnersToggle}
-          checked={noOwners}
-          onChange={toggleNoOwners}
-          color="primary"
-          name="checked"
-          inputProps={{ 'aria-label': 'primary checkbox' }}
-        />
-      </div>
-
-      <div className={classes.noOwners}>
-        <Typography
-          className={classes.inputLabel}
-          htmlFor="select-multiple-chip1"
-        >
-          Wells With Owners
-        </Typography>
-        <Switch
-          className={classes.noOwnersToggle}
-          checked={owners}
-          onChange={toggleOwners}
-          color="primary"
-          name="checked"
-          inputProps={{ 'aria-label': 'primary checkbox' }}
-        />
-      </div>
-      
       <Typography
         className={classes.inputLabel}
         htmlFor="select-multiple-chip1"
       >
-          Owner Count
+          Owner Well Interest Sum
       </Typography>
       <NumberFormat
         id="OwnerCountMin"
@@ -257,7 +223,6 @@ export default function FilterOwnerCount() {
           }
         }}
       />
-
     </div>
   );
 }

@@ -647,6 +647,13 @@ export default function Map() {
         geographyFilterCount += 1;
       }
 
+      if (stateNav.filterOwnerWellInterestSum && stateNav.filterOwnerWellInterestSum.length > 0) {
+        filterArray.push(stateNav.filterOwnerWellInterestSum);
+        isFilterSet = true;
+        totalCount += 1;
+        ownershipFilterCount += 1;
+      }
+
       setStateNav((state) => ({
         ...state,
         productionFilterCount: productionFilterCount,
@@ -730,6 +737,7 @@ export default function Map() {
     stateNav.filterHasOwnerCount,
     stateNav.filterTrackedWells,
     stateNav.filterOwnerConfidence,
+    stateNav.filterOwnerWellInterestSum,
   ]);
 
   useEffect(() => {
