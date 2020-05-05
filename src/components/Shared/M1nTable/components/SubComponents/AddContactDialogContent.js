@@ -63,12 +63,13 @@ export default function AddContactDialogContent(props) {
   const [existingContact, setExistingContact] = useState({ name: "" });
   const [newContact, setNewContact] = useState({
     name: "",
-    phone: "",
-    mobile: "",
-    email: "",
+    mobilePhone: "",
+    homePhone: "",
+    primaryEmail: "",
     address1: "",
     address2: "",
     city: "",
+    country: "",
     state: "",
     zip: "",
     owners: props.parent ? [props.parent] : [],
@@ -139,12 +140,13 @@ export default function AddContactDialogContent(props) {
     setNewContact({
       ...newContact,
       name: "",
-      phone: "",
-      mobile: "",
-      email: "",
+      mobilePhone: "",
+      homePhone: "",
+      primaryEmail: "",
       address1: "",
       address2: "",
       city: "",
+      country: "",
       state: "",
       zip: "",
     });
@@ -170,11 +172,12 @@ export default function AddContactDialogContent(props) {
             address1: existingContact.address1,
             address2: existingContact.address2,
             city: existingContact.city,
+            country: existingContact.country,
             state: existingContact.state,
             zip: existingContact.zip,
-            phone: existingContact.phone,
-            mobile: existingContact.mobile,
-            email: existingContact.email,
+            mobilePhone: existingContact.mobilePhone,
+            homePhone: existingContact.homePhone,
+            primaryEmail: existingContact.primaryEmail,
             owners: [...existingContact.owners, props.parent],
           },
         },
@@ -271,15 +274,15 @@ export default function AddContactDialogContent(props) {
             <TextField
               size="small"
               className={classes.maxWidth}
-              label="Phone"
+              label="Mobile Phone"
               multiline
               variant="outlined"
-              value={newContact.phone}
+              value={newContact.mobilePhone}
               onChange={(e) => {
                 if (phonenumber(e.target.value)) {
                   setNewContact({
                     ...newContact,
-                    phone: e.target.value,
+                    mobilePhone: e.target.value,
                   });
                 }
               }}
@@ -289,15 +292,15 @@ export default function AddContactDialogContent(props) {
             <TextField
               size="small"
               className={classes.maxWidth}
-              label="Mobile"
+              label="Home Phone"
               multiline
               variant="outlined"
-              value={newContact.mobile}
+              value={newContact.homePhone}
               onChange={(e) => {
                 if (phonenumber(e.target.value)) {
                   setNewContact({
                     ...newContact,
-                    mobile: e.target.value,
+                    homePhone: e.target.value,
                   });
                 }
               }}
@@ -310,12 +313,12 @@ export default function AddContactDialogContent(props) {
               label="Email"
               multiline
               variant="outlined"
-              value={newContact.email}
+              value={newContact.primaryEmail}
               onChange={(e) => {
                 if (email(e.target.value)) {
                   setNewContact({
                     ...newContact,
-                    email: e.target.value,
+                    primaryEmail: e.target.value,
                   });
                 }
               }}
@@ -325,7 +328,7 @@ export default function AddContactDialogContent(props) {
             <TextField
               size="small"
               className={classes.maxWidth}
-              label="Address"
+              label="Address 1"
               multiline
               variant="outlined"
               value={newContact.address1}
@@ -341,7 +344,7 @@ export default function AddContactDialogContent(props) {
             <TextField
               size="small"
               className={classes.maxWidth}
-              label="Address-2"
+              label="Address 2"
               multiline
               variant="outlined"
               value={newContact.address2}
@@ -369,7 +372,7 @@ export default function AddContactDialogContent(props) {
               }}
             />
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={6}>
             <TextField
               size="small"
               className={classes.maxWidth}
@@ -385,7 +388,7 @@ export default function AddContactDialogContent(props) {
               }}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={6}>
             <TextField
               size="small"
               className={classes.maxWidth}
@@ -400,6 +403,22 @@ export default function AddContactDialogContent(props) {
                     zip: e.target.value,
                   });
                 }
+              }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              size="small"
+              className={classes.maxWidth}
+              label="Country"
+              multiline
+              variant="outlined"
+              value={newContact.country}
+              onChange={(e) => {
+                setNewContact({
+                  ...newContact,
+                  country: e.target.value,
+                });
               }}
             />
           </Grid>

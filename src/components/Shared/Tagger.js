@@ -19,7 +19,7 @@ import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////t
 
 const useStyles = makeStyles((theme) => ({
   rootDiv: {
-    width: 500,
+    width: (props) => (props.width ? props.width : "500px"),
     "& > * + *": {
       marginTop: theme.spacing(5),
     },
@@ -41,12 +41,13 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignSelf: "unset",
     margin: 0,
+    "& h3": { margin: "0 0 0 13px", color: "#8D8D8D !important" },
   },
 }));
 
 export default function Tags(props) {
   const [stateApp] = useContext(AppContext);
-  const classes = useStyles();
+  const classes = useStyles(props);
 
   const [tagsArray, setTagsArray] = useState([]);
   const [userAvailableTagsArray, setUserAvailableTagsArray] = useState([]);
@@ -280,13 +281,16 @@ export default function Tags(props) {
             props.publicLeftBottom ? classes.publicLeftBottom : ""
           } ${!publicTag ? classes.switchTextDeselected : ""}`}
           control={
-            <Switch
-              size="small"
-              checked={publicTag}
-              onChange={() => {
-                setPublicTag(!publicTag);
-              }}
-            />
+            <React.Fragment>
+              {props.publicLeftBottom && <h3>Tags</h3>}
+              <Switch
+                size="small"
+                checked={publicTag}
+                onChange={() => {
+                  setPublicTag(!publicTag);
+                }}
+              />
+            </React.Fragment>
           }
           label="Public"
           labelPlacement="start"
@@ -299,11 +303,9 @@ export default function Tags(props) {
     <div className={classes.rootDiv}>
       {!loadingTags ? (
         <Grid container>
-          {!props.publicLeftBottom && (
-            <Grid item xs={12}>
-              <TogglePublicButton />
-            </Grid>
-          )}
+          <Grid item xs={12}>
+            <TogglePublicButton />
+          </Grid>
           <Grid item xs={12}>
             <Autocomplete
               multiple
@@ -338,7 +340,7 @@ export default function Tags(props) {
                 <TextField
                   {...params}
                   variant="outlined"
-                  label="Tags"
+                  label={!props.publicLeftBottom ? "Tags" : null}
                   placeholder="New..."
                   fullWidth
                   value={textValue}
@@ -349,11 +351,11 @@ export default function Tags(props) {
               )}
             />
           </Grid>
-          {props.publicLeftBottom && (
+          {/* {props.publicLeftBottom && (
             <Grid item xs={12}>
               <TogglePublicButton />
             </Grid>
-          )}
+          )} */}
         </Grid>
       ) : (
         <CircularProgress color="secondary"></CircularProgress>

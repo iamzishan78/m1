@@ -8,6 +8,7 @@ export const CONTACTSQUERY = gql`
       address1
       address2
       city
+      country
       state
       zip
       phone

@@ -434,14 +434,14 @@ const ContactsHeadCells = [
     },
   },
   { name: "name", label: "Name" },
-  { name: "email", label: "Email" },
+  { name: "primaryEmail", label: "Primary Email" },
   {
-    name: "phone",
-    label: "Phone",
+    name: "mobilePhone",
+    label: "Mobile Phone",
   },
   {
-    name: "mobile",
-    label: "Mobile",
+    name: "homePhone",
+    label: "Home Phone",
   },
   {
     name: "address1",

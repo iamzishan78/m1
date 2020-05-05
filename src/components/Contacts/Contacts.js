@@ -4,10 +4,7 @@ import M1nTable from "../Shared/M1nTable/M1nTable";
 
 const useStyles = makeStyles((theme) => ({
   divTable: {
-    paddingTop: "10px",
-    paddingBottom: "10px",
-    paddingLeft: "32px",
-    paddingRight: "32px",
+    padding: "10px 32px 10px 32px",
   },
 }));
 

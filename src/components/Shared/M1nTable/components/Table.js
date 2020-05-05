@@ -3,7 +3,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
 import WellCardProvider from "../../../WellCard/WellCardProvider";
 import OwnersDetailCard from "../../../OwnersDetailCard/OwnersDetailCard";
-import ContactInfo from "../../../ContactInfo/ContactInfo";
+import ContactDetailCard from "../../../ContactDetailCard/ContactDetailCard";
 import { AppContext } from "../../../../AppContext";
 import Tags from "../../Tagger";
 import Comments from "../../Comments";
@@ -450,7 +450,7 @@ export default function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  if (value === "" || value === null) {
+                  if (value === "" || value === null || !value) {
                     return value;
                   }
 
@@ -564,9 +564,9 @@ export default function SubTable(props) {
           selectedContact: rows[dataIndex].id,
         }));
         // history.push("/contact");
-        setSubComponent(<ContactInfo />);
+        setSubComponent(<ContactDetailCard contactData={rows[dataIndex]} />);
         setTitle(rows[dataIndex].name);
-        setSubTitle(rows[dataIndex].email);
+        setSubTitle(rows[dataIndex].primaryEmail);
         handleOpenExpandableCard();
       }
     },
@@ -625,17 +625,12 @@ export default function SubTable(props) {
           )}
 
           {openDialog === "ownerContacts" && (
-            <M1nTable
-              parent="ownerContacts"
-              ownerId={expandedObjectId}
-              externalAddFunction={() => {}}
-            />
+            <M1nTable parent="ownerContacts" ownerId={expandedObjectId} />
           )}
           {openDialog === "ownersPerContacts" && (
             <M1nTable
               parent="ownersPerContacts"
               ownersIdsArray={expandedObjectId}
-              externalAddFunction={() => {}}
             />
           )}
 
