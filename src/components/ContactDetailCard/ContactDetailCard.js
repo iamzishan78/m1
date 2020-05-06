@@ -15,6 +15,11 @@ import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import MailOutlineIcon from "@material-ui/icons/MailOutline";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
+import { IconButton } from "@material-ui/core";
+import Tooltip from "@material-ui/core/Tooltip";
+
+import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -92,8 +97,9 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   addressIcon: { top: "3px", position: "relative" },
-  socialMediaContainer: {
+  socialMediaSection: {
     marginLeft: "15px",
+    float: "right",
   },
   mainGridContainer: { height: "100%", "& a": { color: "#12ABE0" } },
   twitterIcon: {
@@ -106,7 +112,52 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "2px",
   },
   notAvialableP: { color: "#898989b0", fontSize: "13px" },
+  leftColumnTopRigthCorner: {
+    width: "fit-content",
+    position: "relative",
+    zIndex: "600",
+    height: "0",
+    float: "right",
+    color: "darkgray",
+  },
+  divTest: {
+    "& #contPencilIcon": {
+      visibility: "hidden",
+    },
+    "&:hover #contPencilIcon": {
+      visibility: "visible",
+    },
+  },
+  pTest: {
+    fontSize: "22px",
+  },
 }));
+
+function PencilEditIcon() {
+  const classes = useStyles();
+  return (
+    <Tooltip title={"Edit"}>
+      <IconButton size="small" onClick={() => {}}>
+        <CreateTwoToneIcon id="contPencilIcon" className={classes.pTest} />
+      </IconButton>
+    </Tooltip>
+  );
+}
+
+function FieldContent({ show, children }) {
+  const classes = useStyles();
+  if (!show)
+    return (
+      <p className={`${classes.notAvialableP} ${classes.divTest}`}>
+        Not Avialable <PencilEditIcon />
+      </p>
+    );
+  return (
+    <p className={classes.divTest}>
+      {children} <PencilEditIcon />
+    </p>
+  );
+}
 
 export default function ContactDetailCard(props) {
   const classes = useStyles();
@@ -133,18 +184,40 @@ export default function ContactDetailCard(props) {
 
         <Grid item container>
           {/*/////////// section 1 //////////// */}
+
           <Grid item xs={12} className={classes.border}>
+            <div className={classes.leftColumnTopRigthCorner}>
+              {contactData.primaryEmail && (
+                <Tooltip title={"Send Email"}>
+                  <a href={"mailto:" + contactData.primaryEmail}>
+                    <IconButton size="small" style={{ color: "darkgrey" }}>
+                      <MailOutlineIcon />
+                    </IconButton>
+                  </a>
+                </Tooltip>
+              )}
+
+              <Tooltip title={"Delete Contact"}>
+                <IconButton
+                  size="small"
+                  style={{ color: "darkgrey" }}
+                  onClick={() => {}}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
             <div>
               <div className={classes.userIcon}>
                 <Avatar name={contactData.name} size="80" round />
               </div>
               <div className={classes.userName}>
-                <h1>
+                <h1 style={{ width: "fit-content" }}>
                   {contactData.name}
                   {(contactData.facebook ||
                     contactData.twitte ||
                     contactData.linkedln) && (
-                    <container className={classes.socialMediaContainer}>
+                    <section className={classes.socialMediaSection}>
                       {contactData.facebook && (
                         <a href={"https://" + contactData.facebook}>
                           <FacebookIcon />
@@ -160,7 +233,7 @@ export default function ContactDetailCard(props) {
                           <LinkedInIcon />
                         </a>
                       )}
-                    </container>
+                    </section>
                   )}
                 </h1>
                 <h4>
@@ -183,7 +256,7 @@ export default function ContactDetailCard(props) {
             <div className={classes.tags}>
               <Tags
                 width="100%"
-                targetSourceId={contactData.id}
+                targetSourceId={contactData._id}
                 publicLeftBottom
               />
             </div>
@@ -332,11 +405,21 @@ export default function ContactDetailCard(props) {
                 <p className="dataLabels">Linkedln Profile</p>
               </Grid>
               <Grid item xs={6}>
-                {contactData.linkedln ? (
-                  <p>{contactData.linkedln}</p>
-                ) : (
-                  <p className={classes.notAvialableP}>Not Avialable</p>
-                )}
+                <FieldContent show={contactData.linkedln}>
+                  {contactData.linkedln}
+                </FieldContent>
+
+                {/* <div id="xoxoxoxoxxo" className={classes.divTest}>
+                  {contactData.linkedln ? (
+                    <p>
+                      {contactData.linkedln} <PencilEditIcon />
+                    </p>
+                  ) : (
+                    <p className={classes.notAvialableP}>
+                      Not Avialable <PencilEditIcon />
+                    </p>
+                  )}
+                </div> */}
               </Grid>
 
               <Grid item xs={6}>
@@ -379,15 +462,16 @@ export default function ContactDetailCard(props) {
                 {(contactData.createBy && contactData.createBy.name) ||
                 contactData.createAt ? (
                   <p>
-                    {`${
-                      contactData.createBy ? contactData.createBy.name : ""
-                    } - ${contactData.createAt}`}
+                    {`${contactData.createBy ? contactData.createBy.name : ""}${
+                      contactData.createAt
+                        ? " - " +
+                          anyToDate(contactData.createAt).toLocaleString()
+                        : ""
+                    }`}
                   </p>
                 ) : (
                   <p className={classes.notAvialableP}>Not Avialable</p>
                 )}
-
-                {/*////////////////add time converter//////////// */}
               </Grid>
 
               <Grid item xs={6}>
@@ -401,13 +485,16 @@ export default function ContactDetailCard(props) {
                       contactData.lastUpdateBy
                         ? contactData.lastUpdateBy.name
                         : ""
-                    } - ${contactData.lastUpdateAt}`}
+                    }${
+                      contactData.lastUpdateAt
+                        ? " - " +
+                          anyToDate(contactData.lastUpdateAt).toLocaleString()
+                        : ""
+                    }`}
                   </p>
                 ) : (
                   <p className={classes.notAvialableP}>Not Avialable</p>
                 )}
-
-                {/*////////////////add time converter//////////// */}
               </Grid>
             </Grid>
           </Grid>
