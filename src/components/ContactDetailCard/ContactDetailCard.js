@@ -105,6 +105,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "3px",
     borderRadius: "2px",
   },
+  notAvialableP: { color: "#898989b0", fontSize: "13px" },
 }));
 
 export default function ContactDetailCard(props) {
@@ -208,7 +209,7 @@ export default function ContactDetailCard(props) {
                     </a>
                   </p>
                 ) : (
-                  <p>Not Avialable</p>
+                  <p className={classes.notAvialableP}>Not Avialable</p>
                 )}
               </Grid>
 
@@ -223,7 +224,7 @@ export default function ContactDetailCard(props) {
                     </a>
                   </p>
                 ) : (
-                  <p>Not Avialable</p>
+                  <p className={classes.notAvialableP}>Not Avialable</p>
                 )}
               </Grid>
 
@@ -231,83 +232,87 @@ export default function ContactDetailCard(props) {
                 <p className="dataLabels">Mobile Phone</p>
               </Grid>
               <Grid item xs={6}>
-                <p>
-                  {contactData.mobilePhone
-                    ? contactData.mobilePhone
-                    : "Not Avialable"}
-                </p>
+                {contactData.mobilePhone ? (
+                  <p>{contactData.mobilePhone} </p>
+                ) : (
+                  <p className={classes.notAvialableP}>Not Avialable</p>
+                )}
               </Grid>
 
               <Grid item xs={6}>
                 <p className="dataLabels">Home Phone</p>
               </Grid>
               <Grid item xs={6}>
-                <p>
-                  {contactData.homePhone
-                    ? contactData.homePhone
-                    : "Not Avialable"}
-                </p>
+                {contactData.homePhone ? (
+                  <p>{contactData.homePhone}</p>
+                ) : (
+                  <p className={classes.notAvialableP}>Not Avialable</p>
+                )}
               </Grid>
 
               <Grid item xs={6}>
                 <p className="dataLabels">Alternate Phone</p>
               </Grid>
               <Grid item xs={6}>
-                <p>
-                  {contactData.alternatePhone
-                    ? contactData.alternatePhone
-                    : "Not Avialable"}
-                </p>
+                {contactData.alternatePhone ? (
+                  <p>{contactData.alternatePhone}</p>
+                ) : (
+                  <p className={classes.notAvialableP}>Not Avialable</p>
+                )}
               </Grid>
 
               <Grid item xs={6}>
                 <p className="dataLabels">Primary Address</p>
               </Grid>
               <Grid item xs={6}>
-                <p>
-                  {contactData.address1 ||
-                  contactData.address2 ||
-                  contactData.city ||
-                  contactData.state ||
-                  contactData.zip ||
-                  contactData.country
-                    ? `${contactData.address1 ? contactData.address1 : ""}${
-                        contactData.address2 ? " " + contactData.address2 : ""
-                      }${contactData.city ? " " + contactData.city : ""}${
-                        contactData.state ? " " + contactData.state : ""
-                      }${contactData.zip ? " " + contactData.zip : ""}${
-                        contactData.country ? " " + contactData.country : ""
-                      }`
-                    : "Not Avialable"}
-                </p>
+                {contactData.address1 ||
+                contactData.address2 ||
+                contactData.city ||
+                contactData.state ||
+                contactData.zip ||
+                contactData.country ? (
+                  <p>
+                    {" "}
+                    {`${contactData.address1 ? contactData.address1 : ""}${
+                      contactData.address2 ? " " + contactData.address2 : ""
+                    }${contactData.city ? " " + contactData.city : ""}${
+                      contactData.state ? " " + contactData.state : ""
+                    }${contactData.zip ? " " + contactData.zip : ""}${
+                      contactData.country ? " " + contactData.country : ""
+                    }`}
+                  </p>
+                ) : (
+                  <p className={classes.notAvialableP}>Not Avialable</p>
+                )}
               </Grid>
 
               <Grid item xs={6}>
                 <p className="dataLabels">Secondary Address</p>
               </Grid>
               <Grid item xs={6}>
-                <p>
-                  {contactData.address1Alt ||
-                  contactData.address2Alt ||
-                  contactData.cityAlt ||
-                  contactData.stateAlt ||
-                  contactData.zipAlt ||
-                  contactData.countryAlt
-                    ? `${
-                        contactData.address1Alt ? contactData.address1Alt : ""
-                      }${
-                        contactData.address2Alt
-                          ? " " + contactData.address2Alt
-                          : ""
-                      }${contactData.cityAlt ? " " + contactData.cityAlt : ""}${
-                        contactData.stateAlt ? " " + contactData.stateAlt : ""
-                      }${contactData.zipAlt ? " " + contactData.zipAlt : ""}${
-                        contactData.countryAlt
-                          ? " " + contactData.countryAlt
-                          : ""
-                      }`
-                    : "Not Avialable"}
-                </p>
+                {contactData.address1Alt ||
+                contactData.address2Alt ||
+                contactData.cityAlt ||
+                contactData.stateAlt ||
+                contactData.zipAlt ||
+                contactData.countryAlt ? (
+                  <p>
+                    {" "}
+                    {`${
+                      contactData.address1Alt ? contactData.address1Alt : ""
+                    }${
+                      contactData.address2Alt
+                        ? " " + contactData.address2Alt
+                        : ""
+                    }${contactData.cityAlt ? " " + contactData.cityAlt : ""}${
+                      contactData.stateAlt ? " " + contactData.stateAlt : ""
+                    }${contactData.zipAlt ? " " + contactData.zipAlt : ""}${
+                      contactData.countryAlt ? " " + contactData.countryAlt : ""
+                    }`}
+                  </p>
+                ) : (
+                  <p className={classes.notAvialableP}>Not Avialable</p>
+                )}
               </Grid>
             </Grid>
 
@@ -316,67 +321,72 @@ export default function ContactDetailCard(props) {
                 <p className="dataLabels">Relatives</p>
               </Grid>
               <Grid item xs={6}>
-                <p>
-                  {contactData.relatives
-                    ? contactData.relatives
-                    : "Not Avialable"}
-                </p>
+                {contactData.relatives ? (
+                  <p>{contactData.relatives}</p>
+                ) : (
+                  <p className={classes.notAvialableP}>Not Avialable</p>
+                )}
               </Grid>
 
               <Grid item xs={6}>
                 <p className="dataLabels">Linkedln Profile</p>
               </Grid>
               <Grid item xs={6}>
-                <p>
-                  {contactData.linkedln
-                    ? contactData.linkedln
-                    : "Not Avialable"}
-                </p>
+                {contactData.linkedln ? (
+                  <p>{contactData.linkedln}</p>
+                ) : (
+                  <p className={classes.notAvialableP}>Not Avialable</p>
+                )}
               </Grid>
 
               <Grid item xs={6}>
                 <p className="dataLabels">Facebook Profile</p>
               </Grid>
               <Grid item xs={6}>
-                <p>
-                  {contactData.facebook
-                    ? contactData.facebook
-                    : "Not Avialable"}
-                </p>
+                {contactData.facebook ? (
+                  <p>{contactData.facebook}</p>
+                ) : (
+                  <p className={classes.notAvialableP}>Not Avialable</p>
+                )}
               </Grid>
 
               <Grid item xs={6}>
                 <p className="dataLabels">Twitter Profile</p>
               </Grid>
               <Grid item xs={6}>
-                <p>
-                  {contactData.twitter ? contactData.twitter : "Not Avialable"}
-                </p>
+                {contactData.twitter ? (
+                  <p>{contactData.twitter}</p>
+                ) : (
+                  <p className={classes.notAvialableP}>Not Avialable</p>
+                )}
               </Grid>
 
               <Grid item xs={6}>
                 <p className="dataLabels">Lead Source</p>
               </Grid>
               <Grid item xs={6}>
-                <p>
-                  {contactData.leadSource
-                    ? contactData.leadSource
-                    : "Not Avialable"}
-                </p>
+                {contactData.leadSource ? (
+                  <p>{contactData.leadSource}</p>
+                ) : (
+                  <p className={classes.notAvialableP}>Not Avialable</p>
+                )}
               </Grid>
 
               <Grid item xs={6}>
                 <p className="dataLabels">Created By</p>
               </Grid>
               <Grid item xs={6}>
-                <p>
-                  {(contactData.createBy && contactData.createBy.name) ||
-                  contactData.createAt
-                    ? `${
-                        contactData.createBy ? contactData.createBy.name : ""
-                      } - ${contactData.createAt}`
-                    : "Not Avialable"}
-                </p>
+                {(contactData.createBy && contactData.createBy.name) ||
+                contactData.createAt ? (
+                  <p>
+                    {`${
+                      contactData.createBy ? contactData.createBy.name : ""
+                    } - ${contactData.createAt}`}
+                  </p>
+                ) : (
+                  <p className={classes.notAvialableP}>Not Avialable</p>
+                )}
+
                 {/*////////////////add time converter//////////// */}
               </Grid>
 
@@ -384,17 +394,19 @@ export default function ContactDetailCard(props) {
                 <p className="dataLabels">Last Update By</p>
               </Grid>
               <Grid item xs={6}>
-                <p>
-                  {(contactData.lastUpdateBy &&
-                    contactData.lastUpdateBy.name) ||
-                  contactData.lastUpdateAt
-                    ? `${
-                        contactData.lastUpdateBy
-                          ? contactData.lastUpdateBy.name
-                          : ""
-                      } - ${contactData.lastUpdateAt}`
-                    : "Not Avialable"}
-                </p>
+                {(contactData.lastUpdateBy && contactData.lastUpdateBy.name) ||
+                contactData.lastUpdateAt ? (
+                  <p>
+                    {`${
+                      contactData.lastUpdateBy
+                        ? contactData.lastUpdateBy.name
+                        : ""
+                    } - ${contactData.lastUpdateAt}`}
+                  </p>
+                ) : (
+                  <p className={classes.notAvialableP}>Not Avialable</p>
+                )}
+
                 {/*////////////////add time converter//////////// */}
               </Grid>
             </Grid>
