@@ -7,7 +7,6 @@ export const ADDCONTACT = gql`
       message
       error
       contact {
-        _id
         name
         address1
         address2
@@ -15,11 +14,12 @@ export const ADDCONTACT = gql`
         country
         state
         zip
-        phone
-        mobile
-        email
+        mobilePhone
+        homePhone
+        primaryEmail
         owners
-        ts
+        createBy
+        lastUpdateBy
       }
     }
   }

@@ -10,6 +10,11 @@ import Tags from "../Shared/Tagger";
 import Avatar from "react-avatar";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import RoomIcon from "@material-ui/icons/Room";
+import FacebookIcon from "@material-ui/icons/Facebook";
+import TwitterIcon from "@material-ui/icons/Twitter";
+import LinkedInIcon from "@material-ui/icons/LinkedIn";
+import MailOutlineIcon from "@material-ui/icons/MailOutline";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -87,6 +92,19 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   addressIcon: { top: "3px", position: "relative" },
+  socialMediaContainer: {
+    marginLeft: "15px",
+  },
+  mainGridContainer: { height: "100%", "& a": { color: "#12ABE0" } },
+  twitterIcon: {
+    background: "#17AADD",
+    color: "#fff",
+    height: "18px",
+    width: "18px",
+    padding: "1px",
+    margin: "3px",
+    borderRadius: "2px",
+  },
 }));
 
 export default function ContactDetailCard(props) {
@@ -95,10 +113,9 @@ export default function ContactDetailCard(props) {
   const [stateApp] = useContext(AppContext);
 
   const [contactData, setContactData] = useState(props.contactData);
-  console.log("aaaaaaaa ", contactData);
 
   return (
-    <Grid container spacing={0} style={{ height: "100%" }}>
+    <Grid container spacing={0} className={classes.mainGridContainer}>
       {/*/////////// left column //////////// */}
       <Grid item xs={9}>
         {/* <h3 className={`${classes.topBar} ${classes.border}`}>
@@ -121,7 +138,30 @@ export default function ContactDetailCard(props) {
                 <Avatar name={contactData.name} size="80" round />
               </div>
               <div className={classes.userName}>
-                <h1>{contactData.name}</h1>
+                <h1>
+                  {contactData.name}
+                  {(contactData.facebook ||
+                    contactData.twitte ||
+                    contactData.linkedln) && (
+                    <container className={classes.socialMediaContainer}>
+                      {contactData.facebook && (
+                        <a href={"https://" + contactData.facebook}>
+                          <FacebookIcon />
+                        </a>
+                      )}
+                      {contactData.twitter && (
+                        <a href={"https://" + contactData.twitter}>
+                          <TwitterIcon className={classes.twitterIcon} />
+                        </a>
+                      )}
+                      {contactData.linkedln && (
+                        <a href={"https://" + contactData.linkedln}>
+                          <LinkedInIcon />
+                        </a>
+                      )}
+                    </container>
+                  )}
+                </h1>
                 <h4>
                   <RoomIcon className={classes.addressIcon} fontSize="small" />
                   {`${contactData.address1 ? contactData.address1 : ""}${

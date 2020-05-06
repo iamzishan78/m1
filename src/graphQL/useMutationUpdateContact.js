@@ -15,11 +15,23 @@ export const UPDATECONTACT = gql`
         country
         state
         zip
-        phone
-        mobile
-        email
-        owners
-        ts
+        mobilePhone
+        homePhone
+        primaryEmail
+        lastUpdateBy
+        address1Alt
+        address2Alt
+        cityAlt
+        stateAlt
+        zipAlt
+        countryAlt
+        AltPhone
+        secondaryEmail
+        relatives
+        linkedln
+        facebook
+        twitter
+        leadSource
       }
     }
   }

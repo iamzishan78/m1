@@ -11,11 +11,31 @@ export const CONTACTSBYOWNERSID = gql`
       country
       state
       zip
-      phone
-      mobile
-      email
+      mobilePhone
+      homePhone
+      primaryEmail
       owners
-      ts
+      createAt
+      createBy {
+        name
+      }
+      lastUpdateAt
+      lastUpdateBy {
+        name
+      }
+      address1Alt
+      address2Alt
+      cityAlt
+      stateAlt
+      zipAlt
+      countryAlt
+      AltPhone
+      secondaryEmail
+      relatives
+      linkedln
+      facebook
+      twitter
+      leadSource
     }
   }
 `;

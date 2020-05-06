@@ -24,7 +24,7 @@ const phonenumber = (inputtxt) => {
 };
 const email = (inputtxt) => {
   if (
-    inputtxt.match(/^([0-9a-zA-Z]+@?[0-9a-zA-Z]*\.?[0-9a-zA-Z]*)?$/) !== null
+    inputtxt.match(/^(([0-9a-zA-Z]|\.)+@?[0-9a-zA-Z]*\.?[0-9a-zA-Z]*)?$/) !== null
   ) {
     return true;
   } else {
