@@ -82,6 +82,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: "50%",
     float: "left",
     "& h1": { marginBottom: "0" },
+    "& p": { marginBottom: "0" },
     "& h4": { margin: "0" },
   },
   tags: {
@@ -97,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
   },
   addressIcon: { top: "3px", position: "relative" },
   socialMediaSection: {
-    marginLeft: "15px",
+    // marginLeft: "15px",
     float: "right",
   },
   mainGridContainer: { height: "100%", "& a": { color: "#12ABE0" } },
@@ -175,43 +176,87 @@ export default function ContactDetailCard(props) {
               </div>
               <div className={classes.userName}>
                 <h1 style={{ width: "max-content" }}>
-                  {contactData.name}
-                  {(contactData.facebook ||
-                    contactData.twitte ||
-                    contactData.linkedln) && (
-                    <section className={classes.socialMediaSection}>
-                      {contactData.facebook && (
-                        <a href={"https://" + contactData.facebook}>
-                          <FacebookIcon />
-                        </a>
-                      )}
-                      {contactData.twitter && (
-                        <a href={"https://" + contactData.twitter}>
-                          <TwitterIcon className={classes.twitterIcon} />
-                        </a>
-                      )}
-                      {contactData.linkedln && (
-                        <a href={"https://" + contactData.linkedln}>
-                          <LinkedInIcon />
-                        </a>
-                      )}
-                    </section>
-                  )}
+                  {/* {contactData.name} */}
+
+                  <FieldContent
+                    header
+                    name="name"
+                    id={contactData._id}
+                    show={contactData.name ? contactData.name : "none"}
+                  >
+                    {(contactData.facebook ||
+                      contactData.twitte ||
+                      contactData.linkedln) && (
+                      <section className={classes.socialMediaSection}>
+                        {contactData.facebook && (
+                          <a href={"https://" + contactData.facebook}>
+                            <FacebookIcon />
+                          </a>
+                        )}
+                        {contactData.twitter && (
+                          <a href={"https://" + contactData.twitter}>
+                            <TwitterIcon className={classes.twitterIcon} />
+                          </a>
+                        )}
+                        {contactData.linkedln && (
+                          <a href={"https://" + contactData.linkedln}>
+                            <LinkedInIcon />
+                          </a>
+                        )}
+                      </section>
+                    )}
+                  </FieldContent>
                 </h1>
                 <h4>
-                  <RoomIcon className={classes.addressIcon} fontSize="small" />
-                  {`${contactData.address1 ? contactData.address1 : ""}${
-                    contactData.address2 ? " " + contactData.address2 : ""
-                  }${contactData.city ? " " + contactData.city : ""}${
-                    contactData.state ? " " + contactData.state : ""
-                  }${contactData.zip ? " " + contactData.zip : ""}${
-                    contactData.country ? " " + contactData.country : ""
-                  }`}
+                  <FieldContent
+                    name="Address"
+                    id={contactData._id}
+                    show={
+                      (contactData.address1 && contactData.address1 !== "") ||
+                      (contactData.address2 && contactData.address2 !== "") ||
+                      (contactData.city && contactData.city !== "") ||
+                      (contactData.state && contactData.state !== "") ||
+                      (contactData.zip && contactData.zip !== "") ||
+                      (contactData.country && contactData.country !== "")
+                        ? true
+                        : "none"
+                    }
+                    compound={{
+                      address1: contactData.address1,
+                      address2: contactData.address2,
+                      city: contactData.city,
+                      state: contactData.state,
+                      zip: contactData.zip,
+                      country: contactData.country,
+                    }}
+                  >
+                    <RoomIcon
+                      className={classes.addressIcon}
+                      fontSize="small"
+                    />
+                  </FieldContent>
                 </h4>
+
                 <h4>
-                  {`${contactData.companyName ? contactData.companyName : ""}${
+                  <FieldContent
+                    name={"Company Name Or Job Title"}
+                    id={contactData._id}
+                    show={
+                      (contactData.companyName &&
+                        contactData.companyName !== "") ||
+                      (contactData.jobTitle && contactData.jobTitle !== "")
+                        ? true
+                        : "none"
+                    }
+                    compound={{
+                      companyName: contactData.companyName,
+                      jobTitle: contactData.jobTitle,
+                    }}
+                  />
+
+                  {/* {`${contactData.companyName ? contactData.companyName : ""}${
                     contactData.companyName && contactData.jobTitle ? " - " : ""
-                  }${contactData.jobTitle ? contactData.jobTitle : ""}`}
+                  }${contactData.jobTitle ? contactData.jobTitle : ""}`} */}
                 </h4>
               </div>
             </div>
@@ -233,167 +278,196 @@ export default function ContactDetailCard(props) {
             spacing={0}
           >
             <Grid item xs={6} container spacing={1}>
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <p className="dataLabels">Primary Email</p>
               </Grid>
-              <Grid item xs={6}>
-                {contactData.primaryEmail ? (
-                  <p>
-                    <a href={`mailto:${contactData.primaryEmail}`}>
-                      {contactData.primaryEmail}
-                    </a>
-                  </p>
-                ) : (
-                  <p className={classes.notAvailableP}>Not Available</p>
-                )}
+              <Grid item xs={7}>
+                <FieldContent
+                  name="primaryEmail"
+                  id={contactData._id}
+                  show={
+                    contactData.primaryEmail ? contactData.primaryEmail : "none"
+                  }
+                >
+                  <a href={`mailto:${contactData.primaryEmail}`}>
+                    {contactData.primaryEmail}
+                  </a>
+                </FieldContent>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <p className="dataLabels">Secondary Email</p>
               </Grid>
-              <Grid item xs={6}>
-                {contactData.secondaryEmail ? (
-                  <p>
-                    <a href={`mailto:${contactData.secondaryEmail}`}>
-                      {contactData.secondaryEmail}
-                    </a>
-                  </p>
-                ) : (
-                  <p className={classes.notAvailableP}>Not Available</p>
-                )}
+              <Grid item xs={7}>
+                <FieldContent
+                  name="secondaryEmail"
+                  id={contactData._id}
+                  show={
+                    contactData.secondaryEmail
+                      ? contactData.secondaryEmail
+                      : "none"
+                  }
+                >
+                  <a href={`mailto:${contactData.secondaryEmail}`}>
+                    {contactData.secondaryEmail}
+                  </a>
+                </FieldContent>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <p className="dataLabels">Mobile Phone</p>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={7}>
                 <FieldContent name="mobilePhone" id={contactData._id}>
                   {contactData.mobilePhone}
                 </FieldContent>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <p className="dataLabels">Home Phone</p>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={7}>
                 <FieldContent name="homePhone" id={contactData._id}>
                   {contactData.homePhone}
                 </FieldContent>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <p className="dataLabels">Alternate Phone</p>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={7}>
                 <FieldContent name="alternatePhone" id={contactData._id}>
                   {contactData.alternatePhone}
                 </FieldContent>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <p className="dataLabels">Primary Address</p>
               </Grid>
-              <Grid item xs={6}>
-                {contactData.address1 ||
-                contactData.address2 ||
-                contactData.city ||
-                contactData.state ||
-                contactData.zip ||
-                contactData.country ? (
-                  <p>
-                    {`${contactData.address1 ? contactData.address1 : ""}${
-                      contactData.address2 ? " " + contactData.address2 : ""
-                    }${contactData.city ? " " + contactData.city : ""}${
-                      contactData.state ? " " + contactData.state : ""
-                    }${contactData.zip ? " " + contactData.zip : ""}${
-                      contactData.country ? " " + contactData.country : ""
-                    }`}
-                  </p>
-                ) : (
-                  <p className={classes.notAvailableP}>Not Available</p>
-                )}
+              <Grid item xs={7}>
+                <FieldContent
+                  name=""
+                  id={contactData._id}
+                  show={
+                    (contactData.address1 && contactData.address1 !== "") ||
+                    (contactData.address2 && contactData.address2 !== "") ||
+                    (contactData.city && contactData.city !== "") ||
+                    (contactData.state && contactData.state !== "") ||
+                    (contactData.zip && contactData.zip !== "") ||
+                    (contactData.country && contactData.country !== "")
+                      ? true
+                      : "none"
+                  }
+                  compound={{
+                    address1: contactData.address1,
+                    address2: contactData.address2,
+                    city: contactData.city,
+                    state: contactData.state,
+                    zip: contactData.zip,
+                    country: contactData.country,
+                  }}
+                />
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <p className="dataLabels">Secondary Address</p>
               </Grid>
-              <Grid item xs={6}>
-                {contactData.address1Alt ||
-                contactData.address2Alt ||
-                contactData.cityAlt ||
-                contactData.stateAlt ||
-                contactData.zipAlt ||
-                contactData.countryAlt ? (
-                  <p>
-                    {" "}
-                    {`${
-                      contactData.address1Alt ? contactData.address1Alt : ""
-                    }${
-                      contactData.address2Alt
-                        ? " " + contactData.address2Alt
-                        : ""
-                    }${contactData.cityAlt ? " " + contactData.cityAlt : ""}${
-                      contactData.stateAlt ? " " + contactData.stateAlt : ""
-                    }${contactData.zipAlt ? " " + contactData.zipAlt : ""}${
-                      contactData.countryAlt ? " " + contactData.countryAlt : ""
-                    }`}
-                  </p>
-                ) : (
-                  <p className={classes.notAvailableP}>Not Available</p>
-                )}
+              <Grid item xs={7}>
+                <FieldContent
+                  name=""
+                  id={contactData._id}
+                  show={
+                    (contactData.address1Alt &&
+                      contactData.address1Alt !== "") ||
+                    (contactData.address2Alt &&
+                      contactData.address2Alt !== "") ||
+                    (contactData.cityAlt && contactData.cityAlt !== "") ||
+                    (contactData.stateAlt && contactData.stateAlt !== "") ||
+                    (contactData.zipAlt && contactData.zipAlt !== "") ||
+                    (contactData.countryAlt && contactData.countryAlt !== "")
+                      ? true
+                      : "none"
+                  }
+                  compound={{
+                    address1Alt: contactData.address1Alt,
+                    address2Alt: contactData.address2Alt,
+                    cityAlt: contactData.cityAlt,
+                    stateAlt: contactData.stateAlt,
+                    zipAlt: contactData.zipAlt,
+                    countryAlt: contactData.countryAlt,
+                  }}
+                />
               </Grid>
             </Grid>
 
             <Grid item xs={6} container spacing={1}>
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <p className="dataLabels">Relatives</p>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={7}>
                 <FieldContent name="relatives" id={contactData._id}>
                   {contactData.relatives}
                 </FieldContent>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <p className="dataLabels">Linkedln Profile</p>
               </Grid>
-              <Grid item xs={6}>
-                <FieldContent name="linkedln" id={contactData._id}>
-                  {contactData.linkedln}
+              <Grid item xs={7}>
+                <FieldContent
+                  name="linkedln"
+                  id={contactData._id}
+                  show={contactData.linkedln ? contactData.linkedln : "none"}
+                >
+                  <a href={`https://${contactData.linkedln}`}>
+                    {contactData.linkedln}
+                  </a>
                 </FieldContent>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <p className="dataLabels">Facebook Profile</p>
               </Grid>
-              <Grid item xs={6}>
-                <FieldContent name="facebook" id={contactData._id}>
-                  {contactData.facebook}
+              <Grid item xs={7}>
+                <FieldContent
+                  name="facebook"
+                  id={contactData._id}
+                  show={contactData.facebook ? contactData.facebook : "none"}
+                >
+                  <a href={`https://${contactData.facebook}`}>
+                    {contactData.facebook}
+                  </a>
                 </FieldContent>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <p className="dataLabels">Twitter Profile</p>
               </Grid>
-              <Grid item xs={6}>
-                <FieldContent name="twitter" id={contactData._id}>
-                  {contactData.twitter}
+              <Grid item xs={7}>
+                <FieldContent
+                  name="twitter"
+                  id={contactData._id}
+                  show={contactData.twitter ? contactData.twitter : "none"}
+                >
+                  <a href={`https://${contactData.twitter}`}>
+                    {contactData.twitter}
+                  </a>
                 </FieldContent>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <p className="dataLabels">Lead Source</p>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={7}>
                 <FieldContent name="leadSource" id={contactData._id}>
                   {contactData.leadSource}
                 </FieldContent>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <p className="dataLabels">Created By</p>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={7}>
                 {(contactData.createBy && contactData.createBy.name) ||
                 contactData.createAt ? (
                   <p>
@@ -409,10 +483,10 @@ export default function ContactDetailCard(props) {
                 )}
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <p className="dataLabels">Last Update By</p>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={7}>
                 {(contactData.lastUpdateBy && contactData.lastUpdateBy.name) ||
                 contactData.lastUpdateAt ? (
                   <p>
