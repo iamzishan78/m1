@@ -9,12 +9,15 @@ import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles((theme) => ({
   fieldContentP: {
-    margin: ({ compound }) => {
-      if (compound) return "0";
+    margin: ({ noMargin }) => {
+      if (noMargin) return "0";
     },
-    borderRadius: "3px",
+    width: ({ noMargin }) => {
+      if (noMargin) return "fit-content";
+    },
+    borderRadius: "4px",
     "&:hover": {
-      background: ({ header }) => (header ? "whitesmoke" : "#FFFFFF"),
+      background: ({ noMargin }) => (noMargin ? "whitesmoke" : "#FFFFFF"),
     },
     "& #contPencilIcon": {
       visibility: "hidden",
@@ -55,38 +58,56 @@ function PencilEditIcon({ onClick }) {
 
 export default function FieldContent({
   children,
-  name,
   id,
-  show,
-  header,
-  compound,
+  content,
+  childrenLeft,
+  onlyChildren,
+  name,
+  noMargin,
 }) {
-  //////////// children -brings the field text content  //////optional if compound////////////////////////
-  //////////// name - brings the field name //////if compound field label/////////////////////////////////
-  //////////// id -brings the updating contact id ////////////////////////////////////////////////////////
-  //////////// show -allows to custom show or no the text for composed fields//optional///////////////////
-  ////////////      -if show, show === to the field value in a single field or "none" if no value ////////
-  //////////// compound -will contain a values object for compound fields like address  //optional////////
+  //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
+  //////////// content - brings an object with fielNames and values ///////////////////////////////////////////////
+  //////////// childrenLeft - will move the chilren components to the left side of the field values//optional//////
+  ////////////              - default childrens to rigth///////////////////////////////////////////////////////////
+  //////////// onlyChildren - will show only the children components, no field values  //optional/////////////////
+  //////////// name - will be part of the Not Available text, better use in compound fiels  //optional/////////////
+  //////////// noMargin - no p tag margin  //optional//////////////////////////////////////////////////////////////
 
-  const classes = useStyles({ header, compound });
+  const classes = useStyles({ noMargin });
   const [edit, setEdit] = useState(false);
-  const [editValue, setEditValue] = useState(
-    compound
-      ? { ...compound, _id: id }
-      : {
-          _id: id,
-          [name]:
-            !show && children ? children : show && show !== "none" ? show : "",
+  const [editedField, setEditedField] = useState({});
+  const [editContent, setEditContent] = useState({ content });
+  const [fieldsCount, setFieldsCount] = useState(0);
+
+  // useEffect(() => {
+  //   console.log("ttttttttttttt ", editContent);
+  // }, [editContent]);
+
+  useEffect(() => {
+    if (content) {
+      setEditContent(content);
+
+      let count = 0;
+      for (const fieldName in content) {
+        if (content.hasOwnProperty(fieldName)) {
+          count++;
         }
-  );
+      }
+      setFieldsCount(count);
+    }
+  }, [content]);
 
   useEffect(() => {
-    console.log("ttttttttttttt ", editValue);
-  }, [editValue]);
-
-  useEffect(() => {
-    if (document.getElementById("fieldContentInput"))
-      document.getElementById("fieldContentInput").focus();
+    let fieldName;
+    for (const key in editContent) {
+      fieldName = key;
+      break;
+    }
+    if (
+      document.getElementById("fieldContentInput" + fieldName) &&
+      fieldsCount <= 1
+    )
+      document.getElementById("fieldContentInput" + fieldName).focus();
   }, [edit]);
 
   const handleEditClick = (e) => {
@@ -94,41 +115,48 @@ export default function FieldContent({
     setEdit(!edit);
   };
 
-  const handleUpdating = (e) => {
-    /////////////////editValue//////////////////////
+  const handleUpdating = (e, fieldName) => {
+    /////////////////editContent//////////////////////
   };
 
-  if (edit && compound) {
+  if (edit) {
     let inputsArray = [];
-    for (const fieldName in editValue) {
-      if (editValue.hasOwnProperty(fieldName) && fieldName != "_id") {
+    for (const fieldName in editContent) {
+      if (editContent.hasOwnProperty(fieldName)) {
         inputsArray.push(
           <TextField
-            id="fieldContentInput"
+            id={"fieldContentInput" + fieldName}
             className={classes.editTextField}
             variant="outlined"
             size="small"
-            // fullWidth
+            fullWidth={fieldsCount <= 1}
+            label={
+              fieldsCount > 1
+                ? fieldName.charAt(0).toUpperCase() + fieldName.slice(1)
+                : null
+            }
             multiline
-            value={editValue[fieldName]}
+            value={editContent[fieldName]}
             onChange={(e) => {
               e.persist();
-              setEditValue((editValue) => ({
-                ...editValue,
+              setEditContent((editContent) => ({
+                ...editContent,
                 [fieldName]: e.target.value,
               }));
             }}
             onKeyDown={(event) => {
               if (event.key === "Enter" && !event.shiftKey) {
                 event.preventDefault();
-                handleUpdating(event);
+                handleUpdating(event, fieldName);
               }
             }}
             onBlur={() => {
-              // setEdit(false);
-              setEditValue((editValue) => ({
-                ...editValue,
-                [fieldName]: compound[fieldName],
+              if (fieldsCount <= 1) {
+                setEdit(false);
+              }
+              setEditContent((editContent) => ({
+                ...editContent,
+                [fieldName]: content[fieldName],
               }));
             }}
           />
@@ -138,94 +166,30 @@ export default function FieldContent({
     return inputsArray;
   }
 
-  if (edit && !compound)
-    return (
-      <TextField
-        id="fieldContentInput"
-        className={classes.editTextField}
-        variant="outlined"
-        size="small"
-        fullWidth
-        multiline
-        value={editValue[name]}
-        onChange={(e) => {
-          e.persist();
-          setEditValue((editValue) => ({
-            ...editValue,
-            [name]: e.target.value,
-          }));
-        }}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault();
-            handleUpdating(event);
-          }
-        }}
-        onBlur={() => {
-          setEdit(false);
-          setEditValue({
-            _id: id,
-            [name]:
-              !show && children
-                ? children
-                : show && show !== "none"
-                ? show
-                : "",
-          });
-        }}
-      />
-    );
-
-  //// compound fields with values and condition show===true
-  if (compound && show !== "none") {
-    let textArray = [];
-    for (const key in compound) {
-      if (
-        compound.hasOwnProperty(key) &&
-        compound[key] &&
-        compound[key] !== ""
-      ) {
-        textArray.push(compound[key]);
-      }
+  let textArray = [];
+  for (const key in content) {
+    if (content.hasOwnProperty(key) && content[key] && content[key] !== "") {
+      textArray.push(content[key]);
     }
-    return (
-      <p className={classes.fieldContentP}>
-        {children} {textArray.join(", ")}
-        <PencilEditIcon onClick={handleEditClick} />
-      </p>
-    );
   }
 
-  //// simple header field with value
-  if (header && show && show !== "none")
+  if (textArray.length > 0)
     return (
       <p className={classes.fieldContentP}>
-        {show} <PencilEditIcon onClick={handleEditClick} />
-        {children}
-      </p>
-    );
-  //// empty simple header field
-  if (header && show && show === "none")
-    return (
-      <p className={`${classes.notAvailableP} ${classes.fieldContentP}`}>
-        Not Available <PencilEditIcon onClick={handleEditClick} />
-        {children}
+        {childrenLeft ? children : ""}
+        {onlyChildren ? children : textArray.join(", ")}
+        <PencilEditIcon onClick={handleEditClick} />
+        {!childrenLeft && !onlyChildren ? children : ""}
       </p>
     );
 
-  //// simple field with value
-  if ((!show && children && children !== "") || (show && show !== "none"))
-    return (
-      <p className={classes.fieldContentP}>
-        {children} <PencilEditIcon onClick={handleEditClick} />
-      </p>
-    );
-
-  //// empty field
+  //// empty fields
   return (
     <p className={`${classes.notAvailableP} ${classes.fieldContentP}`}>
-      Not Available{compound ? " " + name : ""}
+      {childrenLeft ? children : ""}
+      Not Available{name ? " " + name : ""}
       <PencilEditIcon onClick={handleEditClick} />
+      {!childrenLeft ? children : ""}
     </p>
   );
 }

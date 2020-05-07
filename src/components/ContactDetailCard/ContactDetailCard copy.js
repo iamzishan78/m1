@@ -19,7 +19,6 @@ import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { IconButton } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
 import FieldContent from "./components/FieldContent";
-import LocationCityIcon from "@material-ui/icons/LocationCity";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -180,49 +179,49 @@ export default function ContactDetailCard(props) {
                   {/* {contactData.name} */}
 
                   <FieldContent
-                    noMargin
+                    header
+                    name="name"
                     id={contactData._id}
-                    content={{ name: contactData.name }}
+                    show={contactData.name ? contactData.name : "none"}
                   >
                     {(contactData.facebook ||
                       contactData.twitte ||
                       contactData.linkedln) && (
-                      <span className={classes.socialMediaSection}>
+                      <section className={classes.socialMediaSection}>
                         {contactData.facebook && (
-                          <a
-                            href={"https://" + contactData.facebook}
-                            target="_blank"
-                          >
+                          <a href={"https://" + contactData.facebook}>
                             <FacebookIcon />
                           </a>
                         )}
                         {contactData.twitter && (
-                          <a
-                            href={"https://" + contactData.twitter}
-                            target="_blank"
-                          >
+                          <a href={"https://" + contactData.twitter}>
                             <TwitterIcon className={classes.twitterIcon} />
                           </a>
                         )}
                         {contactData.linkedln && (
-                          <a
-                            href={"https://" + contactData.linkedln}
-                            target="_blank"
-                          >
+                          <a href={"https://" + contactData.linkedln}>
                             <LinkedInIcon />
                           </a>
                         )}
-                      </span>
+                      </section>
                     )}
                   </FieldContent>
                 </h1>
                 <h4>
                   <FieldContent
-                    childrenLeft
-                    noMargin
                     name="Address"
                     id={contactData._id}
-                    content={{
+                    show={
+                      (contactData.address1 && contactData.address1 !== "") ||
+                      (contactData.address2 && contactData.address2 !== "") ||
+                      (contactData.city && contactData.city !== "") ||
+                      (contactData.state && contactData.state !== "") ||
+                      (contactData.zip && contactData.zip !== "") ||
+                      (contactData.country && contactData.country !== "")
+                        ? true
+                        : "none"
+                    }
+                    compound={{
                       address1: contactData.address1,
                       address2: contactData.address2,
                       city: contactData.city,
@@ -240,20 +239,24 @@ export default function ContactDetailCard(props) {
 
                 <h4>
                   <FieldContent
-                    childrenLeft
-                    noMargin
                     name={"Company Name Or Job Title"}
                     id={contactData._id}
-                    content={{
+                    show={
+                      (contactData.companyName &&
+                        contactData.companyName !== "") ||
+                      (contactData.jobTitle && contactData.jobTitle !== "")
+                        ? true
+                        : "none"
+                    }
+                    compound={{
                       companyName: contactData.companyName,
                       jobTitle: contactData.jobTitle,
                     }}
-                  >
-                    <LocationCityIcon
-                      className={classes.addressIcon}
-                      fontSize="small"
-                    />
-                  </FieldContent>
+                  />
+
+                  {/* {`${contactData.companyName ? contactData.companyName : ""}${
+                    contactData.companyName && contactData.jobTitle ? " - " : ""
+                  }${contactData.jobTitle ? contactData.jobTitle : ""}`} */}
                 </h4>
               </div>
             </div>
@@ -280,14 +283,13 @@ export default function ContactDetailCard(props) {
               </Grid>
               <Grid item xs={7}>
                 <FieldContent
-                  onlyChildren
+                  name="primaryEmail"
                   id={contactData._id}
-                  content={{ primaryEmail: contactData.primaryEmail }}
+                  show={
+                    contactData.primaryEmail ? contactData.primaryEmail : "none"
+                  }
                 >
-                  <a
-                    href={`mailto:${contactData.primaryEmail}`}
-                    target="_blank"
-                  >
+                  <a href={`mailto:${contactData.primaryEmail}`}>
                     {contactData.primaryEmail}
                   </a>
                 </FieldContent>
@@ -298,14 +300,15 @@ export default function ContactDetailCard(props) {
               </Grid>
               <Grid item xs={7}>
                 <FieldContent
-                  onlyChildren
+                  name="secondaryEmail"
                   id={contactData._id}
-                  content={{ secondaryEmail: contactData.secondaryEmail }}
+                  show={
+                    contactData.secondaryEmail
+                      ? contactData.secondaryEmail
+                      : "none"
+                  }
                 >
-                  <a
-                    href={`mailto:${contactData.secondaryEmail}`}
-                    target="_blank"
-                  >
+                  <a href={`mailto:${contactData.secondaryEmail}`}>
                     {contactData.secondaryEmail}
                   </a>
                 </FieldContent>
@@ -315,30 +318,27 @@ export default function ContactDetailCard(props) {
                 <p className="dataLabels">Mobile Phone</p>
               </Grid>
               <Grid item xs={7}>
-                <FieldContent
-                  id={contactData._id}
-                  content={{ mobilePhone: contactData.mobilePhone }}
-                />
+                <FieldContent name="mobilePhone" id={contactData._id}>
+                  {contactData.mobilePhone}
+                </FieldContent>
               </Grid>
 
               <Grid item xs={5}>
                 <p className="dataLabels">Home Phone</p>
               </Grid>
               <Grid item xs={7}>
-                <FieldContent
-                  id={contactData._id}
-                  content={{ homePhone: contactData.homePhone }}
-                />
+                <FieldContent name="homePhone" id={contactData._id}>
+                  {contactData.homePhone}
+                </FieldContent>
               </Grid>
 
               <Grid item xs={5}>
                 <p className="dataLabels">Alternate Phone</p>
               </Grid>
               <Grid item xs={7}>
-                <FieldContent
-                  id={contactData._id}
-                  content={{ alternatePhone: contactData.alternatePhone }}
-                />
+                <FieldContent name="alternatePhone" id={contactData._id}>
+                  {contactData.alternatePhone}
+                </FieldContent>
               </Grid>
 
               <Grid item xs={5}>
@@ -348,7 +348,17 @@ export default function ContactDetailCard(props) {
                 <FieldContent
                   name=""
                   id={contactData._id}
-                  content={{
+                  show={
+                    (contactData.address1 && contactData.address1 !== "") ||
+                    (contactData.address2 && contactData.address2 !== "") ||
+                    (contactData.city && contactData.city !== "") ||
+                    (contactData.state && contactData.state !== "") ||
+                    (contactData.zip && contactData.zip !== "") ||
+                    (contactData.country && contactData.country !== "")
+                      ? true
+                      : "none"
+                  }
+                  compound={{
                     address1: contactData.address1,
                     address2: contactData.address2,
                     city: contactData.city,
@@ -366,7 +376,19 @@ export default function ContactDetailCard(props) {
                 <FieldContent
                   name=""
                   id={contactData._id}
-                  content={{
+                  show={
+                    (contactData.address1Alt &&
+                      contactData.address1Alt !== "") ||
+                    (contactData.address2Alt &&
+                      contactData.address2Alt !== "") ||
+                    (contactData.cityAlt && contactData.cityAlt !== "") ||
+                    (contactData.stateAlt && contactData.stateAlt !== "") ||
+                    (contactData.zipAlt && contactData.zipAlt !== "") ||
+                    (contactData.countryAlt && contactData.countryAlt !== "")
+                      ? true
+                      : "none"
+                  }
+                  compound={{
                     address1Alt: contactData.address1Alt,
                     address2Alt: contactData.address2Alt,
                     cityAlt: contactData.cityAlt,
@@ -383,10 +405,9 @@ export default function ContactDetailCard(props) {
                 <p className="dataLabels">Relatives</p>
               </Grid>
               <Grid item xs={7}>
-                <FieldContent
-                  id={contactData._id}
-                  content={{ relatives: contactData.relatives }}
-                />
+                <FieldContent name="relatives" id={contactData._id}>
+                  {contactData.relatives}
+                </FieldContent>
               </Grid>
 
               <Grid item xs={5}>
@@ -394,11 +415,11 @@ export default function ContactDetailCard(props) {
               </Grid>
               <Grid item xs={7}>
                 <FieldContent
-                  onlyChildren
+                  name="linkedln"
                   id={contactData._id}
-                  content={{ linkedln: contactData.linkedln }}
+                  show={contactData.linkedln ? contactData.linkedln : "none"}
                 >
-                  <a href={`https://:${contactData.linkedln}`} target="_blank">
+                  <a href={`https://${contactData.linkedln}`}>
                     {contactData.linkedln}
                   </a>
                 </FieldContent>
@@ -409,11 +430,11 @@ export default function ContactDetailCard(props) {
               </Grid>
               <Grid item xs={7}>
                 <FieldContent
-                  onlyChildren
+                  name="facebook"
                   id={contactData._id}
-                  content={{ facebook: contactData.facebook }}
+                  show={contactData.facebook ? contactData.facebook : "none"}
                 >
-                  <a href={`https://:${contactData.facebook}`} target="_blank">
+                  <a href={`https://${contactData.facebook}`}>
                     {contactData.facebook}
                   </a>
                 </FieldContent>
@@ -424,11 +445,11 @@ export default function ContactDetailCard(props) {
               </Grid>
               <Grid item xs={7}>
                 <FieldContent
-                  onlyChildren
+                  name="twitter"
                   id={contactData._id}
-                  content={{ twitter: contactData.twitter }}
+                  show={contactData.twitter ? contactData.twitter : "none"}
                 >
-                  <a href={`https://:${contactData.twitter}`} target="_blank">
+                  <a href={`https://${contactData.twitter}`}>
                     {contactData.twitter}
                   </a>
                 </FieldContent>
@@ -438,10 +459,9 @@ export default function ContactDetailCard(props) {
                 <p className="dataLabels">Lead Source</p>
               </Grid>
               <Grid item xs={7}>
-                <FieldContent
-                  id={contactData._id}
-                  content={{ leadSource: contactData.leadSource }}
-                />
+                <FieldContent name="leadSource" id={contactData._id}>
+                  {contactData.leadSource}
+                </FieldContent>
               </Grid>
 
               <Grid item xs={5}>
