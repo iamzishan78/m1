@@ -18,8 +18,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { IconButton } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
-
-import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
+import FieldContent from "./components/FieldContent";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -111,53 +110,16 @@ const useStyles = makeStyles((theme) => ({
     margin: "3px",
     borderRadius: "2px",
   },
-  notAvialableP: { color: "#898989b0", fontSize: "13px" },
+  notAvailableP: { color: "#898989b0", fontSize: "13px" },
   leftColumnTopRigthCorner: {
-    width: "fit-content",
+    width: "max-content",
     position: "relative",
     zIndex: "600",
     height: "0",
     float: "right",
     color: "darkgray",
   },
-  divTest: {
-    "& #contPencilIcon": {
-      visibility: "hidden",
-    },
-    "&:hover #contPencilIcon": {
-      visibility: "visible",
-    },
-  },
-  pTest: {
-    fontSize: "22px",
-  },
 }));
-
-function PencilEditIcon() {
-  const classes = useStyles();
-  return (
-    <Tooltip title={"Edit"}>
-      <IconButton size="small" onClick={() => {}}>
-        <CreateTwoToneIcon id="contPencilIcon" className={classes.pTest} />
-      </IconButton>
-    </Tooltip>
-  );
-}
-
-function FieldContent({ show, children }) {
-  const classes = useStyles();
-  if (!show)
-    return (
-      <p className={`${classes.notAvialableP} ${classes.divTest}`}>
-        Not Avialable <PencilEditIcon />
-      </p>
-    );
-  return (
-    <p className={classes.divTest}>
-      {children} <PencilEditIcon />
-    </p>
-  );
-}
 
 export default function ContactDetailCard(props) {
   const classes = useStyles();
@@ -212,7 +174,7 @@ export default function ContactDetailCard(props) {
                 <Avatar name={contactData.name} size="80" round />
               </div>
               <div className={classes.userName}>
-                <h1 style={{ width: "fit-content" }}>
+                <h1 style={{ width: "max-content" }}>
                   {contactData.name}
                   {(contactData.facebook ||
                     contactData.twitte ||
@@ -282,7 +244,7 @@ export default function ContactDetailCard(props) {
                     </a>
                   </p>
                 ) : (
-                  <p className={classes.notAvialableP}>Not Avialable</p>
+                  <p className={classes.notAvailableP}>Not Available</p>
                 )}
               </Grid>
 
@@ -297,7 +259,7 @@ export default function ContactDetailCard(props) {
                     </a>
                   </p>
                 ) : (
-                  <p className={classes.notAvialableP}>Not Avialable</p>
+                  <p className={classes.notAvailableP}>Not Available</p>
                 )}
               </Grid>
 
@@ -305,33 +267,27 @@ export default function ContactDetailCard(props) {
                 <p className="dataLabels">Mobile Phone</p>
               </Grid>
               <Grid item xs={6}>
-                {contactData.mobilePhone ? (
-                  <p>{contactData.mobilePhone} </p>
-                ) : (
-                  <p className={classes.notAvialableP}>Not Avialable</p>
-                )}
+                <FieldContent name="mobilePhone" id={contactData._id}>
+                  {contactData.mobilePhone}
+                </FieldContent>
               </Grid>
 
               <Grid item xs={6}>
                 <p className="dataLabels">Home Phone</p>
               </Grid>
               <Grid item xs={6}>
-                {contactData.homePhone ? (
-                  <p>{contactData.homePhone}</p>
-                ) : (
-                  <p className={classes.notAvialableP}>Not Avialable</p>
-                )}
+                <FieldContent name="homePhone" id={contactData._id}>
+                  {contactData.homePhone}
+                </FieldContent>
               </Grid>
 
               <Grid item xs={6}>
                 <p className="dataLabels">Alternate Phone</p>
               </Grid>
               <Grid item xs={6}>
-                {contactData.alternatePhone ? (
-                  <p>{contactData.alternatePhone}</p>
-                ) : (
-                  <p className={classes.notAvialableP}>Not Avialable</p>
-                )}
+                <FieldContent name="alternatePhone" id={contactData._id}>
+                  {contactData.alternatePhone}
+                </FieldContent>
               </Grid>
 
               <Grid item xs={6}>
@@ -345,7 +301,6 @@ export default function ContactDetailCard(props) {
                 contactData.zip ||
                 contactData.country ? (
                   <p>
-                    {" "}
                     {`${contactData.address1 ? contactData.address1 : ""}${
                       contactData.address2 ? " " + contactData.address2 : ""
                     }${contactData.city ? " " + contactData.city : ""}${
@@ -355,7 +310,7 @@ export default function ContactDetailCard(props) {
                     }`}
                   </p>
                 ) : (
-                  <p className={classes.notAvialableP}>Not Avialable</p>
+                  <p className={classes.notAvailableP}>Not Available</p>
                 )}
               </Grid>
 
@@ -384,7 +339,7 @@ export default function ContactDetailCard(props) {
                     }`}
                   </p>
                 ) : (
-                  <p className={classes.notAvialableP}>Not Avialable</p>
+                  <p className={classes.notAvailableP}>Not Available</p>
                 )}
               </Grid>
             </Grid>
@@ -394,65 +349,45 @@ export default function ContactDetailCard(props) {
                 <p className="dataLabels">Relatives</p>
               </Grid>
               <Grid item xs={6}>
-                {contactData.relatives ? (
-                  <p>{contactData.relatives}</p>
-                ) : (
-                  <p className={classes.notAvialableP}>Not Avialable</p>
-                )}
+                <FieldContent name="relatives" id={contactData._id}>
+                  {contactData.relatives}
+                </FieldContent>
               </Grid>
 
               <Grid item xs={6}>
                 <p className="dataLabels">Linkedln Profile</p>
               </Grid>
               <Grid item xs={6}>
-                <FieldContent show={contactData.linkedln}>
+                <FieldContent name="linkedln" id={contactData._id}>
                   {contactData.linkedln}
                 </FieldContent>
-
-                {/* <div id="xoxoxoxoxxo" className={classes.divTest}>
-                  {contactData.linkedln ? (
-                    <p>
-                      {contactData.linkedln} <PencilEditIcon />
-                    </p>
-                  ) : (
-                    <p className={classes.notAvialableP}>
-                      Not Avialable <PencilEditIcon />
-                    </p>
-                  )}
-                </div> */}
               </Grid>
 
               <Grid item xs={6}>
                 <p className="dataLabels">Facebook Profile</p>
               </Grid>
               <Grid item xs={6}>
-                {contactData.facebook ? (
-                  <p>{contactData.facebook}</p>
-                ) : (
-                  <p className={classes.notAvialableP}>Not Avialable</p>
-                )}
+                <FieldContent name="facebook" id={contactData._id}>
+                  {contactData.facebook}
+                </FieldContent>
               </Grid>
 
               <Grid item xs={6}>
                 <p className="dataLabels">Twitter Profile</p>
               </Grid>
               <Grid item xs={6}>
-                {contactData.twitter ? (
-                  <p>{contactData.twitter}</p>
-                ) : (
-                  <p className={classes.notAvialableP}>Not Avialable</p>
-                )}
+                <FieldContent name="twitter" id={contactData._id}>
+                  {contactData.twitter}
+                </FieldContent>
               </Grid>
 
               <Grid item xs={6}>
                 <p className="dataLabels">Lead Source</p>
               </Grid>
               <Grid item xs={6}>
-                {contactData.leadSource ? (
-                  <p>{contactData.leadSource}</p>
-                ) : (
-                  <p className={classes.notAvialableP}>Not Avialable</p>
-                )}
+                <FieldContent name="leadSource" id={contactData._id}>
+                  {contactData.leadSource}
+                </FieldContent>
               </Grid>
 
               <Grid item xs={6}>
@@ -470,7 +405,7 @@ export default function ContactDetailCard(props) {
                     }`}
                   </p>
                 ) : (
-                  <p className={classes.notAvialableP}>Not Avialable</p>
+                  <p className={classes.notAvailableP}>Not Available</p>
                 )}
               </Grid>
 
@@ -493,7 +428,7 @@ export default function ContactDetailCard(props) {
                     }`}
                   </p>
                 ) : (
-                  <p className={classes.notAvialableP}>Not Avialable</p>
+                  <p className={classes.notAvailableP}>Not Available</p>
                 )}
               </Grid>
             </Grid>

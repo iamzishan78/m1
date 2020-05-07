@@ -565,8 +565,8 @@ export default function SubTable(props) {
         }));
         // history.push("/contact");
         setSubComponent(<ContactDetailCard contactData={rows[dataIndex]} />);
-        setTitle(rows[dataIndex].name);
-        setSubTitle(rows[dataIndex].primaryEmail);
+        setTitle("Contact");
+        setSubTitle(" ");
         handleOpenExpandableCard();
       }
     },
