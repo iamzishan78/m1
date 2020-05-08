@@ -78,6 +78,8 @@ const NavigationContextProvider = props => {
     ownershipFilterCount:0,
     productionFilterCount:0,
     geographyFilterCount: 0,
+    valuationFilterCount: 0,
+    aiFilterCount: 0,
     operators: null,
     filterPermitDateRange: null,
     filterSpudDateRange: null,
@@ -103,6 +105,7 @@ const NavigationContextProvider = props => {
     m1neralCehckOnOff: true,
     filterWellAppraisal: null,
     filterOwnerAppraisals: null,
+    ownerWellInterestSum: null,
   })
   return (
     <NavigationContext.Provider value={[stateNav, setStateNav]}>

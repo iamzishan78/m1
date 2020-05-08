@@ -283,6 +283,8 @@ export default function Map() {
       let ownershipFilterCount = 0;
       let productionFilterCount = 0;
       let geographyFilterCount = 0;
+      let valuationFilterCount = 0;
+      let aiFilterCount = 0;
       let totalCount = 0;
       let filterArray = [];
 
@@ -348,8 +350,8 @@ export default function Map() {
       ) {
         filterArray.push(stateNav.filterOwnerConfidence);
         isFilterSet = true;
-        // ownershipFilterCount += 1;
-        // totalCount += 1;
+        aiFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterNoOwnerCount &&
@@ -399,12 +401,14 @@ export default function Map() {
         wellFilterCount += total;
         totalCount += total;
       }
-      if (stateNav.filterWellAppraisal && stateNav.filterWellAppraisal.length > 0) {
-        let total = stateNav.filterWellAppraisal[2].length;
+      if (
+        stateNav.filterWellAppraisal &&
+        stateNav.filterWellAppraisal.length > 0
+      ) {
         filterArray.push(stateNav.filterWellAppraisal);
         isFilterSet = true;
-        wellFilterCount += total;
-        totalCount += total;
+        valuationFilterCount += 1;
+        totalCount += 1;
       }
       if (
         stateNav.filterCumulativeOil &&

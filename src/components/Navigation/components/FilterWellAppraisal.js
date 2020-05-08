@@ -34,6 +34,13 @@ export default function FilterWellAppraisal() {
     let filter;
     let min = parseInt(valueMinDisplay);
     let max = parseInt(valueMaxDisplay);
+
+    console.log('min',min)
+    console.log('max',max)
+    console.log(!min)
+    console.log(!max)
+    console.log(min<max)
+
     if (!min && !max) {
       filter = null;
     }
@@ -53,6 +60,8 @@ export default function FilterWellAppraisal() {
     else {
       filter = null;
     }
+
+    console.log('filter',filter)
 
     setStateNav(stateNav => ({
       ...stateNav,
@@ -98,8 +107,12 @@ export default function FilterWellAppraisal() {
   }, [setFilter, stateNav.appraisalWell]);
 
   const handleChangeMin = event => {
+    console.log('handle change min')
     setValueMinDisplay(event.target.value.replace(/,/g, ""));
     setAppraisalWell(event.target.id);
+    console.log(event.target.value.replace(/,/g, ""))
+    console.log(event.target.id)
+
     setStateNav(stateNav => ({ ...stateNav, appraisalWell: event.target.id }));
     if (event.target.value === "") {
       setStateNav(stateNav => ({
@@ -149,6 +162,7 @@ export default function FilterWellAppraisal() {
           Well Appraisal
       </Typography>
       <NumberFormat
+        id="appraisalWellMin"
         value={valueMinDisplay}
         onChange={handleChangeMin}
         thousandSeparator={true}
@@ -167,6 +181,7 @@ export default function FilterWellAppraisal() {
         }}
       />
       <NumberFormat
+        id="appraisalWellMax"
         value={valueMaxDisplay}
         onChange={handleChangeMax}
         thousandSeparator={true}

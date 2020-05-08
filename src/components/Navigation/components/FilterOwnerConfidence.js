@@ -155,7 +155,7 @@ export default function FilterOwnerConfidence() {
           Owner Confidence Score
       </Typography>
       <NumberFormat
-        id="OwnerCountMin"
+        id="OwnerConfidenceMin"
         value={valueMinDisplay}
         onChange={handleChangeMin}
         thousandSeparator={true}
@@ -174,7 +174,7 @@ export default function FilterOwnerConfidence() {
         }}
       />
       <NumberFormat
-        id="OwnerCountMax"
+        id="OwnerConfidenceMax"
         value={valueMaxDisplay}
         onChange={handleChangeMax}
         thousandSeparator={true}

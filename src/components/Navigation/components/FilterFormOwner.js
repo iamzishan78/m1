@@ -59,6 +59,10 @@ export default function FilterFormOwner() {
   const [interests, setInterests] = useState(interestList);
   const [ownerTypes, setOwnerTypes] = useState(ownerTypesList);
 
+
+  // there is an opportunity to break these out into seperate components 
+  // instead of including it on a form. 
+    
   const setFilterInterest = interestNames => {
     let filter;
     let filters = [];

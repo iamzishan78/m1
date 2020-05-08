@@ -51,7 +51,7 @@ export default function FilterOwnerCount() {
     else {
       filter = null;
     }
-
+    console.log('set filter',filter)
     setStateNav(stateNav => ({
       ...stateNav,
       filterOwnerWellInterestSum: filter
@@ -95,8 +95,12 @@ export default function FilterOwnerCount() {
   }, [setFilter, stateNav.ownerWellInterestSum]);
 
   const handleChangeMin = event => {
+    console.log('handle change min')
     setValueMinDisplay(event.target.value.replace(/,/g, ""));
     setOwnerWellInterestSum(event.target.id);
+    console.log(event.target.value.replace(/,/g, ""));
+    console.log(event.target.id);
+    console.log(event.target)
     setStateNav(stateNav => ({ ...stateNav, ownerWellInterestSum: event.target.id }));
     if (event.target.value === "") {
       setStateNav(stateNav => ({
@@ -107,6 +111,7 @@ export default function FilterOwnerCount() {
   };
 
   const handleChangeMax = event => {
+    console.log('handle change max')
     setValueMaxDisplay(event.target.value.replace(/,/g, ""));
     setOwnerWellInterestSum(event.target.id);
     setStateNav(stateNav => ({ ...stateNav, ownerWellInterestSum: event.target.id }));
@@ -126,11 +131,11 @@ export default function FilterOwnerCount() {
   };
 
 
-  useEffect(() => {
-    if (stateNav.filterOwnerWellInterestSum && stateNav.filterOwnerWellInterestSum.length > 1) {
-      setNoOwners(true)
-    }
-  },[stateNav.filterOwnerWellInterestSum])
+  // useEffect(() => {
+  //   if (stateNav.filterOwnerWellInterestSum && stateNav.filterOwnerWellInterestSum.length > 1) {
+  //     setNoOwners(true)
+  //   }
+  // },[stateNav.filterOwnerWellInterestSum])
   
   return (
     <div>
@@ -141,6 +146,7 @@ export default function FilterOwnerCount() {
           Owner Well Interest Sum
       </Typography>
       <NumberFormat
+        id="OwnerInterestSumMin"
         value={valueMinDisplay}
         onChange={handleChangeMin}
         thousandSeparator={true}
@@ -158,7 +164,9 @@ export default function FilterOwnerCount() {
           }
         }}
       />
+
       <NumberFormat
+        id="OwnerInterestSumMax"
         value={valueMaxDisplay}
         onChange={handleChangeMax}
         thousandSeparator={true}
