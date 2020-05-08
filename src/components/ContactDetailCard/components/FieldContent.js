@@ -171,7 +171,9 @@ export default function FieldContent({
       awaitRefetchQueries: true,
     });
 
-    setEdit(null);
+    if (fieldsCount <= 1) {
+      setEdit(null);
+    }
   };
 
   let inputsArray = [];
