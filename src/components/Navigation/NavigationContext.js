@@ -59,6 +59,7 @@ const NavigationContextProvider = props => {
     typeName:[],
     profileName:[],
     ownerCountWell: [],
+    appraisalWell: [],
     interestName:[],
     defaultOn: null,
     m1neralDefaultFilters: null,
@@ -100,6 +101,8 @@ const NavigationContextProvider = props => {
     filterHasOwnerCount: null,
     m1neralDefaultsOnOff: true,
     m1neralCehckOnOff: true,
+    filterWellAppraisal: null,
+    filterOwnerAppraisals: null,
   })
   return (
     <NavigationContext.Provider value={[stateNav, setStateNav]}>

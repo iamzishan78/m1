@@ -1,58 +1,137 @@
-import React, {useContext, useEffect} from 'react';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { NavigationContext } from '../NavigationContext';
+import React, { useState, useContext } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@material-ui/core/TextField";
+import { NavigationContext } from "../NavigationContext";
+import FilterOwnerCount from "./FilterOwnerCount";
+import FilterOwnerInterestSum from "./FilterOwnerInterestSum";
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: "flex",
+    flexWrap: "wrap",
+    flexDirection: "column",
+    justifyContent: "space-around",
+    flexGrow: 1
+  },
+  row: {
+    display: "flex",
+    flexWrap: "wrap",
+    flexDirection: "row"
+  },
+  formControl: {
+    margin: "15px",
+    // minWidth: 120,
+    // maxWidth: 300,
+    color: "black"
+  }
+}));
+
+const interestList = [
+  "ROYALTY INTEREST",
+  "OVERRIDE ROYALTY",
+  "WORKING INTEREST",
+  "PRODUCTION PAYMENT"
+];
 
 
+const ownerTypesList = [
+  "RELIGIOUS INSTITUTIONS",
+  "GOVERNMENTAL BODIES",
+  "NON PROFITS",
+  "TRUSTS",
+  "CORPORATIONS",
+  "EDUCATIONAL INSTITUTIONS",
+  "INDIVIDUALS",
+  "UNKNOWN"
+];
 
-const statusList = ["$0 - $2,500", "$2,500 - $10,000", "etc"];
-
-
+const appraisalList = ["$0 - $1000", 
+                    "$1000 - $10,000", 
+                    "$10,000 - $25,000",
+                    "$25,000+"];
 
 
 
 export default function FilterOwnerAppraisalValue() {
-    const [stateNav, setStateNav] = useContext(NavigationContext)
-    const [statusName, setStatusName] = React.useState(stateNav.statusName ? stateNav.statusName : null);
+  const classes = useStyles();
+  const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [appraisalName, setAppraisalName] = useState(
+    stateNav.appraisalName ? stateNav.appraisalName : []
+  );
+  const [appraisals, setAppraisals] = useState(appraisalList);
 
-
-    const handleStatusChange = value => {
-      let filter;
-      if(value && value.length) {
-        filter = ['match', ['get', 'bbbb'], value, true, false]
-        setStateNav(stateNav => ({ ...stateNav, statusName:value}))
-        setStatusName(value)
+  const setFilterAppraisal = appraisalName => {
+    let filter;
+    let filters = [];
+    let check;
+    if (appraisalName) {
+      check = appraisalName.map(val => val);
+      check.forEach(option => {
+        if (option === "$0 - $1000") {
+          filters.push(["get", "ownerAppraisalLess1k"]);
+        }
+        if (option === "$1000 - $10,000") {
+          filters.push(["get", "ownerAppraisal1to10k"]);
+        }
+        if (option === "$10,000 - $25,000") {
+          filters.push(["get", "ownerAppraisal10to25k"]);
+        }
+        if (option === "$25,000+") {
+          filters.push(["get", "ownerAppraisalOver25k"]);
+        }
+      });
+      if (filters && filters.length > 0) {
+        filters.unshift("any");
+        filter = filters;
+        setStateNav(stateNav => ({
+          ...stateNav,
+          filterOwnerAppraisals: filter
+        }));
+      } else {
+        filter = null;
+        setStateNav(stateNav => ({
+          ...stateNav,
+          filterOwnerAppraisals: filter
+        }));
       }
-      else {
-        filter = null
-        setStateNav(stateNav => ({ ...stateNav, statusName: null}))
-      }
-      setStateNav(stateNav => ({ ...stateNav, filterWellStatus: filter}))
-      };
-  
+    }
+  };
 
+  const handleChangeAppraisal = event => {
+    setAppraisalName(event);
+    setFilterAppraisal(event);
+    setStateNav(stateNav => ({
+      ...stateNav,
+      appraisalName: event
+    }));
+  };
 
-
-
-   
   return (
-    <Autocomplete 
-    //defaultValue={stateNav.statusName}
-    onChange={(event, newValue) => {
-         handleStatusChange(newValue);
-       }}
-    multiple
-    options={statusList}
-    renderInput={params => (
-      <TextField
-        {...params}
-        variant="outlined"
-        label="Individual Owner Appraisal Value Range"
-        placeholder=""
-        fullWidth={true}
-      />
-    )}  
-    disableListWrap
-    />
-  )
+    <div className={classes.row}>
+      <div className={classes.root}>
+        <Autocomplete
+          className={classes.formControl}
+          defaultValue={appraisalName}
+          onChange={(event, newValue) => {
+            handleChangeAppraisal(newValue);
+          }}
+          multiple
+          options={appraisals.map(option => option)}
+          renderInput={params => (
+            <form autoComplete="off">
+              <TextField
+                {...params}
+                variant="outlined"
+                label="Owner Appraisals"
+                placeholder=""
+                fullWidth={true}
+              />
+            </form>
+          )}
+          disableListWrap
+        />
+      </div>
+    </div>
+  );
 }

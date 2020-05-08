@@ -26,9 +26,8 @@ export default function FilterWellAppraisal() {
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
   const [error, setError] = useState(false);
   const [errorText, setErrorText] = useState("");
-  const [type, setType] = useState("");
-  const [ownerCountWell, setOwnerCountWell] = useState(
-    stateNav.ownerCountWell ? stateNav.ownerCountWell : []
+  const [appraisalWell, setAppraisalWell] = useState(
+    stateNav.appraisalWell ? stateNav.appraisalWell : []
   );
 
   const setFilter = useCallback(() => {
@@ -39,34 +38,32 @@ export default function FilterWellAppraisal() {
       filter = null;
     }
     if (!min && max) {
-      filter = ["all", ["<=", ["get", "wellAppraisal"], max]];
-      console.log("add filter", filter);
+      filter = ["all", ["<=", ["get", "appraisalValueSum"], max]];
     } else if (min && !max) {
-      filter = ["all", [">=", ["get", "wellAppraisal"], min]];
-      console.log("add filter", filter);
+      filter = ["all", [">=", ["get", "appraisalValueSum"], min]];
     } else if (min && max) {
       if (min < max) {
         filter = [
           "all",
-          [">=", ["get", "wellAppraisal"], min],
-          ["<=", ["get", "wellAppraisal"], max]
+          [">=", ["get", "appraisalValueSum"], min],
+          ["<=", ["get", "appraisalValueSum"], max]
         ];
-        console.log("add filter", filter);
       }
     } 
     else {
       filter = null;
     }
 
-    // setStateNav(stateNav => ({
-    //   ...stateNav,
-    //   filterOwnerCount: filter
-    // }));
+    setStateNav(stateNav => ({
+      ...stateNav,
+      filterWellAppraisal: filter
+    }));
+
   }, [setStateNav, valueMaxDisplay, valueMinDisplay]);
 
   useEffect(() => {
     const recall = () => {
-      let checkStateNav = stateNav.filterOwnerConfidence;
+      let checkStateNav = stateNav.filterWellAppraisal;
       if (!valueMinDisplay && !valueMaxDisplay) {
         if (checkStateNav && checkStateNav.length === 3) {
           const recallMin = checkStateNav[1][2];
@@ -94,32 +91,32 @@ export default function FilterWellAppraisal() {
     };
   }, [stateNav, valueMaxDisplay, valueMinDisplay]);
 
-  // useEffect(() => {
-  //   if (stateNav.ownerCountWell) {
-  //     setFilter();
-  //   }
-  // }, [setFilter, stateNav.ownerCountWell]);
+  useEffect(() => {
+    if (stateNav.appraisalWell) {
+      setFilter();
+    }
+  }, [setFilter, stateNav.appraisalWell]);
 
   const handleChangeMin = event => {
     setValueMinDisplay(event.target.value.replace(/,/g, ""));
-    //setOwnerCountWell(event.target.id);
-    //setStateNav(stateNav => ({ ...stateNav, ownerCountWell: event.target.id }));
+    setAppraisalWell(event.target.id);
+    setStateNav(stateNav => ({ ...stateNav, appraisalWell: event.target.id }));
     if (event.target.value === "") {
       setStateNav(stateNav => ({
         ...stateNav,
-        filterOwnerCount: null
+        filterWellAppraisal: null
       }));
     }
   };
 
   const handleChangeMax = event => {
     setValueMaxDisplay(event.target.value.replace(/,/g, ""));
-    //setOwnerCountWell(event.target.id);
-    //setStateNav(stateNav => ({ ...stateNav, ownerCountWell: event.target.id }));
+    setAppraisalWell(event.target.id);
+    setStateNav(stateNav => ({ ...stateNav, appraisalWell: event.target.id }));
     if (event.target.value === "") {
       setStateNav(stateNav => ({
         ...stateNav,
-        filterOwnerCount: null
+        filterWellAppraisal: null
       }));
     }
   };
@@ -152,7 +149,6 @@ export default function FilterWellAppraisal() {
           Well Appraisal
       </Typography>
       <NumberFormat
-        id="OwnerCountMin"
         value={valueMinDisplay}
         onChange={handleChangeMin}
         thousandSeparator={true}
@@ -166,12 +162,11 @@ export default function FilterWellAppraisal() {
         InputProps={{
           inputProps: {
             min: 0,
-            max: 1,
+            max: Number.MAX_SAFE_INTEGER - 1,
           }
         }}
       />
       <NumberFormat
-        id="OwnerCountMax"
         value={valueMaxDisplay}
         onChange={handleChangeMax}
         thousandSeparator={true}
@@ -187,7 +182,7 @@ export default function FilterWellAppraisal() {
         InputProps={{
           inputProps: {
             min: 0,
-            max: 1,
+            max: Number.MAX_SAFE_INTEGER,
           }
         }}
       />

@@ -3,7 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import NumberFormat from "react-number-format";
-import Switch from '@material-ui/core/Switch';
 import { NavigationContext } from "../NavigationContext";
 
 const useStyles = makeStyles({
@@ -18,13 +17,6 @@ const useStyles = makeStyles({
     maxWidth: 250,
     marginLeft: 20
   },
-  noOwners: {
-    padding: "6px 0px",
-    display: "flex",
-  },
-  noOwnersToggle:{
-    marginLeft: 20,
-  }
 });
 
 export default function FilterOwnerCount() {
@@ -33,7 +25,6 @@ export default function FilterOwnerCount() {
   const [valueMinDisplay, setValueMinDisplay] = useState("");
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
   const [noOwners , setNoOwners] = useState(false);
-  const [owners , setOwners] = useState(false);
   const [ownerWellInterestSum, setOwnerWellInterestSum] = useState(
     stateNav.ownerWellInterestSum ? stateNav.ownerWellInterestSum : []
   );
@@ -48,17 +39,14 @@ export default function FilterOwnerCount() {
     }
     if (!min && max) {
       filter = ["all", ["<=", ["get", "ownerInterestSum"], max]];
-      console.log("add filter", filter);
     } else if (min && !max) {
       filter = ["all", [">=", ["get", "ownerInterestSum"], min]];
-      console.log("add filter", filter);
     } else if (min && max) {
         filter = [
           "all",
           [">=", ["get", "ownerInterestSum"], min],
           ["<=", ["get", "ownerInterestSum"], max]
         ];
-        console.log("add filter", filter);
     } 
     else {
       filter = null;
@@ -137,39 +125,6 @@ export default function FilterOwnerCount() {
     }
   };
 
-  // const toggleNoOwners = () => {
-  //   setNoOwners(noOwners => !noOwners)
-  // } 
-
-  // const toggleOwners = () => {
-  //   setOwners(owners => !owners)
-  // }
-  
-  // useEffect(() => {
-  //   let filter;
-  //   if (noOwners) {
-  //     filter = ["any",["==",[ "get", "hasOwner"], false]] 
-  //   } else {
-  //     filter = null;
-  //   }
-  //   setStateNav(stateNav => ({
-  //     ...stateNav,
-  //     filterOwnerWellInterestSum: filter
-  //   }));
-  // },[noOwners, setStateNav])
-
-  // useEffect(() => {
-  //   let filter;
-  //   if (owners) {
-  //     filter = ["any",["==",[ "get", "hasOwner"], true]] 
-  //   } else {
-  //     filter = null;
-  //   }
-  //   setStateNav(stateNav => ({
-  //     ...stateNav,
-  //     filterOwnerWellInterestSum: filter
-  //   }));
-  // },[noOwners, owners, setStateNav])
 
   useEffect(() => {
     if (stateNav.filterOwnerWellInterestSum && stateNav.filterOwnerWellInterestSum.length > 1) {
@@ -186,7 +141,6 @@ export default function FilterOwnerCount() {
           Owner Well Interest Sum
       </Typography>
       <NumberFormat
-        id="OwnerCountMin"
         value={valueMinDisplay}
         onChange={handleChangeMin}
         thousandSeparator={true}
@@ -205,7 +159,6 @@ export default function FilterOwnerCount() {
         }}
       />
       <NumberFormat
-        id="OwnerCountMax"
         value={valueMaxDisplay}
         onChange={handleChangeMax}
         thousandSeparator={true}

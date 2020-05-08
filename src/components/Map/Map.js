@@ -399,6 +399,13 @@ export default function Map() {
         wellFilterCount += total;
         totalCount += total;
       }
+      if (stateNav.filterWellAppraisal && stateNav.filterWellAppraisal.length > 0) {
+        let total = stateNav.filterWellAppraisal[2].length;
+        filterArray.push(stateNav.filterWellAppraisal);
+        isFilterSet = true;
+        wellFilterCount += total;
+        totalCount += total;
+      }
       if (
         stateNav.filterCumulativeOil &&
         stateNav.filterCumulativeOil.length > 0
@@ -666,6 +673,20 @@ export default function Map() {
         ownershipFilterCount += total;
         totalCount += total;
       }
+
+      if (
+        stateNav.filterOwnerAppraisals &&
+        stateNav.filterOwnerAppraisals.length > 0
+      ) {
+        let removeAny = 1;
+        let numberFiltes = stateNav.filterOwnerAppraisals.length;
+        let total = numberFiltes - removeAny;
+        filterArray.push(stateNav.filterOwnerAppraisals);
+        isFilterSet = true;
+        ownershipFilterCount += total;
+        totalCount += total;
+      }
+
       if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
         let total = stateNav.filterBasin[2].length;
         filterArray.push(stateNav.filterBasin);
@@ -819,6 +840,8 @@ export default function Map() {
     stateNav.filterTrackedWells,
     stateNav.filterOwnerConfidence,
     stateNav.filterOwnerWellInterestSum,
+    stateNav.filterWellAppraisal,
+    stateNav.filterOwnerAppraisals,
   ]);
 
   useEffect(() => {
