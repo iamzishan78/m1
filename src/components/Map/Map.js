@@ -286,6 +286,7 @@ export default function Map() {
       let valuationFilterCount = 0;
       let aiFilterCount = 0;
       let totalCount = 0;
+      let tagFilterCount=0;
       let filterArray = [];
 
       if (
@@ -368,7 +369,7 @@ export default function Map() {
       ) {
         filterArray.push(stateNav.filterTrackedWells);
         isFilterSet = true;
-        wellFilterCount += 1;
+        tagFilterCount += 1;
         totalCount += 1;
       }
 
@@ -687,7 +688,7 @@ export default function Map() {
         let total = numberFiltes - removeAny;
         filterArray.push(stateNav.filterOwnerAppraisals);
         isFilterSet = true;
-        ownershipFilterCount += total;
+        valuationFilterCount += total;
         totalCount += total;
       }
 
@@ -767,6 +768,9 @@ export default function Map() {
         ownershipFilterCount: ownershipFilterCount,
         wellFilterCount: wellFilterCount,
         totalFilterCount: totalCount,
+        valuationFilterCount: valuationFilterCount,
+        tagFilterCount: tagFilterCount, 
+        aiFilterCount: aiFilterCount,
       }));
 
       if (isFilterSet) {

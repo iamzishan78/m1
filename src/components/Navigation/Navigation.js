@@ -1008,14 +1008,13 @@ export default function Navigation(props) {
                     classes={{ root: classes.tab }}
                     aria-label="Value"
                     icon={
-                      // <Badge
-                      //   color="secondary"
-                      // >
+                      <Badge
+                        badgeContent={stateNav.valuationFilterCount}
+                        color="secondary"
+                      >
                       <ValuationIcon color="#fff" opacity="1" />
-                      // <div className={classes.betaText}>
-                      //   BETA
-                      // </div>
-                      // </Badge>
+                      </Badge>
+
                     }
                     aria-label="value"
                   />
@@ -1025,14 +1024,13 @@ export default function Navigation(props) {
                     value={5}
                     classes={{ root: classes.tab }}
                     icon={
-                      // <Badge
-                      //   color="secondary"
-                      // >
+                      <Badge
+                        badgeContent={stateNav.tagFilterCount}
+                        color="secondary"
+                      >
                       <LocalOfferIcon htmlColor="#fff" opacity="1" />
-                      //   <div className={classes.betaText}>
-                      //     BETA
-                      //   </div>
-                      // </Badge>
+                      </Badge>
+
                     }
                     aria-label="tags"
                   />
@@ -1041,14 +1039,12 @@ export default function Navigation(props) {
                     value={6}
                     classes={{ root: classes.tab }}
                     icon={
-                      // <Badge
-                      //   color="secondary"
-                      // >
+                      <Badge
+                        badgeContent={stateNav.aiFilterCount}
+                        color="secondary"
+                      >
                       <PredictiveIcon color="#fff" opacity="1" />
-                      //  <div className={classes.betaText}>
-                      //     beta
-                      //   </div>
-                      // </Badge>
+                      </Badge>
                     }
                     aria-label="ai"
                   />
