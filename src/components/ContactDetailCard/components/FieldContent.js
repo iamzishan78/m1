@@ -6,6 +6,9 @@ import { IconButton } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 import TextField from "@material-ui/core/TextField";
+import EditionPopover from "./EditionPopover";
+import { useMutation } from "@apollo/react-hooks";
+import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 
 const useStyles = makeStyles((theme) => ({
   fieldContentP: {
@@ -40,19 +43,33 @@ const useStyles = makeStyles((theme) => ({
   notAvailableP: { color: "#898989b0", fontSize: "13px" },
 }));
 
-function PencilEditIcon({ onClick }) {
+function PencilEditIcon({ onClick, anchorEl, setAnchorEl, content }) {
   const classes = useStyles();
   return (
-    <Tooltip title={"Edit"}>
-      <IconButton
-        size="small"
-        onClick={(e) => {
-          onClick(e);
-        }}
-      >
-        <CreateTwoToneIcon id="contPencilIcon" className={classes.pencilIcon} />
-      </IconButton>
-    </Tooltip>
+    <React.Fragment>
+      <EditionPopover anchorEl={anchorEl} setAnchorEl={setAnchorEl}>
+        <Grid container spacing={0} style={{ width: "200px" }}>
+          {content.map((textF) => (
+            <Grid item xs={12}>
+              {textF}
+            </Grid>
+          ))}
+        </Grid>
+      </EditionPopover>
+      <Tooltip title={"Edit"}>
+        <IconButton
+          size="small"
+          onClick={(e) => {
+            onClick(e);
+          }}
+        >
+          <CreateTwoToneIcon
+            id="contPencilIcon"
+            className={classes.pencilIcon}
+          />
+        </IconButton>
+      </Tooltip>
+    </React.Fragment>
   );
 }
 
@@ -74,14 +91,16 @@ export default function FieldContent({
   //////////// noMargin - no p tag margin  //optional//////////////////////////////////////////////////////////////
 
   const classes = useStyles({ noMargin });
-  const [edit, setEdit] = useState(false);
+  const [edit, setEdit] = useState(null);
   const [editedField, setEditedField] = useState({});
   const [editContent, setEditContent] = useState({ content });
   const [fieldsCount, setFieldsCount] = useState(0);
 
+  const [updateContact] = useMutation(UPDATECONTACT);
+
   // useEffect(() => {
-  //   console.log("ttttttttttttt ", editContent);
-  // }, [editContent]);
+  //   console.log("ttttttttttttt ", edit);
+  // }, [edit]);
 
   useEffect(() => {
     if (content) {
@@ -111,32 +130,44 @@ export default function FieldContent({
   }, [edit]);
 
   const handleEditClick = (e) => {
+    e.persist();
     e.preventDefault();
-    setEdit(!edit);
+    setEdit(!edit ? e.currentTarget : null);
   };
 
-  const handleUpdating = (e, fieldName) => {
-    /////////////////editContent//////////////////////
+  const handleUpdating = (event, fieldName) => {
+    /////////////////editContent////////fieldName//////////////
+    // {  _id:id,[fieldName]:fieldName    }
+    updateContact({
+      variables: {
+        contact: { _id: id, [fieldName]: editContent[fieldName] },
+      },
+      refetchQueries: ["getContacts", "getContactsByOwnerId"],
+      awaitRefetchQueries: true,
+    });
   };
 
+  let inputsArray = [];
   if (edit) {
-    let inputsArray = [];
     for (const fieldName in editContent) {
       if (editContent.hasOwnProperty(fieldName)) {
         inputsArray.push(
           <TextField
+            key={"fieldContentInput" + fieldName}
             id={"fieldContentInput" + fieldName}
             className={classes.editTextField}
             variant="outlined"
             size="small"
-            fullWidth={fieldsCount <= 1}
+            fullWidth
             label={
               fieldsCount > 1
                 ? fieldName.charAt(0).toUpperCase() + fieldName.slice(1)
                 : null
             }
             multiline
-            value={editContent[fieldName]}
+            value={
+              editContent[fieldName] === null ? "" : editContent[fieldName]
+            }
             onChange={(e) => {
               e.persist();
               setEditContent((editContent) => ({
@@ -152,7 +183,7 @@ export default function FieldContent({
             }}
             onBlur={() => {
               if (fieldsCount <= 1) {
-                setEdit(false);
+                setEdit(null);
               }
               setEditContent((editContent) => ({
                 ...editContent,
@@ -163,7 +194,10 @@ export default function FieldContent({
         );
       }
     }
-    return inputsArray;
+
+    if (fieldsCount <= 1) {
+      return inputsArray; /////return an input if only one field
+    }
   }
 
   let textArray = [];
@@ -173,23 +207,25 @@ export default function FieldContent({
     }
   }
 
-  if (textArray.length > 0)
-    return (
-      <p className={classes.fieldContentP}>
-        {childrenLeft ? children : ""}
-        {onlyChildren ? children : textArray.join(", ")}
-        <PencilEditIcon onClick={handleEditClick} />
-        {!childrenLeft && !onlyChildren ? children : ""}
-      </p>
-    );
-
-  //// empty fields
   return (
-    <p className={`${classes.notAvailableP} ${classes.fieldContentP}`}>
-      {childrenLeft ? children : ""}
-      Not Available{name ? " " + name : ""}
-      <PencilEditIcon onClick={handleEditClick} />
-      {!childrenLeft ? children : ""}
+    <p
+      className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${
+        classes.fieldContentP
+      }`}
+    >
+      {childrenLeft && !onlyChildren ? children : ""}
+      {textArray.length > 0
+        ? onlyChildren
+          ? children
+          : textArray.join(", ")
+        : `${name ? name + " " : ""} Not Available`}
+      <PencilEditIcon
+        anchorEl={edit}
+        setAnchorEl={setEdit}
+        content={inputsArray}
+        onClick={handleEditClick}
+      />
+      {!childrenLeft && !onlyChildren ? children : ""}
     </p>
   );
 }

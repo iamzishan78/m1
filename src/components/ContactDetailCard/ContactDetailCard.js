@@ -102,7 +102,13 @@ const useStyles = makeStyles((theme) => ({
     // marginLeft: "15px",
     float: "right",
   },
-  mainGridContainer: { height: "100%", "& a": { color: "#12ABE0" } },
+  mainGridContainer: {
+    height: "100%",
+    "& a": { color: "#12ABE0" },
+    "& .MuiPopover-paper": {
+      zIndex: "1700",
+    },
+  },
   twitterIcon: {
     background: "#17AADD",
     color: "#fff",
@@ -119,7 +125,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: "600",
     height: "0",
     float: "right",
-    color: "darkgray",
+    color: "#757575",
   },
 }));
 
@@ -154,7 +160,7 @@ export default function ContactDetailCard(props) {
               {contactData.primaryEmail && (
                 <Tooltip title={"Send Email"}>
                   <a href={"mailto:" + contactData.primaryEmail}>
-                    <IconButton size="small" style={{ color: "darkgrey" }}>
+                    <IconButton size="small" style={{ color: "#757575" }}>
                       <MailOutlineIcon />
                     </IconButton>
                   </a>
@@ -164,7 +170,7 @@ export default function ContactDetailCard(props) {
               <Tooltip title={"Delete Contact"}>
                 <IconButton
                   size="small"
-                  style={{ color: "darkgrey" }}
+                  style={{ color: "#757575" }}
                   onClick={() => {}}
                 >
                   <DeleteIcon />
