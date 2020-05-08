@@ -164,7 +164,7 @@ export default function FieldContent({
         contact: {
           _id: id,
           [fieldName]: event.target.value.trim(),
-          lastUpdateBy: user._id,
+          lastUpdateBy: user._id, ///stateApp.user////temporary while signed user fixed
         },
       },
       refetchQueries: ["getContacts", "getContactsByOwnerId"],

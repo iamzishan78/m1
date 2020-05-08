@@ -202,7 +202,12 @@ export default function ContactDetailCard(props) {
                       <span className={classes.socialMediaSection}>
                         {contactData.facebook && (
                           <a
-                            href={"https://" + contactData.facebook}
+                            href={`${
+                              !contactData.facebook.startsWith("http") &&
+                              !contactData.facebook.startsWith("//")
+                                ? "//"
+                                : ""
+                            }${contactData.facebook}`}
                             target="_blank"
                           >
                             <FacebookIcon />
@@ -210,7 +215,12 @@ export default function ContactDetailCard(props) {
                         )}
                         {contactData.twitter && (
                           <a
-                            href={"https://" + contactData.twitter}
+                            href={`${
+                              !contactData.twitter.startsWith("http") &&
+                              !contactData.twitter.startsWith("//")
+                                ? "//"
+                                : ""
+                            }${contactData.twitter}`}
                             target="_blank"
                           >
                             <TwitterIcon className={classes.twitterIcon} />
@@ -218,7 +228,12 @@ export default function ContactDetailCard(props) {
                         )}
                         {contactData.linkedln && (
                           <a
-                            href={"https://" + contactData.linkedln}
+                            href={`${
+                              !contactData.linkedln.startsWith("http") &&
+                              !contactData.linkedln.startsWith("//")
+                                ? "//"
+                                : ""
+                            }${contactData.linkedln}`}
                             target="_blank"
                           >
                             <LinkedInIcon />
@@ -410,9 +425,19 @@ export default function ContactDetailCard(props) {
                   id={contactData._id}
                   content={{ linkedln: contactData.linkedln }}
                 >
-                  <a href={`https://:${contactData.linkedln}`} target="_blank">
-                    {contactData.linkedln}
-                  </a>
+                  {contactData.linkedln && (
+                    <a
+                      href={`${
+                        !contactData.linkedln.startsWith("http") &&
+                        !contactData.linkedln.startsWith("//")
+                          ? "//"
+                          : ""
+                      }${contactData.linkedln}`}
+                      target="_blank"
+                    >
+                      {contactData.linkedln}
+                    </a>
+                  )}
                 </FieldContent>
               </Grid>
 
@@ -425,9 +450,19 @@ export default function ContactDetailCard(props) {
                   id={contactData._id}
                   content={{ facebook: contactData.facebook }}
                 >
-                  <a href={`https://:${contactData.facebook}`} target="_blank">
-                    {contactData.facebook}
-                  </a>
+                  {contactData.facebook && (
+                    <a
+                      href={`${
+                        !contactData.facebook.startsWith("http") &&
+                        !contactData.facebook.startsWith("//")
+                          ? "//"
+                          : ""
+                      }${contactData.facebook}`}
+                      target="_blank"
+                    >
+                      {contactData.facebook}
+                    </a>
+                  )}
                 </FieldContent>
               </Grid>
 
@@ -440,9 +475,19 @@ export default function ContactDetailCard(props) {
                   id={contactData._id}
                   content={{ twitter: contactData.twitter }}
                 >
-                  <a href={`https://:${contactData.twitter}`} target="_blank">
-                    {contactData.twitter}
-                  </a>
+                  {contactData.twitter && (
+                    <a
+                      href={`${
+                        !contactData.twitter.startsWith("http") &&
+                        !contactData.twitter.startsWith("//")
+                          ? "//"
+                          : ""
+                      }${contactData.twitter}`}
+                      target="_blank"
+                    >
+                      {contactData.twitter}
+                    </a>
+                  )}
                 </FieldContent>
               </Grid>
 

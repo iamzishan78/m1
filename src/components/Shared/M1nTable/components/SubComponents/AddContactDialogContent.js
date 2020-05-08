@@ -15,6 +15,9 @@ import { UPDATECONTACT } from "../../../../../graphQL/useMutationUpdateContact";
 import Taps from "../../../Taps";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
+import { USERBYEMAIL } from "../../../../../graphQL/useQueryUserByEmail"; ///////temporary  while signed user fixed
+import { AppContext } from "../../../../../AppContext"; ///////temporary  while signed user fixed
+
 const phonenumber = (inputtxt) => {
   if (inputtxt.match(/^([0-9]||-|\(|\))+$/) !== null) {
     return true;
@@ -24,7 +27,8 @@ const phonenumber = (inputtxt) => {
 };
 const email = (inputtxt) => {
   if (
-    inputtxt.match(/^(([0-9a-zA-Z]|\.)+@?[0-9a-zA-Z]*\.?[0-9a-zA-Z]*)?$/) !== null
+    inputtxt.match(/^(([0-9a-zA-Z]|\.)+@?[0-9a-zA-Z]*\.?[0-9a-zA-Z]*)?$/) !==
+    null
   ) {
     return true;
   } else {
@@ -84,6 +88,29 @@ export default function AddContactDialogContent(props) {
   ] = useLazyQuery(CONTACTSBYOWNERSID);
   const [addContact] = useMutation(ADDCONTACT);
   const [updateContact] = useMutation(UPDATECONTACT);
+
+  //////begin////////temporary  while signed user fixed
+  const [stateApp] = React.useContext(AppContext);
+  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
+  const [user, setUser] = useState({ _id: "" });
+
+  useEffect(() => {
+    if (stateApp && stateApp.user && stateApp.user.email) {
+      getUserByEmail({
+        variables: {
+          userEmail: stateApp.user.email,
+        },
+      });
+    }
+  }, [stateApp.user.email]);
+
+  useEffect(() => {
+    if (dataUser && dataUser.userByEmail) {
+      setUser(dataUser.userByEmail);
+    }
+  }, [dataUser]);
+
+  /////end/////////temporary while signed user fixed
 
   useEffect(() => {
     if (props.parent) {
@@ -168,16 +195,16 @@ export default function AddContactDialogContent(props) {
         variables: {
           contact: {
             _id: existingContact._id,
-            name: existingContact.name,
-            address1: existingContact.address1,
-            address2: existingContact.address2,
-            city: existingContact.city,
-            country: existingContact.country,
-            state: existingContact.state,
-            zip: existingContact.zip,
-            mobilePhone: existingContact.mobilePhone,
-            homePhone: existingContact.homePhone,
-            primaryEmail: existingContact.primaryEmail,
+            // name: existingContact.name,
+            // address1: existingContact.address1,
+            // address2: existingContact.address2,
+            // city: existingContact.city,
+            // country: existingContact.country,
+            // state: existingContact.state,
+            // zip: existingContact.zip,
+            // mobilePhone: existingContact.mobilePhone,
+            // homePhone: existingContact.homePhone,
+            // primaryEmail: existingContact.primaryEmail,
             owners: [...existingContact.owners, props.parent],
           },
         },
@@ -194,7 +221,7 @@ export default function AddContactDialogContent(props) {
       //////add new///// newContact ////////////
       addContact({
         variables: {
-          contact: newContact,
+          contact: { ...newContact, createBy: user._id }, ///stateApp.user////temporary while signed user fixed
         },
         refetchQueries: [
           "getContacts",
