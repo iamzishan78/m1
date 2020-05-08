@@ -564,7 +564,9 @@ export default function SubTable(props) {
           selectedContact: rows[dataIndex].id,
         }));
         // history.push("/contact");
-        setSubComponent(<ContactDetailCard contactData={rows[dataIndex]} />);
+        setSubComponent(
+          <ContactDetailCard contactData={{ ...rows[dataIndex] }} />
+        );
         setTitle("Contact");
         setSubTitle(" ");
         handleOpenExpandableCard();

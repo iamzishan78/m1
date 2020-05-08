@@ -127,7 +127,7 @@ export default function FieldContent({
 
   useEffect(() => {
     if (content) {
-      setEditContent(content);
+      setEditContent({ ...content });
 
       let count = 0;
       for (const fieldName in content) {

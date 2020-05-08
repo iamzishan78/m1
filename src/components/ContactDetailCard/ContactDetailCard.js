@@ -136,6 +136,12 @@ export default function ContactDetailCard(props) {
 
   const [contactData, setContactData] = useState(props.contactData);
 
+  useEffect(() => {
+    if (props.contactData) {
+      setContactData({ ...props.contactData });
+    }
+  }, [props.contactData]);
+
   return (
     <Grid container spacing={0} className={classes.mainGridContainer}>
       {/*/////////// left column //////////// */}
