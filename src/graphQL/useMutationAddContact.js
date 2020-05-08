@@ -18,8 +18,12 @@ export const ADDCONTACT = gql`
         homePhone
         primaryEmail
         owners
-        createBy
-        lastUpdateBy
+        createBy {
+          name
+        }
+        lastUpdateBy {
+          name
+        }
       }
     }
   }

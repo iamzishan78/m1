@@ -18,7 +18,9 @@ export const UPDATECONTACT = gql`
         mobilePhone
         homePhone
         primaryEmail
-        lastUpdateBy
+        lastUpdateBy {
+          name
+        }
         address1Alt
         address2Alt
         cityAlt

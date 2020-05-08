@@ -9,6 +9,9 @@ import TextField from "@material-ui/core/TextField";
 import EditionPopover from "./EditionPopover";
 import { useMutation } from "@apollo/react-hooks";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
+import { USERBYEMAIL } from "../../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
+import { useLazyQuery } from "@apollo/react-hooks"; //////////////temporary while signed user fixed
+import { AppContext } from "../../../AppContext"; //////////////temporary while signed user fixed
 
 const useStyles = makeStyles((theme) => ({
   fieldContentP: {
@@ -98,13 +101,33 @@ export default function FieldContent({
 
   const [updateContact] = useMutation(UPDATECONTACT);
 
-  // useEffect(() => {
-  //   console.log("ttttttttttttt ", edit);
-  // }, [edit]);
+  //////begin////////temporary  while signed user fixed
+
+  const [stateApp] = React.useContext(AppContext);
+  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
+  const [user, setUser] = useState({ _id: "" });
+
+  useEffect(() => {
+    if (stateApp && stateApp.user && stateApp.user.email) {
+      getUserByEmail({
+        variables: {
+          userEmail: stateApp.user.email,
+        },
+      });
+    }
+  }, [stateApp.user.email]);
+
+  useEffect(() => {
+    if (dataUser && dataUser.userByEmail) {
+      setUser(dataUser.userByEmail);
+    }
+  }, [dataUser]);
+
+  /////end/////////temporary while signed user fixed
 
   useEffect(() => {
     if (content) {
-      setEditContent(content);
+      setEditContent({ ...content });
 
       let count = 0;
       for (const fieldName in content) {
@@ -136,15 +159,21 @@ export default function FieldContent({
   };
 
   const handleUpdating = (event, fieldName) => {
-    /////////////////editContent////////fieldName//////////////
-    // {  _id:id,[fieldName]:fieldName    }
     updateContact({
       variables: {
-        contact: { _id: id, [fieldName]: editContent[fieldName] },
+        contact: {
+          _id: id,
+          [fieldName]: event.target.value.trim(),
+          lastUpdateBy: user._id,
+        },
       },
       refetchQueries: ["getContacts", "getContactsByOwnerId"],
       awaitRefetchQueries: true,
     });
+
+    if (fieldsCount <= 1) {
+      setEdit(null);
+    }
   };
 
   let inputsArray = [];
