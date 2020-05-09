@@ -505,11 +505,7 @@ export default function ContactDetailCard(props) {
                       data.contact.createBy.name
                     ) : (
                       <span style={{ height: "16", width: "22" }}>
-                        <CircularProgress
-                          className={classes.loader}
-                          size={22}
-                          color="secondary"
-                        />
+                        <CircularProgress size={22} color="secondary" />
                       </span>
                     )}
 
@@ -538,11 +534,7 @@ export default function ContactDetailCard(props) {
                       data.contact.lastUpdateBy.name
                     ) : (
                       <span style={{ height: "16", width: "22" }}>
-                        <CircularProgress
-                          className={classes.loader}
-                          size={22}
-                          color="secondary"
-                        />
+                        <CircularProgress size={22} color="secondary" />
                       </span>
                     )}
                     {`${

@@ -166,18 +166,19 @@ export default function FieldContent({
   };
 
   const handleUpdating = (event, fieldName) => {
-    // content[fieldName] = event.target.value.trim();
-    updateContact({
-      variables: {
-        contact: {
-          _id: id,
-          [fieldName]: event.target.value.trim(),
-          lastUpdateBy: user._id, ///stateApp.user////temporary while signed user fixed
+    if (content[fieldName] !== event.target.value.trim()) {
+      updateContact({
+        variables: {
+          contact: {
+            _id: id,
+            [fieldName]: event.target.value.trim(),
+            lastUpdateBy: user._id, ///stateApp.user////temporary while signed user fixed
+          },
         },
-      },
-      refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
-      awaitRefetchQueries: true,
-    });
+        refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
+        awaitRefetchQueries: true,
+      });
+    }
 
     if (fieldsCount <= 1) {
       setEdit(null);
@@ -213,6 +214,15 @@ export default function FieldContent({
               }));
             }}
             onKeyDown={(event) => {
+              event.stopPropagation();
+              if (event.key === "Escape") {
+                setEdit(null);
+                setEditContent((editContent) => ({
+                  ...editContent,
+                  [fieldName]: content[fieldName],
+                }));
+              }
+
               if (event.key === "Enter" && !event.shiftKey) {
                 event.preventDefault();
                 handleUpdating(event, fieldName);
@@ -268,7 +278,6 @@ export default function FieldContent({
       {loading && (
         <div style={{ height: "0", width: "0" }}>
           <CircularProgress
-            id="xoxoxoxoxo"
             className={classes.loader}
             size={22}
             color="secondary"
