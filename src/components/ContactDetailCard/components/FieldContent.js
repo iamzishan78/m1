@@ -9,6 +9,7 @@ import TextField from "@material-ui/core/TextField";
 import EditionPopover from "./EditionPopover";
 import { useMutation } from "@apollo/react-hooks";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { USERBYEMAIL } from "../../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 import { useLazyQuery } from "@apollo/react-hooks"; //////////////temporary while signed user fixed
 import { AppContext } from "../../../AppContext"; //////////////temporary while signed user fixed
@@ -95,11 +96,10 @@ export default function FieldContent({
 
   const classes = useStyles({ noMargin });
   const [edit, setEdit] = useState(null);
-  const [editedField, setEditedField] = useState({});
   const [editContent, setEditContent] = useState({ content });
   const [fieldsCount, setFieldsCount] = useState(0);
 
-  const [updateContact] = useMutation(UPDATECONTACT);
+  const [updateContact, { loading }] = useMutation(UPDATECONTACT);
 
   //////begin////////temporary  while signed user fixed
 
@@ -159,6 +159,7 @@ export default function FieldContent({
   };
 
   const handleUpdating = (event, fieldName) => {
+    // content[fieldName] = event.target.value.trim();
     updateContact({
       variables: {
         contact: {
@@ -167,7 +168,7 @@ export default function FieldContent({
           lastUpdateBy: user._id, ///stateApp.user////temporary while signed user fixed
         },
       },
-      refetchQueries: ["getContacts", "getContactsByOwnerId"],
+      refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
       awaitRefetchQueries: true,
     });
 
@@ -175,6 +176,9 @@ export default function FieldContent({
       setEdit(null);
     }
   };
+
+  if (loading)
+    return <CircularProgress size={28} color="secondary"></CircularProgress>;
 
   let inputsArray = [];
   if (edit) {

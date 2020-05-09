@@ -15,27 +15,6 @@ export const CONTACTSQUERY = gql`
       homePhone
       primaryEmail
       owners
-      createAt
-      createBy {
-        name
-      }
-      lastUpdateAt
-      lastUpdateBy {
-        name
-      }
-      address1Alt
-      address2Alt
-      cityAlt
-      stateAlt
-      zipAlt
-      countryAlt
-      AltPhone
-      secondaryEmail
-      relatives
-      linkedln
-      facebook
-      twitter
-      leadSource
     }
   }
 `;

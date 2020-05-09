@@ -212,6 +212,7 @@ export default function AddContactDialogContent(props) {
           "getContacts",
           "getContactsByOwnerId",
           "getContactsCounter",
+          "getContact",
         ],
         awaitRefetchQueries: true,
       });
@@ -221,12 +222,17 @@ export default function AddContactDialogContent(props) {
       //////add new///// newContact ////////////
       addContact({
         variables: {
-          contact: { ...newContact, createBy: user._id }, ///stateApp.user////temporary while signed user fixed
+          contact: {
+            ...newContact,
+            createBy: user._id, ///stateApp.user////temporary while signed user fixed
+            lastUpdateBy: user._id, ///stateApp.user////temporary while signed user fixed
+          },
         },
         refetchQueries: [
           "getContacts",
           "getContactsByOwnerId",
           "getContactsCounter",
+          "getContact",
         ],
         awaitRefetchQueries: true,
       });

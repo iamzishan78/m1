@@ -1,12 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { AppContext } from "../../AppContext";
 import { Grid } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import Comments from "../Shared/Comments";
 import Tags from "../Shared/Tagger";
-// import { useHistory } from "react-router-dom";
 import Avatar from "react-avatar";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import RoomIcon from "@material-ui/icons/Room";
@@ -20,6 +18,9 @@ import { IconButton } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
 import FieldContent from "./components/FieldContent";
 import LocationCityIcon from "@material-ui/icons/LocationCity";
+import { CONTACT } from "../../graphQL/useQueryContact";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { useLazyQuery } from "@apollo/react-hooks";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -28,10 +29,6 @@ const useStyles = makeStyles((theme) => ({
       cursor: "pointer",
       color: "rgb(18, 150, 194)",
     },
-  },
-  paper: {
-    // height: "100%",
-    // marginLeft: "6px"
   },
   topBar: {
     color: "#12ABE0",
@@ -60,9 +57,6 @@ const useStyles = makeStyles((theme) => ({
     "& .dataLabels": {
       fontWeight: "bold",
     },
-    // left: "4px",
-    // top: "4px",
-    // position: "relative",
   },
   pDealCard: {
     fontWeight: "bold !important",
@@ -99,7 +93,6 @@ const useStyles = makeStyles((theme) => ({
   },
   addressIcon: { top: "3px", position: "relative" },
   socialMediaSection: {
-    // marginLeft: "15px",
     float: "right",
   },
   mainGridContainer: {
@@ -131,41 +124,41 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ContactDetailCard(props) {
   const classes = useStyles();
-  // let history = useHistory();
-  const [stateApp] = useContext(AppContext);
+  // const [contactData, setContactData] = useState();
 
-  const [contactData, setContactData] = useState(props.contactData);
+  const [getContact, { loading, data }] = useLazyQuery(CONTACT);
 
   useEffect(() => {
-    if (props.contactData) {
-      setContactData({ ...props.contactData });
+    if (props.contactId) {
+      getContact({
+        variables: {
+          contactId: props.contactId,
+        },
+      });
     }
-  }, [props.contactData]);
+  }, [props.contactId]);
 
-  return (
+  // useEffect(() => {
+  //   if (data) {
+  //     setContactData(data.contact);
+
+  //   }
+  // }, [data]);
+
+  console.log("yyyyyyyyy", data); //////////////////////////
+
+  return data && data.contact && !loading ? (
     <Grid container spacing={0} className={classes.mainGridContainer}>
       {/*/////////// left column //////////// */}
       <Grid item xs={9}>
-        {/* <h3 className={`${classes.topBar} ${classes.border}`}>
-          <span
-            className={classes.Contacts}
-            onClick={event => {
-              history.push("/contacts");
-            }}
-          >
-            Contacts
-          </span>
-          {` > ${contactData.name}`}
-        </h3> */}
-
         <Grid item container>
           {/*/////////// section 1 //////////// */}
 
           <Grid item xs={12} className={classes.border}>
             <div className={classes.leftColumnTopRigthCorner}>
-              {contactData.primaryEmail && (
+              {data.contact.primaryEmail && (
                 <Tooltip title={"Send Email"}>
-                  <a href={"mailto:" + contactData.primaryEmail}>
+                  <a href={"mailto:" + data.contact.primaryEmail}>
                     <IconButton size="small" style={{ color: "#757575" }}>
                       <MailOutlineIcon />
                     </IconButton>
@@ -185,55 +178,55 @@ export default function ContactDetailCard(props) {
             </div>
             <div>
               <div className={classes.userIcon}>
-                <Avatar name={contactData.name} size="80" round />
+                <Avatar name={data.contact.name} size="80" round />
               </div>
               <div className={classes.userName}>
                 <h1 style={{ width: "max-content" }}>
-                  {/* {contactData.name} */}
+                  {/* {data.contact.name} */}
 
                   <FieldContent
                     noMargin
-                    id={contactData._id}
-                    content={{ name: contactData.name }}
+                    id={data.contact._id}
+                    content={{ name: data.contact.name }}
                   >
-                    {(contactData.facebook ||
-                      contactData.twitte ||
-                      contactData.linkedln) && (
+                    {(data.contact.facebook ||
+                      data.contact.twitte ||
+                      data.contact.linkedln) && (
                       <span className={classes.socialMediaSection}>
-                        {contactData.facebook && (
+                        {data.contact.facebook && (
                           <a
                             href={`${
-                              !contactData.facebook.startsWith("http") &&
-                              !contactData.facebook.startsWith("//")
+                              !data.contact.facebook.startsWith("http") &&
+                              !data.contact.facebook.startsWith("//")
                                 ? "//"
                                 : ""
-                            }${contactData.facebook}`}
+                            }${data.contact.facebook}`}
                             target="_blank"
                           >
                             <FacebookIcon />
                           </a>
                         )}
-                        {contactData.twitter && (
+                        {data.contact.twitter && (
                           <a
                             href={`${
-                              !contactData.twitter.startsWith("http") &&
-                              !contactData.twitter.startsWith("//")
+                              !data.contact.twitter.startsWith("http") &&
+                              !data.contact.twitter.startsWith("//")
                                 ? "//"
                                 : ""
-                            }${contactData.twitter}`}
+                            }${data.contact.twitter}`}
                             target="_blank"
                           >
                             <TwitterIcon className={classes.twitterIcon} />
                           </a>
                         )}
-                        {contactData.linkedln && (
+                        {data.contact.linkedln && (
                           <a
                             href={`${
-                              !contactData.linkedln.startsWith("http") &&
-                              !contactData.linkedln.startsWith("//")
+                              !data.contact.linkedln.startsWith("http") &&
+                              !data.contact.linkedln.startsWith("//")
                                 ? "//"
                                 : ""
-                            }${contactData.linkedln}`}
+                            }${data.contact.linkedln}`}
                             target="_blank"
                           >
                             <LinkedInIcon />
@@ -248,14 +241,14 @@ export default function ContactDetailCard(props) {
                     childrenLeft
                     noMargin
                     name="Address"
-                    id={contactData._id}
+                    id={data.contact._id}
                     content={{
-                      address1: contactData.address1,
-                      address2: contactData.address2,
-                      city: contactData.city,
-                      state: contactData.state,
-                      zip: contactData.zip,
-                      country: contactData.country,
+                      address1: data.contact.address1,
+                      address2: data.contact.address2,
+                      city: data.contact.city,
+                      state: data.contact.state,
+                      zip: data.contact.zip,
+                      country: data.contact.country,
                     }}
                   >
                     <RoomIcon
@@ -270,10 +263,10 @@ export default function ContactDetailCard(props) {
                     childrenLeft
                     noMargin
                     name={"Company Name Or Job Title"}
-                    id={contactData._id}
+                    id={data.contact._id}
                     content={{
-                      companyName: contactData.companyName,
-                      jobTitle: contactData.jobTitle,
+                      companyName: data.contact.companyName,
+                      jobTitle: data.contact.jobTitle,
                     }}
                   >
                     <LocationCityIcon
@@ -287,7 +280,7 @@ export default function ContactDetailCard(props) {
             <div className={classes.tags}>
               <Tags
                 width="100%"
-                targetSourceId={contactData._id}
+                targetSourceId={data.contact._id}
                 publicLeftBottom
               />
             </div>
@@ -308,14 +301,14 @@ export default function ContactDetailCard(props) {
               <Grid item xs={7}>
                 <FieldContent
                   onlyChildren
-                  id={contactData._id}
-                  content={{ primaryEmail: contactData.primaryEmail }}
+                  id={data.contact._id}
+                  content={{ primaryEmail: data.contact.primaryEmail }}
                 >
                   <a
-                    href={`mailto:${contactData.primaryEmail}`}
+                    href={`mailto:${data.contact.primaryEmail}`}
                     target="_blank"
                   >
-                    {contactData.primaryEmail}
+                    {data.contact.primaryEmail}
                   </a>
                 </FieldContent>
               </Grid>
@@ -326,14 +319,14 @@ export default function ContactDetailCard(props) {
               <Grid item xs={7}>
                 <FieldContent
                   onlyChildren
-                  id={contactData._id}
-                  content={{ secondaryEmail: contactData.secondaryEmail }}
+                  id={data.contact._id}
+                  content={{ secondaryEmail: data.contact.secondaryEmail }}
                 >
                   <a
-                    href={`mailto:${contactData.secondaryEmail}`}
+                    href={`mailto:${data.contact.secondaryEmail}`}
                     target="_blank"
                   >
-                    {contactData.secondaryEmail}
+                    {data.contact.secondaryEmail}
                   </a>
                 </FieldContent>
               </Grid>
@@ -343,8 +336,8 @@ export default function ContactDetailCard(props) {
               </Grid>
               <Grid item xs={7}>
                 <FieldContent
-                  id={contactData._id}
-                  content={{ mobilePhone: contactData.mobilePhone }}
+                  id={data.contact._id}
+                  content={{ mobilePhone: data.contact.mobilePhone }}
                 />
               </Grid>
 
@@ -353,8 +346,8 @@ export default function ContactDetailCard(props) {
               </Grid>
               <Grid item xs={7}>
                 <FieldContent
-                  id={contactData._id}
-                  content={{ homePhone: contactData.homePhone }}
+                  id={data.contact._id}
+                  content={{ homePhone: data.contact.homePhone }}
                 />
               </Grid>
 
@@ -363,8 +356,8 @@ export default function ContactDetailCard(props) {
               </Grid>
               <Grid item xs={7}>
                 <FieldContent
-                  id={contactData._id}
-                  content={{ alternatePhone: contactData.alternatePhone }}
+                  id={data.contact._id}
+                  content={{ AltPhone: data.contact.AltPhone }}
                 />
               </Grid>
 
@@ -374,14 +367,14 @@ export default function ContactDetailCard(props) {
               <Grid item xs={7}>
                 <FieldContent
                   name=""
-                  id={contactData._id}
+                  id={data.contact._id}
                   content={{
-                    address1: contactData.address1,
-                    address2: contactData.address2,
-                    city: contactData.city,
-                    state: contactData.state,
-                    zip: contactData.zip,
-                    country: contactData.country,
+                    address1: data.contact.address1,
+                    address2: data.contact.address2,
+                    city: data.contact.city,
+                    state: data.contact.state,
+                    zip: data.contact.zip,
+                    country: data.contact.country,
                   }}
                 />
               </Grid>
@@ -392,14 +385,14 @@ export default function ContactDetailCard(props) {
               <Grid item xs={7}>
                 <FieldContent
                   name=""
-                  id={contactData._id}
+                  id={data.contact._id}
                   content={{
-                    address1Alt: contactData.address1Alt,
-                    address2Alt: contactData.address2Alt,
-                    cityAlt: contactData.cityAlt,
-                    stateAlt: contactData.stateAlt,
-                    zipAlt: contactData.zipAlt,
-                    countryAlt: contactData.countryAlt,
+                    address1Alt: data.contact.address1Alt,
+                    address2Alt: data.contact.address2Alt,
+                    cityAlt: data.contact.cityAlt,
+                    stateAlt: data.contact.stateAlt,
+                    zipAlt: data.contact.zipAlt,
+                    countryAlt: data.contact.countryAlt,
                   }}
                 />
               </Grid>
@@ -411,8 +404,8 @@ export default function ContactDetailCard(props) {
               </Grid>
               <Grid item xs={7}>
                 <FieldContent
-                  id={contactData._id}
-                  content={{ relatives: contactData.relatives }}
+                  id={data.contact._id}
+                  content={{ relatives: data.contact.relatives }}
                 />
               </Grid>
 
@@ -422,20 +415,20 @@ export default function ContactDetailCard(props) {
               <Grid item xs={7}>
                 <FieldContent
                   onlyChildren
-                  id={contactData._id}
-                  content={{ linkedln: contactData.linkedln }}
+                  id={data.contact._id}
+                  content={{ linkedln: data.contact.linkedln }}
                 >
-                  {contactData.linkedln && (
+                  {data.contact.linkedln && (
                     <a
                       href={`${
-                        !contactData.linkedln.startsWith("http") &&
-                        !contactData.linkedln.startsWith("//")
+                        !data.contact.linkedln.startsWith("http") &&
+                        !data.contact.linkedln.startsWith("//")
                           ? "//"
                           : ""
-                      }${contactData.linkedln}`}
+                      }${data.contact.linkedln}`}
                       target="_blank"
                     >
-                      {contactData.linkedln}
+                      {data.contact.linkedln}
                     </a>
                   )}
                 </FieldContent>
@@ -447,20 +440,20 @@ export default function ContactDetailCard(props) {
               <Grid item xs={7}>
                 <FieldContent
                   onlyChildren
-                  id={contactData._id}
-                  content={{ facebook: contactData.facebook }}
+                  id={data.contact._id}
+                  content={{ facebook: data.contact.facebook }}
                 >
-                  {contactData.facebook && (
+                  {data.contact.facebook && (
                     <a
                       href={`${
-                        !contactData.facebook.startsWith("http") &&
-                        !contactData.facebook.startsWith("//")
+                        !data.contact.facebook.startsWith("http") &&
+                        !data.contact.facebook.startsWith("//")
                           ? "//"
                           : ""
-                      }${contactData.facebook}`}
+                      }${data.contact.facebook}`}
                       target="_blank"
                     >
-                      {contactData.facebook}
+                      {data.contact.facebook}
                     </a>
                   )}
                 </FieldContent>
@@ -472,20 +465,20 @@ export default function ContactDetailCard(props) {
               <Grid item xs={7}>
                 <FieldContent
                   onlyChildren
-                  id={contactData._id}
-                  content={{ twitter: contactData.twitter }}
+                  id={data.contact._id}
+                  content={{ twitter: data.contact.twitter }}
                 >
-                  {contactData.twitter && (
+                  {data.contact.twitter && (
                     <a
                       href={`${
-                        !contactData.twitter.startsWith("http") &&
-                        !contactData.twitter.startsWith("//")
+                        !data.contact.twitter.startsWith("http") &&
+                        !data.contact.twitter.startsWith("//")
                           ? "//"
                           : ""
-                      }${contactData.twitter}`}
+                      }${data.contact.twitter}`}
                       target="_blank"
                     >
-                      {contactData.twitter}
+                      {data.contact.twitter}
                     </a>
                   )}
                 </FieldContent>
@@ -496,8 +489,8 @@ export default function ContactDetailCard(props) {
               </Grid>
               <Grid item xs={7}>
                 <FieldContent
-                  id={contactData._id}
-                  content={{ leadSource: contactData.leadSource }}
+                  id={data.contact._id}
+                  content={{ leadSource: data.contact.leadSource }}
                 />
               </Grid>
 
@@ -505,13 +498,15 @@ export default function ContactDetailCard(props) {
                 <p className="dataLabels">Created By</p>
               </Grid>
               <Grid item xs={7}>
-                {(contactData.createBy && contactData.createBy.name) ||
-                contactData.createAt ? (
+                {(data.contact.createBy && data.contact.createBy.name) ||
+                data.contact.createAt ? (
                   <p>
-                    {`${contactData.createBy ? contactData.createBy.name : ""}${
-                      contactData.createAt
+                    {`${
+                      data.contact.createBy ? data.contact.createBy.name : ""
+                    }${
+                      data.contact.createAt
                         ? " - " +
-                          anyToDate(contactData.createAt).toLocaleString()
+                          anyToDate(data.contact.createAt).toLocaleString()
                         : ""
                     }`}
                   </p>
@@ -524,17 +519,18 @@ export default function ContactDetailCard(props) {
                 <p className="dataLabels">Last Update By</p>
               </Grid>
               <Grid item xs={7}>
-                {(contactData.lastUpdateBy && contactData.lastUpdateBy.name) ||
-                contactData.lastUpdateAt ? (
+                {(data.contact.lastUpdateBy &&
+                  data.contact.lastUpdateBy.name) ||
+                data.contact.lastUpdateAt ? (
                   <p>
                     {`${
-                      contactData.lastUpdateBy
-                        ? contactData.lastUpdateBy.name
+                      data.contact.lastUpdateBy
+                        ? data.contact.lastUpdateBy.name
                         : ""
                     }${
-                      contactData.lastUpdateAt
+                      data.contact.lastUpdateAt
                         ? " - " +
-                          anyToDate(contactData.lastUpdateAt).toLocaleString()
+                          anyToDate(data.contact.lastUpdateAt).toLocaleString()
                         : ""
                     }`}
                   </p>
@@ -553,7 +549,7 @@ export default function ContactDetailCard(props) {
           >
             <M1nTable
               parent="ownersPerContacts"
-              ownersIdsArray={contactData.owners}
+              ownersIdsArray={data.contact.owners}
             />
           </Grid>
         </Grid>
@@ -584,12 +580,16 @@ export default function ContactDetailCard(props) {
 
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <Comments targetSourceId={contactData._id} />
+                <Comments targetSourceId={data.contact._id} />
               </Paper>
             </Grid>
           </Grid>
         </div>
       </Grid>
     </Grid>
+  ) : (
+    <div style={{ padding: "15px" }}>
+      <CircularProgress size={80} disableShrink color="secondary" />
+    </div>
   );
 }
