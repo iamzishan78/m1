@@ -1,8 +1,6 @@
 import React, {
   useContext,
   useState,
-  useLayoutEffect,
-  useRef,
   useEffect,
 } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
@@ -15,13 +13,9 @@ import { AppContext } from "../../../AppContext";
 import RoomIcon from '@material-ui/icons/Room';
 import LayersIcon from '@material-ui/icons/Layers';
 import { style } from "@material-ui/system";
-//import mapStyles from "../../Map/components/Utils/MapStyles";
-//import Satellite_Image from '../../Shared/pngImages/Satellite.PNG';
 import { Icon } from "@material-ui/core";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import IconButton from "@material-ui/core/IconButton";
-//import createMuiTheme from "@material-ui/styles/createMuiTheme";
-//import MuiThemeProvider from "@material-ui/styles/MuiThemeProvider";
 import { createMuiTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -148,36 +142,24 @@ export default function BaseMapStyles(props) {
   );
   const [stateMap, setStateMap] = useContext(MapContext);
   const [stateApp, setStateApp] = useContext(AppContext);
-
-  //const theme = useTheme()
   const classes = useStyles();
   const handleClose = () => {
     setStateMapControls((state) => ({ ...state, anchorEl: null }));
   };
-
   const [mapStyles, setMapStyles] = useState([]);
   const [open, setOpen] = React.useState(false);
   const handleClick = () => {
     setOpen(!open);
   };
   const handleToggle = (idx) => () => {
-    //console.log(idx);
-    //console.log("toggle stateMap.checkedBaseLayers before", stateMap.baseMapLayers);
     const currentIndex = stateMap.checkedBaseLayers.indexOf(idx);
     const newChecked = [...stateMap.checkedBaseLayers];
-
     if (currentIndex === -1) {
       newChecked.push(idx);
     } else {
       newChecked.splice(currentIndex, 1);
     }
-    //console.log("newchecked", newChecked);
-
     setStateMap((stateMap) => ({ ...stateMap, checkedBaseLayers: newChecked }));
-
-
-
-    //console.log("toggle stateMap.checkedBaseLayers after", stateMap.checkedBaseLayers);
   };
 
   const StyledListItem = withStyles(theme => ({
@@ -261,15 +243,7 @@ export default function BaseMapStyles(props) {
             disableRipple
             key={style.id}
             role={undefined}
-            //className={classes.subHeaderItem}
             onClick={() => {
-              //setStateMap(state => ({ ...state, selectedLayerId: "mapbox://styles/m1neral/"+style.id }));
-
-              // setStateMap((stateMap) => ({
-              //   ...stateMap,
-              //   mapStyle: style.name,
-              // }));
-
               setStateApp((stateApp) => ({
                 ...stateApp,
                 mapVars: {...stateApp.mapVars,
@@ -282,6 +256,7 @@ export default function BaseMapStyles(props) {
             }}
           >
             <ThemeProvider theme={theme}>
+              {style.name == "Outdoor" && <MapSatelliteIcon />}
               {style.name == "Satellite" && <MapSatelliteIcon />}
               {style.name == "Light" && <MapLightIcon />}
               {style.name == "Dark" && <MapDarkIcon />}
@@ -290,15 +265,6 @@ export default function BaseMapStyles(props) {
             </ThemeProvider>
           </StyledMenuItem>
         ))}
-        {/* <StyledMenuItem
-          //disableRipple
-          //key="subheader"
-          //role={undefined}
-          dense
-          //className={classes.subHeaderItem}
-        >
-          <ListItemText primary="Map Layers" />
-        </StyledMenuItem> */}
 
         <StyledListItem2 button onClick={handleClick}>
           <ListItemIcon>
@@ -313,7 +279,6 @@ export default function BaseMapStyles(props) {
           const labelId = `checkbox-list-label-${index}`;
 
           return (
-            //<StyledMenuItem disableRipple key={index} role={undefined} dense>
             <Collapse in={open} timeout="auto" unmountOnExit>
             <StyledListItem button className={classes.nested}>
               <ListItemIcon>

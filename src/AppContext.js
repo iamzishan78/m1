@@ -33,7 +33,7 @@ const AppProvider = (props) => {
       center: { lng: -98.8, lat: 31.6 },
       pitch: 0,
       bearing: 0,
-      styleId: "Basic",
+      styleId: "Outdoors",
     },
   });
   return (

@@ -903,7 +903,7 @@ export default function Map() {
     fetch(req, { signal: signal })
       .then((results) => results.json())
       .then((data) => {
-        setMapStyles(data.slice(0, 4));
+        setMapStyles(data.slice(0, 5));
       });
 
     setStateApp((state) => ({
@@ -953,9 +953,11 @@ export default function Map() {
         let id = mapEl.current.id;
 
         var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
+        
         console.log("tileset api loaded - style selected", stateMap.mapStyle);
-
         console.log(stateApp.mapVars);
+        console.log(mapStyles[index])
+        console.log(mapStyles)
 
         const newMap = new mapboxgl.Map({
           container: `${id}`,
