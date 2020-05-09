@@ -16,6 +16,7 @@ import { AppContext } from "../../../AppContext"; //////////////temporary while 
 
 const useStyles = makeStyles((theme) => ({
   fieldContentP: {
+    visibility: ({ loading }) => (loading ? "hidden" : "visible"),
     margin: ({ noMargin }) => {
       if (noMargin) return "0";
     },
@@ -45,6 +46,11 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   notAvailableP: { color: "#898989b0", fontSize: "13px" },
+  loader: {
+    position: "relative",
+    top: "-37px",
+    left: "10px",
+  },
 }));
 
 function PencilEditIcon({ onClick, anchorEl, setAnchorEl, content }) {
@@ -94,12 +100,13 @@ export default function FieldContent({
   //////////// name - will be part of the Not Available text, better use in compound fiels  //optional/////////////
   //////////// noMargin - no p tag margin  //optional//////////////////////////////////////////////////////////////
 
-  const classes = useStyles({ noMargin });
   const [edit, setEdit] = useState(null);
   const [editContent, setEditContent] = useState({ content });
   const [fieldsCount, setFieldsCount] = useState(0);
 
   const [updateContact, { loading }] = useMutation(UPDATECONTACT);
+  console.log("loadinnnnnnnnnnnnnnnnnnnn", loading);
+  const classes = useStyles({ noMargin, loading });
 
   //////begin////////temporary  while signed user fixed
 
@@ -177,9 +184,6 @@ export default function FieldContent({
     }
   };
 
-  if (loading)
-    return <CircularProgress size={28} color="secondary"></CircularProgress>;
-
   let inputsArray = [];
   if (edit) {
     for (const fieldName in editContent) {
@@ -241,24 +245,36 @@ export default function FieldContent({
   }
 
   return (
-    <p
-      className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${
-        classes.fieldContentP
-      }`}
-    >
-      {childrenLeft && !onlyChildren ? children : ""}
-      {textArray.length > 0
-        ? onlyChildren
-          ? children
-          : textArray.join(", ")
-        : `${name ? name + " " : ""} Not Available`}
-      <PencilEditIcon
-        anchorEl={edit}
-        setAnchorEl={setEdit}
-        content={inputsArray}
-        onClick={handleEditClick}
-      />
-      {!childrenLeft && !onlyChildren ? children : ""}
-    </p>
+    <React.Fragment>
+      <p
+        className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${
+          classes.fieldContentP
+        }`}
+      >
+        {childrenLeft && !onlyChildren ? children : ""}
+        {textArray.length > 0
+          ? onlyChildren
+            ? children
+            : textArray.join(", ")
+          : `${name ? name + " " : ""} Not Available`}
+        <PencilEditIcon
+          anchorEl={edit}
+          setAnchorEl={setEdit}
+          content={inputsArray}
+          onClick={handleEditClick}
+        />
+        {!childrenLeft && !onlyChildren ? children : ""}
+      </p>
+      {loading && (
+        <div style={{ height: "0", width: "0" }}>
+          <CircularProgress
+            id="xoxoxoxoxo"
+            className={classes.loader}
+            size={22}
+            color="secondary"
+          ></CircularProgress>
+        </div>
+      )}
+    </React.Fragment>
   );
 }

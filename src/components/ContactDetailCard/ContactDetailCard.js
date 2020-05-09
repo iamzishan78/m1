@@ -500,10 +500,20 @@ export default function ContactDetailCard(props) {
               <Grid item xs={7}>
                 {(data.contact.createBy && data.contact.createBy.name) ||
                 data.contact.createAt ? (
-                  <p>
+                  <p style={{ minHeight: "28px" }}>
+                    {data.contact.createBy && data.contact.createBy.name ? (
+                      data.contact.createBy.name
+                    ) : (
+                      <span style={{ height: "16", width: "22" }}>
+                        <CircularProgress
+                          className={classes.loader}
+                          size={22}
+                          color="secondary"
+                        />
+                      </span>
+                    )}
+
                     {`${
-                      data.contact.createBy ? data.contact.createBy.name : ""
-                    }${
                       data.contact.createAt
                         ? " - " +
                           anyToDate(data.contact.createAt).toLocaleString()
@@ -522,12 +532,20 @@ export default function ContactDetailCard(props) {
                 {(data.contact.lastUpdateBy &&
                   data.contact.lastUpdateBy.name) ||
                 data.contact.lastUpdateAt ? (
-                  <p>
+                  <p style={{ minHeight: "28px" }}>
+                    {data.contact.lastUpdateBy &&
+                    data.contact.lastUpdateBy.name ? (
+                      data.contact.lastUpdateBy.name
+                    ) : (
+                      <span style={{ height: "16", width: "22" }}>
+                        <CircularProgress
+                          className={classes.loader}
+                          size={22}
+                          color="secondary"
+                        />
+                      </span>
+                    )}
                     {`${
-                      data.contact.lastUpdateBy
-                        ? data.contact.lastUpdateBy.name
-                        : ""
-                    }${
                       data.contact.lastUpdateAt
                         ? " - " +
                           anyToDate(data.contact.lastUpdateAt).toLocaleString()
