@@ -20,6 +20,7 @@ import { createMuiTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import MapDarkIcon from "../../Shared/svgIcons/MapDarkIcon";
+import MapOutdoorIcon from "../../Shared/svgIcons/MapOutdoorIcon";
 import MapSatelliteIcon from "../../Shared/svgIcons/MapSatelliteIcon";
 import MapLightIcon from "../../Shared/svgIcons/MapLightIcon";
 import MapBasicIcon from "../../Shared/svgIcons/MapBasicIcon";
@@ -256,7 +257,7 @@ export default function BaseMapStyles(props) {
             }}
           >
             <ThemeProvider theme={theme}>
-              {style.name == "Outdoor" && <MapSatelliteIcon />}
+              {style.name == "Outdoors" && <MapOutdoorIcon/>}
               {style.name == "Satellite" && <MapSatelliteIcon />}
               {style.name == "Light" && <MapLightIcon />}
               {style.name == "Dark" && <MapDarkIcon />}
