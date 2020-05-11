@@ -152,6 +152,10 @@ export default function BaseMapStyles(props) {
   const handleClick = () => {
     setOpen(!open);
   };
+
+
+
+
   const handleToggle = (idx) => () => {
     const currentIndex = stateMap.checkedBaseLayers.indexOf(idx);
     const newChecked = [...stateMap.checkedBaseLayers];
@@ -163,6 +167,9 @@ export default function BaseMapStyles(props) {
     setStateMap((stateMap) => ({ ...stateMap, checkedBaseLayers: newChecked }));
   };
 
+
+
+  
   const StyledListItem = withStyles(theme => ({
     root: {
       fontFamily: "Poppins",

@@ -28,26 +28,33 @@ const userDefinedLayers = [
   {
     name: "Parcels",
     id: [],
+    type: 'data layer'
   },
   {
     name: "Title",
     id: [],
+    type: 'data layer'
   },
   {
     name: "Area of Interest",
     id: [],
+    type: 'data layer'
   },
   {
     name: "Tracked Wells",
-    id: [],
+    id: ['Tracked Wells'],
+    type: 'data layer'
   },
   {
     name: "Tracked Owners",
     id: [],
+    type: 'data layer'
   },
   {
     name: "Tag Layer",
     id: [],
+    type: 'data layer'
+
   },
 ];
 
@@ -208,7 +215,7 @@ const MapContextProvider = (props) => {
     checkedLayers: [0, 3],
     checkedHeats: [],
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
-    checkedUserDefinedLayers: [3],
+    checkedUserDefinedLayers: [],
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,

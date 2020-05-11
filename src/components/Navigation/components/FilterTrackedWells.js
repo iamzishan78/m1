@@ -44,23 +44,27 @@ export default function FilterOwnerCount() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [tracks , setTracks] = useState(false);
   const [idArray , setIdArray] = useState(null);
-  const [firstWell , setFirstWell] = useState(null);
-  const [stateMapControls, setStateMapControls] = useContext(
-    MapControlsContext
-  );
+
+
+  // const [firstWell , setFirstWell] = useState(null);
+  // const [stateMapControls, setStateMapControls] = useContext(
+  //   MapControlsContext
+  // );
 
   const [stateMap, setStateMap] = useContext(MapContext);
 
 
   const [stateApp, setStateApp] = useContext(AppContext);
+  
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = useState(true);
-
-
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
   const [tracksByUserAndObjectType, { data: dataTracks }] = useLazyQuery(
     TRACKSBYUSERANDOBJECTTYPE
   );
+
+
+
 
   //////begin////////temporary  while signed user fixed
 

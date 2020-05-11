@@ -52,23 +52,32 @@ export default function CheckboxList(props) {
   const handleClickUD = () => {
     setOpenUD(!openUD);
   };
+
+
   const handleToggle = idx => () => {
-    console.log(idx);
-    console.log("toggle stateMap.checkedlayers before", stateMap.checkedLayers);
     const currentIndex = stateMap.checkedLayers.indexOf(idx);
     const newChecked = [...stateMap.checkedLayers];
-
     if (currentIndex === -1) {
       newChecked.push(idx);
     } else {
       newChecked.splice(currentIndex, 1);
     }
-    console.log("newchecked", newChecked);
-
     setStateMap(stateMap => ({ ...stateMap, checkedLayers: newChecked }));
-
-    console.log("toggle stateMap.checkedlayers after", stateMap.checkedLayers);
   };
+
+
+  const handleToggleUserDefined = idx => () => {
+    const currentIndex = stateMap.checkedUserDefinedLayers.indexOf(idx);
+    const newChecked = [...stateMap.checkedUserDefinedLayers];
+    if (currentIndex === -1) {
+      newChecked.push(idx);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+    setStateMap(stateMap => ({ ...stateMap, checkedUserDefinedLayers: newChecked }));
+  };
+
+
 
   const StyledMenu = withStyles({
     paper: {
@@ -233,7 +242,7 @@ export default function CheckboxList(props) {
                   tabIndex={-1}
                   disableRipple
                   inputProps={{ "aria-labelledby": labelId }}
-                  //onChange={handleToggle(index)}
+                  onChange={handleToggleUserDefined(index)}
                 />
               </ListItemIcon>
               <ListItemText id={labelId} primary={layer.name} />
