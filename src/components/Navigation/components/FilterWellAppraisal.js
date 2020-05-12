@@ -9,13 +9,14 @@ const useStyles = makeStyles({
   input: {
     margin: 20,
     maxWidth: 168,
-    minWidth: 167
+    minWidth: 167,
+    marginLeft: 27.5
   },
   inputLabel: {
     color: "black",
     minWidth: 249,
     maxWidth: 250,
-    marginLeft: 20
+    marginLeft: 27.5
   }
 });
 

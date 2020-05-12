@@ -179,22 +179,7 @@ export default function FilterOwnerCount() {
   return (
     <div>
 
-        <div className={classes.noOwners}>
-        <Typography
-          className={classes.inputLabel}
-          htmlFor="select-multiple-chip1"
-        >
-          Wells With No Owners
-        </Typography>
-        <Switch
-          className={classes.noOwnersToggle}
-          checked={noOwners}
-          onChange={toggleNoOwners}
-          color="primary"
-          name="checked"
-          inputProps={{ 'aria-label': 'primary checkbox' }}
-        />
-      </div>
+        
 
 
       {/* TEMPORARY COMMENT OUT 
@@ -261,6 +246,23 @@ export default function FilterOwnerCount() {
           }
         }}
       />
+
+      <div className={classes.noOwners}>
+        <Typography
+          className={classes.inputLabel}
+          htmlFor="select-multiple-chip1"
+        >
+          Wells With No Owners
+        </Typography>
+        <Switch
+          className={classes.noOwnersToggle}
+          checked={noOwners}
+          onChange={toggleNoOwners}
+          color="primary"
+          name="checked"
+          inputProps={{ 'aria-label': 'primary checkbox' }}
+        />
+      </div>
 
     </div>
   );

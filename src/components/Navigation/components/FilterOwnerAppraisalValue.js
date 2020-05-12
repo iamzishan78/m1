@@ -123,7 +123,7 @@ export default function FilterOwnerAppraisalValue() {
               <TextField
                 {...params}
                 variant="outlined"
-                label="Owner Appraisals"
+                label="Owner Tax Appraisals"
                 placeholder=""
                 fullWidth={true}
               />
