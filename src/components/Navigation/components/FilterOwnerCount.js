@@ -196,6 +196,9 @@ export default function FilterOwnerCount() {
         />
       </div>
 
+
+      {/* TEMPORARY COMMENT OUT 
+      FEATURE WORKS AND HELPS WITH M1 LOCAL DEBUGGING
       <div className={classes.noOwners}>
         <Typography
           className={classes.inputLabel}
@@ -211,7 +214,8 @@ export default function FilterOwnerCount() {
           name="checked"
           inputProps={{ 'aria-label': 'primary checkbox' }}
         />
-      </div>
+      </div> */}
+
       
       <Typography
         className={classes.inputLabel}

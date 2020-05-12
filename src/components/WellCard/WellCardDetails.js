@@ -323,7 +323,14 @@ export default function WellCardDetails(props) {
         <Card style={{ margin: "10px" }}>
           <CardContent className={classes.content}>
             <Grid item className={classes.gridItem}>
+
+              {/* TEMPORARY COMMENT OUT 
+              TABLE SUMMARY IS THE SUMMARY GRID 
+              FOR DETAILED WELL CARD AND IS IN PROGRES
               <TableSummary />
+ */}
+
+
               <CardDetailsMap />
             </Grid>
 
