@@ -30,6 +30,7 @@ import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { CONTACSCOUNTER } from "../../../graphQL/useQueryContactsCounter";
 import { CONTACTSBYOWNERSID } from "../../../graphQL/useQueryContactsByOwnerId";
+import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { USERBYEMAIL } from "../../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
 const useStyles = makeStyles((theme) => ({
@@ -589,6 +590,9 @@ export default function Contacts(props) {
   );
   //////////
   const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
+  const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(
+    OWNERSWELLSQUERY
+  );
   //////////
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
   //////////
@@ -652,6 +656,11 @@ export default function Contacts(props) {
             authToken: stateApp.user.authToken,
           },
         });
+        getOwnersWells({
+          variables: {
+            ownersIds: tracksIdArray,
+          },
+        });
         getCommentsCounter({
           variables: { objectsIdsArray: tracksIdArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
         });
@@ -680,13 +689,24 @@ export default function Contacts(props) {
         dataContactsCounter &&
         dataContactsCounter.contactsCounter &&
         dataTagSamples &&
-        dataTagSamples.tagSamples
+        dataTagSamples.tagSamples &&
+        dataOwnersWells
       ) {
         dataOwners.owners.results.forEach((owner) => {
           owner.isTracked = true;
           owner.commentsCounter = 0;
           owner.tags = [[], 0];
           owner.contactsCounter = 0;
+          owner.wellsCounter = [];
+
+          if (dataOwnersWells.ownersWells) {
+            for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
+              if (owner.id === dataOwnersWells.ownersWells[i].ownerId) {
+                owner.wellsCounter = dataOwnersWells.ownersWells[i].wells;
+                break;
+              }
+            }
+          }
 
           for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
             if (owner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -765,7 +785,13 @@ export default function Contacts(props) {
       }
       setLoading(false);
     }
-  }, [dataOwners, dataTagSamples, dataCommentsCounter, dataContactsCounter]);
+  }, [
+    dataOwners,
+    dataTagSamples,
+    dataCommentsCounter,
+    dataContactsCounter,
+    dataOwnersWells,
+  ]);
   ////////////Tracked Owners end///////////////////////////////////////////////
 
   ////////////Tracked Wells begin///////////////////////////////////////////////
@@ -936,6 +962,11 @@ export default function Contacts(props) {
         setHeader("Owners Per Well");
         setAddAble(false);
 
+        getOwnersWells({
+          variables: {
+            ownersIds: objectsIdsArray,
+          },
+        });
         getCommentsCounter({
           variables: { objectsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
         });
@@ -965,12 +996,23 @@ export default function Contacts(props) {
       dataContactsCounter &&
       dataContactsCounter.contactsCounter &&
       dataTagSamples &&
-      dataTagSamples.tagSamples
+      dataTagSamples.tagSamples &&
+      dataOwnersWells
     ) {
       dataWellOwners.wellOwners.forEach((wellOwner) => {
         wellOwner.commentsCounter = 0;
         wellOwner.tags = [[], 0];
         wellOwner.contactsCounter = 0;
+        wellOwner.wellsCounter = [];
+
+        if (dataOwnersWells.ownersWells) {
+          for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
+            if (wellOwner.id === dataOwnersWells.ownersWells[i].ownerId) {
+              wellOwner.wellsCounter = dataOwnersWells.ownersWells[i].wells;
+              break;
+            }
+          }
+        }
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (wellOwner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -1046,6 +1088,7 @@ export default function Contacts(props) {
     dataTagSamples,
     dataCommentsCounter,
     dataContactsCounter,
+    dataOwnersWells,
   ]);
 
   ////////////Owners Per Well end///////////////////////////////////////////////
@@ -1064,6 +1107,11 @@ export default function Contacts(props) {
           authToken: stateApp.user.authToken,
         },
       });
+      getOwnersWells({
+        variables: {
+          ownersIds: props.ownersIdsArray,
+        },
+      });
     }
   }, [props.ownersIdsArray]);
 
@@ -1073,7 +1121,8 @@ export default function Contacts(props) {
       props.parent === "ownersPerContacts" &&
       dataOwners &&
       dataTracks &&
-      dataTracks.tracksByUserAndObjectType
+      dataTracks.tracksByUserAndObjectType &&
+      dataOwnersWells
     ) {
       if (
         dataOwners.owners &&
@@ -1097,6 +1146,17 @@ export default function Contacts(props) {
               break;
             }
           }
+
+          wellOwner.wellsCounter = [];
+
+          if (dataOwnersWells.ownersWells) {
+            for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
+              if (wellOwner.id === dataOwnersWells.ownersWells[i].ownerId) {
+                wellOwner.wellsCounter = dataOwnersWells.ownersWells[i].wells;
+                break;
+              }
+            }
+          }
         });
 
         setHeader("Well Owners Per Contact");
@@ -1117,7 +1177,7 @@ export default function Contacts(props) {
         setAddAble(false);
       }
     }
-  }, [dataOwners, dataTracks]);
+  }, [dataOwners, dataTracks, dataOwnersWells]);
 
   useEffect(() => {
     if (

@@ -20,7 +20,7 @@ export default function WellCard() {
   return stateApp.selectedOwner ? (
     <Grid container className={classes.gridWidthScroll} spacing={0}>
       <Grid item sm={12}>
-        <OwnerDetailsCardMap/>
+        <OwnerDetailsCardMap />
       </Grid>
 
       <Grid item sm={12}>

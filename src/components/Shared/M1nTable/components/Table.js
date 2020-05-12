@@ -219,18 +219,20 @@ export default function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   return (
                     <Tooltip
-                      title={value ? "Wells" : "Not Available"}
+                      title={value.length > 0 ? "Wells" : "Not Available"}
                       placement="top"
                     >
                       <Badge
-                        badgeContent={value ? value : null}
+                        badgeContent={value.length > 0 ? value.length : null}
                         color="secondary"
                       >
                         <IconButton
                           size="medium"
                           color="primary"
                           className={`${classes.icons} ${
-                            !value ? classes.noOwnersIcon : ""
+                            !value || value.length === 0
+                              ? classes.noOwnersIcon
+                              : ""
                           } ${
                             colInd === tableMeta.columnIndex &&
                             rowInd === tableMeta.rowIndex
@@ -239,7 +241,7 @@ export default function SubTable(props) {
                           }`}
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (value && value > 0) {
+                            if (value && value.length > 0) {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
@@ -251,7 +253,9 @@ export default function SubTable(props) {
                           aria-label="show owners"
                         >
                           <WellIcon
-                            color={value && value !== 0 ? "#000" : "darkgrey"}
+                            color={
+                              value && value.length > 0 ? "#000" : "darkgrey"
+                            }
                             opacity="1.0"
                             small
                           />
