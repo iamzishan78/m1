@@ -2,6 +2,7 @@ import React, { useContext, useState, useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import mapboxgl from "mapbox-gl";
 import { AppContext } from "../../../AppContext";
+import uid from "uid";
 
 const useStyles = makeStyles(() => ({
   MSWrapper: {
@@ -124,7 +125,11 @@ export default function OwnerDetailsCardMap() {
 
   return (
     <div className={classes.MSWrapper}>
-      <div className={classes.map} ref={mapEl} id={`ownerDetailsCardMap`}>
+      <div
+        className={classes.map}
+        ref={mapEl}
+        id={`ownerDetailsCardMap${uid()}`}
+      >
         <div className={classes.footerLeftLogo}>
           <img src="icons/M1LogoWhiteTransparent.png" alt="logo" width="75" />
         </div>
