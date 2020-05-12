@@ -144,11 +144,15 @@ export default function MapControls(props) {
         name: "Heatmaps",
         action: "heatMaps",
       },
-      {
-        icon: !stateApp.editDraw ? <EditIcon /> : <CancelIcon />,
-        name: "Draw",
-        action: "draw",
-      },
+
+      // TEMPORARY COMMENT OUT OF FEATURE IN PROGRESS 
+      // {
+      //   icon: !stateApp.editDraw ? <EditIcon /> : <CancelIcon />,
+      //   name: "Draw",
+      //   action: "draw",
+      // },
+
+
       {
         icon: <Cube3d />,
         name: "Toggle 3D",

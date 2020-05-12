@@ -871,6 +871,8 @@ export default function Navigation(props) {
                     aria-label="tabs"
                     classes={{ indicator: classes.indicator }}
                   >
+
+                {/*  TEMPORARY COMMENT OUT OF FEATURE IN PROGRESS
                     <Button
                       variant="contained"
                       disableElevation
@@ -894,7 +896,9 @@ export default function Navigation(props) {
                       // onKeyDown={e => onEnterKey(e)}
                     >
                       SEND MAILERS
-                    </Button>
+                    </Button> */}
+
+
 
                     <Tab
                       //onClick={handleFilterCardOpen}
@@ -1067,7 +1071,7 @@ export default function Navigation(props) {
                     }
                     aria-label="filter settings"
                   />*/}
-                  
+
                 </Tabs>
                  
               </div>
