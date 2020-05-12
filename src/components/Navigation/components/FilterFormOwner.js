@@ -193,6 +193,7 @@ export default function FilterFormOwner() {
           )}
           disableListWrap
         />
+
         <Autocomplete
           className={classes.formControl}
           defaultValue={ownerTypeName}
@@ -214,8 +215,15 @@ export default function FilterFormOwner() {
           )}
           disableListWrap
         />
+        
       <FilterOwnerCount/>
-      <FilterOwnerInterestSum/>
+
+      {/* TEMPORARY COMMENT OUT BELOW
+      FEATURE WORKS AND WILL HELP WITH M1 LOCAL DEBUGGING
+      <FilterOwnerInterestSum/> */}
+
+
+
       </div>
     </div>
   );
