@@ -333,7 +333,7 @@ export default function FieldContent({
       return [
         inputsArray,
         noInputFooter ? null : (
-          <p className={classes.foodText}>
+          <p key="2" className={classes.foodText}>
             <span>Return</span> to save
           </p>
         ),
