@@ -1,16 +1,12 @@
-import React from 'react'
-import { ExpandableCardContextProvider } from './ExpandableCardContext'
+import React from "react";
+import { ExpandableCardContextProvider } from "./ExpandableCardContext";
 
-import ExpandableCard from './ExandableCard'
-
+import ExpandableCard from "./ExandableCard";
 
 export default function ExpandableCardProvider(props) {
-  
-
   return (
     <ExpandableCardContextProvider>
-     
-        <ExpandableCard 
+      <ExpandableCard
         expanded={props.expanded}
         handleCloseExpandableCard={props.handleCloseExpandableCard}
         component={props.component}
@@ -20,11 +16,11 @@ export default function ExpandableCardProvider(props) {
         mouseX={props.mouseX}
         mouseY={props.mouseY}
         position={props.position}
-        zIndex={props.zIndex} 
-        cardLeft={props.cardLeft} 
-        cardTop={props.cardTop} 
-        cardWidth={props.cardWidth} 
-        cardHeight={props.cardHeight} 
+        zIndex={props.zIndex}
+        cardLeft={props.cardLeft}
+        cardTop={props.cardTop}
+        cardWidth={props.cardWidth}
+        cardHeight={props.cardHeight}
         cardWidthExpanded={props.cardWidthExpanded}
         cardHeightExpanded={props.cardHeightExpanded}
         source={props.source}
@@ -36,10 +32,8 @@ export default function ExpandableCardProvider(props) {
         targetName={props.targetName}
         targetLabel={props.targetLabel}
         Api={props.Api}
-        />
-     
+        noTrackAvailable={props.noTrackAvailable}
+      />
     </ExpandableCardContextProvider>
-  )
+  );
 }
-
-

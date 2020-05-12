@@ -672,6 +672,7 @@ export default function SubTable(props) {
                 : selectedRow._id
             }
             targetLabel={props.targetLabel}
+            noTrackAvailable={title === "Contact" ? true : false}
           />
         </Dialog>
       )}

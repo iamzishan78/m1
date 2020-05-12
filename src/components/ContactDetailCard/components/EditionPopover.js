@@ -27,6 +27,10 @@ export default function EditionPopover(props) {
           vertical: "top",
           horizontal: "center",
         }}
+        onKeyDown={(event) => {
+          event.stopPropagation();
+          event.preventDefault();
+        }}
       >
         <Box p="8px 8px 0 8px">{props.children}</Box>
       </Popover>

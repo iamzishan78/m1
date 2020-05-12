@@ -11,7 +11,7 @@ import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { CONTACTSQUERY } from "../../../../../graphQL/useQueryContacts";
 import { CONTACTSBYOWNERSID } from "../../../../../graphQL/useQueryContactsByOwnerId";
 import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
-import { UPDATECONTACT } from "../../../../../graphQL/useMutationUpdateContact";
+import { ADDREMOVEOWNERTOACONTACT } from "../../../../../graphQL/useMutationAddRemoveOwnerToAContact";
 import Taps from "../../../Taps";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
@@ -19,7 +19,7 @@ import { USERBYEMAIL } from "../../../../../graphQL/useQueryUserByEmail"; //////
 import { AppContext } from "../../../../../AppContext"; ///////temporary  while signed user fixed
 
 const phonenumber = (inputtxt) => {
-  if (inputtxt.match(/^([0-9]||-|\(|\))+$/) !== null) {
+  if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
     return true;
   } else {
     return false;
@@ -87,7 +87,7 @@ export default function AddContactDialogContent(props) {
     { loading: loadingContactsByOwnerId, data: dataContactsByOwnerId },
   ] = useLazyQuery(CONTACTSBYOWNERSID);
   const [addContact] = useMutation(ADDCONTACT);
-  const [updateContact] = useMutation(UPDATECONTACT);
+  const [addRemoveOwnerToAContact] = useMutation(ADDREMOVEOWNERTOACONTACT);
 
   //////begin////////temporary  while signed user fixed
   const [stateApp] = React.useContext(AppContext);
@@ -191,22 +191,11 @@ export default function AddContactDialogContent(props) {
 
     if (props.parent && activeTapIndex === 1) {
       //////update///// existingContact   //////////
-      updateContact({
+
+      addRemoveOwnerToAContact({
         variables: {
-          contact: {
-            _id: existingContact._id,
-            // name: existingContact.name,
-            // address1: existingContact.address1,
-            // address2: existingContact.address2,
-            // city: existingContact.city,
-            // country: existingContact.country,
-            // state: existingContact.state,
-            // zip: existingContact.zip,
-            // mobilePhone: existingContact.mobilePhone,
-            // homePhone: existingContact.homePhone,
-            // primaryEmail: existingContact.primaryEmail,
-            owners: [...existingContact.owners, props.parent],
-          },
+          contactId: existingContact._id,
+          ownerId: props.parent,
         },
         refetchQueries: [
           "getContacts",

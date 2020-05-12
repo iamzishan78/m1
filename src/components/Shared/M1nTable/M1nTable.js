@@ -508,25 +508,25 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
-  {
-    name: "isTracked",
-    label: "Track",
-    options: {
-      searchable: false,
-      download: false,
-      print: false,
-      filterOptions: {
-        names: ["Tracked", "Untracked"],
-        logic(tracked, filterVal) {
-          return !(
-            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
-            (filterVal.indexOf("Untracked") >= 0 && !tracked)
-          );
-        },
-      },
-      filterType: "dropdown",
-    },
-  },
+  // {
+  //   name: "isTracked",
+  //   label: "Track",
+  //   options: {
+  //     searchable: false,
+  //     download: false,
+  //     print: false,
+  //     filterOptions: {
+  //       names: ["Tracked", "Untracked"],
+  //       logic(tracked, filterVal) {
+  //         return !(
+  //           (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+  //           (filterVal.indexOf("Untracked") >= 0 && !tracked)
+  //         );
+  //       },
+  //     },
+  //     filterType: "dropdown",
+  //   },
+  // },
 ];
 
 ////////////HeadCells end///////////////////////////////////////////////

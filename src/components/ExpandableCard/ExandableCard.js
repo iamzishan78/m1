@@ -65,7 +65,7 @@ export default function ExpandableCard(props) {
     title: {
       fontFamily: "Poppins",
       color: "#FFFFFF",
-      fontSize: "15px",
+      fontSize: props.title === "Contact" ? "22px" : "15px",
     },
     headerIcons: {
       // paddingTop: "10px",
@@ -223,12 +223,14 @@ export default function ExpandableCard(props) {
               iconZiseSmall={!stateExpandableCard.expanded}
             />
 
-            <TrackToggleButton
-              target={target}
-              targetLabel={targetLabel}
-              targetSourceId={targetSourceId.toLowerCase()}
-              iconZiseSmall={!stateExpandableCard.expanded}
-            />
+            {!props.noTrackAvailable && (
+              <TrackToggleButton
+                target={target}
+                targetLabel={targetLabel}
+                targetSourceId={targetSourceId.toLowerCase()}
+                iconZiseSmall={!stateExpandableCard.expanded}
+              />
+            )}
 
             {stateExpandableCard.expanded
               ? parent !== "table" && (

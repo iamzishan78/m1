@@ -50,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
   dataSect: {
     color: "#595959",
     width: "100%",
+    marginTop: "10px",
     "& p": {
       margin: "10px",
       wordWrap: "break-word",
@@ -119,12 +120,29 @@ const useStyles = makeStyles((theme) => ({
     height: "0",
     float: "right",
     color: "#757575",
+    "& a": {
+      textDecoration: "none !important",
+    },
+    "& button": {
+      margin: "5px",
+      padding: " 1px 3px 1px 4px",
+      fontSize: "0.75rem",
+      "& .MuiButton-startIcon.MuiButton-iconSizeSmall": {
+        marginRight: "2px",
+      },
+    },
+  },
+  userSmallLoader: {
+    height: "0px",
+    width: "22px",
+    position: "relative",
+    top: "8px",
+    left: "2px",
   },
 }));
 
 export default function ContactDetailCard(props) {
   const classes = useStyles();
-  // const [contactData, setContactData] = useState();
 
   const [getContact, { loading, data }] = useLazyQuery(CONTACT);
 
@@ -138,15 +156,6 @@ export default function ContactDetailCard(props) {
     }
   }, [props.contactId]);
 
-  // useEffect(() => {
-  //   if (data) {
-  //     setContactData(data.contact);
-
-  //   }
-  // }, [data]);
-
-  console.log("yyyyyyyyy", data); //////////////////////////
-
   return data && data.contact && !loading ? (
     <Grid container spacing={0} className={classes.mainGridContainer}>
       {/*/////////// left column //////////// */}
@@ -157,24 +166,27 @@ export default function ContactDetailCard(props) {
           <Grid item xs={12} className={classes.border}>
             <div className={classes.leftColumnTopRigthCorner}>
               {data.contact.primaryEmail && (
-                <Tooltip title={"Send Email"}>
-                  <a href={"mailto:" + data.contact.primaryEmail}>
-                    <IconButton size="small" style={{ color: "#757575" }}>
-                      <MailOutlineIcon />
-                    </IconButton>
-                  </a>
-                </Tooltip>
+                <a href={"mailto:" + data.contact.primaryEmail}>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    variant="outlined"
+                    startIcon={<MailOutlineIcon />}
+                  >
+                    Email
+                  </Button>
+                </a>
               )}
 
-              <Tooltip title={"Delete Contact"}>
-                <IconButton
-                  size="small"
-                  style={{ color: "#757575" }}
-                  onClick={() => {}}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
+              {/* <Button
+                variant="contained"
+                size="small"
+                variant="outlined"
+                startIcon={<DeleteIcon />}
+                onClick={() => {}}
+              >
+                Delete
+              </Button> */}
             </div>
             <div>
               <div className={classes.userIcon}>
@@ -185,6 +197,7 @@ export default function ContactDetailCard(props) {
                   {/* {data.contact.name} */}
 
                   <FieldContent
+                    noInputFooter
                     noMargin
                     id={data.contact._id}
                     content={{ name: data.contact.name }}
@@ -498,16 +511,17 @@ export default function ContactDetailCard(props) {
                 <p className="dataLabels">Created By</p>
               </Grid>
               <Grid item xs={7}>
+                {data.contact.createBy && data.contact.createBy.name === null && (
+                  <div className={classes.userSmallLoader}>
+                    <CircularProgress size={22} color="secondary" />
+                  </div>
+                )}
                 {(data.contact.createBy && data.contact.createBy.name) ||
                 data.contact.createAt ? (
                   <p style={{ minHeight: "28px" }}>
-                    {data.contact.createBy && data.contact.createBy.name ? (
-                      data.contact.createBy.name
-                    ) : (
-                      <span style={{ height: "16", width: "22" }}>
-                        <CircularProgress size={22} color="secondary" />
-                      </span>
-                    )}
+                    {data.contact.createBy && data.contact.createBy.name
+                      ? data.contact.createBy.name
+                      : ""}
 
                     {`${
                       data.contact.createAt
@@ -525,18 +539,19 @@ export default function ContactDetailCard(props) {
                 <p className="dataLabels">Last Update By</p>
               </Grid>
               <Grid item xs={7}>
+                {data.contact.lastUpdateBy &&
+                  data.contact.lastUpdateBy.name === null && (
+                    <div className={classes.userSmallLoader}>
+                      <CircularProgress size={22} color="secondary" />
+                    </div>
+                  )}
                 {(data.contact.lastUpdateBy &&
                   data.contact.lastUpdateBy.name) ||
                 data.contact.lastUpdateAt ? (
                   <p style={{ minHeight: "28px" }}>
-                    {data.contact.lastUpdateBy &&
-                    data.contact.lastUpdateBy.name ? (
-                      data.contact.lastUpdateBy.name
-                    ) : (
-                      <span style={{ height: "16", width: "22" }}>
-                        <CircularProgress size={22} color="secondary" />
-                      </span>
-                    )}
+                    {data.contact.lastUpdateBy && data.contact.lastUpdateBy.name
+                      ? data.contact.lastUpdateBy.name
+                      : ""}
                     {`${
                       data.contact.lastUpdateAt
                         ? " - " +
@@ -552,16 +567,20 @@ export default function ContactDetailCard(props) {
           </Grid>
 
           {/*/////////// section 3 //////////// */}
-          <Grid
-            item
-            xs={12}
-            className={`${classes.border} ${classes.ownersTable}`}
-          >
-            <M1nTable
-              parent="ownersPerContacts"
-              ownersIdsArray={data.contact.owners}
-            />
-          </Grid>
+          {data.contact &&
+            data.contact.owners &&
+            data.contact.owners.length > 0 && (
+              <Grid
+                item
+                xs={12}
+                className={`${classes.border} ${classes.ownersTable}`}
+              >
+                <M1nTable
+                  parent="ownersPerContacts"
+                  ownersIdsArray={data.contact.owners}
+                />
+              </Grid>
+            )}
         </Grid>
       </Grid>
 

@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const ADDREMOVEOWNERTOACONTACT = gql`
-  mutation AddRemoveOwnerToAContact($contact: ContactInput) {
-    addRemoveOwnerToAContact(contact: $contact) {
+  mutation AddRemoveOwnerToAContact($contactId: ID, $ownerId: String) {
+    addRemoveOwnerToAContact(contactId: $contactId, ownerId: $ownerId) {
       success
       message
       error

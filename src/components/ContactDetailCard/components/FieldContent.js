@@ -7,6 +7,9 @@ import Tooltip from "@material-ui/core/Tooltip";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 import TextField from "@material-ui/core/TextField";
 import EditionPopover from "./EditionPopover";
+import ClearSharpIcon from "@material-ui/icons/ClearSharp";
+import CheckSharpIcon from "@material-ui/icons/CheckSharp";
+import Button from "@material-ui/core/Button";
 import { useMutation } from "@apollo/react-hooks";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -38,11 +41,11 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "22px",
   },
   editTextField: {
+    paddingRight: ({ fieldsCount }) => (fieldsCount > 1 ? null : "13px"),
     "& .MuiInputBase-root": {
       fontSize: "0.875rem",
       padding: "10px",
       lineHeight: "1.43",
-      marginBottom: "8px",
     },
   },
   notAvailableP: { color: "#898989b0", fontSize: "13px" },
@@ -51,16 +54,65 @@ const useStyles = makeStyles((theme) => ({
     top: "-37px",
     left: "10px",
   },
+  popoverButton: {
+    margin: "0 0 4px 8px",
+    padding: "2px",
+    minWidth: "0",
+    "& .MuiButton-startIcon.MuiButton-iconSizeSmall": { margin: "0" },
+  },
+  buttonsRow: { textAlign: "right", top: "-2px", position: "relative" },
+  foodText: {
+    fontSize: "10px",
+    color: "#6e6e6e",
+    margin: "0 !important",
+    textAlign: "right",
+    float: "right",
+    marginLeft: "10px",
+    height: "8px",
+    paddingRight: "13px",
+    "& span": {
+      fontWeight: "bold",
+    },
+  },
 }));
 
-function PencilEditIcon({ onClick, anchorEl, setAnchorEl, content }) {
+function PencilEditIcon({
+  onClick,
+  anchorEl,
+  setAnchorEl,
+  content,
+  handleUpdating,
+}) {
   const classes = useStyles();
   return (
     <React.Fragment>
       <EditionPopover anchorEl={anchorEl} setAnchorEl={setAnchorEl}>
         <Grid container spacing={0} style={{ width: "200px" }}>
-          {content.map((textF) => (
-            <Grid item xs={12}>
+          <Grid className={classes.buttonsRow} item xs={12}>
+            <Button
+              variant="contained"
+              size="small"
+              variant="outlined"
+              className={classes.popoverButton}
+              startIcon={<CheckSharpIcon />}
+              onClick={() => {
+                handleUpdating();
+              }}
+            />
+            <Button
+              variant="contained"
+              size="small"
+              variant="outlined"
+              className={classes.popoverButton}
+              startIcon={<ClearSharpIcon />}
+              onClick={() => {
+                setAnchorEl(null);
+              }}
+            />
+          </Grid>
+
+          {content.map((textF, i) => (
+            <Grid key={i} item xs={12} style={{ marginBottom: "8px" }}>
               {textF}
             </Grid>
           ))}
@@ -83,6 +135,37 @@ function PencilEditIcon({ onClick, anchorEl, setAnchorEl, content }) {
   );
 }
 
+const textFieldLabels = (field) => {
+  const fieldsOpt = [
+    "companyName",
+    "jobTitle",
+    "address2Alt",
+    "address1Alt",
+    "cityAlt",
+    "stateAlt",
+    "zipAlt",
+    "countryAlt",
+    "zip",
+  ];
+  const labelsOpt = [
+    "Company Name",
+    "Job Title",
+    "Address2",
+    "Address1",
+    "City",
+    "State",
+    "ZipCode",
+    "Country",
+    "ZipCode",
+  ];
+
+  if (fieldsOpt.indexOf(field) !== -1) {
+    return labelsOpt[fieldsOpt.indexOf(field)];
+  }
+
+  return field.charAt(0).toUpperCase() + field.slice(1);
+};
+
 export default function FieldContent({
   children,
   id,
@@ -91,22 +174,23 @@ export default function FieldContent({
   onlyChildren,
   name,
   noMargin,
+  noInputFooter,
 }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
   //////////// content - brings an object with fielNames and values ///////////////////////////////////////////////
   //////////// childrenLeft - will move the chilren components to the left side of the field values//optional//////
   ////////////              - default childrens to rigth///////////////////////////////////////////////////////////
-  //////////// onlyChildren - will show only the children components, no field values  //optional/////////////////
+  //////////// onlyChildren - will show only the children components, no field values  //optional//////////////////
   //////////// name - will be part of the Not Available text, better use in compound fiels  //optional/////////////
   //////////// noMargin - no p tag margin  //optional//////////////////////////////////////////////////////////////
+  //////////// noInputFooter //optional////////////////////////////////////////////////////////////////////////////
 
   const [edit, setEdit] = useState(null);
   const [editContent, setEditContent] = useState({ content });
   const [fieldsCount, setFieldsCount] = useState(0);
 
   const [updateContact, { loading }] = useMutation(UPDATECONTACT);
-  console.log("loadinnnnnnnnnnnnnnnnnnnn", loading);
-  const classes = useStyles({ noMargin, loading });
+  const classes = useStyles({ noMargin, loading, fieldsCount });
 
   //////begin////////temporary  while signed user fixed
 
@@ -147,16 +231,15 @@ export default function FieldContent({
   }, [content]);
 
   useEffect(() => {
-    let fieldName;
-    for (const key in editContent) {
-      fieldName = key;
-      break;
+    if (fieldsCount <= 1) {
+      let fieldName;
+      for (const key in editContent) {
+        fieldName = key;
+        break;
+      }
+      if (document.getElementById("fieldContentInput" + fieldName))
+        document.getElementById("fieldContentInput" + fieldName).focus();
     }
-    if (
-      document.getElementById("fieldContentInput" + fieldName) &&
-      fieldsCount <= 1
-    )
-      document.getElementById("fieldContentInput" + fieldName).focus();
   }, [edit]);
 
   const handleEditClick = (e) => {
@@ -165,24 +248,30 @@ export default function FieldContent({
     setEdit(!edit ? e.currentTarget : null);
   };
 
-  const handleUpdating = (event, fieldName) => {
-    if (content[fieldName] !== event.target.value.trim()) {
+  const handleUpdating = () => {
+    let trimmedEditContent = {
+      _id: id,
+      lastUpdateBy: user._id, ///stateApp.user////temporary while signed user fixed
+    };
+    let differences = false;
+    for (const field in editContent) {
+      if (editContent[field] !== null) {
+        trimmedEditContent[field] = editContent[field].trim();
+        if (editContent[field].trim() !== content[field]) differences = true;
+      }
+    }
+
+    if (differences) {
       updateContact({
         variables: {
-          contact: {
-            _id: id,
-            [fieldName]: event.target.value.trim(),
-            lastUpdateBy: user._id, ///stateApp.user////temporary while signed user fixed
-          },
+          contact: trimmedEditContent,
         },
         refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
         awaitRefetchQueries: true,
       });
     }
 
-    if (fieldsCount <= 1) {
-      setEdit(null);
-    }
+    setEdit(null);
   };
 
   let inputsArray = [];
@@ -197,11 +286,7 @@ export default function FieldContent({
             variant="outlined"
             size="small"
             fullWidth
-            label={
-              fieldsCount > 1
-                ? fieldName.charAt(0).toUpperCase() + fieldName.slice(1)
-                : null
-            }
+            label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
             multiline
             value={
               editContent[fieldName] === null ? "" : editContent[fieldName]
@@ -216,26 +301,28 @@ export default function FieldContent({
             onKeyDown={(event) => {
               event.stopPropagation();
               if (event.key === "Escape") {
+                if (fieldsCount <= 1) {
+                  setEdit(null);
+                  setEditContent((editContent) => ({
+                    ...editContent,
+                    [fieldName]: content[fieldName],
+                  }));
+                }
+              }
+
+              if (event.key === "Enter") {
+                event.preventDefault();
+                handleUpdating();
+              }
+            }}
+            onBlur={() => {
+              if (fieldsCount <= 1) {
                 setEdit(null);
                 setEditContent((editContent) => ({
                   ...editContent,
                   [fieldName]: content[fieldName],
                 }));
               }
-
-              if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-                handleUpdating(event, fieldName);
-              }
-            }}
-            onBlur={() => {
-              if (fieldsCount <= 1) {
-                setEdit(null);
-              }
-              setEditContent((editContent) => ({
-                ...editContent,
-                [fieldName]: content[fieldName],
-              }));
             }}
           />
         );
@@ -243,7 +330,14 @@ export default function FieldContent({
     }
 
     if (fieldsCount <= 1) {
-      return inputsArray; /////return an input if only one field
+      return [
+        inputsArray,
+        noInputFooter ? null : (
+          <p className={classes.foodText}>
+            <span>Return</span> to save
+          </p>
+        ),
+      ]; /////return an input if only one field
     }
   }
 
@@ -268,6 +362,7 @@ export default function FieldContent({
             : textArray.join(", ")
           : `${name ? name + " " : ""} Not Available`}
         <PencilEditIcon
+          handleUpdating={handleUpdating}
           anchorEl={edit}
           setAnchorEl={setEdit}
           content={inputsArray}
