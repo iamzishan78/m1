@@ -98,7 +98,9 @@ function PencilEditIcon({
               onClick={() => {
                 handleUpdating();
               }}
-            />
+            >
+              {" "}
+            </Button>
             <Button
               variant="contained"
               size="small"
@@ -108,7 +110,9 @@ function PencilEditIcon({
               onClick={() => {
                 setAnchorEl(null);
               }}
-            />
+            >
+              {" "}
+            </Button>
           </Grid>
 
           {content.map((textF, i) => (
@@ -355,10 +359,12 @@ export default function FieldContent({
           classes.fieldContentP
         }`}
       >
-        {childrenLeft && !onlyChildren ? children : ""}
+        {childrenLeft && !onlyChildren && children ? children : ""}
         {textArray.length > 0
           ? onlyChildren
             ? children
+              ? children
+              : ""
             : textArray.join(", ")
           : `${name ? name + " " : ""} Not Available`}
         <PencilEditIcon
@@ -368,7 +374,7 @@ export default function FieldContent({
           content={inputsArray}
           onClick={handleEditClick}
         />
-        {!childrenLeft && !onlyChildren ? children : ""}
+        {!childrenLeft && !onlyChildren && children ? children : ""}
       </p>
       {loading && (
         <div style={{ height: "0", width: "0" }}>

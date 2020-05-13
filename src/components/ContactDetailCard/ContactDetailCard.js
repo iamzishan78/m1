@@ -21,6 +21,7 @@ import LocationCityIcon from "@material-ui/icons/LocationCity";
 import { CONTACT } from "../../graphQL/useQueryContact";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery } from "@apollo/react-hooks";
+import ConfirmationDialog from "./components/ConfirmationDialog";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -124,6 +125,7 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: "none !important",
     },
     "& button": {
+      color: "#757575",
       margin: "5px",
       padding: " 1px 3px 1px 4px",
       fontSize: "0.75rem",
@@ -143,7 +145,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ContactDetailCard(props) {
   const classes = useStyles();
-
+  const [openDialog, setOpenDialog] = useState(false);
   const [getContact, { loading, data }] = useLazyQuery(CONTACT);
 
   useEffect(() => {
@@ -178,15 +180,17 @@ export default function ContactDetailCard(props) {
                 </a>
               )}
 
-              {/* <Button
+              <Button
                 variant="contained"
                 size="small"
                 variant="outlined"
                 startIcon={<DeleteIcon />}
-                onClick={() => {}}
+                onClick={() => {
+                  setOpenDialog(true);
+                }}
               >
                 Delete
-              </Button> */}
+              </Button>
             </div>
             <div>
               <div className={classes.userIcon}>
@@ -615,6 +619,12 @@ export default function ContactDetailCard(props) {
           </Grid>
         </div>
       </Grid>
+      <ConfirmationDialog
+        openDialog={openDialog}
+        handleDialogClose={setOpenDialog}
+        handleCloseExpandableCard={props.handleCloseExpandableCard}
+        id={data.contact._id}
+      />
     </Grid>
   ) : (
     <div style={{ padding: "15px" }}>

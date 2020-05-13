@@ -22,7 +22,6 @@ import WellIcon from "../../svgIcons/well";
 import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
 import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import AddContactDialogContent from "./SubComponents/AddContactDialogContent";
-import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -80,17 +79,6 @@ const useStyles = makeStyles((theme) => ({
   noCommentsIcon: {
     color: "darkgrey",
   },
-  // table: {
-  //   "& .MuiTableRow-root": {
-  //     cursor: "zoom-in",
-  //   },
-  //   "& .MuiTableRow-head": {
-  //     cursor: "default",
-  //   },
-  //   "& .MuiTableRow-footer": {
-  //     cursor: "default",
-  //   },
-  // },
   dialogExpCard: {
     "& .MuiDialog-paperScrollPaper": {
       height: "100%",
@@ -115,7 +103,6 @@ var formatter = new Intl.NumberFormat("en-US", {
 });
 
 export default function SubTable(props) {
-  let history = useHistory();
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, setRows] = useState();
@@ -123,7 +110,7 @@ export default function SubTable(props) {
 
   const [colInd, setColInd] = useState();
   const [rowInd, setRowInd] = useState();
-  const [expandedObjectId, setExpandedObjectId] = useState();
+  const [expandedObject, setExpandedObject] = useState();
   const [openDialog, setOpenDialog] = useState(false);
 
   const [showExpandableCard, setShowExpandableCard] = useState(false);
@@ -245,8 +232,8 @@ export default function SubTable(props) {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
-                                tableMeta.rowData[0],
-                                "well"
+                                value,
+                                "wellsPerOwner"
                               );
                             }
                           }}
@@ -367,7 +354,7 @@ export default function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   return (
                     <Tooltip
-                      title={value.length > 0 ? "Owners" : "Add Owner"}
+                      title={value.length > 0 ? "Owners" : "Not Available"}
                       placement="top"
                     >
                       <Badge
@@ -377,7 +364,11 @@ export default function SubTable(props) {
                         <IconButton
                           size="medium"
                           color="primary"
-                          className={`${classes.icons}  ${
+                          className={`${classes.icons} ${
+                            !value || value.length === 0
+                              ? classes.noOwnersIcon
+                              : ""
+                          }  ${
                             colInd === tableMeta.columnIndex &&
                             rowInd === tableMeta.rowIndex
                               ? classes.iconSelected
@@ -385,12 +376,14 @@ export default function SubTable(props) {
                           }`}
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleExpandClick(
-                              tableMeta.columnIndex,
-                              tableMeta.rowIndex,
-                              value,
-                              "ownersPerContacts"
-                            );
+                            if (value.length > 0) {
+                              handleExpandClick(
+                                tableMeta.columnIndex,
+                                tableMeta.rowIndex,
+                                value,
+                                "ownersPerContacts"
+                              );
+                            }
                           }}
                           aria-label="show owners"
                         >
@@ -481,10 +474,10 @@ export default function SubTable(props) {
     }
   }, [props.columns, props.rows, colInd, rowInd]);
 
-  const handleExpandClick = async (cIndex, rIndex, id, type) => {
+  const handleExpandClick = async (cIndex, rIndex, idOrValues, type) => {
     setColInd(cIndex);
     setRowInd(rIndex);
-    setExpandedObjectId(id);
+    setExpandedObject(idOrValues);
     setOpenDialog(type);
   };
 
@@ -492,7 +485,7 @@ export default function SubTable(props) {
     setOpenDialog(false);
     setColInd(null);
     setRowInd(null);
-    setExpandedObjectId(null);
+    setExpandedObject(null);
   };
 
   const handleOpenExpandableCard = () => {
@@ -547,7 +540,12 @@ export default function SubTable(props) {
 
       if (props.targetLabel === "owner") {
         setStateApp((state) => ({ ...state, selectedOwner: rows[dataIndex] }));
-        setSubComponent(<OwnersDetailCard />);
+        setSubComponent(
+          <OwnersDetailCard
+            ownerId={rows[dataIndex].id}
+            wellsIdsArray={rows[dataIndex].wellsCounter}
+          />
+        );
         setTitle(rows[dataIndex].name);
         setSubTitle(rows[dataIndex].interestType);
         handleOpenExpandableCard();
@@ -567,8 +565,13 @@ export default function SubTable(props) {
           ...stateApp,
           selectedContact: rows[dataIndex].id,
         }));
-        // history.push("/contact");
-        setSubComponent(<ContactDetailCard contactId={rows[dataIndex]._id} />);
+
+        setSubComponent(
+          <ContactDetailCard
+            contactId={rows[dataIndex]._id}
+            handleCloseExpandableCard={handleCloseExpandableCard}
+          />
+        );
         setTitle("Contact");
         setSubTitle(" ");
         handleOpenExpandableCard();
@@ -595,7 +598,7 @@ export default function SubTable(props) {
           fullWidth={
             openDialog === "comment" ||
             openDialog === "owner" ||
-            openDialog === "well" ||
+            openDialog === "wellsPerOwner" ||
             openDialog === "ownerContacts" ||
             openDialog === "ownersPerContacts"
               ? true
@@ -606,7 +609,7 @@ export default function SubTable(props) {
               ? "xl"
               : openDialog === "owner" ||
                 openDialog === "ownersPerContacts" ||
-                openDialog === "well"
+                openDialog === "wellsPerOwner"
               ? "lg"
               : openDialog === "add"
               ? "xs"
@@ -614,27 +617,29 @@ export default function SubTable(props) {
           }
         >
           {openDialog === "comment" && (
-            <Comments focus targetSourceId={expandedObjectId} />
+            <Comments focus targetSourceId={expandedObject} />
           )}
           {openDialog === "tag" && (
             <div className={classes.tagsDiv}>
-              <Tags targetSourceId={expandedObjectId} />
+              <Tags targetSourceId={expandedObject} />
             </div>
           )}
           {openDialog === "owner" && (
             <M1nTable
-              selectedWell={{ api: expandedObjectId }}
+              selectedWell={{ api: expandedObject }}
               parent="OwnersPerWell"
             />
           )}
-
+          {openDialog === "wellsPerOwner" && (
+            <M1nTable wellsIdsArray={expandedObject} parent="WellsPerOwner" />
+          )}
           {openDialog === "ownerContacts" && (
-            <M1nTable parent="ownerContacts" ownerId={expandedObjectId} />
+            <M1nTable parent="ownerContacts" ownerId={expandedObject} />
           )}
           {openDialog === "ownersPerContacts" && (
             <M1nTable
               parent="ownersPerContacts"
-              ownersIdsArray={expandedObjectId}
+              ownersIdsArray={expandedObject}
             />
           )}
 

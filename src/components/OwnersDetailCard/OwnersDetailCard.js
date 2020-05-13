@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function WellCard() {
+export default function WellCard(props) {
   const [stateApp] = useContext(AppContext);
   const classes = useStyles();
 
@@ -27,7 +27,7 @@ export default function WellCard() {
         <Taps
           tabLabels={["Wells", "Contacts"]}
           tabPanels={[
-            <div> wells </div>,
+            <M1nTable parent="WellsPerOwner" wellsIdsArray={props.wellsIdsArray} />,
             <M1nTable
               parent="ownerContacts"
               ownerId={stateApp.selectedOwner.id}

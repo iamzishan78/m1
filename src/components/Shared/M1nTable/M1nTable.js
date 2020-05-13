@@ -18,7 +18,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import { Container } from "@material-ui/core";
-import TableProvider from "./components/TableProvider";
+import Table from "./components/Table";
 
 import { useLazyQuery } from "@apollo/react-hooks";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
@@ -702,7 +702,9 @@ export default function Contacts(props) {
           if (dataOwnersWells.ownersWells) {
             for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
               if (owner.id === dataOwnersWells.ownersWells[i].ownerId) {
-                owner.wellsCounter = dataOwnersWells.ownersWells[i].wells;
+                owner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
+                  (well) => well.wellId
+                );
                 break;
               }
             }
@@ -774,15 +776,21 @@ export default function Contacts(props) {
                 return column;
               })
         );
-        setAddAble(false);
+
         setStateApp((state) => ({
           ...state,
           owners: dataOwners.owners.results,
         }));
       } else {
-        setRows([]);
-        setAddAble(false);
+        if (
+          dataOwners.owners &&
+          dataOwners.owners.results &&
+          dataOwners.owners.results.length === 0
+        ) {
+          setRows([]);
+        }
       }
+      setAddAble(false);
       setLoading(false);
     }
   }, [
@@ -906,6 +914,136 @@ export default function Contacts(props) {
                 return column;
               })
         );
+
+        setStateApp((state) => ({
+          ...state,
+          wells: dataWells.wells.results,
+        }));
+      } else {
+        if (
+          dataWells.wells &&
+          dataWells.wells.results &&
+          dataWells.wells.results.length === 0
+        ) {
+          setRows([]);
+        }
+      }
+      setAddAble(false);
+      setLoading(false);
+    }
+  }, [dataWells, dataTagSamples, dataCommentsCounter]);
+  ////////////Tracked Wells end///////////////////////////////////////////////
+
+  ////////////Wells Per Owner begin///////////////////////////////////////////
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "WellsPerOwner" &&
+      props.wellsIdsArray &&
+      user._id !== ""
+    ) {
+      setTargetLabel("well");
+      getWells({
+        variables: {
+          wellIdArray: props.wellsIdsArray,
+          authToken: stateApp.user.authToken,
+        },
+      });
+      getCommentsCounter({
+        variables: { objectsIdsArray: props.wellsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+      });
+      getTagSamples({
+        variables: { objectsIdsArray: props.wellsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+      });
+    }
+  }, [props.wellsIdsArray, user]);
+
+  useEffect(() => {
+    if (props.parent && props.parent === "WellsPerOwner" && dataWells) {
+      if (
+        dataWells.wells &&
+        dataWells.wells.results &&
+        dataWells.wells.results.length > 0 &&
+        dataCommentsCounter &&
+        dataCommentsCounter.commentsCounter &&
+        dataTagSamples &&
+        dataTagSamples.tagSamples &&
+        dataTracks &&
+        dataTracks.tracksByUserAndObjectType
+      ) {
+        dataWells.wells.results.forEach((well) => {
+          well.isTracked = false;
+          well.commentsCounter = 0;
+          well.tags = [[], 0];
+
+          for (
+            let i = 0;
+            i < dataTracks.tracksByUserAndObjectType.length;
+            i++
+          ) {
+            if (well.id === dataTracks.tracksByUserAndObjectType[i].trackOn) {
+              well.isTracked = true;
+              break;
+            }
+          }
+          for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+            if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+              well.commentsCounter =
+                dataCommentsCounter.commentsCounter[i].total;
+              break;
+            }
+          }
+          for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+            if (well.id === dataTagSamples.tagSamples[i]._id) {
+              well.tags = [
+                dataTagSamples.tagSamples[i].tags,
+                dataTagSamples.tagSamples[i].total,
+              ];
+
+              break;
+            }
+          }
+        });
+
+        let availableTags = [];
+        dataTagSamples.tagSamples.map((sample) => {
+          availableTags = [...availableTags, ...sample.tags];
+        });
+        const cleanAvailableTags = [...new Set(availableTags)];
+
+        setRows(dataWells.wells.results);
+        setHeader("Wells");
+        setColumns(
+          cleanAvailableTags.length > 0
+            ? WellsHeadCells.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
+                    },
+                  };
+                }
+                return column;
+              })
+            : WellsHeadCells.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })
+        );
         setAddAble(false);
         setStateApp((state) => ({
           ...state,
@@ -917,8 +1055,9 @@ export default function Contacts(props) {
       }
       setLoading(false);
     }
-  }, [dataWells, dataTagSamples, dataCommentsCounter]);
-  ////////////Tracked Wells end///////////////////////////////////////////////
+  }, [dataWells, dataTagSamples, dataCommentsCounter, dataTracks]);
+
+  //////////// Wells Per Owner end///////////////////////////////////////////////
 
   ////////////Owners Per Well begin///////////////////////////////////////////////
 
@@ -1008,7 +1147,9 @@ export default function Contacts(props) {
         if (dataOwnersWells.ownersWells) {
           for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
             if (wellOwner.id === dataOwnersWells.ownersWells[i].ownerId) {
-              wellOwner.wellsCounter = dataOwnersWells.ownersWells[i].wells;
+              wellOwner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
+                (well) => well.wellId
+              );
               break;
             }
           }
@@ -1152,7 +1293,9 @@ export default function Contacts(props) {
           if (dataOwnersWells.ownersWells) {
             for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
               if (wellOwner.id === dataOwnersWells.ownersWells[i].ownerId) {
-                wellOwner.wellsCounter = dataOwnersWells.ownersWells[i].wells;
+                wellOwner.wellsCounter = dataOwnersWells.ownersWells[
+                  i
+                ].wells.map((well) => well.wellId);
                 break;
               }
             }
@@ -1550,7 +1693,7 @@ export default function Contacts(props) {
 
   return (
     <Container maxWidth="xl" className={classes.container}>
-      <TableProvider
+      <Table
         header={header}
         columns={columns}
         rows={rows}
