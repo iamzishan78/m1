@@ -156,7 +156,8 @@ const updateApolloClient = (endpoint,token) => {
     let apolloClient = new ApolloClient({
       uri: endpoint,
       headers: {
-        authorization: token ? `Bearer ${token}` : ''
+        //authorization: token ? `Bearer ${token}` : ''
+        'X-ZUMO-AUTH': token ? token : ''
       },
       cache: new InMemoryCache()  
     });

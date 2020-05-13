@@ -23,6 +23,14 @@ import { validateData } from "./loginHelpers";
 import InputBase from '@material-ui/core/InputBase';
 import styled from "styled-components";
 
+import {
+  msalConfig,
+  loginRequest
+ } from "./AADAuthConfig";
+import * as msal from "@azure/msal-browser";
+import { graphqlSync } from "graphql";
+import { QueryData } from "@apollo/react-hooks/lib/data/QueryData";
+const myMSALObj = new msal.PublicClientApplication(msalConfig); 
 
 const localStyles = makeStyles(theme => ({
   myRoot: {
@@ -207,6 +215,18 @@ const useStyles = makeStyles(theme => ({
 
     },
   },
+  aadLoginButton: {
+    backgroundColor: '#e4a773',
+    width: "300px",
+    height: "50px",
+    marginTop: "135px",
+    color: "#011133",
+    float: 'left',
+    marginLeft: '60px',
+    "&:hover" : {
+      backgroundColor: '#f0cfb3',
+    }
+  },
   signupLink: {
     textDecoration: "none",
     color: theme.palette.secondary.main,
@@ -232,7 +252,7 @@ const useStyles = makeStyles(theme => ({
     //marginLeft: '30px',
 
   },
- 
+
 }));
 
 
@@ -482,11 +502,33 @@ const Login = props => {
     autoFocus: false
   });
 
+  // Register Callbacks for Redirect flow
+  myMSALObj.handleRedirectCallback(authRedirectCallBack);
+
   useEffect(() => {}, [userEmail, userPassword]);
 
 
   
-
+  const TESTQUERY = gql`query {
+    login(userName:"${userName}",password:"${password}",tenant:"${tenant}") {
+      success
+      message
+      user {
+        id
+        email
+        name
+        authToken
+        authTokenExpires
+        tenant {
+          id
+          tenant
+          graphQL
+        }
+        
+      }
+      
+    }
+  }`;
 
 
   const LOGINQUERY = gql`query {
@@ -565,6 +607,110 @@ const Login = props => {
 
   };
 
+  function authRedirectCallBack(error, response) {
+      if (error) {
+          console.log(error);
+      } else {
+          if (myMSALObj.getAccount()) {
+            console.log(`Welcome ${response.account.name}`);
+            var headers = new Headers();
+            var bearer = "Bearer " + response.accessToken;
+            headers.append("Authorization", bearer);
+            var options = {
+                    method: "GET",
+                    headers: headers
+            };
+            var graphEndpoint = "https://graph.microsoft.com/v1.0/me";
+    
+            const user = fetch(graphEndpoint, options)
+              .then(resp => {
+                      resp.json().then(jsonResp => {
+                        console.log(jsonResp);
+                          setStateApp(state => ({ ...state, user: jsonResp.displayName }));
+                          setStateNav(stateNav => ({ ...stateNav, defaultOn: true }))
+                          //window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
+                          expiredStorage.setItem(
+                            "user",
+                            JSON.stringify(jsonResp.displayName),
+                            86400
+                          );
+                        // login(
+                        //   {
+                        //     "success": true,
+                        //     "message": "",
+                        //     "user": {
+                        //       "id": jsonResp.id,
+                        //       "email": jsonResp.mail,
+                        //       "name": jsonResp.displayName,
+                        //       "authToken": loginResponse.accessToken,
+                        //       "authTokenExpires": loginResponse.expiresOn,
+                        //       "tenant": {
+                        //         "id": loginResponse.tenantId,
+                        //         "tenant": "test",
+                        //         "graphQL": "test"
+                        //       }
+                        //     }
+                        //   }
+                        // );
+                      })
+              })
+          } else if (response.tokenType === "Bearer") {
+              console.log('access_token acquired at: ' + new Date().toString());
+          } else {
+              console.log("token type is:" + response.tokenType);
+          }
+      }
+  }
+
+  const handledAADSignIn = async () => {
+
+    const loginResponse = await myMSALObj.loginPopup(loginRequest).catch(function (error) {
+        console.log(error);
+    });
+    console.log('id_token acquired at: ' + new Date().toString());
+    console.log(loginResponse);
+    if (myMSALObj.getAccount()) {
+        console.log(`Welcome ${loginResponse.account.name}`);
+
+        var headers = new Headers();
+        headers.append("Content-Type", "application/json")
+        var options = {
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify({"access_token":loginResponse.accessToken})
+        };
+        var graphQLAuthEndpoint = "https://m1graphql.azurewebsites.net/.auth/login/aad";
+
+        const user = fetch(graphQLAuthEndpoint, options)
+          .then(resp => {
+                  resp.json().then(jsonResp => {
+                    console.log(jsonResp);
+
+                    setStateApp(state => ({ ...state, user: 
+                      {
+                        //"id": jsonResp.id,
+                        //"email": jsonResp.mail,
+                        //"name": jsonResp.displayName,
+                        "authToken": jsonResp.authenticationToken,
+                        "authTokenExpires": loginResponse.expiresOn,
+                        "tenant": {
+                          "id": loginResponse.tenantId,
+                          "tenant": "test",
+                          "graphQL": "test"
+                        }
+                      } 
+                    }));
+                    setStateNav(stateNav => ({ ...stateNav, defaultOn: true }))
+                    //window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
+                    expiredStorage.setItem(
+                      "user",
+                      //JSON.stringify(jsonResp.displayName),
+                      86400
+                    );
+                  })
+          })
+    }
+  };
   
   useEffect(() => {
     console.log("it changed");
@@ -1084,7 +1230,10 @@ const Login = props => {
 
 
 
-      <SignInCard handleSignIn={handledSignIn} ready={loading} />
+      <SignInCard 
+        handleSignIn={handledSignIn} ready={loading} 
+        handleAADSignIn={handledAADSignIn} ready={loading}
+      />
 
       
       <div>

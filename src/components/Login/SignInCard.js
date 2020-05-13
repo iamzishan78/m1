@@ -69,6 +69,18 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: '#f0cfb3',
     },
   },
+  aadButton: {
+    backgroundColor: '#e4a773',
+    width: "125px",
+    height: "50px",
+    marginTop: "35px",
+    color: "#011133",
+    float: 'left',
+    marginLeft: '60px',
+    "&:hover" : {
+      backgroundColor: '#f0cfb3',
+    },
+  },
   signupLink: {
     textDecoration: "none",
     color: theme.palette.secondary.main,
@@ -186,6 +198,20 @@ const SignInCard = props => {
     }
   }
 
+  const signInAAD = () => {
+    if (userEmail === "" || userPassword === "") {
+      //set errorFlags
+    } else {
+      const userData = {
+        userEmail,
+        userPassword,
+        tenant
+      };
+      const { handleAADSignIn } = props;
+      handleAADSignIn(userData);
+    }
+  };
+
   const renderButtonAndLoader = (
     props.ready ?
       <CircularProgress color="secondary" size={28} className={classes.loader} />
@@ -200,6 +226,22 @@ const SignInCard = props => {
             >
             Sign In
         </Button>
+  )
+
+  const renderAADButtonAndLoader = (
+    props.ready ?
+      <CircularProgress color="secondary" size={28} className={classes.loader} />
+      : 
+        <Button
+        variant="outlined"
+        disableElevation
+        type="submit"
+        className={classes.aadButton}
+        onClick={signInAAD}
+        onKeyDown={e => onEnterKey(e)}
+          >
+          Sign In with AAD
+      </Button>
   )
 
   const handleTenantChange = (e) => {
@@ -307,6 +349,8 @@ const SignInCard = props => {
           </div>
 
         {renderButtonAndLoader}
+
+        {renderAADButtonAndLoader}
 
         <div className={classes.cardFooter}>
           Don't have an account?
