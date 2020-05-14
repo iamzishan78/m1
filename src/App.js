@@ -153,14 +153,17 @@ const updateApolloClient = (endpoint,token) => {
   }
   
   //change from default used for login to the user's tenant
-    let apolloClient = new ApolloClient({
+    let apolloConfig = {
       uri: endpoint,
-      headers: {
-        //authorization: token ? `Bearer ${token}` : ''
-        'X-ZUMO-AUTH': token ? token : ''
-      },
+      headers: {},
       cache: new InMemoryCache()  
-    });
+    }
+    if(token) {
+      apolloConfig.headers['X-ZUMO-AUTH'] = token;
+    }
+
+    let apolloClient = new ApolloClient(apolloConfig);
+
     setApolloClient(apolloClient)
   }
 }
