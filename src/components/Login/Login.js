@@ -25,7 +25,9 @@ import styled from "styled-components";
 
 import {
   msalConfig,
-  loginRequest
+  loginRequest,
+  readProfileRequest,
+  authGraphQLRequest
  } from "./AADAuthConfig";
 import * as msal from "@azure/msal-browser";
 import { graphqlSync } from "graphql";
@@ -664,53 +666,214 @@ const Login = props => {
 
   const handledAADSignIn = async () => {
 
-    const loginResponse = await myMSALObj.loginPopup(loginRequest).catch(function (error) {
+    const loginResponse = await signIn(loginRequest).catch(error => {
+      //do some error stuff
+      console.log(error);
+    });
+    if (!loginResponse) {
+      //do some error stuff
+      return;
+    }
+
+    loginResponse.scopes = readProfileRequest.scopes;
+    const readProfileLoginResponse = await ssoSilent(loginResponse).catch(error => {
+      //do some error stuff
+      console.log(error);
+    });
+    if (!readProfileLoginResponse) {
+      //do some error stuff
+      return;
+    }
+
+    const readProfileToken = await getTokenPopup(readProfileRequest).catch(error => {
+      //do some error stuff
+      console.log(error);
+    });
+    if (!readProfileToken) {
+      //do some error stuff
+      return;
+    }
+
+    const readProfileResponse = await callMSGraph("https://graph.microsoft.com/v1.0/me", readProfileToken.accessToken).catch(error => {
+        //do some error stuff
         console.log(error);
     });
-    console.log('id_token acquired at: ' + new Date().toString());
+    if (!readProfileResponse) {
+      //do some error stuff
+      return;
+    }
+
+    loginResponse.scopes = authGraphQLRequest.scopes;
+    const authGraphQLLoginResponse = await ssoSilent(loginResponse).catch(error => {
+      //do some error stuff
+      console.log(error);
+    });
+    if (!authGraphQLLoginResponse) {
+      //do some error stuff
+      return;
+    }
+
+    const authGraphQLToken = await getTokenPopup(authGraphQLRequest).catch(error => {
+      //do some error stuff
+      console.log(error);
+    });
+    if (!authGraphQLToken) {
+      //do some error stuff
+      return;
+    }
+
+    const authGraphQLResponse = await callAuthGraphQL("https://m1graphql.azurewebsites.net/.auth/login/aad", authGraphQLToken.accessToken, authGraphQLToken.idToken).catch(error => {
+      //do some error stuff
+      console.log(error);
+    });
+    if (!authGraphQLResponse) {
+      //do some error stuff
+      return;
+    }
+
+    const graphQLProfileResponse = await callProfileGraphQL("https://m1graphql.azurewebsites.net/.auth/me", authGraphQLResponse.authenticationToken).catch(error => {
+      //do some error stuff
+      console.log(error);
+    });
+    if (!graphQLProfileResponse) {
+      //do some error stuff
+      return;
+    }
+
+    await setStateApp(state => ({ ...state, user: 
+      {
+        "id": readProfileResponse.id,
+        "email": readProfileResponse.mail,
+        "name": readProfileResponse.displayName,
+        "authToken": authGraphQLResponse.authenticationToken,
+        "authTokenExpires": authGraphQLToken.expiresOn,
+        "tenant": {
+          "id": loginResponse.tenantId,
+          "tenant": "M1neral",
+          "graphQL": 
+            {
+              "endpoint": "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g=="
+            }
+        }
+      } 
+    }));
+
+    await setStateNav(stateNav => ({ ...stateNav, defaultOn: true }))
+      //window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
+    expiredStorage.setItem(
+      "user",
+      JSON.stringify(
+        {
+          "id": readProfileResponse.id,
+          "email": readProfileResponse.mail,
+          "name": readProfileResponse.displayName,
+          "authToken": authGraphQLResponse.authenticationToken,
+          "authTokenExpires": authGraphQLToken.expiresOn,
+          "tenant": {
+            "id": loginResponse.tenantId,
+            "tenant": "M1neral",
+            "graphQL": 
+            {
+              "endpoint": "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g=="
+            }
+          }
+        } 
+      )
+      ,
+      86400
+    );
+    
+  };
+
+  async function signIn(request) {
+    const loginResponse = await myMSALObj.loginPopup(request).catch(function (error) {
+        console.log(error);
+    });
     console.log(loginResponse);
     if (myMSALObj.getAccount()) {
-        console.log(`Welcome ${loginResponse.account.name}`);
-
-        var headers = new Headers();
-        headers.append("Content-Type", "application/json")
-        var options = {
-                method: "POST",
-                headers: headers,
-                body: JSON.stringify({"access_token":loginResponse.accessToken})
-        };
-        var graphQLAuthEndpoint = "https://m1graphql.azurewebsites.net/.auth/login/aad";
-
-        const user = fetch(graphQLAuthEndpoint, options)
-          .then(resp => {
-                  resp.json().then(jsonResp => {
-                    console.log(jsonResp);
-
-                    setStateApp(state => ({ ...state, user: 
-                      {
-                        //"id": jsonResp.id,
-                        //"email": jsonResp.mail,
-                        //"name": jsonResp.displayName,
-                        "authToken": jsonResp.authenticationToken,
-                        "authTokenExpires": loginResponse.expiresOn,
-                        "tenant": {
-                          "id": loginResponse.tenantId,
-                          "tenant": "test",
-                          "graphQL": "test"
-                        }
-                      } 
-                    }));
-                    setStateNav(stateNav => ({ ...stateNav, defaultOn: true }))
-                    //window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
-                    expiredStorage.setItem(
-                      "user",
-                      //JSON.stringify(jsonResp.displayName),
-                      86400
-                    );
-                  })
-          })
+        console.log(myMSALObj.getAccount());
+        return loginResponse;
     }
-  };
+  }
+
+  async function ssoSilent(request) {
+    const loginResponse = await myMSALObj.ssoSilent(request).catch(function (error) {
+        console.log(error);
+    });
+    console.log(loginResponse);
+    if (myMSALObj.getAccount()) {
+        console.log(myMSALObj.getAccount());
+        return loginResponse;
+    }
+  }
+
+  async function getTokenPopup(request) {
+    return await myMSALObj.acquireTokenSilent(request).catch(async (error) => {
+        console.log("silent token acquisition fails.");
+        if (error instanceof msal.InteractionRequiredAuthError) {
+            console.log("acquiring token using popup");
+            return myMSALObj.acquireTokenPopup(request).catch(error => {
+                console.error(error);
+            });
+        } else {
+            console.error(error);
+        }
+    });
+  }
+
+  async function callMSGraph(endpoint, accessToken) {
+    const headers = new Headers();
+    const bearer = `Bearer ${accessToken}`;
+
+    headers.append("Authorization", bearer);
+
+    const options = {
+        method: "GET",
+        headers: headers
+    };
+
+    console.log('request made to Graph API at: ' + new Date().toString());
+
+    return await fetch(endpoint, options)
+        .then(response => response.json())
+        .then(response => response)
+        .catch(error => console.log(error));
+  }
+
+  async function callAuthGraphQL(endpoint, accessToken, idToken) {
+    const headers = new Headers();
+
+    const options = {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({"access_token":accessToken,"id_token":idToken})
+    };
+
+    console.log('request made to GraphQL auth at: ' + new Date().toString());
+
+    return await fetch(endpoint, options)
+        .then(response => response.json())
+        .then(response => response)
+        .catch(error => console.log(error));
+  }
+
+  async function callProfileGraphQL(endpoint, accessToken) {
+    const headers = new Headers();
+
+    headers.append("X-ZUMO-AUTH", accessToken);
+
+    const options = {
+        method: "GET",
+        headers: headers
+    };
+
+    console.log('request made to GraphQL auth at: ' + new Date().toString());
+
+    return await fetch(endpoint, options)
+        .then(response => response.json())
+        .then(response => response[0])
+        .catch(error => console.log(error));
+  }
   
   useEffect(() => {
     console.log("it changed");

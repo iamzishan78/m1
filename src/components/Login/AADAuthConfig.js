@@ -10,11 +10,16 @@ export const msalConfig = {
     }
 };  
 
-// Add here scopes for id token to be used at MS Identity Platform endpoints.
 export const loginRequest = {
-    scopes: [
-        "https://management.azure.com/user_impersonation"
-    ]
+    scopes: [],
+};
+
+export const readProfileRequest = {
+    scopes: ["https://graph.microsoft.com/User.Read"]
+};
+
+export const authGraphQLRequest = {
+    scopes: ["https://management.azure.com/user_impersonation"]
 };
 
 // Add here the endpoints for MS Graph API services you would like to use.
@@ -27,8 +32,4 @@ const graphConfig = {
 const tokenRequest = {
     scopes: ["Mail.Read"],
     forceRefresh: false // Set this to "true" to skip a cached token and go to the server to get a new token
-};
-
-const silentRequest = {
-    scopes: ["cca47833-0c91-401d-98e1-f7041dfc7045", "User.Read", "Mail.Read"]
 };

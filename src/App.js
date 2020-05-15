@@ -155,6 +155,9 @@ const updateApolloClient = (endpoint,token) => {
   //change from default used for login to the user's tenant
     let apolloConfig = {
       uri: endpoint,
+      // fetchOptions: {
+      //   mode: 'no-cors',
+      // },
       headers: {},
       cache: new InMemoryCache()  
     }

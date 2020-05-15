@@ -7,6 +7,7 @@ const AppProvider = (props) => {
     selectedRoute: "/",
     apolloClientEndpoint:
       "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
+      // "http://localhost:7071/api/m1graph",
     user: null,
     wellCount: 500,
     wells: null,
