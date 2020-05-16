@@ -151,8 +151,8 @@ export default mapStyles[0];
 //         })
 //         .then((json) => {
 //             console.log(json);
-//             console.log(json.slice(0,4));
-//             setMapStyles(json.slice(0,4));
+//             console.log(json.slice(0,5));
+//             setMapStyles(json.slice(0,5));
 //             return json;
 //         });
 
