@@ -68,7 +68,7 @@ export default function MapShape() {
     fetch(req, { signal: signal })
       .then(results => results.json())
       .then(data => {
-        setMapStyles(data.slice(0, 4));
+        setMapStyles(data.slice(0, 5));
       });
   
     //clean up
@@ -231,7 +231,7 @@ export default function MapShape() {
     fetch(req, { signal: signal })
       .then(results => results.json())
       .then(data => {
-        setMapStyles(data.slice(0, 4));
+        setMapStyles(data.slice(0, 5));
       });
 
     //clean up
