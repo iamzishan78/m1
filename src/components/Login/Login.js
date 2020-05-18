@@ -492,10 +492,31 @@ const Login = (props) => {
     autoFocus: false,
   });
 
-  // Register Callbacks for Redirect flow
-  myMSALObj.handleRedirectCallback(authRedirectCallBack);
 
   useEffect(() => {}, [userEmail, userPassword]);
+  
+
+  const TESTQUERY = gql`query {
+    login(userName:"${userName}",password:"${password}",tenant:"${tenant}") {
+      success
+      message
+      user {
+        id
+        email
+        name
+        authToken
+        authTokenExpires
+        tenant {
+          id
+          tenant
+          graphQL
+        }
+        
+      }
+      
+    }
+  }`;
+
 
   const LOGINQUERY = gql`query {
     login(userName:"${userName}",password:"${password}",tenant:"${tenant}") {
@@ -559,6 +580,30 @@ const Login = (props) => {
     }
   }, [data, expiredStorage, setStateApp, setStateNav]);
 
+
+  useEffect(() => {
+    myMSALObj.handleRedirectPromise().then((tokenResponse) => {
+      const accountObj = tokenResponse ? tokenResponse.account : myMSALObj.getAccount();
+
+      if (accountObj) {
+            // Account object was retrieved, continue with app progress
+            console.log('id_token acquired at: ' + new Date().toString());
+            finishAADAuth(accountObj)
+        } else if (tokenResponse && tokenResponse.tokenType === "Bearer") {
+            // No account object available, but access token was retrieved
+            console.log('access_token acquired at: ' + new Date().toString());
+            console.log('now what???')
+        } else if (tokenResponse === null) {
+            // tokenResponse was null, attempt sign in or enter unauthenticated state for app
+        } else {
+            console.log("tokenResponse was not null but did not have any tokens: " + tokenResponse);
+        }
+      }).catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+
   const handledSignIn = (userData) => {
     console.log("[Login.js] userData", userData);
 
@@ -568,74 +613,35 @@ const Login = (props) => {
     login();
   };
 
-  function authRedirectCallBack(error, response) {
-    if (error) {
-      console.log(error);
-    } else {
-      if (myMSALObj.getAccount()) {
-        console.log(`Welcome ${response.account.name}`);
-        var headers = new Headers();
-        var bearer = "Bearer " + response.accessToken;
-        headers.append("Authorization", bearer);
-        var options = {
-          method: "GET",
-          headers: headers,
-        };
-        var graphEndpoint = "https://graph.microsoft.com/v1.0/me";
-
-        const user = fetch(graphEndpoint, options).then((resp) => {
-          resp.json().then((jsonResp) => {
-            console.log(jsonResp);
-            setStateApp((state) => ({ ...state, user: jsonResp.displayName }));
-            setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
-            //window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
-            expiredStorage.setItem(
-              "user",
-              JSON.stringify(jsonResp.displayName),
-              86400
-            );
-            // login(
-            //   {
-            //     "success": true,
-            //     "message": "",
-            //     "user": {
-            //       "id": jsonResp.id,
-            //       "email": jsonResp.mail,
-            //       "name": jsonResp.displayName,
-            //       "authToken": loginResponse.accessToken,
-            //       "authTokenExpires": loginResponse.expiresOn,
-            //       "tenant": {
-            //         "id": loginResponse.tenantId,
-            //         "tenant": "test",
-            //         "graphQL": "test"
-            //       }
-            //     }
-            //   }
-            // );
-          });
-        });
-      } else if (response.tokenType === "Bearer") {
-        console.log("access_token acquired at: " + new Date().toString());
-      } else {
-        console.log("token type is:" + response.tokenType);
-      }
-    }
-  }
-
   const handledAADSignIn = async () => {
     setLoading(true);
 
-    const loginResponse = await signIn(loginRequest).catch((error) => {
-      //do some error stuff
-      console.log(error);
-    });
-    if (!loginResponse) {
-      //do some error stuff
-      return;
-    }
+    const signInType = "loginRedirect";
 
-    loginResponse.scopes = readProfileRequest.scopes;
-    const readProfileLoginResponse = await signIn(loginResponse).catch(
+    if (signInType === "loginPopup") {
+      const loginResponse = await signInPopup(loginRequest).catch((error) => {
+        //do some error stuff
+        console.log(error);
+      });
+      if (!loginResponse) {
+        //do some error stuff
+        return;
+      }
+
+      await finishAADAuth(loginResponse); 
+    } 
+    
+    else if (signInType === "loginRedirect") {
+        myMSALObj.loginRedirect(loginRequest)
+    }   
+  };
+
+  async function finishAADAuth(accountObj) {
+    const request = {}
+    request.account = accountObj
+
+    request.scopes = readProfileRequest.scopes;
+    const readProfileLoginResponse = await ssoSilent(request).catch(
       (error) => {
         //do some error stuff
         console.log(error);
@@ -669,8 +675,8 @@ const Login = (props) => {
       return;
     }
 
-    loginResponse.scopes = authGraphQLRequest.scopes;
-    const authGraphQLLoginResponse = await signIn(loginResponse).catch(
+    request.scopes = authGraphQLRequest.scopes;
+    const authGraphQLLoginResponse = await ssoSilent(request).catch(
       (error) => {
         //do some error stuff
         console.log(error);
@@ -743,7 +749,7 @@ const Login = (props) => {
         authToken: authGraphQLResponse.authenticationToken,
         authTokenExpires: authGraphQLToken.expiresOn,
         tenant: {
-          id: loginResponse.tenantId,
+          id: request.tenantId,
           tenant: "M1neral",
           graphQL: {
             endpoint:
@@ -764,7 +770,7 @@ const Login = (props) => {
         authToken: authGraphQLResponse.authenticationToken,
         authTokenExpires: authGraphQLToken.expiresOn,
         tenant: {
-          id: loginResponse.tenantId,
+          id: request.tenantId,
           tenant: "M1neral",
           graphQL: {
             endpoint:
@@ -778,22 +784,20 @@ const Login = (props) => {
     setLoading(false);
   };
 
-  async function signIn(request) {
-    console.log("request made to signIn at: " + new Date().toString());
-    console.log("scopes requested: " + request.scopes.toString());
+  async function signInPopup(request) {
+    console.log('request made to signIn at: ' + new Date().toString());
+    console.log('scopes requested: ' + request.scopes.toString());
 
-    const loginResponse = await myMSALObj
-      .loginPopup(request)
-      .catch(function (error) {
+    const loginResponse = await myMSALObj.loginPopup(request).catch(function (error) {
         console.log(error);
-      });
+    });
     console.log(loginResponse);
     if (myMSALObj.getAccount()) {
-      return loginResponse;
+        return loginResponse;
     }
   }
 
-  async function ssoSilent(request) {
+   async function ssoSilent(request) {
     console.log("request made to ssoSilent at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes.toString());
 
