@@ -37,7 +37,6 @@ import { WELLSQUERY } from "../../graphQL/useQueryWells";
 import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAndObjectType";
 import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
-
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
     width: "100%",
@@ -94,20 +93,10 @@ export default function Map() {
   mapboxgl.accessToken =
     "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJjanYycGJxbG8yN3JsM3lsYTdnMXZoeHh1In0.tTNECYKDPtcrzivWTiZcIQ";
 
-
-
-
-
-
-
-    
-
-
   //////////// TEMP UNTIL PROVIDER IS MADE //////////
 
-
   //////begin////////temporary  while signed user fixed
-  
+
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = useState(true);
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
@@ -116,9 +105,8 @@ export default function Map() {
   );
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [user, setUser] = useState({ _id: "" });
-  const [tracks , setTracks] = useState(false);
-  const [idArray , setIdArray] = useState(null);
-
+  const [tracks, setTracks] = useState(false);
+  const [idArray, setIdArray] = useState(null);
 
   useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.email) {
@@ -172,9 +160,6 @@ export default function Map() {
     }
   }, [dataTracks]);
 
-
-
-
   useEffect(() => {
     if (dataWells) {
       if (
@@ -182,38 +167,15 @@ export default function Map() {
         dataWells.wells.results &&
         dataWells.wells.results.length > 0
       ) {
-
-        const idArray = dataWells.wells.results.map(
-          (item) => item.api
-        )
+        const idArray = dataWells.wells.results.map((item) => item.api);
 
         setIdArray(idArray);
-
       } else {
         setRows([]);
       }
       setLoading(false);
     }
   }, [dataWells]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   useEffect(() => {
     // USE EFFECT FOR M1 LAYER HANDLES
@@ -245,10 +207,8 @@ export default function Map() {
     }
   }, [map, stateMap.checkedLayers, stateMap.styleLayers]);
 
-
-
   useEffect(() => {
-    // USE EFFECT FOR HEATMAP LAYER HANDLES 
+    // USE EFFECT FOR HEATMAP LAYER HANDLES
     console.log("heatmap layer ue start");
     if (stateMap.checkedHeats.length > 0 && map) {
       stateMap.heatLayers.forEach((l) => {
@@ -274,10 +234,8 @@ export default function Map() {
     }
   }, [map, stateMap.checkedHeats]);
 
-
-
   useEffect(() => {
-    // USE EFFECT FOR BASEMAP LAYER HANDLING 
+    // USE EFFECT FOR BASEMAP LAYER HANDLING
     console.log("basemap layer ue start");
     if (stateMap.checkedBaseLayers.length > 0 && map) {
       stateMap.baseMapLayers.forEach((l) => {
@@ -302,11 +260,6 @@ export default function Map() {
       }
     }
   }, [map, stateMap.checkedBaseLayers]);
-
-
-
-
-
 
   // useEffect(() => {
   //   ///////////////// EFFECT FOR SHOWING TRACKED WELLS /////////////////
@@ -395,83 +348,79 @@ export default function Map() {
   //   }
   // }, [stateApp.trackFilterOn]);
 
-
-
-
   useEffect(() => {
     // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
 
-    if (map && stateMap.checkedUserDefinedLayers.length  > 0
-            && stateApp.trackedWellArray) {
-      
-    console.log("user defined layer ue start");
-    console.log("tracked array ", stateApp.trackedWellArray);
+    if (
+      map &&
+      stateMap.checkedUserDefinedLayers.length > 0 &&
+      stateApp.trackedWellArray
+    ) {
+      console.log("user defined layer ue start");
+      console.log("tracked array ", stateApp.trackedWellArray);
 
-    const layerList = stateMap.userDefinedLayers;
+      const layerList = stateMap.userDefinedLayers;
 
-    stateMap.checkedUserDefinedLayers.forEach((l) => {
-      console.log(l)
-      const selectLayerProps = layerList[l]
+      stateMap.checkedUserDefinedLayers.forEach((l) => {
+        console.log(l);
+        const selectLayerProps = layerList[l];
 
-      if(selectLayerProps.type === 'data layer'){
-        //layerArray = 
+        if (selectLayerProps.type === "data layer") {
+          //layerArray =
 
+          // -> fetch data
+          // -> make GEOJSON
+          // -> add source
+          // -> add layer
+          // -> add interaction (note to change later w/ interaction panel)
 
-        // -> fetch data 
-        // -> make GEOJSON
-        // -> add source 
-        // -> add layer 
-        // -> add interaction (note to change later w/ interaction panel)
+          console.log("is data layer");
+        }
 
-        console.log('is data layer')
-      }
+        // -> if vector layer do the normal thing
+      });
 
-      // -> if vector layer do the normal thing 
+      //   const makeGeoJSON = (data) => {
+      //     return {
+      //       type: "FeatureCollection",
+      //       features: data.map((feature) => {
+      //         return {
+      //           type: "Feature",
+      //           properties: {
+      //             api: feature.api,
+      //             id: feature.id,
+      //             latitude: feature.latitude,
+      //             longitude: feature.longitude,
+      //             operator: feature.operator,
+      //             WellName: feature.wellName,
+      //           },
+      //           geometry: {
+      //             type: "Point",
+      //             coordinates: [feature.longitude, feature.latitude],
+      //           },
+      //         };
+      //       }),
+      //     };
+      //   };
 
+      //   const myGeoJSONData = makeGeoJSON(
+      //     stateApp.trackedWellArray.wells.results
+      //   );
 
-    });
+      //   map.addSource("track_well_points_source", {
+      //     type: "geojson",
+      //     data: myGeoJSONData,
+      //   });
 
-    //   const makeGeoJSON = (data) => {
-    //     return {
-    //       type: "FeatureCollection",
-    //       features: data.map((feature) => {
-    //         return {
-    //           type: "Feature",
-    //           properties: {
-    //             api: feature.api,
-    //             id: feature.id,
-    //             latitude: feature.latitude,
-    //             longitude: feature.longitude,
-    //             operator: feature.operator,
-    //             WellName: feature.wellName,
-    //           },
-    //           geometry: {
-    //             type: "Point",
-    //             coordinates: [feature.longitude, feature.latitude],
-    //           },
-    //         };
-    //       }),
-    //     };
-    //   };
-
-    //   const myGeoJSONData = makeGeoJSON(
-    //     stateApp.trackedWellArray.wells.results
-    //   );
-
-    //   map.addSource("track_well_points_source", {
-    //     type: "geojson",
-    //     data: myGeoJSONData,
-    //   });
-
-    //   map.addLayer({
-    //     id: "track_well_points_layer",
-    //     type: "circle",
-    //     source: "track_well_points_source",
-    //     paint: {
-    //       "circle-radius": 5,
-    //       "circle-color": "yellow",
-    //     },
-    //   });
+      //   map.addLayer({
+      //     id: "track_well_points_layer",
+      //     type: "circle",
+      //     source: "track_well_points_source",
+      //     paint: {
+      //       "circle-radius": 5,
+      //       "circle-color": "yellow",
+      //     },
+      //   });
 
       // const latArray = stateApp.trackedWellArray.wells.results.map(
       //   (item) => item.latitude
@@ -510,17 +459,7 @@ export default function Map() {
       //   padding: { top: 50, bottom: 50, left: 50, right: 50 },
       // });
     }
-
-
   }, [map, stateMap.checkedUserDefinedLayers]);
-
-
-
-
-
-
-
-
 
   useEffect(() => {
     if (showExpandableCard) {
@@ -552,7 +491,7 @@ export default function Map() {
       let valuationFilterCount = 0;
       let aiFilterCount = 0;
       let totalCount = 0;
-      let tagFilterCount=0;
+      let tagFilterCount = 0;
       let filterArray = [];
 
       if (
@@ -1035,7 +974,7 @@ export default function Map() {
         wellFilterCount: wellFilterCount,
         totalFilterCount: totalCount,
         valuationFilterCount: valuationFilterCount,
-        tagFilterCount: tagFilterCount, 
+        tagFilterCount: tagFilterCount,
         aiFilterCount: aiFilterCount,
       }));
 
@@ -1219,11 +1158,11 @@ export default function Map() {
         let id = mapEl.current.id;
 
         var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
-        
+
         console.log("tileset api loaded - style selected", stateMap.mapStyle);
         console.log(stateApp.mapVars);
-        console.log(mapStyles[index])
-        console.log(mapStyles)
+        console.log(mapStyles[index]);
+        console.log(mapStyles);
 
         const newMap = new mapboxgl.Map({
           container: `${id}`,
@@ -1401,7 +1340,6 @@ export default function Map() {
           let currentFeature = features[0];
           console.log("current feature", currentFeature);
 
-
           setStateApp((state) => ({ ...state, popupOpen: false }));
           setStateApp((state) => ({
             ...state,
@@ -1471,7 +1409,7 @@ export default function Map() {
     if (map && geocoder) {
       return () => {
         var list = document.getElementById("searchBar");
-        if (list.childNodes.length > 0) {
+        if (list && list.childNodes && list.childNodes.length > 0) {
           list.removeChild(list.childNodes[0]);
         }
         var zoom = map.getZoom();

@@ -7,7 +7,7 @@ import {
   withStyles,
   makeStyles,
   createMuiTheme,
-} from '@material-ui/core/styles';
+} from "@material-ui/core/styles";
 import ExpiredStorage from "expired-storage";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import gql from "graphql-tag";
@@ -15,26 +15,26 @@ import SignInCard from "./SignInCard";
 import { useHistory } from "react-router-dom";
 import { Card, TextField, Button, Typography } from "@material-ui/core";
 import NewUserCard from "./NewUserCard";
-import Paper from '@material-ui/core/Paper';
-import InputLabel from '@material-ui/core/InputLabel';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Paper from "@material-ui/core/Paper";
+import InputLabel from "@material-ui/core/InputLabel";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { Link } from "react-router-dom";
 import { validateData } from "./loginHelpers";
-import InputBase from '@material-ui/core/InputBase';
+import InputBase from "@material-ui/core/InputBase";
 import styled from "styled-components";
 
 import {
   msalConfig,
   loginRequest,
   readProfileRequest,
-  authGraphQLRequest
- } from "./AADAuthConfig";
+  authGraphQLRequest,
+} from "./AADAuthConfig";
 import * as msal from "@azure/msal-browser";
 import { graphqlSync } from "graphql";
 import { QueryData } from "@apollo/react-hooks/lib/data/QueryData";
-const myMSALObj = new msal.PublicClientApplication(msalConfig); 
+const myMSALObj = new msal.PublicClientApplication(msalConfig);
 
-const localStyles = makeStyles(theme => ({
+const localStyles = makeStyles((theme) => ({
   myRoot: {
     display: "flex",
     flexDirection: "column",
@@ -46,69 +46,69 @@ const localStyles = makeStyles(theme => ({
     backgroundColor: "#011133",
     display: "flex",
     flexDirection: "column",
-    alignItems: 'center',
-    paddingBottom: '1%'
+    alignItems: "center",
+    paddingBottom: "1%",
   },
   headerWords: {
     color: "#011133",
     display: "flex",
     justifyContent: "center",
-    marginTop:"40px",
+    marginTop: "40px",
     marginBottom: "20px",
-    fontSize: '48px',
-    fontWeight: '900',
-    fontFamily: "Tahoma, Geneva, sans-serif",	
+    fontSize: "48px",
+    fontWeight: "900",
+    fontFamily: "Tahoma, Geneva, sans-serif",
   },
   smallerWords: {
     display: "flex",
     justifyContent: "center",
     marginBottom: "20px",
-    fontSize: '24px',
-    fontWeight: '900',
-    fontFamily: "Tahoma, Geneva, sans-serif",	
+    fontSize: "24px",
+    fontWeight: "900",
+    fontFamily: "Tahoma, Geneva, sans-serif",
   },
   conatiner: {
     paddingTop: 20,
     margin: "0 auto",
     height: "100%",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   signInCard: {
-    width: '250px',
-    height: '410px',
+    width: "250px",
+    height: "410px",
     marginBottom: 50,
-    border: '1px solid #f0f4f5' ,
+    border: "1px solid #f0f4f5",
     fontFamily: theme.typography.fontFamily,
     "&:hover": {
       border: `3px solid #f0cfb3`,
     },
   },
   supportCard: {
-    width: '425px',
-    height: '500px',
-    backgroundColor: '#e8eced',
+    width: "425px",
+    height: "500px",
+    backgroundColor: "#e8eced",
     display: "flex",
     flexDirection: "column",
-    fontFamily: theme.typography.fontFamily
+    fontFamily: theme.typography.fontFamily,
   },
   signUpSupportCard: {
-    width: '500px',
-    height: '675px',
-    backgroundColor: '#e8eced',
+    width: "500px",
+    height: "675px",
+    backgroundColor: "#e8eced",
     display: "flex",
     flexDirection: "column",
-    fontFamily: theme.typography.fontFamily
+    fontFamily: theme.typography.fontFamily,
   },
   cardHeader: {
     color: "white",
     padding: "20px 40px",
-    textAlign: "center"
+    textAlign: "center",
   },
   cardFooter: {
     height: "15%",
     color: "white",
     fontSize: ".75rem",
-    textAlign: "center"
+    textAlign: "center",
   },
   inputs: {
     backgroundColor: theme.palette.background.paper,
@@ -116,7 +116,7 @@ const localStyles = makeStyles(theme => ({
     position: "relative",
     borderBottom: "1px solid rgba(0, 0, 0, 0.42)",
     pointerEvents: "all",
-    margin: "2% 10%"
+    margin: "2% 10%",
   },
   inputsName: {
     backgroundColor: theme.palette.background.paper,
@@ -129,61 +129,59 @@ const localStyles = makeStyles(theme => ({
   },
   links: {
     marginTop: 10,
-    marginBottom: 20
+    marginBottom: 20,
   },
   cardForm: {
     display: "contents",
-    pointerEvents: "all"
+    pointerEvents: "all",
   },
   rootNewUser: {
     textAlign: "center",
     display: "flex",
     height: "100%",
     flexDirection: "column",
-    '&::-webkit-scrollbar': {
-      width: '0 !important'
-     },
+    "&::-webkit-scrollbar": {
+      width: "0 !important",
+    },
   },
-    cardContainer: {
+  cardContainer: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
   },
   signInCardContainer: {
     paddingRight: 10,
-    paddingLeft: 10
+    paddingLeft: 10,
   },
   card: {
     width: "425px",
     height: "500px",
     backgroundColor: theme.palette.secondary.dark,
     backgroundColor: "#011133",
-    fontFamily: theme.typography.fontFamily
+    fontFamily: theme.typography.fontFamily,
   },
-
 }));
 
-const useStyles = makeStyles(theme => ({
-  root: {
-  },
+const useStyles = makeStyles((theme) => ({
+  root: {},
   select: {
-    color:'white'
+    color: "white",
   },
   card: {
     width: "425px",
     height: "500px",
     backgroundColor: theme.palette.secondary.dark,
     backgroundColor: "#011133",
-    fontFamily: theme.typography.fontFamily
+    fontFamily: theme.typography.fontFamily,
   },
   buttonLower: {
-    backgroundColor: '#e4a773',
+    backgroundColor: "#e4a773",
     color: "#011133",
     width: "150px",
-    "&:hover" : {
-      backgroundColor: '#f0cfb3',
+    "&:hover": {
+      backgroundColor: "#f0cfb3",
     },
-},
+  },
   inputs: {
     backgroundColor: theme.palette.background.paper,
     width: "80%",
@@ -196,54 +194,53 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    fontSize: ".75rem"
+    fontSize: ".75rem",
   },
   secondaryInputs: {
     paddingTop: "5px",
     fontSize: ".75rem",
     textAlign: "left",
-    marginLeft: '65px',
+    marginLeft: "65px",
   },
   button: {
-    backgroundColor: '#e4a773',
+    backgroundColor: "#e4a773",
     width: "100px",
     height: "50px",
     marginTop: "35px",
     color: "#011133",
-    float: 'left',
-    marginLeft: '60px',
-    "&:hover" : {
-      backgroundColor: '#f0cfb3',
-
+    float: "left",
+    marginLeft: "60px",
+    "&:hover": {
+      backgroundColor: "#f0cfb3",
     },
   },
   aadLoginButton: {
-    backgroundColor: '#e4a773',
+    backgroundColor: "#e4a773",
     width: "300px",
     height: "50px",
     marginTop: "135px",
     color: "#011133",
-    float: 'left',
-    marginLeft: '60px',
-    "&:hover" : {
-      backgroundColor: '#f0cfb3',
-    }
+    float: "left",
+    marginLeft: "60px",
+    "&:hover": {
+      backgroundColor: "#f0cfb3",
+    },
   },
   signupLink: {
     textDecoration: "none",
     color: theme.palette.secondary.main,
     cursor: "pointer",
-    "&:hover" : {
-      color: '#e4a773',
-    }
+    "&:hover": {
+      color: "#e4a773",
+    },
   },
   passwordLink: {
     textDecoration: "none",
     color: theme.palette.secondary.main,
     cursor: "pointer",
-    "&:hover" : {
-      color: '#e4a773',
-    }
+    "&:hover": {
+      color: "#e4a773",
+    },
   },
   cardFooter: {
     paddingBottom: "5px",
@@ -252,23 +249,19 @@ const useStyles = makeStyles(theme => ({
     fontSize: ".75rem",
     //float: 'left',
     //marginLeft: '30px',
-
   },
-
 }));
 
-
-
-const BuyersSvg = props => {
+const BuyersSvg = (props) => {
   return (
     <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="120"
-    height="120"
-    overflow="hidden"
-    viewBox="0 0 508 508"
-  >
-                <defs>
+      xmlns="http://www.w3.org/2000/svg"
+      width="120"
+      height="120"
+      overflow="hidden"
+      viewBox="0 0 508 508"
+    >
+      <defs>
         <filter
           id="c"
           width="129.3%"
@@ -293,79 +286,78 @@ const BuyersSvg = props => {
         </filter>
       </defs>
 
-    <path
-      fill="#011133"
-      strokeWidth="1"
-      d="M102.5 98.3v131.1h98.3V98.3h-98.3zM184.4 213h-65.5v-98.3h65.5V213z"
-      filter="url(#c)"      
-    ></path>
-    <path
-      fill="#011133"
-      strokeWidth="1"
-      d="M233.5 98.3H348.2V114.69999999999999H233.5z"
-      filter="url(#c)"      
-    ></path>
-    <path
-      fill="#011133"
-      strokeWidth="1"
-      d="M233.5 155.7H348.2V172.1H233.5z"
-      filter="url(#c)"      
-    ></path>
-    <path
-      fill="#011133"
-      strokeWidth="1"
-      d="M233.5 213H348.2V229.4H233.5z"
-      filter="url(#c)"      
-    ></path>
-    <path
-      fill="#011133"
-      strokeWidth="1"
-      d="M102.4 270.4H348.20000000000005V286.79999999999995H102.4z"
-      filter="url(#c)"      
-    ></path>
-    <path
-      fill="#011133"
-      strokeWidth="1"
-      d="M102.4 327.7H290.9V344.09999999999997H102.4z"
-      filter="url(#c)"      
-    ></path>
-    <path
-      fill="#011133"
-      strokeWidth="1"
-      d="M102.4 426.1H217.10000000000002V442.5H102.4z"
-      filter="url(#c)"      
-    ></path>
-    <path
-      fill="#011133"
-      strokeWidth="1"
-      d="M491.9 225c-13.7-13.6-40.2-17.8-57.9 0l-36.6 36.6V49.2h-49.2V0H4.1v458.8h49.2V508h344.1V377.5l94.5-94.5c16-16 16-42 0-58zM53.3 442.5H20.5V16.4h311.4v32.8H53.3v393.3zm16.4 49.1V65.5H381V278L246.8 412.2l-14.5 72.4 72.4-14.5 76.2-76.3v97.8H69.7zM266 416.2l23.2-23.2 34.8 34.8-23.3 23.2-34.7-34.8zm18.1 41.3l-30.9 6.2 6.2-30.9 24.7 24.7zm51.4-41.3l-34.8-34.8 139-139.1 34.8 34.8-139 139.1zm149.6-151.7L452.5 232c9.1-4.1 20.6-2.6 27.8 4.7 7.6 7.5 9.1 18.7 4.8 27.8z"
-      filter="url(#c)"      
-    ></path>
-    <path
-      fill="#011133"
-      strokeWidth="1"
-      d="M375.65 292.146H457.549V308.546H375.65z"
-      transform="rotate(-45.001 416.598 300.353)"
-      filter="url(#c)"      
-    ></path>
-  </svg>
+      <path
+        fill="#011133"
+        strokeWidth="1"
+        d="M102.5 98.3v131.1h98.3V98.3h-98.3zM184.4 213h-65.5v-98.3h65.5V213z"
+        filter="url(#c)"
+      ></path>
+      <path
+        fill="#011133"
+        strokeWidth="1"
+        d="M233.5 98.3H348.2V114.69999999999999H233.5z"
+        filter="url(#c)"
+      ></path>
+      <path
+        fill="#011133"
+        strokeWidth="1"
+        d="M233.5 155.7H348.2V172.1H233.5z"
+        filter="url(#c)"
+      ></path>
+      <path
+        fill="#011133"
+        strokeWidth="1"
+        d="M233.5 213H348.2V229.4H233.5z"
+        filter="url(#c)"
+      ></path>
+      <path
+        fill="#011133"
+        strokeWidth="1"
+        d="M102.4 270.4H348.20000000000005V286.79999999999995H102.4z"
+        filter="url(#c)"
+      ></path>
+      <path
+        fill="#011133"
+        strokeWidth="1"
+        d="M102.4 327.7H290.9V344.09999999999997H102.4z"
+        filter="url(#c)"
+      ></path>
+      <path
+        fill="#011133"
+        strokeWidth="1"
+        d="M102.4 426.1H217.10000000000002V442.5H102.4z"
+        filter="url(#c)"
+      ></path>
+      <path
+        fill="#011133"
+        strokeWidth="1"
+        d="M491.9 225c-13.7-13.6-40.2-17.8-57.9 0l-36.6 36.6V49.2h-49.2V0H4.1v458.8h49.2V508h344.1V377.5l94.5-94.5c16-16 16-42 0-58zM53.3 442.5H20.5V16.4h311.4v32.8H53.3v393.3zm16.4 49.1V65.5H381V278L246.8 412.2l-14.5 72.4 72.4-14.5 76.2-76.3v97.8H69.7zM266 416.2l23.2-23.2 34.8 34.8-23.3 23.2-34.7-34.8zm18.1 41.3l-30.9 6.2 6.2-30.9 24.7 24.7zm51.4-41.3l-34.8-34.8 139-139.1 34.8 34.8-139 139.1zm149.6-151.7L452.5 232c9.1-4.1 20.6-2.6 27.8 4.7 7.6 7.5 9.1 18.7 4.8 27.8z"
+        filter="url(#c)"
+      ></path>
+      <path
+        fill="#011133"
+        strokeWidth="1"
+        d="M375.65 292.146H457.549V308.546H375.65z"
+        transform="rotate(-45.001 416.598 300.353)"
+        filter="url(#c)"
+      ></path>
+    </svg>
   );
 };
 
-
-const OperatorSvg = props => {
+const OperatorSvg = (props) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       x="0"
       y="0"
-      width = "120"
-      height = "150"
+      width="120"
+      height="150"
       version="1.1"
       viewBox="0 0 57 57"
       xmlSpace="preserve"
     >
-            <defs>
+      <defs>
         <filter
           id="b"
           width="109.3%"
@@ -392,14 +384,13 @@ const OperatorSvg = props => {
       <path
         fill="#011133"
         d="M52.3 29.4h.6c1.2 0 2.2-.7 2.6-1.8l1.3-3.2c.1-.3.2-.7.2-1.1v-10c0-1.6-1.3-2.8-2.9-2.9h-1.9c-1.2 0-2.3.8-2.7 1.9l-5.1-2.1c-.5-2.1-2.4-3.6-4.6-3.6-.8 0-1.6.2-2.4.7L20.9.2c-1.4-.6-3.1.1-3.7 1.5-.6 1.4.1 3.1 1.5 3.7l.3.2v20.1c-1.5.3-2.8 1.3-3.4 2.8h-3.3c-.8 0-1.6.4-2.1 1l-5.6 6.4c-.5.5-.7 1.2-.7 1.9v12.6h-1c-1.6 0-2.8 1.3-2.9 2.9v1C0 55.7 1.3 57 2.9 57h51.3c1.6 0 2.8-1.3 2.9-2.9v-1c0-1.6-1.3-2.8-2.9-2.9h-5.7v-1c0-1.6-1.3-2.8-2.9-2.9v-3.8h1.9v-1.9h-1.9v-1l-2.1-14.3h1.2v-1.9h-1.4L42 15.6c.1 0 .2-.1.2-.1l7.1 3v8.1c.1 1.6 1.4 2.8 3 2.8zm-1-16.1c0-.5.4-1 1-1h1.9c.5 0 1 .4 1 1v10.1c0 .1 0 .2-.1.4L53.8 27c-.1.4-.5.6-.9.6h-.6c-.5 0-1-.4-1-1V13.3zm-8.5-1.9c0 1.6-1.3 2.9-2.9 2.9-1.6 0-2.9-1.3-2.9-2.9s1.3-2.9 2.9-2.9c1.6 0 2.9 1.3 2.9 2.9zM18.9 2.5c.2-.5.8-.7 1.3-.5L36 8.7c-.4.5-.6 1.1-.7 1.7L19.4 3.7c-.5-.2-.7-.7-.5-1.2zm16.4 10c.3 1.3 1.2 2.5 2.5 3.1l-1.2 8.1h-1.4v1.9h1.2l-2.1 14.1v1.1h-1.9v1.9h1.9v3.8c-1.6 0-2.8 1.3-2.9 2.9v1h-7.6v-8.6h1.9a6.7 6.7 0 000-13.4h-1.4c-.6-1.4-1.9-2.4-3.4-2.8V6.4l14.4 6.1zM21.9 50.3H10.5V39.9c0-.5.4-1 1-1H21c.5 0 1 .4 1 1v10.4zM20 27.5c1.6 0 2.9 1.3 2.9 2.9 0 1.6-1.3 2.9-2.9 2.9-1.6 0-2.9-1.3-2.9-2.9 0-1.6 1.3-2.9 2.9-2.9zM5.7 37.8c0-.2.1-.5.2-.6l5.6-6.4c.2-.2.4-.3.7-.3h2.9c0 2.6 2.1 4.8 4.8 4.8s4.8-2.1 4.8-4.8h1c2.6 0 4.8 2.1 4.8 4.8 0 2.6-2.1 4.8-4.8 4.8h-1.9c0-1.6-1.3-2.8-2.9-2.9h-9.5c-1.6 0-2.8 1.3-2.9 2.9v10.5H5.7V37.8zm48.5 14.4c.5 0 1 .4 1 1v1c0 .5-.4 1-1 1H2.9c-.5 0-1-.4-1-1v-1c0-.5.4-1 1-1h51.3zm-7.6-2.8v1H33.3v-1c0-.5.4-1 1-1h11.4c.4 0 .9.5.9 1zm-2.9-2.9h-7.6v-3.8h7.6v3.8zm0-6.5v.9h-7.6V40l2.1-14.3h3.4L43.7 40zm-2.4-16.3h-2.8l1.1-7.6h.6l1.1 7.6zm2.5-9.6c.4-.5.6-1.1.7-1.7l4.8 2.1v2.1l-5.5-2.5z"
-        filter="url(#b)"      
+        filter="url(#b)"
       ></path>
     </svg>
   );
 };
 
-
-const SellersSvg = props => {
+const SellersSvg = (props) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -443,7 +434,6 @@ const SellersSvg = props => {
   );
 };
 
-
 const M1neralLogoNavNoAuth = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -476,10 +466,7 @@ const M1neralLogo2 = styled(M1neralLogoNavNoAuth)`
   padding-bottom: 20px;
 `;
 
-
-
-
-const Login = props => {
+const Login = (props) => {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [userName, setUserName] = useState(null);
@@ -488,50 +475,27 @@ const Login = props => {
 
   //const classes = useStyles();
   let history = useHistory();
-  const localClass = localStyles();  
+  const localClass = localStyles();
   const [showSignUp, setShowSignUp] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [tenant, setTenant] = useState("M1neral");
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [emailFlags, setEmailFlags] = useState({
     error: false,
     placeholder: null,
-    autoFocus: false
+    autoFocus: false,
   });
   const [passwordFlags, setPasswordFlags] = useState({
     error: false,
     placeholder: null,
-    autoFocus: false
+    autoFocus: false,
   });
 
   // Register Callbacks for Redirect flow
   myMSALObj.handleRedirectCallback(authRedirectCallBack);
 
   useEffect(() => {}, [userEmail, userPassword]);
-
-
-  
-  const TESTQUERY = gql`query {
-    login(userName:"${userName}",password:"${password}",tenant:"${tenant}") {
-      success
-      message
-      user {
-        id
-        email
-        name
-        authToken
-        authTokenExpires
-        tenant {
-          id
-          tenant
-          graphQL
-        }
-        
-      }
-      
-    }
-  }`;
-
 
   const LOGINQUERY = gql`query {
     login(userName:"${userName}",password:"${password}",tenant:"${tenant}") {
@@ -555,7 +519,7 @@ const Login = props => {
   }`;
 
   const expiredStorage = new ExpiredStorage();
-  const [login, { loading, data }] = useLazyQuery(LOGINQUERY);
+  const [login, { loading: loading2, data }] = useLazyQuery(LOGINQUERY);
 
   useEffect(() => {
     //on willmount if session is saved don't require login
@@ -566,32 +530,28 @@ const Login = props => {
       let user = expiredStorage.getItem("user");
 
       let sessionUser = JSON.parse(user);
-      setStateApp(state => ({ ...state, user: sessionUser }));
-      setStateNav(stateNav => ({ ...stateNav, defaultOn: true }))
+      setStateApp((state) => ({ ...state, user: sessionUser }));
+      setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
     } else {
-      setStateApp(state => ({ ...state, user: null }));
-      setStateNav(stateNav => ({ ...stateNav, defaultOn: false }))
+      setStateApp((state) => ({ ...state, user: null }));
+      setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
       expiredStorage.clear();
       history.push("/");
     }
   }, [history, setStateApp, setStateNav]);
- 
+
   useEffect(() => {
     if (data) {
       //console.log('login success',data)
       if (data.login.success) {
-        setStateApp(state => ({ ...state, user: data.login.user }));
-        setStateNav(stateNav => ({ ...stateNav, defaultOn: true }))
+        setStateApp((state) => ({ ...state, user: data.login.user }));
+        setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
         //window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
-        expiredStorage.setItem(
-          "user",
-          JSON.stringify(data.login.user),
-          86400
-        );
+        expiredStorage.setItem("user", JSON.stringify(data.login.user), 86400);
       } else {
         console.log("login failed", data);
-        setStateApp(state => ({ ...state, user: null }));
-        setStateNav(stateNav => ({ ...stateNav, defaultOn: false }))
+        setStateApp((state) => ({ ...state, user: null }));
+        setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
         // window.sessionStorage.removeItem('user');
         expiredStorage.clear();
         //show login failed in the future
@@ -599,74 +559,73 @@ const Login = props => {
     }
   }, [data, expiredStorage, setStateApp, setStateNav]);
 
-  const handledSignIn = userData => {
+  const handledSignIn = (userData) => {
     console.log("[Login.js] userData", userData);
 
     setUserName(userData.userEmail);
     setPassword(userData.userPassword);
     setTenant(userData.tenant);
     login();
-
   };
 
   function authRedirectCallBack(error, response) {
-      if (error) {
-          console.log(error);
+    if (error) {
+      console.log(error);
+    } else {
+      if (myMSALObj.getAccount()) {
+        console.log(`Welcome ${response.account.name}`);
+        var headers = new Headers();
+        var bearer = "Bearer " + response.accessToken;
+        headers.append("Authorization", bearer);
+        var options = {
+          method: "GET",
+          headers: headers,
+        };
+        var graphEndpoint = "https://graph.microsoft.com/v1.0/me";
+
+        const user = fetch(graphEndpoint, options).then((resp) => {
+          resp.json().then((jsonResp) => {
+            console.log(jsonResp);
+            setStateApp((state) => ({ ...state, user: jsonResp.displayName }));
+            setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
+            //window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
+            expiredStorage.setItem(
+              "user",
+              JSON.stringify(jsonResp.displayName),
+              86400
+            );
+            // login(
+            //   {
+            //     "success": true,
+            //     "message": "",
+            //     "user": {
+            //       "id": jsonResp.id,
+            //       "email": jsonResp.mail,
+            //       "name": jsonResp.displayName,
+            //       "authToken": loginResponse.accessToken,
+            //       "authTokenExpires": loginResponse.expiresOn,
+            //       "tenant": {
+            //         "id": loginResponse.tenantId,
+            //         "tenant": "test",
+            //         "graphQL": "test"
+            //       }
+            //     }
+            //   }
+            // );
+          });
+        });
+      } else if (response.tokenType === "Bearer") {
+        console.log("access_token acquired at: " + new Date().toString());
       } else {
-          if (myMSALObj.getAccount()) {
-            console.log(`Welcome ${response.account.name}`);
-            var headers = new Headers();
-            var bearer = "Bearer " + response.accessToken;
-            headers.append("Authorization", bearer);
-            var options = {
-                    method: "GET",
-                    headers: headers
-            };
-            var graphEndpoint = "https://graph.microsoft.com/v1.0/me";
-    
-            const user = fetch(graphEndpoint, options)
-              .then(resp => {
-                      resp.json().then(jsonResp => {
-                        console.log(jsonResp);
-                          setStateApp(state => ({ ...state, user: jsonResp.displayName }));
-                          setStateNav(stateNav => ({ ...stateNav, defaultOn: true }))
-                          //window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
-                          expiredStorage.setItem(
-                            "user",
-                            JSON.stringify(jsonResp.displayName),
-                            86400
-                          );
-                        // login(
-                        //   {
-                        //     "success": true,
-                        //     "message": "",
-                        //     "user": {
-                        //       "id": jsonResp.id,
-                        //       "email": jsonResp.mail,
-                        //       "name": jsonResp.displayName,
-                        //       "authToken": loginResponse.accessToken,
-                        //       "authTokenExpires": loginResponse.expiresOn,
-                        //       "tenant": {
-                        //         "id": loginResponse.tenantId,
-                        //         "tenant": "test",
-                        //         "graphQL": "test"
-                        //       }
-                        //     }
-                        //   }
-                        // );
-                      })
-              })
-          } else if (response.tokenType === "Bearer") {
-              console.log('access_token acquired at: ' + new Date().toString());
-          } else {
-              console.log("token type is:" + response.tokenType);
-          }
+        console.log("token type is:" + response.tokenType);
       }
+    }
   }
 
   const handledAADSignIn = async () => {
+    setLoading(true);
 
-    const loginResponse = await signIn(loginRequest).catch(error => {
+    const loginResponse = await signIn(loginRequest).catch((error) => {
       //do some error stuff
       console.log(error);
     });
@@ -676,27 +635,34 @@ const Login = props => {
     }
 
     loginResponse.scopes = readProfileRequest.scopes;
-    const readProfileLoginResponse = await signIn(loginResponse).catch(error => {
-      //do some error stuff
-      console.log(error);
-    });
+    const readProfileLoginResponse = await signIn(loginResponse).catch(
+      (error) => {
+        //do some error stuff
+        console.log(error);
+      }
+    );
     if (!readProfileLoginResponse) {
       //do some error stuff
       return;
     }
 
-    const readProfileToken = await getTokenPopup(readProfileRequest).catch(error => {
-      //do some error stuff
-      console.log(error);
-    });
+    const readProfileToken = await getTokenPopup(readProfileRequest).catch(
+      (error) => {
+        //do some error stuff
+        console.log(error);
+      }
+    );
     if (!readProfileToken) {
       //do some error stuff
       return;
     }
 
-    const readProfileResponse = await callMSGraph("https://graph.microsoft.com/v1.0/me", readProfileToken.accessToken).catch(error => {
-        //do some error stuff
-        console.log(error);
+    const readProfileResponse = await callMSGraph(
+      "https://graph.microsoft.com/v1.0/me",
+      readProfileToken.accessToken
+    ).catch((error) => {
+      //do some error stuff
+      console.log(error);
     });
     if (!readProfileResponse) {
       //do some error stuff
@@ -704,25 +670,32 @@ const Login = props => {
     }
 
     loginResponse.scopes = authGraphQLRequest.scopes;
-    const authGraphQLLoginResponse = await signIn(loginResponse).catch(error => {
-      //do some error stuff
-      console.log(error);
-    });
+    const authGraphQLLoginResponse = await signIn(loginResponse).catch(
+      (error) => {
+        //do some error stuff
+        console.log(error);
+      }
+    );
     if (!authGraphQLLoginResponse) {
       //do some error stuff
       return;
     }
 
-    const authGraphQLToken = await getTokenPopup(authGraphQLRequest).catch(error => {
-      //do some error stuff
-      console.log(error);
-    });
+    const authGraphQLToken = await getTokenPopup(authGraphQLRequest).catch(
+      (error) => {
+        //do some error stuff
+        console.log(error);
+      }
+    );
     if (!authGraphQLToken) {
       //do some error stuff
       return;
     }
 
-    const authGraphQLResponse = await callAuthGraphQL("https://m1graphql.azurewebsites.net/.auth/login/aad", authGraphQLToken.accessToken).catch(error => {
+    const authGraphQLResponse = await callAuthGraphQL(
+      "https://m1graphql.azurewebsites.net/.auth/login/aad",
+      authGraphQLToken.accessToken
+    ).catch((error) => {
       //do some error stuff
       console.log(error);
     });
@@ -731,7 +704,10 @@ const Login = props => {
       return;
     }
 
-    const graphQLProfileResponse = await callProfileGraphQL("https://m1graphql.azurewebsites.net/.auth/me", authGraphQLResponse.authenticationToken).catch(error => {
+    const graphQLProfileResponse = await callProfileGraphQL(
+      "https://m1graphql.azurewebsites.net/.auth/me",
+      authGraphQLResponse.authenticationToken
+    ).catch((error) => {
       //do some error stuff
       console.log(error);
     });
@@ -758,91 +734,94 @@ const Login = props => {
     //   return;
     // }
 
-    await setStateApp(state => ({ ...state, user: 
-      {
-        "id": readProfileResponse.id,
-        "email": readProfileResponse.mail,
-        "name": readProfileResponse.displayName,
-        "authToken": authGraphQLResponse.authenticationToken,
-        "authTokenExpires": authGraphQLToken.expiresOn,
-        "tenant": {
-          "id": loginResponse.tenantId,
-          "tenant": "M1neral",
-          "graphQL": 
-            {
-              "endpoint": "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g=="
-            }
-        }
-      } 
+    await setStateApp((state) => ({
+      ...state,
+      user: {
+        id: readProfileResponse.id,
+        email: readProfileResponse.mail,
+        name: readProfileResponse.displayName,
+        authToken: authGraphQLResponse.authenticationToken,
+        authTokenExpires: authGraphQLToken.expiresOn,
+        tenant: {
+          id: loginResponse.tenantId,
+          tenant: "M1neral",
+          graphQL: {
+            endpoint:
+              "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
+          },
+        },
+      },
     }));
 
-    await setStateNav(stateNav => ({ ...stateNav, defaultOn: true }))
-      //window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
+    await setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
+    //window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
     expiredStorage.setItem(
       "user",
-      JSON.stringify(
-        {
-          "id": readProfileResponse.id,
-          "email": readProfileResponse.mail,
-          "name": readProfileResponse.displayName,
-          "authToken": authGraphQLResponse.authenticationToken,
-          "authTokenExpires": authGraphQLToken.expiresOn,
-          "tenant": {
-            "id": loginResponse.tenantId,
-            "tenant": "M1neral",
-            "graphQL": 
-            {
-              "endpoint": "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g=="
-            }
-          }
-        } 
-      )
-      ,
+      JSON.stringify({
+        id: readProfileResponse.id,
+        email: readProfileResponse.mail,
+        name: readProfileResponse.displayName,
+        authToken: authGraphQLResponse.authenticationToken,
+        authTokenExpires: authGraphQLToken.expiresOn,
+        tenant: {
+          id: loginResponse.tenantId,
+          tenant: "M1neral",
+          graphQL: {
+            endpoint:
+              "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
+          },
+        },
+      }),
       86400
     );
-    
+
+    setLoading(false);
   };
 
   async function signIn(request) {
-    console.log('request made to signIn at: ' + new Date().toString());
-    console.log('scopes requested: ' + request.scopes.toString());
+    console.log("request made to signIn at: " + new Date().toString());
+    console.log("scopes requested: " + request.scopes.toString());
 
-    const loginResponse = await myMSALObj.loginPopup(request).catch(function (error) {
+    const loginResponse = await myMSALObj
+      .loginPopup(request)
+      .catch(function (error) {
         console.log(error);
-    });
+      });
     console.log(loginResponse);
     if (myMSALObj.getAccount()) {
-        return loginResponse;
+      return loginResponse;
     }
   }
 
   async function ssoSilent(request) {
-    console.log('request made to ssoSilent at: ' + new Date().toString());
-    console.log('scopes requested: ' + request.scopes.toString());
-    
-    const loginResponse = await myMSALObj.ssoSilent(request).catch(function (error) {
+    console.log("request made to ssoSilent at: " + new Date().toString());
+    console.log("scopes requested: " + request.scopes.toString());
+
+    const loginResponse = await myMSALObj
+      .ssoSilent(request)
+      .catch(function (error) {
         console.log(error);
-    });
+      });
     console.log(loginResponse);
     if (myMSALObj.getAccount()) {
-        return loginResponse;
+      return loginResponse;
     }
   }
 
   async function getTokenPopup(request) {
-    console.log('request made to getTokenPopup at: ' + new Date().toString());
-    console.log('scopes requested: ' + request.scopes.toString());
+    console.log("request made to getTokenPopup at: " + new Date().toString());
+    console.log("scopes requested: " + request.scopes.toString());
 
     return await myMSALObj.acquireTokenSilent(request).catch(async (error) => {
-        console.log("silent token acquisition fails.");
-        if (error instanceof msal.InteractionRequiredAuthError) {
-            console.log("acquiring token using popup");
-            return myMSALObj.acquireTokenPopup(request).catch(error => {
-                console.error(error);
-            });
-        } else {
-            console.error(error);
-        }
+      console.log("silent token acquisition fails.");
+      if (error instanceof msal.InteractionRequiredAuthError) {
+        console.log("acquiring token using popup");
+        return myMSALObj.acquireTokenPopup(request).catch((error) => {
+          console.error(error);
+        });
+      } else {
+        console.error(error);
+      }
     });
   }
 
@@ -853,37 +832,39 @@ const Login = props => {
     headers.append("Authorization", bearer);
 
     const options = {
-        method: "GET",
-        headers: headers
+      method: "GET",
+      headers: headers,
     };
 
-    console.log('request made to Graph profile at: ' + new Date().toString());
+    console.log("request made to Graph profile at: " + new Date().toString());
 
     return await fetch(endpoint, options)
-        .then(response => response.json())
-        .then(response => {
-          console.log(response);
-          return response;})
-        .catch(error => console.log(error));
+      .then((response) => response.json())
+      .then((response) => {
+        console.log(response);
+        return response;
+      })
+      .catch((error) => console.log(error));
   }
 
   async function callAuthGraphQL(endpoint, accessToken) {
     const headers = new Headers();
 
     const options = {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({"access_token":accessToken})
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({ access_token: accessToken }),
     };
 
-    console.log('request made to GraphQL login at: ' + new Date().toString());
+    console.log("request made to GraphQL login at: " + new Date().toString());
 
     return await fetch(endpoint, options)
-        .then(response => response.json())
-        .then(response => {
-          console.log(response);
-          return response;})
-        .catch(error => console.log(error));
+      .then((response) => response.json())
+      .then((response) => {
+        console.log(response);
+        return response;
+      })
+      .catch((error) => console.log(error));
   }
 
   async function callProfileGraphQL(endpoint, accessToken) {
@@ -892,484 +873,526 @@ const Login = props => {
     headers.append("X-ZUMO-AUTH", accessToken);
 
     const options = {
-        method: "GET",
-        headers: headers
+      method: "GET",
+      headers: headers,
     };
 
-    console.log('request made to GraphQL profile at: ' + new Date().toString());
+    console.log("request made to GraphQL profile at: " + new Date().toString());
 
     return await fetch(endpoint, options)
-        .then(response => response.json())
-        .then(response => response[0])
-        .then(response => {
-          console.log(response);
-          return response;})
-        .catch(error => console.log(error));
+      .then((response) => response.json())
+      .then((response) => response[0])
+      .then((response) => {
+        console.log(response);
+        return response;
+      })
+      .catch((error) => console.log(error));
   }
-  
+
   useEffect(() => {
     console.log("it changed");
   }, [showSignUp]);
 
-  const handleNewUserSignUp = userData => {
+  const handleNewUserSignUp = (userData) => {
     console.log("userData", userData);
   };
 
   const showForm = () => {
-    if (!showSignUp) {
-      setShowSignUp(true);
-    } else {
-      setShowSignUp(false);
-    }
+    setShowSignUp(!showSignUp);
   };
 
-
-
-
-
   const renderSignUpControls = !showSignUp ? (
-    <>     
+    <>
       <div>
-      <Typography  className={localClass.headerWords}>
-        Don't have an account? 
-      </Typography>
-      <Typography  className={localClass.smallerWords}>
-        Sign up and get started today
-      </Typography>
-    </div>
+        <Typography className={localClass.headerWords}>
+          Don't have an account?
+        </Typography>
+        <Typography className={localClass.smallerWords}>
+          Sign up and get started today
+        </Typography>
+      </div>
 
       <div className={localClass.cardContainer}>
         <div className={localClass.signInCardContainer}>
-        <Paper 
-        elevation = {0}
-        square={true}
-        color="secondary" className={localClass.signInCard}>
-          <div>
-            <div  style={{
-                marginTop: '20px',
-                marginBottom: '15px'
-            }}>
-            <SellersSvg />
-            </div>
-
-            <div
-              className={localClass.cardTitle}
-              style={{ 
-                color: "#011133", 
-                fontSize: "24px"}}
-            >
-              LAND OWNERS
-            </div>
-          </div>
-          <div className={localClass.cardInputs}>
-            <Typography style={{ 
-                  textAlign: "center", 
-                  color: '#011133',
-                  padding: "11%", 
-                  }}>
-              For owners and sellers of royalties or minerals looking to learn
-              more about what they own
-            </Typography>
-          </div>
-          <Button
-            variant="outline"
-            disableElevation
-            type = 'submit'
-            className={classes.buttonLower}
+          <Paper
+            elevation={0}
+            square={true}
+            color="secondary"
+            className={localClass.signInCard}
           >
-            SIGN UP
-          </Button>
-        </Paper>
+            <div>
+              <div
+                style={{
+                  marginTop: "20px",
+                  marginBottom: "15px",
+                }}
+              >
+                <SellersSvg />
+              </div>
+
+              <div
+                className={localClass.cardTitle}
+                style={{
+                  color: "#011133",
+                  fontSize: "24px",
+                }}
+              >
+                LAND OWNERS
+              </div>
+            </div>
+            <div className={localClass.cardInputs}>
+              <Typography
+                style={{
+                  textAlign: "center",
+                  color: "#011133",
+                  padding: "11%",
+                }}
+              >
+                For owners and sellers of royalties or minerals looking to learn
+                more about what they own
+              </Typography>
+            </div>
+            <Button
+              variant="outline"
+              disableElevation
+              type="submit"
+              className={classes.buttonLower}
+            >
+              SIGN UP
+            </Button>
+          </Paper>
         </div>
 
         <div className={localClass.signInCardContainer}>
-        <Paper 
-        elevation = {0}
-        square={true}
-        color="secondary" className={localClass.signInCard}>
-          <div>
-
-          <div  style={{
-                marginTop: '20px',
-                marginLeft: '20px',
-                marginBottom: '20px'
-            }}>
-            <BuyersSvg />
-            </div>
-            <div
-              className={localClass.cardTitle}
-              style={{ 
-                color: "#011133", 
-                fontSize: "24px" }}
-            >
-              MINERAL BUYERS
-            </div>
-          </div>
-          <div className={localClass.cardInputs}>
-            <Typography style={{ 
-              textAlign: "center", 
-              color: '#011133',
-              padding: "10%" }}>
-              For buyers seeking potential deals and to streamline acquisition
-              workflows
-            </Typography>
-          </div>
-          <Button
-            variant="contained"
-            disableElevation
-            className={classes.buttonLower}
-            onClick={showForm}
+          <Paper
+            elevation={0}
+            square={true}
+            color="secondary"
+            className={localClass.signInCard}
           >
-            Sign Up
-          </Button>
-        </Paper>
+            <div>
+              <div
+                style={{
+                  marginTop: "20px",
+                  marginLeft: "20px",
+                  marginBottom: "20px",
+                }}
+              >
+                <BuyersSvg />
+              </div>
+              <div
+                className={localClass.cardTitle}
+                style={{
+                  color: "#011133",
+                  fontSize: "24px",
+                }}
+              >
+                MINERAL BUYERS
+              </div>
+            </div>
+            <div className={localClass.cardInputs}>
+              <Typography
+                style={{
+                  textAlign: "center",
+                  color: "#011133",
+                  padding: "10%",
+                }}
+              >
+                For buyers seeking potential deals and to streamline acquisition
+                workflows
+              </Typography>
+            </div>
+            <Button
+              variant="contained"
+              disableElevation
+              className={classes.buttonLower}
+              onClick={showForm}
+            >
+              Sign Up
+            </Button>
+          </Paper>
         </div>
 
         <div className={localClass.signInCardContainer}>
-        <Paper 
-        id = "op_card"
-        elevation = {0}
-        square={true}
-        color="secondary" className={localClass.signInCard}>
-          <div>
-          <div  style={{
-                marginTop: '5px',
-                marginBottom: '5px'
-            }}>
-            <OperatorSvg />
-            </div>
-            <div
-              className={localClass.cardTitle}
-              style={{ 
-                color: "#011133", 
-                fontSize: "24px" }}
-            >
-              OPERATORS
-            </div>
-          </div>
-          <div className={localClass.cardInputs}>
-            <Typography style={{ textAlign: "center", 
-                                  color: '#011133',
-                                  padding: "10%" }}>
-              For operating companies looking to streamline
-              land acquisition workflows
-            </Typography>
-          </div>
-          
-          <Button
-            id = "op_button"
-            variant="contained"
-            disableElevation
-            className={classes.buttonLower}
-            onClick={showForm}
+          <Paper
+            id="op_card"
+            elevation={0}
+            square={true}
+            color="secondary"
+            className={localClass.signInCard}
           >
-            Sign Up
-          </Button>
-        </Paper>
+            <div>
+              <div
+                style={{
+                  marginTop: "5px",
+                  marginBottom: "5px",
+                }}
+              >
+                <OperatorSvg />
+              </div>
+              <div
+                className={localClass.cardTitle}
+                style={{
+                  color: "#011133",
+                  fontSize: "24px",
+                }}
+              >
+                OPERATORS
+              </div>
+            </div>
+            <div className={localClass.cardInputs}>
+              <Typography
+                style={{
+                  textAlign: "center",
+                  color: "#011133",
+                  padding: "10%",
+                }}
+              >
+                For operating companies looking to streamline land acquisition
+                workflows
+              </Typography>
+            </div>
 
+            <Button
+              id="op_button"
+              variant="contained"
+              disableElevation
+              className={classes.buttonLower}
+              onClick={showForm}
+            >
+              Sign Up
+            </Button>
+          </Paper>
         </div>
-
-
       </div>
-
     </>
   ) : (
     <div className={localClass.displaNone}></div>
   );
-
-
-
 
   const renderSignInControls = showSignUp ? (
-    <>     
+    <>
       <div>
-      <Typography  className={localClass.headerWords}>
-        Already have an account? 
-      </Typography>
-      <Typography  className={localClass.smallerWords}>
-        Login to the Mineral Intelligence Platform
-      </Typography>
-    </div>
+        <Typography className={localClass.headerWords}>
+          Already have an account?
+        </Typography>
+        <Typography className={localClass.smallerWords}>
+          Login to the Mineral Intelligence Platform
+        </Typography>
+      </div>
 
       <div className={localClass.cardContainer}>
         <div className={localClass.signInCardContainer}>
-        <Paper 
-        elevation = {0}
-        square={true}
-        color="secondary" className={localClass.signInCard}>
-          <div>
-            <div  style={{
-                marginTop: '20px',
-                marginBottom: '15px'
-            }}>
-            <SellersSvg />
-            </div>
-
-            <div
-              className={localClass.cardTitle}
-              style={{ 
-                color: "#011133", 
-                fontSize: "24px"}}
-            >
-              LAND OWNERS
-            </div>
-          </div>
-          <div className={localClass.cardInputs}>
-            <Typography style={{ 
-                  textAlign: "center", 
-                  color: '#011133',
-                  padding: "11%", 
-                  }}>
-              For owners and sellers of royalties or minerals looking to learn
-              more about what they own
-            </Typography>
-          </div>
-          <Button
-            variant="outline"
-            disableElevation
-            type = 'submit'
-            className={classes.buttonLower}
+          <Paper
+            elevation={0}
+            square={true}
+            color="secondary"
+            className={localClass.signInCard}
           >
-            SIGN IN
-          </Button>
-        </Paper>
+            <div>
+              <div
+                style={{
+                  marginTop: "20px",
+                  marginBottom: "15px",
+                }}
+              >
+                <SellersSvg />
+              </div>
+
+              <div
+                className={localClass.cardTitle}
+                style={{
+                  color: "#011133",
+                  fontSize: "24px",
+                }}
+              >
+                LAND OWNERS
+              </div>
+            </div>
+            <div className={localClass.cardInputs}>
+              <Typography
+                style={{
+                  textAlign: "center",
+                  color: "#011133",
+                  padding: "11%",
+                }}
+              >
+                For owners and sellers of royalties or minerals looking to learn
+                more about what they own
+              </Typography>
+            </div>
+            <Button
+              variant="outline"
+              disableElevation
+              type="submit"
+              className={classes.buttonLower}
+            >
+              SIGN IN
+            </Button>
+          </Paper>
         </div>
 
         <div className={localClass.signInCardContainer}>
-        <Paper 
-        elevation = {0}
-        square={true}
-        color="secondary" className={localClass.signInCard}>
-          <div>
-
-          <div  style={{
-                marginTop: '20px',
-                marginLeft: '20px',
-                marginBottom: '20px'
-            }}>
-            <BuyersSvg />
-            </div>
-            <div
-              className={localClass.cardTitle}
-              style={{ 
-                color: "#011133", 
-                fontSize: "24px" }}
-            >
-              MINERAL BUYERS
-            </div>
-          </div>
-          <div className={localClass.cardInputs}>
-            <Typography style={{ 
-              textAlign: "center", 
-              color: '#011133',
-              padding: "10%" }}>
-              For buyers seeking potential deals and to streamline acquisition
-              workflows
-            </Typography>
-          </div>
-          <Button
-            variant="contained"
-            disableElevation
-            className={classes.buttonLower}
-            onClick={showForm}
+          <Paper
+            elevation={0}
+            square={true}
+            color="secondary"
+            className={localClass.signInCard}
           >
-            Sign IN
-          </Button>
-        </Paper>
+            <div>
+              <div
+                style={{
+                  marginTop: "20px",
+                  marginLeft: "20px",
+                  marginBottom: "20px",
+                }}
+              >
+                <BuyersSvg />
+              </div>
+              <div
+                className={localClass.cardTitle}
+                style={{
+                  color: "#011133",
+                  fontSize: "24px",
+                }}
+              >
+                MINERAL BUYERS
+              </div>
+            </div>
+            <div className={localClass.cardInputs}>
+              <Typography
+                style={{
+                  textAlign: "center",
+                  color: "#011133",
+                  padding: "10%",
+                }}
+              >
+                For buyers seeking potential deals and to streamline acquisition
+                workflows
+              </Typography>
+            </div>
+            <Button
+              variant="contained"
+              disableElevation
+              className={classes.buttonLower}
+              onClick={showForm}
+            >
+              Sign IN
+            </Button>
+          </Paper>
         </div>
 
         <div className={localClass.signInCardContainer}>
-        <Paper 
-        id = "op_card"
-        elevation = {0}
-        square={true}
-        color="secondary" className={localClass.signInCard}>
-          <div>
-          <div  style={{
-                marginTop: '5px',
-                marginBottom: '5px'
-            }}>
-            <OperatorSvg />
-            </div>
-            <div
-              className={localClass.cardTitle}
-              style={{ 
-                color: "#011133", 
-                fontSize: "24px" }}
-            >
-              OPERATORS
-            </div>
-          </div>
-          <div className={localClass.cardInputs}>
-            <Typography style={{ textAlign: "center", 
-                                  color: '#011133',
-                                  padding: "10%" }}>
-              For operating companies looking to streamline
-              land acquisition workflows
-            </Typography>
-          </div>
-          
-          <Button
-            id = "op_button"
-            variant="contained"
-            disableElevation
-            className={classes.buttonLower}
-            onClick={showForm}
+          <Paper
+            id="op_card"
+            elevation={0}
+            square={true}
+            color="secondary"
+            className={localClass.signInCard}
           >
-            Sign IN
-          </Button>
-        </Paper>
+            <div>
+              <div
+                style={{
+                  marginTop: "5px",
+                  marginBottom: "5px",
+                }}
+              >
+                <OperatorSvg />
+              </div>
+              <div
+                className={localClass.cardTitle}
+                style={{
+                  color: "#011133",
+                  fontSize: "24px",
+                }}
+              >
+                OPERATORS
+              </div>
+            </div>
+            <div className={localClass.cardInputs}>
+              <Typography
+                style={{
+                  textAlign: "center",
+                  color: "#011133",
+                  padding: "10%",
+                }}
+              >
+                For operating companies looking to streamline land acquisition
+                workflows
+              </Typography>
+            </div>
 
+            <Button
+              id="op_button"
+              variant="contained"
+              disableElevation
+              className={classes.buttonLower}
+              onClick={showForm}
+            >
+              Sign IN
+            </Button>
+          </Paper>
         </div>
-
-
       </div>
-
     </>
   ) : (
     <div className={localClass.displaNone}></div>
   );
-
-
-
-
-
 
   const renderSignupNewCard = showSignUp ? (
     <div>
-    <div>
-    <Typography variant="h4" style={{marginBottom: '10px'}} className={localClass.headerWords} >
-      Close more deals in far less time. 
-    </Typography>
-    </div>
+      <div>
+        <Typography
+          variant="h4"
+          style={{ marginBottom: "10px" }}
+          className={localClass.headerWords}
+        >
+          Close more deals in far less time.
+        </Typography>
+      </div>
 
-    <div>
-    <Typography style={{ 
-            marginTop: "5px", 
-            marginBottom: '50px',
-            fontSize: '24px',
-            paddingLeft: '50px',
-            paddingRight: '50px',
+      <div>
+        <Typography
+          style={{
+            marginTop: "5px",
+            marginBottom: "50px",
+            fontSize: "24px",
+            paddingLeft: "50px",
+            paddingRight: "50px",
             fontFamily: "Tahoma, Geneva, sans-serif",
             // textAlign: 'left',
             // paddingLeft: '65px',
             // paddingRight: '45px',
-            color: '#011133' ,
-             }}>
-      M1neral's platform allows you to identify more opportunities, manage interactions with 
-      landowners, and streamline acquisition workflows all in a single location. 
-      </Typography>
-    </div>
-
-    
-    <div className={localClass.cardContainer}>
-
-    <NewUserCard
-      className={localClass.newUser}
-      handleNewUserSignUp={handleNewUserSignUp}
-    />
-
-
-
-
-    <Card 
-      elevation = {0}
-      square={true}
-      color="secondary" className={localClass.signUpSupportCard}>
-      <div>
-      <Typography style={{ 
-            marginTop: "75px", 
-            fontSize: '24px',
-            fontWeight: '900',
-            fontFamily: "Tahoma, Geneva, sans-serif",
-            textAlign: 'left',
-            paddingLeft: '65px',
-            paddingRight: '45px',
-            color: '#011133' 
-            }}>
-        Why M1neral? 
-        </Typography>
-
-      </div>
-      <div>
-      <Typography style={{ 
-            marginTop: "25px", 
-            fontSize: '18px',
-            fontFamily: "Tahoma, Geneva, sans-serif",
-            textAlign: 'left',
-            paddingLeft: '65px',
-            paddingRight: '45px',
-            color: '#011133' ,            
-            fontWeight: 600,
-             }}>
-        Connect the dots on a single platform. 
-        </Typography>
-        <Typography style={{ 
-            marginTop: "25px", 
-            fontSize: '18px',
-            fontFamily: "Tahoma, Geneva, sans-serif",
-            textAlign: 'left',
-            paddingLeft: '65px',
-            paddingRight: '45px',
-            color: '#011133' ,
-             }}>
-        Search across datasets such as production, ownership, and valuation in a single place. Quick and easy. 
+            color: "#011133",
+          }}
+        >
+          M1neral's platform allows you to identify more opportunities, manage
+          interactions with landowners, and streamline acquisition workflows all
+          in a single location.
         </Typography>
       </div>
 
-      <div>
-      <Typography style={{ 
-            marginTop: "25px", 
-            fontSize: '18px',
-            fontFamily: "Tahoma, Geneva, sans-serif",
-            textAlign: 'left',
-            paddingLeft: '65px',
-            paddingRight: '45px',
-            color: '#011133' ,
-            fontWeight: 600,
-             }}>
-        Fit for purpose workflow tools. 
-        </Typography>
-        <Typography style={{ 
-            marginTop: "25px", 
-            fontSize: '18px',
-            fontFamily: "Tahoma, Geneva, sans-serif",
-            textAlign: 'left',
-            paddingLeft: '65px',
-            paddingRight: '45px',
-            color: '#011133' 
-             }}>
-        Streamline your business process from deal sourcing to offer management
-        to due-diligence with a built for purpose workflow solution. 
-        </Typography>
-      </div>
-      <div>
-      <Typography style={{ 
-            marginTop: "25px", 
-            fontSize: '18px',
-            fontFamily: "Tahoma, Geneva, sans-serif",
-            textAlign: 'left',
-            paddingLeft: '65px',
-            paddingRight: '45px',
-            color: '#011133',
-            fontWeight: 600,
-             }}>
-        Support when you need it most. 
-        </Typography>
-        <Typography style={{ 
-            marginTop: "25px", 
-            fontSize: '18px',
-            fontFamily: "Tahoma, Geneva, sans-serif",
-            textAlign: 'left',
-            paddingLeft: '65px',
-            paddingRight: '45px',
-            color: '#011133' 
-             }}>
-        We are here and ready to answer any questions you 
-        have along the way.  
-        </Typography>
-      </div>
-      {/* <div>
+      <div className={localClass.cardContainer}>
+        <NewUserCard
+          className={localClass.newUser}
+          handleNewUserSignUp={handleNewUserSignUp}
+        />
+
+        <Card
+          elevation={0}
+          square={true}
+          color="secondary"
+          className={localClass.signUpSupportCard}
+        >
+          <div>
+            <Typography
+              style={{
+                marginTop: "75px",
+                fontSize: "24px",
+                fontWeight: "900",
+                fontFamily: "Tahoma, Geneva, sans-serif",
+                textAlign: "left",
+                paddingLeft: "65px",
+                paddingRight: "45px",
+                color: "#011133",
+              }}
+            >
+              Why M1neral?
+            </Typography>
+          </div>
+          <div>
+            <Typography
+              style={{
+                marginTop: "25px",
+                fontSize: "18px",
+                fontFamily: "Tahoma, Geneva, sans-serif",
+                textAlign: "left",
+                paddingLeft: "65px",
+                paddingRight: "45px",
+                color: "#011133",
+                fontWeight: 600,
+              }}
+            >
+              Connect the dots on a single platform.
+            </Typography>
+            <Typography
+              style={{
+                marginTop: "25px",
+                fontSize: "18px",
+                fontFamily: "Tahoma, Geneva, sans-serif",
+                textAlign: "left",
+                paddingLeft: "65px",
+                paddingRight: "45px",
+                color: "#011133",
+              }}
+            >
+              Search across datasets such as production, ownership, and
+              valuation in a single place. Quick and easy.
+            </Typography>
+          </div>
+
+          <div>
+            <Typography
+              style={{
+                marginTop: "25px",
+                fontSize: "18px",
+                fontFamily: "Tahoma, Geneva, sans-serif",
+                textAlign: "left",
+                paddingLeft: "65px",
+                paddingRight: "45px",
+                color: "#011133",
+                fontWeight: 600,
+              }}
+            >
+              Fit for purpose workflow tools.
+            </Typography>
+            <Typography
+              style={{
+                marginTop: "25px",
+                fontSize: "18px",
+                fontFamily: "Tahoma, Geneva, sans-serif",
+                textAlign: "left",
+                paddingLeft: "65px",
+                paddingRight: "45px",
+                color: "#011133",
+              }}
+            >
+              Streamline your business process from deal sourcing to offer
+              management to due-diligence with a built for purpose workflow
+              solution.
+            </Typography>
+          </div>
+          <div>
+            <Typography
+              style={{
+                marginTop: "25px",
+                fontSize: "18px",
+                fontFamily: "Tahoma, Geneva, sans-serif",
+                textAlign: "left",
+                paddingLeft: "65px",
+                paddingRight: "45px",
+                color: "#011133",
+                fontWeight: 600,
+              }}
+            >
+              Support when you need it most.
+            </Typography>
+            <Typography
+              style={{
+                marginTop: "25px",
+                fontSize: "18px",
+                fontFamily: "Tahoma, Geneva, sans-serif",
+                textAlign: "left",
+                paddingLeft: "65px",
+                paddingRight: "45px",
+                color: "#011133",
+              }}
+            >
+              We are here and ready to answer any questions you have along the
+              way.
+            </Typography>
+          </div>
+          {/* <div>
       <Button
           variant="contained"
           disableElevation
@@ -1384,133 +1407,98 @@ const Login = props => {
           Contact Support
         </Button>
       </div> */}
-    </Card>
+        </Card>
+      </div>
     </div>
-
-    </div>
-
-
-
-
   ) : (
     <div className={localClass.displaNone}></div>
   );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   const renderBody = !showSignUp ? (
     <>
-
       <div>
-      <Typography variant="h4" className={localClass.headerWords}>
-        Welcome back!
-      </Typography>
+        <Typography variant="h4" className={localClass.headerWords}>
+          Welcome back!
+        </Typography>
       </div>
-
 
       <div className={localClass.cardContainer}>
-        
+        <SignInCard
+          ready={loading}
+          handleAADSignIn={handledAADSignIn}
+          showForm={showForm}
+        />
 
-
-
-      <SignInCard 
-        handleSignIn={handledSignIn} ready={loading} 
-        handleAADSignIn={handledAADSignIn} ready={loading}
-      />
-
-      
-      <div>
-
-
-      <Paper 
-        elevation = {0}
-        square={true}
-      color="secondary" className={localClass.supportCard}>
         <div>
-        <Typography style={{ 
-              marginTop: "75px", 
-              fontSize: '24px',
-              fontWeight: '900',
-              fontFamily: "Tahoma, Geneva, sans-serif",
-              textAlign: 'left',
-              paddingLeft: '65px',
-              paddingRight: '45px',
-              color: '#011133' 
-              }}>
-          Have questions about your account? Need help signing up? 
-          </Typography>
-
-        </div>
-        <div>
-        <Typography style={{ 
-              marginTop: "25px", 
-              fontSize: '18px',
-              fontFamily: "Tahoma, Geneva, sans-serif",
-              textAlign: 'left',
-              paddingLeft: '65px',
-              paddingRight: '45px',
-              color: '#011133' 
-               }}>
-          Our support team is available and ready to help with any questions
-          that you might have. 
-          </Typography>
-        </div>
-        <div>
-        <Button
-            variant="contained"
-            disableElevation
-            type="submit"
-            style={{
-              float: 'left',
-              marginTop: "35px",
-              marginLeft: '65px',
-            }}
+          <Paper
+            elevation={0}
+            square={true}
             color="secondary"
+            className={localClass.supportCard}
           >
-            Contact Support
-          </Button>
+            <div>
+              <Typography
+                style={{
+                  marginTop: "75px",
+                  fontSize: "24px",
+                  fontWeight: "900",
+                  fontFamily: "Tahoma, Geneva, sans-serif",
+                  textAlign: "left",
+                  paddingLeft: "65px",
+                  paddingRight: "45px",
+                  color: "#011133",
+                }}
+              >
+                Have questions about your account? Need help signing up?
+              </Typography>
+            </div>
+            <div>
+              <Typography
+                style={{
+                  marginTop: "25px",
+                  fontSize: "18px",
+                  fontFamily: "Tahoma, Geneva, sans-serif",
+                  textAlign: "left",
+                  paddingLeft: "65px",
+                  paddingRight: "45px",
+                  color: "#011133",
+                }}
+              >
+                Our support team is available and ready to help with any
+                questions that you might have.
+              </Typography>
+            </div>
+            <div>
+              <Button
+                variant="contained"
+                disableElevation
+                type="submit"
+                style={{
+                  float: "left",
+                  marginTop: "35px",
+                  marginLeft: "65px",
+                }}
+                color="secondary"
+              >
+                Contact Support
+              </Button>
+            </div>
+          </Paper>
         </div>
-      </Paper>
       </div>
-      </div>
-
-      
     </>
   ) : (
     <div className={localClass.displaNone}></div>
   );
 
-
-
-  
-
   const renderNoAcct = !showSignUp ? (
-    <>
-
-
-    </>
+    <></>
   ) : (
     <div className={localClass.displaNone}></div>
   );
 
   return (
-      
     <div className={localClass.myRoot}>
-
-
-
       <div className={localClass.rootNewUser}>
         {renderBody}
         {renderSignupNewCard}
@@ -1519,32 +1507,27 @@ const Login = props => {
       <div className={localClass.rootNewUser}>
         {renderSignUpControls}
         {renderSignInControls}
-
       </div>
 
-
-
-
-
-
-
-
-
-
-
       <div className={localClass.footer}>
-        <div><M1neralLogo2/></div>
-
-        <div style={{ 
-                color: "#fff", 
-                }}>
-        © 2020 M1neral, LLC. All Rights Reserved.
+        <div>
+          <M1neralLogo2 />
         </div>
 
-        <div style={{ 
-                color: "#fff", 
-                }}>
-        Terms of Service | Privacy Policy
+        <div
+          style={{
+            color: "#fff",
+          }}
+        >
+          © 2020 M1neral, LLC. All Rights Reserved.
+        </div>
+
+        <div
+          style={{
+            color: "#fff",
+          }}
+        >
+          Terms of Service | Privacy Policy
         </div>
 
         {/* <div style={{ 
@@ -1553,10 +1536,7 @@ const Login = props => {
                 }}>
         Privacy Policy
         </div> */}
-
       </div>
-
-
     </div>
   );
 };
