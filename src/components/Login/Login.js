@@ -641,16 +641,16 @@ const Login = (props) => {
     request.account = accountObj
 
     request.scopes = readProfileRequest.scopes;
-    // const readProfileLoginResponse = await ssoSilent(request).catch(
-    //   (error) => {
-    //     //do some error stuff
-    //     console.log(error);
-    //   }
-    // );
-    // if (!readProfileLoginResponse) {
-    //   //do some error stuff
-    //   return;
-    // }
+    const readProfileLoginResponse = await ssoSilent(request).catch(
+      (error) => {
+        //do some error stuff
+        console.log(error);
+      }
+    );
+    if (!readProfileLoginResponse) {
+      //do some error stuff
+      return;
+    }
 
     const readProfileToken = await getTokenPopup(request).catch(
       (error) => {

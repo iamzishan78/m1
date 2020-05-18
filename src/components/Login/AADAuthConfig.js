@@ -9,11 +9,16 @@ export const msalConfig = {
     cache: {
         cacheLocation: "sessionStorage", // This configures where your cache will be stored
         storeAuthStateInCookie: false, // Set this to "true" if you are having issues on IE11 or Edge
+    },
+    system: {
+        windowHashTimeout: 60000,
+        iframeHashTimeout: 60000,
+        loadFrameTimeout: 0
     }
 };  
 
 export const loginRequest = {
-    scopes: ["https://graph.microsoft.com/User.Read"],
+    scopes: [],
 };
 
 export const readProfileRequest = {
