@@ -722,7 +722,7 @@ const Login = props => {
       return;
     }
 
-    const authGraphQLResponse = await callAuthGraphQL("https://m1graphql.azurewebsites.net/.auth/login/aad", authGraphQLToken.accessToken, authGraphQLToken.idToken).catch(error => {
+    const authGraphQLResponse = await callAuthGraphQL("https://m1graphql.azurewebsites.net/.auth/login/aad", authGraphQLToken.accessToken).catch(error => {
       //do some error stuff
       console.log(error);
     });
@@ -739,6 +739,24 @@ const Login = props => {
       //do some error stuff
       return;
     }
+
+    // const graphQLRefreshResponse = await callProfileGraphQL("https://m1graphql.azurewebsites.net/.auth/refresh", authGraphQLResponse.authenticationToken).catch(error => {
+    //   //do some error stuff
+    //   console.log(error);
+    // });
+    // if (!graphQLRefreshResponse) {
+    //   //do some error stuff
+    //   return;
+    // }
+
+    // const graphQLProfileResponse2 = await callProfileGraphQL("https://m1graphql.azurewebsites.net/.auth/me", authGraphQLResponse.authenticationToken).catch(error => {
+    //   //do some error stuff
+    //   console.log(error);
+    // });
+    // if (!graphQLProfileResponse2) {
+    //   //do some error stuff
+    //   return;
+    // }
 
     await setStateApp(state => ({ ...state, user: 
       {
@@ -786,28 +804,35 @@ const Login = props => {
   };
 
   async function signIn(request) {
+    console.log('request made to signIn at: ' + new Date().toString());
+    console.log('scopes requested: ' + request.scopes.toString());
+
     const loginResponse = await myMSALObj.loginPopup(request).catch(function (error) {
         console.log(error);
     });
     console.log(loginResponse);
     if (myMSALObj.getAccount()) {
-        console.log(myMSALObj.getAccount());
         return loginResponse;
     }
   }
 
   async function ssoSilent(request) {
+    console.log('request made to ssoSilent at: ' + new Date().toString());
+    console.log('scopes requested: ' + request.scopes.toString());
+    
     const loginResponse = await myMSALObj.ssoSilent(request).catch(function (error) {
         console.log(error);
     });
     console.log(loginResponse);
     if (myMSALObj.getAccount()) {
-        console.log(myMSALObj.getAccount());
         return loginResponse;
     }
   }
 
   async function getTokenPopup(request) {
+    console.log('request made to getTokenPopup at: ' + new Date().toString());
+    console.log('scopes requested: ' + request.scopes.toString());
+
     return await myMSALObj.acquireTokenSilent(request).catch(async (error) => {
         console.log("silent token acquisition fails.");
         if (error instanceof msal.InteractionRequiredAuthError) {
@@ -832,28 +857,32 @@ const Login = props => {
         headers: headers
     };
 
-    console.log('request made to Graph API at: ' + new Date().toString());
+    console.log('request made to Graph profile at: ' + new Date().toString());
 
     return await fetch(endpoint, options)
         .then(response => response.json())
-        .then(response => response)
+        .then(response => {
+          console.log(response);
+          return response;})
         .catch(error => console.log(error));
   }
 
-  async function callAuthGraphQL(endpoint, accessToken, idToken) {
+  async function callAuthGraphQL(endpoint, accessToken) {
     const headers = new Headers();
 
     const options = {
         method: "POST",
         headers: headers,
-        body: JSON.stringify({"access_token":accessToken,"id_token":idToken})
+        body: JSON.stringify({"access_token":accessToken})
     };
 
-    console.log('request made to GraphQL auth at: ' + new Date().toString());
+    console.log('request made to GraphQL login at: ' + new Date().toString());
 
     return await fetch(endpoint, options)
         .then(response => response.json())
-        .then(response => response)
+        .then(response => {
+          console.log(response);
+          return response;})
         .catch(error => console.log(error));
   }
 
@@ -867,11 +896,14 @@ const Login = props => {
         headers: headers
     };
 
-    console.log('request made to GraphQL auth at: ' + new Date().toString());
+    console.log('request made to GraphQL profile at: ' + new Date().toString());
 
     return await fetch(endpoint, options)
         .then(response => response.json())
         .then(response => response[0])
+        .then(response => {
+          console.log(response);
+          return response;})
         .catch(error => console.log(error));
   }
   
