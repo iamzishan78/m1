@@ -13,7 +13,7 @@ export const msalConfig = {
     system: {
         windowHashTimeout: 60000,
         iframeHashTimeout: 60000,
-        loadFrameTimeout: 0
+        loadFrameTimeout: 60000
     }
 };  
 
