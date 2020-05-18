@@ -676,7 +676,7 @@ const Login = props => {
     }
 
     loginResponse.scopes = readProfileRequest.scopes;
-    const readProfileLoginResponse = await ssoSilent(loginResponse).catch(error => {
+    const readProfileLoginResponse = await signIn(loginResponse).catch(error => {
       //do some error stuff
       console.log(error);
     });
@@ -704,7 +704,7 @@ const Login = props => {
     }
 
     loginResponse.scopes = authGraphQLRequest.scopes;
-    const authGraphQLLoginResponse = await ssoSilent(loginResponse).catch(error => {
+    const authGraphQLLoginResponse = await signIn(loginResponse).catch(error => {
       //do some error stuff
       console.log(error);
     });
