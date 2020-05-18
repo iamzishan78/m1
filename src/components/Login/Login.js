@@ -492,9 +492,7 @@ const Login = (props) => {
     autoFocus: false,
   });
 
-
   useEffect(() => {}, [userEmail, userPassword]);
-  
 
   const TESTQUERY = gql`query {
     login(userName:"${userName}",password:"${password}",tenant:"${tenant}") {
@@ -516,7 +514,6 @@ const Login = (props) => {
       
     }
   }`;
-
 
   const LOGINQUERY = gql`query {
     login(userName:"${userName}",password:"${password}",tenant:"${tenant}") {
@@ -580,29 +577,35 @@ const Login = (props) => {
     }
   }, [data, expiredStorage, setStateApp, setStateNav]);
 
-
   useEffect(() => {
-    myMSALObj.handleRedirectPromise().then((tokenResponse) => {
-      const accountObj = tokenResponse ? tokenResponse.account : myMSALObj.getAccount();
+    myMSALObj
+      .handleRedirectPromise()
+      .then((tokenResponse) => {
+        const accountObj = tokenResponse
+          ? tokenResponse.account
+          : myMSALObj.getAccount();
 
-      if (accountObj) {
-            // Account object was retrieved, continue with app progress
-            console.log('id_token acquired at: ' + new Date().toString());
-            finishAADAuth(accountObj)
+        if (accountObj) {
+          // Account object was retrieved, continue with app progress
+          console.log("id_token acquired at: " + new Date().toString());
+          finishAADAuth(accountObj);
         } else if (tokenResponse && tokenResponse.tokenType === "Bearer") {
-            // No account object available, but access token was retrieved
-            console.log('access_token acquired at: ' + new Date().toString());
-            console.log('now what???')
+          // No account object available, but access token was retrieved
+          console.log("access_token acquired at: " + new Date().toString());
+          console.log("now what???");
         } else if (tokenResponse === null) {
-            // tokenResponse was null, attempt sign in or enter unauthenticated state for app
+          // tokenResponse was null, attempt sign in or enter unauthenticated state for app
         } else {
-            console.log("tokenResponse was not null but did not have any tokens: " + tokenResponse);
+          console.log(
+            "tokenResponse was not null but did not have any tokens: " +
+              tokenResponse
+          );
         }
-      }).catch((error) => {
+      })
+      .catch((error) => {
         console.log(error);
       });
   }, []);
-
 
   const handledSignIn = (userData) => {
     console.log("[Login.js] userData", userData);
@@ -613,51 +616,54 @@ const Login = (props) => {
     login();
   };
 
-  const handledAADSignIn = async () => {
-    setLoading(true);
+  const handledAADSignIn = async (tenant, updateTenantFlags) => {
+    if (tenant.toUpperCase() === "M1NERAL") {
+      setLoading(true);
 
-    const signInType = "loginRedirect";
+      const signInType = "loginRedirect";
 
-    if (signInType === "loginPopup") {
-      const loginResponse = await signInPopup(loginRequest).catch((error) => {
-        //do some error stuff
-        console.log(error);
-      });
-      if (!loginResponse) {
-        //do some error stuff
-        return;
+      if (signInType === "loginPopup") {
+        const loginResponse = await signInPopup(loginRequest).catch((error) => {
+          //do some error stuff
+          console.log(error);
+          updateTenantFlags(error);
+          setLoading(false);
+        });
+        if (!loginResponse) {
+          //do some error stuff
+          updateTenantFlags("Log in Failed");
+          setLoading(false);
+
+          return;
+        }
+
+        await finishAADAuth(loginResponse);
+      } else if (signInType === "loginRedirect") {
+        myMSALObj.loginRedirect(loginRequest);
       }
-
-      await finishAADAuth(loginResponse); 
-    } 
-    
-    else if (signInType === "loginRedirect") {
-        myMSALObj.loginRedirect(loginRequest)
-    }   
+    } else {
+      updateTenantFlags("Wrong Tenant Name");
+    }
   };
 
   async function finishAADAuth(accountObj) {
-    const request = {}
-    request.account = accountObj
+    const request = {};
+    request.account = accountObj;
 
     request.scopes = readProfileRequest.scopes;
-    const readProfileLoginResponse = await ssoSilent(request).catch(
-      (error) => {
-        //do some error stuff
-        console.log(error);
-      }
-    );
+    const readProfileLoginResponse = await ssoSilent(request).catch((error) => {
+      //do some error stuff
+      console.log(error);
+    });
     if (!readProfileLoginResponse) {
       //do some error stuff
       return;
     }
 
-    const readProfileToken = await getTokenPopup(request).catch(
-      (error) => {
-        //do some error stuff
-        console.log(error);
-      }
-    );
+    const readProfileToken = await getTokenPopup(request).catch((error) => {
+      //do some error stuff
+      console.log(error);
+    });
     if (!readProfileToken) {
       //do some error stuff
       return;
@@ -676,12 +682,10 @@ const Login = (props) => {
     }
 
     request.scopes = authGraphQLRequest.scopes;
-    const authGraphQLLoginResponse = await ssoSilent(request).catch(
-      (error) => {
-        //do some error stuff
-        console.log(error);
-      }
-    );
+    const authGraphQLLoginResponse = await ssoSilent(request).catch((error) => {
+      //do some error stuff
+      console.log(error);
+    });
     if (!authGraphQLLoginResponse) {
       //do some error stuff
       return;
@@ -740,7 +744,7 @@ const Login = (props) => {
     //   return;
     // }
 
-    await setStateApp((state) => ({
+    setStateApp((state) => ({
       ...state,
       user: {
         id: readProfileResponse.id,
@@ -759,7 +763,7 @@ const Login = (props) => {
       },
     }));
 
-    await setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
+    setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
     //window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
     expiredStorage.setItem(
       "user",
@@ -782,22 +786,24 @@ const Login = (props) => {
     );
 
     setLoading(false);
-  };
+  }
 
   async function signInPopup(request) {
-    console.log('request made to signIn at: ' + new Date().toString());
-    console.log('scopes requested: ' + request.scopes.toString());
+    console.log("request made to signIn at: " + new Date().toString());
+    console.log("scopes requested: " + request.scopes.toString());
 
-    const loginResponse = await myMSALObj.loginPopup(request).catch(function (error) {
+    const loginResponse = await myMSALObj
+      .loginPopup(request)
+      .catch(function (error) {
         console.log(error);
-    });
+      });
     console.log(loginResponse);
     if (myMSALObj.getAccount()) {
-        return loginResponse;
+      return loginResponse;
     }
   }
 
-   async function ssoSilent(request) {
+  async function ssoSilent(request) {
     console.log("request made to ssoSilent at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes.toString());
 

@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect, useRef } from "react";
 import { borders } from "@material-ui/system";
 import { shadows } from "@material-ui/system";
 import { Paper } from "@material-ui/core";
-import ExpiredStorage from "expired-storage";
+// import ExpiredStorage from "expired-storage";
 import { NavigationContext } from "./NavigationContext";
 import { AppContext } from "../../AppContext";
 import { useHistory, useLocation } from "react-router-dom";
@@ -726,8 +726,8 @@ export default function Navigation(props) {
     // history.push("/signin");
     setAnchorEl(null);
     window.sessionStorage.removeItem("user");
-    const expiredStorage = new ExpiredStorage();
-    expiredStorage.clear();
+    // const expiredStorage = new ExpiredStorage();
+    // expiredStorage.clear();
     setStateApp((state) => ({ ...state, user: null }));
   };
   const handleProfileMenuOpen = (event) => {

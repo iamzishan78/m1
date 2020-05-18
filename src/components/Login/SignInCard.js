@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import InputBase from "@material-ui/core/InputBase";
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     color: "white",
     fontSize: ".75rem",
     float: "left",
-    marginLeft: "35px",
+    marginLeft: "30px",
   },
 
   aadButton: {
@@ -45,6 +45,14 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       color: "#e4a773",
     },
+  },
+  errorSection: {
+    margin: "120px 65px 14px 65px",
+    padding: "10px",
+    color: "#E4A773",
+    background: "#e4a77347",
+    maxHeight: "90px",
+    overflowY: "auto",
   },
 }));
 
@@ -84,36 +92,41 @@ const SignInCard = (props) => {
 
   const classes = useStyles();
   const [tenant, setTenant] = useState("");
+  const [error, setError] = useState(null);
   const [tenantFlags, setTenantFlags] = useState({
     error: false,
     placeholder: null,
     autoFocus: false,
   });
 
+  const updateTenantFlags = (errorText) => {
+    setTenantFlags({
+      error: true,
+      placeholder: "Please enter a valid name",
+      autoFocus: true,
+    });
+    setTenant("");
+    errorText ? setError(errorText) : setError(null);
+  };
+
   const onEnterKey = (e) => {
     if (tenant.trim() === "") {
-      setTenantFlags({
-        error: true,
-        placeholder: "Please enter a valid Tenant",
-        autoFocus: true,
-      });
+      updateTenantFlags();
     } else {
       if (e.keyCode === 13) {
         e.preventDefault();
-        handleAADSignIn(tenant);
+        setError(null);
+        handleAADSignIn(tenant, updateTenantFlags);
       }
     }
   };
 
   const signInAAD = () => {
     if (tenant.trim() === "") {
-      setTenantFlags({
-        error: true,
-        placeholder: "Please enter a valid Tenant",
-        autoFocus: true,
-      });
+      updateTenantFlags();
     } else {
-      handleAADSignIn(tenant);
+      setError(null);
+      handleAADSignIn(tenant, updateTenantFlags);
     }
   };
 
@@ -145,13 +158,13 @@ const SignInCard = (props) => {
           color: "white",
         }}
       >
-        Sign in
+        Log in to the M1neral Platform
       </div>
       {!props.ready ? (
         <React.Fragment>
           <div
             style={{
-              marginTop: "65px",
+              marginTop: "50px",
               fontSize: "14px",
               fontWeight: "900",
               fontFamily: "Tahoma, Geneva, sans-serif",
@@ -160,7 +173,7 @@ const SignInCard = (props) => {
               marginLeft: "65px",
             }}
           >
-            TENANT
+            Please enter your company domain name
           </div>
           <BootstrapInput
             error={tenantFlags.error}
@@ -170,11 +183,15 @@ const SignInCard = (props) => {
             onKeyDown={(e) => onEnterKey(e)}
             onChange={(e) => setTenant(e.target.value)}
             onBlur={() => {
+              setError(null);
               setTenantFlags({
                 error: false,
                 placeholder: null,
                 autoFocus: false,
               });
+            }}
+            onClick={() => {
+              setError(null);
             }}
             value={tenant}
           />
@@ -199,6 +216,11 @@ const SignInCard = (props) => {
           size={50}
           className={classes.loader}
         />
+      )}
+      {error && (
+        <p id="errorSection" className={classes.errorSection}>
+          {error}
+        </p>
       )}
     </Card>
   );
