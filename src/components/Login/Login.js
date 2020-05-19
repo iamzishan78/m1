@@ -807,11 +807,16 @@ const Login = (props) => {
     console.log("request made to ssoSilent at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes.toString());
 
+    myMSALObj.authModule.config.authOptions.redirectUri = msalConfig.auth.redirectUri + '/auth.html';
+
     const loginResponse = await myMSALObj
       .ssoSilent(request)
       .catch(function (error) {
         console.log(error);
       });
+
+    myMSALObj.authModule.config.authOptions.redirectUri = msalConfig.auth.redirectUri
+      
     console.log(loginResponse);
     if (myMSALObj.getAccount()) {
       return loginResponse;

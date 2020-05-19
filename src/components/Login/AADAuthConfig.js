@@ -4,16 +4,11 @@ export const msalConfig = {
         clientId: "a11778cb-bab1-4789-8084-66d34467fb8c",
         authority: "https://login.microsoftonline.com/09c16dc5-3124-4ec6-a31a-125b325f5de2",
         redirectUri: "https://m1neral-dev.azurewebsites.net/"
-        // redirectUri: "http://localhost:3000/"
+        // redirectUri: "http://localhost:3000"
     },
     cache: {
         cacheLocation: "sessionStorage", // This configures where your cache will be stored
         storeAuthStateInCookie: false, // Set this to "true" if you are having issues on IE11 or Edge
-    },
-    system: {
-        windowHashTimeout: 60000,
-        iframeHashTimeout: 60000,
-        loadFrameTimeout: 60000
     }
 };  
 
