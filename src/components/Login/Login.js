@@ -807,7 +807,7 @@ const Login = (props) => {
     console.log("request made to ssoSilent at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes.toString());
 
-    myMSALObj.authModule.config.authOptions.redirectUri = msalConfig.auth.redirectUri + '/auth.html';
+    myMSALObj.authModule.config.authOptions.redirectUri = msalConfig.auth.redirectUri + '/auth.txt';
 
     const loginResponse = await myMSALObj
       .ssoSilent(request)
