@@ -228,7 +228,7 @@ function App() {
                       path="/contacts"
                       component={ContactsProvider}
                     />
-                    <Route component={NotFoundRedirect} />
+                    {/* <Route component={NotFoundRedirect} /> */}
                   </NavigationProvider>
                 </Switch>
               </Router>
