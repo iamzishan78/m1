@@ -728,7 +728,20 @@ export default function Navigation(props) {
     window.sessionStorage.removeItem("user");
     // const expiredStorage = new ExpiredStorage();
     // expiredStorage.clear();
+
+    localStorage.clear();
+    sessionStorage.clear();
+    var cookies = document.cookie.split(";");
+
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        var eqPos = cookie.indexOf("=");
+        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
     setStateApp((state) => ({ ...state, user: null }));
+    setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
+    history.push("/");
   };
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -871,8 +884,7 @@ export default function Navigation(props) {
                     aria-label="tabs"
                     classes={{ indicator: classes.indicator }}
                   >
-
-                {/*  TEMPORARY COMMENT OUT OF FEATURE IN PROGRESS
+                    {/*  TEMPORARY COMMENT OUT OF FEATURE IN PROGRESS
                     <Button
                       variant="contained"
                       disableElevation
@@ -897,8 +909,6 @@ export default function Navigation(props) {
                     >
                       SEND MAILERS
                     </Button> */}
-
-
 
                     <Tab
                       //onClick={handleFilterCardOpen}
@@ -1016,9 +1026,8 @@ export default function Navigation(props) {
                         badgeContent={stateNav.valuationFilterCount}
                         color="secondary"
                       >
-                      <ValuationIcon color="#fff" opacity="1" />
+                        <ValuationIcon color="#fff" opacity="1" />
                       </Badge>
-
                     }
                     aria-label="value"
                   />
@@ -1032,9 +1041,8 @@ export default function Navigation(props) {
                         badgeContent={stateNav.tagFilterCount}
                         color="secondary"
                       >
-                      <LocalOfferIcon htmlColor="#fff" opacity="1" />
+                        <LocalOfferIcon htmlColor="#fff" opacity="1" />
                       </Badge>
-
                     }
                     aria-label="tags"
                   />
@@ -1047,13 +1055,11 @@ export default function Navigation(props) {
                         badgeContent={stateNav.aiFilterCount}
                         color="secondary"
                       >
-                      <PredictiveIcon color="#fff" opacity="1" />
+                        <PredictiveIcon color="#fff" opacity="1" />
                       </Badge>
                     }
                     aria-label="ai"
                   />
-
-                  
 
                   {/* TEMPORARY COMMENT OUT. 
                   BELOW COMPONENT IS FOR CAMILO'S FILTER SAVE HANDLER */}
@@ -1071,9 +1077,7 @@ export default function Navigation(props) {
                     }
                     aria-label="filter settings"
                   />*/}
-
                 </Tabs>
-                 
               </div>
             ) : (
               <div style={{ display: "none" }}></div>

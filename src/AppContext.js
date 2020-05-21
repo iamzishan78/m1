@@ -1,13 +1,16 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
+
+import { myMSALObj } from "./components/Login/AADAuthConfig";
 
 const AppContext = createContext([{}, () => {}]);
 
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
+    myMSALObj: null,
     selectedRoute: "/",
     apolloClientEndpoint:
       "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
-      // "http://localhost:7071/api/m1graph",
+    // "http://localhost:7071/api/m1graph",
     user: null,
     wellCount: 500,
     wells: null,
@@ -37,6 +40,11 @@ const AppProvider = (props) => {
       styleId: "Outdoors",
     },
   });
+
+  useEffect(() => {
+    setStateApp({ ...stateApp, myMSALObj });
+  }, []);
+
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>
       {props.children}

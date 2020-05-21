@@ -32,7 +32,9 @@ import {
 import * as msal from "@azure/msal-browser";
 import { graphqlSync } from "graphql";
 import { QueryData } from "@apollo/react-hooks/lib/data/QueryData";
-const myMSALObj = new msal.PublicClientApplication(msalConfig);
+// const myMSALObj = new msal.PublicClientApplication(
+//   msalConfig("09c16dc5-3124-4ec6-a31a-125b325f5de2")
+// );
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -469,75 +471,14 @@ const M1neralLogo2 = styled(M1neralLogoNavNoAuth)`
 const Login = (props) => {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [userName, setUserName] = useState(null);
-  const [password, setPassword] = useState(null);
   const classes = useStyles();
 
-  //const classes = useStyles();
   let history = useHistory();
   const localClass = localStyles();
   const [showSignUp, setShowSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [tenant, setTenant] = useState("M1neral");
-  const [userEmail, setUserEmail] = useState("");
-  const [userPassword, setUserPassword] = useState("");
-  const [emailFlags, setEmailFlags] = useState({
-    error: false,
-    placeholder: null,
-    autoFocus: false,
-  });
-  const [passwordFlags, setPasswordFlags] = useState({
-    error: false,
-    placeholder: null,
-    autoFocus: false,
-  });
-
-  useEffect(() => {}, [userEmail, userPassword]);
-
-  const TESTQUERY = gql`query {
-    login(userName:"${userName}",password:"${password}",tenant:"${tenant}") {
-      success
-      message
-      user {
-        id
-        email
-        name
-        authToken
-        authTokenExpires
-        tenant {
-          id
-          tenant
-          graphQL
-        }
-        
-      }
-      
-    }
-  }`;
-
-  const LOGINQUERY = gql`query {
-    login(userName:"${userName}",password:"${password}",tenant:"${tenant}") {
-      success
-      message
-      user {
-        id
-        email
-        name
-        authToken
-        authTokenExpires
-        tenant {
-          id
-          tenant
-          graphQL
-        }
-        
-      }
-      
-    }
-  }`;
 
   const expiredStorage = new ExpiredStorage();
-  const [login, { loading: loading2, data }] = useLazyQuery(LOGINQUERY);
 
   useEffect(() => {
     //on willmount if session is saved don't require login
@@ -559,66 +500,44 @@ const Login = (props) => {
   }, [history, setStateApp, setStateNav]);
 
   useEffect(() => {
-    if (data) {
-      //console.log('login success',data)
-      if (data.login.success) {
-        setStateApp((state) => ({ ...state, user: data.login.user }));
-        setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
-        //window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
-        expiredStorage.setItem("user", JSON.stringify(data.login.user), 86400);
-      } else {
-        console.log("login failed", data);
-        setStateApp((state) => ({ ...state, user: null }));
-        setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
-        // window.sessionStorage.removeItem('user');
-        expiredStorage.clear();
-        //show login failed in the future
-      }
+    if (stateApp.myMSALObj) {
+      stateApp.myMSALObj
+        .handleRedirectPromise()
+        .then((tokenResponse) => {
+          const accountObj = tokenResponse
+            ? tokenResponse.account
+            : stateApp.myMSALObj.getAccount();
+
+          if (accountObj) {
+            // Account object was retrieved, continue with app progress
+            console.log("id_token acquired at: " + new Date().toString());
+            finishAADAuth(accountObj);
+          } else if (tokenResponse && tokenResponse.tokenType === "Bearer") {
+            // No account object available, but access token was retrieved
+            console.log("access_token acquired at: " + new Date().toString());
+            console.log("now what???");
+          } else if (tokenResponse === null) {
+            // tokenResponse was null, attempt sign in or enter unauthenticated state for app
+          } else {
+            console.log(
+              "tokenResponse was not null but did not have any tokens: " +
+                tokenResponse
+            );
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
-  }, [data, expiredStorage, setStateApp, setStateNav]);
-
-  useEffect(() => {
-    myMSALObj
-      .handleRedirectPromise()
-      .then((tokenResponse) => {
-        const accountObj = tokenResponse
-          ? tokenResponse.account
-          : myMSALObj.getAccount();
-
-        if (accountObj) {
-          // Account object was retrieved, continue with app progress
-          console.log("id_token acquired at: " + new Date().toString());
-          finishAADAuth(accountObj);
-        } else if (tokenResponse && tokenResponse.tokenType === "Bearer") {
-          // No account object available, but access token was retrieved
-          console.log("access_token acquired at: " + new Date().toString());
-          console.log("now what???");
-        } else if (tokenResponse === null) {
-          // tokenResponse was null, attempt sign in or enter unauthenticated state for app
-        } else {
-          console.log(
-            "tokenResponse was not null but did not have any tokens: " +
-              tokenResponse
-          );
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
-
-  const handledSignIn = (userData) => {
-    console.log("[Login.js] userData", userData);
-
-    setUserName(userData.userEmail);
-    setPassword(userData.userPassword);
-    setTenant(userData.tenant);
-    login();
-  };
+  }, [stateApp.myMSALObj]);
 
   const handledAADSignIn = async (tenant, updateTenantFlags) => {
     if (tenant.toUpperCase() === "M1NERAL") {
       setLoading(true);
+
+      stateApp.myMSALObj.authModule.config.authOptions.authority = msalConfig(
+        "09c16dc5-3124-4ec6-a31a-125b325f5de2"
+      ).auth.authority;
 
       const signInType = "loginRedirect";
 
@@ -639,7 +558,7 @@ const Login = (props) => {
 
         await finishAADAuth(loginResponse);
       } else if (signInType === "loginRedirect") {
-        myMSALObj.loginRedirect(loginRequest);
+        stateApp.myMSALObj.loginRedirect(loginRequest);
       }
     } else {
       updateTenantFlags("Wrong Tenant Name");
@@ -792,13 +711,13 @@ const Login = (props) => {
     console.log("request made to signIn at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes.toString());
 
-    const loginResponse = await myMSALObj
+    const loginResponse = await stateApp.myMSALObj
       .loginPopup(request)
       .catch(function (error) {
         console.log(error);
       });
     console.log(loginResponse);
-    if (myMSALObj.getAccount()) {
+    if (stateApp.myMSALObj.getAccount()) {
       return loginResponse;
     }
   }
@@ -807,18 +726,19 @@ const Login = (props) => {
     console.log("request made to ssoSilent at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes.toString());
 
-    myMSALObj.authModule.config.authOptions.redirectUri = msalConfig.auth.redirectUri + '/auth.html';
+    stateApp.myMSALObj.authModule.config.authOptions.redirectUri =
+      msalConfig().auth.redirectUri + "auth.html";
 
-    const loginResponse = await myMSALObj
+    const loginResponse = await stateApp.myMSALObj
       .ssoSilent(request)
       .catch(function (error) {
         console.log(error);
       });
 
-    myMSALObj.authModule.config.authOptions.redirectUri = msalConfig.auth.redirectUri
-      
+    stateApp.myMSALObj.authModule.config.authOptions.redirectUri = msalConfig().auth.redirectUri;
+
     console.log(loginResponse);
-    if (myMSALObj.getAccount()) {
+    if (stateApp.myMSALObj.getAccount()) {
       return loginResponse;
     }
   }
@@ -827,17 +747,21 @@ const Login = (props) => {
     console.log("request made to getTokenPopup at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes.toString());
 
-    return await myMSALObj.acquireTokenSilent(request).catch(async (error) => {
-      console.log("silent token acquisition fails.");
-      if (error instanceof msal.InteractionRequiredAuthError) {
-        console.log("acquiring token using popup");
-        return myMSALObj.acquireTokenPopup(request).catch((error) => {
+    return await stateApp.myMSALObj
+      .acquireTokenSilent(request)
+      .catch(async (error) => {
+        console.log("silent token acquisition fails.");
+        if (error instanceof msal.InteractionRequiredAuthError) {
+          console.log("acquiring token using popup");
+          return stateApp.myMSALObj
+            .acquireTokenPopup(request)
+            .catch((error) => {
+              console.error(error);
+            });
+        } else {
           console.error(error);
-        });
-      } else {
-        console.error(error);
-      }
-    });
+        }
+      });
   }
 
   async function callMSGraph(endpoint, accessToken) {
