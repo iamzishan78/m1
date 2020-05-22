@@ -7,7 +7,7 @@ export const msalConfig = (tenantId) => {
     auth: {
       clientId: "a11778cb-bab1-4789-8084-66d34467fb8c",
       authority: `https://login.microsoftonline.com/${
-        tenantId ? tenantId : "09c16dc5-3124-4ec6-a31a-125b325f5de2"
+        tenantId ? tenantId : "common"
       }`,
       redirectUri: `${path}/`,
       postLogoutRedirectUri: `${path}/`,
@@ -19,7 +19,7 @@ export const msalConfig = (tenantId) => {
   };
 };
 
-export const myMSALObj = new msal.PublicClientApplication(msalConfig());
+export const MSALObj = (tenantId) => new msal.PublicClientApplication(msalConfig(tenantId));
 
 export const loginRequest = {
   scopes: [],

@@ -1,6 +1,6 @@
 import React, { useState, createContext, useEffect } from "react";
 
-import { myMSALObj } from "./components/Login/AADAuthConfig";
+import { MSALObj } from "./components/Login/AADAuthConfig";
 
 const AppContext = createContext([{}, () => {}]);
 
@@ -42,7 +42,25 @@ const AppProvider = (props) => {
   });
 
   useEffect(() => {
-    setStateApp({ ...stateApp, myMSALObj });
+    let tenantId = null;
+    let myMSALObjInt = null;
+    let myAccountInt = null;
+
+    async function wait() {
+      tenantId = window.sessionStorage.getItem("tenantId");
+
+      if(tenantId) {
+        myMSALObjInt = await MSALObj(tenantId);
+      }
+
+      if(myMSALObjInt) {
+        myAccountInt = await myMSALObjInt.getAccount();
+      }
+
+      if (tenantId && myMSALObjInt && myAccountInt){
+        setStateApp({ ...stateApp, myMSALObj: myMSALObjInt});
+      }
+    } wait();
   }, []);
 
   return (
