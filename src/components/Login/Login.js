@@ -493,10 +493,8 @@ const Login = (props) => {
     if (tenant.toUpperCase() === "M1NERAL") {
       setLoading(true);
 
-      let myMSALObjInt = null
-
       if (!stateApp.myMSALObj){
-        myMSALObjInt = new msal.PublicClientApplication(msalConfig("09c16dc5-3124-4ec6-a31a-125b325f5de2"));
+        stateApp.myMSALObj = new msal.PublicClientApplication(msalConfig("09c16dc5-3124-4ec6-a31a-125b325f5de2"));
       }
 
       window.sessionStorage.setItem("tenantId", "09c16dc5-3124-4ec6-a31a-125b325f5de2");
@@ -520,7 +518,7 @@ const Login = (props) => {
 
         await finishAADAuth(loginResponse);
       } else if (signInType === "loginRedirect") {
-        myMSALObjInt.loginRedirect(loginRequest);
+        stateApp.myMSALObj.loginRedirect(loginRequest);
       }
     } else {
       updateTenantFlags("Wrong Tenant Name");
