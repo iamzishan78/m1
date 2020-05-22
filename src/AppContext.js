@@ -53,11 +53,11 @@ const AppProvider = (props) => {
         myMSALObjInt = await MSALObj(tenantId);
       }
 
-      if(myMSALObjInt) {
-        myAccountInt = await myMSALObjInt.getAccount();
-      }
+      // if(myMSALObjInt) {
+      //   myAccountInt = await myMSALObjInt.getAccount();
+      // }
 
-      if (tenantId && myMSALObjInt && myAccountInt){
+      if (tenantId && myMSALObjInt/* && myAccountInt*/){
         setStateApp({ ...stateApp, myMSALObj: myMSALObjInt});
       }
     } wait();
