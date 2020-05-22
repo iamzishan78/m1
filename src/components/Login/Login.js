@@ -1,26 +1,11 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useLazyQuery, useApolloClient } from "@apollo/react-hooks";
 import { AppContext } from "../../AppContext";
-import {
-  fade,
-  ThemeProvider,
-  withStyles,
-  makeStyles,
-  createMuiTheme,
-} from "@material-ui/core/styles";
-import ExpiredStorage from "expired-storage";
+import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../Navigation/NavigationContext";
-import gql from "graphql-tag";
 import SignInCard from "./SignInCard";
-import { useHistory } from "react-router-dom";
-import { Card, TextField, Button, Typography } from "@material-ui/core";
+import { Card, Button, Typography } from "@material-ui/core";
 import NewUserCard from "./NewUserCard";
 import Paper from "@material-ui/core/Paper";
-import InputLabel from "@material-ui/core/InputLabel";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { Link } from "react-router-dom";
-import { validateData } from "./loginHelpers";
-import InputBase from "@material-ui/core/InputBase";
 import styled from "styled-components";
 
 import {
@@ -30,11 +15,6 @@ import {
   authGraphQLRequest,
 } from "./AADAuthConfig";
 import * as msal from "@azure/msal-browser";
-import { graphqlSync } from "graphql";
-import { QueryData } from "@apollo/react-hooks/lib/data/QueryData";
-// const myMSALObj = new msal.PublicClientApplication(
-//   msalConfig("09c16dc5-3124-4ec6-a31a-125b325f5de2")
-// );
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -470,34 +450,12 @@ const M1neralLogo2 = styled(M1neralLogoNavNoAuth)`
 
 const Login = (props) => {
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [, setStateNav] = useContext(NavigationContext);
   const classes = useStyles();
 
-  let history = useHistory();
   const localClass = localStyles();
   const [showSignUp, setShowSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const expiredStorage = new ExpiredStorage();
-
-  useEffect(() => {
-    //on willmount if session is saved don't require login
-    //let session = sessionStorage.getItem('user');
-    const expiredStorage = new ExpiredStorage();
-    let isExpired = expiredStorage.isExpired("user");
-    if (!isExpired) {
-      let user = expiredStorage.getItem("user");
-
-      let sessionUser = JSON.parse(user);
-      setStateApp((state) => ({ ...state, user: sessionUser }));
-      setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
-    } else {
-      setStateApp((state) => ({ ...state, user: null }));
-      setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
-      expiredStorage.clear();
-      history.push("/");
-    }
-  }, [history, setStateApp, setStateNav]);
 
   useEffect(() => {
     if (stateApp.myMSALObj) {
@@ -683,26 +641,6 @@ const Login = (props) => {
     }));
 
     setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
-    //window.sessionStorage.setItem('user', JSON.stringify(data.login.user));
-    expiredStorage.setItem(
-      "user",
-      JSON.stringify({
-        id: readProfileResponse.id,
-        email: readProfileResponse.mail,
-        name: readProfileResponse.displayName,
-        authToken: authGraphQLResponse.authenticationToken,
-        authTokenExpires: authGraphQLToken.expiresOn,
-        tenant: {
-          id: request.tenantId,
-          tenant: "M1neral",
-          graphQL: {
-            endpoint:
-              "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
-          },
-        },
-      }),
-      86400
-    );
 
     setLoading(false);
   }

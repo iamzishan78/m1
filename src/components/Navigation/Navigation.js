@@ -2,7 +2,6 @@ import React, { useState, useContext, useEffect, useRef } from "react";
 import { borders } from "@material-ui/system";
 import { shadows } from "@material-ui/system";
 import { Paper } from "@material-ui/core";
-// import ExpiredStorage from "expired-storage";
 import { NavigationContext } from "./NavigationContext";
 import { AppContext } from "../../AppContext";
 import { useHistory, useLocation } from "react-router-dom";
@@ -723,26 +722,14 @@ export default function Navigation(props) {
     setAnchorEl(null);
   };
   const handleLogout = () => {
-    // history.push("/signin");
     setAnchorEl(null);
-    window.sessionStorage.removeItem("user");
-    // const expiredStorage = new ExpiredStorage();
-    // expiredStorage.clear();
-
-    localStorage.clear();
     sessionStorage.clear();
-    var cookies = document.cookie.split(";");
+    stateApp.myMSALObj.logout();
 
-    for (var i = 0; i < cookies.length; i++) {
-        var cookie = cookies[i];
-        var eqPos = cookie.indexOf("=");
-        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    }
-    setStateApp((state) => ({ ...state, user: null }));
-    setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
-    history.push("/");
+    // setStateApp((state) => ({ ...state, user: null }));
+    // setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
   };
+
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };

@@ -20,7 +20,6 @@ import TitleProvider from "./components/Title/TitleProvider";
 import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider";
 import ContactsProvider from "./components/Contacts/ContactsProvider";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
-import ExpiredStorage from "expired-storage";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
@@ -112,21 +111,19 @@ const SetApolloClient = (props) => {
 const PrivateRoute = ({ component, ...options }) => {
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  // const authTokenExpires =
-  //   stateApp.user && stateApp.user.authTokenExpires
-  //     ? stateApp.user.authTokenExpires
-  //     : 0;
+  if (
+    stateApp.user &&
+    Date.parse(stateApp.user.authTokenExpires) < Date.now()
+  ) {
+    sessionStorage.clear();
+    stateApp.myMSALObj.logout();
 
-  // let finalComponent = component;
-
-  // if (authTokenExpires < Date.now()) {
-  //   finalComponent = Login;
-  //   // setStateApp((stateApp) => ({ ...stateApp, user: null }));
-  //   // setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
-  // }
+    // setStateApp((stateApp) => ({ ...stateApp, user: null }));
+    // setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
+  }
 
   const finalComponent =
-    stateApp.user && stateApp.user.authTokenExpires > Date.now()
+    stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
       ? component
       : Login;
 
