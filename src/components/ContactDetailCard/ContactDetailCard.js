@@ -598,7 +598,10 @@ export default function ContactDetailCard(props) {
         <div style={{ marginBottom: "4px" }}>
           <Grid container className={classes.rightColumnGrid} spacing={1}>
             {/* //////////// Deal Card ////////////// */}
-            <Grid item xs={12}>
+
+
+            {/* TEMPORARY COMMENT OUT. DO NOT DELETE. */}
+            {/* <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <div className={classes.divDealCard}>
                   <p className={classes.pDealCard}>
@@ -610,6 +613,7 @@ export default function ContactDetailCard(props) {
                 </div>
               </Paper>
             </Grid>
+             */}
 
             <Grid item xs={12}>
               <Paper className={classes.paper}>
