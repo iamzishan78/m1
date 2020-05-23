@@ -1,5 +1,16 @@
 import * as msal from "@azure/msal-browser";
 
+const tenants = JSON.parse(process.env.REACT_APP_TENANS_CREDENTIALS);
+
+export const tenantsCredentials = (tenantName) => {
+  let found;
+  for (let i = 0; i < tenants.length; i++) {
+    if (tenants[i].name.toUpperCase() === tenantName.toUpperCase())
+      found = tenants[i];
+  }
+  return found;
+};
+
 // Config object to be passed to Msal on creation
 export const msalConfig = (tenantId) => {
   const path = `${window.location.protocol}//${window.location.host}`;
@@ -19,7 +30,8 @@ export const msalConfig = (tenantId) => {
   };
 };
 
-export const MSALObj = (tenantId) => new msal.PublicClientApplication(msalConfig(tenantId));
+export const MSALObj = (tenantId) =>
+  new msal.PublicClientApplication(msalConfig(tenantId));
 
 export const loginRequest = {
   scopes: [],

@@ -1,6 +1,6 @@
 import React, { useState, createContext, useEffect } from "react";
 
-import { MSALObj } from "./components/Login/AADAuthConfig";
+import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
 
 const AppContext = createContext([{}, () => {}]);
 
@@ -42,25 +42,22 @@ const AppProvider = (props) => {
   });
 
   useEffect(() => {
-    let tenantId = null;
-    let myMSALObjInt = null;
-    let myAccountInt = null;
-
     async function wait() {
-      tenantId = window.sessionStorage.getItem("tenantId");
+      let tenantName = window.sessionStorage.getItem("tenantName");
 
-      if(tenantId) {
-        myMSALObjInt = await MSALObj(tenantId);
+      if (tenantName) {
+        let tenant = tenantsCredentials(tenantName);
+        let myMSALObjInt = MSALObj(tenant.id);
+        setStateApp({
+          ...stateApp,
+          myMSALObj: myMSALObjInt,
+          apolloClientEndpoint: tenant.apolloClientEndpoint,
+        });
+      } else {
+        setStateApp({ ...stateApp, myMSALObj: false });
       }
-
-      // if(myMSALObjInt) {
-      //   myAccountInt = await myMSALObjInt.getAccount();
-      // }
-
-      if (tenantId && myMSALObjInt/* && myAccountInt*/){
-        setStateApp({ ...stateApp, myMSALObj: myMSALObjInt});
-      }
-    } wait();
+    }
+    wait();
   }, []);
 
   return (

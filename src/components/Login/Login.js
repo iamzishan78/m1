@@ -7,8 +7,10 @@ import { Card, Button, Typography } from "@material-ui/core";
 import NewUserCard from "./NewUserCard";
 import Paper from "@material-ui/core/Paper";
 import styled from "styled-components";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 import {
+  tenantsCredentials,
   msalConfig,
   loginRequest,
   readProfileRequest,
@@ -49,12 +51,6 @@ const localStyles = makeStyles((theme) => ({
     fontWeight: "900",
     fontFamily: "Tahoma, Geneva, sans-serif",
   },
-  conatiner: {
-    paddingTop: 20,
-    margin: "0 auto",
-    height: "100%",
-    justifyContent: "center",
-  },
   signInCard: {
     width: "250px",
     height: "410px",
@@ -81,42 +77,6 @@ const localStyles = makeStyles((theme) => ({
     flexDirection: "column",
     fontFamily: theme.typography.fontFamily,
   },
-  cardHeader: {
-    color: "white",
-    padding: "20px 40px",
-    textAlign: "center",
-  },
-  cardFooter: {
-    height: "15%",
-    color: "white",
-    fontSize: ".75rem",
-    textAlign: "center",
-  },
-  inputs: {
-    backgroundColor: theme.palette.background.paper,
-    width: "80%",
-    position: "relative",
-    borderBottom: "1px solid rgba(0, 0, 0, 0.42)",
-    pointerEvents: "all",
-    margin: "2% 10%",
-  },
-  inputsName: {
-    backgroundColor: theme.palette.background.paper,
-    width: "39%",
-    position: "relative",
-    borderBottom: "1px solid rgba(0, 0, 0, 0.42)",
-    pointerEvents: "all",
-    margin: "1% 1%",
-    display: "inline-flex",
-  },
-  links: {
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  cardForm: {
-    display: "contents",
-    pointerEvents: "all",
-  },
   rootNewUser: {
     textAlign: "center",
     display: "flex",
@@ -134,13 +94,6 @@ const localStyles = makeStyles((theme) => ({
   signInCardContainer: {
     paddingRight: 10,
     paddingLeft: 10,
-  },
-  card: {
-    width: "425px",
-    height: "500px",
-    backgroundColor: theme.palette.secondary.dark,
-    backgroundColor: "#011133",
-    fontFamily: theme.typography.fontFamily,
   },
 }));
 
@@ -169,15 +122,7 @@ const useStyles = makeStyles((theme) => ({
     width: "80%",
     margin: "2% 10%",
   },
-  cardFooter: {
-    paddingBottom: "0px",
-    paddingTop: "45px",
-    color: "white",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    fontSize: ".75rem",
-  },
+
   secondaryInputs: {
     paddingTop: "5px",
     fontSize: ".75rem",
@@ -223,14 +168,6 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       color: "#e4a773",
     },
-  },
-  cardFooter: {
-    paddingBottom: "5px",
-    paddingTop: "5px",
-    color: "white",
-    fontSize: ".75rem",
-    //float: 'left',
-    //marginLeft: '30px',
   },
 }));
 
@@ -455,7 +392,11 @@ const Login = (props) => {
 
   const localClass = localStyles();
   const [showSignUp, setShowSignUp] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loadingSigInButton, setLoadingSigInButton] = useState(false);
+  const [loading, setLoading] = useState(true);
+  // const [tenants] = useState(
+  //   JSON.parse(process.env.REACT_APP_TENANS_CREDENTIALS)
+  // );
 
   useEffect(() => {
     if (stateApp.myMSALObj) {
@@ -470,58 +411,71 @@ const Login = (props) => {
             // Account object was retrieved, continue with app progress
             console.log("id_token acquired at: " + new Date().toString());
             finishAADAuth(accountObj);
-          } else if (tokenResponse && tokenResponse.tokenType === "Bearer") {
-            // No account object available, but access token was retrieved
-            console.log("access_token acquired at: " + new Date().toString());
-            console.log("now what???");
-          } else if (tokenResponse === null) {
-            // tokenResponse was null, attempt sign in or enter unauthenticated state for app
           } else {
-            console.log(
-              "tokenResponse was not null but did not have any tokens: " +
-                tokenResponse
-            );
+            if (tokenResponse && tokenResponse.tokenType === "Bearer") {
+              // No account object available, but access token was retrieved
+              console.log("access_token acquired at: " + new Date().toString());
+              console.log("now what???");
+            } else if (tokenResponse === null) {
+              // tokenResponse was null, attempt sign in or enter unauthenticated state for app
+            } else {
+              console.log(
+                "tokenResponse was not null but did not have any tokens: " +
+                  tokenResponse
+              );
+            }
+            setLoading(false);
           }
         })
         .catch((error) => {
           console.log(error);
         });
+    } else {
+      if (stateApp.myMSALObj === false) setLoading(false);
     }
   }, [stateApp.myMSALObj]);
 
-  const handledAADSignIn = async (tenant, updateTenantFlags) => {
-    if (tenant.toUpperCase() === "M1NERAL") {
-      setLoading(true);
+  const handledAADSignIn = async (tenantName, updateTenantFlags) => {
+    if (!stateApp.myMSALObj) {
+      let tenant = tenantsCredentials(tenantName);
+      if (tenant) {
+        setLoadingSigInButton(true);
 
-      if (!stateApp.myMSALObj){
-        stateApp.myMSALObj = new msal.PublicClientApplication(msalConfig("09c16dc5-3124-4ec6-a31a-125b325f5de2"));
-      }
+        let myMSALObj = new msal.PublicClientApplication(msalConfig(tenant.id));
+        window.sessionStorage.setItem("tenantName", tenant.name);
 
-      window.sessionStorage.setItem("tenantId", "09c16dc5-3124-4ec6-a31a-125b325f5de2");
-
-      const signInType = "loginRedirect";
-
-      if (signInType === "loginPopup") {
-        const loginResponse = await signInPopup(loginRequest).catch((error) => {
-          //do some error stuff
-          console.log(error);
-          updateTenantFlags(error);
-          setLoading(false);
+        setStateApp({
+          ...stateApp,
+          myMSALObj,
+          apolloClientEndpoint: tenant.apolloClientEndpoint,
         });
-        if (!loginResponse) {
-          //do some error stuff
-          updateTenantFlags("Log in Failed");
-          setLoading(false);
+        const signInType = "loginRedirect";
 
-          return;
+        if (signInType === "loginPopup") {
+          stateApp.myMSALObj = myMSALObj; /////
+          const loginResponse = await signInPopup(loginRequest).catch(
+            (error) => {
+              //do some error stuff
+              console.log(error);
+              updateTenantFlags(error);
+              setLoadingSigInButton(false);
+            }
+          );
+          if (!loginResponse) {
+            //do some error stuff
+            updateTenantFlags("Log in Failed");
+            setLoadingSigInButton(false);
+
+            return;
+          }
+
+          await finishAADAuth(loginResponse);
+        } else if (signInType === "loginRedirect") {
+          myMSALObj.loginRedirect(loginRequest);
         }
-
-        await finishAADAuth(loginResponse);
-      } else if (signInType === "loginRedirect") {
-        stateApp.myMSALObj.loginRedirect(loginRequest);
+      } else {
+        updateTenantFlags("Wrong Tenant Name");
       }
-    } else {
-      updateTenantFlags("Wrong Tenant Name");
     }
   };
 
@@ -644,6 +598,7 @@ const Login = (props) => {
 
     setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
 
+    setLoadingSigInButton(false);
     setLoading(false);
   }
 
@@ -832,7 +787,7 @@ const Login = (props) => {
               </Typography>
             </div>
             <Button
-              variant="outline"
+              variant="outlined"
               disableElevation
               type="submit"
               className={classes.buttonLower}
@@ -1001,7 +956,7 @@ const Login = (props) => {
               </Typography>
             </div>
             <Button
-              variant="outline"
+              variant="outlined"
               disableElevation
               type="submit"
               className={classes.buttonLower}
@@ -1303,7 +1258,7 @@ const Login = (props) => {
 
       <div className={localClass.cardContainer}>
         <SignInCard
-          ready={loading}
+          ready={loadingSigInButton}
           handleAADSignIn={handledAADSignIn}
           showForm={showForm}
         />
@@ -1370,13 +1325,9 @@ const Login = (props) => {
     <div className={localClass.displaNone}></div>
   );
 
-  const renderNoAcct = !showSignUp ? (
-    <></>
+  return loading ? (
+    <CircularProgress size={80} disableShrink color="secondary" />
   ) : (
-    <div className={localClass.displaNone}></div>
-  );
-
-  return (
     <div className={localClass.myRoot}>
       <div className={localClass.rootNewUser}>
         {renderBody}
