@@ -61,10 +61,17 @@ const TrackedOwnersHeadCells = [
   //   name: "ownershipPercentage",
   //   label: "Interest",
   // },
-  {
-    name: "appraisedValue",
-    label: "Appraised Value",
-  },
+
+
+
+  // TEMPORARY COMMENT OUT. DO NOT DELETE 
+  // WILL BE ADDED IN AFTER DEVELOPING A SYSTEM TO 
+  // AGGREGATE OWNERS 
+  // {
+  //   name: "appraisedValue",
+  //   label: "Appraised Value",
+  // },
+  
   {
     name: "tags",
     label: "Tags ",
