@@ -71,7 +71,7 @@ const TrackedOwnersHeadCells = [
   //   name: "appraisedValue",
   //   label: "Appraised Value",
   // },
-  
+
   {
     name: "tags",
     label: "Tags ",
@@ -105,18 +105,29 @@ const TrackedOwnersHeadCells = [
       viewColumns: false,
     },
   },
-  {
-    name: "wellsCounter",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+
+
+/* 
+  // TEMPORARY COMMENT OUT. DO NOT DELETE 
+  // WILL BE RE-ADDED ONCE WE FIGURE OUT HOW TO DRAW AGGREGATIONS 
+  // FOR UNIVERSAL OWNERS
+
+
+  // {
+  //   name: "wellsCounter",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
+ */
+
+
   {
     name: "commentsCounter",
     label: " ",
@@ -283,18 +294,28 @@ const OwnersPerWellHeadCells = [
       viewColumns: false,
     },
   },
-  {
-    name: "wellsCounter",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+
+
+/*   
+// TEMPORARY COMMENT OUT. DO NOT DELETE 
+  // WILL BE RE-ADDED ONCE WE HAVE A WAY OF AGGREGATING A 
+  // UNIVERSAL OWNER 
+
+  // {
+  //   name: "wellsCounter",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // }, 
+  */
+
+
   {
     name: "commentsCounter",
     label: " ",
@@ -383,18 +404,27 @@ const OwnersPerContactsHeadCells = [
       viewColumns: false,
     },
   },
-  {
-    name: "wellsCounter",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+
+  
+/*   
+  // TEMPORARY COMMENT OUT. DO NOT REMOVE 
+  // WILL BE UNCOMMENTED ONCE WE UNDERSTAND A MORE 
+  // UNIVERSAL OWNER ID. 
+
+  // {
+  //   name: "wellsCounter",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
+ */
+
   {
     name: "commentsCounter",
     label: " ",
