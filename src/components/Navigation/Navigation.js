@@ -1292,10 +1292,11 @@ export default function Navigation(props) {
               </Button>
             </ListItemSecondaryAction> */}
           </ListItem>
-          <ListItem
+
+          {/* <ListItem
             classes={{
-              root: classes.menuListItemDisabled,
-              selected: classes.menuListItemDisabled,
+              //root: classes.menuListItemDisabled,
+              //selected: classes.menuListItemDisabled,
             }}
             button
             //selected={stateNav.selectedMenuIndex === 0}
@@ -1306,16 +1307,12 @@ export default function Navigation(props) {
               <TimelineIcon />
             </ListItemIcon>
             <ListItemText primary="Pulse" />
-            {/* <ListItemSecondaryAction>
-              <Button disabled className={classes.betaSideNav} edge="end" aria-label="BETA">
-                BETA
-              </Button>
-            </ListItemSecondaryAction> */}
-          </ListItem>
-          <ListItem
+          </ListItem> */}
+          
+          {/* <ListItem
             classes={{
-              root: classes.menuListItemDisabled,
-              selected: classes.menuListItemSelected,
+              //root: classes.menuListItemDisabled,
+              //selected: classes.menuListItemSelected,
             }}
             button
             //selected={stateNav.selectedMenuIndex === 1}
@@ -1326,12 +1323,10 @@ export default function Navigation(props) {
               <DvrIcon />
             </ListItemIcon>
             <ListItemText primary="Press" />
-            {/* <ListItemSecondaryAction>
-              <Button disabled className={classes.betaSideNav} edge="end" aria-label="BETA">
-                BETA
-              </Button>
-            </ListItemSecondaryAction> */}
-          </ListItem>
+          </ListItem> */}
+
+
+
         </List>
       </Drawer>
       {openFilterCard ? (
