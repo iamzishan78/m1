@@ -1230,49 +1230,49 @@ export default function Map() {
     console.log('wellSelectedCoordinates', stateApp.wellSelectedCoordinates)
 
 
-      if( map  
-          && stateApp.wellSelected === false
-          ){      
-            map.removeLayer('well-point');
-            map.removeSource('well-select-point')
-          }
+      // if( map  
+      //     && stateApp.wellSelected === false
+      //     ){      
+      //       map.removeLayer('well-point');
+      //       map.removeSource('well-select-point')
+      //     }
 
 
       if(map && stateApp.wellSelectedCoordinates){
 
-        if(map.getLayer('well-point')){
-            map.removeLayer('well-point');
-            map.removeSource('well-select-point')
-        }
-
-        map.addSource('well-select-point', {
-          'type': 'geojson',
-          'data': {
-          'type': 'FeatureCollection',
-          'features': [
-          {
-          'type': 'Feature',
-          'geometry': {
-          'type': 'Point',
-          'coordinates': stateApp.wellSelectedCoordinates
+          if(map.getLayer('well-point')){
+              map.removeLayer('well-point');
+              map.removeSource('well-select-point')
           }
-          }
-          ]
-          }
-          });
 
-        map.addLayer({
-          id: "well-point",
-          type: "circle",
-          source: "well-select-point",
-          paint: {
-            "circle-radius": 5,
-            "circle-color": "yellow",
-          },
-        });
+          if(stateApp.wellSelectedCoordinates.length>0){
+              map.addSource('well-select-point', {
+                'type': 'geojson',
+                'data': {
+                'type': 'FeatureCollection',
+                'features': [
+                {
+                'type': 'Feature',
+                'geometry': {
+                'type': 'Point',
+                'coordinates': stateApp.wellSelectedCoordinates
+                }
+                }
+                ]
+                }
+                });
 
-      
-    }
+              map.addLayer({
+                id: "well-point",
+                type: "circle",
+                source: "well-select-point",
+                paint: {
+                  "circle-radius": 5,
+                  "circle-color": "yellow",
+                },
+              });
+              }
+          }
 
   }, [stateApp.wellSelectedCoordinates]);
 
@@ -1332,15 +1332,14 @@ export default function Map() {
 
 
 
-  // useEffect(() => {
-  //   if (stateApp.popupOpen === false) {
-  //     setStateApp((state) => ({
-  //       ...state,
-  //       wellSelected: false,
-  //       wellSelectedCoordinates: [],
-  //     }));
-  //   }
-  // }, [stateApp.popupOpen]);
+  useEffect(() => {
+    if (stateApp.popupOpen === false) {
+      setStateApp((state) => ({
+        ...state,
+        wellSelectedCoordinates: [],
+      }));
+    }
+  }, [stateApp.popupOpen]);
 
 
   function getIndex(value, arr, prop) {
@@ -1543,31 +1542,17 @@ export default function Map() {
           let currentFeature = features[0];
           console.log("current feature", currentFeature);
 
-          // setStateApp((state) => ({ ...state, popupOpen: false }));
-          // setStateApp((state) => ({
-          //   ...state,
-          //   selectedWell: currentFeature.properties,
-          // }));
-          // setStateApp((state) => ({
-          //   ...state,
-          //   selectedWellId: currentFeature.properties.api,
-          // }));
-          // setStateApp((state) => ({
-          //   ...state,
-          //   wellSelected: false,
-          // }));
           setStateApp((state) => ({
             ...state,
-            wellSelected: true,
             popupOpen: false,
+          }));         
+          setStateApp((state) => ({
+            ...state,
             selectedWell: currentFeature.properties,
             selectedWellId: currentFeature.properties.api,
             wellSelectedCoordinates:[currentFeature.properties.longitude,currentFeature.properties.latitude],
           }));
-          // setStateApp((state) => ({
-          //   ...state,
-          //   wellSelectedCoordinates: [currentFeature.properties.longitude,currentFeature.properties.latitude],
-          // }));
+
           createPopUp(currentFeature.properties);
           map.resize();
         });
@@ -1607,38 +1592,20 @@ export default function Map() {
           let currentFeature = features[0];
 
           console.log("clicked well lines", currentFeature);
-          // setStateApp((state) => ({ ...state, popupOpen: false }));
-
-          // setStateApp((state) => ({
-          //   ...state,
-          //   selectedWell: currentFeature.properties,
-          // }));
-
-          // setStateApp((state) => ({
-          //   ...state,
-          //   selectedWellId: currentFeature.properties.api,
-          // }));
 
           setStateApp((state) => ({
             ...state,
-            wellSelected: true,
             popupOpen: false,
+          }));         
+          setStateApp((state) => ({
+            ...state,
             selectedWell: currentFeature.properties,
             selectedWellId: currentFeature.properties.api,
             wellSelectedCoordinates:[currentFeature.properties.longitude,currentFeature.properties.latitude],
           }));
 
           createPopUp(currentFeature.properties);
-
-
-          // setStateApp({
-          //   ...stateApp,
-          //   popupOpen: true,
-          //   wellSelected: true,
-          //   wellSelectedCoordinates: [currentFeature.longitude, currentFeature.latitude],
-          // });
     
-
         });
         console.log("map extra components complete");
       }
@@ -1698,7 +1665,6 @@ export default function Map() {
 
       setStateApp((stateApp) => ({
         ...stateApp,
-          wellSelected: true,
           wellSelectedCoordinates: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
       }));
 

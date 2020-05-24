@@ -39,7 +39,6 @@ const AppProvider = (props) => {
       bearing: 0,
       styleId: "Outdoors",
     },
-    wellSelected:false,
     wellSelectedCoordinates: [],
   });
 
