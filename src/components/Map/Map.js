@@ -1238,7 +1238,12 @@ export default function Map() {
           }
 
 
-      if(map && stateApp.wellSelected === true){
+      if(map && stateApp.wellSelectedCoordinates){
+
+        if(map.getLayer('well-point')){
+            map.removeLayer('well-point');
+            map.removeSource('well-select-point')
+        }
 
         map.addSource('well-select-point', {
           'type': 'geojson',
@@ -1267,9 +1272,9 @@ export default function Map() {
         });
 
       
-  }
+    }
 
-  }, [stateApp.wellSelected]);
+  }, [stateApp.wellSelectedCoordinates]);
 
 
   useEffect(() => {
@@ -1327,15 +1332,15 @@ export default function Map() {
 
 
 
-  useEffect(() => {
-    if (stateApp.popupOpen === false) {
-      setStateApp((state) => ({
-        ...state,
-        wellSelected: false,
-        wellSelectedCoordinates: [],
-      }));
-    }
-  }, [stateApp.popupOpen]);
+  // useEffect(() => {
+  //   if (stateApp.popupOpen === false) {
+  //     setStateApp((state) => ({
+  //       ...state,
+  //       wellSelected: false,
+  //       wellSelectedCoordinates: [],
+  //     }));
+  //   }
+  // }, [stateApp.popupOpen]);
 
 
   function getIndex(value, arr, prop) {
