@@ -25,37 +25,45 @@ const styleLayers = [
 
 
 const userDefinedLayers = [
-  {
-    name: "Parcels",
-    id: [],
-    type: 'data layer'
-  },
-  {
-    name: "Title",
-    id: [],
-    type: 'data layer'
-  },
-  {
-    name: "Area of Interest",
-    id: [],
-    type: 'data layer'
-  },
+  
+  // TEMPORARY COMMENT OUT. FEATURE IN PROGRESS 
+  // DO NOT DELETE
+  // {
+  //   name: "Parcels",
+  //   id: [],
+  //   type: 'data layer'
+  // },
+  // {
+  //   name: "Title",
+  //   id: [],
+  //   type: 'data layer'
+  // },
+  // {
+  //   name: "Area of Interest",
+  //   id: [],
+  //   type: 'data layer'
+  // },
+
   {
     name: "Tracked Wells",
     id: ['Tracked Wells'],
     type: 'data layer'
   },
-  {
-    name: "Tracked Owners",
-    id: [],
-    type: 'data layer'
-  },
-  {
-    name: "Tag Layer",
-    id: [],
-    type: 'data layer'
 
-  },
+  // TEMPORARY COMMENT OUT. FEATURE IN PROGRESS 
+  // DO NOT DELETE 
+  // {
+  //   name: "Tracked Owners",
+  //   id: [],
+  //   type: 'data layer'
+  // },
+  // {
+  //   name: "Tag Layer",
+  //   id: [],
+  //   type: 'data layer'
+
+  // },
+
 ];
 
 
