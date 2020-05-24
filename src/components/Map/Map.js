@@ -1205,7 +1205,8 @@ export default function Map() {
       let coordinates = [currentFeature.longitude, currentFeature.latitude];
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
-      console.log(popUps);
+      //console.log(popUps);
+
       let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
         .setMaxWidth("none")
@@ -1214,10 +1215,64 @@ export default function Map() {
 
       // //show wellcard in popup Portal
       setStateApp((state) => ({ ...state, popupOpen: true }));
+      //setStateApp((state) => ({ ...state, wellSelected: true }));
+      //setStateApp((state) => ({ ...state, wellSelectedCoordinates: [currentFeature.longitude, currentFeature.latitude] }));
+
+
+
       handleOpenExpandableCard();
     },
     [map, setStateApp]
   );
+
+  
+  useEffect(() => {
+    
+    console.log('wellSelected', stateApp.wellSelected)
+    console.log('wellSelectedCoordinates', stateApp.wellSelectedCoordinates)
+
+
+      if( map  
+          && stateApp.wellSelected === false
+          ){      
+            map.removeLayer('well-point');
+            map.removeSource('well-select-point')
+          }
+
+
+      if(map && stateApp.wellSelected === true){
+
+        map.addSource('well-select-point', {
+          'type': 'geojson',
+          'data': {
+          'type': 'FeatureCollection',
+          'features': [
+          {
+          'type': 'Feature',
+          'geometry': {
+          'type': 'Point',
+          'coordinates': stateApp.wellSelectedCoordinates
+          }
+          }
+          ]
+          }
+          });
+
+        map.addLayer({
+          id: "well-point",
+          type: "circle",
+          source: "well-select-point",
+          paint: {
+            "circle-radius": 5,
+            "circle-color": "yellow",
+          },
+        });
+
+      
+  }
+
+  }, [stateApp.wellSelected]);
+
 
   useEffect(() => {
     const req = new Request(
@@ -1479,6 +1534,15 @@ export default function Map() {
             ...state,
             selectedWellId: currentFeature.properties.api,
           }));
+          setStateApp((state) => ({
+            ...state,
+            wellSelected: true,
+            wellSelectedCoordinates:[currentFeature.properties.longitude,currentFeature.properties.latitude],
+          }));
+          // setStateApp((state) => ({
+          //   ...state,
+          //   wellSelectedCoordinates: [currentFeature.properties.longitude,currentFeature.properties.latitude],
+          // }));
           createPopUp(currentFeature.properties);
           map.resize();
         });
@@ -1524,11 +1588,25 @@ export default function Map() {
             ...state,
             selectedWell: currentFeature.properties,
           }));
+
           setStateApp((state) => ({
             ...state,
             selectedWellId: currentFeature.properties.api,
           }));
+
+
+
           createPopUp(currentFeature.properties);
+
+
+          // setStateApp({
+          //   ...stateApp,
+          //   popupOpen: true,
+          //   wellSelected: true,
+          //   wellSelectedCoordinates: [currentFeature.longitude, currentFeature.latitude],
+          // });
+    
+
         });
         console.log("map extra components complete");
       }
@@ -1586,6 +1664,26 @@ export default function Map() {
     if (map && stateApp.flyTo) {
       var zVal = 12;
 
+      // map.addSource('national-park', {
+      //   'type': 'geojson',
+      //   'data': {
+      //   'type': 'FeatureCollection',
+      //   'features': [
+      //   {
+      //   'type': 'Feature',
+      //   'geometry': {
+      //   'type': 'Point',
+      //   'coordinates': [stateApp.flyTo.longitude, stateApp.flyTo.latitude]
+      //   }
+      //   }
+      //   ]
+      //   }
+      //   });
+
+
+
+
+
       map.flyTo({
         center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
         zoom: zVal,
@@ -1593,6 +1691,13 @@ export default function Map() {
       });
     }
   }, [createPopUp, map, stateApp.flyTo]);
+
+
+
+  
+
+
+
 
   useEffect(() => {
     if (map && stateMap.toggleZoomOut) {
@@ -1689,6 +1794,11 @@ export default function Map() {
   //     document.body.removeChild(script);
   //   };
   // }, []);
+
+
+
+
+
 
   //var scale = 'scale(1)';
   //document.body.style.webkitTransform =  scale;
