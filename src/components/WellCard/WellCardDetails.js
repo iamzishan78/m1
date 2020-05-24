@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     display: "flex",
     justifyContent: "space-around",
-    paddingBottom: "10px",
+    // paddingBottom: "10px",
   },
   gridItemGrey: {
     flexGrow: 1,
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
     top: "0",
     left: "0",
     paddingTop: "7px",
-    borderBottom:"1px solid rgb(190, 190, 190)"
+    borderBottom: "1px solid rgb(190, 190, 190)",
   },
   gridWidthScroll: {
     height: "calc(100% - 88px)",
@@ -320,43 +320,39 @@ export default function WellCardDetails(props) {
         <FirstProdDateCard />
       </Grid>
       <Grid item sm={12} className={classes.gridWidthScroll}>
-        <Card style={{ margin: "10px" }}>
-          <CardContent className={classes.content}>
-            <Grid item className={classes.gridItem}>
-
-              {/* TEMPORARY COMMENT OUT 
+        <Grid item className={classes.gridItem}>
+          {/* TEMPORARY COMMENT OUT 
               TABLE SUMMARY IS THE SUMMARY GRID 
               FOR DETAILED WELL CARD AND IS IN PROGRES
               <TableSummary />
  */}
 
+          <CardDetailsMap />
+        </Grid>
 
-              <CardDetailsMap />
-            </Grid>
-
-            <Grid item sm={12}>
-              <Taps
-                tabLabels={[
-                  "Well",
-                  "Owners",
-                  // "Property History",
-                  // "Title",
-                  // "Documents",
-                ]}
-                tabPanels={[
-                  wellInfo(),
-                  <M1nTable
-                    parent="OwnersPerWell"
-                    selectedWell={stateApp.selectedWell}
-                  />,
-                  // <h3>Coming Soon-</h3>,
-                  // <h3>Coming Soon--</h3>,
-                  // <h3>Coming Soon---</h3>,
-                ]}
-              />
-            </Grid>
-          </CardContent>
-        </Card>
+        <Grid item sm={12}>
+          <Taps
+            tabLabels={[
+              "Well",
+              "Owners",
+              // "Property History",
+              // "Title",
+              // "Documents",
+            ]}
+            tabPanels={[
+              <Paper elevation={3} style={{ padding: "10px" }}>
+                {wellInfo()}
+              </Paper>,
+              <M1nTable
+                parent="OwnersPerWell"
+                selectedWell={stateApp.selectedWell}
+              />,
+              // <h3>Coming Soon-</h3>,
+              // <h3>Coming Soon--</h3>,
+              // <h3>Coming Soon---</h3>,
+            ]}
+          />
+        </Grid>
       </Grid>
     </React.Fragment>
   ) : null;
