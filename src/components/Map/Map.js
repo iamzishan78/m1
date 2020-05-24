@@ -261,92 +261,100 @@ export default function Map() {
     }
   }, [map, stateMap.checkedBaseLayers]);
 
-  // useEffect(() => {
-  //   ///////////////// EFFECT FOR SHOWING TRACKED WELLS /////////////////
 
-  //   if (map && stateApp.trackFilterOn && stateApp.trackedWellArray) {
-  //     console.log("array ", stateApp.trackedWellArray);
 
-  //     const makeGeoJSON = (data) => {
-  //       return {
-  //         type: "FeatureCollection",
-  //         features: data.map((feature) => {
-  //           return {
-  //             type: "Feature",
-  //             properties: {
-  //               api: feature.api,
-  //               id: feature.id,
-  //               latitude: feature.latitude,
-  //               longitude: feature.longitude,
-  //               operator: feature.operator,
-  //               WellName: feature.wellName,
-  //             },
-  //             geometry: {
-  //               type: "Point",
-  //               coordinates: [feature.longitude, feature.latitude],
-  //             },
-  //           };
-  //         }),
-  //       };
-  //     };
+  useEffect(() => {
+    ///////////////// EFFECT FOR SHOWING TRACKED WELLS /////////////////
 
-  //     const myGeoJSONData = makeGeoJSON(
-  //       stateApp.trackedWellArray.wells.results
-  //     );
+    if (map && stateApp.trackFilterOn && stateApp.trackedWellArray) {
+      console.log("array ", stateApp.trackedWellArray);
 
-  //     map.addSource("track_well_points_source", {
-  //       type: "geojson",
-  //       data: myGeoJSONData,
-  //     });
+      const makeGeoJSON = (data) => {
+        return {
+          type: "FeatureCollection",
+          features: data.map((feature) => {
+            return {
+              type: "Feature",
+              properties: {
+                api: feature.api,
+                id: feature.id,
+                latitude: feature.latitude,
+                longitude: feature.longitude,
+                operator: feature.operator,
+                WellName: feature.wellName,
+              },
+              geometry: {
+                type: "Point",
+                coordinates: [feature.longitude, feature.latitude],
+              },
+            };
+          }),
+        };
+      };
 
-  //     map.addLayer({
-  //       id: "track_well_points_layer",
-  //       type: "circle",
-  //       source: "track_well_points_source",
-  //       paint: {
-  //         "circle-radius": 5,
-  //         "circle-color": "yellow",
-  //       },
-  //     });
+      const myGeoJSONData = makeGeoJSON(
+        stateApp.trackedWellArray.wells.results
+      );
 
-  //     const latArray = stateApp.trackedWellArray.wells.results.map(
-  //       (item) => item.latitude
-  //     );
-  //     const longArray = stateApp.trackedWellArray.wells.results.map(
-  //       (item) => item.longitude
-  //     );
+      map.addSource("track_well_points_source", {
+        type: "geojson",
+        data: myGeoJSONData,
+      });
 
-  //     map.on("click", "track_well_points_layer", function (e) {
-  //       var bbox = [
-  //         [e.point.x - 10, e.point.y - 10],
-  //         [e.point.x + 10, e.point.y + 10],
-  //       ];
+      map.addLayer({
+        id: "track_well_points_layer",
+        type: "circle",
+        source: "track_well_points_source",
+        paint: {
+          "circle-radius": 5,
+          "circle-color": "yellow",
+        },
+      });
 
-  //       let features = map.queryRenderedFeatures(bbox, {
-  //         layers: ["track_well_points_layer"],
-  //       });
+      const latArray = stateApp.trackedWellArray.wells.results.map(
+        (item) => item.latitude
+      );
+      const longArray = stateApp.trackedWellArray.wells.results.map(
+        (item) => item.longitude
+      );
 
-  //       setStateApp((state) => ({ ...state, flyTo: features[0].properties }));
-  //     });
+      map.on("click", "track_well_points_layer", function (e) {
+        var bbox = [
+          [e.point.x - 10, e.point.y - 10],
+          [e.point.x + 10, e.point.y + 10],
+        ];
 
-  //     map.on("mousemove", "track_well_points_layer", (e) => {
-  //       map.getCanvas().style.cursor = "pointer";
-  //     });
+        let features = map.queryRenderedFeatures(bbox, {
+          layers: ["track_well_points_layer"],
+        });
 
-  //     map.on("mouseleave", "track_well_points_layer", function () {
-  //       map.getCanvas().style.cursor = "";
-  //     });
+        setStateApp((state) => ({ ...state, flyTo: features[0].properties }));
+      });
 
-  //     var bbox = [
-  //       [Math.min(...longArray), Math.min(...latArray)],
-  //       [Math.max(...longArray), Math.max(...latArray)],
-  //     ];
+      map.on("mousemove", "track_well_points_layer", (e) => {
+        map.getCanvas().style.cursor = "pointer";
+      });
 
-  //     map.fitBounds(bbox, {
-  //       padding: { top: 50, bottom: 50, left: 50, right: 50 },
-  //     });
-  //   }
-  // }, [stateApp.trackFilterOn]);
+      map.on("mouseleave", "track_well_points_layer", function () {
+        map.getCanvas().style.cursor = "";
+      });
+
+      var bbox = [
+        [Math.min(...longArray), Math.min(...latArray)],
+        [Math.max(...longArray), Math.max(...latArray)],
+      ];
+
+      map.fitBounds(bbox, {
+        padding: { top: 50, bottom: 50, left: 50, right: 50 },
+      });
+    }
+  }, [stateApp.trackFilterOn]);
+
+
+
+
+  
+
 
   useEffect(() => {
     // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
@@ -368,6 +376,8 @@ export default function Map() {
         if (selectLayerProps.type === "data layer") {
           //layerArray =
 
+
+
           // -> fetch data
           // -> make GEOJSON
           // -> add source
@@ -375,6 +385,7 @@ export default function Map() {
           // -> add interaction (note to change later w/ interaction panel)
 
           console.log("is data layer");
+          console.log(selectLayerProps);
         }
 
         // -> if vector layer do the normal thing
@@ -1404,6 +1415,9 @@ export default function Map() {
       }
     }
   }, [map, setStateMap, setStateMapControls, mapStyles]);
+
+
+
 
   useEffect(() => {
     if (map && geocoder) {
