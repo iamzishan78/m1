@@ -108,6 +108,26 @@ export default function Map() {
   const [tracks, setTracks] = useState(false);
   const [idArray, setIdArray] = useState(null);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
   useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.email) {
       getUserByEmail({
@@ -177,10 +197,25 @@ export default function Map() {
     }
   }, [dataWells]);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   useEffect(() => {
     // USE EFFECT FOR M1 LAYER HANDLES
     console.log("layer ue start");
-    if (stateMap.checkedLayers.length > 0 && map) {
+    if (stateMap.styleLayers.length > 0 && map) {
       stateMap.styleLayers.forEach((l) => {
         l.id.forEach((k) => {
           if (map.getLayer(k)) {
@@ -210,7 +245,7 @@ export default function Map() {
   useEffect(() => {
     // USE EFFECT FOR HEATMAP LAYER HANDLES
     console.log("heatmap layer ue start");
-    if (stateMap.checkedHeats.length > 0 && map) {
+    if (stateMap.heatLayers.length > 0 && map) {
       stateMap.heatLayers.forEach((l) => {
         l.id.forEach((k) => {
           if (map.getLayer(k)) {
@@ -237,7 +272,7 @@ export default function Map() {
   useEffect(() => {
     // USE EFFECT FOR BASEMAP LAYER HANDLING
     console.log("basemap layer ue start");
-    if (stateMap.checkedBaseLayers.length > 0 && map) {
+    if (stateMap.baseMapLayers.length > 0 && map) {
       stateMap.baseMapLayers.forEach((l) => {
         l.id.forEach((k) => {
           if (map.getLayer(k)) {
@@ -260,6 +295,16 @@ export default function Map() {
       }
     }
   }, [map, stateMap.checkedBaseLayers]);
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -353,39 +398,111 @@ export default function Map() {
 
 
 
-  
+
 
 
   useEffect(() => {
     // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
 
+    if (stateMap.userDefinedLayers.length > 0 && map) {
+      //const layerList = stateMap.userDefinedLayers;
+
+      console.log('cehck checked', stateMap.checkedUserDefinedLayers)
+      stateMap.userDefinedLayers.forEach((l) => {
+        l.id.forEach((k) => {
+          if (map.getLayer(k)) {
+            console.log('get layer',k)
+            map.removeLayer(k);
+            map.removeSource('user_defined_source')
+          }
+        });
+      });
+    }
+
+    console.log('length', stateMap.checkedUserDefinedLayers.length)
+    console.log('checks', stateMap.checkedUserDefinedLayers)
+
     if (
       map &&
-      stateMap.checkedUserDefinedLayers.length > 0 &&
-      stateApp.trackedWellArray
+      stateMap.checkedUserDefinedLayers.length > 0
     ) {
-      console.log("user defined layer ue start");
-      console.log("tracked array ", stateApp.trackedWellArray);
-
+      console.log('user defined layers', stateMap.checkedUserDefinedLayers)
+      console.log('length', stateMap.checkedUserDefinedLayers.length)
       const layerList = stateMap.userDefinedLayers;
-
       stateMap.checkedUserDefinedLayers.forEach((l) => {
-        console.log(l);
+        //console.log(l);
         const selectLayerProps = layerList[l];
 
         if (selectLayerProps.type === "data layer") {
           //layerArray =
 
 
-
           // -> fetch data
+          if (dataWells) {
+
+
+
+
           // -> make GEOJSON
+            //console.log("array ", dataWells);
+      
+            const makeGeoJSON = (data) => {
+              return {
+                type: "FeatureCollection",
+                features: data.map((feature) => {
+                  return {
+                    type: "Feature",
+                    properties: {
+                      api: feature.api,
+                      id: feature.id,
+                      latitude: feature.latitude,
+                      longitude: feature.longitude,
+                      operator: feature.operator,
+                      WellName: feature.wellName,
+                    },
+                    geometry: {
+                      type: "Point",
+                      coordinates: [feature.longitude, feature.latitude],
+                    },
+                  };
+                }),
+              };
+            };
+      
+            const myGeoJSONData = makeGeoJSON(
+              dataWells.wells.results
+            );
+      
+
+
           // -> add source
+          map.addSource("user_defined_source", {
+            type: "geojson",
+            data: myGeoJSONData,
+          });
+
+
           // -> add layer
+          map.addLayer({
+            id: "Tracked Wells",
+            type: "circle",
+            source: "user_defined_source",
+            paint: {
+              "circle-radius": 5,
+              "circle-color": "yellow",
+            },
+          });
+
+
           // -> add interaction (note to change later w/ interaction panel)
 
-          console.log("is data layer");
-          console.log(selectLayerProps);
+          //console.log("is data layer");
+          //console.log(selectLayerProps);
+          //console.log(dataWells);
+
+
+        }
+
         }
 
         // -> if vector layer do the normal thing
@@ -470,7 +587,9 @@ export default function Map() {
       //   padding: { top: 50, bottom: 50, left: 50, right: 50 },
       // });
     }
-  }, [map, stateMap.checkedUserDefinedLayers]);
+  },  [   map, 
+          stateMap.checkedUserDefinedLayers
+      ]);
 
   useEffect(() => {
     if (showExpandableCard) {

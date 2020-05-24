@@ -66,6 +66,12 @@ export default function FilterOwnerCount() {
 
 
 
+
+
+
+
+
+
   //////begin////////temporary  while signed user fixed
 
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
@@ -148,6 +154,16 @@ export default function FilterOwnerCount() {
   }, [dataWells]);
 
 
+
+
+
+
+
+
+
+
+
+  
 
   const toggleTracks = () => {
     setTracks(tracks => !tracks)

@@ -67,14 +67,18 @@ export default function CheckboxList(props) {
 
 
   const handleToggleUserDefined = idx => () => {
+    //console.log('idx',idx)
     const currentIndex = stateMap.checkedUserDefinedLayers.indexOf(idx);
     const newChecked = [...stateMap.checkedUserDefinedLayers];
+    //console.log('current idx',currentIndex)
+    //console.log('new checked',newChecked)
     if (currentIndex === -1) {
       newChecked.push(idx);
     } else {
       newChecked.splice(currentIndex, 1);
     }
     setStateMap(stateMap => ({ ...stateMap, checkedUserDefinedLayers: newChecked }));
+    //console.log('new checked new',newChecked)
   };
 
 
