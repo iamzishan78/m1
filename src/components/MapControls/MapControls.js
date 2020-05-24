@@ -145,12 +145,11 @@ export default function MapControls(props) {
         action: "heatMaps",
       },
 
-      // TEMPORARY COMMENT OUT OF FEATURE IN PROGRESS 
-      // {
-      //   icon: !stateApp.editDraw ? <EditIcon /> : <CancelIcon />,
-      //   name: "Draw",
-      //   action: "draw",
-      // },
+      {
+        icon: !stateApp.editDraw ? <EditIcon /> : <CancelIcon />,
+        name: "Draw",
+        action: "draw",
+      },
 
 
       {
