@@ -1196,9 +1196,7 @@ export default function Map() {
     }
   }, [map, stateMap.selectedLayerId]);
 
-  // const createPopUp = currentFeature => {
 
-  // };
 
   const createPopUp = useCallback(
     (currentFeature) => {
@@ -1308,6 +1306,8 @@ export default function Map() {
     };
   }, []);
 
+
+
   useEffect(() => {
     if (map) {
       setStateApp((stateApp) => ({
@@ -1324,6 +1324,19 @@ export default function Map() {
       setMap(null);
     }
   }, [stateApp.mapVars.styleId]);
+
+
+
+  useEffect(() => {
+    if (stateApp.popupOpen === false) {
+      setStateApp((state) => ({
+        ...state,
+        wellSelected: false,
+        wellSelectedCoordinates: [],
+      }));
+    }
+  }, [stateApp.popupOpen]);
+
 
   function getIndex(value, arr, prop) {
     for (var i = 0; i < arr.length; i++) {
@@ -1525,18 +1538,25 @@ export default function Map() {
           let currentFeature = features[0];
           console.log("current feature", currentFeature);
 
-          setStateApp((state) => ({ ...state, popupOpen: false }));
-          setStateApp((state) => ({
-            ...state,
-            selectedWell: currentFeature.properties,
-          }));
-          setStateApp((state) => ({
-            ...state,
-            selectedWellId: currentFeature.properties.api,
-          }));
+          // setStateApp((state) => ({ ...state, popupOpen: false }));
+          // setStateApp((state) => ({
+          //   ...state,
+          //   selectedWell: currentFeature.properties,
+          // }));
+          // setStateApp((state) => ({
+          //   ...state,
+          //   selectedWellId: currentFeature.properties.api,
+          // }));
+          // setStateApp((state) => ({
+          //   ...state,
+          //   wellSelected: false,
+          // }));
           setStateApp((state) => ({
             ...state,
             wellSelected: true,
+            popupOpen: false,
+            selectedWell: currentFeature.properties,
+            selectedWellId: currentFeature.properties.api,
             wellSelectedCoordinates:[currentFeature.properties.longitude,currentFeature.properties.latitude],
           }));
           // setStateApp((state) => ({
@@ -1582,19 +1602,26 @@ export default function Map() {
           let currentFeature = features[0];
 
           console.log("clicked well lines", currentFeature);
-          setStateApp((state) => ({ ...state, popupOpen: false }));
+          // setStateApp((state) => ({ ...state, popupOpen: false }));
+
+          // setStateApp((state) => ({
+          //   ...state,
+          //   selectedWell: currentFeature.properties,
+          // }));
+
+          // setStateApp((state) => ({
+          //   ...state,
+          //   selectedWellId: currentFeature.properties.api,
+          // }));
 
           setStateApp((state) => ({
             ...state,
+            wellSelected: true,
+            popupOpen: false,
             selectedWell: currentFeature.properties,
-          }));
-
-          setStateApp((state) => ({
-            ...state,
             selectedWellId: currentFeature.properties.api,
+            wellSelectedCoordinates:[currentFeature.properties.longitude,currentFeature.properties.latitude],
           }));
-
-
 
           createPopUp(currentFeature.properties);
 
@@ -1664,25 +1691,11 @@ export default function Map() {
     if (map && stateApp.flyTo) {
       var zVal = 12;
 
-      // map.addSource('national-park', {
-      //   'type': 'geojson',
-      //   'data': {
-      //   'type': 'FeatureCollection',
-      //   'features': [
-      //   {
-      //   'type': 'Feature',
-      //   'geometry': {
-      //   'type': 'Point',
-      //   'coordinates': [stateApp.flyTo.longitude, stateApp.flyTo.latitude]
-      //   }
-      //   }
-      //   ]
-      //   }
-      //   });
-
-
-
-
+      setStateApp((stateApp) => ({
+        ...stateApp,
+          wellSelected: true,
+          wellSelectedCoordinates: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
+      }));
 
       map.flyTo({
         center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
@@ -1711,6 +1724,8 @@ export default function Map() {
         });
 
         let flying = null;
+
+
 
         map.on("flystart", function () {
           flying = true;
