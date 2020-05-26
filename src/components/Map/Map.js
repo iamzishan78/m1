@@ -226,18 +226,25 @@ export default function Map() {
 
       if (stateMap.checkedLayers.length > 0) {
         let layers = stateMap.checkedLayers;
-
-        layers.forEach((i) => {
-          let currentLayerArray = stateMap.styleLayers[i].id;
-          currentLayerArray.forEach((j) => {
-            var mapLayer = map.getLayer(j);
-            if (typeof mapLayer !== "undefined") {
-              if (map.getLayer(j)) {
-                map.setLayoutProperty(j, "visibility", "visible");
+        if (layers.length > 0) {
+          for (let k = layers.length - 1; k >= 0; k --) {
+            let i = layers[k];
+            let currentLayerArray = stateMap.styleLayers[i].id;
+            let belowlayer = null;
+            currentLayerArray.forEach((j) => {
+              var mapLayer = map.getLayer(j);
+              if (typeof mapLayer !== "undefined") {
+                if (map.getLayer(j)) {
+                  map.setLayoutProperty(j, "visibility", "visible");
+                  if (belowlayer != null) {
+                    map.moveLayer(j, belowlayer);
+                  }
+                  belowlayer = j;
+                }
               }
-            }
-          });
-        });
+            });
+          }
+        }
       }
     }
   }, [map, stateMap.checkedLayers, stateMap.styleLayers]);

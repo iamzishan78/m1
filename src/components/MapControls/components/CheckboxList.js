@@ -1,8 +1,10 @@
-import React, { useContext, forwardRef } from "react";
+import React, { useContext } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 //import Button from '@material-ui/core/Button';
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import RootRef from "@material-ui/core/RootRef";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 //import List from '@material-ui/core/List';
 //import ListItem from '@material-ui/core/ListItem';
@@ -12,11 +14,11 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Checkbox from "@material-ui/core/Checkbox";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import DragIndicator from "@material-ui/icons/DragIndicator";
 //import IconButton from '@material-ui/core/IconButton';
 //import EditIcon from '@material-ui/icons/Edit';
 import { MapControlsContext } from "../MapControlsContext";
 import { MapContext } from "../../Map/MapContext";
-import { Divider } from "@material-ui/core";
 import Collapse from '@material-ui/core/Collapse';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -30,11 +32,22 @@ const useStyles = makeStyles(theme => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important"
   },
+  list: {
+    padding: 0
+  },
   nested: {
     paddingLeft: theme.spacing(6),
     paddingRight: theme.spacing(6),
   },
 }));
+
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
 
 export default function CheckboxList(props) {
   const [stateMapControls, setStateMapControls] = useContext(
@@ -159,6 +172,55 @@ export default function CheckboxList(props) {
     }));
   };
 
+  const onDragEnd = (result) => {
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+
+    const items = reorder(
+      stateMap.styleLayers,
+      result.source.index,
+      result.destination.index
+    );
+
+    let checkedLayers = stateMap.checkedLayers.slice(0);
+    const sourceIndex = checkedLayers.indexOf(result.source.index)
+    
+    let direction = 0;
+    let from, to = 0;
+    if (result.destination.index > result.source.index) {
+      direction = -1;
+      from = result.source.index;
+      to = result.destination.index;
+    } else {
+      direction = 1;
+      to = result.source.index;
+      from = result.destination.index;
+    }
+
+    for (let i = 0; i < checkedLayers.length; i ++) {
+      if (checkedLayers[i] <= to && checkedLayers[i] >= from) {
+        checkedLayers[i] += direction;
+      } 
+    }
+
+    if (sourceIndex !== -1) {
+      checkedLayers[sourceIndex] = result.destination.index;
+    }
+
+    checkedLayers.sort(function(a, b) {
+      return a - b;
+    });
+
+
+    setStateMap({
+      ...stateMap, 
+      styleLayers: items,
+      checkedLayers: checkedLayers
+    });
+  }
+
   return (
     <ClickAwayListener onClickAway={handleClose}>
       <StyledMenu
@@ -185,38 +247,53 @@ export default function CheckboxList(props) {
           <ListItemText primary="M1neral Layers" />
           {open ? <ExpandLess /> : <ExpandMore />}
         </StyledListItem2>
-
-        {stateMap.styleLayers.map((layer, index) => {
-          const labelId = `checkbox-list-label-${index}`;
-
-          return (
-            // <StyledMenuItem disableRipple key={index} role={undefined} dense>
-            <Collapse in={open} timeout="auto" unmountOnExit>
-
-            <StyledListItem button className={classes.nested}>
-              <ListItemIcon>
-                <Checkbox
-                  icon={<VisibilityOffIcon htmlColor="#fff" />}
-                  checkedIcon={<VisibilityIcon htmlColor="#fff" />}
-                  edge="start"
-                  checked={
-                    stateMap.checkedLayers
-                      ? stateMap.checkedLayers.indexOf(index) !== -1
-                      : false
-                  }
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ "aria-labelledby": labelId }}
-                  onChange={handleToggle(index)}
-                />
-              </ListItemIcon>
-              <ListItemText id={labelId} primary={layer.name} />
-              </StyledListItem>  
-              </Collapse>
-            // </StyledMenuItem> 
-          );
-        })}
-
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="droppable">
+              {(provided, snapshot) => (
+                <RootRef rootRef={provided.innerRef}>
+                  <List className={classes.list}>
+                    {stateMap.styleLayers.map((layer, index) => {
+                      const labelId = `checkbox-list-label-${index}`;
+                      return (
+                        <Draggable key={labelId} draggableId={labelId} index={index}>
+                          {(provided, snapshot) => (
+                            <StyledListItem 
+                              ContainerComponent="li"
+                              ref={ provided.innerRef }
+                              {...provided.draggableProps}
+                            >
+                              <ListItemIcon {...provided.dragHandleProps}>
+                                <DragIndicator />
+                              </ListItemIcon>
+                              <ListItemIcon>
+                                <Checkbox
+                                  icon={<VisibilityOffIcon htmlColor="#fff" />}
+                                  checkedIcon={<VisibilityIcon htmlColor="#fff" />}
+                                  edge="start"
+                                  checked={
+                                    stateMap.checkedLayers
+                                      ? stateMap.checkedLayers.indexOf(index) !== -1
+                                      : false
+                                  }
+                                  tabIndex={-1}
+                                  disableRipple
+                                  inputProps={{ "aria-labelledby": labelId }}
+                                  onChange={handleToggle(index)}
+                                />
+                              </ListItemIcon>
+                              <ListItemText id={labelId} primary={layer.name} />
+                            </StyledListItem>
+                          )}
+                        </Draggable>
+                      );
+                    })}
+                  </List>
+                </RootRef>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </Collapse>
         <StyledListItem2 button onClick={handleClickUD}>
           <ListItemIcon>
             <LayersIcon />
@@ -232,26 +309,26 @@ export default function CheckboxList(props) {
             // <StyledMenuItem disableRipple key={index} role={undefined} dense>
             <Collapse in={openUD} timeout="auto" unmountOnExit>
 
-            <StyledListItem button className={classes.nested}>
-              <ListItemIcon>
-                <Checkbox
-                  icon={<VisibilityOffIcon htmlColor="#fff" />}
-                  checkedIcon={<VisibilityIcon htmlColor="#fff" />}
-                  edge="start"
-                  checked={
-                    stateMap.checkedUserDefinedLayers
-                      ? stateMap.checkedUserDefinedLayers.indexOf(index) !== -1
-                      : false
-                  }
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ "aria-labelledby": labelId }}
-                  onChange={handleToggleUserDefined(index)}
-                />
-              </ListItemIcon>
-              <ListItemText id={labelId} primary={layer.name} />
-              </StyledListItem>  
-              </Collapse>
+              <StyledListItem button className={classes.nested}>
+                <ListItemIcon>
+                  <Checkbox
+                    icon={<VisibilityOffIcon htmlColor="#fff" />}
+                    checkedIcon={<VisibilityIcon htmlColor="#fff" />}
+                    edge="start"
+                    checked={
+                      stateMap.checkedUserDefinedLayers
+                        ? stateMap.checkedUserDefinedLayers.indexOf(index) !== -1
+                        : false
+                    }
+                    tabIndex={-1}
+                    disableRipple
+                    inputProps={{ "aria-labelledby": labelId }}
+                    onChange={handleToggleUserDefined(index)}
+                  />
+                </ListItemIcon>
+                <ListItemText id={labelId} primary={layer.name} />
+              </StyledListItem>
+            </Collapse>
             // </StyledMenuItem> 
           );
         })}
