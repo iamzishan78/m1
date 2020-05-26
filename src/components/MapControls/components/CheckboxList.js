@@ -209,11 +209,6 @@ export default function CheckboxList(props) {
       checkedLayers[sourceIndex] = result.destination.index;
     }
 
-    checkedLayers.sort(function(a, b) {
-      return a - b;
-    });
-
-
     setStateMap({
       ...stateMap, 
       styleLayers: items,
