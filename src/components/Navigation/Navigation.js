@@ -629,6 +629,8 @@ export default function Navigation(props) {
         selectedMenuIndexTitle: 0,
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
+        selectedMenuIndexDashboard: 0,
+
       }));
     } else if (location.pathname === "/track") {
       setStateNav((state) => ({
@@ -639,6 +641,8 @@ export default function Navigation(props) {
         selectedMenuIndexTitle: 0,
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
+        selectedMenuIndexDashboard: 0,
+
       }));
     } else if (location.pathname === "/transact") {
       setStateNav((state) => ({
@@ -649,6 +653,8 @@ export default function Navigation(props) {
         selectedMenuIndexTitle: 0,
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
+        selectedMenuIndexDashboard: 0,
+
       }));
     } else if (location.pathname === "/title") {
       setStateNav((state) => ({
@@ -659,6 +665,8 @@ export default function Navigation(props) {
         selectedMenuIndexTitle: 1,
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
+        selectedMenuIndexDashboard: 0,
+
       }));
     } else if (location.pathname === "/contacts") {
       setStateNav((state) => ({
@@ -669,6 +677,8 @@ export default function Navigation(props) {
         selectedMenuIndexTitle: 0,
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 1,
+        selectedMenuIndexDashboard: 0,
+
       }));
     } else if (location.pathname === "/alerts") {
       setStateNav((state) => ({
@@ -679,6 +689,19 @@ export default function Navigation(props) {
         selectedMenuIndexTitle: 0,
         selectedMenuIndexAlerts: 1,
         selectedMenuIndexContacts: 0,
+        selectedMenuIndexDashboard: 0,
+
+      }));
+    } else if (location.pathname === "/dashboard") {
+      setStateNav((state) => ({
+        ...state,
+        selectedMenuIndexFind: 0,
+        selectedMenuIndexTrack: 0,
+        selectedMenuIndexTransact: 0,
+        selectedMenuIndexTitle: 0,
+        selectedMenuIndexAlerts: 0,
+        selectedMenuIndexContacts: 0,
+        selectedMenuIndexDashboard: 1,
       }));
     }
   }, [location, setStateNav]);
@@ -1128,6 +1151,24 @@ export default function Navigation(props) {
         </div>
         <Divider variant="middle" light="true" />
         <List className={classes.menuList}>
+
+        <ListItem
+            classes={{
+              root: classes.menuListItem,
+              selected: classes.menuListItemSelected,
+            }}
+            button
+            selected={stateNav.selectedMenuIndexFind === 0}
+            onClick={(event) => handleListItemClick(event, 0, "/dashboard")}
+            key="home"
+          >
+            <ListItemIcon>
+              <SearchIcon />
+            </ListItemIcon>
+            <ListItemText primary="Dashboard" />
+          </ListItem>
+
+
           <ListItem
             classes={{
               root: classes.menuListItem,

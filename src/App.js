@@ -20,6 +20,7 @@ import TitleProvider from "./components/Title/TitleProvider";
 import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider";
 import ContactsProvider from "./components/Contacts/ContactsProvider";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
+import DashboardProvider from "./components/Dashboard/DashboardProvider";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
@@ -224,6 +225,11 @@ function App() {
                       exact
                       path="/contacts"
                       component={ContactsProvider}
+                    />
+                    <PrivateRoute
+                      exact
+                      path="/dashboard"
+                      component={DashboardProvider}
                     />
 
                     {/* <Route component={NotFoundRedirect} /> */}
