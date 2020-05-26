@@ -48,7 +48,7 @@ const AppProvider = (props) => {
 
       if (tenantName) {
         let tenant = tenantsCredentials(tenantName);
-        let myMSALObjInt = MSALObj(tenant.id);
+        let myMSALObjInt = MSALObj(tenant.tenantId, tenant.clientId);
         setStateApp({
           ...stateApp,
           myMSALObj: myMSALObjInt,

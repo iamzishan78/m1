@@ -12,11 +12,11 @@ export const tenantsCredentials = (tenantName) => {
 };
 
 // Config object to be passed to Msal on creation
-export const msalConfig = (tenantId) => {
+export const msalConfig = (tenantId, clientId) => {
   const path = `${window.location.protocol}//${window.location.host}`;
   return {
     auth: {
-      clientId: "a11778cb-bab1-4789-8084-66d34467fb8c",
+      clientId: clientId,
       authority: `https://login.microsoftonline.com/${
         tenantId ? tenantId : "common"
       }`,
@@ -30,8 +30,8 @@ export const msalConfig = (tenantId) => {
   };
 };
 
-export const MSALObj = (tenantId) =>
-  new msal.PublicClientApplication(msalConfig(tenantId));
+export const MSALObj = (tenantId, clientId) =>
+  new msal.PublicClientApplication(msalConfig(tenantId, clientId));
 
 export const loginRequest = {
   scopes: [],

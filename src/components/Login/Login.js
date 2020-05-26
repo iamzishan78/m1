@@ -441,7 +441,7 @@ const Login = (props) => {
       if (tenant) {
         setLoadingSigInButton(true);
 
-        let myMSALObj = new msal.PublicClientApplication(msalConfig(tenant.id));
+        let myMSALObj = new msal.PublicClientApplication(msalConfig(tenant.tenantId, tenant.clientId));
         window.sessionStorage.setItem("tenantName", tenant.name);
 
         setStateApp({
