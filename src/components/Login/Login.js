@@ -576,15 +576,15 @@ const Login = (props) => {
     //   //do some error stuff
     //   return;
     // }
-
+    
     setStateApp((state) => ({
       ...state,
       user: {
         id: readProfileResponse.id,
-        email: readProfileResponse.mail,
+        email: readProfileResponse.mail ? readProfileResponse.mail : readProfileResponse.userPrincipalName,
         name: readProfileResponse.displayName,
         authToken: authGraphQLResponse.authenticationToken,
-        authTokenExpires: authGraphQLToken.expiresOn,
+        authTokenExpires: new Date(authGraphQLToken.expiresOn.setDate(authGraphQLToken.expiresOn.getDate() + 14)),
         tenant: {
           id: request.tenantId,
           tenant: "M1neral",
