@@ -536,7 +536,7 @@ const Login = (props) => {
     }
 
     const authGraphQLResponse = await callAuthGraphQL(
-      "https://m1graphql.azurewebsites.net/.auth/login/aad",
+      `${new URL(stateApp.apolloClientEndpoint).origin}/.auth/login/aad`,
       authGraphQLToken.accessToken
     ).catch((error) => {
       //do some error stuff
@@ -548,7 +548,7 @@ const Login = (props) => {
     }
 
     const graphQLProfileResponse = await callProfileGraphQL(
-      "https://m1graphql.azurewebsites.net/.auth/me",
+      `${new URL(stateApp.apolloClientEndpoint).origin}/.auth/me`,
       authGraphQLResponse.authenticationToken
     ).catch((error) => {
       //do some error stuff
