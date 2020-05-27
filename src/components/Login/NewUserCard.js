@@ -8,57 +8,55 @@ import {
   withStyles,
   makeStyles,
   createMuiTheme,
-} from '@material-ui/core/styles';
-import InputBase from '@material-ui/core/InputBase';
+} from "@material-ui/core/styles";
+import InputBase from "@material-ui/core/InputBase";
 import { Card, Button } from "@material-ui/core";
-import Paper from '@material-ui/core/Paper';
+import Paper from "@material-ui/core/Paper";
 
-
-const useStyles = makeStyles(theme => ({
-  conatiner: {
-  },
+const useStyles = makeStyles((theme) => ({
+  conatiner: {},
   card: {
-    width: '500px',
-    height: '635px',
+    width: "500px",
+    height: "635px",
     backgroundColor: theme.palette.secondary.dark,
     //border: `1px solid ${theme.palette.secondary.main}`,
     display: "flex",
     flexDirection: "column",
-    fontFamily: theme.typography.fontFamily
+    fontFamily: theme.typography.fontFamily,
   },
   cardHeader: {
     color: "white",
     padding: "20px 40px",
-    textAlign: "center"
+    textAlign: "center",
   },
   cardFooter: {
     height: "15%",
     color: "white",
     fontSize: ".75rem",
     textAlign: "left",
-    marginLeft: '65px',
+    marginLeft: "65px",
     // float: 'left'
   },
   button: {
-    backgroundColor: '#e4a773',
+    backgroundColor: "#e4a773",
     width: "225px",
     height: "50px",
     marginTop: "25px",
     color: "#011133",
-    float: 'left',
-    marginLeft: '65px',
-    marginBottom: '15px',
-    "&:hover" : {
-      backgroundColor: '#f0cfb3',
+    float: "left",
+    marginLeft: "65px",
+    marginBottom: "15px",
+    "&:hover": {
+      backgroundColor: "#f0cfb3",
     },
   },
   link: {
     textDecoration: "none",
     color: theme.palette.secondary.main,
     cursor: "pointer",
-    "&:hover" : {
-      color: '#e4a773',
-    }
+    "&:hover": {
+      color: "#e4a773",
+    },
   },
   inputs: {
     backgroundColor: theme.palette.background.paper,
@@ -66,7 +64,7 @@ const useStyles = makeStyles(theme => ({
     position: "relative",
     borderBottom: "1px solid rgba(0, 0, 0, 0.42)",
     pointerEvents: "all",
-    margin: "2% 10%"
+    margin: "2% 10%",
   },
   inputsName: {
     backgroundColor: theme.palette.background.paper,
@@ -79,18 +77,17 @@ const useStyles = makeStyles(theme => ({
   },
   links: {
     marginTop: 10,
-    marginBottom: 20
+    marginBottom: 20,
   },
   cardForm: {
     display: "contents",
-    pointerEvents: "all"
+    pointerEvents: "all",
   },
 }));
 
-
 const BootstrapInput = withStyles((theme) => ({
   root: {
-    'label + &': {
+    "label + &": {
       marginTop: theme.spacing(3),
     },
   },
@@ -98,41 +95,39 @@ const BootstrapInput = withStyles((theme) => ({
     borderRadius: 4,
     // position: 'relative',
     backgroundColor: theme.palette.common.white,
-    border: '1px solid #ced4da',
+    border: "1px solid #ced4da",
     fontSize: 16,
-    width: '350px',
-    padding: '10px',
-    marginLeft: '65px',
+    width: "350px",
+    padding: "10px",
+    marginLeft: "65px",
     marginRight: "10px",
-    marginTop: '10px',
-    transition: theme.transitions.create(['border-color', 'box-shadow']),
+    marginTop: "10px",
+    transition: theme.transitions.create(["border-color", "box-shadow"]),
     // Use the system font instead of the default Roboto font.
     fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
+      "-apple-system",
+      "BlinkMacSystemFont",
       '"Segoe UI"',
-      'Roboto',
+      "Roboto",
       '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
+      "Arial",
+      "sans-serif",
       '"Apple Color Emoji"',
       '"Segoe UI Emoji"',
       '"Segoe UI Symbol"',
-    ].join(','),
+    ].join(","),
 
-    '&:hover': {
-      backgroundColor: '#fff',
+    "&:hover": {
+      backgroundColor: "#fff",
     },
 
-    '&$focused': {
-      backgroundColor: '#fff',
+    "&$focused": {
+      backgroundColor: "#fff",
       boxShadow: `${fade(theme.palette.primary.main, 0.25)} 0 0 0 2px`,
       borderColor: theme.palette.primary.main,
     },
   },
 }))(InputBase);
-
-
 
 export default function NewUserCard(props) {
   const classes = useStyles();
@@ -147,37 +142,37 @@ export default function NewUserCard(props) {
 
   useEffect(() => {}, [userEmail]);
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    alert(
-      "Node App Not Deployed"
-    );
+    alert("Node App Not Deployed");
     setSent(true);
   };
 
   useEffect(() => {
-    ValidatorForm.addValidationRule("shortName", value => {
+    ValidatorForm.addValidationRule("shortName", (value) => {
       if (value && userName.length < 2) {
         return false;
       } else {
         return true;
       }
     });
-
   }, [userName.length]);
-  console.log(userName,
+  console.log(
+    userName,
     userLastName,
     userCompany,
     userPhoneNum,
     userTitle,
-    userEmail)
+    userEmail
+  );
   return !sent ? (
     <div className={classes.conatiner}>
-      <Card  
+      <Card
         square={true}
         elevation={0}
-        color="secondary" className={classes.card}>
-
+        color="secondary"
+        className={classes.card}
+      >
         {/* <div className={classes.cardHeader}>
           <div style={{ marginTop: "5px", fontSize: "1rem" }}>
             Sign up as a buyer, financial institution or energy company.
@@ -186,49 +181,50 @@ export default function NewUserCard(props) {
 
         {/* <Card className={classes.cardForm}> */}
 
-        <div 
-            style={{ 
-              marginTop: "75px", 
-              fontSize: '24px',
-              fontWeight: '900',
-              fontFamily: "Tahoma, Geneva, sans-serif",
-              textAlign: 'left',
-              paddingLeft: '65px',
-              color: 'white' 
-            }}
-            >
-              Get in touch
-            </div>
-
-        <div 
-            style={{ 
-              marginTop: "15px", 
-              fontSize: '14px',
-              fontWeight: '900',
-              fontFamily: "Tahoma, Geneva, sans-serif",
-              color: 'white',
-              textAlign: 'left',
-              paddingLeft: '65px' }}
-            >
-            FULL NAME
+        <div
+          style={{
+            marginTop: "75px",
+            fontSize: "24px",
+            fontWeight: "900",
+            fontFamily: "Tahoma, Geneva, sans-serif",
+            textAlign: "left",
+            paddingLeft: "65px",
+            color: "white",
+          }}
+        >
+          Get in touch
         </div>
 
-        <BootstrapInput 
-                type="fname"
-                // label="Email"
-                variant="outlined"
-                // error={emailFlags.error}
-                // placeholder={emailFlags.placeholder}
-                // autoFocus={emailFlags.autoFocus}
-                autoComplete= "true"
-                // onKeyDown={e => onEnterKey(e)}
-                // className={classes.inputs}
-                // onChange={e => setUserEmail(e.target.value)}
-                // onBlur={() => validateData("email", userEmail, setEmailFlags)}
-                value={userEmail}
-                />
+        <div
+          style={{
+            marginTop: "15px",
+            fontSize: "14px",
+            fontWeight: "900",
+            fontFamily: "Tahoma, Geneva, sans-serif",
+            color: "white",
+            textAlign: "left",
+            paddingLeft: "65px",
+          }}
+        >
+          FULL NAME
+        </div>
 
-{/* 
+        <BootstrapInput
+          type="fname"
+          // label="Email"
+          variant="outlined"
+          // error={emailFlags.error}
+          // placeholder={emailFlags.placeholder}
+          // autoFocus={emailFlags.autoFocus}
+          autoComplete="true"
+          // onKeyDown={e => onEnterKey(e)}
+          // className={classes.inputs}
+          // onChange={e => setUserEmail(e.target.value)}
+          // onBlur={() => validateData("email", userEmail, setEmailFlags)}
+          value={userEmail}
+        />
+
+        {/* 
 <div 
             style={{ 
               marginTop: "15px", 
@@ -257,93 +253,94 @@ export default function NewUserCard(props) {
                 value={userEmail}
                 />                 */}
 
-
-        <div 
-            style={{ 
-              marginTop: "15px", 
-              fontSize: '14px',
-              fontWeight: '900',
-              fontFamily: "Tahoma, Geneva, sans-serif",
-              color: 'white',
-              textAlign: 'left',
-              paddingLeft: '65px' }}
-            >
-            EMAIL
+        <div
+          style={{
+            marginTop: "15px",
+            fontSize: "14px",
+            fontWeight: "900",
+            fontFamily: "Tahoma, Geneva, sans-serif",
+            color: "white",
+            textAlign: "left",
+            paddingLeft: "65px",
+          }}
+        >
+          EMAIL
         </div>
 
-        <BootstrapInput 
-                type="email"
-                // label="Email"
-                variant="outlined"
-                // error={emailFlags.error}
-                // placeholder={emailFlags.placeholder}
-                // autoFocus={emailFlags.autoFocus}
-                autoComplete= "true"
-                // onKeyDown={e => onEnterKey(e)}
-                // className={classes.inputs}
-                onChange={e => setUserEmail(e.target.value)}
-                // onBlur={() => validateData("email", userEmail, setEmailFlags)}
-                value={userEmail}
-                />
+        <BootstrapInput
+          type="email"
+          // label="Email"
+          variant="outlined"
+          // error={emailFlags.error}
+          // placeholder={emailFlags.placeholder}
+          // autoFocus={emailFlags.autoFocus}
+          autoComplete="true"
+          // onKeyDown={e => onEnterKey(e)}
+          // className={classes.inputs}
+          onChange={(e) => setUserEmail(e.target.value)}
+          // onBlur={() => validateData("email", userEmail, setEmailFlags)}
+          value={userEmail}
+        />
 
-<div 
-            style={{ 
-              marginTop: "15px", 
-              fontSize: '14px',
-              fontWeight: '900',
-              fontFamily: "Tahoma, Geneva, sans-serif",
-              color: 'white',
-              textAlign: 'left',
-              paddingLeft: '65px' }}
-            >
-            COMPANY NAME
+        <div
+          style={{
+            marginTop: "15px",
+            fontSize: "14px",
+            fontWeight: "900",
+            fontFamily: "Tahoma, Geneva, sans-serif",
+            color: "white",
+            textAlign: "left",
+            paddingLeft: "65px",
+          }}
+        >
+          COMPANY NAME
         </div>
 
-        <BootstrapInput 
-                type="company"
-                // label="Email"
-                variant="outlined"
-                // error={emailFlags.error}
-                // placeholder={emailFlags.placeholder}
-                // autoFocus={emailFlags.autoFocus}
-                autoComplete= "true"
-                // onKeyDown={e => onEnterKey(e)}
-                // className={classes.inputs}
-                // onChange={e => setUserEmail(e.target.value)}
-                // onBlur={() => validateData("email", userEmail, setEmailFlags)}
-                value={userEmail}
-                />
+        <BootstrapInput
+          type="company"
+          // label="Email"
+          variant="outlined"
+          // error={emailFlags.error}
+          // placeholder={emailFlags.placeholder}
+          // autoFocus={emailFlags.autoFocus}
+          autoComplete="true"
+          // onKeyDown={e => onEnterKey(e)}
+          // className={classes.inputs}
+          // onChange={e => setUserEmail(e.target.value)}
+          // onBlur={() => validateData("email", userEmail, setEmailFlags)}
+          value={userEmail}
+        />
 
-<div 
-            style={{ 
-              marginTop: "15px", 
-              fontSize: '14px',
-              fontWeight: '900',
-              fontFamily: "Tahoma, Geneva, sans-serif",
-              color: 'white',
-              textAlign: 'left',
-              paddingLeft: '65px' }}
-            >
-            PHONE
+        <div
+          style={{
+            marginTop: "15px",
+            fontSize: "14px",
+            fontWeight: "900",
+            fontFamily: "Tahoma, Geneva, sans-serif",
+            color: "white",
+            textAlign: "left",
+            paddingLeft: "65px",
+          }}
+        >
+          PHONE
         </div>
 
-        <BootstrapInput 
-                type="mobile"
-                // label="Email"
-                variant="outlined"
-                // error={emailFlags.error}
-                // placeholder={emailFlags.placeholder}
-                // autoFocus={emailFlags.autoFocus}
-                autoComplete= "true"
-                // onKeyDown={e => onEnterKey(e)}
-                // className={classes.inputs}
-                // onChange={e => setUserEmail(e.target.value)}
-                // onBlur={() => validateData("email", userEmail, setEmailFlags)}
-                value={userEmail}
-                />
+        <BootstrapInput
+          type="mobile"
+          // label="Email"
+          variant="outlined"
+          // error={emailFlags.error}
+          // placeholder={emailFlags.placeholder}
+          // autoFocus={emailFlags.autoFocus}
+          autoComplete="true"
+          // onKeyDown={e => onEnterKey(e)}
+          // className={classes.inputs}
+          // onChange={e => setUserEmail(e.target.value)}
+          // onBlur={() => validateData("email", userEmail, setEmailFlags)}
+          value={userEmail}
+        />
 
-
-                {/* <div 
+        {/* <div 
             style={{ 
               marginTop: "15px", 
               fontSize: '14px',
@@ -371,8 +368,7 @@ export default function NewUserCard(props) {
                 value={userEmail}
                 /> */}
 
-
-          {/* <ValidatorForm
+        {/* <ValidatorForm
             onSubmit={handleSubmit}
             onError={errors => console.log(errors)}
             method="POST"
@@ -439,7 +435,7 @@ export default function NewUserCard(props) {
             />
 
           </ValidatorForm> */}
-
+        <a href={`mailto:info@m1neral.com`} target="_blank">
           <Button
             variant="outlined"
             disableElevation
@@ -447,9 +443,10 @@ export default function NewUserCard(props) {
             className={classes.button}
             //onClick={signIn}
             //onKeyDown={e => onEnterKey(e)}
-              >
-                REQUEST ACCESS
-            </Button>
+          >
+            REQUEST ACCESS
+          </Button>
+        </a>
 
         {/* </Card> */}
         <div className={classes.cardFooter}>
@@ -467,7 +464,11 @@ export default function NewUserCard(props) {
           </div> */}
           <div className={classes.links}>
             Already have an account?{" "}
-            <Link to="/" style={{marginLeft: '10px'}} className={classes.link}>
+            <Link
+              to="/"
+              style={{ marginLeft: "10px" }}
+              className={classes.link}
+            >
               {" "}
               Sign In
             </Link>
