@@ -1147,7 +1147,7 @@ export default function Navigation(props) {
               >
                 Help?
               </Button> */}
-              <Link
+              {/* <Link
                 to={location.pathname !== "/" ? "/" : "/signup"}
                 onClick={() => {
                   setStateApp((stateApp) => ({
@@ -1165,7 +1165,9 @@ export default function Navigation(props) {
                 >
                   {location.pathname !== "/" ? "SIGN IN" : "SIGN UP"}
                 </Button>
-              </Link>
+
+                
+              </Link> */}
             </div>
           </div>
         )}
