@@ -631,6 +631,7 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
+        selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/track") {
       setStateNav((state) => ({
@@ -642,6 +643,7 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
+        selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/transact") {
       setStateNav((state) => ({
@@ -653,6 +655,7 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
+        selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/title") {
       setStateNav((state) => ({
@@ -664,6 +667,7 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
+        selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/contacts") {
       setStateNav((state) => ({
@@ -675,6 +679,7 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 1,
         selectedMenuIndexDashboard: 0,
+        selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/alerts") {
       setStateNav((state) => ({
@@ -686,6 +691,7 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 1,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
+        selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/dashboard") {
       setStateNav((state) => ({
@@ -697,6 +703,19 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 1,
+        selectedMenuIndexStudio: 0,
+      }));
+    } else if (location.pathname === "/studio") {
+      setStateNav((state) => ({
+        ...state,
+        selectedMenuIndexFind: 0,
+        selectedMenuIndexTrack: 0,
+        selectedMenuIndexTransact: 0,
+        selectedMenuIndexTitle: 0,
+        selectedMenuIndexAlerts: 0,
+        selectedMenuIndexContacts: 0,
+        selectedMenuIndexDashboard: 0,
+        selectedMenuIndexStudio: 1,
       }));
     }
   }, [location, setStateNav]);
@@ -773,6 +792,13 @@ export default function Navigation(props) {
     handleRouteChange(path);
     handleDrawerClose();
   };
+
+  const handleListItemClickStudio = (event, index, path) => {
+    // handleRouteChange(path);
+    // handleDrawerClose();
+    window.open('https://m1studio-dev.azurewebsites.net/', '_blank')
+  };
+
   const handleRouteChange = (path) => {
     history.push(path);
   };
@@ -1302,7 +1328,36 @@ export default function Navigation(props) {
               <DescriptionIcon />
             </ListItemIcon>
             <ListItemText primary="Title" />
+            <ListItemSecondaryAction>
+              <Button
+                disabled
+                className={classes.betaSideNav2}
+                edge="end"
+                aria-label="beta"
+              >
+                beta
+              </Button>
+            </ListItemSecondaryAction>
           </ListItem>
+
+          <ListItem
+            classes={{
+              root: classes.menuListItem,
+              selected: classes.menuListItemSelected,
+            }}
+            button
+            selected={stateNav.selectedMenuIndexTitle === 1}
+            onClick={(event) => handleListItemClickStudio(event, 0, "/studio")}
+            key="studio"
+          >
+            <ListItemIcon>
+              <DescriptionIcon />
+            </ListItemIcon>
+            <ListItemText primary="M1Studio" />
+          </ListItem>
+
+
+
         </List>
         <Divider variant="middle" className={classes.menuListBottomDivider} />
         <List className={classes.menuListBottom}>
