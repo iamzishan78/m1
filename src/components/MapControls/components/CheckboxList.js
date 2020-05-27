@@ -289,6 +289,8 @@ export default function CheckboxList(props) {
             </Droppable>
           </DragDropContext>
         </Collapse>
+
+
         <StyledListItem2 button onClick={handleClickUD}>
           <ListItemIcon>
             <LayersIcon />
@@ -296,39 +298,53 @@ export default function CheckboxList(props) {
           <ListItemText primary="User Defined" />
           {openUD ? <ExpandLess /> : <ExpandMore />}
         </StyledListItem2>
-
-        {stateMap.userDefinedLayers.map((layer, index) => {
-          const labelId = `checkbox-list-label-${index}`;
-
-          return (
-            // <StyledMenuItem disableRipple key={index} role={undefined} dense>
-            <Collapse in={openUD} timeout="auto" unmountOnExit>
-
-              <StyledListItem button className={classes.nested}>
-                <ListItemIcon>
-                  <Checkbox
-                    icon={<VisibilityOffIcon htmlColor="#fff" />}
-                    checkedIcon={<VisibilityIcon htmlColor="#fff" />}
-                    edge="start"
-                    checked={
-                      stateMap.checkedUserDefinedLayers
-                        ? stateMap.checkedUserDefinedLayers.indexOf(index) !== -1
-                        : false
-                    }
-                    tabIndex={-1}
-                    disableRipple
-                    inputProps={{ "aria-labelledby": labelId }}
-                    onChange={handleToggleUserDefined(index)}
-                  />
-                </ListItemIcon>
-                <ListItemText id={labelId} primary={layer.name} />
-              </StyledListItem>
-            </Collapse>
-            // </StyledMenuItem> 
-          );
-        })}
-
-
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="droppable">
+              {(provided, snapshot) => (
+                <RootRef rootRef={provided.innerRef}>
+                  <List className={classes.list}>
+                    {stateMap.userDefinedLayers.map((layer, index) => {
+                      const labelId = `checkbox-list-label-${index}`;
+                      return (
+                        <Draggable key={labelId} draggableId={labelId} index={index}>
+                          {(provided, snapshot) => (
+                            <StyledListItem 
+                              ContainerComponent="li"
+                              ref={ provided.innerRef }
+                              {...provided.draggableProps}
+                            >
+                              <ListItemIcon {...provided.dragHandleProps}>
+                                <DragIndicator />
+                              </ListItemIcon>
+                              <ListItemIcon>
+                                <Checkbox
+                                  icon={<VisibilityOffIcon htmlColor="#fff" />}
+                                  checkedIcon={<VisibilityIcon htmlColor="#fff" />}
+                                  edge="start"
+                                  checked={
+                                    stateMap.checkedUserDefinedLayers
+                                      ? stateMap.checkedUserDefinedLayers.indexOf(index) !== -1
+                                      : false
+                                  }
+                                  tabIndex={-1}
+                                  disableRipple
+                                  inputProps={{ "aria-labelledby": labelId }}
+                                  onChange={handleToggleUserDefined(index)}
+                                />
+                              </ListItemIcon>
+                              <ListItemText id={labelId} primary={layer.name} />
+                            </StyledListItem>
+                          )}
+                        </Draggable>
+                      );
+                    })}
+                  </List>
+                </RootRef>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </Collapse>
       </StyledMenu>
     </ClickAwayListener>
   );

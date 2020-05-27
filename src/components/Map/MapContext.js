@@ -26,23 +26,21 @@ const styleLayers = [
 
 const userDefinedLayers = [
   
-  // TEMPORARY COMMENT OUT. FEATURE IN PROGRESS 
-  // DO NOT DELETE
-  // {
-  //   name: "Parcels",
-  //   id: [],
-  //   type: 'data layer'
-  // },
-  // {
-  //   name: "Title",
-  //   id: [],
-  //   type: 'data layer'
-  // },
-  // {
-  //   name: "Area of Interest",
-  //   id: [],
-  //   type: 'data layer'
-  // },
+  {
+    name: "Parcels",
+    id: [],
+    type: 'data layer'
+  },
+  {
+    name: "Title",
+    id: [],
+    type: 'data layer'
+  },
+  {
+    name: "Area of Interest",
+    id: [],
+    type: 'data layer'
+  },
 
   {
     name: "Tracked Wells",
