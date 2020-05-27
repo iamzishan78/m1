@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import EmailSuccess from "./EmailSuccess";
@@ -12,6 +12,7 @@ import {
 import InputBase from "@material-ui/core/InputBase";
 import { Card, Button } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
+import { AppContext } from "../../AppContext";
 
 const useStyles = makeStyles((theme) => ({
   conatiner: {},
@@ -130,17 +131,25 @@ const BootstrapInput = withStyles((theme) => ({
 }))(InputBase);
 
 export default function NewUserCard(props) {
+  const [stateApp] = useContext(AppContext);
   const classes = useStyles();
   const [userName, setUserName] = useState("");
   const [userLastName, setUserlastName] = useState("");
   const [userCompany, setUserCompany] = useState("");
   const [userTitle, setUserTitle] = useState("");
-  const [userPhoneNum, setUserPhoneNum] = useState();
+  const [userPhoneNum, setUserPhoneNum] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [sent, setSent] = useState(false);
+  const [emptyInputs, setEmptyInputs] = useState(false);
+
   //const [userPassword, setUserPassword] = useState("");
 
-  useEffect(() => {}, [userEmail]);
+  useEffect(() => {
+    setUserName("");
+    setUserEmail("");
+    setUserPhoneNum("");
+    setUserCompany("");
+  }, [emptyInputs]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -165,6 +174,7 @@ export default function NewUserCard(props) {
     userTitle,
     userEmail
   );
+
   return !sent ? (
     <div className={classes.conatiner}>
       <Card
@@ -219,9 +229,9 @@ export default function NewUserCard(props) {
           autoComplete="true"
           // onKeyDown={e => onEnterKey(e)}
           // className={classes.inputs}
-          // onChange={e => setUserEmail(e.target.value)}
+          onChange={(e) => setUserName(e.target.value)}
           // onBlur={() => validateData("email", userEmail, setEmailFlags)}
-          value={userEmail}
+          value={userName}
         />
 
         {/* 
@@ -306,9 +316,9 @@ export default function NewUserCard(props) {
           autoComplete="true"
           // onKeyDown={e => onEnterKey(e)}
           // className={classes.inputs}
-          // onChange={e => setUserEmail(e.target.value)}
+          onChange={(e) => setUserCompany(e.target.value)}
           // onBlur={() => validateData("email", userEmail, setEmailFlags)}
-          value={userEmail}
+          value={userCompany}
         />
 
         <div
@@ -335,9 +345,9 @@ export default function NewUserCard(props) {
           autoComplete="true"
           // onKeyDown={e => onEnterKey(e)}
           // className={classes.inputs}
-          // onChange={e => setUserEmail(e.target.value)}
+          onChange={(e) => setUserPhoneNum(e.target.value)}
           // onBlur={() => validateData("email", userEmail, setEmailFlags)}
-          value={userEmail}
+          value={userPhoneNum}
         />
 
         {/* <div 
@@ -435,13 +445,37 @@ export default function NewUserCard(props) {
             />
 
           </ValidatorForm> */}
-        <a href={`mailto:info@m1neral.com`} target="_blank">
+        <a
+          href={
+            userName.trim() !== ""
+              ? `mailto:info@m1neral.com?subject="Access Request ${
+                  stateApp.signUpUserType
+                }"&body="${
+                  userName.trim() !== "" ? "Name:" + userName.trim() : ""
+                }${
+                  userEmail.trim() !== "" ? "   Email:" + userEmail.trim() : ""
+                }${
+                  userCompany.trim() !== ""
+                    ? "   Company:" + userCompany.trim()
+                    : ""
+                }${
+                  userPhoneNum.trim() !== ""
+                    ? "   Phone:" + userPhoneNum.trim()
+                    : ""
+                }"`
+              : "#"
+          }
+          target={userName.trim() !== "" ? "_blank" : null}
+          onClick={() => {
+            setEmptyInputs(!emptyInputs);
+          }}
+        >
           <Button
             variant="outlined"
             disableElevation
             type="submit"
             className={classes.button}
-            //onClick={signIn}
+
             //onKeyDown={e => onEnterKey(e)}
           >
             REQUEST ACCESS
