@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
   },
   card: {
     width: '500px',
-    height: '675px',
+    height: '635px',
     backgroundColor: theme.palette.secondary.dark,
     //border: `1px solid ${theme.palette.secondary.main}`,
     display: "flex",
@@ -453,7 +453,7 @@ export default function NewUserCard(props) {
 
         {/* </Card> */}
         <div className={classes.cardFooter}>
-          <div>
+          {/* <div>
             By signing up, you agree to the{" "}
             <a
               href="https://www.m1neral.com"
@@ -464,7 +464,7 @@ export default function NewUserCard(props) {
             >
               Terms and Conditions
             </a>
-          </div>
+          </div> */}
           <div className={classes.links}>
             Already have an account?{" "}
             <Link to="/" style={{marginLeft: '10px'}} className={classes.link}>

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import InputBase from "@material-ui/core/InputBase";
 import { Card, Button } from "@material-ui/core";
+import { AppContext } from "../../AppContext";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles((theme) => ({
@@ -88,8 +89,9 @@ const BootstrapInput = withStyles((theme) => ({
 }))(InputBase);
 
 const SignInCard = (props) => {
-  const { handleAADSignIn, showForm } = props;
+  const { handleAADSignIn } = props;
 
+  const [, setStateApp] = useContext(AppContext);
   const classes = useStyles();
   const [tenant, setTenant] = useState("");
   const [error, setError] = useState(null);
@@ -200,10 +202,13 @@ const SignInCard = (props) => {
             Don't have an account?
             <div>
               <Link
-                to=""
+                to="/signup"
                 className={classes.signupLink}
                 onClick={() => {
-                  showForm();
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    signUpUserType: null,
+                  }));
                 }}
               >
                 Sign Up Here

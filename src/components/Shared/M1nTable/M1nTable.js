@@ -569,7 +569,7 @@ const ContactsHeadCells = [
 
 ////////////HeadCells end///////////////////////////////////////////////
 
-export default function Contacts(props) {
+export default function M1nTable(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, setRows] = useState();

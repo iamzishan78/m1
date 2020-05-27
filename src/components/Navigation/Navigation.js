@@ -40,6 +40,7 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
+import { Link } from "react-router-dom";
 
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -630,7 +631,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-
       }));
     } else if (location.pathname === "/track") {
       setStateNav((state) => ({
@@ -642,7 +642,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-
       }));
     } else if (location.pathname === "/transact") {
       setStateNav((state) => ({
@@ -654,7 +653,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-
       }));
     } else if (location.pathname === "/title") {
       setStateNav((state) => ({
@@ -666,7 +664,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-
       }));
     } else if (location.pathname === "/contacts") {
       setStateNav((state) => ({
@@ -678,7 +675,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 1,
         selectedMenuIndexDashboard: 0,
-
       }));
     } else if (location.pathname === "/alerts") {
       setStateNav((state) => ({
@@ -690,7 +686,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 1,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-
       }));
     } else if (location.pathname === "/dashboard") {
       setStateNav((state) => ({
@@ -1104,11 +1099,18 @@ export default function Navigation(props) {
           <div
           //className={classes.goHome} onClick={sendHome}
           >
-            <M1neralLogoLogin />
+            {location.pathname !== "/" ? (
+              <Link to="/">
+                <M1neralLogoLogin />
+              </Link>
+            ) : (
+              <M1neralLogoLogin />
+            )}
+
             <div
             //className={classes.homeButton}
             >
-              <Button
+              {/* <Button
                 variant="contained"
                 disableElevation
                 type="submit"
@@ -1118,7 +1120,26 @@ export default function Navigation(props) {
                 // onKeyDown={e => onEnterKey(e)}
               >
                 Help?
-              </Button>
+              </Button> */}
+              <Link
+                to={location.pathname !== "/" ? "/" : "/signup"}
+                onClick={() => {
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    signUpUserType: null,
+                  }));
+                }}
+              >
+                <Button
+                  variant="contained"
+                  disableElevation
+                  type="submit"
+                  className={classes.homeButton}
+                  color="primary"
+                >
+                  {location.pathname !== "/" ? "SIGN IN" : "SIGN UP"}
+                </Button>
+              </Link>
             </div>
           </div>
         )}
@@ -1151,8 +1172,7 @@ export default function Navigation(props) {
         </div>
         <Divider variant="middle" light="true" />
         <List className={classes.menuList}>
-
-        <ListItem
+          <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected,
@@ -1167,7 +1187,6 @@ export default function Navigation(props) {
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
           </ListItem>
-
 
           <ListItem
             classes={{
@@ -1349,7 +1368,7 @@ export default function Navigation(props) {
             </ListItemIcon>
             <ListItemText primary="Pulse" />
           </ListItem> */}
-          
+
           {/* <ListItem
             classes={{
               //root: classes.menuListItemDisabled,
@@ -1365,9 +1384,6 @@ export default function Navigation(props) {
             </ListItemIcon>
             <ListItemText primary="Press" />
           </ListItem> */}
-
-
-
         </List>
       </Drawer>
       {openFilterCard ? (
