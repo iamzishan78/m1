@@ -251,6 +251,46 @@ export default function Map() {
     }
   }, [map, stateMap.checkedLayers, stateMap.styleLayers]);
 
+
+  useEffect(() => {
+    // USE EFFECT FOR BASEMAP LAYER HANDLING
+    console.log("basemap layer ue start");
+    if (stateMap.baseMapLayers.length > 0 && map) {
+      stateMap.baseMapLayers.forEach((l) => {
+        l.id.forEach((k) => {
+          if (map.getLayer(k)) {
+            map.setLayoutProperty(k, "visibility", "none");
+          }
+        });
+      });
+
+      if (stateMap.checkedBaseLayers.length > 0) {
+        let layers = stateMap.checkedBaseLayers.slice(0);
+        layers.sort(function(a, b) {return b - a;});
+        if (layers.length > 0) {
+          let belowlayer = null;
+          for (let k = layers.length - 1; k >= 0; k --) {
+            let i = layers[k];
+            let currentLayerArray = stateMap.baseMapLayers[i].id;
+            // eslint-disable-next-line no-loop-func
+            currentLayerArray.forEach((j) => {
+              var mapLayer = map.getLayer(j);
+              if (typeof mapLayer !== "undefined") {
+                if (map.getLayer(j)) {
+                  map.setLayoutProperty(j, "visibility", "visible");
+                  if (belowlayer != null) {
+                    map.moveLayer(j, belowlayer);
+                  }
+                  belowlayer = j;
+                }
+              }
+            });
+          }
+        }
+      }
+    }
+  }, [map, stateMap.checkedBaseLayers]);
+
   useEffect(() => {
     // USE EFFECT FOR HEATMAP LAYER HANDLES
     console.log("heatmap layer ue start");
@@ -278,32 +318,33 @@ export default function Map() {
     }
   }, [map, stateMap.checkedHeats]);
 
-  useEffect(() => {
-    // USE EFFECT FOR BASEMAP LAYER HANDLING
-    console.log("basemap layer ue start");
-    if (stateMap.baseMapLayers.length > 0 && map) {
-      stateMap.baseMapLayers.forEach((l) => {
-        l.id.forEach((k) => {
-          if (map.getLayer(k)) {
-            map.setLayoutProperty(k, "visibility", "none");
-          }
-        });
-      });
 
-      if (stateMap.checkedBaseLayers.length > 0) {
-        let layers = stateMap.checkedBaseLayers;
+  // useEffect(() => {
+  //   // USE EFFECT FOR BASEMAP LAYER HANDLING
+  //   console.log("basemap layer ue start");
+  //   if (stateMap.baseMapLayers.length > 0 && map) {
+  //     stateMap.baseMapLayers.forEach((l) => {
+  //       l.id.forEach((k) => {
+  //         if (map.getLayer(k)) {
+  //           map.setLayoutProperty(k, "visibility", "none");
+  //         }
+  //       });
+  //     });
 
-        layers.forEach((i) => {
-          let currentLayerArray = stateMap.baseMapLayers[i].id;
-          currentLayerArray.forEach((j) => {
-            if (map.getLayer(j)) {
-              map.setLayoutProperty(j, "visibility", "visible");
-            }
-          });
-        });
-      }
-    }
-  }, [map, stateMap.checkedBaseLayers]);
+  //     if (stateMap.checkedBaseLayers.length > 0) {
+  //       let layers = stateMap.checkedBaseLayers;
+
+  //       layers.forEach((i) => {
+  //         let currentLayerArray = stateMap.baseMapLayers[i].id;
+  //         currentLayerArray.forEach((j) => {
+  //           if (map.getLayer(j)) {
+  //             map.setLayoutProperty(j, "visibility", "visible");
+  //           }
+  //         });
+  //       });
+  //     }
+  //   }
+  // }, [map, stateMap.checkedBaseLayers]);
 
 
 

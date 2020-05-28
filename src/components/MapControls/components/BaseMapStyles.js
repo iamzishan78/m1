@@ -3,6 +3,7 @@ import React, {
   useState,
   useEffect,
 } from "react";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -11,6 +12,7 @@ import { MapControlsContext } from "../MapControlsContext";
 import { MapContext } from "../../Map/MapContext";
 import { AppContext } from "../../../AppContext";
 import RoomIcon from '@material-ui/icons/Room';
+import RootRef from "@material-ui/core/RootRef";
 import LayersIcon from '@material-ui/icons/Layers';
 import { style } from "@material-ui/system";
 import { Icon } from "@material-ui/core";
@@ -34,6 +36,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
+import DragIndicator from "@material-ui/icons/DragIndicator";
 
 const theme = createMuiTheme({
   overrides: {
@@ -115,6 +118,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
+
+
 function Icon2() {
   return (
     <svg
@@ -154,7 +166,50 @@ export default function BaseMapStyles(props) {
   };
 
 
-
+  const onDragEnd = (result) => {
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+  
+    const items = reorder(
+      stateMap.baseMapLayers,
+      result.source.index,
+      result.destination.index
+    );
+  
+    let checkedBaseLayers = stateMap.checkedBaseLayers.slice(0);
+    const sourceIndex = checkedBaseLayers.indexOf(result.source.index)
+    
+    let direction = 0;
+    let from, to = 0;
+    if (result.destination.index > result.source.index) {
+      direction = -1;
+      from = result.source.index;
+      to = result.destination.index;
+    } else {
+      direction = 1;
+      to = result.source.index;
+      from = result.destination.index;
+    }
+  
+    for (let i = 0; i < checkedBaseLayers.length; i ++) {
+      if (checkedBaseLayers[i] <= to && checkedBaseLayers[i] >= from) {
+        checkedBaseLayers[i] += direction;
+      } 
+    }
+  
+    if (sourceIndex !== -1) {
+      checkedBaseLayers[sourceIndex] = result.destination.index;
+    }
+  
+    setStateMap({
+      ...stateMap, 
+      baseMapLayers: items,
+      checkedBaseLayers: checkedBaseLayers
+    });
+  }
+  
 
   const handleToggle = (idx) => () => {
     const currentIndex = stateMap.checkedBaseLayers.indexOf(idx);
@@ -274,7 +329,7 @@ export default function BaseMapStyles(props) {
           </StyledMenuItem>
         ))}
 
-        <StyledListItem2 button onClick={handleClick}>
+        {/* <StyledListItem2 button onClick={handleClick}>
           <ListItemIcon>
             <LayersIcon />
           </ListItemIcon>
@@ -309,7 +364,70 @@ export default function BaseMapStyles(props) {
             </StyledListItem>
             </Collapse>
           );
-        })}
+        })} */}
+
+
+        <StyledListItem2 button onClick={handleClick}>
+          <ListItemIcon>
+            <LayersIcon />
+          </ListItemIcon>
+          <ListItemText primary="Map Layers" />
+          {open ? <ExpandLess /> : <ExpandMore />}
+        </StyledListItem2>
+
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="droppable">
+              {(provided, snapshot) => (
+                <RootRef rootRef={provided.innerRef}>
+                  <List className={classes.list}>
+                    {stateMap.baseMapLayers.map((layer, index) => {
+                      const labelId = `checkbox-list-label-${index}`;
+                      return (
+                        <Draggable key={labelId} draggableId={labelId} index={index}>
+                          {(provided, snapshot) => (
+                            <StyledListItem 
+                              ContainerComponent="li"
+                              ref={ provided.innerRef }
+                              {...provided.draggableProps}
+                            >
+                              <ListItemIcon {...provided.dragHandleProps}>
+                                <DragIndicator />
+                              </ListItemIcon>
+                              <ListItemIcon>
+                                <Checkbox
+                                  icon={<VisibilityOffIcon htmlColor="#fff" />}
+                                  checkedIcon={<VisibilityIcon htmlColor="#fff" />}
+                                  edge="start"
+                                  checked={
+                                    stateMap.checkedBaseLayers
+                                      ? stateMap.checkedBaseLayers.indexOf(index) !== -1
+                                      : false
+                                  }
+                                  tabIndex={-1}
+                                  disableRipple
+                                  inputProps={{ "aria-labelledby": labelId }}
+                                  onChange={handleToggle(index)}
+                                />
+                              </ListItemIcon>
+                              <ListItemText id={labelId} primary={layer.name} />
+                            </StyledListItem>
+                          )}
+                        </Draggable>
+                      );
+                    })}
+                  </List>
+                </RootRef>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </Collapse>
+
+
+
+
+
+
       </StyledMenu>
     </ClickAwayListener>
   );
