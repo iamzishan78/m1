@@ -8,6 +8,7 @@ const wellTypesList = [
   "INJECTION",
   "OIL",
   "OIL AND GAS",
+  "PERMITTED",
   "P&A",
   "UNKNOWN",
   "WATER",
