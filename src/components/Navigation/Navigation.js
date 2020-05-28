@@ -758,12 +758,12 @@ export default function Navigation(props) {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setAnchorEl(null);
     sessionStorage.clear();
-    stateApp.myMSALObj.logout();
+    window.location.replace(window.location.origin);
 
-    // setStateApp((state) => ({ ...state, user: null }));
+    // setStateApp((stateApp) => ({ ...stateApp, user: null }));
     // setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
   };
 

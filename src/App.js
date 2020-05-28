@@ -117,7 +117,7 @@ const PrivateRoute = ({ component, ...options }) => {
     Date.parse(stateApp.user.authTokenExpires) < Date.now()
   ) {
     sessionStorage.clear();
-    stateApp.myMSALObj.logout();
+    window.location.replace(window.location.origin);
 
     // setStateApp((stateApp) => ({ ...stateApp, user: null }));
     // setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
