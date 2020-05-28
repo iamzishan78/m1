@@ -7,7 +7,7 @@ const styleLayers = [
   },
   {
     name: "Basins",
-    id: ["basinLayer"],
+    id: ["basinLabels","basinLayer"],
   },
   {
     name: "Pipelines",

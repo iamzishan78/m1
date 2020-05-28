@@ -6,7 +6,7 @@ const MapControlsContext = createContext([{}, () => {}]);
 const layers = [
   { name: "Basins", value: "basinLayer" },
   { name: "Pipelines", value: "pipelineLayer" },
-  { name: "Surveys", value: "basinLayer" },
+  { name: "Surveys", value: "surveyLayer" },
 ];
 
 
