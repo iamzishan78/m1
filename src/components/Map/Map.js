@@ -289,7 +289,10 @@ export default function Map() {
         }
       }
     }
-  }, [map, stateMap.checkedBaseLayers]);
+  }, [map, stateMap.checkedBaseLayers,stateMap.baseMapLayers]);
+
+
+
 
   useEffect(() => {
     // USE EFFECT FOR HEATMAP LAYER HANDLES
@@ -304,19 +307,60 @@ export default function Map() {
       });
 
       if (stateMap.checkedHeats.length > 0) {
-        let layers = stateMap.checkedHeats;
-
-        layers.forEach((i) => {
-          let currentLayerArray = stateMap.heatLayers[i].id;
-          currentLayerArray.forEach((j) => {
-            if (map.getLayer(j)) {
-              map.setLayoutProperty(j, "visibility", "visible");
-            }
-          });
-        });
+        let layers = stateMap.checkedHeats.slice(0);
+        layers.sort(function(a, b) {return b - a;});
+        if (layers.length > 0) {
+          let belowlayer = null;
+          for (let k = layers.length - 1; k >= 0; k --) {
+            let i = layers[k];
+            let currentLayerArray = stateMap.heatLayers[i].id;
+            // eslint-disable-next-line no-loop-func
+            currentLayerArray.forEach((j) => {
+              var mapLayer = map.getLayer(j);
+              if (typeof mapLayer !== "undefined") {
+                if (map.getLayer(j)) {
+                  map.setLayoutProperty(j, "visibility", "visible");
+                  if (belowlayer != null) {
+                    map.moveLayer(j, belowlayer);
+                  }
+                  belowlayer = j;
+                }
+              }
+            });
+          }
+        }
       }
     }
-  }, [map, stateMap.checkedHeats]);
+  }, [map, stateMap.checkedHeats, stateMap.heatLayers]);
+
+
+
+  // useEffect(() => {
+  //   // USE EFFECT FOR HEATMAP LAYER HANDLES
+  //   console.log("heatmap layer ue start");
+  //   if (stateMap.heatLayers.length > 0 && map) {
+  //     stateMap.heatLayers.forEach((l) => {
+  //       l.id.forEach((k) => {
+  //         if (map.getLayer(k)) {
+  //           map.setLayoutProperty(k, "visibility", "none");
+  //         }
+  //       });
+  //     });
+
+  //     if (stateMap.checkedHeats.length > 0) {
+  //       let layers = stateMap.checkedHeats;
+
+  //       layers.forEach((i) => {
+  //         let currentLayerArray = stateMap.heatLayers[i].id;
+  //         currentLayerArray.forEach((j) => {
+  //           if (map.getLayer(j)) {
+  //             map.setLayoutProperty(j, "visibility", "visible");
+  //           }
+  //         });
+  //       });
+  //     }
+  //   }
+  // }, [map, stateMap.checkedHeats]);
 
 
   // useEffect(() => {

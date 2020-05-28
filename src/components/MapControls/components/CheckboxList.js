@@ -345,6 +345,9 @@ export default function CheckboxList(props) {
             </Droppable>
           </DragDropContext>
         </Collapse>
+
+
+
       </StyledMenu>
     </ClickAwayListener>
   );

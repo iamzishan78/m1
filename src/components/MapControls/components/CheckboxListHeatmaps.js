@@ -17,12 +17,38 @@ import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import { MapControlsContext } from "../MapControlsContext";
 import { MapContext } from "../../Map/MapContext";
 import { Divider } from "@material-ui/core";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import Collapse from '@material-ui/core/Collapse';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import DragIndicator from "@material-ui/icons/DragIndicator";
+import RootRef from "@material-ui/core/RootRef";
+
+
+
+
+
 
 const useStyles = makeStyles(theme => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important"
   }
 }));
+
+
+
+
+
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
+
 
 export default function CheckboxListHeatmaps(props) {
   const [stateMapControls, setStateMapControls] = useContext(
@@ -48,6 +74,72 @@ export default function CheckboxListHeatmaps(props) {
 
     console.log("toggle stateMap.checkedHeats after", stateMap.checkedHeats);
   };
+
+
+
+  const onDragEnd = (result) => {
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+  
+    const items = reorder(
+      stateMap.heatLayers,
+      result.source.index,
+      result.destination.index
+    );
+  
+    let checkedHeats = stateMap.checkedHeats.slice(0);
+    const sourceIndex = checkedHeats.indexOf(result.source.index)
+    
+    let direction = 0;
+    let from, to = 0;
+    if (result.destination.index > result.source.index) {
+      direction = -1;
+      from = result.source.index;
+      to = result.destination.index;
+    } else {
+      direction = 1;
+      to = result.source.index;
+      from = result.destination.index;
+    }
+  
+    for (let i = 0; i < checkedHeats.length; i ++) {
+      if (checkedHeats[i] <= to && checkedHeats[i] >= from) {
+        checkedHeats[i] += direction;
+      } 
+    }
+  
+    if (sourceIndex !== -1) {
+      checkedHeats[sourceIndex] = result.destination.index;
+    }
+  
+    setStateMap({
+      ...stateMap, 
+      heatLayers: items,
+      checkedHeats: checkedHeats
+    });
+  }
+  
+
+  const StyledListItem = withStyles(theme => ({
+    root: {
+      fontFamily: "Poppins",
+      "&:hover": {
+        background: "#4B618F"
+      },
+      backgroundColor: "#263451",
+      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+        color: theme.palette.common.white
+        // },
+      }
+    }
+  }))(ListItem);
+
+
+
+
+
 
   const StyledMenu = withStyles({
     paper: {
@@ -116,6 +208,8 @@ export default function CheckboxListHeatmaps(props) {
           <ListItemText primary="Heatmaps" />
         </StyledMenuItem>
 
+
+        {/* 
         {stateMap.heatLayers.map((layer, index) => {
           const labelId = `checkbox-list-label-${index}`;
 
@@ -140,7 +234,62 @@ export default function CheckboxListHeatmaps(props) {
               <ListItemText id={labelId} primary={layer.name} />
             </StyledMenuItem>
           );
-        })}
+        })} */}
+
+
+        {/* <Collapse in={open} timeout="auto" unmountOnExit> */}
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="droppable">
+              {(provided, snapshot) => (
+                <RootRef rootRef={provided.innerRef}>
+                  <List className={classes.list}>
+                    {stateMap.heatLayers.map((layer, index) => {
+                      const labelId = `checkbox-list-label-${index}`;
+                      return (
+                        <Draggable key={labelId} draggableId={labelId} index={index}>
+                          {(provided, snapshot) => (
+                            <StyledListItem 
+                              ContainerComponent="li"
+                              ref={ provided.innerRef }
+                              {...provided.draggableProps}
+                            >
+                              <ListItemIcon {...provided.dragHandleProps}>
+                                <DragIndicator />
+                              </ListItemIcon>
+                              <ListItemIcon>
+                                <Checkbox
+                                  icon={<VisibilityOffIcon htmlColor="#fff" />}
+                                  checkedIcon={<VisibilityIcon htmlColor="#fff" />}
+                                  edge="start"
+                                  checked={
+                                    stateMap.checkedHeats
+                                      ? stateMap.checkedHeats.indexOf(index) !== -1
+                                      : false
+                                  }
+                                  tabIndex={-1}
+                                  disableRipple
+                                  inputProps={{ "aria-labelledby": labelId }}
+                                  onChange={handleToggle(index)}
+                                />
+                              </ListItemIcon>
+                              <ListItemText id={labelId} primary={layer.name} />
+                            </StyledListItem>
+                          )}
+                        </Draggable>
+                      );
+                    })}
+                  </List>
+                </RootRef>
+              )}
+            </Droppable>
+          </DragDropContext>
+        {/* </Collapse> */}
+
+
+
+
+
+
       </StyledMenu>
     </ClickAwayListener>
   );
