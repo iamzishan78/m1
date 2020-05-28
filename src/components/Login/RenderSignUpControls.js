@@ -305,7 +305,7 @@ const RenderSignUpControls = () => {
                 type="submit"
                 className={localClass.buttonLower}
               >
-                SIGN UP
+                LEARN MORE
               </Button>
             </Link>
           </Paper>
@@ -364,7 +364,7 @@ const RenderSignUpControls = () => {
                 disableElevation
                 className={localClass.buttonLower}
               >
-                Sign Up
+                LEARN MORE
               </Button>
             </Link>
           </Paper>
@@ -424,7 +424,7 @@ const RenderSignUpControls = () => {
                 disableElevation
                 className={localClass.buttonLower}
               >
-                Sign Up
+                LEARN MORE
               </Button>
             </Link>
           </Paper>

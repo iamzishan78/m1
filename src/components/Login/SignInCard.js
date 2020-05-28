@@ -32,6 +32,8 @@ const useStyles = makeStyles((theme) => ({
     width: "125px",
     lineHeight: "1.4",
     marginTop: "35px",
+    paddingTop: '12px',
+    paddingBottom: '12px',
     color: "#011133",
     float: "left",
     marginLeft: "65px",
@@ -143,7 +145,7 @@ const SignInCard = (props) => {
       onClick={signInAAD}
       onKeyDown={(e) => onEnterKey(e)}
     >
-      Sign In with Microsoft
+      Sign In
     </Button>
   );
 
@@ -166,7 +168,7 @@ const SignInCard = (props) => {
         <React.Fragment>
           <div
             style={{
-              marginTop: "50px",
+              marginTop: "55px",
               fontSize: "14px",
               fontWeight: "900",
               fontFamily: "Tahoma, Geneva, sans-serif",
@@ -198,7 +200,7 @@ const SignInCard = (props) => {
             value={tenant}
           />
           {renderAADButtonAndLoader}
-          <div className={classes.cardFooter}>
+          {/* <div className={classes.cardFooter}>
             Don't have an account?
             <div>
               <Link
@@ -214,7 +216,7 @@ const SignInCard = (props) => {
                 Sign Up Here
               </Link>
             </div>
-          </div>
+          </div>  */}
         </React.Fragment>
       ) : (
         <CircularProgress
