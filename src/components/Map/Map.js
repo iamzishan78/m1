@@ -1862,7 +1862,6 @@ export default function Map() {
         setStateApp((state) => ({...state, expandedCard: false}));
     };
 
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< master
   useEffect(() => {
     var script = document.createElement("script");
     script.type = "text/javascript";
@@ -1879,25 +1878,6 @@ export default function Map() {
       document.body.removeChild(script);
     };
   }, []);
-========================================================================
-
-    // useEffect(() => {
-    //   var script = document.createElement("script");
-    //   script.type = "text/javascript";
-    //   script.src =
-    //     "//api.usersnap.com/load/64ab8ea7-9417-41a0-b565-eb7ad69da871.js";
-    //   script.async = true;
-
-    //   var x = document.getElementsByTagName("script")[0];
-    //   x.parentNode.insertBefore(script, x);
-
-    //   document.body.appendChild(script);
-
-    //   return () => {
-    //     document.body.removeChild(script);
-    //   };
-    // }, []);
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> draw-filter
 
 
     //var scale = 'scale(1)';
