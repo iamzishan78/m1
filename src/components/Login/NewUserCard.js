@@ -505,7 +505,6 @@ export default function NewUserCard(props) {
   } */}
 
 
-
         <div className={classes.cardFooter}>
           {/* <div>
             By signing up, you agree to the{" "}
