@@ -10,8 +10,8 @@ const localStyles = makeStyles((theme) => ({
     color: "#011133",
     display: "flex",
     justifyContent: "center",
-    marginTop: "40px",
-    marginBottom: "20px",
+    marginTop: "30px",
+    marginBottom: "10px",
     fontSize: "48px",
     fontWeight: "900",
     fontFamily: "Tahoma, Geneva, sans-serif",
@@ -245,9 +245,9 @@ const RenderSignUpControls = () => {
         <Typography className={localClass.headerWords}>
           Don't have an account?
         </Typography>
-        <Typography className={localClass.smallerWords}>
-          Sign up and get started today
-        </Typography>
+        {/* <Typography className={localClass.smallerWords}>
+          Select your role to learn more now
+        </Typography> */}
       </div>
 
       <div className={localClass.cardContainer}>
@@ -275,7 +275,7 @@ const RenderSignUpControls = () => {
                   fontSize: "24px",
                 }}
               >
-                LAND OWNERS
+                LANDOWNERS
               </div>
             </div>
             <div className={localClass.cardInputs}>
@@ -291,21 +291,22 @@ const RenderSignUpControls = () => {
               </Typography>
             </div>
             <Link
-              to="/signup"
-              onClick={() => {
-                setStateApp((stateApp) => ({
-                  ...stateApp,
-                  signUpUserType: "LandOwner",
-                }));
-              }}
+              // to="/signup"
+              // onClick={() => {
+              //   setStateApp((stateApp) => ({
+              //     ...stateApp,
+              //     signUpUserType: "LandOwner",
+              //   }));
+              // }}
             >
               <Button
                 variant="outlined"
                 disableElevation
+                diabled
                 type="submit"
                 className={localClass.buttonLower}
               >
-                LEARN MORE
+                COMING SOON
               </Button>
             </Link>
           </Paper>
@@ -405,8 +406,7 @@ const RenderSignUpControls = () => {
                   padding: "10%",
                 }}
               >
-                For operating companies looking to streamline land acquisition
-                workflows
+                For exploration and production companies seeking to streamline land acquisition
               </Typography>
             </div>
             <Link

@@ -1264,8 +1264,6 @@ export default function Map() {
             setStateApp((state) => ({...state, popupOpen: true}));
             //setStateApp((state) => ({ ...state, wellSelected: true }));
             //setStateApp((state) => ({ ...state, wellSelectedCoordinates: [currentFeature.longitude, currentFeature.latitude] }));
-
-
             handleOpenExpandableCard();
         },
         [map, setStateApp]
@@ -1562,7 +1560,6 @@ export default function Map() {
                 newMap.on("load", function (e) {
                     setDraw(Draw);
                     setMap(newMap);
-                    console.log("draw: ", Draw);
                     console.log("set new map complete", newMap.loaded());
                 });
             };
@@ -1655,12 +1652,13 @@ export default function Map() {
                     createPopUp(currentFeature.properties);
 
                 });
-
                 console.log("map extra components complete");
             }
         }
-    }, [map, setStateMap, setStateNav, setStateMapControls, mapStyles]);
+    }, [map, setStateMap, setStateMapControls, mapStyles]);
 
+
+    // Use effect for removing shape filter
     useEffect(() => {
         if (stateNav.filterDrawing.length === 0) {
             if (draw)
@@ -1676,7 +1674,7 @@ export default function Map() {
     }, [stateNav.filterDrawing]);
 
 
-    // Use effect for shape filter
+    // Use effect for adding shape filter
     useEffect(() => {
         function drawCreateListener(e) {
             if (stateNav.drawingMode !== null) {
@@ -1720,6 +1718,7 @@ export default function Map() {
             }
         }
     }, [stateNav.filterFeatureId]);
+
 
     useEffect(() => {
         if (map && geocoder) {

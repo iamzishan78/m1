@@ -1,11 +1,11 @@
-import React, {useContext, useEffect, useState, useLayoutEffect} from "react";
+import React, { useContext, useEffect, useState, useLayoutEffect } from "react";
 import loadCSS from "fg-loadcss";
 // STATE MANAGEMENT
-import {MapControlsContext} from "../../MapControlsContext";
-import {MapContext} from "../../../Map/MapContext";
-import {AppContext} from "../../../../AppContext";
+import { MapControlsContext } from "../../MapControlsContext";
+import { MapContext } from "../../../Map/MapContext";
+import { AppContext } from "../../../../AppContext";
 // STYLES - Material UI Required Components
-import {useStyles, StyledMenu, StyledMenuItem} from "../muiThemes";
+import { useStyles, StyledMenu, StyledMenuItem } from "../muiThemes";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import ListItemText from "@material-ui/core/ListItemText";
 // STYLES - Font Awesome Icons Required for Menu Items
@@ -16,16 +16,16 @@ import ListItemText from "@material-ui/core/ListItemText";
 // COMPONENTS
 import SpatialDataCard from "../spatialDataCard";
 // HELPERS
-import {area, convertArea} from "@turf/turf";
-import {spatialDataAttributes} from "./constants";
+import { area, convertArea } from "@turf/turf";
+import { spatialDataAttributes } from "./constants";
 import {
-    addCustomShapeProperties,
-    createShapeLabelLayer
+  addCustomShapeProperties,
+  createShapeLabelLayer
 } from "./drawShapesHelpers";
-import mapboxgl, {Marker} from "mapbox-gl";
-import {makeStyles, Icon} from "@material-ui/core";
+import mapboxgl, { Marker } from "mapbox-gl";
+import { makeStyles, Icon } from "@material-ui/core";
 import polylabel from "polylabel";
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 //import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 //import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
@@ -43,39 +43,41 @@ const DEBUG_BLUE = "background: blue; color: white; border: 1px solid black";
 const DEBUG_RED = "background: red; color: white; border: 1px solid black";
 
 
+
+
 export const availableShapes = [
-    {
-        title: "Polygon",
-        mode: "draw_polygon",
-        //icon: "fa fa-draw-polygon"
-    },
-    {
-        title: "Circle",
-        mode: "drag_circle",
-        //icon: "fa fa-circle"
-    },
-    {
-        title: "Rectangle",
-        mode: "draw_rectangle",
-        //icon: "fa fa-square"
-    },
-    {
-        title: "Line",
-        mode: "draw_line_string",
-        //icon: "fa fa-grip-lines"
-    }
+  {
+    title: "Polygon",
+    mode: "draw_polygon",
+    //icon: "fa fa-draw-polygon"
+  },
+  {
+    title: "Circle",
+    mode: "drag_circle",
+    //icon: "fa fa-circle"
+  },
+  {
+    title: "Rectangle",
+    mode: "draw_rectangle",
+    //icon: "fa fa-square"
+  },
+  {
+    title: "Line",
+    mode: "draw_line_string",
+    //icon: "fa fa-grip-lines"
+  }
 ];
 
 const localStyles = makeStyles(theme => ({
-    label: {
-        width: "150px",
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        color: "white",
-        fontSize: "1rem"
-    }
+  label: {
+    width: "150px",
+    height: "15px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "white",
+    fontSize: "1rem"
+  }
 }));
 
 export default function DrawShapes(props) {
