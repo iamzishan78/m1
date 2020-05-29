@@ -37,15 +37,15 @@ const localStyles = makeStyles((theme) => ({
     color: "#011133",
     display: "flex",
     justifyContent: "center",
-    marginTop: "30px",
+    marginTop: "40px",
     marginBottom: "20px",
     fontSize: "48px",
     fontWeight: "900",
     fontFamily: "Tahoma, Geneva, sans-serif",
   },
   supportCard: {
-    width: "375px",
-    height: "425px",
+    width: "425px",
+    height: "500px",
     backgroundColor: "#e8eced",
     display: "flex",
     flexDirection: "column",
@@ -104,12 +104,11 @@ const Login = (props) => {
   const [, setStateNav] = useContext(NavigationContext);
 
   const localClass = localStyles();
-  const [signingIn, setSigningIn] = useState(false);
   const [loadingSigInButton, setLoadingSigInButton] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (stateApp.myMSALObj && !signingIn) {
+    if (stateApp.myMSALObj) {
       stateApp.myMSALObj
         .handleRedirectPromise()
         .then((tokenResponse) => {
@@ -133,71 +132,61 @@ const Login = (props) => {
                 "tokenResponse was not null but did not have any tokens: " +
                   tokenResponse
               );
-            }         
+            }
             setLoading(false);
-
-            sessionStorage.clear();       
-            window.location.replace(window.location.origin);
           }
         })
         .catch((error) => {
           console.log(error);
-          sessionStorage.clear();       
-          window.location.replace(window.location.origin);
         });
-      } else {
+    } else {
       if (stateApp.myMSALObj === false) setLoading(false);
     }
-  }, [stateApp.myMSALObj, signingIn]);
+  }, [stateApp.myMSALObj]);
 
   const handledAADSignIn = async (tenantName, updateTenantFlags) => {
-    let tenant = tenantsCredentials(tenantName);
-    if (tenant) {
-      setSigningIn(true);
-      setLoadingSigInButton(true);
+    if (!stateApp.myMSALObj) {
+      let tenant = tenantsCredentials(tenantName);
+      if (tenant) {
+        setLoadingSigInButton(true);
 
-      let myMSALObj = stateApp.myMSALObj
-
-      if (!stateApp.myMSALObj){
-        myMSALObj = new msal.PublicClientApplication(
+        let myMSALObj = new msal.PublicClientApplication(
           msalConfig(tenant.tenantId, tenant.clientId)
         );
+        window.sessionStorage.setItem("tenantName", tenant.name);
 
         setStateApp({
           ...stateApp,
           myMSALObj,
           apolloClientEndpoint: tenant.apolloClientEndpoint,
         });
-      }
+        const signInType = "loginRedirect";
 
-      window.sessionStorage.setItem("tenantName", tenant.name);
-
-      const signInType = "loginRedirect";
-
-      if (signInType === "loginPopup") {
-        stateApp.myMSALObj = myMSALObj; /////
-        const loginResponse = await signInPopup(loginRequest).catch(
-          (error) => {
+        if (signInType === "loginPopup") {
+          stateApp.myMSALObj = myMSALObj; /////
+          const loginResponse = await signInPopup(loginRequest).catch(
+            (error) => {
+              //do some error stuff
+              console.log(error);
+              updateTenantFlags(error);
+              setLoadingSigInButton(false);
+            }
+          );
+          if (!loginResponse) {
             //do some error stuff
-            console.log(error);
-            updateTenantFlags(error);
+            updateTenantFlags("Log in Failed");
             setLoadingSigInButton(false);
+
+            return;
           }
-        );
-        if (!loginResponse) {
-          //do some error stuff
-          updateTenantFlags("Log in Failed");
-          setLoadingSigInButton(false);
 
-          return;
+          await finishAADAuth(loginResponse);
+        } else if (signInType === "loginRedirect") {
+          myMSALObj.loginRedirect(loginRequest);
         }
-
-        await finishAADAuth(loginResponse);
-      } else if (signInType === "loginRedirect") {
-        myMSALObj.loginRedirect(loginRequest);
+      } else {
+        updateTenantFlags("Wrong Tenant Name");
       }
-    } else {
-      updateTenantFlags("Wrong Tenant Name");
     }
   };
 
@@ -544,13 +533,13 @@ const Login = (props) => {
           © 2020 M1neral, LLC. All Rights Reserved.
         </div>
 
-        <div
+        {/* <div
           style={{
             color: "#fff",
           }}
         >
           Terms of Service | Privacy Policy
-        </div>
+        </div> */}
 
         {/* <div style={{ 
                 color: "#fff", 

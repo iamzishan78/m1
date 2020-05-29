@@ -631,7 +631,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/track") {
@@ -644,7 +643,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/transact") {
@@ -657,7 +655,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/title") {
@@ -670,7 +667,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/contacts") {
@@ -683,7 +679,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 1,
         selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/alerts") {
@@ -696,7 +691,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 1,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/dashboard") {
@@ -709,7 +703,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 1,
-        selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/studio") {
@@ -722,21 +715,7 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 1,
-      }));
-    } else if (location.pathname === "/m1studio") {
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 0,
-        selectedMenuIndexTrack: 0,
-        selectedMenuIndexTransact: 0,
-        selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0,
-        selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 1,
-        selectedMenuIndexStudio: 0,
       }));
     }
   }, [location, setStateNav]);
@@ -779,12 +758,12 @@ export default function Navigation(props) {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-  const handleLogout = async () => {
+  const handleLogout = () => {
     setAnchorEl(null);
     sessionStorage.clear();
-    window.location.replace(window.location.origin);
+    stateApp.myMSALObj.logout();
 
-    // setStateApp((stateApp) => ({ ...stateApp, user: null }));
+    // setStateApp((state) => ({ ...state, user: null }));
     // setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
   };
 
@@ -1377,23 +1356,6 @@ export default function Navigation(props) {
               <DescriptionIcon />
             </ListItemIcon>
             <ListItemText primary="M1Studio" />
-          </ListItem>
-
-
-          <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexStudio === 1}
-            onClick={(event) => handleListItemClick(event, 0, "/studio")}
-            key="studio"
-          >
-            <ListItemIcon>
-              <DescriptionIcon />
-            </ListItemIcon>
-            <ListItemText primary="Studio" />
           </ListItem>
 
 
