@@ -1862,6 +1862,8 @@ export default function Map() {
         setStateApp((state) => ({...state, expandedCard: false}));
     };
 
+
+    
   useEffect(() => {
     var script = document.createElement("script");
     script.type = "text/javascript";
