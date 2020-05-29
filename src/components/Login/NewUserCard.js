@@ -299,6 +299,8 @@ export default function NewUserCard(props) {
 
   return !sent ? (
     <div className={classes.conatiner}>
+      {loaded && !error ? <div /> : <b>Something went wrong!</b>}
+
       <Card
         square={true}
         elevation={0}
@@ -606,9 +608,6 @@ export default function NewUserCard(props) {
 
 
 
-
-        {loaded && !error ? <div /> : <b>Something went wrong!</b>}
-        
 
         <div className={classes.cardFooter}>
           {/* <div>
