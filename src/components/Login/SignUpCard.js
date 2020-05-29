@@ -280,7 +280,7 @@ const Login = (props) => {
             color: "#fff",
           }}
         >
-          Terms of Service | Privacy Policy
+          {/* Terms of Service | Privacy Policy */}
         </div>
       </div>
     </div>

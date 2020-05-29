@@ -483,6 +483,29 @@ export default function NewUserCard(props) {
         </a>
 
         {/* </Card> */}
+
+
+
+{/* 
+
+        {var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src =
+    'https://m1neral.freshsales.io/web_forms/61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f/form.js' crossorigin='anonymous' id='fs_61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f';
+    script.async = true;
+
+    var x = document.getElementsByTagName("script")[0];
+    x.parentNode.insertBefore(script, x);
+
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  } */}
+
+
+
         <div className={classes.cardFooter}>
           {/* <div>
             By signing up, you agree to the{" "}
