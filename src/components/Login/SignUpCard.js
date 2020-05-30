@@ -5,6 +5,8 @@ import { Card, Typography } from "@material-ui/core";
 import NewUserCard from "./NewUserCard";
 import styled from "styled-components";
 import RenderSignUpControls from "./RenderSignUpControls";
+import { Link } from "react-router-dom";
+
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -21,6 +23,7 @@ const localStyles = makeStyles((theme) => ({
     alignItems: "center",
     paddingBottom: "1%",
   },
+
   headerWords: {
     color: "#011133",
     display: "flex",
@@ -33,7 +36,7 @@ const localStyles = makeStyles((theme) => ({
   },
   signUpSupportCard: {
     width: "500px",
-    height: "635px",
+    height: "735px",
     backgroundColor: "#e8eced",
     display: "flex",
     flexDirection: "column",
@@ -251,6 +254,35 @@ const Login = (props) => {
               way.
             </Typography>
           </div>
+
+          <div className={localClass.cardFooter}>
+          {/* <div>
+            By signing up, you agree to the{" "}
+            <a
+              href="https://www.m1neral.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{marginLeft: '10px'}} 
+              className={classes.link}
+            >
+              Terms and Conditions
+            </a>
+          </div> */}
+          <div 
+          
+          className={localClass.links}>
+            Already have an account?{" "}
+            <Link
+              to="/"
+              style={{ marginLeft: "10px" }}
+              className={localClass.link}
+            >
+              {" "}
+              Sign In
+            </Link>
+          </div>
+        </div>
+
         </Card>
       </div>
     </div>

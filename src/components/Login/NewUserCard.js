@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     width: "500px",
     height: "935px",
     //backgroundColor: theme.palette.secondary.dark,
-    backgroundColor: "#011133",
+    backgroundColor: "#fafafa",
     //border: `1px solid ${theme.palette.secondary.main}`,
     display: "flex",
     flexDirection: "column",
@@ -82,7 +82,8 @@ const useStyles = makeStyles((theme) => ({
   links: {
     marginTop: 10,
     marginBottom: 20,
-  },
+    color: "#011133",
+    },
   cardForm: {
     display: "contents",
     pointerEvents: "all",
@@ -333,21 +334,23 @@ export default function NewUserCard(props) {
         </div> */}
 
         {/* <Card className={classes.cardForm}> */}
-
+{/* 
         <div
-          id='parentID'
           style={{
             marginTop: "75px",
             fontSize: "24px",
             fontWeight: "900",
             fontFamily: "Tahoma, Geneva, sans-serif",
             textAlign: "left",
-            //paddingLeft: "65px",
+            paddingLeft: "65px",
             color: "white",
           }}
         >
           Get in touch
-        </div>
+        </div> */}
+
+
+        <div id='parentID' />
 
         {/* <div
           style={{
