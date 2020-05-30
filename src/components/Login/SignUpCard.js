@@ -56,6 +56,33 @@ const localStyles = makeStyles((theme) => ({
     flexDirection: "row",
     justifyContent: "center",
   },
+  link: {
+    textDecoration: "none",
+    color: theme.palette.secondary.main,
+    cursor: "pointer",
+    "&:hover": {
+      color: "#e4a773",
+    },
+  },
+  links: {
+    marginTop: 10,
+    marginBottom: 20,
+    color: "#011133",
+    },
+  cardFooter: {
+    height: "15%",
+    color: "white",
+    // fontSize: "1rem",
+    // textAlign: "left",
+    // marginLeft: "65px",
+    marginTop: "110px",
+    fontSize: "18px",
+    fontFamily: "Tahoma, Geneva, sans-serif",
+    textAlign: "left",
+    paddingLeft: "65px",
+    fontWeight: 600,
+    // float: 'left'
+  },
 }));
 
 const M1neralLogoNavNoAuth = (props) => (

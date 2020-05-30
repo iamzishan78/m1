@@ -632,7 +632,7 @@ export default function NewUserCard(props) {
 
 
 
-        <div className={classes.cardFooter}>
+        {/* <div className={classes.cardFooter}> */}
           {/* <div>
             By signing up, you agree to the{" "}
             <a
@@ -645,7 +645,7 @@ export default function NewUserCard(props) {
               Terms and Conditions
             </a>
           </div> */}
-          <div className={classes.links}>
+          {/* <div className={classes.links}>
             Already have an account?{" "}
             <Link
               to="/"
@@ -655,8 +655,8 @@ export default function NewUserCard(props) {
               {" "}
               Sign In
             </Link>
-          </div>
-        </div>
+          </div> */}
+        {/* </div> */}
       </Card>
     </div>
   ) : (
