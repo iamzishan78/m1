@@ -20,8 +20,9 @@ const useStyles = makeStyles((theme) => ({
   conatiner: {},
   card: {
     width: "500px",
-    height: "635px",
-    backgroundColor: theme.palette.secondary.dark,
+    height: "935px",
+    //backgroundColor: theme.palette.secondary.dark,
+    backgroundColor: "#011133",
     //border: `1px solid ${theme.palette.secondary.main}`,
     display: "flex",
     flexDirection: "column",
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
   cardHeader: {
     color: "white",
-    padding: "20px 40px",
+    //padding: "20px 40px",
     textAlign: "center",
   },
   cardFooter: {
@@ -206,83 +207,100 @@ export default function NewUserCard(props) {
 
 
 
-  const [loaded, error] = useScript(
-    'https://m1neral.freshsales.io/web_forms/61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f/form.js'   );
+  // const [loaded, error] = useScript(
+  //   'https://m1neral.freshsales.io/web_forms/61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f/form.js'   );
 
 
-  let cachedScripts = [];
-  function useScript(src) {
-    // Keeping track of script loaded and error state
-    const [state, setState] = useState({
-      loaded: false,
-      error: false
-    });
+  // let cachedScripts = [];
+  // function useScript(src) {
+  //   // Keeping track of script loaded and error state
+  //   const [state, setState] = useState({
+  //     loaded: false,
+  //     error: false
+  //   });
   
-    useEffect(
-      () => {
-        // If cachedScripts array already includes src that means another instance ...
-        // ... of this hook already loaded this script, so no need to load again.
-        if (cachedScripts.includes(src)) {
-          setState({
-            loaded: true,
-            error: false
-          });
-        } else {
-          cachedScripts.push(src);
+  //   useEffect(
+  //     () => {
+  //       // If cachedScripts array already includes src that means another instance ...
+  //       // ... of this hook already loaded this script, so no need to load again.
+  //       if (cachedScripts.includes(src)) {
+  //         setState({
+  //           loaded: true,
+  //           error: false
+  //         });
+  //       } else {
+  //         cachedScripts.push(src);
   
-          // Create script
-          let script = document.createElement('script');
-          //script.type = "application/json";
-          script.src = src;
-          script.crossorigin = 'anonymous';
-          script.id = 'fs_61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f';
-          script.async = true;
+  //         // Create script
+  //         let script = document.createElement('script');
+  //         //script.type = "application/json";
+  //         script.src = src;
+  //         script.crossorigin = 'anonymous';
+  //         script.id = 'fs_61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f';
+  //         script.async = true;
   
-          // Script event listener callbacks for load and error
-          const onScriptLoad = () => {
-            setState({
-              loaded: true,
-              error: false
-            });
-          };
+  //         // Script event listener callbacks for load and error
+  //         const onScriptLoad = () => {
+  //           setState({
+  //             loaded: true,
+  //             error: false
+  //           });
+  //         };
   
-          const onScriptError = () => {
-            // Remove from cachedScripts we can try loading again
-            const index = cachedScripts.indexOf(src);
-            if (index >= 0) cachedScripts.splice(index, 1);
-            script.remove();
+  //         const onScriptError = () => {
+  //           // Remove from cachedScripts we can try loading again
+  //           const index = cachedScripts.indexOf(src);
+  //           if (index >= 0) cachedScripts.splice(index, 1);
+  //           script.remove();
   
-            setState({
-              loaded: true,
-              error: true
-            });
-          };
+  //           setState({
+  //             loaded: true,
+  //             error: true
+  //           });
+  //         };
   
-          script.addEventListener('load', onScriptLoad);
-          script.addEventListener('error', onScriptError);
+  //         script.addEventListener('load', onScriptLoad);
+  //         script.addEventListener('error', onScriptError);
   
-          // Add script to document body
-          document.body.appendChild(script);
+  //         // Add script to document body
+  //         document.body.appendChild(script);
   
-          // Remove event listeners on cleanup
-          return () => {
-            script.removeEventListener('load', onScriptLoad);
-            script.removeEventListener('error', onScriptError);
-          };
-        }
-      },
-      [src] // Only re-run effect if script src changes
-    );
+  //         // Remove event listeners on cleanup
+  //         return () => {
+  //           script.removeEventListener('load', onScriptLoad);
+  //           script.removeEventListener('error', onScriptError);
+  //         };
+  //       }
+  //     },
+  //     [src] // Only re-run effect if script src changes
+  //   );
   
-    return [state.loaded, state.error];
-  }
-
-
-
+  //   return [state.loaded, state.error];
+  // }
 
 
 
 
+
+
+  useEffect(() => {
+    const script = document.createElement('script');
+  
+    // script.src = "https://use.typekit.net/foobar.js";
+    // script.async = true;
+
+    script.src = 'https://m1neral.freshsales.io/web_forms/61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f/form.js';
+    script.crossorigin = 'anonymous';
+    script.id = 'fs_61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f';
+    script.async = true;
+
+  
+    document.getElementById("parentID").appendChild(script);
+  
+    return () => {
+      document.getElementById("parentID").removeChild(script);
+    }
+  }, []);
 
 
 
@@ -298,8 +316,9 @@ export default function NewUserCard(props) {
 
 
   return !sent ? (
-    <div className={classes.conatiner}>
-      {loaded && !error ? <div /> : <b>Something went wrong!</b>}
+    
+    <div  className={classes.conatiner}>
+      {/* {loaded && !error ? <div /> : <b>Something went wrong!</b>} */}
 
       <Card
         square={true}
@@ -316,20 +335,21 @@ export default function NewUserCard(props) {
         {/* <Card className={classes.cardForm}> */}
 
         <div
+          id='parentID'
           style={{
             marginTop: "75px",
             fontSize: "24px",
             fontWeight: "900",
             fontFamily: "Tahoma, Geneva, sans-serif",
             textAlign: "left",
-            paddingLeft: "65px",
+            //paddingLeft: "65px",
             color: "white",
           }}
         >
           Get in touch
         </div>
 
-        <div
+        {/* <div
           style={{
             marginTop: "15px",
             fontSize: "14px",
@@ -341,9 +361,9 @@ export default function NewUserCard(props) {
           }}
         >
           FULL NAME
-        </div>
+        </div> */}
 
-        <BootstrapInput
+        {/* <BootstrapInput
           type="fname"
           // label="Email"
           variant="outlined"
@@ -356,7 +376,7 @@ export default function NewUserCard(props) {
           onChange={(e) => setUserName(e.target.value)}
           // onBlur={() => validateData("email", userEmail, setEmailFlags)}
           value={userName}
-        />
+        /> */}
 
         {/* 
 <div 
@@ -387,7 +407,7 @@ export default function NewUserCard(props) {
                 value={userEmail}
                 />                 */}
 
-        <div
+        {/* <div
           style={{
             marginTop: "15px",
             fontSize: "14px",
@@ -428,9 +448,9 @@ export default function NewUserCard(props) {
           }}
         >
           COMPANY NAME
-        </div>
+        </div> */}
 
-        <BootstrapInput
+        {/* <BootstrapInput
           type="company"
           // label="Email"
           variant="outlined"
@@ -457,9 +477,9 @@ export default function NewUserCard(props) {
           }}
         >
           PHONE
-        </div>
+        </div> */}
 
-        <BootstrapInput
+        {/* <BootstrapInput
           type="mobile"
           // label="Email"
           variant="outlined"
@@ -472,7 +492,7 @@ export default function NewUserCard(props) {
           onChange={(e) => setUserPhoneNum(e.target.value)}
           // onBlur={() => validateData("email", userEmail, setEmailFlags)}
           value={userPhoneNum}
-        />
+        /> */}
 
         {/* <div 
             style={{ 
@@ -569,7 +589,7 @@ export default function NewUserCard(props) {
             />
 
           </ValidatorForm> */}
-        <a
+        {/* <a
           href={
             userName.trim() !== ""
               ? `mailto:info@m1neral.com?subject="Access Request ${
@@ -604,7 +624,7 @@ export default function NewUserCard(props) {
           >
             REQUEST ACCESS
           </Button>
-        </a>
+        </a> */}
 
 
 

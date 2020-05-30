@@ -258,6 +258,10 @@ const Login = (props) => {
     <RenderSignUpControls />
   );
 
+
+
+
+
   return (
     <div className={localClass.myRoot}>
       <div className={localClass.rootNewUser}>{renderSignupNewCard}</div>
