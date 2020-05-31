@@ -36,6 +36,7 @@ import {useLazyQuery} from "@apollo/react-hooks";
 import {WELLSQUERY} from "../../graphQL/useQueryWells";
 import {TRACKSBYUSERANDOBJECTTYPE} from "../../graphQL/useQueryTracksByUserAndObjectType";
 import {USERBYEMAIL} from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
+import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
 
 const useStyles = makeStyles((theme) => ({
     mapWrapper: {
@@ -105,6 +106,10 @@ export default function Map() {
     const [tracksByUserAndObjectType, {data: dataTracks}] = useLazyQuery(
         TRACKSBYUSERANDOBJECTTYPE
     );
+    const [getOwnersWells, {data: dataOwnersWells}] = useLazyQuery(
+        OWNERSWELLSQUERY
+    );
+
     const [getUserByEmail, {data: dataUser}] = useLazyQuery(USERBYEMAIL);
     const [user, setUser] = useState({_id: ""});
     const [tracks, setTracks] = useState(false);
@@ -137,9 +142,19 @@ export default function Map() {
             tracksByUserAndObjectType({
                 variables: {
                     userId: user._id, //////stateApp.user._id////////temporary while signed user fixed
-                    objectType: "well",
+                    objectType: "owner",
                 },
             });
+
+            var objectsIdsArray = ["5e8b2c386f57b3002bdb3e8e"]
+
+            getOwnersWells({
+                variables: {
+                  ownersIds: objectsIdsArray,
+                },
+              });
+
+
         }
     }, [user]); //////stateApp.user._id////////temporary while signed user fixed
 
@@ -163,22 +178,26 @@ export default function Map() {
         }
     }, [dataTracks]);
 
-    useEffect(() => {
-        if (dataWells) {
-            if (
-                dataWells.wells &&
-                dataWells.wells.results &&
-                dataWells.wells.results.length > 0
-            ) {
-                const idArray = dataWells.wells.results.map((item) => item.api);
 
-                setIdArray(idArray);
-            } else {
-                setRows([]);
-            }
-            setLoading(false);
-        }
-    }, [dataWells]);
+
+
+
+    // useEffect(() => {
+    //     if (dataWells) {
+    //         if (
+    //             dataWells.wells &&
+    //             dataWells.wells.results &&
+    //             dataWells.wells.results.length > 0
+    //         ) {
+    //             const idArray = dataWells.wells.results.map((item) => item.api);
+
+    //             setIdArray(idArray);
+    //         } else {
+    //             setRows([]);
+    //         }
+    //         setLoading(false);
+    //     }
+    // }, [dataWells]);
 
 
     useEffect(() => {
@@ -469,8 +488,11 @@ export default function Map() {
             });
         }
 
-        console.log('length', stateMap.checkedUserDefinedLayers.length)
-        console.log('checks', stateMap.checkedUserDefinedLayers)
+        // console.log('length', stateMap.checkedUserDefinedLayers.length)
+        // console.log('checks', stateMap.checkedUserDefinedLayers)
+        console.log('dataTracks',dataTracks)
+        console.log('dataOwnersWells',dataOwnersWells)
+
 
         if (
             map &&
