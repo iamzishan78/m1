@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -34,69 +34,106 @@ const rows = [
 ];
 
 
-export default function CardDetailsSummary() {
+export default function TableSummary(props) {
   const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
-  console.log(stateApp);
-  console.log(stateApp.selectedWell);
-  const selectedWell = stateApp.selectedWell
+  const [summary, setSummary] = useState(null);
+
+  useEffect(() => {
+    if (props.summary) {
+      setSummary(props.summary);
+    }
+  }, [props.summary, setSummary])
 
   return (
     <TableContainer className={classes.tableContainer} component={Paper}>
-      <Table className={classes.table} aria-label="simple table">
-        <TableBody>
-          <TableRow>
-            <TableCell scope="row">
-              Lease
-            </TableCell>
-            <TableCell>{selectedWell.leaseId}</TableCell>
-            <TableCell scope="row">
-              Field
-            </TableCell>
-            <TableCell>{selectedWell.leaseId}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell scope="row">
-              County
-            </TableCell>
-            <TableCell>{selectedWell.county}</TableCell>
-            <TableCell scope="row">
-              MD(ft)
-            </TableCell>
-            <TableCell>{selectedWell.measuredDepth}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell scope="row">
-              State
-            </TableCell>
-            <TableCell>{selectedWell.state}</TableCell>
-            <TableCell scope="row">
-              TVD(ft)
-            </TableCell>
-            <TableCell>{selectedWell.leaseId}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell scope="row">
-              Survey
-            </TableCell>
-            <TableCell>{selectedWell.survey}</TableCell>
-            <TableCell scope="row">
-              Lateral(ft)
-            </TableCell>
-            <TableCell>{selectedWell.leaseId}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell scope="row">
-              Block
-            </TableCell>
-            <TableCell>{selectedWell.leaseId}</TableCell>
-            <TableCell scope="row">
-              Field
-            </TableCell>
-            <TableCell>{selectedWell.leaseId}</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+    {
+      summary && (
+        <Table className={classes.table} aria-label="simple table" loading={!summary}>
+          <TableBody>
+            <TableRow>
+              <TableCell scope="row">
+                Lease
+              </TableCell>
+              <TableCell>{summary.Lease}</TableCell>
+              <TableCell scope="row">
+                Field
+              </TableCell>
+              <TableCell>{summary.Field}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell scope="row">
+                County
+              </TableCell>
+              <TableCell>{summary.County}</TableCell>
+              <TableCell scope="row">
+                MD(ft)
+              </TableCell>
+              <TableCell>{summary.MeasuredDepth}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell scope="row">
+                State
+              </TableCell>
+              <TableCell>{summary.State}</TableCell>
+              <TableCell scope="row">
+                TVD(ft)
+              </TableCell>
+              <TableCell>{summary.TrueVerticalDepth || 'N/A'}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell scope="row">
+                {summary.State === 'TX' ? 'Survey' : 'Meridian'}
+              </TableCell>
+              <TableCell>{summary.Grid1}</TableCell>
+              <TableCell scope="row">
+                Lateral(ft)
+              </TableCell>
+              <TableCell>{summary.LateralLength}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell scope="row">
+                {summary.State === 'TX' ? 'Block' : 'Township'}
+              </TableCell>
+              <TableCell>{summary.Grid2}</TableCell>
+              <TableCell scope="row">
+                Latitude
+              </TableCell>
+              <TableCell>{summary.Latitude}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell scope="row">
+                {summary.State === 'TX' ? 'Section' : 'Range'}
+              </TableCell>
+              <TableCell>{summary.Grid3}</TableCell>
+              <TableCell scope="row">
+                Longitude
+              </TableCell>
+              <TableCell>{summary.Longitude}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell scope="row">
+                {summary.State === 'TX' ? 'Abstract' : 'Section'}
+              </TableCell>
+              <TableCell>{summary.Grid4}</TableCell>
+              <TableCell scope="row">
+                BH Latitude
+              </TableCell>
+              <TableCell>{summary.BHLatitude}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell scope="row">
+                {summary.State === 'TX' ? 'Alt Survey' : ''}
+              </TableCell>
+              <TableCell>{summary.Grid5 || ''}</TableCell>
+              <TableCell scope="row">
+                BH Longitude
+              </TableCell>
+              <TableCell>{summary.BHLongitude}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      )
+    }
     </TableContainer>
   );
 }

@@ -205,6 +205,7 @@ export default function WellCard() {
     { loading: loadingWellSummary, data: dataWellSummary },
   ] = useLazyQuery(WELLSUMMARYDETAILQUERY);
   const [target, setTarget] = useState(null);
+  const [summary, setSummary] = useState(null);
   const [source, setSource] = useState(null);
   const theme = useTheme();
   const classes = useStyles();
@@ -233,7 +234,7 @@ export default function WellCard() {
           if (dataGraph.vertexEdges.sourceIds.length > 0) {
             dataGraph.vertexEdges.sourceIds.forEach((id) => {
               if (stateApp.selectedWell.id === id) {
-                let trackedWell = stateApp.selectedWell;
+                let trackedWell = target || stateApp.selectedWell;
                 trackedWell.isTracked = true;
                 setTarget(trackedWell);
               }
@@ -249,6 +250,14 @@ export default function WellCard() {
       variables: { api: stateApp.selectedWell.api }
     });
   }, [stateApp.selectedWell]);
+
+  useEffect(() => {
+    if (dataWellSummary) {
+      setSummary(dataWellSummary.wellSummaryDetail[0]);
+    } else {
+      setSummary(null);
+    }
+  }, [dataWellSummary])
 
   //make fire and forget call to REST api so that it begins to cache other well related api calls
   const { data, loading, error } = useQueryWell(stateApp.selectedWell.api);
@@ -503,7 +512,7 @@ export default function WellCard() {
           }
         /> */}
             <CardContent className={classes.content}>
-              <WellCardDetails target={target} />
+              <WellCardDetails target={target} summary={summary} />
             </CardContent>
           </Card>
           {/* </Modal> */}
