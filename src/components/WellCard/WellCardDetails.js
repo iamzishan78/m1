@@ -321,12 +321,7 @@ export default function WellCardDetails(props) {
       </Grid>
       <Grid item sm={12} className={classes.gridWidthScroll}>
         <Grid item className={classes.gridItem}>
-          {/* TEMPORARY COMMENT OUT 
-              TABLE SUMMARY IS THE SUMMARY GRID 
-              FOR DETAILED WELL CARD AND IS IN PROGRES
-              <TableSummary />
- */}
-
+          <TableSummary />
           <CardDetailsMap />
         </Grid>
 

@@ -41,6 +41,7 @@ import TrackToggleButton from "../Shared/TrackToggleButton";
 import useQueryWell from "../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { VERTEXEDGESQUERY } from "../../graphQL/useQueryVertexEdges";
+import { WELLSUMMARYDETAILQUERY } from "../../graphQL/useQueryWellSummaryDetail";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -199,6 +200,10 @@ export default function WellCard() {
     getVertexEdges,
     { loading: loadingGraph, data: dataGraph },
   ] = useLazyQuery(VERTEXEDGESQUERY);
+  const [
+    getWellSummaryDetail,
+    { loading: loadingWellSummary, data: dataWellSummary },
+  ] = useLazyQuery(WELLSUMMARYDETAILQUERY);
   const [target, setTarget] = useState(null);
   const [source, setSource] = useState(null);
   const theme = useTheme();
@@ -238,6 +243,12 @@ export default function WellCard() {
       }
     }
   }, [stateApp.user, stateApp.selectedWell, dataGraph]);
+
+  useEffect(() => {
+    getWellSummaryDetail({
+      variables: { api: stateApp.selectedWell.api }
+    });
+  }, [stateApp.selectedWell]);
 
   //make fire and forget call to REST api so that it begins to cache other well related api calls
   const { data, loading, error } = useQueryWell(stateApp.selectedWell.api);

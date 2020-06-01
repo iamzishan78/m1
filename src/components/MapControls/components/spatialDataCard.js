@@ -233,12 +233,12 @@ export default function SpatialDataCard(props) {
               labelWidth={labelWidth}
             >
               <MenuItem value="interest">Area of Interest</MenuItem>
-              <MenuItem value="parcel">Parcel</MenuItem>
-              {stateMap.currentFeature &&
+              <MenuItem value="parcel">Parcel/Track</MenuItem>
+              {/* {stateMap.currentFeature &&
                 stateMap.currentFeature.geometry.type === "Polygon" &&
                 !stateMap.currentFeature.properties.isCircle && (
                   <MenuItem value="title">Title Opinion</MenuItem>
-                )}
+                )} */}
             </Select>
           </FormControl>
         </div>
@@ -282,7 +282,7 @@ export default function SpatialDataCard(props) {
             </div>
 
             {/* Text Field for Notes*/}
-            <div className={classes.TextField}>
+            {/* <div className={classes.TextField}>
               <TextField
                 fullWidth
                 variant="outlined"
@@ -293,7 +293,7 @@ export default function SpatialDataCard(props) {
                 value={dataNotes}
                 onChange={updateDataNotes}
               ></TextField>
-            </div>
+            </div> */}
           </div>
         )}
       </CardActions>
