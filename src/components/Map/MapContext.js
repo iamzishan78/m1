@@ -27,7 +27,7 @@ const styleLayers = [
   },
   {
     name: "TX GLO Active Leases",
-    id: ["GLOUnits","GLOUnitsLabels"],
+    id: ["GLOLeases","GLOLeaseLabels"],
   }, 
 ];
 
