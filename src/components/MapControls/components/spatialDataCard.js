@@ -127,8 +127,12 @@ const useStyles = makeStyles(theme => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 265,
-    color: "black"
+    color: "black",
     //paddingBottom: 3
+  },
+  label: {
+    background: "white",
+    padding: "0px 4px"
   },
   TextField: {
     display: "flex",
@@ -171,7 +175,7 @@ export default function SpatialDataCard(props) {
       sdType: dataType === "" ? "interest" : dataType,
       shapeLabel: dataName,
       projectName: dataProject,
-      sdNotes: dataNotes
+      // sdNotes: dataNotes
     };
     props.saveSpatialData(spatialData, dataType);
   };
@@ -226,19 +230,19 @@ export default function SpatialDataCard(props) {
             variant="outlined"
             className={classes.formControl}
           >
-            <InputLabel ref={inputLabel}> Boundary Type </InputLabel>
+            <InputLabel ref={inputLabel} className={classes.label}> Boundary Type </InputLabel>
             <Select
               value={dataType}
               onChange={evt => setDataType(evt.target.value)}
               labelWidth={labelWidth}
             >
               <MenuItem value="interest">Area of Interest</MenuItem>
-              <MenuItem value="parcel">Parcel</MenuItem>
-              {stateMap.currentFeature &&
+              <MenuItem value="parcel">Parcel/Track</MenuItem>
+              {/* {stateMap.currentFeature &&
                 stateMap.currentFeature.geometry.type === "Polygon" &&
                 !stateMap.currentFeature.properties.isCircle && (
                   <MenuItem value="title">Title Opinion</MenuItem>
-                )}
+                )} */}
             </Select>
           </FormControl>
         </div>
@@ -282,7 +286,7 @@ export default function SpatialDataCard(props) {
             </div>
 
             {/* Text Field for Notes*/}
-            <div className={classes.TextField}>
+            {/* <div className={classes.TextField}>
               <TextField
                 fullWidth
                 variant="outlined"
@@ -293,7 +297,7 @@ export default function SpatialDataCard(props) {
                 value={dataNotes}
                 onChange={updateDataNotes}
               ></TextField>
-            </div>
+            </div> */}
           </div>
         )}
       </CardActions>

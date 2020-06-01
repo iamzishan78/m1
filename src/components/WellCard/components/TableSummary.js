@@ -1,12 +1,14 @@
-import React from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
+// import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+
+import { AppContext } from "../../../AppContext";
 
 const useStyles = makeStyles({
   table: {
@@ -32,29 +34,106 @@ const rows = [
 ];
 
 
-export default function CardDetailsSummary() {
+export default function TableSummary(props) {
   const classes = useStyles();
+  const [summary, setSummary] = useState(null);
+
+  useEffect(() => {
+    if (props.summary) {
+      setSummary(props.summary);
+    }
+  }, [props.summary, setSummary])
 
   return (
     <TableContainer className={classes.tableContainer} component={Paper}>
-      <Table className={classes.table} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Well Level Data</TableCell>
-            <TableCell align="right">Value</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.name}>
-              <TableCell component="th" scope="row">
-                {row.name}
+    {
+      summary && (
+        <Table className={classes.table} aria-label="simple table" loading={!summary}>
+          <TableBody>
+            <TableRow>
+              <TableCell scope="row">
+                Lease
               </TableCell>
-              <TableCell align="right">{row.calories}</TableCell>
+              <TableCell>{summary.Lease}</TableCell>
+              <TableCell scope="row">
+                Field
+              </TableCell>
+              <TableCell>{summary.Field}</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+            <TableRow>
+              <TableCell scope="row">
+                County
+              </TableCell>
+              <TableCell>{summary.County}</TableCell>
+              <TableCell scope="row">
+                MD(ft)
+              </TableCell>
+              <TableCell>{summary.MeasuredDepth}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell scope="row">
+                State
+              </TableCell>
+              <TableCell>{summary.State}</TableCell>
+              <TableCell scope="row">
+                TVD(ft)
+              </TableCell>
+              <TableCell>{summary.TrueVerticalDepth || 'N/A'}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell scope="row">
+                {summary.State === 'TX' ? 'Survey' : 'Meridian'}
+              </TableCell>
+              <TableCell>{summary.Grid1}</TableCell>
+              <TableCell scope="row">
+                Lateral(ft)
+              </TableCell>
+              <TableCell>{summary.LateralLength}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell scope="row">
+                {summary.State === 'TX' ? 'Block' : 'Township'}
+              </TableCell>
+              <TableCell>{summary.Grid2}</TableCell>
+              <TableCell scope="row">
+                Latitude
+              </TableCell>
+              <TableCell>{summary.Latitude}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell scope="row">
+                {summary.State === 'TX' ? 'Section' : 'Range'}
+              </TableCell>
+              <TableCell>{summary.Grid3}</TableCell>
+              <TableCell scope="row">
+                Longitude
+              </TableCell>
+              <TableCell>{summary.Longitude}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell scope="row">
+                {summary.State === 'TX' ? 'Abstract' : 'Section'}
+              </TableCell>
+              <TableCell>{summary.Grid4}</TableCell>
+              <TableCell scope="row">
+                BH Latitude
+              </TableCell>
+              <TableCell>{summary.BHLatitude}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell scope="row">
+                {summary.State === 'TX' ? 'Alt Survey' : ''}
+              </TableCell>
+              <TableCell>{summary.Grid5 || ''}</TableCell>
+              <TableCell scope="row">
+                BH Longitude
+              </TableCell>
+              <TableCell>{summary.BHLongitude}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      )
+    }
     </TableContainer>
   );
 }

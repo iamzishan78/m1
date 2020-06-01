@@ -19,6 +19,7 @@ import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
 import Portal from "@material-ui/core/Portal";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
+import DrawStatus from "./components/DrawStatus";
 import "./popup.css";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import {
@@ -1914,6 +1915,7 @@ export default function Map() {
                 </div>
             </div>
             <MapControlsProvider/>
+            <DrawStatus drawingStatus={stateApp.editDraw} />  
             <Coordinates long={lng} lat={lat}/>
             <div id="tempPopupHolder" className={classes.portal} ref={container}/>
             <Portal container={container.current}>
