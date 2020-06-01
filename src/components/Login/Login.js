@@ -37,15 +37,15 @@ const localStyles = makeStyles((theme) => ({
     color: "#011133",
     display: "flex",
     justifyContent: "center",
-    marginTop: "40px",
+    marginTop: "30px",
     marginBottom: "20px",
     fontSize: "48px",
     fontWeight: "900",
     fontFamily: "Tahoma, Geneva, sans-serif",
   },
   supportCard: {
-    width: "425px",
-    height: "500px",
+    width: "375px",
+    height: "425px",
     backgroundColor: "#e8eced",
     display: "flex",
     flexDirection: "column",
@@ -104,11 +104,12 @@ const Login = (props) => {
   const [, setStateNav] = useContext(NavigationContext);
 
   const localClass = localStyles();
+  const [signingIn, setSigningIn] = useState(false);
   const [loadingSigInButton, setLoadingSigInButton] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (stateApp.myMSALObj) {
+    if (stateApp.myMSALObj && !signingIn) {
       stateApp.myMSALObj
         .handleRedirectPromise()
         .then((tokenResponse) => {
@@ -132,61 +133,71 @@ const Login = (props) => {
                 "tokenResponse was not null but did not have any tokens: " +
                   tokenResponse
               );
-            }
+            }         
             setLoading(false);
+
+            sessionStorage.clear();       
+            window.location.replace(window.location.origin);
           }
         })
         .catch((error) => {
           console.log(error);
+          sessionStorage.clear();       
+          window.location.replace(window.location.origin);
         });
-    } else {
+      } else {
       if (stateApp.myMSALObj === false) setLoading(false);
     }
-  }, [stateApp.myMSALObj]);
+  }, [stateApp.myMSALObj, signingIn]);
 
   const handledAADSignIn = async (tenantName, updateTenantFlags) => {
-    if (!stateApp.myMSALObj) {
-      let tenant = tenantsCredentials(tenantName);
-      if (tenant) {
-        setLoadingSigInButton(true);
+    let tenant = tenantsCredentials(tenantName);
+    if (tenant) {
+      setSigningIn(true);
+      setLoadingSigInButton(true);
 
-        let myMSALObj = new msal.PublicClientApplication(
+      let myMSALObj = stateApp.myMSALObj
+
+      if (!stateApp.myMSALObj){
+        myMSALObj = new msal.PublicClientApplication(
           msalConfig(tenant.tenantId, tenant.clientId)
         );
-        window.sessionStorage.setItem("tenantName", tenant.name);
 
         setStateApp({
           ...stateApp,
           myMSALObj,
           apolloClientEndpoint: tenant.apolloClientEndpoint,
         });
-        const signInType = "loginRedirect";
-
-        if (signInType === "loginPopup") {
-          stateApp.myMSALObj = myMSALObj; /////
-          const loginResponse = await signInPopup(loginRequest).catch(
-            (error) => {
-              //do some error stuff
-              console.log(error);
-              updateTenantFlags(error);
-              setLoadingSigInButton(false);
-            }
-          );
-          if (!loginResponse) {
-            //do some error stuff
-            updateTenantFlags("Log in Failed");
-            setLoadingSigInButton(false);
-
-            return;
-          }
-
-          await finishAADAuth(loginResponse);
-        } else if (signInType === "loginRedirect") {
-          myMSALObj.loginRedirect(loginRequest);
-        }
-      } else {
-        updateTenantFlags("Wrong Tenant Name");
       }
+
+      window.sessionStorage.setItem("tenantName", tenant.name);
+
+      const signInType = "loginRedirect";
+
+      if (signInType === "loginPopup") {
+        stateApp.myMSALObj = myMSALObj; /////
+        const loginResponse = await signInPopup(loginRequest).catch(
+          (error) => {
+            //do some error stuff
+            console.log(error);
+            updateTenantFlags(error);
+            setLoadingSigInButton(false);
+          }
+        );
+        if (!loginResponse) {
+          //do some error stuff
+          updateTenantFlags("Log in Failed");
+          setLoadingSigInButton(false);
+
+          return;
+        }
+
+        await finishAADAuth(loginResponse);
+      } else if (signInType === "loginRedirect") {
+        myMSALObj.loginRedirect(loginRequest);
+      }
+    } else {
+      updateTenantFlags("Wrong Tenant Name");
     }
   };
 
@@ -541,12 +552,12 @@ const Login = (props) => {
           Terms of Service | Privacy Policy
         </div> */}
 
-        {/* <div style={{ 
+        <div style={{ 
                 color: "#fff", 
                 marginBottom: '50px',
                 }}>
-        Privacy Policy
-        </div> */}
+        {/* Privacy Policy */}
+        </div>
       </div>
     </div>
   );

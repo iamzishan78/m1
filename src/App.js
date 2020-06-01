@@ -21,6 +21,7 @@ import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider
 import ContactsProvider from "./components/Contacts/ContactsProvider";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
 import DashboardProvider from "./components/Dashboard/DashboardProvider";
+import StudioProvider from "./components/Studio/StudioProvider";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
@@ -117,7 +118,7 @@ const PrivateRoute = ({ component, ...options }) => {
     Date.parse(stateApp.user.authTokenExpires) < Date.now()
   ) {
     sessionStorage.clear();
-    stateApp.myMSALObj.logout();
+    window.location.replace(window.location.origin);
 
     // setStateApp((stateApp) => ({ ...stateApp, user: null }));
     // setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
@@ -231,7 +232,11 @@ function App() {
                       path="/dashboard"
                       component={DashboardProvider}
                     />
-
+                    <PrivateRoute
+                      exact
+                      path="/studio"
+                      component={StudioProvider}
+                    />
                     {/* <Route component={NotFoundRedirect} /> */}
                   </NavigationProvider>
                 </Switch>

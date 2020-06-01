@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, Component } from "react";
 import { Link } from "react-router-dom";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import EmailSuccess from "./EmailSuccess";
@@ -13,13 +13,16 @@ import InputBase from "@material-ui/core/InputBase";
 import { Card, Button } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import { AppContext } from "../../AppContext";
+import { Frame } from "framer"
+
 
 const useStyles = makeStyles((theme) => ({
   conatiner: {},
   card: {
     width: "500px",
-    height: "635px",
-    backgroundColor: theme.palette.secondary.dark,
+    height: "935px",
+    //backgroundColor: theme.palette.secondary.dark,
+    backgroundColor: "#fafafa",
     //border: `1px solid ${theme.palette.secondary.main}`,
     display: "flex",
     flexDirection: "column",
@@ -27,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
   cardHeader: {
     color: "white",
-    padding: "20px 40px",
+    //padding: "20px 40px",
     textAlign: "center",
   },
   cardFooter: {
@@ -79,7 +82,8 @@ const useStyles = makeStyles((theme) => ({
   links: {
     marginTop: 10,
     marginBottom: 20,
-  },
+    color: "#011133",
+    },
   cardForm: {
     display: "contents",
     pointerEvents: "all",
@@ -130,6 +134,10 @@ const BootstrapInput = withStyles((theme) => ({
   },
 }))(InputBase);
 
+
+
+
+
 export default function NewUserCard(props) {
   const [stateApp] = useContext(AppContext);
   const classes = useStyles();
@@ -175,8 +183,144 @@ export default function NewUserCard(props) {
     userEmail
   );
 
+
+
+
+  // useEffect(() => {
+  //   var script = document.createElement("script");
+  //   script.type = "text/javascript";
+  //   script.src =
+  //     "https://m1neral.freshsales.io/web_forms/61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f/form.js' crossorigin='anonymous' id='fs_61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f";
+  //   script.async = true;
+  
+  //   var x = document.getElementsByTagName("script")[0];
+  //   x.parentNode.insertBefore(script, x);
+  
+  //   document.body.appendChild(script);
+  
+  //   return () => {
+  //     document.body.removeChild(script);
+  //   };
+  // }, []);
+  
+
+
+
+
+
+  // const [loaded, error] = useScript(
+  //   'https://m1neral.freshsales.io/web_forms/61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f/form.js'   );
+
+
+  // let cachedScripts = [];
+  // function useScript(src) {
+  //   // Keeping track of script loaded and error state
+  //   const [state, setState] = useState({
+  //     loaded: false,
+  //     error: false
+  //   });
+  
+  //   useEffect(
+  //     () => {
+  //       // If cachedScripts array already includes src that means another instance ...
+  //       // ... of this hook already loaded this script, so no need to load again.
+  //       if (cachedScripts.includes(src)) {
+  //         setState({
+  //           loaded: true,
+  //           error: false
+  //         });
+  //       } else {
+  //         cachedScripts.push(src);
+  
+  //         // Create script
+  //         let script = document.createElement('script');
+  //         //script.type = "application/json";
+  //         script.src = src;
+  //         script.crossorigin = 'anonymous';
+  //         script.id = 'fs_61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f';
+  //         script.async = true;
+  
+  //         // Script event listener callbacks for load and error
+  //         const onScriptLoad = () => {
+  //           setState({
+  //             loaded: true,
+  //             error: false
+  //           });
+  //         };
+  
+  //         const onScriptError = () => {
+  //           // Remove from cachedScripts we can try loading again
+  //           const index = cachedScripts.indexOf(src);
+  //           if (index >= 0) cachedScripts.splice(index, 1);
+  //           script.remove();
+  
+  //           setState({
+  //             loaded: true,
+  //             error: true
+  //           });
+  //         };
+  
+  //         script.addEventListener('load', onScriptLoad);
+  //         script.addEventListener('error', onScriptError);
+  
+  //         // Add script to document body
+  //         document.body.appendChild(script);
+  
+  //         // Remove event listeners on cleanup
+  //         return () => {
+  //           script.removeEventListener('load', onScriptLoad);
+  //           script.removeEventListener('error', onScriptError);
+  //         };
+  //       }
+  //     },
+  //     [src] // Only re-run effect if script src changes
+  //   );
+  
+  //   return [state.loaded, state.error];
+  // }
+
+
+
+
+
+
+  useEffect(() => {
+    const script = document.createElement('script');
+  
+    // script.src = "https://use.typekit.net/foobar.js";
+    // script.async = true;
+
+    script.src = 'https://m1neral.freshsales.io/web_forms/61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f/form.js';
+    script.crossorigin = 'anonymous';
+    script.id = 'fs_61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f';
+    script.async = true;
+
+  
+    document.getElementById("parentID").appendChild(script);
+  
+    return () => {
+      document.getElementById("parentID").removeChild(script);
+    }
+  }, []);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   return !sent ? (
-    <div className={classes.conatiner}>
+    
+    <div  className={classes.conatiner}>
+      {/* {loaded && !error ? <div /> : <b>Something went wrong!</b>} */}
+
       <Card
         square={true}
         elevation={0}
@@ -190,7 +334,7 @@ export default function NewUserCard(props) {
         </div> */}
 
         {/* <Card className={classes.cardForm}> */}
-
+{/* 
         <div
           style={{
             marginTop: "75px",
@@ -203,9 +347,12 @@ export default function NewUserCard(props) {
           }}
         >
           Get in touch
-        </div>
+        </div> */}
 
-        <div
+
+        <div id='parentID' />
+
+        {/* <div
           style={{
             marginTop: "15px",
             fontSize: "14px",
@@ -217,9 +364,9 @@ export default function NewUserCard(props) {
           }}
         >
           FULL NAME
-        </div>
+        </div> */}
 
-        <BootstrapInput
+        {/* <BootstrapInput
           type="fname"
           // label="Email"
           variant="outlined"
@@ -232,7 +379,7 @@ export default function NewUserCard(props) {
           onChange={(e) => setUserName(e.target.value)}
           // onBlur={() => validateData("email", userEmail, setEmailFlags)}
           value={userName}
-        />
+        /> */}
 
         {/* 
 <div 
@@ -263,7 +410,7 @@ export default function NewUserCard(props) {
                 value={userEmail}
                 />                 */}
 
-        <div
+        {/* <div
           style={{
             marginTop: "15px",
             fontSize: "14px",
@@ -304,9 +451,9 @@ export default function NewUserCard(props) {
           }}
         >
           COMPANY NAME
-        </div>
+        </div> */}
 
-        <BootstrapInput
+        {/* <BootstrapInput
           type="company"
           // label="Email"
           variant="outlined"
@@ -333,9 +480,9 @@ export default function NewUserCard(props) {
           }}
         >
           PHONE
-        </div>
+        </div> */}
 
-        <BootstrapInput
+        {/* <BootstrapInput
           type="mobile"
           // label="Email"
           variant="outlined"
@@ -348,7 +495,7 @@ export default function NewUserCard(props) {
           onChange={(e) => setUserPhoneNum(e.target.value)}
           // onBlur={() => validateData("email", userEmail, setEmailFlags)}
           value={userPhoneNum}
-        />
+        /> */}
 
         {/* <div 
             style={{ 
@@ -445,7 +592,7 @@ export default function NewUserCard(props) {
             />
 
           </ValidatorForm> */}
-        <a
+        {/* <a
           href={
             userName.trim() !== ""
               ? `mailto:info@m1neral.com?subject="Access Request ${
@@ -480,10 +627,12 @@ export default function NewUserCard(props) {
           >
             REQUEST ACCESS
           </Button>
-        </a>
+        </a> */}
 
-        {/* </Card> */}
-        <div className={classes.cardFooter}>
+
+
+
+        {/* <div className={classes.cardFooter}> */}
           {/* <div>
             By signing up, you agree to the{" "}
             <a
@@ -496,7 +645,7 @@ export default function NewUserCard(props) {
               Terms and Conditions
             </a>
           </div> */}
-          <div className={classes.links}>
+          {/* <div className={classes.links}>
             Already have an account?{" "}
             <Link
               to="/"
@@ -506,8 +655,8 @@ export default function NewUserCard(props) {
               {" "}
               Sign In
             </Link>
-          </div>
-        </div>
+          </div> */}
+        {/* </div> */}
       </Card>
     </div>
   ) : (

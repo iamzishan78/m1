@@ -54,6 +54,7 @@ const NavigationContextProvider = props => {
     filterGeographyAbstract: null,
     filterOwnerWellInterestSum: null,
     filterOwnerCount: null,
+    filterDrawing: [],
     searchInputValue:null,
     statusName:[],
     typeName:[],
@@ -106,7 +107,9 @@ const NavigationContextProvider = props => {
     filterWellAppraisal: null,
     filterOwnerAppraisals: null,
     ownerWellInterestSum: null,
-  })
+    drawingMode: null,
+    filterFeatureId: null,
+  });
   return (
     <NavigationContext.Provider value={[stateNav, setStateNav]}>
       {props.children}

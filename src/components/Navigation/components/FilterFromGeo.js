@@ -18,6 +18,7 @@ import FormControl from "@material-ui/core/FormControl";
 // import TextField from '@material-ui/core/TextField';
 import BasinFilterJ from "./FilterBasin";
 import PlayFilterJ from "./FilterPlay";
+import FilterFromDrawing from "./FilterFromDrawing";
 
 
 const useStyles = makeStyles(theme => ({
@@ -268,7 +269,7 @@ export default function FilterFormGeo() {
   return (
     <div className={classes.row}>
       <div className={classes.root}>
-
+        <FilterFromDrawing/>
       <FormControl variant="outlined" className={classes.formControl}>
          <BasinFilterJ/>
       </FormControl> 

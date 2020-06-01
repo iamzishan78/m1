@@ -34,6 +34,7 @@ import {default as DrawPoly} from '../../../Shared/svgIcons/polygon';
 import {default as Rect} from '../../../Shared/svgIcons/rectangle';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
+import {NavigationContext} from "../../../Navigation/NavigationContext";
 
 // import { availableShapes } from "./constants";
 const DEBUG_GREEN = "background: green; color: white; border: 1px solid black";
@@ -52,7 +53,7 @@ export const availableShapes = [
   },
   {
     title: "Circle",
-    mode: "draw_circle",
+    mode: "drag_circle",
     //icon: "fa fa-circle"
   },
   {
@@ -80,166 +81,181 @@ const localStyles = makeStyles(theme => ({
 }));
 
 export default function DrawShapes(props) {
-  const classes = useStyles();
-  let history = useHistory();
-  const localClasses = localStyles();
-  const [stateMapControls, setStateMapControls] = useContext(
-    MapControlsContext
-  );
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateMap, setStateMap] = useContext(MapContext);
-  const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
+    const classes = useStyles();
+    let history = useHistory();
+    const localClasses = localStyles();
+    const [stateMapControls, setStateMapControls] = useContext(
+        MapControlsContext
+    );
+    const [stateApp, setStateApp] = useContext(AppContext);
+    const [stateMap, setStateMap] = useContext(MapContext);
+    const [stateNav, setStateNav] = useContext(NavigationContext);
+    const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
 
-  const DEBUGGER = (source, value) => {
-    console.log(`%c[DrawShapes.js] ${source}`, DEBUG_GREEN, value);
-  };
+    const DEBUGGER = (source, value) => {
+        console.log(`%c[DrawShapes.js] ${source}`, DEBUG_GREEN, value);
+    };
 
-  const createShapeMarker = feature => {
-    var el = document.createElement("div");
-    el.setAttribute("id", feature.id);
-    el.innerHTML = "Feature_" + feature.id.slice(-4);
-    el.className = localClasses.label;
-    return el;
-  };
+    const createShapeMarker = feature => {
+        var el = document.createElement("div");
+        el.setAttribute("id", feature.id);
+        el.innerHTML = "Feature_" + feature.id.slice(-4);
+        el.className = localClasses.label;
+        return el;
+    };
 
-  // useEffect(() => {
-  //   loadCSS(
-  //     'https://use.fontawesome.com/releases/v5.1.0/css/all.css',
-  //     document.querySelector('#font-awesome-css'),
-  //   );
-  // }, []);
+    // useEffect(() => {
+    //   loadCSS(
+    //     'https://use.fontawesome.com/releases/v5.1.0/css/all.css',
+    //     document.querySelector('#font-awesome-css'),
+    //   );
+    // }, []);
 
-  useEffect(() => {
-    const { map } = stateMap;
-    map.on("draw.create", ({ features }) => {
-      const [feature] = features;
-      const { draw } = stateMap;
-      if (feature) {
-        addCustomShapeProperties(feature, draw);
-      }
-      setStateApp({ ...stateApp, editDraw: false });
-    });
-
-    map.on("draw.selectionchange", ({ features }) => {
-      const [feature] = features;
-      if (feature) {
-        setStateMap({ ...stateMap, currentFeature: feature });
-        setStateApp(stateApp => {
-          return {
-            ...stateApp,
-            featureOrMapShape: feature
-          };
+    useEffect(() => {
+        const {map} = stateMap;
+        map.on("draw.create", ({features}) => {
+            const [feature] = features;
+            const {draw} = stateMap;
+            if (feature) {
+                addCustomShapeProperties(feature, draw);
+            }
+            setStateApp({...stateApp, editDraw: false});
         });
-      } else {
-        setStateMap({ ...stateMap, currentFeature: undefined });
-      }
-    });
-  }, [stateMap.map, showSpatialDataCard]);
 
-  useEffect(() => {
-    const { currentFeature } = stateMap;
-    if (currentFeature !== undefined) {
-      toggleSpatialDataCard(true);
-    } else {
-      toggleSpatialDataCard(false);
-    }
-  }, [stateMap.currentFeature]);
+        map.on("draw.selectionchange", ({features}) => {
+            const [feature] = features;
+            if (feature) {
+                setStateMap({...stateMap, currentFeature: feature});
+                setStateApp(stateApp => {
+                    return {
+                        ...stateApp,
+                        featureOrMapShape: feature
+                    };
+                });
+            } else {
+                setStateMap({...stateMap, currentFeature: undefined});
+            }
+        });
+    }, [stateMap.map, showSpatialDataCard]);
 
-  const createShapeDrawOptions = () => {
-    return availableShapes.map((shape, index) => {
-      return (
-        <StyledMenuItem
-          key={index}
-          onClick={evt => {
-            stateMap.draw.changeMode(shape.mode);
-            setStateApp({ ...stateApp, editDraw: true });
-            handleClose();
-          }}
-        >
-          <div style={{ color: "white", paddingRight: "15px" }}>
-            <Icon className={shape.icon} color="secondary" />
-            {shape.mode === "draw_polygon" && <DrawPoly/>}
-            {shape.mode === "draw_rectangle" && <Rect/>}
-            {shape.mode === "draw_circle" && <RadioButtonUncheckedIcon fontSize='small'/>}
-            {shape.mode === "draw_line_string" && <ShowChartIcon/>}
-          </div>
-          <ListItemText primary={shape.title} id={index} />
-        </StyledMenuItem>
-      );
-    });
-  };
+    useEffect(() => {
+        const {currentFeature} = stateMap;
+        if (currentFeature !== undefined) {
+            toggleSpatialDataCard(true);
+        } else {
+            toggleSpatialDataCard(false);
+        }
+    }, [stateMap.currentFeature]);
 
-  const handleClose = () => {
-    setStateMapControls({ ...stateMapControls, anchorEl: null });
-  };
+    const createShapeDrawOptions = () => {
+        return availableShapes.map((shape, index) => {
+            return (
+                <StyledMenuItem
+                    key={index}
+                    onClick={evt => {
+                        stateMap.draw.changeMode(shape.mode);
+                        setStateApp({...stateApp, editDraw: true});
+                        handleClose();
+                    }}
+                >
+                    <div style={{color: "white", paddingRight: "15px"}}>
+                        <Icon className={shape.icon} color="secondary"/>
+                        {shape.mode === "draw_polygon" && <DrawPoly/>}
+                        {shape.mode === "draw_rectangle" && <Rect/>}
+                        {shape.mode === "drag_circle" && <RadioButtonUncheckedIcon fontSize='small'/>}
+                        {shape.mode === "draw_line_string" && <ShowChartIcon/>}
+                    </div>
+                    <ListItemText primary={shape.title} id={index}/>
+                </StyledMenuItem>
+            );
+        });
+    };
 
-  const handleSaveSpatialDataToShape = (spatialData, dataType) => {
-    // save data onto geoJSON properties fields
+    const handleClose = () => {
+        setStateMapControls({...stateMapControls, anchorEl: null});
+    };
 
-    spatialDataAttributes.forEach(attribute => {
-      stateMap.draw.setFeatureProperty(
-        stateMap.currentFeature.id,
-        attribute,
-        spatialData[attribute]
-      );
-    });
-    toggleSpatialDataCard(false);
+    const handleSaveSpatialDataToShape = (spatialData, dataType) => {
+        // save data onto geoJSON properties fields
 
-    //////cleaning the selected title opinion and redirecting to title opinion page//
+        spatialDataAttributes.forEach(attribute => {
+            stateMap.draw.setFeatureProperty(
+                stateMap.currentFeature.id,
+                attribute,
+                spatialData[attribute]
+            );
+        });
+        toggleSpatialDataCard(false);
 
-    if (dataType === "title") {
-      setStateApp(stateApp => {
-        return {
-          ...stateApp,
-          selectedTitleOpinionId: null
-        };
-      });
+        //////cleaning the selected title opinion and redirecting to title opinion page//
 
-      history.push("/titleopinion");
-    }
-  };
+        if (dataType === "title") {
+            setStateApp(stateApp => {
+                return {
+                    ...stateApp,
+                    selectedTitleOpinionId: null
+                };
+            });
 
-  const handleDeleteSpatialDataAndShape = () => {
-    const { currentFeature } = stateMap;
-    if (currentFeature) {
-      const elem = document.getElementById(currentFeature.id);
-      // elem.parentNode.removeChild(elem);
-      console.log("elem", elem);
-      stateMap.draw.delete(currentFeature.id);
-      setStateMap({ ...stateMap, currentFeature: undefined });
-    }
-  };
+            history.push("/titleopinion");
+        }
+    };
 
-  return (
-    <React.Fragment>
-      <ClickAwayListener onClickAway={handleClose}>
-        <StyledMenu
-          id="draw-shapes"
-          keepMounted
-          anchorEl={stateMapControls.anchorEl}
-          open={Boolean(stateMapControls.anchorEl)}
-          onClose={handleClose}
-        >
-          <StyledMenuItem
-            disableRipple
-            key="subheader"
-            role={undefined}
-            dense
-            className={classes.subHeaderItem}
-          >
-            <ListItemText primary="Draw Shapes" />
-          </StyledMenuItem>
-          {createShapeDrawOptions()}
-        </StyledMenu>
-      </ClickAwayListener>
-      {showSpatialDataCard && stateMap.currentFeature !== undefined ? (
-        <SpatialDataCard
-          closeSpatialDataCard={() => toggleSpatialDataCard(false)}
-          saveSpatialData={handleSaveSpatialDataToShape}
-          deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
-          selectedFeature={stateMap.currentFeature}
-        />
-      ) : null}
-    </React.Fragment>
-  );
+    const handleDeleteSpatialDataAndShape = () => {
+        const {currentFeature} = stateMap;
+        if (currentFeature) {
+            const elem = document.getElementById(currentFeature.id);
+            // elem.parentNode.removeChild(elem);
+            console.log("elem", elem);
+            stateMap.draw.delete(currentFeature.id);
+            setStateMap({
+                ...stateMap,
+                currentFeature: undefined,
+            });
+            if (currentFeature.id.includes("draw_polygon")
+                || currentFeature.id.includes("drag_circle")
+                || currentFeature.id.includes("draw_rectangle")) {
+                setStateNav((stateNav) => ({
+                    ...stateNav,
+                    filterDrawing: []
+                }));
+            }
+        }
+    };
+
+    return (
+        <React.Fragment>
+            <ClickAwayListener onClickAway={handleClose}>
+                <StyledMenu
+                    id="draw-shapes"
+                    keepMounted
+                    anchorEl={stateMapControls.anchorEl}
+                    open={Boolean(stateMapControls.anchorEl)}
+                    onClose={handleClose}
+                >
+                    <StyledMenuItem
+                        disableRipple
+                        key="subheader"
+                        role={undefined}
+                        dense
+                        className={classes.subHeaderItem}
+                    >
+                        <ListItemText primary="Draw Shapes"/>
+                    </StyledMenuItem>
+                    {createShapeDrawOptions()}
+                </StyledMenu>
+            </ClickAwayListener>
+            {showSpatialDataCard && stateMap.currentFeature !== undefined && !stateMap.currentFeature.id.includes("draw_polygon")
+            && !stateMap.currentFeature.id.includes("drag_circle")
+            && !stateMap.currentFeature.id.includes("draw_rectangle")
+                ? (
+                    <SpatialDataCard
+                        closeSpatialDataCard={() => toggleSpatialDataCard(false)}
+                        saveSpatialData={handleSaveSpatialDataToShape}
+                        deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
+                        selectedFeature={stateMap.currentFeature}
+                    />
+                ) : null}
+        </React.Fragment>
+    );
 }

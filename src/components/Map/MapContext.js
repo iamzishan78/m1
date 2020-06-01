@@ -212,7 +212,6 @@ const MapContextProvider = (props) => {
   const [stateMap, setStateMap] = useState({
     selectedWellId: null,
     selectedWellApi: null,
-    checkedHeats: null,
     selectedWell: null,
     styleLayers: styleLayers,
     heatLayers: heatLayers,

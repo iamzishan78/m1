@@ -5,6 +5,8 @@ import { Card, Typography } from "@material-ui/core";
 import NewUserCard from "./NewUserCard";
 import styled from "styled-components";
 import RenderSignUpControls from "./RenderSignUpControls";
+import { Link } from "react-router-dom";
+
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -21,6 +23,7 @@ const localStyles = makeStyles((theme) => ({
     alignItems: "center",
     paddingBottom: "1%",
   },
+
   headerWords: {
     color: "#011133",
     display: "flex",
@@ -33,7 +36,7 @@ const localStyles = makeStyles((theme) => ({
   },
   signUpSupportCard: {
     width: "500px",
-    height: "635px",
+    height: "735px",
     backgroundColor: "#e8eced",
     display: "flex",
     flexDirection: "column",
@@ -52,6 +55,33 @@ const localStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
+  },
+  link: {
+    textDecoration: "none",
+    color: theme.palette.secondary.main,
+    cursor: "pointer",
+    "&:hover": {
+      color: "#e4a773",
+    },
+  },
+  links: {
+    marginTop: 10,
+    marginBottom: 20,
+    color: "#011133",
+    },
+  cardFooter: {
+    height: "15%",
+    color: "white",
+    // fontSize: "1rem",
+    // textAlign: "left",
+    // marginLeft: "65px",
+    marginTop: "110px",
+    fontSize: "18px",
+    fontFamily: "Tahoma, Geneva, sans-serif",
+    textAlign: "left",
+    paddingLeft: "65px",
+    fontWeight: 600,
+    // float: 'left'
   },
 }));
 
@@ -251,12 +281,45 @@ const Login = (props) => {
               way.
             </Typography>
           </div>
+
+          <div className={localClass.cardFooter}>
+          {/* <div>
+            By signing up, you agree to the{" "}
+            <a
+              href="https://www.m1neral.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{marginLeft: '10px'}} 
+              className={classes.link}
+            >
+              Terms and Conditions
+            </a>
+          </div> */}
+          <div 
+          
+          className={localClass.links}>
+            Already have an account?{" "}
+            <Link
+              to="/"
+              style={{ marginLeft: "10px" }}
+              className={localClass.link}
+            >
+              {" "}
+              Sign In
+            </Link>
+          </div>
+        </div>
+
         </Card>
       </div>
     </div>
   ) : (
     <RenderSignUpControls />
   );
+
+
+
+
 
   return (
     <div className={localClass.myRoot}>
@@ -280,7 +343,7 @@ const Login = (props) => {
             color: "#fff",
           }}
         >
-          Terms of Service | Privacy Policy
+          {/* Terms of Service | Privacy Policy */}
         </div>
       </div>
     </div>
