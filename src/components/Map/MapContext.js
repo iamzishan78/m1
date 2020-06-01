@@ -17,10 +17,18 @@ const styleLayers = [
     name: "Land Grid",
     id: ["surveylabels", "surveyLayer"],
   },
+  // {
+  //   name: "Permits",
+  //   id: [],
+  // },
   {
-    name: "Permits",
-    id: [],
+    name: "TX GLO Units",
+    id: ["GLOUnits","GLOUnitsLabels"],
   },
+  {
+    name: "TX GLO Active Leases",
+    id: ["GLOUnits","GLOUnitsLabels"],
+  }, 
 ];
 
 
