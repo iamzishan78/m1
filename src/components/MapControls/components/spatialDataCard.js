@@ -127,8 +127,12 @@ const useStyles = makeStyles(theme => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 265,
-    color: "black"
+    color: "black",
     //paddingBottom: 3
+  },
+  label: {
+    background: "white",
+    padding: "0px 4px"
   },
   TextField: {
     display: "flex",
@@ -171,7 +175,7 @@ export default function SpatialDataCard(props) {
       sdType: dataType === "" ? "interest" : dataType,
       shapeLabel: dataName,
       projectName: dataProject,
-      sdNotes: dataNotes
+      // sdNotes: dataNotes
     };
     props.saveSpatialData(spatialData, dataType);
   };
@@ -226,7 +230,7 @@ export default function SpatialDataCard(props) {
             variant="outlined"
             className={classes.formControl}
           >
-            <InputLabel ref={inputLabel}> Boundary Type </InputLabel>
+            <InputLabel ref={inputLabel} className={classes.label}> Boundary Type </InputLabel>
             <Select
               value={dataType}
               onChange={evt => setDataType(evt.target.value)}
