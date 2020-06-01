@@ -7,7 +7,7 @@ import uid from "uid";
 const useStyles = makeStyles((theme) => ({
   MSWrapper: {
     width: "100%",
-    height: "356px !important",
+    minHeight: "356px !important",
     overflow: "hidden !important",
   },
   map: {
