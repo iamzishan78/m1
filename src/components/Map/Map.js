@@ -1831,47 +1831,47 @@ export default function Map() {
     }, [stateNav.filterFeatureId]);
 
 
-    // useEffect(() => {
-    //     if (map && geocoder) {
-    //         return () => {
-    //             var list = document.getElementById("searchBar");
-    //             if (list && list.childNodes && list.childNodes.length > 0) {
-    //                 list.removeChild(list.childNodes[0]);
-    //             }
-    //             var zoom = map.getZoom();
-    //             var center = map.getCenter();
-    //             var pitch = map.getPitch();
-    //             var bearing = map.getBearing();
+    useEffect(() => {
+        if (map) {
+            return () => {
+                var list = document.getElementById("searchBar");
+                if (list && list.childNodes && list.childNodes.length > 0) {
+                    list.removeChild(list.childNodes[0]);
+                }
+                var zoom = map.getZoom();
+                var center = map.getCenter();
+                var pitch = map.getPitch();
+                var bearing = map.getBearing();
 
-    //             console.log(stateApp.mapVars);
-    //             console.log("**************************");
+                console.log(stateApp.mapVars);
+                console.log("**************************");
 
-    //             setStateApp((stateApp) => ({
-    //                 ...stateApp,
-    //                 mapVars: {
-    //                     ...stateApp.mapVars,
-    //                     zoom: zoom,
-    //                     center: center,
-    //                     pitch: pitch,
-    //                     bearing: bearing,
-    //                 },
-    //             }));
+                setStateApp((stateApp) => ({
+                    ...stateApp,
+                    mapVars: {
+                        ...stateApp.mapVars,
+                        zoom: zoom,
+                        center: center,
+                        pitch: pitch,
+                        bearing: bearing,
+                    },
+                }));
 
-    //             console.log("save map state variables");
-    //             console.log(stateApp.mapVars);
+                console.log("save map state variables");
+                console.log(stateApp.mapVars);
 
-    //             var mapList = document.getElementById("map");
-    //             console.log(mapList.childNodes);
-    //             if (mapList.childNodes.length > 1) {
-    //                 mapList.removeChild(mapList.childNodes[1]);
-    //                 mapList.removeChild(mapList.childNodes[1]);
-    //                 mapList.removeChild(mapList.childNodes[1]);
-    //             }
-    //             console.log(mapList.childNodes);
-    //             console.log("end map unmount");
-    //         };
-    //     }
-    // }, [map, geocoder]);
+                var mapList = document.getElementById("map");
+                console.log(mapList.childNodes);
+                if (mapList.childNodes.length > 1) {
+                    mapList.removeChild(mapList.childNodes[1]);
+                    mapList.removeChild(mapList.childNodes[1]);
+                    mapList.removeChild(mapList.childNodes[1]);
+                }
+                console.log(mapList.childNodes);
+                console.log("end map unmount");
+            };
+        }
+    }, [map]);
 
     useEffect(() => {
         ////// USE EFFECT TO MANAGE THE FLY TO FEATURE
