@@ -22,6 +22,10 @@ const styleLayers = [
   //   id: [],
   // },
   {
+    name: "Rig Activity",
+    id: ["rigsbycounty"],
+  },
+  {
     name: "TX GLO Units",
     id: ["GLOUnits","GLOUnitsLabels"],
   },
