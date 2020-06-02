@@ -57,6 +57,13 @@ const userDefinedLayers = [
   {
     name: "Tracked Wells",
     id: ['Tracked Wells'],
+    type: 'data layer',
+    dataId: 'trackedWells'
+  },
+
+  {
+    name: "Tracked Owners",
+    id: ['Tracked Wells'],
     type: 'data layer'
   },
 

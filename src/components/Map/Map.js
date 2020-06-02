@@ -111,10 +111,13 @@ export default function Map() {
         TRACKSBYUSERANDOBJECTTYPE
     );
 
-
     const [getOwnersWells, {data: dataOwnersWells}] = useLazyQuery(
         OWNERSWELLSQUERY
     );
+
+    const [getWellsForLayer, {data: dataWellsForOwnerWellTrackLayer}] = useLazyQuery(WELLSQUERY);
+
+
 
     const [getUserByEmail, {data: dataUser}] = useLazyQuery(USERBYEMAIL);
     const [user, setUser] = useState({_id: ""});
@@ -165,6 +168,8 @@ export default function Map() {
         }
     }, [user]); //////stateApp.user._id////////temporary while signed user fixed
 
+
+
     useEffect(() => {
         if (dataTracks && dataTracks.tracksByUserAndObjectType) {
             if (dataTracks.tracksByUserAndObjectType.length !== 0) {
@@ -190,12 +195,9 @@ export default function Map() {
         if (dataTracksOwner && dataTracksOwner.tracksByUserAndObjectType) {
             if (dataTracksOwner.tracksByUserAndObjectType.length !== 0) {
 
-            console.log('hehehehehehe')
-            console.log(dataTracksOwner)            
             var objectsIdsArray = dataTracksOwner.tracksByUserAndObjectType.map(
                 (item) => item.trackOn
             );
-            console.log(objectsIdsArray)
             
             getOwnersWells({
                 variables: {
@@ -205,6 +207,35 @@ export default function Map() {
             } 
         }
     }, [dataTracksOwner]);
+
+
+    useEffect(() => {
+        if (dataOwnersWells && dataOwnersWells.length !== 0) {
+
+            console.log(dataOwnersWells.ownersWells)            
+            var ownerObjectIds = dataOwnersWells.ownersWells.map(
+                (item) => item.wells
+            );
+
+            var merged = [].concat.apply([],ownerObjectIds)
+
+            var stripped = merged.map(
+                (item) => item.wellId
+            );
+
+            // console.log(ownerObjectIds)
+            // console.log(merged)
+            // console.log(stripped)
+
+            getWellsForLayer({
+                variables: {
+                    wellIdArray: stripped,
+                    authToken: stateApp.user.authToken,
+                },
+            });
+
+        }
+    }, [dataOwnersWells]);
 
 
 
@@ -503,7 +534,7 @@ export default function Map() {
         if (stateMap.userDefinedLayers.length > 0 && map) {
             //const layerList = stateMap.userDefinedLayers;
 
-            console.log('cehck checked', stateMap.checkedUserDefinedLayers)
+            // console.log('cehck checked', stateMap.checkedUserDefinedLayers)
             stateMap.userDefinedLayers.forEach((l) => {
                 l.id.forEach((k) => {
                     if (map.getLayer(k)) {
@@ -519,7 +550,9 @@ export default function Map() {
         // console.log('checks', stateMap.checkedUserDefinedLayers)
         console.log('dataTracks',dataTracks)
         console.log('dataOwnersWells',dataOwnersWells)
+        console.log('dataWellsForOwnerWellTrackLayer',dataWellsForOwnerWellTrackLayer)
 
+        
 
         if (
             map &&
@@ -528,6 +561,7 @@ export default function Map() {
             console.log('user defined layers', stateMap.checkedUserDefinedLayers)
             console.log('length', stateMap.checkedUserDefinedLayers.length)
             const layerList = stateMap.userDefinedLayers;
+            console.log('layerList',layerList)
             stateMap.checkedUserDefinedLayers.forEach((l) => {
                 //console.log(l);
                 const selectLayerProps = layerList[l];
