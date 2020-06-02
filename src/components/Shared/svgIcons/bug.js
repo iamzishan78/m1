@@ -29,7 +29,7 @@ export default class Bug extends Component {
   };
 
   static defaultProps = {
-    height: '16px',
+    height: '20px',
     predefinedClassName: 'data-ex-icons-bug'
   };
 

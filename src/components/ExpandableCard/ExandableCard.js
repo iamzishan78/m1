@@ -17,6 +17,7 @@ import TaggerWithIcon from "../Shared/TaggerWithIcon";
 import CommentsWithIcon from "../Shared/CommentsWithIcon";
 import TrackToggleButton from "../Shared/TrackToggleButton";
 import $ from "jquery";
+import BugsIcon from "../Shared/svgIcons/bug.js";
 
 export default function ExpandableCard(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -257,6 +258,22 @@ export default function ExpandableCard(props) {
                     </IconButton>
                   </Tooltip>
                 )}
+                  
+
+
+            {stateExpandableCard.expanded && (
+              <Tooltip title={"Report Bug"} placement="top">
+                <IconButton
+                  size="large"
+                  onClick={handleExpand}
+                  //aria-label="expand"
+                  className={classes.icons}
+                >
+                  <BugsIcon viewBox="0 0 64 64" color="white" />
+                </IconButton>
+              </Tooltip>
+            )}
+
             <Tooltip title={"Close"} placement="top">
               <IconButton
                 size={stateExpandableCard.expanded ? "medium" : "small"}
