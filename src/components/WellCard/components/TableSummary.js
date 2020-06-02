@@ -19,6 +19,9 @@ const useStyles = makeStyles({
     //minWidth: 650,
     //paddingRight: '20px'
   },
+  rowName: {
+    fontWeight: 'bold'
+  }
 });
 
 function createData(name, calories, fat, carbs, protein) {
@@ -32,6 +35,12 @@ const rows = [
   createData('Profile', 'Vertical'),
   createData('Permit Date', '10/18/2005'),
 ];
+
+function formatFT(ft) {
+  let ftNum = ft ? ft : 0;
+  ftNum = Math.round(ftNum / 1000) * 1000;
+  return ftNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
 
 export default function TableSummary(props) {
@@ -51,81 +60,81 @@ export default function TableSummary(props) {
         <Table className={classes.table} aria-label="simple table" loading={!summary}>
           <TableBody>
             <TableRow>
-              <TableCell scope="row">
+              <TableCell scope="row" className={classes.rowName}>
                 Lease
               </TableCell>
-              <TableCell>{summary.Lease}</TableCell>
-              <TableCell scope="row">
+              <TableCell>{summary.Lease ? `${summary.LeaseId} - ${summary.Lease}` : summary.LeaseId}</TableCell>
+              <TableCell scope="row" className={classes.rowName}>
                 Field
               </TableCell>
               <TableCell>{summary.Field}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell scope="row">
+              <TableCell scope="row" className={classes.rowName}>
                 County
               </TableCell>
               <TableCell>{summary.County}</TableCell>
-              <TableCell scope="row">
+              <TableCell scope="row" className={classes.rowName}>
                 MD(ft)
               </TableCell>
-              <TableCell>{summary.MeasuredDepth}</TableCell>
+              <TableCell>{formatFT(summary.MeasuredDepth)}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell scope="row">
+              <TableCell scope="row" className={classes.rowName}>
                 State
               </TableCell>
               <TableCell>{summary.State}</TableCell>
-              <TableCell scope="row">
+              <TableCell scope="row" className={classes.rowName}>
                 TVD(ft)
               </TableCell>
-              <TableCell>{summary.TrueVerticalDepth || 'N/A'}</TableCell>
+              <TableCell>{formatFT(summary.TrueVerticalDepth)}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell scope="row">
+              <TableCell scope="row" className={classes.rowName}>
                 {summary.State === 'TX' ? 'Survey' : 'Meridian'}
               </TableCell>
               <TableCell>{summary.Grid1}</TableCell>
-              <TableCell scope="row">
-                Lateral(ft)
+              <TableCell scope="row" className={classes.rowName}>
+                Lateral Length(ft)
               </TableCell>
-              <TableCell>{summary.LateralLength}</TableCell>
+              <TableCell>{formatFT(summary.LateralLength)}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell scope="row">
+              <TableCell scope="row" className={classes.rowName}>
                 {summary.State === 'TX' ? 'Block' : 'Township'}
               </TableCell>
               <TableCell>{summary.Grid2}</TableCell>
-              <TableCell scope="row">
+              <TableCell scope="row" className={classes.rowName}>
                 Latitude
               </TableCell>
               <TableCell>{summary.Latitude}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell scope="row">
+              <TableCell scope="row" className={classes.rowName}>
                 {summary.State === 'TX' ? 'Section' : 'Range'}
               </TableCell>
               <TableCell>{summary.Grid3}</TableCell>
-              <TableCell scope="row">
+              <TableCell scope="row" className={classes.rowName}>
                 Longitude
               </TableCell>
               <TableCell>{summary.Longitude}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell scope="row">
+              <TableCell scope="row" className={classes.rowName}>
                 {summary.State === 'TX' ? 'Abstract' : 'Section'}
               </TableCell>
               <TableCell>{summary.Grid4}</TableCell>
-              <TableCell scope="row">
+              <TableCell scope="row" className={classes.rowName}>
                 BH Latitude
               </TableCell>
               <TableCell>{summary.BHLatitude}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell scope="row">
+              <TableCell scope="row" className={classes.rowName}>
                 {summary.State === 'TX' ? 'Alt Survey' : ''}
               </TableCell>
               <TableCell>{summary.Grid5 || ''}</TableCell>
-              <TableCell scope="row">
+              <TableCell scope="row" className={classes.rowName}>
                 BH Longitude
               </TableCell>
               <TableCell>{summary.BHLongitude}</TableCell>
