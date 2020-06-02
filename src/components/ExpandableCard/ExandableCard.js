@@ -233,6 +233,19 @@ export default function ExpandableCard(props) {
               />
             )}
 
+          {stateExpandableCard.expanded && (
+              <Tooltip title={"Report Bug"} placement="top">
+                <IconButton
+                  size="large"
+                  onClick={handleExpand}
+                  //aria-label="expand"
+                  className={classes.icons}
+                >
+                  <BugsIcon viewBox="0 0 64 64" color="white" />
+                </IconButton>
+              </Tooltip>
+            )}
+
             {stateExpandableCard.expanded
               ? parent !== "table" && (
                   <Tooltip title={"Shrink"} placement="top">
@@ -261,18 +274,7 @@ export default function ExpandableCard(props) {
                   
 
 
-            {stateExpandableCard.expanded && (
-              <Tooltip title={"Report Bug"} placement="top">
-                <IconButton
-                  size="large"
-                  onClick={handleExpand}
-                  //aria-label="expand"
-                  className={classes.icons}
-                >
-                  <BugsIcon viewBox="0 0 64 64" color="white" />
-                </IconButton>
-              </Tooltip>
-            )}
+
 
             <Tooltip title={"Close"} placement="top">
               <IconButton

@@ -1888,6 +1888,8 @@ export default function Map() {
 
     
   useEffect(() => {
+    
+    if(stateApp.userSnap===true){
     var script = document.createElement("script");
     script.type = "text/javascript";
     script.src =
@@ -1902,7 +1904,8 @@ export default function Map() {
     return () => {
       document.body.removeChild(script);
     };
-  }, []);
+    }
+  }, [stateApp.userSnap]);
 
 
 
