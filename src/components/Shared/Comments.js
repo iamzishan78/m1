@@ -257,7 +257,7 @@ export default function Comments(props) {
                     }}
                   />
                 }
-                label="Public"
+                label="Shared"
                 labelPlacement="start"
               />
             </FormGroup>
