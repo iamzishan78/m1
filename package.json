@@ -20,6 +20,7 @@
     "amcharts": "^3.14.5",
     "apollo-boost": "^0.4.7",
     "apollo-cache-inmemory": "^1.6.5",
+    "autosuggest-highlight": "^3.1.1",
     "date-fns": "^2.10.0",
     "deck.gl": "^8.1.1",
     "fg-loadcss": "^2.1.0",

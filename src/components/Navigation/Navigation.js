@@ -88,6 +88,9 @@ import FilterFormValue from "./components/FilterFormValue";
 import FilterFormTags from "./components/FilterFormTags";
 import FilterFormAI from "./components/FilterFormAI";
 
+import InputBase from '@material-ui/core/InputBase';
+import Search from "./components/Search";
+
 import Avatar from "react-avatar";
 
 const useStyles = makeStyles((theme) => ({
@@ -912,7 +915,7 @@ export default function Navigation(props) {
             ) : null}
 
             <div className={classes.search}>
-              <div className={classes.searchInput} id="searchBar" />
+              <Search />
             </div>
 
             <div className={classes.grow1} />
