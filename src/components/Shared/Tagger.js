@@ -292,7 +292,7 @@ export default function Tags(props) {
               />
             </React.Fragment>
           }
-          label="Public"
+          label="Shared"
           labelPlacement="start"
         />
       </FormGroup>
