@@ -566,11 +566,16 @@ export default function Map() {
                 //console.log(l);
                 const selectLayerProps = layerList[l];
 
-                if (selectLayerProps.type === "data layer") {
-                    //layerArray =
+                console.log('layer pros',selectLayerProps)
 
+                if (selectLayerProps.type === "data layer") {
 
                     // -> fetch data
+
+
+
+
+                    
                     if (dataWells) {
 
 
