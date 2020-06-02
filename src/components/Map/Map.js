@@ -107,6 +107,11 @@ export default function Map() {
     const [tracksByUserAndObjectType, {data: dataTracks}] = useLazyQuery(
         TRACKSBYUSERANDOBJECTTYPE
     );
+    const [tracksByUserAndObjectTypeOwner, {data: dataTracksOwner}] = useLazyQuery(
+        TRACKSBYUSERANDOBJECTTYPE
+    );
+
+
     const [getOwnersWells, {data: dataOwnersWells}] = useLazyQuery(
         OWNERSWELLSQUERY
     );
@@ -143,17 +148,18 @@ export default function Map() {
             tracksByUserAndObjectType({
                 variables: {
                     userId: user._id, //////stateApp.user._id////////temporary while signed user fixed
+                    objectType: "well",
+                },
+            });
+
+            tracksByUserAndObjectTypeOwner({
+                variables: {
+                    userId: user._id, //////stateApp.user._id////////temporary while signed user fixed
                     objectType: "owner",
                 },
             });
 
-            var objectsIdsArray = ["5e8b2c386f57b3002bdb3e8e"]
 
-            getOwnersWells({
-                variables: {
-                  ownersIds: objectsIdsArray,
-                },
-              });
 
 
         }
@@ -179,6 +185,26 @@ export default function Map() {
         }
     }, [dataTracks]);
 
+
+    useEffect(() => {
+        if (dataTracksOwner && dataTracksOwner.tracksByUserAndObjectType) {
+            if (dataTracksOwner.tracksByUserAndObjectType.length !== 0) {
+
+            console.log('hehehehehehe')
+            console.log(dataTracksOwner)            
+            var objectsIdsArray = dataTracksOwner.tracksByUserAndObjectType.map(
+                (item) => item.trackOn
+            );
+            console.log(objectsIdsArray)
+            
+            getOwnersWells({
+                variables: {
+                  ownersIds: objectsIdsArray,
+                },
+              });
+            } 
+        }
+    }, [dataTracksOwner]);
 
 
 
