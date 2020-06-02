@@ -9,9 +9,10 @@ const TwitterWidget = () => {
   return (
     <TwitterTimelineEmbed
       key={`${userhandle}-${tcard?.index}`}
-      sourceType="profile"
+      sourceType="timeline"
       screenName={userhandle}
       options={{ height: 380 }}
+      placeholder="Loading" 
     />
   );
 };

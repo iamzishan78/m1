@@ -5,7 +5,7 @@ import DateBar from "./components/WeatherCard";
 
 const Dashboard = () => {
   return (
-    <Container disableGutters>
+    <Container>
       <Grid container direction="column" spacing={2}>
         <DateBar />
         <CardGrid />
