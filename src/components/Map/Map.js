@@ -617,7 +617,7 @@ export default function Map() {
                                             type: "Feature",
                                             properties: feature,
                                             geometry: {
-                                                type: "Point",
+                                                type: selectLayerProps.dataProps.dataTypeId,
                                                 coordinates: [feature.longitude, feature.latitude],
                                             },
                                         };
