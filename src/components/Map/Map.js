@@ -572,7 +572,7 @@ export default function Map() {
 
                     // -> fetch data
                     if(selectLayerProps.dataProps.dataId =='trackedWellsWells'){
-                        var layerData = dataWells;                        
+                        var layerData = dataWells.wells.results;    
                     }
 
 
@@ -584,34 +584,53 @@ export default function Map() {
 
                         console.log(layerData)
 
+                        // const makeGeoJSON = (data) => {
+                        //     return {
+                        //         type: "FeatureCollection",
+                        //         features: data.map((feature) => {
+                        //             return {
+                        //                 type: "Feature",
+                        //                 properties: {
+                        //                     api: feature.api,
+                        //                     id: feature.id,
+                        //                     latitude: feature.latitude,
+                        //                     longitude: feature.longitude,
+                        //                     operator: feature.operator,
+                        //                     WellName: feature.wellName,
+                        //                 },
+                        //                 geometry: {
+                        //                     type: "Point",
+                        //                     coordinates: [feature.longitude, feature.latitude],
+                        //                 },
+                        //             };
+                        //         }),
+                        //     };
+                        // };
+
+                        
                         const makeGeoJSON = (data) => {
                             return {
                                 type: "FeatureCollection",
                                 features: data.map((feature) => {
-                                    return {
-                                        type: "Feature",
-                                        properties: {
-                                            api: feature.api,
-                                            id: feature.id,
-                                            latitude: feature.latitude,
-                                            longitude: feature.longitude,
-                                            operator: feature.operator,
-                                            WellName: feature.wellName,
-                                        },
-                                        geometry: {
-                                            type: "Point",
-                                            coordinates: [feature.longitude, feature.latitude],
-                                        },
+                                    if(selectLayerProps.dataProps.dataTypeId == "Point"){
+                                        return {
+                                            type: "Feature",
+                                            properties: feature,
+                                            geometry: {
+                                                type: "Point",
+                                                coordinates: [feature.longitude, feature.latitude],
+                                            },
+                                        };
                                     };
                                 }),
                             };
-                        };
+                        };                     
 
 
-                        const myGeoJSONData = makeGeoJSON(
-                            layerData.wells.results
-                        );
+                        const myGeoJSONData = makeGeoJSON(layerData);
 
+                        console.log('geojson',myGeoJSONData)
+                        console.log('layerData',layerData)
 
                         // -> add source
                         map.addSource(selectLayerProps.sourceProps.sourceId, {

@@ -60,6 +60,7 @@ const userDefinedLayers = [
     type: 'data layer',
     dataProps: {
       dataId: 'trackedWellsWells',
+      dataTypeId: 'Point',
     },
     sourceProps:{
       sourceId:"tracked_wells_user_defined_source",
