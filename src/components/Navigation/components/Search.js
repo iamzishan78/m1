@@ -48,7 +48,7 @@ export default function Search() {
 //     loaded.current = true;
 //   }
 
-  const callSearch = React.useMemo(
+  const callWellSearch = React.useMemo(
     () =>
       throttle((request, callback) => {
         // autocompleteService.current.getPlacePredictions(request, callback);
@@ -64,13 +64,44 @@ export default function Search() {
         headers: headers
         };
     
-        console.log("request made to cognitive search at: " + new Date().toString());
+        console.log("request made to wellheader-index search at: " + new Date().toString());
 
         fetch(endpoint, options)
             .then((response) => response.json())
             .then((response) => {
                 console.log(response);
-                callback(response.value);
+                callback(response);
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+      }, 200),
+    [],
+  );
+
+  const callOwnerSearch = React.useMemo(
+    () =>
+      throttle((request, callback) => {
+        // autocompleteService.current.getPlacePredictions(request, callback);
+
+        const endpoint = 'https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName%2CAddress1&%24top=5&search=' + request.input;
+                    
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json')
+        headers.append('api-key', '1AE3C6346B38CEB007191D51CFDDFF65');
+    
+        const options = {
+        method: 'GET',
+        headers: headers
+        };
+    
+        console.log("request made to lod2019-index search at: " + new Date().toString());
+
+        fetch(endpoint, options)
+            .then((response) => response.json())
+            .then((response) => {
+                console.log(response);
+                callback(response);
             })
             .catch((error) => {
                 console.log(error);
@@ -94,26 +125,50 @@ export default function Search() {
       return undefined;
     }
 
-    callSearch({ input: inputValue }, (results) => {
-      if (active) {
-        let newOptions = [];
+    (async () => {
+      let newOptions = [];
 
-        if (value) {
-          newOptions = [value];
-        }
+      Promise.all([
+        callWellSearch({ input: inputValue }, (results) => {
+          if (active) {
 
-        if (results) {
-          newOptions = [...newOptions, ...results];
-        }
+            if (value) {
+              newOptions = [value];
+            }
 
-        setOptions(newOptions);
-      }
-    });
+            if (results) {
+              const indexSource = results["@odata.context"].substring(results["@odata.context"].indexOf("('") + 2, results["@odata.context"].indexOf("')"));
+              console.log(indexSource);
+              newOptions = [...newOptions, ...results.value.map(result=> ({ ...result, Source: indexSource, Primary: result.WellName, Secondary: result.ApiNumber }))];
+            }
+
+            setOptions(newOptions);
+          }
+        }),
+        callOwnerSearch({ input: inputValue }, (results) => {
+          if (active) {
+
+            if (value) {
+              newOptions = [value];
+            }
+
+            if (results) {
+              const indexSource = results["@odata.context"].substring(results["@odata.context"].indexOf("('") + 2, results["@odata.context"].indexOf("')"));
+              console.log(indexSource);
+              newOptions = [...newOptions, ...results.value.map(result=> ({ ...result, Source: indexSource, Primary: result.OwnerName, 
+                Secondary: `${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}` }))];
+            }
+
+            setOptions(newOptions);
+          }
+        })
+      ])
+    })();
 
     return () => {
       active = false;
     };
-  }, [value, inputValue, callSearch]);
+  }, [value, inputValue, callWellSearch, callOwnerSearch]);
 
   return (
     <Autocomplete
@@ -122,6 +177,7 @@ export default function Search() {
       getOptionLabel={(option) => (typeof option === 'string' ? option : option.description)}
       filterOptions={(x) => x}
       options={options}
+      groupBy={(option) => option.Source}
       autoComplete
       includeInputInList
       filterSelectedOptions
@@ -139,7 +195,7 @@ export default function Search() {
       renderOption={(option) => {
         const matches = option.WellName;
         const parts = parse(
-          option.WellName,
+          option.Primary,
           Array(),
         );
 
@@ -156,7 +212,7 @@ export default function Search() {
               ))}
 
               <Typography variant="body2" color="textSecondary">
-                {option.ApiNumber}
+                {option.Secondary}
               </Typography>
             </Grid>
           </Grid>
