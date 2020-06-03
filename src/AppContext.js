@@ -41,6 +41,11 @@ const AppProvider = (props) => {
       bearing: 0,
       styleId: "Satellite",
     },
+    // layerData: {
+    //   trackedWellsWells: null,
+    //   trackedOwnerWells: null,
+    //   taggedWells: null,
+    // },
     wellSelectedCoordinates: [],
   });
 

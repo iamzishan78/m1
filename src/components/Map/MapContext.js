@@ -58,7 +58,21 @@ const userDefinedLayers = [
     name: "Tracked Wells",
     id: ['Tracked Wells'],
     type: 'data layer',
-    dataId: 'trackedWells'
+    dataProps: {
+      dataId: 'trackedWellsWells',
+    },
+    sourceProps:{
+      sourceId:"tracked_wells_user_defined_source",
+      sourceType: "geojson",
+    },
+    layerProps: {
+      layerId: "Tracked Wells",
+      layerType: "circle",
+      paintProps: {
+        "circle-radius": 5,
+        "circle-color": "yellow",
+      },
+    },
   },
 
   {

@@ -571,16 +571,18 @@ export default function Map() {
                 if (selectLayerProps.type === "data layer") {
 
                     // -> fetch data
-
+                    if(selectLayerProps.dataProps.dataId =='trackedWellsWells'){
+                        var layerData = dataWells;                        
+                    }
 
 
 
                     
-                    if (dataWells) {
-
+                    if (layerData) {
 
                         // -> make GEOJSON
-                        //console.log("array ", dataWells);
+
+                        console.log(layerData)
 
                         const makeGeoJSON = (data) => {
                             return {
@@ -605,27 +607,25 @@ export default function Map() {
                             };
                         };
 
+
                         const myGeoJSONData = makeGeoJSON(
-                            dataWells.wells.results
+                            layerData.wells.results
                         );
 
 
                         // -> add source
-                        map.addSource("user_defined_source", {
-                            type: "geojson",
+                        map.addSource(selectLayerProps.sourceProps.sourceId, {
+                            type: selectLayerProps.sourceProps.sourceType,
                             data: myGeoJSONData,
                         });
 
 
                         // -> add layer
                         map.addLayer({
-                            id: "Tracked Wells",
-                            type: "circle",
-                            source: "user_defined_source",
-                            paint: {
-                                "circle-radius": 5,
-                                "circle-color": "yellow",
-                            },
+                            id: selectLayerProps.layerProps.layerId,
+                            type: selectLayerProps.layerProps.layerType,
+                            source: selectLayerProps.sourceProps.sourceId,
+                            paint: selectLayerProps.layerProps.paintProps,
                         });
 
 
