@@ -1,23 +1,17 @@
-import React, { useContext } from 'react';
-import { AppContext } from '../../AppContext'
-import { DashboardContext } from './DashboardContext'
-import { MapContext } from '../Map/MapContext'
-import { Container } from '@material-ui/core';
+import { Container, Grid } from "@material-ui/core";
+import React from "react";
+import CardGrid from "./components/CardsGrid";
+import DateBar from "./components/WeatherCard";
 
+const Dashboard = () => {
+  return (
+    <Container>
+      <Grid container direction="column" spacing={2}>
+        <DateBar />
+        <CardGrid />
+      </Grid>
+    </Container>
+  );
+};
 
-
-
-
-export default function Dashboard() {
-
-    return (
-
-
-      <Container>
-          DASHBOARD PAGE
-      </Container>
-
-
-    );
-  }
-
+export default Dashboard;
