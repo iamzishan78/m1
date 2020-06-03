@@ -1,16 +1,18 @@
-import React, { useState, createContext } from 'react'
+import React, { useState, createContext } from "react";
 
-const DashboardContext = createContext([{}, () => {}])
+const DashboardContext = createContext([{}, () => {}]);
 
-const DashboardContextProvider = props => {
+const DashboardContextProvider = (props) => {
   const [stateDashboard, setStateDashboard] = useState({
-    selectedWell: { WellName: '' }
-  })
+    selectedWell: { WellName: "" },
+    userhandle: "m1neraltech",
+    cardIndices: [{ key: null, index: null }],
+  });
   return (
     <DashboardContext.Provider value={[stateDashboard, setStateDashboard]}>
       {props.children}
     </DashboardContext.Provider>
-  )
-}
+  );
+};
 
-export { DashboardContext, DashboardContextProvider }
+export { DashboardContext, DashboardContextProvider };
