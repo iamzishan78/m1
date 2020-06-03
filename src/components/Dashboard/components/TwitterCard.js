@@ -59,6 +59,12 @@ const TwitterCard = () => {
     if (thandleRegex.test(name)) {
       return setStateDashboard({ ...stateDashboard, userhandle: name });
     }
+    if (name.trim() == "") {
+      return setStateDashboard({
+        ...stateDashboard,
+        userhandle: "m1neraltech",
+      });
+    }
   };
 
   return (
