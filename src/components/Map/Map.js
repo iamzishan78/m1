@@ -532,15 +532,17 @@ export default function Map() {
         // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
 
         if (stateMap.userDefinedLayers.length > 0 && map) {
-            //const layerList = stateMap.userDefinedLayers;
-
-            // console.log('cehck checked', stateMap.checkedUserDefinedLayers)
+            const layerList = stateMap.userDefinedLayers;
+            console.log('cehck checked', stateMap.checkedUserDefinedLayers)
             stateMap.userDefinedLayers.forEach((l) => {
+                const selectLayerProps = layerList[l];
+                console.log('selected layer props',selectLayerProps)
+                console.log(l)
                 l.id.forEach((k) => {
                     if (map.getLayer(k)) {
                         console.log('get layer', k)
                         map.removeLayer(k);
-                        map.removeSource('user_defined_source')
+                        map.removeSource(l.sourceProps.sourceId)
                     }
                 });
             });
@@ -548,9 +550,9 @@ export default function Map() {
 
         // console.log('length', stateMap.checkedUserDefinedLayers.length)
         // console.log('checks', stateMap.checkedUserDefinedLayers)
-        console.log('dataTracks',dataTracks)
-        console.log('dataOwnersWells',dataOwnersWells)
-        console.log('dataWellsForOwnerWellTrackLayer',dataWellsForOwnerWellTrackLayer)
+        // console.log('dataTracks',dataTracks)
+        // console.log('dataOwnersWells',dataOwnersWells)
+        // console.log('dataWellsForOwnerWellTrackLayer',dataWellsForOwnerWellTrackLayer)
 
         
 
@@ -573,6 +575,10 @@ export default function Map() {
                     // -> fetch data
                     if(selectLayerProps.dataProps.dataId =='trackedWellsWells'){
                         var layerData = dataWells.wells.results;    
+                    } else if(selectLayerProps.dataProps.dataId =='trackedOwnersWells'){
+                        console.log("===========-",selectLayerProps)
+                        console.log(dataWellsForOwnerWellTrackLayer)
+                        var layerData = dataWellsForOwnerWellTrackLayer.wells.results;    
                     }
 
 

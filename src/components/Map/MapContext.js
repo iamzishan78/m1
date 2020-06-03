@@ -79,7 +79,23 @@ const userDefinedLayers = [
   {
     name: "Tracked Owners",
     id: ['Tracked Owners'],
-    type: 'data layer'
+    type: 'data layer',
+    dataProps: {
+      dataId: 'trackedOwnersWells',
+      dataTypeId: 'Point',
+    },
+    sourceProps:{
+      sourceId:"tracked_owners_user_defined_source",
+      sourceType: "geojson",
+    },
+    layerProps: {
+      layerId: "Tracked Owners",
+      layerType: "circle",
+      paintProps: {
+        "circle-radius": 10,
+        "circle-color": "yellow",
+      },
+    },
   },
 
   // TEMPORARY COMMENT OUT. FEATURE IN PROGRESS 
