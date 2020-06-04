@@ -1,6 +1,5 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { AppProvider, AppContext } from "../../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -12,12 +11,6 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
-import PersonIcon from "@material-ui/icons/Person";
-import AddIcon from "@material-ui/icons/Add";
-import RateReviewIcon from "@material-ui/icons/RateReviewOutlined";
-import ScreenShareIcon from "@material-ui/icons/ScreenShareOutlined";
-import Typography from "@material-ui/core/Typography";
-import { blue } from "@material-ui/core/colors";
 
 const M1neralLogo = (props) => (
   <svg
@@ -79,8 +72,8 @@ function ContactFormModal(props) {
   const [comment, setComment] = useState("");
 
   const sendEmail = () => {
-      console.log({name, email, category, comment})
-  }
+    console.log({ name, email, category, comment });
+  };
 
   return (
     <Dialog
