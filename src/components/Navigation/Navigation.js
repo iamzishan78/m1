@@ -49,9 +49,8 @@ import { green } from "@material-ui/core/colors";
 //icons
 import CloseIcon from "@material-ui/icons/Close";
 import SearchIcon from "@material-ui/icons/Search";
-import ExpandLess from "@material-ui/icons/ExpandLess";
-import ExpandMore from "@material-ui/icons/ExpandMore";
-import StarBorder from "@material-ui/icons/StarBorder";
+import HeadsetIcon from "@material-ui/icons/Headset";
+import DesktopWindowsIcon from "@material-ui/icons/DesktopWindows";
 import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
 // import SettingsIcon from '@material-ui/icons/Settings';
 import SettingsIcon from "./components/Utils/SettingsIcon";
@@ -1469,13 +1468,13 @@ export default function Navigation(props) {
               <List component="div" disablePadding>
                 <ListItem button>
                   <ListItemIcon>
-                    <StarBorder />
+                    <HeadsetIcon />
                   </ListItemIcon>
                   <ListItemText primary="Support Center" />
                 </ListItem>
                 <ListItem button>
                   <ListItemIcon>
-                    <StarBorder />
+                    <DesktopWindowsIcon />
                   </ListItemIcon>
                   <ListItemText primary="Request Demo" />
                 </ListItem>
