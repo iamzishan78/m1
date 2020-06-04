@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import parse from 'autosuggest-highlight/parse';
 import throttle from 'lodash/throttle';
+import { AppContext } from "../../../AppContext";
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -31,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Search() {
   const classes = useStyles();
+  const [stateApp, setStateApp] = React.useContext(AppContext);
   const [value, setValue] = React.useState(null);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState([]);
@@ -174,7 +176,7 @@ export default function Search() {
     <Autocomplete
       id="google-map-demo"
     //   style={{ width: 300 }}
-      getOptionLabel={(option) => (typeof option === 'string' ? option : option.description)}
+      getOptionLabel={(option) => option.Primary}
       filterOptions={(x) => x}
       options={options}
       groupBy={(option) => option.Source}
@@ -185,6 +187,13 @@ export default function Search() {
       onChange={(event, newValue) => {
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
+
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          // wellSelected: option,
+          // wellSelectedCoordinates: [option.Longitude, option.Latitude]
+          flyTo: {longitude: newValue.Longitude, latitude: newValue.Latitude},
+        }));
       }}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
