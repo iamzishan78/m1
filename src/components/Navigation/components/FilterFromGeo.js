@@ -5,6 +5,7 @@ import FilterStateName from "./FilterStateName";
 import FilterCountyName from "./FilterCountyName";
 import Grid from "@material-ui/core/Grid";
 import FilterGrid from "./FilterGrid12345";
+import FilterFromDrawing from "./FilterFromDrawing";
 
 const useStyles = makeStyles((theme) => ({
   gridItem: {
@@ -89,6 +90,9 @@ export default function FilterFromGeo() {
       spacing={2}
       style={{ padding: "8px", width: "100%", margin: "0" }}
     >
+      <Grid item sm={12}>
+        <FilterFromDrawing />
+      </Grid>
       <Grid item sm={12} className={classes.gridItem}>
         <FilterStateName style={{ margin: 0 }} />
       </Grid>
