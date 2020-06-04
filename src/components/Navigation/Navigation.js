@@ -46,6 +46,7 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { green } from "@material-ui/core/colors";
+import SupportCenterModal from "./components/SupportCenter";
 //icons
 import CloseIcon from "@material-ui/icons/Close";
 import SearchIcon from "@material-ui/icons/Search";
@@ -94,6 +95,7 @@ import InputBase from "@material-ui/core/InputBase";
 import Search from "./components/Search";
 
 import Avatar from "react-avatar";
+import ContactFormModal from "./components/ContactFormModal";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -607,6 +609,8 @@ export default function Navigation(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
+  const [openSupportCenter, setOpenSupportCenter] = useState(false);
+  const [openContactForm, setOpenContactForm] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [supportDrawer, setSupportDrawer] = useState(false);
   const [openFilterCard, setOpenFilterCard] = useState(false);
@@ -885,6 +889,18 @@ export default function Navigation(props) {
 
   const handleChangeIndex = (index) => {
     setValue(index);
+  };
+
+  const handleOpenContactForm = () => {
+    setOpenSupportCenter(false);
+    setOpenContactForm(true);
+  };
+
+  const requestDemo = () => {
+    window.open(
+      "mailto:sales@m1neral.com?subject=Request for demo of premium features",
+      "_blank"
+    );
   };
 
   return (
@@ -1466,13 +1482,13 @@ export default function Navigation(props) {
           {supportDrawer && (
             <div className={classes.supportDrawer}>
               <List component="div" disablePadding>
-                <ListItem button>
+                <ListItem button onClick={() => setOpenSupportCenter(true)}>
                   <ListItemIcon>
                     <HeadsetIcon />
                   </ListItemIcon>
                   <ListItemText primary="Support Center" />
                 </ListItem>
-                <ListItem button>
+                <ListItem button onClick={requestDemo}>
                   <ListItemIcon>
                     <DesktopWindowsIcon />
                   </ListItemIcon>
@@ -1481,6 +1497,16 @@ export default function Navigation(props) {
               </List>
             </div>
           )}
+
+          <SupportCenterModal
+            open={openSupportCenter}
+            openContactForm={handleOpenContactForm}
+            onClose={() => setOpenSupportCenter(false)}
+          />
+          <ContactFormModal
+            open={openContactForm}
+            onClose={() => setOpenContactForm(false)}
+          />
 
           {/* <ListItem
             classes={{
