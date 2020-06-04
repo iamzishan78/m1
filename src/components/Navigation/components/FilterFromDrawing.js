@@ -11,10 +11,15 @@ import {NavigationContext} from "../NavigationContext";
 
 const useStyles = makeStyles(theme => ({
     formControl: {
-        margin: "15px",
+        padding: "15px",
         minWidth: 249,
         // maxWidth: 250,
-        color: "black"
+        color: "black",
+        border: "1px solid #C4C4C4",
+        borderRadius: "4px",
+        "&:hover":{
+        border: "1px solid black",
+        }
     },
     buttonEnabled: {
         color: "blue"

@@ -48,17 +48,18 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
   },
   WellsDetailsCardAppBar: {
-    backgroundColor: "rgb(1,17,51)",
-    color: "#FFFFFF",
+    backgroundColor: (props) => (props.white ? "#FFFFFF" : "rgb(1,17,51)"),
+    color: (props) => (props.white ? "rgb(1,17,51)" : "#FFFFFF"),
   },
 }));
 
 export default function Taps(props) {
-  const classes = useStyles();
+  const classes = useStyles(props);
   const [value, setValue] = React.useState(0);
   ////props.tabLabels brings an array of labels////
   ////props.tabPanels brings an array of panels////
   ////props.whichTapIsActive is an optional function to return the active index////
+  ////props.white is an optional, a white taps version////
   const { tabLabels, tabPanels } = props;
 
   const handleChange = (event, newValue) => {
