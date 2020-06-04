@@ -38,6 +38,24 @@ import {WELLSQUERY} from "../../graphQL/useQueryWells";
 import {TRACKSBYUSERANDOBJECTTYPE} from "../../graphQL/useQueryTracksByUserAndObjectType";
 import {USERBYEMAIL} from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
+import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
+
+const groupBy = (arr, property) => {
+    return arr.reduce((memo, x) => {
+      if (!memo[x[property]]) { memo[x[property]] = []; }
+      memo[x[property]].push(x);
+      return memo;
+    }, {});
+}
+
+const makeGeoJsonFromFeatures = (dataList) => {
+    return {
+        type: "FeatureCollection",
+        features: dataList.map((data) => {
+            return JSON.parse(data.shape)
+        }),
+    };
+}
 
 const useStyles = makeStyles((theme) => ({
     mapWrapper: {
@@ -120,7 +138,9 @@ export default function Map() {
 
 
     const [getUserByEmail, {data: dataUser}] = useLazyQuery(USERBYEMAIL);
+    const [getCustomLayers, {data: customLayerData}] = useLazyQuery(CUSTOMLAYERSQUERY);
     const [user, setUser] = useState({_id: ""});
+    const [customLayers, setCustomLayers] = useState([]);
     const [tracks, setTracks] = useState(false);
     const [idArray, setIdArray] = useState(null);
 
@@ -132,6 +152,7 @@ export default function Map() {
                     userEmail: stateApp.user.email,
                 },
             });
+            
         }
     }, [stateApp.user.email]);
 
@@ -140,6 +161,15 @@ export default function Map() {
             setUser(dataUser.userByEmail);
         }
     }, [dataUser]);
+
+    useEffect(() => {
+        if (customLayerData && customLayerData.customLayers)  {
+            setStateApp({
+                ...stateApp,
+                customLayers: customLayerData.customLayers
+            });
+        }
+    }, [customLayerData])
 
     /////end/////////temporary while signed user fixed
 
@@ -162,9 +192,11 @@ export default function Map() {
                 },
             });
 
-
-
-
+            getCustomLayers({
+                variables: {
+                    userId: user._id
+                }
+            });
         }
     }, [user]); //////stateApp.user._id////////temporary while signed user fixed
 
@@ -527,10 +559,7 @@ export default function Map() {
         }
     }, [stateApp.trackFilterOn]);
 
-
-    useEffect(() => {
-        // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
-
+    const drawCustomLayer = () => {
         if (stateMap.userDefinedLayers.length > 0 && map) {
             //const layerList = stateMap.userDefinedLayers;
 
@@ -539,8 +568,7 @@ export default function Map() {
                 l.id.forEach((k) => {
                     if (map.getLayer(k)) {
                         console.log('get layer', k)
-                        map.removeLayer(k);
-                        map.removeSource('user_defined_source')
+                        map.removeLayer(k).removeSource(`${k}_source`);
                     }
                 });
             });
@@ -567,94 +595,132 @@ export default function Map() {
                 const selectLayerProps = layerList[l];
 
                 console.log('layer pros',selectLayerProps)
-
                 if (selectLayerProps.type === "data layer") {
 
                     // -> fetch data
-                    if(selectLayerProps.dataProps.dataId =='trackedWellsWells'){
-                        var layerData = dataWells.wells.results;    
+                    if(selectLayerProps.dataProps && selectLayerProps.dataProps.dataId =='trackedWellsWells'){
+                        const layerData = dataWells.wells.results;
+                        if (layerData) {
+
+                            // -> make GEOJSON
+    
+                            console.log(layerData)
+    
+                            // const makeGeoJSON = (data) => {
+                            //     return {
+                            //         type: "FeatureCollection",
+                            //         features: data.map((feature) => {
+                            //             return {
+                            //                 type: "Feature",
+                            //                 properties: {
+                            //                     api: feature.api,
+                            //                     id: feature.id,
+                            //                     latitude: feature.latitude,
+                            //                     longitude: feature.longitude,
+                            //                     operator: feature.operator,
+                            //                     WellName: feature.wellName,
+                            //                 },
+                            //                 geometry: {
+                            //                     type: "Point",
+                            //                     coordinates: [feature.longitude, feature.latitude],
+                            //                 },
+                            //             };
+                            //         }),
+                            //     };
+                            // };
+    
+                            
+                            const makeGeoJSON = (data) => {
+                                return {
+                                    type: "FeatureCollection",
+                                    features: data.map((feature) => {
+                                        if(selectLayerProps.dataProps.dataTypeId == "Point"){
+                                            return {
+                                                type: "Feature",
+                                                properties: feature,
+                                                geometry: {
+                                                    type: "Point",
+                                                    coordinates: [feature.longitude, feature.latitude],
+                                                },
+                                            };
+                                        };
+                                    }),
+                                };
+                            };
+    
+    
+                            const myGeoJSONData = makeGeoJSON(layerData);
+    
+                            console.log('geojson',myGeoJSONData)
+                            console.log('layerData',layerData)
+    
+                            // -> add source
+                            map.addSource(selectLayerProps.sourceProps.sourceId, {
+                                type: selectLayerProps.sourceProps.sourceType,
+                                data: myGeoJSONData,
+                            });
+    
+    
+                            // -> add layer
+                            map.addLayer({
+                                id: selectLayerProps.layerProps.layerId,
+                                type: selectLayerProps.layerProps.layerType,
+                                source: selectLayerProps.sourceProps.sourceId,
+                                paint: selectLayerProps.layerProps.paintProps,
+                            });
+    
+    
+                            // -> add interaction (note to change later w/ interaction panel)
+    
+                            //console.log("is data layer");
+                            //console.log(selectLayerProps);
+                            //console.log(dataWells);
+    
+    
+                        } 
                     }
 
-
-
-                    
-                    if (layerData) {
-
-                        // -> make GEOJSON
-
-                        console.log(layerData)
-
-                        // const makeGeoJSON = (data) => {
-                        //     return {
-                        //         type: "FeatureCollection",
-                        //         features: data.map((feature) => {
-                        //             return {
-                        //                 type: "Feature",
-                        //                 properties: {
-                        //                     api: feature.api,
-                        //                     id: feature.id,
-                        //                     latitude: feature.latitude,
-                        //                     longitude: feature.longitude,
-                        //                     operator: feature.operator,
-                        //                     WellName: feature.wellName,
-                        //                 },
-                        //                 geometry: {
-                        //                     type: "Point",
-                        //                     coordinates: [feature.longitude, feature.latitude],
-                        //                 },
-                        //             };
-                        //         }),
-                        //     };
-                        // };
-
-                        
-                        const makeGeoJSON = (data) => {
-                            return {
-                                type: "FeatureCollection",
-                                features: data.map((feature) => {
-                                    if(selectLayerProps.dataProps.dataTypeId == "Point"){
-                                        return {
-                                            type: "Feature",
-                                            properties: feature,
-                                            geometry: {
-                                                type: "Point",
-                                                coordinates: [feature.longitude, feature.latitude],
-                                            },
-                                        };
-                                    };
-                                }),
-                            };
-                        };                     
-
-
-                        const myGeoJSONData = makeGeoJSON(layerData);
-
-                        console.log('geojson',myGeoJSONData)
-                        console.log('layerData',layerData)
-
-                        // -> add source
-                        map.addSource(selectLayerProps.sourceProps.sourceId, {
-                            type: selectLayerProps.sourceProps.sourceType,
-                            data: myGeoJSONData,
+                    else {
+                        selectLayerProps.id.forEach((l) => {
+                            const layerData = groupBy(stateApp.customLayers, 'layer')[l];
+                            if (layerData) {
+                                const myGeoJSONData = makeGeoJsonFromFeatures(layerData);
+                                console.log('geojson',myGeoJSONData)
+                                console.log('layerData',layerData)
+        
+                                // -> add source
+                                map.addSource(`${l}_source`, {
+                                    type: 'geojson',
+                                    data: myGeoJSONData,
+                                });
+                                
+                                // -> add layer
+                                if (l.indexOf('_labels') != -1) {
+                                    console.log(l, myGeoJSONData);
+                                    map.addLayer({
+                                        id: l,
+                                        type: 'symbol',
+                                        source: `${l}_source`,
+                                        layout: {
+                                            'text-allow-overlap': true,
+                                            'text-anchor': "center",
+                                            'text-field': ['get', 'label'],
+                                        },
+                                    });
+                                } else {
+                                    map.addLayer({
+                                        id: l,
+                                        type: 'fill',
+                                        source: `${l}_source`,
+                                        paint: {
+                                            'fill-color': '#011133',
+                                            'fill-opacity': 0.4,
+                                            'fill-outline-color': '#011133',
+                                        },
+                                    });
+                                }
+                            }
                         });
-
-
-                        // -> add layer
-                        map.addLayer({
-                            id: selectLayerProps.layerProps.layerId,
-                            type: selectLayerProps.layerProps.layerType,
-                            source: selectLayerProps.sourceProps.sourceId,
-                            paint: selectLayerProps.layerProps.paintProps,
-                        });
-
-
-                        // -> add interaction (note to change later w/ interaction panel)
-
-                        //console.log("is data layer");
-                        //console.log(selectLayerProps);
-                        //console.log(dataWells);
-
-
                     }
 
                 }
@@ -741,8 +807,14 @@ export default function Map() {
             //   padding: { top: 50, bottom: 50, left: 50, right: 50 },
             // });
         }
+    }
+
+    useEffect(() => {
+        // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
+        drawCustomLayer();
     }, [map,
-        stateMap.checkedUserDefinedLayers
+        stateMap.checkedUserDefinedLayers,
+        stateApp.customLayers
     ]);
 
     useEffect(() => {
