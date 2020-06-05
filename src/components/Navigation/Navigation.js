@@ -13,6 +13,7 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 //@material-ui components
 import AppBar from "@material-ui/core/AppBar";
+import DashboardIcon from '@material-ui/icons/Dashboard';
 //import Avatar from "@material-ui/core/Avatar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -1235,7 +1236,7 @@ export default function Navigation(props) {
             key="home"
           >
             <ListItemIcon>
-              <SearchIcon />
+              <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
           </ListItem>
