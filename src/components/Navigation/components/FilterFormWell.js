@@ -95,7 +95,7 @@ export default function FilterFormWell() {
      <div className={classes.datesRow}>
         <FilterDatePickerPermit labelDates={"Permit"} />
         <FilterDatePickerSpud labelDates={"Spud"} />
-        <FilterDatePickerCompletetion labelDates={"Completetion"} />
+        <FilterDatePickerCompletetion labelDates={"Completion"} />
         <FilterDatePickerFirstProd labelDates={"First Production"} />
       </div> 
       

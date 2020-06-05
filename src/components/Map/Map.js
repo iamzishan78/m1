@@ -753,7 +753,7 @@ export default function Map() {
         !stateNav.filterWellType &&
         filterArray.length === 0
       ) {
-        let defaultTypeName = ["typeName", ["GAS", "OIL AND GAS", "OIL"]];
+        let defaultTypeName = ["typeName", ["GAS", "OIL","OIL AND GAS", "PERMITTED","UNKNOWN"]];
         let defaultStatusName = ["statusName", ["ACTIVE", "PERMIT"]];
         let defaultFiltersWellStatus = [
           "filterWellStatus",
