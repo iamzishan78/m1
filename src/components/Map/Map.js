@@ -2011,7 +2011,7 @@ export default function Map() {
   };
 
   useEffect(() => {
-    if (stateApp.userSnap === true) {
+    if (stateApp.userSnap) {
       var script = document.createElement("script");
       script.type = "text/javascript";
       script.src =

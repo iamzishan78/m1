@@ -71,7 +71,7 @@ function SupportCenterModal(props) {
           </ListItemAvatar>
           <ListItemText
             primary="Draw on the screen feedback tool"
-            secondary="Proivde feedback with a screenshot"
+            secondary="Provide feedback with a screenshot"
           />
           <Switch
             checked={stateApp.userSnap}
