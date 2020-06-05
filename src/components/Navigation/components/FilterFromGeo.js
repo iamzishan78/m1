@@ -116,7 +116,7 @@ export default function FilterFromGeo() {
 
       if (stateNav.GrId5) whereFields.GrId5 = stateNav.GrId5;
 
-      console.log("Getting Geo Filters Bounds");
+      ///////////Getting Geo Filters Bounds//////////
       getWellsMinMaxLatLong({
         variables: {
           whereFields,
@@ -148,8 +148,7 @@ export default function FilterFromGeo() {
         data.wellsMinMaxLatLong[0].maxLong &&
         data.wellsMinMaxLatLong[0].minLong
       ) {
-        console.log("Setting Geo Filters Bounds");
-
+        ///////////Setting Geo Filters Bounds////////
         setStateApp((stateApp) => ({
           ...stateApp,
           fitBounds: data.wellsMinMaxLatLong[0],
