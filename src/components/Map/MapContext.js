@@ -77,7 +77,7 @@ const userDefinedLayers = [
   },
 
   {
-    name: "Tracked Owners",
+    name: "Wells w/ Tracked Owners",
     id: ['Tracked Owners'],
     type: 'data layer',
     dataProps: {
