@@ -1881,6 +1881,55 @@ export default function Map() {
   }, [createPopUp, map, stateApp.flyTo]);
 
   useEffect(() => {
+    ////// USE EFFECT TO MANAGE THE FIT BOUNDS TO FEATURE
+
+    if (
+      map &&
+      stateApp.fitBounds &&
+      stateApp.fitBounds.maxLat &&
+      stateApp.fitBounds.minLat &&
+      stateApp.fitBounds.maxLong &&
+      stateApp.fitBounds.minLong
+    ) {
+      const fitOverBounds = () => {
+        let { maxLat, minLat, maxLong, minLong } = stateApp.fitBounds;
+        console.log("fitBounds", maxLat, minLat, maxLong, minLong);
+
+        const latDif = maxLat - minLat;
+        const longDif = maxLong - minLong;
+
+        if (latDif === 0) {
+          maxLat = maxLat + 0.005;
+          minLat = minLat - 0.005;
+        } else {
+          maxLat = maxLat + latDif * 0.03;
+          minLat = minLat - latDif * 0.03;
+        }
+
+        if (longDif === 0) {
+          maxLat = maxLat + 0.005;
+          minLat = minLat - 0.005;
+        } else {
+          maxLat = maxLat + longDif * 0.03;
+          minLat = minLat - longDif * 0.03;
+        }
+
+        return {
+          maxLat,
+          minLat,
+          maxLong,
+          minLong,
+        };
+      };
+
+      map.fitBounds([
+        [fitOverBounds().minLong, fitOverBounds().minLat],
+        [fitOverBounds().maxLong, fitOverBounds().maxLat],
+      ]);
+    }
+  }, [map, stateApp.fitBounds]);
+
+  useEffect(() => {
     if (map && stateMap.toggleZoomOut) {
       if (stateMap.toggleZoomOut === true) {
         map.flyTo({
