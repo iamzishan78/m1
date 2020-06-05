@@ -610,6 +610,9 @@ export default function Map() {
             map.addSource(selectLayerProps.sourceProps.sourceId, {
               type: selectLayerProps.sourceProps.sourceType,
               data: myGeoJSONData,
+              cluster: true,
+              clusterRadius: 50, 
+              clusterMaxZoom: 6,
             });
 
             // -> add layer
@@ -618,8 +621,49 @@ export default function Map() {
               type: selectLayerProps.layerProps.layerType,
               source: selectLayerProps.sourceProps.sourceId,
               paint: selectLayerProps.layerProps.paintProps,
+
             });
 
+            
+            // -> add cluster layer 
+            map.addLayer({
+              id: 'clusters',
+              type: 'circle',
+              source: selectLayerProps.sourceProps.sourceId,
+              filter: ['has', 'point_count'],
+              paint: {
+                  'circle-color': {
+                      property: 'point_count',
+                      type: 'interval',
+                      stops: [
+                          [0, '#41A337'],
+                          [100, '#2D7026'],
+                          [750, '#0B5703'],
+                      ]
+                  },
+                  'circle-radius': {
+                      property: 'point_count',
+                      type: 'interval',
+                      stops: [
+                          [0, 20],
+                          [100, 30],
+                          [750, 40]
+                      ]
+                  }
+              }
+          });
+
+          map.addLayer({
+            id: 'cluster-count',
+            type: 'symbol',
+            source: selectLayerProps.sourceProps.sourceId,
+            filter: ['has', 'point_count'],
+            layout: {
+                'text-field': '{point_count}',
+                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                'text-size': 12
+            }
+        });
             // -> add interaction (note to change later w/ interaction panel)
 
             //console.log("is data layer");
