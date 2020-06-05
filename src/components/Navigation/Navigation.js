@@ -48,9 +48,12 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { green } from "@material-ui/core/colors";
+import SupportCenterModal from "./components/SupportCenter";
 //icons
 import CloseIcon from "@material-ui/icons/Close";
 import SearchIcon from "@material-ui/icons/Search";
+import HeadsetIcon from "@material-ui/icons/Headset";
+import DesktopWindowsIcon from "@material-ui/icons/DesktopWindows";
 import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
 // import SettingsIcon from '@material-ui/icons/Settings';
 import SettingsIcon from "./components/Utils/SettingsIcon";
@@ -90,10 +93,11 @@ import FilterFormValue from "./components/FilterFormValue";
 import FilterFormTags from "./components/FilterFormTags";
 import FilterFormAI from "./components/FilterFormAI";
 
-import InputBase from '@material-ui/core/InputBase';
+import InputBase from "@material-ui/core/InputBase";
 import Search from "./components/Search";
 
 import Avatar from "react-avatar";
+import ContactFormModal from "./components/ContactFormModal";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -500,6 +504,16 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "6px",
     color: theme.palette.secondary.contrastText,
   },
+
+  supportDrawer: {
+    position: "fixed",
+    left: drawerWidth,
+    bottom: "30px",
+    background: "rgba(255, 255, 255, 1.0)",
+    "& .MuiListItem-gutters": {
+      paddingRight: "20px",
+    },
+  },
 }));
 
 const M1neralLogoDrawer = (props) => (
@@ -600,7 +614,10 @@ export default function Navigation(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
+  const [openSupportCenter, setOpenSupportCenter] = useState(false);
+  const [openContactForm, setOpenContactForm] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [supportDrawer, setSupportDrawer] = useState(false);
   const [openFilterCard, setOpenFilterCard] = useState(false);
   const [value, setValue] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -822,7 +839,7 @@ export default function Navigation(props) {
   const handleListItemClickStudio = (event, index, path) => {
     // handleRouteChange(path);
     // handleDrawerClose();
-    window.open('https://m1studio-dev.azurewebsites.net/', '_blank')
+    window.open("https://m1studio-dev.azurewebsites.net/", "_blank");
   };
 
   const handleRouteChange = (path) => {
@@ -855,6 +872,10 @@ export default function Navigation(props) {
     history.push("/");
   };
 
+  const toggleSupportDrawer = () => {
+    setSupportDrawer(!supportDrawer);
+  };
+
   /* const handleFilterCardApply = () => {
     setDisableApply(false)
   }
@@ -873,6 +894,18 @@ export default function Navigation(props) {
 
   const handleChangeIndex = (index) => {
     setValue(index);
+  };
+
+  const handleOpenContactForm = () => {
+    setOpenSupportCenter(false);
+    setOpenContactForm(true);
+  };
+
+  const requestDemo = () => {
+    window.open(
+      "mailto:sales@m1neral.com?subject=Request for demo of premium features",
+      "_blank"
+    );
   };
 
   return (
@@ -1384,7 +1417,6 @@ export default function Navigation(props) {
             <ListItemText primary="M1Studio" />
           </ListItem>
 
-
           <ListItem
             classes={{
               root: classes.menuListItem,
@@ -1400,9 +1432,6 @@ export default function Navigation(props) {
             </ListItemIcon>
             <ListItemText primary="Studio" />
           </ListItem>
-
-
-
         </List>
         <Divider variant="middle" className={classes.menuListBottomDivider} />
         <List className={classes.menuListBottom}>
@@ -1432,6 +1461,7 @@ export default function Navigation(props) {
             </ListItemSecondaryAction> */}
           </ListItem>
 
+          {/* support menu */}
           <ListItem
             classes={{
               root: classes.menuListItemDisabled,
@@ -1440,18 +1470,48 @@ export default function Navigation(props) {
             button
             //selected={stateNav.selectedMenuIndex === 1}
             //onClick={event => handleListItemClick(event, 1, '/track')}
+            onClick={() => toggleSupportDrawer()}
             key="support"
           >
             <ListItemIcon>
               <HeadsetMicIcon />
             </ListItemIcon>
             <ListItemText primary="Support" />
+
             {/* <ListItemSecondaryAction>
               <Button disabled className={classes.betaSideNav2} edge="end" aria-label="BETA">
                 BETA
               </Button>
             </ListItemSecondaryAction> */}
           </ListItem>
+          {supportDrawer && (
+            <div className={classes.supportDrawer}>
+              <List component="div">
+                <ListItem button onClick={() => setOpenSupportCenter(true)}>
+                  <ListItemIcon>
+                    <HeadsetIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Support Center" />
+                </ListItem>
+                <ListItem button onClick={requestDemo}>
+                  <ListItemIcon>
+                    <DesktopWindowsIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Request Demo" />
+                </ListItem>
+              </List>
+            </div>
+          )}
+
+          <SupportCenterModal
+            open={openSupportCenter}
+            openContactForm={handleOpenContactForm}
+            onClose={() => setOpenSupportCenter(false)}
+          />
+          <ContactFormModal
+            open={openContactForm}
+            onClose={() => setOpenContactForm(false)}
+          />
 
           {/* <ListItem
             classes={{
@@ -1487,10 +1547,10 @@ export default function Navigation(props) {
         </List>
       </Drawer>
       {openFilterCard ? (
-        <div ref={anchorEl} className={classes.tabPanelWrapper} >
-          <TabPanel value={value} index={0} dir={theme.direction} >
+        <div ref={anchorEl} className={classes.tabPanelWrapper}>
+          <TabPanel value={value} index={0} dir={theme.direction}>
             <ClickAwayListener onClickAway={(e) => handleClickAway(e)}>
-              <Card className={classes.card} >
+              <Card className={classes.card}>
                 <CardHeader
                   classes={{
                     title: classes.cardTitle,
@@ -1509,7 +1569,7 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Geographical"
                 />
-            
+
                 <CardContent className={classes.cardContent}>
                   <FilterFromGeo />
                 </CardContent>
