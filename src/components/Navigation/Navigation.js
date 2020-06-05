@@ -508,6 +508,9 @@ const useStyles = makeStyles((theme) => ({
     left: drawerWidth,
     bottom: "30px",
     background: "rgba(255, 255, 255, 1.0)",
+    "& .MuiListItem-gutters": {
+      paddingRight: "20px",
+    },
   },
 }));
 
@@ -1481,7 +1484,7 @@ export default function Navigation(props) {
           </ListItem>
           {supportDrawer && (
             <div className={classes.supportDrawer}>
-              <List component="div" disablePadding>
+              <List component="div">
                 <ListItem button onClick={() => setOpenSupportCenter(true)}>
                   <ListItemIcon>
                     <HeadsetIcon />
