@@ -92,8 +92,8 @@ const userDefinedLayers = [
       layerId: "Tracked Owners",
       layerType: "circle",
       paintProps: {
-        "circle-radius": 10,
-        "circle-color": "yellow",
+        "circle-radius": 5,
+        "circle-color": "#01fdfe",
       },
     },
   },
