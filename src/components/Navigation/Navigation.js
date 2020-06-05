@@ -378,7 +378,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "5%",
     paddingBottom: "5%",
     position: "relative",
-    width: drawerWidth - 1,
+    //width: drawerWidth - 1,
 
     top: "0%",
   },
@@ -386,16 +386,16 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "5%",
     paddingBottom: "15%",
     position: "absolute",
-    width: drawerWidth - 1,
-    bottom: "0vh",
+    //width: drawerWidth - 1,
+    bottom: "0",
   },
   menuListBottomDivider: {
-    // position: "relative",
-    // bottom: "100%",
+    position: "relative",
+    bottom: "90%",
   },
   menuListItem: {
     paddingBottom: "5%",
-    width: drawerWidth - 1,
+    width: drawerWidth,
     paddingTop: "5%",
     marginTop: "0%",
     paddingLeft: "17%",
@@ -410,7 +410,7 @@ const useStyles = makeStyles((theme) => ({
 
   menuListItemDisabled: {
     paddingBottom: "5%",
-    width: drawerWidth - 1,
+    //width: drawerWidth - 1,
     paddingTop: "5%",
     marginTop: "0%",
     paddingLeft: "17%",
