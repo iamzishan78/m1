@@ -560,29 +560,6 @@ export default function Map() {
 
             console.log(layerData);
 
-            // const makeGeoJSON = (data) => {
-            //     return {
-            //         type: "FeatureCollection",
-            //         features: data.map((feature) => {
-            //             return {
-            //                 type: "Feature",
-            //                 properties: {
-            //                     api: feature.api,
-            //                     id: feature.id,
-            //                     latitude: feature.latitude,
-            //                     longitude: feature.longitude,
-            //                     operator: feature.operator,
-            //                     WellName: feature.wellName,
-            //                 },
-            //                 geometry: {
-            //                     type: "Point",
-            //                     coordinates: [feature.longitude, feature.latitude],
-            //                 },
-            //             };
-            //         }),
-            //     };
-            // };
-
             const makeGeoJSON = (data) => {
               return {
                 type: "FeatureCollection",
@@ -602,9 +579,6 @@ export default function Map() {
             };
 
             const myGeoJSONData = makeGeoJSON(layerData);
-
-            console.log("geojson", myGeoJSONData);
-            console.log("layerData", layerData);
 
             // -> add source
             map.addSource(selectLayerProps.sourceProps.sourceId, {
@@ -626,44 +600,28 @@ export default function Map() {
 
             
             // -> add cluster layer 
-            map.addLayer({
-              id: 'clusters',
-              type: 'circle',
+
+            console.log('sss',selectLayerProps)
+            //console.log('iii',typeof selectLayerProps.clusterProps.cluster)
+            if(selectLayerProps.layerProps.clusterProps.cluster===true){
+            
+              map.addLayer({
+              id: selectLayerProps.layerProps.clusterProps.clusterBaseId,
+              type: selectLayerProps.layerProps.layerType,
               source: selectLayerProps.sourceProps.sourceId,
               filter: ['has', 'point_count'],
-              paint: {
-                  'circle-color': {
-                      property: 'point_count',
-                      type: 'interval',
-                      stops: [
-                          [0, '#41A337'],
-                          [100, '#2D7026'],
-                          [750, '#0B5703'],
-                      ]
-                  },
-                  'circle-radius': {
-                      property: 'point_count',
-                      type: 'interval',
-                      stops: [
-                          [0, 20],
-                          [100, 30],
-                          [750, 40]
-                      ]
-                  }
-              }
-          });
+              paint: selectLayerProps.layerProps.clusterProps.clusterPaintProps
+                        });
 
-          map.addLayer({
-            id: 'cluster-count',
-            type: 'symbol',
-            source: selectLayerProps.sourceProps.sourceId,
-            filter: ['has', 'point_count'],
-            layout: {
-                'text-field': '{point_count}',
-                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                'text-size': 12
-            }
-        });
+              map.addLayer({
+                id: selectLayerProps.layerProps.clusterProps.clusterCountId,
+                type: 'symbol',
+                source: selectLayerProps.sourceProps.sourceId,
+                filter: ['has', 'point_count'],
+                layout: selectLayerProps.layerProps.clusterProps.clusterSymbolProps,
+                        });
+
+      }
             // -> add interaction (note to change later w/ interaction panel)
 
             //console.log("is data layer");

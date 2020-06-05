@@ -95,6 +95,38 @@ const userDefinedLayers = [
         "circle-radius": 5,
         "circle-color": "#01fdfe",
       },
+      clusterProps: {
+        cluster: true,
+        clusterBaseId: "Tracked Owners Clusters",
+        clusterCountId: "Tracked Owners Clusters Counts",
+        clusterPaintProps: {
+          'circle-color': {
+              property: 'point_count',
+              type: 'interval',
+              stops: [
+                  [0, '#41A337'],
+                  [100, '#2D7026'],
+                  [750, '#0B5703'],
+              ]
+            },
+          'circle-radius': {
+              property: 'point_count',
+              type: 'interval',
+              stops: [
+                  [0, 20],
+                  [100, 30],
+                  [750, 40]
+              ]
+            }
+          },
+        clusterSymbolProps: {
+          'text-field': '{point_count}',
+          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 12
+          },
+
+        
+      }
     },
   },
 
