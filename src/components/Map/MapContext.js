@@ -104,9 +104,9 @@ const userDefinedLayers = [
               property: 'point_count',
               type: 'interval',
               stops: [
-                  [0, '#41A337'],
-                  [100, '#2D7026'],
-                  [750, '#0B5703'],
+                  [0, '#01fdfe'],
+                  [100, '#01fdfe'],
+                  [750, '#01fdfe'],
               ]
             },
           'circle-radius': {
@@ -117,11 +117,13 @@ const userDefinedLayers = [
                   [100, 30],
                   [750, 40]
               ]
-            }
+            },
+            "circle-stroke-width": 5,
+            "circle-stroke-color": '#fff',
           },
         clusterSymbolProps: {
           'text-field': '{point_count}',
-          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-font': ['DIN Offc Pro Bold', 'Arial Unicode MS Bold'],
           'text-size': 12
           },
 
