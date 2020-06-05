@@ -386,8 +386,8 @@ const useStyles = makeStyles((theme) => ({
     bottom: "0vh",
   },
   menuListBottomDivider: {
-    position: "relative",
-    bottom: "100%",
+    // position: "relative",
+    // bottom: "100%",
   },
   menuListItem: {
     paddingBottom: "5%",
@@ -1434,11 +1434,11 @@ export default function Navigation(props) {
 
           <ListItem
             classes={{
-              root: classes.menuListItemDisabled,
+              root: classes.menuListItem,
               selected: classes.menuListItemSelected,
             }}
             button
-            //selected={stateNav.selectedMenuIndex === 1}
+            selected={stateNav.selectedMenuIndex === 1}
             //onClick={event => handleListItemClick(event, 1, '/track')}
             key="support"
           >
