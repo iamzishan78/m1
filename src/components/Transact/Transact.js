@@ -12,7 +12,6 @@ import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { UPDATETRANSACTION } from "../../graphQL/useMutationUpdateTransaction";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Dialog from "./components/dialog";
-import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
 const data_file = {
   lanes: [
@@ -135,39 +134,15 @@ export default function Transact() {
   const [getTransactionData, { loading, data }] = useLazyQuery(TRANSACTIONDATA);
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
 
-  //////begin////////temporary  while signed user fixed
-
-  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [user, setUser] = useState({ _id: "" });
-
   useEffect(() => {
-    if (stateApp && stateApp.user && stateApp.user.email) {
-      getUserByEmail({
-        variables: {
-          userEmail: stateApp.user.email,
-        },
-      });
-    }
-  }, [stateApp.user.email]);
-
-  useEffect(() => {
-    if (dataUser && dataUser.userByEmail) {
-      setUser(dataUser.userByEmail);
-    }
-  }, [dataUser]);
-
-  /////end/////////temporary while signed user fixed
-
-  useEffect(() => {
-    //////stateApp.user._id//////////temporary
-    if (user._id !== "") {
+    if (stateApp.user && stateApp.user.mongoId) {
       getTransactionData({
         variables: {
-          userId: user._id, //////stateApp.user._id//////////temporary
+          userId: stateApp.user.mongoId,
         },
       });
     }
-  }, [user]); ////////////remove dependency//////////temporary
+  }, [stateApp.user]);
 
   useEffect(() => {
     if (data && data.transactionData && data.transactionData.allData) {
@@ -180,7 +155,7 @@ export default function Transact() {
     updateTransaction({
       variables: {
         transactionId: id,
-        transaction: { allData: newData, user: user._id },
+        transaction: { allData: newData, user: stateApp.user.mongoId },
       },
       refetchQueries: ["getTransactionData"],
       awaitRefetchQueries: true,

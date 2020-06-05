@@ -36,7 +36,6 @@ import DefaultFiltersTest from "./filtersDefaultTest";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { WELLSQUERY } from "../../graphQL/useQueryWells";
 import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAndObjectType";
-import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
 
 const useStyles = makeStyles((theme) => ({
@@ -99,7 +98,7 @@ export default function Map() {
 
   //////////// TEMP UNTIL PROVIDER IS MADE //////////
 
-  //////begin////////temporary  while signed user fixed
+  //////begin////////temporary 
 
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = useState(true);
@@ -120,50 +119,29 @@ export default function Map() {
     getWellsForLayer,
     { data: dataWellsForOwnerWellTrackLayer },
   ] = useLazyQuery(WELLSQUERY);
-
-  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [user, setUser] = useState({ _id: "" });
-  const [tracks, setTracks] = useState(false);
-  const [idArray, setIdArray] = useState(null);
+  
+  /////end/////////temporary 
 
   useEffect(() => {
-    if (stateApp && stateApp.user && stateApp.user.email) {
-      getUserByEmail({
-        variables: {
-          userEmail: stateApp.user.email,
-        },
-      });
-    }
-  }, [stateApp.user.email]);
-
-  useEffect(() => {
-    if (dataUser && dataUser.userByEmail) {
-      setUser(dataUser.userByEmail);
-    }
-  }, [dataUser]);
-
-  /////end/////////temporary while signed user fixed
-
-  useEffect(() => {
-    //////stateApp.user._id////////temporary while signed user fixed
-    if (user._id !== "") {
+    
+    if (stateApp.user&&stateApp.user.mongoId) {
       setLoading(true);
 
       tracksByUserAndObjectType({
         variables: {
-          userId: user._id, //////stateApp.user._id////////temporary while signed user fixed
+          userId: stateApp.user.mongoId,
           objectType: "well",
         },
       });
 
       tracksByUserAndObjectTypeOwner({
         variables: {
-          userId: user._id, //////stateApp.user._id////////temporary while signed user fixed
+          userId: stateApp.user.mongoId,
           objectType: "owner",
         },
       });
     }
-  }, [user]); //////stateApp.user._id////////temporary while signed user fixed
+  }, [stateApp.user]); 
 
   useEffect(() => {
     if (dataTracks && dataTracks.tracksByUserAndObjectType) {

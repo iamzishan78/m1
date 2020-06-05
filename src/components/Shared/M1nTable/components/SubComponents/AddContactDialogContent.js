@@ -14,9 +14,7 @@ import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
 import { ADDREMOVEOWNERTOACONTACT } from "../../../../../graphQL/useMutationAddRemoveOwnerToAContact";
 import Taps from "../../../Taps";
 import CircularProgress from "@material-ui/core/CircularProgress";
-
-import { USERBYEMAIL } from "../../../../../graphQL/useQueryUserByEmail"; ///////temporary  while signed user fixed
-import { AppContext } from "../../../../../AppContext"; ///////temporary  while signed user fixed
+import { AppContext } from "../../../../../AppContext";
 
 const phonenumber = (inputtxt) => {
   if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
@@ -61,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function AddContactDialogContent(props) {
+  const [stateApp] = React.useContext(AppContext);
   const [validated, setValidated] = useState(false);
   const [activeTapIndex, setActiveTapIndex] = useState(0);
   const [contacts, setContacts] = useState([]);
@@ -88,29 +87,6 @@ export default function AddContactDialogContent(props) {
   ] = useLazyQuery(CONTACTSBYOWNERSID);
   const [addContact] = useMutation(ADDCONTACT);
   const [addRemoveOwnerToAContact] = useMutation(ADDREMOVEOWNERTOACONTACT);
-
-  //////begin////////temporary  while signed user fixed
-  const [stateApp] = React.useContext(AppContext);
-  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [user, setUser] = useState({ _id: "" });
-
-  useEffect(() => {
-    if (stateApp && stateApp.user && stateApp.user.email) {
-      getUserByEmail({
-        variables: {
-          userEmail: stateApp.user.email,
-        },
-      });
-    }
-  }, [stateApp.user.email]);
-
-  useEffect(() => {
-    if (dataUser && dataUser.userByEmail) {
-      setUser(dataUser.userByEmail);
-    }
-  }, [dataUser]);
-
-  /////end/////////temporary while signed user fixed
 
   useEffect(() => {
     if (props.parent) {
@@ -213,8 +189,8 @@ export default function AddContactDialogContent(props) {
         variables: {
           contact: {
             ...newContact,
-            createBy: user._id, ///stateApp.user////temporary while signed user fixed
-            lastUpdateBy: user._id, ///stateApp.user////temporary while signed user fixed
+            createBy: stateApp.user.mongoId,
+            lastUpdateBy: stateApp.user.mongoId,
           },
         },
         refetchQueries: [

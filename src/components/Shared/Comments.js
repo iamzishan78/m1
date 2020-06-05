@@ -23,7 +23,6 @@ import { COMMENTSBYOBJECTIDQUERY } from "../../graphQL/useQueryCommentsByObjectI
 import { UPSERTCOMMENT } from "../../graphQL/useMutationUpsertComment";
 import { REMOVECOMMENT } from "../../graphQL/useMutationRemoveComment";
 import Grid from "@material-ui/core/Grid";
-import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -121,29 +120,6 @@ export default function Comments(props) {
   const [upsertComment] = useMutation(UPSERTCOMMENT);
   const [removeComment] = useMutation(REMOVECOMMENT);
 
-  //////begin////////temporary  while signed user fixed
-
-  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [user, setUser] = useState({ _id: "" });
-
-  useEffect(() => {
-    if (stateApp && stateApp.user && stateApp.user.email) {
-      getUserByEmail({
-        variables: {
-          userEmail: stateApp.user.email,
-        },
-      });
-    }
-  }, [stateApp.user.email]);
-
-  useEffect(() => {
-    if (dataUser && dataUser.userByEmail) {
-      setUser(dataUser.userByEmail);
-    }
-  }, [dataUser]);
-
-  /////end/////////temporary while signed user fixed
-
   ///////////////////// START FETCHING COMMENTS DATA ////////////////////////////////////////////
 
   useEffect(() => {
@@ -190,7 +166,7 @@ export default function Comments(props) {
                     })
                     .join("\n")}.`,
             public: publicComment,
-            user: user._id, //////stateApp.user._id////////temporary while signed user fixed
+            user: stateApp.user.mongoId,
             commentedOn: props.targetSourceId,
           },
         },

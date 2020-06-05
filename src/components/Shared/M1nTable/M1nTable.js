@@ -31,7 +31,6 @@ import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { CONTACSCOUNTER } from "../../../graphQL/useQueryContactsCounter";
 import { CONTACTSBYOWNERSID } from "../../../graphQL/useQueryContactsByOwnerId";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
-import { USERBYEMAIL } from "../../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
@@ -62,11 +61,9 @@ const TrackedOwnersHeadCells = [
   //   label: "Interest",
   // },
 
-
-
-  // TEMPORARY COMMENT OUT. DO NOT DELETE 
-  // WILL BE ADDED IN AFTER DEVELOPING A SYSTEM TO 
-  // AGGREGATE OWNERS 
+  // TEMPORARY COMMENT OUT. DO NOT DELETE
+  // WILL BE ADDED IN AFTER DEVELOPING A SYSTEM TO
+  // AGGREGATE OWNERS
   // {
   //   name: "appraisedValue",
   //   label: "Appraised Value",
@@ -106,8 +103,7 @@ const TrackedOwnersHeadCells = [
     },
   },
 
-
-/* 
+  /* 
   // TEMPORARY COMMENT OUT. DO NOT DELETE 
   // WILL BE RE-ADDED ONCE WE FIGURE OUT HOW TO DRAW AGGREGATIONS 
   // FOR UNIVERSAL OWNERS
@@ -126,7 +122,6 @@ const TrackedOwnersHeadCells = [
   //   },
   // },
  */
-
 
   {
     name: "commentsCounter",
@@ -295,8 +290,7 @@ const OwnersPerWellHeadCells = [
     },
   },
 
-
-/*   
+  /*   
 // TEMPORARY COMMENT OUT. DO NOT DELETE 
   // WILL BE RE-ADDED ONCE WE HAVE A WAY OF AGGREGATING A 
   // UNIVERSAL OWNER 
@@ -314,7 +308,6 @@ const OwnersPerWellHeadCells = [
   //   },
   // }, 
   */
-
 
   {
     name: "commentsCounter",
@@ -405,8 +398,7 @@ const OwnersPerContactsHeadCells = [
     },
   },
 
-  
-/*   
+  /*   
   // TEMPORARY COMMENT OUT. DO NOT REMOVE 
   // WILL BE UNCOMMENTED ONCE WE UNDERSTAND A MORE 
   // UNIVERSAL OWNER ID. 
@@ -579,29 +571,6 @@ export default function M1nTable(props) {
   const [addAble, setAddAble] = useState(true);
   const [targetLabel, setTargetLabel] = useState(null);
 
-  //////begin////////temporary  while signed user fixed
-
-  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [user, setUser] = useState({ _id: "" });
-
-  useEffect(() => {
-    if (stateApp && stateApp.user && stateApp.user.email) {
-      getUserByEmail({
-        variables: {
-          userEmail: stateApp.user.email,
-        },
-      });
-    }
-  }, [stateApp.user.email]);
-
-  useEffect(() => {
-    if (dataUser && dataUser.userByEmail) {
-      setUser(dataUser.userByEmail);
-    }
-  }, [dataUser]);
-
-  /////end/////////temporary while signed user fixed
-
   ////////////Queries begin///////////////////////////////////////////////
 
   const [tracksByUserAndObjectType, { data: dataTracks }] = useLazyQuery(
@@ -653,18 +622,17 @@ export default function M1nTable(props) {
   ////////////General begin///////////////////////////////////////////////
 
   useEffect(() => {
-    //////stateApp.user._id////////temporary while signed user fixed
-    if (targetLabel && user._id !== "") {
+    if (targetLabel && stateApp.user && stateApp.user.mongoId) {
       setLoading(true);
 
       tracksByUserAndObjectType({
         variables: {
-          userId: user._id, //////stateApp.user._id////////temporary while signed user fixed
+          userId: stateApp.user.mongoId,
           objectType: targetLabel,
         },
       });
     }
-  }, [user, targetLabel]); //////stateApp.user._id////////temporary while signed user fixed
+  }, [stateApp.user, targetLabel]);
 
   ////////////General end///////////////////////////////////////////////
 
@@ -699,10 +667,16 @@ export default function M1nTable(props) {
           },
         });
         getCommentsCounter({
-          variables: { objectsIdsArray: tracksIdArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+          variables: {
+            objectsIdsArray: tracksIdArray,
+            userId: stateApp.user.mongoId,
+          },
         });
         getTagSamples({
-          variables: { objectsIdsArray: tracksIdArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+          variables: {
+            objectsIdsArray: tracksIdArray,
+            userId: stateApp.user.mongoId,
+          },
         });
         getContactsCounter({
           variables: { objectsIdsArray: tracksIdArray },
@@ -865,10 +839,16 @@ export default function M1nTable(props) {
           },
         });
         getCommentsCounter({
-          variables: { objectsIdsArray: tracksIdArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+          variables: {
+            objectsIdsArray: tracksIdArray,
+            userId: stateApp.user.mongoId,
+          },
         });
         getTagSamples({
-          variables: { objectsIdsArray: tracksIdArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+          variables: {
+            objectsIdsArray: tracksIdArray,
+            userId: stateApp.user.mongoId,
+          },
         });
       } else {
         setRows([]);
@@ -978,7 +958,8 @@ export default function M1nTable(props) {
       props.parent &&
       props.parent === "WellsPerOwner" &&
       props.wellsIdsArray &&
-      user._id !== ""
+      stateApp.user &&
+      stateApp.user.mongoId
     ) {
       setTargetLabel("well");
       getWells({
@@ -988,13 +969,19 @@ export default function M1nTable(props) {
         },
       });
       getCommentsCounter({
-        variables: { objectsIdsArray: props.wellsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+        variables: {
+          objectsIdsArray: props.wellsIdsArray,
+          userId: stateApp.user.mongoId,
+        },
       });
       getTagSamples({
-        variables: { objectsIdsArray: props.wellsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+        variables: {
+          objectsIdsArray: props.wellsIdsArray,
+          userId: stateApp.user.mongoId,
+        },
       });
     }
-  }, [props.wellsIdsArray, user]);
+  }, [props.wellsIdsArray, stateApp.user]);
 
   useEffect(() => {
     if (props.parent && props.parent === "WellsPerOwner" && dataWells) {
@@ -1144,10 +1131,10 @@ export default function M1nTable(props) {
           },
         });
         getCommentsCounter({
-          variables: { objectsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
         getTagSamples({
-          variables: { objectsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
         getContactsCounter({
           variables: { objectsIdsArray: objectsIdsArray },
@@ -1343,10 +1330,10 @@ export default function M1nTable(props) {
         setAddAble(false);
 
         getCommentsCounter({
-          variables: { objectsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
         getTagSamples({
-          variables: { objectsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
         getContactsCounter({
           variables: { objectsIdsArray: objectsIdsArray },
@@ -1501,10 +1488,10 @@ export default function M1nTable(props) {
         setAddAble({ parent: props.ownerId });
 
         getCommentsCounter({
-          variables: { objectsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
         getTagSamples({
-          variables: { objectsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
       } else {
         setLoading(false);
@@ -1634,10 +1621,10 @@ export default function M1nTable(props) {
         setAddAble({ parent: false });
 
         getCommentsCounter({
-          variables: { objectsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
         getTagSamples({
-          variables: { objectsIdsArray, userId: user._id }, //////stateApp.user._id////////temporary while signed user fixed
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
       } else {
         setLoading(false);
