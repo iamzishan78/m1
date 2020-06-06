@@ -34,7 +34,7 @@ import RootRef from "@material-ui/core/RootRef";
 const useStyles = makeStyles(theme => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important",
-    width: '400px'
+    width: '350px'
   }
 }));
 

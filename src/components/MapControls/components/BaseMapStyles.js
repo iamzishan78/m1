@@ -48,7 +48,7 @@ const theme = createMuiTheme({
     },
     MuiListItemText: {
       root: {
-        textAlign: "right",
+        //textAlign: "right",
         padding: 20,
       },
     },
@@ -111,6 +111,7 @@ const StyledMenuHeaderItem = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important",
+    width: '350px'
   },
   nested: {
     paddingLeft: theme.spacing(6),
@@ -394,8 +395,8 @@ export default function BaseMapStyles(props) {
                               <ListItemIcon {...provided.dragHandleProps}>
                                 <DragIndicator />
                               </ListItemIcon>
-                              <ListItemIcon>
-                                <Checkbox
+                              <ListItemText id={labelId} primary={layer.name} />
+                              <Checkbox
                                   icon={<VisibilityOffIcon htmlColor="#fff" />}
                                   checkedIcon={<VisibilityIcon htmlColor="#fff" />}
                                   edge="start"
@@ -409,8 +410,6 @@ export default function BaseMapStyles(props) {
                                   inputProps={{ "aria-labelledby": labelId }}
                                   onChange={handleToggle(index)}
                                 />
-                              </ListItemIcon>
-                              <ListItemText id={labelId} primary={layer.name} />
                             </StyledListItem>
                           )}
                         </Draggable>
