@@ -76,7 +76,6 @@ const userDefinedLayers = [
         "circle-stroke-color": '#fff',
       },
       clusterProps: {
-        cluster: true,
         clusterPaintProps: {
           'circle-color': {
               property: 'point_count',
@@ -104,8 +103,22 @@ const userDefinedLayers = [
           'text-font': ['DIN Offc Pro Bold', 'Arial Unicode MS Bold'],
           'text-size': 12
           },
-      }
+      },
     },
+    interactionProps:{
+      mouseMove: {
+        cursor: 'pointer'
+      },
+      mouseLeave: {
+        cursor: ''
+      },
+      mouseClick: {
+        clickInteraction: true,
+        boundTo: false,
+        flyTo: true,
+      }
+    }
+
   },
 
   {

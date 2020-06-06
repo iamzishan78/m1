@@ -343,59 +343,7 @@ export default function Map() {
     }
   }, [map, stateMap.checkedHeats, stateMap.heatLayers]);
 
-  // useEffect(() => {
-  //   // USE EFFECT FOR HEATMAP LAYER HANDLES
-  //   console.log("heatmap layer ue start");
-  //   if (stateMap.heatLayers.length > 0 && map) {
-  //     stateMap.heatLayers.forEach((l) => {
-  //       l.id.forEach((k) => {
-  //         if (map.getLayer(k)) {
-  //           map.setLayoutProperty(k, "visibility", "none");
-  //         }
-  //       });
-  //     });
 
-  //     if (stateMap.checkedHeats.length > 0) {
-  //       let layers = stateMap.checkedHeats;
-
-  //       layers.forEach((i) => {
-  //         let currentLayerArray = stateMap.heatLayers[i].id;
-  //         currentLayerArray.forEach((j) => {
-  //           if (map.getLayer(j)) {
-  //             map.setLayoutProperty(j, "visibility", "visible");
-  //           }
-  //         });
-  //       });
-  //     }
-  //   }
-  // }, [map, stateMap.checkedHeats]);
-
-  // useEffect(() => {
-  //   // USE EFFECT FOR BASEMAP LAYER HANDLING
-  //   console.log("basemap layer ue start");
-  //   if (stateMap.baseMapLayers.length > 0 && map) {
-  //     stateMap.baseMapLayers.forEach((l) => {
-  //       l.id.forEach((k) => {
-  //         if (map.getLayer(k)) {
-  //           map.setLayoutProperty(k, "visibility", "none");
-  //         }
-  //       });
-  //     });
-
-  //     if (stateMap.checkedBaseLayers.length > 0) {
-  //       let layers = stateMap.checkedBaseLayers;
-
-  //       layers.forEach((i) => {
-  //         let currentLayerArray = stateMap.baseMapLayers[i].id;
-  //         currentLayerArray.forEach((j) => {
-  //           if (map.getLayer(j)) {
-  //             map.setLayoutProperty(j, "visibility", "visible");
-  //           }
-  //         });
-  //       });
-  //     }
-  //   }
-  // }, [map, stateMap.checkedBaseLayers]);
 
   useEffect(() => {
     ///////////////// EFFECT FOR SHOWING TRACKED WELLS /////////////////
@@ -601,11 +549,16 @@ export default function Map() {
             });
 
             
+
+
+
             // -> add cluster layer 
 
             //console.log('sss',selectLayerProps)
             //console.log('iii',typeof selectLayerProps.clusterProps.cluster)
-            if(selectLayerProps.layerProps.clusterProps.cluster===true){
+            if(selectLayerProps 
+                && selectLayerProps.layerProps  
+                && selectLayerProps.layerProps.clusterProps){
               
               var clusterVar = selectLayerProps.layerProps.layerId+'-clusters'
               var clusterLabelBar = selectLayerProps.layerProps.layerId+'-clusters-counts'
@@ -627,7 +580,43 @@ export default function Map() {
                         });
 
       }
+
+            console.log('========features',selectLayerProps)
+
             // -> add interaction (note to change later w/ interaction panel)
+            if(selectLayerProps && selectLayerProps.interactionProps){
+              console.log('========features',selectLayerProps.interactionProps)
+
+              if(selectLayerProps.interactionProps.mouseClick){
+                map.on("click", selectLayerProps.layerProps.layerId, function (e) {
+                  var bbox = [
+                    [e.point.x - 10, e.point.y - 10],
+                    [e.point.x + 10, e.point.y + 10],
+                  ];
+          
+                  let features = map.queryRenderedFeatures(bbox, {
+                    layers: [selectLayerProps.layerProps.layerId],
+                  });
+          
+                  console.log('========features',features)
+
+                  setStateApp((state) => ({ ...state, flyTo: features[0].properties }));
+                
+                
+                });
+
+              }
+
+              
+                map.on("mousemove", selectLayerProps.layerProps.layerId, (e) => {
+                  map.getCanvas().style.cursor = "pointer";
+                });
+          
+                map.on("mouseleave", selectLayerProps.layerProps.layerId, function () {
+                  map.getCanvas().style.cursor = "";
+                });
+
+              }
 
             //console.log("is data layer");
             //console.log(selectLayerProps);

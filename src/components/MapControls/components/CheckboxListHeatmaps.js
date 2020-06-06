@@ -256,8 +256,9 @@ export default function CheckboxListHeatmaps(props) {
                               <ListItemIcon {...provided.dragHandleProps}>
                                 <DragIndicator />
                               </ListItemIcon>
-                              <ListItemIcon>
-                                <Checkbox
+                              <ListItemText id={labelId} primary={layer.name} />
+                            
+                              <Checkbox
                                   icon={<VisibilityOffIcon htmlColor="#fff" />}
                                   checkedIcon={<VisibilityIcon htmlColor="#fff" />}
                                   edge="start"
@@ -271,8 +272,7 @@ export default function CheckboxListHeatmaps(props) {
                                   inputProps={{ "aria-labelledby": labelId }}
                                   onChange={handleToggle(index)}
                                 />
-                              </ListItemIcon>
-                              <ListItemText id={labelId} primary={layer.name} />
+
                             </StyledListItem>
                           )}
                         </Draggable>
