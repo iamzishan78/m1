@@ -33,7 +33,8 @@ import RootRef from "@material-ui/core/RootRef";
 
 const useStyles = makeStyles(theme => ({
   subHeaderItem: {
-    backgroundColor: "#011133 !important"
+    backgroundColor: "#011133 !important",
+    width: '400px'
   }
 }));
 
@@ -256,6 +257,7 @@ export default function CheckboxListHeatmaps(props) {
                               <ListItemIcon {...provided.dragHandleProps}>
                                 <DragIndicator />
                               </ListItemIcon>
+
                               <ListItemText id={labelId} primary={layer.name} />
                             
                               <Checkbox
