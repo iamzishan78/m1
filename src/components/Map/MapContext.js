@@ -77,8 +77,6 @@ const userDefinedLayers = [
       },
       clusterProps: {
         cluster: true,
-        clusterBaseId: "Tracked Wells Clusters",
-        clusterCountId: "Tracked Wells Clusters Counts",
         clusterPaintProps: {
           'circle-color': {
               property: 'point_count',

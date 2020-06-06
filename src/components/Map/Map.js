@@ -506,6 +506,14 @@ export default function Map() {
     }
   }, [stateApp.trackFilterOn]);
 
+
+
+
+
+
+
+
+
   useEffect(() => {
     // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
 
@@ -517,11 +525,26 @@ export default function Map() {
         console.log("selected layer props", selectLayerProps);
         console.log(l);
         l.id.forEach((k) => {
+          console.log('k',k)
+
           if (map.getLayer(k)) {
             console.log("get layer", k);
             map.removeLayer(k);
             map.removeSource(l.sourceProps.sourceId);
           }
+
+          var clusterVar = k+'-clusters'
+          if (map.getLayer(clusterVar)) {
+            map.removeLayer(clusterVar);
+            map.removeSource(l.sourceProps.sourceId);
+          }
+
+          var clusterLabelBar = k+'-clusters-counts'
+          if (map.getLayer(clusterLabelBar)) {
+            map.removeLayer(clusterLabelBar);
+            map.removeSource(l.sourceProps.sourceId);
+          }
+          
         });
       });
     }
@@ -538,12 +561,13 @@ export default function Map() {
       const layerList = stateMap.userDefinedLayers;
       console.log("layerList", layerList);
       stateMap.checkedUserDefinedLayers.forEach((l) => {
-        //console.log(l);
+        
+        
         const selectLayerProps = layerList[l];
-
         console.log("layer pros", selectLayerProps);
 
         if (selectLayerProps.type === "data layer") {
+          
           // -> fetch data
           if (selectLayerProps.dataProps.dataId == "trackedWellsWells") {
             var layerData = dataWells.wells.results;
@@ -601,12 +625,15 @@ export default function Map() {
             
             // -> add cluster layer 
 
-            console.log('sss',selectLayerProps)
+            //console.log('sss',selectLayerProps)
             //console.log('iii',typeof selectLayerProps.clusterProps.cluster)
             if(selectLayerProps.layerProps.clusterProps.cluster===true){
-            
+              
+              var clusterVar = selectLayerProps.layerProps.layerId+'-clusters'
+              var clusterLabelBar = selectLayerProps.layerProps.layerId+'-clusters-counts'
+
               map.addLayer({
-              id: selectLayerProps.layerProps.clusterProps.clusterBaseId,
+              id: clusterVar,
               type: selectLayerProps.layerProps.layerType,
               source: selectLayerProps.sourceProps.sourceId,
               filter: ['has', 'point_count'],
@@ -614,7 +641,7 @@ export default function Map() {
                         });
 
               map.addLayer({
-                id: selectLayerProps.layerProps.clusterProps.clusterCountId,
+                id: clusterLabelBar,
                 type: 'symbol',
                 source: selectLayerProps.sourceProps.sourceId,
                 filter: ['has', 'point_count'],
