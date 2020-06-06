@@ -25,12 +25,13 @@ import ListItem from '@material-ui/core/ListItem';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import LayersIcon from '@material-ui/icons/Layers';
-
-
+import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
+import ClickIcon from '..//..//Shared/svgIcons/cursor-click.js'
 
 const useStyles = makeStyles(theme => ({
   subHeaderItem: {
-    backgroundColor: "#011133 !important"
+    backgroundColor: "#011133 !important",
+    width: '400px'
   },
   list: {
     padding: 0
@@ -261,8 +262,10 @@ export default function CheckboxList(props) {
                               <ListItemIcon {...provided.dragHandleProps}>
                                 <DragIndicator />
                               </ListItemIcon>
-                              <ListItemIcon>
-                                <Checkbox
+
+                              <ListItemText id={labelId} primary={layer.name} />
+                            
+                              <Checkbox
                                   icon={<VisibilityOffIcon htmlColor="#fff" />}
                                   checkedIcon={<VisibilityIcon htmlColor="#fff" />}
                                   edge="start"
@@ -276,8 +279,7 @@ export default function CheckboxList(props) {
                                   inputProps={{ "aria-labelledby": labelId }}
                                   onChange={handleToggle(index)}
                                 />
-                              </ListItemIcon>
-                              <ListItemText id={labelId} primary={layer.name} />
+                            
                             </StyledListItem>
                           )}
                         </Draggable>
@@ -317,8 +319,27 @@ export default function CheckboxList(props) {
                               <ListItemIcon {...provided.dragHandleProps}>
                                 <DragIndicator />
                               </ListItemIcon>
-                              <ListItemIcon>
-                                <Checkbox
+
+                              <ListItemText id={labelId} primary={layer.name} />
+                            
+                              <div style={{paddingRight: 20}}>
+                              <Checkbox
+                                  icon={<CancelOutlinedIcon htmlColor="#fff" />}
+                                  checkedIcon={<ClickIcon/>}
+                                  edge="start"
+                                  checked={
+                                    stateMap.checkedUserDefinedLayers
+                                      ? stateMap.checkedUserDefinedLayers.indexOf(index) !== -1
+                                      : false
+                                  }
+                                  tabIndex={-1}
+                                  disableRipple
+                                  //inputProps={{ "aria-labelledby": labelId }}
+                                  //onChange={handleToggleUserDefined(index)}
+                                />
+                              </div>
+
+                              <Checkbox
                                   icon={<VisibilityOffIcon htmlColor="#fff" />}
                                   checkedIcon={<VisibilityIcon htmlColor="#fff" />}
                                   edge="start"
@@ -332,8 +353,9 @@ export default function CheckboxList(props) {
                                   inputProps={{ "aria-labelledby": labelId }}
                                   onChange={handleToggleUserDefined(index)}
                                 />
-                              </ListItemIcon>
-                              <ListItemText id={labelId} primary={layer.name} />
+                              
+
+
                             </StyledListItem>
                           )}
                         </Draggable>
