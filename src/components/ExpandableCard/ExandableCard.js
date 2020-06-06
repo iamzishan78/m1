@@ -12,7 +12,6 @@ import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { TRACKBYUSERANDOBJECTID } from "../../graphQL/useQueryTrackByUserAndObjectId";
-import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 import TaggerWithIcon from "../Shared/TaggerWithIcon";
 import CommentsWithIcon from "../Shared/CommentsWithIcon";
 import TrackToggleButton from "../Shared/TrackToggleButton";
@@ -103,40 +102,16 @@ export default function ExpandableCard(props) {
     { loading: loadingTrack, data: dataTrack },
   ] = useLazyQuery(TRACKBYUSERANDOBJECTID);
 
-  //////begin////////temporary  while signed user fixed
-
-  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [user, setUser] = useState({ _id: "" });
-
   useEffect(() => {
-    if (stateApp && stateApp.user && stateApp.user.email) {
-      getUserByEmail({
-        variables: {
-          userEmail: stateApp.user.email,
-        },
-      });
-    }
-  }, [stateApp.user.email]);
-
-  useEffect(() => {
-    if (dataUser && dataUser.userByEmail) {
-      setUser(dataUser.userByEmail);
-    }
-  }, [dataUser]);
-
-  /////end/////////temporary while signed user fixed
-
-  useEffect(() => {
-    //////stateApp.user._id////////temporary while signed user fixed
-    if (user._id !== "" && props.targetSourceId) {
+    if (stateApp.user && stateApp.user.mongoId && props.targetSourceId) {
       trackByUserAndObjectId({
         variables: {
-          userId: user._id, //////stateApp.user._id////////temporary while signed user fixed
+          userId: stateApp.user.mongoId,
           objectId: props.targetSourceId.toLowerCase(),
         },
       });
     }
-  }, [user, props.targetSourceId]); //////stateApp.user._id////////temporary while signed user fixed
+  }, [stateApp.user.mongoId, props.targetSourceId]);
 
   useEffect(() => {
     if (dataTrack) {
@@ -233,7 +208,7 @@ export default function ExpandableCard(props) {
               />
             )}
 
-          {stateExpandableCard.expanded && (
+            {stateExpandableCard.expanded && (
               <Tooltip title={"Report Bug"} placement="top">
                 <IconButton
                   size="large"
@@ -271,10 +246,6 @@ export default function ExpandableCard(props) {
                     </IconButton>
                   </Tooltip>
                 )}
-                  
-
-
-
 
             <Tooltip title={"Close"} placement="top">
               <IconButton

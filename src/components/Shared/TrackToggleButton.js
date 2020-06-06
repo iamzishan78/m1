@@ -7,7 +7,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { AppContext } from "../../AppContext";
 import { TOGGLETRACK } from "../../graphQL/useMutationToggleCreateRemoveTrack";
 import { CircularProgress } from "@material-ui/core";
-import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,29 +38,6 @@ export default function TrackToggleButton(props) {
   const [selected, setSelected] = useState(false);
   const [toggleCreateRemoveTrack, { data, loading }] = useMutation(TOGGLETRACK);
 
-  //////begin////////temporary  while signed user fixed
-
-  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [user, setUser] = useState({ _id: "" });
-
-  useEffect(() => {
-    if (stateApp && stateApp.user && stateApp.user.email) {
-      getUserByEmail({
-        variables: {
-          userEmail: stateApp.user.email,
-        },
-      });
-    }
-  }, [stateApp.user.email]);
-
-  useEffect(() => {
-    if (dataUser && dataUser.userByEmail) {
-      setUser(dataUser.userByEmail);
-    }
-  }, [dataUser]);
-
-  /////end/////////temporary while signed user fixed
-
   useEffect(() => {
     if (props.target) {
       if (props.target.isTracked) {
@@ -86,7 +62,7 @@ export default function TrackToggleButton(props) {
     toggleCreateRemoveTrack({
       variables: {
         track: {
-          user: user._id, //////stateApp.user._id////////temporary while signed user fixed
+          user: stateApp.user.mongoId,
           objectType: props.targetLabel,
           trackOn: props.targetSourceId,
         },

@@ -1,50 +1,44 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import Switch from '@material-ui/core/Switch';
+import Switch from "@material-ui/core/Switch";
 import { NavigationContext } from "../NavigationContext";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { TRACKSBYUSERANDOBJECTTYPE } from "../../../graphQL/useQueryTracksByUserAndObjectType";
-import { USERBYEMAIL } from "../../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 import { AppContext } from "../../../AppContext";
 import { MapControlsContext } from "../../MapControls/MapControlsContext";
 import { MapContext } from "../../Map/MapContext";
 import SimpleUserTable from "../../Providers/TrackWellsProvider";
 
-
 const useStyles = makeStyles({
   input: {
     margin: 20,
     maxWidth: 168,
-    minWidth: 167
+    minWidth: 167,
   },
   inputLabel: {
     color: "black",
     minWidth: 249,
     maxWidth: 250,
-    marginLeft: 20
+    marginLeft: 20,
   },
   noOwners: {
     padding: "6px 0px",
     display: "flex",
   },
-  noOwnersToggle:{
+  noOwnersToggle: {
     marginLeft: 20,
-  }
+  },
 });
 
-
 const data2 = SimpleUserTable;
-
-
 
 export default function FilterOwnerCount() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [tracks , setTracks] = useState(false);
-  const [idArray , setIdArray] = useState(null);
-
+  const [tracks, setTracks] = useState(false);
+  const [idArray, setIdArray] = useState(null);
 
   // const [firstWell , setFirstWell] = useState(null);
   // const [stateMapControls, setStateMapControls] = useContext(
@@ -53,9 +47,8 @@ export default function FilterOwnerCount() {
 
   const [stateMap, setStateMap] = useContext(MapContext);
 
-
   const [stateApp, setStateApp] = useContext(AppContext);
-  
+
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = useState(true);
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
@@ -63,51 +56,18 @@ export default function FilterOwnerCount() {
     TRACKSBYUSERANDOBJECTTYPE
   );
 
-
-
-
-
-
-
-
-
-
-  //////begin////////temporary  while signed user fixed
-
-  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [user, setUser] = useState({ _id: "" });
-
   useEffect(() => {
-    if (stateApp && stateApp.user && stateApp.user.email) {
-      getUserByEmail({
-        variables: {
-          userEmail: stateApp.user.email,
-        },
-      });
-    }
-  }, [stateApp.user.email]);
-
-  useEffect(() => {
-    if (dataUser && dataUser.userByEmail) {
-      setUser(dataUser.userByEmail);
-    }
-  }, [dataUser]);
-
-  /////end/////////temporary while signed user fixed
-
-  useEffect(() => {
-    //////stateApp.user._id////////temporary while signed user fixed
-    if (user._id !== "") {
+    if (stateApp.user && stateApp.user.mongoId) {
       setLoading(true);
 
       tracksByUserAndObjectType({
         variables: {
-          userId: user._id, //////stateApp.user._id////////temporary while signed user fixed
+          userId: stateApp.user.mongoId,
           objectType: "well",
         },
       });
     }
-  }, [user]); //////stateApp.user._id////////temporary while signed user fixed
+  }, [stateApp.user]);
 
   useEffect(() => {
     if (dataTracks && dataTracks.tracksByUserAndObjectType) {
@@ -129,9 +89,6 @@ export default function FilterOwnerCount() {
     }
   }, [dataTracks]);
 
-
-
-
   useEffect(() => {
     if (dataWells) {
       if (
@@ -139,13 +96,9 @@ export default function FilterOwnerCount() {
         dataWells.wells.results &&
         dataWells.wells.results.length > 0
       ) {
-
-        const idArray = dataWells.wells.results.map(
-          (item) => item.api
-        )
+        const idArray = dataWells.wells.results.map((item) => item.api);
 
         setIdArray(idArray);
-
       } else {
         setRows([]);
       }
@@ -153,49 +106,29 @@ export default function FilterOwnerCount() {
     }
   }, [dataWells]);
 
-
-
-
-
-
-
-
-
-
-
-  
-
   const toggleTracks = () => {
-    setTracks(tracks => !tracks)
-  }
+    setTracks((tracks) => !tracks);
+  };
 
-
-  
   useEffect(() => {
+    if (idArray) {
+      let filter;
 
-    if(idArray){
-    let filter;
-  
-    if(idArray && idArray.length) {
-      filter = ['match', ['get', 'api'], idArray, true, false]
+      if (idArray && idArray.length) {
+        filter = ["match", ["get", "api"], idArray, true, false];
+      } else {
+        filter = null;
+      }
+
+      setStateNav((stateNav) => ({ ...stateNav, filterTrackedWells: filter }));
+      setStateApp({
+        ...stateApp,
+        trackedWellArray: dataWells,
+        trackFilterOn: true,
+      });
     }
-    else {
-      filter = null
-    }
+  }, [tracks]);
 
-    setStateNav(stateNav => ({ ...stateNav, filterTrackedWells: filter}))
-    setStateApp({
-          ...stateApp,
-          trackedWellArray: dataWells,
-          trackFilterOn: true,
-        });
-
-  }
-  },[tracks])
-
-
-
-  
   return (
     <div>
       <div className={classes.noOwners}>
@@ -203,7 +136,7 @@ export default function FilterOwnerCount() {
           className={classes.inputLabel}
           htmlFor="select-multiple-chip1"
         >
-        Tracked Wells
+          Tracked Wells
         </Typography>
         <Switch
           className={classes.noOwnersToggle}
@@ -211,7 +144,7 @@ export default function FilterOwnerCount() {
           onChange={toggleTracks}
           color="primary"
           name="checked"
-          inputProps={{ 'aria-label': 'primary checkbox' }}
+          inputProps={{ "aria-label": "primary checkbox" }}
         />
       </div>
     </div>

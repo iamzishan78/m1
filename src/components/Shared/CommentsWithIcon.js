@@ -3,7 +3,6 @@ import { AppContext } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import { useLazyQuery } from "@apollo/react-hooks";
-import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
 import ChatIcon from "@material-ui/icons/Chat";
@@ -37,40 +36,16 @@ export default function CommentsWithIcon(props) {
     COMMENTSCOUNTER
   );
 
-  //////begin////////temporary  while signed user fixed
-
-  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [user, setUser] = useState({ _id: "" });
-
   useEffect(() => {
-    if (stateApp && stateApp.user && stateApp.user.email) {
-      getUserByEmail({
-        variables: {
-          userEmail: stateApp.user.email,
-        },
-      });
-    }
-  }, [stateApp.user.email]);
-
-  useEffect(() => {
-    if (dataUser && dataUser.userByEmail) {
-      setUser(dataUser.userByEmail);
-    }
-  }, [dataUser]);
-
-  /////end/////////temporary while signed user fixed
-
-  useEffect(() => {
-    //////stateApp.user._id////////temporary while signed user fixed
-    if (user._id !== "" && props.objectId) {
+    if (stateApp.user && stateApp.user.mongoId && props.objectId) {
       getCommentsCounter({
         variables: {
           objectsIdsArray: [props.objectId],
-          userId: user._id,
-        }, //////stateApp.user._id////////temporary while signed user fixed
+          userId: stateApp.user.mongoId,
+        },
       });
     }
-  }, [user, props.objectId]); //////stateApp.user._id////////temporary while signed user fixed
+  }, [stateApp.user, props.objectId]);
 
   useEffect(() => {
     if (dataCommentsCounter && dataCommentsCounter.commentsCounter) {
