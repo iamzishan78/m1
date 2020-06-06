@@ -80,19 +80,37 @@ export default function CheckboxList(props) {
   };
 
 
+  const handleToggleInteraction = idx => () => {
+    const currentIndex = stateMap.checkedLayersInteraction.indexOf(idx);
+    const newChecked = [...stateMap.checkedLayersInteraction];
+    if (currentIndex === -1) {
+      newChecked.push(idx);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+    setStateMap(stateMap => ({ ...stateMap, checkedLayersInteraction: newChecked }));
+  };
+
   const handleToggleUserDefined = idx => () => {
-    //console.log('idx',idx)
     const currentIndex = stateMap.checkedUserDefinedLayers.indexOf(idx);
     const newChecked = [...stateMap.checkedUserDefinedLayers];
-    //console.log('current idx',currentIndex)
-    //console.log('new checked',newChecked)
     if (currentIndex === -1) {
       newChecked.push(idx);
     } else {
       newChecked.splice(currentIndex, 1);
     }
     setStateMap(stateMap => ({ ...stateMap, checkedUserDefinedLayers: newChecked }));
-    //console.log('new checked new',newChecked)
+  };
+
+  const handleToggleUserDefinedInteraction = idx => () => {
+    const currentIndex = stateMap.checkedUserDefinedLayersInteraction.indexOf(idx);
+    const newChecked = [...stateMap.checkedUserDefinedLayersInteraction];
+    if (currentIndex === -1) {
+      newChecked.push(idx);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+    setStateMap(stateMap => ({ ...stateMap, checkedUserDefinedLayersInteraction: newChecked }));
   };
 
 
@@ -265,6 +283,27 @@ export default function CheckboxList(props) {
 
                               <ListItemText id={labelId} primary={layer.name} />
                             
+
+                              {layer.name === 'Wells' &&
+                              <div style={{paddingRight: 20}}>
+                              <Checkbox
+                                  icon={<CancelOutlinedIcon htmlColor="#12abe0"/>}
+                                  checkedIcon={<ClickIcon/>}
+                                  edge="start"
+                                  checked={
+                                    stateMap.checkedLayersInteraction
+                                      ? stateMap.checkedLayersInteraction.indexOf(index) !== -1
+                                      : false
+                                  }
+                                  tabIndex={-1}
+                                  disableRipple
+                                  inputProps={{ "aria-labelledby": labelId }}
+                                  onChange={handleToggleInteraction(index)}
+                                />
+                              </div>
+                              }
+
+
                               <Checkbox
                                   icon={<VisibilityOffIcon htmlColor="#fff" />}
                                   checkedIcon={<VisibilityIcon htmlColor="#fff" />}
@@ -324,18 +363,18 @@ export default function CheckboxList(props) {
                             
                               <div style={{paddingRight: 20}}>
                               <Checkbox
-                                  icon={<CancelOutlinedIcon htmlColor="#fff" />}
+                                  icon={<CancelOutlinedIcon/>}
                                   checkedIcon={<ClickIcon/>}
                                   edge="start"
                                   checked={
-                                    stateMap.checkedUserDefinedLayers
-                                      ? stateMap.checkedUserDefinedLayers.indexOf(index) !== -1
+                                    stateMap.checkedUserDefinedLayersInteraction
+                                      ? stateMap.checkedUserDefinedLayersInteraction.indexOf(index) !== -1
                                       : false
                                   }
                                   tabIndex={-1}
                                   disableRipple
-                                  //inputProps={{ "aria-labelledby": labelId }}
-                                  //onChange={handleToggleUserDefined(index)}
+                                  inputProps={{ "aria-labelledby": labelId }}
+                                  onChange={handleToggleUserDefinedInteraction(index)}
                                 />
                               </div>
 
