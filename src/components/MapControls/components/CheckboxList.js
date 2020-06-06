@@ -364,7 +364,7 @@ export default function CheckboxList(props) {
                               <div style={{paddingRight: 20}}>
                               <Checkbox
                                   icon={<CancelOutlinedIcon/>}
-                                  checkedIcon={<ClickIcon/>}
+                                  checkedIcon={<ClickIcon htmlColor="#12abe0"/>}
                                   edge="start"
                                   checked={
                                     stateMap.checkedUserDefinedLayersInteraction
