@@ -17,6 +17,7 @@ const AppProvider = (props) => {
     wells: null,
     selectedWell: null,
     selectedWellId: null,
+    customLayers: [],
     editDraw: false,
     selectedOwner: null,
     owners: null,

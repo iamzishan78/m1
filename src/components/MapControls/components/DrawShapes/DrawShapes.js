@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState, useLayoutEffect } from "react";
+import { useMutation, useLazyQuery } from "@apollo/react-hooks";
 import loadCSS from "fg-loadcss";
 // STATE MANAGEMENT
 import { MapControlsContext } from "../../MapControlsContext";
@@ -26,6 +27,9 @@ import mapboxgl, { Marker } from "mapbox-gl";
 import { makeStyles, Icon } from "@material-ui/core";
 import polylabel from "polylabel";
 import { useHistory } from "react-router-dom";
+
+import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
+import { USERBYEMAIL } from "../../../../graphQL/useQueryUserByEmail";
 
 //import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 //import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
@@ -92,6 +96,8 @@ export default function DrawShapes(props) {
     const [stateNav, setStateNav] = useContext(NavigationContext);
     const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
 
+    const [upsertCustomLayer, {data: customLayerData}] = useMutation(UPSERTCUSTOMLAYER);
+
     const DEBUGGER = (source, value) => {
         console.log(`%c[DrawShapes.js] ${source}`, DEBUG_GREEN, value);
     };
@@ -110,6 +116,26 @@ export default function DrawShapes(props) {
     //     document.querySelector('#font-awesome-css'),
     //   );
     // }, []);
+
+    const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
+
+    const [user, setUser] = useState({ _id: "" });
+
+    useEffect(() => {
+        if (stateApp && stateApp.user && stateApp.user.email) {
+            getUserByEmail({
+                variables: {
+                    userEmail: stateApp.user.email,
+                },
+            });
+        }
+    }, [stateApp.user.email]);
+
+    useEffect(() => {
+        if (dataUser && dataUser.userByEmail) {
+            setUser(dataUser.userByEmail);
+        }
+    }, [dataUser]);
 
     useEffect(() => {
         const {map} = stateMap;
@@ -185,6 +211,18 @@ export default function DrawShapes(props) {
                 spatialData[attribute]
             );
         });
+
+        const symbolFeature = {
+            type: "Feature",
+            geometry: {
+                type: "Point",
+                coordinates: stateMap.currentFeature.properties.shapeCenter
+            },
+            properties: {
+                label: spatialData.shapeLabel,
+            }
+        }
+
         toggleSpatialDataCard(false);
 
         //////cleaning the selected title opinion and redirecting to title opinion page//
@@ -198,6 +236,36 @@ export default function DrawShapes(props) {
             });
 
             history.push("/titleopinion");
+        } else {
+            if (user._id != "" ) {
+                const customLayerData = {
+                    shape: JSON.stringify(stateMap.currentFeature),
+                    layer: dataType,
+                    name: spatialData.shapeLabel,
+                    user: user._id
+                };
+                const customLayerSymbolData = {
+                    shape: JSON.stringify(symbolFeature),
+                    layer: `${dataType}_labels`,
+                    name: spatialData.shapeLabel,
+                    user: user._id
+                };
+                upsertCustomLayer({
+                    variables: { customLayer: customLayerData }
+                });
+                upsertCustomLayer({
+                    variables: { customLayer: customLayerSymbolData }
+                });
+                setStateApp({
+                    ...stateApp,
+                    customLayers: [
+                        ...stateApp.customLayers,
+                        customLayerData,
+                        customLayerSymbolData
+                    ]
+                });
+                handleDeleteSpatialDataAndShape();
+            }
         }
     };
 

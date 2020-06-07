@@ -40,7 +40,7 @@ const userDefinedLayers = [
   
   {
     name: "Parcels",
-    id: [],
+    id: ["parcel", "parcel_labels"],
     type: 'data layer'
   },
   {
@@ -50,7 +50,7 @@ const userDefinedLayers = [
   },
   {
     name: "Area of Interest",
-    id: [],
+    id: ["interest", "interest_labels"],
     type: 'data layer'
   },
 
