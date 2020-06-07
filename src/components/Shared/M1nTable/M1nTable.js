@@ -1,0 +1,1730 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////                TO USE THIS TABLE:
+//// 1-Send to this component a prop called 'parent' with a trackOwners/trackWells/Contacts/OwnersPerWell...
+////  -if it is OwnersPerWell use case add another prop "selectedWell" with the well
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////                TO USE THIS TABLE IN A NEW USE CASE:
+//// 1-Send to this component a prop called 'parent' with a string you choose to identify your use case.
+//// 2-Define your HeadCells const, for your columns, in the HeadCells section.
+//// 3-Add your query in the queries section.
+//// 4-At the end, but before the return line, add your own section where you will run your queries
+////   and you will set all necessaries local states for your use case and the table,
+////   look at the Tracked Owners section as example.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////external table package info: https://github.com/gregnb/mui-datatables /////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+import React, { useContext, useState, useEffect } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import { AppContext } from "../../../AppContext";
+import { Container } from "@material-ui/core";
+import Table from "./components/Table";
+
+import { useLazyQuery } from "@apollo/react-hooks";
+import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
+import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
+import { WELLSQUERY } from "../../../graphQL/useQueryWells";
+import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
+import { TRACKSBYUSERANDOBJECTTYPE } from "../../../graphQL/useQueryTracksByUserAndObjectType";
+import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
+import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
+import { CONTACSCOUNTER } from "../../../graphQL/useQueryContactsCounter";
+import { CONTACTSBYOWNERSID } from "../../../graphQL/useQueryContactsByOwnerId";
+import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
+
+const useStyles = makeStyles((theme) => ({
+  container: { padding: "0 !important" },
+}));
+
+////////////HeadCells begin///////////////////////////////////////////////
+const TrackedOwnersHeadCells = [
+  {
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  { name: "name", label: "Name" },
+  {
+    name: "ownershipType",
+    label: "Entity",
+  },
+  // { name: "interestType", label: "Type" },
+  // {
+  //   name: "ownershipPercentage",
+  //   label: "Interest",
+  // },
+
+  // TEMPORARY COMMENT OUT. DO NOT DELETE
+  // WILL BE ADDED IN AFTER DEVELOPING A SYSTEM TO
+  // AGGREGATE OWNERS
+  // {
+  //   name: "appraisedValue",
+  //   label: "Appraised Value",
+  // },
+
+  {
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
+  },
+  {
+    name: "contactsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+
+  /* 
+  // TEMPORARY COMMENT OUT. DO NOT DELETE 
+  // WILL BE RE-ADDED ONCE WE FIGURE OUT HOW TO DRAW AGGREGATIONS 
+  // FOR UNIVERSAL OWNERS
+
+
+  // {
+  //   name: "wellsCounter",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
+ */
+
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isTracked",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+];
+
+const WellsHeadCells = [
+  {
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  { name: "wellName", label: "Well" },
+  { name: "api", label: "API" },
+  { name: "operator", label: "Operator" },
+  { name: "wellType", label: "Type" },
+  {
+    name: "wellBoreProfile",
+    label: "Profile",
+  },
+  {
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
+  },
+  {
+    name: "ownerCount",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isTracked",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+];
+
+const OwnersPerWellHeadCells = [
+  {
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  { name: "name", label: "Name" },
+  {
+    name: "ownershipType",
+    label: "Entity",
+  },
+  { name: "interestType", label: "Type" },
+  {
+    name: "ownershipPercentage",
+    label: "Interest",
+  },
+  {
+    name: "appraisedValue",
+    label: "Appraised Value",
+  },
+  {
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
+  },
+  {
+    name: "contactsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+
+  /*   
+// TEMPORARY COMMENT OUT. DO NOT DELETE 
+  // WILL BE RE-ADDED ONCE WE HAVE A WAY OF AGGREGATING A 
+  // UNIVERSAL OWNER 
+
+  // {
+  //   name: "wellsCounter",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // }, 
+  */
+
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isTracked",
+    label: "Track",
+    options: {
+      searchable: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: ["Tracked", "Untracked"],
+        logic(tracked, filterVal) {
+          return !(
+            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+            (filterVal.indexOf("Untracked") >= 0 && !tracked)
+          );
+        },
+      },
+      filterType: "dropdown",
+    },
+  },
+];
+
+const OwnersPerContactsHeadCells = [
+  {
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  { name: "name", label: "Name" },
+  {
+    name: "ownershipType",
+    label: "Entity",
+  },
+  {
+    name: "appraisedValue",
+    label: "Appraised Value",
+  },
+  {
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
+  },
+  {
+    name: "contactsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+
+  /*   
+  // TEMPORARY COMMENT OUT. DO NOT REMOVE 
+  // WILL BE UNCOMMENTED ONCE WE UNDERSTAND A MORE 
+  // UNIVERSAL OWNER ID. 
+
+  // {
+  //   name: "wellsCounter",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
+ */
+
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isTracked",
+    label: "Track",
+    options: {
+      searchable: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: ["Tracked", "Untracked"],
+        logic(tracked, filterVal) {
+          return !(
+            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+            (filterVal.indexOf("Untracked") >= 0 && !tracked)
+          );
+        },
+      },
+      filterType: "dropdown",
+    },
+  },
+];
+
+const ContactsHeadCells = [
+  {
+    name: "_id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  { name: "name", label: "Name" },
+  { name: "primaryEmail", label: "Primary Email" },
+  {
+    name: "mobilePhone",
+    label: "Mobile Phone",
+  },
+  {
+    name: "homePhone",
+    label: "Home Phone",
+  },
+  {
+    name: "address1",
+    label: "Address",
+  },
+  {
+    name: "address2",
+    label: "Address-2",
+  },
+  {
+    name: "city",
+    label: "City",
+  },
+  {
+    name: "state",
+    label: "State",
+  },
+  {
+    name: "zip",
+    label: "Zipcode",
+  },
+  {
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
+  },
+  {
+    name: "owners", //ownerPerContactCount
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  // {
+  //   name: "isTracked",
+  //   label: "Track",
+  //   options: {
+  //     searchable: false,
+  //     download: false,
+  //     print: false,
+  //     filterOptions: {
+  //       names: ["Tracked", "Untracked"],
+  //       logic(tracked, filterVal) {
+  //         return !(
+  //           (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+  //           (filterVal.indexOf("Untracked") >= 0 && !tracked)
+  //         );
+  //       },
+  //     },
+  //     filterType: "dropdown",
+  //   },
+  // },
+];
+
+////////////HeadCells end///////////////////////////////////////////////
+
+export default function M1nTable(props) {
+  const classes = useStyles();
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [rows, setRows] = useState();
+  const [header, setHeader] = useState("");
+  const [columns, setColumns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [addAble, setAddAble] = useState(true);
+  const [targetLabel, setTargetLabel] = useState(null);
+
+  ////////////Queries begin///////////////////////////////////////////////
+
+  const [tracksByUserAndObjectType, { data: dataTracks }] = useLazyQuery(
+    TRACKSBYUSERANDOBJECTTYPE,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
+  const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(
+    COMMENTSCOUNTER,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
+  const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(TAGSAMPLES, {
+    fetchPolicy: "cache-and-network",
+  });
+  const [getContactsCounter, { data: dataContactsCounter }] = useLazyQuery(
+    CONTACSCOUNTER,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
+  //////////
+  const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
+  const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(
+    OWNERSWELLSQUERY
+  );
+  //////////
+  const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
+  //////////
+  const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(
+    WELLOWNERSQUERY
+  );
+  //////////
+  const [getContactsByOwnerId, { data: dataContactsByOwnerId }] = useLazyQuery(
+    CONTACTSBYOWNERSID,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
+  //////////
+  const [getContacts, { data: dataContacts }] = useLazyQuery(CONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
+
+  ////////////Queries end///////////////////////////////////////////////
+
+  ////////////General begin///////////////////////////////////////////////
+
+  useEffect(() => {
+    if (targetLabel && stateApp.user && stateApp.user.mongoId) {
+      setLoading(true);
+
+      tracksByUserAndObjectType({
+        variables: {
+          userId: stateApp.user.mongoId,
+          objectType: targetLabel,
+        },
+      });
+    }
+  }, [stateApp.user, targetLabel]);
+
+  ////////////General end///////////////////////////////////////////////
+
+  ////////////Tracked Owners begin///////////////////////////////////////////////
+  useEffect(() => {
+    if (props.parent && props.parent === "trackOwners") {
+      setTargetLabel("owner");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "trackOwners" &&
+      dataTracks &&
+      dataTracks.tracksByUserAndObjectType
+    ) {
+      if (dataTracks.tracksByUserAndObjectType.length !== 0) {
+        const tracksIdArray = dataTracks.tracksByUserAndObjectType.map(
+          (track) => track.trackOn
+        );
+
+        getOwners({
+          variables: {
+            ownerIdArray: tracksIdArray,
+            authToken: stateApp.user.authToken,
+          },
+        });
+        getOwnersWells({
+          variables: {
+            ownersIds: tracksIdArray,
+          },
+        });
+        getCommentsCounter({
+          variables: {
+            objectsIdsArray: tracksIdArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+        getTagSamples({
+          variables: {
+            objectsIdsArray: tracksIdArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+        getContactsCounter({
+          variables: { objectsIdsArray: tracksIdArray },
+        });
+      } else {
+        setRows([]);
+        setLoading(false);
+        setAddAble(false);
+      }
+    }
+  }, [dataTracks]);
+
+  useEffect(() => {
+    if (props.parent && props.parent === "trackOwners" && dataOwners) {
+      if (
+        dataOwners.owners &&
+        dataOwners.owners.results &&
+        dataOwners.owners.results.length > 0 &&
+        dataCommentsCounter &&
+        dataCommentsCounter.commentsCounter &&
+        dataContactsCounter &&
+        dataContactsCounter.contactsCounter &&
+        dataTagSamples &&
+        dataTagSamples.tagSamples &&
+        dataOwnersWells
+      ) {
+        dataOwners.owners.results.forEach((owner) => {
+          owner.isTracked = true;
+          owner.commentsCounter = 0;
+          owner.tags = [[], 0];
+          owner.contactsCounter = 0;
+          owner.wellsCounter = [];
+
+          if (dataOwnersWells.ownersWells) {
+            for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
+              if (owner.id === dataOwnersWells.ownersWells[i].ownerId) {
+                owner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
+                  (well) => well.wellId
+                );
+                break;
+              }
+            }
+          }
+
+          for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+            if (owner.id === dataCommentsCounter.commentsCounter[i]._id) {
+              owner.commentsCounter =
+                dataCommentsCounter.commentsCounter[i].total;
+              break;
+            }
+          }
+
+          for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+            if (owner.id === dataTagSamples.tagSamples[i]._id) {
+              owner.tags = [
+                dataTagSamples.tagSamples[i].tags,
+                dataTagSamples.tagSamples[i].total,
+              ];
+
+              break;
+            }
+          }
+
+          for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
+            if (owner.id === dataContactsCounter.contactsCounter[i]._id) {
+              owner.contactsCounter =
+                dataContactsCounter.contactsCounter[i].total;
+              break;
+            }
+          }
+        });
+
+        let availableTags = [];
+        dataTagSamples.tagSamples.map((sample) => {
+          availableTags = [...availableTags, ...sample.tags];
+        });
+        const cleanAvailableTags = [...new Set(availableTags)];
+
+        setRows(dataOwners.owners.results);
+        setHeader("Owners");
+        setColumns(
+          cleanAvailableTags.length > 0
+            ? TrackedOwnersHeadCells.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
+                    },
+                  };
+                }
+                return column;
+              })
+            : TrackedOwnersHeadCells.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })
+        );
+
+        setStateApp((state) => ({
+          ...state,
+          owners: dataOwners.owners.results,
+        }));
+      } else {
+        if (
+          dataOwners.owners &&
+          dataOwners.owners.results &&
+          dataOwners.owners.results.length === 0
+        ) {
+          setRows([]);
+        }
+      }
+      setAddAble(false);
+      setLoading(false);
+    }
+  }, [
+    dataOwners,
+    dataTagSamples,
+    dataCommentsCounter,
+    dataContactsCounter,
+    dataOwnersWells,
+  ]);
+  ////////////Tracked Owners end///////////////////////////////////////////////
+
+  ////////////Tracked Wells begin///////////////////////////////////////////////
+  useEffect(() => {
+    if (props.parent && props.parent === "trackWells") {
+      setTargetLabel("well");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "trackWells" &&
+      dataTracks &&
+      dataTracks.tracksByUserAndObjectType
+    ) {
+      if (dataTracks.tracksByUserAndObjectType.length !== 0) {
+        const tracksIdArray = dataTracks.tracksByUserAndObjectType.map(
+          (track) => track.trackOn
+        );
+
+        getWells({
+          variables: {
+            wellIdArray: tracksIdArray,
+            authToken: stateApp.user.authToken,
+          },
+        });
+        getCommentsCounter({
+          variables: {
+            objectsIdsArray: tracksIdArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+        getTagSamples({
+          variables: {
+            objectsIdsArray: tracksIdArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+      } else {
+        setRows([]);
+        setLoading(false);
+        setAddAble(false);
+      }
+    }
+  }, [dataTracks]);
+
+  useEffect(() => {
+    if (props.parent && props.parent === "trackWells" && dataWells) {
+      if (
+        dataWells.wells &&
+        dataWells.wells.results &&
+        dataWells.wells.results.length > 0 &&
+        dataCommentsCounter &&
+        dataCommentsCounter.commentsCounter &&
+        dataTagSamples &&
+        dataTagSamples.tagSamples
+      ) {
+        dataWells.wells.results.forEach((well) => {
+          well.isTracked = true;
+          well.commentsCounter = 0;
+          well.tags = [[], 0];
+
+          for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+            if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+              well.commentsCounter =
+                dataCommentsCounter.commentsCounter[i].total;
+              break;
+            }
+          }
+          for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+            if (well.id === dataTagSamples.tagSamples[i]._id) {
+              well.tags = [
+                dataTagSamples.tagSamples[i].tags,
+                dataTagSamples.tagSamples[i].total,
+              ];
+
+              break;
+            }
+          }
+        });
+
+        let availableTags = [];
+        dataTagSamples.tagSamples.map((sample) => {
+          availableTags = [...availableTags, ...sample.tags];
+        });
+        const cleanAvailableTags = [...new Set(availableTags)];
+
+        setRows(dataWells.wells.results);
+        setHeader("Wells");
+        setColumns(
+          cleanAvailableTags.length > 0
+            ? WellsHeadCells.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
+                    },
+                  };
+                }
+                return column;
+              })
+            : WellsHeadCells.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })
+        );
+
+        setStateApp((state) => ({
+          ...state,
+          wells: dataWells.wells.results,
+        }));
+      } else {
+        if (
+          dataWells.wells &&
+          dataWells.wells.results &&
+          dataWells.wells.results.length === 0
+        ) {
+          setRows([]);
+        }
+      }
+      setAddAble(false);
+      setLoading(false);
+    }
+  }, [dataWells, dataTagSamples, dataCommentsCounter]);
+  ////////////Tracked Wells end///////////////////////////////////////////////
+
+  ////////////Wells Per Owner begin///////////////////////////////////////////
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "WellsPerOwner" &&
+      props.wellsIdsArray &&
+      stateApp.user &&
+      stateApp.user.mongoId
+    ) {
+      setTargetLabel("well");
+      getWells({
+        variables: {
+          wellIdArray: props.wellsIdsArray,
+          authToken: stateApp.user.authToken,
+        },
+      });
+      getCommentsCounter({
+        variables: {
+          objectsIdsArray: props.wellsIdsArray,
+          userId: stateApp.user.mongoId,
+        },
+      });
+      getTagSamples({
+        variables: {
+          objectsIdsArray: props.wellsIdsArray,
+          userId: stateApp.user.mongoId,
+        },
+      });
+    }
+  }, [props.wellsIdsArray, stateApp.user]);
+
+  useEffect(() => {
+    if (props.parent && props.parent === "WellsPerOwner" && dataWells) {
+      if (
+        dataWells.wells &&
+        dataWells.wells.results &&
+        dataWells.wells.results.length > 0 &&
+        dataCommentsCounter &&
+        dataCommentsCounter.commentsCounter &&
+        dataTagSamples &&
+        dataTagSamples.tagSamples &&
+        dataTracks &&
+        dataTracks.tracksByUserAndObjectType
+      ) {
+        dataWells.wells.results.forEach((well) => {
+          well.isTracked = false;
+          well.commentsCounter = 0;
+          well.tags = [[], 0];
+
+          for (
+            let i = 0;
+            i < dataTracks.tracksByUserAndObjectType.length;
+            i++
+          ) {
+            if (well.id === dataTracks.tracksByUserAndObjectType[i].trackOn) {
+              well.isTracked = true;
+              break;
+            }
+          }
+          for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+            if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+              well.commentsCounter =
+                dataCommentsCounter.commentsCounter[i].total;
+              break;
+            }
+          }
+          for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+            if (well.id === dataTagSamples.tagSamples[i]._id) {
+              well.tags = [
+                dataTagSamples.tagSamples[i].tags,
+                dataTagSamples.tagSamples[i].total,
+              ];
+
+              break;
+            }
+          }
+        });
+
+        let availableTags = [];
+        dataTagSamples.tagSamples.map((sample) => {
+          availableTags = [...availableTags, ...sample.tags];
+        });
+        const cleanAvailableTags = [...new Set(availableTags)];
+
+        setRows(dataWells.wells.results);
+        setHeader("Wells");
+        setColumns(
+          cleanAvailableTags.length > 0
+            ? WellsHeadCells.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
+                    },
+                  };
+                }
+                return column;
+              })
+            : WellsHeadCells.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })
+        );
+        setAddAble(false);
+        setStateApp((state) => ({
+          ...state,
+          wells: dataWells.wells.results,
+        }));
+      } else {
+        setRows([]);
+        setAddAble(false);
+      }
+      setLoading(false);
+    }
+  }, [dataWells, dataTagSamples, dataCommentsCounter, dataTracks]);
+
+  //////////// Wells Per Owner end///////////////////////////////////////////////
+
+  ////////////Owners Per Well begin///////////////////////////////////////////////
+
+  useEffect(() => {
+    if (props.parent && props.parent === "OwnersPerWell") {
+      setTargetLabel("owner");
+      getWellOwners({
+        variables: { api: props.selectedWell.api },
+      });
+    }
+  }, [props.selectedWell]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "OwnersPerWell" &&
+      dataWellOwners &&
+      dataTracks &&
+      dataTracks.tracksByUserAndObjectType
+    ) {
+      if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
+        const objectsIdsArray = [];
+        dataWellOwners.wellOwners.forEach((wellOwner) => {
+          wellOwner.isTracked = false;
+          objectsIdsArray.push(wellOwner.id);
+
+          for (
+            let i = 0;
+            i < dataTracks.tracksByUserAndObjectType.length;
+            i++
+          ) {
+            if (
+              wellOwner.id === dataTracks.tracksByUserAndObjectType[i].trackOn
+            ) {
+              wellOwner.isTracked = true;
+              break;
+            }
+          }
+        });
+
+        setHeader("Owners Per Well");
+        setAddAble(false);
+
+        getOwnersWells({
+          variables: {
+            ownersIds: objectsIdsArray,
+          },
+        });
+        getCommentsCounter({
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+        });
+        getTagSamples({
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+        });
+        getContactsCounter({
+          variables: { objectsIdsArray: objectsIdsArray },
+        });
+      } else {
+        setLoading(false);
+        setRows([]);
+        setAddAble(false);
+      }
+    }
+  }, [dataWellOwners, dataTracks]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "OwnersPerWell" &&
+      dataWellOwners &&
+      dataWellOwners.wellOwners &&
+      dataWellOwners.wellOwners.length > 0 &&
+      dataCommentsCounter &&
+      dataCommentsCounter.commentsCounter &&
+      dataContactsCounter &&
+      dataContactsCounter.contactsCounter &&
+      dataTagSamples &&
+      dataTagSamples.tagSamples &&
+      dataOwnersWells
+    ) {
+      dataWellOwners.wellOwners.forEach((wellOwner) => {
+        wellOwner.commentsCounter = 0;
+        wellOwner.tags = [[], 0];
+        wellOwner.contactsCounter = 0;
+        wellOwner.wellsCounter = [];
+
+        if (dataOwnersWells.ownersWells) {
+          for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
+            if (wellOwner.id === dataOwnersWells.ownersWells[i].ownerId) {
+              wellOwner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
+                (well) => well.wellId
+              );
+              break;
+            }
+          }
+        }
+
+        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+          if (wellOwner.id === dataCommentsCounter.commentsCounter[i]._id) {
+            wellOwner.commentsCounter =
+              dataCommentsCounter.commentsCounter[i].total;
+            break;
+          }
+        }
+
+        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+          if (wellOwner.id === dataTagSamples.tagSamples[i]._id) {
+            wellOwner.tags = [
+              dataTagSamples.tagSamples[i].tags,
+              dataTagSamples.tagSamples[i].total,
+            ];
+
+            break;
+          }
+        }
+
+        for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
+          if (wellOwner.id === dataContactsCounter.contactsCounter[i]._id) {
+            wellOwner.contactsCounter =
+              dataContactsCounter.contactsCounter[i].total;
+            break;
+          }
+        }
+      });
+
+      let availableTags = [];
+      dataTagSamples.tagSamples.map((sample) => {
+        availableTags = [...availableTags, ...sample.tags];
+      });
+      const cleanAvailableTags = [...new Set(availableTags)];
+
+      setColumns(
+        cleanAvailableTags.length > 0
+          ? OwnersPerWellHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
+                  },
+                };
+              }
+              return column;
+            })
+          : OwnersPerWellHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
+      );
+
+      setRows(dataWellOwners.wellOwners);
+      setLoading(false);
+    }
+  }, [
+    dataWellOwners,
+    dataTracks,
+    dataTagSamples,
+    dataCommentsCounter,
+    dataContactsCounter,
+    dataOwnersWells,
+  ]);
+
+  ////////////Owners Per Well end///////////////////////////////////////////////
+
+  ////////////Owners Per Contact begin///////////////////////////////////////////////
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerContacts" &&
+      props.ownersIdsArray
+    ) {
+      setTargetLabel("owner");
+      getOwners({
+        variables: {
+          ownerIdArray: props.ownersIdsArray,
+          authToken: stateApp.user.authToken,
+        },
+      });
+      getOwnersWells({
+        variables: {
+          ownersIds: props.ownersIdsArray,
+        },
+      });
+    }
+  }, [props.ownersIdsArray]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerContacts" &&
+      dataOwners &&
+      dataTracks &&
+      dataTracks.tracksByUserAndObjectType &&
+      dataOwnersWells
+    ) {
+      if (
+        dataOwners.owners &&
+        dataOwners.owners &&
+        dataOwners.owners.results.length > 0
+      ) {
+        const objectsIdsArray = [];
+        dataOwners.owners.results.forEach((wellOwner) => {
+          wellOwner.isTracked = false;
+          objectsIdsArray.push(wellOwner.id);
+
+          for (
+            let i = 0;
+            i < dataTracks.tracksByUserAndObjectType.length;
+            i++
+          ) {
+            if (
+              wellOwner.id === dataTracks.tracksByUserAndObjectType[i].trackOn
+            ) {
+              wellOwner.isTracked = true;
+              break;
+            }
+          }
+
+          wellOwner.wellsCounter = [];
+
+          if (dataOwnersWells.ownersWells) {
+            for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
+              if (wellOwner.id === dataOwnersWells.ownersWells[i].ownerId) {
+                wellOwner.wellsCounter = dataOwnersWells.ownersWells[
+                  i
+                ].wells.map((well) => well.wellId);
+                break;
+              }
+            }
+          }
+        });
+
+        setHeader("Well Owners Per Contact");
+        setAddAble(false);
+
+        getCommentsCounter({
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+        });
+        getTagSamples({
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+        });
+        getContactsCounter({
+          variables: { objectsIdsArray: objectsIdsArray },
+        });
+      } else {
+        setLoading(false);
+        setRows([]);
+        setAddAble(false);
+      }
+    }
+  }, [dataOwners, dataTracks, dataOwnersWells]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerContacts" &&
+      dataOwners &&
+      dataOwners.owners &&
+      dataOwners.owners.results &&
+      dataOwners.owners.results.length > 0 &&
+      dataCommentsCounter &&
+      dataCommentsCounter.commentsCounter &&
+      dataContactsCounter &&
+      dataContactsCounter.contactsCounter &&
+      dataTagSamples &&
+      dataTagSamples.tagSamples
+    ) {
+      dataOwners.owners.results.forEach((wellOwner) => {
+        wellOwner.commentsCounter = 0;
+        wellOwner.tags = [[], 0];
+        wellOwner.contactsCounter = 0;
+
+        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+          if (wellOwner.id === dataCommentsCounter.commentsCounter[i]._id) {
+            wellOwner.commentsCounter =
+              dataCommentsCounter.commentsCounter[i].total;
+            break;
+          }
+        }
+
+        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+          if (wellOwner.id === dataTagSamples.tagSamples[i]._id) {
+            wellOwner.tags = [
+              dataTagSamples.tagSamples[i].tags,
+              dataTagSamples.tagSamples[i].total,
+            ];
+
+            break;
+          }
+        }
+
+        for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
+          if (wellOwner.id === dataContactsCounter.contactsCounter[i]._id) {
+            wellOwner.contactsCounter =
+              dataContactsCounter.contactsCounter[i].total;
+            break;
+          }
+        }
+      });
+
+      let availableTags = [];
+      dataTagSamples.tagSamples.map((sample) => {
+        availableTags = [...availableTags, ...sample.tags];
+      });
+      const cleanAvailableTags = [...new Set(availableTags)];
+
+      setColumns(
+        cleanAvailableTags.length > 0
+          ? OwnersPerContactsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
+                  },
+                };
+              }
+              return column;
+            })
+          : OwnersPerContactsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
+      );
+      setRows(dataOwners.owners.results);
+      setLoading(false);
+    }
+  }, [
+    dataOwners,
+    dataTracks,
+    dataTagSamples,
+    dataCommentsCounter,
+    dataContactsCounter,
+  ]);
+
+  ////////////Owners Per Contact end///////////////////////////////////////////////
+
+  ////////////Contacts Per Owner begin///////////////////////////////////////////////
+
+  useEffect(() => {
+    if (props.parent && props.parent === "ownerContacts" && props.ownerId) {
+      setTargetLabel("contact");
+      getContactsByOwnerId({
+        variables: { objectId: props.ownerId },
+      });
+    }
+  }, [props.ownerId]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownerContacts" &&
+      dataContactsByOwnerId &&
+      dataTracks &&
+      dataTracks.tracksByUserAndObjectType
+    ) {
+      if (
+        dataContactsByOwnerId.contactsByOwnerId &&
+        dataContactsByOwnerId.contactsByOwnerId.length > 0
+      ) {
+        const objectsIdsArray = [];
+        dataContactsByOwnerId.contactsByOwnerId.forEach((contact) => {
+          contact.isTracked = false;
+          objectsIdsArray.push(contact._id);
+
+          for (
+            let i = 0;
+            i < dataTracks.tracksByUserAndObjectType.length;
+            i++
+          ) {
+            if (
+              contact.id === dataTracks.tracksByUserAndObjectType[i].trackOn
+            ) {
+              contact.isTracked = true;
+              break;
+            }
+          }
+        });
+        setHeader("Owner's Contacts");
+        setAddAble({ parent: props.ownerId });
+
+        getCommentsCounter({
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+        });
+        getTagSamples({
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+        });
+      } else {
+        setLoading(false);
+        setRows([]);
+        setAddAble({ parent: props.ownerId });
+      }
+    }
+  }, [dataContactsByOwnerId, dataTracks]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownerContacts" &&
+      dataContactsByOwnerId &&
+      dataContactsByOwnerId.contactsByOwnerId &&
+      dataContactsByOwnerId.contactsByOwnerId.length > 0 &&
+      dataCommentsCounter &&
+      dataCommentsCounter.commentsCounter &&
+      dataTagSamples &&
+      dataTagSamples.tagSamples
+    ) {
+      dataContactsByOwnerId.contactsByOwnerId.forEach((contact) => {
+        contact.commentsCounter = 0;
+        contact.tags = [[], 0];
+
+        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+          if (contact._id === dataCommentsCounter.commentsCounter[i]._id) {
+            contact.commentsCounter =
+              dataCommentsCounter.commentsCounter[i].total;
+            break;
+          }
+        }
+
+        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+          if (contact._id === dataTagSamples.tagSamples[i]._id) {
+            contact.tags = [
+              dataTagSamples.tagSamples[i].tags,
+              dataTagSamples.tagSamples[i].total,
+            ];
+
+            break;
+          }
+        }
+      });
+
+      let availableTags = [];
+      dataTagSamples.tagSamples.map((sample) => {
+        availableTags = [...availableTags, ...sample.tags];
+      });
+      const cleanAvailableTags = [...new Set(availableTags)];
+
+      setColumns(
+        cleanAvailableTags.length > 0
+          ? ContactsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
+                  },
+                };
+              }
+              return column;
+            })
+          : ContactsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
+      );
+      setRows(dataContactsByOwnerId.contactsByOwnerId);
+      setLoading(false);
+    }
+  }, [dataContactsByOwnerId, dataTracks, dataTagSamples, dataCommentsCounter]);
+
+  ////////////Contacts Per Owner end///////////////////////////////////////////////
+
+  ////////////Contacts begin///////////////////////////////////////////////
+
+  useEffect(() => {
+    if (props.parent && props.parent === "Contacts") {
+      setTargetLabel("contact");
+      getContacts();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "Contacts" &&
+      dataContacts &&
+      dataTracks &&
+      dataTracks.tracksByUserAndObjectType
+    ) {
+      if (dataContacts.contacts && dataContacts.contacts.length > 0) {
+        const objectsIdsArray = [];
+        dataContacts.contacts.forEach((contact) => {
+          contact.isTracked = false;
+          objectsIdsArray.push(contact._id);
+
+          for (
+            let i = 0;
+            i < dataTracks.tracksByUserAndObjectType.length;
+            i++
+          ) {
+            if (
+              contact.id === dataTracks.tracksByUserAndObjectType[i].trackOn
+            ) {
+              contact.isTracked = true;
+              break;
+            }
+          }
+        });
+
+        setHeader("Contacts");
+        setAddAble({ parent: false });
+
+        getCommentsCounter({
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+        });
+        getTagSamples({
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+        });
+      } else {
+        setLoading(false);
+        setRows([]);
+        setAddAble({ parent: false });
+      }
+    }
+  }, [dataContacts, dataTracks]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "Contacts" &&
+      dataContacts &&
+      dataContacts.contacts &&
+      dataContacts.contacts.length > 0 &&
+      dataCommentsCounter &&
+      dataCommentsCounter.commentsCounter &&
+      dataTagSamples &&
+      dataTagSamples.tagSamples
+    ) {
+      dataContacts.contacts.forEach((contact) => {
+        contact.commentsCounter = 0;
+        contact.tags = [[], 0];
+
+        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+          if (contact._id === dataCommentsCounter.commentsCounter[i]._id) {
+            contact.commentsCounter =
+              dataCommentsCounter.commentsCounter[i].total;
+            break;
+          }
+        }
+
+        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+          if (contact._id === dataTagSamples.tagSamples[i]._id) {
+            contact.tags = [
+              dataTagSamples.tagSamples[i].tags,
+              dataTagSamples.tagSamples[i].total,
+            ];
+
+            break;
+          }
+        }
+      });
+
+      let availableTags = [];
+      dataTagSamples.tagSamples.map((sample) => {
+        availableTags = [...availableTags, ...sample.tags];
+      });
+      const cleanAvailableTags = [...new Set(availableTags)];
+
+      setColumns(
+        cleanAvailableTags.length > 0
+          ? ContactsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
+                  },
+                };
+              }
+              return column;
+            })
+          : ContactsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
+      );
+      setRows([...dataContacts.contacts]);
+      setLoading(false);
+    }
+  }, [dataContacts, dataTracks, dataTagSamples, dataCommentsCounter]);
+
+  ////////////Contacts end///////////////////////////////////////////////
+
+  ////////////-----Add your code section here-----///////////////////////
+
+  return (
+    <Container maxWidth="xl" className={classes.container}>
+      <Table
+        header={header}
+        columns={columns}
+        rows={rows}
+        loading={loading}
+        addAble={addAble}
+        targetLabel={targetLabel}
+      />
+    </Container>
+  );
+}
