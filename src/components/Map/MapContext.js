@@ -15,7 +15,7 @@ const styleLayers = [
   },
   {
     name: "Land Grid",
-    id: ["surveylabels", "surveyLayer"],
+    id: ["PLSSTownships", "PLSSTownshipLabels", "PLSSFirstDivision", "PLSSFirstDivisionLabels", "TexasLandSurvey", "TexasLandSurveyLabels"],
   },
   // {
   //   name: "Permits",
