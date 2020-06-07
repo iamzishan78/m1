@@ -482,15 +482,11 @@ export default function Map() {
     // console.log('dataWellsForOwnerWellTrackLayer',dataWellsForOwnerWellTrackLayer)
 
     if (map && stateMap.checkedUserDefinedLayers.length > 0) {
-      console.log("user defined layers", stateMap.checkedUserDefinedLayers);
-      console.log("length", stateMap.checkedUserDefinedLayers.length);
       const layerList = stateMap.userDefinedLayers;
-      console.log("layerList", layerList);
       stateMap.checkedUserDefinedLayers.forEach((l) => {
         
         
         const selectLayerProps = layerList[l];
-        console.log("layer pros", selectLayerProps);
 
         if (selectLayerProps.type === "data layer") {
           
@@ -500,15 +496,12 @@ export default function Map() {
           } else if (
             selectLayerProps.dataProps.dataId == "trackedOwnersWells"
           ) {
-            console.log("===========-", selectLayerProps);
-            console.log(dataWellsForOwnerWellTrackLayer);
             var layerData = dataWellsForOwnerWellTrackLayer.wells.results;
           }
 
           if (layerData) {
-            // -> make GEOJSON
 
-            console.log(layerData);
+            // -> make GEOJSON
 
             const makeGeoJSON = (data) => {
               return {
@@ -554,8 +547,6 @@ export default function Map() {
 
             // -> add cluster layer 
 
-            //console.log('sss',selectLayerProps)
-            //console.log('iii',typeof selectLayerProps.clusterProps.cluster)
             if(selectLayerProps 
                 && selectLayerProps.layerProps  
                 && selectLayerProps.layerProps.clusterProps){
@@ -581,13 +572,14 @@ export default function Map() {
 
       }
 
-            console.log('========features',selectLayerProps)
 
             // -> add interaction (note to change later w/ interaction panel)
             if(selectLayerProps && selectLayerProps.interactionProps){
-              console.log('========features',selectLayerProps.interactionProps)
 
               if(selectLayerProps.interactionProps.mouseClick){
+                
+                var clusterVar = selectLayerProps.layerProps.layerId+'-clusters'
+  
                 map.on("click", selectLayerProps.layerProps.layerId, function (e) {
                   var bbox = [
                     [e.point.x - 10, e.point.y - 10],
@@ -597,114 +589,61 @@ export default function Map() {
                   let features = map.queryRenderedFeatures(bbox, {
                     layers: [selectLayerProps.layerProps.layerId],
                   });
-          
-                  console.log('========features',features)
 
-                  setStateApp((state) => ({ ...state, flyTo: features[0].properties }));
-                
-                
-                });
+                  if(selectLayerProps.interactionProps.mouseClick.clickInteraction 
+                        && selectLayerProps.interactionProps.mouseClick.clickInteraction.flyTo===true){
+                          setStateApp((state) => ({ ...state, flyTo: features[0].properties }));
+                        }
+                  });
+
+
+                map.on('click', clusterVar, function(e) {
+                  var features = map.queryRenderedFeatures(e.point, {
+                  layers: [clusterVar]
+                  });
+
+                  var clusterId = features[0].properties.cluster_id;
+
+
+                  if(selectLayerProps.interactionProps.mouseClick.clusterClickInteraction 
+                    && selectLayerProps.interactionProps.mouseClick.clusterClickInteraction.easeTo===true){
+                        map.getSource(selectLayerProps.sourceProps.sourceId).getClusterExpansionZoom(
+                              clusterId,
+                              function(err, zoom) {
+                              if (err) return;
+                                
+                              map.easeTo({
+                              center: features[0].geometry.coordinates,
+                              zoom: zoom
+                              });
+                              }
+                        );
+                      }
+                  });
 
               }
 
-              
+              var clusterVar = selectLayerProps.layerProps.layerId+'-clusters'
+
                 map.on("mousemove", selectLayerProps.layerProps.layerId, (e) => {
+                  map.getCanvas().style.cursor = "pointer";
+                });
+                map.on("mousemove", clusterVar, (e) => {
                   map.getCanvas().style.cursor = "pointer";
                 });
           
                 map.on("mouseleave", selectLayerProps.layerProps.layerId, function () {
                   map.getCanvas().style.cursor = "";
                 });
-
+                map.on("mouseleave", clusterVar, function () {
+                  map.getCanvas().style.cursor = "";
+                });
               }
 
-            //console.log("is data layer");
-            //console.log(selectLayerProps);
-            //console.log(dataWells);
+
           }
         }
-
-        // -> if vector layer do the normal thing
       });
-
-      //   const makeGeoJSON = (data) => {
-      //     return {
-      //       type: "FeatureCollection",
-      //       features: data.map((feature) => {
-      //         return {
-      //           type: "Feature",
-      //           properties: {
-      //             api: feature.api,
-      //             id: feature.id,
-      //             latitude: feature.latitude,
-      //             longitude: feature.longitude,
-      //             operator: feature.operator,
-      //             WellName: feature.wellName,
-      //           },
-      //           geometry: {
-      //             type: "Point",
-      //             coordinates: [feature.longitude, feature.latitude],
-      //           },
-      //         };
-      //       }),
-      //     };
-      //   };
-
-      //   const myGeoJSONData = makeGeoJSON(
-      //     stateApp.trackedWellArray.wells.results
-      //   );
-
-      //   map.addSource("track_well_points_source", {
-      //     type: "geojson",
-      //     data: myGeoJSONData,
-      //   });
-
-      //   map.addLayer({
-      //     id: "track_well_points_layer",
-      //     type: "circle",
-      //     source: "track_well_points_source",
-      //     paint: {
-      //       "circle-radius": 5,
-      //       "circle-color": "yellow",
-      //     },
-      //   });
-
-      // const latArray = stateApp.trackedWellArray.wells.results.map(
-      //   (item) => item.latitude
-      // );
-      // const longArray = stateApp.trackedWellArray.wells.results.map(
-      //   (item) => item.longitude
-      // );
-
-      // map.on("click", "track_well_points_layer", function (e) {
-      //   var bbox = [
-      //     [e.point.x - 10, e.point.y - 10],
-      //     [e.point.x + 10, e.point.y + 10],
-      //   ];
-
-      //   let features = map.queryRenderedFeatures(bbox, {
-      //     layers: ["track_well_points_layer"],
-      //   });
-
-      //   setStateApp((state) => ({ ...state, flyTo: features[0].properties }));
-      // });
-
-      // map.on("mousemove", "track_well_points_layer", (e) => {
-      //   map.getCanvas().style.cursor = "pointer";
-      // });
-
-      // map.on("mouseleave", "track_well_points_layer", function () {
-      //   map.getCanvas().style.cursor = "";
-      // });
-
-      // var bbox = [
-      //   [Math.min(...longArray), Math.min(...latArray)],
-      //   [Math.max(...longArray), Math.max(...latArray)],
-      // ];
-
-      // map.fitBounds(bbox, {
-      //   padding: { top: 50, bottom: 50, left: 50, right: 50 },
-      // });
     }
   }, [map, stateMap.checkedUserDefinedLayers]);
 

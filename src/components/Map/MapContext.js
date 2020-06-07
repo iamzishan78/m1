@@ -57,6 +57,7 @@ const userDefinedLayers = [
   {
     name: "Tracked Wells",
     id: ['Tracked Wells'],
+    idColor: "#e4a773",
     type: 'data layer',
     dataProps: {
       dataId: 'trackedWellsWells',
@@ -106,16 +107,28 @@ const userDefinedLayers = [
       },
     },
     interactionProps:{
-      mouseMove: {
-        cursor: 'pointer'
-      },
-      mouseLeave: {
-        cursor: ''
+      hoverActions:{
+        mouseMove: {
+          cursor: 'pointer'
+        },
+        mouseLeave: {
+          cursor: ''
+        },
       },
       mouseClick: {
-        clickInteraction: true,
-        boundTo: false,
-        flyTo: true,
+        clickInteraction: {
+          boundTo: false, 
+          flyTo: true,
+          easeTo: false,
+          popUp: false,
+        },
+        clusterClickInteraction: {
+          boundTo: false, 
+          flyTo: true,
+          easeTo: false,
+          popUp: false,
+        }
+
       }
     }
 
@@ -124,6 +137,7 @@ const userDefinedLayers = [
   {
     name: "Tracked Owners",
     id: ['Tracked Owners'],
+    idColor: "#01fdfe",
     type: 'data layer',
     dataProps: {
       dataId: 'trackedOwnersWells',

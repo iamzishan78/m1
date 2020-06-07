@@ -27,6 +27,9 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import LayersIcon from '@material-ui/icons/Layers';
 import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
 import ClickIcon from '..//..//Shared/svgIcons/cursor-click.js'
+import { borders } from '@material-ui/system';
+import Box from '@material-ui/core/Box';
+
 
 const useStyles = makeStyles(theme => ({
   subHeaderItem: {
@@ -142,6 +145,13 @@ export default function CheckboxList(props) {
     />
   ));
 
+  const defaultProps = {
+    //bgcolor: 'background.paper',
+    //m: 1,
+    borderLeft: 4,
+    //style: { width: '5rem', height: '5rem' },
+  };
+
   const StyledMenuItem = withStyles(theme => ({
     root: {
       fontFamily: "Poppins",
@@ -165,8 +175,7 @@ export default function CheckboxList(props) {
       backgroundColor: "#263451",
       "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
         color: theme.palette.common.white
-        // },
-      }
+      },
     }
   }))(ListItem);
 
@@ -179,7 +188,6 @@ export default function CheckboxList(props) {
       backgroundColor: "#4B618F",
       "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
         color: theme.palette.common.white
-        // },
       }
     }
   }))(ListItem);
@@ -272,6 +280,7 @@ export default function CheckboxList(props) {
                       return (
                         <Draggable key={labelId} draggableId={labelId} index={index}>
                           {(provided, snapshot) => (
+
                             <StyledListItem 
                               ContainerComponent="li"
                               ref={ provided.innerRef }
@@ -281,7 +290,9 @@ export default function CheckboxList(props) {
                                 <DragIndicator />
                               </ListItemIcon>
 
-                              <ListItemText id={labelId} primary={layer.name} />
+                              <ListItemText 
+                                  id={labelId} 
+                                  primary={layer.name} />
                             
 
                               {layer.name === 'Wells' &&
@@ -350,6 +361,9 @@ export default function CheckboxList(props) {
                       return (
                         <Draggable key={labelId} draggableId={labelId} index={index}>
                           {(provided, snapshot) => (
+
+                            <Box borderColor={layer.idColor} {...defaultProps}>
+
                             <StyledListItem 
                               ContainerComponent="li"
                               ref={ provided.innerRef }
@@ -396,6 +410,7 @@ export default function CheckboxList(props) {
 
 
                             </StyledListItem>
+                            </Box>
                           )}
                         </Draggable>
                       );
