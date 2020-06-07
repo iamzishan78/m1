@@ -623,23 +623,33 @@ export default function Map() {
 
               }
 
-              var clusterVar = selectLayerProps.layerProps.layerId+'-clusters'
+              
+              if(selectLayerProps 
+                  && selectLayerProps.interactionProps
+                  && selectLayerProps.interactionProps.hoverActions){
+              
+                var clusterVar = selectLayerProps.layerProps.layerId+'-clusters'
 
+                if(selectLayerProps.interactionProps.hoverActions.mouseMove){
                 map.on("mousemove", selectLayerProps.layerProps.layerId, (e) => {
-                  map.getCanvas().style.cursor = "pointer";
+                  map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseMove.cursor;
                 });
                 map.on("mousemove", clusterVar, (e) => {
-                  map.getCanvas().style.cursor = "pointer";
+                  map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseMove.cursor;
                 });
+                }
           
-                map.on("mouseleave", selectLayerProps.layerProps.layerId, function () {
-                  map.getCanvas().style.cursor = "";
+                if(selectLayerProps.interactionProps.hoverActions.mouseLeave){
+                  map.on("mouseleave", selectLayerProps.layerProps.layerId, function () {
+                  map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseLeave.cursor;
                 });
                 map.on("mouseleave", clusterVar, function () {
-                  map.getCanvas().style.cursor = "";
+                  map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseLeave.cursor;
                 });
+                }
+              
               }
-
+              }
 
           }
         }

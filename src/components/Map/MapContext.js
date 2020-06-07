@@ -124,13 +124,12 @@ const userDefinedLayers = [
         },
         clusterClickInteraction: {
           boundTo: false, 
-          flyTo: true,
-          easeTo: false,
+          flyTo: false,
+          easeTo: true,
           popUp: false,
-        }
-
-      }
-    }
+        },
+      },
+    },
 
   },
 
@@ -187,9 +186,31 @@ const userDefinedLayers = [
           'text-font': ['DIN Offc Pro Bold', 'Arial Unicode MS Bold'],
           'text-size': 12
           },
-
-        
-      }
+      },
+    },
+    interactionProps:{
+      hoverActions:{
+        mouseMove: {
+          cursor: 'pointer'
+        },
+        mouseLeave: {
+          cursor: ''
+        },
+      },
+      mouseClick: {
+        clickInteraction: {
+          boundTo: false, 
+          flyTo: true,
+          easeTo: false,
+          popUp: false,
+        },
+        clusterClickInteraction: {
+          boundTo: false, 
+          flyTo: false,
+          easeTo: true,
+          popUp: false,
+        },
+      },
     },
   },
 
