@@ -478,13 +478,13 @@ import React, {
             var clusterVar = k+'-clusters'
             if (map.getLayer(clusterVar)) {
               map.removeLayer(clusterVar);
-              // map.removeSource(l.sourceProps[i].sourceId);
+              map.removeSource(l.sourceProps[i].sourceId);
             }
   
             var clusterLabelBar = k+'-clusters-counts'
             if (map.getLayer(clusterLabelBar)) {
               map.removeLayer(clusterLabelBar);
-              // map.removeSource(l.sourceProps[i].sourceId);
+              map.removeSource(l.sourceProps[i].sourceId);
             }
           });
         });
