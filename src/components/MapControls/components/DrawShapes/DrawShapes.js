@@ -155,14 +155,20 @@ export default function DrawShapes(props) {
                 setStateApp(stateApp => {
                     return {
                         ...stateApp,
-                        featureOrMapShape: feature
+                        featureOrMapShape: feature,
+                        editDraw: true
                     };
                 });
             } else {
                 setStateMap({...stateMap, currentFeature: undefined});
+                setStateApp({...stateApp, editDraw: false});
             }
         });
     }, [stateMap.map, showSpatialDataCard]);
+
+    useEffect(() => {
+        setStateApp({...stateApp, editDraw: showSpatialDataCard});
+    }, [showSpatialDataCard])
 
     useEffect(() => {
         const {currentFeature} = stateMap;
