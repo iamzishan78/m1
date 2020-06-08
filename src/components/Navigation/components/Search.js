@@ -158,7 +158,7 @@ export default function Search() {
               const indexSource = results["@odata.context"].substring(results["@odata.context"].indexOf("('") + 2, results["@odata.context"].indexOf("')"));
               console.log(indexSource);
               newOptions = [...newOptions, ...results.value.map(result=> ({ ...result, Source: indexSource, Primary: result.OwnerName, 
-                Secondary: `${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}` }))];
+                Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}` }))];
             }
 
             setOptions(newOptions);
@@ -190,9 +190,10 @@ export default function Search() {
 
         setStateApp((stateApp) => ({
           ...stateApp,
-          // wellSelected: option,
-          // wellSelectedCoordinates: [option.Longitude, option.Latitude]
-          flyTo: {longitude: newValue.Longitude, latitude: newValue.Latitude},
+          popupOpen: false,
+          selectedWell: null,
+          selectedWellId: newValue ? newValue.Id.toLowerCase() : null,
+          flyTo: newValue ? {longitude: newValue.Longitude, latitude: newValue.Latitude} : null,
         }));
       }}
       onInputChange={(event, newInputValue) => {

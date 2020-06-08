@@ -10,20 +10,25 @@ import { AppContext } from "../../../AppContext";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { TRACKSBYUSERANDOBJECTTYPE } from "../../../graphQL/useQueryTracksByUserAndObjectType";
+import { USERBYEMAIL } from "../../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
+import Draggable from "react-draggable";
 
 const useStyles = makeStyles((theme) => ({
+
+
   rootList: {
-    width: "100%",
-    height: 300,
-    maxWidth: 360,
-    backgroundColor: theme.palette.background.paper,
-  },
-  wellList: {
     width: "250px",
-    height: "75vh",
+    height: "10vh",
     position: "relative",
     top: "5vh",
     left: "82px",
+  },
+  wellList: {
+    // width: "250px",
+    // height: "10vh",
+    // position: "relative",
+    // top: "5vh",
+    // left: "82px",
     zIndex: 4,
     background: "rgba(255,255,255,0)",
     color: "rgba(23, 170, 221, 1)",
@@ -115,33 +120,44 @@ export default function TrackedWellsMapCard(props) {
   }, [dataWells]);
 
   const handleListClick = (well) => {
-    setStateApp((state) => ({ ...state, popupOpen: false }));
-    setStateApp((state) => ({ ...state, selectedWell: well }));
-    setStateApp((state) => ({ ...state, selectedWellId: well.id }));
-    setStateApp((state) => ({ ...state, flyTo: well }));
+    setStateApp((state) => ({ 
+      ...state,
+      popupOpen: false,
+      selectedWell: null,
+      selectedWellId: well.id,
+      flyTo: well ? {longitude: well.longitude, latitude: well.latitude} : null
+    }));
   };
 
   return rows && rows.length > 0 ? (
-    <div className={classes.rootList}>
-      <List dense className={classes.wellList} aria-label="secondary wells">
-        <ListItem className={classes.subHeader} key="subheader" button>
-          <ListItemText
-            primary={`Tracked Wells (${rows.length})`}
-            secondary=""
-          />
-        </ListItem>
-        {rows.map((well) => (
-          <ListItem
-            onClick={() => handleListClick(well)}
-            className={classes.wellListItem}
-            key={well.wellName}
-            button
-          >
-            <ListItemText primary={well.wellName} secondary={well.operator} />
-          </ListItem>
-        ))}
-      </List>
+
+    <div className={classes.mapWrapper}>
+      <Draggable>
+
+        <div className={classes.rootList}>
+          <List dense className={classes.wellList} aria-label="secondary wells">
+            <ListItem className={classes.subHeader} key="subheader" button>
+              <ListItemText
+                primary={`Tracked Wells (${rows.length})`}
+                secondary=""
+              />
+            </ListItem>
+            {rows.map((well) => (
+              <ListItem
+                onClick={() => handleListClick(well)}
+                className={classes.wellListItem}
+                key={well.wellName}
+                button
+              >
+                <ListItemText primary={well.wellName} secondary={well.operator} />
+              </ListItem>
+            ))}
+          </List>
+        </div>
+
+      </Draggable>
     </div>
+
   ) : loading ? (
     <CircularProgress size={80} disableShrink color="secondary" />
   ) : (
