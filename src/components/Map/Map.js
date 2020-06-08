@@ -594,14 +594,6 @@ import React, {
                     paint: selectLayerProps.layerProps[i].paintProps,
                   });
                 }
-
-                if (beforelayer) {
-                  map.moveLayer(selectLayerProps.layerProps[i].layerId, beforelayer);
-                }
-                beforelayer = selectLayerProps.layerProps[i].layerId;
-  
-              
-  
   
   
                 // -> add cluster layer 
@@ -612,7 +604,21 @@ import React, {
                   
                   var clusterVar = selectLayerProps.layerProps[i].layerId+'-clusters'
                   var clusterLabelBar = selectLayerProps.layerProps[i].layerId+'-clusters-counts'
-    
+                    
+                  
+                  map.addLayer({
+                    id: clusterLabelBar,
+                    type: 'symbol',
+                    source: selectLayerProps.sourceProps[i].sourceId,
+                    filter: ['has', 'point_count'],
+                    layout: selectLayerProps.layerProps[i].clusterProps.clusterSymbolProps,
+                            });
+                  if (beforelayer) {
+                    map.moveLayer(clusterLabelBar, beforelayer);
+                  }
+                  beforelayer = clusterLabelBar;
+                  
+
                   map.addLayer({
                   id: clusterVar,
                   type: selectLayerProps.layerProps[i].layerType,
@@ -626,18 +632,13 @@ import React, {
                   }
                   beforelayer = clusterVar;
     
-                  map.addLayer({
-                    id: clusterLabelBar,
-                    type: 'symbol',
-                    source: selectLayerProps.sourceProps[i].sourceId,
-                    filter: ['has', 'point_count'],
-                    layout: selectLayerProps.layerProps[i].clusterProps.clusterSymbolProps,
-                            });
-                  if (beforelayer) {
-                    map.moveLayer(clusterLabelBar, beforelayer);
-                  }
-                  beforelayer = clusterLabelBar;
+                  
                 }
+
+                if (beforelayer) {
+                  map.moveLayer(selectLayerProps.layerProps[i].layerId, beforelayer);
+                }
+                beforelayer = selectLayerProps.layerProps[i].layerId;
   
                 // -> add interaction (note to change later w/ interaction panel)
                 if(selectLayerProps && selectLayerProps.interactionProps){
