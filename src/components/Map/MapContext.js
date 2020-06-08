@@ -41,16 +41,19 @@ const userDefinedLayers = [
   {
     name: "Parcels",
     id: ["parcel", "parcel_labels"],
-    type: 'data layer'
+    idColor: "#e07c71",
+    type: 'data layer',
   },
   {
     name: "Title",
     id: [],
+    idColor: "#b6a0d3",
     type: 'data layer'
   },
   {
     name: "Area of Interest",
     id: ["interest", "interest_labels"],
+    idColor: "#62a27f",
     type: 'data layer'
   },
 
