@@ -37,6 +37,7 @@ import React, {
   import { WELLSQUERY } from "../../graphQL/useQueryWells";
   import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAndObjectType";
   import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
+  import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
   
   const useStyles = makeStyles((theme) => ({
     mapWrapper: {
@@ -114,6 +115,8 @@ import React, {
     const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(
       OWNERSWELLSQUERY
     );
+
+    const [getCustomLayers, {data: customLayerData}] = useLazyQuery(CUSTOMLAYERSQUERY);
   
     const [
       getWellsForLayer,
@@ -139,6 +142,12 @@ import React, {
             userId: stateApp.user.mongoId,
             objectType: "owner",
           },
+        });
+
+        getCustomLayers({
+            variables: {
+              userId: stateApp.user.mongoId,
+            }
         });
       }
     }, [stateApp.user]); 
@@ -178,6 +187,15 @@ import React, {
         }
       }
     }, [dataTracksOwner]);
+
+    useEffect(() => {
+      if (customLayerData && customLayerData.customLayers)  {
+        setStateApp({
+          ...stateApp,
+          customLayers: customLayerData.customLayers
+        });
+      }
+    }, [customLayerData])
   
     useEffect(() => {
       if (dataOwnersWells && dataOwnersWells.length !== 0) {
@@ -447,30 +465,27 @@ import React, {
         const layerList = stateMap.userDefinedLayers;
         console.log("cehck checked", stateMap.checkedUserDefinedLayers);
         stateMap.userDefinedLayers.forEach((l) => {
-          const selectLayerProps = layerList[l];
-          console.log("selected layer props", selectLayerProps);
           console.log(l);
-          l.id.forEach((k) => {
+          l.id.forEach((k, i) => {
             console.log('k',k)
   
             if (map.getLayer(k)) {
               console.log("get layer", k);
-              map.removeLayer(k);
-              map.removeSource(l.sourceProps.sourceId);
+              map.removeLayer(k)
+              map.removeSource(l.sourceProps[i].sourceId);
             }
   
             var clusterVar = k+'-clusters'
             if (map.getLayer(clusterVar)) {
               map.removeLayer(clusterVar);
-              map.removeSource(l.sourceProps.sourceId);
+              // map.removeSource(l.sourceProps[i].sourceId);
             }
   
             var clusterLabelBar = k+'-clusters-counts'
             if (map.getLayer(clusterLabelBar)) {
               map.removeLayer(clusterLabelBar);
-              map.removeSource(l.sourceProps.sourceId);
+              // map.removeSource(l.sourceProps[i].sourceId);
             }
-            
           });
         });
       }
@@ -489,173 +504,202 @@ import React, {
           const selectLayerProps = layerList[l];
   
           if (selectLayerProps.type === "data layer") {
-            
-            // -> fetch data
-            if (selectLayerProps.dataProps.dataId == "trackedWellsWells") {
-              var layerData = dataWells.wells.results;
-            } else if (
-              selectLayerProps.dataProps.dataId == "trackedOwnersWells"
-            ) {
-              var layerData = dataWellsForOwnerWellTrackLayer.wells.results;
-            }
-  
-            if (layerData) {
-  
-              // -> make GEOJSON
-  
-              const makeGeoJSON = (data) => {
-                return {
-                  type: "FeatureCollection",
-                  features: data.map((feature) => {
-                    if (selectLayerProps.dataProps.dataTypeId == "Point") {
-                      return {
-                        type: "Feature",
-                        properties: feature,
-                        geometry: {
-                          type: selectLayerProps.dataProps.dataTypeId,
-                          coordinates: [feature.longitude, feature.latitude],
-                        },
-                      };
-                    }
-                  }),
+            selectLayerProps.id.forEach((k, i) => {
+              // -> fetch data
+              let layerData = [];
+              if (selectLayerProps.dataProps[i].dataId == "trackedWellsWells") {
+                layerData = dataWells.wells.results;
+              } else if (
+                selectLayerProps.dataProps[i].dataId == "trackedOwnersWells"
+              ) {
+                layerData = dataWellsForOwnerWellTrackLayer.wells.results;
+              } else {
+                const dataId = selectLayerProps.dataProps[i].dataId;
+
+                const groupBy = (arr, property) => {
+                  return arr.reduce((memo, x) => {
+                    if (!memo[x[property]]) { memo[x[property]] = []; }
+                    memo[x[property]].push(x);
+                    return memo;
+                  }, {});
+                }
+
+                layerData = groupBy(stateApp.customLayers, 'layer')[dataId];
+              }
+    
+              if (layerData) {
+    
+                // -> make GEOJSON
+    
+                const makeGeoJSON = (data) => {
+                  return {
+                    type: "FeatureCollection",
+                    features: data.map((feature) => {
+                      if (selectLayerProps.dataProps[i].dataTypeId == "Point") {
+                        return {
+                          type: "Feature",
+                          properties: feature,
+                          geometry: {
+                            type: selectLayerProps.dataProps.dataTypeId,
+                            coordinates: [feature.longitude, feature.latitude],
+                          },
+                        };
+                      } else {
+                        return JSON.parse(feature.shape)
+                      }
+                    }),
+                  };
                 };
-              };
   
-              const myGeoJSONData = makeGeoJSON(layerData);
+                const myGeoJSONData = makeGeoJSON(layerData);
   
-              // -> add source
-              map.addSource(selectLayerProps.sourceProps.sourceId, {
-                type: selectLayerProps.sourceProps.sourceType,
-                data: myGeoJSONData,
-                cluster: true,
-                clusterRadius: 50, 
-                clusterMaxZoom: 6,
-              });
+                // -> add source
+                if (selectLayerProps.dataProps[i].dataTypeId == "Point") {
+                  map.addSource(selectLayerProps.sourceProps[i].sourceId, {
+                    type: selectLayerProps.sourceProps[i].sourceType,
+                    data: myGeoJSONData,
+                    cluster: true,
+                    clusterRadius: 50, 
+                    clusterMaxZoom: 6,
+                  });
+                } else {
+                  map.addSource(selectLayerProps.sourceProps[i].sourceId, {
+                    type: selectLayerProps.sourceProps[i].sourceType,
+                    data: myGeoJSONData,
+                  });
+                }
   
-              // -> add layer
-              map.addLayer({
-                id: selectLayerProps.layerProps.layerId,
-                type: selectLayerProps.layerProps.layerType,
-                source: selectLayerProps.sourceProps.sourceId,
-                paint: selectLayerProps.layerProps.paintProps,
-  
-              });
+                // -> add layer
+                if (selectLayerProps.layerProps[i].layerType == 'symbol') {
+                  map.addLayer({
+                    id: selectLayerProps.layerProps[i].layerId,
+                    type: selectLayerProps.layerProps[i].layerType,
+                    source: selectLayerProps.sourceProps[i].sourceId,
+                    layout: selectLayerProps.layerProps[i].symbolProps,
+                  });
+                } else {
+                  console.log("other", selectLayerProps.layerProps[i].layerId, selectLayerProps.layerProps[i].paintProps);
+                  map.addLayer({
+                    id: selectLayerProps.layerProps[i].layerId,
+                    type: selectLayerProps.layerProps[i].layerType,
+                    source: selectLayerProps.sourceProps[i].sourceId,
+                    paint: selectLayerProps.layerProps[i].paintProps,
+                  });
+                }
   
               
   
   
   
-              // -> add cluster layer 
-  
-              if(selectLayerProps 
-                  && selectLayerProps.layerProps  
-                  && selectLayerProps.layerProps.clusterProps){
-                
-                var clusterVar = selectLayerProps.layerProps.layerId+'-clusters'
-                var clusterLabelBar = selectLayerProps.layerProps.layerId+'-clusters-counts'
-  
-                map.addLayer({
-                id: clusterVar,
-                type: selectLayerProps.layerProps.layerType,
-                source: selectLayerProps.sourceProps.sourceId,
-                filter: ['has', 'point_count'],
-                paint: selectLayerProps.layerProps.clusterProps.clusterPaintProps
-                          });
-  
-                map.addLayer({
-                  id: clusterLabelBar,
-                  type: 'symbol',
-                  source: selectLayerProps.sourceProps.sourceId,
-                  filter: ['has', 'point_count'],
-                  layout: selectLayerProps.layerProps.clusterProps.clusterSymbolProps,
-                          });
-  
-        }
-  
-  
-              // -> add interaction (note to change later w/ interaction panel)
-              if(selectLayerProps && selectLayerProps.interactionProps){
-  
-                if(selectLayerProps.interactionProps.mouseClick){
-                  
-                  var clusterVar = selectLayerProps.layerProps.layerId+'-clusters'
+                // -> add cluster layer 
     
-                  map.on("click", selectLayerProps.layerProps.layerId, function (e) {
-                    var bbox = [
-                      [e.point.x - 10, e.point.y - 10],
-                      [e.point.x + 10, e.point.y + 10],
-                    ];
-            
-                    let features = map.queryRenderedFeatures(bbox, {
-                      layers: [selectLayerProps.layerProps.layerId],
-                    });
-  
-                    if(selectLayerProps.interactionProps.mouseClick.clickInteraction 
-                          && selectLayerProps.interactionProps.mouseClick.clickInteraction.flyTo===true){
-                            setStateApp((state) => ({ ...state, flyTo: features[0].properties }));
-                          }
-                    });
-  
-  
-                  map.on('click', clusterVar, function(e) {
-                    var features = map.queryRenderedFeatures(e.point, {
-                    layers: [clusterVar]
-                    });
-  
-                    var clusterId = features[0].properties.cluster_id;
-  
-  
-                    if(selectLayerProps.interactionProps.mouseClick.clusterClickInteraction 
-                      && selectLayerProps.interactionProps.mouseClick.clusterClickInteraction.easeTo===true){
-                          map.getSource(selectLayerProps.sourceProps.sourceId).getClusterExpansionZoom(
-                                clusterId,
-                                function(err, zoom) {
-                                if (err) return;
-                                  
-                                map.easeTo({
-                                center: features[0].geometry.coordinates,
-                                zoom: zoom
-                                });
-                                }
-                          );
-                        }
-                    });
-  
-                }
-  
-                
                 if(selectLayerProps 
-                    && selectLayerProps.interactionProps
-                    && selectLayerProps.interactionProps.hoverActions){
-                
-                  var clusterVar = selectLayerProps.layerProps.layerId+'-clusters'
-  
-                  if(selectLayerProps.interactionProps.hoverActions.mouseMove){
-                  map.on("mousemove", selectLayerProps.layerProps.layerId, (e) => {
-                    map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseMove.cursor;
-                  });
-                  map.on("mousemove", clusterVar, (e) => {
-                    map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseMove.cursor;
-                  });
-                  }
-            
-                  if(selectLayerProps.interactionProps.hoverActions.mouseLeave){
-                    map.on("mouseleave", selectLayerProps.layerProps.layerId, function () {
-                    map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseLeave.cursor;
-                  });
-                  map.on("mouseleave", clusterVar, function () {
-                    map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseLeave.cursor;
-                  });
-                  }
-                
-                }
+                    && selectLayerProps.layerProps  
+                    && selectLayerProps.layerProps[i].clusterProps){
+                  
+                  var clusterVar = selectLayerProps.layerProps[i].layerId+'-clusters'
+                  var clusterLabelBar = selectLayerProps.layerProps[i].layerId+'-clusters-counts'
+    
+                  map.addLayer({
+                  id: clusterVar,
+                  type: selectLayerProps.layerProps[i].layerType,
+                  source: selectLayerProps.sourceProps[i].sourceId,
+                  filter: ['has', 'point_count'],
+                  paint: selectLayerProps.layerProps[i].clusterProps.clusterPaintProps
+                            });
+    
+                  map.addLayer({
+                    id: clusterLabelBar,
+                    type: 'symbol',
+                    source: selectLayerProps.sourceProps[i].sourceId,
+                    filter: ['has', 'point_count'],
+                    layout: selectLayerProps.layerProps[i].clusterProps.clusterSymbolProps,
+                            });
                 }
   
-            }
+                // -> add interaction (note to change later w/ interaction panel)
+                if(selectLayerProps && selectLayerProps.interactionProps){
+    
+                  if(selectLayerProps.interactionProps.mouseClick){
+                    
+                    var clusterVar = selectLayerProps.layerProps[i].layerId+'-clusters'
+      
+                    map.on("click", selectLayerProps.layerProps[i].layerId, function (e) {
+                      var bbox = [
+                        [e.point.x - 10, e.point.y - 10],
+                        [e.point.x + 10, e.point.y + 10],
+                      ];
+              
+                      let features = map.queryRenderedFeatures(bbox, {
+                        layers: [selectLayerProps.layerProps[i].layerId],
+                      });
+    
+                      if(selectLayerProps.interactionProps.mouseClick.clickInteraction 
+                            && selectLayerProps.interactionProps.mouseClick.clickInteraction.flyTo===true){
+                              setStateApp((state) => ({ ...state, flyTo: features[0].properties }));
+                            }
+                      });
+    
+    
+                    map.on('click', clusterVar, function(e) {
+                      var features = map.queryRenderedFeatures(e.point, {
+                      layers: [clusterVar]
+                      });
+    
+                      var clusterId = features[0].properties.cluster_id;
+    
+    
+                      if(selectLayerProps.interactionProps.mouseClick.clusterClickInteraction 
+                        && selectLayerProps.interactionProps.mouseClick.clusterClickInteraction.easeTo===true){
+                            map.getSource(selectLayerProps.sourceProps[i].sourceId).getClusterExpansionZoom(
+                                  clusterId,
+                                  function(err, zoom) {
+                                  if (err) return;
+                                    
+                                  map.easeTo({
+                                  center: features[0].geometry.coordinates,
+                                  zoom: zoom
+                                  });
+                                  }
+                            );
+                          }
+                      });
+    
+                  }
+    
+                  
+                  if(selectLayerProps 
+                      && selectLayerProps.interactionProps
+                      && selectLayerProps.interactionProps.hoverActions){
+                  
+                    var clusterVar = selectLayerProps.layerProps[i].layerId+'-clusters'
+    
+                    if(selectLayerProps.interactionProps.hoverActions.mouseMove) {
+                      map.on("mousemove", selectLayerProps.layerProps[i].layerId, (e) => {
+                        map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseMove.cursor;
+                      });
+                      map.on("mousemove", clusterVar, (e) => {
+                        map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseMove.cursor;
+                      });
+                    }
+              
+                    if(selectLayerProps.interactionProps.hoverActions.mouseLeave){
+                      map.on("mouseleave", selectLayerProps.layerProps[i].layerId, function () {
+                        map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseLeave.cursor;
+                      });
+                      map.on("mouseleave", clusterVar, function () {
+                        map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseLeave.cursor;
+                      });
+                    }
+                  
+                  }
+                }
+              }
+            });
           }
         });
       }
-    }, [map, stateMap.checkedUserDefinedLayers]);
+    }, [map, stateMap.checkedUserDefinedLayers, stateApp.customLayers]);
   
     useEffect(() => {
       if (showExpandableCard) {

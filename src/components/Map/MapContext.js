@@ -43,6 +43,42 @@ const userDefinedLayers = [
     id: ["parcel", "parcel_labels"],
     idColor: "#e07c71",
     type: 'data layer',
+    dataProps: [
+      {
+        dataId: 'parcel',
+      }, {
+        dataId: 'parcel_labels'
+      }
+    ],
+    sourceProps: [
+      {
+        sourceId: "parcel_source",
+        sourceType: "geojson",
+      },
+      {
+        sourceId: "parcel_labels_source",
+        sourceType: "geojson",
+      },
+    ],
+    layerProps: [
+      {
+        layerType: "fill",
+        layerId: "parcel",
+        paintProps: {
+          'fill-color': '#e07c71',
+          'fill-opacity': 0.4,
+          'fill-outline-color': '#e07c71',
+        }
+      }, {
+        layerType: "symbol",
+        layerId: "parcel_labels",
+        symbolProps: {
+          'text-allow-overlap': true,
+          'text-anchor': "center",
+          'text-field': '{label}',
+        }
+      }
+    ],
   },
   {
     name: "Title",
@@ -54,7 +90,43 @@ const userDefinedLayers = [
     name: "Area of Interest",
     id: ["interest", "interest_labels"],
     idColor: "#62a27f",
-    type: 'data layer'
+    type: 'data layer',
+    dataProps: [
+      {
+        dataId: 'interest',
+      }, {
+        dataId: 'interest_labels'
+      }
+    ],
+    sourceProps: [
+      {
+        sourceId: "interest_source",
+        sourceType: "geojson",
+      },
+      {
+        sourceId: "interest_labels_source",
+        sourceType: "geojson",
+      },
+    ],
+    layerProps: [
+      {
+        layerType: "fill",
+        layerId: "interest",
+        paintProps: {
+          'fill-color': '#62a27f',
+          'fill-opacity': 0.4,
+          'fill-outline-color': '#62a27f',
+        }
+      }, {
+        layerType: "symbol",
+        layerId: "interest_labels",
+        symbolProps: {
+          'text-allow-overlap': true,
+          'text-anchor': "center",
+          'text-field': '{label}',
+        }
+      }
+    ],
   },
 
   {
@@ -62,15 +134,15 @@ const userDefinedLayers = [
     id: ['Tracked Wells'],
     idColor: "#e4a773",
     type: 'data layer',
-    dataProps: {
+    dataProps: [{
       dataId: 'trackedWellsWells',
       dataTypeId: 'Point',
-    },
-    sourceProps:{
+    }],
+    sourceProps:[{
       sourceId:"tracked_wells_user_defined_source",
       sourceType: "geojson",
-    },
-    layerProps: {
+    }],
+    layerProps: [{
       layerId: "Tracked Wells",
       layerType: "circle",
       paintProps: {
@@ -108,7 +180,7 @@ const userDefinedLayers = [
           'text-size': 12
           },
       },
-    },
+    }],
     interactionProps:{
       hoverActions:{
         mouseMove: {
@@ -141,15 +213,15 @@ const userDefinedLayers = [
     id: ['Tracked Owners'],
     idColor: "#01fdfe",
     type: 'data layer',
-    dataProps: {
+    dataProps: [{
       dataId: 'trackedOwnersWells',
       dataTypeId: 'Point',
-    },
-    sourceProps:{
+    }],
+    sourceProps:[{
       sourceId:"tracked_owners_user_defined_source",
       sourceType: "geojson",
-    },
-    layerProps: {
+    }],
+    layerProps: [{
       layerId: "Tracked Owners",
       layerType: "circle",
       paintProps: {
@@ -190,7 +262,7 @@ const userDefinedLayers = [
           'text-size': 12
           },
       },
-    },
+    }],
     interactionProps:{
       hoverActions:{
         mouseMove: {
