@@ -479,13 +479,13 @@ import React, {
             var clusterVar = k+'-clusters'
             if (map.getLayer(clusterVar)) {
               map.removeLayer(clusterVar);
-              // map.removeSource(l.sourceProps[i].sourceId);
+              map.removeSource(l.sourceProps[i].sourceId);
             }
   
             var clusterLabelBar = k+'-clusters-counts'
             if (map.getLayer(clusterLabelBar)) {
               map.removeLayer(clusterLabelBar);
-              // map.removeSource(l.sourceProps[i].sourceId);
+              map.removeSource(l.sourceProps[i].sourceId);
             }
           });
         });
@@ -496,16 +496,22 @@ import React, {
       // console.log('dataTracks',dataTracks)
       // console.log('dataOwnersWells',dataOwnersWells)
       // console.log('dataWellsForOwnerWellTrackLayer',dataWellsForOwnerWellTrackLayer)
-  
+
+      let belowlayer = null;
       if (map && stateMap.checkedUserDefinedLayers.length > 0) {
+        let layers = stateMap.checkedUserDefinedLayers.slice(0);
+        layers.sort(function (a, b) {
+          return b - a;
+        });
         const layerList = stateMap.userDefinedLayers;
-        stateMap.checkedUserDefinedLayers.forEach((l) => {
-          
+        let beforelayer = null;
+        for (let k = layers.length - 1; k >= 0; k--) {
+          const l = layers[k];
           
           const selectLayerProps = layerList[l];
   
           if (selectLayerProps.type === "data layer") {
-            selectLayerProps.id.forEach((k, i) => {
+            for (let i = 0; i < selectLayerProps.id.length; i ++) {
               // -> fetch data
               let layerData = [];
               if (selectLayerProps.dataProps[i].dataId == "trackedWellsWells") {
@@ -571,6 +577,7 @@ import React, {
                 }
   
                 // -> add layer
+                // eslint-disable-next-line eqeqeq
                 if (selectLayerProps.layerProps[i].layerType == 'symbol') {
                   map.addLayer({
                     id: selectLayerProps.layerProps[i].layerId,
@@ -588,9 +595,6 @@ import React, {
                   });
                 }
   
-              
-  
-  
   
                 // -> add cluster layer 
     
@@ -600,15 +604,8 @@ import React, {
                   
                   var clusterVar = selectLayerProps.layerProps[i].layerId+'-clusters'
                   var clusterLabelBar = selectLayerProps.layerProps[i].layerId+'-clusters-counts'
-    
-                  map.addLayer({
-                  id: clusterVar,
-                  type: selectLayerProps.layerProps[i].layerType,
-                  source: selectLayerProps.sourceProps[i].sourceId,
-                  filter: ['has', 'point_count'],
-                  paint: selectLayerProps.layerProps[i].clusterProps.clusterPaintProps
-                            });
-    
+                    
+                  
                   map.addLayer({
                     id: clusterLabelBar,
                     type: 'symbol',
@@ -616,7 +613,32 @@ import React, {
                     filter: ['has', 'point_count'],
                     layout: selectLayerProps.layerProps[i].clusterProps.clusterSymbolProps,
                             });
+                  if (beforelayer) {
+                    map.moveLayer(clusterLabelBar, beforelayer);
+                  }
+                  beforelayer = clusterLabelBar;
+                  
+
+                  map.addLayer({
+                  id: clusterVar,
+                  type: selectLayerProps.layerProps[i].layerType,
+                  source: selectLayerProps.sourceProps[i].sourceId,
+                  filter: ['has', 'point_count'],
+                  paint: selectLayerProps.layerProps[i].clusterProps.clusterPaintProps
+                            });
+                  
+                  if (beforelayer) {
+                    map.moveLayer(clusterVar, beforelayer);
+                  }
+                  beforelayer = clusterVar;
+    
+                  
                 }
+
+                if (beforelayer) {
+                  map.moveLayer(selectLayerProps.layerProps[i].layerId, beforelayer);
+                }
+                beforelayer = selectLayerProps.layerProps[i].layerId;
   
                 // -> add interaction (note to change later w/ interaction panel)
                 if(selectLayerProps && selectLayerProps.interactionProps){
@@ -642,6 +664,7 @@ import React, {
                       });
     
     
+                    // eslint-disable-next-line no-loop-func
                     map.on('click', clusterVar, function(e) {
                       var features = map.queryRenderedFeatures(e.point, {
                       layers: [clusterVar]
@@ -696,9 +719,9 @@ import React, {
                   }
                 }
               }
-            });
+            }
           }
-        });
+        }
       }
     }, [map, stateMap.checkedUserDefinedLayers, stateApp.customLayers]);
   

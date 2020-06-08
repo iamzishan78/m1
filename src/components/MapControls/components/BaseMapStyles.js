@@ -111,7 +111,7 @@ const StyledMenuHeaderItem = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important",
-    width: '350px'
+    width: '100%'
   },
   nested: {
     paddingLeft: theme.spacing(6),
@@ -381,7 +381,7 @@ export default function BaseMapStyles(props) {
             <Droppable droppableId="droppable">
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
-                  <List className={classes.list}>
+                  <List style={{padding: 0}}>
                     {stateMap.baseMapLayers.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
                       return (

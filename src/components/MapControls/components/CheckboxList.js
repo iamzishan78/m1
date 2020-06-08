@@ -34,7 +34,7 @@ import Box from '@material-ui/core/Box';
 const useStyles = makeStyles(theme => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important",
-    width: '400px'
+    width: '100%'
   },
   list: {
     padding: 0
@@ -243,6 +243,52 @@ export default function CheckboxList(props) {
     });
   }
 
+  const onDragEndUserDefined = (result) => {
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+
+    const items = reorder(
+      stateMap.userDefinedLayers,
+      result.source.index,
+      result.destination.index
+    );
+
+    let checkedLayers = stateMap.checkedUserDefinedLayers.slice(0);
+    const sourceIndex = checkedLayers.indexOf(result.source.index)
+    
+    let direction = 0;
+    let from, to = 0;
+    if (result.destination.index > result.source.index) {
+      direction = -1;
+      from = result.source.index;
+      to = result.destination.index;
+    } else {
+      direction = 1;
+      to = result.source.index;
+      from = result.destination.index;
+    }
+
+    for (let i = 0; i < checkedLayers.length; i ++) {
+      if (checkedLayers[i] <= to && checkedLayers[i] >= from) {
+        checkedLayers[i] += direction;
+      } 
+    }
+
+    if (sourceIndex !== -1) {
+      checkedLayers[sourceIndex] = result.destination.index;
+    }
+
+    console.log(checkedLayers);
+
+    setStateMap({
+      ...stateMap, 
+      userDefinedLayers: items,
+      checkedUserDefinedLayers: checkedLayers
+    });
+  }
+
   return (
     <ClickAwayListener onClickAway={handleClose}>
       <StyledMenu
@@ -271,7 +317,7 @@ export default function CheckboxList(props) {
         </StyledListItem2>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="droppable">
+            <Droppable droppableId="droppableM1">
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <List className={classes.list}>
@@ -350,9 +396,9 @@ export default function CheckboxList(props) {
           <ListItemText primary="User Defined" />
           {openUD ? <ExpandLess /> : <ExpandMore />}
         </StyledListItem2>
-        <Collapse in={open} timeout="auto" unmountOnExit>
-          <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="droppable">
+        <Collapse in={openUD} timeout="auto" unmountOnExit>
+          <DragDropContext onDragEnd={onDragEndUserDefined}>
+            <Droppable droppableId="droppableUD">
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <List className={classes.list}>
