@@ -15,7 +15,7 @@ const styleLayers = [
   },
   {
     name: "Land Grid",
-    id: ["surveylabels", "surveyLayer"],
+    id: ["PLSSTownships", "PLSSTownshipLabels", "PLSSFirstDivision", "PLSSFirstDivisionLabels", "TexasLandSurvey", "TexasLandSurveyLabels"],
   },
   // {
   //   name: "Permits",
@@ -41,22 +41,26 @@ const userDefinedLayers = [
   {
     name: "Parcels",
     id: ["parcel", "parcel_labels"],
-    type: 'data layer'
+    idColor: "#e07c71",
+    type: 'data layer',
   },
   {
     name: "Title",
     id: [],
+    idColor: "#b6a0d3",
     type: 'data layer'
   },
   {
     name: "Area of Interest",
     id: ["interest", "interest_labels"],
+    idColor: "#62a27f",
     type: 'data layer'
   },
 
   {
     name: "Tracked Wells",
     id: ['Tracked Wells'],
+    idColor: "#e4a773",
     type: 'data layer',
     dataProps: {
       dataId: 'trackedWellsWells',
@@ -71,14 +75,71 @@ const userDefinedLayers = [
       layerType: "circle",
       paintProps: {
         "circle-radius": 5,
-        "circle-color": "yellow",
+        "circle-color": "#e4a773",
+        "circle-stroke-width": 2,
+        "circle-stroke-color": '#fff',
+      },
+      clusterProps: {
+        clusterPaintProps: {
+          'circle-color': {
+              property: 'point_count',
+              type: 'interval',
+              stops: [
+                  [0, '#e4a773'],
+                  [100, '#e4a773'],
+                  [750, '#e4a773'],
+              ]
+            },
+          'circle-radius': {
+              property: 'point_count',
+              type: 'interval',
+              stops: [
+                  [0, 20],
+                  [100, 30],
+                  [750, 40]
+              ]
+            },
+            "circle-stroke-width": 5,
+            "circle-stroke-color": '#fff',
+          },
+        clusterSymbolProps: {
+          'text-field': '{point_count}',
+          'text-font': ['DIN Offc Pro Bold', 'Arial Unicode MS Bold'],
+          'text-size': 12
+          },
       },
     },
+    interactionProps:{
+      hoverActions:{
+        mouseMove: {
+          cursor: 'pointer'
+        },
+        mouseLeave: {
+          cursor: ''
+        },
+      },
+      mouseClick: {
+        clickInteraction: {
+          boundTo: false, 
+          flyTo: true,
+          easeTo: false,
+          popUp: false,
+        },
+        clusterClickInteraction: {
+          boundTo: false, 
+          flyTo: false,
+          easeTo: true,
+          popUp: false,
+        },
+      },
+    },
+
   },
 
   {
     name: "Tracked Owners",
     id: ['Tracked Owners'],
+    idColor: "#01fdfe",
     type: 'data layer',
     dataProps: {
       dataId: 'trackedOwnersWells',
@@ -92,8 +153,66 @@ const userDefinedLayers = [
       layerId: "Tracked Owners",
       layerType: "circle",
       paintProps: {
-        "circle-radius": 10,
-        "circle-color": "yellow",
+        "circle-radius": 5,
+        "circle-color": "#01fdfe",
+        "circle-stroke-width": 2,
+        "circle-stroke-color": '#fff',
+      },
+      clusterProps: {
+        cluster: true,
+        clusterBaseId: "Tracked Owners Clusters",
+        clusterCountId: "Tracked Owners Clusters Counts",
+        clusterPaintProps: {
+          'circle-color': {
+              property: 'point_count',
+              type: 'interval',
+              stops: [
+                  [0, '#01fdfe'],
+                  [100, '#01fdfe'],
+                  [750, '#01fdfe'],
+              ]
+            },
+          'circle-radius': {
+              property: 'point_count',
+              type: 'interval',
+              stops: [
+                  [0, 20],
+                  [100, 30],
+                  [750, 40]
+              ]
+            },
+            "circle-stroke-width": 5,
+            "circle-stroke-color": '#fff',
+          },
+        clusterSymbolProps: {
+          'text-field': '{point_count}',
+          'text-font': ['DIN Offc Pro Bold', 'Arial Unicode MS Bold'],
+          'text-size': 12
+          },
+      },
+    },
+    interactionProps:{
+      hoverActions:{
+        mouseMove: {
+          cursor: 'pointer'
+        },
+        mouseLeave: {
+          cursor: ''
+        },
+      },
+      mouseClick: {
+        clickInteraction: {
+          boundTo: false, 
+          flyTo: true,
+          easeTo: false,
+          popUp: false,
+        },
+        clusterClickInteraction: {
+          boundTo: false, 
+          flyTo: false,
+          easeTo: true,
+          popUp: false,
+        },
       },
     },
   },
@@ -271,6 +390,8 @@ const MapContextProvider = (props) => {
     checkedHeats: [],
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
     checkedUserDefinedLayers: [],
+    checkedUserDefinedLayersInteraction: [0,1,2,3,4],
+    checkedLayersInteraction: [0],
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,

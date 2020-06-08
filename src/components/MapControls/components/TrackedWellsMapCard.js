@@ -10,7 +10,6 @@ import { AppContext } from "../../../AppContext";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { TRACKSBYUSERANDOBJECTTYPE } from "../../../graphQL/useQueryTracksByUserAndObjectType";
-import { USERBYEMAIL } from "../../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
 const useStyles = makeStyles((theme) => ({
   rootList: {
@@ -61,42 +60,18 @@ export default function TrackedWellsMapCard(props) {
     TRACKSBYUSERANDOBJECTTYPE
   );
 
-  //////begin////////temporary  while signed user fixed
-
-  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [user, setUser] = useState({ _id: "" });
-
   useEffect(() => {
-    if (stateApp && stateApp.user && stateApp.user.email) {
-      getUserByEmail({
-        variables: {
-          userEmail: stateApp.user.email,
-        },
-      });
-    }
-  }, [stateApp.user.email]);
-
-  useEffect(() => {
-    if (dataUser && dataUser.userByEmail) {
-      setUser(dataUser.userByEmail);
-    }
-  }, [dataUser]);
-
-  /////end/////////temporary while signed user fixed
-
-  useEffect(() => {
-    //////stateApp.user._id////////temporary while signed user fixed
-    if (user._id !== "") {
+    if (stateApp.user && stateApp.user.mongoId) {
       setLoading(true);
 
       tracksByUserAndObjectType({
         variables: {
-          userId: user._id, //////stateApp.user._id////////temporary while signed user fixed
+          userId: stateApp.user.mongoId,
           objectType: "well",
         },
       });
     }
-  }, [user]); //////stateApp.user._id////////temporary while signed user fixed
+  }, [stateApp.user]);
 
   useEffect(() => {
     if (dataTracks && dataTracks.tracksByUserAndObjectType) {
@@ -125,8 +100,7 @@ export default function TrackedWellsMapCard(props) {
         dataWells.wells.results &&
         dataWells.wells.results.length > 0
       ) {
-
-        console.log(dataWells)
+        console.log(dataWells);
         setRows(dataWells.wells.results);
 
         setStateApp((state) => ({

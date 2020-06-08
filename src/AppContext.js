@@ -24,6 +24,7 @@ const AppProvider = (props) => {
     popupOpen: false, //map used in flyto
     expandedCard: false,
     flyTo: null, //map used in flyto
+    fitBounds: null, //map used in fitBounds
     selectedTitleOpinionId: null,
     featureOrMapShape: {},
     filters: [],
@@ -34,7 +35,7 @@ const AppProvider = (props) => {
     selectedContact: null,
     trackFilterOn: null,
     trackedWellArray: [],
-    userSnap: true,
+    userSnap: false,
     mapVars: {
       zoom: 5.88,
       center: { lng: -98.8, lat: 31.6 },

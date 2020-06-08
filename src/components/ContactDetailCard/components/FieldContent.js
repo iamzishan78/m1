@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
-import Paper from "@material-ui/core/Paper";
 import { IconButton } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
@@ -13,9 +12,7 @@ import Button from "@material-ui/core/Button";
 import { useMutation } from "@apollo/react-hooks";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { USERBYEMAIL } from "../../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
-import { useLazyQuery } from "@apollo/react-hooks"; //////////////temporary while signed user fixed
-import { AppContext } from "../../../AppContext"; //////////////temporary while signed user fixed
+import { AppContext } from "../../../AppContext";
 
 const useStyles = makeStyles((theme) => ({
   fieldContentP: {
@@ -98,9 +95,7 @@ function PencilEditIcon({
               onClick={() => {
                 handleUpdating();
               }}
-            >
-              {" "}
-            </Button>
+            ></Button>
             <Button
               variant="contained"
               size="small"
@@ -110,9 +105,7 @@ function PencilEditIcon({
               onClick={() => {
                 setAnchorEl(null);
               }}
-            >
-              {" "}
-            </Button>
+            ></Button>
           </Grid>
 
           {content.map((textF, i) => (
@@ -189,36 +182,13 @@ export default function FieldContent({
   //////////// noMargin - no p tag margin  //optional//////////////////////////////////////////////////////////////
   //////////// noInputFooter //optional////////////////////////////////////////////////////////////////////////////
 
+  const [stateApp] = React.useContext(AppContext);
   const [edit, setEdit] = useState(null);
   const [editContent, setEditContent] = useState({ content });
   const [fieldsCount, setFieldsCount] = useState(0);
 
   const [updateContact, { loading }] = useMutation(UPDATECONTACT);
   const classes = useStyles({ noMargin, loading, fieldsCount });
-
-  //////begin////////temporary  while signed user fixed
-
-  const [stateApp] = React.useContext(AppContext);
-  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [user, setUser] = useState({ _id: "" });
-
-  useEffect(() => {
-    if (stateApp && stateApp.user && stateApp.user.email) {
-      getUserByEmail({
-        variables: {
-          userEmail: stateApp.user.email,
-        },
-      });
-    }
-  }, [stateApp.user.email]);
-
-  useEffect(() => {
-    if (dataUser && dataUser.userByEmail) {
-      setUser(dataUser.userByEmail);
-    }
-  }, [dataUser]);
-
-  /////end/////////temporary while signed user fixed
 
   useEffect(() => {
     if (content) {
@@ -255,7 +225,7 @@ export default function FieldContent({
   const handleUpdating = () => {
     let trimmedEditContent = {
       _id: id,
-      lastUpdateBy: user._id, ///stateApp.user////temporary while signed user fixed
+      lastUpdateBy: stateApp.user.mongoId,
     };
     let differences = false;
     for (const field in editContent) {

@@ -980,7 +980,7 @@ export default function FilterDedaults() {
 
   const deleteFilterM1neral = () => {
     if (savedFilters[0] === "M1neral Default Filters") {
-        alert("M1neral Default filters Can't be deleted")
+        alert("M1neral Default filters cannot be deleted")
     }
   };
 

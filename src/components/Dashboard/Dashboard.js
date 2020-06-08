@@ -1,7 +1,14 @@
 import { Container, Grid } from "@material-ui/core";
-import React from "react";
 import CardGrid from "./components/CardsGrid";
 import DateBar from "./components/WeatherCard";
+import React, {
+  useContext,
+  useState,
+  useLayoutEffect,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
 
 const Dashboard = () => {
   return (

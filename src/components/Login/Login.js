@@ -133,19 +133,19 @@ const Login = (props) => {
                 "tokenResponse was not null but did not have any tokens: " +
                   tokenResponse
               );
-            }         
+            }
             setLoading(false);
 
-            sessionStorage.clear();       
+            sessionStorage.clear();
             window.location.replace(window.location.origin);
           }
         })
         .catch((error) => {
           console.log(error);
-          sessionStorage.clear();       
+          sessionStorage.clear();
           window.location.replace(window.location.origin);
         });
-      } else {
+    } else {
       if (stateApp.myMSALObj === false) setLoading(false);
     }
   }, [stateApp.myMSALObj, signingIn]);
@@ -156,9 +156,9 @@ const Login = (props) => {
       setSigningIn(true);
       setLoadingSigInButton(true);
 
-      let myMSALObj = stateApp.myMSALObj
+      let myMSALObj = stateApp.myMSALObj;
 
-      if (!stateApp.myMSALObj){
+      if (!stateApp.myMSALObj) {
         myMSALObj = new msal.PublicClientApplication(
           msalConfig(tenant.tenantId, tenant.clientId)
         );
@@ -176,14 +176,12 @@ const Login = (props) => {
 
       if (signInType === "loginPopup") {
         stateApp.myMSALObj = myMSALObj; /////
-        const loginResponse = await signInPopup(loginRequest).catch(
-          (error) => {
-            //do some error stuff
-            console.log(error);
-            updateTenantFlags(error);
-            setLoadingSigInButton(false);
-          }
-        );
+        const loginResponse = await signInPopup(loginRequest).catch((error) => {
+          //do some error stuff
+          console.log(error);
+          updateTenantFlags(error);
+          setLoadingSigInButton(false);
+        });
         if (!loginResponse) {
           //do some error stuff
           updateTenantFlags("Log in Failed");
@@ -298,15 +296,39 @@ const Login = (props) => {
     //   //do some error stuff
     //   return;
     // }
-    
+
+    const mongoUser = await getMongoDBUser(
+      {
+        email: readProfileResponse.mail
+          ? readProfileResponse.mail
+          : readProfileResponse.userPrincipalName,
+        name: readProfileResponse.displayName,
+      },
+      authGraphQLResponse.authenticationToken
+    ).catch((error) => {
+      //do some error stuff
+      console.log(error);
+    });
+    if (!mongoUser) {
+      //do some error stuff
+      return;
+    }
+
     setStateApp((state) => ({
       ...state,
       user: {
         id: readProfileResponse.id,
-        email: readProfileResponse.mail ? readProfileResponse.mail : readProfileResponse.userPrincipalName,
+        mongoId: mongoUser._id,
+        email: readProfileResponse.mail
+          ? readProfileResponse.mail
+          : readProfileResponse.userPrincipalName,
         name: readProfileResponse.displayName,
         authToken: authGraphQLResponse.authenticationToken,
-        authTokenExpires: new Date(authGraphQLToken.expiresOn.setDate(authGraphQLToken.expiresOn.getDate() + 14)),
+        authTokenExpires: new Date(
+          authGraphQLToken.expiresOn.setDate(
+            authGraphQLToken.expiresOn.getDate() + 14
+          )
+        ),
         tenant: {
           id: request.tenantId,
           tenant: "M1neral",
@@ -322,6 +344,43 @@ const Login = (props) => {
 
     setLoadingSigInButton(false);
     setLoading(false);
+  }
+
+  async function getMongoDBUser(user, accessToken) {
+    const mutation = `
+      mutation getFindOrCreateUser($user: UserInput) {
+        findOrCreateUser(user: $user) {
+          success
+          message
+          user {
+            _id
+            email
+            name
+            }
+          }
+        }
+       `;
+
+    var options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-ZUMO-AUTH": accessToken,
+      },
+      body: JSON.stringify({ query: mutation, variables: { user } }),
+    };
+
+    return await fetch(stateApp.apolloClientEndpoint, options)
+      .then((response) => response.json())
+      .then((response) => {
+        return response &&
+          response.data &&
+          response.data.findOrCreateUser &&
+          response.data.findOrCreateUser.success
+          ? response.data.findOrCreateUser.user
+          : null;
+      })
+      .catch((error) => console.log(error));
   }
 
   async function signInPopup(request) {
@@ -552,11 +611,13 @@ const Login = (props) => {
           Terms of Service | Privacy Policy
         </div> */}
 
-        <div style={{ 
-                color: "#fff", 
-                marginBottom: '50px',
-                }}>
-        {/* Privacy Policy */}
+        <div
+          style={{
+            color: "#fff",
+            marginBottom: "50px",
+          }}
+        >
+          {/* Privacy Policy */}
         </div>
       </div>
     </div>

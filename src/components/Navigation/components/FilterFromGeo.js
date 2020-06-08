@@ -1,11 +1,14 @@
 import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../NavigationContext";
+import { AppContext } from "../../../AppContext";
 import FilterStateName from "./FilterStateName";
 import FilterCountyName from "./FilterCountyName";
 import Grid from "@material-ui/core/Grid";
 import FilterGrid from "./FilterGrid12345";
 import FilterFromDrawing from "./FilterFromDrawing";
+import { useLazyQuery } from "@apollo/react-hooks";
+import { WELLSMINMAXLATLONG } from "../../../graphQL/useQueryWellsMinMaxLatLong";
 
 const useStyles = makeStyles((theme) => ({
   gridItem: {
@@ -16,9 +19,12 @@ const useStyles = makeStyles((theme) => ({
 
 export default function FilterFromGeo() {
   const classes = useStyles();
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [getWellsMinMaxLatLong, { data }] = useLazyQuery(WELLSMINMAXLATLONG);
 
   useEffect(() => {
+    //// Geo Filter Builder ////
     if (
       stateNav.stateName ||
       stateNav.countyName ||
@@ -82,6 +88,79 @@ export default function FilterFromGeo() {
     stateNav.GrId4,
     stateNav.GrId5,
   ]);
+
+  useEffect(() => {
+    //// Geo Filter Fit Bounds ////
+    if (
+      stateNav.stateName ||
+      stateNav.countyName ||
+      stateNav.GrId1 ||
+      stateNav.GrId2 ||
+      stateNav.GrId3 ||
+      stateNav.GrId4 ||
+      stateNav.GrId5
+    ) {
+      let whereFields = {};
+
+      if (stateNav.stateName) whereFields.State = stateNav.stateName;
+
+      if (stateNav.countyName) whereFields.County = stateNav.countyName;
+
+      if (stateNav.GrId1) whereFields.GrId1 = stateNav.GrId1;
+
+      if (stateNav.GrId2) whereFields.GrId2 = stateNav.GrId2;
+
+      if (stateNav.GrId3) whereFields.GrId3 = stateNav.GrId3;
+
+      if (stateNav.GrId4) whereFields.GrId4 = stateNav.GrId4;
+
+      if (stateNav.GrId5) whereFields.GrId5 = stateNav.GrId5;
+
+      ///////////Getting Geo Filters Bounds//////////
+      getWellsMinMaxLatLong({
+        variables: {
+          whereFields,
+        },
+      });
+    } else {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        fitBounds: null,
+      }));
+    }
+  }, [
+    stateNav.stateName,
+    stateNav.countyName,
+    stateNav.GrId1,
+    stateNav.GrId2,
+    stateNav.GrId3,
+    stateNav.GrId4,
+    stateNav.GrId5,
+  ]);
+
+  useEffect(() => {
+    if (data) {
+      if (
+        data.wellsMinMaxLatLong &&
+        data.wellsMinMaxLatLong.length > 0 &&
+        data.wellsMinMaxLatLong[0].maxLat &&
+        data.wellsMinMaxLatLong[0].minLat &&
+        data.wellsMinMaxLatLong[0].maxLong &&
+        data.wellsMinMaxLatLong[0].minLong
+      ) {
+        ///////////Setting Geo Filters Bounds////////
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          fitBounds: data.wellsMinMaxLatLong[0],
+        }));
+      } else {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          fitBounds: null,
+        }));
+      }
+    }
+  }, [data]);
 
   return (
     <Grid

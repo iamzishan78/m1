@@ -134,7 +134,7 @@ export default function FilterGrid12345({ gridNumber, label }) {
           disableListWrap
           includeInputInList
           value={
-            gridList.length === 0 ? "No Options" : stateNav[`GrId${gridNumber}`]
+            gridList.length === 0 ? "" : stateNav[`GrId${gridNumber}`]
           }
           onChange={(event, newValue) => {
             handleChange(event, newValue);

@@ -58,7 +58,7 @@ export default function FilterFromDrawing(props) {
 
     return (
         <div className={classes.formControl}>
-            <FormLabel> Draw Border: </FormLabel>
+            <FormLabel> Filter by Shape: </FormLabel>
             <IconButton className={stateNav.filterFeatureId && stateNav.filterFeatureId.includes("draw_polygon") ? classes.buttonEnabled : classes.buttonDisabled}
                         onClick={handleDrawPolygon} aria-label="draw-polygon">
                 <DrawPoly height={"30px"}/>

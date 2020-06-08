@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import React, { useContext, useState, useEffect } from "react";
 import { useMutation, useLazyQuery } from "@apollo/react-hooks";
 import { AppContext } from "../../AppContext";
@@ -15,7 +14,6 @@ import Grid from "@material-ui/core/Grid";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
-import { USERBYEMAIL } from "../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 
 const useStyles = makeStyles((theme) => ({
   rootDiv: {
@@ -65,29 +63,6 @@ export default function Tags(props) {
   const [upsertTag] = useMutation(UPSERTTAG);
   const [removeTag] = useMutation(REMOVETAG);
 
-  //////begin////////temporary  while signed user fixed
-
-  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [user, setUser] = useState({ _id: "" });
-
-  useEffect(() => {
-    if (stateApp && stateApp.user && stateApp.user.email) {
-      getUserByEmail({
-        variables: {
-          userEmail: stateApp.user.email,
-        },
-      });
-    }
-  }, [stateApp.user.email]);
-
-  useEffect(() => {
-    if (dataUser && dataUser.userByEmail) {
-      setUser(dataUser.userByEmail);
-    }
-  }, [dataUser]);
-
-  /////end/////////temporary while signed user fixed
-
   ///////////////////// START FETCHING TAGS DATA ////////////////////////////////////////////
 
   ////All Object Tag For The Input
@@ -109,15 +84,14 @@ export default function Tags(props) {
 
   ////All User Available Tags For The DropDown
   useEffect(() => {
-    //////stateApp.user._id//////////temporary
-    if (user._id !== "") {
+    if (stateApp.user && stateApp.user.mongoId) {
       getUserAvailableTags({
         variables: {
-          userId: user._id, //////stateApp.user._id//////////temporary
+          userId: stateApp.user.mongoId,
         },
       });
     }
-  }, [user]); ////////////remove dependency//////////temporary
+  }, [stateApp.user]);
 
   useEffect(() => {
     if (dataUserAvailableTags && dataUserAvailableTags.userAvailableTags) {
@@ -184,7 +158,7 @@ export default function Tags(props) {
           tag: {
             tag: tagText,
             public: publicTag,
-            user: user._id, //////stateApp.user._id////////temporary while signed user fixed
+            user: stateApp.user.mongoId,
             taggedOn: props.targetSourceId,
           },
         },
