@@ -6,7 +6,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/lab/Skeleton";
-import React from "react";
+import React, { useContext } from "react";
+import { ProfileContext } from "./ProfileContext";
+import { useEffect } from "react";
+import CardMedia from "@material-ui/core/CardMedia";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,8 +22,6 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 16,
     color: "black",
     "&& + *": {
-      // override initial styles
-      // label + .MuiInput-formControl
       marginTop: theme.spacing(1),
     },
   },
@@ -49,7 +50,6 @@ const useStyles = makeStyles((theme) => ({
     "&:focus": {
       borderRadius: 4,
       borderColor: "#ced4da",
-      //   boxShadow: `0 0 0 0.2rem ${Color(normalColor).fade(0.75)}`,
     },
   },
   button: {
@@ -64,8 +64,28 @@ const useStyles = makeStyles((theme) => ({
 
 const ProfileContent = () => {
   const classes = useStyles();
+  const [stateProfile, setStateProfile] = useContext(ProfileContext);
+  const {
+    fields: { fullname, displayname, activity, phone, timezone, profileimage },
+  } = stateProfile;
+  //   console.log(fields);
+  //   useEffect(() => {
+  //     console.log(fields);
+  //     setStateProfile({
+  //       ...stateProfile,
+  //       fields: { ...stateProfile.fields },
+  //     });
+  //   }, []);
+
+  const onChange = ({ name, value }) => {
+    setStateProfile({
+      ...stateProfile,
+      fields: { ...stateProfile.fields, [name]: value },
+    });
+  };
+
   return (
-    <MuiDialogContent className={{}}>
+    <MuiDialogContent>
       <Grid container>
         <Grid item sm={8}>
           <TextField
@@ -81,7 +101,10 @@ const ProfileContent = () => {
               classes: { root: classes.helperText },
             }}
             label={"Full name"}
-            placeholder={"Jacob Averi"}
+            placeholder={"Your Full Name"}
+            name="fullname"
+            value={fullname}
+            onChange={({ target }) => onChange(target)}
           />
           <Box pb={2.5} />
           <TextField
@@ -97,8 +120,11 @@ const ProfileContent = () => {
               classes: { root: classes.helperText },
             }}
             label={"Display Name"}
-            placeholder={"Jacob Averi"}
-            helperText={"This could be..."}
+            placeholder={"Display Name"}
+            helperText={"This could be a nickname or our first name"}
+            name="displayname"
+            value={displayname}
+            onChange={({ target }) => onChange(target)}
           />
           <Box pb={2.5} />
           <TextField
@@ -114,9 +140,12 @@ const ProfileContent = () => {
             FormHelperTextProps={{
               classes: { root: classes.helperText },
             }}
-            label={"What I do"}
-            placeholder={"Chief cook"}
+            label={"What you do"}
+            placeholder={"CTO"}
             helperText={"Let people know what you do"}
+            name="activity"
+            value={activity}
+            onChange={({ target }) => onChange(target)}
           />
           <Box pb={2.5} />
           <TextField
@@ -133,8 +162,11 @@ const ProfileContent = () => {
               classes: { root: classes.helperText },
             }}
             label={"Phone number"}
-            placeholder={"0703"}
+            placeholder={"XXX-XXX-XXXXXX"}
             helperText={"Enter a phone number"}
+            name="phone"
+            value={phone}
+            onChange={({ target }) => onChange(target)}
           />
           <Box pb={2.5} />
           <TextField
@@ -153,26 +185,33 @@ const ProfileContent = () => {
             label={"Time zone"}
             placeholder={"UTC"}
             helperText={"Your current timezone"}
+            name="timezone"
+            value={timezone}
+            onChange={({ target }) => onChange(target)}
           />
         </Grid>
-        <Grid item sm={4} spacing={2}>
+        <Grid item sm={4}>
           <Typography variant="body1">Profile Photo</Typography>
-          {/* <CardMedia
-          // component={'img'} // add this line to use <img />
-          // image={"src"}
-          //   classes={styles}
-          /> */}
-          <Skeleton variant="rect" className={classes.image} />
+          {profileimage ? (
+            <CardMedia
+              className={classes.image}
+              component={"img"}
+              image={profileimage}
+              title="Profile Image"
+            />
+          ) : (
+            <Skeleton variant="rect" className={classes.image} />
+          )}
           <Box pb={2.5} />
           <input
             accept="image/*"
-            className={classes.input}
             style={{ display: "none" }}
-            id="raised-button-file"
-            multiple
+            id="profile-image"
             type="file"
+            name="profileimage"
+            onChange={(e) => console.log(e)}
           />
-          <label htmlFor="raised-button-file">
+          <label htmlFor="profile-image">
             <Button
               variant="outlined"
               component="span"
@@ -182,7 +221,6 @@ const ProfileContent = () => {
             </Button>
           </label>
           <Button
-            variant="raised"
             component="span"
             className={classes.button}
             style={{ color: "blue" }}

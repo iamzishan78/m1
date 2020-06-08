@@ -5,6 +5,7 @@ import { makeStyles, withStyles } from "@material-ui/core/styles";
 import React, { useState } from "react";
 import ProfileContent from "./ProfileContent";
 import ProfileTitle from "./ProfileTitle";
+import { ProfileContextProvider } from "./ProfileContext";
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -35,33 +36,38 @@ const Profile = () => {
   };
 
   return (
-    <Dialog
-      onClose={handleClose}
-      aria-labelledby="profile-dialog"
-      open={open}
-      classes={{ paper: classes.paper }}
-    >
-      <ProfileTitle />
-      <ProfileContent />
-      <DialogActions>
-        <Button
-          variant="outlined"
-          onClick={handleClose}
-          color="primary"
-          style={{ textTransform: "none" }}
-        >
-          Cancel
-        </Button>
-        <Button
-          style={{ textTransform: "none", color: "white", background: "#0e5721" }}
-          variant="outlined"
-          onClick={handleClose}
-          color="green"
-        >
-          Save changes
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <ProfileContextProvider>
+      <Dialog
+        onClose={handleClose}
+        aria-labelledby="profile-dialog"
+        open={open}
+        classes={{ paper: classes.paper }}
+      >
+        <ProfileTitle />
+        <ProfileContent />
+        <DialogActions>
+          <Button
+            variant="outlined"
+            onClick={handleClose}
+            color="primary"
+            style={{ textTransform: "none" }}
+          >
+            Cancel
+          </Button>
+          <Button
+            style={{
+              textTransform: "none",
+              color: "white",
+              background: "#0e5721",
+            }}
+            variant="outlined"
+            onClick={handleClose}
+          >
+            Save changes
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </ProfileContextProvider>
   );
 };
 
