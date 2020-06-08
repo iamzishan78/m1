@@ -479,13 +479,13 @@ import React, {
             var clusterVar = k+'-clusters'
             if (map.getLayer(clusterVar)) {
               map.removeLayer(clusterVar);
-              // map.removeSource(l.sourceProps[i].sourceId);
+              map.removeSource(l.sourceProps[i].sourceId);
             }
   
             var clusterLabelBar = k+'-clusters-counts'
             if (map.getLayer(clusterLabelBar)) {
               map.removeLayer(clusterLabelBar);
-              // map.removeSource(l.sourceProps[i].sourceId);
+              map.removeSource(l.sourceProps[i].sourceId);
             }
           });
         });
@@ -620,6 +620,11 @@ import React, {
                   filter: ['has', 'point_count'],
                   paint: selectLayerProps.layerProps[i].clusterProps.clusterPaintProps
                             });
+                  
+                  if (beforelayer) {
+                    map.moveLayer(clusterVar, beforelayer);
+                  }
+                  beforelayer = clusterVar;
     
                   map.addLayer({
                     id: clusterLabelBar,
@@ -628,6 +633,10 @@ import React, {
                     filter: ['has', 'point_count'],
                     layout: selectLayerProps.layerProps[i].clusterProps.clusterSymbolProps,
                             });
+                  if (beforelayer) {
+                    map.moveLayer(clusterLabelBar, beforelayer);
+                  }
+                  beforelayer = clusterLabelBar;
                 }
   
                 // -> add interaction (note to change later w/ interaction panel)

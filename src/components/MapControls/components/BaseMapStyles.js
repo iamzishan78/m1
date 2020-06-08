@@ -53,9 +53,6 @@ const theme = createMuiTheme({
       },
     },
   },
-  list: {
-    padding: 0
-  },
 });
 
 const StyledMenu = withStyles({
@@ -384,7 +381,7 @@ export default function BaseMapStyles(props) {
             <Droppable droppableId="droppable">
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
-                  <List className={classes.list}>
+                  <List style={{padding: 0}}>
                     {stateMap.baseMapLayers.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
                       return (
