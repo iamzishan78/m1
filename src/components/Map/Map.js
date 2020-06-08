@@ -85,6 +85,7 @@ import React, {
     const container = useRef(null);
     const [showExpandableCard, setShowExpandableCard] = useState(false);
     const [mapStyles, setMapStyles] = useState([]);
+    const [wellsTileset, setwellsTileset] = useState();
     const [defaultsCheckOnOff, setDefaultsCheckOnOff] = useState(true);
     const [m1neralCheckOnOff, setM1neralCheckOnOff] = useState(true);
     const [map, setMap] = useState(null);
@@ -1393,6 +1394,73 @@ import React, {
         }
       }
     }, [stateApp.wellSelectedCoordinates]);
+
+    useEffect(() => {
+      (async () => {
+        if(stateApp.selectedWellId && stateApp.wellSelectedCoordinates && stateApp.wellSelectedCoordinates.length > 0 && !stateApp.selectedWell) {
+          let point = map.project(stateApp.wellSelectedCoordinates)
+    
+          var bbox = [
+              [point.x - 10, point.y - 10],
+              [point.x + 10, point.y + 10],
+          ];
+          let features = map.queryRenderedFeatures(bbox, {
+          layers: ["wellpoints"],
+          });
+          let currentFeature = features.find(element => element.properties.id == stateApp.selectedWellId);;
+          console.log("current feature", currentFeature);
+    
+          if (!currentFeature) {
+            features = map.querySourceFeatures('composite', {
+              sourceLayer: 'wellPoints',
+              filter: ['in', 'id', stateApp.selectedWellId]
+              });
+            currentFeature = features.find(element => element.properties.id == stateApp.selectedWellId);;
+          }
+    
+          if (!currentFeature) {
+              const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=pk.eyJ1IjoibTFuZXJhbCIsImEiOiJjanYycGJxbG8yN3JsM3lsYTdnMXZoeHh1In0.tTNECYKDPtcrzivWTiZcIQ`;
+                  
+              const headers = new Headers();
+              headers.append('Content-Type', 'application/json')
+              headers.append('api-key', '1AE3C6346B38CEB007191D51CFDDFF65');
+          
+              const options = {
+              method: 'GET',
+              headers: headers
+              };
+          
+              console.log("request made to lod2019-index search at: " + new Date().toString());
+    
+              await fetch(endpoint, options)
+                  .then((response) => response.json())
+                  .then((response) => {
+                      console.log(response);
+                      features = response.features
+                      currentFeature = features.find(element => element.properties.id.toLowerCase() == stateApp.selectedWellId);
+                  })
+                  .catch((error) => {
+                      console.log(error);
+                  })
+    
+              console.log("current feature", currentFeature);
+          }
+    
+          if(currentFeature) {
+            let popUps = document.getElementsByClassName("mapboxgl-popup");
+            if (popUps[0]) popUps[0].remove();
+            setStateApp((state) => ({
+              ...state,
+              selectedWell: currentFeature.properties,
+            }));
+    
+            // map.fire('click', { lngLat: stateApp.wellSelectedCoordinates, point: point, originalEvent: {} })
+            createPopUp(currentFeature.properties);
+            map.resize();
+          }
+        }
+      })();
+    }, [stateApp.wellSelectedCoordinates]);
   
     useEffect(() => {
       const req = new Request(
@@ -1445,8 +1513,11 @@ import React, {
       }
     }, [stateApp.mapVars.styleId]);
   
-    useEffect(() => {
+    useLayoutEffect(() => {
       if (stateApp.popupOpen === false) {
+        let popUps = document.getElementsByClassName("mapboxgl-popup");
+        if (popUps[0]) popUps[0].remove();
+
         setStateApp((state) => ({
           ...state,
           wellSelectedCoordinates: [],
@@ -1486,7 +1557,10 @@ import React, {
             pitch: stateApp.mapVars.pitch,
             bearing: stateApp.mapVars.bearing,
           });
-  
+
+          console.log(`Setting wellsTileset: ${mapStyles[index].sources.composite.url.split(',').find(element => element.indexOf('m1neral.wells') > -1)}`);
+          setwellsTileset(mapStyles[index].sources.composite.url.split(',').find(element => element.indexOf('m1neral.wells') > -1));
+
           console.log("new map generated");
   
           /// optimized interactions w/ map
@@ -1689,7 +1763,7 @@ import React, {
             setStateApp((state) => ({
               ...state,
               selectedWell: currentFeature.properties,
-              selectedWellId: currentFeature.properties.api,
+              selectedWellId: currentFeature.properties.id,
               wellSelectedCoordinates: [
                 currentFeature.properties.longitude,
                 currentFeature.properties.latitude,
@@ -1743,7 +1817,7 @@ import React, {
             setStateApp((state) => ({
               ...state,
               selectedWell: currentFeature.properties,
-              selectedWellId: currentFeature.properties.api,
+              selectedWellId: currentFeature.properties.id,
               wellSelectedCoordinates: [
                 currentFeature.properties.longitude,
                 currentFeature.properties.latitude,
