@@ -34,8 +34,11 @@ import RootRef from "@material-ui/core/RootRef";
 const useStyles = makeStyles(theme => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important",
-    width: '350px'
-  }
+    width: '100%'
+  },
+  list: {
+    padding: 0
+  },
 }));
 
 

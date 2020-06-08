@@ -53,6 +53,9 @@ const theme = createMuiTheme({
       },
     },
   },
+  list: {
+    padding: 0
+  },
 });
 
 const StyledMenu = withStyles({
@@ -111,7 +114,7 @@ const StyledMenuHeaderItem = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important",
-    width: '350px'
+    width: '100%'
   },
   nested: {
     paddingLeft: theme.spacing(6),

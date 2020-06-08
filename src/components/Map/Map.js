@@ -495,16 +495,22 @@ import React, {
       // console.log('dataTracks',dataTracks)
       // console.log('dataOwnersWells',dataOwnersWells)
       // console.log('dataWellsForOwnerWellTrackLayer',dataWellsForOwnerWellTrackLayer)
-  
+
+      let belowlayer = null;
       if (map && stateMap.checkedUserDefinedLayers.length > 0) {
+        let layers = stateMap.checkedUserDefinedLayers.slice(0);
+        layers.sort(function (a, b) {
+          return b - a;
+        });
         const layerList = stateMap.userDefinedLayers;
-        stateMap.checkedUserDefinedLayers.forEach((l) => {
-          
+        let beforelayer = null;
+        for (let k = layers.length - 1; k >= 0; k--) {
+          const l = layers[k];
           
           const selectLayerProps = layerList[l];
   
           if (selectLayerProps.type === "data layer") {
-            selectLayerProps.id.forEach((k, i) => {
+            for (let i = 0; i < selectLayerProps.id.length; i ++) {
               // -> fetch data
               let layerData = [];
               if (selectLayerProps.dataProps[i].dataId == "trackedWellsWells") {
@@ -570,6 +576,7 @@ import React, {
                 }
   
                 // -> add layer
+                // eslint-disable-next-line eqeqeq
                 if (selectLayerProps.layerProps[i].layerType == 'symbol') {
                   map.addLayer({
                     id: selectLayerProps.layerProps[i].layerId,
@@ -586,6 +593,11 @@ import React, {
                     paint: selectLayerProps.layerProps[i].paintProps,
                   });
                 }
+
+                if (beforelayer) {
+                  map.moveLayer(selectLayerProps.layerProps[i].layerId, beforelayer);
+                }
+                beforelayer = selectLayerProps.layerProps[i].layerId;
   
               
   
@@ -641,6 +653,7 @@ import React, {
                       });
     
     
+                    // eslint-disable-next-line no-loop-func
                     map.on('click', clusterVar, function(e) {
                       var features = map.queryRenderedFeatures(e.point, {
                       layers: [clusterVar]
@@ -695,9 +708,9 @@ import React, {
                   }
                 }
               }
-            });
+            }
           }
-        });
+        }
       }
     }, [map, stateMap.checkedUserDefinedLayers, stateApp.customLayers]);
   

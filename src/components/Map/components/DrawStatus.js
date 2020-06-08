@@ -3,7 +3,7 @@ import { Modal } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles'
 const useStyles = makeStyles(theme => ({
   drawStatusBox: {
-    padding: 3,
+    padding: '3px 15px',
     backgroundColor: "white",
     margin: 0,
     fontSize: 14,
