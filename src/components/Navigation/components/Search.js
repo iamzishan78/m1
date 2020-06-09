@@ -377,15 +377,17 @@ export default function Search() {
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
 
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          popupOpen: false,
-          selectedWell: null,
-          selectedWellId: newValue ? newValue.Id.toLowerCase() : null,
-          flyTo: newValue
-            ? { longitude: newValue.Longitude, latitude: newValue.Latitude }
-            : null,
-        }));
+        if (newValue && newValue.Longitude && newValue.Latitude) {
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            popupOpen: false,
+            selectedWell: null,
+            selectedWellId: newValue ? newValue.Id.toLowerCase() : null,
+            flyTo: newValue
+              ? { longitude: newValue.Longitude, latitude: newValue.Latitude }
+              : null,
+          }));
+        }
       }}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
