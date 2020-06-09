@@ -29,7 +29,7 @@
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "immutable": "^3.8.2",
-    "react-iframe":"^1.8.0",
+    "react-iframe": "^1.8.0",
     "jquery": "^3.4.1",
     "mapbox-gl": "^1.10.1",
     "mapbox-gl-draw-circle": "^1.1.1",

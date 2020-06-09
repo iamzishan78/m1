@@ -9,8 +9,12 @@ import CardWrapper from "./CardTemplate";
 import TwitterCard from "./TwitterCard";
 
 const useStyles = makeStyles(() => ({
+  root: {
+    flexGrow: 1,
+  },
   cgriditem: {
     height: "500px",
+
   },
   cgridcard: {
     height: "100%",
