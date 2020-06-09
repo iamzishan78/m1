@@ -38,10 +38,10 @@ const maxMinScore = (options) => {
 };
 
 const calcScoreOpacity = (maxMin, score) => {
-  if (maxMin[0] === maxMin[1]) return 1;
-  if (score === maxMin[1]) return 0.05;
+  if (maxMin[0] === maxMin[1]) return 0;
+  if (score === maxMin[1]) return 1;
 
-  return (0.95 * (score - maxMin[1])) / (maxMin[0] - maxMin[1]) + 0.05;
+  return 1 - (score - maxMin[1]) / (maxMin[0] - maxMin[1]);
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -56,13 +56,13 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: "Poppins",
     color: "#0f2046",
     paddingLeft: "5px",
-    zIndex: "2000",
   },
   groupsHeaders: {
     position: "-webkit-sticky",
     position: "sticky",
     top: "-9px",
     backgroundColor: "#d4e7fce0",
+    zIndex: "4000",
   },
   groupsButton: {
     margin: "3px",
@@ -73,9 +73,10 @@ const useStyles = makeStyles((theme) => ({
     "& input": { color: "#ffffffc9" },
   },
   score: {
+    position: "absolute",
+    top: "-8px",
     width: "17px",
     height: "16px",
-    backgroundColor: "#12ABE0",
     borderRadius: "50%",
     marginLeft: "10px",
   },
@@ -399,9 +400,9 @@ export default function Search() {
         />
       )}
       renderOption={(option) => {
+        if (option.Source === "header") return null;
         const matches = option.WellName;
         const parts = parse(option.Primary, Array());
-        if (option.Source === "header") return null;
 
         return (
           <Grid container spacing={0}>
@@ -435,11 +436,20 @@ export default function Search() {
               </Grid>
             </Grid>
             <Grid container item xs={1} alignItems="center">
-              <Grid item>
+              <Grid item style={{ position: "relative" }}>
                 <div
                   className={classes.score}
                   style={{
                     zIndex: "1300",
+                    backgroundColor: "#12ABE0",
+                  }}
+                />
+                <div
+                  className={classes.score}
+                  style={{
+                    zIndex: "1301",
+                    backgroundImage:
+                      "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
                     opacity: calcScoreOpacity(
                       option.Source === "lod2019-index"
                         ? maxMinOwnersScore
