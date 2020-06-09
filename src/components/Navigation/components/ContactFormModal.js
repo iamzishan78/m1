@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useMutation, useLazyQuery } from "@apollo/react-hooks";
 import styled from "styled-components";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -9,8 +10,11 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import Dialog from "@material-ui/core/Dialog";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import MenuItem from "@material-ui/core/MenuItem";
+import Typography from "@material-ui/core/Typography";
 import Select from "@material-ui/core/Select";
+import { SENDEMAIL } from "../../../graphQL/useMutationSendEmail";
 
 const M1neralLogo = (props) => (
   <svg
@@ -60,6 +64,11 @@ const useStyles = makeStyles((theme) => ({
   inputField: {
     marginBottom: "15px",
   },
+  progress: {
+    marginLeft: "30px",
+    verticalAlign: "middle",
+  },
+  dialogFooter: { display: "flex", justifyContent: "space-between" },
 }));
 
 function ContactFormModal(props) {
@@ -68,12 +77,39 @@ function ContactFormModal(props) {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("issue");
   const [comment, setComment] = useState("");
+  const [sendEmail, { called, loading, data }] = useMutation(SENDEMAIL);
 
-  const sendEmail = () => {
-    console.log({ name, email, category, comment });
+  const sendEmailStatus = data ? data.sendEmail : null;
+  const sendMail = async () => {
+    sendEmail({
+      variables: {
+        email: {
+          name,
+          email,
+          category,
+          comment,
+        },
+      },
+    });
   };
+
+  const clearFields = () => {
+    setName("");
+    setEmail("");
+    setComment("");
+    setCategory("issue");
+  };
+
+  useEffect(() => {
+    if (called && !loading && sendEmailStatus.success === true) {
+      clearFields();
+    }
+  }, [called, loading, sendEmailStatus]);
+
+  const categoryName =
+    category.slice(0, 1).toUpperCase() + category.slice(1, category.length);
 
   return (
     <Dialog
@@ -100,6 +136,7 @@ function ContactFormModal(props) {
           className={classes.inputField}
           value={name}
           onChange={(e) => setName(e.target.value)}
+          disabled={loading}
         />
         <TextField
           variant="outlined"
@@ -111,6 +148,7 @@ function ContactFormModal(props) {
           className={classes.inputField}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled={loading}
         />
 
         <FormControl
@@ -129,13 +167,11 @@ function ContactFormModal(props) {
             onChange={(e) => setCategory(e.target.value)}
             fullWidth
             label="Select a category"
+            disabled={loading}
           >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
+            <MenuItem value={"issue"}>Submit an issue</MenuItem>
+            <MenuItem value={"request"}>Functionality request</MenuItem>
+            <MenuItem value={"feedback"}>General feedback</MenuItem>
           </Select>
         </FormControl>
 
@@ -151,17 +187,34 @@ function ContactFormModal(props) {
           className={classes.inputField}
           value={comment}
           onChange={(e) => setComment(e.target.value)}
+          disabled={loading}
         />
 
-        <Button
-          variant="contained"
-          color="secondary"
-          size="large"
-          disableElevation
-          onClick={sendEmail}
-        >
-          Send
-        </Button>
+        <div className={classes.dialogFooter}>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="large"
+            disableElevation
+            onClick={sendMail}
+            disabled={loading}
+          >
+            Send
+          </Button>
+          {loading ? (
+            <CircularProgress color="secondary" className={classes.progress} />
+          ) : called && !loading ? (
+            sendEmailStatus.success ? (
+              <Typography color="secondary" variant="subtitle2" gutterBottom>
+                {categoryName} submitted successfully
+              </Typography>
+            ) : (
+              <Typography color="primary" variant="subtitle2" gutterBottom>
+                Unable to submit {category}.
+              </Typography>
+            )
+          ) : null}
+        </div>
       </DialogContent>
     </Dialog>
   );
