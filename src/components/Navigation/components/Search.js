@@ -353,10 +353,10 @@ export default function Search() {
             searchOption === option.key.toLowerCase()) && (
             <Grid key={option.key} container item>
               <Grid container item xs={12} className={classes.groupsHeaders}>
-                <Grid item item xs={8}>
+                <Grid item item xs={6}>
                   <h3 className={classes.groupsHeadersText}>{option.key}</h3>
                 </Grid>
-                <Grid item xs={4} style={{ textAlign: "right" }}>
+                <Grid item xs={6} style={{ textAlign: "right" }}>
                   <Button size="small" className={classes.groupsButton}>
                     See All Results
                   </Button>
