@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "3px",
     padding: "0",
     fontFamily: "Poppins",
-    color: "#394d7ae0",
+    color: "#0f2046",
     paddingLeft: "5px",
     zIndex: "2000",
   },
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
     position: "-webkit-sticky",
     position: "sticky",
     top: "-9px",
-    backgroundColor: "#d4e0fce0",
+    backgroundColor: "#d4e7fce0",
   },
   groupsButton: {
     margin: "3px",
@@ -233,9 +233,16 @@ export default function Search() {
                 results["@odata.context"].indexOf("')")
               );
               console.log(indexSource);
-              newOptions = [...newOptions, ...results.value.map(result=> ({ ...result, Source: indexSource, Primary: result.OwnerName, 
-                Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}` }))];
-           
+              newOptions = [
+                ...newOptions,
+                ...results.value.map((result) => ({
+                  ...result,
+                  Source: indexSource,
+                  Primary: result.OwnerName,
+                  Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}`,
+                })),
+              ];
+
               setMaxMinOwnersScore(maxMinScore(results.value));
             }
 
@@ -300,13 +307,11 @@ export default function Search() {
               }}
             >
               <Button
-                variant="outlined"
+                variant={searchOption === "all" ? "contained" : "outlined"}
                 size="small"
                 color={searchOption === "all" ? "secondary" : "primary"}
                 style={{
                   width: "30%",
-                  backgroundColor:
-                    searchOption === "all" ? "rgb(238, 237, 237)" : null,
                 }}
                 onClick={() => {
                   setSearchOption("all");
@@ -315,13 +320,11 @@ export default function Search() {
                 All
               </Button>
               <Button
-                variant="outlined"
+                variant={searchOption === "wells" ? "contained" : "outlined"}
                 size="small"
                 color={searchOption === "wells" ? "secondary" : "primary"}
                 style={{
                   width: "30%",
-                  backgroundColor:
-                    searchOption === "wells" ? "rgb(238, 237, 237)" : null,
                 }}
                 onClick={() => {
                   setSearchOption("wells");
@@ -330,13 +333,11 @@ export default function Search() {
                 Wells
               </Button>
               <Button
-                variant="outlined"
+                variant={searchOption === "owners" ? "contained" : "outlined"}
                 size="small"
                 color={searchOption === "owners" ? "secondary" : "primary"}
                 style={{
                   width: "30%",
-                  backgroundColor:
-                    searchOption === "owners" ? "rgb(238, 237, 237)" : null,
                 }}
                 onClick={() => {
                   setSearchOption("owners");
@@ -356,7 +357,7 @@ export default function Search() {
                 </Grid>
                 <Grid item xs={4} style={{ textAlign: "right" }}>
                   <Button size="small" className={classes.groupsButton}>
-                    See All
+                    See All Results
                   </Button>
                 </Grid>
               </Grid>
@@ -380,7 +381,9 @@ export default function Search() {
           popupOpen: false,
           selectedWell: null,
           selectedWellId: newValue ? newValue.Id.toLowerCase() : null,
-          flyTo: newValue ? {longitude: newValue.Longitude, latitude: newValue.Latitude} : null,
+          flyTo: newValue
+            ? { longitude: newValue.Longitude, latitude: newValue.Latitude }
+            : null,
         }));
       }}
       onInputChange={(event, newInputValue) => {
@@ -389,10 +392,9 @@ export default function Search() {
       renderInput={(params) => (
         <TextField
           {...params}
-          // label="Add a location"
           variant="outlined"
           fullWidth
-          placeholder="Add a location"
+          placeholder="Search by well name, API, owner name"
           className={classes.textF}
         />
       )}
