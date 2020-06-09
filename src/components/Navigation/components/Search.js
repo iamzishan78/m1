@@ -1,32 +1,83 @@
-import React from 'react';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import parse from 'autosuggest-highlight/parse';
-import throttle from 'lodash/throttle';
+import React from "react";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import LocationOnIcon from "@material-ui/icons/LocationOn";
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/core/styles";
+import parse from "autosuggest-highlight/parse";
+import throttle from "lodash/throttle";
 import { AppContext } from "../../../AppContext";
+import Button from "@material-ui/core/Button";
+import PersonIcon from "@material-ui/icons/Person";
+import WellIcon from "../../Shared/svgIcons/well";
 
 function loadScript(src, position, id) {
   if (!position) {
     return;
   }
 
-  const script = document.createElement('script');
-  script.setAttribute('async', '');
-  script.setAttribute('id', id);
+  const script = document.createElement("script");
+  script.setAttribute("async", "");
+  script.setAttribute("id", id);
   script.src = src;
   position.appendChild(script);
 }
 
 // const autocompleteService = { current: null };
 
+const maxMinScore = (options) => {
+  let max = 0;
+  let min = 1000000;
+  for (let i = 0; i < options.length; i++) {
+    if (options[i]["@search.score"] > max) max = options[i]["@search.score"];
+    if (options[i]["@search.score"] < min) min = options[i]["@search.score"];
+  }
+
+  return [max, min];
+};
+
+const calcScoreOpacity = (maxMin, score) => {
+  if (maxMin[0] === maxMin[1]) return 1;
+  if (score === maxMin[1]) return 0.05;
+
+  return (0.95 * (score - maxMin[1])) / (maxMin[0] - maxMin[1]) + 0.05;
+};
+
 const useStyles = makeStyles((theme) => ({
   icon: {
     color: theme.palette.text.secondary,
     marginRight: theme.spacing(2),
+  },
+  groupsHeadersText: {
+    margin: "0",
+    marginTop: "3px",
+    padding: "0",
+    fontFamily: "Poppins",
+    color: "#394d7ae0",
+    paddingLeft: "5px",
+    zIndex: "2000",
+  },
+  groupsHeaders: {
+    position: "-webkit-sticky",
+    position: "sticky",
+    top: "-9px",
+    backgroundColor: "#d4e0fce0",
+  },
+  groupsButton: {
+    margin: "3px",
+    zIndex: "2000",
+    color: "#5f5f5f",
+  },
+  textF: {
+    "& input": { color: "#ffffffc9" },
+  },
+  score: {
+    width: "17px",
+    height: "16px",
+    backgroundColor: "#12ABE0",
+    borderRadius: "50%",
+    marginLeft: "10px",
   },
 }));
 
@@ -34,51 +85,58 @@ export default function Search() {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [value, setValue] = React.useState(null);
-  const [inputValue, setInputValue] = React.useState('');
+  const [inputValue, setInputValue] = React.useState("");
+  const [searchOption, setSearchOption] = React.useState("all");
   const [options, setOptions] = React.useState([]);
+  const [maxMinWellsScore, setMaxMinWellsScore] = React.useState([0, 0]);
+  const [maxMinOwnersScore, setMaxMinOwnersScore] = React.useState([0, 0]);
   const loaded = React.useRef(false);
 
-//   if (typeof window !== 'undefined' && !loaded.current) {
-//     if (!document.querySelector('#google-maps')) {
-//       loadScript(
-//         'https://maps.googleapis.com/maps/api/js?key=AIzaSyBwRp1e12ec1vOTtGiA4fcCt2sCUS78UYc&libraries=places',
-//         document.querySelector('head'),
-//         'google-maps',
-//       );
-//     }
+  //   if (typeof window !== 'undefined' && !loaded.current) {
+  //     if (!document.querySelector('#google-maps')) {
+  //       loadScript(
+  //         'https://maps.googleapis.com/maps/api/js?key=AIzaSyBwRp1e12ec1vOTtGiA4fcCt2sCUS78UYc&libraries=places',
+  //         document.querySelector('head'),
+  //         'google-maps',
+  //       );
+  //     }
 
-//     loaded.current = true;
-//   }
+  //     loaded.current = true;
+  //   }
 
   const callWellSearch = React.useMemo(
     () =>
       throttle((request, callback) => {
         // autocompleteService.current.getPlacePredictions(request, callback);
 
-        const endpoint = 'https://m1neral-search.search.windows.net/indexes/wellheader-index/docs?api-version=2019-05-06&$count=true&searchFields=WellName,ApiNumber&$top=5&search=' + request.input;
-                    
+        const endpoint =
+          "https://m1neral-search.search.windows.net/indexes/wellheader-index/docs?api-version=2019-05-06&$count=true&searchFields=WellName,ApiNumber&$top=5&search=" +
+          request.input;
+
         const headers = new Headers();
-        headers.append('Content-Type', 'application/json')
-        headers.append('api-key', 'C7D8ADB027CCBA30133479D51D669526');
-    
+        headers.append("Content-Type", "application/json");
+        headers.append("api-key", "C7D8ADB027CCBA30133479D51D669526");
+
         const options = {
-        method: 'GET',
-        headers: headers
+          method: "GET",
+          headers: headers,
         };
-    
-        console.log("request made to wellheader-index search at: " + new Date().toString());
+
+        console.log(
+          "request made to wellheader-index search at: " + new Date().toString()
+        );
 
         fetch(endpoint, options)
-            .then((response) => response.json())
-            .then((response) => {
-                console.log(response);
-                callback(response);
-            })
-            .catch((error) => {
-                console.log(error);
-            })
+          .then((response) => response.json())
+          .then((response) => {
+            console.log(response);
+            callback(response);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       }, 200),
-    [],
+    []
   );
 
   const callOwnerSearch = React.useMemo(
@@ -86,30 +144,34 @@ export default function Search() {
       throttle((request, callback) => {
         // autocompleteService.current.getPlacePredictions(request, callback);
 
-        const endpoint = 'https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName%2CAddress1&%24top=5&search=' + request.input;
-                    
+        const endpoint =
+          "https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName%2CAddress1&%24top=5&search=" +
+          request.input;
+
         const headers = new Headers();
-        headers.append('Content-Type', 'application/json')
-        headers.append('api-key', '1AE3C6346B38CEB007191D51CFDDFF65');
-    
+        headers.append("Content-Type", "application/json");
+        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
+
         const options = {
-        method: 'GET',
-        headers: headers
+          method: "GET",
+          headers: headers,
         };
-    
-        console.log("request made to lod2019-index search at: " + new Date().toString());
+
+        console.log(
+          "request made to lod2019-index search at: " + new Date().toString()
+        );
 
         fetch(endpoint, options)
-            .then((response) => response.json())
-            .then((response) => {
-                console.log(response);
-                callback(response);
-            })
-            .catch((error) => {
-                console.log(error);
-            })
+          .then((response) => response.json())
+          .then((response) => {
+            console.log(response);
+            callback(response);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       }, 200),
-    [],
+    []
   );
 
   React.useEffect(() => {
@@ -122,7 +184,7 @@ export default function Search() {
     //   return undefined;
     // }
 
-    if (inputValue === '') {
+    if (inputValue === "") {
       setOptions(value ? [value] : []);
       return undefined;
     }
@@ -133,15 +195,27 @@ export default function Search() {
       Promise.all([
         callWellSearch({ input: inputValue }, (results) => {
           if (active) {
-
             if (value) {
               newOptions = [value];
             }
-
             if (results) {
-              const indexSource = results["@odata.context"].substring(results["@odata.context"].indexOf("('") + 2, results["@odata.context"].indexOf("')"));
+              const indexSource = results["@odata.context"].substring(
+                results["@odata.context"].indexOf("('") + 2,
+                results["@odata.context"].indexOf("')")
+              );
+
               console.log(indexSource);
-              newOptions = [...newOptions, ...results.value.map(result=> ({ ...result, Source: indexSource, Primary: result.WellName, Secondary: result.ApiNumber }))];
+              newOptions = [
+                ...newOptions,
+                ...results.value.map((result) => ({
+                  ...result,
+                  Source: indexSource,
+                  Primary: result.WellName,
+                  Secondary: result.ApiNumber,
+                })),
+              ];
+
+              setMaxMinWellsScore(maxMinScore(results.value));
             }
 
             setOptions(newOptions);
@@ -149,22 +223,26 @@ export default function Search() {
         }),
         callOwnerSearch({ input: inputValue }, (results) => {
           if (active) {
-
             if (value) {
               newOptions = [value];
             }
 
             if (results) {
-              const indexSource = results["@odata.context"].substring(results["@odata.context"].indexOf("('") + 2, results["@odata.context"].indexOf("')"));
+              const indexSource = results["@odata.context"].substring(
+                results["@odata.context"].indexOf("('") + 2,
+                results["@odata.context"].indexOf("')")
+              );
               console.log(indexSource);
               newOptions = [...newOptions, ...results.value.map(result=> ({ ...result, Source: indexSource, Primary: result.OwnerName, 
                 Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}` }))];
+           
+              setMaxMinOwnersScore(maxMinScore(results.value));
             }
 
             setOptions(newOptions);
           }
-        })
-      ])
+        }),
+      ]);
     })();
 
     return () => {
@@ -172,14 +250,123 @@ export default function Search() {
     };
   }, [value, inputValue, callWellSearch, callOwnerSearch]);
 
+  const header = {
+    Source: "header",
+    "@search.score": 0,
+    Id: "0",
+    WellName: "",
+    ApiNumber: "",
+    Latitude: 0,
+    Longitude: 0,
+    Primary: "",
+    Secondary: "",
+  };
+  const optionsWithHeader = [header, ...options];
+
   return (
     <Autocomplete
       id="google-map-demo"
-    //   style={{ width: 300 }}
+      //   style={{ width: 300 }}
       getOptionLabel={(option) => option.Primary}
       filterOptions={(x) => x}
-      options={options}
-      groupBy={(option) => option.Source}
+      options={optionsWithHeader}
+      groupBy={(option) => {
+        return option.Source === "lod2019-index"
+          ? "Owners"
+          : option.Source === "wellheader-index"
+          ? "Wells"
+          : "header";
+      }}
+      renderGroup={(option) => {
+        return option.key === "header" ? (
+          <Grid
+            key={option.key}
+            container
+            item
+            spacing={0}
+            style={{
+              position: "relative",
+              top: "0",
+              backgroundColor: "#ffffff",
+              paddingBottom: options.length === 0 ? "0" : "9px",
+            }}
+          >
+            <Grid
+              item
+              xs={12}
+              style={{
+                display: "flex",
+                justifyContent: "space-evenly",
+              }}
+            >
+              <Button
+                variant="outlined"
+                size="small"
+                color={searchOption === "all" ? "secondary" : "primary"}
+                style={{
+                  width: "30%",
+                  backgroundColor:
+                    searchOption === "all" ? "rgb(238, 237, 237)" : null,
+                }}
+                onClick={() => {
+                  setSearchOption("all");
+                }}
+              >
+                All
+              </Button>
+              <Button
+                variant="outlined"
+                size="small"
+                color={searchOption === "wells" ? "secondary" : "primary"}
+                style={{
+                  width: "30%",
+                  backgroundColor:
+                    searchOption === "wells" ? "rgb(238, 237, 237)" : null,
+                }}
+                onClick={() => {
+                  setSearchOption("wells");
+                }}
+              >
+                Wells
+              </Button>
+              <Button
+                variant="outlined"
+                size="small"
+                color={searchOption === "owners" ? "secondary" : "primary"}
+                style={{
+                  width: "30%",
+                  backgroundColor:
+                    searchOption === "owners" ? "rgb(238, 237, 237)" : null,
+                }}
+                onClick={() => {
+                  setSearchOption("owners");
+                }}
+              >
+                Owners
+              </Button>
+            </Grid>
+          </Grid>
+        ) : (
+          (searchOption === "all" ||
+            searchOption === option.key.toLowerCase()) && (
+            <Grid key={option.key} container item>
+              <Grid container item xs={12} className={classes.groupsHeaders}>
+                <Grid item item xs={8}>
+                  <h3 className={classes.groupsHeadersText}>{option.key}</h3>
+                </Grid>
+                <Grid item xs={4} style={{ textAlign: "right" }}>
+                  <Button size="small" className={classes.groupsButton}>
+                    See All
+                  </Button>
+                </Grid>
+              </Grid>
+              <Grid item xs={12}>
+                {option.children}
+              </Grid>
+            </Grid>
+          )
+        );
+      }}
       autoComplete
       includeInputInList
       filterSelectedOptions
@@ -200,30 +387,66 @@ export default function Search() {
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <TextField {...params} label="Add a location" variant="outlined" fullWidth />
+        <TextField
+          {...params}
+          // label="Add a location"
+          variant="outlined"
+          fullWidth
+          placeholder="Add a location"
+          className={classes.textF}
+        />
       )}
       renderOption={(option) => {
         const matches = option.WellName;
-        const parts = parse(
-          option.Primary,
-          Array(),
-        );
+        const parts = parse(option.Primary, Array());
+        if (option.Source === "header") return null;
 
         return (
-          <Grid container alignItems="center">
-            <Grid item>
-              <LocationOnIcon className={classes.icon} />
-            </Grid>
-            <Grid item xs>
-              {parts.map((part, index) => (
-                <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-                  {part.text}
-                </span>
-              ))}
+          <Grid container spacing={0}>
+            <Grid container item xs={11} alignItems="center">
+              <Grid item>
+                {option.Source === "lod2019-index" && (
+                  <PersonIcon className={classes.icon} />
+                )}
+                {option.Source === "wellheader-index" && (
+                  <WellIcon
+                    className={classes.icon}
+                    color={"#757575"}
+                    opacity="1.0"
+                    small
+                  />
+                )}
+              </Grid>
+              <Grid item xs>
+                {parts.map((part, index) => (
+                  <span
+                    key={index}
+                    style={{ fontWeight: part.highlight ? 700 : 400 }}
+                  >
+                    {part.text}
+                  </span>
+                ))}
 
-              <Typography variant="body2" color="textSecondary">
-                {option.Secondary}
-              </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  {option.Secondary}
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid container item xs={1} alignItems="center">
+              <Grid item>
+                <div
+                  className={classes.score}
+                  style={{
+                    zIndex: "1300",
+                    opacity: calcScoreOpacity(
+                      option.Source === "lod2019-index"
+                        ? maxMinOwnersScore
+                        : maxMinWellsScore,
+                      option["@search.score"]
+                    ).toString(),
+                  }}
+                />
+              </Grid>
             </Grid>
           </Grid>
         );
