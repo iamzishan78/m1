@@ -280,12 +280,24 @@ export default function CheckboxList(props) {
       checkedLayers[sourceIndex] = result.destination.index;
     }
 
-    console.log(checkedLayers);
+    let checkedInteractionLayers = stateMap.checkedUserDefinedLayersInteraction.slice(0);
+    const sourceInteractionIndex = checkedInteractionLayers.indexOf(result.source.index)
+    for (let i = 0; i < checkedInteractionLayers.length; i ++) {
+      if (checkedInteractionLayers[i] <= to && checkedInteractionLayers[i] >= from) {
+        checkedInteractionLayers[i] += direction;
+      } 
+    }
+
+    if (sourceInteractionIndex !== -1) {
+      checkedInteractionLayers[sourceInteractionIndex] = result.destination.index;
+    }
+
 
     setStateMap({
       ...stateMap, 
       userDefinedLayers: items,
-      checkedUserDefinedLayers: checkedLayers
+      checkedUserDefinedLayers: checkedLayers,
+      checkedUserDefinedLayersInteraction: checkedInteractionLayers,
     });
   }
 
