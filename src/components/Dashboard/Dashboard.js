@@ -15,14 +15,14 @@ import React, {
 const Dashboard = () => {
 
   return (
-    <Container>
+    // <Container>
       <Grid container
             direction="column" 
             spacing={2}>
         <DateBar />
         <CardGrid />
       </Grid>
-    </Container>
+    // </Container>
   );
 };
 

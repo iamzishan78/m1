@@ -13,7 +13,7 @@ const useStyles = makeStyles(() => ({
     flexGrow: 1,
   },
   cgriditem: {
-    height: "500px",
+    height: "550px",
 
   },
   cgridcard: {
@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
 const SortableItem = SortableElement(({ content }) => {
   const classes = useStyles();
   return (
-    <Grid item sm={content.size == "2x" ? 8 : 4} className={classes.cgriditem}>
+    <Grid item sm={content.size == "2x" ? 6 : 6} className={classes.cgriditem}>
       <Card className={classes.cgridcard}>{content.el}</Card>
     </Grid>
   );
@@ -32,7 +32,9 @@ const SortableItem = SortableElement(({ content }) => {
 
 const SortableList = SortableContainer(({ items }) => {
   return (
-    <Grid item container sm={10} spacing={4}>
+    <Grid item container 
+      //lg={12} 
+      spacing={4}>
       {items.map((content, index) => {
         return (
           <SortableItem
