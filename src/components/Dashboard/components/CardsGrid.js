@@ -8,6 +8,7 @@ import { DashboardContext } from "../DashboardContext";
 import ProdCard from "./ProdCard"
 import CardWrapper from "./CardTemplate";
 import TwitterCard from "./TwitterCard";
+import StockCard from "./StockCard";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -61,7 +62,7 @@ const CardGrid = () => {
     { el: <ProdCard title={1} />, size: "2x", key: 1 },
     { el: <TwitterCard title={2} />, size: "x", key: 2 },
     { el: <CardWrapper title={3} />, size: "2x", key: 3 },
-    { el: <CardWrapper title={4} />, size: "x", key: 4 },
+    { el: <StockCard title={4} />, size: "x", key: 4 },
     { el: <CardWrapper title={5} />, size: "3x", key: 5 },
 
   ]);
