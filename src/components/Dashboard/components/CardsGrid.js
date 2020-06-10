@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
 const SortableItem = SortableElement(({ content }) => {
   const classes = useStyles();
   return (
-    <Grid item sm={content.size == "2x" ? 6 : 6} className={classes.cgriditem}>
+    <Grid item sm={content.size == "2x" ? 8 : 4} className={classes.cgriditem}>
       <Card className={classes.cgridcard}>{content.el}</Card>
     </Grid>
   );
