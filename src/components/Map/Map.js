@@ -497,7 +497,6 @@ import React, {
       // console.log('dataOwnersWells',dataOwnersWells)
       // console.log('dataWellsForOwnerWellTrackLayer',dataWellsForOwnerWellTrackLayer)
 
-      let belowlayer = null;
       if (map && stateMap.checkedUserDefinedLayers.length > 0) {
         let layers = stateMap.checkedUserDefinedLayers.slice(0);
         layers.sort(function (a, b) {
@@ -656,6 +655,14 @@ import React, {
                       let features = map.queryRenderedFeatures(bbox, {
                         layers: [selectLayerProps.layerProps[i].layerId],
                       });
+
+                      if (!features || features.length === 0) {
+                        return;
+                      }
+
+                      if (features[0].properties.cluster_id) {
+                        return;
+                      }
     
                       if(selectLayerProps.interactionProps.mouseClick.clickInteraction 
                         && selectLayerProps.interactionProps.mouseClick.clickInteraction.flyTo === true) {
@@ -678,6 +685,15 @@ import React, {
                       var features = map.queryRenderedFeatures(e.point, {
                         layers: [clusterVar]
                       });
+                      console.log(features);
+
+                      if (!features || features.length === 0) {
+                        return;
+                      }
+
+                      if (!features) {
+                        return;
+                      }
       
                       var clusterId = features[0].properties.cluster_id;
       
