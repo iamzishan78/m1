@@ -25,6 +25,9 @@ const useStyles = makeStyles(() => ({
 
 const SortableItem = SortableElement(({ content }) => {
   const classes = useStyles();
+
+
+
   return (
     <Grid 
         item 

@@ -237,7 +237,7 @@ export default function SpatialDataCard(props) {
               labelWidth={labelWidth}
             >
               <MenuItem value="interest">Area of Interest</MenuItem>
-              <MenuItem value="parcel">Parcel/Track</MenuItem>
+              <MenuItem value="parcel">Parcel/Tract</MenuItem>
               {/* {stateMap.currentFeature &&
                 stateMap.currentFeature.geometry.type === "Polygon" &&
                 !stateMap.currentFeature.properties.isCircle && (
@@ -279,7 +279,7 @@ export default function SpatialDataCard(props) {
                 disabled
                 autoComplete="disabled"
                 variant="outlined"
-                label="Land Area"
+                label="Calc. Area"
                 fullWidth
                 defaultValue={calculateLandArea()}
               ></TextField>
