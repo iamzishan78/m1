@@ -208,11 +208,7 @@ import React, {
         var merged = [].concat.apply([], ownerObjectIds);
   
         var stripped = merged.map((item) => item.wellId);
-  
-        // console.log(ownerObjectIds)
-        // console.log(merged)
-        // console.log(stripped)
-  
+
         getWellsForLayer({
           variables: {
             wellIdArray: stripped,
@@ -222,23 +218,7 @@ import React, {
       }
     }, [dataOwnersWells]);
   
-    // useEffect(() => {
-    //     if (dataWells) {
-    //         if (
-    //             dataWells.wells &&
-    //             dataWells.wells.results &&
-    //             dataWells.wells.results.length > 0
-    //         ) {
-    //             const idArray = dataWells.wells.results.map((item) => item.api);
-  
-    //             setIdArray(idArray);
-    //         } else {
-    //             setRows([]);
-    //         }
-    //         setLoading(false);
-    //     }
-    // }, [dataWells]);
-  
+
     useEffect(() => {
       // USE EFFECT FOR M1 LAYER HANDLES
       console.log("layer ue start");
@@ -491,11 +471,6 @@ import React, {
         });
       }
   
-      // console.log('length', stateMap.checkedUserDefinedLayers.length)
-      // console.log('checks', stateMap.checkedUserDefinedLayers)
-      // console.log('dataTracks',dataTracks)
-      // console.log('dataOwnersWells',dataOwnersWells)
-      // console.log('dataWellsForOwnerWellTrackLayer',dataWellsForOwnerWellTrackLayer)
 
       if (map && stateMap.checkedUserDefinedLayers.length > 0) {
         let layers = stateMap.checkedUserDefinedLayers.slice(0);

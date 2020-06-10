@@ -27,15 +27,32 @@ const SortableItem = SortableElement(({ content }) => {
   const classes = useStyles();
 
 
+  const sizeHandle = (ele) => {
+    
+    if(ele=="x"){
+      var arr = [3,3,4,4,6];
+    } else if(ele=="2x"){
+      var arr = [9,9,8,8,6];
+    }
+    else {
+      var arr = [6,6,6,6,6];
+    }
+    return(arr);
+
+  };
+
+  const sizeArray = sizeHandle(content.size);
+
+
 
   return (
     <Grid 
         item 
-        xl={content.size == "2x" ? 9 : 3} 
-        lg={content.size == "2x" ? 9 : 3} 
-        md={content.size == "2x" ? 8 : 4} 
-        sm={content.size == "2x" ? 8 : 4} 
-        xs={content.size == "2x" ? 6 : 6} 
+        xl={sizeArray[0]}
+        lg={sizeArray[1]}
+        md={sizeArray[2]}
+        sm={sizeArray[3]}
+        xs={sizeArray[4]}
         className={classes.cgriditem}>
       <Card className={classes.cgridcard}>{content.el}</Card>
     </Grid>
