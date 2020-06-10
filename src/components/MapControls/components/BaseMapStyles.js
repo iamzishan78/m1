@@ -111,7 +111,8 @@ const StyledMenuHeaderItem = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important",
-    width: '100%'
+    width: '350px'
+
   },
   nested: {
     paddingLeft: theme.spacing(6),
