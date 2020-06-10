@@ -503,12 +503,12 @@ import React, {
         layers.sort(function (a, b) {
           return b - a;
         });
-        const layerList = stateMap.userDefinedLayers;
+        const layerList = stateMap.userDefinedLayers.slice(0);
         let beforelayer = null;
         for (let k = layers.length - 1; k >= 0; k--) {
           const l = layers[k];
           
-          const selectLayerProps = layerList[l];
+          const selectLayerProps = {...layerList[l]};
   
           if (selectLayerProps.type === "data layer") {
             for (let i = 0; i < selectLayerProps.id.length; i ++) {
@@ -642,12 +642,12 @@ import React, {
   
                 // -> add interaction (note to change later w/ interaction panel)
                 if(selectLayerProps && selectLayerProps.interactionProps){
-    
+                  const availableInteraction = stateMap.checkedUserDefinedLayersInteraction.indexOf(l) !== -1 
                   if(selectLayerProps.interactionProps.mouseClick){
                     
                     var clusterVar = selectLayerProps.layerProps[i].layerId+'-clusters'
-      
-                    map.on("click", selectLayerProps.layerProps[i].layerId, function (e) {
+
+                    const layerClickHander = (e) => {
                       var bbox = [
                         [e.point.x - 10, e.point.y - 10],
                         [e.point.x + 10, e.point.y + 10],
@@ -658,21 +658,30 @@ import React, {
                       });
     
                       if(selectLayerProps.interactionProps.mouseClick.clickInteraction 
-                            && selectLayerProps.interactionProps.mouseClick.clickInteraction.flyTo===true){
-                              setStateApp((state) => ({ ...state, flyTo: features[0].properties }));
-                            }
-                      });
-    
-    
+                        && selectLayerProps.interactionProps.mouseClick.clickInteraction.flyTo === true) {
+                        setStateApp((state) => ({ ...state, flyTo: features[0].properties }));
+                      }
+                    }
+                    
+                    if (selectLayerProps.interactionProps.mouseClick.clickInteractionHandler) {
+                      map.off("click", selectLayerProps.layerProps[i].layerId, selectLayerProps.interactionProps.mouseClick.clickInteractionHandler)
+                    }
+
+                    if (availableInteraction) {
+                      map.on("click", selectLayerProps.layerProps[i].layerId, layerClickHander);
+                      selectLayerProps.interactionProps.mouseClick.clickInteractionHandler = layerClickHander;
+                    }
+
+
                     // eslint-disable-next-line no-loop-func
-                    map.on('click', clusterVar, function(e) {
+                    const clusterClickHandler = (e) => {
                       var features = map.queryRenderedFeatures(e.point, {
-                      layers: [clusterVar]
+                        layers: [clusterVar]
                       });
-    
+      
                       var clusterId = features[0].properties.cluster_id;
-    
-    
+      
+      
                       if(selectLayerProps.interactionProps.mouseClick.clusterClickInteraction 
                         && selectLayerProps.interactionProps.mouseClick.clusterClickInteraction.easeTo===true){
                             map.getSource(selectLayerProps.sourceProps[i].sourceId).getClusterExpansionZoom(
@@ -687,7 +696,16 @@ import React, {
                                   }
                             );
                           }
-                      });
+                    }
+
+                    if (selectLayerProps.interactionProps.mouseClick.clusterClickHandler) {
+                      map.off("click", clusterVar, selectLayerProps.interactionProps.mouseClick.clusterClickHandler)
+                    }
+
+                    if (availableInteraction) {
+                      map.on('click', clusterVar, clusterClickHandler);
+                      selectLayerProps.interactionProps.mouseClick.clusterClickHandler = clusterClickHandler;
+                    }
     
                   }
     
@@ -699,31 +717,51 @@ import React, {
                     var clusterVar = selectLayerProps.layerProps[i].layerId+'-clusters'
     
                     if(selectLayerProps.interactionProps.hoverActions.mouseMove) {
-                      map.on("mousemove", selectLayerProps.layerProps[i].layerId, (e) => {
+                      const mouseMoveHandler = () => {
                         map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseMove.cursor;
-                      });
-                      map.on("mousemove", clusterVar, (e) => {
-                        map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseMove.cursor;
-                      });
+                      }
+                      if (selectLayerProps.interactionProps.hoverActions.mouseMoveHandler) {
+                        const oldHander = selectLayerProps.interactionProps.hoverActions.mouseMoveHandler
+                        map.off("mousemove", selectLayerProps.layerProps[i].layerId, oldHander);
+                        map.off("mousemove", clusterVar, oldHander);
+                      }
+                      if (availableInteraction) {
+                        map.on("mousemove", selectLayerProps.layerProps[i].layerId, mouseMoveHandler);
+                        map.on("mousemove", clusterVar, mouseMoveHandler);
+                        selectLayerProps.interactionProps.hoverActions.mouseMoveHandler = mouseMoveHandler;
+                      }
                     }
               
                     if(selectLayerProps.interactionProps.hoverActions.mouseLeave){
-                      map.on("mouseleave", selectLayerProps.layerProps[i].layerId, function () {
+                      const mouseLeaveHandler = () => {
                         map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseLeave.cursor;
-                      });
-                      map.on("mouseleave", clusterVar, function () {
-                        map.getCanvas().style.cursor = selectLayerProps.interactionProps.hoverActions.mouseLeave.cursor;
-                      });
+                      }
+                      if (selectLayerProps.interactionProps.hoverActions.mouseLeaveHandler) {
+                        const oldHander = selectLayerProps.interactionProps.hoverActions.mouseMoveHandler
+                        map.off("mouseleave", selectLayerProps.layerProps[i].layerId, oldHander);
+                        map.off("mouseleave", clusterVar, oldHander);
+                      }
+                      if (availableInteraction) {
+                        map.on("mouseleave", selectLayerProps.layerProps[i].layerId, mouseLeaveHandler);
+                        map.on("mouseleave", clusterVar, mouseLeaveHandler);
+                        selectLayerProps.interactionProps.hoverActions.mouseLeaveHandler = mouseLeaveHandler;
+                      }
                     }
                   
                   }
+
+                  layerList[l] = selectLayerProps;
                 }
               }
             }
           }
         }
+        setStateMap({
+          ...stateMap,
+          userDefinedLayers: layerList,
+        });
       }
-    }, [map, stateMap.checkedUserDefinedLayers, stateApp.customLayers]);
+    }, [map, stateMap.checkedUserDefinedLayers, stateMap.checkedUserDefinedLayersInteraction, stateApp.customLayers]);
   
     useEffect(() => {
       if (showExpandableCard) {
