@@ -5,6 +5,7 @@ import arrayMove from "array-move";
 import React, { useContext, useState } from "react";
 import { SortableContainer, SortableElement } from "react-sortable-hoc";
 import { DashboardContext } from "../DashboardContext";
+import ProdCard from "./ProdCard"
 import CardWrapper from "./CardTemplate";
 import TwitterCard from "./TwitterCard";
 
@@ -13,7 +14,7 @@ const useStyles = makeStyles(() => ({
     flexGrow: 1,
   },
   cgriditem: {
-    height: "550px",
+    height: "500px",
 
   },
   cgridcard: {
@@ -57,7 +58,7 @@ const SortableList = SortableContainer(({ items }) => {
 const CardGrid = () => {
   const [stateDashboard, setStateDashboard] = useContext(DashboardContext);
   const [items, setItems] = useState([
-    { el: <CardWrapper title={1} />, size: "2x", key: 1 },
+    { el: <ProdCard title={1} />, size: "2x", key: 1 },
     { el: <TwitterCard title={2} />, size: "x", key: 2 },
     { el: <CardWrapper title={3} />, size: "2x", key: 3 },
     { el: <CardWrapper title={4} />, size: "x", key: 4 },

@@ -117,7 +117,7 @@ const WeatherCard = () => {
   }, [location,weatherkey]);
 
   return (
-    <Fragment>
+    <Fragment >
       <Grid item container spacing={2}>
         <Grid item sm={8} className={classes.dateCard}>
           <Box>
@@ -146,7 +146,7 @@ const WeatherCard = () => {
                     className={classes.wdescription}
                     variant="body2"
                   >{`${currWeather?.description || "N/A"}`}</Typography>
-                  <Typography variant="caption">
+                  {/* <Typography variant="caption">
                     Powered By{" "}
                     <Typography
                       variant="caption"
@@ -154,7 +154,7 @@ const WeatherCard = () => {
                     >
                       OpenWeatherMap
                     </Typography>
-                  </Typography>
+                  </Typography> */}
                 </Grid>
                 <Grid item sm={2}>
                   <Typography variant="h4" className={classes.temp}>

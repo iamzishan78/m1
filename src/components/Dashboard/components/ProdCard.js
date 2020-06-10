@@ -17,18 +17,23 @@ import Iframe from 'react-iframe';
 const useStyles = makeStyles((theme) => ({
   header: {
     padding: "8px 8px 0 8px",
+    backgroundColor:'#011133',
+    color: 'white'
+  },
+  frame: {
+    padding: "8px",
   },
 }));
 
 const DragHandle = sortableHandle(() => (
   <IconButton aria-label="drag">
-    <DragIndicatorOutlinedIcon fontSize="default" />
+    <DragIndicatorOutlinedIcon fontSize="default" htmlColor="#fff" />
   </IconButton>
 ));
 
 
 
-const Template = ({ title }) => {
+const ProdCard = ({ title }) => {
 
 
   const classes = useStyles();
@@ -37,14 +42,17 @@ const Template = ({ title }) => {
     <div>
     <CardHeader
       action={<DragHandle />}
-      title={`Card-${title}`}
+      title={'Production by State/County'}
       className={classes.header}
     />
 
-    {/* <Iframe 
+    <div className={classes.frame}>
+    <Iframe 
       width="100%"
-      height="500px"
-      url="https://app.powerbi.com/view?r=eyJrIjoiNDVlNmExN2MtYTlmOC00NTQ5LWFmYmEtZDQ1MThmNWUxNzA5IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9" />  */}
+      height="499px"
+      paddintTop="10px"
+      url="https://app.powerbi.com/view?r=eyJrIjoiNDVlNmExN2MtYTlmOC00NTQ5LWFmYmEtZDQ1MThmNWUxNzA5IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9" /> 
+    </div>
 
     </div>
 
@@ -52,4 +60,4 @@ const Template = ({ title }) => {
 
   );
 };
-export default Template;
+export default ProdCard;
