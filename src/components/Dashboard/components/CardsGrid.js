@@ -40,7 +40,6 @@ const SortableItem = SortableElement(({ content }) => {
 const SortableList = SortableContainer(({ items }) => {
   return (
     <Grid item container 
-      //lg={12} 
       spacing={4}>
       {items.map((content, index) => {
         return (
@@ -62,6 +61,8 @@ const CardGrid = () => {
     { el: <TwitterCard title={2} />, size: "x", key: 2 },
     { el: <CardWrapper title={3} />, size: "2x", key: 3 },
     { el: <CardWrapper title={4} />, size: "x", key: 4 },
+    { el: <CardWrapper title={5} />, size: "3x", key: 5 },
+
   ]);
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
