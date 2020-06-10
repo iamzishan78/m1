@@ -9,15 +9,39 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    backgroundColor:'#efefef',
+  },
+  header: {    
+    paddingTop: '25px',
+    paddingBottom: '75px',
+    paddingLeft: "20px"
+  }
+}));
 
 const Dashboard = () => {
+  
+  const classes = useStyles();
+
   return (
-    <Container>
-      <Grid container direction="column" spacing={2}>
+    <div className={classes.root}>
+    <Container maxWidth='false'>
+      {/* <Grid container
+            direction="column" 
+            spacing={2}> */}
+
+        <div className={classes.header}>
         <DateBar />
+        </div>
         <CardGrid />
-      </Grid>
+
+      {/* </Grid> */}
     </Container>
+    </div>
   );
 };
 

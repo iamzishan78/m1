@@ -34,7 +34,7 @@ import Box from '@material-ui/core/Box';
 const useStyles = makeStyles(theme => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important",
-    width: '100%'
+    width: '350px'
   },
   list: {
     padding: 0
@@ -449,8 +449,8 @@ export default function CheckboxList(props) {
                             
                               <div style={{paddingRight: 20}}>
                               <Checkbox
-                                  icon={<CancelOutlinedIcon/>}
-                                  checkedIcon={<ClickIcon htmlColor="#12abe0"/>}
+                                  icon={<CancelOutlinedIcon htmlColor="#12abe0"/>}
+                                  checkedIcon={<ClickIcon/>}
                                   edge="start"
                                   checked={
                                     stateMap.checkedUserDefinedLayersInteraction

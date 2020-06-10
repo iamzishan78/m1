@@ -5,12 +5,17 @@ import arrayMove from "array-move";
 import React, { useContext, useState } from "react";
 import { SortableContainer, SortableElement } from "react-sortable-hoc";
 import { DashboardContext } from "../DashboardContext";
+import ProdCard from "./ProdCard"
 import CardWrapper from "./CardTemplate";
 import TwitterCard from "./TwitterCard";
 
 const useStyles = makeStyles(() => ({
+  root: {
+    flexGrow: 1,
+  },
   cgriditem: {
     height: "500px",
+
   },
   cgridcard: {
     height: "100%",
@@ -20,7 +25,14 @@ const useStyles = makeStyles(() => ({
 const SortableItem = SortableElement(({ content }) => {
   const classes = useStyles();
   return (
-    <Grid item sm={content.size == "2x" ? 8 : 4} className={classes.cgriditem}>
+    <Grid 
+        item 
+        xl={content.size == "2x" ? 9 : 3} 
+        lg={content.size == "2x" ? 9 : 3} 
+        md={content.size == "2x" ? 8 : 4} 
+        sm={content.size == "2x" ? 8 : 4} 
+        xs={content.size == "2x" ? 6 : 6} 
+        className={classes.cgriditem}>
       <Card className={classes.cgridcard}>{content.el}</Card>
     </Grid>
   );
@@ -28,7 +40,8 @@ const SortableItem = SortableElement(({ content }) => {
 
 const SortableList = SortableContainer(({ items }) => {
   return (
-    <Grid item container sm={10} spacing={4}>
+    <Grid item container 
+      spacing={4}>
       {items.map((content, index) => {
         return (
           <SortableItem
@@ -45,10 +58,12 @@ const SortableList = SortableContainer(({ items }) => {
 const CardGrid = () => {
   const [stateDashboard, setStateDashboard] = useContext(DashboardContext);
   const [items, setItems] = useState([
-    { el: <CardWrapper title={1} />, size: "2x", key: 1 },
+    { el: <ProdCard title={1} />, size: "2x", key: 1 },
     { el: <TwitterCard title={2} />, size: "x", key: 2 },
     { el: <CardWrapper title={3} />, size: "2x", key: 3 },
     { el: <CardWrapper title={4} />, size: "x", key: 4 },
+    { el: <CardWrapper title={5} />, size: "3x", key: 5 },
+
   ]);
 
   const onSortEnd = ({ oldIndex, newIndex }) => {

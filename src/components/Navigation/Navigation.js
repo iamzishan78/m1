@@ -653,7 +653,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/track") {
@@ -666,7 +665,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/transact") {
@@ -679,7 +677,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/title") {
@@ -705,7 +702,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 1,
         selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/alerts") {
@@ -718,7 +714,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 1,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/dashboard") {
@@ -731,7 +726,6 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 1,
-        selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
       }));
     } else if (location.pathname === "/studio") {
@@ -744,21 +738,7 @@ export default function Navigation(props) {
         selectedMenuIndexAlerts: 0,
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 1,
-      }));
-    } else if (location.pathname === "/m1studio") {
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 0,
-        selectedMenuIndexTrack: 0,
-        selectedMenuIndexTransact: 0,
-        selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0,
-        selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 1,
-        selectedMenuIndexStudio: 0,
       }));
     }
   }, [location, setStateNav]);
@@ -1265,9 +1245,9 @@ export default function Navigation(props) {
               selected: classes.menuListItemSelected,
             }}
             button
-            selected={stateNav.selectedMenuIndexFind === 0}
+            selected={stateNav.selectedMenuIndexFind === 1}
             onClick={(event) => handleListItemClick(event, 0, "/dashboard")}
-            key="home"
+            key="dashboard"
           >
             <ListItemIcon>
               <DashboardIcon />
@@ -1401,7 +1381,7 @@ export default function Navigation(props) {
             </ListItemSecondaryAction>
           </ListItem>
 
-          <ListItem
+          {/* <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected,
@@ -1415,7 +1395,7 @@ export default function Navigation(props) {
               <LayersIcon />
             </ListItemIcon>
             <ListItemText primary="M1Studio" />
-          </ListItem>
+          </ListItem> */}
 
           <ListItem
             classes={{
