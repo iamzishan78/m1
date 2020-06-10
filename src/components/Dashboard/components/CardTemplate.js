@@ -11,6 +11,8 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+import Iframe from 'react-iframe';
+
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -27,18 +29,24 @@ const DragHandle = sortableHandle(() => (
 
 
 const Template = ({ title }) => {
+
+
   const classes = useStyles();
-  useEffect(() => {
-    const handler = event => {
-      const data = JSON.parse(event.data)
-      console.log("Hello World?", data)
-    }
+  
+  // useEffect(() => {
+  //   const handler = event => {
+  //     const data = JSON.parse(event.data)
+  //     console.log("Hello World?", data)
+  //   }
 
-    window.addEventListener("message", handler)
+  //   window.addEventListener("message", handler)
 
-    // clean up
-    return () => window.removeEventListener("message", handler)
-  }, []) // empty array => run only once
+  //   // clean up
+  //   return () => window.removeEventListener("message", handler)
+  // }, []) // empty array => run only once
+
+
+
 
   return (
     <div>
@@ -47,17 +55,26 @@ const Template = ({ title }) => {
       title={`Card-${title}`}
       className={classes.header}
     />
-    <div>    
-    <iframe 
-      width="800" 
-      height="600" 
-      src="https://app.powerbi.com/view?r=eyJrIjoiNDVlNmExN2MtYTlmOC00NTQ5LWFmYmEtZDQ1MThmNWUxNzA5IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9" 
-      frameborder="0" 
-      allowFullScreen="true">
-      </iframe>
-    
+
+    {/* // <div>    
+    // <iframe 
+    //   width="800" 
+    //   height="600" 
+    //   src="https://app.powerbi.com/view?r=eyJrIjoiNDVlNmExN2MtYTlmOC00NTQ5LWFmYmEtZDQ1MThmNWUxNzA5IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9" 
+    //   frameborder="0" 
+    //   allowFullScreen="true">
+    //   </iframe>
+    // </div> */}
+
+    <Iframe 
+      width="100%"
+      height="500px"
+      url="https://app.powerbi.com/view?r=eyJrIjoiNDVlNmExN2MtYTlmOC00NTQ5LWFmYmEtZDQ1MThmNWUxNzA5IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9" /> 
+
     </div>
-    </div>
+
+
+
   );
 };
 export default Template;
