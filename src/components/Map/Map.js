@@ -1417,7 +1417,7 @@ import React, {
           let features = map.queryRenderedFeatures(bbox, {
           layers: ["wellpoints"],
           });
-          let currentFeature = features.find(element => element.properties.id == stateApp.selectedWellId);;
+          let currentFeature = features.find(element => element.properties.id.toLowerCase() == stateApp.selectedWellId);;
           console.log("current feature", currentFeature);
     
           if (!currentFeature) {
@@ -1425,7 +1425,7 @@ import React, {
               sourceLayer: 'wellPoints',
               filter: ['in', 'id', stateApp.selectedWellId]
               });
-            currentFeature = features.find(element => element.properties.id == stateApp.selectedWellId);;
+            currentFeature = features.find(element => element.properties.id.toLowerCase() == stateApp.selectedWellId);;
           }
     
           if (!currentFeature) {

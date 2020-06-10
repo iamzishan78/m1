@@ -176,8 +176,6 @@ export default function Search() {
   );
 
   React.useEffect(() => {
-    let active = true;
-
     // if (!autocompleteService.current && window.google) {
     //   autocompleteService.current = new window.google.maps.places.AutocompleteService();
     // }
@@ -194,69 +192,54 @@ export default function Search() {
       let newOptions = [];
 
       Promise.all([
-        callWellSearch({ input: inputValue }, (results) => {
-          if (active) {
-            if (value) {
-              newOptions = [value];
-            }
-            if (results) {
-              const indexSource = results["@odata.context"].substring(
-                results["@odata.context"].indexOf("('") + 2,
-                results["@odata.context"].indexOf("')")
-              );
+        (searchOption == 'all' || searchOption == 'wells') ? callWellSearch({ input: inputValue }, (results) => {
+          if (results) {
+            const indexSource = results["@odata.context"].substring(
+              results["@odata.context"].indexOf("('") + 2,
+              results["@odata.context"].indexOf("')")
+            );
 
-              console.log(indexSource);
-              newOptions = [
-                ...newOptions,
-                ...results.value.map((result) => ({
-                  ...result,
-                  Source: indexSource,
-                  Primary: result.WellName,
-                  Secondary: result.ApiNumber,
-                })),
-              ];
+            console.log(indexSource);
+            newOptions = [
+              ...newOptions,
+              ...results.value.map((result) => ({
+                ...result,
+                Source: indexSource,
+                Primary: result.WellName,
+                Secondary: result.ApiNumber,
+              })),
+            ];
 
-              setMaxMinWellsScore(maxMinScore(results.value));
-            }
-
-            setOptions(newOptions);
+            setMaxMinWellsScore(maxMinScore(results.value));
           }
-        }),
-        callOwnerSearch({ input: inputValue }, (results) => {
-          if (active) {
-            if (value) {
-              newOptions = [value];
-            }
 
-            if (results) {
-              const indexSource = results["@odata.context"].substring(
-                results["@odata.context"].indexOf("('") + 2,
-                results["@odata.context"].indexOf("')")
-              );
-              console.log(indexSource);
-              newOptions = [
-                ...newOptions,
-                ...results.value.map((result) => ({
-                  ...result,
-                  Source: indexSource,
-                  Primary: result.OwnerName,
-                  Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}`,
-                })),
-              ];
+          setOptions(newOptions);
+        }) : null,
+        (searchOption == 'all' || searchOption == 'owners') ? callOwnerSearch({ input: inputValue }, (results) => {
+          if (results) {
+            const indexSource = results["@odata.context"].substring(
+              results["@odata.context"].indexOf("('") + 2,
+              results["@odata.context"].indexOf("')")
+            );
+            console.log(indexSource);
+            newOptions = [
+              ...newOptions,
+              ...results.value.map((result) => ({
+                ...result,
+                Source: indexSource,
+                Primary: result.OwnerName,
+                Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}`,
+              })),
+            ];
 
-              setMaxMinOwnersScore(maxMinScore(results.value));
-            }
-
-            setOptions(newOptions);
+            setMaxMinOwnersScore(maxMinScore(results.value));
           }
-        }),
+
+          setOptions(newOptions);
+        }) : null,
       ]);
     })();
-
-    return () => {
-      active = false;
-    };
-  }, [value, inputValue, callWellSearch, callOwnerSearch]);
+  }, [inputValue, callWellSearch, callOwnerSearch, searchOption]);
 
   const header = {
     Source: "header",
@@ -286,9 +269,9 @@ export default function Search() {
           : "header";
       }}
       renderGroup={(option) => {
-        return option.key === "header" ? (
+        return option.group === "header" ? (
           <Grid
-            key={option.key}
+            key={option.group}
             container
             item
             spacing={0}
@@ -350,11 +333,11 @@ export default function Search() {
           </Grid>
         ) : (
           (searchOption === "all" ||
-            searchOption === option.key.toLowerCase()) && (
-            <Grid key={option.key} container item>
+            searchOption === option.group.toLowerCase()) && (
+            <Grid key={option.group} container item>
               <Grid container item xs={12} className={classes.groupsHeaders}>
                 <Grid item item xs={6}>
-                  <h3 className={classes.groupsHeadersText}>{option.key}</h3>
+                  <h3 className={classes.groupsHeadersText}>{option.group}</h3>
                 </Grid>
                 <Grid item xs={6} style={{ textAlign: "right" }}>
                   <Button size="small" className={classes.groupsButton}>
@@ -371,10 +354,9 @@ export default function Search() {
       }}
       autoComplete
       includeInputInList
-      filterSelectedOptions
       value={value}
       onChange={(event, newValue) => {
-        setOptions(newValue ? [newValue, ...options] : options);
+        //setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
 
         if (newValue && newValue.Longitude && newValue.Latitude) {
@@ -389,8 +371,10 @@ export default function Search() {
           }));
         }
       }}
-      onInputChange={(event, newInputValue) => {
-        setInputValue(newInputValue);
+      onInputChange={(event, newInputValue, reason) => {
+        if(reason == "input") {
+          setInputValue(newInputValue);
+        }
       }}
       renderInput={(params) => (
         <TextField
