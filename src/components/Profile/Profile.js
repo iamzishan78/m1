@@ -1,14 +1,12 @@
-import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import MuiDialogActions from "@material-ui/core/DialogActions";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import React, { useState , useContext} from "react";
+import React, { useState, useContext } from "react";
 import ProfileContent from "./ProfileContent";
 import ProfileTitle from "./ProfileTitle";
+import ProfileActions from "./ProfileActions";
 import { ProfileContextProvider, ProfileContext } from "./ProfileContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { useHistory } from "react-router-dom";
-
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -20,30 +18,16 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const DialogActions = withStyles((theme) => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(1),
-  },
-}))(MuiDialogActions);
-
 const Profile = () => {
-  const [stateProfile, setStateProfile] = useContext(ProfileContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const { isProfileOpen } = stateNav;
   const classes = useStyles();
   const history = useHistory();
-  // const [open, setOpen] = useState(true);
-
-  // console.log(stateProfile, stateNav)
 
   const handleClose = () => {
-    // console.log(history)
     setStateNav({ ...stateNav, isProfileOpen: false });
-    history.goBack()
+    history.goBack();
   };
-
- 
 
   return (
     <ProfileContextProvider>
@@ -55,27 +39,7 @@ const Profile = () => {
       >
         <ProfileTitle />
         <ProfileContent />
-        <DialogActions>
-          <Button
-            variant="outlined"
-            onClick={handleClose}
-            color="primary"
-            style={{ textTransform: "none" }}
-          >
-            Cancel
-          </Button>
-          <Button
-            style={{
-              textTransform: "none",
-              color: "white",
-              background: "#0e5721",
-            }}
-            variant="outlined"
-            onClick={handleClose}
-          >
-            Save changes
-          </Button>
-        </DialogActions>
+        <ProfileActions />
       </Dialog>
     </ProfileContextProvider>
   );

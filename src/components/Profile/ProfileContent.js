@@ -82,6 +82,7 @@ const ProfileContent = () => {
       ...stateProfile,
       fields: { ...stateProfile.fields, [name]: value },
     });
+    console.log(stateProfile)
   };
 
   return (
@@ -168,7 +169,7 @@ const ProfileContent = () => {
             value={phone}
             onChange={({ target }) => onChange(target)}
           />
-          <Box pb={2.5} />
+          {/* <Box pb={2.5} />
           <TextField
             InputLabelProps={{
               classes: { root: classes.label, focused: classes.focused },
@@ -188,7 +189,7 @@ const ProfileContent = () => {
             name="timezone"
             value={timezone}
             onChange={({ target }) => onChange(target)}
-          />
+          /> */}
         </Grid>
         <Grid item sm={4}>
           <Typography variant="body1">Profile Photo</Typography>
