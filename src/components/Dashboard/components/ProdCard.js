@@ -51,7 +51,8 @@ const ProdCard = ({ title }) => {
       width="100%"
       height="499px"
       paddintTop="10px"
-      url="https://app.powerbi.com/view?r=eyJrIjoiNDVlNmExN2MtYTlmOC00NTQ5LWFmYmEtZDQ1MThmNWUxNzA5IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9" /> 
+      url="https://app.powerbi.com/view?r=eyJrIjoiNDVlNmExN2MtYTlmOC00NTQ5LWFmYmEtZDQ1MThmNWUxNzA5IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9" 
+      /> 
     </div>
 
     </div>

@@ -5,6 +5,8 @@ import Typography from "@material-ui/core/Typography";
 import WbSunnyOutlinedIcon from "@material-ui/icons/WbSunnyOutlined";
 import moment from "moment";
 import React, { Fragment, useEffect, useState } from "react";
+import Iframe from 'react-iframe';
+
 
 const useStyles = makeStyles(() => ({
   weather: {
@@ -119,7 +121,7 @@ const WeatherCard = () => {
   return (
     <Fragment >
       <Grid item container spacing={2}>
-        <Grid item sm={8} className={classes.dateCard}>
+        <Grid item sm={4} className={classes.dateCard}>
           <Box>
             <Typography variant="body2" align="left">
               {date?.split(";")[0]}
@@ -129,6 +131,21 @@ const WeatherCard = () => {
             </Typography>
           </Box>
         </Grid>
+
+        <Grid item sm={4}>
+          <Box>
+            <Iframe 
+              frameborder="0" 
+              width="300" 
+              height="250" 
+              scrolling="no" 
+              marginwidth="0" 
+              marginheight="0"
+              url="https://app.drillinginfo.com/drc/?widget=true" 
+              /> 
+          </Box>
+        </Grid>
+
         <Grid item sm={4}>
           <Paper elevation={1} className={classes.wpaper}>
             <Grid item container direction="column">
