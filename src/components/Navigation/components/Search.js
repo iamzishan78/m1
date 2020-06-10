@@ -11,6 +11,7 @@ import { AppContext } from "../../../AppContext";
 import Button from "@material-ui/core/Button";
 import PersonIcon from "@material-ui/icons/Person";
 import WellIcon from "../../Shared/svgIcons/well";
+import OperatorIcon from "../../Shared/svgIcons/operator";
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -175,6 +176,39 @@ export default function Search() {
     []
   );
 
+  const callOperatorSearch = React.useMemo(
+    () =>
+      throttle((request, callback) => {
+        const endpoint =
+          "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2019-05-06&$count=true&searchFields=Name&$top=5&search=" +
+          request.input;
+
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
+
+        const options = {
+          method: "GET",
+          headers: headers,
+        };
+
+        console.log(
+          "request made to operator-index search at: " + new Date().toString()
+        );
+
+        fetch(endpoint, options)
+          .then((response) => response.json())
+          .then((response) => {
+            console.log(response);
+            callback(response);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }, 200),
+    []
+  );
+
   React.useEffect(() => {
     // if (!autocompleteService.current && window.google) {
     //   autocompleteService.current = new window.google.maps.places.AutocompleteService();
@@ -192,54 +226,88 @@ export default function Search() {
       let newOptions = [];
 
       Promise.all([
-        (searchOption == 'all' || searchOption == 'wells') ? callWellSearch({ input: inputValue }, (results) => {
-          if (results) {
-            const indexSource = results["@odata.context"].substring(
-              results["@odata.context"].indexOf("('") + 2,
-              results["@odata.context"].indexOf("')")
-            );
+        searchOption == "all" || searchOption == "wells"
+          ? callWellSearch({ input: inputValue }, (results) => {
+              if (results) {
+                const indexSource = results["@odata.context"].substring(
+                  results["@odata.context"].indexOf("('") + 2,
+                  results["@odata.context"].indexOf("')")
+                );
 
-            console.log(indexSource);
-            newOptions = [
-              ...newOptions,
-              ...results.value.map((result) => ({
-                ...result,
-                Source: indexSource,
-                Primary: result.WellName,
-                Secondary: result.ApiNumber,
-              })),
-            ];
+                console.log(indexSource);
+                newOptions = [
+                  ...newOptions,
+                  ...results.value.map((result) => ({
+                    ...result,
+                    Source: indexSource,
+                    Primary: result.WellName,
+                    Secondary: result.ApiNumber,
+                  })),
+                ];
 
-            setMaxMinWellsScore(maxMinScore(results.value));
-          }
+                setMaxMinWellsScore(maxMinScore(results.value));
+              }
 
-          setOptions(newOptions);
-        }) : null,
-        (searchOption == 'all' || searchOption == 'owners') ? callOwnerSearch({ input: inputValue }, (results) => {
-          if (results) {
-            const indexSource = results["@odata.context"].substring(
-              results["@odata.context"].indexOf("('") + 2,
-              results["@odata.context"].indexOf("')")
-            );
-            console.log(indexSource);
-            newOptions = [
-              ...newOptions,
-              ...results.value.map((result) => ({
-                ...result,
-                Source: indexSource,
-                Primary: result.OwnerName,
-                Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}`,
-              })),
-            ];
+              setOptions(newOptions);
+            })
+          : null,
+        searchOption == "all" || searchOption == "owners"
+          ? callOwnerSearch({ input: inputValue }, (results) => {
+              if (results) {
+                const indexSource = results["@odata.context"].substring(
+                  results["@odata.context"].indexOf("('") + 2,
+                  results["@odata.context"].indexOf("')")
+                );
+                console.log(indexSource);
+                newOptions = [
+                  ...newOptions,
+                  ...results.value.map((result) => ({
+                    ...result,
+                    Source: indexSource,
+                    Primary: result.OwnerName,
+                    Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}`,
+                  })),
+                ];
 
-            setMaxMinOwnersScore(maxMinScore(results.value));
-          }
+                setMaxMinOwnersScore(maxMinScore(results.value));
+              }
 
-          setOptions(newOptions);
-        }) : null,
+              setOptions(newOptions);
+            })
+          : null,
+        searchOption == "all" || searchOption == "operators"
+          ? callOperatorSearch({ input: inputValue }, (results) => {
+              if (results) {
+                const indexSource = results["@odata.context"].substring(
+                  results["@odata.context"].indexOf("('") + 2,
+                  results["@odata.context"].indexOf("')")
+                );
+                console.log(indexSource);
+                newOptions = [
+                  ...newOptions,
+                  ...results.value.map((result) => ({
+                    ...result,
+                    Source: indexSource,
+                    Primary: result.Name,
+                    Secondary: null,
+                  })),
+                ];
+
+                setMaxMinOwnersScore(maxMinScore(results.value));
+              }
+
+              setOptions(newOptions);
+            })
+          : null,
       ]);
     })();
-  }, [inputValue, callWellSearch, callOwnerSearch, searchOption]);
+  }, [
+    inputValue,
+    callWellSearch,
+    callOwnerSearch,
+    callOperatorSearch,
+    searchOption,
+  ]);
 
   const header = {
     Source: "header",
@@ -256,8 +324,7 @@ export default function Search() {
 
   return (
     <Autocomplete
-      id="google-map-demo"
-      //   style={{ width: 300 }}
+      id="cognitive-search-autocomplete"
       getOptionLabel={(option) => option.Primary}
       filterOptions={(x) => x}
       options={optionsWithHeader}
@@ -266,6 +333,8 @@ export default function Search() {
           ? "Owners"
           : option.Source === "wellheader-index"
           ? "Wells"
+          : option.Source === "operator-index"
+          ? "Operators"
           : "header";
       }}
       renderGroup={(option) => {
@@ -295,7 +364,7 @@ export default function Search() {
                 size="small"
                 color={searchOption === "all" ? "secondary" : "primary"}
                 style={{
-                  width: "30%",
+                  width: "22%",
                 }}
                 onClick={() => {
                   setSearchOption("all");
@@ -308,7 +377,7 @@ export default function Search() {
                 size="small"
                 color={searchOption === "wells" ? "secondary" : "primary"}
                 style={{
-                  width: "30%",
+                  width: "22%",
                 }}
                 onClick={() => {
                   setSearchOption("wells");
@@ -321,13 +390,28 @@ export default function Search() {
                 size="small"
                 color={searchOption === "owners" ? "secondary" : "primary"}
                 style={{
-                  width: "30%",
+                  width: "22%",
                 }}
                 onClick={() => {
                   setSearchOption("owners");
                 }}
               >
                 Owners
+              </Button>
+              <Button
+                variant={
+                  searchOption === "operators" ? "contained" : "outlined"
+                }
+                size="small"
+                color={searchOption === "operators" ? "secondary" : "primary"}
+                style={{
+                  width: "25%",
+                }}
+                onClick={() => {
+                  setSearchOption("operators");
+                }}
+              >
+                Operators
               </Button>
             </Grid>
           </Grid>
@@ -372,7 +456,7 @@ export default function Search() {
         }
       }}
       onInputChange={(event, newInputValue, reason) => {
-        if(reason == "input") {
+        if (reason == "input") {
           setInputValue(newInputValue);
         }
       }}
@@ -381,7 +465,7 @@ export default function Search() {
           {...params}
           variant="outlined"
           fullWidth
-          placeholder="Search by well name, API, owner name"
+          placeholder="Search by well name, API, owner, operator"
           className={classes.textF}
         />
       )}
@@ -396,6 +480,13 @@ export default function Search() {
               <Grid item>
                 {option.Source === "lod2019-index" && (
                   <PersonIcon className={classes.icon} />
+                )}
+                {option.Source === "operators-index" && (
+                  <OperatorIcon
+                    className={classes.icon}
+                    color={"#757575"}
+                    small
+                  />
                 )}
                 {option.Source === "wellheader-index" && (
                   <WellIcon
@@ -416,9 +507,11 @@ export default function Search() {
                   </span>
                 ))}
 
-                <Typography variant="body2" color="textSecondary">
-                  {option.Secondary}
-                </Typography>
+                {option && option.Secondary && (
+                  <Typography variant="body2" color="textSecondary">
+                    {option.Secondary}
+                  </Typography>
+                )}
               </Grid>
             </Grid>
             <Grid container item xs={1} alignItems="center">
