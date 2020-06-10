@@ -236,10 +236,24 @@ export default function CheckboxList(props) {
       checkedLayers[sourceIndex] = result.destination.index;
     }
 
+    let checkedLayersInteraction = stateMap.checkedLayersInteraction.slice(0);
+    const sourceInteractionIndex = checkedLayersInteraction.indexOf(result.source.index)
+
+    for (let i = 0; i < checkedLayersInteraction.length; i ++) {
+      if (checkedLayersInteraction[i] <= to && checkedLayersInteraction[i] >= from) {
+        checkedLayersInteraction[i] += direction;
+      } 
+    }
+
+    if (sourceInteractionIndex !== -1) {
+      checkedLayersInteraction[sourceInteractionIndex] = result.destination.index;
+    }
+
     setStateMap({
       ...stateMap, 
       styleLayers: items,
-      checkedLayers: checkedLayers
+      checkedLayers: checkedLayers,
+      checkedLayersInteraction: checkedLayersInteraction
     });
   }
 

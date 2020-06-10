@@ -497,7 +497,6 @@ import React, {
       // console.log('dataOwnersWells',dataOwnersWells)
       // console.log('dataWellsForOwnerWellTrackLayer',dataWellsForOwnerWellTrackLayer)
 
-      let belowlayer = null;
       if (map && stateMap.checkedUserDefinedLayers.length > 0) {
         let layers = stateMap.checkedUserDefinedLayers.slice(0);
         layers.sort(function (a, b) {
@@ -656,6 +655,14 @@ import React, {
                       let features = map.queryRenderedFeatures(bbox, {
                         layers: [selectLayerProps.layerProps[i].layerId],
                       });
+
+                      if (!features || features.length === 0) {
+                        return;
+                      }
+
+                      if (features[0].properties.cluster_id) {
+                        return;
+                      }
     
                       if(selectLayerProps.interactionProps.mouseClick.clickInteraction 
                         && selectLayerProps.interactionProps.mouseClick.clickInteraction.flyTo === true) {
@@ -678,6 +685,15 @@ import React, {
                       var features = map.queryRenderedFeatures(e.point, {
                         layers: [clusterVar]
                       });
+                      console.log(features);
+
+                      if (!features || features.length === 0) {
+                        return;
+                      }
+
+                      if (!features) {
+                        return;
+                      }
       
                       var clusterId = features[0].properties.cluster_id;
       
@@ -1581,6 +1597,80 @@ import React, {
       }
       return -1; //to handle the case where the value doesn't exist
     }
+    
+    const wellPointClick = (e) => {
+      var bbox = [
+        [e.point.x - 10, e.point.y - 10],
+        [e.point.x + 10, e.point.y + 10],
+      ];
+      let features = map.queryRenderedFeatures(bbox, {
+        layers: ["wellpoints"],
+      });
+      let currentFeature = features[0];
+      console.log("current feature", currentFeature);
+
+      setStateApp((state) => ({
+        ...state,
+        popupOpen: false,
+      }));
+      setStateApp((state) => ({
+        ...state,
+        selectedWell: currentFeature.properties,
+        selectedWellId: currentFeature.properties.id,
+        wellSelectedCoordinates: [
+          currentFeature.properties.longitude,
+          currentFeature.properties.latitude,
+        ],
+      }));
+
+      createPopUp(currentFeature.properties);
+      map.resize();
+    }
+
+    const wellMouseMove = (e) => {
+      map.getCanvas().style.cursor = "pointer";
+    }
+
+    const wellMouseLeave = (e) => {
+      map.getCanvas().style.cursor = "";
+    }
+
+    const wellLineClick = (e) => {
+      var bbox = [
+        [e.point.x - 10, e.point.y - 10],
+        [e.point.x + 10, e.point.y + 10],
+      ];
+      let features = map.queryRenderedFeatures(bbox, {
+        layers: ["welllines"],
+      });
+
+      let currentFeature = features[0];
+
+      console.log("clicked well lines", currentFeature);
+
+      setStateApp((state) => ({
+        ...state,
+        popupOpen: false,
+      }));
+      setStateApp((state) => ({
+        ...state,
+        selectedWell: currentFeature.properties,
+        selectedWellId: currentFeature.properties.id,
+        wellSelectedCoordinates: [
+          currentFeature.properties.longitude,
+          currentFeature.properties.latitude,
+        ],
+      }));
+
+      createPopUp(currentFeature.properties);
+    }
+
+    const mapMouseMove = (e) => {
+      // e.lngLat is the longitude, latitude geographical position of the event
+      let coordinates = e.lngLat.wrap();
+      setLng(coordinates.lng);
+      setLat(coordinates.lat);
+    }
   
     useEffect(() => {
       console.log("map ue start");
@@ -1792,92 +1882,66 @@ import React, {
           // for some reason these do not work when initializing but do here
           // map.boxZoom.enable();
           // map.touchZoomRotate.enable();
+
+          const selectedLayerIntereaction = stateMap.checkedLayersInteraction[0];
+          const wellIndex = stateMap.styleLayers.findIndex(layer => layer.name === 'Wells');
+
+          const well = stateMap.styleLayers[wellIndex];
+          
+          if (well.wellPointClick) {
+            map.off("click", "wellpoints", well.wellPointClick);
+          }
+    
+          if (well.wellMouseMove) {
+            map.off("mousemove", "wellpoints", well.wellMouseMove);
+            map.off("mousemove", "welllines", well.wellMouseMove);
+          }
   
-          map.on("click", "wellpoints", function (e) {
-            var bbox = [
-              [e.point.x - 10, e.point.y - 10],
-              [e.point.x + 10, e.point.y + 10],
-            ];
-            let features = map.queryRenderedFeatures(bbox, {
-              layers: ["wellpoints"],
-            });
-            let currentFeature = features[0];
-            console.log("current feature", currentFeature);
+          if (well.wellMouseLeave) {
+            map.off("mouseleave", "wellpoints", well.wellMouseLeave);
+            map.off("mouseleave", "welllines", well.wellMouseLeave);
+          }
+          
+          if (well.wellLineClick) {
+            map.off("click", "welllines", well.wellLineClick);
+          }
   
-            setStateApp((state) => ({
-              ...state,
-              popupOpen: false,
-            }));
-            setStateApp((state) => ({
-              ...state,
-              selectedWell: currentFeature.properties,
-              selectedWellId: currentFeature.properties.id,
-              wellSelectedCoordinates: [
-                currentFeature.properties.longitude,
-                currentFeature.properties.latitude,
-              ],
-            }));
+          if (stateMap.checkedLayersInteraction.length > 0 && stateMap.styleLayers[selectedLayerIntereaction].name === 'Wells') {
+            map.on("click", "wellpoints", wellPointClick);
+    
+            map.on("mousemove", "wellpoints", wellMouseMove);
+    
+            map.on("mouseleave", "wellpoints", wellMouseLeave);
+
+            map.on("mousemove", "welllines", wellMouseMove);
+    
+            map.on("mouseleave", "welllines", wellMouseLeave);
+    
+            map.on("click", "welllines", wellLineClick);
+
+            const wellcp = {...well}
+            wellcp.wellMouseLeave = wellMouseLeave;
+            wellcp.wellMouseMove = wellMouseMove;
+            wellcp.wellPointClick = wellPointClick;
+            wellcp.wellLineClick = wellLineClick;
+
+            const styleLayers = stateMap.styleLayers.slice(0);
+            styleLayers[wellIndex] = wellcp;
+
+            setStateMap({
+              ...stateMap,
+              styleLayers
+            })
+          }
+          map.off("mousemove", mapMouseMove);
   
-            createPopUp(currentFeature.properties);
-            map.resize();
-          });
+          map.on("mousemove", mapMouseMove);
   
-          map.on("mousemove", "wellpoints", (e) => {
-            map.getCanvas().style.cursor = "pointer";
-          });
-  
-          map.on("mouseleave", "wellpoints", function () {
-            map.getCanvas().style.cursor = "";
-          });
-  
-          map.on("mousemove", (e) => {
-            // e.lngLat is the longitude, latitude geographical position of the event
-            let coordinates = e.lngLat.wrap();
-            setLng(coordinates.lng);
-            setLat(coordinates.lat);
-          });
-  
-          map.on("mousemove", "welllines", (e) => {
-            map.getCanvas().style.cursor = "pointer";
-          });
-  
-          map.on("mouseleave", "welllines", function () {
-            map.getCanvas().style.cursor = "";
-          });
-  
-          map.on("click", "welllines", function (e) {
-            var bbox = [
-              [e.point.x - 10, e.point.y - 10],
-              [e.point.x + 10, e.point.y + 10],
-            ];
-            let features = map.queryRenderedFeatures(bbox, {
-              layers: ["welllines"],
-            });
-  
-            let currentFeature = features[0];
-  
-            console.log("clicked well lines", currentFeature);
-  
-            setStateApp((state) => ({
-              ...state,
-              popupOpen: false,
-            }));
-            setStateApp((state) => ({
-              ...state,
-              selectedWell: currentFeature.properties,
-              selectedWellId: currentFeature.properties.id,
-              wellSelectedCoordinates: [
-                currentFeature.properties.longitude,
-                currentFeature.properties.latitude,
-              ],
-            }));
-  
-            createPopUp(currentFeature.properties);
-          });
+
           console.log("map extra components complete");
         }
       }
-    }, [map, setStateMap, setStateMapControls, mapStyles]);
+    }, [map, setStateMap, setStateMapControls, mapStyles, stateMap.checkedLayersInteraction]);
   
     // Use effect for removing shape filter
     useEffect(() => {
