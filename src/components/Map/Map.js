@@ -1868,20 +1868,29 @@ import React, {
           // map.touchZoomRotate.enable();
 
           const selectedLayerIntereaction = stateMap.checkedLayersInteraction[0];
+          const wellIndex = stateMap.styleLayers.findIndex(layer => layer.name === 'Wells');
+
+          const well = stateMap.styleLayers[wellIndex];
           
-          map.off("click", "wellpoints", wellPointClick);
+          if (well.wellPointClick) {
+            map.off("click", "wellpoints", well.wellPointClick);
+          }
     
-          map.off("mousemove", "wellpoints", wellMouseMove);
+          if (well.wellMouseMove) {
+            map.off("mousemove", "wellpoints", well.wellMouseMove);
+            map.off("mousemove", "welllines", well.wellMouseMove);
+          }
   
-          map.off("mouseleave", "wellpoints", wellMouseLeave);
-
-          map.off("mousemove", "welllines", wellMouseMove);
+          if (well.wellMouseLeave) {
+            map.off("mouseleave", "wellpoints", well.wellMouseLeave);
+            map.off("mouseleave", "welllines", well.wellMouseLeave);
+          }
+          
+          if (well.wellLineClick) {
+            map.off("click", "welllines", well.wellLineClick);
+          }
   
-          map.off("mouseleave", "welllines", wellMouseLeave);
-  
-          map.off("click", "welllines", wellLineClick);
-
-          if (selectedLayerIntereaction && stateMap.styleLayers[selectedLayerIntereaction].name === 'Wells') {
+          if (stateMap.checkedLayersInteraction.length > 0 && stateMap.styleLayers[selectedLayerIntereaction].name === 'Wells') {
             map.on("click", "wellpoints", wellPointClick);
     
             map.on("mousemove", "wellpoints", wellMouseMove);
@@ -1893,6 +1902,20 @@ import React, {
             map.on("mouseleave", "welllines", wellMouseLeave);
     
             map.on("click", "welllines", wellLineClick);
+
+            const wellcp = {...well}
+            wellcp.wellMouseLeave = wellMouseLeave;
+            wellcp.wellMouseMove = wellMouseMove;
+            wellcp.wellPointClick = wellPointClick;
+            wellcp.wellLineClick = wellLineClick;
+
+            const styleLayers = stateMap.styleLayers.slice(0);
+            styleLayers[wellIndex] = wellcp;
+
+            setStateMap({
+              ...stateMap,
+              styleLayers
+            })
           }
           map.off("mousemove", mapMouseMove);
   
