@@ -4,6 +4,7 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import NumberFormat from "react-number-format";
 import { NavigationContext } from "../NavigationContext";
+import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles({
   input: {
@@ -14,7 +15,7 @@ const useStyles = makeStyles({
   inputLabel: {
     color: "black",
     minWidth: 249,
-    maxWidth: 250,
+    maxWidth: 450,
     marginLeft: 20
   }
 });
@@ -148,6 +149,7 @@ export default function FilterOwnerConfidence() {
 
   return (
     <div>
+      <div>
       <Typography
         className={classes.inputLabel}
         htmlFor="select-multiple-chip1"
@@ -194,6 +196,19 @@ export default function FilterOwnerConfidence() {
           }
         }}
       />
+      </div>
+
+
+      <div className={classes.inputLabel}>
+        <Box>
+        <Typography variant='caption' align='left' display='inline' >
+            *M1neral’s proprietary owner confidence score enriches public and consumer datasets 
+            with intelligence to attach a confidence metric on owner records in relation to a well asset. 
+        </Typography>
+        </Box>
+      </div>
+
+
     </div>
   );
 }
