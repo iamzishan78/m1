@@ -252,12 +252,12 @@ export default function FilterOwnerCount() {
           className={classes.inputLabel}
           htmlFor="select-multiple-chip1"
         >
-          Wells With No Owners
+          Wells With Owners
         </Typography>
         <Switch
-          className={classes.noOwnersToggle}
-          checked={noOwners}
-          onChange={toggleNoOwners}
+          className={classes.ownersToggle}
+          checked={owners}
+          onChange={toggleOwners}
           color="primary"
           name="checked"
           inputProps={{ 'aria-label': 'primary checkbox' }}
