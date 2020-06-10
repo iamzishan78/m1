@@ -1695,11 +1695,11 @@ import React, {
           // function forwardGeocoder(query) {
           //   return new Promise ((resolve, reject) => {
   
-          //       const endpoint = 'https://m1neral-search.search.windows.net/indexes/wellheader-index/docs?api-version=2019-05-06&$count=true&searchFields=WellName,ApiNumber&$top=5&search=' + query;
+          //       const endpoint = 'https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2019-05-06&$count=true&searchFields=WellName,ApiNumber&$top=5&search=' + query;
   
           //       const headers = new Headers();
           //       headers.append('Content-Type', 'application/json')
-          //       headers.append('api-key', 'C7D8ADB027CCBA30133479D51D669526');
+          //       headers.append('api-key', '1AE3C6346B38CEB007191D51CFDDFF65');
   
           //       const options = {
           //         method: 'GET',
