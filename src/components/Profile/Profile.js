@@ -1,6 +1,7 @@
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import React, { useState, useContext } from "react";
+import ImageModal from "./ImageModal";
 import ProfileContent from "./ProfileContent";
 import ProfileTitle from "./ProfileTitle";
 import ProfileActions from "./ProfileActions";
@@ -37,6 +38,7 @@ const Profile = () => {
         open={isProfileOpen}
         classes={{ paper: classes.paper }}
       >
+        <ImageModal/>
         <ProfileTitle />
         <ProfileContent />
         <ProfileActions />

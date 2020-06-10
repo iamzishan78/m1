@@ -1,6 +1,7 @@
 import { Grid } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
+import CardMedia from "@material-ui/core/CardMedia";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
@@ -8,8 +9,6 @@ import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/lab/Skeleton";
 import React, { useContext } from "react";
 import { ProfileContext } from "./ProfileContext";
-import { useEffect } from "react";
-import CardMedia from "@material-ui/core/CardMedia";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,7 +65,9 @@ const ProfileContent = () => {
   const classes = useStyles();
   const [stateProfile, setStateProfile] = useContext(ProfileContext);
   const {
-    fields: { fullname, displayname, activity, phone, timezone, profileimage },
+    fields: { fullname, displayname, activity, phone, timezone,profileImage },
+    isImageModalOpen,
+    
   } = stateProfile;
   //   console.log(fields);
   //   useEffect(() => {
@@ -82,7 +83,20 @@ const ProfileContent = () => {
       ...stateProfile,
       fields: { ...stateProfile.fields, [name]: value },
     });
-    console.log(stateProfile)
+  };
+
+  const handleImage = (e) => {
+    if (e.target.files?.length > 0) {
+      const reader = new FileReader();
+      reader.addEventListener("load", () =>
+        setStateProfile({
+          ...stateProfile,
+          isImageModalOpen: true,
+          selectedImage: reader.result,
+        })
+      );
+      reader.readAsDataURL(e.target.files[0]);
+    }
   };
 
   return (
@@ -193,11 +207,11 @@ const ProfileContent = () => {
         </Grid>
         <Grid item sm={4}>
           <Typography variant="body1">Profile Photo</Typography>
-          {profileimage ? (
+          {profileImage?.length > 0 ? (
             <CardMedia
               className={classes.image}
               component={"img"}
-              image={profileimage}
+              image={profileImage}
               title="Profile Image"
             />
           ) : (
@@ -210,7 +224,7 @@ const ProfileContent = () => {
             id="profile-image"
             type="file"
             name="profileimage"
-            onChange={(e) => console.log(e)}
+            onChange={(e) => handleImage(e)}
           />
           <label htmlFor="profile-image">
             <Button

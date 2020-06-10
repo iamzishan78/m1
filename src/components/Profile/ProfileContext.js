@@ -4,14 +4,15 @@ const ProfileContext = createContext([{}, () => {}]);
 
 const ProfileContextProvider = (props) => {
   const [stateProfile, setStateProfile] = useState({
-    rieng: "mboko",
     fields: {
       fullname: "",
       displayname: "",
       activity: "",
       phone: "",
       timezone: "",
+      profileImage: "",
     },
+    isImageModalOpen: false,
   });
   return (
     <ProfileContext.Provider value={[stateProfile, setStateProfile]}>

@@ -4,8 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import React, { useContext } from "react";
-import { useHistory } from "react-router-dom";
-import { NavigationContext } from "../Navigation/NavigationContext";
+import { ProfileContext } from "./ProfileContext";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -21,19 +20,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ProfileTitle = (props) => {
-  const history = useHistory();
+const ImageModalTitle = (props) => {
   const classes = useStyles();
-  const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [stateProfile, setStateProfile] = useContext(ProfileContext);
 
   const handleClose = () => {
-    setStateNav({ ...stateNav, isProfileOpen: false });
-    history.goBack()
+    setStateProfile({ ...stateProfile, isImageModalOpen: false });
   };
 
   return (
     <MuiDialogTitle disableTypography className={classes.root}>
-      <Typography variant="h5">Edit your profile</Typography>
+      <Typography variant="h5">Crop your photo</Typography>
       <IconButton
         aria-label="close"
         className={classes.closeButton}
@@ -45,4 +42,4 @@ const ProfileTitle = (props) => {
   );
 };
 
-export default ProfileTitle;
+export default ImageModalTitle;

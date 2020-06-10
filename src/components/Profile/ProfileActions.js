@@ -1,11 +1,10 @@
 import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
 import MuiDialogActions from "@material-ui/core/DialogActions";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import React, { useState, useContext } from "react";
-import { ProfileContext } from "./ProfileContext";
-import { NavigationContext } from "../Navigation/NavigationContext";
+import { withStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
+import { NavigationContext } from "../Navigation/NavigationContext";
+import { ProfileContext } from "./ProfileContext";
 
 const DialogActions = withStyles((theme) => ({
   root: {
@@ -21,7 +20,6 @@ const ProfileActions = () => {
   const history = useHistory();
 
   const handleClose = () => {
-    // console.log(history)
     setStateNav({ ...stateNav, isProfileOpen: false });
     history.goBack();
   };
