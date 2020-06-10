@@ -114,6 +114,7 @@ const NavigationContextProvider = (props) => {
     ownerWellInterestSum: null,
     drawingMode: null,
     filterFeatureId: null,
+    isProfileOpen: true
   });
   return (
     <NavigationContext.Provider value={[stateNav, setStateNav]}>
