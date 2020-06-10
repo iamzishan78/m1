@@ -2,10 +2,13 @@ import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import MuiDialogActions from "@material-ui/core/DialogActions";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import React, { useState } from "react";
+import React, { useState , useContext} from "react";
 import ProfileContent from "./ProfileContent";
 import ProfileTitle from "./ProfileTitle";
-import { ProfileContextProvider } from "./ProfileContext";
+import { ProfileContextProvider, ProfileContext } from "./ProfileContext";
+import { NavigationContext } from "../Navigation/NavigationContext";
+import { useHistory } from "react-router-dom";
+
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -25,22 +28,29 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 const Profile = () => {
+  const [stateProfile, setStateProfile] = useContext(ProfileContext);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
+  const { isProfileOpen } = stateNav;
   const classes = useStyles();
-  const [open, setOpen] = useState(true);
+  const history = useHistory();
+  // const [open, setOpen] = useState(true);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  // console.log(stateProfile, stateNav)
+
   const handleClose = () => {
-    setOpen(false);
+    // console.log(history)
+    setStateNav({ ...stateNav, isProfileOpen: false });
+    history.goBack()
   };
+
+ 
 
   return (
     <ProfileContextProvider>
       <Dialog
         onClose={handleClose}
         aria-labelledby="profile-dialog"
-        open={open}
+        open={isProfileOpen}
         classes={{ paper: classes.paper }}
       >
         <ProfileTitle />

@@ -121,7 +121,7 @@ const ProfileContent = () => {
             }}
             label={"Display Name"}
             placeholder={"Display Name"}
-            helperText={"This could be a nickname or our first name"}
+            helperText={"This could be a nickname or your first name"}
             name="displayname"
             value={displayname}
             onChange={({ target }) => onChange(target)}
