@@ -32,7 +32,6 @@ import React, {
   import * as MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
   import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
   import DefaultFiltersTest from "./filtersDefaultTest";
-  
   import { useLazyQuery } from "@apollo/react-hooks";
   import { WELLSQUERY } from "../../graphQL/useQueryWells";
   import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAndObjectType";

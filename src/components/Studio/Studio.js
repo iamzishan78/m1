@@ -8,16 +8,20 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    paddingTop: "10px",
-    paddingBottom: "10px",
-    maxHeight: "100%",
-    height:"100%"
+    //paddingTop: "10px",
+    //paddingBottom: "10px",
+    //maxHeight: "100%",
+    //height:"100%"
   },
   iframe: {
-    width: "100%",
-    height: "100%",
-    overflow:"hidden"
-  },
+    overflow:"hidden",
+    floatLeft: 'left',
+    paddingTop: '0px',
+    marginTop: '-10px',
+    marginLeft: '-10px',
+    width: "calc(100vw + 10px)",
+    height: "calc(100% + 10px)",
+    },
 }));
 
 export default function Studio() {
@@ -25,9 +29,19 @@ export default function Studio() {
     return (
 
     /// TODO : check for configuration to host url, check if customer width & height is needed.
-      <Container maxWidth="xl" className={classes.container}  >
-         <Iframe className={classes.iframe} url="https://studio.m1neral.com"  frameBorder="0" scrolling="no"/> 
-      </Container>
+      // <Container 
+      //     //maxWidth="xl" 
+      //     width="100%"
+      //     className={classes.container}
+      //       >
+         
+         <Iframe 
+              className={classes.iframe} 
+              url="https://studio.m1neral.com"  
+              frameBorder="0" 
+              scrolling="no"/> 
+
+      // </Container>
 
 
     );
