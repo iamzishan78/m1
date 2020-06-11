@@ -148,11 +148,13 @@ export default function SpatialDataCard(props) {
     sdType,
     shapeLabel,
     projectName,
-    sdNotes
+    sdNotes,
+    sdCrossAcres,
   } = props.selectedFeature.properties;
   const [dataType, setDataType] = useState(sdType);
   const [dataName, setDataName] = useState(shapeLabel);
   const [dataProject, setDataProject] = useState(projectName);
+  const [crossAcres, setCrossAcres] = useState(sdCrossAcres);
   const [dataNotes, setDataNotes] = useState(sdNotes);
   const [stateMap] = useContext(MapContext);
 
@@ -175,6 +177,7 @@ export default function SpatialDataCard(props) {
       sdType: dataType === "" ? "interest" : dataType,
       shapeLabel: dataName,
       projectName: dataProject,
+      sdCrossAcres: crossAcres,
       // sdNotes: dataNotes
     };
     props.saveSpatialData(spatialData, dataType);
@@ -261,6 +264,18 @@ export default function SpatialDataCard(props) {
                 onChange={evt => setDataName(evt.target.value)}
               ></TextField>
             </div>
+            <div className={classes.TextField}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="Cross Acres"
+                type="text"
+                //placeholder= "Enter Name"
+                value={crossAcres}
+                autoComplete="disabled"
+                onChange={evt => setCrossAcres(evt.target.value)}
+              ></TextField>
+            </div>
 
             {/* <div className={classes.TextField}>
            <TextField
@@ -279,7 +294,7 @@ export default function SpatialDataCard(props) {
                 disabled
                 autoComplete="disabled"
                 variant="outlined"
-                label="Land Area"
+                label="Calc. Acres"
                 fullWidth
                 defaultValue={calculateLandArea()}
               ></TextField>
