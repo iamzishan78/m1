@@ -121,7 +121,7 @@ const WeatherCard = () => {
   return (
     <Fragment >
       <Grid item container spacing={2}>
-        <Grid item sm={4} className={classes.dateCard}>
+        <Grid item sm={8} className={classes.dateCard}>
           <Box>
             <Typography variant="body2" align="left">
               {date?.split(";")[0]}
@@ -132,7 +132,7 @@ const WeatherCard = () => {
           </Box>
         </Grid>
 
-        <Grid item sm={4}>
+        {/* <Grid item sm={4}>
           <Box>
             <Iframe 
               frameborder="0" 
@@ -144,7 +144,7 @@ const WeatherCard = () => {
               url="https://app.drillinginfo.com/drc/?widget=true" 
               /> 
           </Box>
-        </Grid>
+        </Grid> */}
 
         <Grid item sm={4}>
           <Paper elevation={1} className={classes.wpaper}>
