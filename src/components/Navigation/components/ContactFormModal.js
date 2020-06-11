@@ -14,7 +14,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
 import Select from "@material-ui/core/Select";
-import { SENDEMAIL } from "../../../graphQL/useMutationSendEmail";
+import { SENDEMAILCONTACT } from "../../../graphQL/useMutationSendEmailContact";
 
 const M1neralLogo = (props) => (
   <svg
@@ -79,11 +79,11 @@ function ContactFormModal(props) {
   const [email, setEmail] = useState("");
   const [category, setCategory] = useState("issue");
   const [comment, setComment] = useState("");
-  const [sendEmail, { called, loading, data }] = useMutation(SENDEMAIL);
+  const [sendEmailContact, { called, loading, data }] = useMutation(SENDEMAILCONTACT);
 
-  const sendEmailStatus = data ? data.sendEmail : null;
+  const sendEmailStatus = data ? data.sendEmailContact : null;
   const sendMail = async () => {
-    sendEmail({
+    sendEmailContact({
       variables: {
         email: {
           name,
