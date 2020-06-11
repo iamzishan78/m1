@@ -2,7 +2,7 @@ export const spatialDataAttributes = [
   "sdType",
   "projectName",
   "sdNotes",
-  "sdCrossAcres",
+  "sdGrossAcres",
   "shapeArea",
   "shapeCenter",
   "shapeLabel",
