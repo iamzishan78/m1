@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useMutation, useLazyQuery } from "@apollo/react-hooks";
 import styled from "styled-components";
+import * as EmailValidator from "email-validator";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -69,7 +70,18 @@ const useStyles = makeStyles((theme) => ({
     verticalAlign: "middle",
   },
   dialogFooter: { display: "flex", justifyContent: "space-between" },
+
+  label: {
+    backgroundColor: "white",
+  },
 }));
+
+let initialErrors = {
+  name: false,
+  email: false,
+  category: false,
+  comment: false,
+};
 
 function ContactFormModal(props) {
   const classes = useStyles();
@@ -79,10 +91,42 @@ function ContactFormModal(props) {
   const [email, setEmail] = useState("");
   const [category, setCategory] = useState("issue");
   const [comment, setComment] = useState("");
-  const [sendEmailContact, { called, loading, data }] = useMutation(SENDEMAILCONTACT);
+  const [sendEmailContact, { called, loading, data }] = useMutation(
+    SENDEMAILCONTACT
+  );
+  const [errors, setErrors] = useState({ ...initialErrors });
 
   const sendEmailStatus = data ? data.sendEmailContact : null;
+
+  const clearFields = () => {
+    setName("");
+    setEmail("");
+    setComment("");
+    setCategory("issue");
+  };
+
+  const updateErrors = () => {
+    let nameErr = false;
+    let categoryErr = false;
+    let commentErr = false;
+    let emailErr = false;
+    if (!name || name.length === 0) nameErr = true;
+    if (!email || email.length === 0 || !EmailValidator.validate(email))
+      emailErr = true;
+    if (!category || category.length === 0) categoryErr = true;
+    if (!comment || comment.length === 0) commentErr = true;
+    setErrors({
+      name: nameErr,
+      category: categoryErr,
+      email: emailErr,
+      comment: commentErr,
+    });
+    return nameErr || emailErr || categoryErr || commentErr;
+  };
+
   const sendMail = async () => {
+    if (updateErrors()) return;
+
     sendEmailContact({
       variables: {
         email: {
@@ -93,13 +137,6 @@ function ContactFormModal(props) {
         },
       },
     });
-  };
-
-  const clearFields = () => {
-    setName("");
-    setEmail("");
-    setComment("");
-    setCategory("issue");
   };
 
   useEffect(() => {
@@ -135,8 +172,12 @@ function ContactFormModal(props) {
           fullWidth
           className={classes.inputField}
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            setName(e.target.value);
+            updateErrors();
+          }}
           disabled={loading}
+          error={errors.name}
         />
         <TextField
           variant="outlined"
@@ -147,8 +188,12 @@ function ContactFormModal(props) {
           fullWidth
           className={classes.inputField}
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            updateErrors();
+          }}
           disabled={loading}
+          error={errors.email}
         />
 
         <FormControl
@@ -156,17 +201,24 @@ function ContactFormModal(props) {
           fullWidth
           className={classes.inputField}
           size="small"
+          error={errors.category}
         >
-          <InputLabel id="demo-simple-select-outlined-label">
+          <InputLabel
+            id="demo-simple-select-outlined-label"
+            className={classes.label}
+          >
             Select a category
           </InputLabel>
           <Select
             labelId="demo-simple-select-outlined-label"
             id="demo-simple-select-outlined"
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              updateErrors();
+            }}
             fullWidth
-            label="Select a category"
+            // label="Select a category"
             disabled={loading}
           >
             <MenuItem value={"issue"}>Submit an issue</MenuItem>
@@ -186,8 +238,12 @@ function ContactFormModal(props) {
           fullWidth
           className={classes.inputField}
           value={comment}
-          onChange={(e) => setComment(e.target.value)}
+          onChange={(e) => {
+            setComment(e.target.value);
+            updateErrors();
+          }}
           disabled={loading}
+          error={errors.comment}
         />
 
         <div className={classes.dialogFooter}>

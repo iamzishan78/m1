@@ -36,7 +36,16 @@ const useStyles = makeStyles((theme) => ({
     verticalAlign: "middle",
   },
   dialogFooter: { display: "flex", justifyContent: "space-between" },
+
+  label: {
+    backgroundColor: "white",
+  },
 }));
+
+const initialErrors = {
+  issue: false,
+  description: false,
+};
 
 function ReportBugModal(props) {
   const classes = useStyles();
@@ -44,10 +53,31 @@ function ReportBugModal(props) {
 
   const [issue, setIssue] = useState("missing");
   const [description, setDescription] = useState("");
+  const [errors, setErrors] = useState({ ...initialErrors });
   const [sendEmailBug, { called, loading, data }] = useMutation(SENDEMAILBUG);
 
   const sendEmailStatus = data ? data.sendEmailBug : null;
+
+  const clearFields = () => {
+    setDescription("");
+    setIssue("missing");
+  };
+
+  const updateErrors = () => {
+    let issueErr = false;
+    let descriptionErr = false;
+    if (!issue || issue.length === 0) issueErr = true;
+    if (!description || description.length === 0) descriptionErr = true;
+    setErrors({
+      issue: issueErr,
+      description: descriptionErr,
+    });
+    return issueErr || descriptionErr;
+  };
+
   const sendMail = async () => {
+    if (updateErrors()) return;
+
     sendEmailBug({
       variables: {
         email: {
@@ -56,11 +86,6 @@ function ReportBugModal(props) {
         },
       },
     });
-  };
-
-  const clearFields = () => {
-    setDescription("");
-    setIssue("missing");
   };
 
   useEffect(() => {
@@ -86,17 +111,24 @@ function ReportBugModal(props) {
           className={classes.inputField}
           size="small"
         >
-          <InputLabel id="demo-simple-select-outlined-label">
+          <InputLabel
+            id="demo-simple-select-outlined-label"
+            className={classes.label}
+          >
             Issue Type
           </InputLabel>
           <Select
             labelId="demo-simple-select-outlined-label"
             id="demo-simple-select-outlined"
             value={issue}
-            onChange={(e) => setIssue(e.target.value)}
+            onChange={(e) => {
+              setIssue(e.target.value);
+              updateErrors();
+            }}
             fullWidth
             label="Issue type"
             disabled={loading}
+            error={errors.issue}
           >
             <MenuItem value={"missing"}>Missing Information</MenuItem>
             <MenuItem value={"incorrect"}>Incorrect Information</MenuItem>
@@ -114,8 +146,12 @@ function ReportBugModal(props) {
           fullWidth
           className={classes.inputField}
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(e) => {
+            setDescription(e.target.value);
+            updateErrors();
+          }}
           disabled={loading}
+          error={errors.description}
         />
 
         <div className={classes.dialogFooter}>
