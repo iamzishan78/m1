@@ -79,7 +79,7 @@ const NavigationContextProvider = (props) => {
     GrId5: null,
     surveyName: null, ////
     abstractName: null, ////
-    operatorName: null,
+    operatorName: [],
     wellFilterCount: 0,
     ownershipFilterCount: 0,
     productionFilterCount: 0,
@@ -114,6 +114,7 @@ const NavigationContextProvider = (props) => {
     ownerWellInterestSum: null,
     drawingMode: null,
     filterFeatureId: null,
+    isProfileOpen: true
   });
   return (
     <NavigationContext.Provider value={[stateNav, setStateNav]}>

@@ -505,7 +505,7 @@ const operatorList = [
 export default function OperatorFilterJ() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [operatorName, setOperatorName] = React.useState(
-    stateNav.operatorName ? stateNav.operatorName : null
+    stateNav.operatorName ? stateNav.operatorName : []
   );
   const handleOperatorChange = (value) => {
     let filter;
@@ -515,14 +515,14 @@ export default function OperatorFilterJ() {
       setOperatorName(value);
     } else {
       filter = null;
-      setStateNav((stateNav) => ({ ...stateNav, operatorName: null }));
+      setStateNav((stateNav) => ({ ...stateNav, operatorName: [] }));
     }
     setStateNav((stateNav) => ({ ...stateNav, filterOperator: filter }));
   };
 
   return (
     <Autocomplete
-      defaultValue={stateNav.operatorName}
+      defaultValue={stateNav.operatorName ? stateNav.operatorName : []}
       onChange={(event, newValue) => {
         handleOperatorChange(newValue);
       }}

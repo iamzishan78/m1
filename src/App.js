@@ -31,6 +31,7 @@ import { ApolloProvider } from "@apollo/react-hooks";
 import ApolloClient from "apollo-boost";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { CircularProgress } from "@material-ui/core";
+import Profile from "./components/Profile/Profile"
 
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
 const theme = createMuiTheme({
@@ -191,6 +192,7 @@ function App() {
                 <Switch>
                   <NavigationProvider>
                     <PrivateRoute exact path="/" component={MapProvider} />
+                    <PrivateRoute exact path="/profile" component={Profile} />
                     <Route exact path="/signup" component={SignUpCard} />
                     <Route
                       exact
