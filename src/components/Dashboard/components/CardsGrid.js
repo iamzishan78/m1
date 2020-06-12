@@ -84,8 +84,8 @@ const CardGrid = () => {
   const [items, setItems] = useState([
     { el: <ProdCard title={1} />, size: "2x", key: 1 },
     { el: <TwitterCard title={2} />, size: "x", key: 2 },
-    { el: <StockCard title={4} />, size: "x", key: 3 },
-    { el: <CardWrapper title={3} />, size: "2x", key: 4},
+    { el: <CardWrapper title={4} />, size: "x", key: 3 },
+    { el: <StockCard title={3} />, size: "2x", key: 4},
     { el: <RigsCard title={5} />, size: "full", key: 5 },
 
   ]);
