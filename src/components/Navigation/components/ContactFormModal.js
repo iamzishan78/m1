@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useMutation, useLazyQuery } from "@apollo/react-hooks";
 import styled from "styled-components";
+import * as EmailValidator from "email-validator";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -9,8 +11,11 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import Dialog from "@material-ui/core/Dialog";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import MenuItem from "@material-ui/core/MenuItem";
+import Typography from "@material-ui/core/Typography";
 import Select from "@material-ui/core/Select";
+import { SENDEMAILCONTACT } from "../../../graphQL/useMutationSendEmailContact";
 
 const M1neralLogo = (props) => (
   <svg
@@ -60,7 +65,23 @@ const useStyles = makeStyles((theme) => ({
   inputField: {
     marginBottom: "15px",
   },
+  progress: {
+    marginLeft: "30px",
+    verticalAlign: "middle",
+  },
+  dialogFooter: { display: "flex", justifyContent: "space-between" },
+
+  label: {
+    backgroundColor: "white",
+  },
 }));
+
+let initialErrors = {
+  name: false,
+  email: false,
+  category: false,
+  comment: false,
+};
 
 function ContactFormModal(props) {
   const classes = useStyles();
@@ -68,12 +89,64 @@ function ContactFormModal(props) {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("issue");
   const [comment, setComment] = useState("");
+  const [sendEmailContact, { called, loading, data }] = useMutation(
+    SENDEMAILCONTACT
+  );
+  const [errors, setErrors] = useState({ ...initialErrors });
 
-  const sendEmail = () => {
-    console.log({ name, email, category, comment });
+  const sendEmailStatus = data ? data.sendEmailContact : null;
+
+  const clearFields = () => {
+    setName("");
+    setEmail("");
+    setComment("");
+    setCategory("issue");
   };
+
+  const updateErrors = () => {
+    let nameErr = false;
+    let categoryErr = false;
+    let commentErr = false;
+    let emailErr = false;
+    if (!name || name.length === 0) nameErr = true;
+    if (!email || email.length === 0 || !EmailValidator.validate(email))
+      emailErr = true;
+    if (!category || category.length === 0) categoryErr = true;
+    if (!comment || comment.length === 0) commentErr = true;
+    setErrors({
+      name: nameErr,
+      category: categoryErr,
+      email: emailErr,
+      comment: commentErr,
+    });
+    return nameErr || emailErr || categoryErr || commentErr;
+  };
+
+  const sendMail = async () => {
+    if (updateErrors()) return;
+
+    sendEmailContact({
+      variables: {
+        email: {
+          name,
+          email,
+          category,
+          comment,
+        },
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (called && !loading && sendEmailStatus.success === true) {
+      clearFields();
+    }
+  }, [called, loading, sendEmailStatus]);
+
+  const categoryName =
+    category.slice(0, 1).toUpperCase() + category.slice(1, category.length);
 
   return (
     <Dialog
@@ -99,7 +172,12 @@ function ContactFormModal(props) {
           fullWidth
           className={classes.inputField}
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            setName(e.target.value);
+            updateErrors();
+          }}
+          disabled={loading}
+          error={errors.name}
         />
         <TextField
           variant="outlined"
@@ -110,7 +188,12 @@ function ContactFormModal(props) {
           fullWidth
           className={classes.inputField}
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            updateErrors();
+          }}
+          disabled={loading}
+          error={errors.email}
         />
 
         <FormControl
@@ -118,24 +201,29 @@ function ContactFormModal(props) {
           fullWidth
           className={classes.inputField}
           size="small"
+          error={errors.category}
         >
-          <InputLabel id="demo-simple-select-outlined-label">
+          <InputLabel
+            id="demo-simple-select-outlined-label"
+            className={classes.label}
+          >
             Select a category
           </InputLabel>
           <Select
             labelId="demo-simple-select-outlined-label"
             id="demo-simple-select-outlined"
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              updateErrors();
+            }}
             fullWidth
-            label="Select a category"
+            // label="Select a category"
+            disabled={loading}
           >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
+            <MenuItem value={"issue"}>Submit an issue</MenuItem>
+            <MenuItem value={"request"}>Functionality request</MenuItem>
+            <MenuItem value={"feedback"}>General feedback</MenuItem>
           </Select>
         </FormControl>
 
@@ -150,18 +238,39 @@ function ContactFormModal(props) {
           fullWidth
           className={classes.inputField}
           value={comment}
-          onChange={(e) => setComment(e.target.value)}
+          onChange={(e) => {
+            setComment(e.target.value);
+            updateErrors();
+          }}
+          disabled={loading}
+          error={errors.comment}
         />
 
-        <Button
-          variant="contained"
-          color="secondary"
-          size="large"
-          disableElevation
-          onClick={sendEmail}
-        >
-          Send
-        </Button>
+        <div className={classes.dialogFooter}>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="large"
+            disableElevation
+            onClick={sendMail}
+            disabled={loading}
+          >
+            Send
+          </Button>
+          {loading ? (
+            <CircularProgress color="secondary" className={classes.progress} />
+          ) : called && !loading ? (
+            sendEmailStatus.success ? (
+              <Typography color="secondary" variant="subtitle2" gutterBottom>
+                {categoryName} submitted successfully
+              </Typography>
+            ) : (
+              <Typography color="primary" variant="subtitle2" gutterBottom>
+                Unable to submit {category}.
+              </Typography>
+            )
+          ) : null}
+        </div>
       </DialogContent>
     </Dialog>
   );
