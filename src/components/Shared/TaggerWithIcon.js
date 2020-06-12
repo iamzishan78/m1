@@ -7,7 +7,7 @@ import { useLazyQuery } from "@apollo/react-hooks";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";
-import Tags from "../Shared/Tagger";
+import Tags from "./Tagger";
 import Dialog from "@material-ui/core/Dialog";
 
 export default function TaggerWithIcon(props) {
@@ -92,7 +92,10 @@ export default function TaggerWithIcon(props) {
           }}
         >
           <div className={classes.tagsDiv}>
-            <Tags targetSourceId={props.objectId} />
+            <Tags
+              targetSourceId={props.objectId}
+              targetLabel={props.targetLabel}
+            />
           </div>
         </Dialog>
       )}

@@ -298,6 +298,7 @@ export default function ContactDetailCard(props) {
               <Tags
                 width="100%"
                 targetSourceId={data.contact._id}
+                targetLabel="contact"
                 publicLeftBottom
               />
             </div>
@@ -599,7 +600,6 @@ export default function ContactDetailCard(props) {
           <Grid container className={classes.rightColumnGrid} spacing={1}>
             {/* //////////// Deal Card ////////////// */}
 
-
             {/* TEMPORARY COMMENT OUT. DO NOT DELETE. */}
             {/* <Grid item xs={12}>
               <Paper className={classes.paper}>
@@ -617,7 +617,10 @@ export default function ContactDetailCard(props) {
 
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <Comments targetSourceId={data.contact._id} />
+                <Comments
+                  targetSourceId={data.contact._id}
+                  targetLabel="contact"
+                />
               </Paper>
             </Grid>
           </Grid>
