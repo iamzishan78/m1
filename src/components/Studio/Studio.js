@@ -37,7 +37,8 @@ export default function Studio() {
          
          <Iframe 
               className={classes.iframe} 
-              url="https://studio.m1neral.com"  
+              // url="https://studio.m1neral.com"  
+              url="https://m1studio-dev.azurewebsites.net/"
               frameBorder="0" 
               scrolling="no"/> 
 

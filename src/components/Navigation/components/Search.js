@@ -72,6 +72,9 @@ const useStyles = makeStyles((theme) => ({
   },
   textF: {
     "& input": { color: "#ffffffc9" },
+    height: '35px',
+    //width: '30%',
+    //top: "-20px"
   },
   score: {
     position: "absolute",
@@ -460,6 +463,7 @@ export default function Search() {
           setInputValue(newInputValue);
         }
       }}
+
       renderInput={(params) => (
         <TextField
           {...params}
