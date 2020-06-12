@@ -4,7 +4,7 @@ export default (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 430 430"
-    width={props.size ? props.size : "30"}
+    width={props.size ? props.size : "25"}
     height={props.size ? props.size : "30"}
     className={props.className}
   >
