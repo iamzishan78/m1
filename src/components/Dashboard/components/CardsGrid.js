@@ -10,6 +10,7 @@ import CardWrapper from "./CardTemplate";
 import TwitterCard from "./TwitterCard";
 import StockCard from "./StockCard";
 import RigsCard from "./RigsCard"
+import RSSFeed from "./RssFeed"
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -87,6 +88,7 @@ const CardGrid = () => {
     { el: <CardWrapper title={4} />, size: "x", key: 3 },
     { el: <StockCard title={3} />, size: "2x", key: 4},
     { el: <RigsCard title={5} />, size: "full", key: 5 },
+    { el: <RSSFeed />, size: "x", key: 6 },
 
   ]);
 
