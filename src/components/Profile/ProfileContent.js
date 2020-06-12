@@ -7,8 +7,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/lab/Skeleton";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { ProfileContext } from "./ProfileContext";
+import { GETPROFILE } from "../../graphQL/useQueryGetProfile";
+import { useLazyQuery, useQuery } from "@apollo/react-hooks";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -64,19 +66,22 @@ const useStyles = makeStyles((theme) => ({
 const ProfileContent = () => {
   const classes = useStyles();
   const [stateProfile, setStateProfile] = useContext(ProfileContext);
+  const {data, error, loading} = useQuery(GETPROFILE);
+  console.log({data, error, loading});
+  // console.log(data);
   const {
-    fields: { fullname, displayname, activity, phone, timezone,profileImage },
+    fields: { fullname, displayname, activity, phone, timezone, profileImage },
     isImageModalOpen,
-    
   } = stateProfile;
   //   console.log(fields);
-  //   useEffect(() => {
-  //     console.log(fields);
-  //     setStateProfile({
-  //       ...stateProfile,
-  //       fields: { ...stateProfile.fields },
-  //     });
-  //   }, []);
+  useEffect(() => {
+    // getProfile({ email: "haha" });
+    // console.log(fields);
+    // setStateProfile({
+    //   ...stateProfile,
+    //   fields: { ...stateProfile.fields },
+    // });
+  }, []);
 
   const onChange = ({ name, value }) => {
     setStateProfile({
