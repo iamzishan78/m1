@@ -486,11 +486,7 @@ export default function Search() {
                   <PersonIcon className={classes.icon} />
                 )}
                 {option.Source === "operators-index" && (
-                  <OperatorIcon
-                    className={classes.icon}
-                    color={"#757575"}
-                    small
-                  />
+                  <OperatorIcon className={classes.icon} color={"#757575"} />
                 )}
                 {option.Source === "wellheader-index" && (
                   <WellIcon

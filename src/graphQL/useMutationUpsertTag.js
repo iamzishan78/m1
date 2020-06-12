@@ -11,6 +11,7 @@ export const UPSERTTAG = gql`
         ts
         public
         taggedOn
+        objectType
       }
     }
   }

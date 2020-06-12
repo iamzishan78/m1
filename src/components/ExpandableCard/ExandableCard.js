@@ -191,11 +191,13 @@ export default function ExpandableCard(props) {
           <div className={classes.headerIcons}>
             <CommentsWithIcon
               objectId={targetSourceId.toLowerCase()}
+              targetLabel={props.targetLabel}
               iconZiseSmall={!stateExpandableCard.expanded}
             />
 
             <TaggerWithIcon
               objectId={targetSourceId.toLowerCase()}
+              targetLabel={props.targetLabel}
               iconZiseSmall={!stateExpandableCard.expanded}
             />
 

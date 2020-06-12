@@ -168,6 +168,7 @@ export default function Comments(props) {
             public: publicComment,
             user: stateApp.user.mongoId,
             commentedOn: props.targetSourceId,
+            objectType: props.targetLabel,
           },
         },
         refetchQueries: ["getCommentsByObjectId", "getCommentsCounter"],
