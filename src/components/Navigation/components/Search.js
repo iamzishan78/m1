@@ -12,10 +12,11 @@ import Button from "@material-ui/core/Button";
 import PersonIcon from "@material-ui/icons/Person";
 import WellIcon from "../../Shared/svgIcons/well";
 import OperatorIcon from "../../Shared/svgIcons/operator";
+import LeaseIcon from "../../Shared/svgIcons/lease";
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -75,10 +76,10 @@ const useStyles = makeStyles((theme) => ({
     color: "#5f5f5f",
   },
   textF: {
-    "& input": { color: "#ffffffc9", height: '5px' },
-    //height: '35px',
-    //width: '30%',
-    //top: "-20px"
+    "& input": { color: "#ffffffc9", height: "5px" },
+    "& .MuiInputBase-adornedStart, .MuiInputBase-adornedEnd": {
+      padding: "9px 0 !important",
+    },
   },
   score: {
     position: "absolute",
@@ -99,6 +100,8 @@ export default function Search() {
   const [options, setOptions] = React.useState([]);
   const [maxMinWellsScore, setMaxMinWellsScore] = React.useState([0, 0]);
   const [maxMinOwnersScore, setMaxMinOwnersScore] = React.useState([0, 0]);
+  const [maxMinOperatosScore, setMaxMinOperatosScore] = React.useState([0, 0]);
+  const [maxMinLeasesScore, setMaxMinLeasesScore] = React.useState([0, 0]);
   const loaded = React.useRef(false);
 
   //   if (typeof window !== 'undefined' && !loaded.current) {
@@ -187,7 +190,7 @@ export default function Search() {
     () =>
       throttle((request, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2019-05-06&$count=true&searchFields=Name&$top=5&search=" +
+          "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2019-05-06&$count=true&searchFields=Operator&$top=5&search=" +
           request.input;
 
         const headers = new Headers();
@@ -201,6 +204,39 @@ export default function Search() {
 
         console.log(
           "request made to operator-index search at: " + new Date().toString()
+        );
+
+        fetch(endpoint, options)
+          .then((response) => response.json())
+          .then((response) => {
+            console.log(response);
+            callback(response);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }, 200),
+    []
+  );
+
+  const callLeaseSearch = React.useMemo(
+    () =>
+      throttle((request, callback) => {
+        const endpoint =
+          "https://m1search.search.windows.net/indexes/lease-index/docs?api-version=2019-05-06&$count=true&searchFields=Lease,LeaseId&$top=5&search=" +
+          request.input;
+
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
+
+        const options = {
+          method: "GET",
+          headers: headers,
+        };
+
+        console.log(
+          "request made to lease-index search at: " + new Date().toString()
         );
 
         fetch(endpoint, options)
@@ -295,12 +331,37 @@ export default function Search() {
                   ...results.value.map((result) => ({
                     ...result,
                     Source: indexSource,
-                    Primary: result.Name,
+                    Primary: result.Operator,
                     Secondary: null,
                   })),
                 ];
 
-                setMaxMinOwnersScore(maxMinScore(results.value));
+                setMaxMinOperatosScore(maxMinScore(results.value));
+              }
+
+              setOptions(newOptions);
+            })
+          : null,
+        searchOption == "all" || searchOption == "leases"
+          ? callLeaseSearch({ input: inputValue }, (results) => {
+              if (results) {
+                const indexSource = results["@odata.context"].substring(
+                  results["@odata.context"].indexOf("('") + 2,
+                  results["@odata.context"].indexOf("')")
+                );
+                console.log(indexSource);
+                newOptions = [
+                  ...newOptions,
+                  ...results.value.map((result) => ({
+                    ...result,
+                    Source: indexSource,
+                    Primary:
+                      result.Lease && result.Lease !== "" ? result.Lease : "--",
+                    Secondary: result.LeaseId,
+                  })),
+                ];
+
+                setMaxMinLeasesScore(maxMinScore(results.value));
               }
 
               setOptions(newOptions);
@@ -343,9 +404,11 @@ export default function Search() {
           ? "Wells"
           : option.Source === "operator-index"
           ? "Operators"
+          : option.Source === "lease-index"
+          ? "Leases"
           : "header";
       }}
-      leftIconButton={<SearchIcon/>}
+      leftIconButton={<SearchIcon />}
       renderGroup={(option) => {
         return option.group === "header" ? (
           <Grid
@@ -372,9 +435,6 @@ export default function Search() {
                 variant={searchOption === "all" ? "contained" : "outlined"}
                 size="small"
                 color={searchOption === "all" ? "secondary" : "primary"}
-                style={{
-                  width: "22%",
-                }}
                 onClick={() => {
                   setSearchOption("all");
                 }}
@@ -385,9 +445,6 @@ export default function Search() {
                 variant={searchOption === "wells" ? "contained" : "outlined"}
                 size="small"
                 color={searchOption === "wells" ? "secondary" : "primary"}
-                style={{
-                  width: "22%",
-                }}
                 onClick={() => {
                   setSearchOption("wells");
                 }}
@@ -398,9 +455,6 @@ export default function Search() {
                 variant={searchOption === "owners" ? "contained" : "outlined"}
                 size="small"
                 color={searchOption === "owners" ? "secondary" : "primary"}
-                style={{
-                  width: "22%",
-                }}
                 onClick={() => {
                   setSearchOption("owners");
                 }}
@@ -413,14 +467,21 @@ export default function Search() {
                 }
                 size="small"
                 color={searchOption === "operators" ? "secondary" : "primary"}
-                style={{
-                  width: "25%",
-                }}
                 onClick={() => {
                   setSearchOption("operators");
                 }}
               >
                 Operators
+              </Button>
+              <Button
+                variant={searchOption === "leases" ? "contained" : "outlined"}
+                size="small"
+                color={searchOption === "leases" ? "secondary" : "primary"}
+                onClick={() => {
+                  setSearchOption("leases");
+                }}
+              >
+                Leases
               </Button>
             </Grid>
           </Grid>
@@ -469,15 +530,14 @@ export default function Search() {
           setInputValue(newInputValue);
         }
       }}
-
       renderInput={(params) => (
-        <div>
         <TextField
           {...params}
           variant="outlined"
           fullWidth
           placeholder="Search by well name, API, owner, operator"
           InputProps={{
+            ...params.InputProps,
             startAdornment: (
               <InputAdornment>
                 <IconButton>
@@ -491,11 +551,10 @@ export default function Search() {
                   <ArrowDropDownIcon htmlColor="#fff" />
                 </IconButton>
               </InputAdornment>
-            )
+            ),
           }}
           className={classes.textF}
         />
-        </div>
       )}
       renderOption={(option) => {
         if (option.Source === "header") return null;
@@ -509,7 +568,7 @@ export default function Search() {
                 {option.Source === "lod2019-index" && (
                   <PersonIcon className={classes.icon} />
                 )}
-                {option.Source === "operators-index" && (
+                {option.Source === "operator-index" && (
                   <OperatorIcon className={classes.icon} color={"#757575"} />
                 )}
                 {option.Source === "wellheader-index" && (
@@ -519,6 +578,9 @@ export default function Search() {
                     opacity="1.0"
                     small
                   />
+                )}
+                {option.Source === "lease-index" && (
+                  <LeaseIcon className={classes.icon} color={"#757575"} />
                 )}
               </Grid>
               <Grid item xs>
@@ -556,7 +618,11 @@ export default function Search() {
                     opacity: calcScoreOpacity(
                       option.Source === "lod2019-index"
                         ? maxMinOwnersScore
-                        : maxMinWellsScore,
+                        : option.Source === "wellheader-index"
+                        ? maxMinWellsScore
+                        : option.Source === "operator-index"
+                        ? maxMinOperatosScore
+                        : maxMinLeasesScore,
                       option["@search.score"]
                     ).toString(),
                   }}
