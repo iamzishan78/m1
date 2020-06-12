@@ -15,7 +15,7 @@ import OperatorIcon from "../../Shared/svgIcons/operator";
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -75,10 +75,10 @@ const useStyles = makeStyles((theme) => ({
     color: "#5f5f5f",
   },
   textF: {
-    "& input": { color: "#ffffffc9", height: '5px' },
-    //height: '35px',
-    //width: '30%',
-    //top: "-20px"
+    "& input": { color: "#ffffffc9", height: "5px" },
+    "& .MuiInputBase-adornedStart, .MuiInputBase-adornedEnd": {
+      padding: "9px 0 !important",
+    },
   },
   score: {
     position: "absolute",
@@ -99,6 +99,7 @@ export default function Search() {
   const [options, setOptions] = React.useState([]);
   const [maxMinWellsScore, setMaxMinWellsScore] = React.useState([0, 0]);
   const [maxMinOwnersScore, setMaxMinOwnersScore] = React.useState([0, 0]);
+  const [maxMinOperatosScore, setMaxMinOperatosScore] = React.useState([0, 0]);
   const loaded = React.useRef(false);
 
   //   if (typeof window !== 'undefined' && !loaded.current) {
@@ -187,7 +188,7 @@ export default function Search() {
     () =>
       throttle((request, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2019-05-06&$count=true&searchFields=Name&$top=5&search=" +
+          "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2019-05-06&$count=true&searchFields=Operator&$top=5&search=" +
           request.input;
 
         const headers = new Headers();
@@ -295,12 +296,12 @@ export default function Search() {
                   ...results.value.map((result) => ({
                     ...result,
                     Source: indexSource,
-                    Primary: result.Name,
+                    Primary: result.Operator,
                     Secondary: null,
                   })),
                 ];
 
-                setMaxMinOwnersScore(maxMinScore(results.value));
+                setMaxMinOperatosScore(maxMinScore(results.value));
               }
 
               setOptions(newOptions);
@@ -345,7 +346,7 @@ export default function Search() {
           ? "Operators"
           : "header";
       }}
-      leftIconButton={<SearchIcon/>}
+      leftIconButton={<SearchIcon />}
       renderGroup={(option) => {
         return option.group === "header" ? (
           <Grid
@@ -469,15 +470,14 @@ export default function Search() {
           setInputValue(newInputValue);
         }
       }}
-
       renderInput={(params) => (
-        <div>
         <TextField
           {...params}
           variant="outlined"
           fullWidth
           placeholder="Search by well name, API, owner, operator"
           InputProps={{
+            ...params.InputProps,
             startAdornment: (
               <InputAdornment>
                 <IconButton>
@@ -491,11 +491,10 @@ export default function Search() {
                   <ArrowDropDownIcon htmlColor="#fff" />
                 </IconButton>
               </InputAdornment>
-            )
+            ),
           }}
           className={classes.textF}
         />
-        </div>
       )}
       renderOption={(option) => {
         if (option.Source === "header") return null;
@@ -509,7 +508,7 @@ export default function Search() {
                 {option.Source === "lod2019-index" && (
                   <PersonIcon className={classes.icon} />
                 )}
-                {option.Source === "operators-index" && (
+                {option.Source === "operator-index" && (
                   <OperatorIcon className={classes.icon} color={"#757575"} />
                 )}
                 {option.Source === "wellheader-index" && (
@@ -556,7 +555,9 @@ export default function Search() {
                     opacity: calcScoreOpacity(
                       option.Source === "lod2019-index"
                         ? maxMinOwnersScore
-                        : maxMinWellsScore,
+                        : option.Source === "wellheader-index"
+                        ? maxMinWellsScore
+                        : maxMinOperatosScore,
                       option["@search.score"]
                     ).toString(),
                   }}
