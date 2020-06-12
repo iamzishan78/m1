@@ -17,12 +17,14 @@ import Iframe from 'react-iframe';
 const useStyles = makeStyles((theme) => ({
   header: {
     padding: "8px 8px 0 8px",
+    backgroundColor:'#011133',
+    color: 'white'
   },
 }));
 
 const DragHandle = sortableHandle(() => (
   <IconButton aria-label="drag">
-    <DragIndicatorOutlinedIcon fontSize="default" />
+    <DragIndicatorOutlinedIcon fontSize="default" htmlColor="#fff"/>
   </IconButton>
 ));
 
@@ -46,8 +48,8 @@ const StockCard = ({ title }) => {
           "locale": "en",
           "largeChartUrl": "",
           "isTransparent": false,
-          "width": "400",
-          "height": "660",
+          "width": "100%",
+          "height": "450",
           "plotLineColorGrowing": "rgba(33, 150, 243, 1)",
           "plotLineColorFalling": "rgba(33, 150, 243, 1)",
           "gridLineColor": "rgba(240, 243, 250, 1)",
@@ -151,7 +153,7 @@ const StockCard = ({ title }) => {
     <div>
     <CardHeader
       action={<DragHandle />}
-      title={`Card-${title}`}
+      title={`Market Pulse`}
       className={classes.header}
     />
 

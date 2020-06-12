@@ -20,6 +20,9 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor:'#011133',
     color: 'white'
   },
+  frame: {
+    padding: "8px",
+  },
 }));
 
 const DragHandle = sortableHandle(() => (
@@ -30,7 +33,7 @@ const DragHandle = sortableHandle(() => (
 
 
 
-const Template = ({ title }) => {
+const RigsCard = ({ title }) => {
 
 
   const classes = useStyles();
@@ -39,14 +42,18 @@ const Template = ({ title }) => {
     <div>
     <CardHeader
       action={<DragHandle />}
-      title={`Card-${title}`}
+      title={'Rigs by State/County'}
       className={classes.header}
     />
 
-    {/* <Iframe 
+    <div className={classes.frame}>
+    <Iframe 
       width="100%"
-      height="500px"
-      url="https://app.powerbi.com/view?r=eyJrIjoiNDVlNmExN2MtYTlmOC00NTQ5LWFmYmEtZDQ1MThmNWUxNzA5IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9" />  */}
+      height="499px"
+      paddintTop="10px"
+      url="https://app.powerbi.com/view?r=eyJrIjoiMzA0MzgzZGMtYmZjZi00OWRjLWIzMmItOTg0MmVlNDVkMzU5IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9" 
+      /> 
+    </div>
 
     </div>
 
@@ -54,4 +61,4 @@ const Template = ({ title }) => {
 
   );
 };
-export default Template;
+export default RigsCard;

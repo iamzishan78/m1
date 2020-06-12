@@ -27,7 +27,7 @@ const styleLayers = [
   },
   {
     name: "TX GLO Units",
-    id: ["GLOUnits","GLOUnitsLabels"],
+    id: ["GLOUnits","GLOUnitLabels"],
   },
   {
     name: "TX GLO Active Leases",

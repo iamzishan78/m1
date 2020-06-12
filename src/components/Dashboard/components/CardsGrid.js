@@ -9,6 +9,7 @@ import ProdCard from "./ProdCard"
 import CardWrapper from "./CardTemplate";
 import TwitterCard from "./TwitterCard";
 import StockCard from "./StockCard";
+import RigsCard from "./RigsCard"
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -33,6 +34,8 @@ const SortableItem = SortableElement(({ content }) => {
       var arr = [3,3,4,4,6];
     } else if(ele=="2x"){
       var arr = [9,9,8,8,6];
+    } else if(ele=="full"){
+      var arr = [12,12,12,12,12];
     }
     else {
       var arr = [6,6,6,6,6];
@@ -81,9 +84,9 @@ const CardGrid = () => {
   const [items, setItems] = useState([
     { el: <ProdCard title={1} />, size: "2x", key: 1 },
     { el: <TwitterCard title={2} />, size: "x", key: 2 },
-    { el: <CardWrapper title={3} />, size: "2x", key: 3 },
-    { el: <StockCard title={4} />, size: "x", key: 4 },
-    { el: <CardWrapper title={5} />, size: "3x", key: 5 },
+    { el: <CardWrapper title={4} />, size: "x", key: 3 },
+    { el: <StockCard title={3} />, size: "2x", key: 4},
+    { el: <RigsCard title={5} />, size: "full", key: 5 },
 
   ]);
 

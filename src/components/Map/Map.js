@@ -32,7 +32,6 @@ import React, {
   import * as MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
   import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
   import DefaultFiltersTest from "./filtersDefaultTest";
-  
   import { useLazyQuery } from "@apollo/react-hooks";
   import { WELLSQUERY } from "../../graphQL/useQueryWells";
   import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAndObjectType";
@@ -1433,12 +1432,12 @@ import React, {
           filterArray.unshift("all");
           map.setFilter("wellpoints", filterArray);
           map.setFilter("welllines", filterArray);
-          map.setFilter("wellsHeatmapBoe", filterArray);
-          map.setFilter("wellsHeatmapLast12", filterArray);
-          map.setFilter("wellsHeatmapIP90Oil", filterArray);
-          map.setFilter("wellsHeatmapIP90Gas", filterArray);
-          map.setFilter("wellsHeatmapRecentlyDrilled", filterArray);
-          map.setFilter("wellsHeatmapRecentlyCompleted", filterArray);
+          map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
+          map.setFilter("wellsHeatmapLast12", [">", ["get", "lastTwelveMonthBOE"], 0] );
+          map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
+          map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);
+          map.setFilter("wellsHeatmapRecentlyDrilled", [">",["get", "daysSinceDrilled"], 0]);
+          map.setFilter("wellsHeatmapRecentlyCompleted", [">", ["get","daysSinceCompletion"], 0 ]);
         } else {
           map.setFilter("wellpoints", null);
           map.setFilter("welllines", null);

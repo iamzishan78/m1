@@ -11,6 +11,7 @@ export const UPSERTCOMMENT = gql`
         ts
         public
         commentedOn
+        objectType
         user {
           name
           email

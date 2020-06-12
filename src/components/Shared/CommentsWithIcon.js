@@ -97,7 +97,11 @@ export default function CommentsWithIcon(props) {
             setOpenDialog(false);
           }}
         >
-          <Comments focus targetSourceId={props.objectId} />
+          <Comments
+            focus
+            targetSourceId={props.objectId}
+            targetLabel={props.targetLabel}
+          />
         </Dialog>
       )}
     </React.Fragment>

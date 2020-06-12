@@ -1,6 +1,4 @@
 import React, { useEffect, useContext, useState } from "react";
-import { AppContext } from "../../AppContext";
-import { ExpandableCardContext } from "./ExpandableCardContext";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
@@ -11,11 +9,14 @@ import ExpandIcon from "./components/svgIcons/ExpandIcon";
 import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useLazyQuery } from "@apollo/react-hooks";
+import $ from "jquery";
+import { AppContext } from "../../AppContext";
+import { ExpandableCardContext } from "./ExpandableCardContext";
+import ReportBugModal from "./components/ReportBugModal";
 import { TRACKBYUSERANDOBJECTID } from "../../graphQL/useQueryTrackByUserAndObjectId";
 import TaggerWithIcon from "../Shared/TaggerWithIcon";
 import CommentsWithIcon from "../Shared/CommentsWithIcon";
 import TrackToggleButton from "../Shared/TrackToggleButton";
-import $ from "jquery";
 import BugsIcon from "../Shared/svgIcons/bug.js";
 
 export default function ExpandableCard(props) {
@@ -23,6 +24,7 @@ export default function ExpandableCard(props) {
   const [stateExpandableCard, setStateExpandableCard] = useContext(
     ExpandableCardContext
   );
+  const [openBugModal, setOpenBugModal] = useState(false);
   const [title] = useState(props.title);
   const [subTitle] = useState(props.subTitle);
   const [parent] = useState(props.parent);
@@ -184,6 +186,10 @@ export default function ExpandableCard(props) {
 
   return (
     <Card className={classes.card}>
+      <ReportBugModal
+        open={openBugModal}
+        onClose={() => setOpenBugModal(false)}
+      />
       <CardHeader
         id="detailCardHeader"
         classes={{ title: classes.title, subheader: classes.subheader }}
@@ -191,11 +197,13 @@ export default function ExpandableCard(props) {
           <div className={classes.headerIcons}>
             <CommentsWithIcon
               objectId={targetSourceId.toLowerCase()}
+              targetLabel={props.targetLabel}
               iconZiseSmall={!stateExpandableCard.expanded}
             />
 
             <TaggerWithIcon
               objectId={targetSourceId.toLowerCase()}
+              targetLabel={props.targetLabel}
               iconZiseSmall={!stateExpandableCard.expanded}
             />
 
@@ -212,7 +220,7 @@ export default function ExpandableCard(props) {
               <Tooltip title={"Report Bug"} placement="top">
                 <IconButton
                   size="large"
-                  onClick={handleExpand}
+                  onClick={() => setOpenBugModal(true)}
                   //aria-label="expand"
                   className={classes.icons}
                 >

@@ -160,6 +160,7 @@ export default function Tags(props) {
             public: publicTag,
             user: stateApp.user.mongoId,
             taggedOn: props.targetSourceId,
+            objectType: props.targetLabel,
           },
         },
         refetchQueries: [

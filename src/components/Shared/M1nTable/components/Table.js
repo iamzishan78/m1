@@ -617,11 +617,18 @@ export default function SubTable(props) {
           }
         >
           {openDialog === "comment" && (
-            <Comments focus targetSourceId={expandedObject} />
+            <Comments
+              focus
+              targetSourceId={expandedObject}
+              targetLabel={props.targetLabel}
+            />
           )}
           {openDialog === "tag" && (
             <div className={classes.tagsDiv}>
-              <Tags targetSourceId={expandedObject} />
+              <Tags
+                targetSourceId={expandedObject}
+                targetLabel={props.targetLabel}
+              />
             </div>
           )}
           {openDialog === "owner" && (
