@@ -12,6 +12,10 @@ import Button from "@material-ui/core/Button";
 import PersonIcon from "@material-ui/icons/Person";
 import WellIcon from "../../Shared/svgIcons/well";
 import OperatorIcon from "../../Shared/svgIcons/operator";
+import IconButton from "@material-ui/core/IconButton";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import SearchIcon from "@material-ui/icons/Search";
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -329,6 +333,7 @@ export default function Search() {
     <Autocomplete
       id="cognitive-search-autocomplete"
       getOptionLabel={(option) => option.Primary}
+      forcePopupIcon
       filterOptions={(x) => x}
       options={optionsWithHeader}
       groupBy={(option) => {
@@ -340,6 +345,7 @@ export default function Search() {
           ? "Operators"
           : "header";
       }}
+      leftIconButton={<SearchIcon/>}
       renderGroup={(option) => {
         return option.group === "header" ? (
           <Grid
@@ -465,13 +471,31 @@ export default function Search() {
       }}
 
       renderInput={(params) => (
+        <div>
         <TextField
           {...params}
           variant="outlined"
           fullWidth
           placeholder="Search by well name, API, owner, operator"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment>
+                <IconButton>
+                  <SearchIcon htmlColor="#fff" />
+                </IconButton>
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment>
+                <IconButton>
+                  <ArrowDropDownIcon htmlColor="#fff" />
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
           className={classes.textF}
         />
+        </div>
       )}
       renderOption={(option) => {
         if (option.Source === "header") return null;
