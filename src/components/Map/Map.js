@@ -88,6 +88,7 @@ import React, {
     const [defaultsCheckOnOff, setDefaultsCheckOnOff] = useState(true);
     const [m1neralCheckOnOff, setM1neralCheckOnOff] = useState(true);
     const [map, setMap] = useState(null);
+    const [mapClick, setMapClick] = useState(null);
     const [draw, setDraw] = useState(null);
     const [drawingFilterFeatureId, setDrawingFilterFeatureId] = useState(null);
     // const [geocoder, setGeocoder] = useState(null);
@@ -216,6 +217,158 @@ import React, {
         });
       }
     }, [dataOwnersWells]);
+
+
+    useEffect(() => {
+
+      const wellLineClick = (currentFeature) => {
+        console.log("clicked well lines", currentFeature);
+
+        setStateApp((state) => ({
+          ...state,
+          popupOpen: false,
+        }));
+        setStateApp((state) => ({
+          ...state,
+          selectedWell: currentFeature.properties,
+          selectedWellId: currentFeature.properties.id,
+          wellSelectedCoordinates: [
+            currentFeature.properties.longitude,
+            currentFeature.properties.latitude,
+          ],
+        }));
+
+        createPopUp(currentFeature.properties);
+      }
+
+      const wellPointClick = (currentFeature) => {
+        console.log("current feature", currentFeature);
+
+        setStateApp((state) => ({
+          ...state,
+          popupOpen: false,
+        }));
+        setStateApp((state) => ({
+          ...state,
+          selectedWell: currentFeature.properties,
+          selectedWellId: currentFeature.properties.id,
+          wellSelectedCoordinates: [
+            currentFeature.properties.longitude,
+            currentFeature.properties.latitude,
+          ],
+        }));
+
+        createPopUp(currentFeature.properties);
+        map.resize();
+      }
+
+      const layerClickHander = (feature) => {
+        setStateApp((state) => ({ ...state, flyTo: feature.properties }));
+      }
+
+      const clusterClickHandler = (feature, map) => {
+        var clusterId = feature.properties.cluster_id;
+        map.getSource(feature.source).getClusterExpansionZoom (
+          clusterId,
+          function(err, zoom) {
+            if (err) return;
+                      
+            map.easeTo({
+              center: feature.geometry.coordinates,
+              zoom: zoom
+            });
+          }
+        );
+      }
+
+      const mapClickHandler = (e) => {
+        const map = e.target;
+        let layers = [];
+        const checkedUDLayersInteraction = stateMap.checkedUserDefinedLayersInteraction;
+        const checkedUDLayers = stateMap.checkedUserDefinedLayers;
+        const definedLayers = stateMap.userDefinedLayers;
+        const clusterUDLayers = [];
+        const udLayers = [];
+        checkedUDLayers.forEach(l => {
+          if (checkedUDLayersInteraction.indexOf(l) > -1) {
+            const definedLayer = definedLayers[l];
+            const layerProps = definedLayer.layerProps;
+            if (layerProps) {
+              for (let i = 0; i < layerProps.length; i ++) {
+                const layerProp = layerProps[i];
+                if (layerProp.clusterProps) {
+                  const clusterLayerId = layerProp.layerId + '-clusters';
+                  layers.push(clusterLayerId);
+                  clusterUDLayers.push(clusterLayerId);
+                }
+                layers.push(layerProp.layerId);
+                udLayers.push(layerProp.layerId);
+              }
+            }
+          }
+        });
+        const checkedSLayersInteraction = stateMap.checkedLayersInteraction;
+        const checkedSLayers = stateMap.checkedLayers;
+        const styleLayers = stateMap.styleLayers;
+        // let sLayers = [];
+        checkedSLayers.forEach(l => {
+          if (checkedSLayersInteraction.indexOf(l) > -1) {
+            const styleLayer = styleLayers[l];
+            layers = [...layers, ...styleLayer.id];
+            // sLayers = [...sLayers, ...styleLayer.id];
+          }
+        })
+        
+        var bbox = [
+          [e.point.x - 10, e.point.y - 10],
+          [e.point.x + 10, e.point.y + 10],
+        ];
+
+        console.log("checking layers", layers);
+
+        let features = map.queryRenderedFeatures(bbox, {
+          layers: layers,
+        });
+
+        if (features && features.length > 0) {
+          const feature = features[0];
+          console.log("stacked layers click info", features);
+          console.log(feature);
+          const layerId = feature.layer.id;
+          console.log(layerId);
+          switch (true) {
+            case clusterUDLayers.indexOf(layerId) > -1:
+              clusterClickHandler(feature, map);
+              break;
+            case udLayers.indexOf(layerId) > -1:
+              layerClickHander(feature);
+              break;
+            case layerId === "wellpoints":
+              wellPointClick(feature);
+              break;
+            case layerId === "welllines":
+              wellLineClick(feature);
+              break;
+            default:
+              break;
+          }
+        }
+      }
+      if (map) {
+        console.log(mapClick);
+        if (mapClick && mapClick.mapClickHandler) {
+          console.log("off click action");
+          map.off("click", mapClick.mapClickHandler);
+        }
+        console.log("on click action");
+        map.on("click", mapClickHandler);
+        setMapClick({mapClickHandler});
+      }
+    }, [map, stateMap.checkedLayersInteraction, 
+        stateMap.checkedUserDefinedLayersInteraction,
+        stateMap.checkedLayers, stateMap.checkedUserDefinedLayers
+      ]
+    );
   
 
     useEffect(() => {
@@ -443,9 +596,7 @@ import React, {
   
       if (stateMap.userDefinedLayers.length > 0 && map) {
         const layerList = stateMap.userDefinedLayers;
-        console.log("cehck checked", stateMap.checkedUserDefinedLayers);
         stateMap.userDefinedLayers.forEach((l) => {
-          console.log(l);
           l.id.forEach((k, i) => {
             console.log('k',k)
   
@@ -620,82 +771,82 @@ import React, {
                     
                     var clusterVar = selectLayerProps.layerProps[i].layerId+'-clusters'
 
-                    const layerClickHander = (e) => {
-                      var bbox = [
-                        [e.point.x - 10, e.point.y - 10],
-                        [e.point.x + 10, e.point.y + 10],
-                      ];
+                    // const layerClickHander = (e) => {
+                    //   var bbox = [
+                    //     [e.point.x - 10, e.point.y - 10],
+                    //     [e.point.x + 10, e.point.y + 10],
+                    //   ];
               
-                      let features = map.queryRenderedFeatures(bbox, {
-                        layers: [selectLayerProps.layerProps[i].layerId],
-                      });
+                    //   let features = map.queryRenderedFeatures(bbox, {
+                    //     layers: [selectLayerProps.layerProps[i].layerId],
+                    //   });
 
-                      if (!features || features.length === 0) {
-                        return;
-                      }
+                    //   if (!features || features.length === 0) {
+                    //     return;
+                    //   }
 
-                      if (features[0].properties.cluster_id) {
-                        return;
-                      }
+                    //   if (features[0].properties.cluster_id) {
+                    //     return;
+                    //   }
     
-                      if(selectLayerProps.interactionProps.mouseClick.clickInteraction 
-                        && selectLayerProps.interactionProps.mouseClick.clickInteraction.flyTo === true) {
-                        setStateApp((state) => ({ ...state, flyTo: features[0].properties }));
-                      }
-                    }
+                    //   if(selectLayerProps.interactionProps.mouseClick.clickInteraction 
+                    //     && selectLayerProps.interactionProps.mouseClick.clickInteraction.flyTo === true) {
+                    //     setStateApp((state) => ({ ...state, flyTo: features[0].properties }));
+                    //   }
+                    // }
                     
-                    if (selectLayerProps.interactionProps.mouseClick.clickInteractionHandler) {
-                      map.off("click", selectLayerProps.layerProps[i].layerId, selectLayerProps.interactionProps.mouseClick.clickInteractionHandler)
-                    }
+                    // if (selectLayerProps.interactionProps.mouseClick.clickInteractionHandler) {
+                    //   map.off("click", selectLayerProps.layerProps[i].layerId, selectLayerProps.interactionProps.mouseClick.clickInteractionHandler)
+                    // }
 
-                    if (availableInteraction) {
-                      map.on("click", selectLayerProps.layerProps[i].layerId, layerClickHander);
-                      selectLayerProps.interactionProps.mouseClick.clickInteractionHandler = layerClickHander;
-                    }
+                    // if (availableInteraction) {
+                    //   map.on("click", selectLayerProps.layerProps[i].layerId, layerClickHander);
+                    //   selectLayerProps.interactionProps.mouseClick.clickInteractionHandler = layerClickHander;
+                    // }
 
 
                     // eslint-disable-next-line no-loop-func
-                    const clusterClickHandler = (e) => {
-                      var features = map.queryRenderedFeatures(e.point, {
-                        layers: [clusterVar]
-                      });
-                      console.log(features);
+                    // const clusterClickHandler = (e) => {
+                    //   var features = map.queryRenderedFeatures(e.point, {
+                    //     layers: [clusterVar]
+                    //   });
+                    //   console.log(features);
 
-                      if (!features || features.length === 0) {
-                        return;
-                      }
+                    //   if (!features || features.length === 0) {
+                    //     return;
+                    //   }
 
-                      if (!features) {
-                        return;
-                      }
+                    //   if (!features) {
+                    //     return;
+                    //   }
       
-                      var clusterId = features[0].properties.cluster_id;
+                    //   var clusterId = features[0].properties.cluster_id;
       
       
-                      if(selectLayerProps.interactionProps.mouseClick.clusterClickInteraction 
-                        && selectLayerProps.interactionProps.mouseClick.clusterClickInteraction.easeTo===true){
-                            map.getSource(selectLayerProps.sourceProps[i].sourceId).getClusterExpansionZoom(
-                                  clusterId,
-                                  function(err, zoom) {
-                                  if (err) return;
+                    //   if(selectLayerProps.interactionProps.mouseClick.clusterClickInteraction 
+                    //     && selectLayerProps.interactionProps.mouseClick.clusterClickInteraction.easeTo===true){
+                    //         map.getSource(selectLayerProps.sourceProps[i].sourceId).getClusterExpansionZoom(
+                    //               clusterId,
+                    //               function(err, zoom) {
+                    //               if (err) return;
                                     
-                                  map.easeTo({
-                                  center: features[0].geometry.coordinates,
-                                  zoom: zoom
-                                  });
-                                  }
-                            );
-                          }
-                    }
+                    //               map.easeTo({
+                    //               center: features[0].geometry.coordinates,
+                    //               zoom: zoom
+                    //               });
+                    //               }
+                    //         );
+                    //       }
+                    // }
 
-                    if (selectLayerProps.interactionProps.mouseClick.clusterClickHandler) {
-                      map.off("click", clusterVar, selectLayerProps.interactionProps.mouseClick.clusterClickHandler)
-                    }
+                    // if (selectLayerProps.interactionProps.mouseClick.clusterClickHandler) {
+                    //   map.off("click", clusterVar, selectLayerProps.interactionProps.mouseClick.clusterClickHandler)
+                    // }
 
-                    if (availableInteraction) {
-                      map.on('click', clusterVar, clusterClickHandler);
-                      selectLayerProps.interactionProps.mouseClick.clusterClickHandler = clusterClickHandler;
-                    }
+                    // if (availableInteraction) {
+                    //   map.on('click', clusterVar, clusterClickHandler);
+                    //   selectLayerProps.interactionProps.mouseClick.clusterClickHandler = clusterClickHandler;
+                    // }
     
                   }
     
@@ -1572,34 +1723,34 @@ import React, {
       return -1; //to handle the case where the value doesn't exist
     }
     
-    const wellPointClick = (e) => {
-      var bbox = [
-        [e.point.x - 10, e.point.y - 10],
-        [e.point.x + 10, e.point.y + 10],
-      ];
-      let features = map.queryRenderedFeatures(bbox, {
-        layers: ["wellpoints"],
-      });
-      let currentFeature = features[0];
-      console.log("current feature", currentFeature);
+    // const wellPointClick = (e) => {
+    //   var bbox = [
+    //     [e.point.x - 10, e.point.y - 10],
+    //     [e.point.x + 10, e.point.y + 10],
+    //   ];
+    //   let features = map.queryRenderedFeatures(bbox, {
+    //     layers: ["wellpoints"],
+    //   });
+    //   let currentFeature = features[0];
+    //   console.log("current feature", currentFeature);
 
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
-      }));
-      setStateApp((state) => ({
-        ...state,
-        selectedWell: currentFeature.properties,
-        selectedWellId: currentFeature.properties.id,
-        wellSelectedCoordinates: [
-          currentFeature.properties.longitude,
-          currentFeature.properties.latitude,
-        ],
-      }));
+    //   setStateApp((state) => ({
+    //     ...state,
+    //     popupOpen: false,
+    //   }));
+    //   setStateApp((state) => ({
+    //     ...state,
+    //     selectedWell: currentFeature.properties,
+    //     selectedWellId: currentFeature.properties.id,
+    //     wellSelectedCoordinates: [
+    //       currentFeature.properties.longitude,
+    //       currentFeature.properties.latitude,
+    //     ],
+    //   }));
 
-      createPopUp(currentFeature.properties);
-      map.resize();
-    }
+    //   createPopUp(currentFeature.properties);
+    //   map.resize();
+    // }
 
     const wellMouseMove = (e) => {
       map.getCanvas().style.cursor = "pointer";
@@ -1609,35 +1760,6 @@ import React, {
       map.getCanvas().style.cursor = "";
     }
 
-    const wellLineClick = (e) => {
-      var bbox = [
-        [e.point.x - 10, e.point.y - 10],
-        [e.point.x + 10, e.point.y + 10],
-      ];
-      let features = map.queryRenderedFeatures(bbox, {
-        layers: ["welllines"],
-      });
-
-      let currentFeature = features[0];
-
-      console.log("clicked well lines", currentFeature);
-
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
-      }));
-      setStateApp((state) => ({
-        ...state,
-        selectedWell: currentFeature.properties,
-        selectedWellId: currentFeature.properties.id,
-        wellSelectedCoordinates: [
-          currentFeature.properties.longitude,
-          currentFeature.properties.latitude,
-        ],
-      }));
-
-      createPopUp(currentFeature.properties);
-    }
 
     const mapMouseMove = (e) => {
       // e.lngLat is the longitude, latitude geographical position of the event
@@ -1881,7 +2003,7 @@ import React, {
           }
   
           if (stateMap.checkedLayersInteraction.length > 0 && stateMap.styleLayers[selectedLayerIntereaction].name === 'Wells') {
-            map.on("click", "wellpoints", wellPointClick);
+            // map.on("click", "wellpoints", wellPointClick);
     
             map.on("mousemove", "wellpoints", wellMouseMove);
     
@@ -1891,13 +2013,13 @@ import React, {
     
             map.on("mouseleave", "welllines", wellMouseLeave);
     
-            map.on("click", "welllines", wellLineClick);
+            // map.on("click", "welllines", wellLineClick);
 
             const wellcp = {...well}
             wellcp.wellMouseLeave = wellMouseLeave;
             wellcp.wellMouseMove = wellMouseMove;
-            wellcp.wellPointClick = wellPointClick;
-            wellcp.wellLineClick = wellLineClick;
+            // wellcp.wellPointClick = wellPointClick;
+            // wellcp.wellLineClick = wellLineClick;
 
             const styleLayers = stateMap.styleLayers.slice(0);
             styleLayers[wellIndex] = wellcp;
