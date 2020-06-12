@@ -71,8 +71,8 @@ const useStyles = makeStyles((theme) => ({
     color: "#5f5f5f",
   },
   textF: {
-    "& input": { color: "#ffffffc9" },
-    height: '35px',
+    "& input": { color: "#ffffffc9", height: '5px' },
+    //height: '35px',
     //width: '30%',
     //top: "-20px"
   },
