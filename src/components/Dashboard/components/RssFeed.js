@@ -1,25 +1,23 @@
-import CardHeader from "@material-ui/core/CardHeader";
-import IconButton from "@material-ui/core/IconButton";
-import { makeStyles } from "@material-ui/core/styles";
-import DragIndicatorOutlinedIcon from "@material-ui/icons/DragIndicatorOutlined";
-import { sortableHandle } from "react-sortable-hoc";
-import React, {
-  useContext,
-  useState,
-  useLayoutEffect,
-  useRef,
-  useEffect,
-  useCallback,
-  Fragment,
-} from "react";
 import { Grid } from "@material-ui/core";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
-import Skeleton from "@material-ui/lab/Skeleton";
+import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
-import moment from "moment";
-import M1neralIconSvg from "../../Shared/m1neralIconSvg";
+import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
+import Paper from "@material-ui/core/Paper";
+import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
+import DragIndicatorOutlinedIcon from "@material-ui/icons/DragIndicatorOutlined";
+import moment from "moment";
+import React, { Fragment, useEffect, useState } from "react";
+import { sortableHandle } from "react-sortable-hoc";
+import M1neralIconSvg from "../../Shared/m1neralIconSvg";
+import cnbc from "./RSSFeedIcons/cnbc1.svg";
+import feedimage from "./RSSFeedIcons/feedburner.png";
+import ngi from "./RSSFeedIcons/ngi.png";
+import oilngas from "./RSSFeedIcons/oilngas.png";
+import pbgas from "./RSSFeedIcons/pbgas.png";
+import rigzone from "./RSSFeedIcons/rigzone.svg";
+import smag from "./RSSFeedIcons/smag.webp";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -33,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
   thumb: {
     height: "16px",
-    width: "16px",
+    maxWidth: "16px",
   },
   source: {
     fontSize: "8px",
@@ -57,8 +55,8 @@ const useStyles = makeStyles((theme) => ({
     margin: "8px 4px",
   },
   image: {
-    height: "72px",
-    // width: "72px",
+    maxHeight: "72px",
+    maxWwidth: "72px",
     borderRadius: "4px",
   },
 }));
@@ -73,24 +71,33 @@ const rsslist = [
   {
     title: "FeedBurner",
     url: "https://feeds.feedburner.com/OilGasJournal-GeneralInterest",
-    image: "https://base.imgix.net/files/base/pennwell/ogj/logo.png?h=60",
+    image: feedimage,
   },
   {
     title: "Rigzone",
     url: "https://www.rigzone.com/news/rss/rigzone_latest.aspx",
+    image: rigzone,
   },
   {
     title: "Oil and Gas 360",
     url: "http://www.oilandgas360.com/feed/",
-    image:
-      "https://www.oilandgas360.com/wp-content/uploads/2014/09/OAG-Logo-325x90_rev.png",
+    image: oilngas,
   },
-  { title: "CNBC", url: "http://www.cnbc.com/id/10000030/device/rss" },
-  { title: "NGI Shale Daily", url: "https://www.naturalgasintel.com/rss/1" },
-  { title: "Shalemag", url: "https://shalemag.com/feed/" },
+  {
+    title: "CNBC",
+    url: "http://www.cnbc.com/id/10000030/device/rss",
+    image: cnbc,
+  },
+  {
+    title: "NGI Shale Daily",
+    url: "https://www.naturalgasintel.com/rss/1",
+    image: ngi,
+  },
+  { title: "Shalemag", url: "https://shalemag.com/feed/", image: smag },
   {
     title: "PB Oil and Gas Magazine",
     url: "http://pboilandgasmagazine.com/feed/",
+    image: pbgas,
   },
 ];
 
@@ -111,15 +118,8 @@ const RssFeed = () => {
           article: item,
           image,
         }));
-        // return [
-        //   { source: title, feed, article: items[0], image },
-        //   { source: title, feed, article: items[1], image },
-        //   { source: title, feed, article: items[2], image },
-        //   { source: title, feed, article: items[3], image },
-        //   { source: title, feed, article: items[4], image },
-        // ];
       } catch (error) {
-        console.log(error);
+        console.log(error, url);
       }
     };
     Promise.all(rsslist.map((source) => fetchRss(source))).then((articles) => {
@@ -128,7 +128,6 @@ const RssFeed = () => {
       const sorted = newArticles.sort((a, b) =>
         a.article.pubDate > b.article.pubDate ? -1 : 1
       );
-      console.log(sorted);
       setNews([...news, ...sorted]);
     });
   }, []);
@@ -147,6 +146,15 @@ const RssFeed = () => {
     return sanitized;
   };
 
+  const sentenceCase = (sen) =>
+    sen
+      .split("")
+      .map((c, i) => {
+        if (i == 0) return c.toUpperCase();
+        return c;
+      })
+      .join("");
+
   return (
     <Fragment>
       <CardHeader
@@ -156,63 +164,70 @@ const RssFeed = () => {
       />
 
       <List style={{ maxHeight: "calc(100% - 40px)", overflow: "auto" }}>
-        {news.map(({ feed, article, source, image }, i) => (
-          <Paper key={i} className={classes.paper}>
-            <Grid
-              container
-              direction="row"
-              justify="space-between"
-              alignItems="center"
-              className={classes.listitem}
-              spacing={1}
-            >
-              <Grid item xs={9} zeroMinWidth>
-                <Grid container alignItems="center">
-                  {!!(article.enclosure.link || feed.image) ? (
+        {news.map(({ feed, article, source, image }, i) => {
+          const thumbImage = image || feed.image || article.enclosure.link;
+          const mainImage = article.enclosure.link || feed.image || image;
+          const time = moment.utc(article.pubDate).local().fromNow();
+          return (
+            <Paper key={i} className={classes.paper}>
+              <Grid
+                container
+                direction="row"
+                justify="space-between"
+                alignItems="center"
+                className={classes.listitem}
+                spacing={1}
+              >
+                <Grid item xs={9} zeroMinWidth>
+                  <Grid container alignItems="center">
+                    {!!thumbImage ? (
+                      <CardMedia
+                        className={classes.thumb}
+                        component={"img"}
+                        image={thumbImage}
+                        title="thumbnail"
+                      />
+                    ) : (
+                      <M1neralIconSvg
+                        size={{ height: "16px", width: "16px" }}
+                      />
+                    )}
+                    <Typography noWrap className={classes.source}>
+                      {cleanedText(feed.title)}
+                    </Typography>{" "}
+                  </Grid>
+                  <Typography
+                    component="a"
+                    href={article.link}
+                    variant="h2"
+                    className={classes.title}
+                    target="_blank"
+                  >
+                    {truncate(article.title, 50)}
+                  </Typography>
+                  <Typography className={classes.content}>
+                    {truncate(cleanedText(article.content), 100)}
+                  </Typography>
+                  <Typography noWrap className={classes.date}>
+                    {sentenceCase(time)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={3} style={{ textAlign: "-webkit-center" }}>
+                  {!!mainImage ? (
                     <CardMedia
-                      className={classes.thumb}
+                      className={classes.image}
                       component={"img"}
-                      image={feed.image || article.enclosure.link}
-                      title="thumbnail"
+                      image={mainImage}
+                      title="Image"
                     />
                   ) : (
-                    <M1neralIconSvg size={{ height: "16px", width: "16px" }} />
+                    <M1neralIconSvg />
                   )}
-                  {/* <Skeleton variant="rect" className={classes.thumb} /> */}
-                  <Typography noWrap className={classes.source}>
-                    {cleanedText(feed.title)}
-                  </Typography>{" "}
                 </Grid>
-                <Typography
-                  component="a"
-                  href={article.link}
-                  variant="h2"
-                  className={classes.title}
-                >
-                  {truncate(article.title, 50)}
-                </Typography>
-                <Typography className={classes.content}>
-                  {truncate(cleanedText(article.content), 100)}
-                </Typography>
-                <Typography noWrap className={classes.date}>
-                  {moment.utc(article.pubDate).local().fromNow()}
-                </Typography>
               </Grid>
-              <Grid item xs={3} style={{ textAlign: "-webkit-center" }}>
-                {!!(article.enclosure.link || feed.image) ? (
-                  <CardMedia
-                    className={classes.image}
-                    component={"img"}
-                    image={article.enclosure.link || feed.image}
-                    title="Image"
-                  />
-                ) : (
-                  <M1neralIconSvg />
-                )}
-              </Grid>
-            </Grid>
-          </Paper>
-        ))}
+            </Paper>
+          );
+        })}
       </List>
     </Fragment>
   );
