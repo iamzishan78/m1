@@ -167,6 +167,10 @@ export default function Tags(props) {
           "getTagsByObjectId",
           "getUserAvailableTags",
           "getTagSamples",
+          "getUserAvailableFilterTags",
+          "getObjectsFromTagsArray",
+          "getWellsIdsFromTagsArray",
+          "getOwnersIdsFromTagsArray",
         ],
         awaitRefetchQueries: true,
       });
@@ -184,6 +188,10 @@ export default function Tags(props) {
         "getTagsByObjectId",
         "getUserAvailableTags",
         "getTagSamples",
+        "getUserAvailableFilterTags",
+        "getObjectsFromTagsArray",
+        "getWellsIdsFromTagsArray",
+        "getOwnersIdsFromTagsArray",
       ],
       awaitRefetchQueries: true,
     });

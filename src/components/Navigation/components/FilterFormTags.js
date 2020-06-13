@@ -1,133 +1,89 @@
-import React, { useState, useContext, useEffect, useCallback } from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
 import { NavigationContext } from "../NavigationContext";
-import ProdMinMax from "./ProdMinMax";
 import FilterTags from "./FilterTags";
-import FormControl from "@material-ui/core/FormControl";
 import FilterTrackedWells from "./FilterTrackedWells";
+import Grid from "@material-ui/core/Grid";
+import { WELLSMINMAXLATLONGFROMIDSARRAY } from "../../../graphQL/useQueryWellsMinMaxLatLongFromIdsArray";
+import { useLazyQuery } from "@apollo/react-hooks";
+import { AppContext } from "../../../AppContext";
 
-
-const useStyles = makeStyles(theme => ({
-  root: {
+const useStyles = makeStyles((theme) => ({
+  gridItem: {
     display: "flex",
-    flexWrap: "wrap",
     flexDirection: "column",
-    justifyContent: "space-around",
-  },
-  row: {
-    display: "flex",
-    flexWrap: "wrap",
-    flexDirection: "row"
-  },
-  formControl: {
-    margin: "15px",
-    color: "black",
-  },
-  chips: {
-    display: "flex",
-    flexWrap: "wrap",
-    flexDirection: "column",
-  },
-  chip: {
-    margin: 2,
-  },
-  noLabel: {
-    marginTop: "100px"
-  },
-  indicator: {
-    backgroundColor: "rgba(23, 170, 221, 1) !important"
-  },
-  inputLabel: {
-    color: "black"
   },
 }));
-
-
 
 export default function FilterFormProduction() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  // const [prodOptions, setProdOptions] = useState(
-  //   stateNav.prodOptions ? stateNav.prodOptions : null
-  // );
-  const [list, setList] = useState([]);
-  const [optionsCopy, setOptionsCopy] = useState(null);
+  const [, setStateApp] = useContext(AppContext);
+  const [getWellsMinMaxLatLongFromIdsArray, { data }] = useLazyQuery(
+    WELLSMINMAXLATLONGFROMIDSARRAY
+  );
 
-  const handleSelectedValueToDisplay = value => {
-    // setProdOptions(value);
-    // setStateNav(stateNav => ({
-    //   ...stateNav,
-    //   prodOptions: value
-    // }));
-  };
+  useEffect(() => {
+    let filter;
 
-  // useEffect(() => {
-  //   if (stateNav.prodOptions && optionsCopy) {
-      
-  //     const check = optionsCopy.map(val => val)
-      
-  //     const removeFilters = check.filter(name => !stateNav.prodOptions.includes(name.name))
+    if (stateNav.wellsIdsFromTags && stateNav.wellsIdsFromTags.length > 0) {
+      let IdsArray = [];
+      for (let i = 0; i < stateNav.wellsIdsFromTags.length; i++) {
+        if (IdsArray.indexOf(stateNav.wellsIdsFromTags[i]) === -1)
+          IdsArray.push(stateNav.wellsIdsFromTags[i]);
+      }
 
-  //     // removeFilters.forEach(element => {
-  //     //   // setStateNav(stateNav => ({
-  //     //   //   ...stateNav,
-  //     //   //   [element.filterName]: null
-  //     //   // }));
-  //     // })
-      
-  //   } 
-  // },[optionsCopy, setStateNav, stateNav.prodOptions])
+      filter = ["match", ["get", "id"], IdsArray, true, false];
 
-  // useEffect(() => {
-  //   if (optionsCopy) {
-  //     let compare = [];
-  //     let optionUpdate;
-  //     let elementUpdate;
-  //     let matchName = prodOptions.map(option => option);
-  //     matchName.forEach(element => {
-  //       compare.push(element);
-  //     });
+      getWellsMinMaxLatLongFromIdsArray({
+        variables: {
+          idsArray: IdsArray,
+        },
+      });
+    } else {
+      filter = null;
+    }
 
-  //     const check = optionsCopy.filter(name => compare.includes(name.name));
-  //     optionsCopy.forEach((element, index) => {
-  //       check.forEach(option => {
-  //         if (element.name === option.name) {
-  //           optionUpdate = option.name;
-  //           elementUpdate = option.name;
-  //         }
-  //       });
-  //     });
-  //     if (optionUpdate && elementUpdate) {
-  //       const updateState = optionsCopy.map(item =>
-  //         compare.includes(item.name) ? { ...item, display: true } : item
-  //       );
-  //       setList(updateState);
-  //     } else {
-  //       const updateState = optionsCopy.map(item =>
-  //         compare.includes(!item.name) ? { ...item, display: false } : item
-  //       );
-  //       setList(updateState);
-  //     } 
-  //   } 
-  // }, [optionsCopy, prodOptions, stateNav.prodOptions]);
+    setStateNav((stateNav) => ({ ...stateNav, filterTags: filter }));
+  }, [stateNav.wellsIdsFromTags]);
 
-  const renderFMW = list
-    .filter(item => item.display === true)
-    .map(item => (
-      <ProdMinMax key={item.name} id={item.id} name={item.name} filter={item.filterName} />
-    ));
+  useEffect(() => {
+    if (data) {
+      if (
+        data.wellsMinMaxLatLongFromIdsArray &&
+        data.wellsMinMaxLatLongFromIdsArray.length > 0 &&
+        data.wellsMinMaxLatLongFromIdsArray[0].maxLat &&
+        data.wellsMinMaxLatLongFromIdsArray[0].minLat &&
+        data.wellsMinMaxLatLongFromIdsArray[0].maxLong &&
+        data.wellsMinMaxLatLongFromIdsArray[0].minLong
+      ) {
+        ///////////Setting Filters Bounds////////
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          fitBounds: data.wellsMinMaxLatLongFromIdsArray[0],
+        }));
+      } else {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          fitBounds: null,
+        }));
+      }
+    }
+  }, [data]);
 
   return (
-    <div className={classes.root}>
-
-    <FormControl className={classes.formControl}>
-      <FilterTags />
-    </FormControl> 
-    <FormControl className={classes.formControl}>
-      <FilterTrackedWells/>
-    </FormControl> 
-
-    </div>
+    <Grid
+      container
+      item
+      spacing={2}
+      style={{ padding: "8px", width: "100%", margin: "0" }}
+    >
+      <Grid item sm={12} className={classes.gridItem}>
+        <FilterTags />
+      </Grid>
+      <Grid item sm={12} className={classes.gridItem}>
+        <FilterTrackedWells />
+      </Grid>
+    </Grid>
   );
 }

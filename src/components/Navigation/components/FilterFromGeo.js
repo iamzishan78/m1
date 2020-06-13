@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function FilterFromGeo() {
   const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [getWellsMinMaxLatLong, { data }] = useLazyQuery(WELLSMINMAXLATLONG);
 
