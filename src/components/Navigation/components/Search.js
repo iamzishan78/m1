@@ -558,9 +558,9 @@ export default function Search() {
             ),
             endAdornment: (
               <InputAdornment>
-                <IconButton>
+                {/* <IconButton>
                   <ArrowDropDownIcon htmlColor="#fff" />
-                </IconButton>
+                </IconButton> */}
               </InputAdornment>
             ),
           }}
