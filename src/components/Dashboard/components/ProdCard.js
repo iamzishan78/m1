@@ -50,7 +50,13 @@ const ProdCard = ({ title }) => {
     <Iframe 
       width="100%"
       height="499px"
-      paddintTop="10px"
+      //height="10000px"
+      position='relative'
+      display='initial'
+      paddingTop="10px"
+      frameBorder="0"
+      scrolling="yes"
+      allowFullScreen="true"
       url="https://app.powerbi.com/view?r=eyJrIjoiNDVlNmExN2MtYTlmOC00NTQ5LWFmYmEtZDQ1MThmNWUxNzA5IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9" 
       /> 
     </div>

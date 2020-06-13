@@ -40,7 +40,8 @@ export default function Studio() {
               // url="https://studio.m1neral.com"  
               url="https://m1studio-dev.azurewebsites.net/"
               frameBorder="0" 
-              scrolling="no"/> 
+              scrolling="no"
+              /> 
 
       // </Container>
 
