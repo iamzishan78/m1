@@ -1253,7 +1253,7 @@ export default function Navigation(props) {
               selected: classes.menuListItemSelected,
             }}
             button
-            selected={stateNav.selectedMenuIndexFind === 1}
+            selected={stateNav.selectedMenuIndexDashboard === 1}
             onClick={(event) => handleListItemClick(event, 0, "/dashboard")}
             key="dashboard"
           >

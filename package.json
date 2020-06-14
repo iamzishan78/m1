@@ -60,7 +60,7 @@
     "typescript": "^3.9.5",
     "uid": "^1.0.0",
     "viewport-mercator-project": "^7.0.1"
-    },
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
