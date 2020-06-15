@@ -2,12 +2,12 @@ import React from "react";
 
 /* props is just a style object*/
 
-const M1neralIconSvg = props => {
+const M1neralIconSvg = (props) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="50"
-      height="50"
+      width={props.size?.width || "50"}
+      height={props.size?.height || "50"}
       // viewBox="0 0 11320 2490"
       viewBox="0 0 1700 2500"
     >
