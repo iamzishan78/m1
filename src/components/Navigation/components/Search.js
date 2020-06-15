@@ -356,8 +356,19 @@ export default function Search() {
                     ...result,
                     Source: indexSource,
                     Primary:
-                      result.Lease && result.Lease !== "" ? result.Lease : "--",
-                    Secondary: result.LeaseId,
+                      result.Lease &&
+                      (result.Lease === "" ||
+                        result.Lease === "N/A" ||
+                        result.Lease === "(N/A)")
+                        ? "--"
+                        : result.Lease,
+                    Secondary:
+                      result.LeaseId &&
+                      (result.LeaseId === "" ||
+                        result.LeaseId === "N/A" ||
+                        result.LeaseId === "(N/A)")
+                        ? null
+                        : result.LeaseId,
                   })),
                 ];
 
@@ -535,7 +546,7 @@ export default function Search() {
           {...params}
           variant="outlined"
           fullWidth
-          placeholder="Search by well name, API, owner, operator"
+          placeholder="Search by well name, API, owner, operator or lease"
           InputProps={{
             ...params.InputProps,
             startAdornment: (
@@ -547,9 +558,9 @@ export default function Search() {
             ),
             endAdornment: (
               <InputAdornment>
-                <IconButton>
+                {/* <IconButton>
                   <ArrowDropDownIcon htmlColor="#fff" />
-                </IconButton>
+                </IconButton> */}
               </InputAdornment>
             ),
           }}

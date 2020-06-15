@@ -9,6 +9,9 @@ import Iframe from 'react-iframe';
 
 
 const useStyles = makeStyles(() => ({
+  root:  {
+    flexgrow: 1
+  },
   weather: {
     justifyContent: "space-between",
     textAlign: "center",
@@ -119,9 +122,9 @@ const WeatherCard = () => {
   }, [location,weatherkey]);
 
   return (
-    <Fragment >
+    <Fragment styles={{width: "100%"}}>
       <Grid item container spacing={2}>
-        <Grid item sm={8} className={classes.dateCard}>
+        <Grid item xs={6} sm={8} md={8} lg={9} xl={9} className={classes.dateCard}>
           <Box>
             <Typography variant="body2" align="left">
               {date?.split(";")[0]}
@@ -146,7 +149,7 @@ const WeatherCard = () => {
           </Box>
         </Grid> */}
 
-        <Grid item sm={4}>
+        <Grid styles={{width: "100%"}} item xs={6} sm={4} md={4} lg={3} xl={3}>
           <Paper elevation={1} className={classes.wpaper}>
             <Grid item container direction="column">
               <Grid item container direction="row">

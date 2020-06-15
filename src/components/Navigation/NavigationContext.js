@@ -9,6 +9,9 @@ const NavigationContextProvider = (props) => {
     selectedMenuIndexTransact: 0,
     selectedMenuIndexTitle: 0,
     selectedMenuIndexAlerts: 0,
+    selectedMenuIndexDashboard: 0,
+    selectedMenuIndexContacts: 0,
+    selectedMenuIndexStudio: 0,
     totalFilterCount: 0,
     filterWellProfile: null,
     filterWellType: null,
@@ -44,6 +47,7 @@ const NavigationContextProvider = (props) => {
     filterNoOwnerCount: null,
     filterOwnerConfidence: null,
     filterHasOwners: null,
+    filterTags: null,
     filterTrackedWells: null,
     filterAllInterestTypes: null,
     filterAllOwnershipTypes: null,
@@ -114,7 +118,10 @@ const NavigationContextProvider = (props) => {
     ownerWellInterestSum: null,
     drawingMode: null,
     filterFeatureId: null,
-    isProfileOpen: true
+    isProfileOpen: true,
+    filterDrawing: [],
+    selectedTags: [],
+    wellsIdsFromTags: [],
   });
   return (
     <NavigationContext.Provider value={[stateNav, setStateNav]}>

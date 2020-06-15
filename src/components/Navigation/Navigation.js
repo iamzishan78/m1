@@ -1253,7 +1253,7 @@ export default function Navigation(props) {
               selected: classes.menuListItemSelected,
             }}
             button
-            selected={stateNav.selectedMenuIndexFind === 1}
+            selected={stateNav.selectedMenuIndexDashboard === 1}
             onClick={(event) => handleListItemClick(event, 0, "/dashboard")}
             key="dashboard"
           >
@@ -1586,11 +1586,11 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Well"
                 />
-                <CardActions
+                {/* <CardActions
                   classes={{
                     root: classes.cardAction,
                   }}
-                ></CardActions>
+                ></CardActions> */}
                 <CardContent className={classes.cardContent}>
                   <FilterFormWell />
                 </CardContent>
@@ -1618,11 +1618,11 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Ownership"
                 />
-                <CardActions
+                {/* <CardActions
                   classes={{
                     root: classes.cardAction,
                   }}
-                ></CardActions>
+                ></CardActions> */}
                 <CardContent className={classes.cardContent}>
                   <FilterFormOwner />
                 </CardContent>
@@ -1650,11 +1650,11 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Production"
                 />
-                <CardActions
+                {/* <CardActions
                   classes={{
                     root: classes.cardAction,
                   }}
-                ></CardActions>
+                ></CardActions> */}
                 <CardContent className={classes.cardContent}>
                   <FilterFormProduction />
                 </CardContent>
@@ -1683,11 +1683,11 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Value"
                 />
-                <CardActions
+                {/* <CardActions
                   classes={{
                     root: classes.cardAction,
                   }}
-                ></CardActions>
+                ></CardActions> */}
                 <CardContent className={classes.cardContent}>
                   <FilterFormValue />
                 </CardContent>
@@ -1715,11 +1715,11 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Tags"
                 />
-                <CardActions
+                {/* <CardActions
                   classes={{
                     root: classes.cardAction,
                   }}
-                ></CardActions>
+                ></CardActions> */}
                 <CardContent className={classes.cardContent}>
                   <FilterFormTags />
                 </CardContent>
@@ -1747,11 +1747,11 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Artificial Intelligence"
                 />
-                <CardActions
+                {/* <CardActions
                   classes={{
                     root: classes.cardAction,
                   }}
-                ></CardActions>
+                ></CardActions> */}
                 <CardContent className={classes.cardContent}>
                   <FilterFormAI />
                 </CardContent>
@@ -1779,11 +1779,11 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Advanced Search"
                 />
-                <CardActions
+                {/* <CardActions
                   classes={{
                     root: classes.cardAction,
                   }}
-                ></CardActions>
+                ></CardActions> */}
                 <CardContent className={classes.cardContent}>
                   <FilterDefaults />
                 </CardContent>

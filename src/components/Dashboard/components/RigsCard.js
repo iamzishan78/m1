@@ -49,7 +49,7 @@ const RigsCard = ({ title }) => {
     <div className={classes.frame}>
     <Iframe 
       width="100%"
-      height="499px"
+      height="1499px"
       paddintTop="10px"
       url="https://app.powerbi.com/view?r=eyJrIjoiMzA0MzgzZGMtYmZjZi00OWRjLWIzMmItOTg0MmVlNDVkMzU5IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9" 
       /> 
