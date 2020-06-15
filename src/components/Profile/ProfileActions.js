@@ -1,8 +1,12 @@
+import { useMutation } from "@apollo/react-hooks";
 import Button from "@material-ui/core/Button";
 import MuiDialogActions from "@material-ui/core/DialogActions";
 import { withStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
+import { AppContext } from "../../AppContext";
+import { UPSERTPROFILE } from "../../graphQL/useMutationUpsertProfile";
+import { GETPROFILE } from "../../graphQL/useQueryGetProfile";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { ProfileContext } from "./ProfileContext";
 
@@ -14,9 +18,14 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 const ProfileActions = () => {
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateProfile, setStateProfile] = useContext(ProfileContext);
   const { isProfileOpen } = stateNav;
+  const {
+    user: { email },
+  } = stateApp;
+  const [updateProfile, { called, loading, data }] = useMutation(UPSERTPROFILE);
   const history = useHistory();
 
   const handleClose = () => {
@@ -24,10 +33,12 @@ const ProfileActions = () => {
     history.goBack();
   };
 
-  const handleSubmit = () => {
-    console.log(stateProfile.fields);
-    // setStateNav({ ...stateNav, isProfileOpen: false });
-    // history.goBack()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await updateProfile({
+      variables: { profileData: { ...stateProfile.fields, email } },
+    });
+    handleClose();
   };
 
   return (
