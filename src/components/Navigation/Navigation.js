@@ -825,6 +825,8 @@ export default function Navigation(props) {
   };
 
   const openProfile = (event) => {
+    event.preventDefault()
+    handleMenuClose()
     setStateNav({...stateNav, isProfileOpen:true})
   };
   const menuId = "primary-search-account-menu";
@@ -841,7 +843,7 @@ export default function Navigation(props) {
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
         Logout
       </MenuItem>
-      <MenuItem className={classes.userMenuItem} onClick={()=>openProfile()}>
+      <MenuItem className={classes.userMenuItem} onClick={(e)=>openProfile(e)}>
         <Link to="/profile" style={{textDecoration: 'none', color: 'black'}}>
           Profile
         </Link>

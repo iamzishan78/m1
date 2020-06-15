@@ -1,3 +1,4 @@
+import { useQuery } from "@apollo/react-hooks";
 import { Grid } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
@@ -7,7 +8,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/lab/Skeleton";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
+import { AppContext } from "../../AppContext";
+import { GETPROFILE } from "../../graphQL/useQueryGetProfile";
 import { ProfileContext } from "./ProfileContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -57,26 +60,56 @@ const useStyles = makeStyles((theme) => ({
   },
   image: {
     width: "100%",
-    height: "150px",
+    height: "180px",
+    borderRadius: "4px",
   },
 }));
 
 const ProfileContent = () => {
   const classes = useStyles();
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [stateProfile, setStateProfile] = useContext(ProfileContext);
   const {
-    fields: { fullname, displayname, activity, phone, timezone,profileImage },
+    user: { email },
+  } = stateApp;
+
+  const { data, error, loading } = useQuery(GETPROFILE, {
+    variables: { email },
+    fetchPolicy: "network-only",
+  });
+  const {
+    fields: { fullname, displayname, activity, phone, timezone, profileImage },
     isImageModalOpen,
-    
   } = stateProfile;
-  //   console.log(fields);
-  //   useEffect(() => {
-  //     console.log(fields);
-  //     setStateProfile({
-  //       ...stateProfile,
-  //       fields: { ...stateProfile.fields },
-  //     });
-  //   }, []);
+
+  useEffect(() => {
+    if (data?.profileByEmail?.profile) {
+      const {
+        profileByEmail: {
+          profile: {
+            fullname,
+            displayname,
+            activity,
+            phone,
+            timezone,
+            profileImage,
+          },
+        },
+      } = data;
+
+      setStateProfile({
+        ...stateProfile,
+        fields: {
+          fullname,
+          displayname,
+          activity,
+          phone,
+          timezone,
+          profileImage,
+        },
+      });
+    }
+  }, [data]);
 
   const onChange = ({ name, value }) => {
     setStateProfile({
@@ -97,6 +130,14 @@ const ProfileContent = () => {
       );
       reader.readAsDataURL(e.target.files[0]);
     }
+  };
+
+  const removePhoto = (e) => {
+    e.preventDefault();
+    setStateProfile({
+      ...stateProfile,
+      fields: { ...stateProfile.fields, profileImage: "" },
+    });
   };
 
   return (
@@ -239,6 +280,7 @@ const ProfileContent = () => {
             component="span"
             className={classes.button}
             style={{ color: "blue" }}
+            onClick={(e) => removePhoto(e)}
           >
             Remove photo
           </Button>

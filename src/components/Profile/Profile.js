@@ -1,13 +1,13 @@
 import Dialog from "@material-ui/core/Dialog";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import React, { useState, useContext } from "react";
-import ImageModal from "./ImageModal";
-import ProfileContent from "./ProfileContent";
-import ProfileTitle from "./ProfileTitle";
-import ProfileActions from "./ProfileActions";
-import { ProfileContextProvider, ProfileContext } from "./ProfileContext";
-import { NavigationContext } from "../Navigation/NavigationContext";
+import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
+import { NavigationContext } from "../Navigation/NavigationContext";
+import ImageModal from "./ImageModal";
+import ProfileActions from "./ProfileActions";
+import ProfileContent from "./ProfileContent";
+import { ProfileContextProvider } from "./ProfileContext";
+import ProfileTitle from "./ProfileTitle";
 
 const useStyles = makeStyles(() => ({
   paper: {
