@@ -142,9 +142,13 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     left: 0,
   },
+  drawerOpenLogo: {
+    paddingLeft: '50px',
+    paddingTop: '10px',
+  },
   drawerOpen: {
-    //background: 'rgba(245, 245, 245, 1.0)',
-    background: "rgba(255, 255, 255, 1.0)",
+    // background: "rgba(255, 255, 255, 1.0)",
+    background: "rgba(250, 250, 250, 1.0)",
     width: drawerWidth,
     height: "100vh",
     top: "0",
@@ -170,8 +174,8 @@ const useStyles = makeStyles((theme) => ({
   toolbar: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "flex-end",
-    padding: theme.spacing(0, 1),
+    // justifyContent: "flex-end",
+    // padding: theme.spacing(0, 1),
     // ...theme.mixins.toolbar
   },
   content: {
@@ -1262,7 +1266,11 @@ export default function Navigation(props) {
         open={openDrawer}
       >
         <div className={classes.toolbar}>
-          <M1neralLogo />
+
+          <div className={classes.drawerOpenLogo}>
+          <M1neralLogo/>
+          </div>
+
           <IconButton color="secondary" onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
