@@ -328,20 +328,46 @@ const useStyles = makeStyles((theme) => ({
   betaSideNav2: {
     textTransform: "inherit",
     position: "relative",
-    left: 7,
+    fontWeight: 900,
+    left: -13,
     fontSize: 12,
-    color: "rgba(0, 0, 0, 0.52) !important ",
+    color: "rgba(228, 167, 115, 1) !important ",
+  },
+  betaSideNav5: {
+    textTransform: "inherit",
+    position: "relative",
+    fontWeight: 900,
+    left: -50,
+    fontSize: 12,
+    color: "rgba(228, 167, 115, 0.25) !important ",
   },
   betaSideNav3: {
     textTransform: "inherit",
-    left: 10,
+    left: -10,
     fontSize: 12,
-    color: "rgba(0, 0, 0, 0.52) !important ",
+    fontWeight: 900,
+    color: "rgba(228, 167, 115, 1) !important ",
+  },
+  betaSideNav6: {
+    textTransform: "inherit",
+    position: "relative",
+    fontWeight: 900,
+    left: -13,
+    fontSize: 12,
+    color: "rgba(228, 167, 115, 1) !important ",
+  },
+  betaSideNav7: {
+    textTransform: "inherit",
+    position: "relative",
+    fontWeight: 900,
+    left: -34,
+    fontSize: 12,
+    color: "rgba(228, 167, 115, 1) !important ",
   },
   betaSideNav4: {
     textTransform: "inherit",
     position: "relative",
-    left: -10,
+    left: -40,
     fontSize: 12,
     color: "rgba(0, 0, 0, 0.52) !important ",
   },
@@ -606,7 +632,7 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 };
 
-const drawerWidth = "225px";
+const drawerWidth = "250px";
 
 export default function Navigation(props) {
   const classes = useStyles();
@@ -1363,31 +1389,7 @@ export default function Navigation(props) {
             </ListItemSecondaryAction>
           </ListItem>
 
-          <ListItem
-            classes={{
-              root: classes.menuListItemDisabled,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexTitle === 1}
-            //onClick={(event) => handleListItemClick(event, 0, "/title")}
-            key="title"
-          >
-            <ListItemIcon>
-              <DescriptionIcon />
-            </ListItemIcon>
-            <ListItemText primary="Title" />
-            <ListItemSecondaryAction>
-              <Button
-                disabled
-                className={classes.betaSideNav2}
-                edge="end"
-                aria-label="beta"
-              >
-                beta
-              </Button>
-            </ListItemSecondaryAction>
-          </ListItem>
+
 
           {/* <ListItem
             classes={{
@@ -1405,6 +1407,8 @@ export default function Navigation(props) {
             <ListItemText primary="M1Studio" />
           </ListItem> */}
 
+
+
           <ListItem
             classes={{
               root: classes.menuListItem,
@@ -1419,7 +1423,52 @@ export default function Navigation(props) {
               <LayersIcon/>
             </ListItemIcon>
             <ListItemText primary="Studio" />
+
+            <ListItemSecondaryAction>
+              <Button
+                disabled
+                className={classes.betaSideNav7}
+                edge="end"
+                aria-label="beta"
+              >
+                beta
+              </Button>
+            </ListItemSecondaryAction>
+
           </ListItem>
+
+
+          <ListItem
+            classes={{
+              root: classes.menuListItemDisabled,
+              selected: classes.menuListItemSelected,
+            }}
+            button
+            selected={stateNav.selectedMenuIndexTitle === 1}
+            //onClick={(event) => handleListItemClick(event, 0, "/title")}
+            key="title"
+          >
+            <ListItemIcon>
+              <DescriptionIcon />
+            </ListItemIcon>
+            <ListItemText primary="Title" />
+            <ListItemSecondaryAction>
+              <Button
+                disabled
+                className={classes.betaSideNav5}
+                edge="end"
+                aria-label="beta"
+              >
+                beta
+              </Button>
+            </ListItemSecondaryAction>
+          </ListItem>
+
+
+
+
+
+
         </List>
         <Divider variant="middle" className={classes.menuListBottomDivider} />
         <List className={classes.menuListBottom}>
