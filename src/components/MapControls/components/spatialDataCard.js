@@ -156,7 +156,7 @@ export default function SpatialDataCard(props) {
   const [dataProject, setDataProject] = useState(projectName);
   const [grossAcres, setGrossAcres] = useState(sdGrossAcres);
   const [dataNotes, setDataNotes] = useState(sdNotes);
-  const [stateMap] = useContext(MapContext);
+  const [stateMap, setStateMap] = useContext(MapContext);
 
   const inputLabel = useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);
@@ -167,6 +167,33 @@ export default function SpatialDataCard(props) {
     setDataProject(projectName);
     setDataNotes(sdNotes);
   }, [props.selectedFeature]);
+
+  useEffect(() => {
+    let udName = ""
+    switch (dataType) {
+      case "interest":
+        udName = "Area of Interest";
+        break;
+      case "parcel":
+        udName = "Parcels";
+        break;
+      default:
+        udName = "";
+        break;
+    }
+    if (udName) {
+      const layerIndex = stateMap.userDefinedLayers.findIndex(layer => layer.name == udName);
+      setStateMap({
+        ...stateMap,
+        tempCheckedUserDefinedLayers: layerIndex
+      });
+    } else {
+      setStateMap({
+        ...stateMap,
+        tempCheckedUserDefinedLayers: null
+      });
+    }
+  }, [dataType]);
 
   const updateDataNotes = evt => {
     let updatedNotes = evt.target.value;
@@ -181,8 +208,32 @@ export default function SpatialDataCard(props) {
       // sdNotes: dataNotes
     };
     props.saveSpatialData(spatialData, dataType);
+
+    const tmpChecked = stateMap.tempCheckedUserDefinedLayers;
+    const checkedLayers = stateMap.checkedUserDefinedLayers.slice(0);
+    if (tmpChecked && stateMap.checkedUserDefinedLayers.indexOf(tmpChecked) === -1) {
+      checkedLayers.push(tmpChecked)
+    }
+    setStateMap({
+      ...stateMap,
+      checkedUserDefinedLayers: checkedLayers,
+      tempCheckedUserDefinedLayers: null
+    })
   };
+
+  const closeSpatialDataCard = () => {
+    setStateMap({
+      ...stateMap,
+      tempCheckedUserDefinedLayers: null
+    });
+    props.closeSpatialDataCard();
+  }
+
   const deleteSpatialData = () => {
+    setStateMap({
+      ...stateMap,
+      tempCheckedUserDefinedLayers: null
+    });
     props.deleteSpatialDataAndShape();
   };
   const calculateLandArea = () => {
@@ -219,7 +270,7 @@ export default function SpatialDataCard(props) {
               />
             </IconButton>
 
-            <IconButton color="secondary" onClick={props.closeSpatialDataCard}>
+            <IconButton color="secondary" onClick={closeSpatialDataCard}>
               <CloseIcon fontSize="medium" />
             </IconButton>
           </div>

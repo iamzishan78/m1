@@ -462,6 +462,7 @@ const MapContextProvider = (props) => {
     checkedHeats: [],
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
     checkedUserDefinedLayers: [],
+    tempCheckedUserDefinedLayer: null,
     checkedUserDefinedLayersInteraction: [0,1,2,3,4],
     checkedLayersInteraction: [0],
     selectedLayerId: null,

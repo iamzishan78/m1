@@ -611,9 +611,13 @@ export default function Map() {
         });
       });
     }
-
-    if (map && stateMap.checkedUserDefinedLayers.length > 0) {
-      let layers = stateMap.checkedUserDefinedLayers.slice(0);
+    const tmpCheckedLayer = stateMap.tempCheckedUserDefinedLayers;
+    const checkedLayers = stateMap.checkedUserDefinedLayers.slice(0)
+    if (tmpCheckedLayer && stateMap.checkedUserDefinedLayers.indexOf(tmpCheckedLayer) === -1) {
+      checkedLayers.push(tmpCheckedLayer)
+    }
+    if (map && checkedLayers.length > 0) {
+      let layers = checkedLayers;
       layers.sort(function (a, b) {
         return b - a;
       });
@@ -937,6 +941,7 @@ export default function Map() {
     map,
     stateMap.checkedUserDefinedLayers,
     stateMap.checkedUserDefinedLayersInteraction,
+    stateMap.tempCheckedUserDefinedLayers,
     stateApp.customLayers,
   ]);
 
