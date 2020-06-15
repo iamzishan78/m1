@@ -83,7 +83,7 @@ const ProfileContent = () => {
   } = stateProfile;
 
   useEffect(() => {
-    if (data?.profileByEmail) {
+    if (data?.profileByEmail?.profile) {
       const {
         profileByEmail: {
           profile: {
