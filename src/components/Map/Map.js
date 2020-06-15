@@ -12,6 +12,7 @@ import { MapControlsContext } from "../MapControls/MapControlsContext";
 import Popover from "@material-ui/core/Popover";
 import { MapContext } from "./MapContext";
 import mapboxgl from "mapbox-gl";
+import * as turf from "@turf/turf";
 import { makeStyles } from "@material-ui/core/styles";
 import MapControlsProvider from "../MapControls/MapControlsProvider";
 import WellCardProvider from "../WellCard/WellCardProvider";
@@ -1499,6 +1500,62 @@ export default function Map() {
           ["get", "daysSinceCompletion"],
           0,
         ]);
+
+        const filterLayers = ["GLOLeases", "GLOLeaseLabels", "GLOUnits", "GLOUnitLabels"];
+        if (stateNav.filterDrawing && stateNav.filterDrawing.length === 2) {
+          filterLayers.forEach((filterLayer) => {
+            const layer = map.getLayer(filterLayer);
+            if (layer) {
+              const filterFeature = stateNav.filterDrawing[1];
+              const featuresList = map.querySourceFeatures('composite', {
+                'sourceLayer': layer.sourceLayer
+              });
+              if (featuresList && featuresList.length > 0) {
+                const result = featuresList.filter((feature) => {
+                  if (feature.geometry.type === "MultiPolygon") {
+                    for(let i = 0; i < feature.geometry.coordinates.length; i ++) {
+                      const coordinates = feature.geometry.coordinates[i]
+                      const geometry = {
+                        type: "Polygon",
+                        coordinates: coordinates,
+                      };
+                      if (!turf.booleanContains(filterFeature, geometry)) {
+                        return false;
+                      }
+                    }
+                    return true;
+                  }
+                  return turf.booleanContains(filterFeature, feature);
+                });
+
+                console.log(result);
+                let ids = result.map(function(feature) {
+                  return feature.properties.VIEWID
+                });
+  
+                const onlyUnique = (value, index, self) => { 
+                  return self.indexOf(value) === index;
+                }
+  
+                ids = ids.filter( onlyUnique );
+  
+                // console.log(ids);
+  
+                map.setFilter(filterLayer, [
+                  'match',
+                  ['get', 'VIEWID'],
+                  ids,
+                  true,
+                  false
+                ])
+              }
+            }
+          });
+        } else {
+          filterLayers.forEach((filterLayer) => {
+            map.setFilter(filterLayer, null);
+          });
+        }
       } else {
         map.setFilter("wellpoints", null);
         map.setFilter("welllines", null);
@@ -1508,6 +1565,10 @@ export default function Map() {
         map.setFilter("wellsHeatmapIP90Gas", null);
         map.setFilter("wellsHeatmapRecentlyDrilled", null);
         map.setFilter("wellsHeatmapRecentlyCompleted", null);
+        map.setFilter("GLOLeases", null);
+        map.setFilter("GLOLeaseLabels", null);
+        map.setFilter("GLOUnits", null);
+        map.setFilter("GLOUnitLabels", null);
       }
     }
     console.log("filters applied");
