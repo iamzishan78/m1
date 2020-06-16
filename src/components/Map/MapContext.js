@@ -162,15 +162,29 @@ const userDefinedLayers = [
                   [750, '#e4a773'],
               ]
             },
-          'circle-radius': {
-              property: 'point_count',
-              type: 'interval',
-              stops: [
-                  [0, 20],
-                  [100, 30],
-                  [750, 40]
-              ]
-            },
+
+          // 'circle-radius': {
+          //     property: 'point_count',
+          //     type: 'interval',
+          //     stops: [
+          //         [0, 20],
+          //         [100, 30],
+          //         [750, 40]
+          //     ]
+          //   },
+
+            'circle-radius': [
+              'step',
+              ['get', 'point_count'],
+              20,
+              5,
+              30,
+              10,
+              40,
+              20,
+              50
+              ],
+
             "circle-stroke-width": 5,
             "circle-stroke-color": '#fff',
           },
@@ -244,15 +258,31 @@ const userDefinedLayers = [
                   [750, '#01fdfe'],
               ]
             },
-          'circle-radius': {
-              property: 'point_count',
-              type: 'interval',
-              stops: [
-                  [0, 20],
-                  [100, 30],
-                  [750, 40]
-              ]
-            },
+
+
+          // 'circle-radius': {
+          //     property: 'point_count',
+          //     type: 'interval',
+          //     stops: [
+          //         [0, 20],
+          //         [100, 30],
+          //         [750, 40]
+          //     ]
+          //   },
+
+
+            'circle-radius': [
+              'step',
+              ['get', 'point_count'],
+              20,
+              5,
+              25,
+              10,
+              30,
+              20,
+              35
+              ],
+
             "circle-stroke-width": 5,
             "circle-stroke-color": '#fff',
           },

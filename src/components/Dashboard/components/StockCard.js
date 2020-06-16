@@ -47,7 +47,7 @@ const StockCard = ({ title }) => {
         "largeChartUrl": "",
         "isTransparent": false,
         "width": "100%",
-        "height": "500",
+        "height": "700",
         "plotLineColorGrowing": "rgba(33, 150, 243, 1)",
         "plotLineColorFalling": "rgba(33, 150, 243, 1)",
         "gridLineColor": "rgba(240, 243, 250, 1)",
