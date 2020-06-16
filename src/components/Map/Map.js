@@ -91,6 +91,7 @@ export default function Map() {
   const [map, setMap] = useState(null);
   const [mapClick, setMapClick] = useState(null);
   const [draw, setDraw] = useState(null);
+  const [drawStatus, setDrawStatus] = useState(false);
   const [drawingFilterFeatureId, setDrawingFilterFeatureId] = useState(null);
   // const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
@@ -264,6 +265,10 @@ export default function Map() {
 
     const layerClickHander = (feature) => {
       setStateApp((state) => ({ ...state, flyTo: feature.properties }));
+    };
+
+    const udLayerClickHandler = (feature) => {
+      
     };
 
     const clusterClickHandler = (feature, map) => {
@@ -2443,6 +2448,22 @@ export default function Map() {
     }
   }, [stateMap.toggle3d]);
 
+  useEffect(() => {
+    if (stateApp.editDraw === true || stateNav.drawingMode !== null) {
+      setDrawStatus(true);
+      if (mapClick && mapClick.mapClickHandler != null) {
+        map.off("click", mapClick.mapClickHandler);
+      }
+    } else {
+      setDrawStatus(false);
+      if (mapClick && mapClick.mapClickHandler != null) {
+        setTimeout(() => {
+          map.on("click", mapClick.mapClickHandler);
+        }, 500);
+      }
+    }
+  }, [stateApp.editDraw, stateNav.drawingMode])
+
   const handleOpenExpandableCard = (e) => {
     setAnchorElPoPOver(container.current);
     setShowExpandableCard(true);
@@ -2482,7 +2503,7 @@ export default function Map() {
         </div>
       </div>
       <MapControlsProvider />
-      <DrawStatus drawingStatus={stateApp.editDraw} />
+      <DrawStatus drawingStatus={drawStatus} />
       <Coordinates long={lng} lat={lat} />
       <div id="tempPopupHolder" className={classes.portal} ref={container} />
       <Portal container={container.current}>
