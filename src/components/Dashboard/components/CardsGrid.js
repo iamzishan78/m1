@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
     flexGrow: 1,
   },
   cgriditem: {
-    height: "700px",
+    height: "800px",
 
   },
   cgridcard: {
@@ -83,11 +83,13 @@ const SortableList = SortableContainer(({ items }) => {
 const CardGrid = () => {
   const [stateDashboard, setStateDashboard] = useContext(DashboardContext);
   const [items, setItems] = useState([
-    { el: <ProdCard title={1} />, size: "2x", key: 1 },
-    { el: <TwitterCard title={2} />, size: "x", key: 2 },
-    { el: <RSSFeed title={4} />, size: "x", key: 3 },
-    { el: <StockCard title={3} />, size: "2x", key: 4},
-    { el: <RigsCard title={5} />, size: "full", key: 5 },
+    { el: <RigsCard title={5} />, size: "2x", key: 1 },
+    { el: <StockCard title={3} />, size: "x", key: 2},
+    { el: <ProdCard title={1} />, size: "", key: 3 },
+    { el: <RSSFeed title={4} />, size: "x", key: 4 },
+    { el: <TwitterCard title={2} />, size: "x", key: 5 },   
+    
+    
   ]);
 
   const onSortEnd = ({ oldIndex, newIndex }) => {

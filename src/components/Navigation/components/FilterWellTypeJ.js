@@ -4,12 +4,16 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { NavigationContext } from '../NavigationContext';
 
 const wellTypesList = [
+  "COALBED METHANE",
+  "DISPOSAL",
+  "DRY HOLE",
   "GAS",
   "INJECTION",
   "OIL",
   "OIL AND GAS",
-  "PERMITTED",
   "P&A",
+  "PERMITTED",
+  "STORAGE",
   "UNKNOWN",
   "WATER",
 ];
