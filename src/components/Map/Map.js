@@ -584,6 +584,8 @@ export default function Map() {
   useEffect(() => {
     // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
 
+
+    // this section deletes the layers from the map 
     if (stateMap.userDefinedLayers.length > 0 && map) {
       const layerList = stateMap.userDefinedLayers;
       stateMap.userDefinedLayers.forEach((l) => {
@@ -611,6 +613,7 @@ export default function Map() {
       });
     }
 
+    // this section adds the updated list of layers 
     if (map && stateMap.checkedUserDefinedLayers.length > 0) {
       let layers = stateMap.checkedUserDefinedLayers.slice(0);
       layers.sort(function (a, b) {
@@ -625,7 +628,12 @@ export default function Map() {
 
         if (selectLayerProps.type === "data layer") {
           for (let i = 0; i < selectLayerProps.id.length; i++) {
+
+
             // -> fetch data
+            // this is taking the layer id and bringing in the data properties that go into the data layer
+            // this is selecting the correct data set for the layer that is being added to the map
+            // long term solution is somehow controlling the api for the data in a better way 
             let layerData = [];
             if (selectLayerProps.dataProps[i].dataId == "trackedWellsWells") {
               layerData = dataWells.wells.results;
@@ -649,9 +657,11 @@ export default function Map() {
               layerData = groupBy(stateApp.customLayers, "layer")[dataId];
             }
 
+
+
             if (layerData) {
               // -> make GEOJSON
-
+              // this section checks if data exists and then turns it into geojson formatting 
               const makeGeoJSON = (data) => {
                 return {
                   type: "FeatureCollection",
@@ -674,7 +684,10 @@ export default function Map() {
 
               const myGeoJSONData = makeGeoJSON(layerData);
 
+
+
               // -> add source
+              // before a layer can be added we add a source to the map 
               if (selectLayerProps.dataProps[i].dataTypeId == "Point") {
                 map.addSource(selectLayerProps.sourceProps[i].sourceId, {
                   type: selectLayerProps.sourceProps[i].sourceType,
@@ -690,8 +703,9 @@ export default function Map() {
                 });
               }
 
+
               // -> add layer
-              // eslint-disable-next-line eqeqeq
+              // this block of code paints the symbol layers and the normal layers 
               if (selectLayerProps.layerProps[i].layerType == "symbol") {
                 map.addLayer({
                   id: selectLayerProps.layerProps[i].layerId,
@@ -700,11 +714,6 @@ export default function Map() {
                   layout: selectLayerProps.layerProps[i].symbolProps,
                 });
               } else {
-                console.log(
-                  "other",
-                  selectLayerProps.layerProps[i].layerId,
-                  selectLayerProps.layerProps[i].paintProps
-                );
                 map.addLayer({
                   id: selectLayerProps.layerProps[i].layerId,
                   type: selectLayerProps.layerProps[i].layerType,
@@ -714,7 +723,7 @@ export default function Map() {
               }
 
               // -> add cluster layer
-
+              // this block of code adds the cluster layer if there is a cluster attached to that source 
               if (
                 selectLayerProps &&
                 selectLayerProps.layerProps &&
@@ -763,6 +772,8 @@ export default function Map() {
               }
               beforelayer = selectLayerProps.layerProps[i].layerId;
 
+
+              
               // -> add interaction (note to change later w/ interaction panel)
               if (selectLayerProps && selectLayerProps.interactionProps) {
                 const availableInteraction =
