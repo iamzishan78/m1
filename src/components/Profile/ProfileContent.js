@@ -132,14 +132,6 @@ const ProfileContent = () => {
     }
   };
 
-  const removePhoto = async () => {
-    await setStateProfile({
-      ...stateProfile,
-      selectedImage: null,
-      fields: { ...stateProfile.fields, profileImage: "" },
-    });
-  };
-
   return (
     <MuiDialogContent>
       <Grid container>
@@ -224,27 +216,6 @@ const ProfileContent = () => {
             value={phone}
             onChange={({ target }) => onChange(target)}
           />
-          {/* <Box pb={2.5} />
-          <TextField
-            InputLabelProps={{
-              classes: { root: classes.label, focused: classes.focused },
-              shrink: true,
-            }}
-            InputProps={{
-              disableUnderline: true,
-              error: true,
-              classes: { input: classes.input },
-            }}
-            FormHelperTextProps={{
-              classes: { root: classes.helperText },
-            }}
-            label={"Time zone"}
-            placeholder={"UTC"}
-            helperText={"Your current timezone"}
-            name="timezone"
-            value={timezone}
-            onChange={({ target }) => onChange(target)}
-          /> */}
         </Grid>
         <Grid item sm={4}>
           <Typography variant="body1">Profile Photo</Typography>
@@ -276,14 +247,6 @@ const ProfileContent = () => {
               Upload an image
             </Button>
           </label>
-          <Button
-            component="span"
-            className={classes.button}
-            style={{ color: "blue" }}
-            onClick={removePhoto}
-          >
-            Remove photo
-          </Button>
         </Grid>
       </Grid>
     </MuiDialogContent>
