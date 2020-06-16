@@ -2535,6 +2535,7 @@ export default function Map() {
   };
 
   const handleCloseSpatialDataCard = () => {
+    console.log("close card on map here");
     setStateApp((state) => ({
       ...state,
       popupOpen: false,
@@ -2728,8 +2729,9 @@ export default function Map() {
                   <SpatialDataCard
                     selectedFeature={stateApp.selectedUserDefinedLayer}
                     saveSpatialData={handleSaveSpatialDataToShape}
-                    closeSpatialDataCard={handleCloseExpandableCard}
+                    closeSpatialDataCard={handleCloseSpatialDataCard}
                     deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
+                    cardClass={"cardPopup"}
                   />
                 </PortalD>
               )

@@ -51,6 +51,19 @@ const useStyles = makeStyles(theme => ({
     left: "10vw"
   },
 
+  cardPopup: {
+    fontFamily: "Poppins",
+    fontStyle: "normal",
+    fontSize: ".75rem",
+    background: "#011133",
+    borderStyle: "solid",
+    borderWidth: "thin",
+    borderColor: "#011133",
+    width: "325px",
+    height: "auto",
+    position: "relative",
+  },
+
   cardHeader: {
     padding: "2%",
     height: "15%"
@@ -151,6 +164,7 @@ export default function SpatialDataCard(props) {
     sdNotes,
     sdGrossAcres,
   } = props.selectedFeature.properties;
+  const { cardClass = "card" } = props;
   const [dataType, setDataType] = useState(sdType);
   const [dataName, setDataName] = useState(shapeLabel);
   const [dataProject, setDataProject] = useState(projectName);
@@ -252,7 +266,7 @@ export default function SpatialDataCard(props) {
   };
 
   return (
-    <Card className={classes.card}>
+    <Card className={classes[cardClass]}>
       <CardHeader
         className={classes.cardHeader}
         classes={{
