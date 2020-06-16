@@ -281,8 +281,9 @@ export default function Map() {
       //   wellSelectedCoordinates: JSON.parse(feature.properties.center),
       // }));
 
+      setStateMap({...stateMap, currentFeature: feature});
       // createPopUp(feature.properties);
-      // map.resize();
+      map.resize();
     };
 
     const clusterClickHandler = (feature, map) => {
@@ -313,7 +314,6 @@ export default function Map() {
       checkedUDLayers.forEach((l) => {
         if (checkedUDLayersInteraction.indexOf(l) > -1) {
           const definedLayer = definedLayers[l];
-          console.log(definedLayer);
           const layerProps = definedLayer.layerProps;
           if (layerProps) {
             for (let i = 0; i < layerProps.length; i++) {
@@ -358,9 +358,7 @@ export default function Map() {
       if (features && features.length > 0) {
         const feature = features[0];
         console.log("stacked layers click info", features);
-        console.log(feature);
         const layerId = feature.layer.id;
-        console.log(udLayers);
         switch (true) {
           case clusterUDLayers.indexOf(layerId) > -1:
             clusterClickHandler(feature, map);
@@ -1700,6 +1698,24 @@ export default function Map() {
       //setStateApp((state) => ({ ...state, wellSelected: true }));
       //setStateApp((state) => ({ ...state, wellSelectedCoordinates: [currentFeature.longitude, currentFeature.latitude] }));
       handleOpenExpandableCard();
+    },
+    [map, setStateApp]
+  );
+
+  const createUDPopUp = useCallback(
+    (currentFeature) => {
+      let coordinates = JSON.parse(currentFeature.center);
+      let popUps = document.getElementsByClassName("mapboxgl-popup");
+      if (popUps[0]) popUps[0].remove();
+      //console.log(popUps);
+
+      let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+        .setLngLat(coordinates)
+        .setMaxWidth("none")
+        .setHTML(`<div id="popupContainer"></div>`)
+        .addTo(map);
+
+      setStateApp((state) => ({ ...state, popupOpen: true }));
     },
     [map, setStateApp]
   );
