@@ -132,10 +132,10 @@ const ProfileContent = () => {
     }
   };
 
-  const removePhoto = (e) => {
-    e.preventDefault();
-    setStateProfile({
+  const removePhoto = async () => {
+    await setStateProfile({
       ...stateProfile,
+      selectedImage: null,
       fields: { ...stateProfile.fields, profileImage: "" },
     });
   };
@@ -280,7 +280,7 @@ const ProfileContent = () => {
             component="span"
             className={classes.button}
             style={{ color: "blue" }}
-            onClick={(e) => removePhoto(e)}
+            onClick={removePhoto}
           >
             Remove photo
           </Button>
