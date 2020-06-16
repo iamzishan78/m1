@@ -657,6 +657,8 @@ export default function Navigation(props) {
   const [disableApply, setDisableApply] = useState(true);
   const [matchLocation, setMatchLocation] = useState(false);
   const [matchTrack, setMatchTrack] = useState(false);
+  const [matchFind, setMatchFind] = useState(false);
+
   let history = useHistory();
   let location = useLocation();
 
@@ -793,11 +795,14 @@ export default function Navigation(props) {
     }
   }, [location.pathname]);
 
+
   useEffect(() => {
     if (location.pathname === "/") {
       setMatchLocation(true);
+      setMatchFind(true);
     } else {
       setMatchLocation(false);
+      setMatchFind(false);
     }
   }, [location.pathname]);
 
@@ -969,9 +974,11 @@ export default function Navigation(props) {
               />
             ) : null}
 
+          {matchFind ? (
             <div className={classes.search}>
               <Search />
             </div>
+            ) : null}
 
             <div className={classes.grow1} />
 
