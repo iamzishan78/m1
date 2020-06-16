@@ -268,7 +268,21 @@ export default function Map() {
     };
 
     const udLayerClickHandler = (feature) => {
-      
+      console.log("current feature", feature);
+
+      setStateApp((state) => ({
+        ...state,
+        popupOpen: false,
+      }));
+      // setStateApp((state) => ({
+      //   ...state,
+      //   selectedWell: feature.properties,
+      //   selectedWellId: feature.properties.id,
+      //   wellSelectedCoordinates: JSON.parse(feature.properties.center),
+      // }));
+
+      // createPopUp(feature.properties);
+      // map.resize();
     };
 
     const clusterClickHandler = (feature, map) => {
@@ -294,20 +308,26 @@ export default function Map() {
       const definedLayers = stateMap.userDefinedLayers;
       const clusterUDLayers = [];
       const udLayers = [];
+      const clusterLayers = [];
+
       checkedUDLayers.forEach((l) => {
         if (checkedUDLayersInteraction.indexOf(l) > -1) {
           const definedLayer = definedLayers[l];
+          console.log(definedLayer);
           const layerProps = definedLayer.layerProps;
           if (layerProps) {
             for (let i = 0; i < layerProps.length; i++) {
               const layerProp = layerProps[i];
+              if (definedLayer.name === "Area of Interest" || definedLayer.name === "Parcels") {
+                udLayers.push(layerProp.layerId);
+              }
               if (layerProp.clusterProps) {
                 const clusterLayerId = layerProp.layerId + "-clusters";
                 layers.push(clusterLayerId);
                 clusterUDLayers.push(clusterLayerId);
+                clusterLayers.push(layerProp.layerId);
               }
               layers.push(layerProp.layerId);
-              udLayers.push(layerProp.layerId);
             }
           }
         }
@@ -340,13 +360,16 @@ export default function Map() {
         console.log("stacked layers click info", features);
         console.log(feature);
         const layerId = feature.layer.id;
-        console.log(layerId);
+        console.log(udLayers);
         switch (true) {
           case clusterUDLayers.indexOf(layerId) > -1:
             clusterClickHandler(feature, map);
             break;
-          case udLayers.indexOf(layerId) > -1:
+          case clusterLayers.indexOf(layerId) > -1:
             layerClickHander(feature);
+            break;
+          case udLayers.indexOf(layerId) > -1:
+            udLayerClickHandler(feature);
             break;
           case layerId === "wellpoints":
             wellPointClick(feature);
@@ -2276,6 +2299,15 @@ export default function Map() {
       }
     }
   }, [stateNav.filterFeatureId]);
+
+  useEffect(() => {
+    if (draw && stateNav.filterDrawing && stateNav.filterDrawing.length == 2) {
+      console.log("initialize filter draw");
+      const feature = stateNav.filterDrawing[1];
+      draw.delete(feature.id);
+      draw.add(feature);
+    }
+  }, [draw])
 
   useEffect(() => {
     if (map) {
