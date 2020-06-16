@@ -11,7 +11,7 @@ const TwitterWidget = () => {
       key={`${userhandle}-${tcard?.index}`}
       sourceType="timeline"
       screenName={userhandle}
-      options={{ height: 380 }}
+      options={{ height: 680 }}
       placeholder="Loading" 
     />
   );

@@ -83,11 +83,12 @@ const SortableList = SortableContainer(({ items }) => {
 const CardGrid = () => {
   const [stateDashboard, setStateDashboard] = useContext(DashboardContext);
   const [items, setItems] = useState([
-    { el: <ProdCard title={1} />, size: "2x", key: 1 },
-    { el: <RSSFeed title={4} />, size: "x", key: 2 },
-    { el: <RigsCard title={5} />, size: "2x", key: 3 },
-    { el: <TwitterCard title={2} />, size: "x", key: 4 },   
-    { el: <StockCard title={3} />, size: "full", key: 4},
+    { el: <RigsCard title={5} />, size: "2x", key: 1 },
+    { el: <StockCard title={3} />, size: "x", key: 2},
+    { el: <ProdCard title={1} />, size: "", key: 3 },
+    { el: <RSSFeed title={4} />, size: "x", key: 4 },
+    { el: <TwitterCard title={2} />, size: "x", key: 5 },   
+    
     
   ]);
 
