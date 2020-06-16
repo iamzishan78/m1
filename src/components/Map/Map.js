@@ -21,6 +21,7 @@ import Portal from "@material-ui/core/Portal";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
 import DrawStatus from "./components/DrawStatus";
+import SpatialDataCard from '../MapControls/components/spatialDataCard';
 import "./popup.css";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import {
@@ -38,6 +39,7 @@ import { WELLSQUERY } from "../../graphQL/useQueryWells";
 import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAndObjectType";
 import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
 import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
+import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -274,15 +276,13 @@ export default function Map() {
         ...state,
         popupOpen: false,
       }));
-      // setStateApp((state) => ({
-      //   ...state,
-      //   selectedWell: feature.properties,
-      //   selectedWellId: feature.properties.id,
-      //   wellSelectedCoordinates: JSON.parse(feature.properties.center),
-      // }));
+      setStateApp((state) => ({
+        ...state,
+        selectedUserDefinedLayer: feature,
+      }));
 
-      setStateMap({...stateMap, currentFeature: feature});
-      // createPopUp(feature.properties);
+      // setStateMap({...stateMap, currentFeature: feature});
+      createUDPopUp(feature.properties);
       map.resize();
     };
 
@@ -1704,7 +1704,7 @@ export default function Map() {
 
   const createUDPopUp = useCallback(
     (currentFeature) => {
-      let coordinates = JSON.parse(currentFeature.center);
+      let coordinates = JSON.parse(currentFeature.shapeCenter);
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
       //console.log(popUps);
@@ -2534,6 +2534,95 @@ export default function Map() {
     setStateApp((state) => ({ ...state, expandedCard: false }));
   };
 
+  const handleCloseSpatialDataCard = () => {
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+      selectedUserDefinedLayer: null,
+    }));
+  }
+
+  const handleSaveSpatialDataToShape = (spatialData, dataType) => {
+    // save data onto geoJSON properties fields
+
+    // spatialDataAttributes.forEach(attribute => {
+    //     // console.log(attribute, spatialData[attribute]);
+    //     stateMap.draw.setFeatureProperty(
+    //         stateMap.currentFeature.id,
+    //         attribute,
+    //         spatialData[attribute]
+    //     );
+    //     if (spatialData[attribute]) {
+    //         stateMap.currentFeature.properties[attribute] = spatialData[attribute];
+    //     }
+    // });
+
+    // const symbolFeature = {
+    //     type: "Feature",
+    //     geometry: {
+    //         type: "Point",
+    //         coordinates: stateMap.currentFeature.properties.shapeCenter
+    //     },
+    //     properties: {
+    //         ...stateMap.currentFeature.properties,
+    //         label: spatialData.shapeLabel,
+    //     }
+    // }
+
+    // //////cleaning the selected title opinion and redirecting to title opinion page//
+
+    // if (user._id != "" ) {
+    //   const customLayerData = {
+    //       shape: JSON.stringify(stateMap.currentFeature),
+    //       layer: dataType,
+    //       name: spatialData.shapeLabel,
+    //       user: user._id
+    //   };
+    //   const customLayerSymbolData = {
+    //       shape: JSON.stringify(symbolFeature),
+    //       layer: `${dataType}_labels`,
+    //       name: spatialData.shapeLabel,
+    //       user: user._id
+    //   };
+    //   upsertCustomLayer({
+    //       variables: { customLayer: customLayerData }
+    //   });
+    //   upsertCustomLayer({
+    //       variables: { customLayer: customLayerSymbolData }
+    //   });
+    //   setStateApp({
+    //       ...stateApp,
+    //       customLayers: [
+    //           ...stateApp.customLayers,
+    //           customLayerData,
+    //           customLayerSymbolData
+    //       ]
+    //   });
+    // }
+  };
+
+  const handleDeleteSpatialDataAndShape = () => {
+    // const {currentFeature} = stateMap;
+    // if (currentFeature) {
+    //   const elem = document.getElementById(currentFeature.id);
+    //   // elem.parentNode.removeChild(elem);
+    //   console.log("elem", elem);
+    //   stateMap.draw.delete(currentFeature.id);
+    //   setStateMap({
+    //     ...stateMap,
+    //     currentFeature: undefined,
+    //   });
+    //   if (currentFeature.id.includes("draw_polygon")
+    //     || currentFeature.id.includes("drag_circle")
+    //     || currentFeature.id.includes("draw_rectangle")) {
+    //     setStateNav((stateNav) => ({
+    //       ...stateNav,
+    //       filterDrawing: []
+    //     }));
+    //   }
+    // }
+  };
+
   useEffect(() => {
     if (stateApp.userSnap === true) {
       var script = document.createElement("script");
@@ -2568,67 +2657,83 @@ export default function Map() {
       <Portal container={container.current}>
         {stateApp.popupOpen ? (
           <div>
-            <PortalD id="popupContainer">
-              {showExpandableCard && !stateApp.expandedCard ? (
-                <ExpandableCardProvider
-                  expanded={false}
-                  handleCloseExpandableCard={handleCloseExpandableCard}
-                  component={<WellCardProvider></WellCardProvider>}
-                  title={stateApp.selectedWell.wellName}
-                  subTitle={stateApp.selectedWell.operator}
-                  parent="map"
-                  mouseX={0}
-                  mouseY={0}
-                  position="relative"
-                  cardLeft={20}
-                  cardTop={70}
-                  zIndex={99}
-                  cardWidth="350px"
-                  // cardHeight="350px"
-                  cardWidthExpanded="95vw"
-                  cardHeightExpanded="90vh"
-                  targetSourceId={stateApp.selectedWell.id}
-                  targetLabel="well"
-                ></ExpandableCardProvider>
-              ) : (
-                <Popover
-                  open={stateApp.expandedCard}
-                  anchorEl={anchorElPoPOver}
-                  anchorReference="anchorEl"
-                  style={{ width: "100%" }} //right:30, left: "-30px"}}
-                  BackdropProps={{ invisible: false }}
-                  anchorOrigin={{
-                    vertical: "center",
-                    horizontal: "center",
-                  }}
-                  transformOrigin={{
-                    vertical: "center",
-                    horizontal: "center",
-                  }}
-                >
-                  <ExpandableCardProvider
-                    expanded={true}
-                    handleCloseExpandableCard={handleCloseExpandableCard}
-                    component={<WellCardProvider></WellCardProvider>}
-                    title={stateApp.selectedWell.wellName}
-                    subTitle={stateApp.selectedWell.operator}
-                    parent="map"
-                    mouseX={0}
-                    mouseY={0}
-                    position="relative"
-                    // cardLeft={"0px"}
-                    // cardTop={"0px"}
-                    zIndex={99}
-                    // cardWidth="380px"
-                    // cardHeight="380px"
-                    cardWidthExpanded="95vw"
-                    cardHeightExpanded="95vh"
-                    targetSourceId={stateApp.selectedWell.id}
-                    targetLabel="well"
-                  ></ExpandableCardProvider>
-                </Popover>
-              )}
-            </PortalD>
+            {
+              stateApp.selectedWell && (
+                <PortalD id="popupContainer">
+                  {showExpandableCard && !stateApp.expandedCard ? (
+                    <ExpandableCardProvider
+                      expanded={false}
+                      handleCloseExpandableCard={handleCloseExpandableCard}
+                      component={<WellCardProvider></WellCardProvider>}
+                      title={stateApp.selectedWell.wellName}
+                      subTitle={stateApp.selectedWell.operator}
+                      parent="map"
+                      mouseX={0}
+                      mouseY={0}
+                      position="relative"
+                      cardLeft={20}
+                      cardTop={70}
+                      zIndex={99}
+                      cardWidth="350px"
+                      // cardHeight="350px"
+                      cardWidthExpanded="95vw"
+                      cardHeightExpanded="90vh"
+                      targetSourceId={stateApp.selectedWell.id}
+                      targetLabel="well"
+                    ></ExpandableCardProvider>
+                  ) : (
+                    <Popover
+                      open={stateApp.expandedCard}
+                      anchorEl={anchorElPoPOver}
+                      anchorReference="anchorEl"
+                      style={{ width: "100%" }} //right:30, left: "-30px"}}
+                      BackdropProps={{ invisible: false }}
+                      anchorOrigin={{
+                        vertical: "center",
+                        horizontal: "center",
+                      }}
+                      transformOrigin={{
+                        vertical: "center",
+                        horizontal: "center",
+                      }}
+                    >
+                      <ExpandableCardProvider
+                        expanded={true}
+                        handleCloseExpandableCard={handleCloseExpandableCard}
+                        component={<WellCardProvider></WellCardProvider>}
+                        title={stateApp.selectedWell.wellName}
+                        subTitle={stateApp.selectedWell.operator}
+                        parent="map"
+                        mouseX={0}
+                        mouseY={0}
+                        position="relative"
+                        // cardLeft={"0px"}
+                        // cardTop={"0px"}
+                        zIndex={99}
+                        // cardWidth="380px"
+                        // cardHeight="380px"
+                        cardWidthExpanded="95vw"
+                        cardHeightExpanded="95vh"
+                        targetSourceId={stateApp.selectedWell.id}
+                        targetLabel="well"
+                      ></ExpandableCardProvider>
+                    </Popover>
+                  )}
+                </PortalD>
+              )
+            }
+            {
+              stateApp.selectedUserDefinedLayer && (
+                <PortalD id="popupContainer">
+                  <SpatialDataCard
+                    selectedFeature={stateApp.selectedUserDefinedLayer}
+                    saveSpatialData={handleSaveSpatialDataToShape}
+                    closeSpatialDataCard={handleCloseExpandableCard}
+                    deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
+                  />
+                </PortalD>
+              )
+            }
           </div>
         ) : null}
       </Portal>

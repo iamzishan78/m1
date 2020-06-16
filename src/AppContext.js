@@ -26,6 +26,7 @@ const AppProvider = (props) => {
     flyTo: null, //map used in flyto
     fitBounds: null, //map used in fitBounds
     selectedTitleOpinionId: null,
+    selectedUserDefinedLayer: null,
     featureOrMapShape: {},
     filters: [],
     filtersMockDb: null,
