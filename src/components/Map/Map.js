@@ -2304,6 +2304,7 @@ export default function Map() {
     if (draw && stateNav.filterDrawing && stateNav.filterDrawing.length == 2) {
       console.log("initialize filter draw");
       const feature = stateNav.filterDrawing[1];
+      setDrawingFilterFeatureId(feature.id);
       draw.delete(feature.id);
       draw.add(feature);
     }
