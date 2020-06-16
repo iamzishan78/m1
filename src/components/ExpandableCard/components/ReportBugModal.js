@@ -102,7 +102,7 @@ function ReportBugModal(props) {
       className={classes.root}
     >
       <DialogTitle id="simple-dialog-title" className={classes.dialogTitle}>
-        Data Issue Entry
+        Log Data Issue
       </DialogTitle>
       <DialogContent>
         <FormControl
