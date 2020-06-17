@@ -931,51 +931,51 @@ export default function Map() {
                 layerList[l] = selectLayerProps;
               }
 
-              //// finding and fitting bounds 
-              const findBounds = (wells) => {
-                let maxLat = wells[0].latitude;
-                let minLat = wells[0].latitude;
-                let maxLong = wells[0].longitude;
-                let minLong = wells[0].longitude;
+              // //// finding and fitting bounds 
+              // const findBounds = (wells) => {
+              //   let maxLat = wells[0].latitude;
+              //   let minLat = wells[0].latitude;
+              //   let maxLong = wells[0].longitude;
+              //   let minLong = wells[0].longitude;
               
-                for (let i = 0; i < wells.length; i++) {
-                  if (wells[i].latitude !== 0) {
-                    if (maxLat < wells[i].latitude) maxLat = wells[i].latitude;
-                    if (minLat > wells[i].latitude) minLat = wells[i].latitude;
-                  }
-                  if (wells[i].longitude !== 0) {
-                    if (maxLong < wells[i].longitude) maxLong = wells[i].longitude;
-                    if (minLong > wells[i].longitude) minLong = wells[i].longitude;
-                  }
-                }
+              //   for (let i = 0; i < wells.length; i++) {
+              //     if (wells[i].latitude !== 0) {
+              //       if (maxLat < wells[i].latitude) maxLat = wells[i].latitude;
+              //       if (minLat > wells[i].latitude) minLat = wells[i].latitude;
+              //     }
+              //     if (wells[i].longitude !== 0) {
+              //       if (maxLong < wells[i].longitude) maxLong = wells[i].longitude;
+              //       if (minLong > wells[i].longitude) minLong = wells[i].longitude;
+              //     }
+              //   }
 
-                const latDif = maxLat - minLat;
-                const longDif = maxLong - minLong;
+              //   const latDif = maxLat - minLat;
+              //   const longDif = maxLong - minLong;
         
-                if (latDif === 0) {
-                  maxLat = maxLat + 0.005;
-                  minLat = minLat - 0.005;
-                } else {
-                  maxLat = maxLat + latDif * 0.08;
-                  minLat = minLat - latDif * 0.08;
-                }
+              //   if (latDif === 0) {
+              //     maxLat = maxLat + 0.005;
+              //     minLat = minLat - 0.005;
+              //   } else {
+              //     maxLat = maxLat + latDif * 0.08;
+              //     minLat = minLat - latDif * 0.08;
+              //   }
         
-                if (longDif === 0) {
-                  maxLong = maxLong + 0.005;
-                  minLong = minLong - 0.005;
-                } else {
-                  maxLong = maxLong + longDif * 0.08;
-                  minLong = minLong - longDif * 0.08;
-                }
-                return { maxLat, minLat, maxLong, minLong };
-              };
+              //   if (longDif === 0) {
+              //     maxLong = maxLong + 0.005;
+              //     minLong = minLong - 0.005;
+              //   } else {
+              //     maxLong = maxLong + longDif * 0.08;
+              //     minLong = minLong - longDif * 0.08;
+              //   }
+              //   return { maxLat, minLat, maxLong, minLong };
+              // };
         
-              let bounds= findBounds(layerData)
+              // let bounds= findBounds(layerData)
         
-              map.fitBounds([
-                [bounds.minLong, bounds.minLat],
-                [bounds.maxLong, bounds.maxLat],
-              ]);
+              // map.fitBounds([
+              //   [bounds.minLong, bounds.minLat],
+              //   [bounds.maxLong, bounds.maxLat],
+              // ]);
 
             }
           }
