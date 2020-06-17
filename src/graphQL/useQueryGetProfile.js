@@ -19,3 +19,15 @@ export const GETPROFILE = gql`
         }
     }
 `
+export const GETPROFILEIMAGE = gql`
+    query getProfileImage($email: String) {
+        profileByEmail(userEmail: $email){
+            success
+            profile {
+                fullname
+                email
+                profileImage             
+            }
+        }
+    }
+`

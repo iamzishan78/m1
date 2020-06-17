@@ -98,6 +98,8 @@ import Search from "./components/Search";
 
 import Avatar from "react-avatar";
 import ContactFormModal from "./components/ContactFormModal";
+import { GETPROFILEIMAGE } from "../../graphQL/useQueryGetProfile";
+import { useLazyQuery } from "@apollo/react-hooks";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -143,8 +145,8 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
   },
   drawerOpenLogo: {
-    paddingLeft: '50px',
-    paddingTop: '10px',
+    paddingLeft: "50px",
+    paddingTop: "10px",
   },
   drawerOpen: {
     // background: "rgba(255, 255, 255, 1.0)",
@@ -643,7 +645,6 @@ export default function Navigation(props) {
   const theme = useTheme();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-
   const [openSupportCenter, setOpenSupportCenter] = useState(false);
   const [openContactForm, setOpenContactForm] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -658,6 +659,29 @@ export default function Navigation(props) {
   const [matchLocation, setMatchLocation] = useState(false);
   const [matchTrack, setMatchTrack] = useState(false);
   const [matchFind, setMatchFind] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
+  const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE);
+  useEffect(() => {
+    if (stateApp?.user?.email) {
+      getProfileImage({
+        variables: { email: stateApp.user.email },
+        fetchPolicy: "network-only",
+      });
+    }
+  }, [stateApp.user]);
+
+  useEffect(() => {
+    if (profiledata.data) {
+      const {
+        data: {
+          profileByEmail: {
+            profile: { profileImage },
+          },
+        },
+      } = profiledata;
+      setProfileImage(profileImage);
+    }
+  }, [profiledata]);
 
   let history = useHistory();
   let location = useLocation();
@@ -794,7 +818,6 @@ export default function Navigation(props) {
       setMatchTrack(false);
     }
   }, [location.pathname]);
-
 
   useEffect(() => {
     if (location.pathname === "/") {
@@ -977,10 +1000,10 @@ export default function Navigation(props) {
               />
             ) : null}
 
-          {matchFind ? (
-            <div className={classes.search}>
-              <Search />
-            </div>
+            {matchFind ? (
+              <div className={classes.search}>
+                <Search />
+              </div>
             ) : null}
 
             <div className={classes.grow1} />
@@ -1207,8 +1230,8 @@ export default function Navigation(props) {
               style={{ left: "8.5px" }}
               onClick={handleProfileMenuOpen}
             >
-              {true ? (
-                <Avatar name={"Dann"} size="38" round />
+              {profileImage ? (
+                <Avatar src={profileImage} size="38" round />
               ) : (
                 <Avatar name={stateApp.user.name} size="38" round />
               )}
@@ -1282,9 +1305,8 @@ export default function Navigation(props) {
         open={openDrawer}
       >
         <div className={classes.toolbar}>
-
           <div className={classes.drawerOpenLogo}>
-          <M1neralLogo/>
+            <M1neralLogo />
           </div>
 
           <IconButton color="secondary" onClick={handleDrawerClose}>
@@ -1413,8 +1435,6 @@ export default function Navigation(props) {
             </ListItemSecondaryAction>
           </ListItem>
 
-
-
           {/* <ListItem
             classes={{
               root: classes.menuListItem,
@@ -1430,8 +1450,6 @@ export default function Navigation(props) {
             </ListItemIcon>
             <ListItemText primary="M1Studio" />
           </ListItem> */}
-
-
 
           <ListItem
             classes={{
@@ -1458,9 +1476,7 @@ export default function Navigation(props) {
                 beta
               </Button>
             </ListItemSecondaryAction>
-
           </ListItem>
-
 
           <ListItem
             classes={{
@@ -1487,12 +1503,6 @@ export default function Navigation(props) {
               </Button>
             </ListItemSecondaryAction>
           </ListItem>
-
-
-
-
-
-
         </List>
         <Divider variant="middle" className={classes.menuListBottomDivider} />
         <List className={classes.menuListBottom}>
