@@ -1027,6 +1027,11 @@ export default function Map() {
         ...stateApp,
         userDefinedLayers: layerList,
       });
+
+      map.fitBounds([
+        [fitBounds.minLong, fitBounds.minLat],
+        [fitBounds.maxLong, fitBounds.maxLat],
+      ]);
     }
   }, [
     map,
