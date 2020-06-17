@@ -671,7 +671,12 @@ export default function Navigation(props) {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (profiledata.data) {
+    if (
+      profiledata &&
+      profiledata.data &&
+      profiledata.data.profileByEmail &&
+      profiledata.data.profileByEmail.profile
+    ) {
       const {
         data: {
           profileByEmail: {
