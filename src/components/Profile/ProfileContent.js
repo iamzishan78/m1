@@ -157,7 +157,7 @@ const ProfileContent = () => {
             FormHelperTextProps={{
               classes: { root: classes.helperText },
             }}
-            label={"Full name"}
+            label={"Full Name"}
             placeholder={"Your Full Name"}
             name="fullname"
             value={fullname}
@@ -178,7 +178,7 @@ const ProfileContent = () => {
             }}
             label={"Display Name"}
             placeholder={"Display Name"}
-            helperText={"This could be a nickname or your first name"}
+            helperText={"This could be your nickname or first name"}
             name="displayname"
             value={displayname}
             onChange={({ target }) => onChange(target)}
@@ -198,7 +198,7 @@ const ProfileContent = () => {
               classes: { root: classes.helperText },
             }}
             label={"What you do"}
-            placeholder={"Your Role or title"}
+            placeholder={"Your Role or Title"}
             helperText={"Let people know what you do"}
             name="activity"
             value={activity}
@@ -220,7 +220,7 @@ const ProfileContent = () => {
             }}
             label={"Phone number"}
             placeholder={formatPhone("555-555-5555")}
-            helperText={"Enter a phone number"}
+            helperText={"Enter your phone number"}
             name="phone"
             value={formatPhone(phone)}
             onChange={({ target }) => onChange(target)}
