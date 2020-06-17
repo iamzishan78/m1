@@ -6,6 +6,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
+import Modal from '@material-ui/core/Modal';
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
@@ -22,10 +23,12 @@ import IconButton from "@material-ui/core/IconButton";
 // import DialogActions from '@material-ui/core/DialogActions'
 // import DialogContent from '@material-ui/core/DialogContent'
 import CloseIcon from "@material-ui/icons/Close";
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import ExpandIcon from "../../WellCard/components/svgIcons/ExpandIcon";
 import { MapContext } from "../../Map/MapContext";
+import { AppContext } from "../../../AppContext";
 
 // Helpers for area calcs
 import { area, convertArea, length } from "@turf/turf";
@@ -152,10 +155,20 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(1),
     minWidth: 265,
     color: "black"
+  },
+  modalContainer: {
+    background: "white",
+    width: "500px",
+    textAlign: "center",
+    padding: "15px",
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    transform: "translate(-50%, -50%)",
   }
 }));
 
-export default function SpatialDataCard(props) {
+export default function SpatialDataCardEdit(props) {
   const classes = useStyles();
   const {
     sdType,
@@ -171,6 +184,12 @@ export default function SpatialDataCard(props) {
   const [grossAcres, setGrossAcres] = useState(sdGrossAcres);
   const [dataNotes, setDataNotes] = useState(sdNotes);
   const [stateMap, setStateMap] = useContext(MapContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [drawFeatureId, setDrawFeatureId] = useState("");
+  const [custLayers, setCustLayers] = useState([]);
+
+  const [openDeleteModal, setDeleteModal] = useState(false);
+
 
   const inputLabel = useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);
@@ -236,10 +255,21 @@ export default function SpatialDataCard(props) {
   };
 
   const closeSpatialDataCard = () => {
+    if (drawFeatureId) {
+      stateMap.draw.delete(drawFeatureId);
+      setDrawFeatureId("");
+    }
     setStateMap({
       ...stateMap,
-      tempCheckedUserDefinedLayers: null
+      tempCheckedUserDefinedLayers: null,
     });
+    if (custLayers.length > 0) {
+      setStateApp({
+        ...stateApp,
+        customLayers: custLayers
+      });
+    }
+    
     props.closeSpatialDataCard();
   }
 
@@ -265,6 +295,44 @@ export default function SpatialDataCard(props) {
     }
   };
 
+  const handleClose = () => {
+    setDeleteModal(false);
+  }
+
+  const showDeleteModal = () => {
+    setDeleteModal(true);
+  }
+
+  const editShape = () => {
+    if (!drawFeatureId) {
+      const { selectedFeature } = props;
+      const featureId = selectedFeature.properties.id;
+      const featureLabelId = featureId + '_label';
+      if (stateMap.draw) {
+        const featureIds = stateMap.draw.add(selectedFeature);
+        setDrawFeatureId(featureIds[0]);
+        stateMap.draw.changeMode("direct_select", { featureId: featureIds[0] });
+        const { customLayers } = stateApp;
+        if (customLayers && customLayers.length > 0) {
+          // const index = customLayers.findIndex(layer => JSON.parse(layer.shape).properties.id === selectedFeature.properties.id);
+          const filteredLayers = customLayers.filter(layer => JSON.parse(layer.shape).properties.id !== featureId && JSON.parse(layer.shape).properties.id !== featureLabelId);
+          setCustLayers(customLayers);
+          setStateApp({
+            ...stateApp,
+            customLayers: filteredLayers
+          });
+        }
+      }
+    } else {
+      stateMap.draw.delete(drawFeatureId);
+      setDrawFeatureId("");
+      setStateApp({
+        ...stateApp,
+        customLayers: custLayers
+      })
+    }
+  }
+
   return (
     <Card className={classes[cardClass]}>
       <CardHeader
@@ -276,16 +344,15 @@ export default function SpatialDataCard(props) {
         title="Spatial Data"
         action={
           <div className={classes.actionWrapper}>
-            <IconButton aria-label="expand">
-              <ExpandIcon
-                viewBox="0 0 64 64"
-                color="secondary"
-                fontSize="small"
-              />
+            <IconButton color="secondary" onClick={showDeleteModal}>
+              <DeleteIcon />
+            </IconButton>
+            <IconButton color="secondary" onClick={editShape}>
+              <EditIcon />
             </IconButton>
 
             <IconButton color="secondary" onClick={closeSpatialDataCard}>
-              <CloseIcon fontSize="medium" />
+              <CloseIcon />
             </IconButton>
           </div>
         }
@@ -397,7 +464,7 @@ export default function SpatialDataCard(props) {
         </Button>
 
         {/* delete button*/}
-        <Button
+        {/* <Button
           variant="contained"
           //disableRipple={true}
           // size="medium"
@@ -407,7 +474,36 @@ export default function SpatialDataCard(props) {
         >
           {" "}
           Delete
-        </Button>
+        </Button> */}
+        <Modal
+          open = {openDeleteModal}
+          onClose = {handleClose}
+          aria-labelledby="delete-modal-title"
+          aria-describedby="delete-modal-description"
+        >
+          <div className={classes.modalContainer}>
+            <h2 id="delete-modal-title">Are you sure?</h2>
+            <p id="delete-modal-description">Are you sure want to remove this shape?</p>
+            <div className={classes.buttonContainer} >
+              <Button
+                variant="contained"
+                className={classes.button}
+                style={{ backgroundColor: "light gray", color: "dark gray" }}
+                onClick={handleClose}
+              >
+                Back
+              </Button>
+              <Button
+                variant="contained"
+                className={classes.button}
+                style={{ backgroundColor: "light gray", color: "dark gray" }}
+                onClick={deleteSpatialData}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </Modal>
       </CardContent>
     </Card>
   );

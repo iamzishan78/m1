@@ -12,6 +12,7 @@ import { MapControlsContext } from "../MapControls/MapControlsContext";
 import Popover from "@material-ui/core/Popover";
 import { MapContext } from "./MapContext";
 import mapboxgl from "mapbox-gl";
+import * as turf from "@turf/turf";
 import { makeStyles } from "@material-ui/core/styles";
 import MapControlsProvider from "../MapControls/MapControlsProvider";
 import WellCardProvider from "../WellCard/WellCardProvider";
@@ -20,6 +21,7 @@ import Portal from "@material-ui/core/Portal";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
 import DrawStatus from "./components/DrawStatus";
+import SpatialDataCardEdit from '../MapControls/components/spatialDataCardEdit';
 import "./popup.css";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import {
@@ -37,6 +39,7 @@ import { WELLSQUERY } from "../../graphQL/useQueryWells";
 import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAndObjectType";
 import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
 import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
+import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -90,6 +93,7 @@ export default function Map() {
   const [map, setMap] = useState(null);
   const [mapClick, setMapClick] = useState(null);
   const [draw, setDraw] = useState(null);
+  const [drawStatus, setDrawStatus] = useState(false);
   const [drawingFilterFeatureId, setDrawingFilterFeatureId] = useState(null);
   // const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
@@ -266,6 +270,23 @@ export default function Map() {
       setStateApp((state) => ({ ...state, flyTo: feature.properties }));
     }
 
+    const udLayerClickHandler = (feature) => {
+      console.log("current feature", feature);
+
+      setStateApp((state) => ({
+        ...state,
+        popupOpen: false,
+      }));
+      setStateApp((state) => ({
+        ...state,
+        selectedUserDefinedLayer: feature,
+      }));
+
+      // setStateMap({...stateMap, currentFeature: feature});
+      createUDPopUp(feature.properties);
+      map.resize();
+    };
+
     const clusterClickHandler = (feature, map) => {
       var clusterId = feature.properties.cluster_id;
       map.getSource(feature.source).getClusterExpansionZoom (
@@ -289,6 +310,8 @@ export default function Map() {
       const definedLayers = stateMap.userDefinedLayers;
       const clusterUDLayers = [];
       const udLayers = [];
+      const clusterLayers = [];
+
       checkedUDLayers.forEach(l => {
         if (checkedUDLayersInteraction.indexOf(l) > -1) {
           const definedLayer = definedLayers[l];
@@ -296,13 +319,16 @@ export default function Map() {
           if (layerProps) {
             for (let i = 0; i < layerProps.length; i ++) {
               const layerProp = layerProps[i];
+              if (definedLayer.name === "Area of Interest" || definedLayer.name === "Parcels") {
+                udLayers.push(layerProp.layerId);
+              }
               if (layerProp.clusterProps) {
                 const clusterLayerId = layerProp.layerId + '-clusters';
                 layers.push(clusterLayerId);
                 clusterUDLayers.push(clusterLayerId);
+                clusterLayers.push(layerProp.layerId);
               }
               layers.push(layerProp.layerId);
-              udLayers.push(layerProp.layerId);
             }
           }
         }
@@ -333,15 +359,16 @@ export default function Map() {
       if (features && features.length > 0) {
         const feature = features[0];
         console.log("stacked layers click info", features);
-        console.log(feature);
         const layerId = feature.layer.id;
-        console.log(layerId);
         switch (true) {
           case clusterUDLayers.indexOf(layerId) > -1:
             clusterClickHandler(feature, map);
             break;
-          case udLayers.indexOf(layerId) > -1:
+          case clusterLayers.indexOf(layerId) > -1:
             layerClickHander(feature);
+            break;
+          case udLayers.indexOf(layerId) > -1:
+            udLayerClickHandler(feature);
             break;
           case layerId === "wellpoints":
             wellPointClick(feature);
@@ -623,9 +650,14 @@ export default function Map() {
       });
     }
 
-// this section adds the updated list of layers 
-    if (map && stateMap.checkedUserDefinedLayers.length > 0) {
-      let layers = stateMap.checkedUserDefinedLayers.slice(0);
+    // this section adds the updated list of layers 
+    const tmpCheckedLayer = stateMap.tempCheckedUserDefinedLayers;
+    const checkedLayers = stateMap.checkedUserDefinedLayers.slice(0)
+    if (tmpCheckedLayer && stateMap.checkedUserDefinedLayers.indexOf(tmpCheckedLayer) === -1) {
+      checkedLayers.push(tmpCheckedLayer)
+    }
+    if (map && checkedLayers.length > 0) {
+      let layers = checkedLayers;
       layers.sort(function (a, b) {
         return b - a;
       });
@@ -701,6 +733,7 @@ export default function Map() {
                 map.addSource(selectLayerProps.sourceProps[i].sourceId, {
                   type: selectLayerProps.sourceProps[i].sourceType,
                   data: myGeoJSONData,
+                  promoteId: { original: "id" }
                 });
               }
 
@@ -898,51 +931,51 @@ export default function Map() {
                 layerList[l] = selectLayerProps;
               }
 
-              //// finding and fitting bounds 
-              const findBounds = (wells) => {
-                let maxLat = wells[0].latitude;
-                let minLat = wells[0].latitude;
-                let maxLong = wells[0].longitude;
-                let minLong = wells[0].longitude;
+              // //// finding and fitting bounds 
+              // const findBounds = (wells) => {
+              //   let maxLat = wells[0].latitude;
+              //   let minLat = wells[0].latitude;
+              //   let maxLong = wells[0].longitude;
+              //   let minLong = wells[0].longitude;
               
-                for (let i = 0; i < wells.length; i++) {
-                  if (wells[i].latitude !== 0) {
-                    if (maxLat < wells[i].latitude) maxLat = wells[i].latitude;
-                    if (minLat > wells[i].latitude) minLat = wells[i].latitude;
-                  }
-                  if (wells[i].longitude !== 0) {
-                    if (maxLong < wells[i].longitude) maxLong = wells[i].longitude;
-                    if (minLong > wells[i].longitude) minLong = wells[i].longitude;
-                  }
-                }
+              //   for (let i = 0; i < wells.length; i++) {
+              //     if (wells[i].latitude !== 0) {
+              //       if (maxLat < wells[i].latitude) maxLat = wells[i].latitude;
+              //       if (minLat > wells[i].latitude) minLat = wells[i].latitude;
+              //     }
+              //     if (wells[i].longitude !== 0) {
+              //       if (maxLong < wells[i].longitude) maxLong = wells[i].longitude;
+              //       if (minLong > wells[i].longitude) minLong = wells[i].longitude;
+              //     }
+              //   }
 
-                const latDif = maxLat - minLat;
-                const longDif = maxLong - minLong;
+              //   const latDif = maxLat - minLat;
+              //   const longDif = maxLong - minLong;
         
-                if (latDif === 0) {
-                  maxLat = maxLat + 0.005;
-                  minLat = minLat - 0.005;
-                } else {
-                  maxLat = maxLat + latDif * 0.08;
-                  minLat = minLat - latDif * 0.08;
-                }
+              //   if (latDif === 0) {
+              //     maxLat = maxLat + 0.005;
+              //     minLat = minLat - 0.005;
+              //   } else {
+              //     maxLat = maxLat + latDif * 0.08;
+              //     minLat = minLat - latDif * 0.08;
+              //   }
         
-                if (longDif === 0) {
-                  maxLong = maxLong + 0.005;
-                  minLong = minLong - 0.005;
-                } else {
-                  maxLong = maxLong + longDif * 0.08;
-                  minLong = minLong - longDif * 0.08;
-                }
-                return { maxLat, minLat, maxLong, minLong };
-              };
+              //   if (longDif === 0) {
+              //     maxLong = maxLong + 0.005;
+              //     minLong = minLong - 0.005;
+              //   } else {
+              //     maxLong = maxLong + longDif * 0.08;
+              //     minLong = minLong - longDif * 0.08;
+              //   }
+              //   return { maxLat, minLat, maxLong, minLong };
+              // };
         
-              let bounds= findBounds(layerData)
+              // let bounds= findBounds(layerData)
         
-              map.fitBounds([
-                [bounds.minLong, bounds.minLat],
-                [bounds.maxLong, bounds.maxLat],
-              ]);
+              // map.fitBounds([
+              //   [bounds.minLong, bounds.minLat],
+              //   [bounds.maxLong, bounds.maxLat],
+              // ]);
 
             }
           }
@@ -953,7 +986,13 @@ export default function Map() {
         userDefinedLayers: layerList,
       });
     }
-  }, [map, stateMap.checkedUserDefinedLayers, stateMap.checkedUserDefinedLayersInteraction, stateApp.customLayers]);
+  }, [
+    map,
+    stateMap.checkedUserDefinedLayers,
+    stateMap.checkedUserDefinedLayersInteraction,
+    stateMap.tempCheckedUserDefinedLayers,
+    stateApp.customLayers,
+  ]);
 
   useEffect(() => {
     if (showExpandableCard) {
@@ -1500,6 +1539,62 @@ export default function Map() {
         map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);
         map.setFilter("wellsHeatmapRecentlyDrilled", [">",["get", "daysSinceDrilled"], 0]);
         map.setFilter("wellsHeatmapRecentlyCompleted", [">", ["get","daysSinceCompletion"], 0 ]);
+
+        const filterLayers = ["GLOLeases", "GLOLeaseLabels", "GLOUnits", "GLOUnitLabels"];
+        if (stateNav.filterDrawing && stateNav.filterDrawing.length === 2) {
+          filterLayers.forEach((filterLayer) => {
+            const layer = map.getLayer(filterLayer);
+            if (layer) {
+              const filterFeature = stateNav.filterDrawing[1];
+              const featuresList = map.querySourceFeatures('composite', {
+                'sourceLayer': layer.sourceLayer
+              });
+              if (featuresList && featuresList.length > 0) {
+                const result = featuresList.filter((feature) => {
+                  if (feature.geometry.type === "MultiPolygon") {
+                    for(let i = 0; i < feature.geometry.coordinates.length; i ++) {
+                      const coordinates = feature.geometry.coordinates[i]
+                      const geometry = {
+                        type: "Polygon",
+                        coordinates: coordinates,
+                      };
+                      if (!turf.booleanContains(filterFeature, geometry)) {
+                        return false;
+                      }
+                    }
+                    return true;
+                  }
+                  return turf.booleanContains(filterFeature, feature);
+                });
+
+                console.log(result);
+                let ids = result.map(function(feature) {
+                  return feature.properties.VIEWID
+                });
+  
+                const onlyUnique = (value, index, self) => { 
+                  return self.indexOf(value) === index;
+                }
+  
+                ids = ids.filter( onlyUnique );
+  
+                // console.log(ids);
+  
+                map.setFilter(filterLayer, [
+                  'match',
+                  ['get', 'VIEWID'],
+                  ids,
+                  true,
+                  false
+                ])
+              }
+            }
+          });
+        } else {
+          filterLayers.forEach((filterLayer) => {
+            map.setFilter(filterLayer, null);
+          });
+        }
       } else {
         map.setFilter("wellpoints", null);
         map.setFilter("welllines", null);
@@ -1509,6 +1604,10 @@ export default function Map() {
         map.setFilter("wellsHeatmapIP90Gas", null);
         map.setFilter("wellsHeatmapRecentlyDrilled", null);
         map.setFilter("wellsHeatmapRecentlyCompleted", null);
+        map.setFilter("GLOLeases", null);
+        map.setFilter("GLOLeaseLabels", null);
+        map.setFilter("GLOUnits", null);
+        map.setFilter("GLOUnitLabels", null);
       }
     }
     console.log("filters applied");
@@ -1597,6 +1696,24 @@ stateNav.selectedTags,
       //setStateApp((state) => ({ ...state, wellSelected: true }));
       //setStateApp((state) => ({ ...state, wellSelectedCoordinates: [currentFeature.longitude, currentFeature.latitude] }));
       handleOpenExpandableCard();
+    },
+    [map, setStateApp]
+  );
+
+  const createUDPopUp = useCallback(
+    (currentFeature) => {
+      let coordinates = JSON.parse(currentFeature.shapeCenter);
+      let popUps = document.getElementsByClassName("mapboxgl-popup");
+      if (popUps[0]) popUps[0].remove();
+      //console.log(popUps);
+
+      let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+        .setLngLat(coordinates)
+        .setMaxWidth("none")
+        .setHTML(`<div id="popupContainer"></div>`)
+        .addTo(map);
+
+      setStateApp((state) => ({ ...state, popupOpen: true }));
     },
     [map, setStateApp]
   );
@@ -2097,6 +2214,17 @@ stateNav.selectedTags,
 
         map.on("mousemove", mapMouseMove);
 
+        // map.on("draw.selectionchange", ({features}) => {
+        //   const [feature] = features;
+        //   if (mapClick && mapClick.mapClickHandler) {
+        //     if (feature) {
+        //       map.off("click", mapClick.mapClickHandler);
+        //     } else {
+        //       map.on("click", mapClick.mapClickHandler);
+        //     }
+        //   }
+        // });
+
 
         console.log("map extra components complete");
       }
@@ -2163,6 +2291,16 @@ stateNav.selectedTags,
       }
     }
   }, [stateNav.filterFeatureId]);
+
+  useEffect(() => {
+    if (draw && stateNav.filterDrawing && stateNav.filterDrawing.length == 2) {
+      console.log("initialize filter draw");
+      const feature = stateNav.filterDrawing[1];
+      setDrawingFilterFeatureId(feature.id);
+      draw.delete(feature.id);
+      draw.add(feature);
+    }
+  }, [draw])
 
   useEffect(() => {
     if (map) {
@@ -2346,6 +2484,22 @@ stateNav.selectedTags,
     }
   }, [stateMap.toggle3d]);
 
+  useEffect(() => {
+    if (stateApp.editDraw === true || stateNav.drawingMode !== null) {
+      setDrawStatus(true);
+      if (mapClick && mapClick.mapClickHandler != null) {
+        map.off("click", mapClick.mapClickHandler);
+      }
+    } else {
+      setDrawStatus(false);
+      if (mapClick && mapClick.mapClickHandler != null) {
+        setTimeout(() => {
+          map.on("click", mapClick.mapClickHandler);
+        }, 500);
+      }
+    }
+  }, [stateApp.editDraw, stateNav.drawingMode])
+
   const handleOpenExpandableCard = (e) => {
     setAnchorElPoPOver(container.current);
     setShowExpandableCard(true);
@@ -2355,6 +2509,96 @@ stateNav.selectedTags,
     setShowExpandableCard(false);
     setAnchorElPoPOver(null);
     setStateApp((state) => ({ ...state, expandedCard: false }));
+  };
+
+  const handleCloseSpatialDataCard = () => {
+    console.log("close card on map here");
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+      selectedUserDefinedLayer: null,
+    }));
+  }
+
+  const handleSaveSpatialDataToShape = (spatialData, dataType) => {
+    // save data onto geoJSON properties fields
+
+    // spatialDataAttributes.forEach(attribute => {
+    //     // console.log(attribute, spatialData[attribute]);
+    //     stateMap.draw.setFeatureProperty(
+    //         stateMap.currentFeature.id,
+    //         attribute,
+    //         spatialData[attribute]
+    //     );
+    //     if (spatialData[attribute]) {
+    //         stateMap.currentFeature.properties[attribute] = spatialData[attribute];
+    //     }
+    // });
+
+    // const symbolFeature = {
+    //     type: "Feature",
+    //     geometry: {
+    //         type: "Point",
+    //         coordinates: stateMap.currentFeature.properties.shapeCenter
+    //     },
+    //     properties: {
+    //         ...stateMap.currentFeature.properties,
+    //         label: spatialData.shapeLabel,
+    //     }
+    // }
+
+    // //////cleaning the selected title opinion and redirecting to title opinion page//
+
+    // if (user._id != "" ) {
+    //   const customLayerData = {
+    //       shape: JSON.stringify(stateMap.currentFeature),
+    //       layer: dataType,
+    //       name: spatialData.shapeLabel,
+    //       user: user._id
+    //   };
+    //   const customLayerSymbolData = {
+    //       shape: JSON.stringify(symbolFeature),
+    //       layer: `${dataType}_labels`,
+    //       name: spatialData.shapeLabel,
+    //       user: user._id
+    //   };
+    //   upsertCustomLayer({
+    //       variables: { customLayer: customLayerData }
+    //   });
+    //   upsertCustomLayer({
+    //       variables: { customLayer: customLayerSymbolData }
+    //   });
+    //   setStateApp({
+    //       ...stateApp,
+    //       customLayers: [
+    //           ...stateApp.customLayers,
+    //           customLayerData,
+    //           customLayerSymbolData
+    //       ]
+    //   });
+    // }
+  };
+
+  const handleDeleteSpatialDataAndShape = () => {
+    // const {currentFeature} = stateMap;
+    // if (currentFeature) {
+    //   const elem = document.getElementById(currentFeature.id);
+    //   // elem.parentNode.removeChild(elem);
+    //   console.log("elem", elem);
+    //   stateMap.draw.delete(currentFeature.id);
+    //   setStateMap({
+    //     ...stateMap,
+    //     currentFeature: undefined,
+    //   });
+    //   if (currentFeature.id.includes("draw_polygon")
+    //     || currentFeature.id.includes("drag_circle")
+    //     || currentFeature.id.includes("draw_rectangle")) {
+    //     setStateNav((stateNav) => ({
+    //       ...stateNav,
+    //       filterDrawing: []
+    //     }));
+    //   }
+    // }
   };
 
   useEffect(() => {
@@ -2385,73 +2629,90 @@ stateNav.selectedTags,
         </div>
       </div>
       <MapControlsProvider />
-      <DrawStatus drawingStatus={stateApp.editDraw} />
+      <DrawStatus drawingStatus={drawStatus} />
       <Coordinates long={lng} lat={lat} />
       <div id="tempPopupHolder" className={classes.portal} ref={container} />
       <Portal container={container.current}>
         {stateApp.popupOpen ? (
           <div>
-            <PortalD id="popupContainer">
-              {showExpandableCard && !stateApp.expandedCard ? (
-                <ExpandableCardProvider
-                  expanded={false}
-                  handleCloseExpandableCard={handleCloseExpandableCard}
-                  component={<WellCardProvider></WellCardProvider>}
-                  title={stateApp.selectedWell.wellName}
-                  subTitle={stateApp.selectedWell.operator}
-                  parent="map"
-                  mouseX={0}
-                  mouseY={0}
-                  position="relative"
-                  cardLeft={20}
-                  cardTop={70}
-                  zIndex={99}
-                  cardWidth="350px"
-                  // cardHeight="350px"
-                  cardWidthExpanded="95vw"
-                  cardHeightExpanded="90vh"
-                  targetSourceId={stateApp.selectedWell.id}
-                  targetLabel="well"
-                ></ExpandableCardProvider>
-              ) : (
-                <Popover
-                  open={stateApp.expandedCard}
-                  anchorEl={anchorElPoPOver}
-                  anchorReference="anchorEl"
-                  style={{ width: "100%" }} //right:30, left: "-30px"}}
-                  BackdropProps={{ invisible: false }}
-                  anchorOrigin={{
-                    vertical: "center",
-                    horizontal: "center",
-                  }}
-                  transformOrigin={{
-                    vertical: "center",
-                    horizontal: "center",
-                  }}
-                >
-                  <ExpandableCardProvider
-                    expanded={true}
-                    handleCloseExpandableCard={handleCloseExpandableCard}
-                    component={<WellCardProvider></WellCardProvider>}
-                    title={stateApp.selectedWell.wellName}
-                    subTitle={stateApp.selectedWell.operator}
-                    parent="map"
-                    mouseX={0}
-                    mouseY={0}
-                    position="relative"
-                    // cardLeft={"0px"}
-                    // cardTop={"0px"}
-                    zIndex={99}
-                    // cardWidth="380px"
-                    // cardHeight="380px"
-                    cardWidthExpanded="95vw"
-                    cardHeightExpanded="95vh"
-                    targetSourceId={stateApp.selectedWell.id}
-                    targetLabel="well"
-                  ></ExpandableCardProvider>
-                </Popover>
-              )}
-            </PortalD>
+            {
+              stateApp.selectedWell && (
+                <PortalD id="popupContainer">
+                  {showExpandableCard && !stateApp.expandedCard ? (
+                    <ExpandableCardProvider
+                      expanded={false}
+                      handleCloseExpandableCard={handleCloseExpandableCard}
+                      component={<WellCardProvider></WellCardProvider>}
+                      title={stateApp.selectedWell.wellName}
+                      subTitle={stateApp.selectedWell.operator}
+                      parent="map"
+                      mouseX={0}
+                      mouseY={0}
+                      position="relative"
+                      cardLeft={20}
+                      cardTop={70}
+                      zIndex={99}
+                      cardWidth="350px"
+                      // cardHeight="350px"
+                      cardWidthExpanded="95vw"
+                      cardHeightExpanded="90vh"
+                      targetSourceId={stateApp.selectedWell.id}
+                      targetLabel="well"
+                    ></ExpandableCardProvider>
+                  ) : (
+                    <Popover
+                      open={stateApp.expandedCard}
+                      anchorEl={anchorElPoPOver}
+                      anchorReference="anchorEl"
+                      style={{ width: "100%" }} //right:30, left: "-30px"}}
+                      BackdropProps={{ invisible: false }}
+                      anchorOrigin={{
+                        vertical: "center",
+                        horizontal: "center",
+                      }}
+                      transformOrigin={{
+                        vertical: "center",
+                        horizontal: "center",
+                      }}
+                    >
+                      <ExpandableCardProvider
+                        expanded={true}
+                        handleCloseExpandableCard={handleCloseExpandableCard}
+                        component={<WellCardProvider></WellCardProvider>}
+                        title={stateApp.selectedWell.wellName}
+                        subTitle={stateApp.selectedWell.operator}
+                        parent="map"
+                        mouseX={0}
+                        mouseY={0}
+                        position="relative"
+                        // cardLeft={"0px"}
+                        // cardTop={"0px"}
+                        zIndex={99}
+                        // cardWidth="380px"
+                        // cardHeight="380px"
+                        cardWidthExpanded="95vw"
+                        cardHeightExpanded="95vh"
+                        targetSourceId={stateApp.selectedWell.id}
+                        targetLabel="well"
+                      ></ExpandableCardProvider>
+                    </Popover>
+                  )}
+                </PortalD>
+              )
+            }
+            {
+              stateApp.selectedUserDefinedLayer && (
+                <PortalD id="popupContainer">
+                  <SpatialDataCardEdit
+                    selectedFeature={stateApp.selectedUserDefinedLayer}
+                    saveSpatialData={handleSaveSpatialDataToShape}
+                    closeSpatialDataCard={handleCloseSpatialDataCard}
+                    deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
+                    cardClass={"cardPopup"}
+                  />
+                </PortalD>
+              )
+            }
           </div>
         ) : null}
       </Portal>

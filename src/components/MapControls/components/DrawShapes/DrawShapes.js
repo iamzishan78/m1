@@ -211,12 +211,17 @@ export default function DrawShapes(props) {
         // save data onto geoJSON properties fields
 
         spatialDataAttributes.forEach(attribute => {
+            // console.log(attribute, spatialData[attribute]);
             stateMap.draw.setFeatureProperty(
                 stateMap.currentFeature.id,
                 attribute,
                 spatialData[attribute]
             );
+            if (spatialData[attribute]) {
+                stateMap.currentFeature.properties[attribute] = spatialData[attribute];
+            }
         });
+        stateMap.currentFeature.properties.id = stateMap.currentFeature.id
 
         const symbolFeature = {
             type: "Feature",
@@ -225,6 +230,8 @@ export default function DrawShapes(props) {
                 coordinates: stateMap.currentFeature.properties.shapeCenter
             },
             properties: {
+                ...stateMap.currentFeature.properties,
+                id: `${stateMap.currentFeature.properties.id}_label`,
                 label: spatialData.shapeLabel,
             }
         }
