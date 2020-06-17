@@ -1209,9 +1209,7 @@ export default function Navigation(props) {
                     aria-label="ai"
                   />
 
-                  {/* TEMPORARY COMMENT OUT. 
-                  BELOW COMPONENT IS FOR CAMILO'S FILTER SAVE HANDLER */}
-                  {/* <Tab
+                  <Tab
                     value={7}
                     classes={{ root: classes.tab }}
                     style={{ paddingTop: 10 }}
@@ -1224,7 +1222,7 @@ export default function Navigation(props) {
                       </Badge>
                     }
                     aria-label="filter settings"
-                  />*/}
+                  />
                 </Tabs>
               </div>
             ) : (
@@ -1490,7 +1488,7 @@ export default function Navigation(props) {
             }}
             button
             selected={stateNav.selectedMenuIndexTitle === 1}
-            //onClick={(event) => handleListItemClick(event, 0, "/title")}
+            onClick={(event) => handleListItemClick(event, 0, "/title")}
             key="title"
           >
             <ListItemIcon>
