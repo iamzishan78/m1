@@ -10,7 +10,6 @@ import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
 import Popover from "@material-ui/core/Popover";
-import { MapContext } from "./MapContext";
 import mapboxgl from "mapbox-gl";
 import * as turf from "@turf/turf";
 import { makeStyles } from "@material-ui/core/styles";
@@ -73,7 +72,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Map() {
   let classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateMap, setStateMap] = useContext(MapContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
@@ -282,7 +280,7 @@ export default function Map() {
         selectedUserDefinedLayer: feature,
       }));
 
-      // setStateMap({...stateMap, currentFeature: feature});
+      // setStateApp({...stateApp, currentFeature: feature});
       createUDPopUp(feature.properties);
       map.resize();
     };
@@ -305,9 +303,9 @@ export default function Map() {
     const mapClickHandler = (e) => {
       const map = e.target;
       let layers = [];
-      const checkedUDLayersInteraction = stateMap.checkedUserDefinedLayersInteraction;
-      const checkedUDLayers = stateMap.checkedUserDefinedLayers;
-      const definedLayers = stateMap.userDefinedLayers;
+      const checkedUDLayersInteraction = stateApp.checkedUserDefinedLayersInteraction;
+      const checkedUDLayers = stateApp.checkedUserDefinedLayers;
+      const definedLayers = stateApp.userDefinedLayers;
       const clusterUDLayers = [];
       const udLayers = [];
       const clusterLayers = [];
@@ -333,9 +331,9 @@ export default function Map() {
           }
         }
       });
-      const checkedSLayersInteraction = stateMap.checkedLayersInteraction;
-      const checkedSLayers = stateMap.checkedLayers;
-      const styleLayers = stateMap.styleLayers;
+      const checkedSLayersInteraction = stateApp.checkedLayersInteraction;
+      const checkedSLayers = stateApp.checkedLayers;
+      const styleLayers = stateApp.styleLayers;
       // let sLayers = [];
       checkedSLayers.forEach(l => {
         if (checkedSLayersInteraction.indexOf(l) > -1) {
@@ -391,9 +389,9 @@ export default function Map() {
       map.on("click", mapClickHandler);
       setMapClick({mapClickHandler});
     }
-  }, [map, stateMap.checkedLayersInteraction, 
-      stateMap.checkedUserDefinedLayersInteraction,
-      stateMap.checkedLayers, stateMap.checkedUserDefinedLayers
+  }, [map, stateApp.checkedLayersInteraction, 
+      stateApp.checkedUserDefinedLayersInteraction,
+      stateApp.checkedLayers, stateApp.checkedUserDefinedLayers
     ]
   );
 
@@ -401,8 +399,8 @@ export default function Map() {
   useEffect(() => {
     // USE EFFECT FOR M1 LAYER HANDLES
     console.log("layer ue start");
-    if (stateMap.styleLayers.length > 0 && map) {
-      stateMap.styleLayers.forEach((l) => {
+    if (stateApp.styleLayers.length > 0 && map) {
+      stateApp.styleLayers.forEach((l) => {
         l.id.forEach((k) => {
           if (map.getLayer(k)) {
             map.setLayoutProperty(k, "visibility", "none");
@@ -410,8 +408,8 @@ export default function Map() {
         });
       });
 
-      if (stateMap.checkedLayers.length > 0) {
-        let layers = stateMap.checkedLayers.slice(0);
+      if (stateApp.checkedLayers.length > 0) {
+        let layers = stateApp.checkedLayers.slice(0);
         layers.sort(function (a, b) {
           return b - a;
         });
@@ -419,7 +417,7 @@ export default function Map() {
           let belowlayer = null;
           for (let k = layers.length - 1; k >= 0; k--) {
             let i = layers[k];
-            let currentLayerArray = stateMap.styleLayers[i].id;
+            let currentLayerArray = stateApp.styleLayers[i].id;
             // eslint-disable-next-line no-loop-func
             currentLayerArray.forEach((j) => {
               var mapLayer = map.getLayer(j);
@@ -437,13 +435,13 @@ export default function Map() {
         }
       }
     }
-  }, [map, stateMap.checkedLayers, stateMap.styleLayers]);
+  }, [map, stateApp.checkedLayers, stateApp.styleLayers]);
 
   useEffect(() => {
     // USE EFFECT FOR BASEMAP LAYER HANDLING
     console.log("basemap layer ue start");
-    if (stateMap.baseMapLayers.length > 0 && map) {
-      stateMap.baseMapLayers.forEach((l) => {
+    if (stateApp.baseMapLayers.length > 0 && map) {
+      stateApp.baseMapLayers.forEach((l) => {
         l.id.forEach((k) => {
           if (map.getLayer(k)) {
             map.setLayoutProperty(k, "visibility", "none");
@@ -451,8 +449,8 @@ export default function Map() {
         });
       });
 
-      if (stateMap.checkedBaseLayers.length > 0) {
-        let layers = stateMap.checkedBaseLayers.slice(0);
+      if (stateApp.checkedBaseLayers.length > 0) {
+        let layers = stateApp.checkedBaseLayers.slice(0);
         layers.sort(function (a, b) {
           return b - a;
         });
@@ -460,7 +458,7 @@ export default function Map() {
           let belowlayer = null;
           for (let k = layers.length - 1; k >= 0; k--) {
             let i = layers[k];
-            let currentLayerArray = stateMap.baseMapLayers[i].id;
+            let currentLayerArray = stateApp.baseMapLayers[i].id;
             // eslint-disable-next-line no-loop-func
             currentLayerArray.forEach((j) => {
               var mapLayer = map.getLayer(j);
@@ -478,13 +476,13 @@ export default function Map() {
         }
       }
     }
-  }, [map, stateMap.checkedBaseLayers, stateMap.baseMapLayers]);
+  }, [map, stateApp.checkedBaseLayers, stateApp.baseMapLayers]);
 
   useEffect(() => {
     // USE EFFECT FOR HEATMAP LAYER HANDLES
     console.log("heatmap layer ue start");
-    if (stateMap.heatLayers.length > 0 && map) {
-      stateMap.heatLayers.forEach((l) => {
+    if (stateApp.heatLayers.length > 0 && map) {
+      stateApp.heatLayers.forEach((l) => {
         l.id.forEach((k) => {
           if (map.getLayer(k)) {
             map.setLayoutProperty(k, "visibility", "none");
@@ -492,8 +490,8 @@ export default function Map() {
         });
       });
 
-      if (stateMap.checkedHeats.length > 0) {
-        let layers = stateMap.checkedHeats.slice(0);
+      if (stateApp.checkedHeats.length > 0) {
+        let layers = stateApp.checkedHeats.slice(0);
         layers.sort(function (a, b) {
           return b - a;
         });
@@ -501,7 +499,7 @@ export default function Map() {
           let belowlayer = null;
           for (let k = layers.length - 1; k >= 0; k--) {
             let i = layers[k];
-            let currentLayerArray = stateMap.heatLayers[i].id;
+            let currentLayerArray = stateApp.heatLayers[i].id;
             // eslint-disable-next-line no-loop-func
             currentLayerArray.forEach((j) => {
               var mapLayer = map.getLayer(j);
@@ -519,7 +517,7 @@ export default function Map() {
         }
       }
     }
-  }, [map, stateMap.checkedHeats, stateMap.heatLayers]);
+  }, [map, stateApp.checkedHeats, stateApp.heatLayers]);
 
 
 
@@ -621,10 +619,10 @@ export default function Map() {
   useEffect(() => {
     // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
 
-    if (stateMap.userDefinedLayers.length > 0 && map) {
-      const layerList = stateMap.userDefinedLayers;
+    if (stateApp.userDefinedLayers.length > 0 && map) {
+      const layerList = stateApp.userDefinedLayers;
 
-      stateMap.userDefinedLayers.forEach((l) => {
+      stateApp.userDefinedLayers.forEach((l) => {
         l.id.forEach((k, i) => {
           console.log('k',k)
 
@@ -651,9 +649,9 @@ export default function Map() {
     }
 
     // this section adds the updated list of layers 
-    const tmpCheckedLayer = stateMap.tempCheckedUserDefinedLayers;
-    const checkedLayers = stateMap.checkedUserDefinedLayers.slice(0)
-    if (tmpCheckedLayer && stateMap.checkedUserDefinedLayers.indexOf(tmpCheckedLayer) === -1) {
+    const tmpCheckedLayer = stateApp.tempCheckedUserDefinedLayers;
+    const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0)
+    if (tmpCheckedLayer && stateApp.checkedUserDefinedLayers.indexOf(tmpCheckedLayer) === -1) {
       checkedLayers.push(tmpCheckedLayer)
     }
     if (map && checkedLayers.length > 0) {
@@ -661,7 +659,7 @@ export default function Map() {
       layers.sort(function (a, b) {
         return b - a;
       });
-      const layerList = stateMap.userDefinedLayers.slice(0);
+      const layerList = stateApp.userDefinedLayers.slice(0);
       let beforelayer = null;
       for (let k = layers.length - 1; k >= 0; k--) {
         const l = layers[k];
@@ -679,7 +677,7 @@ export default function Map() {
             ) {
               layerData = dataWellsForOwnerWellTrackLayer.wells.results;
             } else if(selectLayerProps.dataProps[i].dataId == "wellsFromSearch"){
-              layerData = stateMap.wellListFromSearch;
+              layerData = stateApp.wellListFromSearch;
             }else {
               const dataId = selectLayerProps.dataProps[i].dataId;
 
@@ -803,7 +801,7 @@ export default function Map() {
 
               // -> add interaction (note to change later w/ interaction panel)
               if(selectLayerProps && selectLayerProps.interactionProps){
-                const availableInteraction = stateMap.checkedUserDefinedLayersInteraction.indexOf(l) !== -1 
+                const availableInteraction = stateApp.checkedUserDefinedLayersInteraction.indexOf(l) !== -1 
                 if(selectLayerProps.interactionProps.mouseClick){
                   
                   var clusterVar = selectLayerProps.layerProps[i].layerId+'-clusters'
@@ -981,16 +979,16 @@ export default function Map() {
           }
         }
       }
-      setStateMap({
-        ...stateMap,
+      setStateApp({
+        ...stateApp,
         userDefinedLayers: layerList,
       });
     }
   }, [
     map,
-    stateMap.checkedUserDefinedLayers,
-    stateMap.checkedUserDefinedLayersInteraction,
-    stateMap.tempCheckedUserDefinedLayers,
+    stateApp.checkedUserDefinedLayers,
+    stateApp.checkedUserDefinedLayersInteraction,
+    stateApp.tempCheckedUserDefinedLayers,
     stateApp.customLayers,
   ]);
 
@@ -1671,12 +1669,12 @@ stateNav.selectedTags,
 
   useEffect(() => {
     //sets style of map when changed in Map Controls
-    if (stateMap.selectedLayerId && map) {
-      if (stateMap.selectedLayerId) {
-        map.setStyle(stateMap.selectedLayerId);
+    if (stateApp.selectedLayerId && map) {
+      if (stateApp.selectedLayerId) {
+        map.setStyle(stateApp.selectedLayerId);
       }
     }
-  }, [map, stateMap.selectedLayerId]);
+  }, [map, stateApp.selectedLayerId]);
 
   const createPopUp = useCallback(
     (currentFeature) => {
@@ -1954,12 +1952,12 @@ stateNav.selectedTags,
     if (mapStyles.length > 0) {
       // const SET_INITIAL_MAP_STYLE = "Satellite";
 
-      const initializeMap = ({ setMap, mapEl, setStateMap, setDraw }) => {
+      const initializeMap = ({ setMap, mapEl, setStateApp, setDraw }) => {
         let id = mapEl.current.id;
 
         var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
 
-        console.log("tileset api loaded - style selected", stateMap.mapStyle);
+        console.log("tileset api loaded - style selected", stateApp.mapStyle);
         console.log(stateApp.mapVars);
         console.log(mapStyles[index]);
         console.log(mapStyles);
@@ -2139,7 +2137,7 @@ stateNav.selectedTags,
           },
         });
         newMap.addControl(Draw);
-        setStateMap({ ...stateMap, map: newMap, draw: Draw });
+        setStateApp({ ...stateApp, map: newMap, draw: Draw });
 
         newMap.on("load", function (e) {
           setDraw(Draw);
@@ -2150,7 +2148,7 @@ stateNav.selectedTags,
 
       if (!map) {
         console.log("initialize map start");
-        initializeMap({ setMap, mapEl, setStateMap, setDraw });
+        initializeMap({ setMap, mapEl, setStateApp, setDraw });
         console.log("initialize map finish");
       } else {
         console.log("map extra components start");
@@ -2160,10 +2158,10 @@ stateNav.selectedTags,
         // map.boxZoom.enable();
         // map.touchZoomRotate.enable();
 
-        const selectedLayerIntereaction = stateMap.checkedLayersInteraction[0];
-        const wellIndex = stateMap.styleLayers.findIndex(layer => layer.name === 'Wells');
+        const selectedLayerIntereaction = stateApp.checkedLayersInteraction[0];
+        const wellIndex = stateApp.styleLayers.findIndex(layer => layer.name === 'Wells');
 
-        const well = stateMap.styleLayers[wellIndex];
+        const well = stateApp.styleLayers[wellIndex];
         
         if (well.wellPointClick) {
           map.off("click", "wellpoints", well.wellPointClick);
@@ -2183,7 +2181,7 @@ stateNav.selectedTags,
           map.off("click", "welllines", well.wellLineClick);
         }
 
-        if (stateMap.checkedLayersInteraction.length > 0 && stateMap.styleLayers[selectedLayerIntereaction].name === 'Wells') {
+        if (stateApp.checkedLayersInteraction.length > 0 && stateApp.styleLayers[selectedLayerIntereaction].name === 'Wells') {
           // map.on("click", "wellpoints", wellPointClick);
   
           map.on("mousemove", "wellpoints", wellMouseMove);
@@ -2202,11 +2200,11 @@ stateNav.selectedTags,
           // wellcp.wellPointClick = wellPointClick;
           // wellcp.wellLineClick = wellLineClick;
 
-          const styleLayers = stateMap.styleLayers.slice(0);
+          const styleLayers = stateApp.styleLayers.slice(0);
           styleLayers[wellIndex] = wellcp;
 
-          setStateMap({
-            ...stateMap,
+          setStateApp({
+            ...stateApp,
             styleLayers
           })
         }
@@ -2229,7 +2227,7 @@ stateNav.selectedTags,
         console.log("map extra components complete");
       }
     }
-  }, [map, setStateMap, setStateMapControls, mapStyles, stateMap.checkedLayersInteraction]);
+  }, [map, setStateApp, setStateMapControls, mapStyles, stateApp.checkedLayersInteraction]);
 
   // Use effect for removing shape filter
   useEffect(() => {
@@ -2281,10 +2279,10 @@ stateNav.selectedTags,
 
     if (stateNav.drawingMode) {
       // delete previous filter feature
-      stateMap.draw.delete(drawingFilterFeatureId);
+      stateApp.draw.delete(drawingFilterFeatureId);
 
       setDrawingFilterFeatureId(stateNav.filterFeatureId);
-      stateMap.draw.changeMode(stateNav.drawingMode);
+      stateApp.draw.changeMode(stateNav.drawingMode);
       if (map) {
         map.on("draw.create", drawCreateListener);
         map.on("draw.update", drawUpdateListener);
@@ -2417,8 +2415,8 @@ stateNav.selectedTags,
   }, [map, stateApp.fitBounds]);
 
   useEffect(() => {
-    if (map && stateMap.toggleZoomOut) {
-      if (stateMap.toggleZoomOut === true) {
+    if (map && stateApp.toggleZoomOut) {
+      if (stateApp.toggleZoomOut === true) {
         map.flyTo({
           center: { lng: -98.8, lat: 31.6 },
           zoom: 5.88,
@@ -2453,14 +2451,14 @@ stateNav.selectedTags,
           }
         });
 
-        setStateMap((stateMap) => ({ ...stateMap, toggleZoomOut: null }));
+        setStateApp((stateApp) => ({ ...stateApp, toggleZoomOut: null }));
       }
     }
-  }, [stateMap.toggleZoomOut]);
+  }, [stateApp.toggleZoomOut]);
 
   useEffect(() => {
-    if (map && stateMap.toggle3d) {
-      if (stateMap.toggle3d === true) {
+    if (map && stateApp.toggle3d) {
+      if (stateApp.toggle3d === true) {
         if (map.getPitch() == 0 && map.getBearing() == 0) {
           map.setPitch(70);
           map.setBearing(20);
@@ -2479,10 +2477,10 @@ stateNav.selectedTags,
             bearing: map.getBearing(),
           },
         }));
-        setStateMap((stateMap) => ({ ...stateMap, toggle3d: null }));
+        setStateApp((stateApp) => ({ ...stateApp, toggle3d: null }));
       }
     }
-  }, [stateMap.toggle3d]);
+  }, [stateApp.toggle3d]);
 
   useEffect(() => {
     if (stateApp.editDraw === true || stateNav.drawingMode !== null) {
@@ -2525,13 +2523,13 @@ stateNav.selectedTags,
 
     // spatialDataAttributes.forEach(attribute => {
     //     // console.log(attribute, spatialData[attribute]);
-    //     stateMap.draw.setFeatureProperty(
-    //         stateMap.currentFeature.id,
+    //     stateApp.draw.setFeatureProperty(
+    //         stateApp.currentFeature.id,
     //         attribute,
     //         spatialData[attribute]
     //     );
     //     if (spatialData[attribute]) {
-    //         stateMap.currentFeature.properties[attribute] = spatialData[attribute];
+    //         stateApp.currentFeature.properties[attribute] = spatialData[attribute];
     //     }
     // });
 
@@ -2539,10 +2537,10 @@ stateNav.selectedTags,
     //     type: "Feature",
     //     geometry: {
     //         type: "Point",
-    //         coordinates: stateMap.currentFeature.properties.shapeCenter
+    //         coordinates: stateApp.currentFeature.properties.shapeCenter
     //     },
     //     properties: {
-    //         ...stateMap.currentFeature.properties,
+    //         ...stateApp.currentFeature.properties,
     //         label: spatialData.shapeLabel,
     //     }
     // }
@@ -2551,7 +2549,7 @@ stateNav.selectedTags,
 
     // if (user._id != "" ) {
     //   const customLayerData = {
-    //       shape: JSON.stringify(stateMap.currentFeature),
+    //       shape: JSON.stringify(stateApp.currentFeature),
     //       layer: dataType,
     //       name: spatialData.shapeLabel,
     //       user: user._id
@@ -2580,14 +2578,14 @@ stateNav.selectedTags,
   };
 
   const handleDeleteSpatialDataAndShape = () => {
-    // const {currentFeature} = stateMap;
+    // const {currentFeature} = stateApp;
     // if (currentFeature) {
     //   const elem = document.getElementById(currentFeature.id);
     //   // elem.parentNode.removeChild(elem);
     //   console.log("elem", elem);
-    //   stateMap.draw.delete(currentFeature.id);
-    //   setStateMap({
-    //     ...stateMap,
+    //   stateApp.draw.delete(currentFeature.id);
+    //   setStateApp({
+    //     ...stateApp,
     //     currentFeature: undefined,
     //   });
     //   if (currentFeature.id.includes("draw_polygon")

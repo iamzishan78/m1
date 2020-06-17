@@ -263,7 +263,7 @@ export default function WellCard() {
   const { data, loading, error } = useQueryWell(stateApp.selectedWell.api);
   //console.log('fireForget',data)
   /* useEffect(() => {
-    setStateMap(state => ({ ...state, selectedWell: props.selectedWell }))
+    setStateApp(state => ({ ...state, selectedWell: props.selectedWell }))
    
   }, [props.selectedWell, props.isSelectedWellLoading, setStateWellCard]) */
 

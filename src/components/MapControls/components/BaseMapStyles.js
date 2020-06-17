@@ -9,7 +9,6 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import { MapControlsContext } from "../MapControlsContext";
-import { MapContext } from "../../Map/MapContext";
 import { AppContext } from "../../../AppContext";
 import RoomIcon from '@material-ui/icons/Room';
 import RootRef from "@material-ui/core/RootRef";
@@ -155,7 +154,7 @@ export default function BaseMapStyles(props) {
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
-  const [stateMap, setStateMap] = useContext(MapContext);
+  
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
   const handleClose = () => {
@@ -175,12 +174,12 @@ export default function BaseMapStyles(props) {
     }
   
     const items = reorder(
-      stateMap.baseMapLayers,
+      stateApp.baseMapLayers,
       result.source.index,
       result.destination.index
     );
   
-    let checkedBaseLayers = stateMap.checkedBaseLayers.slice(0);
+    let checkedBaseLayers = stateApp.checkedBaseLayers.slice(0);
     const sourceIndex = checkedBaseLayers.indexOf(result.source.index)
     
     let direction = 0;
@@ -205,8 +204,8 @@ export default function BaseMapStyles(props) {
       checkedBaseLayers[sourceIndex] = result.destination.index;
     }
   
-    setStateMap({
-      ...stateMap, 
+    setStateApp({
+      ...stateApp, 
       baseMapLayers: items,
       checkedBaseLayers: checkedBaseLayers
     });
@@ -214,14 +213,14 @@ export default function BaseMapStyles(props) {
   
 
   const handleToggle = (idx) => () => {
-    const currentIndex = stateMap.checkedBaseLayers.indexOf(idx);
-    const newChecked = [...stateMap.checkedBaseLayers];
+    const currentIndex = stateApp.checkedBaseLayers.indexOf(idx);
+    const newChecked = [...stateApp.checkedBaseLayers];
     if (currentIndex === -1) {
       newChecked.push(idx);
     } else {
       newChecked.splice(currentIndex, 1);
     }
-    setStateMap((stateMap) => ({ ...stateMap, checkedBaseLayers: newChecked }));
+    setStateApp((stateApp) => ({ ...stateApp, checkedBaseLayers: newChecked }));
   };
 
 
@@ -340,7 +339,7 @@ export default function BaseMapStyles(props) {
         </StyledListItem2>
 
 
-        {stateMap.baseMapLayers.map((layer, index) => {
+        {stateApp.baseMapLayers.map((layer, index) => {
           const labelId = `checkbox-list-label-${index}`;
 
           return (
@@ -352,8 +351,8 @@ export default function BaseMapStyles(props) {
                   checkedIcon={<VisibilityIcon htmlColor="#fff" />}
                   edge="start"
                   checked={
-                    stateMap.checkedBaseLayers
-                      ? stateMap.checkedBaseLayers.indexOf(index) !== -1
+                    stateApp.checkedBaseLayers
+                      ? stateApp.checkedBaseLayers.indexOf(index) !== -1
                       : false
                   }
                   tabIndex={-1}
@@ -383,7 +382,7 @@ export default function BaseMapStyles(props) {
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <List style={{padding: 0}}>
-                    {stateMap.baseMapLayers.map((layer, index) => {
+                    {stateApp.baseMapLayers.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
                       return (
                         <Draggable key={labelId} draggableId={labelId} index={index}>
@@ -402,8 +401,8 @@ export default function BaseMapStyles(props) {
                                   checkedIcon={<VisibilityIcon htmlColor="#fff" />}
                                   edge="start"
                                   checked={
-                                    stateMap.checkedBaseLayers
-                                      ? stateMap.checkedBaseLayers.indexOf(index) !== -1
+                                    stateApp.checkedBaseLayers
+                                      ? stateApp.checkedBaseLayers.indexOf(index) !== -1
                                       : false
                                   }
                                   tabIndex={-1}

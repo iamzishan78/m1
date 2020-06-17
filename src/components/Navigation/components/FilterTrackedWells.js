@@ -8,7 +8,6 @@ import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { TRACKSBYUSERANDOBJECTTYPE } from "../../../graphQL/useQueryTracksByUserAndObjectType";
 import { AppContext } from "../../../AppContext";
 import { MapControlsContext } from "../../MapControls/MapControlsContext";
-import { MapContext } from "../../Map/MapContext";
 import SimpleUserTable from "../../Providers/TrackWellsProvider";
 
 const useStyles = makeStyles({
@@ -45,7 +44,7 @@ export default function FilterOwnerCount() {
   //   MapControlsContext
   // );
 
-  const [stateMap, setStateMap] = useContext(MapContext);
+  
 
   const [stateApp, setStateApp] = useContext(AppContext);
 

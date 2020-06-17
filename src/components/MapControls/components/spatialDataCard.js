@@ -25,7 +25,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import ExpandIcon from "../../WellCard/components/svgIcons/ExpandIcon";
-import { MapContext } from "../../Map/MapContext";
+import { AppContext } from "../../../AppContext";
 
 // Helpers for area calcs
 import { area, convertArea, length } from "@turf/turf";
@@ -170,7 +170,8 @@ export default function SpatialDataCard(props) {
   const [dataProject, setDataProject] = useState(projectName);
   const [grossAcres, setGrossAcres] = useState(sdGrossAcres);
   const [dataNotes, setDataNotes] = useState(sdNotes);
-  const [stateMap, setStateMap] = useContext(MapContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
+  
 
   const inputLabel = useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);
@@ -196,14 +197,14 @@ export default function SpatialDataCard(props) {
         break;
     }
     if (udName) {
-      const layerIndex = stateMap.userDefinedLayers.findIndex(layer => layer.name == udName);
-      setStateMap({
-        ...stateMap,
+      const layerIndex = stateApp.userDefinedLayers.findIndex(layer => layer.name == udName);
+      setStateApp({
+        ...stateApp,
         tempCheckedUserDefinedLayers: layerIndex
       });
     } else {
-      setStateMap({
-        ...stateMap,
+      setStateApp({
+        ...stateApp,
         tempCheckedUserDefinedLayers: null
       });
     }
@@ -223,29 +224,29 @@ export default function SpatialDataCard(props) {
     };
     props.saveSpatialData(spatialData, dataType);
 
-    const tmpChecked = stateMap.tempCheckedUserDefinedLayers;
-    const checkedLayers = stateMap.checkedUserDefinedLayers.slice(0);
-    if (tmpChecked && stateMap.checkedUserDefinedLayers.indexOf(tmpChecked) === -1) {
+    const tmpChecked = stateApp.tempCheckedUserDefinedLayers;
+    const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
+    if (tmpChecked && stateApp.checkedUserDefinedLayers.indexOf(tmpChecked) === -1) {
       checkedLayers.push(tmpChecked)
     }
-    setStateMap({
-      ...stateMap,
+    setStateApp({
+      ...stateApp,
       checkedUserDefinedLayers: checkedLayers,
       tempCheckedUserDefinedLayers: null
     })
   };
 
   const closeSpatialDataCard = () => {
-    setStateMap({
-      ...stateMap,
+    setStateApp({
+      ...stateApp,
       tempCheckedUserDefinedLayers: null
     });
     props.closeSpatialDataCard();
   }
 
   const deleteSpatialData = () => {
-    setStateMap({
-      ...stateMap,
+    setStateApp({
+      ...stateApp,
       tempCheckedUserDefinedLayers: null
     });
     props.deleteSpatialDataAndShape();
@@ -306,9 +307,9 @@ export default function SpatialDataCard(props) {
             >
               <MenuItem value="interest">Area of Interest</MenuItem>
               <MenuItem value="parcel">Parcel/Tract</MenuItem>
-              {/* {stateMap.currentFeature &&
-                stateMap.currentFeature.geometry.type === "Polygon" &&
-                !stateMap.currentFeature.properties.isCircle && (
+              {/* {stateApp.currentFeature &&
+                stateApp.currentFeature.geometry.type === "Polygon" &&
+                !stateApp.currentFeature.properties.isCircle && (
                   <MenuItem value="title">Title Opinion</MenuItem>
                 )} */}
             </Select>

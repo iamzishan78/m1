@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { AppContext } from '../../AppContext'
 import { StudioContext } from './StudioContext'
-import { MapContext } from '../Map/MapContext'
 import { Container } from '@material-ui/core';
 import Iframe from 'react-iframe';
 import { makeStyles } from "@material-ui/core/styles";

@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { AppContext } from "../../AppContext";
 import { WellCardContext } from "./WellCardContext";
-import { MapContext } from "./../Map/MapContext";
 import { makeStyles } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core/styles";
 import { purple } from "@material-ui/core/colors";
@@ -164,7 +163,7 @@ const useStyles = makeStyles((theme) => ({
 export default function WellCardDetails(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
-  const [stateMap, setStateMap] = useContext(MapContext);
+  
   const [target, setTarget] = useState(null);
   const classes = useStyles();
   useEffect(() => {

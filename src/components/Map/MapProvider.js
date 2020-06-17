@@ -1,5 +1,5 @@
 import React from 'react'
-import { MapContextProvider } from './MapContext'
+// import { MapContextProvider } from './MapContext'
 import { makeStyles } from '@material-ui/core/styles'
 import Map from './Map'
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles'
@@ -13,8 +13,8 @@ const useStyles = makeStyles(theme => ({
 export default function MapProvider(props) {
   let classes = useStyles()
   return (
-    <MapContextProvider>
+    // <MapContextProvider>
         <Map>{props.children}</Map>
-    </MapContextProvider>
+    // </MapContextProvider>
   )
 }
