@@ -20,6 +20,8 @@ import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import { OWNERWELLSQUERY } from "../../../graphQL/useQueryOwnerWells ";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
+import { OPERATORSLATSLONS } from "../../../graphQL/useQueryOperatorLatsLonsArray";
+import { LEASELATSLONS } from "../../../graphQL/useQueryLeaseLatsLonsArray";
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -51,25 +53,6 @@ const calcScoreOpacity = (maxMin, score) => {
   if (score === maxMin[1]) return 1;
 
   return 1 - (score - maxMin[1]) / (maxMin[0] - maxMin[1]);
-};
-
-const findMaxMinLatLong = (wells) => {
-  let maxLat = wells[0].latitude;
-  let minLat = wells[0].latitude;
-  let maxLong = wells[0].longitude;
-  let minLong = wells[0].longitude;
-
-  for (let i = 0; i < wells.length; i++) {
-    if (wells[i].latitude !== 0) {
-      if (maxLat < wells[i].latitude) maxLat = wells[i].latitude;
-      if (minLat > wells[i].latitude) minLat = wells[i].latitude;
-    }
-    if (wells[i].longitude !== 0) {
-      if (maxLong < wells[i].longitude) maxLong = wells[i].longitude;
-      if (minLong > wells[i].longitude) minLong = wells[i].longitude;
-    }
-  }
-  return { maxLat, minLat, maxLong, minLong };
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -129,8 +112,12 @@ export default function Search() {
   const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(
     OWNERWELLSQUERY
   );
-
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
+
+  const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(
+    OPERATORSLATSLONS
+  );
+  const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
 
   //   if (typeof window !== 'undefined' && !loaded.current) {
   //     if (!document.querySelector('#google-maps')) {
@@ -430,7 +417,7 @@ export default function Search() {
   };
   const optionsWithHeader = [header, ...options];
 
-  //// getting wells data from owners, operators, leases ////
+  //// getting wells data from owners ////
 
   useEffect(() => {
     if (dataOwnerWells && dataOwnerWells.ownerWells) {
@@ -463,16 +450,63 @@ export default function Search() {
       setStateApp((stateApp) => ({
         ...stateApp,
         wellListFromSearch: dataWells.wells.results,
-        // fitBounds: findMaxMinLatLong(dataWells.wells.results),
       }));
     }
   }, [dataWells]);
+
+  //// getting wells data from  operators////
+  useEffect(() => {
+    if (dataOperatorWells && dataOperatorWells.operatorLatsLonsArray) {
+      if (dataOperatorWells.operatorLatsLonsArray.length !== 0) {
+        console.log(
+          "wells data from search",
+          dataOperatorWells.operatorLatsLonsArray
+        );
+
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          wellListFromSearch: dataOperatorWells.operatorLatsLonsArray.map(
+            (item) => ({
+              longitude: item.Longitude,
+              latitude: item.Latitude,
+            })
+          ),
+        }));
+      } else {
+        console.log("Not wells found for the operator");
+      }
+    }
+  }, [dataOperatorWells]);
+
+  //// getting wells data from  leases ////
+  useEffect(() => {
+    if (dataLeaseWells && dataLeaseWells.leaseLatsLonsArray) {
+      if (dataLeaseWells.leaseLatsLonsArray.length !== 0) {
+        console.log(
+          "wells data from search",
+          dataLeaseWells.leaseLatsLonsArray
+        );
+
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          wellListFromSearch: dataLeaseWells.leaseLatsLonsArray.map((item) => ({
+            longitude: item.Longitude,
+            latitude: item.Latitude,
+          })),
+        }));
+      } else {
+        console.log("Not wells found for the lease");
+      }
+    }
+  }, [dataLeaseWells]);
 
   ///////////////////////////////////////
 
   const handleChange = (newValue) => {
     //setOptions(newValue ? [newValue, ...options] : options);
     console.log("search Selected", newValue); ////////////////////////////////////////////////////////////////
+
+    setValue(newValue);
 
     //// if well, with lat long
     if (
@@ -490,18 +524,49 @@ export default function Search() {
           ? { longitude: newValue.Longitude, latitude: newValue.Latitude }
           : null,
         wellListFromSearch: null,
-        // fitBounds: null,
       }));
     }
 
     //// if owner
-    setValue(newValue);
     if (newValue && newValue.Source === "lod2019-index" && newValue.Id) {
       getOwnerWells({
         variables: {
           ownerId: newValue.Id,
         },
       });
+    }
+
+    //// if operator
+    if (newValue && newValue.Source === "operator-index" && newValue.Operator) {
+      getOperatorWells({
+        variables: {
+          operatorName: newValue.Operator,
+        },
+      });
+    }
+
+    //// if lease
+    if (
+      newValue &&
+      newValue.Source === "lease-index" &&
+      ((newValue.Lease && newValue.Lease !== "") ||
+        (newValue.LeaseId && newValue.LeaseId !== ""))
+    ) {
+      if (newValue.Lease && newValue.Lease !== "") {
+        getLeaseWells({
+          variables: {
+            fieldName: "Lease",
+            value: newValue.Lease,
+          },
+        });
+      } else {
+        getLeaseWells({
+          variables: {
+            fieldName: "LeaseId",
+            value: newValue.LeaseId,
+          },
+        });
+      }
     }
   };
 
