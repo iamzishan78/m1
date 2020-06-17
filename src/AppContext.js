@@ -50,6 +50,7 @@ const AppProvider = (props) => {
     //   taggedWells: null,
     // },
     wellSelectedCoordinates: [],
+    wellListFromSearch: null,
   });
 
   useEffect(() => {
