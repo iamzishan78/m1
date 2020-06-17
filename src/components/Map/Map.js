@@ -2214,6 +2214,17 @@ stateNav.selectedTags,
 
         map.on("mousemove", mapMouseMove);
 
+        // map.on("draw.selectionchange", ({features}) => {
+        //   const [feature] = features;
+        //   if (mapClick && mapClick.mapClickHandler) {
+        //     if (feature) {
+        //       map.off("click", mapClick.mapClickHandler);
+        //     } else {
+        //       map.on("click", mapClick.mapClickHandler);
+        //     }
+        //   }
+        // });
+
 
         console.log("map extra components complete");
       }

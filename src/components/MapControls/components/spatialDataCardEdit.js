@@ -263,10 +263,12 @@ export default function SpatialDataCardEdit(props) {
       ...stateMap,
       tempCheckedUserDefinedLayers: null,
     });
-    setStateApp({
-      ...stateApp,
-      customLayers: custLayers
-    })
+    if (custLayers.length > 0) {
+      setStateApp({
+        ...stateApp,
+        customLayers: custLayers
+      });
+    }
     
     props.closeSpatialDataCard();
   }
