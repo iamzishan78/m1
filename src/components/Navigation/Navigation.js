@@ -13,8 +13,8 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 //@material-ui components
 import AppBar from "@material-ui/core/AppBar";
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import LayersIcon from '@material-ui/icons/Layers';
+import DashboardIcon from "@material-ui/icons/Dashboard";
+import LayersIcon from "@material-ui/icons/Layers";
 //import Avatar from "@material-ui/core/Avatar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -830,9 +830,9 @@ export default function Navigation(props) {
   };
 
   const openProfile = (event) => {
-    event.preventDefault()
-    handleMenuClose()
-    setStateNav({...stateNav, isProfileOpen:true})
+    event.preventDefault();
+    handleMenuClose();
+    setStateNav({ ...stateNav, isProfileOpen: true });
   };
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -848,8 +848,11 @@ export default function Navigation(props) {
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
         Logout
       </MenuItem>
-      <MenuItem className={classes.userMenuItem} onClick={(e)=>openProfile(e)}>
-        <Link to="/profile" style={{textDecoration: 'none', color: 'black'}}>
+      <MenuItem
+        className={classes.userMenuItem}
+        onClick={(e) => openProfile(e)}
+      >
+        <Link to="/profile" style={{ textDecoration: "none", color: "black" }}>
           Profile
         </Link>
       </MenuItem>
@@ -1204,7 +1207,11 @@ export default function Navigation(props) {
               style={{ left: "8.5px" }}
               onClick={handleProfileMenuOpen}
             >
-              <Avatar name={stateApp.user.name} size="38" round />
+              {true ? (
+                <Avatar name={"Dann"} size="38" round />
+              ) : (
+                <Avatar name={stateApp.user.name} size="38" round />
+              )}
             </IconButton>
           </Toolbar>
         ) : (
@@ -1437,7 +1444,7 @@ export default function Navigation(props) {
             key="studio"
           >
             <ListItemIcon>
-              <LayersIcon/>
+              <LayersIcon />
             </ListItemIcon>
             <ListItemText primary="Studio" />
 
@@ -1600,7 +1607,7 @@ export default function Navigation(props) {
           </ListItem> */}
         </List>
       </Drawer>
-  
+
       {openFilterCard ? (
         <div ref={anchorEl} className={classes.tabPanelWrapper}>
           <TabPanel value={value} index={0} dir={theme.direction}>

@@ -132,6 +132,15 @@ const ProfileContent = () => {
     }
   };
 
+  const formatPhone = (number) => {
+    const formatted = `${number}`.replace(/\D/g, "");
+    const match = formatted.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+      return `(${match[1]}) ${match[2]}-${match[3]}`;
+    }
+    return number;
+  };
+
   return (
     <MuiDialogContent>
       <Grid container>
@@ -189,7 +198,7 @@ const ProfileContent = () => {
               classes: { root: classes.helperText },
             }}
             label={"What you do"}
-            placeholder={"CTO"}
+            placeholder={"Your Role or title"}
             helperText={"Let people know what you do"}
             name="activity"
             value={activity}
@@ -210,10 +219,10 @@ const ProfileContent = () => {
               classes: { root: classes.helperText },
             }}
             label={"Phone number"}
-            placeholder={"XXX-XXX-XXXXXX"}
+            placeholder={formatPhone("555-555-5555")}
             helperText={"Enter a phone number"}
             name="phone"
-            value={phone}
+            value={formatPhone(phone)}
             onChange={({ target }) => onChange(target)}
           />
         </Grid>
