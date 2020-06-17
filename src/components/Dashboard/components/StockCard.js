@@ -187,7 +187,7 @@ const StockCard = ({ title }) => {
     document.getElementById("parentID").appendChild(script);
   
     return () => {
-      document.getElementById("parentID").removeChild(script);
+      //document.getElementById("parentID").removeChild(script);
     }
   }, []);
 

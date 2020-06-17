@@ -132,12 +132,13 @@ const ProfileContent = () => {
     }
   };
 
-  const removePhoto = (e) => {
-    e.preventDefault();
-    setStateProfile({
-      ...stateProfile,
-      fields: { ...stateProfile.fields, profileImage: "" },
-    });
+  const formatPhone = (number) => {
+    const formatted = `${number}`.replace(/\D/g, "");
+    const match = formatted.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+      return `(${match[1]}) ${match[2]}-${match[3]}`;
+    }
+    return number;
   };
 
   return (
@@ -156,7 +157,7 @@ const ProfileContent = () => {
             FormHelperTextProps={{
               classes: { root: classes.helperText },
             }}
-            label={"Full name"}
+            label={"Full Name"}
             placeholder={"Your Full Name"}
             name="fullname"
             value={fullname}
@@ -177,7 +178,7 @@ const ProfileContent = () => {
             }}
             label={"Display Name"}
             placeholder={"Display Name"}
-            helperText={"This could be a nickname or your first name"}
+            helperText={"This could be your nickname or first name"}
             name="displayname"
             value={displayname}
             onChange={({ target }) => onChange(target)}
@@ -197,7 +198,7 @@ const ProfileContent = () => {
               classes: { root: classes.helperText },
             }}
             label={"What you do"}
-            placeholder={"CTO"}
+            placeholder={"Your Role or Title"}
             helperText={"Let people know what you do"}
             name="activity"
             value={activity}
@@ -218,33 +219,12 @@ const ProfileContent = () => {
               classes: { root: classes.helperText },
             }}
             label={"Phone number"}
-            placeholder={"XXX-XXX-XXXXXX"}
-            helperText={"Enter a phone number"}
+            placeholder={formatPhone("555-555-5555")}
+            helperText={"Enter your phone number"}
             name="phone"
-            value={phone}
+            value={formatPhone(phone)}
             onChange={({ target }) => onChange(target)}
           />
-          {/* <Box pb={2.5} />
-          <TextField
-            InputLabelProps={{
-              classes: { root: classes.label, focused: classes.focused },
-              shrink: true,
-            }}
-            InputProps={{
-              disableUnderline: true,
-              error: true,
-              classes: { input: classes.input },
-            }}
-            FormHelperTextProps={{
-              classes: { root: classes.helperText },
-            }}
-            label={"Time zone"}
-            placeholder={"UTC"}
-            helperText={"Your current timezone"}
-            name="timezone"
-            value={timezone}
-            onChange={({ target }) => onChange(target)}
-          /> */}
         </Grid>
         <Grid item sm={4}>
           <Typography variant="body1">Profile Photo</Typography>
@@ -276,14 +256,6 @@ const ProfileContent = () => {
               Upload an image
             </Button>
           </label>
-          <Button
-            component="span"
-            className={classes.button}
-            style={{ color: "blue" }}
-            onClick={(e) => removePhoto(e)}
-          >
-            Remove photo
-          </Button>
         </Grid>
       </Grid>
     </MuiDialogContent>
