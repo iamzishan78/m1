@@ -21,7 +21,7 @@ import Portal from "@material-ui/core/Portal";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
 import DrawStatus from "./components/DrawStatus";
-import SpatialDataCard from '../MapControls/components/spatialDataCard';
+import SpatialDataCardEdit from '../MapControls/components/spatialDataCardEdit';
 import "./popup.css";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import {
@@ -730,6 +730,7 @@ export default function Map() {
                 map.addSource(selectLayerProps.sourceProps[i].sourceId, {
                   type: selectLayerProps.sourceProps[i].sourceType,
                   data: myGeoJSONData,
+                  promoteId: { original: "id" }
                 });
               }
 
@@ -2726,7 +2727,7 @@ export default function Map() {
             {
               stateApp.selectedUserDefinedLayer && (
                 <PortalD id="popupContainer">
-                  <SpatialDataCard
+                  <SpatialDataCardEdit
                     selectedFeature={stateApp.selectedUserDefinedLayer}
                     saveSpatialData={handleSaveSpatialDataToShape}
                     closeSpatialDataCard={handleCloseSpatialDataCard}

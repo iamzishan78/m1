@@ -221,6 +221,7 @@ export default function DrawShapes(props) {
                 stateMap.currentFeature.properties[attribute] = spatialData[attribute];
             }
         });
+        stateMap.currentFeature.properties.id = stateMap.currentFeature.id
 
         const symbolFeature = {
             type: "Feature",
@@ -230,6 +231,7 @@ export default function DrawShapes(props) {
             },
             properties: {
                 ...stateMap.currentFeature.properties,
+                id: `${stateMap.currentFeature.properties.id}_label`,
                 label: spatialData.shapeLabel,
             }
         }
