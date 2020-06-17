@@ -94,6 +94,11 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "50%",
     marginLeft: "10px",
   },
+  headerButtons: {
+    width: "100%",
+    margin: "0 4px",
+    minWidth: "max-content",
+  },
 }));
 
 export default function Search() {
@@ -608,10 +613,12 @@ export default function Search() {
               xs={12}
               style={{
                 display: "flex",
-                justifyContent: "space-evenly",
+                justifyContent: "space-between",
+                margin: "0 4px",
               }}
             >
               <Button
+                className={classes.headerButtons}
                 variant={searchOption === "all" ? "contained" : "outlined"}
                 size="small"
                 color={searchOption === "all" ? "secondary" : "primary"}
@@ -622,6 +629,7 @@ export default function Search() {
                 All
               </Button>
               <Button
+                className={classes.headerButtons}
                 variant={searchOption === "wells" ? "contained" : "outlined"}
                 size="small"
                 color={searchOption === "wells" ? "secondary" : "primary"}
@@ -632,6 +640,7 @@ export default function Search() {
                 Wells
               </Button>
               <Button
+                className={classes.headerButtons}
                 variant={searchOption === "owners" ? "contained" : "outlined"}
                 size="small"
                 color={searchOption === "owners" ? "secondary" : "primary"}
@@ -642,6 +651,7 @@ export default function Search() {
                 Owners
               </Button>
               <Button
+                className={classes.headerButtons}
                 variant={
                   searchOption === "operators" ? "contained" : "outlined"
                 }
@@ -654,6 +664,7 @@ export default function Search() {
                 Operators
               </Button>
               <Button
+                className={classes.headerButtons}
                 variant={searchOption === "leases" ? "contained" : "outlined"}
                 size="small"
                 color={searchOption === "leases" ? "secondary" : "primary"}

@@ -165,6 +165,11 @@ export default function Map() {
           (track) => track.trackOn
         );
 
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          wells: dataTracks.tracksByUserAndObjectType,
+        }));
+
         getWells({
           variables: {
             wellIdArray: tracksIdArray,
@@ -2348,7 +2353,7 @@ export default function Map() {
 
   // Use effect for removing shape filter
   useEffect(() => {
-    if (stateNav.filterDrawing.length === 0) {
+    if (stateNav.filterDrawing && stateNav.filterDrawing.length === 0) {
       if (draw) draw.delete(drawingFilterFeatureId);
       setStateNav((stateNav) => ({
         ...stateNav,
