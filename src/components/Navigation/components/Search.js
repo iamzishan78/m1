@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -17,6 +17,9 @@ import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import { OWNERWELLSQUERY } from "../../../graphQL/useQueryOwnerWells ";
+import { useLazyQuery } from "@apollo/react-hooks";
+import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -48,6 +51,25 @@ const calcScoreOpacity = (maxMin, score) => {
   if (score === maxMin[1]) return 1;
 
   return 1 - (score - maxMin[1]) / (maxMin[0] - maxMin[1]);
+};
+
+const findMaxMinLatLong = (wells) => {
+  let maxLat = wells[0].latitude;
+  let minLat = wells[0].latitude;
+  let maxLong = wells[0].longitude;
+  let minLong = wells[0].longitude;
+
+  for (let i = 0; i < wells.length; i++) {
+    if (wells[i].latitude !== 0) {
+      if (maxLat < wells[i].latitude) maxLat = wells[i].latitude;
+      if (minLat > wells[i].latitude) minLat = wells[i].latitude;
+    }
+    if (wells[i].longitude !== 0) {
+      if (maxLong < wells[i].longitude) maxLong = wells[i].longitude;
+      if (minLong > wells[i].longitude) minLong = wells[i].longitude;
+    }
+  }
+  return { maxLat, minLat, maxLong, minLong };
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -103,6 +125,12 @@ export default function Search() {
   const [maxMinOperatosScore, setMaxMinOperatosScore] = React.useState([0, 0]);
   const [maxMinLeasesScore, setMaxMinLeasesScore] = React.useState([0, 0]);
   const loaded = React.useRef(false);
+
+  const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(
+    OWNERWELLSQUERY
+  );
+
+  const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
 
   //   if (typeof window !== 'undefined' && !loaded.current) {
   //     if (!document.querySelector('#google-maps')) {
@@ -388,6 +416,7 @@ export default function Search() {
     searchOption,
   ]);
 
+  //// setting the buttons header /////
   const header = {
     Source: "header",
     "@search.score": 0,
@@ -400,6 +429,81 @@ export default function Search() {
     Secondary: "",
   };
   const optionsWithHeader = [header, ...options];
+
+  //// getting wells data from owners, operators, leases ////
+
+  useEffect(() => {
+    if (dataOwnerWells && dataOwnerWells.ownerWells) {
+      if (dataOwnerWells.ownerWells.length !== 0) {
+        let wellsIdsArray = dataOwnerWells.ownerWells.map(
+          (item) => item.WellId
+        );
+
+        getWells({
+          variables: {
+            wellIdArray: wellsIdsArray,
+            authToken: stateApp.user.authToken,
+          },
+        });
+      } else {
+        console.log("Not wells found for the owner");
+      }
+    }
+  }, [dataOwnerWells]);
+
+  useEffect(() => {
+    if (
+      dataWells &&
+      dataWells.wells &&
+      dataWells.wells.results &&
+      dataWells.wells.results.length !== 0
+    ) {
+      console.log("wells data from search", dataWells.wells.results);
+
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        wellListFromSearch: dataWells.wells.results,
+        // fitBounds: findMaxMinLatLong(dataWells.wells.results),
+      }));
+    }
+  }, [dataWells]);
+
+  ///////////////////////////////////////
+
+  const handleChange = (newValue) => {
+    //setOptions(newValue ? [newValue, ...options] : options);
+    console.log("search Selected", newValue); ////////////////////////////////////////////////////////////////
+
+    //// if well, with lat long
+    if (
+      newValue &&
+      newValue.Source === "wellheader-index" &&
+      newValue.Longitude &&
+      newValue.Latitude
+    ) {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        popupOpen: false,
+        selectedWell: null,
+        selectedWellId: newValue ? newValue.Id.toLowerCase() : null,
+        flyTo: newValue
+          ? { longitude: newValue.Longitude, latitude: newValue.Latitude }
+          : null,
+        wellListFromSearch: null,
+        // fitBounds: null,
+      }));
+    }
+
+    //// if owner
+    setValue(newValue);
+    if (newValue && newValue.Source === "lod2019-index" && newValue.Id) {
+      getOwnerWells({
+        variables: {
+          ownerId: newValue.Id,
+        },
+      });
+    }
+  };
 
   return (
     <Autocomplete
@@ -521,20 +625,7 @@ export default function Search() {
       includeInputInList
       value={value}
       onChange={(event, newValue) => {
-        //setOptions(newValue ? [newValue, ...options] : options);
-        setValue(newValue);
-
-        if (newValue && newValue.Longitude && newValue.Latitude) {
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            popupOpen: false,
-            selectedWell: null,
-            selectedWellId: newValue ? newValue.Id.toLowerCase() : null,
-            flyTo: newValue
-              ? { longitude: newValue.Longitude, latitude: newValue.Latitude }
-              : null,
-          }));
-        }
+        handleChange(newValue);
       }}
       onInputChange={(event, newInputValue, reason) => {
         if (reason == "input") {
