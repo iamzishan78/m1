@@ -207,7 +207,7 @@ export default function TitleOpinion() {
               <GeneralInfoForm />
             </Grid>
             <Grid item xs={6} sm={6} md={6} lg={7}>
-              <MapShape />
+              {/* <MapShape /> */}
             </Grid>
           </Grid>
           <Grid item xs={12} container>

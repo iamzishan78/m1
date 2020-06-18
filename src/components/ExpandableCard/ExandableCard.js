@@ -56,6 +56,7 @@ export default function ExpandableCard(props) {
       width: width,
       height: props.expanded ? height : null,
       background: "#011133",
+      //background: "#efefef",
       borderStyle: "solid",
       borderWidth: "thin",
       borderColor: "#011133",
@@ -83,7 +84,7 @@ export default function ExpandableCard(props) {
     },
     content: {
       transition: "height 0.1s",
-      backgroundColor: "#fff",
+      backgroundColor: "#fafafa",
       padding: "0 !important",
       height: height,
       overflowY: "auto",
