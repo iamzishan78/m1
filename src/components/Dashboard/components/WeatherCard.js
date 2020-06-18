@@ -126,10 +126,10 @@ const WeatherCard = () => {
       <Grid item container spacing={2}>
         <Grid item xs={6} sm={8} md={8} lg={9} xl={9} className={classes.dateCard}>
           <Box>
-            <Typography variant="body2" align="left">
+            <Typography variant="h6" align="left">
               {date?.split(";")[0]}
             </Typography>
-            <Typography variant="h5" align="left" className={classes.ldate}>
+            <Typography variant="h4" align="left" className={classes.ldate}>
               {date?.split(";")[1]}
             </Typography>
           </Box>
