@@ -3,7 +3,6 @@ import { useMutation, useLazyQuery } from "@apollo/react-hooks";
 import loadCSS from "fg-loadcss";
 // STATE MANAGEMENT
 import { MapControlsContext } from "../../MapControlsContext";
-import { MapContext } from "../../../Map/MapContext";
 import { AppContext } from "../../../../AppContext";
 // STYLES - Material UI Required Components
 import { useStyles, StyledMenu, StyledMenuItem } from "../muiThemes";
@@ -92,7 +91,7 @@ export default function DrawShapes(props) {
         MapControlsContext
     );
     const [stateApp, setStateApp] = useContext(AppContext);
-    const [stateMap, setStateMap] = useContext(MapContext);
+    
     const [stateNav, setStateNav] = useContext(NavigationContext);
     const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
 
@@ -138,10 +137,10 @@ export default function DrawShapes(props) {
     }, [dataUser]);
 
     useEffect(() => {
-        const {map} = stateMap;
+        const {map} = stateApp;
         map.on("draw.create", ({features}) => {
             const [feature] = features;
-            const {draw} = stateMap;
+            const {draw} = stateApp;
             if (feature) {
                 addCustomShapeProperties(feature, draw);
             }
@@ -151,7 +150,7 @@ export default function DrawShapes(props) {
         map.on("draw.selectionchange", ({features}) => {
             const [feature] = features;
             if (feature) {
-                setStateMap({...stateMap, currentFeature: feature});
+                setStateApp({...stateApp, currentFeature: feature});
                 setStateApp(stateApp => {
                     return {
                         ...stateApp,
@@ -160,24 +159,24 @@ export default function DrawShapes(props) {
                     };
                 });
             } else {
-                setStateMap({...stateMap, currentFeature: undefined});
+                setStateApp({...stateApp, currentFeature: undefined});
                 setStateApp({...stateApp, editDraw: false});
             }
         });
-    }, [stateMap.map, showSpatialDataCard]);
+    }, [stateApp.map, showSpatialDataCard]);
 
     useEffect(() => {
         setStateApp({...stateApp, editDraw: showSpatialDataCard});
     }, [showSpatialDataCard])
 
     useEffect(() => {
-        const {currentFeature} = stateMap;
+        const {currentFeature} = stateApp;
         if (currentFeature !== undefined) {
             toggleSpatialDataCard(true);
         } else {
             toggleSpatialDataCard(false);
         }
-    }, [stateMap.currentFeature]);
+    }, [stateApp.currentFeature]);
 
     const createShapeDrawOptions = () => {
         return availableShapes.map((shape, index) => {
@@ -185,7 +184,7 @@ export default function DrawShapes(props) {
                 <StyledMenuItem
                     key={index}
                     onClick={evt => {
-                        stateMap.draw.changeMode(shape.mode);
+                        stateApp.draw.changeMode(shape.mode);
                         setStateApp({...stateApp, editDraw: true});
                         handleClose();
                     }}
@@ -212,26 +211,26 @@ export default function DrawShapes(props) {
 
         spatialDataAttributes.forEach(attribute => {
             // console.log(attribute, spatialData[attribute]);
-            stateMap.draw.setFeatureProperty(
-                stateMap.currentFeature.id,
+            stateApp.draw.setFeatureProperty(
+                stateApp.currentFeature.id,
                 attribute,
                 spatialData[attribute]
             );
             if (spatialData[attribute]) {
-                stateMap.currentFeature.properties[attribute] = spatialData[attribute];
+                stateApp.currentFeature.properties[attribute] = spatialData[attribute];
             }
         });
-        stateMap.currentFeature.properties.id = stateMap.currentFeature.id
+        stateApp.currentFeature.properties.id = stateApp.currentFeature.id
 
         const symbolFeature = {
             type: "Feature",
             geometry: {
                 type: "Point",
-                coordinates: stateMap.currentFeature.properties.shapeCenter
+                coordinates: stateApp.currentFeature.properties.shapeCenter
             },
             properties: {
-                ...stateMap.currentFeature.properties,
-                id: `${stateMap.currentFeature.properties.id}_label`,
+                ...stateApp.currentFeature.properties,
+                id: `${stateApp.currentFeature.properties.id}_label`,
                 label: spatialData.shapeLabel,
             }
         }
@@ -252,7 +251,7 @@ export default function DrawShapes(props) {
         } else {
             if (user._id != "" ) {
                 const customLayerData = {
-                    shape: JSON.stringify(stateMap.currentFeature),
+                    shape: JSON.stringify(stateApp.currentFeature),
                     layer: dataType,
                     name: spatialData.shapeLabel,
                     user: user._id
@@ -283,14 +282,14 @@ export default function DrawShapes(props) {
     };
 
     const handleDeleteSpatialDataAndShape = () => {
-        const {currentFeature} = stateMap;
+        const {currentFeature} = stateApp;
         if (currentFeature) {
             const elem = document.getElementById(currentFeature.id);
             // elem.parentNode.removeChild(elem);
             console.log("elem", elem);
-            stateMap.draw.delete(currentFeature.id);
-            setStateMap({
-                ...stateMap,
+            stateApp.draw.delete(currentFeature.id);
+            setStateApp({
+                ...stateApp,
                 currentFeature: undefined,
             });
             if (currentFeature.id.includes("draw_polygon")
@@ -326,15 +325,15 @@ export default function DrawShapes(props) {
                     {createShapeDrawOptions()}
                 </StyledMenu>
             </ClickAwayListener>
-            {showSpatialDataCard && stateMap.currentFeature !== undefined && !stateMap.currentFeature.id.includes("draw_polygon")
-            && !stateMap.currentFeature.id.includes("drag_circle")
-            && !stateMap.currentFeature.id.includes("draw_rectangle")
+            {showSpatialDataCard && stateApp.currentFeature !== undefined && !stateApp.currentFeature.id.includes("draw_polygon")
+            && !stateApp.currentFeature.id.includes("drag_circle")
+            && !stateApp.currentFeature.id.includes("draw_rectangle")
                 ? (
                     <SpatialDataCard
                         closeSpatialDataCard={() => toggleSpatialDataCard(false)}
                         saveSpatialData={handleSaveSpatialDataToShape}
                         deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
-                        selectedFeature={stateMap.currentFeature}
+                        selectedFeature={stateApp.currentFeature}
                     />
                 ) : null}
         </React.Fragment>

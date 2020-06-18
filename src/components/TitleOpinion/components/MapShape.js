@@ -264,7 +264,7 @@ export default function MapShape() {
       const SET_INITIAL_MAP_STYLE = "Satellite";
       var index = getIndex(SET_INITIAL_MAP_STYLE, mapStyles, "name");
 
-      const initializeMap = ({ setMap, mapEl, setStateMap }) => {
+      const initializeMap = ({ setMap, mapEl, setStateApp }) => {
         let id = mapEl.current.id;
 
         const newMap = new mapboxgl.Map({

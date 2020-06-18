@@ -4,7 +4,6 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { AppContext } from '../../../AppContext';
-import { MapContext } from '../MapContext';
 import { NavigationContext } from '../../Navigation/NavigationContext';
 
 const useStyles = makeStyles(theme => ({
@@ -49,16 +48,16 @@ const useStyles = makeStyles(theme => ({
 export default function OwnerList() {
   const [stateApp, setStateApp] = useContext(AppContext)
     const [stateNav, setStateNav] = useContext(NavigationContext)
-    const [stateMap, setStateMap] = useContext(MapContext)
+    const [stateApp, setStateApp] = useContext(MapContext)
   const classes = useStyles();
 
   const handleClick = (owner) => {
     console.log('flyto',owner)
     
-    //setStateMap(state => ({...state, popupOpen:false}))
+    //setStateApp(state => ({...state, popupOpen:false}))
     //setStateApp(state => ({ ...state, selectedOwner:owner }))
-   // setStateMap(state => ({ ...state, selectedWellId:well.Id }))
-    //setStateMap(state => ({...state,flyTo:well}))
+   // setStateApp(state => ({ ...state, selectedWellId:well.Id }))
+    //setStateApp(state => ({...state,flyTo:well}))
     
 }
 

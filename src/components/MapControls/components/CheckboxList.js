@@ -18,7 +18,7 @@ import DragIndicator from "@material-ui/icons/DragIndicator";
 //import IconButton from '@material-ui/core/IconButton';
 //import EditIcon from '@material-ui/icons/Edit';
 import { MapControlsContext } from "../MapControlsContext";
-import { MapContext } from "../../Map/MapContext";
+import { AppContext } from "../../../AppContext";
 import Collapse from '@material-ui/core/Collapse';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -57,7 +57,7 @@ export default function CheckboxList(props) {
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
-  const [stateMap, setStateMap] = useContext(MapContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   //const theme = useTheme()
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
@@ -72,48 +72,48 @@ export default function CheckboxList(props) {
 
 
   const handleToggle = idx => () => {
-    const currentIndex = stateMap.checkedLayers.indexOf(idx);
-    const newChecked = [...stateMap.checkedLayers];
+    const currentIndex = stateApp.checkedLayers.indexOf(idx);
+    const newChecked = [...stateApp.checkedLayers];
     if (currentIndex === -1) {
       newChecked.push(idx);
     } else {
       newChecked.splice(currentIndex, 1);
     }
-    setStateMap(stateMap => ({ ...stateMap, checkedLayers: newChecked }));
+    setStateApp(stateApp => ({ ...stateApp, checkedLayers: newChecked }));
   };
 
 
   const handleToggleInteraction = idx => () => {
-    const currentIndex = stateMap.checkedLayersInteraction.indexOf(idx);
-    const newChecked = [...stateMap.checkedLayersInteraction];
+    const currentIndex = stateApp.checkedLayersInteraction.indexOf(idx);
+    const newChecked = [...stateApp.checkedLayersInteraction];
     if (currentIndex === -1) {
       newChecked.push(idx);
     } else {
       newChecked.splice(currentIndex, 1);
     }
-    setStateMap(stateMap => ({ ...stateMap, checkedLayersInteraction: newChecked }));
+    setStateApp(stateApp => ({ ...stateApp, checkedLayersInteraction: newChecked }));
   };
 
   const handleToggleUserDefined = idx => () => {
-    const currentIndex = stateMap.checkedUserDefinedLayers.indexOf(idx);
-    const newChecked = [...stateMap.checkedUserDefinedLayers];
+    const currentIndex = stateApp.checkedUserDefinedLayers.indexOf(idx);
+    const newChecked = [...stateApp.checkedUserDefinedLayers];
     if (currentIndex === -1) {
       newChecked.push(idx);
     } else {
       newChecked.splice(currentIndex, 1);
     }
-    setStateMap(stateMap => ({ ...stateMap, checkedUserDefinedLayers: newChecked }));
+    setStateApp(stateApp => ({ ...stateApp, checkedUserDefinedLayers: newChecked }));
   };
 
   const handleToggleUserDefinedInteraction = idx => () => {
-    const currentIndex = stateMap.checkedUserDefinedLayersInteraction.indexOf(idx);
-    const newChecked = [...stateMap.checkedUserDefinedLayersInteraction];
+    const currentIndex = stateApp.checkedUserDefinedLayersInteraction.indexOf(idx);
+    const newChecked = [...stateApp.checkedUserDefinedLayersInteraction];
     if (currentIndex === -1) {
       newChecked.push(idx);
     } else {
       newChecked.splice(currentIndex, 1);
     }
-    setStateMap(stateMap => ({ ...stateMap, checkedUserDefinedLayersInteraction: newChecked }));
+    setStateApp(stateApp => ({ ...stateApp, checkedUserDefinedLayersInteraction: newChecked }));
   };
 
 
@@ -206,12 +206,12 @@ export default function CheckboxList(props) {
     }
 
     const items = reorder(
-      stateMap.styleLayers,
+      stateApp.styleLayers,
       result.source.index,
       result.destination.index
     );
 
-    let checkedLayers = stateMap.checkedLayers.slice(0);
+    let checkedLayers = stateApp.checkedLayers.slice(0);
     const sourceIndex = checkedLayers.indexOf(result.source.index)
     
     let direction = 0;
@@ -236,7 +236,7 @@ export default function CheckboxList(props) {
       checkedLayers[sourceIndex] = result.destination.index;
     }
 
-    let checkedLayersInteraction = stateMap.checkedLayersInteraction.slice(0);
+    let checkedLayersInteraction = stateApp.checkedLayersInteraction.slice(0);
     const sourceInteractionIndex = checkedLayersInteraction.indexOf(result.source.index)
 
     for (let i = 0; i < checkedLayersInteraction.length; i ++) {
@@ -249,8 +249,8 @@ export default function CheckboxList(props) {
       checkedLayersInteraction[sourceInteractionIndex] = result.destination.index;
     }
 
-    setStateMap({
-      ...stateMap, 
+    setStateApp({
+      ...stateApp, 
       styleLayers: items,
       checkedLayers: checkedLayers,
       checkedLayersInteraction: checkedLayersInteraction
@@ -264,12 +264,12 @@ export default function CheckboxList(props) {
     }
 
     const items = reorder(
-      stateMap.userDefinedLayers,
+      stateApp.userDefinedLayers,
       result.source.index,
       result.destination.index
     );
 
-    let checkedLayers = stateMap.checkedUserDefinedLayers.slice(0);
+    let checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
     const sourceIndex = checkedLayers.indexOf(result.source.index)
     
     let direction = 0;
@@ -294,7 +294,7 @@ export default function CheckboxList(props) {
       checkedLayers[sourceIndex] = result.destination.index;
     }
 
-    let checkedInteractionLayers = stateMap.checkedUserDefinedLayersInteraction.slice(0);
+    let checkedInteractionLayers = stateApp.checkedUserDefinedLayersInteraction.slice(0);
     const sourceInteractionIndex = checkedInteractionLayers.indexOf(result.source.index)
     for (let i = 0; i < checkedInteractionLayers.length; i ++) {
       if (checkedInteractionLayers[i] <= to && checkedInteractionLayers[i] >= from) {
@@ -307,8 +307,8 @@ export default function CheckboxList(props) {
     }
 
 
-    setStateMap({
-      ...stateMap, 
+    setStateApp({
+      ...stateApp, 
       userDefinedLayers: items,
       checkedUserDefinedLayers: checkedLayers,
       checkedUserDefinedLayersInteraction: checkedInteractionLayers,
@@ -347,7 +347,7 @@ export default function CheckboxList(props) {
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <List className={classes.list}>
-                    {stateMap.styleLayers.map((layer, index) => {
+                    {stateApp.styleLayers.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
                       return (
                         <Draggable key={labelId} draggableId={labelId} index={index}>
@@ -374,8 +374,8 @@ export default function CheckboxList(props) {
                                   checkedIcon={<ClickIcon/>}
                                   edge="start"
                                   checked={
-                                    stateMap.checkedLayersInteraction
-                                      ? stateMap.checkedLayersInteraction.indexOf(index) !== -1
+                                    stateApp.checkedLayersInteraction
+                                      ? stateApp.checkedLayersInteraction.indexOf(index) !== -1
                                       : false
                                   }
                                   tabIndex={-1}
@@ -392,8 +392,8 @@ export default function CheckboxList(props) {
                                   checkedIcon={<VisibilityIcon htmlColor="#fff" />}
                                   edge="start"
                                   checked={
-                                    stateMap.checkedLayers
-                                      ? stateMap.checkedLayers.indexOf(index) !== -1
+                                    stateApp.checkedLayers
+                                      ? stateApp.checkedLayers.indexOf(index) !== -1
                                       : false
                                   }
                                   tabIndex={-1}
@@ -428,7 +428,7 @@ export default function CheckboxList(props) {
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <List className={classes.list}>
-                    {stateMap.userDefinedLayers.map((layer, index) => {
+                    {stateApp.userDefinedLayers.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
                       return (
                         <Draggable key={labelId} draggableId={labelId} index={index}>
@@ -453,8 +453,8 @@ export default function CheckboxList(props) {
                                   checkedIcon={<ClickIcon/>}
                                   edge="start"
                                   checked={
-                                    stateMap.checkedUserDefinedLayersInteraction
-                                      ? stateMap.checkedUserDefinedLayersInteraction.indexOf(index) !== -1
+                                    stateApp.checkedUserDefinedLayersInteraction
+                                      ? stateApp.checkedUserDefinedLayersInteraction.indexOf(index) !== -1
                                       : false
                                   }
                                   tabIndex={-1}
@@ -469,8 +469,8 @@ export default function CheckboxList(props) {
                                   checkedIcon={<VisibilityIcon htmlColor="#fff" />}
                                   edge="start"
                                   checked={
-                                    stateMap.checkedUserDefinedLayers
-                                      ? stateMap.checkedUserDefinedLayers.indexOf(index) !== -1
+                                    stateApp.checkedUserDefinedLayers
+                                      ? stateApp.checkedUserDefinedLayers.indexOf(index) !== -1
                                       : false
                                   }
                                   tabIndex={-1}

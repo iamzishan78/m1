@@ -1,7 +1,5 @@
-import React, { useState, createContext, useEffect, useContext } from "react";
-import { AppContext } from "../../AppContext";
 
-const styleLayers = [
+export const styleLayers = [
   {
     name: "Wells",
     id: ["wellpoints", "welllines"],
@@ -43,7 +41,7 @@ const styleLayers = [
   },
 ];
 
-const userDefinedLayers = [
+export const userDefinedLayers = [
   {
     name: "Parcels",
     id: ["parcel", "parcel_labels"],
@@ -439,7 +437,7 @@ const userDefinedLayers = [
   // },
 ];
 
-const heatLayers = [
+export const heatLayers = [
   {
     name: "Cumulative BOE",
     id: ["wellsHeatmapBoe"],
@@ -472,7 +470,7 @@ const heatLayers = [
   },
 ];
 
-const baseMapLayers = [
+export const baseMapLayers = [
   {
     name: "Map Labels",
     id: [
@@ -579,62 +577,3 @@ const baseMapLayers = [
     ],
   },
 ];
-
-const MapContext = createContext([{}, () => {}]);
-
-const MapContextProvider = (props) => {
-  const [stateApp] = useContext(AppContext);
-
-  const [stateApp, setStateApp] = useState({
-    selectedWellId: null,
-    selectedWellApi: null,
-    selectedWell: null,
-    styleLayers: styleLayers,
-    heatLayers: heatLayers,
-    baseMapLayers: baseMapLayers,
-    userDefinedLayers: userDefinedLayers,
-    checkedLayers: [0, 3],
-    checkedHeats: [],
-    checkedBaseLayers: [0, 1, 2, 3, 4, 5],
-    checkedUserDefinedLayers: [],
-    tempCheckedUserDefinedLayer: null,
-    checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5],
-    checkedLayersInteraction: [0],
-    selectedLayerId: null,
-    openWellDetails: false,
-    sourceLoaded: false,
-    toggle3d: null,
-    toggleZoomOut: null,
-    map: null,
-    draw: null,
-    currentFeature: undefined,
-    wellListFromSearch: null,
-  });
-
-  useEffect(() => {
-    const currentIndex = stateApp.checkedUserDefinedLayers.indexOf(5);
-    const newChecked = [...stateApp.checkedUserDefinedLayers];
-
-    if (currentIndex === -1 && stateApp.wellListFromSearch) {
-      newChecked.push(5);
-    }
-
-    if (!stateApp.wellListFromSearch && currentIndex !== -1) {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      wellListFromSearch: stateApp.wellListFromSearch,
-      checkedUserDefinedLayers: newChecked,
-    }));
-  }, [stateApp.wellListFromSearch]);
-
-  return (
-    <MapContext.Provider value={[stateApp, setStateApp]}>
-      {props.children}
-    </MapContext.Provider>
-  );
-};
-
-export { MapContext, MapContextProvider };
