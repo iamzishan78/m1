@@ -212,7 +212,7 @@ function App() {
                     <PrivateRoute
                       exact
                       path="/title"
-                      component={TitleProvider}
+                      component={TitleOpinionProvider}
                     />
                     <PrivateRoute
                       exact
