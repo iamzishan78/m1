@@ -1100,7 +1100,7 @@ export default function Map() {
           "typeName",
           ["GAS", "OIL", "OIL AND GAS", "PERMITTED", "UNKNOWN"],
         ];
-        let defaultStatusName = ["statusName", ["ACTIVE", "PERMIT"]];
+        let defaultStatusName = ["statusName", ["ACTIVE","ACTIVE - DRILLING","COMPLETED - NOT ACTIVE","DRILLED UNCOMPLETED (DUC)", "PERMIT","PERMIT - EXISTING WELL","PERMIT - NEW DRILL"]];
         let defaultFiltersWellStatus = [
           "filterWellStatus",
           ["match", ["get", "wellStatus"], defaultStatusName[1], true, false],
