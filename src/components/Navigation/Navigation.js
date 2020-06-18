@@ -1006,7 +1006,7 @@ export default function Navigation(props) {
             ) : null}
 
             {matchFind ? (
-              <div className={classes.search}>
+              <div className={classes.search} id="searchBarDivParent">
                 <Search />
               </div>
             ) : null}

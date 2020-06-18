@@ -122,6 +122,7 @@ const NavigationContextProvider = (props) => {
     filterDrawing: [],
     selectedTags: [],
     wellsIdsFromTags: [],
+    searchHistory: [],
   });
   return (
     <NavigationContext.Provider value={[stateNav, setStateNav]}>

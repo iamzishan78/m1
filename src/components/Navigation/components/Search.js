@@ -22,6 +22,10 @@ import { useLazyQuery } from "@apollo/react-hooks";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { OPERATORSLATSLONS } from "../../../graphQL/useQueryOperatorLatsLonsArray";
 import { LEASELATSLONS } from "../../../graphQL/useQueryLeaseLatsLonsArray";
+import { NavigationContext } from "../NavigationContext";
+import Popover from "@material-ui/core/Popover";
+import Tooltip from "@material-ui/core/Tooltip";
+import Box from "@material-ui/core/Box";
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -99,15 +103,32 @@ const useStyles = makeStyles((theme) => ({
     margin: "0 4px",
     minWidth: "max-content",
   },
+  historyPopover: {
+    "& .MuiPopover-paper": {
+      width: "100% !important",
+      maxWidth: "none !important",
+      minWidth: "unset !important",
+      maxHeight: "55vh !important",
+    },
+  },
+  historyRow: {
+    "&:hover": {
+      backgroundColor: "#EFEFEF",
+      cursor: "pointer",
+    },
+  },
 }));
 
 export default function Search() {
   const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const [stateApp, setStateApp] = React.useContext(AppContext);
+  const [stateNav, setStateNav] = React.useContext(NavigationContext);
   const [value, setValue] = React.useState(null);
   const [inputValue, setInputValue] = React.useState("");
   const [searchOption, setSearchOption] = React.useState("all");
   const [options, setOptions] = React.useState([]);
+  const [searchTop, setSearchTop] = React.useState(5);
   const [maxMinWellsScore, setMaxMinWellsScore] = React.useState([0, 0]);
   const [maxMinOwnersScore, setMaxMinOwnersScore] = React.useState([0, 0]);
   const [maxMinOperatosScore, setMaxMinOperatosScore] = React.useState([0, 0]);
@@ -138,11 +159,11 @@ export default function Search() {
 
   const callWellSearch = React.useMemo(
     () =>
-      throttle((request, callback) => {
-        // autocompleteService.current.getPlacePredictions(request, callback);
-
+      throttle((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2019-05-06&$count=true&searchFields=WellName,ApiNumber&$top=5&search=" +
+          "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2019-05-06&$count=true&searchFields=WellName,ApiNumber&$top=" +
+          top +
+          "&search=" +
           request.input;
 
         const headers = new Headers();
@@ -173,11 +194,11 @@ export default function Search() {
 
   const callOwnerSearch = React.useMemo(
     () =>
-      throttle((request, callback) => {
-        // autocompleteService.current.getPlacePredictions(request, callback);
-
+      throttle((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName%2CAddress1&%24top=5&search=" +
+          "https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName%2CAddress1&%24top=" +
+          top +
+          "&search=" +
           request.input;
 
         const headers = new Headers();
@@ -208,9 +229,11 @@ export default function Search() {
 
   const callOperatorSearch = React.useMemo(
     () =>
-      throttle((request, callback) => {
+      throttle((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2019-05-06&$count=true&searchFields=Operator&$top=5&search=" +
+          "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2019-05-06&$count=true&searchFields=Operator&$top=" +
+          top +
+          "&search=" +
           request.input;
 
         const headers = new Headers();
@@ -241,9 +264,11 @@ export default function Search() {
 
   const callLeaseSearch = React.useMemo(
     () =>
-      throttle((request, callback) => {
+      throttle((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/lease-index/docs?api-version=2019-05-06&$count=true&searchFields=Lease,LeaseId&$top=5&search=" +
+          "https://m1search.search.windows.net/indexes/lease-index/docs?api-version=2019-05-06&$count=true&searchFields=Lease,LeaseId&$top=" +
+          top +
+          "&search=" +
           request.input;
 
         const headers = new Headers();
@@ -290,7 +315,7 @@ export default function Search() {
 
       Promise.all([
         searchOption == "all" || searchOption == "wells"
-          ? callWellSearch({ input: inputValue }, (results) => {
+          ? callWellSearch({ input: inputValue }, searchTop, (results) => {
               if (results) {
                 const indexSource = results["@odata.context"].substring(
                   results["@odata.context"].indexOf("('") + 2,
@@ -315,7 +340,7 @@ export default function Search() {
             })
           : null,
         searchOption == "all" || searchOption == "owners"
-          ? callOwnerSearch({ input: inputValue }, (results) => {
+          ? callOwnerSearch({ input: inputValue }, searchTop, (results) => {
               if (results) {
                 const indexSource = results["@odata.context"].substring(
                   results["@odata.context"].indexOf("('") + 2,
@@ -339,7 +364,7 @@ export default function Search() {
             })
           : null,
         searchOption == "all" || searchOption == "operators"
-          ? callOperatorSearch({ input: inputValue }, (results) => {
+          ? callOperatorSearch({ input: inputValue }, searchTop, (results) => {
               if (results) {
                 const indexSource = results["@odata.context"].substring(
                   results["@odata.context"].indexOf("('") + 2,
@@ -363,7 +388,7 @@ export default function Search() {
             })
           : null,
         searchOption == "all" || searchOption == "leases"
-          ? callLeaseSearch({ input: inputValue }, (results) => {
+          ? callLeaseSearch({ input: inputValue }, searchTop, (results) => {
               if (results) {
                 const indexSource = results["@odata.context"].substring(
                   results["@odata.context"].indexOf("('") + 2,
@@ -406,6 +431,7 @@ export default function Search() {
     callOwnerSearch,
     callOperatorSearch,
     searchOption,
+    searchTop,
   ]);
 
   //// setting the buttons header /////
@@ -508,10 +534,35 @@ export default function Search() {
   ///////////////////////////////////////
 
   const handleChange = (newValue) => {
-    //setOptions(newValue ? [newValue, ...options] : options);
     console.log("search Selected", newValue); ////////////////////////////////////////////////////////////////
 
     setValue(newValue);
+
+    //// setting search history
+    const setSearchHistory = (search) => {
+      let searchHistory = stateNav.searchHistory;
+
+      for (let i = 0; i < searchHistory.length; i++) {
+        if (
+          searchHistory[i].Source === search.Source &&
+          searchHistory[i].Primary === search.Primary &&
+          searchHistory[i].Secondary === search.Secondary
+        ) {
+          searchHistory.splice(i, 1);
+          break;
+        }
+      }
+      searchHistory.unshift({ ...search, date: Date.now() });
+
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        searchHistory: [...searchHistory],
+      }));
+    };
+
+    if (newValue) {
+      setSearchHistory(newValue);
+    }
 
     //// if well, with lat long
     if (
@@ -524,7 +575,7 @@ export default function Search() {
         ...stateApp,
         popupOpen: false,
         selectedWell: null,
-        selectedWellId: newValue ? newValue.Id.toLowerCase() : null,
+        selectedWellId: newValue.Id ? newValue.Id.toLowerCase() : null,
         flyTo: newValue
           ? { longitude: newValue.Longitude, latitude: newValue.Latitude }
           : null,
@@ -578,7 +629,7 @@ export default function Search() {
   return (
     <Autocomplete
       id="cognitive-search-autocomplete"
-      getOptionLabel={(option) => option.Primary}
+      getOptionLabel={(option, value) => option.Primary}
       forcePopupIcon
       filterOptions={(x) => x}
       options={optionsWithHeader}
@@ -623,6 +674,7 @@ export default function Search() {
                 size="small"
                 color={searchOption === "all" ? "secondary" : "primary"}
                 onClick={() => {
+                  setSearchTop(5);
                   setSearchOption("all");
                 }}
               >
@@ -634,6 +686,7 @@ export default function Search() {
                 size="small"
                 color={searchOption === "wells" ? "secondary" : "primary"}
                 onClick={() => {
+                  setSearchTop(5);
                   setSearchOption("wells");
                 }}
               >
@@ -645,6 +698,7 @@ export default function Search() {
                 size="small"
                 color={searchOption === "owners" ? "secondary" : "primary"}
                 onClick={() => {
+                  setSearchTop(5);
                   setSearchOption("owners");
                 }}
               >
@@ -658,6 +712,7 @@ export default function Search() {
                 size="small"
                 color={searchOption === "operators" ? "secondary" : "primary"}
                 onClick={() => {
+                  setSearchTop(5);
                   setSearchOption("operators");
                 }}
               >
@@ -669,6 +724,7 @@ export default function Search() {
                 size="small"
                 color={searchOption === "leases" ? "secondary" : "primary"}
                 onClick={() => {
+                  setSearchTop(5);
                   setSearchOption("leases");
                 }}
               >
@@ -685,9 +741,39 @@ export default function Search() {
                   <h3 className={classes.groupsHeadersText}>{option.group}</h3>
                 </Grid>
                 <Grid item xs={6} style={{ textAlign: "right" }}>
-                  <Button size="small" className={classes.groupsButton}>
-                    See All Results
-                  </Button>
+                  {searchTop === 5 ? (
+                    <Button
+                      size="small"
+                      className={classes.groupsButton}
+                      onClick={() => {
+                        setSearchTop(200);
+                        setSearchOption(
+                          option.group === "Owners"
+                            ? "owners"
+                            : option.group === "Wells"
+                            ? "wells"
+                            : option.group === "Operators"
+                            ? "operators"
+                            : option.group === "Leases"
+                            ? "leases"
+                            : "all"
+                        );
+                      }}
+                    >
+                      See All Results
+                    </Button>
+                  ) : (
+                    <Button
+                      size="small"
+                      className={classes.groupsButton}
+                      onClick={() => {
+                        setSearchTop(5);
+                        setSearchOption("all");
+                      }}
+                    >
+                      See Less
+                    </Button>
+                  )}
                 </Grid>
               </Grid>
               <Grid item xs={12}>
@@ -725,9 +811,148 @@ export default function Search() {
             ),
             endAdornment: (
               <InputAdornment>
-                <IconButton>
-                  <ArrowDropDownIcon htmlColor="#fff" />
-                </IconButton>
+                <div>
+                  <Tooltip title="Search History" placement="top">
+                    <IconButton
+                      onClick={(event) => {
+                        setAnchorEl(event.currentTarget);
+                      }}
+                    >
+                      <ArrowDropDownIcon htmlColor="#fff" />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Popover
+                    onBlur={() => {
+                      setAnchorEl(null);
+                    }}
+                    open={Boolean(anchorEl)}
+                    anchorEl={anchorEl}
+                    onClose={() => {
+                      setAnchorEl(null);
+                    }}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    style={{
+                      width: document.getElementById("searchBarDivParent")
+                        ? document.getElementById("searchBarDivParent")
+                            .offsetWidth
+                        : "400px",
+                    }}
+                    className={classes.historyPopover}
+                  >
+                    {stateNav.searchHistory.length > 0 ? (
+                      stateNav.searchHistory.map((option, i) => {
+                        const parts = parse(option.Primary, Array());
+
+                        return (
+                          <Box
+                            p={1}
+                            key={i}
+                            className={classes.historyRow}
+                            onClick={() => {
+                              setSearchTop(5);
+                              setSearchOption(
+                                option.Source === "lod2019-index"
+                                  ? "owners"
+                                  : option.Source === "wellheader-index"
+                                  ? "wells"
+                                  : option.Source === "operator-index"
+                                  ? "operators"
+                                  : option.Source === "lease-index"
+                                  ? "leases"
+                                  : "all"
+                              );
+                              setInputValue(
+                                option.Primary
+                                  ? option.Primary
+                                  : option.Secondary
+                              );
+                              handleChange(option);
+                            }}
+                          >
+                            <Grid container spacing={0}>
+                              <Grid container item xs={10} alignItems="center">
+                                <Grid item>
+                                  {option.Source === "lod2019-index" && (
+                                    <PersonIcon className={classes.icon} />
+                                  )}
+                                  {option.Source === "operator-index" && (
+                                    <OperatorIcon
+                                      className={classes.icon}
+                                      color={"#757575"}
+                                    />
+                                  )}
+                                  {option.Source === "wellheader-index" && (
+                                    <WellIcon
+                                      className={classes.icon}
+                                      color={"#757575"}
+                                      opacity="1.0"
+                                      small
+                                    />
+                                  )}
+                                  {option.Source === "lease-index" && (
+                                    <LeaseIcon
+                                      className={classes.icon}
+                                      color={"#757575"}
+                                    />
+                                  )}
+                                </Grid>
+                                <Grid item xs>
+                                  {parts.map((part, index) => (
+                                    <span
+                                      key={index}
+                                      style={{
+                                        fontWeight: part.highlight ? 700 : 400,
+                                      }}
+                                    >
+                                      {part.text}
+                                    </span>
+                                  ))}
+
+                                  {option && option.Secondary && (
+                                    <Typography
+                                      variant="body2"
+                                      color="textSecondary"
+                                    >
+                                      {option.Secondary}
+                                    </Typography>
+                                  )}
+                                </Grid>
+                              </Grid>
+                              <Grid container item xs={2} alignItems="center">
+                                <Grid item>
+                                  <Typography
+                                    variant="body2"
+                                    style={{ color: "rgb(80, 187, 223)" }}
+                                  >
+                                    {new Intl.DateTimeFormat("en-US", {
+                                      year: "2-digit",
+                                      month: "2-digit",
+                                      day: "2-digit",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    }).format(option.date)}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </Grid>
+                          </Box>
+                        );
+                      })
+                    ) : (
+                      <Box p={1}>
+                        <Typography>There's no history yet.</Typography>
+                      </Box>
+                    )}
+                  </Popover>
+                </div>
               </InputAdornment>
             ),
           }}
@@ -736,7 +961,6 @@ export default function Search() {
       )}
       renderOption={(option) => {
         if (option.Source === "header") return null;
-        const matches = option.WellName;
         const parts = parse(option.Primary, Array());
 
         return (
