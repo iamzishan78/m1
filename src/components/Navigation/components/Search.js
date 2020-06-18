@@ -540,7 +540,7 @@ export default function Search() {
 
     //// setting search history
     const setSearchHistory = (search) => {
-      let searchHistory = stateNav.searchHistory;
+      let searchHistory = stateNav.searchHistory ? stateNav.searchHistory : [];
 
       for (let i = 0; i < searchHistory.length; i++) {
         if (
@@ -847,7 +847,8 @@ export default function Search() {
                     }}
                     className={classes.historyPopover}
                   >
-                    {stateNav.searchHistory.length > 0 ? (
+                    {stateNav.searchHistory &&
+                    stateNav.searchHistory.length > 0 ? (
                       stateNav.searchHistory.map((option, i) => {
                         const parts = parse(option.Primary, Array());
 
@@ -878,7 +879,7 @@ export default function Search() {
                             }}
                           >
                             <Grid container spacing={0}>
-                              <Grid container item xs={10} alignItems="center">
+                              <Grid container item xs={9} alignItems="center">
                                 <Grid item>
                                   {option.Source === "lod2019-index" && (
                                     <PersonIcon className={classes.icon} />
@@ -926,7 +927,7 @@ export default function Search() {
                                   )}
                                 </Grid>
                               </Grid>
-                              <Grid container item xs={2} alignItems="center">
+                              <Grid container item xs={3} alignItems="center">
                                 <Grid item>
                                   <Typography
                                     variant="body2"

@@ -10,7 +10,7 @@ import { AppContext } from "../../../AppContext";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 
 export default function FilterTags() {
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [ownersWells, setOwnersWells] = React.useState(null);
 
@@ -135,6 +135,10 @@ export default function FilterTags() {
         ...stateNav,
         selectedTags: [],
         wellsIdsFromTags: [],
+      }));
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        wellListFromTagsFilter: null,
       }));
     }
   };

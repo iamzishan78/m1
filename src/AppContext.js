@@ -1,7 +1,12 @@
 import React, { useState, createContext, useEffect } from "react";
 
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
-import { styleLayers, userDefinedLayers, heatLayers, baseMapLayers } from './LayerConfig';
+import {
+  styleLayers,
+  userDefinedLayers,
+  heatLayers,
+  baseMapLayers,
+} from "./LayerConfig";
 
 const AppContext = createContext([{}, () => {}]);
 
@@ -51,7 +56,6 @@ const AppProvider = (props) => {
     //   taggedWells: null,
     // },
     wellSelectedCoordinates: [],
-    wellListFromSearch: null,
 
     //Map State
     selectedWellApi: null,
@@ -64,7 +68,7 @@ const AppProvider = (props) => {
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
     checkedUserDefinedLayers: [],
     tempCheckedUserDefinedLayer: null,
-    checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5],
+    checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
     checkedLayersInteraction: [0],
     selectedLayerId: null,
     openWellDetails: false,
@@ -74,6 +78,8 @@ const AppProvider = (props) => {
     map: null,
     draw: null,
     currentFeature: undefined,
+    wellListFromSearch: null,
+    wellListFromTagsFilter: null,
   });
 
   useEffect(() => {
@@ -95,24 +101,31 @@ const AppProvider = (props) => {
     wait();
   }, []);
 
-  useEffect(() => {
-    const currentIndex = stateApp.checkedUserDefinedLayers.indexOf(5);
+  const updateCheckedUserDefinedLayers = (layerData, layerNumber) => {
+    const currentIndex = stateApp.checkedUserDefinedLayers.indexOf(layerNumber);
     const newChecked = [...stateApp.checkedUserDefinedLayers];
 
-    if (currentIndex === -1 && stateApp.wellListFromSearch) {
-      newChecked.push(5);
+    if (currentIndex === -1 && layerData) {
+      newChecked.push(layerNumber);
     }
 
-    if (!stateApp.wellListFromSearch && currentIndex !== -1) {
+    if (!layerData && currentIndex !== -1) {
       newChecked.splice(currentIndex, 1);
     }
 
     setStateApp((stateApp) => ({
       ...stateApp,
-      // wellListFromSearch: stateApp.wellListFromSearch,
       checkedUserDefinedLayers: newChecked,
     }));
+  };
+
+  useEffect(() => {
+    updateCheckedUserDefinedLayers(stateApp.wellListFromSearch, 6);
   }, [stateApp.wellListFromSearch]);
+
+  useEffect(() => {
+    updateCheckedUserDefinedLayers(stateApp.wellListFromTagsFilter, 5);
+  }, [stateApp.wellListFromTagsFilter]);
 
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>

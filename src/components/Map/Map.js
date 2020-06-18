@@ -306,7 +306,8 @@ export default function Map() {
     const mapClickHandler = (e) => {
       const map = e.target;
       let layers = [];
-      const checkedUDLayersInteraction = stateApp.checkedUserDefinedLayersInteraction;
+      const checkedUDLayersInteraction =
+        stateApp.checkedUserDefinedLayersInteraction;
       const checkedUDLayers = stateApp.checkedUserDefinedLayers;
       const definedLayers = stateApp.userDefinedLayers;
       const clusterUDLayers = [];
@@ -395,12 +396,13 @@ export default function Map() {
       map.on("click", mapClickHandler);
       setMapClick({ mapClickHandler });
     }
-  }, [map, stateApp.checkedLayersInteraction, 
-      stateApp.checkedUserDefinedLayersInteraction,
-      stateApp.checkedLayers, stateApp.checkedUserDefinedLayers
-    ]
-  );
-
+  }, [
+    map,
+    stateApp.checkedLayersInteraction,
+    stateApp.checkedUserDefinedLayersInteraction,
+    stateApp.checkedLayers,
+    stateApp.checkedUserDefinedLayers,
+  ]);
 
   useEffect(() => {
     // USE EFFECT FOR M1 LAYER HANDLES
@@ -643,11 +645,14 @@ export default function Map() {
       });
     }
 
-    // this section adds the updated list of layers 
+    // this section adds the updated list of layers
     const tmpCheckedLayer = stateApp.tempCheckedUserDefinedLayers;
-    const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0)
-    if (tmpCheckedLayer && stateApp.checkedUserDefinedLayers.indexOf(tmpCheckedLayer) === -1) {
-      checkedLayers.push(tmpCheckedLayer)
+    const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
+    if (
+      tmpCheckedLayer &&
+      stateApp.checkedUserDefinedLayers.indexOf(tmpCheckedLayer) === -1
+    ) {
+      checkedLayers.push(tmpCheckedLayer);
     }
     if (map && checkedLayers.length > 0) {
       let layers = checkedLayers;
@@ -673,9 +678,15 @@ export default function Map() {
               selectLayerProps.dataProps[i].dataId == "trackedOwnersWells"
             ) {
               layerData = dataWellsForOwnerWellTrackLayer.wells.results;
-            } else if(selectLayerProps.dataProps[i].dataId == "wellsFromSearch"){
+            } else if (
+              selectLayerProps.dataProps[i].dataId == "wellsFromSearch"
+            ) {
               layerData = stateApp.wellListFromSearch;
-            }else {
+            } else if (
+              selectLayerProps.dataProps[i].dataId == "wellsFromTagsFilter"
+            ) {
+              layerData = stateApp.wellListFromTagsFilter;
+            } else {
               const dataId = selectLayerProps.dataProps[i].dataId;
 
               const groupBy = (arr, property) => {
@@ -807,11 +818,13 @@ export default function Map() {
               beforelayer = selectLayerProps.layerProps[i].layerId;
 
               // -> add interaction (note to change later w/ interaction panel)
-              if(selectLayerProps && selectLayerProps.interactionProps){
-                const availableInteraction = stateApp.checkedUserDefinedLayersInteraction.indexOf(l) !== -1 
-                if(selectLayerProps.interactionProps.mouseClick){
-                  
-                  var clusterVar = selectLayerProps.layerProps[i].layerId+'-clusters'
+              if (selectLayerProps && selectLayerProps.interactionProps) {
+                const availableInteraction =
+                  stateApp.checkedUserDefinedLayersInteraction.indexOf(l) !==
+                  -1;
+                if (selectLayerProps.interactionProps.mouseClick) {
+                  var clusterVar =
+                    selectLayerProps.layerProps[i].layerId + "-clusters";
 
                   // const layerClickHander = (e) => {
                   //   var bbox = [
@@ -967,42 +980,16 @@ export default function Map() {
 
               //// finding and fitting bounds
               const findBounds = (wells) => {
-                let maxLat = wells[0].latitude;
-                let minLat = wells[0].latitude;
-                let maxLong = wells[0].longitude;
-                let minLong = wells[0].longitude;
+                let latArray = wells.map((item) => item.latitude);
+                let longArray = wells.map((item) => item.longitude);
 
-                for (let i = 0; i < wells.length; i++) {
-                  if (wells[i].latitude !== 0) {
-                    if (maxLat < wells[i].latitude) maxLat = wells[i].latitude;
-                    if (minLat > wells[i].latitude) minLat = wells[i].latitude;
-                  }
-                  if (wells[i].longitude !== 0) {
-                    if (maxLong < wells[i].longitude)
-                      maxLong = wells[i].longitude;
-                    if (minLong > wells[i].longitude)
-                      minLong = wells[i].longitude;
-                  }
-                }
+                latArray = latArray.filter((item) => item !== 0);
+                longArray = longArray.filter((item) => item !== 0);
 
-                const latDif = maxLat - minLat;
-                const longDif = maxLong - minLong;
-
-                if (latDif === 0) {
-                  maxLat = maxLat + 0.005;
-                  minLat = minLat - 0.005;
-                } else {
-                  maxLat = maxLat + latDif * 0.08;
-                  minLat = minLat - latDif * 0.08;
-                }
-
-                if (longDif === 0) {
-                  maxLong = maxLong + 0.005;
-                  minLong = minLong - 0.005;
-                } else {
-                  maxLong = maxLong + longDif * 0.08;
-                  minLong = minLong - longDif * 0.08;
-                }
+                let maxLat = Math.max(...latArray);
+                let minLat = Math.min(...latArray);
+                let maxLong = Math.max(...longArray);
+                let minLong = Math.min(...longArray);
 
                 if (fitBounds) {
                   const {
@@ -1023,20 +1010,52 @@ export default function Map() {
                 return { maxLat, minLat, maxLong, minLong };
               };
 
-              fitBounds = findBounds(layerData);
+              fitBounds = layerData ? findBounds(layerData) : null;
             }
           }
         }
       }
+      if (fitBounds) {
+        const fitOverBounds = ({ maxLat, minLat, maxLong, minLong }) => {
+          const latDif = maxLat - minLat;
+          const longDif = maxLong - minLong;
+
+          if (latDif === 0) {
+            maxLat = maxLat + 0.005;
+            minLat = minLat - 0.005;
+          } else {
+            maxLat = maxLat + latDif * 0.08;
+            minLat = minLat - latDif * 0.08;
+          }
+
+          if (longDif === 0) {
+            maxLong = maxLong + 0.005;
+            minLong = minLong - 0.005;
+          } else {
+            maxLong = maxLong + longDif * 0.08;
+            minLong = minLong - longDif * 0.08;
+          }
+
+          return {
+            maxLat,
+            minLat,
+            maxLong,
+            minLong,
+          };
+        };
+
+        let bounds = fitOverBounds(fitBounds);
+
+        map.fitBounds([
+          [bounds.minLong, bounds.minLat],
+          [bounds.maxLong, bounds.maxLat],
+        ]);
+      }
+
       setStateApp({
         ...stateApp,
         userDefinedLayers: layerList,
       });
-
-      map.fitBounds([
-        [fitBounds.minLong, fitBounds.minLat],
-        [fitBounds.maxLong, fitBounds.maxLat],
-      ]);
     }
   }, [
     map,
@@ -1089,7 +1108,18 @@ export default function Map() {
           "typeName",
           ["GAS", "OIL", "OIL AND GAS", "PERMITTED", "UNKNOWN"],
         ];
-        let defaultStatusName = ["statusName", ["ACTIVE","ACTIVE - DRILLING","COMPLETED - NOT ACTIVE","DRILLED UNCOMPLETED (DUC)", "PERMIT","PERMIT - EXISTING WELL","PERMIT - NEW DRILL"]];
+        let defaultStatusName = [
+          "statusName",
+          [
+            "ACTIVE",
+            "ACTIVE - DRILLING",
+            "COMPLETED - NOT ACTIVE",
+            "DRILLED UNCOMPLETED (DUC)",
+            "PERMIT",
+            "PERMIT - EXISTING WELL",
+            "PERMIT - NEW DRILL",
+          ],
+        ];
         let defaultFiltersWellStatus = [
           "filterWellStatus",
           ["match", ["get", "wellStatus"], defaultStatusName[1], true, false],
@@ -1844,6 +1874,7 @@ export default function Map() {
   useEffect(() => {
     (async () => {
       if (
+        map &&
         stateApp.selectedWellId &&
         stateApp.wellSelectedCoordinates &&
         stateApp.wellSelectedCoordinates.length > 0 &&
@@ -2260,10 +2291,12 @@ export default function Map() {
         // map.touchZoomRotate.enable();
 
         const selectedLayerIntereaction = stateApp.checkedLayersInteraction[0];
-        const wellIndex = stateApp.styleLayers.findIndex(layer => layer.name === 'Wells');
+        const wellIndex = stateApp.styleLayers.findIndex(
+          (layer) => layer.name === "Wells"
+        );
 
         const well = stateApp.styleLayers[wellIndex];
-        
+
         if (well.wellPointClick) {
           map.off("click", "wellpoints", well.wellPointClick);
         }
@@ -2282,7 +2315,10 @@ export default function Map() {
           map.off("click", "welllines", well.wellLineClick);
         }
 
-        if (stateApp.checkedLayersInteraction.length > 0 && stateApp.styleLayers[selectedLayerIntereaction].name === 'Wells') {
+        if (
+          stateApp.checkedLayersInteraction.length > 0 &&
+          stateApp.styleLayers[selectedLayerIntereaction].name === "Wells"
+        ) {
           // map.on("click", "wellpoints", wellPointClick);
 
           map.on("mousemove", "wellpoints", wellMouseMove);
@@ -2306,8 +2342,8 @@ export default function Map() {
 
           setStateApp({
             ...stateApp,
-            styleLayers
-          })
+            styleLayers,
+          });
         }
         map.off("mousemove", mapMouseMove);
 
@@ -2327,7 +2363,13 @@ export default function Map() {
         console.log("map extra components complete");
       }
     }
-  }, [map, setStateApp, setStateMapControls, mapStyles, stateApp.checkedLayersInteraction]);
+  }, [
+    map,
+    setStateApp,
+    setStateMapControls,
+    mapStyles,
+    stateApp.checkedLayersInteraction,
+  ]);
 
   // Use effect for removing shape filter
   useEffect(() => {
