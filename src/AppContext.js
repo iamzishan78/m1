@@ -80,33 +80,33 @@ const AppProvider = (props) => {
     currentFeature: undefined,
     wellListFromSearch: null,
     wellListFromTagsFilter: null,
-    activateUserDefinedLayers: (layerNumber) => {
+    activateLayers: (layerContainerVarName, layerNumber) => {
       let added = false;
       setStateApp((stateApp) => {
-        const currentIndex = stateApp.checkedUserDefinedLayers.indexOf(
+        const currentIndex = stateApp[layerContainerVarName].indexOf(
           layerNumber
         );
-        const newChecked = [...stateApp.checkedUserDefinedLayers];
+        const newChecked = [...stateApp[layerContainerVarName]];
         if (currentIndex === -1) {
           newChecked.push(layerNumber);
           added = true;
         }
         return {
           ...stateApp,
-          checkedUserDefinedLayers: newChecked,
+          [layerContainerVarName]: newChecked,
           popupOpen: false,
           selectedWell: null,
         };
       });
       return added;
     },
-    deactivateUserDefinedLayers: (layerNumber) => {
+    deactivateLayers: (layerContainerVarName, layerNumber) => {
       let deleted = false;
       setStateApp((stateApp) => {
-        const currentIndex = stateApp.checkedUserDefinedLayers.indexOf(
+        const currentIndex = stateApp[layerContainerVarName].indexOf(
           layerNumber
         );
-        const newChecked = [...stateApp.checkedUserDefinedLayers];
+        const newChecked = [...stateApp[layerContainerVarName]];
         if (currentIndex !== -1) {
           newChecked.splice(currentIndex, 1);
           deleted = true;
@@ -114,12 +114,24 @@ const AppProvider = (props) => {
 
         return {
           ...stateApp,
-          checkedUserDefinedLayers: newChecked,
+          [layerContainerVarName]: newChecked,
           popupOpen: false,
           selectedWell: null,
         };
       });
       return deleted;
+    },
+    activateUserDefinedLayers: (layerNumber) => {
+      return stateApp.activateLayers("checkedUserDefinedLayers", layerNumber);
+    },
+    deactivateUserDefinedLayers: (layerNumber) => {
+      return stateApp.deactivateLayers("checkedUserDefinedLayers", layerNumber);
+    },
+    activateWellLayer: () => {
+      return stateApp.activateLayers("checkedLayers", 0);
+    },
+    deactivateWellLayer: () => {
+      return stateApp.deactivateLayers("checkedLayers", 0);
     },
   });
 
@@ -141,6 +153,17 @@ const AppProvider = (props) => {
     }
     wait();
   }, []);
+
+  useEffect(() => {
+    if (
+      stateApp.checkedUserDefinedLayers &&
+      stateApp.checkedUserDefinedLayers.indexOf(5) === -1 &&
+      stateApp.checkedUserDefinedLayers.indexOf(4) === -1 &&
+      stateApp.checkedUserDefinedLayers.indexOf(3) === -1
+    ) {
+      stateApp.activateWellLayer();
+    }
+  }, [stateApp.checkedUserDefinedLayers]);
 
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>

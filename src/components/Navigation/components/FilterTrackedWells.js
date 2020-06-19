@@ -38,6 +38,7 @@ export default function FilterTrackedWells() {
   const toggleTracks = () => {
     if (!stateApp.activateUserDefinedLayers(3))
       stateApp.deactivateUserDefinedLayers(3);
+    else stateApp.deactivateWellLayer();
 
     setStateNav((stateNav) => ({
       ...stateNav,
@@ -55,7 +56,7 @@ export default function FilterTrackedWells() {
         className={classes.noOwnersToggle}
         checked={stateNav.filterTrackedWells}
         onChange={toggleTracks}
-        color="primary"
+        color="secondary"
         name="checked"
         inputProps={{ "aria-label": "primary checkbox" }}
       />

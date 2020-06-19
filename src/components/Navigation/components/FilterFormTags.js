@@ -24,7 +24,7 @@ export default function FilterFormProduction() {
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
 
   useEffect(() => {
-    let filter;
+    // let filter;
 
     if (stateNav.wellsIdsFromTags && stateNav.wellsIdsFromTags.length > 0) {
       let IdsArray = [];
@@ -62,6 +62,7 @@ export default function FilterFormProduction() {
         wellListFromTagsFilter: dataWells.wells.results,
       }));
       stateApp.activateUserDefinedLayers(5);
+      stateApp.deactivateWellLayer();
     }
   }, [dataWells]);
 

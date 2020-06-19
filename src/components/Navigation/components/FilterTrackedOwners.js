@@ -38,6 +38,7 @@ export default function FilterTrackedOwners() {
   const toggleTracks = () => {
     if (!stateApp.activateUserDefinedLayers(4))
       stateApp.deactivateUserDefinedLayers(4);
+    else stateApp.deactivateWellLayer();
 
     setStateNav((stateNav) => ({
       ...stateNav,
@@ -55,7 +56,7 @@ export default function FilterTrackedOwners() {
         className={classes.noOwnersToggle}
         checked={stateNav.filterTrackedOwners}
         onChange={toggleTracks}
-        color="primary"
+        color="secondary"
         name="checked"
         inputProps={{ "aria-label": "primary checkbox" }}
       />
