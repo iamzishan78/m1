@@ -18,7 +18,7 @@ const useStyles = makeStyles({
   },
   noOwnersToggle: {
     float: "right",
-    marginTop: "7.5px",
+    marginTop: "5px",
   },
   IconButton: {
     marginRight: "10px",
