@@ -95,6 +95,7 @@ const AppProvider = (props) => {
           ...stateApp,
           checkedUserDefinedLayers: newChecked,
           popupOpen: false,
+          selectedWell: null,
         };
       });
       return added;
@@ -115,6 +116,7 @@ const AppProvider = (props) => {
           ...stateApp,
           checkedUserDefinedLayers: newChecked,
           popupOpen: false,
+          selectedWell: null,
         };
       });
       return deleted;
