@@ -465,6 +465,7 @@ export default function Search() {
         });
       } else {
         console.log("Not wells found for the owner");
+        stateApp.deactivateUserDefinedLayers(6);
       }
     }
   }, [dataOwnerWells]);
@@ -478,10 +479,24 @@ export default function Search() {
     ) {
       console.log("wells data from search", dataWells.wells.results);
 
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        wellListFromSearch: dataWells.wells.results,
-      }));
+      setStateApp((stateApp) =>
+        dataWells.wells.results.length === 1
+          ? {
+              ...stateApp,
+              selectedWell: null,
+              selectedWellId: dataWells.wells.results[0].id.toLowerCase(),
+              wellSelectedCoordinates: [
+                dataWells.wells.results[0].longitude,
+                dataWells.wells.results[0].latitude,
+              ],
+              wellListFromSearch: dataWells.wells.results,
+            }
+          : {
+              ...stateApp,
+              wellListFromSearch: dataWells.wells.results,
+            }
+      );
+      stateApp.activateUserDefinedLayers(6);
     }
   }, [dataWells]);
 
@@ -494,17 +509,27 @@ export default function Search() {
           dataOperatorWells.operatorLatsLonsArray
         );
 
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          wellListFromSearch: dataOperatorWells.operatorLatsLonsArray.map(
-            (item) => ({
-              longitude: item.Longitude,
-              latitude: item.Latitude,
-            })
-          ),
-        }));
+        setStateApp((stateApp) =>
+          dataOperatorWells.operatorLatsLonsArray.length === 1
+            ? {
+                ...stateApp,
+                selectedWell: null,
+                selectedWellId: dataOperatorWells.operatorLatsLonsArray[0].id.toLowerCase(),
+                wellSelectedCoordinates: [
+                  dataOperatorWells.operatorLatsLonsArray[0].longitude,
+                  dataOperatorWells.operatorLatsLonsArray[0].latitude,
+                ],
+                wellListFromSearch: dataOperatorWells.operatorLatsLonsArray,
+              }
+            : {
+                ...stateApp,
+                wellListFromSearch: dataOperatorWells.operatorLatsLonsArray,
+              }
+        );
+        stateApp.activateUserDefinedLayers(6);
       } else {
         console.log("Not wells found for the operator");
+        stateApp.deactivateUserDefinedLayers(6);
       }
     }
   }, [dataOperatorWells]);
@@ -518,15 +543,27 @@ export default function Search() {
           dataLeaseWells.leaseLatsLonsArray
         );
 
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          wellListFromSearch: dataLeaseWells.leaseLatsLonsArray.map((item) => ({
-            longitude: item.Longitude,
-            latitude: item.Latitude,
-          })),
-        }));
+        setStateApp((stateApp) =>
+          dataLeaseWells.leaseLatsLonsArray.length === 1
+            ? {
+                ...stateApp,
+                selectedWell: null,
+                selectedWellId: dataLeaseWells.leaseLatsLonsArray[0].id.toLowerCase(),
+                wellSelectedCoordinates: [
+                  dataLeaseWells.leaseLatsLonsArray[0].longitude,
+                  dataLeaseWells.leaseLatsLonsArray[0].latitude,
+                ],
+                wellListFromSearch: dataLeaseWells.leaseLatsLonsArray,
+              }
+            : {
+                ...stateApp,
+                wellListFromSearch: dataLeaseWells.leaseLatsLonsArray,
+              }
+        );
+        stateApp.activateUserDefinedLayers(6);
       } else {
         console.log("Not wells found for the lease");
+        stateApp.deactivateUserDefinedLayers(6);
       }
     }
   }, [dataLeaseWells]);
@@ -581,6 +618,7 @@ export default function Search() {
           : null,
         wellListFromSearch: null,
       }));
+      stateApp.deactivateUserDefinedLayers(6);
     }
 
     //// if owner
@@ -949,7 +987,7 @@ export default function Search() {
                       })
                     ) : (
                       <Box p={1}>
-                        <Typography>There's no history yet.</Typography>
+                        <Typography>There is no history yet.</Typography>
                       </Box>
                     )}
                   </Popover>

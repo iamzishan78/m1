@@ -80,6 +80,45 @@ const AppProvider = (props) => {
     currentFeature: undefined,
     wellListFromSearch: null,
     wellListFromTagsFilter: null,
+    activateUserDefinedLayers: (layerNumber) => {
+      let added = false;
+      setStateApp((stateApp) => {
+        const currentIndex = stateApp.checkedUserDefinedLayers.indexOf(
+          layerNumber
+        );
+        const newChecked = [...stateApp.checkedUserDefinedLayers];
+        if (currentIndex === -1) {
+          newChecked.push(layerNumber);
+          added = true;
+        }
+        return {
+          ...stateApp,
+          checkedUserDefinedLayers: newChecked,
+          popupOpen: false,
+        };
+      });
+      return added;
+    },
+    deactivateUserDefinedLayers: (layerNumber) => {
+      let deleted = false;
+      setStateApp((stateApp) => {
+        const currentIndex = stateApp.checkedUserDefinedLayers.indexOf(
+          layerNumber
+        );
+        const newChecked = [...stateApp.checkedUserDefinedLayers];
+        if (currentIndex !== -1) {
+          newChecked.splice(currentIndex, 1);
+          deleted = true;
+        }
+
+        return {
+          ...stateApp,
+          checkedUserDefinedLayers: newChecked,
+          popupOpen: false,
+        };
+      });
+      return deleted;
+    },
   });
 
   useEffect(() => {
@@ -100,32 +139,6 @@ const AppProvider = (props) => {
     }
     wait();
   }, []);
-
-  const updateCheckedUserDefinedLayers = (layerData, layerNumber) => {
-    const currentIndex = stateApp.checkedUserDefinedLayers.indexOf(layerNumber);
-    const newChecked = [...stateApp.checkedUserDefinedLayers];
-
-    if (currentIndex === -1 && layerData) {
-      newChecked.push(layerNumber);
-    }
-
-    if (!layerData && currentIndex !== -1) {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      checkedUserDefinedLayers: newChecked,
-    }));
-  };
-
-  useEffect(() => {
-    updateCheckedUserDefinedLayers(stateApp.wellListFromSearch, 6);
-  }, [stateApp.wellListFromSearch]);
-
-  useEffect(() => {
-    updateCheckedUserDefinedLayers(stateApp.wellListFromTagsFilter, 5);
-  }, [stateApp.wellListFromTagsFilter]);
 
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>

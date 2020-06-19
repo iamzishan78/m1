@@ -2,7 +2,8 @@ import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../NavigationContext";
 import FilterTags from "./FilterTags";
-import FilterTrackedWells from "./FilterTrackedWells";
+import FilterTrackedOwners from "./FilterTrackedWells";
+import FilterTrackedWells from "./FilterTrackedOwners";
 import Grid from "@material-ui/core/Grid";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { AppContext } from "../../../AppContext";
@@ -60,6 +61,7 @@ export default function FilterFormProduction() {
         ...stateApp,
         wellListFromTagsFilter: dataWells.wells.results,
       }));
+      stateApp.activateUserDefinedLayers(5);
     }
   }, [dataWells]);
 
@@ -73,7 +75,10 @@ export default function FilterFormProduction() {
       <Grid item sm={12} className={classes.gridItem}>
         <FilterTags />
       </Grid>
-      <Grid item sm={12} className={classes.gridItem}>
+      <Grid item sm={6} className={classes.gridItem}>
+        <FilterTrackedOwners />
+      </Grid>
+      <Grid item sm={6} className={classes.gridItem}>
         <FilterTrackedWells />
       </Grid>
     </Grid>

@@ -269,7 +269,20 @@ export default function Map() {
     };
 
     const layerClickHander = (feature) => {
-      setStateApp((state) => ({ ...state, flyTo: feature.properties }));
+      let zVal;
+      if (map && map.getZoom() && map.getZoom() > 12) zVal = map.getZoom();
+
+      setStateApp((state) => ({
+        ...state,
+        popupOpen: false,
+        selectedWell: null,
+        selectedWellId: feature.properties.id
+          ? feature.properties.id.toLowerCase()
+          : null,
+        flyTo: zVal
+          ? { ...feature.properties, zoom: zVal }
+          : feature.properties,
+      }));
     };
 
     const udLayerClickHandler = (feature) => {
@@ -2014,6 +2027,7 @@ export default function Map() {
       setStateApp((state) => ({
         ...state,
         wellSelectedCoordinates: [],
+        selectedWell: null,
       }));
     }
   }, [stateApp.popupOpen]);
@@ -2500,7 +2514,7 @@ export default function Map() {
 
       map.flyTo({
         center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
-        zoom: zVal,
+        zoom: stateApp.flyTo.zoom ? stateApp.flyTo.zoom : zVal,
         speed: 0.5,
       });
     }
