@@ -34,7 +34,9 @@ const SortableItem = SortableElement(({ content }) => {
     if(ele=="x"){
       var arr = [3,3,4,4,6];
     } else if(ele=="2x"){
-      var arr = [9,9,8,8,6];
+      var arr = [5,8,8,8,8];
+    } else if(ele=="bi"){
+      var arr = [5,9,12,12,12];
     } else if(ele=="full"){
       var arr = [12,12,12,12,12];
     }
@@ -83,9 +85,9 @@ const SortableList = SortableContainer(({ items }) => {
 const CardGrid = () => {
   const [stateDashboard, setStateDashboard] = useContext(DashboardContext);
   const [items, setItems] = useState([
-    { el: <RigsCard title={5} />, size: "2x", key: 1 },
+    { el: <RigsCard title={5} />, size: "bi", key: 1 },
     { el: <StockCard title={3} />, size: "x", key: 2},
-    { el: <ProdCard title={1} />, size: "", key: 3 },
+    { el: <ProdCard title={1} />, size: "bi", key: 3 },
     { el: <RSSFeed title={4} />, size: "x", key: 4 },
     { el: <TwitterCard title={2} />, size: "x", key: 5 },   
     
