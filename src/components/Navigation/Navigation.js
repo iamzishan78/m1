@@ -392,10 +392,13 @@ const useStyles = makeStyles((theme) => ({
     margin: "0px",
   },
   cardContent: {
-    height: "400px",
+    maxHeight: "400px",
     backgroundColor: "#fff",
     padding: "0px",
-    overflow: "scroll",
+    overflow: "auto",
+    "&:last-child": {
+      paddingBottom: "0",
+    },
   },
   cardAction: {
     flexGrow: 1,
