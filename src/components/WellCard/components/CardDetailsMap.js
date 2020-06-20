@@ -101,6 +101,26 @@ export default function CardDetailsMap() {
         el.style.width = "28px";
         el.style.height = "64px";
 
+        /// optimized interactions w/ map
+        newMap.scrollZoom.enable();
+        newMap.dragPan.enable();
+        newMap.dragRotate.enable();
+        newMap.keyboard.enable();
+        newMap.doubleClickZoom.disable();
+        newMap.boxZoom.enable();
+        newMap.touchZoomRotate.enable();
+
+        newMap.addControl(
+          new mapboxgl.ScaleControl({
+            maxWidth: 80,
+            unit: "imperial",
+          }),
+          "bottom-right"
+        );
+
+        newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
+
+
         new mapboxgl.Marker(el)
           .setLngLat([
             stateApp.selectedWell.longitude,
@@ -109,7 +129,30 @@ export default function CardDetailsMap() {
           .addTo(newMap);
 
         newMap.on("load", function (e) {
-          newMap.flyTo({
+
+          setMap(newMap);
+
+
+
+        });
+
+
+
+
+
+      };
+
+      if (!map) {
+        initializeMap({ setMap, mapEl });
+      } else {
+        
+
+        map.setLayoutProperty('wellpoints', "visibility", "visible");
+        map.setLayoutProperty('welllines', "visibility", "visible"); 
+        
+        
+
+        map.flyTo({
             center: [
               stateApp.selectedWell.longitude,
               stateApp.selectedWell.latitude,
@@ -118,16 +161,39 @@ export default function CardDetailsMap() {
             speed: 0.4,
             bearing: 0,
           });
+
+
+
+
+        // map.on("click", function (e) {
+        //   map.rotateTo.disable()
+        // });
+ 
+
+        map.on('moveend', ({ originalEvent }) => {
+          if (originalEvent) {
+            map.fire('usermoveend');
+          } else {
+            map.fire('flyend');
+          }
         });
 
-        newMap.on("moveend", function (e) {
-          newMap.rotateTo(540, { duration: 100000 });
-        });
-      };
+        map.on("flyend", function (e) {
+          map.flyTo({
+            center: [
+              stateApp.selectedWell.longitude,
+              stateApp.selectedWell.latitude,
+            ],
+            zoom: 16,
+            speed: 0.04,
+            bearing: 540,
+          });       
+      });
+ 
 
-      if (!map) {
-        initializeMap({ setMap, mapEl });
-      } else {
+       
+
+
       }
     }
   }, [map, mapStyles]);

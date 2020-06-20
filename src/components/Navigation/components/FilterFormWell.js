@@ -76,9 +76,9 @@ export default function FilterFormWell() {
   return (
       <div className={classes.root}>
 
-        <FormControl className={classes.formControl}>
+        {/* <FormControl className={classes.formControl}>
           <OperatorFilterJ />
-        </FormControl> 
+        </FormControl>  */}
 
         <FormControl variant="outlined" className={classes.formControl}>
         <FilterWellTypeJ/>
