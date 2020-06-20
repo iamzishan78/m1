@@ -38,6 +38,8 @@ export default function CardDetailsMap() {
   const [map, setMap] = useState(null);
   const [mapStyles, setMapStyles] = useState([]);
   const mapEl = useRef(null);
+  const [flyVar1, setFlyVar1] = useState([null]);
+
 
   useEffect(() => {
     const req = new Request(
@@ -75,6 +77,63 @@ export default function CardDetailsMap() {
     }
     return -1; //to handle the case where the value doesn't exist
   }
+
+  useEffect(() => {
+
+    if(flyVar1 && flyVar1 === true){
+
+      map.flyTo({
+        center: [
+          stateApp.selectedWell.longitude,
+          stateApp.selectedWell.latitude,
+        ],
+        zoom: 16,
+        speed: 0.4,
+        bearing: -10,
+        //duration: 10000,
+        easing: function(t) {
+          return Math.sin(t * Math.PI / 2);
+          },
+      });
+
+      setFlyVar1(false)
+
+      map.on("moveend", function (e) {
+
+        if(map.getBearing()===-10
+                && map.getZoom()===16 
+                // && map.getCenter()===[
+                //                       stateApp.selectedWell.longitude,
+                //                       stateApp.selectedWell.latitude,
+                //                     ]
+                                    )
+        {
+
+          map.flyTo({
+            center: [
+              stateApp.selectedWell.longitude,
+              stateApp.selectedWell.latitude,
+            ],
+            zoom: 16,
+            //speed: 0.4,
+            bearing: 540,
+            duration: 100000,
+            easing: function(t) {
+              return Math.sin(t * Math.PI / 2);
+              },
+          });
+
+
+        }
+
+      });
+
+    }
+
+  }, [flyVar1]);
+
+
+
 
   useEffect(() => {
     if (mapStyles.length > 0) {
@@ -151,16 +210,28 @@ export default function CardDetailsMap() {
         map.setLayoutProperty('welllines', "visibility", "visible"); 
         
         
+        map.on('moveend', ({ originalEvent }) => {
+          if (originalEvent) {
+            map.fire('usermoveend');
+          } else {
+            map.fire('flyend');
+          }
+        });
 
-        map.flyTo({
-            center: [
-              stateApp.selectedWell.longitude,
-              stateApp.selectedWell.latitude,
-            ],
-            zoom: 16,
-            speed: 0.4,
-            bearing: 0,
-          });
+        setFlyVar1(true)
+
+
+
+        // map.flyTo({
+        //     center: [
+        //       stateApp.selectedWell.longitude,
+        //       stateApp.selectedWell.latitude,
+        //     ],
+        //     // zoom: 16,
+        //     // speed: 0.4,
+        //     bearing: 540,
+        //     duration: 10000,
+        //   });
 
 
 
@@ -170,25 +241,32 @@ export default function CardDetailsMap() {
         // });
  
 
-        map.on('moveend', ({ originalEvent }) => {
-          if (originalEvent) {
-            map.fire('usermoveend');
-          } else {
-            map.fire('flyend');
-          }
-        });
 
-        map.on("flyend", function (e) {
-          map.flyTo({
-            center: [
-              stateApp.selectedWell.longitude,
-              stateApp.selectedWell.latitude,
-            ],
-            zoom: 16,
-            speed: 0.04,
-            bearing: 540,
-          });       
-      });
+
+      //   map.on("flyend", function (e) {
+      //     // map.flyTo({
+      //     //   center: [
+      //     //     stateApp.selectedWell.longitude,
+      //     //     stateApp.selectedWell.latitude,
+      //     //   ],
+      //     //   //zoom: 16,
+      //     //   //speed: 0.0001,
+      //     //   bearing: 180,
+      //     //   screenSpeed: 0.001,
+      //     // });     
+      //     map.flyTo({
+      //       // center: [
+      //       //   stateApp.selectedWell.longitude,
+      //       //   stateApp.selectedWell.latitude,
+      //       // ],
+      //       // //zoom: 16,
+      //       // //speed: 0.0001,
+      //       bearing: 540,
+      //       //duration: 10000,
+      //       //essential: false,
+      //       // screenSpeed: 0.001,
+      //     });     
+      // });
  
 
        
