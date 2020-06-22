@@ -2734,6 +2734,19 @@ export default function Map() {
           const shape_properties = JSON.parse(layer.shape).properties;
           return shape_properties.id && shape_properties.id.includes(id)
         });
+        handleCloseSpatialDataCard();
+      } else {
+        stateApp.draw.delete(`edit_polygon_${id}`);
+        const updated_layers = stateApp.editingUserDefinedLayers.filter(layer => {
+          const shape_properties = JSON.parse(layer.shape).properties;
+          return !shape_properties.id || !shape_properties.id.includes(id)
+        });
+        setStateApp({
+          ...stateApp,
+          selectedUserDefinedLayer: null,
+          editingUserDefinedLayers: updated_layers
+        });
+        handleCloseSpatialDataCardEdit();
       }
       const customLayerId = update_layers[0]._id;
       const customLayerLabelId = update_layers[1]._id;
