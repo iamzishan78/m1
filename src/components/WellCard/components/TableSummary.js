@@ -38,7 +38,7 @@ const rows = [
 
 function formatFT(ft) {
   let ftNum = ft ? ft : 0;
-  ftNum = Math.round(ftNum / 1000) * 1000;
+  ftNum = Math.round(ftNum);
   return ftNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
