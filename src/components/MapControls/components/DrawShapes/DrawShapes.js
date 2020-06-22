@@ -328,6 +328,7 @@ export default function DrawShapes(props) {
             {showSpatialDataCard && stateApp.currentFeature !== undefined && !stateApp.currentFeature.id.includes("draw_polygon")
             && !stateApp.currentFeature.id.includes("drag_circle")
             && !stateApp.currentFeature.id.includes("draw_rectangle")
+            && !stateApp.currentFeature.id.includes("edit_polygon")
                 ? (
                     <SpatialDataCard
                         closeSpatialDataCard={() => toggleSpatialDataCard(false)}

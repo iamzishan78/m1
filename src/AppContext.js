@@ -25,6 +25,7 @@ const AppProvider = (props) => {
     selectedWellId: null,
     customLayers: [],
     editDraw: false,
+    editLayer: true,
     selectedOwner: null,
     owners: null,
     popupOpen: false, //map used in flyto
@@ -69,6 +70,7 @@ const AppProvider = (props) => {
     checkedUserDefinedLayers: [],
     tempCheckedUserDefinedLayer: null,
     checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
+    editingUserDefinedLayers: [],
     checkedLayersInteraction: [0],
     selectedLayerId: null,
     openWellDetails: false,
