@@ -6,12 +6,12 @@ import { TitleOpinionContext } from "../TitleOpinionContext";
 const useStyles = makeStyles(theme => ({
   MSWrapper: {
     width: "100%",
-    height: "100% !important",
+    //height: "100% !important",
     overflow: "hidden !important"
   },
   map: {
     width: "100%",
-    height: "100%",
+    //height: "100%",
     overflow: "hidden !important",
     "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib": {
       display: "none"
@@ -47,6 +47,9 @@ export default function MapShape() {
 
   const mapEl = useRef(null);
   const [mapStyles, setMapStyles] = useState([]);
+
+  mapboxgl.accessToken =
+  "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJjanYycGJxbG8yN3JsM3lsYTdnMXZoeHh1In0.tTNECYKDPtcrzivWTiZcIQ";
 
 
   useEffect(() => {

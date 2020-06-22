@@ -38,6 +38,8 @@ export default function CardDetailsMap() {
   const [map, setMap] = useState(null);
   const [mapStyles, setMapStyles] = useState([]);
   const mapEl = useRef(null);
+  const [flyVar1, setFlyVar1] = useState([null]);
+
 
   useEffect(() => {
     const req = new Request(
@@ -77,6 +79,63 @@ export default function CardDetailsMap() {
   }
 
   useEffect(() => {
+
+    if(flyVar1 && flyVar1 === true){
+
+      map.flyTo({
+        center: [
+          stateApp.selectedWell.longitude,
+          stateApp.selectedWell.latitude,
+        ],
+        zoom: 16,
+        speed: 0.4,
+        bearing: -10,
+        //duration: 10000,
+        easing: function(t) {
+          return Math.sin(t * Math.PI / 2);
+          },
+      });
+
+      setFlyVar1(false)
+
+      map.on("moveend", function (e) {
+
+        if(map.getBearing()===-10
+                && map.getZoom()===16 
+                // && map.getCenter()===[
+                //                       stateApp.selectedWell.longitude,
+                //                       stateApp.selectedWell.latitude,
+                //                     ]
+                                    )
+        {
+
+          map.flyTo({
+            center: [
+              stateApp.selectedWell.longitude,
+              stateApp.selectedWell.latitude,
+            ],
+            zoom: 16,
+            //speed: 0.4,
+            bearing: 540,
+            duration: 100000,
+            easing: function(t) {
+              return Math.sin(t * Math.PI / 2);
+              },
+          });
+
+
+        }
+
+      });
+
+    }
+
+  }, [flyVar1]);
+
+
+
+
+  useEffect(() => {
     if (mapStyles.length > 0) {
       const SET_INITIAL_MAP_STYLE = "Satellite";
       var index = getIndex(SET_INITIAL_MAP_STYLE, mapStyles, "name");
@@ -101,6 +160,26 @@ export default function CardDetailsMap() {
         el.style.width = "28px";
         el.style.height = "64px";
 
+        /// optimized interactions w/ map
+        newMap.scrollZoom.enable();
+        newMap.dragPan.enable();
+        newMap.dragRotate.enable();
+        newMap.keyboard.enable();
+        newMap.doubleClickZoom.disable();
+        newMap.boxZoom.enable();
+        newMap.touchZoomRotate.enable();
+
+        newMap.addControl(
+          new mapboxgl.ScaleControl({
+            maxWidth: 80,
+            unit: "imperial",
+          }),
+          "bottom-right"
+        );
+
+        newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
+
+
         new mapboxgl.Marker(el)
           .setLngLat([
             stateApp.selectedWell.longitude,
@@ -109,25 +188,90 @@ export default function CardDetailsMap() {
           .addTo(newMap);
 
         newMap.on("load", function (e) {
-          newMap.flyTo({
-            center: [
-              stateApp.selectedWell.longitude,
-              stateApp.selectedWell.latitude,
-            ],
-            zoom: 16,
-            speed: 0.4,
-            bearing: 0,
-          });
+
+          setMap(newMap);
+
+
+
         });
 
-        newMap.on("moveend", function (e) {
-          newMap.rotateTo(540, { duration: 100000 });
-        });
+
+
+
+
       };
 
       if (!map) {
         initializeMap({ setMap, mapEl });
       } else {
+        
+
+        map.setLayoutProperty('wellpoints', "visibility", "visible");
+        map.setLayoutProperty('welllines', "visibility", "visible"); 
+        
+        
+        map.on('moveend', ({ originalEvent }) => {
+          if (originalEvent) {
+            map.fire('usermoveend');
+          } else {
+            map.fire('flyend');
+          }
+        });
+
+        setFlyVar1(true)
+
+
+
+        // map.flyTo({
+        //     center: [
+        //       stateApp.selectedWell.longitude,
+        //       stateApp.selectedWell.latitude,
+        //     ],
+        //     // zoom: 16,
+        //     // speed: 0.4,
+        //     bearing: 540,
+        //     duration: 10000,
+        //   });
+
+
+
+
+        // map.on("click", function (e) {
+        //   map.rotateTo.disable()
+        // });
+ 
+
+
+
+      //   map.on("flyend", function (e) {
+      //     // map.flyTo({
+      //     //   center: [
+      //     //     stateApp.selectedWell.longitude,
+      //     //     stateApp.selectedWell.latitude,
+      //     //   ],
+      //     //   //zoom: 16,
+      //     //   //speed: 0.0001,
+      //     //   bearing: 180,
+      //     //   screenSpeed: 0.001,
+      //     // });     
+      //     map.flyTo({
+      //       // center: [
+      //       //   stateApp.selectedWell.longitude,
+      //       //   stateApp.selectedWell.latitude,
+      //       // ],
+      //       // //zoom: 16,
+      //       // //speed: 0.0001,
+      //       bearing: 540,
+      //       //duration: 10000,
+      //       //essential: false,
+      //       // screenSpeed: 0.001,
+      //     });     
+      // });
+ 
+
+       
+
+
       }
     }
   }, [map, mapStyles]);

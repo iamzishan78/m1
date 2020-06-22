@@ -19,25 +19,24 @@ import DragIndicator from "@material-ui/icons/DragIndicator";
 //import EditIcon from '@material-ui/icons/Edit';
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
-import Collapse from '@material-ui/core/Collapse';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import LayersIcon from '@material-ui/icons/Layers';
-import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
-import ClickIcon from '..//..//Shared/svgIcons/cursor-click.js'
-import { borders } from '@material-ui/system';
-import Box from '@material-ui/core/Box';
+import Collapse from "@material-ui/core/Collapse";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import LayersIcon from "@material-ui/icons/Layers";
+import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
+import ClickIcon from "..//..//Shared/svgIcons/cursor-click.js";
+import { borders } from "@material-ui/system";
+import Box from "@material-ui/core/Box";
 
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important",
-    width: '350px'
+    width: "350px",
   },
   list: {
-    padding: 0
+    padding: 0,
   },
   nested: {
     paddingLeft: theme.spacing(6),
@@ -70,8 +69,7 @@ export default function CheckboxList(props) {
     setOpenUD(!openUD);
   };
 
-
-  const handleToggle = idx => () => {
+  const handleToggle = (idx) => () => {
     const currentIndex = stateApp.checkedLayers.indexOf(idx);
     const newChecked = [...stateApp.checkedLayers];
     if (currentIndex === -1) {
@@ -79,11 +77,10 @@ export default function CheckboxList(props) {
     } else {
       newChecked.splice(currentIndex, 1);
     }
-    setStateApp(stateApp => ({ ...stateApp, checkedLayers: newChecked }));
+    setStateApp((stateApp) => ({ ...stateApp, checkedLayers: newChecked }));
   };
 
-
-  const handleToggleInteraction = idx => () => {
+  const handleToggleInteraction = (idx) => () => {
     const currentIndex = stateApp.checkedLayersInteraction.indexOf(idx);
     const newChecked = [...stateApp.checkedLayersInteraction];
     if (currentIndex === -1) {
@@ -91,10 +88,13 @@ export default function CheckboxList(props) {
     } else {
       newChecked.splice(currentIndex, 1);
     }
-    setStateApp(stateApp => ({ ...stateApp, checkedLayersInteraction: newChecked }));
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      checkedLayersInteraction: newChecked,
+    }));
   };
 
-  const handleToggleUserDefined = idx => () => {
+  const handleToggleUserDefined = (idx) => () => {
     const currentIndex = stateApp.checkedUserDefinedLayers.indexOf(idx);
     const newChecked = [...stateApp.checkedUserDefinedLayers];
     if (currentIndex === -1) {
@@ -102,29 +102,35 @@ export default function CheckboxList(props) {
     } else {
       newChecked.splice(currentIndex, 1);
     }
-    setStateApp(stateApp => ({ ...stateApp, checkedUserDefinedLayers: newChecked }));
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      checkedUserDefinedLayers: newChecked,
+    }));
   };
 
-  const handleToggleUserDefinedInteraction = idx => () => {
-    const currentIndex = stateApp.checkedUserDefinedLayersInteraction.indexOf(idx);
+  const handleToggleUserDefinedInteraction = (idx) => () => {
+    const currentIndex = stateApp.checkedUserDefinedLayersInteraction.indexOf(
+      idx
+    );
     const newChecked = [...stateApp.checkedUserDefinedLayersInteraction];
     if (currentIndex === -1) {
       newChecked.push(idx);
     } else {
       newChecked.splice(currentIndex, 1);
     }
-    setStateApp(stateApp => ({ ...stateApp, checkedUserDefinedLayersInteraction: newChecked }));
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      checkedUserDefinedLayersInteraction: newChecked,
+    }));
   };
-
-
 
   const StyledMenu = withStyles({
     paper: {
       border: "1px solid #011133",
       left: "unset !important",
-      right: "80px !important"
-    }
-  })(props => (
+      right: "80px !important",
+    },
+  })((props) => (
     <Menu
       elevation={0}
       variant="menu"
@@ -132,14 +138,14 @@ export default function CheckboxList(props) {
       getContentAnchorEl={null}
       anchorOrigin={{
         vertical: "top",
-        horizontal: "left"
+        horizontal: "left",
       }}
       MenuListProps={{
-        disablePadding: true
+        disablePadding: true,
       }}
       transformOrigin={{
         vertical: "top",
-        horizontal: "right"
+        horizontal: "right",
       }}
       {...props}
     />
@@ -152,50 +158,50 @@ export default function CheckboxList(props) {
     //style: { width: '5rem', height: '5rem' },
   };
 
-  const StyledMenuItem = withStyles(theme => ({
+  const StyledMenuItem = withStyles((theme) => ({
     root: {
       fontFamily: "Poppins",
       "&:hover": {
-        background: "#4B618F"
+        background: "#4B618F",
       },
       backgroundColor: "#263451",
       "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-        color: theme.palette.common.white
+        color: theme.palette.common.white,
         // },
-      }
-    }
+      },
+    },
   }))(MenuItem);
 
-  const StyledListItem = withStyles(theme => ({
+  const StyledListItem = withStyles((theme) => ({
     root: {
       fontFamily: "Poppins",
       "&:hover": {
-        background: "#4B618F"
+        background: "#4B618F",
       },
       backgroundColor: "#263451",
       "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-        color: theme.palette.common.white
+        color: theme.palette.common.white,
       },
-    }
+    },
   }))(ListItem);
 
-  const StyledListItem2 = withStyles(theme => ({
+  const StyledListItem2 = withStyles((theme) => ({
     root: {
       fontFamily: "Poppins",
       "&:hover": {
-        background: "#a3b2cf"
+        background: "#a3b2cf",
       },
       backgroundColor: "#4B618F",
       "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-        color: theme.palette.common.white
-      }
-    }
+        color: theme.palette.common.white,
+      },
+    },
   }))(ListItem);
 
   const handleClose = () => {
-    setStateMapControls(stateMapControls => ({
+    setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
-      anchorEl: null
+      anchorEl: null,
     }));
   };
 
@@ -212,10 +218,11 @@ export default function CheckboxList(props) {
     );
 
     let checkedLayers = stateApp.checkedLayers.slice(0);
-    const sourceIndex = checkedLayers.indexOf(result.source.index)
-    
+    const sourceIndex = checkedLayers.indexOf(result.source.index);
+
     let direction = 0;
-    let from, to = 0;
+    let from,
+      to = 0;
     if (result.destination.index > result.source.index) {
       direction = -1;
       from = result.source.index;
@@ -226,10 +233,10 @@ export default function CheckboxList(props) {
       from = result.destination.index;
     }
 
-    for (let i = 0; i < checkedLayers.length; i ++) {
+    for (let i = 0; i < checkedLayers.length; i++) {
       if (checkedLayers[i] <= to && checkedLayers[i] >= from) {
         checkedLayers[i] += direction;
-      } 
+      }
     }
 
     if (sourceIndex !== -1) {
@@ -237,25 +244,31 @@ export default function CheckboxList(props) {
     }
 
     let checkedLayersInteraction = stateApp.checkedLayersInteraction.slice(0);
-    const sourceInteractionIndex = checkedLayersInteraction.indexOf(result.source.index)
+    const sourceInteractionIndex = checkedLayersInteraction.indexOf(
+      result.source.index
+    );
 
-    for (let i = 0; i < checkedLayersInteraction.length; i ++) {
-      if (checkedLayersInteraction[i] <= to && checkedLayersInteraction[i] >= from) {
+    for (let i = 0; i < checkedLayersInteraction.length; i++) {
+      if (
+        checkedLayersInteraction[i] <= to &&
+        checkedLayersInteraction[i] >= from
+      ) {
         checkedLayersInteraction[i] += direction;
-      } 
+      }
     }
 
     if (sourceInteractionIndex !== -1) {
-      checkedLayersInteraction[sourceInteractionIndex] = result.destination.index;
+      checkedLayersInteraction[sourceInteractionIndex] =
+        result.destination.index;
     }
 
     setStateApp({
-      ...stateApp, 
+      ...stateApp,
       styleLayers: items,
       checkedLayers: checkedLayers,
-      checkedLayersInteraction: checkedLayersInteraction
+      checkedLayersInteraction: checkedLayersInteraction,
     });
-  }
+  };
 
   const onDragEndUserDefined = (result) => {
     // dropped outside the list
@@ -270,10 +283,11 @@ export default function CheckboxList(props) {
     );
 
     let checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
-    const sourceIndex = checkedLayers.indexOf(result.source.index)
-    
+    const sourceIndex = checkedLayers.indexOf(result.source.index);
+
     let direction = 0;
-    let from, to = 0;
+    let from,
+      to = 0;
     if (result.destination.index > result.source.index) {
       direction = -1;
       from = result.source.index;
@@ -284,36 +298,43 @@ export default function CheckboxList(props) {
       from = result.destination.index;
     }
 
-    for (let i = 0; i < checkedLayers.length; i ++) {
+    for (let i = 0; i < checkedLayers.length; i++) {
       if (checkedLayers[i] <= to && checkedLayers[i] >= from) {
         checkedLayers[i] += direction;
-      } 
+      }
     }
 
     if (sourceIndex !== -1) {
       checkedLayers[sourceIndex] = result.destination.index;
     }
 
-    let checkedInteractionLayers = stateApp.checkedUserDefinedLayersInteraction.slice(0);
-    const sourceInteractionIndex = checkedInteractionLayers.indexOf(result.source.index)
-    for (let i = 0; i < checkedInteractionLayers.length; i ++) {
-      if (checkedInteractionLayers[i] <= to && checkedInteractionLayers[i] >= from) {
+    let checkedInteractionLayers = stateApp.checkedUserDefinedLayersInteraction.slice(
+      0
+    );
+    const sourceInteractionIndex = checkedInteractionLayers.indexOf(
+      result.source.index
+    );
+    for (let i = 0; i < checkedInteractionLayers.length; i++) {
+      if (
+        checkedInteractionLayers[i] <= to &&
+        checkedInteractionLayers[i] >= from
+      ) {
         checkedInteractionLayers[i] += direction;
-      } 
+      }
     }
 
     if (sourceInteractionIndex !== -1) {
-      checkedInteractionLayers[sourceInteractionIndex] = result.destination.index;
+      checkedInteractionLayers[sourceInteractionIndex] =
+        result.destination.index;
     }
 
-
     setStateApp({
-      ...stateApp, 
+      ...stateApp,
       userDefinedLayers: items,
       checkedUserDefinedLayers: checkedLayers,
       checkedUserDefinedLayersInteraction: checkedInteractionLayers,
     });
-  }
+  };
 
   return (
     <ClickAwayListener onClickAway={handleClose}>
@@ -350,58 +371,63 @@ export default function CheckboxList(props) {
                     {stateApp.styleLayers.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
                       return (
-                        <Draggable key={labelId} draggableId={labelId} index={index}>
+                        <Draggable
+                          key={labelId}
+                          draggableId={labelId}
+                          index={index}
+                        >
                           {(provided, snapshot) => (
-
-                            <StyledListItem 
+                            <StyledListItem
                               ContainerComponent="li"
-                              ref={ provided.innerRef }
+                              ref={provided.innerRef}
                               {...provided.draggableProps}
                             >
                               <ListItemIcon {...provided.dragHandleProps}>
                                 <DragIndicator />
                               </ListItemIcon>
 
-                              <ListItemText 
-                                  id={labelId} 
-                                  primary={layer.name} />
-                            
+                              <ListItemText id={labelId} primary={layer.name} />
 
-                              {layer.name === 'Wells' &&
-                              <div style={{paddingRight: 20}}>
+                              {layer.name === "Wells" && (
+                                <div style={{ paddingRight: 20 }}>
+                                  <Checkbox
+                                    icon={
+                                      <CancelOutlinedIcon htmlColor="#12abe0" />
+                                    }
+                                    checkedIcon={<ClickIcon />}
+                                    edge="start"
+                                    checked={
+                                      stateApp.checkedLayersInteraction
+                                        ? stateApp.checkedLayersInteraction.indexOf(
+                                            index
+                                          ) !== -1
+                                        : false
+                                    }
+                                    tabIndex={-1}
+                                    disableRipple
+                                    inputProps={{ "aria-labelledby": labelId }}
+                                    onChange={handleToggleInteraction(index)}
+                                  />
+                                </div>
+                              )}
+
                               <Checkbox
-                                  icon={<CancelOutlinedIcon htmlColor="#12abe0"/>}
-                                  checkedIcon={<ClickIcon/>}
-                                  edge="start"
-                                  checked={
-                                    stateApp.checkedLayersInteraction
-                                      ? stateApp.checkedLayersInteraction.indexOf(index) !== -1
-                                      : false
-                                  }
-                                  tabIndex={-1}
-                                  disableRipple
-                                  inputProps={{ "aria-labelledby": labelId }}
-                                  onChange={handleToggleInteraction(index)}
-                                />
-                              </div>
-                              }
-
-
-                              <Checkbox
-                                  icon={<VisibilityOffIcon htmlColor="#fff" />}
-                                  checkedIcon={<VisibilityIcon htmlColor="#fff" />}
-                                  edge="start"
-                                  checked={
-                                    stateApp.checkedLayers
-                                      ? stateApp.checkedLayers.indexOf(index) !== -1
-                                      : false
-                                  }
-                                  tabIndex={-1}
-                                  disableRipple
-                                  inputProps={{ "aria-labelledby": labelId }}
-                                  onChange={handleToggle(index)}
-                                />
-                            
+                                icon={<VisibilityOffIcon htmlColor="#fff" />}
+                                checkedIcon={
+                                  <VisibilityIcon htmlColor="#fff" />
+                                }
+                                edge="start"
+                                checked={
+                                  stateApp.checkedLayers
+                                    ? stateApp.checkedLayers.indexOf(index) !==
+                                      -1
+                                    : false
+                                }
+                                tabIndex={-1}
+                                disableRipple
+                                inputProps={{ "aria-labelledby": labelId }}
+                                onChange={handleToggle(index)}
+                              />
                             </StyledListItem>
                           )}
                         </Draggable>
@@ -413,7 +439,6 @@ export default function CheckboxList(props) {
             </Droppable>
           </DragDropContext>
         </Collapse>
-
 
         <StyledListItem2 button onClick={handleClickUD}>
           <ListItemIcon>
@@ -430,61 +455,90 @@ export default function CheckboxList(props) {
                   <List className={classes.list}>
                     {stateApp.userDefinedLayers.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
+
                       return (
-                        <Draggable key={labelId} draggableId={labelId} index={index}>
-                          {(provided, snapshot) => (
+                        ((layer.name !== "Tags Filter" &&
+                          layer.name !== "Search") ||
+                          (layer.name === "Tags Filter" &&
+                            stateApp.wellListFromTagsFilter &&
+                            stateApp.wellListFromTagsFilter.length > 0) ||
+                          (layer.name === "Search" &&
+                            stateApp.wellListFromSearch &&
+                            stateApp.wellListFromSearch.length > 0)) && (
+                          <Draggable
+                            key={labelId}
+                            draggableId={labelId}
+                            index={index}
+                          >
+                            {(provided, snapshot) => (
+                              <Box
+                                borderColor={layer.idColor}
+                                {...defaultProps}
+                              >
+                                <StyledListItem
+                                  ContainerComponent="li"
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                >
+                                  <ListItemIcon {...provided.dragHandleProps}>
+                                    <DragIndicator />
+                                  </ListItemIcon>
 
-                            <Box borderColor={layer.idColor} {...defaultProps}>
+                                  <ListItemText
+                                    id={labelId}
+                                    primary={layer.name}
+                                  />
 
-                            <StyledListItem 
-                              ContainerComponent="li"
-                              ref={ provided.innerRef }
-                              {...provided.draggableProps}
-                            >
-                              <ListItemIcon {...provided.dragHandleProps}>
-                                <DragIndicator />
-                              </ListItemIcon>
+                                  <div style={{ paddingRight: 20 }}>
+                                    <Checkbox
+                                      icon={
+                                        <CancelOutlinedIcon htmlColor="#12abe0" />
+                                      }
+                                      checkedIcon={<ClickIcon />}
+                                      edge="start"
+                                      checked={
+                                        stateApp.checkedUserDefinedLayersInteraction
+                                          ? stateApp.checkedUserDefinedLayersInteraction.indexOf(
+                                              index
+                                            ) !== -1
+                                          : false
+                                      }
+                                      tabIndex={-1}
+                                      disableRipple
+                                      inputProps={{
+                                        "aria-labelledby": labelId,
+                                      }}
+                                      onChange={handleToggleUserDefinedInteraction(
+                                        index
+                                      )}
+                                    />
+                                  </div>
 
-                              <ListItemText id={labelId} primary={layer.name} />
-                            
-                              <div style={{paddingRight: 20}}>
-                              <Checkbox
-                                  icon={<CancelOutlinedIcon htmlColor="#12abe0"/>}
-                                  checkedIcon={<ClickIcon/>}
-                                  edge="start"
-                                  checked={
-                                    stateApp.checkedUserDefinedLayersInteraction
-                                      ? stateApp.checkedUserDefinedLayersInteraction.indexOf(index) !== -1
-                                      : false
-                                  }
-                                  tabIndex={-1}
-                                  disableRipple
-                                  inputProps={{ "aria-labelledby": labelId }}
-                                  onChange={handleToggleUserDefinedInteraction(index)}
-                                />
-                              </div>
-
-                              <Checkbox
-                                  icon={<VisibilityOffIcon htmlColor="#fff" />}
-                                  checkedIcon={<VisibilityIcon htmlColor="#fff" />}
-                                  edge="start"
-                                  checked={
-                                    stateApp.checkedUserDefinedLayers
-                                      ? stateApp.checkedUserDefinedLayers.indexOf(index) !== -1
-                                      : false
-                                  }
-                                  tabIndex={-1}
-                                  disableRipple
-                                  inputProps={{ "aria-labelledby": labelId }}
-                                  onChange={handleToggleUserDefined(index)}
-                                />
-                              
-
-
-                            </StyledListItem>
-                            </Box>
-                          )}
-                        </Draggable>
+                                  <Checkbox
+                                    icon={
+                                      <VisibilityOffIcon htmlColor="#fff" />
+                                    }
+                                    checkedIcon={
+                                      <VisibilityIcon htmlColor="#fff" />
+                                    }
+                                    edge="start"
+                                    checked={
+                                      stateApp.checkedUserDefinedLayers
+                                        ? stateApp.checkedUserDefinedLayers.indexOf(
+                                            index
+                                          ) !== -1
+                                        : false
+                                    }
+                                    tabIndex={-1}
+                                    disableRipple
+                                    inputProps={{ "aria-labelledby": labelId }}
+                                    onChange={handleToggleUserDefined(index)}
+                                  />
+                                </StyledListItem>
+                              </Box>
+                            )}
+                          </Draggable>
+                        )
                       );
                     })}
                   </List>
@@ -493,9 +547,6 @@ export default function CheckboxList(props) {
             </Droppable>
           </DragDropContext>
         </Collapse>
-
-
-
       </StyledMenu>
     </ClickAwayListener>
   );

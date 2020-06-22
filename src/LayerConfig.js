@@ -1,4 +1,3 @@
-
 export const styleLayers = [
   {
     name: "Wells",
@@ -299,6 +298,92 @@ export const userDefinedLayers = [
               35,
             ],
 
+            "circle-stroke-width": 5,
+            "circle-stroke-color": "#fff",
+          },
+          clusterSymbolProps: {
+            "text-field": "{point_count}",
+            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+            "text-size": 12,
+          },
+        },
+      },
+    ],
+    interactionProps: {
+      hoverActions: {
+        mouseMove: {
+          cursor: "pointer",
+        },
+        mouseLeave: {
+          cursor: "",
+        },
+      },
+      mouseClick: {
+        clickInteraction: {
+          boundTo: false,
+          flyTo: true,
+          easeTo: false,
+          popUp: false,
+        },
+        clusterClickInteraction: {
+          boundTo: false,
+          flyTo: false,
+          easeTo: true,
+          popUp: false,
+        },
+      },
+    },
+  },
+
+  {
+    name: "Tags Filter",
+    id: ["Tags Filter"],
+    idColor: "rgb(30, 144, 255)",
+    type: "data layer",
+    dataProps: [
+      {
+        dataId: "wellsFromTagsFilter",
+        dataTypeId: "Point",
+      },
+    ],
+    sourceProps: [
+      {
+        sourceId: "wells_from_tag_filter_user_defined_source",
+        sourceType: "geojson",
+      },
+    ],
+    layerProps: [
+      {
+        layerId: "Tags Filter",
+        layerType: "circle",
+        paintProps: {
+          "circle-radius": 5,
+          "circle-color": "rgb(30, 144, 255)",
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#fff",
+        },
+        clusterProps: {
+          clusterPaintProps: {
+            "circle-color": {
+              property: "point_count",
+              type: "interval",
+              stops: [
+                [0, "rgb(30, 144, 255)"],
+                [100, "rgb(30, 144, 255)"],
+                [750, "rgb(30, 144, 255)"],
+              ],
+            },
+            "circle-radius": [
+              "step",
+              ["get", "point_count"],
+              20,
+              5,
+              25,
+              10,
+              30,
+              20,
+              35,
+            ],
             "circle-stroke-width": 5,
             "circle-stroke-color": "#fff",
           },

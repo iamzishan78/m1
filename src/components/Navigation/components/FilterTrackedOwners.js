@@ -4,12 +4,12 @@ import Switch from "@material-ui/core/Switch";
 import { NavigationContext } from "../NavigationContext";
 import { AppContext } from "../../../AppContext";
 import { FormLabel } from "@material-ui/core";
-import WellIcon from "../../Shared/svgIcons/well";
 import IconButton from "@material-ui/core/IconButton";
+import OwnershipIcon from "../../Shared/svgIcons/ownership";
 
 const useStyles = makeStyles({
   mainDiv: {
-    padding: "0px 15px",
+    padding: "2.5px 15px",
     border: "1px solid #C4C4C4",
     borderRadius: "4px",
     "&:hover": {
@@ -18,7 +18,7 @@ const useStyles = makeStyles({
   },
   noOwnersToggle: {
     float: "right",
-    marginTop: "7.5px",
+    marginTop: "5px",
   },
   IconButton: {
     marginRight: "10px",
@@ -29,45 +29,46 @@ const useStyles = makeStyles({
   },
 });
 
-export default function FilterTrackedWells() {
+export default function FilterTrackedOwners() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
+
   const [stateApp] = useContext(AppContext);
 
   useEffect(() => {
     if (stateApp.checkedUserDefinedLayers)
-      if (stateApp.checkedUserDefinedLayers.indexOf(3) === -1)
+      if (stateApp.checkedUserDefinedLayers.indexOf(4) === -1)
         setStateNav((stateNav) => ({
           ...stateNav,
-          filterTrackedWells: false,
+          filterTrackedOwners: false,
         }));
       else
         setStateNav((stateNav) => ({
           ...stateNav,
-          filterTrackedWells: true,
+          filterTrackedOwners: true,
         }));
   }, [stateApp.checkedUserDefinedLayers]);
 
   const toggleTracks = () => {
-    if (!stateApp.activateUserDefinedLayers(3))
-      stateApp.deactivateUserDefinedLayers(3);
+    if (!stateApp.activateUserDefinedLayers(4))
+      stateApp.deactivateUserDefinedLayers(4);
     else stateApp.deactivateWellLayer();
 
     setStateNav((stateNav) => ({
       ...stateNav,
-      filterTrackedWells: !stateNav.filterTrackedWells,
+      filterTrackedOwners: !stateNav.filterTrackedOwners,
     }));
   };
 
   return (
     <div className={classes.mainDiv}>
       <IconButton className={classes.IconButton}>
-        <WellIcon className={classes.icon} color="#808080" opacity="1.0" />
+        <OwnershipIcon color="#808080" opacity="1.0" />
       </IconButton>
-      <FormLabel>Tracked Wells</FormLabel>
+      <FormLabel>Tracked Owners</FormLabel>
       <Switch
         className={classes.noOwnersToggle}
-        checked={stateNav.filterTrackedWells}
+        checked={stateNav.filterTrackedOwners}
         onChange={toggleTracks}
         color="secondary"
         name="checked"

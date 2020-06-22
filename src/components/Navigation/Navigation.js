@@ -392,10 +392,13 @@ const useStyles = makeStyles((theme) => ({
     margin: "0px",
   },
   cardContent: {
-    height: "400px",
+    maxHeight: "400px",
     backgroundColor: "#fff",
     padding: "0px",
-    overflow: "scroll",
+    overflow: "auto",
+    "&:last-child": {
+      paddingBottom: "0",
+    },
   },
   cardAction: {
     flexGrow: 1,
@@ -1006,7 +1009,7 @@ export default function Navigation(props) {
             ) : null}
 
             {matchFind ? (
-              <div className={classes.search}>
+              <div className={classes.search} id="searchBarDivParent">
                 <Search />
               </div>
             ) : null}
@@ -1192,7 +1195,7 @@ export default function Navigation(props) {
                         <LocalOfferIcon htmlColor="#fff" opacity="1" />
                       </Badge>
                     }
-                    aria-label="tags"
+                    aria-label="tags and Tracks"
                   />
                   <Tab
                     //disabled={true}
@@ -1209,9 +1212,7 @@ export default function Navigation(props) {
                     aria-label="ai"
                   />
 
-                  {/* TEMPORARY COMMENT OUT. 
-                  BELOW COMPONENT IS FOR CAMILO'S FILTER SAVE HANDLER */}
-                  {/* <Tab
+                  <Tab
                     value={7}
                     classes={{ root: classes.tab }}
                     style={{ paddingTop: 10 }}
@@ -1224,7 +1225,7 @@ export default function Navigation(props) {
                       </Badge>
                     }
                     aria-label="filter settings"
-                  />*/}
+                  />
                 </Tabs>
               </div>
             ) : (
@@ -1490,7 +1491,7 @@ export default function Navigation(props) {
             }}
             button
             selected={stateNav.selectedMenuIndexTitle === 1}
-            //onClick={(event) => handleListItemClick(event, 0, "/title")}
+            onClick={(event) => handleListItemClick(event, 0, "/title")}
             key="title"
           >
             <ListItemIcon>
@@ -1801,7 +1802,7 @@ export default function Navigation(props) {
                     </div>
                   }
                   title="Filter"
-                  subheader="Tags"
+                  subheader="Tags and Tracks"
                 />
                 {/* <CardActions
                   classes={{

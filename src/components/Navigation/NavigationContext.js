@@ -59,6 +59,8 @@ const NavigationContextProvider = (props) => {
     filterOwnerWellInterestSum: null,
     filterOwnerCount: null,
     filterDrawing: [],
+    filterTrackedWells: false,
+    filterTrackedOwners: false,
     searchInputValue: null,
     statusName: [],
     typeName: [],
@@ -122,6 +124,7 @@ const NavigationContextProvider = (props) => {
     filterDrawing: [],
     selectedTags: [],
     wellsIdsFromTags: [],
+    searchHistory: [],
   });
   return (
     <NavigationContext.Provider value={[stateNav, setStateNav]}>

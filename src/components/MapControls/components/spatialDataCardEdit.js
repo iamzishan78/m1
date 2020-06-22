@@ -318,7 +318,8 @@ export default function SpatialDataCardEdit(props) {
           setCustLayers(customLayers);
           setStateApp({
             ...stateApp,
-            customLayers: filteredLayers
+            customLayers: filteredLayers,
+            currentFeature: selectedFeature,
           });
         }
       }
@@ -327,7 +328,7 @@ export default function SpatialDataCardEdit(props) {
       setDrawFeatureId("");
       setStateApp({
         ...stateApp,
-        customLayers: custLayers
+        customLayers: custLayers,
       })
     }
   }

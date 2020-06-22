@@ -18,6 +18,7 @@ export default function AlertDialogSlide(props) {
         maxWidth: "100% !important",
         height: "100% !important",
         margin: "0 !important",
+        //backgroundColor: "#000"
       },
     },
   }));

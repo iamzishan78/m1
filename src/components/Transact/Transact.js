@@ -115,6 +115,7 @@ const data_file = {
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100%",
+    backgroundColor: '#efefef',
   },
   list: {
     overflowX: "auto !important",
@@ -181,7 +182,7 @@ export default function Transact() {
       />
       <Board
         className={classes.list}
-        style={{ backgroundColor: " #eeeeee" }}
+        style={{ backgroundColor: "#efefef" }}
         data={transactData}
         draggable={true}
         laneDraggable={true}

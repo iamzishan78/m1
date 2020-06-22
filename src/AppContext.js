@@ -1,7 +1,12 @@
 import React, { useState, createContext, useEffect } from "react";
 
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
-import { styleLayers, userDefinedLayers, heatLayers, baseMapLayers } from './LayerConfig';
+import {
+  styleLayers,
+  userDefinedLayers,
+  heatLayers,
+  baseMapLayers,
+} from "./LayerConfig";
 
 const AppContext = createContext([{}, () => {}]);
 
@@ -51,7 +56,6 @@ const AppProvider = (props) => {
     //   taggedWells: null,
     // },
     wellSelectedCoordinates: [],
-    wellListFromSearch: null,
 
     //Map State
     selectedWellApi: null,
@@ -64,7 +68,7 @@ const AppProvider = (props) => {
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
     checkedUserDefinedLayers: [],
     tempCheckedUserDefinedLayer: null,
-    checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5],
+    checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
     checkedLayersInteraction: [0],
     selectedLayerId: null,
     openWellDetails: false,
@@ -74,6 +78,61 @@ const AppProvider = (props) => {
     map: null,
     draw: null,
     currentFeature: undefined,
+    wellListFromSearch: null,
+    wellListFromTagsFilter: null,
+    activateLayers: (layerContainerVarName, layerNumber) => {
+      let added = false;
+      setStateApp((stateApp) => {
+        const currentIndex = stateApp[layerContainerVarName].indexOf(
+          layerNumber
+        );
+        const newChecked = [...stateApp[layerContainerVarName]];
+        if (currentIndex === -1) {
+          newChecked.push(layerNumber);
+          added = true;
+        }
+        return {
+          ...stateApp,
+          [layerContainerVarName]: newChecked,
+          popupOpen: false,
+          selectedWell: null,
+        };
+      });
+      return added;
+    },
+    deactivateLayers: (layerContainerVarName, layerNumber) => {
+      let deleted = false;
+      setStateApp((stateApp) => {
+        const currentIndex = stateApp[layerContainerVarName].indexOf(
+          layerNumber
+        );
+        const newChecked = [...stateApp[layerContainerVarName]];
+        if (currentIndex !== -1) {
+          newChecked.splice(currentIndex, 1);
+          deleted = true;
+        }
+
+        return {
+          ...stateApp,
+          [layerContainerVarName]: newChecked,
+          popupOpen: false,
+          selectedWell: null,
+        };
+      });
+      return deleted;
+    },
+    activateUserDefinedLayers: (layerNumber) => {
+      return stateApp.activateLayers("checkedUserDefinedLayers", layerNumber);
+    },
+    deactivateUserDefinedLayers: (layerNumber) => {
+      return stateApp.deactivateLayers("checkedUserDefinedLayers", layerNumber);
+    },
+    activateWellLayer: () => {
+      return stateApp.activateLayers("checkedLayers", 0);
+    },
+    deactivateWellLayer: () => {
+      return stateApp.deactivateLayers("checkedLayers", 0);
+    },
   });
 
   useEffect(() => {
@@ -96,23 +155,15 @@ const AppProvider = (props) => {
   }, []);
 
   useEffect(() => {
-    const currentIndex = stateApp.checkedUserDefinedLayers.indexOf(5);
-    const newChecked = [...stateApp.checkedUserDefinedLayers];
-
-    if (currentIndex === -1 && stateApp.wellListFromSearch) {
-      newChecked.push(5);
+    if (
+      stateApp.checkedUserDefinedLayers &&
+      stateApp.checkedUserDefinedLayers.indexOf(5) === -1 &&
+      stateApp.checkedUserDefinedLayers.indexOf(4) === -1 &&
+      stateApp.checkedUserDefinedLayers.indexOf(3) === -1
+    ) {
+      stateApp.activateWellLayer();
     }
-
-    if (!stateApp.wellListFromSearch && currentIndex !== -1) {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      // wellListFromSearch: stateApp.wellListFromSearch,
-      checkedUserDefinedLayers: newChecked,
-    }));
-  }, [stateApp.wellListFromSearch]);
+  }, [stateApp.checkedUserDefinedLayers]);
 
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>
