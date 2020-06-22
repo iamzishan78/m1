@@ -992,6 +992,7 @@ export default function Map() {
               }
 
               //// finding and fitting bounds
+              // eslint-disable-next-line no-loop-func
               const findBounds = (wells) => {
                 let latArray = wells.map((item) => item.latitude);
                 let longArray = wells.map((item) => item.longitude);
@@ -1059,10 +1060,13 @@ export default function Map() {
 
         let bounds = fitOverBounds(fitBounds);
 
-        map.fitBounds([
-          [bounds.minLong, bounds.minLat],
-          [bounds.maxLong, bounds.maxLat],
-        ]);
+        if (bounds.length > 0) {
+          map.fitBounds([
+            [bounds.minLong, bounds.minLat],
+            [bounds.maxLong, bounds.maxLat],
+          ]);
+        }
+
       }
 
       setStateApp({
