@@ -28,6 +28,7 @@ import polylabel from "polylabel";
 import { useHistory } from "react-router-dom";
 
 import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
+import { CUSTOMLAYERSQUERY } from "../../../../graphQL/useQueryCustomLayers";
 import { USERBYEMAIL } from "../../../../graphQL/useQueryUserByEmail";
 
 //import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
@@ -95,7 +96,11 @@ export default function DrawShapes(props) {
     const [stateNav, setStateNav] = useContext(NavigationContext);
     const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
 
-    const [upsertCustomLayer, {data: customLayerData}] = useMutation(UPSERTCUSTOMLAYER);
+    const [upsertCustomLayer] = useMutation(UPSERTCUSTOMLAYER);
+
+    const [getCustomLayers, { data: customLayerData }] = useLazyQuery(
+        CUSTOMLAYERSQUERY
+    );
 
     const DEBUGGER = (source, value) => {
         console.log(`%c[DrawShapes.js] ${source}`, DEBUG_GREEN, value);
@@ -119,6 +124,15 @@ export default function DrawShapes(props) {
     const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
 
     const [user, setUser] = useState({ _id: "" });
+
+    useEffect(() => {
+        if (customLayerData && customLayerData.customLayers) {
+            setStateApp({
+                ...stateApp,
+                customLayers: customLayerData.customLayers,
+            });
+        }
+    }, [customLayerData]);
 
     useEffect(() => {
         if (stateApp && stateApp.user && stateApp.user.email) {
@@ -268,14 +282,19 @@ export default function DrawShapes(props) {
                 upsertCustomLayer({
                     variables: { customLayer: customLayerSymbolData }
                 });
-                setStateApp({
-                    ...stateApp,
-                    customLayers: [
-                        ...stateApp.customLayers,
-                        customLayerData,
-                        customLayerSymbolData
-                    ]
+                getCustomLayers({
+                    variables: {
+                        userId: user._id,
+                    },
                 });
+                // setStateApp({
+                //     ...stateApp,
+                //     customLayers: [
+                //         ...stateApp.customLayers,
+                //         customLayerData,
+                //         customLayerSymbolData
+                //     ]
+                // });
                 handleDeleteSpatialDataAndShape();
             }
         }
