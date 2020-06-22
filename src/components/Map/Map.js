@@ -21,6 +21,7 @@ import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
 import DrawStatus from "./components/DrawStatus";
 import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
+import SpatialDataCard from "../MapControls/components/spatialDataCard";
 import "./popup.css";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import {
@@ -33,11 +34,13 @@ import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import * as MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import DefaultFiltersTest from "./filtersDefaultTest";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { WELLSQUERY } from "../../graphQL/useQueryWells";
 import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAndObjectType";
 import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
 import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
+import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
+import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 
 const useStyles = makeStyles((theme) => ({
@@ -122,6 +125,10 @@ export default function Map() {
   const [getCustomLayers, { data: customLayerData }] = useLazyQuery(
     CUSTOMLAYERSQUERY
   );
+
+  const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
+
+  const [removeCustomLayer] = useMutation(REMOVECUSTOMLAYER);
 
   const [
     getWellsForLayer,
@@ -2676,85 +2683,195 @@ export default function Map() {
     setStateApp((state) => ({
       ...state,
       popupOpen: false,
-      selectedUserDefinedLayer: null,
+    }));
+  };
+
+  const handleCloseSpatialDataCardEdit = () => {
+    console.log("close card on map here");
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+      editLayer: false,
     }));
   };
 
   const handleSaveSpatialDataToShape = (spatialData, dataType) => {
     // save data onto geoJSON properties fields
-    // spatialDataAttributes.forEach(attribute => {
-    //     // console.log(attribute, spatialData[attribute]);
-    //     stateApp.draw.setFeatureProperty(
-    //         stateApp.currentFeature.id,
-    //         attribute,
-    //         spatialData[attribute]
-    //     );
-    //     if (spatialData[attribute]) {
-    //         stateApp.currentFeature.properties[attribute] = spatialData[attribute];
-    //     }
-    // });
-    // const symbolFeature = {
-    //     type: "Feature",
-    //     geometry: {
-    //         type: "Point",
-    //         coordinates: stateApp.currentFeature.properties.shapeCenter
-    //     },
-    //     properties: {
-    //         ...stateApp.currentFeature.properties,
-    //         label: spatialData.shapeLabel,
-    //     }
-    // }
+
+    spatialDataAttributes.forEach(attribute => {
+      // console.log(attribute, spatialData[attribute]);
+      stateApp.draw.setFeatureProperty(
+          stateApp.selectedUserDefinedLayer.id,
+          attribute,
+          spatialData[attribute]
+      );
+      if (spatialData[attribute]) {
+          stateApp.selectedUserDefinedLayer.properties[attribute] = spatialData[attribute];
+      }
+    });
+
+    stateApp.selectedUserDefinedLayer.id = stateApp.selectedUserDefinedLayer.properties.id;
+
+    const symbolFeature = {
+      type: "Feature",
+      geometry: {
+          type: "Point",
+          coordinates: stateApp.selectedUserDefinedLayer.properties.shapeCenter
+      },
+      properties: {
+          ...stateApp.selectedUserDefinedLayer.properties,
+          id: `${stateApp.selectedUserDefinedLayer.properties.id}_label`,
+          label: spatialData.shapeLabel,
+      }
+    }
     // //////cleaning the selected title opinion and redirecting to title opinion page//
-    // if (user._id != "" ) {
-    //   const customLayerData = {
-    //       shape: JSON.stringify(stateApp.currentFeature),
-    //       layer: dataType,
-    //       name: spatialData.shapeLabel,
-    //       user: user._id
-    //   };
-    //   const customLayerSymbolData = {
-    //       shape: JSON.stringify(symbolFeature),
-    //       layer: `${dataType}_labels`,
-    //       name: spatialData.shapeLabel,
-    //       user: user._id
-    //   };
-    //   upsertCustomLayer({
-    //       variables: { customLayer: customLayerData }
-    //   });
-    //   upsertCustomLayer({
-    //       variables: { customLayer: customLayerSymbolData }
-    //   });
-    //   setStateApp({
-    //       ...stateApp,
-    //       customLayers: [
-    //           ...stateApp.customLayers,
-    //           customLayerData,
-    //           customLayerSymbolData
-    //       ]
-    //   });
-    // }
+    if (stateApp.user.mongoId !== "" ) {
+      const id = stateApp.selectedUserDefinedLayer.properties.id;
+      let update_layers = stateApp.editingUserDefinedLayers.filter(layer => {
+        const shape_properties = JSON.parse(layer.shape).properties;
+        return shape_properties.id && shape_properties.id.includes(id)
+      });
+      if (update_layers.length === 0) {
+        update_layers = stateApp.customLayers.filter(layer => {
+          const shape_properties = JSON.parse(layer.shape).properties;
+          return shape_properties.id && shape_properties.id.includes(id)
+        });
+        handleCloseSpatialDataCard();
+      } else {
+        stateApp.draw.delete(`edit_polygon_${id}`);
+        const updated_layers = stateApp.editingUserDefinedLayers.filter(layer => {
+          const shape_properties = JSON.parse(layer.shape).properties;
+          return !shape_properties.id || !shape_properties.id.includes(id)
+        });
+        setStateApp({
+          ...stateApp,
+          selectedUserDefinedLayer: null,
+          editingUserDefinedLayers: updated_layers
+        });
+        handleCloseSpatialDataCardEdit();
+      }
+      const customLayerId = update_layers[0]._id;
+      const customLayerLabelId = update_layers[1]._id;
+
+      const customLayerData = {
+          shape: JSON.stringify(stateApp.selectedUserDefinedLayer),
+          layer: dataType,
+          name: spatialData.shapeLabel,
+          user: stateApp.user.mongoId
+      };
+      const customLayerSymbolData = {
+          shape: JSON.stringify(symbolFeature),
+          layer: `${dataType}_labels`,
+          name: spatialData.shapeLabel,
+          user: stateApp.user.mongoId
+      };
+      updateCustomLayer({
+          variables: {
+            customLayerId: customLayerId,
+            customLayer: customLayerData
+          }
+      });
+      updateCustomLayer({
+          variables: {
+            customLayerId: customLayerLabelId,
+            customLayer: customLayerSymbolData
+          }
+      });
+      getCustomLayers({
+        variables: {
+          userId: stateApp.user.mongoId,
+        },
+      });
+    }
   };
 
   const handleDeleteSpatialDataAndShape = () => {
-    // const {currentFeature} = stateApp;
-    // if (currentFeature) {
-    //   const elem = document.getElementById(currentFeature.id);
-    //   // elem.parentNode.removeChild(elem);
-    //   console.log("elem", elem);
-    //   stateApp.draw.delete(currentFeature.id);
-    //   setStateApp({
-    //     ...stateApp,
-    //     currentFeature: undefined,
-    //   });
-    //   if (currentFeature.id.includes("draw_polygon")
-    //     || currentFeature.id.includes("drag_circle")
-    //     || currentFeature.id.includes("draw_rectangle")) {
-    //     setStateNav((stateNav) => ({
-    //       ...stateNav,
-    //       filterDrawing: []
-    //     }));
-    //   }
-    // }
+    const {selectedUserDefinedLayer, editingUserDefinedLayers, customLayers} = stateApp;
+    if (selectedUserDefinedLayer) {
+      let id = selectedUserDefinedLayer.properties.id;
+      if (id.includes('edit_polygon')) {
+        id = id.replace('edit_polygon_', '');
+      }
+      if (editingUserDefinedLayers.length > 0) {
+        const delete_layers = editingUserDefinedLayers.filter(layer => {
+          const shape_properties = JSON.parse(layer.shape).properties;
+          return shape_properties.id && shape_properties.id.includes(id)
+        });
+        if (delete_layers.length > 0) {
+          for (let i = 0; i < delete_layers.length; i ++) {
+            const delete_layer = delete_layers[i];
+            removeCustomLayer({
+              variables: {
+                customLayerId: delete_layer._id
+              }
+            })
+          }
+          const updated_layers = editingUserDefinedLayers.filter(layer => {
+            const shape_properties = JSON.parse(layer.shape).properties;
+            return !shape_properties.id || !shape_properties.id.includes(id)
+          });
+          stateApp.draw.delete(`edit_polygon_${id}`);
+          setStateApp({
+            ...stateApp,
+            selectedUserDefinedLayer: null,
+            editingUserDefinedLayers: updated_layers
+          });
+          handleCloseSpatialDataCardEdit();
+        } else if (customLayers.length > 0) {
+          const delete_layers = customLayers.filter(layer => {
+            const shape_properties = JSON.parse(layer.shape).properties;
+            return shape_properties.id && shape_properties.id.includes(id)
+          });
+          if (delete_layers.length > 0) {
+            for (let i = 0; i < delete_layers.length; i ++) {
+              const delete_layer = delete_layers[i];
+              removeCustomLayer({
+                variables: {
+                  customLayerId: delete_layer._id
+                }
+              })
+            }
+            const updated_layers = customLayers.filter(layer => {
+              const shape_properties = JSON.parse(layer.shape).properties;
+              return !shape_properties.id || !shape_properties.id.includes(id)
+            });
+            setStateApp({
+              ...stateApp,
+              selectedUserDefinedLayer: null,
+              customLayers: updated_layers
+            })
+          }
+        }
+        handleCloseSpatialDataCard();
+      } else {
+        if (customLayers.length > 0) {
+          const delete_layers = customLayers.filter(layer => {
+            const shape_properties = JSON.parse(layer.shape).properties;
+            return shape_properties.id && shape_properties.id.includes(id)
+          });
+          if (delete_layers.length > 0) {
+            for (let i = 0; i < delete_layers.length; i ++) {
+              const delete_layer = delete_layers[i];
+              removeCustomLayer({
+                variables: {
+                  customLayerId: delete_layer._id
+                }
+              })
+            }
+            const updated_layers = customLayers.filter(layer => {
+              const shape_properties = JSON.parse(layer.shape).properties;
+              return !shape_properties.id || !shape_properties.id.includes(id)
+            });
+            setStateApp({
+              ...stateApp,
+              selectedUserDefinedLayer: null,
+              customLayers: updated_layers
+            })
+          }
+        }
+        handleCloseSpatialDataCard();
+      }
+    }
   };
 
   useEffect(() => {
@@ -2776,6 +2893,21 @@ export default function Map() {
     }
   }, [stateApp.userSnap]);
 
+  useEffect(() => {
+    if (stateApp.editingUserDefinedLayers.length > 0) {
+      const {map} = stateApp;
+  
+      map.on("draw.selectionchange", ({features}) => {
+          const [feature] = features;
+          if (feature && feature.id.includes('edit_polygon')) {
+              setStateApp({...stateApp, selectedUserDefinedLayer: feature, editLayer: true});
+          } else {
+              setStateApp({...stateApp, selectedUserDefinedLayer: undefined, editLayer: false});
+          }
+      });
+    }
+  }, [stateApp.editingUserDefinedLayers]);
+
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
@@ -2787,6 +2919,16 @@ export default function Map() {
       <MapControlsProvider />
       <DrawStatus drawingStatus={drawStatus} />
       <Coordinates long={lng} lat={lat} />
+      {
+        stateApp.selectedUserDefinedLayer && !stateApp.popupOpen && stateApp.editLayer && (
+          <SpatialDataCard
+            selectedFeature={stateApp.selectedUserDefinedLayer}
+            saveSpatialData={handleSaveSpatialDataToShape}
+            closeSpatialDataCard={handleCloseSpatialDataCardEdit}
+            deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
+          />
+        )
+      }
       <div id="tempPopupHolder" className={classes.portal} ref={container} />
       <Portal container={container.current}>
         {stateApp.popupOpen ? (

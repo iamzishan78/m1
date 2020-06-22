@@ -308,20 +308,23 @@ export default function SpatialDataCardEdit(props) {
       const featureId = selectedFeature.properties.id;
       const featureLabelId = featureId + '_label';
       if (stateApp.draw) {
-        const featureIds = stateApp.draw.add(selectedFeature);
-        setDrawFeatureId(featureIds[0]);
-        stateApp.draw.changeMode("direct_select", { featureId: featureIds[0] });
+        selectedFeature.id = `edit_polygon_${selectedFeature.properties.id}`;
+        stateApp.draw.add(selectedFeature);
+        stateApp.draw.changeMode("direct_select", { featureId: selectedFeature.id });
         const { customLayers } = stateApp;
         if (customLayers && customLayers.length > 0) {
           // const index = customLayers.findIndex(layer => JSON.parse(layer.shape).properties.id === selectedFeature.properties.id);
           const filteredLayers = customLayers.filter(layer => JSON.parse(layer.shape).properties.id !== featureId && JSON.parse(layer.shape).properties.id !== featureLabelId);
+          const editingLayers = customLayers.filter(layer => JSON.parse(layer.shape).properties.id === featureId || JSON.parse(layer.shape).properties.id === featureLabelId);
           setCustLayers(customLayers);
           setStateApp({
             ...stateApp,
             customLayers: filteredLayers,
-            currentFeature: selectedFeature,
+            editingUserDefinedLayers: editingLayers,
+            editLayer: true,
           });
         }
+        props.closeSpatialDataCard();
       }
     } else {
       stateApp.draw.delete(drawFeatureId);
