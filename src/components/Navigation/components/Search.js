@@ -466,6 +466,10 @@ export default function Search() {
       } else {
         console.log("Not wells found for the owner");
         stateApp.deactivateUserDefinedLayers(6);
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          wellListFromSearch: null,
+        }));
       }
     }
   }, [dataOwnerWells]);
@@ -530,6 +534,10 @@ export default function Search() {
       } else {
         console.log("Not wells found for the operator");
         stateApp.deactivateUserDefinedLayers(6);
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          wellListFromSearch: null,
+        }));
       }
     }
   }, [dataOperatorWells]);
@@ -564,6 +572,10 @@ export default function Search() {
       } else {
         console.log("Not wells found for the lease");
         stateApp.deactivateUserDefinedLayers(6);
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          wellListFromSearch: null,
+        }));
       }
     }
   }, [dataLeaseWells]);
@@ -610,15 +622,19 @@ export default function Search() {
     ) {
       setStateApp((stateApp) => ({
         ...stateApp,
-        popupOpen: false,
+        // popupOpen: false,
         selectedWell: null,
         selectedWellId: newValue.Id ? newValue.Id.toLowerCase() : null,
-        flyTo: newValue
-          ? { longitude: newValue.Longitude, latitude: newValue.Latitude }
-          : null,
-        wellListFromSearch: null,
+        wellSelectedCoordinates: [newValue.Longitude, newValue.Latitude],
+        wellListFromSearch: [
+          {
+            id: newValue.Id,
+            longitude: newValue.Longitude,
+            latitude: newValue.Latitude,
+          },
+        ],
       }));
-      stateApp.deactivateUserDefinedLayers(6);
+      stateApp.activateUserDefinedLayers(6);
     }
 
     //// if owner

@@ -1195,7 +1195,7 @@ export default function Navigation(props) {
                         <LocalOfferIcon htmlColor="#fff" opacity="1" />
                       </Badge>
                     }
-                    aria-label="tags"
+                    aria-label="tags and Tracks"
                   />
                   <Tab
                     //disabled={true}
@@ -1802,7 +1802,7 @@ export default function Navigation(props) {
                     </div>
                   }
                   title="Filter"
-                  subheader="Tags"
+                  subheader="Tags and Tracks"
                 />
                 {/* <CardActions
                   classes={{

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import { NavigationContext } from "../NavigationContext";
@@ -32,8 +32,21 @@ const useStyles = makeStyles({
 export default function FilterTrackedWells() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-
   const [stateApp] = useContext(AppContext);
+
+  useEffect(() => {
+    if (stateApp.checkedUserDefinedLayers)
+      if (stateApp.checkedUserDefinedLayers.indexOf(3) === -1)
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          filterTrackedWells: false,
+        }));
+      else
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          filterTrackedWells: true,
+        }));
+  }, [stateApp.checkedUserDefinedLayers]);
 
   const toggleTracks = () => {
     if (!stateApp.activateUserDefinedLayers(3))

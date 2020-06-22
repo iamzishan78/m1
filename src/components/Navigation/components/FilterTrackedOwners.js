@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import { NavigationContext } from "../NavigationContext";
@@ -34,6 +34,20 @@ export default function FilterTrackedOwners() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
   const [stateApp] = useContext(AppContext);
+
+  useEffect(() => {
+    if (stateApp.checkedUserDefinedLayers)
+      if (stateApp.checkedUserDefinedLayers.indexOf(4) === -1)
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          filterTrackedOwners: false,
+        }));
+      else
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          filterTrackedOwners: true,
+        }));
+  }, [stateApp.checkedUserDefinedLayers]);
 
   const toggleTracks = () => {
     if (!stateApp.activateUserDefinedLayers(4))
