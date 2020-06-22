@@ -21,6 +21,7 @@ const AppProvider = (props) => {
     signUpUserType: null,
     wellCount: 500,
     wells: null,
+    trackedwells: null,
     selectedWell: null,
     selectedWellId: null,
     customLayers: [],

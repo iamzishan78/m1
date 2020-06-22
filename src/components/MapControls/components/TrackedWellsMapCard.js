@@ -110,7 +110,7 @@ export default function TrackedWellsMapCard(props) {
 
         setStateApp((state) => ({
           ...state,
-          wells: dataWells.wells.results,
+          trackedwells: dataWells.wells.results,
         }));
       } else {
         setRows([]);

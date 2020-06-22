@@ -53,10 +53,10 @@ export default function FilterTrackedWells() {
       stateApp.deactivateUserDefinedLayers(3);
     else stateApp.deactivateWellLayer();
 
-    setStateNav((stateNav) => ({
-      ...stateNav,
-      filterTrackedWells: !stateNav.filterTrackedWells,
-    }));
+    // setStateNav((stateNav) => ({
+    //   ...stateNav,
+    //   filterTrackedWells: !stateNav.filterTrackedWells,
+    // }));
   };
 
   return (

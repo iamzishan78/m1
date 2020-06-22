@@ -165,7 +165,7 @@ export default function Map() {
 
         setStateApp((stateApp) => ({
           ...stateApp,
-          wells: dataTracks.tracksByUserAndObjectType,
+          trackedwells: dataTracks.tracksByUserAndObjectType,
         }));
 
         getWells({
@@ -1191,25 +1191,26 @@ export default function Map() {
         ownershipFilterCount += 1;
         totalCount += 1;
       }
-      if (
-        stateNav.filterTrackedWells &&
-        stateNav.filterTrackedWells.length > 0
-      ) {
-        filterArray.push(stateNav.filterTrackedWells);
-        isFilterSet = true;
-        tagFilterCount += 1 + stateNav.selectedTags.length;
+      if (stateNav.filterTrackedWells) {
+        // filterArray.push(stateNav.filterTrackedWells);
+        // isFilterSet = true;
+        tagFilterCount += 1;
+        totalCount += 1;
+      }
+      if (stateNav.filterTrackedOwners) {
+        // filterArray.push(stateNav.filterTrackedWells);
+        // isFilterSet = true;
+        tagFilterCount += 1;
         totalCount += 1;
       }
 
       if (stateNav.filterTags && stateNav.filterTags.length > 0) {
         filterArray.push(stateNav.filterTags);
         isFilterSet = true;
-        totalCount += 1;
-        tagFilterCount +=
-          stateNav.selectedTags.length +
-          (stateNav.filterTrackedWells && stateNav.filterTrackedWells.length > 0
-            ? 1
-            : 0);
+        totalCount += stateNav.selectedTags ? stateNav.selectedTags.length : 0;
+        tagFilterCount += stateNav.selectedTags
+          ? stateNav.selectedTags.length
+          : 0;
       }
 
       if (
@@ -1771,6 +1772,7 @@ export default function Map() {
     stateNav.filterHasOwners,
     stateNav.filterHasOwnerCount,
     stateNav.filterTrackedWells,
+    stateNav.filterTrackedOwners,
     stateNav.filterOwnerConfidence,
     stateNav.filterOwnerWellInterestSum,
     stateNav.filterWellAppraisal,

@@ -2,8 +2,8 @@ import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../NavigationContext";
 import FilterTags from "./FilterTags";
-import FilterTrackedOwners from "./FilterTrackedWells";
-import FilterTrackedWells from "./FilterTrackedOwners";
+import FilterTrackedOwners from "./FilterTrackedOwners";
+import FilterTrackedWells from "./FilterTrackedWells";
 import Grid from "@material-ui/core/Grid";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { AppContext } from "../../../AppContext";
@@ -24,7 +24,7 @@ export default function FilterFormProduction() {
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
 
   useEffect(() => {
-    // let filter;
+    let filter;
 
     if (stateNav.wellsIdsFromTags && stateNav.wellsIdsFromTags.length > 0) {
       let IdsArray = [];
@@ -33,7 +33,7 @@ export default function FilterFormProduction() {
           IdsArray.push(stateNav.wellsIdsFromTags[i]);
       }
 
-      // filter = ["match", ["get", "id"], IdsArray, true, false];
+      filter = ["match", ["get", "id"], IdsArray, true, false];
 
       getWells({
         variables: {
@@ -42,10 +42,10 @@ export default function FilterFormProduction() {
         },
       });
     } else {
-      // filter = null;
+      filter = null;
     }
 
-    // setStateNav((stateNav) => ({ ...stateNav, filterTags: filter }));
+    setStateNav((stateNav) => ({ ...stateNav, filterTags: filter }));
   }, [stateNav.wellsIdsFromTags]);
 
   useEffect(() => {
@@ -77,10 +77,10 @@ export default function FilterFormProduction() {
         <FilterTags />
       </Grid>
       <Grid item sm={6} className={classes.gridItem}>
-        <FilterTrackedOwners />
+        <FilterTrackedWells />
       </Grid>
       <Grid item sm={6} className={classes.gridItem}>
-        <FilterTrackedWells />
+        <FilterTrackedOwners />
       </Grid>
     </Grid>
   );
