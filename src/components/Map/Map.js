@@ -2104,12 +2104,12 @@ export default function Map() {
         console.log(
           `Setting wellsTileset: ${mapStyles[index].sources.composite.url
             .split(",")
-            .find((element) => element.indexOf("m1neral.wells") > -1)}`
+            .find((element) => element.indexOf("m1neral.wells") > -1).replace('mapbox://', '')}`
         );
         setwellsTileset(
           mapStyles[index].sources.composite.url
             .split(",")
-            .find((element) => element.indexOf("m1neral.wells") > -1)
+            .find((element) => element.indexOf("m1neral.wells") > -1).replace('mapbox://', '')
         );
 
         console.log("new map generated");
