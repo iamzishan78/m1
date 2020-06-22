@@ -624,7 +624,10 @@ export default function ContactDetailCard(props) {
                 />
               </Paper>
               <Paper className={classes.paper}>
-                <Activities />
+                <Activities
+                  id={data.contact._id}
+                  activityLog={data.contact.activityLog}
+                />
               </Paper>
             </Grid>
           </Grid>

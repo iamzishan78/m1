@@ -1,5 +1,6 @@
-import React from "react";
-import { format } from "date-fns/esm";
+import React, { useState, useEffect, useContext } from "react";
+import { useQuery } from "@apollo/react-hooks";
+import moment from "moment";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
@@ -13,10 +14,14 @@ import TimelineConnector from "@material-ui/lab/TimelineConnector";
 import TimelineContent from "@material-ui/lab/TimelineContent";
 import TimelineDot from "@material-ui/lab/TimelineDot";
 import FastfoodIcon from "@material-ui/icons/Fastfood";
-import LaptopMacIcon from "@material-ui/icons/LaptopMac";
-import HotelIcon from "@material-ui/icons/Hotel";
-import RepeatIcon from "@material-ui/icons/Repeat";
-import Paper from "@material-ui/core/Paper";
+import AddActivityModal from "../ContactDetailCard/components/AddActivityModal";
+
+import EnvelopeIcon from "../Shared/svgIcons/envelope.js";
+import PhoneIcon from "../Shared/svgIcons/phone.js";
+import StarIcon from "../Shared/svgIcons/star.js";
+import MeetingIcon from "../Shared/svgIcons/meeting.js";
+import { ProfileContext } from "../Profile/ProfileContext";
+import { GETPROFILE } from "../../graphQL/useQueryGetProfile";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,41 +48,39 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Activities() {
-  const classes = useStyles();
+export default function Activities({ activityLog, ...props }) {
+  const [activityModalOpen, setActivityModalOpen] = useState(false);
 
-  const activities = [
-    {
-      type: "general",
-      timestamp: +new Date(),
-      author: "Kyle Chapman",
-      description: "Email sent about offer to James Sampleton",
-    },
-    {
-      type: "meeting",
-      timestamp: +new Date(),
-      author: "Kyle Chapman",
-      description: "Meeting with Jacob Avery",
-    },
-  ];
+  const classes = useStyles();
 
   const getIcon = (activityType) => {
     switch (activityType) {
       case "general":
-        return <FastfoodIcon />;
+        return <StarIcon />;
       case "phone":
-        return <FastfoodIcon />;
+        return <PhoneIcon />;
       case "emails":
-        return <FastfoodIcon />;
+        return <EnvelopeIcon />;
       case "meeting":
-        return <FastfoodIcon />;
+        return <MeetingIcon />;
       default:
-        return <FastfoodIcon />;
+        return <StarIcon />;
     }
   };
 
+  const sortedActivityLog =
+    activityLog && activityLog.length > 0
+      ? activityLog.sort((a, b) => moment(b.dateTime).diff(moment(a.dateTime)))
+      : [];
+
   return (
     <Card className={classes.root} variant="outlined">
+      <AddActivityModal
+        open={activityModalOpen}
+        onClose={() => setActivityModalOpen(false)}
+        id={props.id}
+        activityLog={activityLog}
+      />
       <CardActions>
         <Grid container justify="space-between">
           <Grid item>
@@ -86,7 +89,12 @@ export default function Activities() {
             </Typography>
           </Grid>
           <Grid item>
-            <Typography variant="button" gutterBottom>
+            <Typography
+              variant="button"
+              onClick={() => setActivityModalOpen(true)}
+              gutterBottom
+              style={{ cursor: "pointer" }}
+            >
               Add Activity
             </Typography>
           </Grid>
@@ -99,17 +107,18 @@ export default function Activities() {
             <TimelineConnector />
           </TimelineSeparator>
         </TimelineItem>
-        {activities.map((activity, i) => (
+        {sortedActivityLog.map((activity, i) => (
           <TimelineItem key={i} className={classes.timelineItemRight}>
             <TimelineSeparator>
               <TimelineDot>{getIcon(activity.type)}</TimelineDot>
-              {i + 1 !== activities.length && <TimelineConnector />}
+              {i + 1 !== activityLog.length && <TimelineConnector />}
             </TimelineSeparator>
             <TimelineContent>
               <div className={classes.timelineText}>
-                <Typography variant="body2">{activity.description}</Typography>
+                <Typography variant="body2">{activity.notes}</Typography>
                 <Typography variant="body2" className={classes.blue}>
-                  {activity.author} – {format(activity.timestamp, "MMMM d, yyyy hh:mm a")}
+                  {activity.fullname} –{" "}
+                  {moment(activity.dateTime).format("MMMM D, YYYY hh:mm a")}
                 </Typography>
               </div>
             </TimelineContent>
