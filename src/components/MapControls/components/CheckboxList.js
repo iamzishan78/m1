@@ -29,11 +29,12 @@ import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
 import ClickIcon from "..//..//Shared/svgIcons/cursor-click.js";
 import { borders } from "@material-ui/system";
 import Box from "@material-ui/core/Box";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important",
-    width: "350px",
+    minWidth: "350px",
   },
   list: {
     padding: 0,
@@ -41,6 +42,9 @@ const useStyles = makeStyles((theme) => ({
   nested: {
     paddingLeft: theme.spacing(6),
     paddingRight: theme.spacing(6),
+  },
+  disabledLayerTitle: {
+    "& span": { color: "rgb(127, 149, 199) !important" },
   },
 }));
 
@@ -336,6 +340,26 @@ export default function CheckboxList(props) {
     });
   };
 
+  const ifLayerHaveData = (layer) => {
+    if (
+      (layer.name === "Tagged Wells/Owners" &&
+        !(
+          stateApp.wellListFromTagsFilter &&
+          stateApp.wellListFromTagsFilter.length > 0
+        )) ||
+      (layer.name === "Search" &&
+        !(
+          stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0
+        )) ||
+      (layer.name === "Tracked Wells" &&
+        !(stateApp.trackedwells && stateApp.trackedwells.length > 0)) ||
+      (layer.name === "Tracked Owners" &&
+        !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))
+    )
+      return false;
+    return true;
+  };
+
   return (
     <ClickAwayListener onClickAway={handleClose}>
       <StyledMenu
@@ -457,23 +481,20 @@ export default function CheckboxList(props) {
                       const labelId = `checkbox-list-label-${index}`;
 
                       return (
-                        ((layer.name !== "Tags Filter" &&
-                          layer.name !== "Search") ||
-                          (layer.name === "Tags Filter" &&
-                            stateApp.wellListFromTagsFilter &&
-                            stateApp.wellListFromTagsFilter.length > 0) ||
-                          (layer.name === "Search" &&
-                            stateApp.wellListFromSearch &&
-                            stateApp.wellListFromSearch.length > 0)) && (
-                          <Draggable
-                            key={labelId}
-                            draggableId={labelId}
-                            index={index}
-                          >
-                            {(provided, snapshot) => (
-                              <Box
-                                borderColor={layer.idColor}
-                                {...defaultProps}
+                        <Draggable
+                          key={labelId}
+                          draggableId={labelId}
+                          index={index}
+                        >
+                          {(provided, snapshot) => (
+                            <Box borderColor={layer.idColor} {...defaultProps}>
+                              <Tooltip
+                                placement="top"
+                                title={
+                                  !ifLayerHaveData(layer)
+                                    ? "Please choose the data first."
+                                    : ""
+                                }
                               >
                                 <StyledListItem
                                   ContainerComponent="li"
@@ -487,14 +508,34 @@ export default function CheckboxList(props) {
                                   <ListItemText
                                     id={labelId}
                                     primary={layer.name}
+                                    className={
+                                      !ifLayerHaveData(layer)
+                                        ? classes.disabledLayerTitle
+                                        : ""
+                                    }
                                   />
 
                                   <div style={{ paddingRight: 20 }}>
                                     <Checkbox
+                                      disabled={!ifLayerHaveData(layer)}
                                       icon={
-                                        <CancelOutlinedIcon htmlColor="#12abe0" />
+                                        <CancelOutlinedIcon
+                                          htmlColor={
+                                            !ifLayerHaveData(layer)
+                                              ? "rgb(127, 149, 199)"
+                                              : "#12abe0"
+                                          }
+                                        />
                                       }
-                                      checkedIcon={<ClickIcon />}
+                                      checkedIcon={
+                                        <ClickIcon
+                                          color={
+                                            !ifLayerHaveData(layer)
+                                              ? "rgb(127, 149, 199)"
+                                              : "#12abe0"
+                                          }
+                                        />
+                                      }
                                       edge="start"
                                       checked={
                                         stateApp.checkedUserDefinedLayersInteraction
@@ -515,11 +556,24 @@ export default function CheckboxList(props) {
                                   </div>
 
                                   <Checkbox
+                                    disabled={!ifLayerHaveData(layer)}
                                     icon={
-                                      <VisibilityOffIcon htmlColor="#fff" />
+                                      <VisibilityOffIcon
+                                        htmlColor={
+                                          !ifLayerHaveData(layer)
+                                            ? "rgb(127, 149, 199)"
+                                            : "#fff"
+                                        }
+                                      />
                                     }
                                     checkedIcon={
-                                      <VisibilityIcon htmlColor="#fff" />
+                                      <VisibilityIcon
+                                        htmlColor={
+                                          !ifLayerHaveData(layer)
+                                            ? "rgb(127, 149, 199)"
+                                            : "#fff"
+                                        }
+                                      />
                                     }
                                     edge="start"
                                     checked={
@@ -535,10 +589,10 @@ export default function CheckboxList(props) {
                                     onChange={handleToggleUserDefined(index)}
                                   />
                                 </StyledListItem>
-                              </Box>
-                            )}
-                          </Draggable>
-                        )
+                              </Tooltip>
+                            </Box>
+                          )}
+                        </Draggable>
                       );
                     })}
                   </List>

@@ -336,7 +336,7 @@ export const userDefinedLayers = [
   },
 
   {
-    name: "Tags Filter",
+    name: "Tagged Wells/Owners",
     id: ["Tags Filter"],
     idColor: "rgb(30, 144, 255)",
     type: "data layer",
