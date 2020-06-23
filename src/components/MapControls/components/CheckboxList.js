@@ -529,7 +529,7 @@ export default function CheckboxList(props) {
                                       }
                                       checkedIcon={
                                         <ClickIcon
-                                          htmlColor={
+                                          color={
                                             !ifLayerHaveData(layer)
                                               ? "rgb(127, 149, 199)"
                                               : "#12abe0"

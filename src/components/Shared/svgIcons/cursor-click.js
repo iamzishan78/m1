@@ -37,7 +37,7 @@ export default class CursorClick extends Component {
     return (
       <Base
         {...this.props}
-        color={this.props.htmlColor ? this.props.htmlColor : ""}
+        color={this.props.color ? this.props.color : ""}
       >
         <g transform="scale(1.2, 1.2) translate(0, 2)">
           <polygon points="22.5,11.1 27.6,43.9 35.3,37.3 43,49 48.8,45 41,33.2 49,28.3 " />
