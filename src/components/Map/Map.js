@@ -42,6 +42,9 @@ import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
 import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
+import {
+  addCustomShapeProperties,
+} from "../MapControls/components/DrawShapes/drawShapesHelpers";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -2696,35 +2699,53 @@ export default function Map() {
   const handleSaveSpatialDataToShape = (spatialData, dataType) => {
     // save data onto geoJSON properties fields
 
+    const {selectedUserDefinedLayer} = stateApp;
+
+
     spatialDataAttributes.forEach(attribute => {
-      // console.log(attribute, spatialData[attribute]);
+      if (spatialData[attribute]) {
+        selectedUserDefinedLayer.properties[attribute] = spatialData[attribute];
+      }
+    });
+    selectedUserDefinedLayer.id = selectedUserDefinedLayer.properties.id;
+    
+    let update_layer = selectedUserDefinedLayer;
+
+    let draw_id = selectedUserDefinedLayer.id;
+    if (!draw_id.includes('edit_polygon')) {
+      draw_id = `edit_polygon_${draw_id}`;
+    }
+    
+    spatialDataAttributes.forEach(attribute => {
       stateApp.draw.setFeatureProperty(
-          stateApp.selectedUserDefinedLayer.id,
+          selectedUserDefinedLayer.id,
           attribute,
           spatialData[attribute]
       );
-      if (spatialData[attribute]) {
-          stateApp.selectedUserDefinedLayer.properties[attribute] = spatialData[attribute];
-      }
     });
+    const current_feature = map.draw.get(draw_id);
+    if (current_feature) {
+      addCustomShapeProperties(current_feature, map.draw);
+      current_feature.id = current_feature.properties.id;
+      update_layer = current_feature;
+    }
 
-    stateApp.selectedUserDefinedLayer.id = stateApp.selectedUserDefinedLayer.properties.id;
 
     const symbolFeature = {
       type: "Feature",
       geometry: {
           type: "Point",
-          coordinates: stateApp.selectedUserDefinedLayer.properties.shapeCenter
+          coordinates: update_layer.properties.shapeCenter
       },
       properties: {
-          ...stateApp.selectedUserDefinedLayer.properties,
-          id: `${stateApp.selectedUserDefinedLayer.properties.id}_label`,
+          ...update_layer.properties,
+          id: `${update_layer.properties.id}_label`,
           label: spatialData.shapeLabel,
       }
     }
     // //////cleaning the selected title opinion and redirecting to title opinion page//
     if (stateApp.user.mongoId !== "" ) {
-      const id = stateApp.selectedUserDefinedLayer.properties.id;
+      const id = update_layer.properties.id;
       let update_layers = stateApp.editingUserDefinedLayers.filter(layer => {
         const shape_properties = JSON.parse(layer.shape).properties;
         return shape_properties.id && shape_properties.id.includes(id)
@@ -2752,7 +2773,7 @@ export default function Map() {
       const customLayerLabelId = update_layers[1]._id;
 
       const customLayerData = {
-          shape: JSON.stringify(stateApp.selectedUserDefinedLayer),
+          shape: JSON.stringify(update_layer),
           layer: dataType,
           name: spatialData.shapeLabel,
           user: stateApp.user.mongoId

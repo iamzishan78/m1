@@ -96,7 +96,7 @@ export default function DrawShapes(props) {
     const [stateNav, setStateNav] = useContext(NavigationContext);
     const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
 
-    const [upsertCustomLayer] = useMutation(UPSERTCUSTOMLAYER);
+    const [upsertCustomLayer, {data: customLayerInsertedData}] = useMutation(UPSERTCUSTOMLAYER);
 
     const [getCustomLayers, { data: customLayerData }] = useLazyQuery(
         CUSTOMLAYERSQUERY
@@ -126,6 +126,7 @@ export default function DrawShapes(props) {
     const [user, setUser] = useState({ _id: "" });
 
     useEffect(() => {
+        console.log(customLayerData);
         if (customLayerData && customLayerData.customLayers) {
             setStateApp({
                 ...stateApp,
@@ -133,6 +134,14 @@ export default function DrawShapes(props) {
             });
         }
     }, [customLayerData]);
+
+    useEffect(() => {
+        getCustomLayers({
+            variables: {
+                userId: user._id,
+            },
+        });
+    }, [customLayerInsertedData]);
 
     useEffect(() => {
         if (stateApp && stateApp.user && stateApp.user.email) {
@@ -282,11 +291,7 @@ export default function DrawShapes(props) {
                 upsertCustomLayer({
                     variables: { customLayer: customLayerSymbolData }
                 });
-                getCustomLayers({
-                    variables: {
-                        userId: user._id,
-                    },
-                });
+                
                 // setStateApp({
                 //     ...stateApp,
                 //     customLayers: [

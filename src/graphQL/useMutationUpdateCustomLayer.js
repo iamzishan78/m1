@@ -5,7 +5,7 @@ export const UPDATECUSTOMLAYER = gql`
     $customLayerId: ID
     $customLayer: CustomLayerInput
   ) {
-    updateTransaction(
+    updateCustomLayer(
       customLayerId: $customLayerId
       customLayer: $customLayer
     ) {

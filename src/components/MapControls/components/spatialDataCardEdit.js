@@ -303,36 +303,28 @@ export default function SpatialDataCardEdit(props) {
   }
 
   const editShape = () => {
-    if (!drawFeatureId) {
-      const { selectedFeature } = props;
-      const featureId = selectedFeature.properties.id;
-      const featureLabelId = featureId + '_label';
-      if (stateApp.draw) {
-        selectedFeature.id = `edit_polygon_${selectedFeature.properties.id}`;
-        stateApp.draw.add(selectedFeature);
-        stateApp.draw.changeMode("direct_select", { featureId: selectedFeature.id });
-        const { customLayers } = stateApp;
-        if (customLayers && customLayers.length > 0) {
-          // const index = customLayers.findIndex(layer => JSON.parse(layer.shape).properties.id === selectedFeature.properties.id);
-          const filteredLayers = customLayers.filter(layer => JSON.parse(layer.shape).properties.id !== featureId && JSON.parse(layer.shape).properties.id !== featureLabelId);
-          const editingLayers = customLayers.filter(layer => JSON.parse(layer.shape).properties.id === featureId || JSON.parse(layer.shape).properties.id === featureLabelId);
-          setCustLayers(customLayers);
-          setStateApp({
-            ...stateApp,
-            customLayers: filteredLayers,
-            editingUserDefinedLayers: editingLayers,
-            editLayer: true,
-          });
-        }
-        props.closeSpatialDataCard();
+    const { selectedFeature } = props;
+    const featureId = selectedFeature.properties.id;
+    const featureLabelId = featureId + '_label';
+    if (stateApp.draw) {
+      selectedFeature.id = `edit_polygon_${selectedFeature.properties.id}`;
+      stateApp.draw.add(selectedFeature);
+      stateApp.draw.changeMode("direct_select", { featureId: selectedFeature.id });
+      const { customLayers } = stateApp;
+      if (customLayers && customLayers.length > 0) {
+        // const index = customLayers.findIndex(layer => JSON.parse(layer.shape).properties.id === selectedFeature.properties.id);
+        const filteredLayers = customLayers.filter(layer => JSON.parse(layer.shape).properties.id !== featureId && JSON.parse(layer.shape).properties.id !== featureLabelId);
+        const editingLayers = customLayers.filter(layer => JSON.parse(layer.shape).properties.id === featureId || JSON.parse(layer.shape).properties.id === featureLabelId);
+        setCustLayers(customLayers);
+        setStateApp({
+          ...stateApp,
+          customLayers: filteredLayers,
+          editingUserDefinedLayers: editingLayers,
+          selectedUserDefinedLayer: selectedFeature,
+          editLayer: true,
+        });
       }
-    } else {
-      stateApp.draw.delete(drawFeatureId);
-      setDrawFeatureId("");
-      setStateApp({
-        ...stateApp,
-        customLayers: custLayers,
-      })
+      props.closeSpatialDataCard();
     }
   }
 
