@@ -1195,8 +1195,8 @@ export default function Map() {
         let wellTypeFilter = null;
         let wellStatusFilter = null;
 
-        console.log('***********',defaultTypeName[1])
-        console.log('***********',defaultStatusName[1].length)
+        // console.log('***********',defaultTypeName[1])
+        // console.log('***********',defaultStatusName[1].length)
 
         if(defaultTypeName[1].length>0){wellTypeFilter=defaultFiltersWellType[1]}
         if(defaultStatusName[1].length>0){wellStatusFilter=defaultFiltersWellStatus[1]}

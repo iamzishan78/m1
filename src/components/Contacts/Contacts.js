@@ -4,7 +4,7 @@ import M1nTable from "../Shared/M1nTable/M1nTable";
 
 const useStyles = makeStyles((theme) => ({
   root:{
-    backgroundColor:'#efefef',
+    //backgroundColor:'#efefef',
     height: '100%'
   },
   divTable: {
@@ -20,5 +20,7 @@ export default function Contacts() {
     <div className={classes.divTable}>
       <M1nTable parent="Contacts" />
     </div>
+
+    
   );
 }
