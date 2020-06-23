@@ -1149,7 +1149,7 @@ export default function Map() {
       let tagFilterCount = 0;
       let filterArray = [];
 
-      let defaultOverride = true;
+      let defaultOverride = false;
 
       if (
         defaultOverride == true &&
