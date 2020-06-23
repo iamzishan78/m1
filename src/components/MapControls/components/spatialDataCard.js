@@ -197,7 +197,7 @@ export default function SpatialDataCard(props) {
         break;
     }
     if (udName) {
-      const layerIndex = stateApp.userDefinedLayers.findIndex(layer => layer.name == udName);
+      const layerIndex = stateApp.userDefinedLayers.findIndex(layer => layer.name === udName);
       setStateApp({
         ...stateApp,
         tempCheckedUserDefinedLayers: layerIndex
@@ -226,7 +226,7 @@ export default function SpatialDataCard(props) {
 
     const tmpChecked = stateApp.tempCheckedUserDefinedLayers;
     const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
-    if (tmpChecked && stateApp.checkedUserDefinedLayers.indexOf(tmpChecked) === -1) {
+    if (tmpChecked != null && stateApp.checkedUserDefinedLayers.indexOf(tmpChecked) === -1) {
       checkedLayers.push(tmpChecked)
     }
     setStateApp({

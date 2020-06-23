@@ -646,8 +646,6 @@ export default function Map() {
 
       stateApp.userDefinedLayers.forEach((l) => {
         l.id.forEach((k, i) => {
-          console.log("k", k);
-
           var clusterLabelBar = k + "-clusters-counts";
           if (map.getLayer(clusterLabelBar)) {
             map.removeLayer(clusterLabelBar);
@@ -661,7 +659,6 @@ export default function Map() {
           }
 
           if (map.getLayer(k)) {
-            console.log("get layer", k);
             map.removeLayer(k);
             map.removeSource(l.sourceProps[i].sourceId);
           }
@@ -673,7 +670,7 @@ export default function Map() {
     const tmpCheckedLayer = stateApp.tempCheckedUserDefinedLayers;
     const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
     if (
-      tmpCheckedLayer &&
+      tmpCheckedLayer != null &&
       stateApp.checkedUserDefinedLayers.indexOf(tmpCheckedLayer) === -1
     ) {
       checkedLayers.push(tmpCheckedLayer);
@@ -780,11 +777,7 @@ export default function Map() {
                   layout: selectLayerProps.layerProps[i].symbolProps,
                 });
               } else {
-                console.log(
-                  "other",
-                  selectLayerProps.layerProps[i].layerId,
-                  selectLayerProps.layerProps[i].paintProps
-                );
+                
                 map.addLayer({
                   id: selectLayerProps.layerProps[i].layerId,
                   type: selectLayerProps.layerProps[i].layerType,
@@ -851,81 +844,6 @@ export default function Map() {
                 if (selectLayerProps.interactionProps.mouseClick) {
                   var clusterVar =
                     selectLayerProps.layerProps[i].layerId + "-clusters";
-
-                  // const layerClickHander = (e) => {
-                  //   var bbox = [
-                  //     [e.point.x - 10, e.point.y - 10],
-                  //     [e.point.x + 10, e.point.y + 10],
-                  //   ];
-
-                  //   let features = map.queryRenderedFeatures(bbox, {
-                  //     layers: [selectLayerProps.layerProps[i].layerId],
-                  //   });
-
-                  //   if (!features || features.length === 0) {
-                  //     return;
-                  //   }
-
-                  //   if (features[0].properties.cluster_id) {
-                  //     return;
-                  //   }
-
-                  //   if(selectLayerProps.interactionProps.mouseClick.clickInteraction
-                  //     && selectLayerProps.interactionProps.mouseClick.clickInteraction.flyTo === true) {
-                  //     setStateApp((state) => ({ ...state, flyTo: features[0].properties }));
-                  //   }
-                  // }
-
-                  // if (selectLayerProps.interactionProps.mouseClick.clickInteractionHandler) {
-                  //   map.off("click", selectLayerProps.layerProps[i].layerId, selectLayerProps.interactionProps.mouseClick.clickInteractionHandler)
-                  // }
-
-                  // if (availableInteraction) {
-                  //   map.on("click", selectLayerProps.layerProps[i].layerId, layerClickHander);
-                  //   selectLayerProps.interactionProps.mouseClick.clickInteractionHandler = layerClickHander;
-                  // }
-
-                  // eslint-disable-next-line no-loop-func
-                  // const clusterClickHandler = (e) => {
-                  //   var features = map.queryRenderedFeatures(e.point, {
-                  //     layers: [clusterVar]
-                  //   });
-                  //   console.log(features);
-
-                  //   if (!features || features.length === 0) {
-                  //     return;
-                  //   }
-
-                  //   if (!features) {
-                  //     return;
-                  //   }
-
-                  //   var clusterId = features[0].properties.cluster_id;
-
-                  //   if(selectLayerProps.interactionProps.mouseClick.clusterClickInteraction
-                  //     && selectLayerProps.interactionProps.mouseClick.clusterClickInteraction.easeTo===true){
-                  //         map.getSource(selectLayerProps.sourceProps[i].sourceId).getClusterExpansionZoom(
-                  //               clusterId,
-                  //               function(err, zoom) {
-                  //               if (err) return;
-
-                  //               map.easeTo({
-                  //               center: features[0].geometry.coordinates,
-                  //               zoom: zoom
-                  //               });
-                  //               }
-                  //         );
-                  //       }
-                  // }
-
-                  // if (selectLayerProps.interactionProps.mouseClick.clusterClickHandler) {
-                  //   map.off("click", clusterVar, selectLayerProps.interactionProps.mouseClick.clusterClickHandler)
-                  // }
-
-                  // if (availableInteraction) {
-                  //   map.on('click', clusterVar, clusterClickHandler);
-                  //   selectLayerProps.interactionProps.mouseClick.clusterClickHandler = clusterClickHandler;
-                  // }
                 }
 
                 if (
@@ -1702,7 +1620,7 @@ export default function Map() {
                 });
 
                 const onlyUnique = (value, index, self) => {
-                  return self.indexOf(value) === index;
+                  return self.indexOf(value) === index && (typeof value === 'number' || typeof value === 'string');
                 };
 
                 ids = ids.filter(onlyUnique);
@@ -1829,6 +1747,30 @@ export default function Map() {
     },
     [map, setStateApp]
   );
+
+  const addFilterPopup = useCallback(
+    (filterFeature) => {
+      const { geometry } = filterFeature;
+      const coordinates = geometry.coordinates;
+      if (coordinates.length > 0) {
+        
+        const minLatitude = coordinates.reduce((a,b)=>a[0]<b[0]?a:b)[0][0];
+        const minLongitude = coordinates.reduce((a,b)=>a[1]<b[1]?a:b)[0][1];
+        
+        let popupCoordinate = [minLatitude, minLongitude];
+        console.log(popupCoordinate);
+
+        let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+        .setLngLat(popupCoordinate)
+        .setMaxWidth("none")
+        .setHTML(`<div id="filterPopupContainer"></div>`)
+        .addTo(map);
+
+        setStateApp({...stateApp});
+      }
+    },
+    [map, setStateApp, stateApp]
+  )
 
   const createUDPopUp = useCallback(
     (currentFeature) => {
@@ -2421,6 +2363,8 @@ export default function Map() {
         feature.id = stateNav.filterFeatureId;
         draw.add(feature);
 
+        addFilterPopup(feature, map);
+
         setStateNav((stateNav) => ({
           ...stateNav,
           drawingMode: null,
@@ -2650,6 +2594,7 @@ export default function Map() {
   }, [stateApp.toggle3d]);
 
   useEffect(() => {
+    console.log("Drawing status check", stateApp.editDraw, stateNav.drawingMode);
     if (stateApp.editDraw === true || stateNav.drawingMode !== null) {
       setDrawStatus(true);
       if (mapClick && mapClick.mapClickHandler != null) {
@@ -2831,10 +2776,8 @@ export default function Map() {
           stateApp.draw.delete(`edit_polygon_${id}`);
           setStateApp({
             ...stateApp,
-            selectedUserDefinedLayer: null,
-            editingUserDefinedLayers: updated_layers
+            editingUserDefinedLayers: updated_layers,
           });
-          handleCloseSpatialDataCardEdit();
         } else if (customLayers.length > 0) {
           const delete_layers = customLayers.filter(layer => {
             const shape_properties = JSON.parse(layer.shape).properties;
@@ -2855,12 +2798,10 @@ export default function Map() {
             });
             setStateApp({
               ...stateApp,
-              selectedUserDefinedLayer: null,
-              customLayers: updated_layers
+              customLayers: updated_layers,
             })
           }
         }
-        handleCloseSpatialDataCard();
       } else {
         if (customLayers.length > 0) {
           const delete_layers = customLayers.filter(layer => {
@@ -2882,13 +2823,17 @@ export default function Map() {
             });
             setStateApp({
               ...stateApp,
-              selectedUserDefinedLayer: null,
-              customLayers: updated_layers
+              customLayers: updated_layers,
             })
           }
         }
-        handleCloseSpatialDataCard();
       }
+      setStateApp((state) => ({
+        ...state,
+        selectedUserDefinedLayer: null,
+        editLayer: false,
+        popupOpen: false,
+      }))
     }
   };
 
