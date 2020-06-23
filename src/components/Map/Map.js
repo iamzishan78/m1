@@ -694,6 +694,8 @@ export default function Map() {
 
         if (selectLayerProps.type === "data layer") {
           for (let i = 0; i < selectLayerProps.id.length; i++) {
+            
+            
             // -> fetch data
             let layerData = [];
             if (selectLayerProps.dataProps[i].dataId == "trackedWellsWells") {
