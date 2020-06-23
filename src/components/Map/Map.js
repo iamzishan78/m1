@@ -163,10 +163,10 @@ export default function Map() {
           (track) => track.trackOn
         );
 
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          trackedwells: dataTracks.tracksByUserAndObjectType,
-        }));
+        // setStateApp((stateApp) => ({
+        //   ...stateApp,
+        //   trackedwells: dataTracks.tracksByUserAndObjectType,
+        // }));
 
         getWells({
           variables: {
@@ -225,6 +225,44 @@ export default function Map() {
       });
     }
   }, [dataOwnersWells]);
+
+  useEffect(() => {
+    if (dataWells) {
+      if (
+        dataWells.wells &&
+        dataWells.wells.results &&
+        dataWells.wells.results.length > 0
+      )
+        setStateApp((state) => ({
+          ...state,
+          trackedwells: dataWells.wells.results,
+        }));
+      else
+        setStateApp((state) => ({
+          ...state,
+          trackedwells: null,
+        }));
+    }
+  }, [dataWells]);
+
+  useEffect(() => {
+    if (dataWellsForOwnerWellTrackLayer) {
+      if (
+        dataWellsForOwnerWellTrackLayer.wells &&
+        dataWellsForOwnerWellTrackLayer.wells.results &&
+        dataWellsForOwnerWellTrackLayer.wells.results.length > 0
+      )
+        setStateApp((state) => ({
+          ...state,
+          trackedOwnerWells: dataWellsForOwnerWellTrackLayer.wells.results,
+        }));
+      else
+        setStateApp((state) => ({
+          ...state,
+          trackedOwnerWells: null,
+        }));
+    }
+  }, [dataWellsForOwnerWellTrackLayer]);
 
   useEffect(() => {
     const wellLineClick = (currentFeature) => {
@@ -1117,14 +1155,8 @@ export default function Map() {
         !stateNav.filterWellType &&
         filterArray.length === 0
       ) {
-        let defaultTypeName = [
-          "typeName",
-          [ ],
-        ];
-        let defaultStatusName = [
-          "statusName",
-          [ ],
-        ];
+        let defaultTypeName = ["typeName", []];
+        let defaultStatusName = ["statusName", []];
         let defaultFiltersWellStatus = [
           "filterWellStatus",
           ["match", ["get", "wellStatus"], defaultStatusName[1], true, false],
@@ -2106,12 +2138,14 @@ export default function Map() {
         console.log(
           `Setting wellsTileset: ${mapStyles[index].sources.composite.url
             .split(",")
-            .find((element) => element.indexOf("m1neral.wells") > -1).replace('mapbox://', '')}`
+            .find((element) => element.indexOf("m1neral.wells") > -1)
+            .replace("mapbox://", "")}`
         );
         setwellsTileset(
           mapStyles[index].sources.composite.url
             .split(",")
-            .find((element) => element.indexOf("m1neral.wells") > -1).replace('mapbox://', '')
+            .find((element) => element.indexOf("m1neral.wells") > -1)
+            .replace("mapbox://", "")
         );
 
         console.log("new map generated");

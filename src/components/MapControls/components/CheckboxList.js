@@ -340,14 +340,25 @@ export default function CheckboxList(props) {
     });
   };
 
-  const ifLayerHaveData = (layer) =>
-    (layer.name !== "Tagged Wells/Owners" && layer.name !== "Search") ||
-    (layer.name === "Tagged Wells/Owners" &&
-      stateApp.wellListFromTagsFilter &&
-      stateApp.wellListFromTagsFilter.length > 0) ||
-    (layer.name === "Search" &&
-      stateApp.wellListFromSearch &&
-      stateApp.wellListFromSearch.length > 0);
+  const ifLayerHaveData = (layer) => {
+    if (
+      (layer.name === "Tagged Wells/Owners" &&
+        !(
+          stateApp.wellListFromTagsFilter &&
+          stateApp.wellListFromTagsFilter.length > 0
+        )) ||
+      (layer.name === "Search" &&
+        !(
+          stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0
+        )) ||
+      (layer.name === "Tracked Wells" &&
+        !(stateApp.trackedwells && stateApp.trackedwells.length > 0)) ||
+      (layer.name === "Tracked Owners" &&
+        !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))
+    )
+      return false;
+    return true;
+  };
 
   return (
     <ClickAwayListener onClickAway={handleClose}>

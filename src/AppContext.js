@@ -22,6 +22,7 @@ const AppProvider = (props) => {
     wellCount: 500,
     wells: null,
     trackedwells: null,
+    trackedOwnerWells: null,
     selectedWell: null,
     selectedWellId: null,
     customLayers: [],
