@@ -1149,7 +1149,7 @@ export default function Map() {
       let tagFilterCount = 0;
       let filterArray = [];
 
-      let defaultOverride = false;
+      let defaultOverride = true;
 
       if (
         defaultOverride == true &&
@@ -1159,20 +1159,20 @@ export default function Map() {
         filterArray.length === 0
       ) {
         
-        let defaultTypeName = ["typeName", ["GAS", "OIL", "OIL AND GAS", "PERMITTED", "UNKNOWN"]];
-        let defaultStatusName = ["statusName",           
-        [
-          "ACTIVE",
-          "ACTIVE - DRILLING",
-          "COMPLETED - NOT ACTIVE",
-          "DRILLED UNCOMPLETED (DUC)",
-          "PERMIT",
-          "PERMIT - EXISTING WELL",
-          "PERMIT - NEW DRILL",
-        ],];
+        // let defaultTypeName = ["typeName", ["GAS", "OIL", "OIL AND GAS", "PERMITTED", "UNKNOWN"]];
+        // let defaultStatusName = ["statusName",           
+        // [
+        //   "ACTIVE",
+        //   "ACTIVE - DRILLING",
+        //   "COMPLETED - NOT ACTIVE",
+        //   "DRILLED UNCOMPLETED (DUC)",
+        //   "PERMIT",
+        //   "PERMIT - EXISTING WELL",
+        //   "PERMIT - NEW DRILL",
+        // ],];
 
-        // let defaultTypeName = ["typeName", []];
-        // let defaultStatusName = ["statusName",[],];
+        let defaultTypeName = ["typeName", []];
+        let defaultStatusName = ["statusName",[],];
 
         let defaultFiltersWellStatus = [
           "filterWellStatus",
@@ -1191,14 +1191,24 @@ export default function Map() {
             default: defaultsCheckOnOff,
           },
         ];
+
+        let wellTypeFilter = null;
+        let wellStatusFilter = null;
+
+        console.log('***********',defaultTypeName[1])
+        console.log('***********',defaultStatusName[1].length)
+
+        if(defaultTypeName[1].length>0){wellTypeFilter=defaultFiltersWellType[1]}
+        if(defaultStatusName[1].length>0){wellStatusFilter=defaultFiltersWellStatus[1]}
+
         setStateNav((stateNav) => ({
           ...stateNav,
           defaultOn: false,
           statusName: defaultStatusName[1],
           typeName: defaultTypeName[1],
           m1neralDefaultFilters: m1neralDefaults,
-          filterWellStatus: defaultFiltersWellStatus[1],
-          filterWellType: defaultFiltersWellType[1],
+          filterWellStatus: wellStatusFilter,
+          filterWellType: wellTypeFilter,
         }));
       }
       if (stateNav.filterWellProfile && stateNav.filterWellProfile.length > 0) {
