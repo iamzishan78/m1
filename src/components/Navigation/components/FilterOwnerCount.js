@@ -6,18 +6,27 @@ import NumberFormat from "react-number-format";
 import Switch from "@material-ui/core/Switch";
 import { NavigationContext } from "../NavigationContext";
 import Grid from "@material-ui/core/Grid";
+import { FormLabel } from "@material-ui/core";
 
 const useStyles = makeStyles({
+  divBorders: {
+    display: "flow-root",
+    padding: "4.5px 7.5px",
+    border: "1px solid #C4C4C4",
+    borderRadius: "4px",
+    "&:hover": {
+      border: "1px solid black",
+    },
+  },
   input: {
-    margin: 20,
-    maxWidth: 168,
-    minWidth: 167,
+    margin: "0 7.5px",
+    width: "180px",
+    float: "right",
   },
   inputLabel: {
-    color: "black",
-    minWidth: 249,
-    maxWidth: 250,
-    // marginLeft: 20,
+    padding: "10.5px 7.5px",
+    position: "relative",
+    top: "10.5px",
   },
   noOwners: {
     padding: "6px 0px",
@@ -214,55 +223,52 @@ export default function FilterOwnerCount() {
       </div> */}
 
       <Grid item sm={12}>
-        <Typography
-          className={classes.inputLabel}
-          htmlFor="select-multiple-chip1"
-        >
-          Owner Count
-        </Typography>
-        <NumberFormat
-          id="OwnerCountMin"
-          value={valueMinDisplay}
-          onChange={handleChangeMin}
-          thousandSeparator={true}
-          customInput={TextField}
-          className={classes.input}
-          aria-labelledby="range-number"
-          type="text"
-          label="Min"
-          variant="outlined"
-          onKeyPress={(e) => allowNumbersOnly(e)}
-          InputProps={{
-            inputProps: {
-              min: 0,
-              max: Number.MAX_SAFE_INTEGER - 1,
-            },
-          }}
-        />
-        <NumberFormat
-          id="OwnerCountMax"
-          value={valueMaxDisplay}
-          onChange={handleChangeMax}
-          thousandSeparator={true}
-          customInput={TextField}
-          className={classes.input}
-          aria-labelledby="range-number"
-          type="text"
-          label="Max"
-          variant="outlined"
-          onKeyPress={(e) => allowNumbersOnly(e)}
-          InputProps={{
-            inputProps: {
-              min: 0,
-              max: Number.MAX_SAFE_INTEGER,
-            },
-          }}
-        />
+        <div className={classes.divBorders}>
+          <FormLabel className={classes.inputLabel}>Owner Count</FormLabel>
+          <NumberFormat
+            id="OwnerCountMax"
+            value={valueMaxDisplay}
+            onChange={handleChangeMax}
+            thousandSeparator={true}
+            customInput={TextField}
+            className={classes.input}
+            aria-labelledby="range-number"
+            type="text"
+            label="Max"
+            size="small"
+            onKeyPress={(e) => allowNumbersOnly(e)}
+            InputProps={{
+              inputProps: {
+                min: 0,
+                max: Number.MAX_SAFE_INTEGER,
+              },
+            }}
+          />
+          <NumberFormat
+            id="OwnerCountMin"
+            value={valueMinDisplay}
+            onChange={handleChangeMin}
+            thousandSeparator={true}
+            customInput={TextField}
+            className={classes.input}
+            aria-labelledby="range-number"
+            type="text"
+            label="Min"
+            size="small"
+            onKeyPress={(e) => allowNumbersOnly(e)}
+            InputProps={{
+              inputProps: {
+                min: 0,
+                max: Number.MAX_SAFE_INTEGER - 1,
+              },
+            }}
+          />
+        </div>
       </Grid>
       <Grid item sm={12}>
         <div className={classes.noOwners}>
           <Typography
-            className={classes.inputLabel}
+            // className={classes.inputLabel}
             htmlFor="select-multiple-chip1"
           >
             Wells With Owners

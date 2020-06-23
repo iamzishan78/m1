@@ -31,6 +31,7 @@ export default function BasinFilterJ() {
         handleBasinChange(newValue);
       }}
       multiple
+      // ChipProps={{color:"secondary"}}
       options={basinList}
       renderInput={(params) => (
         <TextField
