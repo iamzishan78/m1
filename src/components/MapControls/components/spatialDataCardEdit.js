@@ -243,7 +243,7 @@ export default function SpatialDataCardEdit(props) {
 
     const tmpChecked = stateApp.tempCheckedUserDefinedLayers;
     const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
-    if (tmpChecked && stateApp.checkedUserDefinedLayers.indexOf(tmpChecked) === -1) {
+    if (tmpChecked != null && stateApp.checkedUserDefinedLayers.indexOf(tmpChecked) === -1) {
       checkedLayers.push(tmpChecked)
     }
     setStateApp({

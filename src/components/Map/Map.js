@@ -219,6 +219,9 @@ export default function Map() {
       setStateApp({
         ...stateApp,
         customLayers: customLayerData.customLayers,
+        selectedUserDefinedLayer: null,
+        editLayer: false,
+        popupOpen: false,
       });
     }
   }, [customLayerData]);
@@ -2745,7 +2748,7 @@ export default function Map() {
       type: "Feature",
       geometry: {
           type: "Point",
-          coordinates: update_layer.properties.shapeCenter
+          coordinates: JSON.parse(update_layer.properties.shapeCenter)
       },
       properties: {
           ...update_layer.properties,
@@ -2896,12 +2899,6 @@ export default function Map() {
           }
         }
       }
-      setStateApp((state) => ({
-        ...state,
-        selectedUserDefinedLayer: null,
-        editLayer: false,
-        popupOpen: false,
-      }))
     }
   };
 
@@ -2957,6 +2954,7 @@ export default function Map() {
             saveSpatialData={handleSaveSpatialDataToShape}
             closeSpatialDataCard={handleCloseSpatialDataCardEdit}
             deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
+            cardClass={"cardPopup"}
           />
         )
       }
