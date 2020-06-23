@@ -126,7 +126,8 @@ export default function Map() {
   );
 
   const [getCustomLayers, { data: customLayerData }] = useLazyQuery(
-    CUSTOMLAYERSQUERY
+    CUSTOMLAYERSQUERY,
+    { fetchPolicy: "network-only" }
   );
 
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
@@ -2718,14 +2719,16 @@ export default function Map() {
     
     spatialDataAttributes.forEach(attribute => {
       stateApp.draw.setFeatureProperty(
-          selectedUserDefinedLayer.id,
+          draw_id,
           attribute,
           spatialData[attribute]
       );
     });
-    const current_feature = map.draw.get(draw_id);
+    let current_feature = stateApp.draw.get(draw_id);
     if (current_feature) {
-      addCustomShapeProperties(current_feature, map.draw);
+      console.log("update layer change to draw feature");
+      addCustomShapeProperties(current_feature, stateApp.draw);
+      current_feature = stateApp.draw.get(draw_id);
       current_feature.id = current_feature.properties.id;
       update_layer = current_feature;
     }
