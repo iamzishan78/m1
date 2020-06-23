@@ -93,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "0px",
   },
   content: {
-    backgroundColor: "#fff",
+    backgroundColor: "#efefef",
     // overflowY: "auto",
     padding: "0 !important",
     height: "100%",
@@ -299,7 +299,7 @@ export default function WellCard() {
   if (stateApp.selectedWell.wellStatus !== "Permit") {
     return stateApp.selectedWell ? (
       !stateExpandableCard.expanded ? (
-        <div style={{backgroundColor: "#000", height: "100%", padding: "9px" }}>
+        <div style={{height: "100%", padding: "9px" }}>
           <Card>
             <CardActions
               classes={{
