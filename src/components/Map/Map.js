@@ -34,6 +34,7 @@ import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import * as MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import DefaultFiltersTest from "./filtersDefaultTest";
+import FilterControl from './components/FilterControl';
 import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { WELLSQUERY } from "../../graphQL/useQueryWells";
 import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAndObjectType";
@@ -60,6 +61,11 @@ const useStyles = makeStyles((theme) => ({
     "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib": {
       display: "none",
     },
+  },
+  filterPopup: {
+    "& .mapboxgl-popup-tip": {
+      display: "none"
+    }
   },
   footerLeftLogo: {
     position: "absolute",
@@ -1748,16 +1754,18 @@ export default function Map() {
     [map, setStateApp]
   );
 
-  const addFilterPopup = useCallback(
+  const createFilterPopup = useCallback(
     (filterFeature) => {
       const { geometry } = filterFeature;
       const coordinates = geometry.coordinates;
+      let popUps = document.getElementsByClassName("mapboxgl-popup");
+      if (popUps[0]) popUps[0].remove();
       if (coordinates.length > 0) {
         
         const minLatitude = coordinates.reduce((a,b)=>a[0]<b[0]?a:b)[0][0];
-        const minLongitude = coordinates.reduce((a,b)=>a[1]<b[1]?a:b)[0][1];
+        const maxLongitude = coordinates.reduce((a,b)=>a[1]>b[1]?a:b)[0][1];
         
-        let popupCoordinate = [minLatitude, minLongitude];
+        let popupCoordinate = [minLatitude, maxLongitude];
         console.log(popupCoordinate);
 
         let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
@@ -1766,10 +1774,14 @@ export default function Map() {
         .setHTML(`<div id="filterPopupContainer"></div>`)
         .addTo(map);
 
-        setStateApp({...stateApp});
+        setStateApp((state) => ({
+          ...state,
+          popupOpen: true,
+          filterFeature: filterFeature,
+        }));
       }
     },
-    [map, setStateApp, stateApp]
+    [map, setStateApp]
   )
 
   const createUDPopUp = useCallback(
@@ -2363,7 +2375,7 @@ export default function Map() {
         feature.id = stateNav.filterFeatureId;
         draw.add(feature);
 
-        addFilterPopup(feature, map);
+        createFilterPopup(feature, map);
 
         setStateNav((stateNav) => ({
           ...stateNav,
@@ -2381,6 +2393,9 @@ export default function Map() {
         e.features[0].id.includes("draw_rectangle")
       ) {
         let feature = e.features[0];
+
+        createFilterPopup(feature, map);
+
         setStateNav((stateNav) => ({
           ...stateNav,
           filterDrawing: ["within", feature],
@@ -2967,6 +2982,13 @@ export default function Map() {
                   closeSpatialDataCard={handleCloseSpatialDataCard}
                   deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
                   cardClass={"cardPopup"}
+                />
+              </PortalD>
+            )}
+            {stateApp.filterFeature && (
+              <PortalD id="filterPopupContainer">
+                <FilterControl
+                  filterFeature={stateApp.filterFeature}
                 />
               </PortalD>
             )}
