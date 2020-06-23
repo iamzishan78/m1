@@ -2673,16 +2673,16 @@ export default function Map() {
       draw_id = `edit_polygon_${draw_id}`;
     }
     
-    spatialDataAttributes.forEach(attribute => {
-      stateApp.draw.setFeatureProperty(
-          draw_id,
-          attribute,
-          spatialData[attribute]
-      );
-    });
     let current_feature = stateApp.draw.get(draw_id);
     if (current_feature) {
       console.log("update layer change to draw feature");
+      spatialDataAttributes.forEach(attribute => {
+        stateApp.draw.setFeatureProperty(
+            draw_id,
+            attribute,
+            spatialData[attribute]
+        );
+      });
       addCustomShapeProperties(current_feature, stateApp.draw);
       current_feature = stateApp.draw.get(draw_id);
       current_feature.id = current_feature.properties.id;
@@ -2702,6 +2702,8 @@ export default function Map() {
           label: spatialData.shapeLabel,
       }
     }
+
+    console.log(symbolFeature);
     // //////cleaning the selected title opinion and redirecting to title opinion page//
     if (stateApp.user.mongoId !== "" ) {
       const id = update_layer.properties.id;

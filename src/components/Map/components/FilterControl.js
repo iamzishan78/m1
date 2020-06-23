@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useContext} from 'react';
 
 import IconButton from "@material-ui/core/IconButton";
 import Popover from '@material-ui/core/Popover';
@@ -17,6 +17,9 @@ import MyLocationIcon from '@material-ui/icons/MyLocation';
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
+
+import { AppContext } from "../../../AppContext";
+import { NavigationContext } from "../../Navigation/NavigationContext";
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
@@ -107,26 +110,13 @@ const StyledMenu = withStyles({
   />
 ));
 
-// const StyledMenuItem = withStyles((theme) => ({
-//   root: {
-//     fontFamily: "Poppins",
-//     "&:hover": {
-//       background: "#4B618F",
-//     },
-//     backgroundColor: "#263451",
-//     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-//       color: theme.palette.common.white,
-//       // },
-//     },
-//   },
-// }))(MenuItem);
-
-
 export default (props) => {
   const classes = useStyles
   const [openedControl, setOpenControl] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openTrack, setOpenTrack] = useState(false);
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
 
   const toggleOpenContorl = (event) => {
     if (openedControl) {
@@ -144,6 +134,19 @@ export default (props) => {
 
   const handleOpenTrack = () => {
     setOpenTrack(!openTrack);
+  }
+
+  const handleRemoveFilter = () => {
+    setStateNav(stateNav => ({ ...stateNav, drawingMode: null, filterFeatureId: null, filterDrawing: []}));
+    setStateApp(stateApp => ({ ...stateApp, popupOpen: false}));
+  };
+
+  const handleTrackWells = () => {
+
+  }
+
+  const handleTrackOwners = () => {
+    
   }
 
   const id = openedControl ? 'filter-control-popover' : undefined;
@@ -207,7 +210,7 @@ export default (props) => {
               </StyledListItem>
             </List>
           </Collapse>
-        <StyledListItem2 button>
+        <StyledListItem2 button onClick={handleRemoveFilter}>
           <ListItemIcon>
             <DeleteIcon fontSize="small" />
           </ListItemIcon>
