@@ -1149,14 +1149,31 @@ export default function Map() {
       let tagFilterCount = 0;
       let filterArray = [];
 
+      let defaultOverride = true;
+
       if (
+        defaultOverride == true &&
         stateNav.defaultOn &&
         !stateNav.filterWellStatus &&
         !stateNav.filterWellType &&
         filterArray.length === 0
       ) {
-        let defaultTypeName = ["typeName", []];
-        let defaultStatusName = ["statusName", []];
+        
+        let defaultTypeName = ["typeName", ["GAS", "OIL", "OIL AND GAS", "PERMITTED", "UNKNOWN"]];
+        let defaultStatusName = ["statusName",           
+        [
+          "ACTIVE",
+          "ACTIVE - DRILLING",
+          "COMPLETED - NOT ACTIVE",
+          "DRILLED UNCOMPLETED (DUC)",
+          "PERMIT",
+          "PERMIT - EXISTING WELL",
+          "PERMIT - NEW DRILL",
+        ],];
+
+        // let defaultTypeName = ["typeName", []];
+        // let defaultStatusName = ["statusName",[],];
+
         let defaultFiltersWellStatus = [
           "filterWellStatus",
           ["match", ["get", "wellStatus"], defaultStatusName[1], true, false],
