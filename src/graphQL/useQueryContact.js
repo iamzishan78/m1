@@ -38,6 +38,13 @@ export const CONTACT = gql`
       leadSource
       companyName
       jobTitle
+      activityLog {
+        type
+        notes
+        dateTime
+        fullname
+        user_id
+      }
     }
   }
 `;

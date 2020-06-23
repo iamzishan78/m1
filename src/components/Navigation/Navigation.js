@@ -1085,7 +1085,7 @@ export default function Navigation(props) {
                       icon={
                         <Badge
                           badgeContent={
-                            stateApp.wells ? stateApp.wells.length : 0
+                            stateApp.trackedwells ? stateApp.trackedwells.length : 0
                           }
                           color="secondary"
                         >

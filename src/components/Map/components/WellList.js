@@ -58,10 +58,10 @@ export default function WellList() {
 
   useEffect( () => {
 
-    if(stateApp.wells){
-      setWells(stateApp.wells)
+    if(stateApp.trackedwells){
+      setWells(stateApp.trackedwells)
     }
-  },[stateApp.wells])
+  },[stateApp.trackedwells])
 
   const handleWellClick = (well) => {
     //console.log('flyto',well)

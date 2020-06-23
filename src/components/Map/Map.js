@@ -176,7 +176,7 @@ export default function Map() {
 
         setStateApp((stateApp) => ({
           ...stateApp,
-          wells: dataTracks.tracksByUserAndObjectType,
+          trackedwells: dataTracks.tracksByUserAndObjectType,
         }));
 
         getWells({
@@ -1136,19 +1136,11 @@ export default function Map() {
       ) {
         let defaultTypeName = [
           "typeName",
-          ["GAS", "OIL", "OIL AND GAS", "PERMITTED", "UNKNOWN"],
+          [ ],
         ];
         let defaultStatusName = [
           "statusName",
-          [
-            "ACTIVE",
-            "ACTIVE - DRILLING",
-            "COMPLETED - NOT ACTIVE",
-            "DRILLED UNCOMPLETED (DUC)",
-            "PERMIT",
-            "PERMIT - EXISTING WELL",
-            "PERMIT - NEW DRILL",
-          ],
+          [ ],
         ];
         let defaultFiltersWellStatus = [
           "filterWellStatus",
@@ -1216,25 +1208,26 @@ export default function Map() {
         ownershipFilterCount += 1;
         totalCount += 1;
       }
-      if (
-        stateNav.filterTrackedWells &&
-        stateNav.filterTrackedWells.length > 0
-      ) {
-        filterArray.push(stateNav.filterTrackedWells);
-        isFilterSet = true;
-        tagFilterCount += 1 + stateNav.selectedTags.length;
+      if (stateNav.filterTrackedWells) {
+        // filterArray.push(stateNav.filterTrackedWells);
+        // isFilterSet = true;
+        tagFilterCount += 1;
+        totalCount += 1;
+      }
+      if (stateNav.filterTrackedOwners) {
+        // filterArray.push(stateNav.filterTrackedWells);
+        // isFilterSet = true;
+        tagFilterCount += 1;
         totalCount += 1;
       }
 
       if (stateNav.filterTags && stateNav.filterTags.length > 0) {
         filterArray.push(stateNav.filterTags);
         isFilterSet = true;
-        totalCount += 1;
-        tagFilterCount +=
-          stateNav.selectedTags.length +
-          (stateNav.filterTrackedWells && stateNav.filterTrackedWells.length > 0
-            ? 1
-            : 0);
+        totalCount += stateNav.selectedTags ? stateNav.selectedTags.length : 0;
+        tagFilterCount += stateNav.selectedTags
+          ? stateNav.selectedTags.length
+          : 0;
       }
 
       if (
@@ -1796,6 +1789,7 @@ export default function Map() {
     stateNav.filterHasOwners,
     stateNav.filterHasOwnerCount,
     stateNav.filterTrackedWells,
+    stateNav.filterTrackedOwners,
     stateNav.filterOwnerConfidence,
     stateNav.filterOwnerWellInterestSum,
     stateNav.filterWellAppraisal,
@@ -2129,12 +2123,12 @@ export default function Map() {
         console.log(
           `Setting wellsTileset: ${mapStyles[index].sources.composite.url
             .split(",")
-            .find((element) => element.indexOf("m1neral.wells") > -1)}`
+            .find((element) => element.indexOf("m1neral.wells") > -1).replace('mapbox://', '')}`
         );
         setwellsTileset(
           mapStyles[index].sources.composite.url
             .split(",")
-            .find((element) => element.indexOf("m1neral.wells") > -1)
+            .find((element) => element.indexOf("m1neral.wells") > -1).replace('mapbox://', '')
         );
 
         console.log("new map generated");

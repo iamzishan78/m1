@@ -934,7 +934,7 @@ export default function M1nTable(props) {
 
         setStateApp((state) => ({
           ...state,
-          wells: dataWells.wells.results,
+          trackedwells: dataWells.wells.results,
         }));
       } else {
         if (
@@ -1326,7 +1326,7 @@ export default function M1nTable(props) {
           }
         });
 
-        setHeader("Well Owners Per Contact");
+        setHeader("Interest Owners Tied to Contact");
         setAddAble(false);
 
         getCommentsCounter({

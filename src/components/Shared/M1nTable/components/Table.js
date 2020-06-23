@@ -506,7 +506,8 @@ export default function SubTable(props) {
         ? [10, 25]
         : [],
 
-    selectableRows: "none",
+    selectableRows:
+      props.header === "Interest Owners Tied to Contact" ? "multiple" : "none",
 
     customToolbar: () => {
       return (
