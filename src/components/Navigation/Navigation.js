@@ -546,7 +546,7 @@ const useStyles = makeStyles((theme) => ({
     bottom: "30px",
     background: "rgba(255, 255, 255, 1.0)",
     "& .MuiListItem-gutters": {
-      paddingRight: "20px",
+      paddingRight: "30px",
     },
   },
 }));
@@ -1085,7 +1085,9 @@ export default function Navigation(props) {
                       icon={
                         <Badge
                           badgeContent={
-                            stateApp.trackedwells ? stateApp.trackedwells.length : 0
+                            stateApp.trackedwells
+                              ? stateApp.trackedwells.length
+                              : 0
                           }
                           color="secondary"
                         >
@@ -1562,22 +1564,24 @@ export default function Navigation(props) {
             </ListItemSecondaryAction> */}
           </ListItem>
           {supportDrawer && (
-            <div className={classes.supportDrawer}>
-              <List component="div">
-                <ListItem button onClick={() => setOpenSupportCenter(true)}>
-                  <ListItemIcon>
-                    <HeadsetIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Support Center" />
-                </ListItem>
-                <ListItem button onClick={requestDemo}>
-                  <ListItemIcon>
-                    <DesktopWindowsIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Request Demo" />
-                </ListItem>
-              </List>
-            </div>
+            <ClickAwayListener onClickAway={() => setSupportDrawer(false)}>
+              <div className={classes.supportDrawer}>
+                <List component="div">
+                  <ListItem button onClick={() => setOpenSupportCenter(true)}>
+                    <ListItemIcon>
+                      <HeadsetIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Support Center" />
+                  </ListItem>
+                  <ListItem button onClick={requestDemo}>
+                    <ListItemIcon>
+                      <DesktopWindowsIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Request Demo" />
+                  </ListItem>
+                </List>
+              </div>
+            </ClickAwayListener>
           )}
 
           <SupportCenterModal
