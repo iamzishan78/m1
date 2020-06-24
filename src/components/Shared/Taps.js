@@ -70,7 +70,7 @@ export default function Taps(props) {
   };
 
   return (
-    <div className={classes.root} id="M1nTaps">
+    <div style={{backgroundColor: '#efefef'}} className={classes.root} id="M1nTaps">
       <AppBar
         className={classes.WellsDetailsCardAppBar}
         position="static"
@@ -91,7 +91,7 @@ export default function Taps(props) {
       </AppBar>
 
       {tabPanels.map((panel, i) => (
-        <TabPanel key={i} value={value} index={i}>
+        <TabPanel /*style={{background: "#efefef"}}*/ key={i} value={value} index={i}>
           {panel}
         </TabPanel>
       ))}
