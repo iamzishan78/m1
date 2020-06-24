@@ -221,7 +221,7 @@ export default function ExpandableCard(props) {
             {stateExpandableCard.expanded && (
               <Tooltip title={"Report Bug"} placement="top">
                 <IconButton
-                  size="large"
+                  size="medium"
                   onClick={() => setOpenBugModal(true)}
                   //aria-label="expand"
                   className={classes.icons}

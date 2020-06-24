@@ -95,7 +95,7 @@ function PencilEditIcon({
               onClick={() => {
                 handleUpdating();
               }}
-            ></Button>
+            >{" "}</Button>
             <Button
               variant="contained"
               size="small"
@@ -105,7 +105,7 @@ function PencilEditIcon({
               onClick={() => {
                 setAnchorEl(null);
               }}
-            ></Button>
+            >{" "}</Button>
           </Grid>
 
           {content.map((textF, i) => (
@@ -318,7 +318,16 @@ export default function FieldContent({
   let textArray = [];
   for (const key in content) {
     if (content.hasOwnProperty(key) && content[key] && content[key] !== "") {
-      textArray.push(content[key]);
+      if (
+        key === "zip" ||
+        key === "country" ||
+        key === "zipAlt" ||
+        key === "countryAlt"
+      ) {
+        textArray = [[textArray.join(", "), content[key]].join(" ")];
+      } else if (key === "jobTitle") {
+        textArray = [[textArray.join(", "), content[key]].join(" - ")];
+      } else textArray.push(content[key]);
     }
   }
 
