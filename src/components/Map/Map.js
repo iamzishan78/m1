@@ -2690,12 +2690,18 @@ export default function Map() {
     setStateApp((state) => ({ ...state, expandedCard: false }));
   };
 
-  const handleCloseSpatialDataCard = () => {
+  const handleCloseSpatialDataCard = (complete = true) => {
     console.log("close card on map here");
     setStateApp((state) => ({
       ...state,
       popupOpen: false,
     }));
+    if (complete == true) {
+      setStateApp((state) => ({
+        ...state,
+        selectedUserDefinedLayer: undefined,
+      }));
+    }
   };
 
   const handleCloseSpatialDataCardEdit = () => {
@@ -2704,6 +2710,7 @@ export default function Map() {
       ...state,
       popupOpen: false,
       editLayer: false,
+      selectedUserDefinedLayer: undefined
     }));
   };
 
