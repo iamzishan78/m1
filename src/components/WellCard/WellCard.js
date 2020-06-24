@@ -40,7 +40,7 @@ import TrackToggleButton from "../Shared/TrackToggleButton";
 
 import useQueryWell from "../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/react-hooks";
-import { VERTEXEDGESQUERY } from "../../graphQL/useQueryVertexEdges";
+// import { VERTEXEDGESQUERY } from "../../graphQL/useQueryVertexEdges";/////////////////
 import { WELLSUMMARYDETAILQUERY } from "../../graphQL/useQueryWellSummaryDetail";
 
 const useStyles = makeStyles((theme) => ({
@@ -93,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "0px",
   },
   content: {
-    backgroundColor: "#fff",
+    backgroundColor: "#efefef",
     // overflowY: "auto",
     padding: "0 !important",
     height: "100%",
@@ -196,10 +196,10 @@ export default function WellCard() {
     ExpandableCardContext
   );
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
-  const [
-    getVertexEdges,
-    { loading: loadingGraph, data: dataGraph },
-  ] = useLazyQuery(VERTEXEDGESQUERY);
+  // const [
+  //   getVertexEdges,
+  //   { loading: loadingGraph, data: dataGraph },
+  // ] = useLazyQuery(VERTEXEDGESQUERY);
   const [
     getWellSummaryDetail,
     { loading: loadingWellSummary, data: dataWellSummary },
@@ -220,34 +220,35 @@ export default function WellCard() {
         type: "vertex",
         properties: [],
       });
-    } else {
-      getVertexEdges({
-        variables: { source: source, edgeLabel: "tracks", targetLabel: "well" },
-      });
     }
+    //  else {
+    //   getVertexEdges({
+    //     variables: { source: source, edgeLabel: "tracks", targetLabel: "well" },
+    //   });
+    // }
   }, [stateApp.user, source]);
 
-  useEffect(() => {
-    if (dataGraph) {
-      if (dataGraph.vertexEdges) {
-        if (dataGraph.vertexEdges.sourceIds) {
-          if (dataGraph.vertexEdges.sourceIds.length > 0) {
-            dataGraph.vertexEdges.sourceIds.forEach((id) => {
-              if (stateApp.selectedWell.id === id) {
-                let trackedWell = target || stateApp.selectedWell;
-                trackedWell.isTracked = true;
-                setTarget(trackedWell);
-              }
-            });
-          }
-        }
-      }
-    }
-  }, [stateApp.user, stateApp.selectedWell, dataGraph]);
+  // useEffect(() => {
+  //   if (dataGraph) {
+  //     if (dataGraph.vertexEdges) {
+  //       if (dataGraph.vertexEdges.sourceIds) {
+  //         if (dataGraph.vertexEdges.sourceIds.length > 0) {
+  //           dataGraph.vertexEdges.sourceIds.forEach((id) => {
+  //             if (stateApp.selectedWell.id === id) {
+  //               let trackedWell = target || stateApp.selectedWell;
+  //               trackedWell.isTracked = true;
+  //               setTarget(trackedWell);
+  //             }
+  //           });
+  //         }
+  //       }
+  //     }
+  //   }
+  // }, [stateApp.user, stateApp.selectedWell, dataGraph]);
 
   useEffect(() => {
     getWellSummaryDetail({
-      variables: { api: stateApp.selectedWell.api }
+      variables: { api: stateApp.selectedWell.api },
     });
   }, [stateApp.selectedWell]);
 
@@ -257,7 +258,7 @@ export default function WellCard() {
     } else {
       setSummary(null);
     }
-  }, [dataWellSummary])
+  }, [dataWellSummary]);
 
   //make fire and forget call to REST api so that it begins to cache other well related api calls
   const { data, loading, error } = useQueryWell(stateApp.selectedWell.api);
@@ -299,7 +300,7 @@ export default function WellCard() {
   if (stateApp.selectedWell.wellStatus !== "Permit") {
     return stateApp.selectedWell ? (
       !stateExpandableCard.expanded ? (
-        <div style={{ height: "100%", padding: "9px" }}>
+        <div style={{height: "100%", padding: "9px" }}>
           <Card>
             <CardActions
               classes={{

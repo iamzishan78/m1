@@ -66,6 +66,7 @@ export default function FilterTrackedWells() {
       </IconButton>
       <FormLabel>Tracked Wells</FormLabel>
       <Switch
+        disabled={!(stateApp.trackedwells && stateApp.trackedwells.length > 0)}
         className={classes.noOwnersToggle}
         checked={stateNav.filterTrackedWells}
         onChange={toggleTracks}

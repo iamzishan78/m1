@@ -10,6 +10,7 @@ import M1nTable from "../Shared/M1nTable/M1nTable";
 const useStyles = makeStyles((theme) => ({
   gridWidthScroll: {
     overflow: "auto",
+    //background: "#000"
   },
 }));
 
@@ -23,7 +24,9 @@ export default function WellCard(props) {
         <OwnerDetailsCardMap />
       </Grid>
 
-      <Grid item sm={12}>
+      <Grid item sm={12} 
+        //style={{backgroundColor: '#efefef'}}
+        >
         <Taps
           tabLabels={["Wells", "Contacts"]}
           tabPanels={[

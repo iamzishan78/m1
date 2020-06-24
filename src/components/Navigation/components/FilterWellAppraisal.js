@@ -1,23 +1,30 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
 import NumberFormat from "react-number-format";
 import { NavigationContext } from "../NavigationContext";
+import { FormLabel } from "@material-ui/core";
 
 const useStyles = makeStyles({
+  divBordersMinMax: {
+    display: "flow-root",
+    padding: "3.5px 15px 5.5px 15px",
+    border: "1px solid #C4C4C4",
+    borderRadius: "4px",
+    "&:hover": {
+      border: "1px solid black",
+    },
+  },
   input: {
-    margin: 20,
-    maxWidth: 168,
-    minWidth: 167,
-    marginLeft: 27.5
+    marginLeft: "30px",
+    width: "160px",
+    float: "right",
+    "& input": { color: "#17AADD" },
   },
   inputLabel: {
-    color: "black",
-    minWidth: 249,
-    maxWidth: 250,
-    marginLeft: 27.5
-  }
+    position: "relative",
+    top: "11.5px",
+  },
 });
 
 export default function FilterWellAppraisal() {
@@ -36,11 +43,11 @@ export default function FilterWellAppraisal() {
     let min = parseInt(valueMinDisplay);
     let max = parseInt(valueMaxDisplay);
 
-    console.log('min',min)
-    console.log('max',max)
-    console.log(!min)
-    console.log(!max)
-    console.log(min<max)
+    console.log("min", min);
+    console.log("max", max);
+    console.log(!min);
+    console.log(!max);
+    console.log(min < max);
 
     if (!min && !max) {
       filter = null;
@@ -54,21 +61,19 @@ export default function FilterWellAppraisal() {
         filter = [
           "all",
           [">=", ["get", "appraisalValueSum"], min],
-          ["<=", ["get", "appraisalValueSum"], max]
+          ["<=", ["get", "appraisalValueSum"], max],
         ];
       }
-    } 
-    else {
+    } else {
       filter = null;
     }
 
-    console.log('filter',filter)
+    console.log("filter", filter);
 
-    setStateNav(stateNav => ({
+    setStateNav((stateNav) => ({
       ...stateNav,
-      filterWellAppraisal: filter
+      filterWellAppraisal: filter,
     }));
-
   }, [setStateNav, valueMaxDisplay, valueMinDisplay]);
 
   useEffect(() => {
@@ -107,30 +112,36 @@ export default function FilterWellAppraisal() {
     }
   }, [setFilter, stateNav.appraisalWell]);
 
-  const handleChangeMin = event => {
-    console.log('handle change min')
+  const handleChangeMin = (event) => {
+    console.log("handle change min");
     setValueMinDisplay(event.target.value.replace(/,/g, ""));
     setAppraisalWell(event.target.id);
-    console.log(event.target.value.replace(/,/g, ""))
-    console.log(event.target.id)
+    console.log(event.target.value.replace(/,/g, ""));
+    console.log(event.target.id);
 
-    setStateNav(stateNav => ({ ...stateNav, appraisalWell: event.target.id }));
+    setStateNav((stateNav) => ({
+      ...stateNav,
+      appraisalWell: event.target.id,
+    }));
     if (event.target.value === "") {
-      setStateNav(stateNav => ({
+      setStateNav((stateNav) => ({
         ...stateNav,
-        filterWellAppraisal: null
+        filterWellAppraisal: null,
       }));
     }
   };
 
-  const handleChangeMax = event => {
+  const handleChangeMax = (event) => {
     setValueMaxDisplay(event.target.value.replace(/,/g, ""));
     setAppraisalWell(event.target.id);
-    setStateNav(stateNav => ({ ...stateNav, appraisalWell: event.target.id }));
+    setStateNav((stateNav) => ({
+      ...stateNav,
+      appraisalWell: event.target.id,
+    }));
     if (event.target.value === "") {
-      setStateNav(stateNav => ({
+      setStateNav((stateNav) => ({
         ...stateNav,
-        filterWellAppraisal: null
+        filterWellAppraisal: null,
       }));
     }
   };
@@ -147,7 +158,7 @@ export default function FilterWellAppraisal() {
     }
   }, [valueMaxDisplay, valueMinDisplay]);
 
-  const allowNumbersOnly = e => {
+  const allowNumbersOnly = (e) => {
     let code = e.which ? e.which : e.keyCode;
     if (code > 31 && (code < 48 || code > 57)) {
       e.preventDefault();
@@ -155,13 +166,9 @@ export default function FilterWellAppraisal() {
   };
 
   return (
-    <div>
-      <Typography
-        className={classes.inputLabel}
-        htmlFor="select-multiple-chip1"
-      >
-          Well Appraisal
-      </Typography>
+    <div className={classes.divBordersMinMax}>
+      <FormLabel className={classes.inputLabel}>Well Appraisal</FormLabel>
+
       <NumberFormat
         id="appraisalWellMin"
         value={valueMinDisplay}
@@ -172,13 +179,13 @@ export default function FilterWellAppraisal() {
         aria-labelledby="range-number"
         type="text"
         label="Min"
-        variant="outlined"
-        onKeyPress={e => allowNumbersOnly(e)}
+        size="small"
+        onKeyPress={(e) => allowNumbersOnly(e)}
         InputProps={{
           inputProps: {
             min: 0,
             max: Number.MAX_SAFE_INTEGER - 1,
-          }
+          },
         }}
       />
       <NumberFormat
@@ -191,15 +198,15 @@ export default function FilterWellAppraisal() {
         aria-labelledby="range-number"
         type="text"
         label="Max"
-        variant="outlined"
-        onKeyPress={e => allowNumbersOnly(e)}
+        size="small"
+        onKeyPress={(e) => allowNumbersOnly(e)}
         error={error}
         helperText={errorText}
         InputProps={{
           inputProps: {
             min: 0,
             max: Number.MAX_SAFE_INTEGER,
-          }
+          },
         }}
       />
     </div>

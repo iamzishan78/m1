@@ -67,6 +67,9 @@ export default function FilterTrackedOwners() {
       </IconButton>
       <FormLabel>Tracked Owners</FormLabel>
       <Switch
+        disabled={
+          !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0)
+        }
         className={classes.noOwnersToggle}
         checked={stateNav.filterTrackedOwners}
         onChange={toggleTracks}

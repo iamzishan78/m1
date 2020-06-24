@@ -1,7 +1,6 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
 import NumberFormat from "react-number-format";
 import Switch from "@material-ui/core/Switch";
 import { NavigationContext } from "../NavigationContext";
@@ -9,9 +8,18 @@ import Grid from "@material-ui/core/Grid";
 import { FormLabel } from "@material-ui/core";
 
 const useStyles = makeStyles({
-  divBorders: {
+  divBordersMinMax: {
     display: "flow-root",
-    padding: "4.5px 7.5px",
+    padding: "3.5px 15px 5.5px 15px",
+    border: "1px solid #C4C4C4",
+    borderRadius: "4px",
+    "&:hover": {
+      border: "1px solid black",
+    },
+  },
+  divBordersSwitch: {
+    textAlign: "center",
+    padding: "8px 15px",
     border: "1px solid #C4C4C4",
     borderRadius: "4px",
     "&:hover": {
@@ -19,21 +27,17 @@ const useStyles = makeStyles({
     },
   },
   input: {
-    margin: "0 7.5px",
-    width: "180px",
+    marginLeft: "30px",
+    width: "160px",
     float: "right",
+    "& input": { color: "#17AADD" },
   },
   inputLabel: {
-    padding: "10.5px 7.5px",
     position: "relative",
-    top: "10.5px",
+    top: "11.5px",
   },
-  noOwners: {
-    padding: "6px 0px",
-    display: "flex",
-  },
-  noOwnersToggle: {
-    marginLeft: 20,
+  ownersToggle: {
+    paddingLeft: "20px",
   },
 });
 
@@ -223,7 +227,7 @@ export default function FilterOwnerCount() {
       </div> */}
 
       <Grid item sm={12}>
-        <div className={classes.divBorders}>
+        <div className={classes.divBordersMinMax}>
           <FormLabel className={classes.inputLabel}>Owner Count</FormLabel>
           <NumberFormat
             id="OwnerCountMax"
@@ -266,18 +270,15 @@ export default function FilterOwnerCount() {
         </div>
       </Grid>
       <Grid item sm={12}>
-        <div className={classes.noOwners}>
-          <Typography
-            // className={classes.inputLabel}
-            htmlFor="select-multiple-chip1"
-          >
+        <div className={classes.divBordersSwitch}>
+          <FormLabel style={{ verticalAlign: "middle", paddingRight: "40px" }}>
             Wells With Owners
-          </Typography>
+          </FormLabel>
           <Switch
             className={classes.ownersToggle}
             checked={stateNav.filterHasOwnerCount ? true : false}
             onChange={toggleOwners}
-            color="primary"
+            color="secondary"
             name="checked"
             inputProps={{ "aria-label": "primary checkbox" }}
           />
