@@ -5,7 +5,7 @@ import TextField from "@material-ui/core/TextField";
 import { NavigationContext } from "../NavigationContext";
 import FilterOwnerCount from "./FilterOwnerCount";
 import Grid from "@material-ui/core/Grid";
-import FilterOwnerInterestSum from "./FilterOwnerInterestSum";
+// import FilterOwnerInterestSum from "./FilterOwnerInterestSum";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -161,6 +161,7 @@ export default function FilterFormOwner() {
     >
       <Grid item sm={12}>
         <Autocomplete
+          ChipProps={{ color: "secondary" }}
           className={classes.formControl}
           defaultValue={interestName}
           onChange={(event, newValue) => {
@@ -184,6 +185,7 @@ export default function FilterFormOwner() {
       </Grid>
       <Grid item sm={12}>
         <Autocomplete
+          ChipProps={{ color: "secondary" }}
           className={classes.formControl}
           defaultValue={ownerTypeName}
           onChange={(event, newValue) => {
