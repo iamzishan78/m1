@@ -213,6 +213,7 @@ export default function Map() {
 
   useEffect(() => {
     if (customLayerData && customLayerData.customLayers) {
+      console.log("Custom Layer data", customLayerData.customLayers);
       setStateApp({
         ...stateApp,
         customLayers: customLayerData.customLayers,
@@ -2753,20 +2754,16 @@ export default function Map() {
 
     let current_feature = stateApp.draw.get(draw_id);
     if (current_feature) {
-      console.log("update layer change to draw feature");
-      spatialDataAttributes.forEach((attribute) => {
-        stateApp.draw.setFeatureProperty(
-          draw_id,
-          attribute,
-          spatialData[attribute]
-        );
-      });
       addCustomShapeProperties(current_feature, stateApp.draw);
       current_feature = stateApp.draw.get(draw_id);
+      spatialDataAttributes.forEach((attribute) => {
+        if (spatialData[attribute]) {
+          current_feature.properties[attribute] = spatialData[attribute];
+        }
+      });
       current_feature.id = current_feature.properties.id;
       update_layer = current_feature;
     }
-
 
     let position = null;
 
@@ -2775,8 +2772,6 @@ export default function Map() {
     } else {
       position = update_layer.properties.shapeCenter
     }
-
-    console.log(position);
 
     const symbolFeature = {
       type: "Feature",
@@ -2791,7 +2786,6 @@ export default function Map() {
       },
     };
 
-    console.log(symbolFeature);
     // //////cleaning the selected title opinion and redirecting to title opinion page//
     if (stateApp.user.mongoId !== "") {
       const id = update_layer.properties.id;
@@ -2835,6 +2829,7 @@ export default function Map() {
         name: spatialData.shapeLabel,
         user: stateApp.user.mongoId,
       };
+
       updateCustomLayer({
         variables: {
           customLayerId: customLayerId,
