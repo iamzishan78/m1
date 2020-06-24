@@ -1,5 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
+import uuid from "uuid";
+import NumberFormat from "react-number-format";
 import Button from "@material-ui/core/Button";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -9,10 +12,11 @@ import MenuItem from "@material-ui/core/MenuItem";
 import DialogContent from "@material-ui/core/DialogContent";
 import Select from "@material-ui/core/Select";
 import { makeStyles } from "@material-ui/core/styles";
-import uuid from "uuid";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { TransactContext } from "../TransactContext";
+import { AppContext } from "../../../AppContext";
+import AddContactDialogContent from "../../Shared/M1nTable/components/SubComponents/AddContactDialogContent";
 
 const useStyles = makeStyles((theme) => ({
   label: {
@@ -20,15 +24,41 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function NumberFormatCustom(props) {
+  const { inputRef, onChange, ...other } = props;
+
+  return (
+    <NumberFormat
+      {...other}
+      getInputRef={inputRef}
+      onValueChange={(values) => {
+        onChange({
+          target: {
+            name: props.name,
+            value: values.value,
+          },
+        });
+      }}
+      thousandSeparator
+      isNumericString
+      prefix="$"
+    />
+  );
+}
+
 export default function TransactDialog(props) {
   const classes = useStyles();
   const { cardId, laneId, transactData, handleDataChange } = props;
+  const [stateApp] = useContext(AppContext);
   const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [dealName, setDealName] = useState("");
   const [title, setTitle] = useState("");
   const [label, setLabel] = useState("");
   const [stage, setStage] = useState("lane1");
   const [description, setDescription] = useState("");
+  const [contact, setContact] = useState({});
+  const [openContactDialog, setOpenContactDialog] = useState(false);
+  console.log("Contact dialog.js: ", contact);
 
   useEffect(() => {
     if (transactData && cardId && laneId) {
@@ -41,6 +71,9 @@ export default function TransactDialog(props) {
               setLabel(card.label ? card.label : "");
               setDescription(card.description ? card.description : "");
               setStage(card.stage ? card.stage : "lane1");
+              if (card.contactId) {
+                setContact({ name: card.title, id: card.contactId });
+              }
             }
           });
         }
@@ -58,6 +91,11 @@ export default function TransactDialog(props) {
     setDescription(description.trim());
   };
 
+  const handleCloseContactDialog = () => {
+    console.log("Handle close dialog");
+    setOpenContactDialog(false);
+  };
+
   const handleUpdate = () => {
     // if (title.trim() !== "" && description.trim() !== "") {
 
@@ -73,10 +111,11 @@ export default function TransactDialog(props) {
             lane.cards.forEach((card) => {
               if (card.id === cardId) {
                 card.dealName = dealName.trim();
-                card.title = title.trim();
+                card.title = contact?.name;
                 card.label = label.trim();
                 card.description = description.trim();
                 card.laneId = stage;
+                card.contactId = contact?._id;
               }
             });
           }
@@ -89,10 +128,11 @@ export default function TransactDialog(props) {
             let cards = [...lane.cards];
             const newCard = {
               dealName: dealName.trim(),
-              title: title.trim(),
+              title: contact?.name,
               label: label.trim(),
               description: description.trim(),
               id: uuid(),
+              contactId: contact?._id,
             };
             cards.push(newCard);
             lane.cards = cards;
@@ -125,16 +165,68 @@ export default function TransactDialog(props) {
             setDealName(e.target.value);
           }}
         />
-        <TextField
-          margin="dense"
-          value={title}
-          label="Contact Name"
-          fullWidth
-          //   required
-          onChange={(e) => {
-            setTitle(e.target.value);
-          }}
-        />
+        <Dialog
+          className={classes.dialog}
+          open={openContactDialog ? true : false}
+          onClose={handleCloseContactDialog}
+          maxWidth={"xs"}
+        >
+          <AddContactDialogContent
+            onClose={handleCloseContactDialog}
+            dealsPage={true}
+            setDealsContact={setContact}
+          />
+        </Dialog>
+
+        <FormControl margin="dense" fullWidth size="small">
+          {/* <InputLabel
+            id="demo-simple-select-outlined-label"
+            className={classes.label}
+          >
+            Contact Name
+          </InputLabel> */}
+
+          {!(
+            (Object.keys(contact).length === 0 &&
+              contact.constructor === Object) ||
+            contact === null ||
+            title === ""
+          ) && (
+            <TextField
+              margin="dense"
+              value={contact?.name}
+              label=""
+              fullWidth
+              disabled
+            />
+          )}
+
+          <ButtonGroup
+            fullWidth
+            variant="contained"
+            color="primary"
+            aria-label="contained primary button group"
+          >
+            <Button onClick={() => setOpenContactDialog(true)}>
+              Add / Select Contact
+            </Button>
+
+            <Button
+              component="a"
+              href="http://www.google.com"
+              target="_blank"
+              disabled={
+                (Object.keys(contact).length === 0 &&
+                  contact.constructor === Object) ||
+                contact === null ||
+                title === ""
+              }
+            >
+              View Contact
+            </Button>
+          </ButtonGroup>
+        </FormControl>
+
         <FormControl margin="dense" fullWidth size="small">
           <InputLabel
             id="demo-simple-select-outlined-label"
@@ -147,7 +239,7 @@ export default function TransactDialog(props) {
             id="demo-simple-select-outlined"
             value={stage}
             onChange={(e) => {
-              console.log("Stage: ", e.target.value)
+              console.log("Stage: ", e.target.value);
               setStage(e.target.value);
             }}
             fullWidth
@@ -168,6 +260,9 @@ export default function TransactDialog(props) {
           onChange={(e) => {
             setLabel(e.target.value);
           }}
+          // InputProps={{
+          //   inputComponent: NumberFormatCustom,
+          // }}
         />
         <TextField
           //   autoFocus

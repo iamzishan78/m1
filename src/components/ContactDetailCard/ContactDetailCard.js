@@ -23,6 +23,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery } from "@apollo/react-hooks";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import Activities from "../Shared/Activities";
+import Deals from "../Shared/Deals";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -617,6 +618,9 @@ export default function ContactDetailCard(props) {
              */}
 
             <Grid item xs={12}>
+              <Paper className={classes.paper}>
+                <Deals contact={data.contact} />
+              </Paper>
               <Paper className={classes.paper}>
                 <Comments
                   targetSourceId={data.contact._id}

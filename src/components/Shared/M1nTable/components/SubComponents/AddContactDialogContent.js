@@ -89,8 +89,8 @@ export default function AddContactDialogContent(props) {
   const [addRemoveOwnerToAContact] = useMutation(ADDREMOVEOWNERTOACONTACT);
 
   useEffect(() => {
+    getContacts();
     if (props.parent) {
-      getContacts();
       getContactsByOwnerId({
         variables: { objectId: props.parent },
       });
@@ -164,6 +164,28 @@ export default function AddContactDialogContent(props) {
 
   const handleClickAdd = (e) => {
     e.preventDefault();
+
+    if (props.dealsPage) {
+      if (activeTapIndex === 0) {
+
+        addContact({
+          variables: {
+            contact: {
+              ...newContact,
+              createBy: stateApp.user.mongoId,
+              lastUpdateBy: stateApp.user.mongoId,
+            },
+          },
+          refetchQueries: ["getContacts"],
+          awaitRefetchQueries: true,
+        });
+        props.setDealsContact(newContact);
+      } else if (activeTapIndex === 1) {
+        props.setDealsContact(existingContact);
+      }
+      handleClickDialogClose(e);
+      return;
+    }
 
     if (props.parent && activeTapIndex === 1) {
       //////update///// existingContact   //////////
