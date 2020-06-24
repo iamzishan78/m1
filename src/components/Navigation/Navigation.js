@@ -3,6 +3,7 @@ import { borders } from "@material-ui/system";
 import { shadows } from "@material-ui/system";
 import { Paper } from "@material-ui/core";
 import { NavigationContext } from "./NavigationContext";
+import { TransactContext } from "../Transact/TransactContext";
 import { AppContext } from "../../AppContext";
 import { useHistory, useLocation } from "react-router-dom";
 import clsx from "clsx";
@@ -646,6 +647,7 @@ const drawerWidth = "250px";
 export default function Navigation(props) {
   const classes = useStyles();
   const theme = useTheme();
+  const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [openSupportCenter, setOpenSupportCenter] = useState(false);
@@ -661,6 +663,7 @@ export default function Navigation(props) {
   const [disableApply, setDisableApply] = useState(true);
   const [matchLocation, setMatchLocation] = useState(false);
   const [matchTrack, setMatchTrack] = useState(false);
+  const [matchTransact, setMatchTransact] = useState(false);
   const [matchFind, setMatchFind] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE);
@@ -828,6 +831,14 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   useEffect(() => {
+    if (location.pathname === "/transact") {
+      setMatchTransact(true);
+    } else {
+      setMatchTransact(false);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
     if (location.pathname === "/") {
       setMatchLocation(true);
       setMatchFind(true);
@@ -967,6 +978,13 @@ export default function Navigation(props) {
     );
   };
 
+  const handleClickAddDeal = () => {
+    setStateTransact((stateTransact) => ({
+      ...stateTransact,
+      openDialog: true,
+    }));
+  };
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -1015,6 +1033,21 @@ export default function Navigation(props) {
             ) : null}
 
             <div className={classes.grow1} />
+            {matchTransact ? (
+              <div>
+                <div ref={anchorEl} className={classes.filterTabs}>
+                  <Button
+                    onClick={handleClickAddDeal}
+                    color="secondary"
+                    variant="contained"
+                  >
+                    Add Deal
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: "none" }}></div>
+            )}
 
             {matchTrack ? (
               <div
