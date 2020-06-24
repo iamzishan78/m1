@@ -505,9 +505,16 @@ export default function SubTable(props) {
         : props.rows && props.rows.length > 10
         ? [10, 25]
         : [],
-
-    selectableRows:
-      props.header === "Interest Owners Tied to Contact" ? "multiple" : "none",
+    selectableRows: "multiple",
+    selectToolbarPlacement: "none",
+    // onRowSelectionChange
+    // onRowsDelete
+    customToolbarSelect:
+      props.header === "Interest Owners Tied to Contact"
+        ? false
+        : (selectedRows, displayData, setSelectedRows) => {
+            return <div style={{ height: "48px" }} />; ////////////////////////
+          },
 
     customToolbar: () => {
       return (
