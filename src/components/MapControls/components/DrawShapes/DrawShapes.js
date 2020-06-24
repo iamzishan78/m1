@@ -264,11 +264,19 @@ export default function DrawShapes(props) {
         });
         stateApp.currentFeature.properties.id = stateApp.currentFeature.id
 
+        let position = null;
+
+        if (typeof stateApp.currentFeature.properties.shapeCenter == 'string') {
+            position = JSON.parse(stateApp.currentFeature.properties.shapeCenter);
+        } else {
+            position = stateApp.currentFeature.properties.shapeCenter
+        }
+
         const symbolFeature = {
             type: "Feature",
             geometry: {
                 type: "Point",
-                coordinates: stateApp.currentFeature.properties.shapeCenter
+                coordinates: position
             },
             properties: {
                 ...stateApp.currentFeature.properties,

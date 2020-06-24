@@ -2664,7 +2664,7 @@ export default function Map() {
 
   useEffect(() => {
     console.log("Drawing status check", stateApp.editDraw, stateNav.drawingMode);
-    if (stateApp.editDraw === true || stateNav.drawingMode !== null) {
+    if (stateApp.editDraw === true || stateNav.drawingMode) {
       setDrawStatus(true);
       if (mapClick && mapClick.mapClickHandler != null) {
         map.off("click", mapClick.mapClickHandler);
@@ -2751,11 +2751,21 @@ export default function Map() {
     }
 
 
+    let position = null;
+
+    if (typeof update_layer.properties.shapeCenter == 'string') {
+      position = JSON.parse(update_layer.properties.shapeCenter);
+    } else {
+      position = update_layer.properties.shapeCenter
+    }
+
+    console.log(position);
+
     const symbolFeature = {
       type: "Feature",
       geometry: {
           type: "Point",
-          coordinates: JSON.parse(update_layer.properties.shapeCenter)
+          coordinates: position
       },
       properties: {
           ...update_layer.properties,
@@ -2856,6 +2866,7 @@ export default function Map() {
             ...stateApp,
             editingUserDefinedLayers: updated_layers,
           });
+          handleCloseSpatialDataCardEdit();
         } else if (customLayers.length > 0) {
           const delete_layers = customLayers.filter(layer => {
             const shape_properties = JSON.parse(layer.shape).properties;
@@ -2877,8 +2888,9 @@ export default function Map() {
             setStateApp({
               ...stateApp,
               customLayers: updated_layers,
-            })
+            });
           }
+          handleCloseSpatialDataCard();
         }
       } else {
         if (customLayers.length > 0) {
@@ -2904,6 +2916,7 @@ export default function Map() {
               customLayers: updated_layers,
             })
           }
+          handleCloseSpatialDataCard();
         }
       }
     }
