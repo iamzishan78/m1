@@ -2954,7 +2954,6 @@ export default function Map() {
             saveSpatialData={handleSaveSpatialDataToShape}
             closeSpatialDataCard={handleCloseSpatialDataCardEdit}
             deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
-            cardClass={"cardPopup"}
           />
         )
       }
