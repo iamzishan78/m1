@@ -259,6 +259,7 @@ export default function FilterFormProduction() {
     >
       <Grid item sm={12}>
         <Autocomplete
+          ChipProps={{ color: "secondary" }}
           multiple
           options={listOptions.map((option) => option.name)}
           disableListWrap

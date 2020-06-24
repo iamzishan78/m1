@@ -161,6 +161,7 @@ export default function FilterTags() {
           dataUserAvailableTags.userAvailableFilterTags.length > 0
         )
       }
+      ChipProps={{ color: "secondary" }}
       defaultValue={stateNav.selectedTags}
       onChange={(event, newValue) => {
         handleChange(newValue);
