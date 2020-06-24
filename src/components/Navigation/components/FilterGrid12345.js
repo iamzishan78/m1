@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
   loader: {
     marginLeft: "50%",
   },
+  autoC: { "& input": { color: "#17AADD" } },
 }));
 
 ///////props: -gridNumber//////////
@@ -119,7 +120,7 @@ export default function FilterGrid12345({ gridNumber, label }) {
         </div>
       ) : (
         <Autocomplete
-          className={classes.maxWidth}
+          className={classes.autoC}
           options={gridList}
           getOptionLabel={(option) =>
             option && option[`GrId${gridNumber}`]
@@ -133,9 +134,7 @@ export default function FilterGrid12345({ gridNumber, label }) {
           autoSelect
           disableListWrap
           includeInputInList
-          value={
-            gridList.length === 0 ? "" : stateNav[`GrId${gridNumber}`]
-          }
+          value={gridList.length === 0 ? "" : stateNav[`GrId${gridNumber}`]}
           onChange={(event, newValue) => {
             handleChange(event, newValue);
           }}

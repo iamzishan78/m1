@@ -593,7 +593,7 @@ export default function ContactDetailCard(props) {
       {/*/////////// rigth column //////////// */}
       <Grid
         className={classes.border}
-        style={{ MinHeight: "100%" }}
+        style={{ MinHeight: "100%", backgroundColor: "#efefef" }}
         item
         xs={3}
       >

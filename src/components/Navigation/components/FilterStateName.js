@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 249,
     color: "black",
   },
+  autoC: { "& input": { color: "#17AADD" } },
 }));
 
 export default function FilterStateName() {
@@ -58,7 +59,7 @@ export default function FilterStateName() {
   return (
     <FormControl variant="outlined" className={classes.formControl}>
       <Autocomplete
-        className={classes.maxWidth}
+        className={classes.autoC}
         options={statesNames}
         getOptionLabel={(option) => option}
         autoSelect

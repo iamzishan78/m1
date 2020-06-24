@@ -7,7 +7,6 @@ import { FormLabel } from "@material-ui/core";
 
 const useStyles = makeStyles({
   divBordersMinMax: {
-    display: "flow-root",
     padding: "3.5px 15px 5.5px 9px",
     border: "1px solid #C4C4C4",
     borderRadius: "4px",
