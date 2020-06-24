@@ -2076,34 +2076,7 @@ export default function Map() {
     return -1; //to handle the case where the value doesn't exist
   }
 
-  // const wellPointClick = (e) => {
-  //   var bbox = [
-  //     [e.point.x - 10, e.point.y - 10],
-  //     [e.point.x + 10, e.point.y + 10],
-  //   ];
-  //   let features = map.queryRenderedFeatures(bbox, {
-  //     layers: ["wellpoints"],
-  //   });
-  //   let currentFeature = features[0];
-  //   console.log("current feature", currentFeature);
-
-  //   setStateApp((state) => ({
-  //     ...state,
-  //     popupOpen: false,
-  //   }));
-  //   setStateApp((state) => ({
-  //     ...state,
-  //     selectedWell: currentFeature.properties,
-  //     selectedWellId: currentFeature.properties.id,
-  //     wellSelectedCoordinates: [
-  //       currentFeature.properties.longitude,
-  //       currentFeature.properties.latitude,
-  //     ],
-  //   }));
-
-  //   createPopUp(currentFeature.properties);
-  //   map.resize();
-  // }
+ 
 
   const wellMouseMove = (e) => {
     map.getCanvas().style.cursor = "pointer";
