@@ -186,7 +186,7 @@ export default function ContactDetailCard(props) {
   return data && data.contact && !loading ? (
     <Grid container spacing={0} className={classes.mainGridContainer}>
       {/*/////////// left column //////////// */}
-      <Grid item xs={9}>
+      <Grid item xs={9} style={{ MinHeight: "100%", backgroundColor: "#fff" }}>
         <Grid item container>
           {/*/////////// section 1 //////////// */}
 
@@ -617,7 +617,7 @@ export default function ContactDetailCard(props) {
       {/*/////////// rigth column //////////// */}
       <Grid
         className={classes.border}
-        style={{ MinHeight: "100%", backgroundColor: "#efefef" }}
+        style={{ MinHeight: "100%" }}
         item
         xs={3}
       >

@@ -84,6 +84,7 @@ export default function ExpandableCard(props) {
       fontSize: "11px",
     },
     content: {
+      backgroundColor: "#efefef",
       transition: "height 0.1s",
       background: "#fff",
       padding: "0 !important",
@@ -304,12 +305,7 @@ export default function ExpandableCard(props) {
             : "--"
         }
       />
-      <CardContent
-        style={props.expanded ? {backgroundColor: "#efefef"} : { backgroundColor: "#efefef" }}
-        className={classes.content}
-      >
-        {props.component}
-      </CardContent>
+      <CardContent className={classes.content}>{props.component}</CardContent>
     </Card>
   );
 }

@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   TagSample: {
+    backgroundColor: "#efefef",
     color: "rgb(1,17,51)",
     borderRadius: "12px",
     width: "100%",

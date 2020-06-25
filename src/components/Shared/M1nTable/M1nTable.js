@@ -33,7 +33,7 @@ import { CONTACTSBYOWNERSID } from "../../../graphQL/useQueryContactsByOwnerId";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 
 const useStyles = makeStyles((theme) => ({
-  container: { 
+  container: {
     padding: "0 !important",
   },
 }));
@@ -70,7 +70,7 @@ const TrackedOwnersHeadCells = [
   //   name: "appraisedValue",
   //   label: "Appraised Value",
   // },
-
+  // { name: "address", label: "Address" },
   {
     name: "tags",
     label: "Tags ",
@@ -756,7 +756,7 @@ export default function M1nTable(props) {
           availableTags = [...availableTags, ...sample.tags];
         });
         const cleanAvailableTags = [...new Set(availableTags)];
-
+        console.log("xxxxxxxxxxxxxxxxxxx", dataOwners.owners.results);
         setRows(dataOwners.owners.results);
         setHeader("Owners");
         setColumns(
