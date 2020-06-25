@@ -134,7 +134,7 @@ export default function QuadSummary(props) {
   };
 
   //graphQL
-  const { data, loading, error } = useQueryQuadChart(stateApp.selectedWell.api);
+  const { data, loading, error } = useQueryQuadChart(stateApp.selectedWell.id);
 
   useEffect(() => {
     if (!stateQuad.quadChart) {

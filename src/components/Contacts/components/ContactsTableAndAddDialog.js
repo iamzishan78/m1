@@ -37,7 +37,7 @@ export default function ContactsTableAndAddDialog() {
   const [validated, setValidated] = useState(false);
   const [ifNewContact, setIfNewContact] = useState("");
 
-  const [wellAPI, setWellAPI] = useState("");
+  const [wellId, setWellId] = useState("");
   const [ownerName, setOwnerName] = useState("");
 
   const [newContact, setNewContact] = useState({
@@ -55,7 +55,7 @@ export default function ContactsTableAndAddDialog() {
   });
 
   const emptyStates = () => {
-    setWellAPI("");
+    setWellId("");
     setOwnerName("");
     setNewContact({
       name: "",
@@ -111,12 +111,12 @@ export default function ContactsTableAndAddDialog() {
   ] = useLazyQuery(WELLOWNERSQUERY);
 
   useEffect(() => {
-    if (wellAPI !== "") {
+    if (wellId !== "") {
       getWellOwners({
-        variables: { api: wellAPI },
+        variables: { id: wellId },
       });
     }
-  }, [wellAPI]);
+  }, [wellId]);
 
   // const ifNewContactFromOwner = () => {
   //   return (
@@ -129,10 +129,10 @@ export default function ContactsTableAndAddDialog() {
   //             label="Well API Number"
   //             multiline
   //             variant="outlined"
-  //             value={wellAPI}
+  //             value={wellId}
   //             onChange={(e) => {
   //               setOwnerName("");
-  //               setWellAPI(e.target.value);
+  //               setWellId(e.target.value);
   //             }}
   //           />
   //         </Grid>

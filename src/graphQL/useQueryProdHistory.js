@@ -2,10 +2,10 @@ import React from 'react';
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 
-export default function useQueryProdHistory(api) {
+export default function useQueryProdHistory(id) {
 
   const WELLPRODHISTORYQUERY = gql`query {
-    wellProdHistory(wellId:"${api}") {
+    wellProdHistory(wellId:"${id}") {
             year
             month
             reportDate

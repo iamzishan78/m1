@@ -248,7 +248,7 @@ export default function WellCard() {
 
   useEffect(() => {
     getWellSummaryDetail({
-      variables: { api: stateApp.selectedWell.api },
+      variables: { id: stateApp.selectedWell.id },
     });
   }, [stateApp.selectedWell]);
 
@@ -261,7 +261,7 @@ export default function WellCard() {
   }, [dataWellSummary]);
 
   //make fire and forget call to REST api so that it begins to cache other well related api calls
-  const { data, loading, error } = useQueryWell(stateApp.selectedWell.api);
+  const { data, loading, error } = useQueryWell(stateApp.selectedWell.id);
   //console.log('fireForget',data)
   /* useEffect(() => {
     setStateApp(state => ({ ...state, selectedWell: props.selectedWell }))
