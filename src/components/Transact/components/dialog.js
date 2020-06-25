@@ -89,6 +89,7 @@ export default function TransactDialog(props) {
     setTitle(title.trim());
     setLabel(label.trim());
     setDescription(description.trim());
+    setContact({});
   };
 
   const handleCloseContactDialog = () => {
