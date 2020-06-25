@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useMutation } from "@apollo/react-hooks";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import Button from "@material-ui/core/Button";
@@ -11,6 +12,10 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+import { AppContext } from "../../AppContext";
+import { TransactContext } from "../Transact/TransactContext";
+import { UPDATETRANSACTION } from "../../graphQL/useMutationUpdateTransaction";
+import Dialog from "../Transact/components/dialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,11 +53,14 @@ export default function Activities({
   transactId,
   ...props
 }) {
-  const [activityModalOpen, setActivityModalOpen] = useState(false);
   const [wonDeals, setWonDeals] = useState([]); // deal closed
   const [lostDeals, setLostDeals] = useState([]); // deal rejected
   const [activeDeals, setActiveDeals] = useState([]); // all other deals
   const [allDeals, setAllDeals] = useState([]); // all other deals
+  const [updateTransaction] = useMutation(UPDATETRANSACTION);
+  const [stateApp] = useContext(AppContext);
+  const [stateTransact, setStateTransact] = useContext(TransactContext);
+  const [displayModal, setDisplayModal] = useState(false);
 
   const classes = useStyles();
   console.log("CONTACT: ", contact);
@@ -101,7 +109,7 @@ export default function Activities({
       (card) =>
         (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     );
-    console.log("SUM: ", sum)
+    console.log("SUM: ", sum);
     return formatter.format(sum);
   };
 
@@ -114,12 +122,49 @@ export default function Activities({
     return formatter.format(sum);
   };
 
+  const handleDataChange = (newData) => {
+    updateTransaction({
+      variables: {
+        transactionId: transactId,
+        transaction: { allData: newData, user: stateApp.user.mongoId },
+      },
+      refetchQueries: ["getTransactionData"],
+      awaitRefetchQueries: true,
+    });
+  };
+
+  const handleOpenDialog = () => {
+    console.log("setting dialog to true ");
+    setStateTransact((stateTransact) => ({
+      ...stateTransact,
+      openDialog: true,
+    }));
+    setDisplayModal(true);
+  };
+
+  const handleCloseDialog = () => {
+    setStateTransact((stateTransact) => ({
+      ...stateTransact,
+      openDialog: false,
+    }));
+    setDisplayModal(false);
+  };
+
   console.log("WON: ", wonDeals);
   console.log("LOST: ", lostDeals);
   console.log("OTHER: ", activeDeals);
 
   return (
     <Card className={classes.root} variant="outlined">
+      <Dialog
+        laneId={null}
+        cardId={null}
+        transactData={transactData}
+        handleDataChange={handleDataChange}
+        openDeals={displayModal}
+        contact={contact}
+        handleCloseDeals={handleCloseDialog}
+      />
       <CardActions>
         <Grid container justify="space-between">
           <Grid item>
@@ -131,7 +176,7 @@ export default function Activities({
             <Button
               variant="contained"
               color="secondary"
-              onClick={() => setActivityModalOpen(true)}
+              onClick={handleOpenDialog}
               gutterBottom
             >
               Add Deal

@@ -52,13 +52,24 @@ export default function TransactDialog(props) {
   const [stateApp] = useContext(AppContext);
   const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [dealName, setDealName] = useState("");
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(props.contact ? props.contact.name : "");
   const [label, setLabel] = useState("");
   const [stage, setStage] = useState("lane1");
   const [description, setDescription] = useState("");
-  const [contact, setContact] = useState({});
+  const [contact, setContact] = useState(
+    props.contact ? { name: props.contact.name, _id: props.contact._id } : {}
+  );
   const [openContactDialog, setOpenContactDialog] = useState(false);
   console.log("Contact dialog.js: ", contact);
+
+  useEffect(() => {
+    if (props.openDeals && !stateTransact.openDialog) {
+      setStateTransact((stateTransact) => ({
+        ...stateTransact,
+        openDialog: true,
+      }));
+    }
+  }, [props.openDeals]);
 
   useEffect(() => {
     if (transactData && cardId && laneId) {
@@ -67,12 +78,16 @@ export default function TransactDialog(props) {
           lane.cards.map((card) => {
             if (card.id === cardId) {
               setDealName(card.dealName ? card.dealName : "");
-              setTitle(card.title ? card.title : "");
               setLabel(card.label ? card.label : "");
               setDescription(card.description ? card.description : "");
               setStage(card.stage ? card.stage : "lane1");
+              if (card.title) setTitle(card.title);
+              else if (props.contact) setTitle(props.contact.name);
+              else setTitle("");
               if (card.contactId) {
                 setContact({ name: card.title, id: card.contactId });
+              } else if (props.contact) {
+                setContact({ name: props.contact.name, id: props.contact._id });
               }
             }
           });
@@ -90,6 +105,9 @@ export default function TransactDialog(props) {
     setLabel(label.trim());
     setDescription(description.trim());
     setContact({});
+    if (props.handleCloseDeals) {
+      props.handleCloseDeals();
+    }
   };
 
   const handleCloseContactDialog = () => {
@@ -99,6 +117,10 @@ export default function TransactDialog(props) {
 
   const handleUpdate = () => {
     // if (title.trim() !== "" && description.trim() !== "") {
+
+    console.log("ADDING")
+    console.log("ttransactData", transactData)
+    console.log(cardId, laneId)
 
     if (transactData) {
       if (cardId && laneId) {
@@ -148,7 +170,7 @@ export default function TransactDialog(props) {
 
   return (
     <Dialog
-      open={stateTransact.openDialog}
+      open={stateTransact.openDialog || props.openDeals}
       onClose={handleClose}
       aria-labelledby="form-dialog-title"
       fullWidth
@@ -202,30 +224,32 @@ export default function TransactDialog(props) {
             />
           )}
 
-          <ButtonGroup
-            fullWidth
-            variant="contained"
-            color="primary"
-            aria-label="contained primary button group"
-          >
-            <Button onClick={() => setOpenContactDialog(true)}>
-              Add / Select Contact
-            </Button>
-
-            <Button
-              component="a"
-              href="http://www.google.com"
-              target="_blank"
-              disabled={
-                (Object.keys(contact).length === 0 &&
-                  contact.constructor === Object) ||
-                contact === null ||
-                title === ""
-              }
+          {!props.contact && (
+            <ButtonGroup
+              fullWidth
+              variant="contained"
+              color="primary"
+              aria-label="contained primary button group"
             >
-              View Contact
-            </Button>
-          </ButtonGroup>
+              <Button onClick={() => setOpenContactDialog(true)}>
+                Add / Select Contact
+              </Button>
+
+              <Button
+                component="a"
+                href="http://www.google.com"
+                target="_blank"
+                disabled={
+                  (Object.keys(contact).length === 0 &&
+                    contact.constructor === Object) ||
+                  contact === null ||
+                  title === ""
+                }
+              >
+                View Contact
+              </Button>
+            </ButtonGroup>
+          )}
         </FormControl>
 
         <FormControl margin="dense" fullWidth size="small">
