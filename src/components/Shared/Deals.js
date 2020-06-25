@@ -3,25 +3,16 @@ import { useQuery } from "@apollo/react-hooks";
 import moment from "moment";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
+import Button from "@material-ui/core/Button";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import Timeline from "@material-ui/lab/Timeline";
-import TimelineItem from "@material-ui/lab/TimelineItem";
-import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
-import TimelineConnector from "@material-ui/lab/TimelineConnector";
-import TimelineContent from "@material-ui/lab/TimelineContent";
-import TimelineDot from "@material-ui/lab/TimelineDot";
-import FastfoodIcon from "@material-ui/icons/Fastfood";
-import AddActivityModal from "../ContactDetailCard/components/AddActivityModal";
-
-import EnvelopeIcon from "../Shared/svgIcons/envelope.js";
-import PhoneIcon from "../Shared/svgIcons/phone.js";
-import StarIcon from "../Shared/svgIcons/star.js";
-import MeetingIcon from "../Shared/svgIcons/meeting.js";
-import { ProfileContext } from "../Profile/ProfileContext";
-import { GETPROFILE } from "../../graphQL/useQueryGetProfile";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,30 +39,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function createData(name, amount, status) {
+  return { name, amount, status };
+}
+
+const rows = [
+  createData("Johnson - 6 NRA", "$765,000", "Active"),
+  createData("Johnson - 84 NRA", "$10,234.2043", "Lost"),
+];
+
 export default function Activities({ activityLog, ...props }) {
   const [activityModalOpen, setActivityModalOpen] = useState(false);
 
   const classes = useStyles();
-
-  const getIcon = (activityType) => {
-    switch (activityType) {
-      case "general":
-        return <StarIcon />;
-      case "phone":
-        return <PhoneIcon />;
-      case "emails":
-        return <EnvelopeIcon />;
-      case "meeting":
-        return <MeetingIcon />;
-      default:
-        return <StarIcon />;
-    }
-  };
-
-  const sortedActivityLog =
-    activityLog && activityLog.length > 0
-      ? activityLog.sort((a, b) => moment(b.dateTime).diff(moment(a.dateTime)))
-      : [];
 
   return (
     <Card className={classes.root} variant="outlined">
@@ -85,21 +65,69 @@ export default function Activities({ activityLog, ...props }) {
         <Grid container justify="space-between">
           <Grid item>
             <Typography variant="button" gutterBottom>
-              Recent Activities
+              Deals
             </Typography>
           </Grid>
           <Grid item>
-            <Typography
-              variant="button"
+            <Button
+              variant="contained"
+              color="secondary"
               onClick={() => setActivityModalOpen(true)}
               gutterBottom
-              style={{ cursor: "pointer" }}
             >
-              Add Activity
-            </Typography>
+              Add Deal
+            </Button>
           </Grid>
         </Grid>
       </CardActions>
+      <CardContent>
+        <div style={{ display: "flex", justifyContent: "space-around" }}>
+          <div
+            style={{
+              textAlign: "center",
+            }}
+          >
+            <Typography variant="h5">$765,000</Typography>
+
+            <Typography variant="caption" gutterBottom>
+              1 Open Deals
+            </Typography>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <Typography variant="h5">$0</Typography>
+
+            <Typography variant="caption" gutterBottom>
+              0 Won Deals
+            </Typography>
+          </div>
+        </div>
+        <Table className={classes.table} size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <strong>Name</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Amount</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Status</strong>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((row) => (
+              <TableRow key={row.name}>
+                <TableCell component="th" scope="row">
+                  {row.name}
+                </TableCell>
+                <TableCell>{row.amount}</TableCell>
+                <TableCell>{row.status}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
     </Card>
   );
 }
