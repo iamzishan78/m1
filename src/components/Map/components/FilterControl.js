@@ -1,5 +1,5 @@
-import React, {useState, useContext} from 'react';
-import { useMutation } from "@apollo/react-hooks";
+import React, {useState, useContext, useEffect} from 'react';
+import { useMutation, useLazyQuery } from "@apollo/react-hooks";
 
 import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
@@ -21,6 +21,7 @@ import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../../Navigation/NavigationContext";
 import { TOGGLETRACK } from "../../../graphQL/useMutationToggleCreateRemoveTrack";
+import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
@@ -120,6 +121,10 @@ export default (props) => {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [toggleCreateRemoveTrack, { data, loading }] = useMutation(TOGGLETRACK);
 
+  const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(
+    WELLOWNERSQUERY
+  );
+
   const toggleOpenContorl = (event) => {
     if (openedControl) {
       setAnchorEl(null);
@@ -153,7 +158,7 @@ export default (props) => {
 
     if (points && points.length > 0) {
       points.forEach((point) => {
-        const targetSourceId = point.id;
+        const targetSourceId = point.properties.id;
         toggleCreateRemoveTrack({
           variables: {
             track: {
@@ -165,12 +170,54 @@ export default (props) => {
         })
       });
     }
-
-    console.log("track wells list", points);
   }
 
+  const trackOwners = (ownerList) => {
+    const user = stateApp.user.mongoId;
+    const targetLabel = "owner";
+    console.log(ownerList);
+    ownerList.forEach((owner) => {
+      const targetSourceId = owner.id;
+      toggleCreateRemoveTrack({
+        variables: {
+          track: {
+            user: user,
+            objectType: targetLabel,
+            trackOn: targetSourceId,
+          },
+        },
+      });
+    });
+  }
+
+  useEffect(() => {
+    if (dataWellOwners && dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
+        trackOwners(dataWellOwners.wellOwners);
+    }
+  }, [dataWellOwners])
+
   const handleTrackOwners = () => {
-    
+    const { map } = stateApp;
+    const points = map.queryRenderedFeatures({
+      layers: ["wellpoints", "welllines"]
+    });
+    // const targetLabel = 'owner';
+    // const user = stateApp.user.mongoId;
+
+    if (points && points.length > 0) {
+      points.forEach((point) => {
+        // const targetSourceId = point.id;
+        const wellApi = point.properties.api;
+        console.log("Selected Well", wellApi);
+
+        getWellOwners({
+          variables: {
+            api: wellApi,
+          },
+        })
+        
+      });
+    }
   }
 
   const id = openedControl ? 'filter-control-popover' : undefined;
@@ -225,6 +272,7 @@ export default (props) => {
               </StyledListItem>
               <StyledListItem
                 ContainerComponent="li"
+                onClick={handleTrackOwners}
               >
                 <ListItemText
                   primary="Owners"
