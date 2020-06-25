@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useQuery } from "@apollo/react-hooks";
-import moment from "moment";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import Button from "@material-ui/core/Button";
@@ -39,14 +37,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function createData(name, amount, status) {
-  return { name, amount, status };
-}
-
-const rows = [
-  createData("Johnson - 6 NRA", "$765,000", "Active"),
-  createData("Johnson - 84 NRA", "$10,234.2043", "Lost"),
-];
+let formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
 
 export default function Activities({
   contact,
@@ -95,6 +89,31 @@ export default function Activities({
     setActiveDeals(others);
   }, [allDeals]);
 
+  const getDealStatus = (laneId) => {
+    if (laneId === "lane5") return "Lost";
+    else if (laneId === "lane4") return "Won";
+    else return "Active";
+  };
+
+  const sumOpenDeals = () => {
+    let sum = 0;
+    activeDeals.forEach(
+      (card) =>
+        (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+    );
+    console.log("SUM: ", sum)
+    return formatter.format(sum);
+  };
+
+  const sumWonDeals = () => {
+    let sum = 0;
+    wonDeals.forEach(
+      (card) =>
+        (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+    );
+    return formatter.format(sum);
+  };
+
   console.log("WON: ", wonDeals);
   console.log("LOST: ", lostDeals);
   console.log("OTHER: ", activeDeals);
@@ -120,54 +139,58 @@ export default function Activities({
           </Grid>
         </Grid>
       </CardActions>
-      <CardContent>
-        <div style={{ display: "flex", justifyContent: "space-around" }}>
-          <div
-            style={{
-              textAlign: "center",
-            }}
-          >
-            <Typography variant="h5">$765,000</Typography>
+      {allDeals && allDeals.length > 0 ? (
+        <CardContent>
+          <div style={{ display: "flex", justifyContent: "space-around" }}>
+            <div
+              style={{
+                textAlign: "center",
+              }}
+            >
+              <Typography variant="h5">{sumOpenDeals()}</Typography>
 
-            <Typography variant="caption" gutterBottom>
-              1 Open Deals
-            </Typography>
-          </div>
-          <div style={{ textAlign: "center" }}>
-            <Typography variant="h5">$0</Typography>
+              <Typography variant="caption" gutterBottom>
+                {activeDeals.length} Open Deals
+              </Typography>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <Typography variant="h5">{sumWonDeals()}</Typography>
 
-            <Typography variant="caption" gutterBottom>
-              0 Won Deals
-            </Typography>
+              <Typography variant="caption" gutterBottom>
+                {wonDeals.length} Won Deals
+              </Typography>
+            </div>
           </div>
-        </div>
-        <Table className={classes.table} size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <strong>Name</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Amount</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Status</strong>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.name}>
-                <TableCell component="th" scope="row">
-                  {row.name}
+          <Table className={classes.table} size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <strong>Name</strong>
                 </TableCell>
-                <TableCell>{row.amount}</TableCell>
-                <TableCell>{row.status}</TableCell>
+                <TableCell>
+                  <strong>Amount</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Status</strong>
+                </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
+            </TableHead>
+            <TableBody>
+              {allDeals.map((deal) => (
+                <TableRow key={deal.id}>
+                  <TableCell component="th" scope="row">
+                    {deal.dealName}
+                  </TableCell>
+                  <TableCell>{deal.label}</TableCell>
+                  <TableCell>{getDealStatus(deal.laneId)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      ) : (
+        <CardContent>No deals found</CardContent>
+      )}
     </Card>
   );
 }
