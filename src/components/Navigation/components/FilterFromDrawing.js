@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
         }
     },
     buttonEnabled: {
-        color: "blue"
+        color: "#17AADD"
     },
     buttonDisabled: {
         color: "gray"

@@ -2,8 +2,6 @@ import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { Container } from "@material-ui/core";
-// import WellsProvider from '../Wells/WellsProvider';
-// import OwnersProvider from '../Owners/OwnersProvider';
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import Card from "@material-ui/core/Card";
 

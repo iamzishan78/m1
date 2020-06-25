@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
   loader: {
     marginLeft: "50%",
   },
+  autoC: { "& input": { color: "#17AADD" } },
 }));
 
 export default function FilterCountyName() {
@@ -113,7 +114,7 @@ export default function FilterCountyName() {
         </div>
       ) : (
         <Autocomplete
-          className={classes.maxWidth}
+          className={classes.autoC}
           options={countyList}
           getOptionLabel={(option) =>
             option && option.county ? option.county : option ? option : ""

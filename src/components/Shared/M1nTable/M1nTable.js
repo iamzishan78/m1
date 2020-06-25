@@ -33,7 +33,9 @@ import { CONTACTSBYOWNERSID } from "../../../graphQL/useQueryContactsByOwnerId";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 
 const useStyles = makeStyles((theme) => ({
-  container: { padding: "0 !important" },
+  container: {
+    padding: "0 !important",
+  },
 }));
 
 ////////////HeadCells begin///////////////////////////////////////////////
@@ -68,7 +70,7 @@ const TrackedOwnersHeadCells = [
   //   name: "appraisedValue",
   //   label: "Appraised Value",
   // },
-
+  // { name: "address", label: "Address" },
   {
     name: "tags",
     label: "Tags ",
@@ -754,7 +756,7 @@ export default function M1nTable(props) {
           availableTags = [...availableTags, ...sample.tags];
         });
         const cleanAvailableTags = [...new Set(availableTags)];
-
+        console.log("xxxxxxxxxxxxxxxxxxx", dataOwners.owners.results);
         setRows(dataOwners.owners.results);
         setHeader("Owners");
         setColumns(
@@ -1089,7 +1091,7 @@ export default function M1nTable(props) {
     if (props.parent && props.parent === "OwnersPerWell") {
       setTargetLabel("owner");
       getWellOwners({
-        variables: { api: props.selectedWell.api },
+        variables: { id: props.selectedWell.id },
       });
     }
   }, [props.selectedWell]);
@@ -1718,6 +1720,7 @@ export default function M1nTable(props) {
   return (
     <Container maxWidth="xl" className={classes.container}>
       <Table
+        //style={{backgroundColor: '#000'}}
         header={header}
         columns={columns}
         rows={rows}

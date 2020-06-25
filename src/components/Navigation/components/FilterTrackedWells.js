@@ -52,11 +52,6 @@ export default function FilterTrackedWells() {
     if (!stateApp.activateUserDefinedLayers(3))
       stateApp.deactivateUserDefinedLayers(3);
     else stateApp.deactivateWellLayer();
-
-    // setStateNav((stateNav) => ({
-    //   ...stateNav,
-    //   filterTrackedWells: !stateNav.filterTrackedWells,
-    // }));
   };
 
   return (
@@ -66,6 +61,7 @@ export default function FilterTrackedWells() {
       </IconButton>
       <FormLabel>Tracked Wells</FormLabel>
       <Switch
+        disabled={!(stateApp.trackedwells && stateApp.trackedwells.length > 0)}
         className={classes.noOwnersToggle}
         checked={stateNav.filterTrackedWells}
         onChange={toggleTracks}

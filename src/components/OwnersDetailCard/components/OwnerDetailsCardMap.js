@@ -38,6 +38,7 @@ export default function OwnerDetailsCardMap() {
   const [map, setMap] = useState(null);
   const [mapStyles, setMapStyles] = useState([]);
   const mapEl = useRef(null);
+  mapboxgl.accessToken = stateApp.mapboxglAccessToken;
 
   useEffect(() => {
     const req = new Request(

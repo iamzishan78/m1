@@ -209,7 +209,8 @@ export default function FilterFormProduction() {
       let compare = [];
       let optionUpdate;
       let elementUpdate;
-      let matchName = prodOptions.map((option) => option);
+      // let matchName = prodOptions.map((option) => option);
+      let matchName = [...prodOptions];
       matchName.forEach((element) => {
         compare.push(element);
       });
@@ -259,6 +260,7 @@ export default function FilterFormProduction() {
     >
       <Grid item sm={12}>
         <Autocomplete
+          ChipProps={{ color: "secondary" }}
           multiple
           options={listOptions.map((option) => option.name)}
           disableListWrap

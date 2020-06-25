@@ -3,12 +3,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 
 const useStyles = makeStyles((theme) => ({
-  root:{
-    backgroundColor:'#efefef',
-    height: '100%'
-  },
-  divTable: {
+  root: {
     padding: "10px 32px 10px 32px",
+    background:'#efefef',
+    height: '100%'
   },
 }));
 
@@ -17,8 +15,10 @@ export default function Contacts() {
 
   return (
     
-    <div className={classes.divTable}>
+    <div className={classes.root}>
       <M1nTable parent="Contacts" />
     </div>
+
+    
   );
 }

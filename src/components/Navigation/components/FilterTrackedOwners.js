@@ -53,11 +53,6 @@ export default function FilterTrackedOwners() {
     if (!stateApp.activateUserDefinedLayers(4))
       stateApp.deactivateUserDefinedLayers(4);
     else stateApp.deactivateWellLayer();
-
-    // setStateNav((stateNav) => ({
-    //   ...stateNav,
-    //   filterTrackedOwners: !stateNav.filterTrackedOwners,
-    // }));
   };
 
   return (
@@ -67,6 +62,9 @@ export default function FilterTrackedOwners() {
       </IconButton>
       <FormLabel>Tracked Owners</FormLabel>
       <Switch
+        disabled={
+          !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0)
+        }
         className={classes.noOwnersToggle}
         checked={stateNav.filterTrackedOwners}
         onChange={toggleTracks}

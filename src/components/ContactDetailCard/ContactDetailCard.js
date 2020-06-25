@@ -186,7 +186,7 @@ export default function ContactDetailCard(props) {
   return data && data.contact && !loading ? (
     <Grid container spacing={0} className={classes.mainGridContainer}>
       {/*/////////// left column //////////// */}
-      <Grid item xs={9}>
+      <Grid item xs={9} style={{ MinHeight: "100%", backgroundColor: "#fff" }}>
         <Grid item container>
           {/*/////////// section 1 //////////// */}
 
@@ -654,6 +654,8 @@ export default function ContactDetailCard(props) {
                   targetLabel="contact"
                 />
               </Paper>
+            </Grid>
+            <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <Activities
                   id={data.contact._id}

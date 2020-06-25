@@ -57,6 +57,7 @@ export default function ExpandableCard(props) {
       height: props.expanded ? height : null,
       background: "#011133",
       //background: "#efefef",
+      //background: "#000",
       borderStyle: "solid",
       borderWidth: "thin",
       borderColor: "#011133",
@@ -83,8 +84,9 @@ export default function ExpandableCard(props) {
       fontSize: "11px",
     },
     content: {
+      backgroundColor: "#efefef",
       transition: "height 0.1s",
-      backgroundColor: "#fafafa",
+      background: "#fff",
       padding: "0 !important",
       height: height,
       overflowY: "auto",
@@ -220,7 +222,7 @@ export default function ExpandableCard(props) {
             {stateExpandableCard.expanded && (
               <Tooltip title={"Report Bug"} placement="top">
                 <IconButton
-                  size="large"
+                  size="medium"
                   onClick={() => setOpenBugModal(true)}
                   //aria-label="expand"
                   className={classes.icons}
