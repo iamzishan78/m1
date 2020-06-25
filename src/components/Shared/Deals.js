@@ -48,19 +48,70 @@ const rows = [
   createData("Johnson - 84 NRA", "$10,234.2043", "Lost"),
 ];
 
-export default function Activities({ activityLog, ...props }) {
+export default function Activities({
+  contact,
+  transactData,
+  transactId,
+  ...props
+}) {
   const [activityModalOpen, setActivityModalOpen] = useState(false);
+  const [wonDeals, setWonDeals] = useState([]); // deal closed
+  const [lostDeals, setLostDeals] = useState([]); // deal rejected
+  const [activeDeals, setActiveDeals] = useState([]); // all other deals
 
   const classes = useStyles();
+  console.log("CONTACT: ", contact);
+
+  useEffect(() => {
+    console.log("Transact data: ", transactData);
+    if (transactData && transactData.lanes && transactData.lanes.length > 0) {
+      const { lanes } = transactData;
+      // get lost deals
+      const lost = lanes.find((obj) => obj.title === "Offer Rejected")?.cards;
+
+      if (lost && lost.length > 0) {
+        let lostFiltered = [];
+        lost.forEach((card) => {
+          if (contact?._id === card.contactId) lostFiltered.push(card);
+        });
+        setLostDeals(lostFiltered);
+      } else {
+        setLostDeals([]);
+      }
+
+      // get won deals
+      const won = lanes.find((obj) => obj.title === "Deal Closed")?.cards;
+
+      if (won && won.length > 0) {
+        let wonFiltered = [];
+        won.forEach((card) => {
+          if (contact?._id === card.contactId) wonFiltered.push(card);
+        });
+        setWonDeals(wonFiltered);
+      } else {
+        setWonDeals([]);
+      }
+
+      // get all other deals
+      const otherDeals = lanes.filter(
+        (obj) => obj.title !== "Deal Closed" && obj.title !== "Offer Rejected"
+      );
+      const otherDealCards = [];
+      otherDeals.forEach((deal) => {
+        deal.cards.forEach((card) => {
+          if (contact?._id === card.contactId) otherDealCards.push(card);
+        });
+      });
+      setActiveDeals(otherDealCards);
+    }
+  }, [contact, transactData, transactId]);
+
+  console.log("WON: ", wonDeals);
+  console.log("LOST: ", lostDeals);
+  console.log("OTHER: ", activeDeals);
 
   return (
     <Card className={classes.root} variant="outlined">
-      {/* <AddActivityModal
-        open={activityModalOpen}
-        onClose={() => setActivityModalOpen(false)}
-        id={props.id}
-        activityLog={activityLog}
-      /> */}
       <CardActions>
         <Grid container justify="space-between">
           <Grid item>
