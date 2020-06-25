@@ -21,7 +21,7 @@ import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../../Navigation/NavigationContext";
 import { TOGGLETRACK } from "../../../graphQL/useMutationToggleCreateRemoveTrack";
-import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
+import { WELLSOWNERSQUERY } from "../../../graphQL/useQueryWellsOwners";
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
@@ -121,8 +121,8 @@ export default (props) => {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [toggleCreateRemoveTrack, { data, loading }] = useMutation(TOGGLETRACK);
 
-  const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(
-    WELLOWNERSQUERY
+  const [getWellsOwners, { data: dataWellsOwners }] = useLazyQuery(
+    WELLSOWNERSQUERY
   );
 
   const toggleOpenContorl = (event) => {
@@ -191,10 +191,11 @@ export default (props) => {
   }
 
   useEffect(() => {
-    if (dataWellOwners && dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
-        trackOwners(dataWellOwners.wellOwners);
+    if (dataWellsOwners && dataWellsOwners.wellOwners && dataWellsOwners.wellOwners.length > 0) {
+        // trackOwners(dataWellsOwners.wellOwners);
+        console.log(dataWellsOwners.wellOwners);
     }
-  }, [dataWellOwners])
+  }, [dataWellsOwners])
 
   const handleTrackOwners = () => {
     const { map } = stateApp;
@@ -205,18 +206,20 @@ export default (props) => {
     // const user = stateApp.user.mongoId;
 
     if (points && points.length > 0) {
+      const wellApiArray = [];
       points.forEach((point) => {
         // const targetSourceId = point.id;
         const wellApi = point.properties.api;
+        wellApiArray.push(wellApi);
         console.log("Selected Well", wellApi);
 
-        getWellOwners({
-          variables: {
-            api: wellApi,
-          },
-        })
         
       });
+      getWellsOwners({
+        variables: {
+          api: wellApiArray,
+        },
+      })
     }
   }
 
