@@ -2925,6 +2925,7 @@ export default function Map() {
       script.src =
         "//api.usersnap.com/load/64ab8ea7-9417-41a0-b565-eb7ad69da871.js";
       script.async = true;
+      script.setAttribute("id", "feedback-script");
 
       var x = document.getElementsByTagName("script")[0];
       x.parentNode.insertBefore(script, x);
@@ -2934,6 +2935,11 @@ export default function Map() {
       return () => {
         document.body.removeChild(script);
       };
+    } else if (stateApp.userSnap === false){
+      const feedbackScript = document.querySelector("#feedback-script");
+      feedbackScript && feedbackScript.remove();
+      const element = document.getElementsByName("us-entrypoint-button");
+      element && element[0] && element[0].remove();
     }
   }, [stateApp.userSnap]);
 

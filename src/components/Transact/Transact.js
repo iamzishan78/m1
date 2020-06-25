@@ -11,6 +11,7 @@ import { TransactContext } from "./TransactContext";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { UPDATETRANSACTION } from "../../graphQL/useMutationUpdateTransaction";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Button from "@material-ui/core/Button";
 import Dialog from "./components/dialog";
 
 const data_file = {
@@ -115,7 +116,7 @@ const data_file = {
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100%",
-    backgroundColor: '#efefef',
+    backgroundColor: "#efefef",
   },
   list: {
     overflowX: "auto !important",
@@ -172,8 +173,26 @@ export default function Transact() {
     }));
   };
 
+  const handleClickAddDeal = () => {
+    setCardId(null);
+    setLaneId(null);
+    setStateTransact((stateTransact) => ({
+      ...stateTransact,
+      openDialog: true,
+    }));
+  };
+
+
   return !loading && data && transactData ? (
     <div className={classes.root}>
+      <Button
+        onClick={handleClickAddDeal}
+        color="secondary"
+        variant="contained"
+        style={{ margin: "10px" }}
+      >
+        Add Deal
+      </Button>
       <Dialog
         cardId={cardId}
         laneId={laneId}
@@ -188,7 +207,7 @@ export default function Transact() {
         laneDraggable={true}
         cardDraggable={true}
         collapsibleLanes={false}
-        editable={true}
+        editable={false}
         canAddLanes={true}
         editLaneTitle={true}
         hideCardDeleteIcon={false}

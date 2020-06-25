@@ -19,10 +19,13 @@ import Tooltip from "@material-ui/core/Tooltip";
 import FieldContent from "./components/FieldContent";
 import LocationCityIcon from "@material-ui/icons/LocationCity";
 import { CONTACT } from "../../graphQL/useQueryContact";
+import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery } from "@apollo/react-hooks";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import Activities from "../Shared/Activities";
+import Deals from "../Shared/Deals";
+import { AppContext } from "../../AppContext";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -147,7 +150,11 @@ const useStyles = makeStyles((theme) => ({
 export default function ContactDetailCard(props) {
   const classes = useStyles();
   const [openDialog, setOpenDialog] = useState(false);
+  const [stateApp] = useContext(AppContext);
+  const [transactData, setTransactData] = useState();
+  const [transactId, setTransactId] = useState();
   const [getContact, { loading, data }] = useLazyQuery(CONTACT);
+  const [getTransactionData, { data: tData }] = useLazyQuery(TRANSACTIONDATA);
 
   useEffect(() => {
     if (props.contactId) {
@@ -158,6 +165,23 @@ export default function ContactDetailCard(props) {
       });
     }
   }, [props.contactId]);
+
+  useEffect(() => {
+    if (stateApp.user && stateApp.user.mongoId) {
+      getTransactionData({
+        variables: {
+          userId: stateApp.user.mongoId,
+        },
+      });
+    }
+  }, [stateApp.user]);
+
+  useEffect(() => {
+    if (tData && tData.transactionData && tData.transactionData.allData) {
+      setTransactData(tData.transactionData.allData);
+      setTransactId(tData.transactionData._id);
+    }
+  }, [tData]);
 
   return data && data.contact && !loading ? (
     <Grid container spacing={0} className={classes.mainGridContainer}>
@@ -617,6 +641,13 @@ export default function ContactDetailCard(props) {
              */}
 
             <Grid item xs={12}>
+              <Paper className={classes.paper}>
+                <Deals
+                  contact={data.contact}
+                  transactData={transactData}
+                  transactId={transactId}
+                />
+              </Paper>
               <Paper className={classes.paper}>
                 <Comments
                   targetSourceId={data.contact._id}
