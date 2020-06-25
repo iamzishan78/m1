@@ -58,6 +58,7 @@ export default function Activities({
   const [wonDeals, setWonDeals] = useState([]); // deal closed
   const [lostDeals, setLostDeals] = useState([]); // deal rejected
   const [activeDeals, setActiveDeals] = useState([]); // all other deals
+  const [allDeals, setAllDeals] = useState([]); // all other deals
 
   const classes = useStyles();
   console.log("CONTACT: ", contact);
@@ -66,45 +67,33 @@ export default function Activities({
     console.log("Transact data: ", transactData);
     if (transactData && transactData.lanes && transactData.lanes.length > 0) {
       const { lanes } = transactData;
-      // get lost deals
-      const lost = lanes.find((obj) => obj.title === "Offer Rejected")?.cards;
 
-      if (lost && lost.length > 0) {
-        let lostFiltered = [];
-        lost.forEach((card) => {
-          if (contact?._id === card.contactId) lostFiltered.push(card);
-        });
-        setLostDeals(lostFiltered);
-      } else {
-        setLostDeals([]);
-      }
-
-      // get won deals
-      const won = lanes.find((obj) => obj.title === "Deal Closed")?.cards;
-
-      if (won && won.length > 0) {
-        let wonFiltered = [];
-        won.forEach((card) => {
-          if (contact?._id === card.contactId) wonFiltered.push(card);
-        });
-        setWonDeals(wonFiltered);
-      } else {
-        setWonDeals([]);
-      }
-
-      // get all other deals
-      const otherDeals = lanes.filter(
-        (obj) => obj.title !== "Deal Closed" && obj.title !== "Offer Rejected"
-      );
-      const otherDealCards = [];
-      otherDeals.forEach((deal) => {
+      // get all deals
+      const all = [];
+      lanes.forEach((deal) => {
         deal.cards.forEach((card) => {
-          if (contact?._id === card.contactId) otherDealCards.push(card);
+          if (contact?._id === card.contactId) all.push(card);
         });
       });
-      setActiveDeals(otherDealCards);
+      console.log("all: ", all);
+      setAllDeals(all);
     }
   }, [contact, transactData, transactId]);
+
+  useEffect(() => {
+    let lost = [];
+    let won = [];
+    let others = [];
+    allDeals.forEach((card) => {
+      if (card.laneId === "lane5") lost.push(card);
+      else if (card.laneId === "lane4") won.push(card);
+      else others.push(card);
+    });
+
+    setWonDeals(won);
+    setLostDeals(lost);
+    setActiveDeals(others);
+  }, [allDeals]);
 
   console.log("WON: ", wonDeals);
   console.log("LOST: ", lostDeals);
