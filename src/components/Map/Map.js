@@ -1857,10 +1857,13 @@ export default function Map() {
 
   const createUDPopUp = useCallback(
     (currentFeature) => {
-      let coordinates = JSON.parse(currentFeature.shapeCenter);
+      console.log(currentFeature.shapeCenter);
+      let coordinates = currentFeature.shapeCenter;
+      if (typeof currentFeature.shapeCenter === 'string') {
+        coordinates = JSON.parse(currentFeature.shapeCenter);
+      }
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
-      //console.log(popUps);
 
       let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
@@ -2739,7 +2742,8 @@ export default function Map() {
     const { selectedUserDefinedLayer } = stateApp;
 
     spatialDataAttributes.forEach((attribute) => {
-      if (spatialData[attribute]) {
+      if (spatialData[attribute] != null || typeof spatialData[attribute] !== 'undefined') {
+        console.log("set attribute", spatialData[attribute], attribute);
         selectedUserDefinedLayer.properties[attribute] = spatialData[attribute];
       }
     });
@@ -2757,7 +2761,8 @@ export default function Map() {
       addCustomShapeProperties(current_feature, stateApp.draw);
       current_feature = stateApp.draw.get(draw_id);
       spatialDataAttributes.forEach((attribute) => {
-        if (spatialData[attribute]) {
+        if (spatialData[attribute] != null || typeof spatialData[attribute] !== 'undefined') {
+          console.log("set attribute", spatialData[attribute], attribute);
           current_feature.properties[attribute] = spatialData[attribute];
         }
       });

@@ -258,7 +258,7 @@ export default function DrawShapes(props) {
                 attribute,
                 spatialData[attribute]
             );
-            if (spatialData[attribute]) {
+            if (spatialData[attribute] != null || typeof spatialData[attribute] !== 'undefined') {
                 stateApp.currentFeature.properties[attribute] = spatialData[attribute];
             }
         });
