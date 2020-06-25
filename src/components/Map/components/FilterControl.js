@@ -1,7 +1,7 @@
 import React, {useState, useContext} from 'react';
+import { useMutation } from "@apollo/react-hooks";
 
 import IconButton from "@material-ui/core/IconButton";
-import Popover from '@material-ui/core/Popover';
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
@@ -20,6 +20,7 @@ import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
 
 import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../../Navigation/NavigationContext";
+import { TOGGLETRACK } from "../../../graphQL/useMutationToggleCreateRemoveTrack";
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
@@ -117,6 +118,7 @@ export default (props) => {
   const [openTrack, setOpenTrack] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [toggleCreateRemoveTrack, { data, loading }] = useMutation(TOGGLETRACK);
 
   const toggleOpenContorl = (event) => {
     if (openedControl) {
@@ -142,7 +144,29 @@ export default (props) => {
   };
 
   const handleTrackWells = () => {
+    const { map } = stateApp;
+    const points = map.queryRenderedFeatures({
+      layers: ["wellpoints", "welllines"]
+    });
+    const targetLabel = 'well';
+    const user = stateApp.user.mongoId;
 
+    if (points && points.length > 0) {
+      points.forEach((point) => {
+        const targetSourceId = point.id;
+        toggleCreateRemoveTrack({
+          variables: {
+            track: {
+              user: user,
+              objectType: targetLabel,
+              trackOn: targetSourceId,
+            },
+          },
+        })
+      });
+    }
+
+    console.log("track wells list", points);
   }
 
   const handleTrackOwners = () => {
@@ -190,6 +214,7 @@ export default (props) => {
             <List disablePadding>
               <StyledListItem
                 ContainerComponent="li"
+                onClick={handleTrackWells}
               >
                 <ListItemText
                   primary="Wells"
