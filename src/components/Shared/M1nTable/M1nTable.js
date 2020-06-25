@@ -33,7 +33,9 @@ import { CONTACTSBYOWNERSID } from "../../../graphQL/useQueryContactsByOwnerId";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 
 const useStyles = makeStyles((theme) => ({
-  container: { padding: "0 !important" },
+  container: { 
+    padding: "0 !important",
+  },
 }));
 
 ////////////HeadCells begin///////////////////////////////////////////////
@@ -1718,7 +1720,7 @@ export default function M1nTable(props) {
   return (
     <Container maxWidth="xl" className={classes.container}>
       <Table
-        style={{backgroundColor: '#fff'}}
+        //style={{backgroundColor: '#000'}}
         header={header}
         columns={columns}
         rows={rows}
