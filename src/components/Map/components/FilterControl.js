@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     width: "350px",
   },
   list: {
-    padding: 0,
+    padding: '0',
   },
 }));
 
@@ -187,7 +187,7 @@ export default (props) => {
           {openTrack ? <ExpandLess /> : <ExpandMore />}
           </StyledListItem2>
           <Collapse in={openTrack} timeout="auto" unmountOnExit>
-            <List className={classes.list}>
+            <List disablePadding>
               <StyledListItem
                 ContainerComponent="li"
               >

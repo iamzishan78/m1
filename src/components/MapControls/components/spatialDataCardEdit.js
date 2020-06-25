@@ -269,7 +269,7 @@ export default function SpatialDataCardEdit(props) {
       });
     }
     
-    props.closeSpatialDataCard();
+    props.closeSpatialDataCard(false);
   }
 
   const deleteSpatialData = () => {

@@ -258,17 +258,25 @@ export default function DrawShapes(props) {
                 attribute,
                 spatialData[attribute]
             );
-            if (spatialData[attribute]) {
+            if (spatialData[attribute] != null || typeof spatialData[attribute] !== 'undefined') {
                 stateApp.currentFeature.properties[attribute] = spatialData[attribute];
             }
         });
         stateApp.currentFeature.properties.id = stateApp.currentFeature.id
 
+        let position = null;
+
+        if (typeof stateApp.currentFeature.properties.shapeCenter == 'string') {
+            position = JSON.parse(stateApp.currentFeature.properties.shapeCenter);
+        } else {
+            position = stateApp.currentFeature.properties.shapeCenter
+        }
+
         const symbolFeature = {
             type: "Feature",
             geometry: {
                 type: "Point",
-                coordinates: stateApp.currentFeature.properties.shapeCenter
+                coordinates: position
             },
             properties: {
                 ...stateApp.currentFeature.properties,

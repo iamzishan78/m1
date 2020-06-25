@@ -213,6 +213,7 @@ export default function Map() {
 
   useEffect(() => {
     if (customLayerData && customLayerData.customLayers) {
+      console.log("Custom Layer data", customLayerData.customLayers);
       setStateApp({
         ...stateApp,
         customLayers: customLayerData.customLayers,
@@ -1856,10 +1857,13 @@ export default function Map() {
 
   const createUDPopUp = useCallback(
     (currentFeature) => {
-      let coordinates = JSON.parse(currentFeature.shapeCenter);
+      console.log(currentFeature.shapeCenter);
+      let coordinates = currentFeature.shapeCenter;
+      if (typeof currentFeature.shapeCenter === 'string') {
+        coordinates = JSON.parse(currentFeature.shapeCenter);
+      }
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
-      //console.log(popUps);
 
       let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
@@ -2681,12 +2685,8 @@ export default function Map() {
   }, [stateApp.toggle3d]);
 
   useEffect(() => {
-    console.log(
-      "Drawing status check",
-      stateApp.editDraw,
-      stateNav.drawingMode
-    );
-    if (stateApp.editDraw === true || stateNav.drawingMode !== null) {
+    console.log("Drawing status check", stateApp.editDraw, stateNav.drawingMode);
+    if (stateApp.editDraw === true || stateNav.drawingMode) {
       setDrawStatus(true);
       if (mapClick && mapClick.mapClickHandler != null) {
         map.off("click", mapClick.mapClickHandler);
@@ -2712,12 +2712,18 @@ export default function Map() {
     setStateApp((state) => ({ ...state, expandedCard: false }));
   };
 
-  const handleCloseSpatialDataCard = () => {
+  const handleCloseSpatialDataCard = (complete = true) => {
     console.log("close card on map here");
     setStateApp((state) => ({
       ...state,
       popupOpen: false,
     }));
+    if (complete == true) {
+      setStateApp((state) => ({
+        ...state,
+        selectedUserDefinedLayer: undefined,
+      }));
+    }
   };
 
   const handleCloseSpatialDataCardEdit = () => {
@@ -2726,6 +2732,7 @@ export default function Map() {
       ...state,
       popupOpen: false,
       editLayer: false,
+      selectedUserDefinedLayer: undefined
     }));
   };
 
@@ -2735,7 +2742,8 @@ export default function Map() {
     const { selectedUserDefinedLayer } = stateApp;
 
     spatialDataAttributes.forEach((attribute) => {
-      if (spatialData[attribute]) {
+      if (spatialData[attribute] != null || typeof spatialData[attribute] !== 'undefined') {
+        console.log("set attribute", spatialData[attribute], attribute);
         selectedUserDefinedLayer.properties[attribute] = spatialData[attribute];
       }
     });
@@ -2750,25 +2758,31 @@ export default function Map() {
 
     let current_feature = stateApp.draw.get(draw_id);
     if (current_feature) {
-      console.log("update layer change to draw feature");
-      spatialDataAttributes.forEach((attribute) => {
-        stateApp.draw.setFeatureProperty(
-          draw_id,
-          attribute,
-          spatialData[attribute]
-        );
-      });
       addCustomShapeProperties(current_feature, stateApp.draw);
       current_feature = stateApp.draw.get(draw_id);
+      spatialDataAttributes.forEach((attribute) => {
+        if (spatialData[attribute] != null || typeof spatialData[attribute] !== 'undefined') {
+          console.log("set attribute", spatialData[attribute], attribute);
+          current_feature.properties[attribute] = spatialData[attribute];
+        }
+      });
       current_feature.id = current_feature.properties.id;
       update_layer = current_feature;
+    }
+
+    let position = null;
+
+    if (typeof update_layer.properties.shapeCenter == 'string') {
+      position = JSON.parse(update_layer.properties.shapeCenter);
+    } else {
+      position = update_layer.properties.shapeCenter
     }
 
     const symbolFeature = {
       type: "Feature",
       geometry: {
-        type: "Point",
-        coordinates: JSON.parse(update_layer.properties.shapeCenter),
+          type: "Point",
+          coordinates: position
       },
       properties: {
         ...update_layer.properties,
@@ -2777,7 +2791,6 @@ export default function Map() {
       },
     };
 
-    console.log(symbolFeature);
     // //////cleaning the selected title opinion and redirecting to title opinion page//
     if (stateApp.user.mongoId !== "") {
       const id = update_layer.properties.id;
@@ -2821,6 +2834,7 @@ export default function Map() {
         name: spatialData.shapeLabel,
         user: stateApp.user.mongoId,
       };
+
       updateCustomLayer({
         variables: {
           customLayerId: customLayerId,
@@ -2875,6 +2889,7 @@ export default function Map() {
             ...stateApp,
             editingUserDefinedLayers: updated_layers,
           });
+          handleCloseSpatialDataCardEdit();
         } else if (customLayers.length > 0) {
           const delete_layers = customLayers.filter((layer) => {
             const shape_properties = JSON.parse(layer.shape).properties;
@@ -2898,6 +2913,7 @@ export default function Map() {
               customLayers: updated_layers,
             });
           }
+          handleCloseSpatialDataCard();
         }
       } else {
         if (customLayers.length > 0) {
@@ -2923,6 +2939,7 @@ export default function Map() {
               customLayers: updated_layers,
             });
           }
+          handleCloseSpatialDataCard();
         }
       }
     }
@@ -2989,7 +3006,6 @@ export default function Map() {
             saveSpatialData={handleSaveSpatialDataToShape}
             closeSpatialDataCard={handleCloseSpatialDataCardEdit}
             deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
-            cardClass={"cardPopup"}
           />
         )}
       <div id="tempPopupHolder" className={classes.portal} ref={container} />
