@@ -10,6 +10,8 @@ import LayersIcon from "@material-ui/icons/Layers";
 import LanguageIcon from "@material-ui/icons/Language";
 import EditIcon from "@material-ui/icons/Edit";
 import MenuIcon from "@material-ui/icons/Menu";
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import QueueIcon from '@material-ui/icons/Queue';
 //import ToggleButton from "@material-ui/lab/ToggleButton";
 // import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 // import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -19,6 +21,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import BaseMapStyles from "./components/BaseMapStyles";
 import CheckboxList from "./components/CheckboxList";
 import CheckboxListHeatmaps from "./components/CheckboxListHeatmaps";
+import AddUserData from "./components/addUserData";
 import DrawShapes from "./components/DrawShapes/DrawShapes";
 import TrackedWellsMapCard from "./components/TrackedWellsMapCard";
 import GpsFixedIcon from "@material-ui/icons/GpsFixed";
@@ -143,15 +146,13 @@ export default function MapControls(props) {
         icon: <GradientIcon id="heatMaps" />,
         name: "Heatmaps",
         action: "heatMaps",
-      },
-
+      }, 
+      {icon: <QueueIcon id="add" />, name: "Add Data", action: "add"},
       {
         icon: !stateApp.editDraw ? <EditIcon /> : <CancelIcon />,
         name: "Draw",
         action: "draw",
       },
-
-
       {
         icon: <Cube3d />,
         name: "Toggle 3D",
@@ -189,6 +190,8 @@ export default function MapControls(props) {
         return <CheckboxList changeLayers={changeLayers} />;
       case "heatMaps":
         return <CheckboxListHeatmaps changeHeatmaps={changeHeatmaps} />;
+      case "add":
+        return <AddUserData/>;
       case "draw":
         return <DrawShapes />;
       case "track":
