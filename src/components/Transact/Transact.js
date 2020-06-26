@@ -204,11 +204,11 @@ export default function Transact() {
         style={{ backgroundColor: "#efefef" }}
         data={transactData}
         draggable={true}
-        laneDraggable={true}
+        laneDraggable={false}
         cardDraggable={true}
-        collapsibleLanes={false}
+        collapsibleLanes={true}
         editable={false}
-        canAddLanes={true}
+        canAddLanes={false}
         editLaneTitle={true}
         hideCardDeleteIcon={false}
         onDataChange={handleDataChange}
