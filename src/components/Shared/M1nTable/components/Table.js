@@ -31,11 +31,11 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#efefef",
     marginLeft: "auto",
     "&:hover": {
-      backgroundColor: "#dadbde",
+      backgroundColor: "#dadbde !important",
     },
   },
   iconSelected: {
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: `${theme.palette.secondary.main} !important`,
     color: "#011133 !important",
     "& p": {
       color: "#011133 !important",
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: "180px",
     minWidth: "80px",
     "&:hover": {
-      backgroundColor: "#DADBDE",
+      backgroundColor: "#dadbde !important",
       cursor: "pointer",
     },
     "& .first": {
@@ -120,6 +120,10 @@ export default function SubTable(props) {
   const [title, setTitle] = useState("");
   const [subTitle, setSubTitle] = useState("");
 
+  const [m1nSelectedRowsIndexes, setM1nSelectedRowsIndexes] = useState([]);
+  const [m1nSelectedRowsIds, setM1nSelectedRowsIds] = useState([]);
+  const [m1nSelectedRowsTracks, setM1nSelectedRowsTracks] = useState([]);
+
   useEffect(() => {
     if (props.rows) {
       setRows([
@@ -129,6 +133,30 @@ export default function SubTable(props) {
       ]);
     }
   }, [props.rows]);
+
+  useEffect(() => {
+    if (rows && m1nSelectedRowsIndexes) {
+      if (rows.length > 0 && m1nSelectedRowsIndexes.length > 0) {
+        let selectedRowsTracks = m1nSelectedRowsIndexes.map(
+          (ind) => rows[ind].isTracked
+        );
+        setM1nSelectedRowsTracks(selectedRowsTracks);
+      } else setM1nSelectedRowsTracks([]);
+    }
+  }, [rows, m1nSelectedRowsIndexes, props.columns]);
+
+  const multiSelectMouseHoverColor = (id, color) => {
+    for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+      if (
+        document.getElementById(
+          id + m1nSelectedRowsIds[i] + m1nSelectedRowsIndexes[i]
+        )
+      )
+        document.getElementById(
+          id + m1nSelectedRowsIds[i] + m1nSelectedRowsIndexes[i]
+        ).style.backgroundColor = color;
+    }
+  };
 
   ////setting all icons columns/////
   useEffect(() => {
@@ -140,12 +168,33 @@ export default function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
                   return (
                     <TrackToggleButton
+                      id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                       target={{ isTracked: value }}
                       targetLabel={props.targetLabel}
                       targetSourceId={tableMeta.rowData[0]}
                       dark
+                      multipleIds={
+                        m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !==
+                          -1 && m1nSelectedRowsIndexes.length > 1
+                          ? m1nSelectedRowsIds
+                          : null
+                      }
+                      multipleTracks={
+                        m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !==
+                          -1 && m1nSelectedRowsIndexes.length > 1
+                          ? m1nSelectedRowsTracks
+                          : null
+                      }
+                      multiSelectMouseHoverColor={
+                        m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !==
+                          -1 && m1nSelectedRowsIndexes.length > 1
+                          ? multiSelectMouseHoverColor
+                          : null
+                      }
+                      idBase={id}
                     />
                   );
                 },
@@ -158,6 +207,8 @@ export default function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
+
                   return (
                     <Tooltip
                       title={
@@ -170,6 +221,7 @@ export default function SubTable(props) {
                         color="secondary"
                       >
                         <IconButton
+                          id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                           size="medium"
                           color="primary"
                           className={`${classes.icons} ${
@@ -190,6 +242,24 @@ export default function SubTable(props) {
                             );
                           }}
                           aria-label="show comments"
+                          onMouseOver={() => {
+                            if (
+                              m1nSelectedRowsIndexes.indexOf(
+                                tableMeta.rowIndex
+                              ) !== -1 &&
+                              m1nSelectedRowsIndexes.length > 1
+                            )
+                              multiSelectMouseHoverColor(id, "#dadbde");
+                          }}
+                          onMouseOut={() => {
+                            if (
+                              m1nSelectedRowsIndexes.indexOf(
+                                tableMeta.rowIndex
+                              ) !== -1 &&
+                              m1nSelectedRowsIndexes.length > 1
+                            )
+                              multiSelectMouseHoverColor(id, "#efefef");
+                          }}
                         >
                           <ChatIcon />
                         </IconButton>
@@ -403,12 +473,14 @@ export default function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
                   return (
                     <Tooltip
-                      title={value[1] === 0 ? "Add Tags" : "Tags"}
+                      title={value && value[1] === 0 ? "Add Tags" : "Tags"}
                       placement="top"
                     >
                       <Badge
+                        id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                         className={`${classes.TagSample} ${
                           colInd === tableMeta.columnIndex &&
                           rowInd === tableMeta.rowIndex
@@ -426,6 +498,24 @@ export default function SubTable(props) {
                             tableMeta.rowData[0],
                             "tag"
                           );
+                        }}
+                        onMouseOver={() => {
+                          if (
+                            m1nSelectedRowsIndexes.indexOf(
+                              tableMeta.rowIndex
+                            ) !== -1 &&
+                            m1nSelectedRowsIndexes.length > 1
+                          )
+                            multiSelectMouseHoverColor(id, "#dadbde");
+                        }}
+                        onMouseOut={() => {
+                          if (
+                            m1nSelectedRowsIndexes.indexOf(
+                              tableMeta.rowIndex
+                            ) !== -1 &&
+                            m1nSelectedRowsIndexes.length > 1
+                          )
+                            multiSelectMouseHoverColor(id, "#efefef");
                         }}
                       >
                         {value[0] && value[0].length > 0 ? (
@@ -473,7 +563,15 @@ export default function SubTable(props) {
       });
       setColumns([...props.columns]);
     }
-  }, [props.columns, props.rows, colInd, rowInd]);
+  }, [
+    props.columns,
+    props.rows,
+    colInd,
+    rowInd,
+    m1nSelectedRowsIds,
+    m1nSelectedRowsIndexes,
+    m1nSelectedRowsTracks,
+  ]);
 
   const handleExpandClick = async (cIndex, rIndex, idOrValues, type) => {
     setColInd(cIndex);
@@ -507,14 +605,52 @@ export default function SubTable(props) {
         ? [10, 25]
         : [],
     selectableRows: "multiple",
-    selectToolbarPlacement: "none",
-    // onRowSelectionChange
+
+    onRowsSelect: (currentRowsSelected, rowsSelected) => {
+      if (rowsSelected && rowsSelected.length > 0) {
+        let indexArray = rowsSelected.map((d) => d.index).sort((a, b) => a - b);
+        if (rows && indexArray) {
+          if (rows.length > 0 && indexArray.length > 0) {
+            let selectedRows = rows.filter(
+              (row, index) => indexArray.indexOf(index) !== -1
+            );
+            let selectedRowsIds = selectedRows.map((row) => {
+              if (row.id) return row.id;
+              if (row.Id) return row.Id;
+            });
+
+            setM1nSelectedRowsIds(selectedRowsIds);
+          } else setM1nSelectedRowsIds([]);
+        }
+        setM1nSelectedRowsIndexes(indexArray);
+      } else {
+        setM1nSelectedRowsIndexes([]);
+        setM1nSelectedRowsIds([]);
+      }
+    },
     // onRowsDelete
+    rowsSelected: m1nSelectedRowsIndexes,
+
     customToolbarSelect:
       props.header === "Interest Owners Tied to Contact"
         ? false
         : (selectedRows, displayData, setSelectedRows) => {
-            return <div style={{ height: "48px" }} />; ////////////////////////
+            // console.log("1111111111111111", JSON.stringify(selectedRows));
+            // console.log("2222222222222222",JSON.stringify(displayData))
+            // console.log("3333333333333333",setSelectedRows)
+            return (
+              <div
+                style={{
+                  height: "48px",
+                  // width: "48px",
+                  // backgroundColor: "red",
+                }}
+                // onClick={() => {
+                //   // setSelectedRows([4]);
+                //   // setM1nSelectedRowsIndexes([1, 2, 3]);
+                // }}
+              />
+            );
           },
 
     customToolbar: () => {
