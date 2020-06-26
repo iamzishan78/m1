@@ -19,7 +19,7 @@ const useStyles = makeStyles({
   tableContainer: {
     //minWidth: 650,
     //paddingRight: '20px'
-    minHeight: "419.556px",
+    // minHeight: "419.556px",
   },
   rowName: {
     fontWeight: "bold",

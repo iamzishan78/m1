@@ -766,6 +766,12 @@ export default function SubTable(props) {
               focus
               targetSourceId={expandedObject}
               targetLabel={props.targetLabel}
+              multipleIds={
+                m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
+                m1nSelectedRowsIndexes.length > 1
+                  ? m1nSelectedRowsIds
+                  : null
+              }
             />
           )}
           {openDialog === "tag" && (
@@ -773,6 +779,12 @@ export default function SubTable(props) {
               <Tags
                 targetSourceId={expandedObject}
                 targetLabel={props.targetLabel}
+                multipleIds={
+                  m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
+                  m1nSelectedRowsIndexes.length > 1
+                    ? m1nSelectedRowsIds
+                    : null
+                }
               />
             </div>
           )}

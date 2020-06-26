@@ -115,7 +115,10 @@ export default function Comments(props) {
   const [publicComment, setPublicComment] = useState(true);
 
   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
-    COMMENTSBYOBJECTIDQUERY
+    COMMENTSBYOBJECTIDQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
   const [upsertComment] = useMutation(UPSERTCOMMENT);
   const [removeComment] = useMutation(REMOVECOMMENT);
@@ -123,12 +126,14 @@ export default function Comments(props) {
   ///////////////////// START FETCHING COMMENTS DATA ////////////////////////////////////////////
 
   useEffect(() => {
-    setLoadingComments(true);
-    getCommentsByObjectId({
-      variables: {
-        objectId: props.targetSourceId,
-      },
-    });
+    if (!props.multipleIds) {
+      setLoadingComments(true);
+      getCommentsByObjectId({
+        variables: {
+          objectId: props.targetSourceId,
+        },
+      });
+    }
   }, [props.targetSourceId]);
 
   useEffect(() => {
@@ -140,41 +145,65 @@ export default function Comments(props) {
 
   ///////////////////// INSERTING NEW COMMENT ///////////////////////////////////////////////
 
-  const handleEnteringComment = (event) => {
-    if (event.target.value.split("\n").join("").trim() !== "") {
-      upsertComment({
-        variables: {
-          comment: {
-            comment:
-              event.target.value.trim()[
-                event.target.value.trim().length - 1
-              ] === "."
-                ? event.target.value
-                    .split("\n")
-                    .map((line) => {
-                      if (line.trim() !== ".") {
-                        return line.trim();
-                      }
-                    })
-                    .join("\n")
-                : `${event.target.value
-                    .split("\n")
-                    .map((line) => {
-                      if (line.trim() !== ".") {
-                        return line.trim();
-                      }
-                    })
-                    .join("\n")}.`,
-            public: publicComment,
-            user: stateApp.user.mongoId,
-            commentedOn: props.targetSourceId,
-            objectType: props.targetLabel,
-          },
-        },
-        refetchQueries: ["getCommentsByObjectId", "getCommentsCounter"],
-        awaitRefetchQueries: true,
-      });
+  const newCommentCleaner = (value) =>
+    value.trim()[value.trim().length - 1] === "."
+      ? value
+          .split("\n")
+          .map((line) => {
+            if (line.trim() !== ".") {
+              return line.trim();
+            }
+          })
+          .join("\n")
+      : `${value
+          .split("\n")
+          .map((line) => {
+            if (line.trim() !== ".") {
+              return line.trim();
+            }
+          })
+          .join("\n")}.`;
 
+  const addNewComent = (value, commentedOn) => {
+    upsertComment({
+      variables: {
+        comment: {
+          comment: newCommentCleaner(value),
+          public: publicComment,
+          user: stateApp.user.mongoId,
+          commentedOn,
+          objectType: props.targetLabel,
+        },
+      },
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter"],
+      awaitRefetchQueries: true,
+    });
+  };
+
+  const handleEnteringComment = (event) => {
+    event.persist();
+    if (
+      event.target.value.split("\n").join("").trim() !== "" &&
+      event.target.value.split("\n").join("").trim() !== "."
+    ) {
+      if (!props.multipleIds) {
+        addNewComent(event.target.value, props.targetSourceId);
+      } else {
+        for (let i = 0; i < props.multipleIds.length; i++) {
+          addNewComent(event.target.value, props.multipleIds[i]);
+        }
+
+        //// adding the new comment to the down list
+        setCommentsArray((commentsArray) => [
+          ...commentsArray,
+          {
+            ts: Date.now(),
+            public: publicComment,
+            user: { name: stateApp.user.name, email: stateApp.user.email },
+            comment: newCommentCleaner(event.target.value),
+          },
+        ]);
+      }
       setEmptyInput(false);
     } else {
       setEmptyInput(true);
