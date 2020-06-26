@@ -82,7 +82,6 @@ const StyledMenuItem = withStyles((theme) => ({
     backgroundColor: "#263451",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white,
-      // },
     },
   },
 }))(MenuItem);
@@ -118,7 +117,9 @@ export default (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openTrack, setOpenTrack] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [setStateNav] = useContext(NavigationContext);
+  const [isTrackWells, setTrackWells] = useState(false);
+  const [isTrackOwners, setTrackOwners] = useState(false);
   const [toggleCreateRemoveTrack, { data, loading }] = useMutation(TOGGLETRACK);
 
   const [getWellsOwners, { data: dataWellsOwners }] = useLazyQuery(
@@ -156,6 +157,8 @@ export default (props) => {
     const targetLabel = 'well';
     const user = stateApp.user.mongoId;
 
+    setTrackWells(!isTrackWells);
+
     if (points && points.length > 0) {
       points.forEach((point) => {
         const targetSourceId = point.properties.id;
@@ -192,8 +195,7 @@ export default (props) => {
 
   useEffect(() => {
     if (dataWellsOwners && dataWellsOwners.wellOwners && dataWellsOwners.wellOwners.length > 0) {
-        // trackOwners(dataWellsOwners.wellOwners);
-        console.log(dataWellsOwners.wellOwners);
+        trackOwners(dataWellsOwners.wellOwners);
     }
   }, [dataWellsOwners])
 
@@ -202,6 +204,7 @@ export default (props) => {
     const points = map.queryRenderedFeatures({
       layers: ["wellpoints", "welllines"]
     });
+    setTrackOwners(!isTrackOwners);
     // const targetLabel = 'owner';
     // const user = stateApp.user.mongoId;
 
@@ -270,7 +273,7 @@ export default (props) => {
                   primary="Wells"
                 />
                 <ListItemIcon>
-                  <MyLocationIcon />
+                  <MyLocationIcon color={isTrackWells ? 'secondary' : 'primary'} />
                 </ListItemIcon>
               </StyledListItem>
               <StyledListItem
@@ -281,7 +284,7 @@ export default (props) => {
                   primary="Owners"
                 />
                 <ListItemIcon>
-                  <MyLocationIcon />
+                  <MyLocationIcon color={isTrackOwners ? 'secondary' : 'primary'} />
                 </ListItemIcon>
               </StyledListItem>
             </List>
