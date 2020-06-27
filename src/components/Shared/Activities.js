@@ -46,11 +46,16 @@ const useStyles = makeStyles((theme) => ({
   },
   todayDot: {
     fontSize: "8px",
+    paddingLeft: "10px",
+    paddingRight: "10px",
+    borderRadius: "20px",
+    color: "#000",
+    backgroundColor: "#d9d9d9"
   },
   imageIcon: {
     height: "100%",
     padding: "3px",
-    display: "block"
+    display: "block",
   },
   iconRoot: {
     textAlign: "center",
@@ -71,7 +76,7 @@ export default function Activities({ activityLog, ...props }) {
       case "phone":
         icon = "phone_call_icon";
         break;
-      case "emails":
+      case "email":
         icon = "envelope_icon";
         break;
       case "meeting":
@@ -126,7 +131,7 @@ export default function Activities({ activityLog, ...props }) {
       </CardActions>
       <Timeline>
         <TimelineItem className={classes.timelineItemRight}>
-          <TimelineSeparator>
+          <TimelineSeparator style={{ transform: "translateX(-5px)" }}>
             <TimelineDot className={classes.todayDot}>Today</TimelineDot>
             <TimelineConnector />
           </TimelineSeparator>
