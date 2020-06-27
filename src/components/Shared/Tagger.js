@@ -55,10 +55,16 @@ export default function Tags(props) {
   const [publicTag, setPublicTag] = useState(true);
 
   const [getTagsByObjectId, { data: dataTags }] = useLazyQuery(
-    TAGSBYOBJECTIDQUERY
+    TAGSBYOBJECTIDQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
   const [getUserAvailableTags, { data: dataUserAvailableTags }] = useLazyQuery(
-    USERAVAILABLETAGSQUERY
+    USERAVAILABLETAGSQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
   const [upsertTag] = useMutation(UPSERTTAG);
   const [removeTag] = useMutation(REMOVETAG);
@@ -67,12 +73,14 @@ export default function Tags(props) {
 
   ////All Object Tag For The Input
   useEffect(() => {
-    setLoadingTags(true);
-    getTagsByObjectId({
-      variables: {
-        objectId: props.targetSourceId,
-      },
-    });
+    if (!props.multipleIds) {
+      setLoadingTags(true);
+      getTagsByObjectId({
+        variables: {
+          objectId: props.targetSourceId,
+        },
+      });
+    }
   }, [props.targetSourceId]);
 
   useEffect(() => {
@@ -141,7 +149,7 @@ export default function Tags(props) {
 
   const NewTag = (tagText) => {
     tagText = UpperAndCleanTagText(tagText);
-    if (tagText === addInDropDown && addInDropDown) {
+    if (addInDropDown && tagText === addInDropDown) {
       tagText = UpperAndCleanTagText(textValue);
     }
     setTextValue("");
@@ -153,27 +161,61 @@ export default function Tags(props) {
       }
     });
     if (!found) {
-      upsertTag({
-        variables: {
-          tag: {
+      if (!props.multipleIds) {
+        upsertTag({
+          variables: {
+            tag: {
+              tag: tagText,
+              public: publicTag,
+              user: stateApp.user.mongoId,
+              taggedOn: props.targetSourceId,
+              objectType: props.targetLabel,
+            },
+          },
+          refetchQueries: [
+            "getTagsByObjectId",
+            "getUserAvailableTags",
+            "getTagSamples",
+            "getUserAvailableFilterTags",
+            "getObjectsFromTagsArray",
+            "getWellsIdsFromTagsArray",
+            "getOwnersIdsFromTagsArray",
+          ],
+          awaitRefetchQueries: true,
+        });
+      } else {
+        for (let i = 0; i < props.multipleIds.length; i++) {
+          upsertTag({
+            variables: {
+              tag: {
+                tag: tagText,
+                public: publicTag,
+                user: stateApp.user.mongoId,
+                taggedOn: props.multipleIds[i],
+                objectType: props.targetLabel,
+              },
+            },
+            refetchQueries: [
+              "getTagsByObjectId",
+              "getUserAvailableTags",
+              "getTagSamples",
+              "getUserAvailableFilterTags",
+              "getObjectsFromTagsArray",
+              "getWellsIdsFromTagsArray",
+              "getOwnersIdsFromTagsArray",
+            ],
+            awaitRefetchQueries: true,
+          });
+        }
+        setTagsArray((tags) => [
+          ...tags,
+          {
             tag: tagText,
             public: publicTag,
-            user: stateApp.user.mongoId,
-            taggedOn: props.targetSourceId,
-            objectType: props.targetLabel,
+            user: { name: stateApp.user.name, email: stateApp.user.email },
           },
-        },
-        refetchQueries: [
-          "getTagsByObjectId",
-          "getUserAvailableTags",
-          "getTagSamples",
-          "getUserAvailableFilterTags",
-          "getObjectsFromTagsArray",
-          "getWellsIdsFromTagsArray",
-          "getOwnersIdsFromTagsArray",
-        ],
-        awaitRefetchQueries: true,
-      });
+        ]);
+      }
     }
   };
 
@@ -235,8 +277,16 @@ export default function Tags(props) {
   };
 
   const AddingAddRowToDropDown = () => {
-    const { cleanArray } = cleanDropDownArray();
+    let { cleanArray } = cleanDropDownArray();
 
+    if (props.multipleIds && userAvailableTagsArray) {
+      let objectTags = tagsArray.map((tag) => tag.tag);
+      cleanArray = [
+        ...userAvailableTagsArray.filter(
+          (tag) => objectTags.indexOf(tag) === -1
+        ),
+      ];
+    }
     if (addInDropDown) {
       cleanArray.unshift(addInDropDown);
     }
