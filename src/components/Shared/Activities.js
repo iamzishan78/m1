@@ -13,6 +13,7 @@ import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
 import TimelineConnector from "@material-ui/lab/TimelineConnector";
 import TimelineContent from "@material-ui/lab/TimelineContent";
 import TimelineDot from "@material-ui/lab/TimelineDot";
+import Icon from "@material-ui/core/Icon";
 import FastfoodIcon from "@material-ui/icons/Fastfood";
 import AddActivityModal from "../ContactDetailCard/components/AddActivityModal";
 
@@ -45,6 +46,19 @@ const useStyles = makeStyles((theme) => ({
   },
   todayDot: {
     fontSize: "8px",
+    paddingLeft: "10px",
+    paddingRight: "10px",
+    borderRadius: "20px",
+    color: "#000",
+    backgroundColor: "#d9d9d9"
+  },
+  imageIcon: {
+    height: "100%",
+    padding: "3px",
+    display: "block",
+  },
+  iconRoot: {
+    textAlign: "center",
   },
 }));
 
@@ -54,18 +68,33 @@ export default function Activities({ activityLog, ...props }) {
   const classes = useStyles();
 
   const getIcon = (activityType) => {
+    let icon = "";
     switch (activityType) {
       case "general":
-        return <StarIcon />;
+        icon = "star_icon";
+        break;
       case "phone":
-        return <PhoneIcon />;
-      case "emails":
-        return <EnvelopeIcon />;
+        icon = "phone_call_icon";
+        break;
+      case "email":
+        icon = "envelope_icon";
+        break;
       case "meeting":
-        return <MeetingIcon />;
+        icon = "meeting_icon";
+        break;
       default:
-        return <StarIcon />;
+        icon = "star_icon";
     }
+
+    return (
+      <Icon classes={{ root: classes.iconRoot }}>
+        <img
+          className={classes.imageIcon}
+          src={require(`../Shared/svgIcons/${icon}.svg`)}
+          alt={activityType}
+        />
+      </Icon>
+    );
   };
 
   const sortedActivityLog =
@@ -102,7 +131,7 @@ export default function Activities({ activityLog, ...props }) {
       </CardActions>
       <Timeline>
         <TimelineItem className={classes.timelineItemRight}>
-          <TimelineSeparator>
+          <TimelineSeparator style={{ transform: "translateX(-5px)" }}>
             <TimelineDot className={classes.todayDot}>Today</TimelineDot>
             <TimelineConnector />
           </TimelineSeparator>
@@ -110,7 +139,9 @@ export default function Activities({ activityLog, ...props }) {
         {sortedActivityLog.map((activity, i) => (
           <TimelineItem key={i} className={classes.timelineItemRight}>
             <TimelineSeparator>
-              <TimelineDot>{getIcon(activity.type)}</TimelineDot>
+              <TimelineDot variant="outlined">
+                {getIcon(activity.type)}
+              </TimelineDot>
               {i + 1 !== activityLog.length && <TimelineConnector />}
             </TimelineSeparator>
             <TimelineContent>
