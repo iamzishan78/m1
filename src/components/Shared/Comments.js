@@ -20,6 +20,7 @@ import Switch from "@material-ui/core/Switch";
 import { CircularProgress } from "@material-ui/core";
 import { AppContext } from "../../AppContext";
 import { COMMENTSBYOBJECTIDQUERY } from "../../graphQL/useQueryCommentsByObjectId";
+import { COMMENTSBYOBJECTSIDS } from "../../graphQL/useQueryCommentsByObjectsIds";
 import { UPSERTCOMMENT } from "../../graphQL/useMutationUpsertComment";
 import { REMOVECOMMENT } from "../../graphQL/useMutationRemoveComment";
 import Grid from "@material-ui/core/Grid";
@@ -120,17 +121,31 @@ export default function Comments(props) {
       fetchPolicy: "cache-and-network",
     }
   );
+  const [
+    getCommentsByObjectsIds,
+    { data: dataCommentsMultiIds },
+  ] = useLazyQuery(COMMENTSBYOBJECTSIDS, {
+    fetchPolicy: "cache-and-network",
+  });
+
   const [upsertComment] = useMutation(UPSERTCOMMENT);
   const [removeComment] = useMutation(REMOVECOMMENT);
 
   ///////////////////// START FETCHING COMMENTS DATA ////////////////////////////////////////////
 
   useEffect(() => {
+    setLoadingComments(true);
     if (!props.multipleIds) {
-      setLoadingComments(true);
       getCommentsByObjectId({
         variables: {
           objectId: props.targetSourceId,
+        },
+      });
+    } else {
+      getCommentsByObjectsIds({
+        variables: {
+          objectsIdsArray: props.multipleIds,
+          userId: stateApp.user.mongoId,
         },
       });
     }
@@ -142,6 +157,28 @@ export default function Comments(props) {
     }
     setLoadingComments(false);
   }, [dataComments]);
+
+  useEffect(() => {
+    if (dataCommentsMultiIds && dataCommentsMultiIds.commentsByObjectsIds) {
+      const checkIfUserMatch = (user) => {
+        for (let i = 0; i < user.length; i++) {
+          if (user[i]._id === stateApp.user.mongoId) return user[i];
+        }
+
+        return false;
+      };
+
+      let comments = dataCommentsMultiIds.commentsByObjectsIds.map((c) => ({
+        ...c,
+        user: checkIfUserMatch(c.user)
+          ? checkIfUserMatch(c.user)
+          : { name: "", email: "" },
+      }));
+
+      setCommentsArray(comments);
+    }
+    setLoadingComments(false);
+  }, [dataCommentsMultiIds]);
 
   ///////////////////// INSERTING NEW COMMENT ///////////////////////////////////////////////
 
@@ -175,7 +212,11 @@ export default function Comments(props) {
           objectType: props.targetLabel,
         },
       },
-      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter"],
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+      ],
       awaitRefetchQueries: true,
     });
   };
@@ -193,16 +234,16 @@ export default function Comments(props) {
           addNewComent(event.target.value, props.multipleIds[i]);
         }
 
-        //// adding the new comment to the down list
-        setCommentsArray((commentsArray) => [
-          ...commentsArray,
-          {
-            ts: Date.now(),
-            public: publicComment,
-            user: { name: stateApp.user.name, email: stateApp.user.email },
-            comment: newCommentCleaner(event.target.value),
-          },
-        ]);
+        // //// adding the new comment to the down list
+        // setCommentsArray((commentsArray) => [
+        //   ...commentsArray,
+        //   {
+        //     ts: Date.now(),
+        //     public: publicComment,
+        //     user: { name: stateApp.user.name, email: stateApp.user.email },
+        //     comment: newCommentCleaner(event.target.value),
+        //   },
+        // ]);
       }
       setEmptyInput(false);
     } else {
@@ -214,13 +255,33 @@ export default function Comments(props) {
   ///////////////////// DELETING A COMMENT ///////////////////////////////////////////////
 
   const handleDeleteClick = (comment) => {
-    removeComment({
-      variables: {
-        commentId: comment._id,
-      },
-      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter"],
-      awaitRefetchQueries: true,
-    });
+    if (!props.multipleIds)
+      removeComment({
+        variables: {
+          commentId: comment._id,
+        },
+        refetchQueries: [
+          "getCommentsByObjectId",
+          "getCommentsCounter",
+          "getCommentsByObjectsIds",
+        ],
+        awaitRefetchQueries: true,
+      });
+    else {
+      for (let i = 0; i < comment.ids.length; i++) {
+        removeComment({
+          variables: {
+            commentId: comment.ids[i],
+          },
+          refetchQueries: [
+            "getCommentsByObjectId",
+            "getCommentsCounter",
+            "getCommentsByObjectsIds",
+          ],
+          awaitRefetchQueries: true,
+        });
+      }
+    }
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -231,7 +292,8 @@ export default function Comments(props) {
 
     return 0;
   };
-  commentsArray.sort(compare);
+
+  if (!props.multipleIds) commentsArray.sort(compare);
 
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -336,13 +398,13 @@ export default function Comments(props) {
         {!loadingComments ? (
           <List className={classes.list}>
             {commentsArray.map(
-              (comment) =>
+              (comment, index) =>
                 ((publicComment && comment.public) ||
                   (!publicComment &&
                     !comment.public &&
                     stateApp.user.email === comment.user.email)) && (
                   <ListItem
-                    key={comment._id}
+                    key={index}
                     className={classes.listItem}
                     alignItems="flex-start"
                   >
@@ -358,15 +420,17 @@ export default function Comments(props) {
                           })}
                         </React.Fragment>
                       }
-                      secondary={`${
-                        comment.user.name
-                      } - ${new Intl.DateTimeFormat("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }).format(comment.ts)}`}
+                      secondary={
+                        `${comment.user.name}` + comment.ids
+                          ? ""
+                          : `- ${new Intl.DateTimeFormat("en-US", {
+                              year: "numeric",
+                              month: "long",
+                              day: "2-digit",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }).format(comment.ts)}`
+                      }
                     />
                     <ListItemSecondaryAction>
                       <IconButton
