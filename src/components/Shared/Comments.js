@@ -149,7 +149,7 @@ export default function Comments(props) {
         },
       });
     }
-  }, [props.targetSourceId]);
+  }, [props.targetSourceId, props.multipleIds]);
 
   useEffect(() => {
     if (dataComments && dataComments.commentsByObjectId) {
@@ -162,23 +162,37 @@ export default function Comments(props) {
     if (dataCommentsMultiIds && dataCommentsMultiIds.commentsByObjectsIds) {
       const checkIfUserMatch = (user) => {
         for (let i = 0; i < user.length; i++) {
-          if (user[i]._id === stateApp.user.mongoId) return user[i];
+          if (user[i]._id !== stateApp.user.mongoId) return false;
         }
-
-        return false;
+        return user[0];
       };
 
-      let comments = dataCommentsMultiIds.commentsByObjectsIds.map((c) => ({
-        ...c,
-        user: checkIfUserMatch(c.user)
-          ? checkIfUserMatch(c.user)
-          : { name: "", email: "" },
-      }));
+      let comments = [];
+      for (
+        let i = 0;
+        i < dataCommentsMultiIds.commentsByObjectsIds.length;
+        i++
+      ) {
+        const element = dataCommentsMultiIds.commentsByObjectsIds[i];
+        if (
+          element.commentedOn.length === props.multipleIds.length &&
+          element.public.filter((v) => v === publicComment).length ===
+            props.multipleIds.length
+        ) {
+          comments.push({
+            ...element,
+            user: checkIfUserMatch(element.user)
+              ? checkIfUserMatch(element.user)
+              : { name: "", email: "" },
+            public: publicComment,
+          });
+        }
+      }
 
       setCommentsArray(comments);
     }
     setLoadingComments(false);
-  }, [dataCommentsMultiIds]);
+  }, [dataCommentsMultiIds, publicComment]);
 
   ///////////////////// INSERTING NEW COMMENT ///////////////////////////////////////////////
 
@@ -401,8 +415,8 @@ export default function Comments(props) {
               (comment, index) =>
                 ((publicComment && comment.public) ||
                   (!publicComment &&
-                    !comment.public &&
-                    stateApp.user.email === comment.user.email)) && (
+                    stateApp.user.email === comment.user.email &&
+                    !comment.public)) && (
                   <ListItem
                     key={index}
                     className={classes.listItem}
