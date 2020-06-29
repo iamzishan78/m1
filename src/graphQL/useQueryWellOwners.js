@@ -1,8 +1,8 @@
 import React from 'react';
 import gql from "graphql-tag";
 
-export const WELLOWNERSQUERY = gql`query getWellOwners($api:String) {
-  wellOwners(wellId:$api) {
+export const WELLOWNERSQUERY = gql`query getWellOwners($id:String) {
+  wellOwners(wellId:$id) {
       id
       name
       ownershipType
@@ -13,10 +13,10 @@ export const WELLOWNERSQUERY = gql`query getWellOwners($api:String) {
   }
 }`
 
-/* export default function useQueryWellOwners(api) {
+/* export default function useQueryWellOwners(id) {
  
   const WELLOWNERSQUERY = gql`query {
-    wellOwners (wellId:"${api}") {
+    wellOwners (wellId:"${id}") {
       id
       name
       ownerType

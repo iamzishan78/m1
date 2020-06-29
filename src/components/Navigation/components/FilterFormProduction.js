@@ -209,7 +209,8 @@ export default function FilterFormProduction() {
       let compare = [];
       let optionUpdate;
       let elementUpdate;
-      let matchName = prodOptions.map((option) => option);
+      // let matchName = prodOptions.map((option) => option);
+      let matchName = [...prodOptions];
       matchName.forEach((element) => {
         compare.push(element);
       });

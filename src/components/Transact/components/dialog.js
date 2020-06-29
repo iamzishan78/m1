@@ -1,19 +1,75 @@
 import React, { useState, useContext, useEffect } from "react";
+import uuid from "uuid";
+import NumberFormat from "react-number-format";
 import Button from "@material-ui/core/Button";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
 import DialogContent from "@material-ui/core/DialogContent";
+import Select from "@material-ui/core/Select";
+import { makeStyles } from "@material-ui/core/styles";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { TransactContext } from "../TransactContext";
+import { AppContext } from "../../../AppContext";
+import AddContactDialogContent from "../../Shared/M1nTable/components/SubComponents/AddContactDialogContent";
+
+const useStyles = makeStyles((theme) => ({
+  label: {
+    backgroundColor: "white",
+  },
+}));
+
+function NumberFormatCustom(props) {
+  const { inputRef, onChange, ...other } = props;
+
+  return (
+    <NumberFormat
+      {...other}
+      getInputRef={inputRef}
+      onValueChange={(values) => {
+        onChange({
+          target: {
+            name: props.name,
+            value: values.value,
+          },
+        });
+      }}
+      thousandSeparator
+      isNumericString
+      prefix="$"
+    />
+  );
+}
 
 export default function TransactDialog(props) {
+  const classes = useStyles();
   const { cardId, laneId, transactData, handleDataChange } = props;
+  const [stateApp] = useContext(AppContext);
   const [stateTransact, setStateTransact] = useContext(TransactContext);
-  const [title, setTitle] = useState("");
+  const [dealName, setDealName] = useState("");
+  const [title, setTitle] = useState(props.contact ? props.contact.name : "");
   const [label, setLabel] = useState("");
+  const [stage, setStage] = useState("lane1");
   const [description, setDescription] = useState("");
+  const [contact, setContact] = useState(
+    props.contact ? { name: props.contact.name, _id: props.contact._id } : {}
+  );
+  const [openContactDialog, setOpenContactDialog] = useState(false);
+  console.log("Contact dialog.js: ", contact);
+
+  useEffect(() => {
+    if (props.openDeals && !stateTransact.openDialog) {
+      setStateTransact((stateTransact) => ({
+        ...stateTransact,
+        openDialog: true,
+      }));
+    }
+  }, [props.openDeals]);
 
   useEffect(() => {
     if (transactData && cardId && laneId) {
@@ -21,9 +77,18 @@ export default function TransactDialog(props) {
         if (lane.id === laneId) {
           lane.cards.map((card) => {
             if (card.id === cardId) {
-              setTitle(card.title ? card.title : "");
+              setDealName(card.dealName ? card.dealName : "");
               setLabel(card.label ? card.label : "");
               setDescription(card.description ? card.description : "");
+              setStage(card.stage ? card.stage : "lane1");
+              if (card.title) setTitle(card.title);
+              else if (props.contact) setTitle(props.contact.name);
+              else setTitle("");
+              if (card.contactId) {
+                setContact({ name: card.title, id: card.contactId });
+              } else if (props.contact) {
+                setContact({ name: props.contact.name, id: props.contact._id });
+              }
             }
           });
         }
@@ -39,32 +104,73 @@ export default function TransactDialog(props) {
     setTitle(title.trim());
     setLabel(label.trim());
     setDescription(description.trim());
+    setContact({});
+    if (props.handleCloseDeals) {
+      props.handleCloseDeals();
+    }
+  };
+
+  const handleCloseContactDialog = () => {
+    console.log("Handle close dialog");
+    setOpenContactDialog(false);
   };
 
   const handleUpdate = () => {
     // if (title.trim() !== "" && description.trim() !== "") {
-    if (transactData && cardId && laneId) {
-      transactData.lanes.forEach((lane) => {
-        if (lane.id === laneId) {
-          lane.cards.forEach((card) => {
-            if (card.id === cardId) {
-              card.title = title.trim();
-              card.label = label.trim();
-              card.description = description.trim();
-            }
-          });
-        }
-      });
 
+    console.log("ADDING")
+    console.log("ttransactData", transactData)
+    console.log(cardId, laneId)
+
+    if (transactData) {
+      if (cardId && laneId) {
+        // update existing
+
+        // BUG: if we change laneId/Stage, card won't move to different lane
+        // To fix: Manually delete card from lane and re-insert in appropriate lane
+
+        transactData.lanes.forEach((lane) => {
+          if (lane.id === laneId) {
+            lane.cards.forEach((card) => {
+              if (card.id === cardId) {
+                card.dealName = dealName.trim();
+                card.title = contact?.name;
+                card.label = label.trim();
+                card.description = description.trim();
+                card.laneId = stage;
+                card.contactId = contact?._id;
+              }
+            });
+          }
+        });
+      } else if (cardId === null && laneId === null) {
+        // add new
+
+        transactData.lanes.forEach((lane) => {
+          if (lane.id === stage) {
+            let cards = [...lane.cards];
+            const newCard = {
+              dealName: dealName.trim(),
+              title: contact?.name,
+              label: label.trim(),
+              description: description.trim(),
+              id: uuid(),
+              contactId: contact?._id,
+            };
+            cards.push(newCard);
+            lane.cards = cards;
+          }
+        });
+      }
       handleDataChange(transactData);
+
       handleClose();
     }
-    // }
   };
 
   return (
     <Dialog
-      open={stateTransact.openDialog}
+      open={stateTransact.openDialog || props.openDeals}
       onClose={handleClose}
       aria-labelledby="form-dialog-title"
       fullWidth
@@ -74,14 +180,103 @@ export default function TransactDialog(props) {
       <DialogContent>
         <TextField
           margin="dense"
-          value={title}
-          label="Owner Name"
+          value={dealName}
+          label="Deal Name"
           fullWidth
           //   required
           onChange={(e) => {
-            setTitle(e.target.value);
+            setDealName(e.target.value);
           }}
         />
+        <Dialog
+          className={classes.dialog}
+          open={openContactDialog ? true : false}
+          onClose={handleCloseContactDialog}
+          maxWidth={"xs"}
+        >
+          <AddContactDialogContent
+            onClose={handleCloseContactDialog}
+            dealsPage={true}
+            setDealsContact={setContact}
+          />
+        </Dialog>
+
+        <FormControl margin="dense" fullWidth size="small">
+          {/* <InputLabel
+            id="demo-simple-select-outlined-label"
+            className={classes.label}
+          >
+            Contact Name
+          </InputLabel> */}
+
+          {!(
+            (Object.keys(contact).length === 0 &&
+              contact.constructor === Object) ||
+            contact === null ||
+            title === ""
+          ) && (
+            <TextField
+              margin="dense"
+              value={contact?.name}
+              label=""
+              fullWidth
+              disabled
+            />
+          )}
+
+          {!props.contact && (
+            <ButtonGroup
+              fullWidth
+              variant="contained"
+              color="primary"
+              aria-label="contained primary button group"
+            >
+              <Button onClick={() => setOpenContactDialog(true)}>
+                Add / Select Contact
+              </Button>
+
+              <Button
+                component="a"
+                href="http://www.google.com"
+                target="_blank"
+                disabled={
+                  (Object.keys(contact).length === 0 &&
+                    contact.constructor === Object) ||
+                  contact === null ||
+                  title === ""
+                }
+              >
+                View Contact
+              </Button>
+            </ButtonGroup>
+          )}
+        </FormControl>
+
+        <FormControl margin="dense" fullWidth size="small">
+          <InputLabel
+            id="demo-simple-select-outlined-label"
+            className={classes.label}
+          >
+            Deal Stage
+          </InputLabel>
+          <Select
+            labelId="demo-simple-select-outlined-label"
+            id="demo-simple-select-outlined"
+            value={stage}
+            onChange={(e) => {
+              console.log("Stage: ", e.target.value);
+              setStage(e.target.value);
+            }}
+            fullWidth
+            label="Deal Stage"
+          >
+            <MenuItem value={"lane1"}>Offer Preperation</MenuItem>
+            <MenuItem value={"lane2"}>Offer Extended</MenuItem>
+            <MenuItem value={"lane3"}>Accepted - Due Diligence</MenuItem>
+            <MenuItem value={"lane4"}>Deal Closed</MenuItem>
+            <MenuItem value={"lane5"}>Offer Rejected</MenuItem>
+          </Select>
+        </FormControl>
         <TextField
           margin="dense"
           value={label}
@@ -90,6 +285,9 @@ export default function TransactDialog(props) {
           onChange={(e) => {
             setLabel(e.target.value);
           }}
+          // InputProps={{
+          //   inputComponent: NumberFormatCustom,
+          // }}
         />
         <TextField
           //   autoFocus

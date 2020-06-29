@@ -2089,34 +2089,7 @@ export default function Map() {
     return -1; //to handle the case where the value doesn't exist
   }
 
-  // const wellPointClick = (e) => {
-  //   var bbox = [
-  //     [e.point.x - 10, e.point.y - 10],
-  //     [e.point.x + 10, e.point.y + 10],
-  //   ];
-  //   let features = map.queryRenderedFeatures(bbox, {
-  //     layers: ["wellpoints"],
-  //   });
-  //   let currentFeature = features[0];
-  //   console.log("current feature", currentFeature);
-
-  //   setStateApp((state) => ({
-  //     ...state,
-  //     popupOpen: false,
-  //   }));
-  //   setStateApp((state) => ({
-  //     ...state,
-  //     selectedWell: currentFeature.properties,
-  //     selectedWellId: currentFeature.properties.id,
-  //     wellSelectedCoordinates: [
-  //       currentFeature.properties.longitude,
-  //       currentFeature.properties.latitude,
-  //     ],
-  //   }));
-
-  //   createPopUp(currentFeature.properties);
-  //   map.resize();
-  // }
+ 
 
   const wellMouseMove = (e) => {
     map.getCanvas().style.cursor = "pointer";
@@ -2954,24 +2927,30 @@ export default function Map() {
     }
   };
 
-  useEffect(() => {
-    if (stateApp.userSnap === true) {
-      var script = document.createElement("script");
-      script.type = "text/javascript";
-      script.src =
-        "//api.usersnap.com/load/64ab8ea7-9417-41a0-b565-eb7ad69da871.js";
-      script.async = true;
+  // useEffect(() => {
+  //   if (stateApp.userSnap === true) {
+  //     var script = document.createElement("script");
+  //     script.type = "text/javascript";
+  //     script.src =
+  //       "//api.usersnap.com/load/64ab8ea7-9417-41a0-b565-eb7ad69da871.js";
+  //     script.async = true;
+  //     script.setAttribute("id", "feedback-script");
 
-      var x = document.getElementsByTagName("script")[0];
-      x.parentNode.insertBefore(script, x);
+  //     var x = document.getElementsByTagName("script")[0];
+  //     x.parentNode.insertBefore(script, x);
 
-      document.body.appendChild(script);
+  //     document.body.appendChild(script);
 
-      return () => {
-        document.body.removeChild(script);
-      };
-    }
-  }, [stateApp.userSnap]);
+  //     return () => {
+  //       document.body.removeChild(script);
+  //     };
+  //   } else if (stateApp.userSnap === false){
+  //     const feedbackScript = document.querySelector("#feedback-script");
+  //     feedbackScript && feedbackScript.remove();
+  //     const element = document.getElementsByName("us-entrypoint-button");
+  //     element && element[0] && element[0].remove();
+  //   }
+  // }, [stateApp.userSnap]);
 
   useEffect(() => {
     if (stateApp.editingUserDefinedLayers.length > 0) {

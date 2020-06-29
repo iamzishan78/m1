@@ -20,6 +20,7 @@ import Switch from "@material-ui/core/Switch";
 import { CircularProgress } from "@material-ui/core";
 import { AppContext } from "../../AppContext";
 import { COMMENTSBYOBJECTIDQUERY } from "../../graphQL/useQueryCommentsByObjectId";
+import { COMMENTSBYOBJECTSIDS } from "../../graphQL/useQueryCommentsByObjectsIds";
 import { UPSERTCOMMENT } from "../../graphQL/useMutationUpsertComment";
 import { REMOVECOMMENT } from "../../graphQL/useMutationRemoveComment";
 import Grid from "@material-ui/core/Grid";
@@ -115,8 +116,18 @@ export default function Comments(props) {
   const [publicComment, setPublicComment] = useState(true);
 
   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
-    COMMENTSBYOBJECTIDQUERY
+    COMMENTSBYOBJECTIDQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
+  const [
+    getCommentsByObjectsIds,
+    { data: dataCommentsMultiIds },
+  ] = useLazyQuery(COMMENTSBYOBJECTSIDS, {
+    fetchPolicy: "cache-and-network",
+  });
+
   const [upsertComment] = useMutation(UPSERTCOMMENT);
   const [removeComment] = useMutation(REMOVECOMMENT);
 
@@ -124,12 +135,21 @@ export default function Comments(props) {
 
   useEffect(() => {
     setLoadingComments(true);
-    getCommentsByObjectId({
-      variables: {
-        objectId: props.targetSourceId,
-      },
-    });
-  }, [props.targetSourceId]);
+    if (!props.multipleIds) {
+      getCommentsByObjectId({
+        variables: {
+          objectId: props.targetSourceId,
+        },
+      });
+    } else {
+      getCommentsByObjectsIds({
+        variables: {
+          objectsIdsArray: props.multipleIds,
+          userId: stateApp.user.mongoId,
+        },
+      });
+    }
+  }, [props.targetSourceId, props.multipleIds]);
 
   useEffect(() => {
     if (dataComments && dataComments.commentsByObjectId) {
@@ -138,43 +158,107 @@ export default function Comments(props) {
     setLoadingComments(false);
   }, [dataComments]);
 
+  useEffect(() => {
+    if (dataCommentsMultiIds && dataCommentsMultiIds.commentsByObjectsIds) {
+      const checkIfUserMatch = (user) => {
+        for (let i = 0; i < user.length; i++) {
+          if (user[i]._id !== stateApp.user.mongoId) return false;
+        }
+        return user[0];
+      };
+
+      let comments = [];
+      for (
+        let i = 0;
+        i < dataCommentsMultiIds.commentsByObjectsIds.length;
+        i++
+      ) {
+        const element = dataCommentsMultiIds.commentsByObjectsIds[i];
+        if (
+          element.commentedOn.length === props.multipleIds.length &&
+          element.public.filter((v) => v === publicComment).length ===
+            props.multipleIds.length
+        ) {
+          comments.push({
+            ...element,
+            user: checkIfUserMatch(element.user)
+              ? checkIfUserMatch(element.user)
+              : { name: "", email: "" },
+            public: publicComment,
+          });
+        }
+      }
+
+      setCommentsArray(comments);
+    }
+    setLoadingComments(false);
+  }, [dataCommentsMultiIds, publicComment]);
+
   ///////////////////// INSERTING NEW COMMENT ///////////////////////////////////////////////
 
-  const handleEnteringComment = (event) => {
-    if (event.target.value.split("\n").join("").trim() !== "") {
-      upsertComment({
-        variables: {
-          comment: {
-            comment:
-              event.target.value.trim()[
-                event.target.value.trim().length - 1
-              ] === "."
-                ? event.target.value
-                    .split("\n")
-                    .map((line) => {
-                      if (line.trim() !== ".") {
-                        return line.trim();
-                      }
-                    })
-                    .join("\n")
-                : `${event.target.value
-                    .split("\n")
-                    .map((line) => {
-                      if (line.trim() !== ".") {
-                        return line.trim();
-                      }
-                    })
-                    .join("\n")}.`,
-            public: publicComment,
-            user: stateApp.user.mongoId,
-            commentedOn: props.targetSourceId,
-            objectType: props.targetLabel,
-          },
-        },
-        refetchQueries: ["getCommentsByObjectId", "getCommentsCounter"],
-        awaitRefetchQueries: true,
-      });
+  const newCommentCleaner = (value) =>
+    value.trim()[value.trim().length - 1] === "."
+      ? value
+          .split("\n")
+          .map((line) => {
+            if (line.trim() !== ".") {
+              return line.trim();
+            }
+          })
+          .join("\n")
+      : `${value
+          .split("\n")
+          .map((line) => {
+            if (line.trim() !== ".") {
+              return line.trim();
+            }
+          })
+          .join("\n")}.`;
 
+  const addNewComent = (value, commentedOn) => {
+    upsertComment({
+      variables: {
+        comment: {
+          comment: newCommentCleaner(value),
+          public: publicComment,
+          user: stateApp.user.mongoId,
+          commentedOn,
+          objectType: props.targetLabel,
+        },
+      },
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+      ],
+      awaitRefetchQueries: true,
+    });
+  };
+
+  const handleEnteringComment = (event) => {
+    event.persist();
+    if (
+      event.target.value.split("\n").join("").trim() !== "" &&
+      event.target.value.split("\n").join("").trim() !== "."
+    ) {
+      if (!props.multipleIds) {
+        addNewComent(event.target.value, props.targetSourceId);
+      } else {
+        for (let i = 0; i < props.multipleIds.length; i++) {
+          addNewComent(event.target.value, props.multipleIds[i]);
+        }
+
+        // //// adding the new comment to the down list
+        // setCommentsArray((commentsArray) => [
+        //   ...commentsArray,
+        //   {
+        //     ts: Date.now(),
+        //     public: publicComment,
+        //     user: { name: stateApp.user.name, email: stateApp.user.email },
+        //     comment: newCommentCleaner(event.target.value),
+        //   },
+        // ]);
+      }
       setEmptyInput(false);
     } else {
       setEmptyInput(true);
@@ -185,13 +269,33 @@ export default function Comments(props) {
   ///////////////////// DELETING A COMMENT ///////////////////////////////////////////////
 
   const handleDeleteClick = (comment) => {
-    removeComment({
-      variables: {
-        commentId: comment._id,
-      },
-      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter"],
-      awaitRefetchQueries: true,
-    });
+    if (!props.multipleIds)
+      removeComment({
+        variables: {
+          commentId: comment._id,
+        },
+        refetchQueries: [
+          "getCommentsByObjectId",
+          "getCommentsCounter",
+          "getCommentsByObjectsIds",
+        ],
+        awaitRefetchQueries: true,
+      });
+    else {
+      for (let i = 0; i < comment.ids.length; i++) {
+        removeComment({
+          variables: {
+            commentId: comment.ids[i],
+          },
+          refetchQueries: [
+            "getCommentsByObjectId",
+            "getCommentsCounter",
+            "getCommentsByObjectsIds",
+          ],
+          awaitRefetchQueries: true,
+        });
+      }
+    }
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -202,7 +306,8 @@ export default function Comments(props) {
 
     return 0;
   };
-  commentsArray.sort(compare);
+
+  if (!props.multipleIds) commentsArray.sort(compare);
 
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -307,13 +412,13 @@ export default function Comments(props) {
         {!loadingComments ? (
           <List className={classes.list}>
             {commentsArray.map(
-              (comment) =>
+              (comment, index) =>
                 ((publicComment && comment.public) ||
                   (!publicComment &&
-                    !comment.public &&
-                    stateApp.user.email === comment.user.email)) && (
+                    stateApp.user.email === comment.user.email &&
+                    !comment.public)) && (
                   <ListItem
-                    key={comment._id}
+                    key={index}
                     className={classes.listItem}
                     alignItems="flex-start"
                   >
@@ -329,15 +434,17 @@ export default function Comments(props) {
                           })}
                         </React.Fragment>
                       }
-                      secondary={`${
-                        comment.user.name
-                      } - ${new Intl.DateTimeFormat("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }).format(comment.ts)}`}
+                      secondary={
+                        `${comment.user.name}` + comment.ids
+                          ? ""
+                          : `- ${new Intl.DateTimeFormat("en-US", {
+                              year: "numeric",
+                              month: "long",
+                              day: "2-digit",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }).format(comment.ts)}`
+                      }
                     />
                     <ListItemSecondaryAction>
                       <IconButton

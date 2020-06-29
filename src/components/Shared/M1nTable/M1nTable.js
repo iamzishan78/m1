@@ -1089,7 +1089,7 @@ export default function M1nTable(props) {
     if (props.parent && props.parent === "OwnersPerWell") {
       setTargetLabel("owner");
       getWellOwners({
-        variables: { api: props.selectedWell.api },
+        variables: { id: props.selectedWell.id },
       });
     }
   }, [props.selectedWell]);

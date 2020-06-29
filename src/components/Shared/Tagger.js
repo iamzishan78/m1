@@ -7,6 +7,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import { USERAVAILABLETAGSQUERY } from "../../graphQL/useQueryUserAvailableTags";
+import { TAGSBYOBJECTSIDS } from "../../graphQL/useQueryTagsByObjectsIds";
 import { TAGSBYOBJECTIDQUERY } from "../../graphQL/useQueryTagsByObjectId";
 import { UPSERTTAG } from "../../graphQL/useMutationUpsertTag";
 import { REMOVETAG } from "../../graphQL/useMutationRemoveTag";
@@ -55,10 +56,22 @@ export default function Tags(props) {
   const [publicTag, setPublicTag] = useState(true);
 
   const [getTagsByObjectId, { data: dataTags }] = useLazyQuery(
-    TAGSBYOBJECTIDQUERY
+    TAGSBYOBJECTIDQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
+  const [getTagsByObjectsIds, { data: dataTagsMultiIds }] = useLazyQuery(
+    TAGSBYOBJECTSIDS,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
   const [getUserAvailableTags, { data: dataUserAvailableTags }] = useLazyQuery(
-    USERAVAILABLETAGSQUERY
+    USERAVAILABLETAGSQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
   const [upsertTag] = useMutation(UPSERTTAG);
   const [removeTag] = useMutation(REMOVETAG);
@@ -67,13 +80,22 @@ export default function Tags(props) {
 
   ////All Object Tag For The Input
   useEffect(() => {
-    setLoadingTags(true);
-    getTagsByObjectId({
-      variables: {
-        objectId: props.targetSourceId,
-      },
-    });
-  }, [props.targetSourceId]);
+    if (!props.multipleIds) {
+      setLoadingTags(true);
+      getTagsByObjectId({
+        variables: {
+          objectId: props.targetSourceId,
+        },
+      });
+    } else {
+      getTagsByObjectsIds({
+        variables: {
+          objectsIdsArray: props.multipleIds,
+          userId: stateApp.user.mongoId,
+        },
+      });
+    }
+  }, [props.targetSourceId, props.multipleIds]);
 
   useEffect(() => {
     if (dataTags && dataTags.tagsByObjectId) {
@@ -81,6 +103,38 @@ export default function Tags(props) {
     }
     setLoadingTags(false);
   }, [dataTags]);
+
+  useEffect(() => {
+    if (dataTagsMultiIds && dataTagsMultiIds.tagsByObjectsIds) {
+      const checkIfUserMatch = (user) => {
+        for (let i = 0; i < user.length; i++) {
+          if (user[i]._id !== stateApp.user.mongoId) return false;
+        }
+        return user[0];
+      };
+
+      let tags = [];
+      for (let i = 0; i < dataTagsMultiIds.tagsByObjectsIds.length; i++) {
+        const element = dataTagsMultiIds.tagsByObjectsIds[i];
+        if (
+          element.taggedOn.length === props.multipleIds.length &&
+          element.public.filter((v) => v === publicTag).length ===
+            props.multipleIds.length
+        ) {
+          tags.push({
+            ...element,
+            user: checkIfUserMatch(element.user)
+              ? checkIfUserMatch(element.user)
+              : { name: "", email: "" },
+            public: publicTag,
+          });
+        }
+      }
+
+      setTagsArray(tags);
+    }
+    setLoadingTags(false);
+  }, [dataTagsMultiIds, publicTag]);
 
   ////All User Available Tags For The DropDown
   useEffect(() => {
@@ -94,7 +148,11 @@ export default function Tags(props) {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (dataUserAvailableTags && dataUserAvailableTags.userAvailableTags) {
+    if (
+      dataUserAvailableTags &&
+      dataUserAvailableTags.userAvailableTags &&
+      tagsArray
+    ) {
       let defaultTags = [
         "High Cash Flow",
         "Interested Seller",
@@ -122,7 +180,7 @@ export default function Tags(props) {
         ...dataUserAvailableTags.userAvailableTags,
       ]);
     }
-  }, [dataUserAvailableTags]);
+  }, [dataUserAvailableTags, tagsArray]);
 
   ///////////////////// INSERTING NEW TAG ///////////////////////////////////////////////
 
@@ -141,7 +199,7 @@ export default function Tags(props) {
 
   const NewTag = (tagText) => {
     tagText = UpperAndCleanTagText(tagText);
-    if (tagText === addInDropDown && addInDropDown) {
+    if (addInDropDown && tagText === addInDropDown) {
       tagText = UpperAndCleanTagText(textValue);
     }
     setTextValue("");
@@ -153,15 +211,64 @@ export default function Tags(props) {
       }
     });
     if (!found) {
-      upsertTag({
-        variables: {
-          tag: {
-            tag: tagText,
-            public: publicTag,
-            user: stateApp.user.mongoId,
-            taggedOn: props.targetSourceId,
-            objectType: props.targetLabel,
+      if (!props.multipleIds) {
+        upsertTag({
+          variables: {
+            tag: {
+              tag: tagText,
+              public: publicTag,
+              user: stateApp.user.mongoId,
+              taggedOn: props.targetSourceId,
+              objectType: props.targetLabel,
+            },
           },
+          refetchQueries: [
+            "getTagsByObjectId",
+            "getUserAvailableTags",
+            "getTagSamples",
+            "getUserAvailableFilterTags",
+            "getObjectsFromTagsArray",
+            "getWellsIdsFromTagsArray",
+            "getOwnersIdsFromTagsArray",
+          ],
+          awaitRefetchQueries: true,
+        });
+      } else {
+        for (let i = 0; i < props.multipleIds.length; i++) {
+          upsertTag({
+            variables: {
+              tag: {
+                tag: tagText,
+                public: publicTag,
+                user: stateApp.user.mongoId,
+                taggedOn: props.multipleIds[i],
+                objectType: props.targetLabel,
+              },
+            },
+            refetchQueries: [
+              "getTagsByObjectId",
+              "getUserAvailableTags",
+              "getTagSamples",
+              "getUserAvailableFilterTags",
+              "getObjectsFromTagsArray",
+              "getWellsIdsFromTagsArray",
+              "getOwnersIdsFromTagsArray",
+              "getTagsByObjectsIds",
+            ],
+            awaitRefetchQueries: true,
+          });
+        }
+      }
+    }
+  };
+
+  ///////////////////// DELETING A TAG ///////////////////////////////////////////////
+
+  const DeleteTag = (TagIdOIds) => {
+    if (!props.multipleIds)
+      removeTag({
+        variables: {
+          tagId: TagIdOIds,
         },
         refetchQueries: [
           "getTagsByObjectId",
@@ -171,30 +278,32 @@ export default function Tags(props) {
           "getObjectsFromTagsArray",
           "getWellsIdsFromTagsArray",
           "getOwnersIdsFromTagsArray",
+          "getTagsByObjectsIds",
         ],
         awaitRefetchQueries: true,
       });
+    else {
+      let ids = TagIdOIds.split("???|||///");
+
+      for (let i = 0; i < ids.length; i++) {
+        removeTag({
+          variables: {
+            tagId: ids[i],
+          },
+          refetchQueries: [
+            "getTagsByObjectId",
+            "getUserAvailableTags",
+            "getTagSamples",
+            "getUserAvailableFilterTags",
+            "getObjectsFromTagsArray",
+            "getWellsIdsFromTagsArray",
+            "getOwnersIdsFromTagsArray",
+            "getTagsByObjectsIds",
+          ],
+          awaitRefetchQueries: true,
+        });
+      }
     }
-  };
-
-  ///////////////////// DELETING A TAG ///////////////////////////////////////////////
-
-  const DeleteTag = (tagId) => {
-    removeTag({
-      variables: {
-        tagId: tagId,
-      },
-      refetchQueries: [
-        "getTagsByObjectId",
-        "getUserAvailableTags",
-        "getTagSamples",
-        "getUserAvailableFilterTags",
-        "getObjectsFromTagsArray",
-        "getWellsIdsFromTagsArray",
-        "getOwnersIdsFromTagsArray",
-      ],
-      awaitRefetchQueries: true,
-    });
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -207,14 +316,14 @@ export default function Tags(props) {
       NewTag(v[v.length - 1]);
     } else if (e.target.tagName === "svg" || e.target.tagName === "path") {
       ////A tag was deleted
-      let TagId;
+      let TagIdOIds;
       if (e.target.tagName === "svg") {
-        TagId = e.target.parentNode.id;
+        TagIdOIds = e.target.parentNode.id;
       }
       if (e.target.tagName === "path") {
-        TagId = e.target.parentNode.parentNode.id;
+        TagIdOIds = e.target.parentNode.parentNode.id;
       }
-      DeleteTag(TagId);
+      DeleteTag(TagIdOIds);
     } else {
       if (e.type === "click") {
         ////A new tag by click on the dropdown
@@ -235,8 +344,11 @@ export default function Tags(props) {
   };
 
   const AddingAddRowToDropDown = () => {
-    const { cleanArray } = cleanDropDownArray();
+    let { cleanArray } = cleanDropDownArray();
 
+    // if (props.multipleIds && userAvailableTagsArray) {
+    //   cleanArray = [...userAvailableTagsArray];
+    // }
     if (addInDropDown) {
       cleanArray.unshift(addInDropDown);
     }
@@ -310,7 +422,11 @@ export default function Tags(props) {
                     return (
                       <Chip
                         key={index}
-                        id={tag._id}
+                        id={
+                          !props.multipleIds
+                            ? tag._id
+                            : tag.ids.join("???|||///")
+                        }
                         variant="outlined"
                         label={tag.tag}
                         {...getTagProps({ index })}

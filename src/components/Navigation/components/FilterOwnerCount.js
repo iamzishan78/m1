@@ -6,6 +6,8 @@ import Switch from "@material-ui/core/Switch";
 import { NavigationContext } from "../NavigationContext";
 import Grid from "@material-ui/core/Grid";
 import { FormLabel } from "@material-ui/core";
+import IconButton from "@material-ui/core/IconButton";
+import OwnershipIcon from "../../Shared/svgIcons/ownership";
 
 const useStyles = makeStyles({
   divBordersMinMax: {
@@ -19,7 +21,7 @@ const useStyles = makeStyles({
   },
   divBordersSwitch: {
     textAlign: "center",
-    padding: "8px 15px",
+    padding: "3px 15px",
     border: "1px solid #C4C4C4",
     borderRadius: "4px",
     "&:hover": {
@@ -36,8 +38,16 @@ const useStyles = makeStyles({
     position: "relative",
     top: "11.5px",
   },
+  IconButton: {
+    marginRight: "10px",
+    "&:hover": {
+      backgroundColor: "#fff",
+      cursor: "context-menu",
+    },
+  },
   ownersToggle: {
-    paddingLeft: "20px",
+    // marginLeft: "20px",
+    marginRight: "50px",
   },
 });
 
@@ -271,7 +281,10 @@ export default function FilterOwnerCount() {
       </Grid>
       <Grid item sm={12}>
         <div className={classes.divBordersSwitch}>
-          <FormLabel style={{ verticalAlign: "middle", paddingRight: "40px" }}>
+          <IconButton className={classes.IconButton}>
+            <OwnershipIcon color="#808080" opacity="1.0" />
+          </IconButton>
+          <FormLabel style={{ verticalAlign: "middle", paddingRight: "60px" }}>
             Wells With Owners
           </FormLabel>
           <Switch

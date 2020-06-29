@@ -19,7 +19,7 @@ const useStyles = makeStyles({
   input: {
     marginLeft: "30px",
     width: "160px",
-    float: "right",
+    //float: "right",
     "& input": { color: "#17AADD" },
   },
   inputLabel: {

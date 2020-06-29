@@ -53,11 +53,6 @@ export default function FilterTrackedOwners() {
     if (!stateApp.activateUserDefinedLayers(4))
       stateApp.deactivateUserDefinedLayers(4);
     else stateApp.deactivateWellLayer();
-
-    // setStateNav((stateNav) => ({
-    //   ...stateNav,
-    //   filterTrackedOwners: !stateNav.filterTrackedOwners,
-    // }));
   };
 
   return (

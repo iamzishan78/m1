@@ -2,10 +2,10 @@ import React from 'react';
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 
-export default function useQueryQuadChart(api) {
+export default function useQueryQuadChart(id) {
 
   const QUADCHARTQUERY = gql`query {
-    quadChart(wellId:"${api}") {
+    quadChart(wellId:"${id}") {
             quadrant
             metric
             units

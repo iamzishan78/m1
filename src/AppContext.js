@@ -163,9 +163,9 @@ const AppProvider = (props) => {
   useEffect(() => {
     if (
       stateApp.checkedUserDefinedLayers &&
-      stateApp.checkedUserDefinedLayers.indexOf(5) === -1 &&
       stateApp.checkedUserDefinedLayers.indexOf(4) === -1 &&
-      stateApp.checkedUserDefinedLayers.indexOf(3) === -1
+      stateApp.checkedUserDefinedLayers.indexOf(3) === -1 &&
+      stateApp.checkedLayers.indexOf(0) === -1
     ) {
       stateApp.activateWellLayer();
     }
