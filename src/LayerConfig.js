@@ -22,10 +22,21 @@ export const styleLayers = [
       "TexasLandSurveyLabels",
     ],
   },
-  // {
-  //   name: "Permits",
-  //   id: [],
-  // },
+  {
+    name: "Permits",
+    id: ["permits"],
+    sourceProps: ["permits_source"],
+    layerProps: {
+      layerId: ["permits"],
+      layerType: ["circle"],
+      paintProps: {
+        "circle-radius": 5,
+        "circle-color": "#00ff00",
+        "circle-stroke-width": 2,
+        "circle-stroke-color": "#fff",
+      },
+    }
+  },
   {
     name: "Rig Activity",
     id: ["rigsbycounty"],
