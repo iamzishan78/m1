@@ -181,21 +181,24 @@ export default (props) => {
     console.log(ownerList);
     ownerList.forEach((owner) => {
       const targetSourceId = owner.id;
-      toggleCreateRemoveTrack({
-        variables: {
-          track: {
-            user: user,
-            objectType: targetLabel,
-            trackOn: targetSourceId,
-          },
-        },
-      });
+      // toggleCreateRemoveTrack({
+      //   variables: {
+      //     track: {
+      //       user: user,
+      //       objectType: targetLabel,
+      //       trackOn: targetSourceId,
+      //     },
+      //   },
+      // });
     });
   }
 
   useEffect(() => {
-    if (dataWellsOwners && dataWellsOwners.wellOwners && dataWellsOwners.wellOwners.length > 0) {
-        trackOwners(dataWellsOwners.wellOwners);
+    // if (dataWellsOwners && dataWellsOwners.wellOwners && dataWellsOwners.wellOwners.length > 0) {
+    //     // trackOwners(dataWellsOwners.wellOwners);
+    // }
+    if (dataWellsOwners) {
+      console.log(dataWellsOwners);
     }
   }, [dataWellsOwners])
 

@@ -42,6 +42,8 @@ import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
 import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
 import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
+import { GETBASINSHAPES } from '../../graphQL/useQueryBasinShapes';
+import { PERMITSQUERY } from '../../graphQL/useQueryPermits';
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 
@@ -141,6 +143,11 @@ export default function Map() {
     getWellsForLayer,
     { data: dataWellsForOwnerWellTrackLayer },
   ] = useLazyQuery(WELLSQUERY);
+
+  const [
+    getPermits,
+    { data: permits }
+  ] = useLazyQuery(PERMITSQUERY)
 
   /////end/////////temporary
 
@@ -2022,6 +2029,8 @@ export default function Map() {
 
     const abortController = new AbortController();
     const signal = abortController.signal;
+
+    getPermits();
 
     fetch(req, { signal: signal })
       .then((results) => results.json())
