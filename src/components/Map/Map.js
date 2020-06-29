@@ -42,7 +42,6 @@ import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
 import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
 import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
-import { GETBASINSHAPES } from '../../graphQL/useQueryBasinShapes';
 import { PERMITSQUERY } from '../../graphQL/useQueryPermits';
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
@@ -282,7 +281,7 @@ export default function Map() {
               properties: feature,
               geometry: {
                 type: 'Point',
-                coordinates: [feature.longitude, feature.latitude],
+                coordinates: [feature.Longitude, feature.Latitude],
               },
             }
           }),
