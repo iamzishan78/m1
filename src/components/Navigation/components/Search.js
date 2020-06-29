@@ -18,10 +18,14 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import { OWNERWELLSQUERY } from "../../../graphQL/useQueryOwnerWells ";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { OPERATORSLATSLONS } from "../../../graphQL/useQueryOperatorLatsLonsArray";
 import { LEASELATSLONS } from "../../../graphQL/useQueryLeaseLatsLonsArray";
+import { USERSEARCHHISTORY } from "../../../graphQL/useQueryUserSearchHistory";
+import { ADDSEARCHHISTORY } from "../../../graphQL/useMutationAddSearchHistory";
+import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHistory";
+import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
 import { NavigationContext } from "../NavigationContext";
 import Popover from "@material-ui/core/Popover";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -45,8 +49,8 @@ const maxMinScore = (options) => {
   let max = 0;
   let min = 1000000;
   for (let i = 0; i < options.length; i++) {
-    if (options[i]["@search.score"] > max) max = options[i]["@search.score"];
-    if (options[i]["@search.score"] < min) min = options[i]["@search.score"];
+    if (options[i].Score > max) max = options[i].Score;
+    if (options[i].Score < min) min = options[i].Score;
   }
 
   return [max, min];
@@ -133,6 +137,7 @@ export default function Search() {
   const [maxMinOwnersScore, setMaxMinOwnersScore] = React.useState([0, 0]);
   const [maxMinOperatosScore, setMaxMinOperatosScore] = React.useState([0, 0]);
   const [maxMinLeasesScore, setMaxMinLeasesScore] = React.useState([0, 0]);
+  const [searchHistoryList, setSearchHistoryList] = React.useState([]);
   const loaded = React.useRef(false);
 
   const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(
@@ -144,6 +149,57 @@ export default function Search() {
     OPERATORSLATSLONS
   );
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
+
+  //////////// Search History Begin//////////////////
+
+  // Search History Queries and Mutations
+  const [getSearchHistory, { data: searchHistoryData }] = useLazyQuery(
+    USERSEARCHHISTORY
+  );
+  const [addSearchHistory] = useMutation(ADDSEARCHHISTORY);
+  const [updateSearchHistory] = useMutation(UPDATESEARCHHISTORY);
+  const [removeSearchHistory] = useMutation(REMOVESEARCHHISTORY);
+
+  useEffect(() => {
+    if (stateApp && stateApp.user && stateApp.user.mongoId) {
+      getSearchHistory({
+        variables: {
+          userId: stateApp.user.mongoId,
+        },
+      });
+    }
+  }, [stateApp.user]);
+
+  useEffect(() => {
+    if (searchHistoryData && searchHistoryData.getSearchHistory) {
+      const compare = (a, b) => {
+        if (a.ts < b.ts) return 1;
+        if (a.ts > b.ts) return -1;
+        return 0;
+      };
+      let list = searchHistoryData.getSearchHistory;
+      list.sort(compare);
+
+      setSearchHistoryList(list);
+    }
+  }, [searchHistoryData]);
+
+  useEffect(() => {
+    if (searchHistoryList && searchHistoryList.length > 100) {
+      ///remove last add
+      removeSearchHistory({
+        variables: {
+          searchHistory: {
+            id: searchHistoryList[0]._id,
+          },
+        },
+        refetchQueries: ["getSearchHistory"],
+        awaitRefetchQueries: true,
+      });
+    }
+  }, [searchHistoryList]);
+
+  //////////// Search History End//////////////////
 
   //   if (typeof window !== 'undefined' && !loaded.current) {
   //     if (!document.querySelector('#google-maps')) {
@@ -325,12 +381,16 @@ export default function Search() {
                 console.log(indexSource);
                 newOptions = [
                   ...newOptions,
-                  ...results.value.map((result) => ({
-                    ...result,
-                    Source: indexSource,
-                    Primary: result.WellName,
-                    Secondary: result.ApiNumber,
-                  })),
+                  ...results.value.map((result) => {
+                    result.Score = result["@search.score"];
+                    delete result["@search.score"];
+                    return {
+                      ...result,
+                      Source: indexSource,
+                      Primary: result.WellName,
+                      Secondary: result.ApiNumber,
+                    };
+                  }),
                 ];
 
                 setMaxMinWellsScore(maxMinScore(results.value));
@@ -349,12 +409,16 @@ export default function Search() {
                 console.log(indexSource);
                 newOptions = [
                   ...newOptions,
-                  ...results.value.map((result) => ({
-                    ...result,
-                    Source: indexSource,
-                    Primary: result.OwnerName,
-                    Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}`,
-                  })),
+                  ...results.value.map((result) => {
+                    result.Score = result["@search.score"];
+                    delete result["@search.score"];
+                    return {
+                      ...result,
+                      Source: indexSource,
+                      Primary: result.OwnerName,
+                      Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}`,
+                    };
+                  }),
                 ];
 
                 setMaxMinOwnersScore(maxMinScore(results.value));
@@ -373,12 +437,16 @@ export default function Search() {
                 console.log(indexSource);
                 newOptions = [
                   ...newOptions,
-                  ...results.value.map((result) => ({
-                    ...result,
-                    Source: indexSource,
-                    Primary: result.Operator,
-                    Secondary: null,
-                  })),
+                  ...results.value.map((result) => {
+                    result.Score = result["@search.score"];
+                    delete result["@search.score"];
+                    return {
+                      ...result,
+                      Source: indexSource,
+                      Primary: result.Operator,
+                      Secondary: null,
+                    };
+                  }),
                 ];
 
                 setMaxMinOperatosScore(maxMinScore(results.value));
@@ -397,24 +465,29 @@ export default function Search() {
                 console.log(indexSource);
                 newOptions = [
                   ...newOptions,
-                  ...results.value.map((result) => ({
-                    ...result,
-                    Source: indexSource,
-                    Primary:
-                      result.Lease &&
-                      (result.Lease === "" ||
-                        result.Lease === "N/A" ||
-                        result.Lease === "(N/A)")
-                        ? "--"
-                        : result.Lease,
-                    Secondary:
-                      result.LeaseId &&
-                      (result.LeaseId === "" ||
-                        result.LeaseId === "N/A" ||
-                        result.LeaseId === "(N/A)")
-                        ? null
-                        : result.LeaseId,
-                  })),
+                  ...results.value.map((result) => {
+                    result.Score = result["@search.score"];
+                    delete result["@search.score"];
+
+                    return {
+                      ...result,
+                      Source: indexSource,
+                      Primary:
+                        result.Lease &&
+                        (result.Lease === "" ||
+                          result.Lease === "N/A" ||
+                          result.Lease === "(N/A)")
+                          ? "--"
+                          : result.Lease,
+                      Secondary:
+                        result.LeaseId &&
+                        (result.LeaseId === "" ||
+                          result.LeaseId === "N/A" ||
+                          result.LeaseId === "(N/A)")
+                          ? null
+                          : result.LeaseId,
+                    };
+                  }),
                 ];
 
                 setMaxMinLeasesScore(maxMinScore(results.value));
@@ -437,7 +510,7 @@ export default function Search() {
   //// setting the buttons header /////
   const header = {
     Source: "header",
-    "@search.score": 0,
+    Score: 0,
     Id: "0",
     WellName: "",
     ApiNumber: "",
@@ -585,33 +658,39 @@ export default function Search() {
   const handleChange = (newValue) => {
     console.log("search Selected", newValue); ////////////////////////////////////////////////////////////////
 
-    setValue(newValue);
-
     //// setting search history
     const setSearchHistory = (search) => {
-      let searchHistory = stateNav.searchHistory ? stateNav.searchHistory : [];
-
-      for (let i = 0; i < searchHistory.length; i++) {
-        if (
-          searchHistory[i].Source === search.Source &&
-          searchHistory[i].Primary === search.Primary &&
-          searchHistory[i].Secondary === search.Secondary
-        ) {
-          searchHistory.splice(i, 1);
-          break;
-        }
+      if (search.searchId) {
+        ///update
+        updateSearchHistory({
+          variables: {
+            searchHistory: {
+              id: search.searchId,
+            },
+          },
+          refetchQueries: ["getSearchHistory"],
+          awaitRefetchQueries: true,
+        });
+        delete newValue.searchId;
+      } else {
+        ///add
+        addSearchHistory({
+          variables: {
+            searchHistory: {
+              searchData: search,
+              user: stateApp.user.mongoId,
+            },
+          },
+          refetchQueries: ["getSearchHistory"],
+          awaitRefetchQueries: true,
+        });
       }
-      searchHistory.unshift({ ...search, date: Date.now() });
-
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        searchHistory: [...searchHistory],
-      }));
     };
 
     if (newValue) {
       setSearchHistory(newValue);
     }
+    setValue(newValue);
 
     //// if well, with lat long
     if (
@@ -901,9 +980,9 @@ export default function Search() {
                     }}
                     className={classes.historyPopover}
                   >
-                    {stateNav.searchHistory &&
-                    stateNav.searchHistory.length > 0 ? (
-                      stateNav.searchHistory.map((option, i) => {
+                    {searchHistoryList && searchHistoryList.length > 0 ? (
+                      searchHistoryList.map((search, i) => {
+                        let option = search.searchData;
                         const parts = parse(option.Primary, Array());
 
                         return (
@@ -929,7 +1008,7 @@ export default function Search() {
                                   ? option.Primary
                                   : option.Secondary
                               );
-                              handleChange(option);
+                              handleChange({ ...option, searchId: search._id });
                             }}
                           >
                             <Grid container spacing={0}>
@@ -993,7 +1072,7 @@ export default function Search() {
                                       day: "2-digit",
                                       hour: "2-digit",
                                       minute: "2-digit",
-                                    }).format(option.date)}
+                                    }).format(search.ts)}
                                   </Typography>
                                 </Grid>
                               </Grid>
@@ -1080,7 +1159,7 @@ export default function Search() {
                         : option.Source === "operator-index"
                         ? maxMinOperatosScore
                         : maxMinLeasesScore,
-                      option["@search.score"]
+                      option.Score
                     ).toString(),
                   }}
                 />
