@@ -45,6 +45,9 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 
+
+
+
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
     width: "100%",
