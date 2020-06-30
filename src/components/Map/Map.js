@@ -335,7 +335,8 @@ export default function Map() {
 
       getRigs({
         variables: {
-          offset: nextOffset
+          offset: nextOffset,
+          amount: 5000
         }
       });
       
@@ -2159,7 +2160,8 @@ export default function Map() {
     getPermits();
     getRigs({
       variables: {
-        offset: 0
+        offset: 0,
+        amount: 500
       }
     });
 
