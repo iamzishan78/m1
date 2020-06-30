@@ -157,8 +157,12 @@ export default function Search() {
     USERSEARCHHISTORY
   );
   const [addSearchHistory] = useMutation(ADDSEARCHHISTORY);
-  const [updateSearchHistory] = useMutation(UPDATESEARCHHISTORY);
+  const [updateSearchHistory, { data }] = useMutation(UPDATESEARCHHISTORY);
   const [removeSearchHistory] = useMutation(REMOVESEARCHHISTORY);
+
+  useEffect(() => {
+    console.log("wwwwwwwwwwwwwwwwwww", data);
+  }, [data]);
 
   useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.mongoId) {
@@ -189,9 +193,7 @@ export default function Search() {
       ///remove last add
       removeSearchHistory({
         variables: {
-          searchHistory: {
-            searchId: searchHistoryList[0]._id,
-          },
+          searchId: searchHistoryList[0]._id,
         },
         refetchQueries: ["getSearchHistory"],
         awaitRefetchQueries: true,
@@ -664,9 +666,7 @@ export default function Search() {
         ///update
         updateSearchHistory({
           variables: {
-            searchHistory: {
-              searchId: search.searchId,
-            },
+            searchId: search.searchId,
           },
           refetchQueries: ["getSearchHistory"],
           awaitRefetchQueries: true,
