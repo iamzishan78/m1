@@ -126,12 +126,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Transact() {
   const classes = useStyles();
-  const [stateApp] = useContext(AppContext);
-  const [stateTransact, setStateTransact] = useContext(TransactContext);
+  // const [stateTransact, setStateTransact] = useContext(TransactContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [transactData, setTransactData] = useState();
   const [id, setId] = useState();
-  const [cardId, setCardId] = useState();
-  const [laneId, setLaneId] = useState();
 
   const [getTransactionData, { loading, data }] = useLazyQuery(TRANSACTIONDATA);
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
@@ -165,40 +163,19 @@ export default function Transact() {
   };
 
   const handleCardClick = (cardId, metadata, laneId) => {
-    setCardId(cardId);
-    setLaneId(laneId);
-    setStateTransact((stateTransact) => ({
-      ...stateTransact,
-      openDialog: true,
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      dealDialog: true,
+      activeDeal: {
+        cardId,
+        laneId,
+      },
     }));
   };
-
-  const handleClickAddDeal = () => {
-    setCardId(null);
-    setLaneId(null);
-    setStateTransact((stateTransact) => ({
-      ...stateTransact,
-      openDialog: true,
-    }));
-  };
-
 
   return !loading && data && transactData ? (
     <div className={classes.root}>
-      <Button
-        onClick={handleClickAddDeal}
-        color="secondary"
-        variant="contained"
-        style={{ margin: "10px" }}
-      >
-        Add Deal
-      </Button>
-      <Dialog
-        cardId={cardId}
-        laneId={laneId}
-        transactData={transactData}
-        handleDataChange={handleDataChange}
-      />
+      <Dialog transactData={transactData} handleDataChange={handleDataChange} />
       <Board
         className={classes.list}
         style={{ backgroundColor: "#efefef" }}

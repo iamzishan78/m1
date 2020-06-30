@@ -48,9 +48,8 @@ function NumberFormatCustom(props) {
 
 export default function TransactDialog(props) {
   const classes = useStyles();
-  const { cardId, laneId, transactData, handleDataChange } = props;
-  const [stateApp] = useContext(AppContext);
-  const [stateTransact, setStateTransact] = useContext(TransactContext);
+  const { transactData, handleDataChange } = props;
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [dealName, setDealName] = useState("");
   const [title, setTitle] = useState(props.contact ? props.contact.name : "");
   const [label, setLabel] = useState("");
@@ -60,13 +59,12 @@ export default function TransactDialog(props) {
     props.contact ? { name: props.contact.name, _id: props.contact._id } : {}
   );
   const [openContactDialog, setOpenContactDialog] = useState(false);
-  console.log("Contact dialog.js: ", contact);
 
   useEffect(() => {
-    console.log("TRANSACT DATA ON MOUNT: ", transactData);
-    console.log("CARD ID MOUNT: ", cardId);
-    console.log("LANE ID MOUNT: ", laneId);
-    if (transactData && cardId && laneId && stateTransact.openDialog) {
+    const cardId = stateApp.activeDeal?.cardId;
+    const laneId = stateApp.activeDeal?.laneId;
+
+    if (transactData && cardId && laneId && stateApp.dealDialog) {
       const lane = transactData.lanes.find((lane) => lane.id === laneId);
       console.log("LANE SETTING: ", lane);
       if (!lane || !lane.cards) return;
@@ -85,14 +83,7 @@ export default function TransactDialog(props) {
     } else if (props.contact) {
       setContact({ name: props.contact.name, _id: props.contact._id });
     }
-  }, [
-    transactData,
-    cardId,
-    laneId,
-    props.contact,
-    stateTransact.openDialog,
-    props.openDeals,
-  ]);
+  }, [transactData, stateApp.activeDeal, props.contact, stateApp.dealDialog]);
 
   useEffect(() => {
     if (contact?._id) {
@@ -107,15 +98,9 @@ export default function TransactDialog(props) {
     setDescription("");
     setStage("");
     setContact({});
-    if (
-      props.handleCloseDeals !== null &&
-      props.handleCloseDeals !== undefined
-    ) {
-      props.handleCloseDeals();
-    }
-    setStateTransact((stateTransact) => ({
-      ...stateTransact,
-      openDialog: false,
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      dealDialog: false,
     }));
   };
 
@@ -127,11 +112,9 @@ export default function TransactDialog(props) {
   const handleUpdate = () => {
     // if (title.trim() !== "" && description.trim() !== "") {
 
-    console.log("ADDING");
-    console.log("ttransactData", transactData);
-    console.log(cardId, laneId);
-
     if (transactData) {
+      const cardId = stateApp.activeDeal?.cardId;
+      const laneId = stateApp.activeDeal?.laneId;
       if (cardId && laneId) {
         // update existing
         const laneIndex = transactData.lanes.findIndex(
@@ -148,7 +131,7 @@ export default function TransactDialog(props) {
           description: description.trim(),
           laneId: stage,
           contactId: contact?._id,
-          id: card.id
+          id: card.id,
         };
 
         if (card.laneId !== stage) {
@@ -164,7 +147,6 @@ export default function TransactDialog(props) {
         } else {
           transactData.lanes[laneIndex].cards[cardIndex] = updatedCard;
         }
-
       } else if (cardId === null && laneId === null) {
         // add new
 
@@ -191,10 +173,9 @@ export default function TransactDialog(props) {
     }
   };
 
-  console.log("OPEN: ", stateTransact?.openDialog);
   return (
     <Dialog
-      open={stateTransact.openDialog || props.openDeals}
+      open={stateApp.dealDialog}
       onClose={handleClose}
       aria-labelledby="form-dialog-title"
       fullWidth
