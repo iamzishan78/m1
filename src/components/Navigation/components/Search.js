@@ -157,12 +157,8 @@ export default function Search() {
     USERSEARCHHISTORY
   );
   const [addSearchHistory] = useMutation(ADDSEARCHHISTORY);
-  const [updateSearchHistory, { data }] = useMutation(UPDATESEARCHHISTORY);
+  const [updateSearchHistory] = useMutation(UPDATESEARCHHISTORY);
   const [removeSearchHistory] = useMutation(REMOVESEARCHHISTORY);
-
-  useEffect(() => {
-    console.log("wwwwwwwwwwwwwwwwwww", data);
-  }, [data]);
 
   useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.mongoId) {
