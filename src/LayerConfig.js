@@ -39,7 +39,18 @@ export const styleLayers = [
   },
   {
     name: "Rig Activity",
-    id: ["rigsbycounty"],
+    id: ["rigs"],
+    sourceProps: ["rigs_source"],
+    layerProps: {
+      layerId: ["rigs"],
+      layerType: ["circle"],
+      paintProps: {
+        "circle-radius": 5,
+        "circle-color": "#0000ff",
+        "circle-stroke-width": 2,
+        "circle-stroke-color": "#fff",
+      },
+    }
   },
   {
     name: "TX GLO Units",
