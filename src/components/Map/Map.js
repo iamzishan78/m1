@@ -277,7 +277,6 @@ export default function Map() {
   }, [dataWells]);
 
   useEffect(() => {
-    console.log(permitData);
     if (permitData && permitData.permits && permitData.permits.length > 0 && map) {
       const makeGeoJSON = (data) => {
         return {
@@ -364,13 +363,12 @@ export default function Map() {
       
       const geoJson = makeGeoJSON(rigs);
   
-      const permitConfigIndex = stateApp.styleLayers.findIndex((value) => value.name === "Rig Activity");
-      const permitConfig = stateApp.styleLayers[permitConfigIndex];
-      const checkedPosition = stateApp.checkedLayers.indexOf(permitConfigIndex);
-      console.log(permitConfig);
+      const rigConfigIndex = stateApp.styleLayers.findIndex((value) => value.name === "Rig Activity");
+      const rigConfig = stateApp.styleLayers[rigConfigIndex];
+      const checkedPosition = stateApp.checkedLayers.indexOf(rigConfigIndex);
   
-      if (permitConfig) {
-        const sourceId = permitConfig.sourceProps[0];
+      if (rigConfig) {
+        const sourceId = rigConfig.sourceProps[0];
         if (map.getSource(sourceId)) {
           map.getSource(sourceId).setData(geoJson);
         } else {
@@ -385,10 +383,10 @@ export default function Map() {
     
           // -> add layer
           map.addLayer({
-            id: permitConfig.layerProps.layerId[0],
-            type: permitConfig.layerProps.layerType[0],
+            id: rigConfig.layerProps.layerId[0],
+            type: rigConfig.layerProps.layerType[0],
             source: sourceId,
-            paint: permitConfig.layerProps.paintProps,
+            paint: rigConfig.layerProps.paintProps,
             layout: {
               visibility: checkedPosition > -1 ? 'visible' : 'none'
             }
