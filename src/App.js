@@ -99,6 +99,8 @@ const SetApolloClient = (props) => {
     }
   }, [stateApp.user]);
   
+
+  
   useEffect(() => {
     if (stateApp.userSnap === true) {
       var script = document.createElement("script");
