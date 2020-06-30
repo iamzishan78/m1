@@ -190,7 +190,7 @@ export default function Search() {
       removeSearchHistory({
         variables: {
           searchHistory: {
-            id: searchHistoryList[0]._id,
+            searchId: searchHistoryList[0]._id,
           },
         },
         refetchQueries: ["getSearchHistory"],
@@ -665,7 +665,7 @@ export default function Search() {
         updateSearchHistory({
           variables: {
             searchHistory: {
-              id: search.searchId,
+              searchId: search.searchId,
             },
           },
           refetchQueries: ["getSearchHistory"],

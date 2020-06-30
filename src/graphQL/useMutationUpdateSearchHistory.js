@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const UPDATESEARCHHISTORY = gql`
-  mutation UpdateSearchHistory($id: ID) {
-    updateSearchHistory(id: $id) {
+  mutation UpdateSearchHistory($searchId: ID) {
+    updateSearchHistory(searchId: $searchId) {
       success
       message
       error
