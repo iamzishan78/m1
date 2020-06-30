@@ -42,10 +42,10 @@ import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
 import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
 import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
-import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
+import { PERMITSQUERY } from '../../graphQL/useQueryPermits';
+import { RIGSQUERY } from '../../graphQL/useQueryRigs';
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
-import { CircularProgress } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -104,6 +104,7 @@ export default function Map() {
   const [mapClick, setMapClick] = useState(null);
   const [draw, setDraw] = useState(null);
   const [drawStatus, setDrawStatus] = useState(false);
+  const [rigs, setRigData] = useState([]);
   const [drawingFilterFeatureId, setDrawingFilterFeatureId] = useState(null);
   // const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
@@ -144,7 +145,15 @@ export default function Map() {
     { data: dataWellsForOwnerWellTrackLayer },
   ] = useLazyQuery(WELLSQUERY);
 
-  const [getPermits, { data: permitData }] = useLazyQuery(PERMITSQUERY);
+  const [
+    getPermits,
+    { data: permitData }
+  ] = useLazyQuery(PERMITSQUERY)
+
+  const [
+    getRigs,
+    { data: rigData }
+  ] = useLazyQuery(RIGSQUERY)
 
   /////end/////////temporary
 
@@ -268,13 +277,7 @@ export default function Map() {
   }, [dataWells]);
 
   useEffect(() => {
-    console.log(permitData);
-    if (
-      permitData &&
-      permitData.permits &&
-      permitData.permits.length > 0 &&
-      map
-    ) {
+    if (permitData && permitData.permits && permitData.permits.length > 0 && map) {
       const makeGeoJSON = (data) => {
         return {
           type: "FeatureCollection",
@@ -283,19 +286,17 @@ export default function Map() {
               type: "Feature",
               properties: feature,
               geometry: {
-                type: "Point",
+                type: 'Point',
                 coordinates: [feature.Longitude, feature.Latitude],
               },
-            };
+            }
           }),
         };
       };
-
+      
       const geoJson = makeGeoJSON(permitData.permits);
 
-      const permitConfigIndex = stateApp.styleLayers.findIndex(
-        (value) => value.name === "Permits"
-      );
+      const permitConfigIndex = stateApp.styleLayers.findIndex((value) => value.name === "Permits");
       const permitConfig = stateApp.styleLayers[permitConfigIndex];
       const checkedPosition = stateApp.checkedLayers.indexOf(permitConfigIndex);
       console.log(permitConfig);
@@ -303,29 +304,98 @@ export default function Map() {
       // -> add source
       if (permitConfig) {
         map.addSource(permitConfig.sourceProps[0], {
-          type: "geojson",
+          type: 'geojson',
           data: geoJson,
           cluster: true,
           clusterRadius: 50,
           clusterMaxZoom: 6,
         });
-
+  
         // -> add layer
-
+        
         map.addLayer({
           id: permitConfig.layerProps.layerId[0],
           type: permitConfig.layerProps.layerType[0],
           source: permitConfig.sourceProps[0],
           paint: permitConfig.layerProps.paintProps,
           layout: {
-            visibility: checkedPosition > -1 ? "visible" : "none",
-          },
+            visibility: checkedPosition > -1 ? 'visible' : 'none'
+          }
         });
 
         console.log(map.getLayer(permitConfig.layerProps.layerId[0]));
       }
     }
   }, [permitData, map]);
+
+  useEffect(() => {
+    if (rigData && rigData.rigs && rigData.rigs.length > 0) {
+      const nextOffset = rigs.length + rigData.rigs.length
+      setRigData([...rigs, ...rigData.rigs]);
+
+      getRigs({
+        variables: {
+          offset: nextOffset,
+          amount: 5000
+        }
+      });
+      
+    }
+  }, [rigData]);
+
+  useEffect(() => {
+    if (rigs.length > 0 && map) {
+
+      const makeGeoJSON = (data) => {
+        return {
+          type: "FeatureCollection",
+          features: data.map((feature) => {
+            return {
+              type: "Feature",
+              properties: feature,
+              geometry: {
+                type: 'Point',
+                coordinates: [feature.Longitude, feature.Latitude],
+              },
+            }
+          }),
+        };
+      };
+      
+      const geoJson = makeGeoJSON(rigs);
+  
+      const rigConfigIndex = stateApp.styleLayers.findIndex((value) => value.name === "Rig Activity");
+      const rigConfig = stateApp.styleLayers[rigConfigIndex];
+      const checkedPosition = stateApp.checkedLayers.indexOf(rigConfigIndex);
+  
+      if (rigConfig) {
+        const sourceId = rigConfig.sourceProps[0];
+        if (map.getSource(sourceId)) {
+          map.getSource(sourceId).setData(geoJson);
+        } else {
+          // -> add source
+          map.addSource(sourceId, {
+            type: 'geojson',
+            data: geoJson,
+            cluster: true,
+            clusterRadius: 50,
+            clusterMaxZoom: 6,
+          });
+    
+          // -> add layer
+          map.addLayer({
+            id: rigConfig.layerProps.layerId[0],
+            type: rigConfig.layerProps.layerType[0],
+            source: sourceId,
+            paint: rigConfig.layerProps.paintProps,
+            layout: {
+              visibility: checkedPosition > -1 ? 'visible' : 'none'
+            }
+          });
+        }
+      }
+    }
+  }, [rigs, map]);
 
   useEffect(() => {
     if (dataWellsForOwnerWellTrackLayer) {
@@ -1923,7 +1993,7 @@ export default function Map() {
     (currentFeature) => {
       console.log(currentFeature.shapeCenter);
       let coordinates = currentFeature.shapeCenter;
-      if (typeof currentFeature.shapeCenter === "string") {
+      if (typeof currentFeature.shapeCenter === 'string') {
         coordinates = JSON.parse(currentFeature.shapeCenter);
       }
       let popUps = document.getElementsByClassName("mapboxgl-popup");
@@ -2088,6 +2158,12 @@ export default function Map() {
     const signal = abortController.signal;
 
     getPermits();
+    getRigs({
+      variables: {
+        offset: 0,
+        amount: 500
+      }
+    });
 
     fetch(req, { signal: signal })
       .then((results) => results.json())
@@ -2145,6 +2221,8 @@ export default function Map() {
     }
     return -1; //to handle the case where the value doesn't exist
   }
+
+ 
 
   const wellMouseMove = (e) => {
     map.getCanvas().style.cursor = "pointer";
@@ -2722,11 +2800,7 @@ export default function Map() {
   }, [stateApp.toggle3d]);
 
   useEffect(() => {
-    console.log(
-      "Drawing status check",
-      stateApp.editDraw,
-      stateNav.drawingMode
-    );
+    console.log("Drawing status check", stateApp.editDraw, stateNav.drawingMode);
     if (stateApp.editDraw === true || stateNav.drawingMode) {
       setDrawStatus(true);
       if (mapClick && mapClick.mapClickHandler != null) {
@@ -2773,7 +2847,7 @@ export default function Map() {
       ...state,
       popupOpen: false,
       editLayer: false,
-      selectedUserDefinedLayer: undefined,
+      selectedUserDefinedLayer: undefined
     }));
   };
 
@@ -2783,10 +2857,7 @@ export default function Map() {
     const { selectedUserDefinedLayer } = stateApp;
 
     spatialDataAttributes.forEach((attribute) => {
-      if (
-        spatialData[attribute] != null ||
-        typeof spatialData[attribute] !== "undefined"
-      ) {
+      if (spatialData[attribute] != null || typeof spatialData[attribute] !== 'undefined') {
         console.log("set attribute", spatialData[attribute], attribute);
         selectedUserDefinedLayer.properties[attribute] = spatialData[attribute];
       }
@@ -2805,10 +2876,7 @@ export default function Map() {
       addCustomShapeProperties(current_feature, stateApp.draw);
       current_feature = stateApp.draw.get(draw_id);
       spatialDataAttributes.forEach((attribute) => {
-        if (
-          spatialData[attribute] != null ||
-          typeof spatialData[attribute] !== "undefined"
-        ) {
+        if (spatialData[attribute] != null || typeof spatialData[attribute] !== 'undefined') {
           console.log("set attribute", spatialData[attribute], attribute);
           current_feature.properties[attribute] = spatialData[attribute];
         }
@@ -2819,17 +2887,17 @@ export default function Map() {
 
     let position = null;
 
-    if (typeof update_layer.properties.shapeCenter == "string") {
+    if (typeof update_layer.properties.shapeCenter == 'string') {
       position = JSON.parse(update_layer.properties.shapeCenter);
     } else {
-      position = update_layer.properties.shapeCenter;
+      position = update_layer.properties.shapeCenter
     }
 
     const symbolFeature = {
       type: "Feature",
       geometry: {
-        type: "Point",
-        coordinates: position,
+          type: "Point",
+          coordinates: position
       },
       properties: {
         ...update_layer.properties,
@@ -3147,9 +3215,6 @@ export default function Map() {
           </div>
         ) : null}
       </Portal>
-      {stateApp.mapCircularLoaderAct && (
-        <CircularProgress key="loader" size={100} color="secondary" />
-      )}
     </div>
   );
 }
