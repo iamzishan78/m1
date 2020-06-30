@@ -59,10 +59,11 @@ const AppProvider = (props) => {
     //   taggedWells: null,
     // },
     wellSelectedCoordinates: [],
-    mapboxglAccessToken:
-      "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJjanYycGJxbG8yN3JsM3lsYTdnMXZoeHh1In0.tTNECYKDPtcrzivWTiZcIQ",
 
     //Map State
+    mapCircularLoaderAct: false,
+    mapboxglAccessToken:
+      "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJjanYycGJxbG8yN3JsM3lsYTdnMXZoeHh1In0.tTNECYKDPtcrzivWTiZcIQ",
     selectedWellApi: null,
     styleLayers: styleLayers,
     heatLayers: heatLayers,
@@ -102,6 +103,7 @@ const AppProvider = (props) => {
           [layerContainerVarName]: newChecked,
           popupOpen: false,
           selectedWell: null,
+          mapCircularLoaderAct: false,
         };
       });
       return added;
@@ -123,6 +125,7 @@ const AppProvider = (props) => {
           [layerContainerVarName]: newChecked,
           popupOpen: false,
           selectedWell: null,
+          mapCircularLoaderAct: false,
         };
       });
       return deleted;
