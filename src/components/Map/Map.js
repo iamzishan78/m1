@@ -42,6 +42,7 @@ import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
 import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
 import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
+import { PERMITSQUERY } from '../../graphQL/useQueryPermits';
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 
@@ -144,6 +145,11 @@ export default function Map() {
     getWellsForLayer,
     { data: dataWellsForOwnerWellTrackLayer },
   ] = useLazyQuery(WELLSQUERY);
+
+  const [
+    getPermits,
+    { data: permitData }
+  ] = useLazyQuery(PERMITSQUERY)
 
   /////end/////////temporary
 
@@ -265,6 +271,59 @@ export default function Map() {
         }));
     }
   }, [dataWells]);
+
+  useEffect(() => {
+    console.log(permitData);
+    if (permitData && permitData.permits && permitData.permits.length > 0 && map) {
+      const makeGeoJSON = (data) => {
+        return {
+          type: "FeatureCollection",
+          features: data.map((feature) => {
+            return {
+              type: "Feature",
+              properties: feature,
+              geometry: {
+                type: 'Point',
+                coordinates: [feature.Longitude, feature.Latitude],
+              },
+            }
+          }),
+        };
+      };
+      
+      const geoJson = makeGeoJSON(permitData.permits);
+
+      const permitConfigIndex = stateApp.styleLayers.findIndex((value) => value.name === "Permits");
+      const permitConfig = stateApp.styleLayers[permitConfigIndex];
+      const checkedPosition = stateApp.checkedLayers.indexOf(permitConfigIndex);
+      console.log(permitConfig);
+
+      // -> add source
+      if (permitConfig) {
+        map.addSource(permitConfig.sourceProps[0], {
+          type: 'geojson',
+          data: geoJson,
+          cluster: true,
+          clusterRadius: 50,
+          clusterMaxZoom: 6,
+        });
+  
+        // -> add layer
+        
+        map.addLayer({
+          id: permitConfig.layerProps.layerId[0],
+          type: permitConfig.layerProps.layerType[0],
+          source: permitConfig.sourceProps[0],
+          paint: permitConfig.layerProps.paintProps,
+          layout: {
+            visibility: checkedPosition > -1 ? 'visible' : 'none'
+          }
+        });
+
+        console.log(map.getLayer(permitConfig.layerProps.layerId[0]));
+      }
+    }
+  }, [permitData, map]);
 
   useEffect(() => {
     if (dataWellsForOwnerWellTrackLayer) {
@@ -2025,6 +2084,8 @@ export default function Map() {
 
     const abortController = new AbortController();
     const signal = abortController.signal;
+
+    getPermits();
 
     fetch(req, { signal: signal })
       .then((results) => results.json())

@@ -1,7 +1,7 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
+import { useMutation, useLazyQuery } from "@apollo/react-hooks";
 
 import IconButton from "@material-ui/core/IconButton";
-import Popover from '@material-ui/core/Popover';
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
@@ -20,6 +20,8 @@ import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
 
 import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../../Navigation/NavigationContext";
+import { TOGGLETRACK } from "../../../graphQL/useMutationToggleCreateRemoveTrack";
+import { WELLSOWNERSQUERY } from "../../../graphQL/useQueryWellsOwners";
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
@@ -80,7 +82,6 @@ const StyledMenuItem = withStyles((theme) => ({
     backgroundColor: "#263451",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white,
-      // },
     },
   },
 }))(MenuItem);
@@ -116,7 +117,14 @@ export default (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openTrack, setOpenTrack] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [setStateNav] = useContext(NavigationContext);
+  const [isTrackWells, setTrackWells] = useState(false);
+  const [isTrackOwners, setTrackOwners] = useState(false);
+  const [toggleCreateRemoveTrack, { data, loading }] = useMutation(TOGGLETRACK);
+
+  const [getWellsOwners, { data: dataWellsOwners }] = useLazyQuery(
+    WELLSOWNERSQUERY
+  );
 
   const toggleOpenContorl = (event) => {
     if (openedControl) {
@@ -142,11 +150,83 @@ export default (props) => {
   };
 
   const handleTrackWells = () => {
+    const { map } = stateApp;
+    const points = map.queryRenderedFeatures({
+      layers: ["wellpoints", "welllines"]
+    });
+    const targetLabel = 'well';
+    const user = stateApp.user.mongoId;
 
+    setTrackWells(!isTrackWells);
+
+    if (points && points.length > 0) {
+      points.forEach((point) => {
+        const targetSourceId = point.properties.id;
+        toggleCreateRemoveTrack({
+          variables: {
+            track: {
+              user: user,
+              objectType: targetLabel,
+              trackOn: targetSourceId,
+            },
+          },
+        })
+      });
+    }
   }
 
+  const trackOwners = (ownerList) => {
+    const user = stateApp.user.mongoId;
+    const targetLabel = "owner";
+    console.log(ownerList);
+    ownerList.forEach((owner) => {
+      const targetSourceId = owner.id;
+      // toggleCreateRemoveTrack({
+      //   variables: {
+      //     track: {
+      //       user: user,
+      //       objectType: targetLabel,
+      //       trackOn: targetSourceId,
+      //     },
+      //   },
+      // });
+    });
+  }
+
+  useEffect(() => {
+    // if (dataWellsOwners && dataWellsOwners.wellOwners && dataWellsOwners.wellOwners.length > 0) {
+    //     // trackOwners(dataWellsOwners.wellOwners);
+    // }
+    if (dataWellsOwners) {
+      console.log(dataWellsOwners);
+    }
+  }, [dataWellsOwners])
+
   const handleTrackOwners = () => {
-    
+    const { map } = stateApp;
+    const points = map.queryRenderedFeatures({
+      layers: ["wellpoints", "welllines"]
+    });
+    setTrackOwners(!isTrackOwners);
+    // const targetLabel = 'owner';
+    // const user = stateApp.user.mongoId;
+
+    if (points && points.length > 0) {
+      const wellApiArray = [];
+      points.forEach((point) => {
+        // const targetSourceId = point.id;
+        const wellApi = point.properties.api;
+        wellApiArray.push(wellApi);
+        console.log("Selected Well", wellApi);
+
+        
+      });
+      getWellsOwners({
+        variables: {
+          api: wellApiArray,
+        },
+      })
+    }
   }
 
   const id = openedControl ? 'filter-control-popover' : undefined;
@@ -190,22 +270,24 @@ export default (props) => {
             <List disablePadding>
               <StyledListItem
                 ContainerComponent="li"
+                onClick={handleTrackWells}
               >
                 <ListItemText
                   primary="Wells"
                 />
                 <ListItemIcon>
-                  <MyLocationIcon />
+                  <MyLocationIcon color={isTrackWells ? 'secondary' : 'primary'} />
                 </ListItemIcon>
               </StyledListItem>
               <StyledListItem
                 ContainerComponent="li"
+                onClick={handleTrackOwners}
               >
                 <ListItemText
                   primary="Owners"
                 />
                 <ListItemIcon>
-                  <MyLocationIcon />
+                  <MyLocationIcon color={isTrackOwners ? 'secondary' : 'primary'} />
                 </ListItemIcon>
               </StyledListItem>
             </List>
