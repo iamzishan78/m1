@@ -43,6 +43,7 @@ import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
 import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { PERMITSQUERY } from '../../graphQL/useQueryPermits';
+import { RIGSQUERY } from '../../graphQL/useQueryRigs';
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 
@@ -103,6 +104,7 @@ export default function Map() {
   const [mapClick, setMapClick] = useState(null);
   const [draw, setDraw] = useState(null);
   const [drawStatus, setDrawStatus] = useState(false);
+  const [rigs, setRigData] = useState([]);
   const [drawingFilterFeatureId, setDrawingFilterFeatureId] = useState(null);
   // const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
@@ -147,6 +149,11 @@ export default function Map() {
     getPermits,
     { data: permitData }
   ] = useLazyQuery(PERMITSQUERY)
+
+  const [
+    getRigs,
+    { data: rigData }
+  ] = useLazyQuery(RIGSQUERY)
 
   /////end/////////temporary
 
@@ -321,6 +328,75 @@ export default function Map() {
       }
     }
   }, [permitData, map]);
+
+  useEffect(() => {
+    if (rigData && rigData.rigs && rigData.rigs.length > 0) {
+      const nextOffset = rigs.length + rigData.rigs.length
+      setRigData([...rigs, ...rigData.rigs]);
+
+      getRigs({
+        variables: {
+          offset: nextOffset
+        }
+      });
+      
+    }
+  }, [rigData]);
+
+  useEffect(() => {
+    if (rigs.length > 0 && map) {
+
+      const makeGeoJSON = (data) => {
+        return {
+          type: "FeatureCollection",
+          features: data.map((feature) => {
+            return {
+              type: "Feature",
+              properties: feature,
+              geometry: {
+                type: 'Point',
+                coordinates: [feature.Longitude, feature.Latitude],
+              },
+            }
+          }),
+        };
+      };
+      
+      const geoJson = makeGeoJSON(rigs);
+  
+      const permitConfigIndex = stateApp.styleLayers.findIndex((value) => value.name === "Rig Activity");
+      const permitConfig = stateApp.styleLayers[permitConfigIndex];
+      const checkedPosition = stateApp.checkedLayers.indexOf(permitConfigIndex);
+      console.log(permitConfig);
+  
+      if (permitConfig) {
+        const sourceId = permitConfig.sourceProps[0];
+        if (map.getSource(sourceId)) {
+          map.getSource(sourceId).setData(geoJson);
+        } else {
+          // -> add source
+          map.addSource(sourceId, {
+            type: 'geojson',
+            data: geoJson,
+            cluster: true,
+            clusterRadius: 50,
+            clusterMaxZoom: 6,
+          });
+    
+          // -> add layer
+          map.addLayer({
+            id: permitConfig.layerProps.layerId[0],
+            type: permitConfig.layerProps.layerType[0],
+            source: sourceId,
+            paint: permitConfig.layerProps.paintProps,
+            layout: {
+              visibility: checkedPosition > -1 ? 'visible' : 'none'
+            }
+          });
+        }
+      }
+    }
+  }, [rigs, map]);
 
   useEffect(() => {
     if (dataWellsForOwnerWellTrackLayer) {
@@ -2083,6 +2159,11 @@ export default function Map() {
     const signal = abortController.signal;
 
     getPermits();
+    getRigs({
+      variables: {
+        offset: 0
+      }
+    });
 
     fetch(req, { signal: signal })
       .then((results) => results.json())
