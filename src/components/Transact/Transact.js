@@ -151,7 +151,7 @@ export default function Transact() {
       setTransactData(data.transactionData.allData);
       setId(data.transactionData._id);
     }
-  }, [data]);
+  }, [loading, data]);
 
   const handleDataChange = (newData) => {
     updateTransaction({

@@ -62,7 +62,6 @@ export default function TransactDialog(props) {
   const [openContactDialog, setOpenContactDialog] = useState(false);
   console.log("Contact dialog.js: ", contact);
 
-
   useEffect(() => {
     console.log("TRANSACT DATA ON MOUNT: ", transactData);
     console.log("CARD ID MOUNT: ", cardId);
@@ -135,24 +134,37 @@ export default function TransactDialog(props) {
     if (transactData) {
       if (cardId && laneId) {
         // update existing
+        const laneIndex = transactData.lanes.findIndex(
+          (lane) => lane.id === laneId
+        );
+        const lane = transactData.lanes[laneIndex];
+        const cardIndex = lane.cards.findIndex((card) => card.id === cardId);
+        const card = lane.cards[cardIndex];
 
-        // BUG: if we change laneId/Stage, card won't move to different lane
-        // To fix: Manually delete card from lane and re-insert in appropriate lane
+        const updatedCard = {
+          dealName: dealName.trim(),
+          title: contact?.name.trim(),
+          label: label.trim(),
+          description: description.trim(),
+          laneId: stage,
+          contactId: contact?._id,
+          id: card.id
+        };
 
-        transactData.lanes.forEach((lane) => {
-          if (lane.id === laneId) {
-            lane.cards.forEach((card) => {
-              if (card.id === cardId) {
-                card.dealName = dealName.trim();
-                card.title = contact?.name;
-                card.label = label.trim();
-                card.description = description.trim();
-                card.laneId = stage;
-                card.contactId = contact?._id;
-              }
-            });
+        if (card.laneId !== stage) {
+          if (cardIndex > -1) {
+            // remove card from current lane
+            transactData.lanes[laneIndex].cards.splice(cardIndex, 1);
+            // add card to updated lane
+            const stageIndex = transactData.lanes.findIndex(
+              (lane) => lane.id === stage
+            );
+            transactData.lanes[stageIndex].cards.push(updatedCard);
           }
-        });
+        } else {
+          transactData.lanes[laneIndex].cards[cardIndex] = updatedCard;
+        }
+
       } else if (cardId === null && laneId === null) {
         // add new
 
@@ -166,7 +178,7 @@ export default function TransactDialog(props) {
               description: description.trim(),
               id: uuid(),
               contactId: contact?._id,
-              laneId: stage
+              laneId: stage,
             };
             cards.push(newCard);
             lane.cards = cards;
