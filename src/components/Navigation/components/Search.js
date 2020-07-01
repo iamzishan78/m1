@@ -30,6 +30,7 @@ import { NavigationContext } from "../NavigationContext";
 import Popover from "@material-ui/core/Popover";
 import Tooltip from "@material-ui/core/Tooltip";
 import Box from "@material-ui/core/Box";
+import { CircularProgress } from "@material-ui/core";
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -139,6 +140,10 @@ export default function Search() {
   const [maxMinLeasesScore, setMaxMinLeasesScore] = React.useState([0, 0]);
   const [searchHistoryList, setSearchHistoryList] = React.useState([]);
   const loaded = React.useRef(false);
+  const [loadingWells, setLoadingWells] = React.useState(false);
+  const [loadingOwners, setLoadingOwners] = React.useState(false);
+  const [loadingLeases, setLoadingLeases] = React.useState(false);
+  const [loadingOperators, setLoadingOperators] = React.useState(false);
 
   const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(
     OWNERWELLSQUERY
@@ -395,6 +400,7 @@ export default function Search() {
               }
 
               setOptions(newOptions);
+              setLoadingWells(false);
             })
           : null,
         searchOption == "all" || searchOption == "owners"
@@ -423,6 +429,7 @@ export default function Search() {
               }
 
               setOptions(newOptions);
+              setLoadingOwners(false);
             })
           : null,
         searchOption == "all" || searchOption == "operators"
@@ -451,6 +458,7 @@ export default function Search() {
               }
 
               setOptions(newOptions);
+              setLoadingOperators(false);
             })
           : null,
         searchOption == "all" || searchOption == "leases"
@@ -492,6 +500,7 @@ export default function Search() {
               }
 
               setOptions(newOptions);
+              setLoadingLeases(false);
             })
           : null,
       ]);
@@ -504,20 +513,6 @@ export default function Search() {
     searchOption,
     searchTop,
   ]);
-
-  //// setting the buttons header /////
-  const header = {
-    Source: "header",
-    Score: 0,
-    Id: "0",
-    WellName: "",
-    ApiNumber: "",
-    Latitude: 0,
-    Longitude: 0,
-    Primary: "",
-    Secondary: "",
-  };
-  const optionsWithHeader = [header, ...options];
 
   //// getting wells data from owners ////
 
@@ -688,6 +683,9 @@ export default function Search() {
     }
     setValue(newValue);
 
+    //// setting map loader
+    setStateApp((stateApp) => ({ ...stateApp, mapCircularLoaderAct: true }));
+
     //// if well, with lat long
     if (
       newValue &&
@@ -755,6 +753,31 @@ export default function Search() {
     }
   };
 
+  //// setting the buttons header /////
+  const header = {
+    Source: "header",
+    Score: 0,
+    Id: "0",
+    WellName: "",
+    ApiNumber: "",
+    Latitude: 0,
+    Longitude: 0,
+    Primary: "",
+    Secondary: "",
+  };
+  let optionsWithHeader = [header, ...options];
+  //// adding loader ////
+  if (
+    (searchOption === "all" &&
+      (loadingWells || loadingOwners || loadingOperators || loadingLeases)) ||
+    (searchOption === "wells" && loadingWells) ||
+    (searchOption === "owners" && loadingOwners) ||
+    (searchOption === "operators" && loadingOperators) ||
+    (searchOption === "leases" && loadingLeases)
+  ) {
+    optionsWithHeader = [header, { ...header, Source: "loader" }];
+  }
+
   return (
     <Autocomplete
       id="cognitive-search-autocomplete"
@@ -771,10 +794,22 @@ export default function Search() {
           ? "Operators"
           : option.Source === "lease-index"
           ? "Leases"
-          : "header";
+          : option.Source === "header"
+          ? "header"
+          : "loader";
       }}
       leftIconButton={<SearchIcon />}
       renderGroup={(option) => {
+        if (option.group === "loader")
+          return (
+            <CircularProgress
+              key="loader"
+              style={{ margin: "10px 0 0 48%" }}
+              size={28}
+              color="secondary"
+            />
+          );
+
         return option.group === "header" ? (
           <Grid
             key={option.group}
@@ -785,7 +820,19 @@ export default function Search() {
               position: "relative",
               top: "0",
               backgroundColor: "#ffffff",
-              paddingBottom: options.length === 0 ? "0" : "9px",
+              paddingBottom:
+                (searchOption === "all" &&
+                  (loadingWells ||
+                    loadingOwners ||
+                    loadingOperators ||
+                    loadingLeases)) ||
+                (searchOption === "wells" && loadingWells) ||
+                (searchOption === "owners" && loadingOwners) ||
+                (searchOption === "operators" && loadingOperators) ||
+                (searchOption === "leases" && loadingLeases) ||
+                options.length === 0
+                  ? "0"
+                  : "9px",
             }}
           >
             <Grid
@@ -921,6 +968,20 @@ export default function Search() {
       onInputChange={(event, newInputValue, reason) => {
         if (reason == "input") {
           setInputValue(newInputValue);
+
+          if (newInputValue !== "") {
+            //// setting loader
+            if (searchOption === "all") {
+              setLoadingWells(true);
+              setLoadingOwners(true);
+              setLoadingOperators(true);
+              setLoadingLeases(true);
+            }
+            if (searchOption === "wells") setLoadingWells(true);
+            if (searchOption === "owners") setLoadingOwners(true);
+            if (searchOption === "operators") setLoadingOperators(true);
+            if (searchOption === "leases") setLoadingLeases(true);
+          }
         }
       }}
       renderInput={(params) => (
@@ -1090,7 +1151,8 @@ export default function Search() {
         />
       )}
       renderOption={(option) => {
-        if (option.Source === "header") return null;
+        if (option.Source === "header" || option.group === "loader")
+          return null;
         const parts = parse(option.Primary, Array());
 
         return (
