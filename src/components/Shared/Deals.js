@@ -58,9 +58,8 @@ export default function Activities({
   const [activeDeals, setActiveDeals] = useState([]); // all other deals
   const [allDeals, setAllDeals] = useState([]); // all other deals
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
-  const [stateApp] = useContext(AppContext);
-  const [stateTransact, setStateTransact] = useContext(TransactContext);
-  const [displayModal, setDisplayModal] = useState(false);
+  const [stateApp, setStateApp] = useContext(AppContext);
+  // const [stateTransact, setStateTransact] = useContext(TransactContext);
 
   const classes = useStyles();
   console.log("CONTACT: ", contact);
@@ -134,36 +133,22 @@ export default function Activities({
   };
 
   const handleOpenDialog = () => {
-    console.log("setting dialog to true ");
-    setStateTransact((stateTransact) => ({
-      ...stateTransact,
-      openDialog: true,
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      dealDialog: true,
+      activeDeal: {
+        laneId: null,
+        cardId: null
+      }
     }));
-    setDisplayModal(true);
   };
-
-  const handleCloseDialog = () => {
-    setStateTransact((stateTransact) => ({
-      ...stateTransact,
-      openDialog: false,
-    }));
-    setDisplayModal(false);
-  };
-
-  console.log("WON: ", wonDeals);
-  console.log("LOST: ", lostDeals);
-  console.log("OTHER: ", activeDeals);
 
   return (
     <Card className={classes.root} variant="outlined">
       <Dialog
-        laneId={null}
-        cardId={null}
         transactData={transactData}
         handleDataChange={handleDataChange}
-        openDeals={displayModal}
         contact={contact}
-        handleCloseDeals={handleCloseDialog}
       />
       <CardActions>
         <Grid container justify="space-between">
