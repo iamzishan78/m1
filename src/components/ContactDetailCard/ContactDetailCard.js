@@ -154,7 +154,7 @@ export default function ContactDetailCard(props) {
   const [transactData, setTransactData] = useState();
   const [transactId, setTransactId] = useState();
   const [getContact, { loading, data }] = useLazyQuery(CONTACT);
-  const [getTransactionData, { data: tData }] = useLazyQuery(TRANSACTIONDATA);
+  const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(TRANSACTIONDATA);
 
   useEffect(() => {
     if (props.contactId) {
@@ -166,6 +166,7 @@ export default function ContactDetailCard(props) {
     }
   }, [props.contactId]);
 
+  
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
       getTransactionData({
@@ -181,7 +182,7 @@ export default function ContactDetailCard(props) {
       setTransactData(tData.transactionData.allData);
       setTransactId(tData.transactionData._id);
     }
-  }, [tData]);
+  }, [tData, tLoading]);
 
   return data && data.contact && !loading ? (
     <Grid container spacing={0} className={classes.mainGridContainer}>
