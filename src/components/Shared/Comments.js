@@ -435,15 +435,16 @@ export default function Comments(props) {
                         </React.Fragment>
                       }
                       secondary={
-                        `${comment.user.name}` + comment.ids
+                        `${comment.user.name}` +
+                        (comment.ids
                           ? ""
-                          : `- ${new Intl.DateTimeFormat("en-US", {
+                          : ` - ${new Intl.DateTimeFormat("en-US", {
                               year: "numeric",
                               month: "long",
                               day: "2-digit",
                               hour: "2-digit",
                               minute: "2-digit",
-                            }).format(comment.ts)}`
+                            }).format(comment.ts)}`)
                       }
                     />
                     <ListItemSecondaryAction>
