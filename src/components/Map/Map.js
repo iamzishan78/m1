@@ -1675,11 +1675,80 @@ export default function Map() {
       }
 
       if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
-        let total = stateNav.filterBasin[2].length;
-        filterArray.push(stateNav.filterBasin);
+        // let total = stateNav.filterBasin[2].length;
+        // filterArray.push(stateNav.filterBasin);
+        const filterLayers = [
+          "GLOLeases",
+          "GLOLeaseLabels",
+          "GLOUnits",
+          "GLOUnitLabels",
+          "wellpoints",
+          "welllines"
+        ];
+        if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
+          const basinShapes = stateNav.filterBasin;
+          filterLayers.forEach((filterLayer) => {
+            const layer = map.getLayer(filterLayer);
+            if (layer) {
+              const featuresList = map.querySourceFeatures("composite", {
+                sourceLayer: layer.sourceLayer,
+              });
+              if (featuresList && featuresList.length > 0) {
+                const result = featuresList.filter((feature) => {
+                  for(let i = 0; i < basinShapes.length; i ++) {
+                    if (turf.booleanContains(basinShapes[i], feature)) {
+                      return true;
+                    }
+                  }
+                  return false;
+                });
+
+                let ids = result.map(function (feature) {
+                  if (filterLayer == 'wellpoints' || filterLayer == 'welllines') {
+                    return feature.properties.id;
+                  }
+                  return feature.properties.VIEWID;
+                });
+
+                const onlyUnique = (value, index, self) => {
+                  return (
+                    self.indexOf(value) === index &&
+                    (typeof value === "number" || typeof value === "string")
+                  );
+                };
+
+                ids = ids.filter(onlyUnique);
+
+                // console.log(ids);
+
+                if (filterLayer == 'wellpoints' || filterLayer == 'welllines') {
+                  map.setFilter(filterLayer, [
+                    "match",
+                    ["get", "id"],
+                    ids,
+                    true,
+                    false,
+                  ]);
+                } else {
+                  map.setFilter(filterLayer, [
+                    "match",
+                    ["get", "VIEWID"],
+                    ids,
+                    true,
+                    false,
+                  ]);
+                }
+              }
+            }
+          });
+        } else {
+          filterLayers.forEach((filterLayer) => {
+            map.setFilter(filterLayer, null);
+          });
+        }
         isFilterSet = true;
-        geographyFilterCount += total;
-        totalCount += total;
+        geographyFilterCount += 1;
+        totalCount += 1;
       }
 
       if (stateNav.filterPlay && stateNav.filterPlay.length > 0) {
@@ -1821,7 +1890,6 @@ export default function Map() {
                   return turf.booleanContains(filterFeature, feature);
                 });
 
-                console.log(result);
                 let ids = result.map(function (feature) {
                   return feature.properties.VIEWID;
                 });

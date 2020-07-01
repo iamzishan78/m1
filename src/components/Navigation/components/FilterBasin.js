@@ -33,15 +33,21 @@ export default function BasinFilterJ() {
 
   useEffect(() => {
     if (basinShapes && basinShapes.basinShapes) {
-      const filter = basinShapes.basinShapes.map(basinShape => basinShape.shape);
-      // setStateNav(filter)
+      const filter = basinShapes.basinShapes.map(basinShape => {
+        return JSON.parse(basinShape.shape);
+      });
+      setStateNav((stateNav) => ({ ...stateNav, filterBasin: filter }));
     }
   }, [basinShapes])
 
   const handleBasinChange = (value) => {
     let filter;
     if (value && value.length) {
-      getBasinShapes(value);
+      getBasinShapes({
+        variables: {
+          names: value
+        }
+      });
       filter = ["match", ["get", "basin"], value, true, false];
       setStateNav((stateNav) => ({ ...stateNav, basinName: value }));
       setBasinName(value);
@@ -49,7 +55,7 @@ export default function BasinFilterJ() {
       filter = null;
       setStateNav((stateNav) => ({ ...stateNav, basinName: null }));
     }
-    setStateNav((stateNav) => ({ ...stateNav, filterBasin: filter }));
+    // setStateNav((stateNav) => ({ ...stateNav, filterBasin: filter }));
   };
 
   return (
