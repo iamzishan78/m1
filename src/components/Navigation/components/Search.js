@@ -138,12 +138,17 @@ export default function Search() {
   const [maxMinOwnersScore, setMaxMinOwnersScore] = React.useState([0, 0]);
   const [maxMinOperatosScore, setMaxMinOperatosScore] = React.useState([0, 0]);
   const [maxMinLeasesScore, setMaxMinLeasesScore] = React.useState([0, 0]);
+  const [maxMinMapboxSearchScore, setMaxMinMapboxSearchScore] = React.useState([
+    0,
+    0,
+  ]);
   const [searchHistoryList, setSearchHistoryList] = React.useState([]);
   const loaded = React.useRef(false);
   const [loadingWells, setLoadingWells] = React.useState(false);
   const [loadingOwners, setLoadingOwners] = React.useState(false);
   const [loadingLeases, setLoadingLeases] = React.useState(false);
   const [loadingOperators, setLoadingOperators] = React.useState(false);
+  const [loadingMapboxSearch, setLoadingMapboxSearch] = React.useState(false);
 
   const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(
     OWNERWELLSQUERY
@@ -356,6 +361,35 @@ export default function Search() {
     []
   );
 
+  const callMapboxSearch = React.useMemo(
+    () =>
+      throttle((request, top, callback) => {
+        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${
+          request.input
+        }.json?access_token=${
+          stateApp.mapboxglAccessToken
+        }&autocomplete=true&country=us%2Cca&limit=${top > 10 ? 10 : top}`;
+
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+
+        const options = {
+          method: "GET",
+          headers,
+        };
+
+        fetch(endpoint, options)
+          .then((response) => response.json())
+          .then((response) => {
+            callback(response);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }, 200),
+    []
+  );
+
   React.useEffect(() => {
     // if (!autocompleteService.current && window.google) {
     //   autocompleteService.current = new window.google.maps.places.AutocompleteService();
@@ -383,7 +417,6 @@ export default function Search() {
 
                 console.log(indexSource);
                 newOptions = [
-                  ...newOptions,
                   ...results.value.map((result) => {
                     result.Score = result["@search.score"];
                     delete result["@search.score"];
@@ -394,6 +427,7 @@ export default function Search() {
                       Secondary: result.ApiNumber,
                     };
                   }),
+                  ...newOptions,
                 ];
 
                 setMaxMinWellsScore(maxMinScore(results.value));
@@ -412,7 +446,6 @@ export default function Search() {
                 );
                 console.log(indexSource);
                 newOptions = [
-                  ...newOptions,
                   ...results.value.map((result) => {
                     result.Score = result["@search.score"];
                     delete result["@search.score"];
@@ -423,6 +456,7 @@ export default function Search() {
                       Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}`,
                     };
                   }),
+                  ...newOptions,
                 ];
 
                 setMaxMinOwnersScore(maxMinScore(results.value));
@@ -441,7 +475,6 @@ export default function Search() {
                 );
                 console.log(indexSource);
                 newOptions = [
-                  ...newOptions,
                   ...results.value.map((result) => {
                     result.Score = result["@search.score"];
                     delete result["@search.score"];
@@ -452,6 +485,7 @@ export default function Search() {
                       Secondary: null,
                     };
                   }),
+                  ...newOptions,
                 ];
 
                 setMaxMinOperatosScore(maxMinScore(results.value));
@@ -470,7 +504,6 @@ export default function Search() {
                 );
                 console.log(indexSource);
                 newOptions = [
-                  ...newOptions,
                   ...results.value.map((result) => {
                     result.Score = result["@search.score"];
                     delete result["@search.score"];
@@ -494,6 +527,7 @@ export default function Search() {
                           : result.LeaseId,
                     };
                   }),
+                  ...newOptions,
                 ];
 
                 setMaxMinLeasesScore(maxMinScore(results.value));
@@ -503,6 +537,37 @@ export default function Search() {
               setLoadingLeases(false);
             })
           : null,
+        searchOption == "all" || searchOption == "locations"
+          ? callMapboxSearch({ input: inputValue }, searchTop, (results) => {
+              if (results) {
+                let resultsMod = results.features
+                  ? results.features.map((result) => {
+                      return {
+                        ...result,
+                        Id: result.id,
+                        Source: "mapboxSearch",
+                        Score: result.relevance ? result.relevance : 0,
+                        Primary: result.text ? result.text : "",
+                        Secondary: result.place_name
+                          ? result.place_name.indexOf(result.text + ", ") === 0
+                            ? result.place_name.slice(
+                                result.place_name.indexOf(", ") + 2,
+                                result.place_name.length
+                              )
+                            : result.place_name
+                          : "",
+                      };
+                    })
+                  : [];
+
+                newOptions = [...newOptions, ...resultsMod];
+                setMaxMinMapboxSearchScore(maxMinScore(resultsMod));
+              }
+
+              setOptions(newOptions);
+              setLoadingMapboxSearch(false);
+            })
+          : null,
       ]);
     })();
   }, [
@@ -510,6 +575,8 @@ export default function Search() {
     callWellSearch,
     callOwnerSearch,
     callOperatorSearch,
+    callLeaseSearch,
+    callMapboxSearch,
     searchOption,
     searchTop,
   ]);
@@ -554,6 +621,7 @@ export default function Search() {
           ? {
               ...stateApp,
               selectedWell: null,
+              fitBounds: null,
               selectedWellId: dataWells.wells.results[0].id.toLowerCase(),
               wellSelectedCoordinates: [
                 dataWells.wells.results[0].longitude,
@@ -563,6 +631,7 @@ export default function Search() {
             }
           : {
               ...stateApp,
+              fitBounds: null,
               wellListFromSearch: dataWells.wells.results,
             }
       );
@@ -584,6 +653,7 @@ export default function Search() {
             ? {
                 ...stateApp,
                 selectedWell: null,
+                fitBounds: null,
                 selectedWellId: dataOperatorWells.operatorLatsLonsArray[0].id.toLowerCase(),
                 wellSelectedCoordinates: [
                   dataOperatorWells.operatorLatsLonsArray[0].longitude,
@@ -593,6 +663,7 @@ export default function Search() {
               }
             : {
                 ...stateApp,
+                fitBounds: null,
                 wellListFromSearch: dataOperatorWells.operatorLatsLonsArray,
               }
         );
@@ -622,6 +693,7 @@ export default function Search() {
             ? {
                 ...stateApp,
                 selectedWell: null,
+                fitBounds: null,
                 selectedWellId: dataLeaseWells.leaseLatsLonsArray[0].id.toLowerCase(),
                 wellSelectedCoordinates: [
                   dataLeaseWells.leaseLatsLonsArray[0].longitude,
@@ -631,6 +703,7 @@ export default function Search() {
               }
             : {
                 ...stateApp,
+                fitBounds: null,
                 wellListFromSearch: dataLeaseWells.leaseLatsLonsArray,
               }
         );
@@ -649,106 +722,141 @@ export default function Search() {
   ///////////////////////////////////////
 
   const handleChange = (newValue) => {
-    console.log("search Selected", newValue); ////////////////////////////////////////////////////////////////
+    console.log("search Selected", newValue);
 
-    //// setting search history
-    const setSearchHistory = (search) => {
-      if (search.searchId) {
-        ///update
-        updateSearchHistory({
-          variables: {
-            searchId: search.searchId,
-          },
-          refetchQueries: ["getSearchHistory"],
-          awaitRefetchQueries: true,
-        });
-        delete newValue.searchId;
-      } else {
-        ///add
-        addSearchHistory({
-          variables: {
-            searchHistory: {
-              searchData: search,
-              user: stateApp.user.mongoId,
+    if (
+      !value ||
+      (newValue &&
+        (value.Id !== newValue.Id ||
+          value.Source !== newValue.Source ||
+          value.Primary !== newValue.Primary ||
+          value.Secondary !== newValue.Secondary))
+    ) {
+      //// setting search history
+      const setSearchHistory = (search) => {
+        if (search.searchId) {
+          ///update
+          updateSearchHistory({
+            variables: {
+              searchId: search.searchId,
             },
+            refetchQueries: ["getSearchHistory"],
+            awaitRefetchQueries: true,
+          });
+          delete newValue.searchId;
+        } else {
+          ///add
+          addSearchHistory({
+            variables: {
+              searchHistory: {
+                searchData: search,
+                user: stateApp.user.mongoId,
+              },
+            },
+            refetchQueries: ["getSearchHistory"],
+            awaitRefetchQueries: true,
+          });
+        }
+      };
+
+      setSearchHistory(newValue);
+      setValue(newValue);
+
+      //// setting map loader
+      setStateApp((stateApp) => ({ ...stateApp, mapCircularLoaderAct: true }));
+
+      //// if well, with lat long
+      if (
+        newValue &&
+        newValue.Source === "wellheader-index" &&
+        newValue.Longitude &&
+        newValue.Latitude
+      ) {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          fitBounds: null,
+          selectedWell: null,
+          selectedWellId: newValue.Id ? newValue.Id.toLowerCase() : null,
+          wellSelectedCoordinates: [newValue.Longitude, newValue.Latitude],
+          wellListFromSearch: [
+            {
+              id: newValue.Id,
+              longitude: newValue.Longitude,
+              latitude: newValue.Latitude,
+            },
+          ],
+        }));
+        stateApp.activateUserDefinedLayers(6);
+      }
+
+      //// if owner
+      if (newValue && newValue.Source === "lod2019-index" && newValue.Id) {
+        getOwnerWells({
+          variables: {
+            ownerId: newValue.Id,
           },
-          refetchQueries: ["getSearchHistory"],
-          awaitRefetchQueries: true,
         });
       }
-    };
 
-    if (newValue) {
-      setSearchHistory(newValue);
-    }
-    setValue(newValue);
-
-    //// setting map loader
-    setStateApp((stateApp) => ({ ...stateApp, mapCircularLoaderAct: true }));
-
-    //// if well, with lat long
-    if (
-      newValue &&
-      newValue.Source === "wellheader-index" &&
-      newValue.Longitude &&
-      newValue.Latitude
-    ) {
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        // popupOpen: false,
-        selectedWell: null,
-        selectedWellId: newValue.Id ? newValue.Id.toLowerCase() : null,
-        wellSelectedCoordinates: [newValue.Longitude, newValue.Latitude],
-        wellListFromSearch: [
-          {
-            id: newValue.Id,
-            longitude: newValue.Longitude,
-            latitude: newValue.Latitude,
-          },
-        ],
-      }));
-      stateApp.activateUserDefinedLayers(6);
-    }
-
-    //// if owner
-    if (newValue && newValue.Source === "lod2019-index" && newValue.Id) {
-      getOwnerWells({
-        variables: {
-          ownerId: newValue.Id,
-        },
-      });
-    }
-
-    //// if operator
-    if (newValue && newValue.Source === "operator-index" && newValue.Operator) {
-      getOperatorWells({
-        variables: {
-          operatorName: newValue.Operator,
-        },
-      });
-    }
-
-    //// if lease
-    if (
-      newValue &&
-      newValue.Source === "lease-index" &&
-      ((newValue.Lease && newValue.Lease !== "") ||
-        (newValue.LeaseId && newValue.LeaseId !== ""))
-    ) {
-      if (newValue.Lease && newValue.Lease !== "") {
-        getLeaseWells({
+      //// if operator
+      if (
+        newValue &&
+        newValue.Source === "operator-index" &&
+        newValue.Operator
+      ) {
+        getOperatorWells({
           variables: {
-            fieldName: "Lease",
-            value: newValue.Lease,
+            operatorName: newValue.Operator,
           },
         });
-      } else {
-        getLeaseWells({
-          variables: {
-            fieldName: "LeaseId",
-            value: newValue.LeaseId,
-          },
-        });
+      }
+
+      //// if lease
+      if (
+        newValue &&
+        newValue.Source === "lease-index" &&
+        ((newValue.Lease && newValue.Lease !== "") ||
+          (newValue.LeaseId && newValue.LeaseId !== ""))
+      ) {
+        if (newValue.Lease && newValue.Lease !== "") {
+          getLeaseWells({
+            variables: {
+              fieldName: "Lease",
+              value: newValue.Lease,
+            },
+          });
+        } else {
+          getLeaseWells({
+            variables: {
+              fieldName: "LeaseId",
+              value: newValue.LeaseId,
+            },
+          });
+        }
+      }
+
+      //// if mapboxSearch
+      if (newValue && newValue.Source === "mapboxSearch" && newValue.center) {
+        let minLong, maxLong, minLat, maxLat;
+        if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
+
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedWell: null,
+          selectedWellId: null,
+          wellSelectedCoordinates: null,
+          wellListFromSearch: [
+            {
+              id: newValue.Id,
+              longitude: newValue.center[0],
+              latitude: newValue.center[1],
+            },
+          ],
+          fitBounds: newValue.bbox
+            ? { maxLat, minLat, maxLong, minLong }
+            : null,
+        }));
+        stateApp.activateUserDefinedLayers(6);
       }
     }
   };
@@ -758,10 +866,6 @@ export default function Search() {
     Source: "header",
     Score: 0,
     Id: "0",
-    WellName: "",
-    ApiNumber: "",
-    Latitude: 0,
-    Longitude: 0,
     Primary: "",
     Secondary: "",
   };
@@ -769,11 +873,16 @@ export default function Search() {
   //// adding loader ////
   if (
     (searchOption === "all" &&
-      (loadingWells || loadingOwners || loadingOperators || loadingLeases)) ||
+      (loadingWells ||
+        loadingOwners ||
+        loadingOperators ||
+        loadingLeases ||
+        loadingMapboxSearch)) ||
     (searchOption === "wells" && loadingWells) ||
     (searchOption === "owners" && loadingOwners) ||
     (searchOption === "operators" && loadingOperators) ||
-    (searchOption === "leases" && loadingLeases)
+    (searchOption === "leases" && loadingLeases) ||
+    (searchOption === "locations" && loadingMapboxSearch)
   ) {
     optionsWithHeader = [header, { ...header, Source: "loader" }];
   }
@@ -786,17 +895,13 @@ export default function Search() {
       filterOptions={(x) => x}
       options={optionsWithHeader}
       groupBy={(option) => {
-        return option.Source === "lod2019-index"
-          ? "Owners"
-          : option.Source === "wellheader-index"
-          ? "Wells"
-          : option.Source === "operator-index"
-          ? "Operators"
-          : option.Source === "lease-index"
-          ? "Leases"
-          : option.Source === "header"
-          ? "header"
-          : "loader";
+        if (option.Source === "lod2019-index") return "Owners";
+        if (option.Source === "wellheader-index") return "Wells";
+        if (option.Source === "operator-index") return "Operators";
+        if (option.Source === "lease-index") return "Leases";
+        if (option.Source === "mapboxSearch") return "Locations";
+        if (option.Source === "loader") return "loader";
+        return "header";
       }}
       leftIconButton={<SearchIcon />}
       renderGroup={(option) => {
@@ -825,11 +930,13 @@ export default function Search() {
                   (loadingWells ||
                     loadingOwners ||
                     loadingOperators ||
-                    loadingLeases)) ||
+                    loadingLeases ||
+                    loadingMapboxSearch)) ||
                 (searchOption === "wells" && loadingWells) ||
                 (searchOption === "owners" && loadingOwners) ||
                 (searchOption === "operators" && loadingOperators) ||
                 (searchOption === "leases" && loadingLeases) ||
+                (searchOption === "locations" && loadingMapboxSearch) ||
                 options.length === 0
                   ? "0"
                   : "9px",
@@ -906,6 +1013,20 @@ export default function Search() {
               >
                 Leases
               </Button>
+              <Button
+                className={classes.headerButtons}
+                variant={
+                  searchOption === "locations" ? "contained" : "outlined"
+                }
+                size="small"
+                color={searchOption === "locations" ? "secondary" : "primary"}
+                onClick={() => {
+                  setSearchTop(5);
+                  setSearchOption("locations");
+                }}
+              >
+                Locations
+              </Button>
             </Grid>
           </Grid>
         ) : (
@@ -932,6 +1053,8 @@ export default function Search() {
                             ? "operators"
                             : option.group === "Leases"
                             ? "leases"
+                            : option.group === "Locations"
+                            ? "locations"
                             : "all"
                         );
                       }}
@@ -976,11 +1099,21 @@ export default function Search() {
               setLoadingOwners(true);
               setLoadingOperators(true);
               setLoadingLeases(true);
+              setLoadingMapboxSearch(true);
             }
             if (searchOption === "wells") setLoadingWells(true);
             if (searchOption === "owners") setLoadingOwners(true);
             if (searchOption === "operators") setLoadingOperators(true);
             if (searchOption === "leases") setLoadingLeases(true);
+            if (searchOption === "locations") setLoadingMapboxSearch(true);
+          } else {
+            // setValue(null);
+            setOptions([]);
+            setLoadingWells(false);
+            setLoadingOwners(false);
+            setLoadingOperators(false);
+            setLoadingLeases(false);
+            setLoadingMapboxSearch(false);
           }
         }
       }}
@@ -989,7 +1122,7 @@ export default function Search() {
           {...params}
           variant="outlined"
           fullWidth
-          placeholder="Search by well name, API, owner, operator or lease"
+          placeholder="Search by well name, API, owner, operator, lease or a location"
           InputProps={{
             ...params.InputProps,
             startAdornment: (
@@ -1058,6 +1191,8 @@ export default function Search() {
                                   ? "operators"
                                   : option.Source === "lease-index"
                                   ? "leases"
+                                  : option.group === "mapboxSearch"
+                                  ? "locations"
                                   : "all"
                               );
                               setInputValue(
@@ -1093,6 +1228,9 @@ export default function Search() {
                                       className={classes.icon}
                                       color={"#757575"}
                                     />
+                                  )}
+                                  {option.Source === "mapboxSearch" && (
+                                    <LocationOnIcon className={classes.icon} />
                                   )}
                                 </Grid>
                                 <Grid item xs>
@@ -1176,6 +1314,9 @@ export default function Search() {
                 {option.Source === "lease-index" && (
                   <LeaseIcon className={classes.icon} color={"#757575"} />
                 )}
+                {option.Source === "mapboxSearch" && (
+                  <LocationOnIcon className={classes.icon} />
+                )}
               </Grid>
               <Grid item xs>
                 {parts.map((part, index) => (
@@ -1216,7 +1357,9 @@ export default function Search() {
                         ? maxMinWellsScore
                         : option.Source === "operator-index"
                         ? maxMinOperatosScore
-                        : maxMinLeasesScore,
+                        : option.Source === "lease-index"
+                        ? maxMinLeasesScore
+                        : maxMinMapboxSearchScore,
                       option.Score
                     ).toString(),
                   }}

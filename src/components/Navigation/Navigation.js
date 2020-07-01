@@ -205,10 +205,10 @@ const useStyles = makeStyles((theme) => ({
     },
     marginRight: theme.spacing(2),
     marginLeft: 5,
-    width: "30%",
+    width: "34%",
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
-      width: "30%",
+      width: "34%",
     },
   },
   searchInput: {
@@ -647,7 +647,6 @@ const drawerWidth = "250px";
 export default function Navigation(props) {
   const classes = useStyles();
   const theme = useTheme();
-  const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [openSupportCenter, setOpenSupportCenter] = useState(false);
@@ -979,9 +978,10 @@ export default function Navigation(props) {
   };
 
   const handleClickAddDeal = () => {
-    setStateTransact((stateTransact) => ({
-      ...stateTransact,
-      openDialog: true,
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      dealDialog: true,
+      activeDeal: { cardId: null, laneId: null }
     }));
   };
 
