@@ -205,10 +205,10 @@ const useStyles = makeStyles((theme) => ({
     },
     marginRight: theme.spacing(2),
     marginLeft: 5,
-    width: "30%",
+    width: "34%",
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
-      width: "30%",
+      width: "34%",
     },
   },
   searchInput: {

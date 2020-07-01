@@ -1175,7 +1175,8 @@ export default function Map() {
           bounds.minLong &&
           bounds.maxLong &&
           bounds.minLat &&
-          bounds.maxLat
+          bounds.maxLat &&
+          !stateApp.fitBounds
         ) {
           map.fitBounds([
             [bounds.minLong, bounds.minLat],
@@ -1184,10 +1185,11 @@ export default function Map() {
         }
       }
 
-      setStateApp({
+      setStateApp((stateApp) => ({
         ...stateApp,
         userDefinedLayers: layerList,
-      });
+        fitBounds: { ...stateApp.fitBounds },
+      }));
     }
   }, [
     map,
