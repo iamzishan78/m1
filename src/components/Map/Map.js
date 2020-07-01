@@ -1695,6 +1695,29 @@ export default function Map() {
               });
               if (featuresList && featuresList.length > 0) {
                 const result = featuresList.filter((feature) => {
+                  if (feature.geometry.type === "MultiPolygon") {
+                    for (
+                      let i = 0;
+                      i < feature.geometry.coordinates.length;
+                      i++
+                    ) {
+                      const coordinates = feature.geometry.coordinates[i];
+                      const geometry = {
+                        type: "Polygon",
+                        coordinates: coordinates,
+                      };
+                      let flag = 0
+                      for(let i = 0; i < basinShapes.length; i ++) {
+                        if (!turf.booleanContains(basinShapes[i], geometry)) {
+                          flag ++;
+                        }
+                      }
+                      if (flag === basinShapes.length) {
+                        return false;
+                      }
+                    }
+                    return true;
+                  }
                   for(let i = 0; i < basinShapes.length; i ++) {
                     if (turf.booleanContains(basinShapes[i], feature)) {
                       return true;
