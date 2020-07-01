@@ -62,13 +62,20 @@ export default function AddUserData(props) {
   const handleFileAsync = (file) => {
     return new Promise((resolve, reject) => {
 
-      let reader = new FileReader();
+      fetch(file[0].data)
+      .then((response) => response.json())
+      .then((response) => {
+        resolve(response);
+      })
+      .catch((error) => console.log(error));
 
-      reader.onload = () => {
-        resolve(reader.result);
-      }
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(file);
+      // let reader = new FileReader();
+
+      // reader.onload = () => {
+        // resolve(reader.result);
+      // }
+      // reader.onerror = reject;
+      // reader.readAsArrayBuffer(file);
     })
   }
 
