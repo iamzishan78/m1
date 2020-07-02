@@ -89,7 +89,12 @@ export default function AddContactDialogContent(props) {
   const [addRemoveOwnerToAContact] = useMutation(ADDREMOVEOWNERTOACONTACT);
 
   useEffect(() => {
-    getContacts();
+    if (props.parent || props.setDealsContact) {
+      getContacts();
+    }
+  }, [props.parent, props.setDealsContact]);
+
+  useEffect(() => {
     if (props.parent) {
       getContactsByOwnerId({
         variables: { objectId: props.parent },
@@ -167,7 +172,6 @@ export default function AddContactDialogContent(props) {
 
     if (props.dealsPage) {
       if (activeTapIndex === 0) {
-
         addContact({
           variables: {
             contact: {
@@ -467,6 +471,7 @@ export default function AddContactDialogContent(props) {
             tabLabels={["Add New", "Select Existing"]}
             tabPanels={[addNew(), selectExisting()]}
             whichTapIsActive={whichTapIsActive}
+            backgroundColor="#fff"
           />
         ) : (
           addNew()
