@@ -209,7 +209,7 @@ export default function Activities({
               {allDeals.map((deal) => (
                 <TableRow key={deal.id}>
                   <TableCell component="th" scope="row">
-                    {deal.dealName}
+                    {deal.title}
                   </TableCell>
                   <TableCell>{deal.label}</TableCell>
                   <TableCell>{getDealStatus(deal.laneId)}</TableCell>
