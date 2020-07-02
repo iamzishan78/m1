@@ -112,6 +112,7 @@ export default function TransactDialog(props) {
   const handleUpdate = () => {
     // if (title.trim() !== "" && description.trim() !== "") {
 
+    let newStage = stage ? stage : "lane1";
     if (transactData) {
       const cardId = stateApp.activeDeal?.cardId;
       const laneId = stateApp.activeDeal?.laneId;
@@ -127,22 +128,22 @@ export default function TransactDialog(props) {
         const updatedCard = {
           // dealName: dealName.trim(),
           // title: contact?.name.trim(),
-          contactName: contact?.name.trim(),
-          title: title.trim(),
-          label: label.trim(),
-          description: description.trim(),
-          laneId: stage,
+          contactName: contact?.name ? contact.name.trim() : "",
+          title: title ? title.trim() : "",
+          label: label ? label.trim() : "",
+          description: description ? description.trim() : "",
+          laneId: newStage,
           contactId: contact?._id,
           id: card.id,
         };
 
-        if (card.laneId !== stage) {
+        if (card.laneId !== newStage) {
           if (cardIndex > -1) {
             // remove card from current lane
             transactData.lanes[laneIndex].cards.splice(cardIndex, 1);
             // add card to updated lane
             const stageIndex = transactData.lanes.findIndex(
-              (lane) => lane.id === stage
+              (lane) => lane.id === newStage
             );
             transactData.lanes[stageIndex].cards.push(updatedCard);
           }
@@ -153,18 +154,18 @@ export default function TransactDialog(props) {
         // add new
 
         transactData.lanes.forEach((lane) => {
-          if (lane.id === stage) {
+          if (lane.id === newStage) {
             let cards = [...lane.cards];
             const newCard = {
               // dealName: dealName.trim(),
               // title: contact?.name,
-              contactName: contact?.name.trim(),
-              title: title.trim(),
-              label: label.trim(),
-              description: description.trim(),
+              contactName: contact?.name ? contact.name.trim() : "",
+              title: title ? title.trim() : "",
+              label: label ? label.trim() : "",
+              description: description ? description.trim() : "",
               id: uuid(),
               contactId: contact?._id,
-              laneId: stage,
+              laneId: newStage,
             };
             cards.push(newCard);
             lane.cards = cards;
