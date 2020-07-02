@@ -1228,6 +1228,7 @@ export default function Map() {
       let totalCount = 0;
       let tagFilterCount = 0;
       let filterArray = [];
+      let filterCustomArray = {};
 
       let defaultOverride = true;
 
@@ -1707,9 +1708,30 @@ export default function Map() {
                         coordinates: coordinates,
                       };
                       let flag = 0
-                      for(let i = 0; i < basinShapes.length; i ++) {
-                        if (!turf.booleanContains(basinShapes[i], geometry)) {
-                          flag ++;
+                      for(let k = 0; k < basinShapes.length; k ++) {
+                        if (basinShapes[k].type === "MultiPolygon") {
+                          let flagM = 0;
+                          for (
+                            let j = 0;
+                            j < basinShapes[k].coordinates.length;
+                            j++
+                          ) {
+                            const filterCoordinates = basinShapes[k].coordinates[j];
+                            const filterGeometry = {
+                              type: "Polygon",
+                              coordinates: filterCoordinates,
+                            };
+                            if (!turf.booleanContains(filterGeometry, geometry)) {
+                              flagM ++;
+                            }
+                          }
+                          if (flagM == basinShapes[k].coordinates.length) {
+                            flag ++;
+                          }
+                        } else {
+                          if (!turf.booleanContains(basinShapes[k], geometry)) {
+                            flag ++;
+                          }
                         }
                       }
                       if (flag === basinShapes.length) {
@@ -1717,13 +1739,32 @@ export default function Map() {
                       }
                     }
                     return true;
-                  }
-                  for(let i = 0; i < basinShapes.length; i ++) {
-                    if (turf.booleanContains(basinShapes[i], feature)) {
-                      return true;
+                  } else {
+                    for(let i = 0; i < basinShapes.length; i ++) {
+                      if (basinShapes[i].type === "MultiPolygon") {
+                        for (
+                          let j = 0;
+                          j < basinShapes[i].coordinates.length;
+                          j++
+                        ) {
+                          const filterCoordinates = basinShapes[i].coordinates[j];
+                          const filterGeometry = {
+                            type: "Polygon",
+                            coordinates: filterCoordinates,
+                          };
+                          if (turf.booleanContains(filterGeometry, feature)) {
+                            return true;
+                          }
+                        }
+                        return false
+                      } else {
+                        if (turf.booleanContains(basinShapes[i], feature)) {
+                          return true;
+                        }
+                      }
                     }
+                    return false;
                   }
-                  return false;
                 });
 
                 let ids = result.map(function (feature) {
@@ -1742,24 +1783,28 @@ export default function Map() {
 
                 ids = ids.filter(onlyUnique);
 
-                // console.log(ids);
-
-                if (filterLayer == 'wellpoints' || filterLayer == 'welllines') {
-                  map.setFilter(filterLayer, [
-                    "match",
-                    ["get", "id"],
-                    ids,
-                    true,
-                    false,
-                  ]);
-                } else {
-                  map.setFilter(filterLayer, [
-                    "match",
-                    ["get", "VIEWID"],
-                    ids,
-                    true,
-                    false,
-                  ]);
+                console.log(ids);
+                if (ids.length > 0) {
+                  if (!filterCustomArray[filterLayer]) {
+                    filterCustomArray[filterLayer] = [];
+                  }
+                  if (filterLayer == 'wellpoints' || filterLayer == 'welllines') {
+                    filterCustomArray[filterLayer].push([
+                      "match",
+                      ["get", "id"],
+                      ids,
+                      true,
+                      false,
+                    ]);
+                  } else {
+                    filterCustomArray[filterLayer].push([
+                      "match",
+                      ["get", "VIEWID"],
+                      ids,
+                      true,
+                      false,
+                    ]);
+                  }
                 }
               }
             }
@@ -1856,8 +1901,16 @@ export default function Map() {
 
       if (isFilterSet) {
         filterArray.unshift("all");
-        map.setFilter("wellpoints", filterArray);
-        map.setFilter("welllines", filterArray);
+        if (filterCustomArray['wellpoints']) {
+          map.setFilter("wellpoints", [...filterArray, ...filterCustomArray['wellpoints']]);
+        } else {
+          map.setFilter("wellpoints", filterArray);
+        }
+        if (filterCustomArray['welllines']) {
+          map.setFilter("welllines", [...filterArray, ...filterCustomArray['welllines']]);
+        } else {
+          map.setFilter("welllines", filterArray);
+        }
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
         map.setFilter("wellsHeatmapLast12", [
           ">",
@@ -1927,22 +1980,29 @@ export default function Map() {
                 ids = ids.filter(onlyUnique);
 
                 // console.log(ids);
-
-                map.setFilter(filterLayer, [
-                  "match",
-                  ["get", "VIEWID"],
-                  ids,
-                  true,
-                  false,
-                ]);
+                if (ids.length > 0) {
+                  if (!filterCustomArray[filterLayer]) {
+                    filterCustomArray[filterLayer] = [];
+                  }
+                  filterCustomArray[filterLayer].push([
+                    "match",
+                    ["get", "VIEWID"],
+                    ids,
+                    true,
+                    false,
+                  ]);
+                }
+                
               }
             }
           });
-        } else {
-          filterLayers.forEach((filterLayer) => {
-            map.setFilter(filterLayer, null);
-          });
         }
+        filterLayers.forEach(filterLayer => {
+          if (filterCustomArray[filterLayer]) {
+            console.log(filterCustomArray[filterLayer]);
+            map.setFilter(filterLayer, filterCustomArray[filterLayer]);
+          }
+        });
       } else {
         map.setFilter("wellpoints", null);
         map.setFilter("welllines", null);
