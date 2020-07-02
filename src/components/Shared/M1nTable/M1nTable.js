@@ -20,7 +20,7 @@ import { AppContext } from "../../../AppContext";
 import { Container } from "@material-ui/core";
 import Table from "./components/Table";
 
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
 import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
@@ -31,6 +31,7 @@ import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { CONTACSCOUNTER } from "../../../graphQL/useQueryContactsCounter";
 import { CONTACTSBYOWNERSID } from "../../../graphQL/useQueryContactsByOwnerId";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
+import { ADDREMOVEOWNERTOACONTACT } from "../../../graphQL/useMutationAddRemoveOwnerToAContact";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
@@ -570,6 +571,7 @@ export default function M1nTable(props) {
   const [loading, setLoading] = useState(true);
   const [addAble, setAddAble] = useState(true);
   const [targetLabel, setTargetLabel] = useState(null);
+  const [deleteFunc, setDeleteFunc] = useState(null);
 
   ////////////Queries begin///////////////////////////////////////////////
 
@@ -616,6 +618,8 @@ export default function M1nTable(props) {
   const [getContacts, { data: dataContacts }] = useLazyQuery(CONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
   });
+  //////////
+  const [addRemoveOwnerToAContact] = useMutation(ADDREMOVEOWNERTOACONTACT);
 
   ////////////Queries end///////////////////////////////////////////////
 
@@ -1259,6 +1263,7 @@ export default function M1nTable(props) {
   ////////////Owners Per Well end///////////////////////////////////////////////
 
   ////////////Owners Per Contact begin///////////////////////////////////////////////
+
   useEffect(() => {
     if (
       props.parent &&
@@ -1440,8 +1445,39 @@ export default function M1nTable(props) {
     dataCommentsCounter,
     dataContactsCounter,
   ]);
+  ////////////Owners Per Contact begin//////////Delete//////////////////////////////
 
-  ////////////Owners Per Contact end///////////////////////////////////////////////
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerContacts" &&
+      props.contactId &&
+      props.ownersIdsArray
+    ) {
+      setDeleteFunc(() => (ownersIdsToDelete) => {
+        if (ownersIdsToDelete) {
+          for (let i = 0; i < ownersIdsToDelete.length; i++) {
+            addRemoveOwnerToAContact({
+              variables: {
+                contactId: props.contactId,
+                ownerId: ownersIdsToDelete[i],
+              },
+              refetchQueries: [
+                "getContacts",
+                "getContactsByOwnerId",
+                "getContactsCounter",
+                "getContact",
+              ],
+              awaitRefetchQueries: true,
+            });
+          }
+        }
+        return true;
+      });
+    }
+  }, [props.contactId, props.ownersIdsArray]);
+
+  ////////////Owners Per Contact end/////////////////////////////////////////////////
 
   ////////////Contacts Per Owner begin///////////////////////////////////////////////
 
@@ -1587,7 +1623,7 @@ export default function M1nTable(props) {
       setTargetLabel("contact");
       getContacts();
     }
-  }, []);
+  }, [props.parent]);
 
   useEffect(() => {
     if (
@@ -1718,13 +1754,14 @@ export default function M1nTable(props) {
   return (
     <Container maxWidth="xl" className={classes.container}>
       <Table
-        style={{backgroundColor: '#fff'}}
+        style={{ backgroundColor: "#fff" }}
         header={header}
         columns={columns}
         rows={rows}
         loading={loading}
         addAble={addAble}
         targetLabel={targetLabel}
+        deleteFunc={deleteFunc}
       />
     </Container>
   );
