@@ -50,9 +50,9 @@ export default function TransactDialog(props) {
   const classes = useStyles();
   const { transactData, handleDataChange } = props;
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [dealName, setDealName] = useState("");
-  const [title, setTitle] = useState(props.contact ? props.contact.name : "");
-  const [label, setLabel] = useState("");
+  // const [title, setTitle] = useState(props.contact ? props.contact.name : ""); // title change from contact.name to dealName
+  const [title, setTitle] = useState(""); // title change from contact.name to dealName
+  const [label, setLabel] = useState(""); 
   const [stage, setStage] = useState("");
   const [description, setDescription] = useState("");
   const [contact, setContact] = useState(
@@ -72,27 +72,27 @@ export default function TransactDialog(props) {
       console.log("CARD SETTING: ", card);
       if (!card) return;
 
-      setDealName(card.dealName ? card.dealName : "");
+      setTitle(card.title ? card.title : "");
       setLabel(card.label ? card.label : "");
       setDescription(card.description ? card.description : "");
       setStage(card.laneId ? card.laneId : "lane1");
       if (card.contactId) {
         console.log("SETTING CONTACT: ", card.title);
-        setContact({ name: card.title, _id: card.contactId });
+        setContact({ name: card.contactName, _id: card.contactId });
       }
     } else if (props.contact) {
       setContact({ name: props.contact.name, _id: props.contact._id });
     }
   }, [transactData, stateApp.activeDeal, props.contact, stateApp.dealDialog]);
 
-  useEffect(() => {
-    if (contact?._id) {
-      setTitle(contact.name);
-    }
-  }, [contact]);
+  // old
+  // useEffect(() => {
+  //   if (contact?._id) {
+  //     setTitle(contact.name);
+  //   }
+  // }, [contact]);
 
   const handleClose = () => {
-    setDealName("");
     setTitle("");
     setLabel("");
     setDescription("");
@@ -112,6 +112,7 @@ export default function TransactDialog(props) {
   const handleUpdate = () => {
     // if (title.trim() !== "" && description.trim() !== "") {
 
+    let newStage = stage ? stage : "lane1";
     if (transactData) {
       const cardId = stateApp.activeDeal?.cardId;
       const laneId = stateApp.activeDeal?.laneId;
@@ -125,22 +126,24 @@ export default function TransactDialog(props) {
         const card = lane.cards[cardIndex];
 
         const updatedCard = {
-          dealName: dealName.trim(),
-          title: contact?.name.trim(),
-          label: label.trim(),
-          description: description.trim(),
-          laneId: stage,
+          // dealName: dealName.trim(),
+          // title: contact?.name.trim(),
+          contactName: contact?.name ? contact.name.trim() : "",
+          title: title ? title.trim() : "",
+          label: label ? label.trim() : "",
+          description: description ? description.trim() : "",
+          laneId: newStage,
           contactId: contact?._id,
           id: card.id,
         };
 
-        if (card.laneId !== stage) {
+        if (card.laneId !== newStage) {
           if (cardIndex > -1) {
             // remove card from current lane
             transactData.lanes[laneIndex].cards.splice(cardIndex, 1);
             // add card to updated lane
             const stageIndex = transactData.lanes.findIndex(
-              (lane) => lane.id === stage
+              (lane) => lane.id === newStage
             );
             transactData.lanes[stageIndex].cards.push(updatedCard);
           }
@@ -151,16 +154,18 @@ export default function TransactDialog(props) {
         // add new
 
         transactData.lanes.forEach((lane) => {
-          if (lane.id === stage) {
+          if (lane.id === newStage) {
             let cards = [...lane.cards];
             const newCard = {
-              dealName: dealName.trim(),
-              title: contact?.name,
-              label: label.trim(),
-              description: description.trim(),
+              // dealName: dealName.trim(),
+              // title: contact?.name,
+              contactName: contact?.name ? contact.name.trim() : "",
+              title: title ? title.trim() : "",
+              label: label ? label.trim() : "",
+              description: description ? description.trim() : "",
               id: uuid(),
               contactId: contact?._id,
-              laneId: stage,
+              laneId: newStage,
             };
             cards.push(newCard);
             lane.cards = cards;
@@ -185,12 +190,12 @@ export default function TransactDialog(props) {
       <DialogContent>
         <TextField
           margin="dense"
-          value={dealName}
+          value={title}
           label="Deal Name"
           fullWidth
           //   required
           onChange={(e) => {
-            setDealName(e.target.value);
+            setTitle(e.target.value);
           }}
         />
         <Dialog
@@ -217,8 +222,7 @@ export default function TransactDialog(props) {
           {!(
             (Object.keys(contact).length === 0 &&
               contact.constructor === Object) ||
-            contact === null ||
-            title === ""
+            contact === null
           ) && (
             <TextField
               margin="dense"
@@ -247,8 +251,7 @@ export default function TransactDialog(props) {
                 disabled={
                   (Object.keys(contact).length === 0 &&
                     contact.constructor === Object) ||
-                  contact === null ||
-                  title === ""
+                  contact === null
                 }
               >
                 View Contact
