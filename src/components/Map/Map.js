@@ -1678,6 +1678,25 @@ export default function Map() {
       if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
         // let total = stateNav.filterBasin[2].length;
         // filterArray.push(stateNav.filterBasin);
+        const {styleLayers, checkedLayers} = stateApp;
+        const basinIndex = styleLayers.findIndex((styleLayer) => styleLayer.name === "Basins");
+        
+        if (checkedLayers.indexOf(basinIndex) === -1) {
+          setStateApp({
+            ...stateApp,
+            checkedLayers: [...checkedLayers, basinIndex]
+          });
+        }
+        let basinNames = stateNav.basinName;
+        if (basinNames) {
+          filterCustomArray['basin'] = [
+            "match",
+            ["get", "NAME"],
+            basinNames,
+            true,
+            false
+          ];
+        }
         const filterLayers = [
           "GLOLeases",
           "GLOLeaseLabels",
@@ -1783,7 +1802,7 @@ export default function Map() {
 
                 ids = ids.filter(onlyUnique);
 
-                console.log(ids);
+                // console.log(ids);
                 if (ids.length > 0) {
                   if (!filterCustomArray[filterLayer]) {
                     filterCustomArray[filterLayer] = [];
@@ -2003,6 +2022,13 @@ export default function Map() {
             map.setFilter(filterLayer, filterCustomArray[filterLayer]);
           }
         });
+        if (filterCustomArray['basin']) {
+          map.setFilter('basinLayer', filterCustomArray['basin']);
+          map.setFilter('basinLabels', filterCustomArray['basin']);
+        } else {
+          map.setFilter('basinLayer', null);
+          map.setFilter('basinLabels', null);
+        }
       } else {
         map.setFilter("wellpoints", null);
         map.setFilter("welllines", null);

@@ -54,6 +54,7 @@ export default function BasinFilterJ() {
     } else {
       filter = null;
       setStateNav((stateNav) => ({ ...stateNav, basinName: null }));
+      setStateNav((stateNav) => ({ ...stateNav, filterBasin: filter }));
     }
     // setStateNav((stateNav) => ({ ...stateNav, filterBasin: filter }));
   };
