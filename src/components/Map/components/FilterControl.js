@@ -117,7 +117,7 @@ export default (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openTrack, setOpenTrack] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [setStateNav] = useContext(NavigationContext);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
   const [isTrackWells, setTrackWells] = useState(false);
   const [isTrackOwners, setTrackOwners] = useState(false);
   const [toggleCreateRemoveTrack, { data, loading }] = useMutation(TOGGLETRACK);
@@ -170,35 +170,37 @@ export default (props) => {
               trackOn: targetSourceId,
             },
           },
+          refetchQueries: ["tracksByUserAndObjectType", "trackByUserAndObjectId"], ////add all queries for components with track icons////
+          awaitRefetchQueries: true,
         })
       });
     }
   }
 
-  const trackOwners = (ownerList) => {
+  const trackOwners = (wellownerList) => {
     const user = stateApp.user.mongoId;
     const targetLabel = "owner";
-    console.log(ownerList);
-    ownerList.forEach((owner) => {
-      const targetSourceId = owner.id;
-      // toggleCreateRemoveTrack({
-      //   variables: {
-      //     track: {
-      //       user: user,
-      //       objectType: targetLabel,
-      //       trackOn: targetSourceId,
-      //     },
-      //   },
-      // });
+    wellownerList.forEach((well) => {
+      well.owners.forEach((owner) => {
+        const targetSourceId = owner.ownerId;
+        toggleCreateRemoveTrack({
+          variables: {
+            track: {
+              user: user,
+              objectType: targetLabel,
+              trackOn: targetSourceId,
+            },
+          },
+          refetchQueries: ["tracksByUserAndObjectType", "trackByUserAndObjectId"], ////add all queries for components with track icons////
+          awaitRefetchQueries: true,
+        });
+      });
     });
   }
 
   useEffect(() => {
-    // if (dataWellsOwners && dataWellsOwners.wellOwners && dataWellsOwners.wellOwners.length > 0) {
-    //     // trackOwners(dataWellsOwners.wellOwners);
-    // }
-    if (dataWellsOwners) {
-      console.log(dataWellsOwners);
+    if (dataWellsOwners && dataWellsOwners.wellsOwners && dataWellsOwners.wellsOwners.length > 0) {
+      trackOwners(dataWellsOwners.wellsOwners);
     }
   }, [dataWellsOwners])
 
@@ -215,11 +217,8 @@ export default (props) => {
       const wellApiArray = [];
       points.forEach((point) => {
         // const targetSourceId = point.id;
-        const wellApi = point.properties.api;
+        const wellApi = point.properties.id;
         wellApiArray.push(wellApi);
-        console.log("Selected Well", wellApi);
-
-        
       });
       getWellsOwners({
         variables: {
