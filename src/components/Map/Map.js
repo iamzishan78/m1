@@ -1834,8 +1834,8 @@ export default function Map() {
           });
         }
         isFilterSet = true;
-        geographyFilterCount += 1;
-        totalCount += 1;
+        geographyFilterCount += stateNav.basinName.length;
+        totalCount += stateNav.basinName.length;
       }
 
       if (stateNav.filterPlay && stateNav.filterPlay.length > 0) {
@@ -2042,6 +2042,8 @@ export default function Map() {
         map.setFilter("GLOLeaseLabels", null);
         map.setFilter("GLOUnits", null);
         map.setFilter("GLOUnitLabels", null);
+        map.setFilter('basinLayer', null);
+        map.setFilter('basinLabels', null);
       }
     }
     console.log("filters applied");
