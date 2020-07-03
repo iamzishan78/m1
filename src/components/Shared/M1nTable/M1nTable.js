@@ -32,6 +32,7 @@ import { CONTACSCOUNTER } from "../../../graphQL/useQueryContactsCounter";
 import { CONTACTSBYOWNERSID } from "../../../graphQL/useQueryContactsByOwnerId";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { ADDREMOVEOWNERTOACONTACT } from "../../../graphQL/useMutationAddRemoveOwnerToAContact";
+import { CONTACT } from "../../../graphQL/useQueryContact";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
@@ -614,6 +615,10 @@ export default function M1nTable(props) {
       fetchPolicy: "cache-and-network",
     }
   );
+  //////////
+  const [getContactInM1nTable, { data: dataContact }] = useLazyQuery(CONTACT, {
+    fetchPolicy: "cache-and-network",
+  });
   //////////
   const [getContacts, { data: dataContacts }] = useLazyQuery(CONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
@@ -1267,27 +1272,47 @@ export default function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "ownersPerContacts" &&
-      props.ownersIdsArray
+      props.contactId
     ) {
       setTargetLabel("owner");
-      getOwners({
+
+      getContactInM1nTable({
         variables: {
-          ownerIdArray: props.ownersIdsArray,
-          authToken: stateApp.user.authToken,
-        },
-      });
-      getOwnersWells({
-        variables: {
-          ownersIds: props.ownersIdsArray,
+          contactId: props.contactId,
         },
       });
     }
-  }, [props.ownersIdsArray]);
+  }, [props.contactId]);
 
   useEffect(() => {
     if (
       props.parent &&
       props.parent === "ownersPerContacts" &&
+      dataContact &&
+      dataContact.contact &&
+      dataContact.contact.owners &&
+      dataContact.contact.owners.length > 0
+    ) {
+      getOwners({
+        variables: {
+          ownerIdArray: dataContact.contact.owners,
+          authToken: stateApp.user.authToken,
+        },
+      });
+      getOwnersWells({
+        variables: {
+          ownersIds: dataContact.contact.owners,
+        },
+      });
+    }
+  }, [dataContact]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerContacts" &&
+      dataContact &&
+      dataContact.contact &&
       dataOwners &&
       dataTracks &&
       dataTracks.tracksByUserAndObjectType &&
@@ -1345,19 +1370,14 @@ export default function M1nTable(props) {
         setLoading(false);
         setRows([]);
       }
+
       setAddAble({
         parent: props.contactId,
         type: "ownerToContact",
-        existingOwners: props.ownersIdsArray,
+        existingOwners: dataContact.contact.owners,
       });
     }
-  }, [
-    dataOwners,
-    dataTracks,
-    dataOwnersWells,
-    props.contactId,
-    props.ownersIdsArray,
-  ]);
+  }, [dataOwners, dataTracks, dataOwnersWells, props.contactId, dataContact]);
 
   useEffect(() => {
     if (
@@ -1459,8 +1479,7 @@ export default function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "ownersPerContacts" &&
-      props.contactId &&
-      props.ownersIdsArray
+      props.contactId
     ) {
       setDeleteFunc(() => (ownersIdsToDelete) => {
         if (ownersIdsToDelete) {
@@ -1475,28 +1494,15 @@ export default function M1nTable(props) {
                 "getContactsByOwnerId",
                 "getContactsCounter",
                 "getContact",
+                "getContactInM1nTable",
               ],
               awaitRefetchQueries: true,
             });
           }
-          const newOwnersIdsArray = props.ownersIdsArray.filter(
-            (id) => ownersIdsToDelete.indexOf(id) === -1
-          );
-          getOwners({
-            variables: {
-              ownerIdArray: newOwnersIdsArray,
-              authToken: stateApp.user.authToken,
-            },
-          });
-          getOwnersWells({
-            variables: {
-              ownersIds: newOwnersIdsArray,
-            },
-          });
         }
       });
     }
-  }, [props.parent, props.contactId, props.ownersIdsArray]);
+  }, [props.parent, props.contactId]);
 
   ////////////Owners Per Contact end/////////////////////////////////////////////////
 

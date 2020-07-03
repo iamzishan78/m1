@@ -65,8 +65,6 @@ export default function AddOwnerToContactDialogContent(props) {
 
   React.useEffect(() => {
     if (inputValue === "") {
-      setOptions(value ? [value] : []);
-      setValue(null);
       return undefined;
     }
 
@@ -116,6 +114,7 @@ export default function AddOwnerToContactDialogContent(props) {
           "getContactsByOwnerId",
           "getContactsCounter",
           "getContact",
+          "getContactInM1nTable",
         ],
         awaitRefetchQueries: true,
       });
@@ -151,7 +150,6 @@ export default function AddOwnerToContactDialogContent(props) {
   if (value) {
     optionsWithLoader = [...optionsWithLoader, value];
   }
-
   const searchAutocomplete = (
     <Autocomplete
       id="add-owner-to-contact-autocomplete"
@@ -163,7 +161,8 @@ export default function AddOwnerToContactDialogContent(props) {
       options={optionsWithLoader}
       groupBy={(option) => {
         if (option.Source === "lod2019-index") return "Owners";
-        return "loader";
+        if (option.Source === "loader") return "loader";
+        return "textField text";
       }}
       renderGroup={(option) => {
         if (option.group === "loader")
@@ -175,14 +174,14 @@ export default function AddOwnerToContactDialogContent(props) {
               color="secondary"
             />
           );
-
-        return (
-          <Grid key={option.group} container item>
-            <Grid item xs={12}>
-              {option.children}
+        if (option.group === "Owners")
+          return (
+            <Grid key={option.group} container item>
+              <Grid item xs={12}>
+                {option.children}
+              </Grid>
             </Grid>
-          </Grid>
-        );
+          );
       }}
       autoComplete
       includeInputInList
@@ -191,19 +190,23 @@ export default function AddOwnerToContactDialogContent(props) {
         handleChange(newValue);
       }}
       onInputChange={(event, newInputValue, reason) => {
-        // console.log("xxxxxxxxxxx", newInputValue, reason);////////////////////////////////
         if (reason == "input") {
           setInputValue(newInputValue);
-          // setOptions([newInputValue]);
-          setValue(newInputValue);
+
           if (newInputValue !== "") {
-            //// setting loader
+            setValue(newInputValue);
             setLoadingOwners(true);
           } else {
+            setOptions([]);
+            setValue(null);
             setLoadingOwners(false);
           }
         }
-        if (reason == "clear") setInputValue("");
+        if (reason == "clear") {
+          setInputValue("");
+          setOptions([]);
+          setValue(null);
+        }
       }}
       renderInput={(params) => (
         <TextField
@@ -214,7 +217,7 @@ export default function AddOwnerToContactDialogContent(props) {
       )}
       renderOption={(option) => {
         if (option.group === "loader") {
-          // console.log("rrrrrrrrr", option);/////////////////////////////////////////
+          console.log("rrrrrrrrr", option); /////////////////////////////////////////
           return null;
         }
 
@@ -243,7 +246,7 @@ export default function AddOwnerToContactDialogContent(props) {
             </Grid>
           );
         }
-        // return option;//////////////////////////////////
+        return null; //////////////////////////////////
       }}
     />
   );
