@@ -153,7 +153,9 @@ export default function ContactDetailCard(props) {
   const [stateApp] = useContext(AppContext);
   const [transactData, setTransactData] = useState();
   const [transactId, setTransactId] = useState();
-  const [getContact, { loading, data }] = useLazyQuery(CONTACT);
+  const [getContact, { loading, data }] = useLazyQuery(CONTACT, {
+    fetchPolicy: "cache-and-network",
+  });
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
     TRANSACTIONDATA
   );
@@ -677,7 +679,7 @@ export default function ContactDetailCard(props) {
       />
     </Grid>
   ) : (
-    <div style={{ padding: "15px" }}>
+    <div style={{ padding: "15px", height: "100%" }}>
       <CircularProgress size={80} disableShrink color="secondary" />
     </div>
   );

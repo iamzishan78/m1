@@ -54,7 +54,7 @@ export default function ExpandableCard(props) {
       WebkitTransform: "translateZ(0)",
       transition: "width 0.1s, height 0.1s, left 0.1s, top 0.1s",
       width: width,
-      // height: props.expanded ? height : null,
+      height: props.expanded ? height : "inherit",
       background: "#011133",
       //background: "#efefef",
       //background: "#000",
@@ -188,7 +188,7 @@ export default function ExpandableCard(props) {
   };
 
   return (
-    <Card className={classes.card}>
+    <Card className={classes.card} id="xoxoxoxxoxoxoxoxo">
       <ReportBugModal
         open={openBugModal}
         onClose={() => setOpenBugModal(false)}

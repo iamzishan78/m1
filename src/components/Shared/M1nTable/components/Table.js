@@ -22,6 +22,7 @@ import WellIcon from "../../svgIcons/well";
 import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
 import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import AddContactDialogContent from "./SubComponents/AddContactDialogContent";
+import AddOwnerToContactDialogContent from "./SubComponents/AddOwnerToContactDialogContent";
 import DeleteConfirmationDialogContent from "./SubComponents/DeleteConfirmationDialogContent";
 
 const useStyles = makeStyles((theme) => ({
@@ -138,9 +139,9 @@ export default function SubTable(props) {
   useEffect(() => {
     if (rows && m1nSelectedRowsIndexes) {
       if (rows.length > 0 && m1nSelectedRowsIndexes.length > 0) {
-        let selectedRowsTracks = m1nSelectedRowsIndexes.map(
-          (ind) => rows[ind].isTracked
-        );
+        let selectedRowsTracks = m1nSelectedRowsIndexes.map((ind) => {
+          if (rows[ind] && rows[ind].isTracked) return rows[ind].isTracked;
+        });
         setM1nSelectedRowsTracks(selectedRowsTracks);
       } else setM1nSelectedRowsTracks([]);
     }
@@ -630,15 +631,7 @@ export default function SubTable(props) {
       }
     },
     onRowsDelete: (rowsDeleted) => {
-      ///m1nSelectedRowsIds has all owners ids, array
-
-      // console.log(
-      //   "2222222222222",
-      //   JSON.stringify(m1nSelectedRowsIds),
-      //   props.deleteFunc
-      // );
-      // props.deleteFunc(m1nSelectedRowsIds);
-      handleExpandClick(null, null, m1nSelectedRowsIds, "delete");
+      handleExpandClick(null, null, null, "deleteOwnersFromContact");
       return false;
     },
     rowsSelected: m1nSelectedRowsIndexes,
@@ -674,7 +667,17 @@ export default function SubTable(props) {
               className={classes.addIcon}
               onClick={(e) => {
                 e.stopPropagation();
-                handleExpandClick(null, null, null, "add");
+                if (
+                  props.addAble.type &&
+                  (props.addAble.type === "contact" ||
+                    props.addAble.type === "contactToOwner")
+                )
+                  handleExpandClick(null, null, null, "addContact");
+                if (
+                  props.addAble.type &&
+                  props.addAble.type === "ownerToContact"
+                )
+                  handleExpandClick(null, null, null, "addOwnerToContact");
               }}
             >
               <AddCircleOutlineRoundedIcon />
@@ -759,7 +762,8 @@ export default function SubTable(props) {
                 openDialog === "ownersPerContacts" ||
                 openDialog === "wellsPerOwner"
               ? "lg"
-              : openDialog === "add"
+              : openDialog === "addContact" ||
+                openDialog === "addOwnerToContact"
               ? "xs"
               : "sm"
           }
@@ -811,17 +815,25 @@ export default function SubTable(props) {
             />
           )}
 
-          {openDialog === "add" && props.targetLabel === "contact" && (
+          {openDialog === "addContact" && props.targetLabel === "contact" && (
             <AddContactDialogContent
               onClose={handleCloseDialog}
               parent={props.addAble.parent}
             />
           )}
-          {openDialog === "delete" && (
+          {openDialog === "addOwnerToContact" && (
+            <AddOwnerToContactDialogContent
+              onClose={handleCloseDialog}
+              parent={props.addAble.parent}
+              existingOwners={props.addAble.existingOwners}
+            />
+          )}
+          {openDialog === "deleteOwnersFromContact" && (
             <DeleteConfirmationDialogContent
               onClose={handleCloseDialog}
               deleteFunc={props.deleteFunc}
-              idOrIds={expandedObject}
+              m1nSelectedRowsIds={m1nSelectedRowsIds}
+              setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
             >
               {`Do you want to permanently delete the owner${
                 expandedObject && expandedObject.length > 1 ? "s" : ""

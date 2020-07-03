@@ -1072,15 +1072,15 @@ export default function M1nTable(props) {
                 return column;
               })
         );
-        setAddAble(false);
+
         setStateApp((state) => ({
           ...state,
           wells: dataWells.wells.results,
         }));
       } else {
         setRows([]);
-        setAddAble(false);
       }
+      setAddAble(false);
       setLoading(false);
     }
   }, [dataWells, dataTagSamples, dataCommentsCounter, dataTracks]);
@@ -1127,7 +1127,6 @@ export default function M1nTable(props) {
         });
 
         setHeader("Owners Per Well");
-        setAddAble(false);
 
         getOwnersWells({
           variables: {
@@ -1146,8 +1145,8 @@ export default function M1nTable(props) {
       } else {
         setLoading(false);
         setRows([]);
-        setAddAble(false);
       }
+      setAddAble(false);
     }
   }, [dataWellOwners, dataTracks]);
 
@@ -1332,7 +1331,6 @@ export default function M1nTable(props) {
         });
 
         setHeader("Interest Owners Tied to Contact");
-        setAddAble(false);
 
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
@@ -1346,10 +1344,20 @@ export default function M1nTable(props) {
       } else {
         setLoading(false);
         setRows([]);
-        setAddAble(false);
       }
+      setAddAble({
+        parent: props.contactId,
+        type: "ownerToContact",
+        existingOwners: props.ownersIdsArray,
+      });
     }
-  }, [dataOwners, dataTracks, dataOwnersWells]);
+  }, [
+    dataOwners,
+    dataTracks,
+    dataOwnersWells,
+    props.contactId,
+    props.ownersIdsArray,
+  ]);
 
   useEffect(() => {
     if (
@@ -1471,11 +1479,24 @@ export default function M1nTable(props) {
               awaitRefetchQueries: true,
             });
           }
+          const newOwnersIdsArray = props.ownersIdsArray.filter(
+            (id) => ownersIdsToDelete.indexOf(id) === -1
+          );
+          getOwners({
+            variables: {
+              ownerIdArray: newOwnersIdsArray,
+              authToken: stateApp.user.authToken,
+            },
+          });
+          getOwnersWells({
+            variables: {
+              ownersIds: newOwnersIdsArray,
+            },
+          });
         }
-        return true;
       });
     }
-  }, [props.contactId, props.ownersIdsArray]);
+  }, [props.parent, props.contactId, props.ownersIdsArray]);
 
   ////////////Owners Per Contact end/////////////////////////////////////////////////
 
@@ -1521,7 +1542,6 @@ export default function M1nTable(props) {
           }
         });
         setHeader("Owner's Contacts");
-        setAddAble({ parent: props.ownerId });
 
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
@@ -1532,8 +1552,8 @@ export default function M1nTable(props) {
       } else {
         setLoading(false);
         setRows([]);
-        setAddAble({ parent: props.ownerId });
       }
+      setAddAble({ parent: props.ownerId, type: "contactToOwner" });
     }
   }, [dataContactsByOwnerId, dataTracks]);
 
@@ -1609,7 +1629,7 @@ export default function M1nTable(props) {
               return column;
             })
       );
-      setRows(dataContactsByOwnerId.contactsByOwnerId);
+      setRows([...dataContactsByOwnerId.contactsByOwnerId]);
       setLoading(false);
     }
   }, [dataContactsByOwnerId, dataTracks, dataTagSamples, dataCommentsCounter]);
@@ -1654,7 +1674,6 @@ export default function M1nTable(props) {
         });
 
         setHeader("Contacts");
-        setAddAble({ parent: false });
 
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
@@ -1665,8 +1684,8 @@ export default function M1nTable(props) {
       } else {
         setLoading(false);
         setRows([]);
-        setAddAble({ parent: false });
       }
+      setAddAble({ parent: false, type: "contact" });
     }
   }, [dataContacts, dataTracks]);
 
