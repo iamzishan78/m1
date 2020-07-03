@@ -13,6 +13,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import { ADDREMOVEOWNERTOACONTACT } from "../../../../../graphQL/useMutationAddRemoveOwnerToAContact";
+import { AppContext } from "../../../../../AppContext";
 
 const useStyles = makeStyles((theme) => ({
   dialogContent: {
@@ -26,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AddOwnerToContactDialogContent(props) {
   const classes = useStyles();
+  const [stateApp, setStateApp] = React.useContext(AppContext);
   const [value, setValue] = React.useState(null);
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState([]);
@@ -119,6 +121,7 @@ export default function AddOwnerToContactDialogContent(props) {
         awaitRefetchQueries: true,
       });
       props.onClose();
+      setStateApp((state) => ({ ...state, universalCircularLoaderAct: true }));
     }
   };
 

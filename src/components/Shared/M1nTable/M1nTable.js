@@ -1369,6 +1369,10 @@ export default function M1nTable(props) {
       } else {
         setLoading(false);
         setRows([]);
+        setStateApp((state) => ({
+          ...state,
+          universalCircularLoaderAct: false,
+        }));
       }
 
       setAddAble({
@@ -1465,6 +1469,7 @@ export default function M1nTable(props) {
       );
       setRows(dataOwners.owners.results);
       setLoading(false);
+      setStateApp((state) => ({ ...state, universalCircularLoaderAct: false }));
     }
   }, [
     dataOwners,
@@ -1483,6 +1488,10 @@ export default function M1nTable(props) {
     ) {
       setDeleteFunc(() => (ownersIdsToDelete) => {
         if (ownersIdsToDelete) {
+          setStateApp((state) => ({
+            ...state,
+            universalCircularLoaderAct: true,
+          }));
           for (let i = 0; i < ownersIdsToDelete.length; i++) {
             addRemoveOwnerToAContact({
               variables: {
