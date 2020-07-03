@@ -48,7 +48,7 @@ export default function BasinFilterJ() {
           names: value
         }
       });
-      filter = ["match", ["get", "basin"], value, true, false];
+      // filter = ["match", ["get", "basin"], value, true, false];
       setStateNav((stateNav) => ({ ...stateNav, basinName: value }));
       setBasinName(value);
     } else {
