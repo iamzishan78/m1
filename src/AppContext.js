@@ -1,5 +1,5 @@
 import React, { useState, createContext, useEffect } from "react";
-
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
 import {
   styleLayers,
@@ -59,6 +59,7 @@ const AppProvider = (props) => {
     //   taggedWells: null,
     // },
     wellSelectedCoordinates: [],
+    universalCircularLoaderAct: false, //set it to true to show a loader in the center of the viewport
 
     //Map State
     mapCircularLoaderAct: false,
@@ -177,6 +178,29 @@ const AppProvider = (props) => {
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>
       {props.children}
+      {stateApp.universalCircularLoaderAct && (
+        <div
+          style={{
+            position: "fixed",
+            top: "0",
+            left: "0",
+            height: "100vh",
+            width: "100vw",
+            zIndex: "100000",
+          }}
+        >
+          <CircularProgress
+            style={{
+              position: "fixed",
+              top: "calc(50vh - 16px)",
+              left: "calc(50vw - 40px)",
+              color: "#12ABE0",
+            }}
+            size={80}
+            disableShrink
+          />
+        </div>
+      )}
     </AppContext.Provider>
   );
 };

@@ -903,7 +903,7 @@ export default function Search() {
         if (option.Source === "loader") return "loader";
         return "header";
       }}
-      leftIconButton={<SearchIcon />}
+      // leftIconButton={<SearchIcon />}
       renderGroup={(option) => {
         if (option.group === "loader")
           return (

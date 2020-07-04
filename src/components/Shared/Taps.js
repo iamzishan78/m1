@@ -60,6 +60,7 @@ export default function Taps(props) {
   ////props.tabPanels brings an array of panels////
   ////props.whichTapIsActive is an optional function to return the active index////
   ////props.white is an optional, a white taps version////
+  ////props.backgroundColor is an optional////
   const { tabLabels, tabPanels } = props;
 
   const handleChange = (event, newValue) => {
@@ -70,7 +71,15 @@ export default function Taps(props) {
   };
 
   return (
-    <div style={{backgroundColor: '#efefef'}} className={classes.root} id="M1nTaps">
+    <div
+      style={{
+        backgroundColor: props.backgroundColor
+          ? props.backgroundColor
+          : "#efefef",
+      }}
+      className={classes.root}
+      id="M1nTaps"
+    >
       <AppBar
         className={classes.WellsDetailsCardAppBar}
         position="static"
@@ -91,7 +100,11 @@ export default function Taps(props) {
       </AppBar>
 
       {tabPanels.map((panel, i) => (
-        <TabPanel /*style={{background: "#efefef"}}*/ key={i} value={value} index={i}>
+        <TabPanel
+          /*style={{background: "#efefef"}}*/ key={i}
+          value={value}
+          index={i}
+        >
           {panel}
         </TabPanel>
       ))}

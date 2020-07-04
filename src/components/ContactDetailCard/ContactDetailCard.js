@@ -153,8 +153,12 @@ export default function ContactDetailCard(props) {
   const [stateApp] = useContext(AppContext);
   const [transactData, setTransactData] = useState();
   const [transactId, setTransactId] = useState();
-  const [getContact, { loading, data }] = useLazyQuery(CONTACT);
-  const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(TRANSACTIONDATA);
+  const [getContact, { loading, data }] = useLazyQuery(CONTACT, {
+    fetchPolicy: "cache-and-network",
+  });
+  const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
+    TRANSACTIONDATA
+  );
 
   useEffect(() => {
     if (props.contactId) {
@@ -166,7 +170,6 @@ export default function ContactDetailCard(props) {
     }
   }, [props.contactId]);
 
-  
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
       getTransactionData({
@@ -609,6 +612,7 @@ export default function ContactDetailCard(props) {
                 <M1nTable
                   parent="ownersPerContacts"
                   ownersIdsArray={data.contact.owners}
+                  contactId={props.contactId}
                 />
               </Grid>
             )}
@@ -675,7 +679,7 @@ export default function ContactDetailCard(props) {
       />
     </Grid>
   ) : (
-    <div style={{ padding: "15px" }}>
+    <div style={{ padding: "15px", height: "100%" }}>
       <CircularProgress size={80} disableShrink color="secondary" />
     </div>
   );

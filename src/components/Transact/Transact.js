@@ -144,9 +144,41 @@ export default function Transact() {
     }
   }, [stateApp.user]);
 
+  const getTitle = (laneID) => {
+    switch (laneID) {
+      case "lane1":
+        return "Offer Preperation";
+      case "lane2":
+        return "Offer Extended";
+      case "lane3":
+        return "Accepted - Due Diligence";
+      case "lane4":
+        return "Deal Closed";
+      case "lane5":
+        return "Offer Rejected";
+      default:
+        return "Offer Preperation";
+    }
+  };
+
+  const getLanesWithFixedTitles = (lanes) => {
+    return lanes.map((lane) => {
+      let title = getTitle(lane.id);
+      return { ...lane, title };
+    });
+  };
+
   useEffect(() => {
-    if (data && data.transactionData && data.transactionData.allData) {
-      setTransactData(data.transactionData.allData);
+    if (
+      data &&
+      data.transactionData &&
+      data.transactionData.allData &&
+      data.transactionData.allData.lanes
+    ) {
+      setTransactData({
+        ...data.transactionData.allData,
+        lanes: getLanesWithFixedTitles(data.transactionData.allData.lanes),
+      });
       setId(data.transactionData._id);
     }
   }, [loading, data]);
@@ -186,7 +218,7 @@ export default function Transact() {
         collapsibleLanes={true}
         editable={false}
         canAddLanes={false}
-        editLaneTitle={true}
+        editLaneTitle={false}
         hideCardDeleteIcon={false}
         onDataChange={handleDataChange}
         onCardClick={handleCardClick}
