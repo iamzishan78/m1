@@ -20,7 +20,7 @@ import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
 
 import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../../Navigation/NavigationContext";
-import { TOGGLETRACK } from "../../../graphQL/useMutationToggleCreateRemoveTrack";
+import { TOGGLETRACKS } from "../../../graphQL/useMutationToggleCreateRemoveTracks";
 import { WELLSOWNERSQUERY } from "../../../graphQL/useQueryWellsOwners";
 
 const useStyles = makeStyles((theme) => ({
@@ -120,7 +120,7 @@ export default (props) => {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [isTrackWells, setTrackWells] = useState(false);
   const [isTrackOwners, setTrackOwners] = useState(false);
-  const [toggleCreateRemoveTrack, { data, loading }] = useMutation(TOGGLETRACK);
+  const [toggleCreateRemoveTracks, { data, loading }] = useMutation(TOGGLETRACKS);
 
   const [getWellsOwners, { data: dataWellsOwners }] = useLazyQuery(
     WELLSOWNERSQUERY
@@ -160,19 +160,22 @@ export default (props) => {
     setTrackWells(!isTrackWells);
 
     if (points && points.length > 0) {
+      const tracks = [];
       points.forEach((point) => {
         const targetSourceId = point.properties.id;
-        toggleCreateRemoveTrack({
-          variables: {
-            track: {
-              user: user,
-              objectType: targetLabel,
-              trackOn: targetSourceId,
-            },
-          },
-          refetchQueries: ["tracksByUserAndObjectType", "trackByUserAndObjectId"], ////add all queries for components with track icons////
-          awaitRefetchQueries: true,
-        })
+        const track = {
+          user: user,
+          objectType: targetLabel,
+          trackOn: targetSourceId,
+        };
+        tracks.push(track);
+      });
+      toggleCreateRemoveTracks({
+        variables: {
+          tracks: tracks,
+        },
+        refetchQueries: ["tracksByUserAndObjectType", "trackByUserAndObjectId"], ////add all queries for components with track icons////
+        awaitRefetchQueries: true,
       });
     }
   }
@@ -180,21 +183,24 @@ export default (props) => {
   const trackOwners = (wellownerList) => {
     const user = stateApp.user.mongoId;
     const targetLabel = "owner";
+    const tracks = []
     wellownerList.forEach((well) => {
       well.owners.forEach((owner) => {
         const targetSourceId = owner.ownerId;
-        toggleCreateRemoveTrack({
-          variables: {
-            track: {
-              user: user,
-              objectType: targetLabel,
-              trackOn: targetSourceId,
-            },
-          },
-          refetchQueries: ["tracksByUserAndObjectType", "trackByUserAndObjectId"], ////add all queries for components with track icons////
-          awaitRefetchQueries: true,
-        });
+        const track = {
+          user: user,
+          objectType: targetLabel,
+          trackOn: targetSourceId,
+        }
+        tracks.push(track);
       });
+    });
+    toggleCreateRemoveTracks({
+      variables: {
+        tracks: tracks
+      },
+      refetchQueries: ["tracksByUserAndObjectType", "trackByUserAndObjectId"], ////add all queries for components with track icons////
+      awaitRefetchQueries: true,
     });
   }
 
