@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
@@ -8,6 +8,7 @@ import Tags from "../Shared/Tagger";
 import Avatar from "react-avatar";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import RoomIcon from "@material-ui/icons/Room";
+import Badge from '@material-ui/core/Badge';
 import FacebookIcon from "@material-ui/icons/Facebook";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
@@ -25,7 +26,9 @@ import { useLazyQuery } from "@apollo/react-hooks";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import Activities from "../Shared/Activities";
 import Deals from "../Shared/Deals";
+import LeadScore from "../Shared/LeadScore";
 import { AppContext } from "../../AppContext";
+import RecentConversations from "../Shared/RecentConversations";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -180,6 +183,22 @@ export default function ContactDetailCard(props) {
     }
   }, [stateApp.user]);
 
+  const StyleBadge = withStyles({
+    badge: {
+      transform: 'unset',
+      background: 'white',
+      color: '#0033de',
+      border: '2px solid',
+      width: '30px',
+      height: '30px',
+      borderRadius: '50%'
+    },
+  })((props) => (
+    <Badge
+      {...props}
+    />
+  ));
+
   useEffect(() => {
     if (tData && tData.transactionData && tData.transactionData.allData) {
       setTransactData(tData.transactionData.allData);
@@ -223,7 +242,9 @@ export default function ContactDetailCard(props) {
             </div>
             <div>
               <div className={classes.userIcon}>
-                <Avatar name={data.contact.name} size="80" round />
+                <StyleBadge badgeContent={5} color={'primary'}>
+                  <Avatar name={data.contact.name} size="80" round />
+                </StyleBadge>
               </div>
               <div className={classes.userName}>
                 <h1 style={{ width: "max-content" }}>
@@ -600,6 +621,12 @@ export default function ContactDetailCard(props) {
             </Grid>
           </Grid>
 
+          {/*/////////// Recent Converstaion. //////////// */}
+          <RecentConversations
+            header={"Recent Converstaion"}
+            
+          />
+
           {/*/////////// section 3 //////////// */}
           {data.contact &&
             data.contact.owners &&
@@ -651,6 +678,14 @@ export default function ContactDetailCard(props) {
                   contact={data.contact}
                   transactData={transactData}
                   transactId={transactId}
+                />
+              </Paper>
+              <Paper className={classes.paper}>
+                <LeadScore
+                  score={5}
+                  lastSeen={''}
+                  lastContacted={'6 months ago'}
+                  lastModified={'3 months ago'}
                 />
               </Paper>
               <Paper className={classes.paper}>
