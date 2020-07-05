@@ -187,6 +187,9 @@ export default function ContactDetailCard(props) {
       background: 'white',
       color: '#0033de',
       border: '2px solid',
+      width: '30px',
+      height: '30px',
+      borderRadius: '50%'
     },
   })((props) => (
     <Badge
