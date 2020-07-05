@@ -17,6 +17,9 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     marginRight: "20px"
+  },
+  moreIcon: {
+    color: 'lightgray'
   }
 }));
 
@@ -69,10 +72,9 @@ export default ({
           <ListItemText primary={"jacob@m1neral.com"} secondary="5 months ago" />
           <ListItemText primary={"Re Power Rangers(5)"} secondary={"No Problem thx for the update..."} />
           <ListItemIcon>
-            <MoreVertIcon color='secondary' />
+            <MoreVertIcon classes={classes.moreIcon} />
           </ListItemIcon>
         </ListItem>
-        
       </List>
       </div>
     </div>

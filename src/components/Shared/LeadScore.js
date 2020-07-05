@@ -20,6 +20,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center"
+  },
+  leadTitle: {
+    justifyContent: "center",
+    alignItems: "center"
   }
 }));
 
@@ -35,16 +39,10 @@ export default function LeadScore({
 
   return (
     <Card className={classes.root} variant="outlined">
-      <CardActions>
-        <div
-          style={{
-            textAlign: "center",
-          }}
-        >
-          <Typography variant="button" gutterBottom>
-            Lead Score
-          </Typography>
-        </div>
+      <CardActions classes={classes.leadTitle}>
+        <Typography variant="button" gutterBottom>
+          Lead Score
+        </Typography>
       </CardActions>
       <CardContent>
         <div>
@@ -62,37 +60,40 @@ export default function LeadScore({
           <div
             style={{
               textAlign: "center",
+              marginBottom: "15px",
             }}
           >
-            <Typography variant="button" dispaly="block">
+            <Typography variant="button" component="p">
               Last Seen:
             </Typography>
-            <Typography variant="overline" dispaly="block">
-              {lastSeen}
+            <Typography variant="caption" component="p">
+              {lastSeen || "--"}
             </Typography>
           </div>
           <div
             style={{
               textAlign: "center",
+              marginBottom: "15px",
             }}
           >
-            <Typography variant="button" dispaly="block">
+            <Typography variant="button" component="p">
               Last contacted:
             </Typography>
-            <Typography variant="overline" dispaly="block">
-              {lastContacted}
+            <Typography variant="caption" component="p">
+              {lastContacted || "--"}
             </Typography>
           </div>
           <div
             style={{
               textAlign: "center",
+              marginBottom: "15px",
             }}
           >
-            <Typography variant="button" dispaly="block">
+            <Typography variant="button" component="p">
               Last modified:
             </Typography>
-            <Typography variant="overline" dispaly="block">
-              {lastModified}
+            <Typography variant="caption" component="p">
+              {lastModified || "--"}
             </Typography>
           </div>
         </div>
