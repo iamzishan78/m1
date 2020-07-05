@@ -1,13 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useMutation } from "@apollo/react-hooks";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
-import Button from "@material-ui/core/Button";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import { AppContext } from "../../AppContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,7 +47,7 @@ export default function LeadScore({
         </div>
       </CardActions>
       <CardContent>
-        <div style={{ display: "flex", justifyContent: "space-around" }}>
+        <div>
           <div
             style={{
               textAlign: "center",
@@ -62,22 +58,40 @@ export default function LeadScore({
                 {score}
               </Typography>
             </div>
-            <Typography variant="button">
+          </div>
+          <div
+            style={{
+              textAlign: "center",
+            }}
+          >
+            <Typography variant="button" dispaly="block">
               Last Seen:
             </Typography>
-            <Typography variant="small">
+            <Typography variant="overline" dispaly="block">
               {lastSeen}
             </Typography>
-            <Typography variant="button">
+          </div>
+          <div
+            style={{
+              textAlign: "center",
+            }}
+          >
+            <Typography variant="button" dispaly="block">
               Last contacted:
             </Typography>
-            <Typography variant="small">
+            <Typography variant="overline" dispaly="block">
               {lastContacted}
             </Typography>
-            <Typography variant="button">
+          </div>
+          <div
+            style={{
+              textAlign: "center",
+            }}
+          >
+            <Typography variant="button" dispaly="block">
               Last modified:
             </Typography>
-            <Typography variant="button">
+            <Typography variant="overline" dispaly="block">
               {lastModified}
             </Typography>
           </div>

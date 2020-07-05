@@ -28,6 +28,7 @@ import Activities from "../Shared/Activities";
 import Deals from "../Shared/Deals";
 import LeadScore from "../Shared/LeadScore";
 import { AppContext } from "../../AppContext";
+import RecentConversations from "../Shared/RecentConversations";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -614,6 +615,12 @@ export default function ContactDetailCard(props) {
               </Grid>
             </Grid>
           </Grid>
+
+          {/*/////////// Recent Converstaion. //////////// */}
+          <RecentConversations
+            header={"Recent Converstaion"}
+            
+          />
 
           {/*/////////// section 3 //////////// */}
           {data.contact &&
