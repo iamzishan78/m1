@@ -339,6 +339,12 @@ const heatLayers = [
   },
 ];
 
+// const userFileLayers = [
+// {
+//  data: {}
+// }
+
+//]
 const baseMapLayers = [
   {
     name: "Map Labels",
@@ -456,6 +462,8 @@ const MapContextProvider = (props) => {
     selectedWell: null,
     styleLayers: styleLayers,
     heatLayers: heatLayers,
+    userFileLayers: [],
+    //userServiceLayers: userServiceLayers,
     baseMapLayers: baseMapLayers,
     userDefinedLayers: userDefinedLayers,
     checkedLayers: [0, 3],

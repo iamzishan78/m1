@@ -18,15 +18,12 @@ import Button from '@material-ui/core/Button';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import TextField from '@material-ui/core/TextField';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
-import { useDropzone } from 'react-dropzone';
-import { readProfileRequest } from "../../Login/AADAuthConfig";
 
 
 export default function AddUserData(props) {
 
   const [isOpen, setIsOpen] = useState(true);
-  const [inputFile, setInputFile] = useState('');
-  const [inputURL, setInputURL] = useState('');
+  const [inputFiles, setInputFiles] = useState(null);
 
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
@@ -38,15 +35,13 @@ export default function AddUserData(props) {
   };
 
   async function handleFileInput(fileObj) {
-
-    console.log("FILE INPUT HANDLER");
     console.log('Added Files:', fileObj)
     console.log(typeof fileObj);
 
     try {
       let fileContent = await handleFileAsync(fileObj);
-      console.log(fileContent);
-
+      console.log('FILE CONTENT: ', fileContent);
+      setInputFiles(fileContent);
     } catch (err) {
       console.log(err);
     }
@@ -55,27 +50,37 @@ export default function AddUserData(props) {
   const handleOnAlert = (message, variant) => {
     console.log(`${variant}: ${message}`)
   }
+
+
   const handleApplyChanges = () => {
     console.log('Apply Changes');
+    let fileContent = inputFiles;
+
+    //handle feature collection
+    if (fileContent.type == 'FeatureCollection') {
+
+      console.log("THE TYPE IS FEATURE COLLECTION")
+      let existingFileLayers = stateMap.userFileLayers
+      existingFileLayers.push(fileContent);
+      console.log('USER FILE LAYERS:: ', existingFileLayers)
+
+      setStateMap(stateMap => ({ ...stateMap, userFileLayers: existingFileLayers }));
+      //console.log(stateMap);
+
+
+    } else {
+      console.log('THE TYPE IS NOT FEATURE COLLECTION')
+    }
   }
 
   const handleFileAsync = (file) => {
     return new Promise((resolve, reject) => {
-
       fetch(file[0].data)
-      .then((response) => response.json())
-      .then((response) => {
-        resolve(response);
-      })
-      .catch((error) => console.log(error));
-
-      // let reader = new FileReader();
-
-      // reader.onload = () => {
-        // resolve(reader.result);
-      // }
-      // reader.onerror = reject;
-      // reader.readAsArrayBuffer(file);
+        .then((response) => response.json())
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((error) => reject(error));
     })
   }
 
@@ -92,9 +97,10 @@ export default function AddUserData(props) {
             onAdd={handleFileInput}
             onDelete={(fileObj) => console.log('Removed File:', fileObj)}
             onAlert={handleOnAlert}
-            filesLimit="1"
+            filesLimit={1}
             dropzoneText=" Drag and Drop a GeoJSON or Shapefile."
-            acceptedFiles={[".json", ".geojson", ".shp"]}
+            acceptedFiles={[".geojson", ".zip"]}
+            maxFileSize={600000000}
           ></DropzoneAreaBase>
           <TextField
             autoFocus

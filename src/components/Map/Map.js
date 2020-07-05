@@ -494,6 +494,20 @@ export default function Map() {
     }
   }, [map, stateMap.checkedHeats, stateMap.heatLayers]);
 
+  /////////////////// HANDLE ADD USER DATA //////////////////////
+  useEffect(() => {
+
+/// when user data added
+if (stateMap.userFileLayers.lenghth > 0 ){
+
+  console.log('USE EFFECT - USER DATA ADDED::', stateMap.userFileLayers)
+}
+/// parse input layers 
+/// identify feature type (point, poly)
+/// assign default style appropriate to feature type
+
+  },[stateMap.userFileLayers])
+
   useEffect(() => {
     ///////////////// EFFECT FOR SHOWING TRACKED WELLS /////////////////
 
@@ -2445,43 +2459,43 @@ export default function Map() {
                   targetLabel="well"
                 ></ExpandableCardProvider>
               ) : (
-                <Popover
-                  open={stateApp.expandedCard}
-                  anchorEl={anchorElPoPOver}
-                  anchorReference="anchorEl"
-                  style={{ width: "100%" }} //right:30, left: "-30px"}}
-                  BackdropProps={{ invisible: false }}
-                  anchorOrigin={{
-                    vertical: "center",
-                    horizontal: "center",
-                  }}
-                  transformOrigin={{
-                    vertical: "center",
-                    horizontal: "center",
-                  }}
-                >
-                  <ExpandableCardProvider
-                    expanded={true}
-                    handleCloseExpandableCard={handleCloseExpandableCard}
-                    component={<WellCardProvider></WellCardProvider>}
-                    title={stateApp.selectedWell.wellName}
-                    subTitle={stateApp.selectedWell.operator}
-                    parent="map"
-                    mouseX={0}
-                    mouseY={0}
-                    position="relative"
-                    // cardLeft={"0px"}
-                    // cardTop={"0px"}
-                    zIndex={99}
-                    // cardWidth="380px"
-                    // cardHeight="380px"
-                    cardWidthExpanded="95vw"
-                    cardHeightExpanded="95vh"
-                    targetSourceId={stateApp.selectedWell.id}
-                    targetLabel="well"
-                  ></ExpandableCardProvider>
-                </Popover>
-              )}
+                  <Popover
+                    open={stateApp.expandedCard}
+                    anchorEl={anchorElPoPOver}
+                    anchorReference="anchorEl"
+                    style={{ width: "100%" }} //right:30, left: "-30px"}}
+                    BackdropProps={{ invisible: false }}
+                    anchorOrigin={{
+                      vertical: "center",
+                      horizontal: "center",
+                    }}
+                    transformOrigin={{
+                      vertical: "center",
+                      horizontal: "center",
+                    }}
+                  >
+                    <ExpandableCardProvider
+                      expanded={true}
+                      handleCloseExpandableCard={handleCloseExpandableCard}
+                      component={<WellCardProvider></WellCardProvider>}
+                      title={stateApp.selectedWell.wellName}
+                      subTitle={stateApp.selectedWell.operator}
+                      parent="map"
+                      mouseX={0}
+                      mouseY={0}
+                      position="relative"
+                      // cardLeft={"0px"}
+                      // cardTop={"0px"}
+                      zIndex={99}
+                      // cardWidth="380px"
+                      // cardHeight="380px"
+                      cardWidthExpanded="95vw"
+                      cardHeightExpanded="95vh"
+                      targetSourceId={stateApp.selectedWell.id}
+                      targetLabel="well"
+                    ></ExpandableCardProvider>
+                  </Popover>
+                )}
             </PortalD>
           </div>
         ) : null}

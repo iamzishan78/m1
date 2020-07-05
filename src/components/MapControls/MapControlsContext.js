@@ -16,6 +16,8 @@ const MapControlsContextProvider = props => {
     openSpeedDial: true,
     anchorEl: null,
     layers: layers,
+    userFileLayers: '',
+    userServiceLayers: '',
     heatmaps: null,
     selectedBaseMap: "",
     editDraw: false,
