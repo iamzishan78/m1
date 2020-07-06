@@ -24,7 +24,7 @@ export const styleLayers = [
   },
   {
     name: "Permits",
-    id: ["permits"],
+    id: ["permits-clusters-counts", "permits-clusters", "permits"],
     sourceProps: ["permits_source"],
     layerProps: {
       layerId: ["permits"],
@@ -35,11 +35,44 @@ export const styleLayers = [
         "circle-stroke-width": 2,
         "circle-stroke-color": "#fff",
       },
+      clusterProps: {
+        clusterPaintProps: {
+          "circle-color": {
+            property: "point_count",
+            type: "interval",
+            stops: [
+              [0, "#e4a773"],
+              [100, "#e4a773"],
+              [750, "#e4a773"],
+            ],
+          },
+
+          "circle-radius": [
+            "step",
+            ["get", "point_count"],
+            20,
+            5,
+            25,
+            10,
+            30,
+            20,
+            35,
+          ],
+
+          "circle-stroke-width": 5,
+          "circle-stroke-color": "#fff",
+        },
+        clusterSymbolProps: {
+          "text-field": "{point_count}",
+          "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+          "text-size": 12,
+        },
+      }
     }
   },
   {
     name: "Rig Activity",
-    id: ["rigs"],
+    id: ["rigs-clusters-counts", "rigs-clusters", "rigs"],
     sourceProps: ["rigs_source"],
     layerProps: {
       layerId: ["rigs"],
@@ -50,6 +83,38 @@ export const styleLayers = [
         "circle-stroke-width": 2,
         "circle-stroke-color": "#fff",
       },
+      clusterProps: {
+        clusterPaintProps: {
+          "circle-color": {
+            property: "point_count",
+            type: "interval",
+            stops: [
+              [0, "#e4a773"],
+              [100, "#e4a773"],
+              [750, "#e4a773"],
+            ],
+          },
+          "circle-radius": [
+            "step",
+            ["get", "point_count"],
+            20,
+            5,
+            25,
+            10,
+            30,
+            20,
+            35,
+          ],
+
+          "circle-stroke-width": 5,
+          "circle-stroke-color": "#fff",
+        },
+        clusterSymbolProps: {
+          "text-field": "{point_count}",
+          "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+          "text-size": 12,
+        },
+      }
     }
   },
   {
