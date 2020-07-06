@@ -622,10 +622,16 @@ export default function ContactDetailCard(props) {
           </Grid>
 
           {/*/////////// Recent Converstaion. //////////// */}
-          <RecentConversations
-            header={"Recent Converstaion"}
-            
-          />
+          <Grid
+            item
+            xs={12}
+            className={`${classes.border}`}
+          >
+            <RecentConversations
+              header={"Recent Conversation"}
+              
+            />
+          </Grid>
 
           {/*/////////// section 3 //////////// */}
           {data.contact &&
