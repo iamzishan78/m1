@@ -12,8 +12,8 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "8px",
   },
   leadScore: {
-    width: "100px",
-    height: "100px",
+    width: "120px",
+    height: "120px",
     backgroundColor: "white",
     color: "#0033de",
     border: "4px solid",
@@ -57,7 +57,7 @@ export default function LeadScore({
             }}
           >
             <div className={classes.leadScore}>
-              <Typography variant="button">
+              <Typography variant="h4">
                 {score}
               </Typography>
             </div>
