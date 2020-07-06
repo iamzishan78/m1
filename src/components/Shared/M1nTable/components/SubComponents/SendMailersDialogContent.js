@@ -113,7 +113,7 @@ export default function SendMailersDialogContent(props) {
               {props.rows && props.rows.length && props.rows.length > 1
                 ? "s"
                 : ""}{" "}
-              to Send Mailers
+              To Send Mailers
             </h3>
           </Grid>
           <Grid item xs={12}>

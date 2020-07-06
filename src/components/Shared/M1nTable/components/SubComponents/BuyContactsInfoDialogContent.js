@@ -154,7 +154,7 @@ export default function BuyContactsInfoDialogContent(props) {
               {props.rows && props.rows.length && props.rows.length > 1
                 ? "s"
                 : ""}{" "}
-              to Purchase
+              To Purchase
             </h3>
           </Grid>
           <Grid

@@ -88,17 +88,20 @@ const useStyles = makeStyles({});
 
 export default function PrintLabelsDialogContent(props) {
   const classes = useStyles();
-
-  useEffect(() => {
-    if (!props.rows || props.rows.length === 0) props.onClose();
-  }, [props.rows]);
-
-  const recipientData = [];
+  const recipientData = [
+    `Contact Name${props.rows && props.rows.length > 1 ? "s" : ""}`,
+    "“Current Owner”",
+  ];
   const labelTypeData = [
     'Avery 5160: 2 5/8" X 1"',
     'Avery 5161: 4" X 1"',
     'Avery 5162: 4" X 1.33"',
   ];
+  const [recipientValue, setRecipientValue] = React.useState(recipientData[0]);
+
+  useEffect(() => {
+    if (!props.rows || props.rows.length === 0) props.onClose();
+  }, [props.rows]);
 
   return (
     <React.Fragment>
@@ -112,6 +115,10 @@ export default function PrintLabelsDialogContent(props) {
               options={recipientData}
               getOptionLabel={(option) => option}
               style={{ marginBottom: "10px" }}
+              value={recipientValue}
+              onChange={(event, newValue) => {
+                setRecipientValue(newValue);
+              }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -124,6 +131,7 @@ export default function PrintLabelsDialogContent(props) {
               options={labelTypeData}
               getOptionLabel={(option) => option}
               style={{ marginBottom: "10px" }}
+              defaultValue={labelTypeData[0]}
               renderInput={(params) => (
                 <TextField {...params} label="Label Type" variant="outlined" />
               )}
@@ -131,11 +139,11 @@ export default function PrintLabelsDialogContent(props) {
           </Grid>
           <Grid item xs={6}>
             <h3 style={{ margin: "0" }}>
-              {props.rows && props.rows.length ? props.rows.length : ""} Owner
+              {props.rows && props.rows.length ? props.rows.length : ""} Label
               {props.rows && props.rows.length && props.rows.length > 1
                 ? "s"
                 : ""}{" "}
-              to Send Mailers
+              To Print
             </h3>
           </Grid>
           <Grid item xs={12}>
@@ -151,7 +159,9 @@ export default function PrintLabelsDialogContent(props) {
                         scope="row"
                         style={{ padding: "0 0 0 10px", fontSize: "0.8rem" }}
                       >
-                        {row.name}
+                        {recipientValue === "“Current Owner”"
+                          ? "“Current Owner”"
+                          : row.name}
                       </TableCell>
 
                       <TableCell
