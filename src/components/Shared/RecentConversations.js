@@ -60,17 +60,17 @@ export default ({
             <Avatar name={"Jacob"} size="60" round />
           </ListItemAvatar>
           <ListItemText primary={"jacob@m1neral.com"} secondary="5 months ago" />
-          <ListItemText primary={"Re Power Rangers(5)"} secondary={"No Problem thx for the update..."} />
+          <ListItemText primary={"Re Power Rangers (5)"} secondary={"No Problem thx for the update. Have a great conversation. Best regar..."} />
           <ListItemIcon>
-            <MoreVertIcon color='secondary' />
+            <MoreVertIcon classes={classes.moreIcon} />
           </ListItemIcon>
         </ListItem>
         <ListItem>
           <ListItemAvatar className={classes.avatar}>
             <Avatar name={"Kyle"} size="60" round />
           </ListItemAvatar>
-          <ListItemText primary={"jacob@m1neral.com"} secondary="5 months ago" />
-          <ListItemText primary={"Re Power Rangers(5)"} secondary={"No Problem thx for the update..."} />
+          <ListItemText primary={"kyle@m1neral.com"} secondary="5 months ago" />
+          <ListItemText primary={"Re Power Rangers (7)"} secondary={"All Jacob and I are out next week to Fort Worth for our board meeti..."} />
           <ListItemIcon>
             <MoreVertIcon classes={classes.moreIcon} />
           </ListItemIcon>
