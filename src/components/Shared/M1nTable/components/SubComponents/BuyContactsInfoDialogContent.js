@@ -15,6 +15,7 @@ import TableRow from "@material-ui/core/TableRow";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { FormLabel } from "@material-ui/core";
 import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const styles = (theme) => ({
   root: {
@@ -137,15 +138,16 @@ export default function BuyContactsInfoDialogContent(props) {
                 {currentCredits} Credit
                 {currentCredits && currentCredits > 1 ? "s" : ""}
               </FormLabel>
-
-              <IconButton
-                aria-label="add"
-                className={classes.inputContent}
-                // onClick={}
-                size="small"
-              >
-                <AddCircleRoundedIcon fontSize="small" />
-              </IconButton>
+              <Tooltip title="Add Credits">
+                <IconButton
+                  aria-label="add"
+                  className={classes.inputContent}
+                  // onClick={}
+                  size="small"
+                >
+                  <AddCircleRoundedIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </div>
           </Grid>
           <Grid item xs={6}>

@@ -643,7 +643,6 @@ export default function SubTable(props) {
       }
     },
     onRowsDelete: (rowsDeleted) => {
-      console.log("deleteeeeeee")
       handleExpandClick(null, null, null, "deleteOwnersFromContact");
       return false;
     },
