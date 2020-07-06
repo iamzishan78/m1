@@ -323,6 +323,31 @@ export default function Map() {
           }
         });
 
+
+        const clusterVar =
+          permitConfig.layerProps.layerId + "-clusters";
+        const clusterLabelBar =
+          permitConfig.layerProps.layerId + "-clusters-counts";
+
+        map.addLayer({
+          id: clusterLabelBar,
+          type: "symbol",
+          source: permitConfig.sourceProps[0],
+          filter: ["has", "point_count"],
+          layout:
+          permitConfig.layerProps.clusterProps
+              .clusterSymbolProps,
+        });
+
+        map.addLayer({
+          id: clusterVar,
+          type: permitConfig.layerProps.layerType[0],
+          source: permitConfig.sourceProps[0],
+          filter: ["has", "point_count"],
+          paint: permitConfig.layerProps.clusterProps
+              .clusterPaintProps,
+        });
+
         console.log(map.getLayer(permitConfig.layerProps.layerId[0]));
       }
     }
@@ -391,6 +416,30 @@ export default function Map() {
             layout: {
               visibility: checkedPosition > -1 ? 'visible' : 'none'
             }
+          });
+
+          const clusterVar =
+            rigConfig.layerProps.layerId + "-clusters";
+          const clusterLabelBar =
+            rigConfig.layerProps.layerId + "-clusters-counts";
+
+          map.addLayer({
+            id: clusterLabelBar,
+            type: "symbol",
+            source: sourceId,
+            filter: ["has", "point_count"],
+            layout:
+            rigConfig.layerProps.clusterProps
+                .clusterSymbolProps,
+          });
+
+          map.addLayer({
+            id: clusterVar,
+            type: rigConfig.layerProps.layerType[0],
+            source: sourceId,
+            filter: ["has", "point_count"],
+            paint: rigConfig.layerProps.clusterProps
+                .clusterPaintProps,
           });
         }
       }
