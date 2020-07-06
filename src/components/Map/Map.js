@@ -986,7 +986,7 @@ export default function Map() {
               const layerId = selectLayerProps.id[i];
               if (map.getLayer(layerId)) {
                 map.setLayoutProperty(layerId, "visibility", "visible");
-                map.setData(selectLayerProps.sourceProps[i].sourceId, myGeoJSONData)
+                map.getSource(selectLayerProps.sourceProps[i].sourceId).setData(myGeoJSONData);
                 let clusterLabelBar = layerId + "-clusters-counts";
                 if (map.getLayer(clusterLabelBar)) {
                   map.setLayoutProperty(clusterLabelBar, "visibility", "visible");
