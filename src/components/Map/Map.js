@@ -225,7 +225,7 @@ export default function Map() {
   }, [dataTracksOwner]);
 
   useEffect(() => {
-    if (customLayerData && customLayerData.customLayers) {
+    if (customLayerData && customLayerData.customLayers && map) {
       console.log("Custom Layer data", customLayerData.customLayers);
       setStateApp({
         ...stateApp,
@@ -234,8 +234,9 @@ export default function Map() {
         editLayer: false,
         popupOpen: false,
       });
+      
     }
-  }, [customLayerData]);
+  }, [customLayerData, map]);
 
   useEffect(() => {
     if (dataOwnersWells && dataOwnersWells.length !== 0) {
@@ -869,32 +870,6 @@ export default function Map() {
   useEffect(() => {
     // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
 
-    if (stateApp.userDefinedLayers.length > 0 && map) {
-      const layerList = stateApp.userDefinedLayers;
-
-      stateApp.userDefinedLayers.forEach((l) => {
-        l.id.forEach((k, i) => {
-          var clusterLabelBar = k + "-clusters-counts";
-          if (map.getLayer(clusterLabelBar)) {
-            map.removeLayer(clusterLabelBar);
-            // map.removeSource(l.sourceProps[i].sourceId);
-          }
-
-          var clusterVar = k + "-clusters";
-          if (map.getLayer(clusterVar)) {
-            map.removeLayer(clusterVar);
-            // map.removeSource(l.sourceProps[i].sourceId);
-          }
-
-          if (map.getLayer(k)) {
-            map.removeLayer(k);
-            map.removeSource(l.sourceProps[i].sourceId);
-          }
-        });
-      });
-    }
-
-    // this section adds the updated list of layers
     const tmpCheckedLayer = stateApp.tempCheckedUserDefinedLayers;
     const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
     if (
@@ -903,6 +878,37 @@ export default function Map() {
     ) {
       checkedLayers.push(tmpCheckedLayer);
     }
+
+    if (stateApp.userDefinedLayers.length > 0 && map) {
+      const layerList = stateApp.userDefinedLayers;
+
+      stateApp.userDefinedLayers.forEach((l) => {
+        l.id.forEach((k, i) => {
+          let clusterLabelBar = k + "-clusters-counts";
+          if (map.getLayer(clusterLabelBar)) {
+            // map.removeLayer(clusterLabelBar);
+            // map.removeSource(l.sourceProps[i].sourceId);
+            map.setLayoutProperty(clusterLabelBar, "visibility", "none");
+          }
+
+          let clusterVar = k + "-clusters";
+          if (map.getLayer(clusterVar)) {
+            // map.removeLayer(clusterVar);
+            // map.removeSource(l.sourceProps[i].sourceId);
+            map.setLayoutProperty(clusterVar, "visibility", "none");
+          }
+
+          if (map.getLayer(k)) {
+            // map.removeLayer(k);
+            // map.removeSource(l.sourceProps[i].sourceId);
+            map.setLayoutProperty(k, "visibility", "none");
+          }
+        });
+      });
+    }
+
+    // this section adds the updated list of layers
+    
     if (map && checkedLayers.length > 0) {
       let layers = checkedLayers;
       layers.sort(function (a, b) {
@@ -919,6 +925,7 @@ export default function Map() {
 
         if (selectLayerProps.type === "data layer") {
           for (let i = 0; i < selectLayerProps.id.length; i++) {
+            
             // -> fetch data
             let layerData = [];
             if (selectLayerProps.dataProps[i].dataId == "trackedWellsWells") {
@@ -976,81 +983,181 @@ export default function Map() {
 
               const myGeoJSONData = makeGeoJSON(layerData);
 
-              // -> add source
-              if (selectLayerProps.dataProps[i].dataTypeId == "Point") {
-                map.addSource(selectLayerProps.sourceProps[i].sourceId, {
-                  type: selectLayerProps.sourceProps[i].sourceType,
-                  data: myGeoJSONData,
-                  cluster: true,
-                  clusterRadius: 50,
-                  clusterMaxZoom: 6,
-                });
-              } else {
-                map.addSource(selectLayerProps.sourceProps[i].sourceId, {
-                  type: selectLayerProps.sourceProps[i].sourceType,
-                  data: myGeoJSONData,
-                  promoteId: { original: "id" },
-                });
-              }
-
-              // -> add layer
-              // eslint-disable-next-line eqeqeq
-              if (selectLayerProps.layerProps[i].layerType == "symbol") {
-                map.addLayer({
-                  id: selectLayerProps.layerProps[i].layerId,
-                  type: selectLayerProps.layerProps[i].layerType,
-                  source: selectLayerProps.sourceProps[i].sourceId,
-                  layout: selectLayerProps.layerProps[i].symbolProps,
-                });
-              } else {
-                map.addLayer({
-                  id: selectLayerProps.layerProps[i].layerId,
-                  type: selectLayerProps.layerProps[i].layerType,
-                  source: selectLayerProps.sourceProps[i].sourceId,
-                  paint: selectLayerProps.layerProps[i].paintProps,
-                });
-              }
-
-              // -> add cluster layer
-
-              if (
-                selectLayerProps &&
-                selectLayerProps.layerProps &&
-                selectLayerProps.layerProps[i].clusterProps
-              ) {
-                var clusterVar =
-                  selectLayerProps.layerProps[i].layerId + "-clusters";
-                var clusterLabelBar =
-                  selectLayerProps.layerProps[i].layerId + "-clusters-counts";
-
-                map.addLayer({
-                  id: clusterLabelBar,
-                  type: "symbol",
-                  source: selectLayerProps.sourceProps[i].sourceId,
-                  filter: ["has", "point_count"],
-                  layout:
-                    selectLayerProps.layerProps[i].clusterProps
-                      .clusterSymbolProps,
-                });
-                if (beforelayer) {
-                  map.moveLayer(clusterLabelBar, beforelayer);
+              const layerId = selectLayerProps.id[i];
+              if (map.getLayer(layerId)) {
+                map.setLayoutProperty(layerId, "visibility", "visible");
+                map.getSource(selectLayerProps.sourceProps[i].sourceId).setData(myGeoJSONData);
+                let clusterLabelBar = layerId + "-clusters-counts";
+                if (map.getLayer(clusterLabelBar)) {
+                  map.setLayoutProperty(clusterLabelBar, "visibility", "visible");
                 }
-                beforelayer = clusterLabelBar;
 
-                map.addLayer({
-                  id: clusterVar,
-                  type: selectLayerProps.layerProps[i].layerType,
-                  source: selectLayerProps.sourceProps[i].sourceId,
-                  filter: ["has", "point_count"],
-                  paint:
-                    selectLayerProps.layerProps[i].clusterProps
-                      .clusterPaintProps,
-                });
-
-                if (beforelayer) {
-                  map.moveLayer(clusterVar, beforelayer);
+                let clusterVar = layerId + "-clusters";
+                if (map.getLayer(clusterVar)) {
+                  map.setLayoutProperty(clusterVar, "visibility", "visible");
                 }
-                beforelayer = clusterVar;
+              } else {
+                // -> add source
+                if (selectLayerProps.dataProps[i].dataTypeId == "Point") {
+                  map.addSource(selectLayerProps.sourceProps[i].sourceId, {
+                    type: selectLayerProps.sourceProps[i].sourceType,
+                    data: myGeoJSONData,
+                    cluster: true,
+                    clusterRadius: 50,
+                    clusterMaxZoom: 6,
+                  });
+                } else {
+                  map.addSource(selectLayerProps.sourceProps[i].sourceId, {
+                    type: selectLayerProps.sourceProps[i].sourceType,
+                    data: myGeoJSONData,
+                    promoteId: { original: "id" },
+                  });
+                }
+
+                // -> add layer
+                // eslint-disable-next-line eqeqeq
+                if (selectLayerProps.layerProps[i].layerType == "symbol") {
+                  map.addLayer({
+                    id: selectLayerProps.layerProps[i].layerId,
+                    type: selectLayerProps.layerProps[i].layerType,
+                    source: selectLayerProps.sourceProps[i].sourceId,
+                    layout: selectLayerProps.layerProps[i].symbolProps,
+                  });
+                } else {
+                  map.addLayer({
+                    id: selectLayerProps.layerProps[i].layerId,
+                    type: selectLayerProps.layerProps[i].layerType,
+                    source: selectLayerProps.sourceProps[i].sourceId,
+                    paint: selectLayerProps.layerProps[i].paintProps,
+                  });
+                }
+
+                // -> add cluster layer
+
+                if (
+                  selectLayerProps &&
+                  selectLayerProps.layerProps &&
+                  selectLayerProps.layerProps[i].clusterProps
+                ) {
+                  var clusterVar =
+                    selectLayerProps.layerProps[i].layerId + "-clusters";
+                  var clusterLabelBar =
+                    selectLayerProps.layerProps[i].layerId + "-clusters-counts";
+
+                  map.addLayer({
+                    id: clusterLabelBar,
+                    type: "symbol",
+                    source: selectLayerProps.sourceProps[i].sourceId,
+                    filter: ["has", "point_count"],
+                    layout:
+                      selectLayerProps.layerProps[i].clusterProps
+                        .clusterSymbolProps,
+                  });
+                  if (beforelayer) {
+                    map.moveLayer(clusterLabelBar, beforelayer);
+                  }
+                  beforelayer = clusterLabelBar;
+
+                  map.addLayer({
+                    id: clusterVar,
+                    type: selectLayerProps.layerProps[i].layerType,
+                    source: selectLayerProps.sourceProps[i].sourceId,
+                    filter: ["has", "point_count"],
+                    paint:
+                      selectLayerProps.layerProps[i].clusterProps
+                        .clusterPaintProps,
+                  });
+
+                  if (beforelayer) {
+                    map.moveLayer(clusterVar, beforelayer);
+                  }
+                  beforelayer = clusterVar;
+                }
+                // -> add interaction (note to change later w/ interaction panel)
+                if (selectLayerProps && selectLayerProps.interactionProps) {
+                  const availableInteraction =
+                    stateApp.checkedUserDefinedLayersInteraction.indexOf(l) !==
+                    -1;
+                  if (selectLayerProps.interactionProps.mouseClick) {
+                    var clusterVar =
+                      selectLayerProps.layerProps[i].layerId + "-clusters";
+                  }
+
+                  if (
+                    selectLayerProps &&
+                    selectLayerProps.interactionProps &&
+                    selectLayerProps.interactionProps.hoverActions
+                  ) {
+                    var clusterVar =
+                      selectLayerProps.layerProps[i].layerId + "-clusters";
+
+                    if (
+                      selectLayerProps.interactionProps.hoverActions.mouseMove
+                    ) {
+                      const mouseMoveHandler = () => {
+                        map.getCanvas().style.cursor =
+                          selectLayerProps.interactionProps.hoverActions.mouseMove.cursor;
+                      };
+                      if (
+                        selectLayerProps.interactionProps.hoverActions
+                          .mouseMoveHandler
+                      ) {
+                        const oldHander =
+                          selectLayerProps.interactionProps.hoverActions
+                            .mouseMoveHandler;
+                        map.off(
+                          "mousemove",
+                          selectLayerProps.layerProps[i].layerId,
+                          oldHander
+                        );
+                        map.off("mousemove", clusterVar, oldHander);
+                      }
+                      if (availableInteraction) {
+                        map.on(
+                          "mousemove",
+                          selectLayerProps.layerProps[i].layerId,
+                          mouseMoveHandler
+                        );
+                        map.on("mousemove", clusterVar, mouseMoveHandler);
+                        selectLayerProps.interactionProps.hoverActions.mouseMoveHandler = mouseMoveHandler;
+                      }
+                    }
+
+                    if (
+                      selectLayerProps.interactionProps.hoverActions.mouseLeave
+                    ) {
+                      const mouseLeaveHandler = () => {
+                        map.getCanvas().style.cursor =
+                          selectLayerProps.interactionProps.hoverActions.mouseLeave.cursor;
+                      };
+                      if (
+                        selectLayerProps.interactionProps.hoverActions
+                          .mouseLeaveHandler
+                      ) {
+                        const oldHander =
+                          selectLayerProps.interactionProps.hoverActions
+                            .mouseMoveHandler;
+                        map.off(
+                          "mouseleave",
+                          selectLayerProps.layerProps[i].layerId,
+                          oldHander
+                        );
+                        map.off("mouseleave", clusterVar, oldHander);
+                      }
+                      if (availableInteraction) {
+                        map.on(
+                          "mouseleave",
+                          selectLayerProps.layerProps[i].layerId,
+                          mouseLeaveHandler
+                        );
+                        map.on("mouseleave", clusterVar, mouseLeaveHandler);
+                        selectLayerProps.interactionProps.hoverActions.mouseLeaveHandler = mouseLeaveHandler;
+                      }
+                    }
+                  }
+
+                  layerList[l] = selectLayerProps;
+                }
               }
 
               if (beforelayer) {
@@ -1060,92 +1167,6 @@ export default function Map() {
                 );
               }
               beforelayer = selectLayerProps.layerProps[i].layerId;
-
-              // -> add interaction (note to change later w/ interaction panel)
-              if (selectLayerProps && selectLayerProps.interactionProps) {
-                const availableInteraction =
-                  stateApp.checkedUserDefinedLayersInteraction.indexOf(l) !==
-                  -1;
-                if (selectLayerProps.interactionProps.mouseClick) {
-                  var clusterVar =
-                    selectLayerProps.layerProps[i].layerId + "-clusters";
-                }
-
-                if (
-                  selectLayerProps &&
-                  selectLayerProps.interactionProps &&
-                  selectLayerProps.interactionProps.hoverActions
-                ) {
-                  var clusterVar =
-                    selectLayerProps.layerProps[i].layerId + "-clusters";
-
-                  if (
-                    selectLayerProps.interactionProps.hoverActions.mouseMove
-                  ) {
-                    const mouseMoveHandler = () => {
-                      map.getCanvas().style.cursor =
-                        selectLayerProps.interactionProps.hoverActions.mouseMove.cursor;
-                    };
-                    if (
-                      selectLayerProps.interactionProps.hoverActions
-                        .mouseMoveHandler
-                    ) {
-                      const oldHander =
-                        selectLayerProps.interactionProps.hoverActions
-                          .mouseMoveHandler;
-                      map.off(
-                        "mousemove",
-                        selectLayerProps.layerProps[i].layerId,
-                        oldHander
-                      );
-                      map.off("mousemove", clusterVar, oldHander);
-                    }
-                    if (availableInteraction) {
-                      map.on(
-                        "mousemove",
-                        selectLayerProps.layerProps[i].layerId,
-                        mouseMoveHandler
-                      );
-                      map.on("mousemove", clusterVar, mouseMoveHandler);
-                      selectLayerProps.interactionProps.hoverActions.mouseMoveHandler = mouseMoveHandler;
-                    }
-                  }
-
-                  if (
-                    selectLayerProps.interactionProps.hoverActions.mouseLeave
-                  ) {
-                    const mouseLeaveHandler = () => {
-                      map.getCanvas().style.cursor =
-                        selectLayerProps.interactionProps.hoverActions.mouseLeave.cursor;
-                    };
-                    if (
-                      selectLayerProps.interactionProps.hoverActions
-                        .mouseLeaveHandler
-                    ) {
-                      const oldHander =
-                        selectLayerProps.interactionProps.hoverActions
-                          .mouseMoveHandler;
-                      map.off(
-                        "mouseleave",
-                        selectLayerProps.layerProps[i].layerId,
-                        oldHander
-                      );
-                      map.off("mouseleave", clusterVar, oldHander);
-                    }
-                    if (availableInteraction) {
-                      map.on(
-                        "mouseleave",
-                        selectLayerProps.layerProps[i].layerId,
-                        mouseLeaveHandler
-                      );
-                      map.on("mouseleave", clusterVar, mouseLeaveHandler);
-                      selectLayerProps.interactionProps.hoverActions.mouseLeaveHandler = mouseLeaveHandler;
-                    }
-                  }
-                }
-
-                layerList[l] = selectLayerProps;
-              }
 
               //// finding and fitting bounds
               // eslint-disable-next-line no-loop-func
