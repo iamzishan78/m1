@@ -13,8 +13,6 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { FormLabel } from "@material-ui/core";
-import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import TextField from "@material-ui/core/TextField";
 
 const styles = (theme) => ({
@@ -85,32 +83,7 @@ const joinAddress = (row) => {
   return textArray.join(", ");
 };
 
-const useStyles = makeStyles({
-  divBorders: {
-    padding: "15px",
-    border: "1px solid #C4C4C4",
-    borderRadius: "4px",
-    "&:hover": {
-      border: "1px solid black",
-    },
-    alignItems: "center",
-    marginBottom: "10px",
-    textAlign: "center",
-  },
-  inputContent: {
-    marginLeft: "30px",
-    verticalAlign: "middle",
-    color: "#17AADD",
-  },
-  inputLabel: {
-    float: "left",
-    display: "block",
-    width: "200px",
-    textAlign: "center",
-    lineHeight: "1.2",
-    paddingTop: "3px",
-  },
-});
+const useStyles = makeStyles({});
 
 export default function SendMailersDialogContent(props) {
   const classes = useStyles();
@@ -118,8 +91,6 @@ export default function SendMailersDialogContent(props) {
   useEffect(() => {
     if (!props.rows || props.rows.length === 0) props.onClose();
   }, [props.rows]);
-
-  const currentCredits = 20;
 
   return (
     <React.Fragment>

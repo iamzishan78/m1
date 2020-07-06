@@ -23,7 +23,7 @@ import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
 import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import AddContactDialogContent from "./SubComponents/AddContactDialogContent";
 import AddOwnerToContactDialogContent from "./SubComponents/AddOwnerToContactDialogContent";
-import DeleteConfirmationDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
+import DeleteConfirmationDialogContent from "./SubComponents/DeleteConfirmationDialogContent";
 import Button from "@material-ui/core/Button";
 import LocalPrintshopRoundedIcon from "@material-ui/icons/LocalPrintshopRounded";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
@@ -643,6 +643,7 @@ export default function SubTable(props) {
       }
     },
     onRowsDelete: (rowsDeleted) => {
+      console.log("deleteeeeeee")
       handleExpandClick(null, null, null, "deleteOwnersFromContact");
       return false;
     },
