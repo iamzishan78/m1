@@ -8,10 +8,12 @@ import Typography from "@material-ui/core/Typography";
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "#fff",
+    marginTop: "8px",
+    marginBottom: "8px",
   },
   leadScore: {
-    width: "80px",
-    height: "80px",
+    width: "120px",
+    height: "120px",
     backgroundColor: "white",
     color: "#0033de",
     border: "4px solid",
@@ -24,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
   leadTitle: {
     justifyContent: "center",
     alignItems: "center"
+  },
+  leadInfoTitle: {
+    fontWeight: 'bold'
   }
 }));
 
@@ -52,7 +57,7 @@ export default function LeadScore({
             }}
           >
             <div className={classes.leadScore}>
-              <Typography variant="button">
+              <Typography variant="h4">
                 {score}
               </Typography>
             </div>
@@ -63,7 +68,7 @@ export default function LeadScore({
               marginBottom: "15px",
             }}
           >
-            <Typography variant="button" component="p">
+            <Typography variant="button" component="p" className={classes.leadInfoTitle}>
               Last Seen:
             </Typography>
             <Typography variant="caption" component="p">
@@ -76,7 +81,7 @@ export default function LeadScore({
               marginBottom: "15px",
             }}
           >
-            <Typography variant="button" component="p">
+            <Typography variant="button" component="p" className={classes.leadInfoTitle}>
               Last contacted:
             </Typography>
             <Typography variant="caption" component="p">
@@ -89,7 +94,7 @@ export default function LeadScore({
               marginBottom: "15px",
             }}
           >
-            <Typography variant="button" component="p">
+            <Typography variant="button" component="p" className={classes.leadInfoTitle}>
               Last modified:
             </Typography>
             <Typography variant="caption" component="p">

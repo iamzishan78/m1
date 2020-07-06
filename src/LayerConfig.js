@@ -24,14 +24,14 @@ export const styleLayers = [
   },
   {
     name: "Permits",
-    id: ["permits"],
+    id: ["permits-clusters-counts", "permits-clusters", "permits"],
     sourceProps: ["permits_source"],
     layerProps: {
       layerId: ["permits"],
       layerType: ["circle"],
       paintProps: {
         "circle-radius": 5,
-        "circle-color": "#d94dad",
+        "circle-color": "#00ff00",
         "circle-stroke-width": 2,
         "circle-stroke-color": "#fff",
       },
@@ -41,9 +41,57 @@ export const styleLayers = [
             property: "point_count",
             type: "interval",
             stops: [
-              [0, "#d94dad"],
-              [100, "#d94dad"],
-              [750, "#d94dad"],
+              [0, "#e4a773"],
+              [100, "#e4a773"],
+              [750, "#e4a773"],
+            ],
+          },
+
+          "circle-radius": [
+            "step",
+            ["get", "point_count"],
+            20,
+            5,
+            25,
+            10,
+            30,
+            20,
+            35,
+          ],
+
+          "circle-stroke-width": 5,
+          "circle-stroke-color": "#fff",
+        },
+        clusterSymbolProps: {
+          "text-field": "{point_count}",
+          "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+          "text-size": 12,
+        },
+      }
+    }
+  },
+  {
+    name: "Rig Activity",
+    id: ["rigs-clusters-counts", "rigs-clusters", "rigs"],
+    sourceProps: ["rigs_source"],
+    layerProps: {
+      layerId: ["rigs"],
+      layerType: ["circle"],
+      paintProps: {
+        "circle-radius": 5,
+        "circle-color": "#0000ff",
+        "circle-stroke-width": 2,
+        "circle-stroke-color": "#fff",
+      },
+      clusterProps: {
+        clusterPaintProps: {
+          "circle-color": {
+            property: "point_count",
+            type: "interval",
+            stops: [
+              [0, "#e4a773"],
+              [100, "#e4a773"],
+              [750, "#e4a773"],
             ],
           },
           "circle-radius": [
@@ -66,43 +114,9 @@ export const styleLayers = [
           "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
           "text-size": 12,
         },
-      },
+      }
     }
   },
-
-
-  {
-    name: "Rig Activity",
-    id: ["rigs"],
-    sourceProps: ["rigs_source"],
-    layerProps: {
-      layerId: ["rigs"],
-      layerType: ["circle"],
-      paintProps: {
-        "circle-radius": 5,
-        "circle-color": "#0000ff",
-        "circle-stroke-width": 2,
-        "circle-stroke-color": "#fff",
-      },
-    }
-  },
-
-  // {
-  //   name: "Rig Activity",
-  //   id: ["rigs"],
-  //   sourceProps: ["rigs_source"],
-  //   layerProps: {
-  //     layerId: ["rigs"],
-  //     layerType: ["symbol"],
-  //     paintProps: {
-  //       "circle-radius": 5,
-  //       "circle-color": "#0000ff",
-  //       "circle-stroke-width": 2,
-  //       "circle-stroke-color": "#fff",
-  //     },
-  //   }
-  // },
-
   {
     name: "TX GLO Units",
     id: ["GLOUnits", "GLOUnitLabels"],
@@ -112,10 +126,6 @@ export const styleLayers = [
     id: ["GLOLeases", "GLOLeaseLabels"],
   },
 ];
-
-
-
-
 
 export const userDefinedLayers = [
   {
