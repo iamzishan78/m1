@@ -24,6 +24,14 @@ import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRoun
 import AddContactDialogContent from "./SubComponents/AddContactDialogContent";
 import AddOwnerToContactDialogContent from "./SubComponents/AddOwnerToContactDialogContent";
 import DeleteConfirmationDialogContent from "./SubComponents/DeleteConfirmationDialogContent";
+import Button from "@material-ui/core/Button";
+import LocalPrintshopRoundedIcon from "@material-ui/icons/LocalPrintshopRounded";
+import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
+import ContactPhoneRoundedIcon from "@material-ui/icons/ContactPhoneRounded";
+import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
+import PrintLabelsDialogContent from "./SubComponents/PrintLabelsDialogContent";
+import SendMailersDialogContent from "./SubComponents/SendMailersDialogContent";
+import BackupIcon from "@material-ui/icons/Backup";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -87,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
       height: "100%",
     },
   },
-  addIcon: { "& :hover": { color: "#011133" } },
+  addIcon: { "& .MuiIconButton-root:hover": { color: "#011133" } },
   cellDataDiv: {
     padding: "10px",
     borderRadius: "7px",
@@ -96,6 +104,11 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       backgroundColor: "#fff !important",
     },
+  },
+  multiSelectionTopBarButtons: {
+    margin: "6px 12px",
+    fontWeight: "600",
+    color: "#082768",
   },
 }));
 
@@ -639,7 +652,76 @@ export default function SubTable(props) {
     customToolbarSelect:
       props.header === "Interest Owners Tied to Contact"
         ? false
-        : (selectedRows, displayData, setSelectedRows) => {
+        : (selectedRows, displayData, setSelectedRow) => {
+            //// if contacts set the multi selection top bar: ////
+            if (
+              props.header === "Owner's Contacts" ||
+              props.header === "Contacts"
+            ) {
+              const getSelectedRows = () => {
+                const selectedRows = [];
+                for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+                  selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+                }
+                return selectedRows;
+              };
+
+              return (
+                <div
+                  style={{
+                    height: "48px",
+                  }}
+                >
+                  <Button
+                    color="secondary"
+                    startIcon={<ContactPhoneRoundedIcon />}
+                    className={classes.multiSelectionTopBarButtons}
+                    onClick={() => {
+                      handleExpandClick(
+                        null,
+                        null,
+                        getSelectedRows(),
+                        "buyContactsInfo"
+                      );
+                    }}
+                  >
+                    Buy Info
+                  </Button>
+                  <Button
+                    color="secondary"
+                    startIcon={<EmailRoundedIcon />}
+                    className={classes.multiSelectionTopBarButtons}
+                    onClick={() => {
+                      handleExpandClick(
+                        null,
+                        null,
+                        getSelectedRows(),
+                        "sendMailers"
+                      );
+                    }}
+                  >
+                    Mailers
+                  </Button>
+                  <Button
+                    color="secondary"
+                    startIcon={<LocalPrintshopRoundedIcon />}
+                    className={classes.multiSelectionTopBarButtons}
+                    onClick={() => {
+                      handleExpandClick(
+                        null,
+                        null,
+                        getSelectedRows(),
+                        "printLabels"
+                      );
+                    }}
+                  >
+                    Labels
+                  </Button>
+                </div>
+              );
+            }
+
+            //// default empty top bar ////
             return (
               <div
                 style={{
@@ -651,39 +733,57 @@ export default function SubTable(props) {
 
     customToolbar: () => {
       return (
-        props.addAble && (
-          //////Add Icon/////////////////////////
-          <Tooltip
-            title={`Add${
-              props.targetLabel
-                ? " " +
+        <>
+          {props.uploadIcon && (
+            //////Upload Icon/////////////////////////
+            <span className={classes.addIcon}>
+              <Tooltip
+                title={`Upload ${
                   props.targetLabel.charAt(0).toUpperCase() +
                   props.targetLabel.slice(1)
-                : ""
-            }`}
-          >
-            <IconButton
-              size="medium"
-              className={classes.addIcon}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (
-                  props.addAble.type &&
-                  (props.addAble.type === "contact" ||
-                    props.addAble.type === "contactToOwner")
-                )
-                  handleExpandClick(null, null, null, "addContact");
-                if (
-                  props.addAble.type &&
-                  props.addAble.type === "ownerToContact"
-                )
-                  handleExpandClick(null, null, null, "addOwnerToContact");
-              }}
-            >
-              <AddCircleOutlineRoundedIcon />
-            </IconButton>
-          </Tooltip>
-        )
+                }s`}
+              >
+                <IconButton size="medium" onClick={(e) => {}}>
+                  <BackupIcon />
+                </IconButton>
+              </Tooltip>
+            </span>
+          )}
+          {props.addAble && (
+            //////Add Icon/////////////////////////
+            <span className={classes.addIcon}>
+              <Tooltip
+                title={`Add${
+                  props.targetLabel
+                    ? " " +
+                      props.targetLabel.charAt(0).toUpperCase() +
+                      props.targetLabel.slice(1)
+                    : ""
+                }`}
+              >
+                <IconButton
+                  size="medium"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (
+                      props.addAble.type &&
+                      (props.addAble.type === "contact" ||
+                        props.addAble.type === "contactToOwner")
+                    )
+                      handleExpandClick(null, null, null, "addContact");
+                    if (
+                      props.addAble.type &&
+                      props.addAble.type === "ownerToContact"
+                    )
+                      handleExpandClick(null, null, null, "addOwnerToContact");
+                  }}
+                >
+                  <AddCircleOutlineRoundedIcon />
+                </IconButton>
+              </Tooltip>
+            </span>
+          )}
+        </>
       );
     },
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
@@ -751,7 +851,10 @@ export default function SubTable(props) {
             openDialog === "owner" ||
             openDialog === "wellsPerOwner" ||
             openDialog === "ownerContacts" ||
-            openDialog === "ownersPerContacts"
+            openDialog === "ownersPerContacts" ||
+            openDialog === "buyContactsInfo" ||
+            openDialog === "sendMailers" ||
+            openDialog === "printLabels"
               ? true
               : false
           }
@@ -839,6 +942,30 @@ export default function SubTable(props) {
                 expandedObject && expandedObject.length > 1 ? "s" : ""
               } from  this contact?`}
             </DeleteConfirmationDialogContent>
+          )}
+          {openDialog === "buyContactsInfo" && (
+            <BuyContactsInfoDialogContent
+              onClose={handleCloseDialog}
+              rows={expandedObject}
+              setRows={setExpandedObject}
+              setSelectedRow={setSelectedRow}
+            />
+          )}
+          {openDialog === "sendMailers" && (
+            <SendMailersDialogContent
+              onClose={handleCloseDialog}
+              rows={expandedObject}
+              setRows={setExpandedObject}
+              setSelectedRow={setSelectedRow}
+            />
+          )}
+          {openDialog === "printLabels" && (
+            <PrintLabelsDialogContent
+              onClose={handleCloseDialog}
+              rows={expandedObject}
+              setRows={setExpandedObject}
+              setSelectedRow={setSelectedRow}
+            />
           )}
         </Dialog>
       )}

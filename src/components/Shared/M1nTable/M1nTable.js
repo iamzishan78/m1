@@ -571,6 +571,7 @@ export default function M1nTable(props) {
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [addAble, setAddAble] = useState(true);
+  const [uploadIcon, setUploadIcon] = useState(null);
   const [targetLabel, setTargetLabel] = useState(null);
   const [deleteFunc, setDeleteFunc] = useState(null);
 
@@ -1657,6 +1658,7 @@ export default function M1nTable(props) {
     if (props.parent && props.parent === "Contacts") {
       setTargetLabel("contact");
       getContacts();
+      setUploadIcon(true);
     }
   }, [props.parent]);
 
@@ -1796,6 +1798,7 @@ export default function M1nTable(props) {
         addAble={addAble}
         targetLabel={targetLabel}
         deleteFunc={deleteFunc}
+        uploadIcon={uploadIcon}
       />
     </Container>
   );
