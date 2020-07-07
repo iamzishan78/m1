@@ -33,7 +33,7 @@ export default function FilterWellTypeJ() {
       setTypeName(value);
     } else {
       filter = null;
-      setStateNav((stateNav) => ({ ...stateNav, typeName: null }));
+      setStateNav((stateNav) => ({ ...stateNav, typeName: [] }));
     }
     setStateNav((stateNav) => ({ ...stateNav, filterWellType: filter }));
   };

@@ -34,7 +34,7 @@ export default function FilterWellStatusJ() {
       setStatusName(value);
     } else {
       filter = null;
-      setStateNav((stateNav) => ({ ...stateNav, statusName: null }));
+      setStateNav((stateNav) => ({ ...stateNav, statusName: [] }));
     }
     setStateNav((stateNav) => ({ ...stateNav, filterWellStatus: filter }));
   };
