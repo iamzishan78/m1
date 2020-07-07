@@ -416,7 +416,7 @@ export default function CheckboxList(props) {
 
                               <ListItemText id={labelId} primary={layer.name} />
 
-                              {layer.name === "Wells" && (
+                              {(layer.name === "Wells" || layer.name === "Permits" || layer.name === "Rig Activity") && (
                                 <div style={{ paddingRight: 20 }}>
                                   <Checkbox
                                     icon={

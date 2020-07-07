@@ -77,7 +77,7 @@ const AppProvider = (props) => {
     tempCheckedUserDefinedLayer: null,
     checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
     editingUserDefinedLayers: [],
-    checkedLayersInteraction: [0],
+    checkedLayersInteraction: [0, 4, 5],
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,
