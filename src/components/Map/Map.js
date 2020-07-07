@@ -349,6 +349,9 @@ export default function Map() {
               .clusterPaintProps,
         });
 
+        map.setLayoutProperty(clusterVar, "visibility", checkedPosition > -1 ? 'visible' : 'none');
+        map.setLayoutProperty(clusterLabelBar, "visibility", checkedPosition > -1 ? 'visible' : 'none');
+
         console.log(map.getLayer(permitConfig.layerProps.layerId[0]));
       }
     }
@@ -442,6 +445,9 @@ export default function Map() {
             paint: rigConfig.layerProps.clusterProps
                 .clusterPaintProps,
           });
+
+          map.setLayoutProperty(clusterVar, "visibility", checkedPosition > -1 ? 'visible' : 'none');
+          map.setLayoutProperty(clusterLabelBar, "visibility", checkedPosition > -1 ? 'visible' : 'none');
         }
       }
     }
