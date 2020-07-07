@@ -989,11 +989,19 @@ export default function Map() {
                 let clusterLabelBar = layerId + "-clusters-counts";
                 if (map.getLayer(clusterLabelBar)) {
                   map.setLayoutProperty(clusterLabelBar, "visibility", "visible");
+                  if (beforelayer) {
+                    map.moveLayer(clusterLabelBar, beforelayer);
+                  }
+                  beforelayer = clusterLabelBar;
                 }
 
                 let clusterVar = layerId + "-clusters";
                 if (map.getLayer(clusterVar)) {
                   map.setLayoutProperty(clusterVar, "visibility", "visible");
+                  if (beforelayer) {
+                    map.moveLayer(clusterVar, beforelayer);
+                  }
+                  beforelayer = clusterVar;
                 }
               } else {
                 // -> add source
