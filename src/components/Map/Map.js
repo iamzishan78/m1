@@ -225,18 +225,18 @@ export default function Map() {
   }, [dataTracksOwner]);
 
   useEffect(() => {
-    if (customLayerData && customLayerData.customLayers && map) {
+    if (customLayerData && customLayerData.customLayers) {
       console.log("Custom Layer data", customLayerData.customLayers);
-      setStateApp({
-        ...stateApp,
+      setStateApp((state) => ({
+        ...state,
         customLayers: customLayerData.customLayers,
         selectedUserDefinedLayer: null,
         editLayer: false,
         popupOpen: false,
-      });
+      }));
       
     }
-  }, [customLayerData, map]);
+  }, [customLayerData]);
 
   useEffect(() => {
     if (dataOwnersWells && dataOwnersWells.length !== 0) {
@@ -870,17 +870,7 @@ export default function Map() {
   useEffect(() => {
     // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
 
-    const tmpCheckedLayer = stateApp.tempCheckedUserDefinedLayers;
-    const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
-    if (
-      tmpCheckedLayer != null &&
-      stateApp.checkedUserDefinedLayers.indexOf(tmpCheckedLayer) === -1
-    ) {
-      checkedLayers.push(tmpCheckedLayer);
-    }
-
     if (stateApp.userDefinedLayers.length > 0 && map) {
-      const layerList = stateApp.userDefinedLayers;
 
       stateApp.userDefinedLayers.forEach((l) => {
         l.id.forEach((k, i) => {
@@ -908,7 +898,15 @@ export default function Map() {
     }
 
     // this section adds the updated list of layers
-    
+    const tmpCheckedLayer = stateApp.tempCheckedUserDefinedLayers;
+    const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
+    if (
+      tmpCheckedLayer != null &&
+      stateApp.checkedUserDefinedLayers.indexOf(tmpCheckedLayer) === -1
+    ) {
+      checkedLayers.push(tmpCheckedLayer);
+    }
+
     if (map && checkedLayers.length > 0) {
       let layers = checkedLayers;
       layers.sort(function (a, b) {
@@ -983,7 +981,8 @@ export default function Map() {
 
               const myGeoJSONData = makeGeoJSON(layerData);
 
-              const layerId = selectLayerProps.id[i];
+              const layerId = selectLayerProps.layerProps[i].layerId;
+              console.log("layerId: " + layerId);
               if (map.getLayer(layerId)) {
                 map.setLayoutProperty(layerId, "visibility", "visible");
                 map.getSource(selectLayerProps.sourceProps[i].sourceId).setData(myGeoJSONData);
