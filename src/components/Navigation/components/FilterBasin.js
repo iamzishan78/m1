@@ -61,7 +61,7 @@ export default function BasinFilterJ() {
 
   return (
     <Autocomplete
-      defaultValue={stateNav.basinName}
+      defaultValue={basinName}
       onChange={(event, newValue) => {
         handleBasinChange(newValue);
       }}
