@@ -48,6 +48,10 @@ const DialogTitle = withStyles(styles)((props) => {
   );
 });
 
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 const joinAddress = (row) => {
   let rowData =
     row.address1 ||
@@ -76,8 +80,10 @@ const joinAddress = (row) => {
   for (const key in rowData) {
     if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
       if (key === "zip" || key === "country") {
-        textArray = [[textArray.join(", "), rowData[key]].join(" ")];
-      } else textArray.push(rowData[key]);
+        textArray = [
+          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
+        ];
+      } else textArray.push(capitalizeFirstLetter(rowData[key]));
     }
   }
 
@@ -160,7 +166,7 @@ export default function PrintLabelsDialogContent(props) {
                         style={{ padding: "0 0 0 10px", fontSize: "0.8rem" }}
                       >
                         {recipientValue === "“Current Owner”"
-                          ? "“Current Owner”"
+                          ? "Current Owner"
                           : row.name}
                       </TableCell>
 

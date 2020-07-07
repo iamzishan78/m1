@@ -49,6 +49,10 @@ const DialogTitle = withStyles(styles)((props) => {
   );
 });
 
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 const joinAddress = (row) => {
   let rowData =
     row.address1 ||
@@ -77,8 +81,10 @@ const joinAddress = (row) => {
   for (const key in rowData) {
     if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
       if (key === "zip" || key === "country") {
-        textArray = [[textArray.join(", "), rowData[key]].join(" ")];
-      } else textArray.push(rowData[key]);
+        textArray = [
+          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
+        ];
+      } else textArray.push(capitalizeFirstLetter(rowData[key]));
     }
   }
 
