@@ -569,12 +569,17 @@ export default function SubTable(props) {
                       }}
                     >
                       {value}{" "}
-                      <Tooltip title="Purchased contact info">
-                        <MonetizationOnIcon
-                          fontSize="small"
-                          style={{ color: "#082768", verticalAlign: "middle" }}
-                        />
-                      </Tooltip>
+                      {value === "Jacob Avery" && ( //////temporary to demo only
+                        <Tooltip title="Purchased contact info">
+                          <MonetizationOnIcon
+                            fontSize="small"
+                            style={{
+                              color: "#082768",
+                              verticalAlign: "middle",
+                            }}
+                          />
+                        </Tooltip>
+                      )}
                     </div>
                   );
                 },
