@@ -15,21 +15,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function WellCard(props) {
+export default function OwnersDetailCard(props) {
   const [stateApp] = useContext(AppContext);
   const classes = useStyles();
 
   return stateApp.selectedOwner ? (
     <Grid container className={classes.gridWidthScroll} spacing={0}>
       <Grid item sm={12}>
-        <OwnerDetailsCardMap />
+        <OwnerDetailsCardMap wellsIdsArray={props.wellsIdsArray} />
       </Grid>
 
-      <Grid item sm={12} >
+      <Grid item sm={12}>
         <Taps
           tabLabels={["Wells", "Contacts"]}
           tabPanels={[
-            <M1nTable parent="WellsPerOwner" wellsIdsArray={props.wellsIdsArray} />,
+            <M1nTable
+              parent="WellsPerOwner"
+              wellsIdsArray={props.wellsIdsArray}
+            />,
             <M1nTable
               parent="ownerContacts"
               ownerId={stateApp.selectedOwner.id}

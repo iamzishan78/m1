@@ -33,7 +33,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function OwnerDetailsCardMap() {
+export default function OwnerDetailsCardMap(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [map, setMap] = useState(null);
   const [mapStyles, setMapStyles] = useState([]);

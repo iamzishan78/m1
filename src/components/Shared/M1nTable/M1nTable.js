@@ -468,6 +468,8 @@ const ContactsHeadCells = [
   { name: "contactName", label: "Name" },
   { name: "fullAddress", label: "Primary Address" },
   { name: "leadSource", label: "Lead Source" },
+  { name: "lastUpdateBy.name", label: "Updated By" },
+  { name: "lastUpdateAt", label: "Last Updated" },
   // { name: "primaryEmail", label: "Primary Email" },
   // {
   //   name: "mobilePhone",
@@ -542,8 +544,6 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
-  { name: "lastUpdateAt", label: "Last Updated" },
-  { name: "lastUpdateBy.name", label: "Updated By" },
   // {
   //   name: "isTracked",
   //   label: "Track",
