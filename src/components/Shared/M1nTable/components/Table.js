@@ -95,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
       height: "100%",
     },
   },
-  addIcon: { "& :hover": { color: "#011133" } },
+  addIcon: { "& .MuiIconButton-root:hover": { color: "#011133" } },
   cellDataDiv: {
     padding: "10px",
     borderRadius: "7px",
@@ -736,53 +736,52 @@ export default function SubTable(props) {
         <>
           {props.uploadIcon && (
             //////Upload Icon/////////////////////////
-            <Tooltip
-              title={`Upload ${
-                props.targetLabel.charAt(0).toUpperCase() +
-                props.targetLabel.slice(1)
-              }s`}
-            >
-              <IconButton
-                size="medium"
-                className={classes.addIcon}
-                onClick={(e) => {}}
+            <span className={classes.addIcon}>
+              <Tooltip
+                title={`Upload ${
+                  props.targetLabel.charAt(0).toUpperCase() +
+                  props.targetLabel.slice(1)
+                }s`}
               >
-                <BackupIcon />
-              </IconButton>
-            </Tooltip>
+                <IconButton size="medium" onClick={(e) => {}}>
+                  <BackupIcon />
+                </IconButton>
+              </Tooltip>
+            </span>
           )}
           {props.addAble && (
             //////Add Icon/////////////////////////
-            <Tooltip
-              title={`Add${
-                props.targetLabel
-                  ? " " +
-                    props.targetLabel.charAt(0).toUpperCase() +
-                    props.targetLabel.slice(1)
-                  : ""
-              }`}
-            >
-              <IconButton
-                size="medium"
-                className={classes.addIcon}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (
-                    props.addAble.type &&
-                    (props.addAble.type === "contact" ||
-                      props.addAble.type === "contactToOwner")
-                  )
-                    handleExpandClick(null, null, null, "addContact");
-                  if (
-                    props.addAble.type &&
-                    props.addAble.type === "ownerToContact"
-                  )
-                    handleExpandClick(null, null, null, "addOwnerToContact");
-                }}
+            <span className={classes.addIcon}>
+              <Tooltip
+                title={`Add${
+                  props.targetLabel
+                    ? " " +
+                      props.targetLabel.charAt(0).toUpperCase() +
+                      props.targetLabel.slice(1)
+                    : ""
+                }`}
               >
-                <AddCircleOutlineRoundedIcon />
-              </IconButton>
-            </Tooltip>
+                <IconButton
+                  size="medium"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (
+                      props.addAble.type &&
+                      (props.addAble.type === "contact" ||
+                        props.addAble.type === "contactToOwner")
+                    )
+                      handleExpandClick(null, null, null, "addContact");
+                    if (
+                      props.addAble.type &&
+                      props.addAble.type === "ownerToContact"
+                    )
+                      handleExpandClick(null, null, null, "addOwnerToContact");
+                  }}
+                >
+                  <AddCircleOutlineRoundedIcon />
+                </IconButton>
+              </Tooltip>
+            </span>
           )}
         </>
       );
