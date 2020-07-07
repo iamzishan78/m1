@@ -24,6 +24,13 @@ import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRoun
 import AddContactDialogContent from "./SubComponents/AddContactDialogContent";
 import AddOwnerToContactDialogContent from "./SubComponents/AddOwnerToContactDialogContent";
 import DeleteConfirmationDialogContent from "./SubComponents/DeleteConfirmationDialogContent";
+import Button from "@material-ui/core/Button";
+import LocalPrintshopRoundedIcon from "@material-ui/icons/LocalPrintshopRounded";
+import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
+import ContactPhoneRoundedIcon from "@material-ui/icons/ContactPhoneRounded";
+import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
+import PrintLabelsDialogContent from "./SubComponents/PrintLabelsDialogContent";
+import SendMailersDialogContent from "./SubComponents/SendMailersDialogContent";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -96,6 +103,11 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       backgroundColor: "#fff !important",
     },
+  },
+  multiSelectionTopBarButtons: {
+    margin: "6px 12px",
+    fontWeight: "600",
+    color: "#082768",
   },
 }));
 
@@ -639,7 +651,76 @@ export default function SubTable(props) {
     customToolbarSelect:
       props.header === "Interest Owners Tied to Contact"
         ? false
-        : (selectedRows, displayData, setSelectedRows) => {
+        : (selectedRows, displayData, setSelectedRow) => {
+            //// if contacts set the multi selection top bar: ////
+            if (
+              props.header === "Owner's Contacts" ||
+              props.header === "Contacts"
+            ) {
+              const getSelectedRows = () => {
+                const selectedRows = [];
+                for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+                  selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+                }
+                return selectedRows;
+              };
+
+              return (
+                <div
+                  style={{
+                    height: "48px",
+                  }}
+                >
+                  <Button
+                    color="secondary"
+                    startIcon={<ContactPhoneRoundedIcon />}
+                    className={classes.multiSelectionTopBarButtons}
+                    onClick={() => {
+                      handleExpandClick(
+                        null,
+                        null,
+                        getSelectedRows(),
+                        "buyContactsInfo"
+                      );
+                    }}
+                  >
+                    Buy Info
+                  </Button>
+                  <Button
+                    color="secondary"
+                    startIcon={<EmailRoundedIcon />}
+                    className={classes.multiSelectionTopBarButtons}
+                    onClick={() => {
+                      handleExpandClick(
+                        null,
+                        null,
+                        getSelectedRows(),
+                        "sendMailers"
+                      );
+                    }}
+                  >
+                    Mailers
+                  </Button>
+                  <Button
+                    color="secondary"
+                    startIcon={<LocalPrintshopRoundedIcon />}
+                    className={classes.multiSelectionTopBarButtons}
+                    onClick={() => {
+                      handleExpandClick(
+                        null,
+                        null,
+                        getSelectedRows(),
+                        "printLabels"
+                      );
+                    }}
+                  >
+                    Labels
+                  </Button>
+                </div>
+              );
+            }
+
+            //// default empty top bar ////
             return (
               <div
                 style={{
@@ -751,7 +832,10 @@ export default function SubTable(props) {
             openDialog === "owner" ||
             openDialog === "wellsPerOwner" ||
             openDialog === "ownerContacts" ||
-            openDialog === "ownersPerContacts"
+            openDialog === "ownersPerContacts" ||
+            openDialog === "buyContactsInfo" ||
+            openDialog === "sendMailers" ||
+            openDialog === "printLabels"
               ? true
               : false
           }
@@ -839,6 +923,30 @@ export default function SubTable(props) {
                 expandedObject && expandedObject.length > 1 ? "s" : ""
               } from  this contact?`}
             </DeleteConfirmationDialogContent>
+          )}
+          {openDialog === "buyContactsInfo" && (
+            <BuyContactsInfoDialogContent
+              onClose={handleCloseDialog}
+              rows={expandedObject}
+              setRows={setExpandedObject}
+              setSelectedRow={setSelectedRow}
+            />
+          )}
+          {openDialog === "sendMailers" && (
+            <SendMailersDialogContent
+              onClose={handleCloseDialog}
+              rows={expandedObject}
+              setRows={setExpandedObject}
+              setSelectedRow={setSelectedRow}
+            />
+          )}
+          {openDialog === "printLabels" && (
+            <PrintLabelsDialogContent
+              onClose={handleCloseDialog}
+              rows={expandedObject}
+              setRows={setExpandedObject}
+              setSelectedRow={setSelectedRow}
+            />
           )}
         </Dialog>
       )}
