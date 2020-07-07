@@ -31,6 +31,7 @@ import ContactPhoneRoundedIcon from "@material-ui/icons/ContactPhoneRounded";
 import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
 import PrintLabelsDialogContent from "./SubComponents/PrintLabelsDialogContent";
 import SendMailersDialogContent from "./SubComponents/SendMailersDialogContent";
+import BackupIcon from "@material-ui/icons/Backup";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -732,39 +733,58 @@ export default function SubTable(props) {
 
     customToolbar: () => {
       return (
-        props.addAble && (
-          //////Add Icon/////////////////////////
-          <Tooltip
-            title={`Add${
-              props.targetLabel
-                ? " " +
-                  props.targetLabel.charAt(0).toUpperCase() +
-                  props.targetLabel.slice(1)
-                : ""
-            }`}
-          >
-            <IconButton
-              size="medium"
-              className={classes.addIcon}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (
-                  props.addAble.type &&
-                  (props.addAble.type === "contact" ||
-                    props.addAble.type === "contactToOwner")
-                )
-                  handleExpandClick(null, null, null, "addContact");
-                if (
-                  props.addAble.type &&
-                  props.addAble.type === "ownerToContact"
-                )
-                  handleExpandClick(null, null, null, "addOwnerToContact");
-              }}
+        <>
+          {props.uploadIcon && (
+            //////Upload Icon/////////////////////////
+            <Tooltip
+              title={`Upload ${
+                props.targetLabel.charAt(0).toUpperCase() +
+                props.targetLabel.slice(1)
+              }s`}
             >
-              <AddCircleOutlineRoundedIcon />
-            </IconButton>
-          </Tooltip>
-        )
+              <IconButton
+                size="medium"
+                className={classes.addIcon}
+                onClick={(e) => {}}
+              >
+                <BackupIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+          {props.addAble && (
+            //////Add Icon/////////////////////////
+            <Tooltip
+              title={`Add${
+                props.targetLabel
+                  ? " " +
+                    props.targetLabel.charAt(0).toUpperCase() +
+                    props.targetLabel.slice(1)
+                  : ""
+              }`}
+            >
+              <IconButton
+                size="medium"
+                className={classes.addIcon}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (
+                    props.addAble.type &&
+                    (props.addAble.type === "contact" ||
+                      props.addAble.type === "contactToOwner")
+                  )
+                    handleExpandClick(null, null, null, "addContact");
+                  if (
+                    props.addAble.type &&
+                    props.addAble.type === "ownerToContact"
+                  )
+                    handleExpandClick(null, null, null, "addOwnerToContact");
+                }}
+              >
+                <AddCircleOutlineRoundedIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+        </>
       );
     },
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
