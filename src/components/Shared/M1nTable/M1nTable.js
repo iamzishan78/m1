@@ -1823,7 +1823,7 @@ export default function M1nTable(props) {
   ////////////-----Add your code section here-----///////////////////////
 
   return (
-    <Container maxWidth="xl" className={classes.container}>
+    <Container maxWidth={false} className={classes.container}>
       <Table
         style={{ backgroundColor: "#fff" }}
         header={header}
