@@ -2400,6 +2400,7 @@ export default function Map() {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          "Cache-Control": "max-age=0",
         },
       }
     );
