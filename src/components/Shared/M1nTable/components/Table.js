@@ -32,6 +32,8 @@ import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogC
 import PrintLabelsDialogContent from "./SubComponents/PrintLabelsDialogContent";
 import SendMailersDialogContent from "./SubComponents/SendMailersDialogContent";
 import BackupIcon from "@material-ui/icons/Backup";
+import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
+import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -548,6 +550,38 @@ export default function SubTable(props) {
               };
             }
             break;
+
+          case "contactName":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  if (value === "" || value === null || !value) {
+                    return value;
+                  }
+
+                  return (
+                    <div
+                      className={classes.cellDataDiv}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    >
+                      {value}{" "}
+                      <Tooltip title="Purchased contact info">
+                        <MonetizationOnIcon
+                          fontSize="small"
+                          style={{ color: "#082768", verticalAlign: "middle" }}
+                        />
+                      </Tooltip>
+                    </div>
+                  );
+                },
+              };
+            }
+            break;
+
           default:
             {
               column.options = {
@@ -567,6 +601,12 @@ export default function SubTable(props) {
                     >
                       {column.name === "appraisedValue"
                         ? formatter.format(value)
+                        : column.name === "lastUpdateAt"
+                        ? anyToDate(value).toLocaleString("en-US", {
+                            year: "numeric",
+                            day: "numeric",
+                            month: "numeric",
+                          })
                         : value}
                     </div>
                   );

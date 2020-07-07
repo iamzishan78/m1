@@ -465,36 +465,38 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
-  { name: "name", label: "Name" },
-  { name: "primaryEmail", label: "Primary Email" },
-  {
-    name: "mobilePhone",
-    label: "Mobile Phone",
-  },
-  {
-    name: "homePhone",
-    label: "Home Phone",
-  },
-  {
-    name: "address1",
-    label: "Address",
-  },
-  {
-    name: "address2",
-    label: "Address-2",
-  },
-  {
-    name: "city",
-    label: "City",
-  },
-  {
-    name: "state",
-    label: "State",
-  },
-  {
-    name: "zip",
-    label: "Zipcode",
-  },
+  { name: "contactName", label: "Name" },
+  { name: "fullAddress", label: "Primary Address" },
+  { name: "leadSource", label: "Lead Source" },
+  // { name: "primaryEmail", label: "Primary Email" },
+  // {
+  //   name: "mobilePhone",
+  //   label: "Mobile Phone",
+  // },
+  // {
+  //   name: "homePhone",
+  //   label: "Home Phone",
+  // },
+  // {
+  //   name: "address1",
+  //   label: "Address",
+  // },
+  // {
+  //   name: "address2",
+  //   label: "Address-2",
+  // },
+  // {
+  //   name: "city",
+  //   label: "City",
+  // },
+  // {
+  //   name: "state",
+  //   label: "State",
+  // },
+  // {
+  //   name: "zip",
+  //   label: "Zipcode",
+  // },
   {
     name: "tags",
     label: "Tags ",
@@ -540,6 +542,8 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
+  { name: "lastUpdateAt", label: "Last Updated" },
+  { name: "lastUpdateBy.name", label: "Updated By" },
   // {
   //   name: "isTracked",
   //   label: "Track",
@@ -562,6 +566,33 @@ const ContactsHeadCells = [
 ];
 
 ////////////HeadCells end///////////////////////////////////////////////
+
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+const joinAddress = (row) => {
+  let rowData = {
+    address1: row.address1,
+    address2: row.address2,
+    city: row.city,
+    state: row.state,
+    zip: row.zip,
+    country: row.country,
+  };
+  let textArray = [];
+  for (const key in rowData) {
+    if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
+      if (key === "zip" || key === "country") {
+        textArray = [
+          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
+        ];
+      } else textArray.push(capitalizeFirstLetter(rowData[key]));
+    }
+  }
+
+  return textArray.join(", ");
+};
 
 export default function M1nTable(props) {
   const classes = useStyles();
@@ -1588,6 +1619,8 @@ export default function M1nTable(props) {
       dataContactsByOwnerId.contactsByOwnerId.forEach((contact) => {
         contact.commentsCounter = 0;
         contact.tags = [[], 0];
+        contact.fullAddress = joinAddress(contact);
+        contact.contactName = contact.name;
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (contact._id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -1721,6 +1754,8 @@ export default function M1nTable(props) {
       dataContacts.contacts.forEach((contact) => {
         contact.commentsCounter = 0;
         contact.tags = [[], 0];
+        contact.fullAddress = joinAddress(contact);
+        contact.contactName = contact.name;
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (contact._id === dataCommentsCounter.commentsCounter[i]._id) {

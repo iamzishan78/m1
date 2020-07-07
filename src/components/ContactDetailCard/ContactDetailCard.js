@@ -8,7 +8,7 @@ import Tags from "../Shared/Tagger";
 import Avatar from "react-avatar";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import RoomIcon from "@material-ui/icons/Room";
-import Badge from '@material-ui/core/Badge';
+import Badge from "@material-ui/core/Badge";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
@@ -185,19 +185,15 @@ export default function ContactDetailCard(props) {
 
   const StyleBadge = withStyles({
     badge: {
-      transform: 'unset',
-      background: 'white',
-      color: '#0033de',
-      border: '2px solid',
-      width: '30px',
-      height: '30px',
-      borderRadius: '50%'
+      transform: "unset",
+      background: "white",
+      color: "#0033de",
+      border: "2px solid",
+      width: "30px",
+      height: "30px",
+      borderRadius: "50%",
     },
-  })((props) => (
-    <Badge
-      {...props}
-    />
-  ));
+  })((props) => <Badge {...props} />);
 
   useEffect(() => {
     if (tData && tData.transactionData && tData.transactionData.allData) {
@@ -242,7 +238,7 @@ export default function ContactDetailCard(props) {
             </div>
             <div>
               <div className={classes.userIcon}>
-                <StyleBadge badgeContent={5} color={'primary'}>
+                <StyleBadge badgeContent={5} color={"primary"}>
                   <Avatar name={data.contact.name} size="80" round />
                 </StyleBadge>
               </div>
@@ -622,15 +618,8 @@ export default function ContactDetailCard(props) {
           </Grid>
 
           {/*/////////// Recent Converstaion. //////////// */}
-          <Grid
-            item
-            xs={12}
-            className={`${classes.border}`}
-          >
-            <RecentConversations
-              header={"Recent Conversation"}
-              
-            />
+          <Grid item xs={12} className={`${classes.border}`}>
+            <RecentConversations header={"Recent Conversation"} />
           </Grid>
 
           {/*/////////// section 3 //////////// */}
@@ -689,9 +678,9 @@ export default function ContactDetailCard(props) {
               <Paper className={classes.paper}>
                 <LeadScore
                   score={5}
-                  lastSeen={''}
-                  lastContacted={'6 months ago'}
-                  lastModified={'3 months ago'}
+                  lastSeen={""}
+                  lastContacted={"6 months ago"}
+                  lastModified={"3 months ago"}
                 />
               </Paper>
               <Paper className={classes.paper}>
