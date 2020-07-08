@@ -2115,18 +2115,18 @@ export default function Map() {
       } else {
         map.setFilter("wellpoints", null);
         map.setFilter("welllines", null);
-        map.setFilter("wellsHeatmapBoe", null);
-        map.setFilter("wellsHeatmapLast12", null);
-        map.setFilter("wellsHeatmapIP90Oil", null);
-        map.setFilter("wellsHeatmapIP90Gas", null);
-        map.setFilter("wellsHeatmapRecentlyDrilled", null);
-        map.setFilter("wellsHeatmapRecentlyCompleted", null);
         map.setFilter("GLOLeases", null);
         map.setFilter("GLOLeaseLabels", null);
         map.setFilter("GLOUnits", null);
         map.setFilter("GLOUnitLabels", null);
         map.setFilter('basinLayer', null);
         map.setFilter('basinLabels', null);
+        map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
+        map.setFilter("wellsHeatmapLast12", [">",["get", "lastTwelveMonthBOE"],0,]);
+        map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
+        map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);
+        map.setFilter("wellsHeatmapRecentlyDrilled", [">",["get", "daysSinceDrilled"],0,]);
+        map.setFilter("wellsHeatmapRecentlyCompleted", [">",["get", "daysSinceCompletion"],0,]);
       }
     }
     console.log("filters applied");
