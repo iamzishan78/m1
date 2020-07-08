@@ -12,7 +12,12 @@ export default function DeleteConfirmationDialogContent(props) {
       <DialogActions>
         <Button
           onClick={() => {
-            props.deleteFunc(props.m1nSelectedRowsIds);
+            props.completelyDelete
+              ? props.deleteFunc(
+                  props.m1nSelectedRowsIds,
+                  props.completelyDelete === "false" ? false : true
+                )
+              : props.deleteFunc(props.m1nSelectedRowsIds);
             props.onClose();
             props.setM1nSelectedRowsIndexes([]);
           }}

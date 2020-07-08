@@ -33,6 +33,7 @@ import { CONTACTSBYOWNERSID } from "../../../graphQL/useQueryContactsByOwnerId";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { ADDREMOVEOWNERTOACONTACT } from "../../../graphQL/useMutationAddRemoveOwnerToAContact";
 import { CONTACT } from "../../../graphQL/useQueryContact";
+import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
@@ -657,6 +658,8 @@ export default function M1nTable(props) {
   });
   //////////
   const [addRemoveOwnerToAContact] = useMutation(ADDREMOVEOWNERTOACONTACT);
+  //////////
+  const [removeContact] = useMutation(REMOVECONTACT);
 
   ////////////Queries end///////////////////////////////////////////////
 
@@ -1683,6 +1686,50 @@ export default function M1nTable(props) {
     }
   }, [dataContactsByOwnerId, dataTracks, dataTagSamples, dataCommentsCounter]);
 
+  ////////////Contact Per Owner begin//////////Delete//////////////////////////////
+
+  useEffect(() => {
+    if (props.parent && props.parent === "ownerContacts" && props.ownerId) {
+      setDeleteFunc(() => (contactsIdsToDelete, completelyDelete) => {
+        if (contactsIdsToDelete) {
+          if (completelyDelete) {
+            for (let i = 0; i < contactsIdsToDelete.length; i++) {
+              removeContact({
+                variables: {
+                  contactId: contactsIdsToDelete[i],
+                },
+                refetchQueries: [
+                  "getContacts",
+                  "getContactsByOwnerId",
+                  "getContactsCounter",
+                  "getContact",
+                ],
+                awaitRefetchQueries: true,
+              });
+            }
+          } else {
+            for (let i = 0; i < contactsIdsToDelete.length; i++) {
+              addRemoveOwnerToAContact({
+                variables: {
+                  contactId: contactsIdsToDelete[i],
+                  ownerId: props.ownerId,
+                },
+                refetchQueries: [
+                  "getContacts",
+                  "getContactsByOwnerId",
+                  "getContactsCounter",
+                  "getContact",
+                  "getContactInM1nTable",
+                ],
+                awaitRefetchQueries: true,
+              });
+            }
+          }
+        }
+      });
+    }
+  }, [props.parent, props.ownerId]);
+
   ////////////Contacts Per Owner end///////////////////////////////////////////////
 
   ////////////Contacts begin///////////////////////////////////////////////
@@ -1817,6 +1864,31 @@ export default function M1nTable(props) {
       setLoading(false);
     }
   }, [dataContacts, dataTracks, dataTagSamples, dataCommentsCounter]);
+
+  ////////////Contact begin//////////Delete//////////////////////////////
+
+  useEffect(() => {
+    if (props.parent && props.parent === "Contacts") {
+      setDeleteFunc(() => (contactsIdsToDelete) => {
+        if (contactsIdsToDelete) {
+          for (let i = 0; i < contactsIdsToDelete.length; i++) {
+            removeContact({
+              variables: {
+                contactId: contactsIdsToDelete[i],
+              },
+              refetchQueries: [
+                "getContacts",
+                "getContactsByOwnerId",
+                "getContactsCounter",
+                "getContact",
+              ],
+              awaitRefetchQueries: true,
+            });
+          }
+        }
+      });
+    }
+  }, [props.parent]);
 
   ////////////Contacts end///////////////////////////////////////////////
 
