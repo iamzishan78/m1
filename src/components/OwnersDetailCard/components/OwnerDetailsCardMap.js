@@ -3,6 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import mapboxgl from "mapbox-gl";
 import { AppContext } from "../../../AppContext";
 import uid from "uid";
+import { WELLSQUERY } from "../../../graphQL/useQueryWells";
+import { useLazyQuery } from "@apollo/react-hooks";
 
 const useStyles = makeStyles(() => ({
   MSWrapper: {
@@ -38,7 +40,19 @@ export default function OwnerDetailsCardMap(props) {
   const [map, setMap] = useState(null);
   const [mapStyles, setMapStyles] = useState([]);
   const mapEl = useRef(null);
+  const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
+
+  useEffect(() => {
+    if (props.wellsIdsArray) {
+      getWells({
+        variables: {
+          wellIdArray: props.wellsIdsArray,
+          authToken: stateApp.user.authToken,
+        },
+      });
+    }
+  }, [props.wellsIdsArray]);
 
   useEffect(() => {
     const req = new Request(
@@ -90,28 +104,31 @@ export default function OwnerDetailsCardMap(props) {
           style: "mapbox://styles/m1neral/" + mapStyles[index].id,
           center: [-98.8, 31.6],
           zoom: 5,
-          pitch: 70,
-          bearing: 20,
+          // pitch: 70,
+          // bearing: 20,
         });
 
-        var el = document.createElement("div");
-        el.style.backgroundImage = "url(icons/favicon-inverted.png)";
-        el.style.width = "28px";
-        el.style.height = "64px";
+        // var el = document.createElement("div");
+        // el.style.backgroundImage = "url(icons/favicon-inverted.png)";
+        // el.style.width = "28px";
+        // el.style.height = "64px";
 
-        new mapboxgl.Marker(el).setLngLat([-98.8, 31.6]).addTo(newMap);
+        // new mapboxgl.Marker(el).setLngLat([-98.8, 31.6]).addTo(newMap);
 
+        // newMap.on("load", function (e) {
+        //   newMap.flyTo({
+        //     center: [-98.8, 31.6],
+        //     zoom: 16,
+        //     speed: 0.4,
+        //     bearing: 0,
+        //   });
+        // });
+
+        // newMap.on("moveend", function (e) {
+        //   newMap.rotateTo(540, { duration: 100000 });
+        // });
         newMap.on("load", function (e) {
-          newMap.flyTo({
-            center: [-98.8, 31.6],
-            zoom: 16,
-            speed: 0.4,
-            bearing: 0,
-          });
-        });
-
-        newMap.on("moveend", function (e) {
-          newMap.rotateTo(540, { duration: 100000 });
+          setMap(newMap);
         });
       };
 
@@ -121,6 +138,154 @@ export default function OwnerDetailsCardMap(props) {
       }
     }
   }, [map, mapStyles]);
+
+  useEffect(() => {
+    if (
+      map &&
+      dataWells &&
+      dataWells.wells &&
+      dataWells.wells.results &&
+      dataWells.wells.results.length > 0
+    ) {
+      let layerData = dataWells.wells.results;
+      const makeGeoJSON = (data) => {
+        return {
+          type: "FeatureCollection",
+          features: data.map((feature) => {
+            return {
+              type: "Feature",
+              properties: feature,
+              geometry: {
+                type: "Point",
+                coordinates: [feature.longitude, feature.latitude],
+              },
+            };
+          }),
+        };
+      };
+
+      const myGeoJSONData = makeGeoJSON(layerData);
+
+      // -> add source
+      map.addSource("wells", {
+        type: "geojson",
+        data: myGeoJSONData,
+        cluster: true,
+        clusterRadius: 50,
+        clusterMaxZoom: 6,
+      });
+
+      map.addLayer({
+        id: "unclustered-point",
+        type: "circle",
+        source: "wells",
+        paint: {
+          "circle-radius": 5,
+          "circle-color": "#11b4da",
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#fff",
+        },
+      });
+
+      map.addLayer({
+        id: "clusters",
+        type: "circle",
+        source: "wells",
+        filter: ["has", "point_count"],
+        paint: {
+          "circle-color": {
+            property: "point_count",
+            type: "interval",
+            stops: [
+              [0, "#11b4da"],
+              [100, "#11b4da"],
+              [750, "#11b4da"],
+            ],
+          },
+
+          "circle-radius": [
+            "step",
+            ["get", "point_count"],
+            20,
+            5,
+            25,
+            10,
+            30,
+            20,
+            35,
+          ],
+
+          "circle-stroke-width": 5,
+          "circle-stroke-color": "#fff",
+        },
+      });
+
+      map.addLayer({
+        id: "cluster-count",
+        type: "symbol",
+        source: "wells",
+        filter: ["has", "point_count"],
+        layout: {
+          "text-field": "{point_count}",
+          "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+          "text-size": 12,
+        },
+      });
+
+      // inspect a cluster on click
+      map.on("click", "clusters", function (e) {
+        // var bbox = [
+        //   [e.point.x - 10, e.point.y - 10],
+        //   [e.point.x + 10, e.point.y + 10],
+        // ];
+        // let features = map.queryRenderedFeatures(bbox, {
+        //   layers: ["clusters"],
+        // });
+        // map.flyTo({
+        //   center: [
+        //     features[0].properties.longitude,
+        //     features[0].properties.latitude,
+        //   ],
+        //   zoom: 12,
+        //   speed: 0.5,
+        // });
+      });
+
+      map.on("mouseenter", "clusters", function () {
+        map.getCanvas().style.cursor = "pointer";
+      });
+      map.on("mouseleave", "clusters", function () {
+        map.getCanvas().style.cursor = "";
+      });
+      map.on("mouseenter", "unclustered-point", function () {
+        map.getCanvas().style.cursor = "pointer";
+      });
+      map.on("mouseleave", "unclustered-point", function () {
+        map.getCanvas().style.cursor = "";
+      });
+
+      var bbox = [
+        [
+          Math.min(...layerData.map((data) => data.longitude)),
+          Math.min(...layerData.map((data) => data.latitude)),
+        ],
+        [
+          Math.max(...layerData.map((data) => data.longitude)),
+          Math.max(...layerData.map((data) => data.latitude)),
+        ],
+      ];
+
+      //// only one well
+      if (bbox[1][0] - bbox[0][0] === 0 && bbox[1][1] - bbox[0][1] === 0) {
+        bbox[0] = [bbox[0][0] - 0.005, bbox[0][1] - 0.005];
+        bbox[1] = [bbox[1][0] + 0.005, bbox[1][1] + 0.005];
+      }
+
+      map.fitBounds(bbox, {
+        padding: { top: 30, bottom: 30, left: 30, right: 30 },
+      });
+    }
+  }, [map, dataWells]);
 
   let classes = useStyles();
 
