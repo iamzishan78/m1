@@ -162,7 +162,7 @@ export default (props) => {
     if (points && points.length > 0) {
       const tracks = [];
       points.forEach((point) => {
-        const targetSourceId = point.properties.id;
+        const targetSourceId = point.properties.id.toLowerCase();
         const track = {
           user: user,
           objectType: targetLabel,
@@ -186,7 +186,7 @@ export default (props) => {
     const tracks = []
     wellownerList.forEach((well) => {
       well.owners.forEach((owner) => {
-        const targetSourceId = owner.ownerId;
+        const targetSourceId = owner.ownerId.toLowerCase();
         const track = {
           user: user,
           objectType: targetLabel,

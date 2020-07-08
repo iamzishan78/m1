@@ -942,11 +942,11 @@ export default function Map() {
             // -> fetch data
             let layerData = [];
             if (selectLayerProps.dataProps[i].dataId == "trackedWellsWells") {
-              layerData = dataWells.wells.results;
+              layerData = stateApp.trackedwells;
             } else if (
               selectLayerProps.dataProps[i].dataId == "trackedOwnersWells"
             ) {
-              layerData = dataWellsForOwnerWellTrackLayer.wells.results;
+              layerData = stateApp.trackedOwnerWells;
             } else if (
               selectLayerProps.dataProps[i].dataId == "wellsFromSearch"
             ) {
@@ -1286,6 +1286,10 @@ export default function Map() {
     stateApp.checkedUserDefinedLayersInteraction,
     stateApp.tempCheckedUserDefinedLayers,
     stateApp.customLayers,
+    stateApp.trackedwells,
+    stateApp.trackedOwnerWells,
+    stateApp.wellListFromSearch,
+    stateApp.wellListFromTagsFilter
   ]);
 
   useEffect(() => {
