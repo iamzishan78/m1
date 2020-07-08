@@ -619,7 +619,7 @@ export default function ContactDetailCard(props) {
 
           {/*/////////// Recent Converstaion. //////////// */}
           <Grid item xs={12} className={`${classes.border}`}>
-            <RecentConversations header={"Recent Conversation"} />
+            <RecentConversations header={"Recent Conversations"} />
           </Grid>
 
           {/*/////////// section 3 //////////// */}

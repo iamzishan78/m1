@@ -54,16 +54,16 @@ export default ({
           }
           <ListItem>
             <ListItemAvatar className={classes.avatar}>
-              <Avatar name={"Jacob"} size="60" round />
+              <Avatar name={"Jacob Avery"} size="60" round />
             </ListItemAvatar>
             <ListItemText
               primary={"jacob@m1neral.com"}
               secondary="5 months ago"
             />
             <ListItemText
-              primary={"Re Power Rangers (5)"}
+              primary={"Re: Offer Sent Last Week"}
               secondary={
-                "No Problem thx for the update. Have a great conversation. Best regar..."
+                "No Problem thanks for the update. Have a great weekend. Best regards..."
               }
             />
             <ListItemIcon>
@@ -72,16 +72,16 @@ export default ({
           </ListItem>
           <ListItem>
             <ListItemAvatar className={classes.avatar}>
-              <Avatar name={"Kyle"} size="60" round />
+              <Avatar name={"Kyle Chapman"} size="60" round />
             </ListItemAvatar>
             <ListItemText
               primary={"kyle@m1neral.com"}
               secondary="5 months ago"
             />
             <ListItemText
-              primary={"Re Power Rangers (7)"}
+              primary={"Re: Offer Sent Last Week"}
               secondary={
-                "All Jacob and I are out next week to Fort Worth for our board meeti..."
+                "The offer has been sent - please let me know if you have any further..."
               }
             />
             <ListItemIcon>
