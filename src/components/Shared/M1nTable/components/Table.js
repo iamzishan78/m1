@@ -418,7 +418,7 @@ export default function SubTable(props) {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
-                                tableMeta.rowData[2],
+                                tableMeta.rowData[0],
                                 "owner"
                               );
                             }
@@ -945,7 +945,7 @@ export default function SubTable(props) {
           )}
           {openDialog === "owner" && (
             <M1nTable
-              selectedWell={{ api: expandedObject }}
+              selectedWell={{ id: expandedObject }}
               parent="OwnersPerWell"
             />
           )}
