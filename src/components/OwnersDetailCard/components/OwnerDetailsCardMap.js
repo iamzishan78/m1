@@ -275,14 +275,9 @@ export default function OwnerDetailsCardMap(props) {
         ],
       ];
 
-      //// only one well
-      if (bbox[1][0] - bbox[0][0] === 0 && bbox[1][1] - bbox[0][1] === 0) {
-        bbox[0] = [bbox[0][0] - 0.005, bbox[0][1] - 0.005];
-        bbox[1] = [bbox[1][0] + 0.005, bbox[1][1] + 0.005];
-      }
-
       map.fitBounds(bbox, {
-        padding: { top: 30, bottom: 30, left: 30, right: 30 },
+        padding: 30,
+        maxZoom: 15,
       });
     }
   }, [map, dataWells]);
