@@ -1,23 +1,39 @@
-import React, { useContext, useState, useRef, useEffect } from "react";
+import React, {
+  useContext,
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import mapboxgl from "mapbox-gl";
 import { AppContext } from "../../../AppContext";
 import uid from "uid";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { useLazyQuery } from "@apollo/react-hooks";
+import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
+import Portal from "@material-ui/core/Portal";
+import PortalD from "../../Map/components/Portal";
+import Popover from "@material-ui/core/Popover";
+import WellCardProvider from "../../WellCard/WellCardProvider";
+// import SpatialDataCardEdit from "../../MapControls/components/spatialDataCardEdit";
+// import FilterControl from "../../Map/components/FilterControl";
 
 const useStyles = makeStyles(() => ({
   MSWrapper: {
     width: "100%",
     height: "300px !important",
-    overflow: "hidden !important",
+    // overflow: "hidden !important",
   },
   map: {
     width: "100%",
     height: "100%",
-    overflow: "hidden !important",
+    overflow: "unset",
+    zIndex: "1500",
+    // overflow: "hidden !important",
     "& canvas": {
       height: "100% !important",
+      width: "100% !important",
     },
     "& .mapboxgl-canvas-container": {
       width: "100% !important",
@@ -36,11 +52,15 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function OwnerDetailsCardMap(props) {
+  let classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [map, setMap] = useState(null);
   const [mapStyles, setMapStyles] = useState([]);
   const mapEl = useRef(null);
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
+  const [showExpandableCard, setShowExpandableCard] = useState(false);
+  const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
+  const container = useRef(null);
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
 
   useEffect(() => {
@@ -138,6 +158,45 @@ export default function OwnerDetailsCardMap(props) {
       }
     }
   }, [map, mapStyles]);
+
+  const handleCloseExpandableCard = () => {
+    setShowExpandableCard(false);
+    setAnchorElPoPOver(null);
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+      // selectedWell: null,
+      expandedCard: false,
+    }));
+  };
+
+  const handleOpenExpandableCard = (well) => {
+    setAnchorElPoPOver(container.current);
+    setShowExpandableCard(true);
+    // //show wellcard in popup Portal
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: true,
+      selectedWell: well,
+      expandedCard: false,
+    }));
+  };
+
+  const createPopUp = useCallback(
+    (coordinates, well) => {
+      let popUps = document.getElementsByClassName("mapboxgl-popup");
+      if (popUps[0]) popUps[0].remove();
+
+      new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+        .setLngLat(coordinates)
+        .setMaxWidth("none")
+        .setHTML(`<div id="popupContainer"></div>`)
+        .addTo(map);
+
+      handleOpenExpandableCard(well);
+    },
+    [map, setStateApp]
+  );
 
   useEffect(() => {
     if (
@@ -268,6 +327,23 @@ export default function OwnerDetailsCardMap(props) {
           zoom: 13,
           speed: 0.8,
         });
+
+        let rotating = false;
+        map.on("moveend", function (e) {
+          if (!rotating) {
+            rotating = true;
+            map.rotateTo(540, { duration: 100000 });
+          }
+        });
+
+        //// find the well by id
+        for (let i = 0; i < layerData.length; i++) {
+          if (layerData[i].id === features[0].properties.id) {
+            createPopUp(features[0].geometry.coordinates, layerData[i]);
+            // map.resize();
+            break;
+          }
+        }
       });
 
       map.on("mouseenter", "clusters", function () {
@@ -296,12 +372,20 @@ export default function OwnerDetailsCardMap(props) {
 
       map.fitBounds(bbox, {
         padding: 30,
-        maxZoom: 15,
+        maxZoom: 13,
       });
+
+      if (bbox[1][0] - bbox[0][0] === 0 && bbox[1][1] - bbox[0][1] === 0) {
+        let rotating = false;
+        map.on("moveend", function (e) {
+          if (!rotating) {
+            rotating = true;
+            map.rotateTo(540, { duration: 100000 });
+          }
+        });
+      }
     }
   }, [map, dataWells]);
-
-  let classes = useStyles();
 
   return (
     <div className={classes.MSWrapper}>
@@ -314,6 +398,76 @@ export default function OwnerDetailsCardMap(props) {
           <img src="icons/M1LogoWhiteTransparent.png" alt="logo" width="75" />
         </div>
       </div>
+      <div id="tempPopupHolder" className={classes.portal} ref={container} />
+      <Portal container={container.current}>
+        {stateApp.popupOpen && (
+          <div>
+            {stateApp.selectedWell && (
+              <PortalD id="popupContainer">
+                {showExpandableCard && !stateApp.expandedCard ? (
+                  <ExpandableCardProvider
+                    expanded={false}
+                    handleCloseExpandableCard={handleCloseExpandableCard}
+                    component={<WellCardProvider></WellCardProvider>}
+                    title={stateApp.selectedWell.wellName}
+                    subTitle={stateApp.selectedWell.operator}
+                    parent="map"
+                    mouseX={0}
+                    mouseY={0}
+                    position="relative"
+                    cardLeft={20}
+                    cardTop={70}
+                    zIndex={99}
+                    cardWidth="350px"
+                    // cardHeight="350px"
+                    cardWidthExpanded="95vw"
+                    cardHeightExpanded="90vh"
+                    targetSourceId={stateApp.selectedWell.id}
+                    targetLabel="well"
+                  ></ExpandableCardProvider>
+                ) : (
+                  <Popover
+                    open={stateApp.expandedCard}
+                    anchorEl={anchorElPoPOver}
+                    anchorReference="anchorEl"
+                    style={{ width: "100%" }} //right:30, left: "-30px"}}
+                    BackdropProps={{ invisible: false }}
+                    anchorOrigin={{
+                      vertical: "center",
+                      horizontal: "center",
+                    }}
+                    transformOrigin={{
+                      vertical: "center",
+                      horizontal: "center",
+                    }}
+                  >
+                    <ExpandableCardProvider
+                      expanded={true}
+                      handleCloseExpandableCard={handleCloseExpandableCard}
+                      component={<WellCardProvider></WellCardProvider>}
+                      title={stateApp.selectedWell.wellName}
+                      subTitle={stateApp.selectedWell.operator}
+                      parent="map"
+                      mouseX={0}
+                      mouseY={0}
+                      position="relative"
+                      // cardLeft={"0px"}
+                      // cardTop={"0px"}
+                      zIndex={99}
+                      // cardWidth="380px"
+                      // cardHeight="380px"
+                      cardWidthExpanded="95vw"
+                      cardHeightExpanded="95vh"
+                      targetSourceId={stateApp.selectedWell.id}
+                      targetLabel="well"
+                    ></ExpandableCardProvider>
+                  </Popover>
+                )}
+              </PortalD>
+            )}
+          </div>
+        )}
+      </Portal>
     </div>
   );
 }

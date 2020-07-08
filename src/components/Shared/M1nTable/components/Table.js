@@ -569,7 +569,7 @@ export default function SubTable(props) {
                       }}
                     >
                       {value}{" "}
-                      {value === "Jacob Avery" && ( //////temporary to demo only
+                      {value === "Jim Adler" && ( //////temporary to demo only
                         <Tooltip title="Purchased contact info">
                           <MonetizationOnIcon
                             fontSize="small"
@@ -652,6 +652,11 @@ export default function SubTable(props) {
   };
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+      expandedCard: false,
+    }));
   };
 
   const options = {

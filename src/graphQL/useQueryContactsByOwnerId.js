@@ -15,6 +15,11 @@ export const CONTACTSBYOWNERSID = gql`
       homePhone
       primaryEmail
       owners
+      leadSource
+      lastUpdateAt
+      lastUpdateBy {
+        name
+      }
     }
   }
 `;
