@@ -70,14 +70,14 @@ const AppProvider = (props) => {
     heatLayers: heatLayers,
     baseMapLayers: baseMapLayers,
     userDefinedLayers: userDefinedLayers,
-    checkedLayers: [0, 3],
+    checkedLayers: [2, 5],
     checkedHeats: [],
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
     checkedUserDefinedLayers: [],
     tempCheckedUserDefinedLayer: null,
     checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
     editingUserDefinedLayers: [],
-    checkedLayersInteraction: [0, 4, 5],
+    checkedLayersInteraction: [0, 1, 2],
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,
@@ -138,7 +138,7 @@ const AppProvider = (props) => {
       return stateApp.deactivateLayers("checkedUserDefinedLayers", layerNumber);
     },
     activateWellLayer: () => {
-      return stateApp.activateLayers("checkedLayers", 0);
+      return stateApp.activateLayers("checkedLayers", 2);
     },
     deactivateWellLayer: () => {
       return stateApp.deactivateLayers("checkedLayers", 0);
@@ -169,7 +169,7 @@ const AppProvider = (props) => {
       stateApp.checkedUserDefinedLayers &&
       stateApp.checkedUserDefinedLayers.indexOf(4) === -1 &&
       stateApp.checkedUserDefinedLayers.indexOf(3) === -1 &&
-      stateApp.checkedLayers.indexOf(0) === -1
+      stateApp.checkedLayers.indexOf(2) === -1
     ) {
       stateApp.activateWellLayer();
     }
