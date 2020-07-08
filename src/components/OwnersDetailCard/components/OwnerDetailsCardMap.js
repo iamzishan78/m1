@@ -234,21 +234,40 @@ export default function OwnerDetailsCardMap(props) {
 
       // inspect a cluster on click
       map.on("click", "clusters", function (e) {
-        // var bbox = [
-        //   [e.point.x - 10, e.point.y - 10],
-        //   [e.point.x + 10, e.point.y + 10],
-        // ];
-        // let features = map.queryRenderedFeatures(bbox, {
-        //   layers: ["clusters"],
-        // });
-        // map.flyTo({
-        //   center: [
-        //     features[0].properties.longitude,
-        //     features[0].properties.latitude,
-        //   ],
-        //   zoom: 12,
-        //   speed: 0.5,
-        // });
+        var bbox = [
+          [e.point.x - 10, e.point.y - 10],
+          [e.point.x + 10, e.point.y + 10],
+        ];
+        let features = map.queryRenderedFeatures(bbox, {
+          layers: ["clusters"],
+        });
+
+        var clusterId = features[0].properties.cluster_id;
+        map
+          .getSource("wells")
+          .getClusterExpansionZoom(clusterId, function (err, zoom) {
+            if (err) return;
+            map.flyTo({
+              center: features[0].geometry.coordinates,
+              zoom: zoom,
+            });
+          });
+      });
+
+      map.on("click", "unclustered-point", function (e) {
+        var bbox = [
+          [e.point.x - 10, e.point.y - 10],
+          [e.point.x + 10, e.point.y + 10],
+        ];
+        let features = map.queryRenderedFeatures(bbox, {
+          layers: ["unclustered-point"],
+        });
+
+        map.flyTo({
+          center: features[0].geometry.coordinates,
+          zoom: 13,
+          speed: 0.8,
+        });
       });
 
       map.on("mouseenter", "clusters", function () {
