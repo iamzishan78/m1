@@ -588,6 +588,7 @@ export default function Map() {
               }
               if (layerProp.clusterProps) {
                 const clusterLayerId = layerProp.layerId + "-clusters";
+                
                 layers.push(clusterLayerId);
                 clusterUDLayers.push(clusterLayerId);
                 clusterLayers.push(layerProp.layerId);
@@ -604,8 +605,16 @@ export default function Map() {
       checkedSLayers.forEach((l) => {
         if (checkedSLayersInteraction.indexOf(l) > -1) {
           const styleLayer = styleLayers[l];
-          layers = [...layers, ...styleLayer.id];
+          if (!styleLayer.layerProps) {
+            layers = [...layers, ...styleLayer.id];
+          }
           // sLayers = [...sLayers, ...styleLayer.id];
+          if (styleLayer.layerProps && styleLayer.layerProps.clusterProps) {
+            layers.push(styleLayer.id[1])
+            layers.push(styleLayer.id[2])
+            const clusterLayerId = styleLayer.id[1]
+            clusterUDLayers.push(clusterLayerId)
+          }
         }
       });
 
