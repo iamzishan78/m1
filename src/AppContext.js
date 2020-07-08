@@ -138,7 +138,7 @@ const AppProvider = (props) => {
       return stateApp.deactivateLayers("checkedUserDefinedLayers", layerNumber);
     },
     activateWellLayer: () => {
-      return stateApp.activateLayers("checkedLayers", 0);
+      return stateApp.activateLayers("checkedLayers", 2);
     },
     deactivateWellLayer: () => {
       return stateApp.deactivateLayers("checkedLayers", 0);
@@ -169,7 +169,7 @@ const AppProvider = (props) => {
       stateApp.checkedUserDefinedLayers &&
       stateApp.checkedUserDefinedLayers.indexOf(4) === -1 &&
       stateApp.checkedUserDefinedLayers.indexOf(3) === -1 &&
-      stateApp.checkedLayers.indexOf(0) === -1
+      stateApp.checkedLayers.indexOf(2) === -1
     ) {
       stateApp.activateWellLayer();
     }
