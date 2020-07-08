@@ -678,7 +678,7 @@ export default function ContactDetailCard(props) {
               <Paper className={classes.paper}>
                 <LeadScore
                   score={5}
-                  lastSeen={""}
+                  //lastSeen={""}
                   lastContacted={"6 months ago"}
                   lastModified={"3 months ago"}
                 />
