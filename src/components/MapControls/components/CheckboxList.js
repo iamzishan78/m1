@@ -341,6 +341,10 @@ export default function CheckboxList(props) {
   };
 
   const ifLayerHaveData = (layer) => {
+    //// temporary disabling the Title Layer
+    if (layer.name === "Title") return false;
+    ////
+
     if (
       (layer.name === "Tagged Wells/Owners" &&
         !(
@@ -492,7 +496,11 @@ export default function CheckboxList(props) {
                                 placement="top"
                                 title={
                                   !ifLayerHaveData(layer)
-                                    ? "Please choose the data first."
+                                    ? //// temporary disabling the Title Layer
+                                      layer.name === "Title"
+                                      ? "Temporary Disabled"
+                                      : ////
+                                        "Please choose the data first."
                                     : ""
                                 }
                               >

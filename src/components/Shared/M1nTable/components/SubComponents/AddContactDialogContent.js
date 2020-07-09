@@ -80,11 +80,15 @@ export default function AddContactDialogContent(props) {
   const [
     getContacts,
     { loading: loadingContacts, data: dataContacts },
-  ] = useLazyQuery(CONTACTSQUERY);
+  ] = useLazyQuery(CONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
   const [
     getContactsByOwnerId,
     { loading: loadingContactsByOwnerId, data: dataContactsByOwnerId },
-  ] = useLazyQuery(CONTACTSBYOWNERSID);
+  ] = useLazyQuery(CONTACTSBYOWNERSID, {
+    fetchPolicy: "cache-and-network",
+  });
   const [addContact] = useMutation(ADDCONTACT);
   const [addRemoveOwnerToAContact] = useMutation(ADDREMOVEOWNERTOACONTACT);
 

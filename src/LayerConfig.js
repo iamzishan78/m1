@@ -8,7 +8,7 @@ export const styleLayers = [
       layerType: ["circle"],
       paintProps: {
         "circle-radius": 5,
-        "circle-color": "#00ff00",
+        "circle-color": "#e362e3",
         "circle-stroke-width": 2,
         "circle-stroke-color": "#fff",
       },
@@ -18,9 +18,9 @@ export const styleLayers = [
             property: "point_count",
             type: "interval",
             stops: [
-              [0, "#e4a773"],
-              [100, "#e4a773"],
-              [750, "#e4a773"],
+              [0, "#e362e3"],
+              [100, "#e362e3"],
+              [750, "#e362e3"],
             ],
           },
 
@@ -56,7 +56,7 @@ export const styleLayers = [
       layerType: ["circle"],
       paintProps: {
         "circle-radius": 5,
-        "circle-color": "#0000ff",
+        "circle-color": "#666666",
         "circle-stroke-width": 2,
         "circle-stroke-color": "#fff",
       },
@@ -66,9 +66,9 @@ export const styleLayers = [
             property: "point_count",
             type: "interval",
             stops: [
-              [0, "#e4a773"],
-              [100, "#e4a773"],
-              [750, "#e4a773"],
+              [0, "#666666"],
+              [100, "#666666"],
+              [750, "#666666"],
             ],
           },
           "circle-radius": [

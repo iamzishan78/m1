@@ -264,6 +264,7 @@ export default function BaseMapStyles(props) {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          "Cache-Control": "max-age=0",
         },
       }
     );

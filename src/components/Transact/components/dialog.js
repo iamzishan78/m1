@@ -278,7 +278,7 @@ export default function TransactDialog(props) {
             fullWidth
             label="Deal Stage"
           >
-            <MenuItem value={"lane1"}>Offer Preperation</MenuItem>
+            <MenuItem value={"lane1"}>Offer Preparation</MenuItem>
             <MenuItem value={"lane2"}>Offer Extended</MenuItem>
             <MenuItem value={"lane3"}>Accepted - Due Diligence</MenuItem>
             <MenuItem value={"lane4"}>Deal Closed</MenuItem>

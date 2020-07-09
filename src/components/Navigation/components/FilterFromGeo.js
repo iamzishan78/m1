@@ -8,6 +8,7 @@ import Grid from "@material-ui/core/Grid";
 import FilterGrid from "./FilterGrid12345";
 import FilterFromDrawing from "./FilterFromDrawing";
 import FilterBasin from "./FilterBasin";
+import FilterAOI from "./FilterAOI";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { WELLSMINMAXLATLONG } from "../../../graphQL/useQueryWellsMinMaxLatLong";
 
@@ -172,6 +173,9 @@ export default function FilterFromGeo() {
     >
       <Grid item sm={12}>
         <FilterFromDrawing />
+      </Grid>
+      <Grid item sm={12} className={classes.gridItem}>
+        <FilterAOI />
       </Grid>
       <Grid item sm={12} className={classes.gridItem}>
         <FilterBasin />

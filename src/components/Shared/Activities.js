@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: "10px",
     borderRadius: "20px",
     color: "#000",
-    backgroundColor: "#d9d9d9"
+    backgroundColor: "#d9d9d9",
   },
   imageIcon: {
     height: "100%",
@@ -146,7 +146,7 @@ export default function Activities({ activityLog, ...props }) {
             </TimelineSeparator>
             <TimelineContent>
               <div className={classes.timelineText}>
-                <Typography variant="body2">{activity.notes}</Typography>
+                <Typography variant="body1">{activity.notes}</Typography>
                 <Typography variant="body2" className={classes.blue}>
                   {activity.fullname} –{" "}
                   {moment(activity.dateTime).format("MMMM D, YYYY hh:mm a")}

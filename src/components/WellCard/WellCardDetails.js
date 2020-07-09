@@ -56,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     display: "flex",
     justifyContent: "space-around",
+    height: "100%",
     // paddingBottom: "10px",
   },
   gridItemGrey: {
@@ -70,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: "1px solid rgb(190, 190, 190)",
   },
   gridWidthScroll: {
-    height: "calc(100% - 88px)",
+    maxHeight: "calc(100% - 88px)",
     overflow: "auto",
   },
   card: {
@@ -311,14 +312,15 @@ export default function WellCardDetails(props) {
         <FirstProdDateCard />
       </Grid>
       <Grid item sm={12} container className={classes.gridWidthScroll}>
-        <Grid item sm={6} className={classes.gridItem}>
-          <TableSummary summary={props.summary} />
-        </Grid>
+        <Grid item sm={12} container style={{ height: "482px" }}>
+          <Grid item sm={6} className={classes.gridItem}>
+            <TableSummary summary={props.summary} />
+          </Grid>
 
-        <Grid item sm={6} className={classes.gridItem}>
-          <CardDetailsMap />
+          <Grid item sm={6} className={classes.gridItem}>
+            <CardDetailsMap />
+          </Grid>
         </Grid>
-
         <Grid item sm={12}>
           <Taps
             tabLabels={[

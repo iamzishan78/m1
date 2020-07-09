@@ -68,12 +68,12 @@ export default function LeadScore({
               marginBottom: "15px",
             }}
           >
-            <Typography variant="button" component="p" className={classes.leadInfoTitle}>
+           {/* <Typography variant="button" component="p" className={classes.leadInfoTitle}>
               Last Seen:
             </Typography>
             <Typography variant="caption" component="p">
               {lastSeen || "--"}
-            </Typography>
+            </Typography> */}
           </div>
           <div
             style={{

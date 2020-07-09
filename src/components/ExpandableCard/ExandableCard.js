@@ -188,7 +188,7 @@ export default function ExpandableCard(props) {
   };
 
   return (
-    <Card className={classes.card} id="xoxoxoxxoxoxoxoxo">
+    <Card className={classes.card}>
       <ReportBugModal
         open={openBugModal}
         onClose={() => setOpenBugModal(false)}
