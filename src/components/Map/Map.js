@@ -1934,6 +1934,167 @@ export default function Map() {
         totalCount += stateNav.basinName.length;
       }
 
+      if (stateNav.filterAOI && stateNav.filterAOI.length > 0) {
+        const {userDefinedLayers, checkedUserDefinedLayers} = stateApp;
+        const aoiIndex = userDefinedLayers.findIndex((userDefinedLayer) => userDefinedLayer.name === "Area of Interest");
+        
+        if (checkedUserDefinedLayers.indexOf(aoiIndex) === -1) {
+          setStateApp({
+            ...stateApp,
+            checkedUserDefinedLayers: [...checkedUserDefinedLayers, aoiIndex]
+          });
+        }
+        let aoiName = stateNav.aoiName;
+        if (aoiName) {
+          filterCustomArray['aoi'] = [
+            "match",
+            ["get", "shapeLabel"],
+            aoiName,
+            true,
+            false
+          ];
+        }
+        const filterLayers = [
+          "GLOLeases",
+          "GLOLeaseLabels",
+          "GLOUnits",
+          "GLOUnitLabels",
+          "wellpoints",
+          "welllines"
+        ];
+        if (stateNav.filterAOI && stateNav.filterAOI.length > 0) {
+          const aoiShapes = stateNav.filterAOI;
+          filterLayers.forEach((filterLayer) => {
+            const layer = map.getLayer(filterLayer);
+            if (layer) {
+              const featuresList = map.querySourceFeatures("composite", {
+                sourceLayer: layer.sourceLayer,
+              });
+              if (featuresList && featuresList.length > 0) {
+                const result = featuresList.filter((feature) => {
+                  if (feature.geometry.type === "MultiPolygon") {
+                    for (
+                      let i = 0;
+                      i < feature.geometry.coordinates.length;
+                      i++
+                    ) {
+                      const coordinates = feature.geometry.coordinates[i];
+                      const geometry = {
+                        type: "Polygon",
+                        coordinates: coordinates,
+                      };
+                      let flag = 0
+                      for(let k = 0; k < aoiShapes.length; k ++) {
+                        if (aoiShapes[k].type === "MultiPolygon") {
+                          let flagM = 0;
+                          for (
+                            let j = 0;
+                            j < aoiShapes[k].coordinates.length;
+                            j++
+                          ) {
+                            const filterCoordinates = aoiShapes[k].coordinates[j];
+                            const filterGeometry = {
+                              type: "Polygon",
+                              coordinates: filterCoordinates,
+                            };
+                            if (!turf.booleanContains(filterGeometry, geometry)) {
+                              flagM ++;
+                            }
+                          }
+                          if (flagM == aoiShapes[k].coordinates.length) {
+                            flag ++;
+                          }
+                        } else {
+                          if (!turf.booleanContains(aoiShapes[k], geometry)) {
+                            flag ++;
+                          }
+                        }
+                      }
+                      if (flag === aoiShapes.length) {
+                        return false;
+                      }
+                    }
+                    return true;
+                  } else {
+                    for(let i = 0; i < aoiShapes.length; i ++) {
+                      if (aoiShapes[i].type === "MultiPolygon") {
+                        for (
+                          let j = 0;
+                          j < aoiShapes[i].coordinates.length;
+                          j++
+                        ) {
+                          const filterCoordinates = aoiShapes[i].coordinates[j];
+                          const filterGeometry = {
+                            type: "Polygon",
+                            coordinates: filterCoordinates,
+                          };
+                          if (turf.booleanContains(filterGeometry, feature)) {
+                            return true;
+                          }
+                        }
+                        return false
+                      } else {
+                        if (turf.booleanContains(aoiShapes[i], feature)) {
+                          return true;
+                        }
+                      }
+                    }
+                    return false;
+                  }
+                });
+
+                let ids = result.map(function (feature) {
+                  if (filterLayer == 'wellpoints' || filterLayer == 'welllines') {
+                    return feature.properties.id;
+                  }
+                  return feature.properties.VIEWID;
+                });
+
+                const onlyUnique = (value, index, self) => {
+                  return (
+                    self.indexOf(value) === index &&
+                    (typeof value === "number" || typeof value === "string")
+                  );
+                };
+
+                ids = ids.filter(onlyUnique);
+
+                // console.log(ids);
+                if (ids.length > 0) {
+                  if (!filterCustomArray[filterLayer]) {
+                    filterCustomArray[filterLayer] = [];
+                  }
+                  if (filterLayer == 'wellpoints' || filterLayer == 'welllines') {
+                    filterCustomArray[filterLayer].push([
+                      "match",
+                      ["get", "id"],
+                      ids,
+                      true,
+                      false,
+                    ]);
+                  } else {
+                    filterCustomArray[filterLayer].push([
+                      "match",
+                      ["get", "VIEWID"],
+                      ids,
+                      true,
+                      false,
+                    ]);
+                  }
+                }
+              }
+            }
+          });
+        } else {
+          filterLayers.forEach((filterLayer) => {
+            map.setFilter(filterLayer, null);
+          });
+        }
+        isFilterSet = true;
+        geographyFilterCount += stateNav.aoiName.length;
+        totalCount += stateNav.aoiName.length;
+      }
+
       if (stateNav.filterPlay && stateNav.filterPlay.length > 0) {
         let total = stateNav.filterPlay[2].length;
         filterArray.push(stateNav.filterPlay);
@@ -2125,6 +2286,13 @@ export default function Map() {
           map.setFilter('basinLayer', null);
           map.setFilter('basinLabels', null);
         }
+        if (filterCustomArray['aoi']) {
+          map.setFilter('interest', filterCustomArray['basin']);
+          map.setFilter('interest_labels', filterCustomArray['basin']);
+        } else {
+          map.setFilter('interest', null);
+          map.setFilter('interest_labels', null);
+        }
       } else {
         map.setFilter("wellpoints", null);
         map.setFilter("welllines", null);
@@ -2150,6 +2318,7 @@ export default function Map() {
     stateNav.filterAllInterestTypes,
     stateNav.filterAllOwnershipTypes,
     stateNav.filterBasin,
+    stateNav.filterAOI,
     stateNav.filterCompletetionDateRange,
     stateNav.filterCumulativeGas,
     stateNav.filterCumulativeOil,
