@@ -4,7 +4,7 @@ import M1nTable from "../Shared/M1nTable/M1nTable";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: "10px 32px 10px 32px",
+    padding: "10px",
     background:'#efefef',
     height: '100%'
   },

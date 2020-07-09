@@ -15,6 +15,11 @@ export const CONTACTSQUERY = gql`
       homePhone
       primaryEmail
       owners
+      leadSource
+      lastUpdateAt
+      lastUpdateBy {
+        name
+      }
     }
   }
 `;

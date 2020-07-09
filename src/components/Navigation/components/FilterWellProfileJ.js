@@ -25,7 +25,7 @@ export default function FilterWellProfileJ() {
       setProfileName(value);
     } else {
       filter = null;
-      setStateNav((stateNav) => ({ ...stateNav, profileName: null }));
+      setStateNav((stateNav) => ({ ...stateNav, profileName: [] }));
     }
     setStateNav((stateNav) => ({ ...stateNav, filterWellProfile: filter }));
   };

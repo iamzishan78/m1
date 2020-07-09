@@ -32,6 +32,13 @@ import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogC
 import PrintLabelsDialogContent from "./SubComponents/PrintLabelsDialogContent";
 import SendMailersDialogContent from "./SubComponents/SendMailersDialogContent";
 import BackupIcon from "@material-ui/icons/Backup";
+import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
+import DeleteIcon from "@material-ui/icons/Delete";
+import Divider from "@material-ui/core/Divider";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -138,6 +145,8 @@ export default function SubTable(props) {
   const [m1nSelectedRowsIndexes, setM1nSelectedRowsIndexes] = useState([]);
   const [m1nSelectedRowsIds, setM1nSelectedRowsIds] = useState([]);
   const [m1nSelectedRowsTracks, setM1nSelectedRowsTracks] = useState([]);
+
+  const [completelyDelete, setCompletelyDelete] = useState("false");
 
   useEffect(() => {
     if (props.rows) {
@@ -416,7 +425,7 @@ export default function SubTable(props) {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
-                                tableMeta.rowData[2],
+                                tableMeta.rowData[0],
                                 "owner"
                               );
                             }
@@ -548,6 +557,43 @@ export default function SubTable(props) {
               };
             }
             break;
+
+          // case "contactName":
+          //   {
+          //     column.options = {
+          //       ...column.options,
+          //       customBodyRender: (value, tableMeta, updateValue) => {
+          //         if (value === "" || value === null || !value) {
+          //           return value;
+          //         }
+
+          //         return (
+          //           <div
+          //             className={classes.cellDataDiv}
+          //             onClick={(e) => {
+          //               e.preventDefault();
+          //               e.stopPropagation();
+          //             }}
+          //           >
+          //             {value}{" "}
+          //             {value === "Jim Adler" && ( //////temporary to demo only
+          //               <Tooltip title="Purchased contact info">
+          //                 <MonetizationOnIcon
+          //                   fontSize="small"
+          //                   style={{
+          //                     color: "#082768",
+          //                     verticalAlign: "middle",
+          //                   }}
+          //                 />
+          //               </Tooltip>
+          //             )}
+          //           </div>
+          //         );
+          //       },
+          //     };
+          //   }
+          //   break;
+
           default:
             {
               column.options = {
@@ -567,6 +613,12 @@ export default function SubTable(props) {
                     >
                       {column.name === "appraisedValue"
                         ? formatter.format(value)
+                        : column.name === "lastUpdateAt"
+                        ? anyToDate(value).toLocaleString("en-US", {
+                            year: "numeric",
+                            day: "numeric",
+                            month: "numeric",
+                          })
                         : value}
                     </div>
                   );
@@ -607,6 +659,11 @@ export default function SubTable(props) {
   };
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+      expandedCard: false,
+    }));
   };
 
   const options = {
@@ -632,6 +689,7 @@ export default function SubTable(props) {
             let selectedRowsIds = selectedRows.map((row) => {
               if (row.id) return row.id;
               if (row.Id) return row.Id;
+              if (row._id) return row._id;
             });
 
             setM1nSelectedRowsIds(selectedRowsIds);
@@ -670,6 +728,7 @@ export default function SubTable(props) {
                 <div
                   style={{
                     height: "48px",
+                    display: "flex",
                   }}
                 >
                   <Button
@@ -717,6 +776,19 @@ export default function SubTable(props) {
                   >
                     Labels
                   </Button>
+                  <Divider orientation="vertical" flexItem />
+                  <Tooltip title={"Delete"}>
+                    <IconButton
+                      size="medium"
+                      style={{ margin: "0 5px" }}
+                      onClick={(e) => {
+                        handleExpandClick(null, null, null, "deleteContact");
+                      }}
+                      aria-label="delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
                 </div>
               );
             }
@@ -900,7 +972,7 @@ export default function SubTable(props) {
           )}
           {openDialog === "owner" && (
             <M1nTable
-              selectedWell={{ api: expandedObject }}
+              selectedWell={{ id: expandedObject }}
               parent="OwnersPerWell"
             />
           )}
@@ -939,8 +1011,50 @@ export default function SubTable(props) {
               setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
             >
               {`Do you want to permanently delete the owner${
-                expandedObject && expandedObject.length > 1 ? "s" : ""
+                m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
               } from  this contact?`}
+            </DeleteConfirmationDialogContent>
+          )}
+          {openDialog === "deleteContact" && (
+            <DeleteConfirmationDialogContent
+              onClose={handleCloseDialog}
+              deleteFunc={props.deleteFunc}
+              m1nSelectedRowsIds={m1nSelectedRowsIds}
+              setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              completelyDelete={completelyDelete}
+            >
+              {props.header === "Owner's Contacts" && (
+                <RadioGroup
+                  value={completelyDelete}
+                  onChange={(event) => {
+                    setCompletelyDelete(event.target.value);
+                  }}
+                >
+                  <FormControlLabel
+                    value={"false"}
+                    control={<Radio />}
+                    label={`Do you want to remove the contact${
+                      m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
+                        ? "s"
+                        : ""
+                    } only from this owner?`}
+                  />
+                  <FormControlLabel
+                    value={"true"}
+                    control={<Radio />}
+                    label={`Do you want to permanently delete the contact${
+                      m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
+                        ? "s"
+                        : ""
+                    }?`}
+                  />
+                </RadioGroup>
+              )}
+
+              {props.header === "Contacts" &&
+                `Do you want to permanently delete the contact${
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                }?`}
             </DeleteConfirmationDialogContent>
           )}
           {openDialog === "buyContactsInfo" && (
