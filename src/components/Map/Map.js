@@ -588,6 +588,7 @@ export default function Map() {
               }
               if (layerProp.clusterProps) {
                 const clusterLayerId = layerProp.layerId + "-clusters";
+                
                 layers.push(clusterLayerId);
                 clusterUDLayers.push(clusterLayerId);
                 clusterLayers.push(layerProp.layerId);
@@ -604,8 +605,16 @@ export default function Map() {
       checkedSLayers.forEach((l) => {
         if (checkedSLayersInteraction.indexOf(l) > -1) {
           const styleLayer = styleLayers[l];
-          layers = [...layers, ...styleLayer.id];
+          if (!styleLayer.layerProps) {
+            layers = [...layers, ...styleLayer.id];
+          }
           // sLayers = [...sLayers, ...styleLayer.id];
+          if (styleLayer.layerProps && styleLayer.layerProps.clusterProps) {
+            layers.push(styleLayer.id[1])
+            layers.push(styleLayer.id[2])
+            const clusterLayerId = styleLayer.id[1]
+            clusterUDLayers.push(clusterLayerId)
+          }
         }
       });
 
@@ -933,11 +942,11 @@ export default function Map() {
             // -> fetch data
             let layerData = [];
             if (selectLayerProps.dataProps[i].dataId == "trackedWellsWells") {
-              layerData = dataWells.wells.results;
+              layerData = stateApp.trackedwells;
             } else if (
               selectLayerProps.dataProps[i].dataId == "trackedOwnersWells"
             ) {
-              layerData = dataWellsForOwnerWellTrackLayer.wells.results;
+              layerData = stateApp.trackedOwnerWells;
             } else if (
               selectLayerProps.dataProps[i].dataId == "wellsFromSearch"
             ) {
@@ -1277,6 +1286,10 @@ export default function Map() {
     stateApp.checkedUserDefinedLayersInteraction,
     stateApp.tempCheckedUserDefinedLayers,
     stateApp.customLayers,
+    stateApp.trackedwells,
+    stateApp.trackedOwnerWells,
+    stateApp.wellListFromSearch,
+    stateApp.wellListFromTagsFilter
   ]);
 
   useEffect(() => {

@@ -1,28 +1,5 @@
 export const styleLayers = [
   {
-    name: "Wells",
-    id: ["wellpoints", "welllines"],
-  },
-  {
-    name: "Basins",
-    id: ["basinLabels", "basinLayer"],
-  },
-  {
-    name: "Pipelines",
-    id: ["pipelineLayer"],
-  },
-  {
-    name: "Land Grid",
-    id: [
-      "PLSSTownships",
-      "PLSSTownshipLabels",
-      "PLSSFirstDivision",
-      "PLSSFirstDivisionLabels",
-      "TexasLandSurvey",
-      "TexasLandSurveyLabels",
-    ],
-  },
-  {
     name: "Permits",
     id: ["permits-clusters-counts", "permits-clusters", "permits"],
     sourceProps: ["permits_source"],
@@ -117,6 +94,30 @@ export const styleLayers = [
       }
     }
   },
+  {
+    name: "Wells",
+    id: ["wellpoints", "welllines"],
+  },
+  {
+    name: "Basins",
+    id: ["basinLabels", "basinLayer"],
+  },
+  {
+    name: "Pipelines",
+    id: ["pipelineLayer"],
+  },
+  {
+    name: "Land Grid",
+    id: [
+      "PLSSTownships",
+      "PLSSTownshipLabels",
+      "PLSSFirstDivision",
+      "PLSSFirstDivisionLabels",
+      "TexasLandSurvey",
+      "TexasLandSurveyLabels",
+    ],
+  },
+  
   {
     name: "TX GLO Units",
     id: ["GLOUnits", "GLOUnitLabels"],
