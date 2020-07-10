@@ -7,11 +7,11 @@ import { AppContext } from "../../../AppContext";
 export default () => {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [aoiData, setAOIData] = useState([]);
-  const [aoiName, setAOIName] = useState(
-    stateNav.aoiName ? stateNav.aoiName : []
+  const [parcelData, setParcelData] = useState([]);
+  const [parcelName, setParcelName] = useState(
+    stateNav.parcelName ? stateNav.parcelName : []
   );
-  const [aoiNameList, setAOINameList] = useState([]);
+  const [parcelNameList, setParcelNameList] = useState([]);
 
   useEffect(() => {
     const groupBy = (arr, property) => {
@@ -24,54 +24,54 @@ export default () => {
       }, {});
     };
 
-    const layerData = groupBy(stateApp.customLayers, "layer")['interest'];
+    const layerData = groupBy(stateApp.customLayers, "layer")['parcel'];
     if (layerData && layerData.length > 0) {
-      setAOIData(layerData);
-      setAOINameList(layerData.map(layer => layer.name));
-    }    
+      setParcelData(layerData);
+      setParcelNameList(layerData.map(layer => layer.name));
+    }
+    
   }, [stateApp.customLayers]);
 
-  const handleAOIChange = (value) => {
+  const handleParcelChange = (value) => {
     let filter;
     if (value && value.length) {
-      const layers = aoiData.filter(aoi => value.indexOf(aoi.name) > -1);
+      const layers = parcelData.filter(parcel => value.indexOf(parcel.name) > -1);
       filter = layers.map(basinShape => {
         return JSON.parse(basinShape.shape);
       });
       console.log(layers, filter);
-      setStateNav((stateNav) => ({ ...stateNav, aoiName: value }));
-      setAOIName(value);
+      setStateNav((stateNav) => ({ ...stateNav, parcelName: value }));
+      setParcelName(value);
     } else {
       filter = null;
-      setStateNav((stateNav) => ({ ...stateNav, aoiName: null }));
+      setStateNav((stateNav) => ({ ...stateNav, parcelName: null }));
     }
-    setStateNav((stateNav) => ({ ...stateNav, filterAOI: filter }));
+    setStateNav((stateNav) => ({ ...stateNav, filterParcel: filter }));
   };
 
-  if (aoiNameList.length > 0) {
+  if (parcelNameList.length > 0) {
     return (
       <Autocomplete
-        defaultValue={aoiName}
+        defaultValue={parcelName}
         onChange={(event, newValue) => {
-          handleAOIChange(newValue);
+          handleParcelChange(newValue);
         }}
         multiple
         ChipProps={{ color: "secondary" }}
-        options={aoiNameList}
+        options={parcelNameList}
         renderInput={(params) => (
           <TextField
             {...params}
             variant="outlined"
-            label="Area of Interest"
+            label="Parcel"
             placeholder=""
             fullWidth
           />
         )}
         disableListWrap
-        id="virtualize-aoi"
+        id="virtualize-parcel"
       />
     );
   }
-
   return null;
 }
