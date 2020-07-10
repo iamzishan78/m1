@@ -611,8 +611,15 @@ export default function Map() {
         });
       });
 
-      if (stateApp.checkedLayers.length > 0) {
-        let layers = stateApp.checkedLayers.slice(0);
+      console.log(stateApp.tempCheckedLayer);
+
+      const checkedLayers = stateApp.checkedLayers.slice(0);
+      if (stateApp.tempCheckedLayer) {
+        checkedLayers.push(stateApp.tempCheckedLayer);
+      }
+
+      if (checkedLayers.length > 0) {
+        let layers = checkedLayers;
         layers.sort(function (a, b) {
           return b - a;
         });
@@ -640,7 +647,7 @@ export default function Map() {
         }
       }
     }
-  }, [map, stateApp.checkedLayers, stateApp.styleLayers]);
+  }, [map, stateApp.checkedLayers, stateApp.tempCheckedLayer, stateApp.styleLayers]);
 
   useEffect(() => {
     // USE EFFECT FOR BASEMAP LAYER HANDLING
@@ -1163,19 +1170,19 @@ export default function Map() {
           const longDif = maxLong - minLong;
 
           if (latDif === 0) {
-            maxLat = maxLat + 0.005;
-            minLat = minLat - 0.005;
+            maxLat = maxLat + 0.005 > 90 ? 90 : maxLat + 0.005;
+            minLat = minLat - 0.005 < -90 ? -90 : minLat - 0.005;
           } else {
-            maxLat = maxLat + latDif * 0.08;
-            minLat = minLat - latDif * 0.08;
+            maxLat = maxLat + latDif * 0.08 > 90 ? 90 : maxLat + latDif * 0.08;
+            minLat = minLat - latDif * 0.08 < -90 ? -90 : minLat - latDif * 0.08;
           }
 
           if (longDif === 0) {
-            maxLong = maxLong + 0.005;
-            minLong = minLong - 0.005;
+            maxLong = maxLong + 0.005 > 180 ? 180 : maxLong + 0.005;
+            minLong = minLong - 0.005 < -180 ? -180 : minLong - 0.005;
           } else {
-            maxLong = maxLong + longDif * 0.08;
-            minLong = minLong - longDif * 0.08;
+            maxLong = maxLong + longDif * 0.08 > 180 ? 180 : maxLong + latDif * 0.08;
+            maxLong = maxLong - longDif * 0.08 < -180 ? -180 : maxLong - latDif * 0.08;
           }
 
           return {
@@ -1705,7 +1712,6 @@ export default function Map() {
       const findBounds = (wells) => {
         let latArray = wells.map((item) => item.properties.latitude);
         let longArray = wells.map((item) => item.properties.longitude);
-        console.log(latArray, longArray);
 
         latArray = latArray.filter((item) => item !== 0);
         longArray = longArray.filter((item) => item !== 0);
@@ -1741,10 +1747,10 @@ export default function Map() {
         const basinIndex = styleLayers.findIndex((styleLayer) => styleLayer.name === "Basins");
         
         if (checkedLayers.indexOf(basinIndex) === -1) {
-          setStateApp({
+          setStateApp((stateApp) => ({
             ...stateApp,
             tempCheckedLayer: basinIndex
-          });
+          }));
         }
         let basinNames = stateNav.basinName;
         if (basinNames) {
@@ -1891,19 +1897,15 @@ export default function Map() {
               }
             }
           });
-        } else {
-          filterLayers.forEach((filterLayer) => {
-            map.setFilter(filterLayer, null);
-          });
         }
         isFilterSet = true;
         geographyFilterCount += stateNav.basinName.length;
         totalCount += stateNav.basinName.length;
-      } else if (stateApp.tempCheckedLayer) {
-        setStateApp({
+      } else {
+        setStateApp((stateApp) => ({
           ...stateApp,
           tempCheckedLayer: null
-        });
+        }));
       }
 
       if (stateNav.filterAOI && stateNav.filterAOI.length > 0) {
@@ -1911,10 +1913,10 @@ export default function Map() {
         const aoiIndex = userDefinedLayers.findIndex((userDefinedLayer) => userDefinedLayer.name === "Area of Interest");
         
         if (checkedUserDefinedLayers.indexOf(aoiIndex) === -1) {
-          setStateApp({
+          setStateApp((stateApp) => ({
             ...stateApp,
             tempCheckedUserDefinedLayer: aoiIndex
-          });
+          }));
         }
         let aoiName = stateNav.aoiName;
         if (aoiName) {
@@ -2070,10 +2072,10 @@ export default function Map() {
         geographyFilterCount += stateNav.aoiName.length;
         totalCount += stateNav.aoiName.length;
       } else {
-        setStateApp({
+        setStateApp((stateApp) => ({
           ...stateApp,
           tempCheckedUserDefinedLayer: null
-        });
+        }));
       }
 
       if (stateNav.filterParcel && stateNav.filterParcel.length > 0) {
@@ -2081,10 +2083,10 @@ export default function Map() {
         const parcelIndex = userDefinedLayers.findIndex((userDefinedLayer) => userDefinedLayer.name === "Parcels");
         
         if (checkedUserDefinedLayers.indexOf(parcelIndex) === -1) {
-          setStateApp({
+          setStateApp((stateApp) => ({
             ...stateApp,
             tempCheckedUserDefinedLayer: parcelIndex
-          });
+          }));
         }
         let parcelName = stateNav.parcelName;
         if (parcelName) {
@@ -2240,18 +2242,17 @@ export default function Map() {
         geographyFilterCount += stateNav.aoiName.length;
         totalCount += stateNav.aoiName.length;
       } else {
-        setStateApp({
+        setStateApp((stateApp) => ({
           ...stateApp,
           tempCheckedUserDefinedLayer: null
-        });
+        }));
       }
 
       if (fitBounds) {
-        console.log(fitBounds);
-        setStateApp({
+        setStateApp((stateApp) => ({
           ...stateApp,
           fitBounds
-        });
+        }));
       }
 
       if (stateNav.filterPlay && stateNav.filterPlay.length > 0) {
@@ -3317,19 +3318,19 @@ export default function Map() {
         const longDif = maxLong - minLong;
 
         if (latDif === 0) {
-          maxLat = maxLat + 0.005;
-          minLat = minLat - 0.005;
+          maxLat = maxLat + 0.005 > 90 ? 90 : maxLat + 0.005;
+          minLat = minLat - 0.005 < -90 ? -90 : minLat - 0.005;
         } else {
-          maxLat = maxLat + latDif * 0.08;
-          minLat = minLat - latDif * 0.08;
+          maxLat = maxLat + latDif * 0.08 > 90 ? 90 : maxLat + latDif * 0.08;
+          minLat = minLat - latDif * 0.08 < -90 ? -90 : minLat - latDif * 0.08;
         }
 
         if (longDif === 0) {
-          maxLong = maxLong + 0.005;
-          minLong = minLong - 0.005;
+          maxLong = maxLong + 0.005 > 180 ? 180 : maxLong + 0.005;
+          minLong = minLong - 0.005 < -180 ? -180 : minLong - 0.005;
         } else {
-          maxLong = maxLong + longDif * 0.08;
-          minLong = minLong - longDif * 0.08;
+          maxLong = maxLong + longDif * 0.08 > 180 ? 180 : maxLong + latDif * 0.08;
+          maxLong = maxLong - longDif * 0.08 < -180 ? -180 : maxLong - latDif * 0.08;
         }
 
         return {
