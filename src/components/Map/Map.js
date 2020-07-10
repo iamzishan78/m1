@@ -2216,8 +2216,8 @@ export default function Map() {
           map.setFilter('basinLabels', null);
         }
         if (filterCustomArray['aoi']) {
-          map.setFilter('interest', filterCustomArray['basin']);
-          map.setFilter('interest_labels', filterCustomArray['basin']);
+          map.setFilter('interest', filterCustomArray['aoi']);
+          map.setFilter('interest_labels', filterCustomArray['aoi']);
         } else {
           map.setFilter('interest', null);
           map.setFilter('interest_labels', null);
