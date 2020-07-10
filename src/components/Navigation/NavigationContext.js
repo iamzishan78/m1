@@ -20,6 +20,7 @@ const NavigationContextProvider = (props) => {
     filterInterest: null,
     filterBasin: null,
     filterAOI: null,
+    filterParcel: null,
     filterPlay: null,
     filterOwnerType: null,
     filterCumulativeOil: null,
@@ -72,6 +73,7 @@ const NavigationContextProvider = (props) => {
     m1neralDefaultFilters: null,
     basinName: [],
     aoiName: [],
+    parcelName: [],
     playName: [],
     prodOptions: [],
     ownerTypeName: [],
@@ -122,7 +124,6 @@ const NavigationContextProvider = (props) => {
     drawingMode: null,
     filterFeatureId: null,
     isProfileOpen: true,
-    filterDrawing: [],
     selectedTags: [],
     wellsIdsFromTags: [],
   });
