@@ -1735,7 +1735,7 @@ export default function Map() {
         totalCount += total;
       }
 
-      let fitBounds = null;
+      let fitBounds = {...stateApp.fitBounds};
 
       const findBounds = (wells) => {
         let latArray = wells.map((item) => item.properties.latitude);
@@ -2282,6 +2282,7 @@ export default function Map() {
       }
 
       if (fitBounds) {
+        console.log(fitBounds);
         setStateApp((stateApp) => ({
           ...stateApp,
           fitBounds
@@ -2354,6 +2355,71 @@ export default function Map() {
         isFilterSet = true;
         totalCount += 1;
         geographyFilterCount += 1;
+
+        const filterLayers = [
+          "GLOLeases",
+          "GLOLeaseLabels",
+          "GLOUnits",
+          "GLOUnitLabels",
+        ];
+        filterLayers.forEach((filterLayer) => {
+          const layer = map.getLayer(filterLayer);
+          if (layer) {
+            const filterFeature = stateNav.filterDrawing[1];
+            const featuresList = map.querySourceFeatures("composite", {
+              sourceLayer: layer.sourceLayer,
+            });
+            if (featuresList && featuresList.length > 0) {
+              const result = featuresList.filter((feature) => {
+                if (feature.geometry.type === "MultiPolygon") {
+                  for (
+                    let i = 0;
+                    i < feature.geometry.coordinates.length;
+                    i++
+                  ) {
+                    const coordinates = feature.geometry.coordinates[i];
+                    const geometry = {
+                      type: "Polygon",
+                      coordinates: coordinates,
+                    };
+                    if (!turf.booleanContains(filterFeature, geometry)) {
+                      return false;
+                    }
+                  }
+                  return true;
+                }
+                return turf.booleanContains(filterFeature, feature);
+              });
+
+              let ids = result.map(function (feature) {
+                return feature.properties.VIEWID;
+              });
+
+              const onlyUnique = (value, index, self) => {
+                return (
+                  self.indexOf(value) === index &&
+                  (typeof value === "number" || typeof value === "string")
+                );
+              };
+
+              ids = ids.filter(onlyUnique);
+
+              if (ids.length > 0) {
+                if (!filterCustomArray[filterLayer]) {
+                  filterCustomArray[filterLayer] = [];
+                }
+                filterCustomArray[filterLayer].push([
+                  "match",
+                  ["get", "VIEWID"],
+                  ids,
+                  true,
+                  false,
+                ]);
+              }
+              
+            }
+          }
+        });
       }
 
       setStateNav((state) => ({
@@ -2405,71 +2471,14 @@ export default function Map() {
           "GLOUnits",
           "GLOUnitLabels",
         ];
-        if (stateNav.filterDrawing && stateNav.filterDrawing.length === 2) {
-          filterLayers.forEach((filterLayer) => {
-            const layer = map.getLayer(filterLayer);
-            if (layer) {
-              const filterFeature = stateNav.filterDrawing[1];
-              const featuresList = map.querySourceFeatures("composite", {
-                sourceLayer: layer.sourceLayer,
-              });
-              if (featuresList && featuresList.length > 0) {
-                const result = featuresList.filter((feature) => {
-                  if (feature.geometry.type === "MultiPolygon") {
-                    for (
-                      let i = 0;
-                      i < feature.geometry.coordinates.length;
-                      i++
-                    ) {
-                      const coordinates = feature.geometry.coordinates[i];
-                      const geometry = {
-                        type: "Polygon",
-                        coordinates: coordinates,
-                      };
-                      if (!turf.booleanContains(filterFeature, geometry)) {
-                        return false;
-                      }
-                    }
-                    return true;
-                  }
-                  return turf.booleanContains(filterFeature, feature);
-                });
-
-                let ids = result.map(function (feature) {
-                  return feature.properties.VIEWID;
-                });
-
-                const onlyUnique = (value, index, self) => {
-                  return (
-                    self.indexOf(value) === index &&
-                    (typeof value === "number" || typeof value === "string")
-                  );
-                };
-
-                ids = ids.filter(onlyUnique);
-
-                // console.log(ids);
-                if (ids.length > 0) {
-                  if (!filterCustomArray[filterLayer]) {
-                    filterCustomArray[filterLayer] = [];
-                  }
-                  filterCustomArray[filterLayer].push([
-                    "match",
-                    ["get", "VIEWID"],
-                    ids,
-                    true,
-                    false,
-                  ]);
-                }
-                
-              }
-            }
-          });
-        }
         filterLayers.forEach(filterLayer => {
           if (filterCustomArray[filterLayer]) {
             console.log(filterCustomArray[filterLayer]);
-            map.setFilter(filterLayer, filterCustomArray[filterLayer]);
+            if (filterCustomArray[filterLayer].length == 1) {
+              map.setFilter(filterLayer, filterCustomArray[filterLayer][0]);  
+            } else {
+              map.setFilter(filterLayer, filterCustomArray[filterLayer]);
+            }
           }
         });
         if (filterCustomArray['basin']) {
