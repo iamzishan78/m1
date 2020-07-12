@@ -32,6 +32,7 @@ export default function AddUserData(props) {
 
   const handleClose = () => {
     setIsOpen(false);
+    setStateMapControls(stateMapControls => ({ ...stateMapControls, addData: false }));
   };
 
   async function handleFileInput(fileObj) {
@@ -55,22 +56,11 @@ export default function AddUserData(props) {
   const handleApplyChanges = () => {
     console.log('Apply Changes');
     let fileContent = inputFiles;
+    let existingFileLayers = stateMap.userFileLayers
+    existingFileLayers.push(fileContent);
+    console.log('USER FILE LAYERS:: ', existingFileLayers)
 
-    //handle feature collection
-    if (fileContent.type == 'FeatureCollection') {
-
-      console.log("THE TYPE IS FEATURE COLLECTION")
-      let existingFileLayers = stateMap.userFileLayers
-      existingFileLayers.push(fileContent);
-      console.log('USER FILE LAYERS:: ', existingFileLayers)
-
-      setStateMap(stateMap => ({ ...stateMap, userFileLayers: existingFileLayers }));
-      //console.log(stateMap);
-
-
-    } else {
-      console.log('THE TYPE IS NOT FEATURE COLLECTION')
-    }
+    setStateMap(stateMap => ({ ...stateMap, userFileLayers: [...existingFileLayers] }));
   }
 
   const handleFileAsync = (file) => {
@@ -86,8 +76,8 @@ export default function AddUserData(props) {
 
   return (
     <ClickAwayListener onClickAway={handleClose}>
-      <Dialog open={isOpen} onClose={handleClose} >
-        <DialogTitle onClose={handleClose}>
+      <Dialog open={isOpen} onClose={handleClose}>
+        <DialogTitle>
           Add Data
         </DialogTitle>
         <DialogContent dividers>
