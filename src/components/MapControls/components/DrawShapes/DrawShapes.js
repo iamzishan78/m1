@@ -172,6 +172,7 @@ export default function DrawShapes(props) {
                 setStateApp(stateApp => {
                     return {
                         ...stateApp,
+                        popupOpen: false,
                         currentFeature: feature,
                         featureOrMapShape: feature,
                         editDraw: true

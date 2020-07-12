@@ -328,6 +328,7 @@ export default function SpatialDataCard(props) {
                 value={dataName}
                 autoComplete="disabled"
                 onChange={evt => setDataName(evt.target.value)}
+                required
               ></TextField>
             </div>
             <div className={classes.TextField}>

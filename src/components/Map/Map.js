@@ -406,6 +406,7 @@ export default function Map() {
       setStateApp((state) => ({
         ...state,
         popupOpen: false,
+        selectedUserDefinedLayer: undefined,
       }));
       setStateApp((state) => ({
         ...state,
@@ -426,6 +427,7 @@ export default function Map() {
       setStateApp((state) => ({
         ...state,
         popupOpen: false,
+        selectedUserDefinedLayer: undefined,
       }));
       setStateApp((state) => ({
         ...state,
@@ -448,6 +450,7 @@ export default function Map() {
       setStateApp((state) => ({
         ...state,
         popupOpen: false,
+        selectedUserDefinedLayer: undefined,
         selectedWell: null,
         selectedWellId: feature.properties.id
           ? feature.properties.id.toLowerCase()
@@ -511,16 +514,21 @@ export default function Map() {
                 definedLayer.name === "Area of Interest" ||
                 definedLayer.name === "Parcels"
               ) {
-                udLayers.push(layerProp.layerId);
+                if (map.getLayer(layerProp.layerId)) {
+                  udLayers.push(layerProp.layerId);
+                }
               }
               if (layerProp.clusterProps) {
                 const clusterLayerId = layerProp.layerId + "-clusters";
-                
-                layers.push(clusterLayerId);
-                clusterUDLayers.push(clusterLayerId);
-                clusterLayers.push(layerProp.layerId);
+                if (map.getLayer(clusterLayerId)) {
+                  layers.push(clusterLayerId);
+                  clusterUDLayers.push(clusterLayerId);
+                  clusterLayers.push(layerProp.layerId);
+                }
               }
-              layers.push(layerProp.layerId);
+              if (map.getLayer(layerProp.layerId)) {
+                layers.push(layerProp.layerId);
+              }
             }
           }
         }
@@ -533,14 +541,24 @@ export default function Map() {
         if (checkedSLayersInteraction.indexOf(l) > -1) {
           const styleLayer = styleLayers[l];
           if (!styleLayer.layerProps) {
-            layers = [...layers, ...styleLayer.id];
+            styleLayer.id.forEach(styleId => {
+              if (map.getLayer(styleId)) {
+                layers.push(styleId);
+              }
+            });
           }
           // sLayers = [...sLayers, ...styleLayer.id];
           if (styleLayer.layerProps && styleLayer.layerProps.clusterProps) {
-            layers.push(styleLayer.id[1])
-            layers.push(styleLayer.id[2])
-            const clusterLayerId = styleLayer.id[1]
-            clusterUDLayers.push(clusterLayerId)
+            if (map.getLayer(styleLayer.id[1])) {
+              layers.push(styleLayer.id[1]);
+            }
+            if (map.getLayer(styleLayer.id[2])) {
+              layers.push(styleLayer.id[2]);
+            }
+            const clusterLayerId = styleLayer.id[1];
+            if (map.getLayer(clusterLayerId)) {
+              clusterUDLayers.push(clusterLayerId);
+            }
           }
         }
       });
@@ -602,6 +620,13 @@ export default function Map() {
   useEffect(() => {
     // USE EFFECT FOR M1 LAYER HANDLES
     console.log("layer ue start");
+
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+      selectedUserDefinedLayer: undefined,
+    }));
+
     if (stateApp.styleLayers.length > 0 && map) {
       stateApp.styleLayers.forEach((l) => {
         l.id.forEach((k) => {
@@ -610,8 +635,6 @@ export default function Map() {
           }
         });
       });
-
-      console.log(stateApp.tempCheckedLayer);
 
       const checkedLayers = stateApp.checkedLayers.slice(0);
       if (stateApp.tempCheckedLayer) {
@@ -820,6 +843,11 @@ export default function Map() {
 
   useEffect(() => {
     // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+      selectedUserDefinedLayer: undefined,
+    }));
 
     if (stateApp.userDefinedLayers.length > 0 && map) {
 
@@ -1712,6 +1740,7 @@ export default function Map() {
       const findBounds = (wells) => {
         let latArray = wells.map((item) => item.properties.latitude);
         let longArray = wells.map((item) => item.properties.longitude);
+        console.log(latArray, longArray);
 
         latArray = latArray.filter((item) => item !== 0);
         longArray = longArray.filter((item) => item !== 0);
@@ -1800,7 +1829,10 @@ export default function Map() {
                             j < basinShapes[k].coordinates.length;
                             j++
                           ) {
-                            const filterCoordinates = basinShapes[k].coordinates[j];
+                            let filterCoordinates = basinShapes[k].coordinates[j];
+                            if (filterCoordinates[0].length > 2) {
+                              filterCoordinates = filterCoordinates[0];
+                            }
                             const filterGeometry = {
                               type: "Polygon",
                               coordinates: filterCoordinates,
@@ -1831,7 +1863,10 @@ export default function Map() {
                           j < basinShapes[i].coordinates.length;
                           j++
                         ) {
-                          const filterCoordinates = basinShapes[i].coordinates[j];
+                          let filterCoordinates = basinShapes[i].coordinates[j];
+                          if (filterCoordinates[0].length > 2) {
+                            filterCoordinates = filterCoordinates[0];
+                          }
                           const filterGeometry = {
                             type: "Polygon",
                             coordinates: filterCoordinates,
@@ -1851,10 +1886,6 @@ export default function Map() {
                   }
                 });
 
-                if (filterLayer === 'wellpoints') {
-                  fitBounds = findBounds(result);
-                }
-
                 let ids = result.map(function (feature) {
                   if (filterLayer == 'wellpoints' || filterLayer == 'welllines') {
                     return feature.properties.id;
@@ -1873,6 +1904,9 @@ export default function Map() {
 
                 // console.log(ids);
                 if (ids.length > 0) {
+                  if (filterLayer === 'wellpoints') {
+                    fitBounds = findBounds(result);
+                  }
                   if (!filterCustomArray[filterLayer]) {
                     filterCustomArray[filterLayer] = [];
                   }
@@ -2016,11 +2050,6 @@ export default function Map() {
                     return false;
                   }
                 });
-
-                if (filterLayer === 'wellpoints') {
-                  fitBounds = findBounds(result);
-                }
-
                 let ids = result.map(function (feature) {
                   if (filterLayer == 'wellpoints' || filterLayer == 'welllines') {
                     return feature.properties.id;
@@ -2039,6 +2068,10 @@ export default function Map() {
 
                 // console.log(ids);
                 if (ids.length > 0) {
+                  if (filterLayer === 'wellpoints') {
+                    fitBounds = findBounds(result);
+                  }
+  
                   if (!filterCustomArray[filterLayer]) {
                     filterCustomArray[filterLayer] = [];
                   }
@@ -2187,10 +2220,6 @@ export default function Map() {
                   }
                 });
 
-                if (filterLayer === 'wellpoints') {
-                  fitBounds = findBounds(result);
-                }
-
                 let ids = result.map(function (feature) {
                   if (filterLayer == 'wellpoints' || filterLayer == 'welllines') {
                     return feature.properties.id;
@@ -2209,6 +2238,10 @@ export default function Map() {
 
                 // console.log(ids);
                 if (ids.length > 0) {
+                  if (filterLayer === 'wellpoints') {
+                    fitBounds = findBounds(result);
+                  }
+
                   if (!filterCustomArray[filterLayer]) {
                     filterCustomArray[filterLayer] = [];
                   }
@@ -2794,6 +2827,7 @@ export default function Map() {
       ...state,
       popupOpen: false,
       expandedCard: false,
+      selectedUserDefinedLayer: undefined,
     }));
 
     //clean up
@@ -3079,7 +3113,7 @@ export default function Map() {
         // map.boxZoom.enable();
         // map.touchZoomRotate.enable();
 
-        const selectedLayerIntereaction = stateApp.checkedLayersInteraction[0];
+        const selectedLayerIntereaction = stateApp.checkedLayersInteraction.slice(0);
         const wellIndex = stateApp.styleLayers.findIndex(
           (layer) => layer.name === "Wells"
         );
@@ -3106,7 +3140,7 @@ export default function Map() {
 
         if (
           stateApp.checkedLayersInteraction.length > 0 &&
-          stateApp.styleLayers[selectedLayerIntereaction].name === "Wells"
+          selectedLayerIntereaction.indexOf(wellIndex) > -1
         ) {
           // map.on("click", "wellpoints", wellPointClick);
 
@@ -3318,19 +3352,19 @@ export default function Map() {
         const longDif = maxLong - minLong;
 
         if (latDif === 0) {
-          maxLat = maxLat + 0.005 > 90 ? 90 : maxLat + 0.005;
-          minLat = minLat - 0.005 < -90 ? -90 : minLat - 0.005;
+          maxLat = maxLat + 0.005 > 90 ? 89.995 : maxLat + 0.005;
+          minLat = minLat - 0.005 < -90 ? -89.995 : minLat - 0.005;
         } else {
-          maxLat = maxLat + latDif * 0.08 > 90 ? 90 : maxLat + latDif * 0.08;
-          minLat = minLat - latDif * 0.08 < -90 ? -90 : minLat - latDif * 0.08;
+          maxLat = maxLat + latDif * 0.08 > 90 ? 89.995 : maxLat + latDif * 0.08;
+          minLat = minLat - latDif * 0.08 < -90 ? -89.995 : minLat - latDif * 0.08;
         }
 
         if (longDif === 0) {
-          maxLong = maxLong + 0.005 > 180 ? 180 : maxLong + 0.005;
-          minLong = minLong - 0.005 < -180 ? -180 : minLong - 0.005;
+          maxLong = maxLong + 0.005 > 180 ? 179.995 : maxLong + 0.005;
+          minLong = minLong - 0.005 < -180 ? -179.995 : minLong - 0.005;
         } else {
-          maxLong = maxLong + longDif * 0.08 > 180 ? 180 : maxLong + latDif * 0.08;
-          maxLong = maxLong - longDif * 0.08 < -180 ? -180 : maxLong - latDif * 0.08;
+          maxLong = maxLong + longDif * 0.08 > 180 ? 179.995 : maxLong + latDif * 0.08;
+          maxLong = maxLong - longDif * 0.08 < -180 ? -179.995 : maxLong - latDif * 0.08;
         }
 
         return {
@@ -3451,6 +3485,7 @@ export default function Map() {
     setStateApp((state) => ({
       ...state,
       popupOpen: false,
+      selectedUserDefinedLayer: undefined,
     }));
     if (complete == true) {
       setStateApp((state) => ({
@@ -3719,6 +3754,7 @@ export default function Map() {
         } else {
           setStateApp({
             ...stateApp,
+            popupOpen: false,
             selectedUserDefinedLayer: undefined,
             editLayer: false,
           });
