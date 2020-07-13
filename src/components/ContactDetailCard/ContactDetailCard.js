@@ -156,6 +156,7 @@ export default function ContactDetailCard(props) {
   const [stateApp] = useContext(AppContext);
   const [transactData, setTransactData] = useState();
   const [transactId, setTransactId] = useState();
+  const [contactData, setContactData] = useState(null);
   const [getContact, { loading, data }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
   });
@@ -172,6 +173,12 @@ export default function ContactDetailCard(props) {
       });
     }
   }, [props.contactId]);
+
+  useEffect(() => {
+    if (data && data.contact) {
+      setContactData(data.contact);
+    }
+  }, [data]);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
@@ -202,458 +209,463 @@ export default function ContactDetailCard(props) {
     }
   }, [tData, tLoading]);
 
-  return data && data.contact && !loading ? (
-    <Grid container spacing={0} className={classes.mainGridContainer}>
-      {/*/////////// left column //////////// */}
-      <Grid item xs={9} style={{ MinHeight: "100%", backgroundColor: "#fff" }}>
-        <Grid item container>
-          {/*/////////// section 1 //////////// */}
+  return (
+    contactData && (
+      <Grid container spacing={0} className={classes.mainGridContainer}>
+        {/*/////////// left column //////////// */}
+        <Grid
+          item
+          xs={9}
+          style={{ MinHeight: "100%", backgroundColor: "#fff" }}
+        >
+          <Grid item container>
+            {/*/////////// section 1 //////////// */}
 
-          <Grid item xs={12} className={classes.border}>
-            <div className={classes.leftColumnTopRigthCorner}>
-              {data.contact.primaryEmail && (
-                <a href={"mailto:" + data.contact.primaryEmail}>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    variant="outlined"
-                    startIcon={<MailOutlineIcon />}
-                  >
-                    Email
-                  </Button>
-                </a>
-              )}
-
-              <Button
-                variant="contained"
-                size="small"
-                variant="outlined"
-                startIcon={<DeleteIcon />}
-                onClick={() => {
-                  setOpenDialog(true);
-                }}
-              >
-                Delete
-              </Button>
-            </div>
-            <div>
-              <div className={classes.userIcon}>
-                <StyleBadge badgeContent={5} color={"primary"}>
-                  <Avatar name={data.contact.name} size="80" round />
-                </StyleBadge>
-              </div>
-              <div className={classes.userName}>
-                <h1 style={{ width: "max-content" }}>
-                  {/* {data.contact.name} */}
-
-                  <FieldContent
-                    noInputFooter
-                    noMargin
-                    id={data.contact._id}
-                    content={{ name: data.contact.name }}
-                  >
-                    {(data.contact.facebook ||
-                      data.contact.twitte ||
-                      data.contact.linkedln) && (
-                      <span className={classes.socialMediaSection}>
-                        {data.contact.facebook && (
-                          <a
-                            href={`${
-                              !data.contact.facebook.startsWith("http") &&
-                              !data.contact.facebook.startsWith("//")
-                                ? "//"
-                                : ""
-                            }${data.contact.facebook}`}
-                            target="_blank"
-                          >
-                            <FacebookIcon />
-                          </a>
-                        )}
-                        {data.contact.twitter && (
-                          <a
-                            href={`${
-                              !data.contact.twitter.startsWith("http") &&
-                              !data.contact.twitter.startsWith("//")
-                                ? "//"
-                                : ""
-                            }${data.contact.twitter}`}
-                            target="_blank"
-                          >
-                            <TwitterIcon className={classes.twitterIcon} />
-                          </a>
-                        )}
-                        {data.contact.linkedln && (
-                          <a
-                            href={`${
-                              !data.contact.linkedln.startsWith("http") &&
-                              !data.contact.linkedln.startsWith("//")
-                                ? "//"
-                                : ""
-                            }${data.contact.linkedln}`}
-                            target="_blank"
-                          >
-                            <LinkedInIcon />
-                          </a>
-                        )}
-                      </span>
-                    )}
-                  </FieldContent>
-                </h1>
-                <h4>
-                  <FieldContent
-                    childrenLeft
-                    noMargin
-                    name="Address"
-                    id={data.contact._id}
-                    content={{
-                      address1: data.contact.address1,
-                      address2: data.contact.address2,
-                      city: data.contact.city,
-                      state: data.contact.state,
-                      zip: data.contact.zip,
-                      country: data.contact.country,
-                    }}
-                  >
-                    <RoomIcon
-                      className={classes.addressIcon}
-                      fontSize="small"
-                    />
-                  </FieldContent>
-                </h4>
-
-                <h4>
-                  <FieldContent
-                    childrenLeft
-                    noMargin
-                    name={"Company Name Or Job Title"}
-                    id={data.contact._id}
-                    content={{
-                      companyName: data.contact.companyName,
-                      jobTitle: data.contact.jobTitle,
-                    }}
-                  >
-                    <LocationCityIcon
-                      className={classes.addressIcon}
-                      fontSize="small"
-                    />
-                  </FieldContent>
-                </h4>
-              </div>
-            </div>
-            <div className={classes.tags}>
-              <Tags
-                width="100%"
-                targetSourceId={data.contact._id}
-                targetLabel="contact"
-                publicLeftBottom
-              />
-            </div>
-          </Grid>
-
-          {/*/////////// section 2 //////////// */}
-          <Grid
-            item
-            xs={12}
-            container
-            className={`${classes.border} ${classes.dataSect}`}
-            spacing={0}
-          >
-            <Grid item xs={6} container spacing={1}>
-              <Grid item xs={5}>
-                <p className="dataLabels">Primary Email</p>
-              </Grid>
-              <Grid item xs={7}>
-                <FieldContent
-                  onlyChildren
-                  id={data.contact._id}
-                  content={{ primaryEmail: data.contact.primaryEmail }}
-                >
-                  <a
-                    href={`mailto:${data.contact.primaryEmail}`}
-                    target="_blank"
-                  >
-                    {data.contact.primaryEmail}
+            <Grid item xs={12} className={classes.border}>
+              <div className={classes.leftColumnTopRigthCorner}>
+                {contactData.primaryEmail && (
+                  <a href={"mailto:" + contactData.primaryEmail}>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      variant="outlined"
+                      startIcon={<MailOutlineIcon />}
+                    >
+                      Email
+                    </Button>
                   </a>
-                </FieldContent>
-              </Grid>
+                )}
 
-              <Grid item xs={5}>
-                <p className="dataLabels">Secondary Email</p>
-              </Grid>
-              <Grid item xs={7}>
-                <FieldContent
-                  onlyChildren
-                  id={data.contact._id}
-                  content={{ secondaryEmail: data.contact.secondaryEmail }}
+                <Button
+                  variant="contained"
+                  size="small"
+                  variant="outlined"
+                  startIcon={<DeleteIcon />}
+                  onClick={() => {
+                    setOpenDialog(true);
+                  }}
                 >
-                  <a
-                    href={`mailto:${data.contact.secondaryEmail}`}
-                    target="_blank"
-                  >
-                    {data.contact.secondaryEmail}
-                  </a>
-                </FieldContent>
-              </Grid>
+                  Delete
+                </Button>
+              </div>
+              <div>
+                <div className={classes.userIcon}>
+                  <StyleBadge badgeContent={5} color={"primary"}>
+                    <Avatar name={contactData.name} size="80" round />
+                  </StyleBadge>
+                </div>
+                <div className={classes.userName}>
+                  <h1 style={{ width: "max-content" }}>
+                    {/* {contactData.name} */}
 
-              <Grid item xs={5}>
-                <p className="dataLabels">Mobile Phone</p>
-              </Grid>
-              <Grid item xs={7}>
-                <FieldContent
-                  id={data.contact._id}
-                  content={{ mobilePhone: data.contact.mobilePhone }}
-                />
-              </Grid>
+                    <FieldContent
+                      noInputFooter
+                      noMargin
+                      id={contactData._id}
+                      content={{ name: contactData.name }}
+                    >
+                      {(contactData.facebook ||
+                        contactData.twitte ||
+                        contactData.linkedln) && (
+                        <span className={classes.socialMediaSection}>
+                          {contactData.facebook && (
+                            <a
+                              href={`${
+                                !contactData.facebook.startsWith("http") &&
+                                !contactData.facebook.startsWith("//")
+                                  ? "//"
+                                  : ""
+                              }${contactData.facebook}`}
+                              target="_blank"
+                            >
+                              <FacebookIcon />
+                            </a>
+                          )}
+                          {contactData.twitter && (
+                            <a
+                              href={`${
+                                !contactData.twitter.startsWith("http") &&
+                                !contactData.twitter.startsWith("//")
+                                  ? "//"
+                                  : ""
+                              }${contactData.twitter}`}
+                              target="_blank"
+                            >
+                              <TwitterIcon className={classes.twitterIcon} />
+                            </a>
+                          )}
+                          {contactData.linkedln && (
+                            <a
+                              href={`${
+                                !contactData.linkedln.startsWith("http") &&
+                                !contactData.linkedln.startsWith("//")
+                                  ? "//"
+                                  : ""
+                              }${contactData.linkedln}`}
+                              target="_blank"
+                            >
+                              <LinkedInIcon />
+                            </a>
+                          )}
+                        </span>
+                      )}
+                    </FieldContent>
+                  </h1>
+                  <h4>
+                    <FieldContent
+                      childrenLeft
+                      noMargin
+                      name="Address"
+                      id={contactData._id}
+                      content={{
+                        address1: contactData.address1,
+                        address2: contactData.address2,
+                        city: contactData.city,
+                        state: contactData.state,
+                        zip: contactData.zip,
+                        country: contactData.country,
+                      }}
+                    >
+                      <RoomIcon
+                        className={classes.addressIcon}
+                        fontSize="small"
+                      />
+                    </FieldContent>
+                  </h4>
 
-              <Grid item xs={5}>
-                <p className="dataLabels">Home Phone</p>
-              </Grid>
-              <Grid item xs={7}>
-                <FieldContent
-                  id={data.contact._id}
-                  content={{ homePhone: data.contact.homePhone }}
+                  <h4>
+                    <FieldContent
+                      childrenLeft
+                      noMargin
+                      name={"Company Name Or Job Title"}
+                      id={contactData._id}
+                      content={{
+                        companyName: contactData.companyName,
+                        jobTitle: contactData.jobTitle,
+                      }}
+                    >
+                      <LocationCityIcon
+                        className={classes.addressIcon}
+                        fontSize="small"
+                      />
+                    </FieldContent>
+                  </h4>
+                </div>
+              </div>
+              <div className={classes.tags}>
+                <Tags
+                  width="100%"
+                  targetSourceId={contactData._id}
+                  targetLabel="contact"
+                  publicLeftBottom
                 />
-              </Grid>
-
-              <Grid item xs={5}>
-                <p className="dataLabels">Alternate Phone</p>
-              </Grid>
-              <Grid item xs={7}>
-                <FieldContent
-                  id={data.contact._id}
-                  content={{ AltPhone: data.contact.AltPhone }}
-                />
-              </Grid>
-
-              <Grid item xs={5}>
-                <p className="dataLabels">Primary Address</p>
-              </Grid>
-              <Grid item xs={7}>
-                <FieldContent
-                  name=""
-                  id={data.contact._id}
-                  content={{
-                    address1: data.contact.address1,
-                    address2: data.contact.address2,
-                    city: data.contact.city,
-                    state: data.contact.state,
-                    zip: data.contact.zip,
-                    country: data.contact.country,
-                  }}
-                />
-              </Grid>
-
-              <Grid item xs={5}>
-                <p className="dataLabels">Secondary Address</p>
-              </Grid>
-              <Grid item xs={7}>
-                <FieldContent
-                  name=""
-                  id={data.contact._id}
-                  content={{
-                    address1Alt: data.contact.address1Alt,
-                    address2Alt: data.contact.address2Alt,
-                    cityAlt: data.contact.cityAlt,
-                    stateAlt: data.contact.stateAlt,
-                    zipAlt: data.contact.zipAlt,
-                    countryAlt: data.contact.countryAlt,
-                  }}
-                />
-              </Grid>
+              </div>
             </Grid>
 
-            <Grid item xs={6} container spacing={1}>
-              <Grid item xs={5}>
-                <p className="dataLabels">Relatives</p>
-              </Grid>
-              <Grid item xs={7}>
-                <FieldContent
-                  id={data.contact._id}
-                  content={{ relatives: data.contact.relatives }}
-                />
-              </Grid>
-
-              <Grid item xs={5}>
-                <p className="dataLabels">Linkedln Profile</p>
-              </Grid>
-              <Grid item xs={7}>
-                <FieldContent
-                  onlyChildren
-                  id={data.contact._id}
-                  content={{ linkedln: data.contact.linkedln }}
-                >
-                  {data.contact.linkedln && (
+            {/*/////////// section 2 //////////// */}
+            <Grid
+              item
+              xs={12}
+              container
+              className={`${classes.border} ${classes.dataSect}`}
+              spacing={0}
+            >
+              <Grid item xs={6} container spacing={1}>
+                <Grid item xs={5}>
+                  <p className="dataLabels">Primary Email</p>
+                </Grid>
+                <Grid item xs={7}>
+                  <FieldContent
+                    onlyChildren
+                    id={contactData._id}
+                    content={{ primaryEmail: contactData.primaryEmail }}
+                  >
                     <a
-                      href={`${
-                        !data.contact.linkedln.startsWith("http") &&
-                        !data.contact.linkedln.startsWith("//")
-                          ? "//"
-                          : ""
-                      }${data.contact.linkedln}`}
+                      href={`mailto:${contactData.primaryEmail}`}
                       target="_blank"
                     >
-                      {data.contact.linkedln}
+                      {contactData.primaryEmail}
                     </a>
-                  )}
-                </FieldContent>
-              </Grid>
+                  </FieldContent>
+                </Grid>
 
-              <Grid item xs={5}>
-                <p className="dataLabels">Facebook Profile</p>
-              </Grid>
-              <Grid item xs={7}>
-                <FieldContent
-                  onlyChildren
-                  id={data.contact._id}
-                  content={{ facebook: data.contact.facebook }}
-                >
-                  {data.contact.facebook && (
+                <Grid item xs={5}>
+                  <p className="dataLabels">Secondary Email</p>
+                </Grid>
+                <Grid item xs={7}>
+                  <FieldContent
+                    onlyChildren
+                    id={contactData._id}
+                    content={{ secondaryEmail: contactData.secondaryEmail }}
+                  >
                     <a
-                      href={`${
-                        !data.contact.facebook.startsWith("http") &&
-                        !data.contact.facebook.startsWith("//")
-                          ? "//"
-                          : ""
-                      }${data.contact.facebook}`}
+                      href={`mailto:${contactData.secondaryEmail}`}
                       target="_blank"
                     >
-                      {data.contact.facebook}
+                      {contactData.secondaryEmail}
                     </a>
-                  )}
-                </FieldContent>
+                  </FieldContent>
+                </Grid>
+
+                <Grid item xs={5}>
+                  <p className="dataLabels">Mobile Phone</p>
+                </Grid>
+                <Grid item xs={7}>
+                  <FieldContent
+                    id={contactData._id}
+                    content={{ mobilePhone: contactData.mobilePhone }}
+                  />
+                </Grid>
+
+                <Grid item xs={5}>
+                  <p className="dataLabels">Home Phone</p>
+                </Grid>
+                <Grid item xs={7}>
+                  <FieldContent
+                    id={contactData._id}
+                    content={{ homePhone: contactData.homePhone }}
+                  />
+                </Grid>
+
+                <Grid item xs={5}>
+                  <p className="dataLabels">Alternate Phone</p>
+                </Grid>
+                <Grid item xs={7}>
+                  <FieldContent
+                    id={contactData._id}
+                    content={{ AltPhone: contactData.AltPhone }}
+                  />
+                </Grid>
+
+                <Grid item xs={5}>
+                  <p className="dataLabels">Primary Address</p>
+                </Grid>
+                <Grid item xs={7}>
+                  <FieldContent
+                    name=""
+                    id={contactData._id}
+                    content={{
+                      address1: contactData.address1,
+                      address2: contactData.address2,
+                      city: contactData.city,
+                      state: contactData.state,
+                      zip: contactData.zip,
+                      country: contactData.country,
+                    }}
+                  />
+                </Grid>
+
+                <Grid item xs={5}>
+                  <p className="dataLabels">Secondary Address</p>
+                </Grid>
+                <Grid item xs={7}>
+                  <FieldContent
+                    name=""
+                    id={contactData._id}
+                    content={{
+                      address1Alt: contactData.address1Alt,
+                      address2Alt: contactData.address2Alt,
+                      cityAlt: contactData.cityAlt,
+                      stateAlt: contactData.stateAlt,
+                      zipAlt: contactData.zipAlt,
+                      countryAlt: contactData.countryAlt,
+                    }}
+                  />
+                </Grid>
               </Grid>
 
-              <Grid item xs={5}>
-                <p className="dataLabels">Twitter Profile</p>
-              </Grid>
-              <Grid item xs={7}>
-                <FieldContent
-                  onlyChildren
-                  id={data.contact._id}
-                  content={{ twitter: data.contact.twitter }}
-                >
-                  {data.contact.twitter && (
-                    <a
-                      href={`${
-                        !data.contact.twitter.startsWith("http") &&
-                        !data.contact.twitter.startsWith("//")
-                          ? "//"
-                          : ""
-                      }${data.contact.twitter}`}
-                      target="_blank"
-                    >
-                      {data.contact.twitter}
-                    </a>
-                  )}
-                </FieldContent>
-              </Grid>
+              <Grid item xs={6} container spacing={1}>
+                <Grid item xs={5}>
+                  <p className="dataLabels">Relatives</p>
+                </Grid>
+                <Grid item xs={7}>
+                  <FieldContent
+                    id={contactData._id}
+                    content={{ relatives: contactData.relatives }}
+                  />
+                </Grid>
 
-              <Grid item xs={5}>
-                <p className="dataLabels">Lead Source</p>
-              </Grid>
-              <Grid item xs={7}>
-                <FieldContent
-                  id={data.contact._id}
-                  content={{ leadSource: data.contact.leadSource }}
-                />
-              </Grid>
+                <Grid item xs={5}>
+                  <p className="dataLabels">Linkedln Profile</p>
+                </Grid>
+                <Grid item xs={7}>
+                  <FieldContent
+                    onlyChildren
+                    id={contactData._id}
+                    content={{ linkedln: contactData.linkedln }}
+                  >
+                    {contactData.linkedln && (
+                      <a
+                        href={`${
+                          !contactData.linkedln.startsWith("http") &&
+                          !contactData.linkedln.startsWith("//")
+                            ? "//"
+                            : ""
+                        }${contactData.linkedln}`}
+                        target="_blank"
+                      >
+                        {contactData.linkedln}
+                      </a>
+                    )}
+                  </FieldContent>
+                </Grid>
 
-              <Grid item xs={5}>
-                <p className="dataLabels">Created By</p>
-              </Grid>
-              <Grid item xs={7}>
-                {data.contact.createBy && data.contact.createBy.name === null && (
-                  <div className={classes.userSmallLoader}>
-                    <CircularProgress size={22} color="secondary" />
-                  </div>
-                )}
-                {(data.contact.createBy && data.contact.createBy.name) ||
-                data.contact.createAt ? (
-                  <p style={{ minHeight: "28px" }}>
-                    {data.contact.createBy && data.contact.createBy.name
-                      ? data.contact.createBy.name
-                      : ""}
+                <Grid item xs={5}>
+                  <p className="dataLabels">Facebook Profile</p>
+                </Grid>
+                <Grid item xs={7}>
+                  <FieldContent
+                    onlyChildren
+                    id={contactData._id}
+                    content={{ facebook: contactData.facebook }}
+                  >
+                    {contactData.facebook && (
+                      <a
+                        href={`${
+                          !contactData.facebook.startsWith("http") &&
+                          !contactData.facebook.startsWith("//")
+                            ? "//"
+                            : ""
+                        }${contactData.facebook}`}
+                        target="_blank"
+                      >
+                        {contactData.facebook}
+                      </a>
+                    )}
+                  </FieldContent>
+                </Grid>
 
-                    {`${
-                      data.contact.createAt
-                        ? " - " +
-                          anyToDate(data.contact.createAt).toLocaleString()
-                        : ""
-                    }`}
-                  </p>
-                ) : (
-                  <p className={classes.notAvailableP}>Not Available</p>
-                )}
-              </Grid>
+                <Grid item xs={5}>
+                  <p className="dataLabels">Twitter Profile</p>
+                </Grid>
+                <Grid item xs={7}>
+                  <FieldContent
+                    onlyChildren
+                    id={contactData._id}
+                    content={{ twitter: contactData.twitter }}
+                  >
+                    {contactData.twitter && (
+                      <a
+                        href={`${
+                          !contactData.twitter.startsWith("http") &&
+                          !contactData.twitter.startsWith("//")
+                            ? "//"
+                            : ""
+                        }${contactData.twitter}`}
+                        target="_blank"
+                      >
+                        {contactData.twitter}
+                      </a>
+                    )}
+                  </FieldContent>
+                </Grid>
 
-              <Grid item xs={5}>
-                <p className="dataLabels">Last Update By</p>
-              </Grid>
-              <Grid item xs={7}>
-                {data.contact.lastUpdateBy &&
-                  data.contact.lastUpdateBy.name === null && (
+                <Grid item xs={5}>
+                  <p className="dataLabels">Lead Source</p>
+                </Grid>
+                <Grid item xs={7}>
+                  <FieldContent
+                    id={contactData._id}
+                    content={{ leadSource: contactData.leadSource }}
+                  />
+                </Grid>
+
+                <Grid item xs={5}>
+                  <p className="dataLabels">Created By</p>
+                </Grid>
+                <Grid item xs={7}>
+                  {contactData.createBy && contactData.createBy.name === null && (
                     <div className={classes.userSmallLoader}>
                       <CircularProgress size={22} color="secondary" />
                     </div>
                   )}
-                {(data.contact.lastUpdateBy &&
-                  data.contact.lastUpdateBy.name) ||
-                data.contact.lastUpdateAt ? (
-                  <p style={{ minHeight: "28px" }}>
-                    {data.contact.lastUpdateBy && data.contact.lastUpdateBy.name
-                      ? data.contact.lastUpdateBy.name
-                      : ""}
-                    {`${
-                      data.contact.lastUpdateAt
-                        ? " - " +
-                          anyToDate(data.contact.lastUpdateAt).toLocaleString()
-                        : ""
-                    }`}
-                  </p>
-                ) : (
-                  <p className={classes.notAvailableP}>Not Available</p>
-                )}
+                  {(contactData.createBy && contactData.createBy.name) ||
+                  contactData.createAt ? (
+                    <p style={{ minHeight: "28px" }}>
+                      {contactData.createBy && contactData.createBy.name
+                        ? contactData.createBy.name
+                        : ""}
+
+                      {`${
+                        contactData.createAt
+                          ? " - " +
+                            anyToDate(contactData.createAt).toLocaleString()
+                          : ""
+                      }`}
+                    </p>
+                  ) : (
+                    <p className={classes.notAvailableP}>Not Available</p>
+                  )}
+                </Grid>
+
+                <Grid item xs={5}>
+                  <p className="dataLabels">Last Update By</p>
+                </Grid>
+                <Grid item xs={7}>
+                  {contactData.lastUpdateBy &&
+                    contactData.lastUpdateBy.name === null && (
+                      <div className={classes.userSmallLoader}>
+                        <CircularProgress size={22} color="secondary" />
+                      </div>
+                    )}
+                  {(contactData.lastUpdateBy &&
+                    contactData.lastUpdateBy.name) ||
+                  contactData.lastUpdateAt ? (
+                    <p style={{ minHeight: "28px" }}>
+                      {contactData.lastUpdateBy && contactData.lastUpdateBy.name
+                        ? contactData.lastUpdateBy.name
+                        : ""}
+                      {`${
+                        contactData.lastUpdateAt
+                          ? " - " +
+                            anyToDate(contactData.lastUpdateAt).toLocaleString()
+                          : ""
+                      }`}
+                    </p>
+                  ) : (
+                    <p className={classes.notAvailableP}>Not Available</p>
+                  )}
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
 
-          {/*/////////// Recent Converstaion. //////////// */}
-          <Grid item xs={12} className={`${classes.border}`}>
-            <RecentConversations header={"Recent Conversations"} />
-          </Grid>
+            {/*/////////// Recent Converstaion. //////////// */}
+            <Grid item xs={12} className={`${classes.border}`}>
+              <RecentConversations header={"Recent Conversations"} />
+            </Grid>
 
-          {/*/////////// section 3 //////////// */}
-          {data.contact &&
-            data.contact.owners &&
-            data.contact.owners.length > 0 && (
-              <Grid
-                item
-                xs={12}
-                className={`${classes.border} ${classes.ownersTable}`}
-              >
-                <M1nTable
-                  parent="ownersPerContacts"
-                  ownersIdsArray={data.contact.owners}
-                  contactId={props.contactId}
-                />
-              </Grid>
-            )}
+            {/*/////////// section 3 //////////// */}
+            {contactData &&
+              contactData.owners &&
+              contactData.owners.length > 0 && (
+                <Grid
+                  item
+                  xs={12}
+                  className={`${classes.border} ${classes.ownersTable}`}
+                >
+                  <M1nTable
+                    parent="ownersPerContacts"
+                    ownersIdsArray={contactData.owners}
+                    contactId={props.contactId}
+                  />
+                </Grid>
+              )}
+          </Grid>
         </Grid>
-      </Grid>
 
-      {/*/////////// rigth column //////////// */}
-      <Grid
-        className={classes.border}
-        style={{ MinHeight: "100%" }}
-        item
-        xs={3}
-      >
-        <div style={{ marginBottom: "4px" }}>
-          <Grid container className={classes.rightColumnGrid} spacing={1}>
-            {/* //////////// Deal Card ////////////// */}
+        {/*/////////// rigth column //////////// */}
+        <Grid
+          className={classes.border}
+          style={{ MinHeight: "100%" }}
+          item
+          xs={3}
+        >
+          <div style={{ marginBottom: "4px" }}>
+            <Grid container className={classes.rightColumnGrid} spacing={1}>
+              {/* //////////// Deal Card ////////////// */}
 
-            {/* TEMPORARY COMMENT OUT. DO NOT DELETE. */}
-            {/* <Grid item xs={12}>
+              {/* TEMPORARY COMMENT OUT. DO NOT DELETE. */}
+              {/* <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <div className={classes.divDealCard}>
                   <p className={classes.pDealCard}>
@@ -667,50 +679,60 @@ export default function ContactDetailCard(props) {
             </Grid>
              */}
 
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <Deals
-                  contact={data.contact}
-                  transactData={transactData}
-                  transactId={transactId}
-                />
-              </Paper>
-              <Paper className={classes.paper}>
-                <LeadScore
-                  score={5}
-                  //lastSeen={""}
-                  lastContacted={"6 months ago"}
-                  lastModified={"3 months ago"}
-                />
-              </Paper>
-              <Paper className={classes.paper}>
-                <Comments
-                  targetSourceId={data.contact._id}
-                  targetLabel="contact"
-                />
-              </Paper>
+              <Grid item xs={12}>
+                <Paper className={classes.paper}>
+                  <Deals
+                    contact={contactData}
+                    transactData={transactData}
+                    transactId={transactId}
+                  />
+                </Paper>
+                <Paper className={classes.paper}>
+                  <LeadScore
+                    score={5}
+                    //lastSeen={""}
+                    lastContacted={"6 months ago"}
+                    lastModified={"3 months ago"}
+                  />
+                </Paper>
+                <Paper className={classes.paper}>
+                  <Comments
+                    targetSourceId={contactData._id}
+                    targetLabel="contact"
+                  />
+                </Paper>
+              </Grid>
+              <Grid item xs={12}>
+                <Paper className={classes.paper}>
+                  <Activities
+                    id={contactData._id}
+                    activityLog={contactData.activityLog}
+                  />
+                </Paper>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <Activities
-                  id={data.contact._id}
-                  activityLog={data.contact.activityLog}
-                />
-              </Paper>
-            </Grid>
-          </Grid>
-        </div>
+          </div>
+        </Grid>
+        <ConfirmationDialog
+          openDialog={openDialog}
+          handleDialogClose={setOpenDialog}
+          handleCloseExpandableCard={props.handleCloseExpandableCard}
+          id={contactData._id}
+        />
+        {loading && (
+          <div
+            style={{
+              padding: "20px",
+              position: "absolute",
+              height: "100%",
+              width: "100%",
+              zIndex: "50",
+            }}
+          >
+            <CircularProgress size={80} disableShrink color="secondary" />
+          </div>
+        )}
       </Grid>
-      <ConfirmationDialog
-        openDialog={openDialog}
-        handleDialogClose={setOpenDialog}
-        handleCloseExpandableCard={props.handleCloseExpandableCard}
-        id={data.contact._id}
-      />
-    </Grid>
-  ) : (
-    <div style={{ padding: "15px", height: "100%" }}>
-      <CircularProgress size={80} disableShrink color="secondary" />
-    </div>
+    )
   );
 }

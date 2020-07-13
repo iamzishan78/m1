@@ -21,15 +21,15 @@ const useStyles = makeStyles((theme) => ({
     margin: "0 auto",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   leadTitle: {
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   leadInfoTitle: {
-    fontWeight: 'bold'
-  }
+    fontWeight: "bold",
+  },
 }));
 
 export default function LeadScore({
@@ -44,7 +44,7 @@ export default function LeadScore({
 
   return (
     <Card className={classes.root} variant="outlined">
-      <CardActions classes={classes.leadTitle}>
+      <CardActions className={classes.leadTitle}>
         <Typography variant="button" gutterBottom>
           Lead Score
         </Typography>
@@ -57,9 +57,7 @@ export default function LeadScore({
             }}
           >
             <div className={classes.leadScore}>
-              <Typography variant="h4">
-                {score}
-              </Typography>
+              <Typography variant="h4">{score}</Typography>
             </div>
           </div>
           <div
@@ -68,7 +66,7 @@ export default function LeadScore({
               marginBottom: "15px",
             }}
           >
-           {/* <Typography variant="button" component="p" className={classes.leadInfoTitle}>
+            {/* <Typography variant="button" component="p" className={classes.leadInfoTitle}>
               Last Seen:
             </Typography>
             <Typography variant="caption" component="p">
@@ -81,7 +79,11 @@ export default function LeadScore({
               marginBottom: "15px",
             }}
           >
-            <Typography variant="button" component="p" className={classes.leadInfoTitle}>
+            <Typography
+              variant="button"
+              component="p"
+              className={classes.leadInfoTitle}
+            >
               Last contacted:
             </Typography>
             <Typography variant="caption" component="p">
@@ -94,7 +96,11 @@ export default function LeadScore({
               marginBottom: "15px",
             }}
           >
-            <Typography variant="button" component="p" className={classes.leadInfoTitle}>
+            <Typography
+              variant="button"
+              component="p"
+              className={classes.leadInfoTitle}
+            >
               Last modified:
             </Typography>
             <Typography variant="caption" component="p">

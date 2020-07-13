@@ -23,10 +23,14 @@ export default function EditionPopover(props) {
           vertical: "top",
           horizontal: "center",
         }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
+        transformOrigin={
+          props.transformOrigin
+            ? props.transformOrigin
+            : {
+                vertical: "top",
+                horizontal: "center",
+              }
+        }
         onKeyDown={(event) => {
           event.stopPropagation();
           event.preventDefault();

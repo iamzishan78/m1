@@ -67,7 +67,7 @@ export default ({
               }
             />
             <ListItemIcon>
-              <MoreVertIcon classes={classes.moreIcon} />
+              <MoreVertIcon className ={classes.moreIcon} />
             </ListItemIcon>
           </ListItem>
           <ListItem>
@@ -85,7 +85,7 @@ export default ({
               }
             />
             <ListItemIcon>
-              <MoreVertIcon classes={classes.moreIcon} />
+              <MoreVertIcon className ={classes.moreIcon} />
             </ListItemIcon>
           </ListItem>
         </List>

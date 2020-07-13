@@ -3249,7 +3249,6 @@ export default function Map() {
         var bearing = map.getBearing();
 
         console.log(stateApp.mapVars);
-        console.log("**************************");
 
         setStateApp((stateApp) => ({
           ...stateApp,
