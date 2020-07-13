@@ -188,6 +188,7 @@ export default function SpatialDataCardEdit(props) {
   const [custLayers, setCustLayers] = useState([]);
 
   const [openDeleteModal, setDeleteModal] = useState(false);
+  const [showError, setShowError] = useState(false);
 
 
   const inputLabel = useRef(null);
@@ -232,25 +233,29 @@ export default function SpatialDataCardEdit(props) {
     setDataNotes(updatedNotes);
   };
   const saveSpatialData = () => {
-    const spatialData = {
-      sdType: dataType === "" ? "interest" : dataType,
-      shapeLabel: dataName,
-      projectName: dataProject,
-      sdGrossAcres: grossAcres,
-      // sdNotes: dataNotes
-    };
-    props.saveSpatialData(spatialData, dataType);
-
-    const tmpChecked = stateApp.tempCheckedUserDefinedLayers;
-    const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
-    if (tmpChecked != null && stateApp.checkedUserDefinedLayers.indexOf(tmpChecked) === -1) {
-      checkedLayers.push(tmpChecked)
+    if (dataName) {
+      const spatialData = {
+        sdType: dataType === "" ? "interest" : dataType,
+        shapeLabel: dataName,
+        projectName: dataProject,
+        sdGrossAcres: grossAcres,
+        // sdNotes: dataNotes
+      };
+      props.saveSpatialData(spatialData, dataType);
+  
+      const tmpChecked = stateApp.tempCheckedUserDefinedLayers;
+      const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
+      if (tmpChecked != null && stateApp.checkedUserDefinedLayers.indexOf(tmpChecked) === -1) {
+        checkedLayers.push(tmpChecked)
+      }
+      setStateApp({
+        ...stateApp,
+        checkedUserDefinedLayers: checkedLayers,
+        tempCheckedUserDefinedLayers: null
+      })
+    } else {
+      setShowError(true);
     }
-    setStateApp({
-      ...stateApp,
-      checkedUserDefinedLayers: checkedLayers,
-      tempCheckedUserDefinedLayers: null
-    })
   };
 
   const closeSpatialDataCard = () => {
@@ -385,10 +390,13 @@ export default function SpatialDataCardEdit(props) {
                 variant="outlined"
                 label="Name"
                 type="text"
+                error={showError}
                 //placeholder= "Enter Name"
                 value={dataName}
                 autoComplete="disabled"
                 onChange={evt => setDataName(evt.target.value)}
+                helperText={showError ? 'Name is required!' : ''}
+                required
               ></TextField>
             </div>
             <div className={classes.TextField}>

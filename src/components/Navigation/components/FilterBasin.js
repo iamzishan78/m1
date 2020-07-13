@@ -36,6 +36,7 @@ export default function BasinFilterJ() {
       const filter = basinShapes.basinShapes.map(basinShape => {
         return JSON.parse(basinShape.shape);
       });
+      console.log(filter);
       setStateNav((stateNav) => ({ ...stateNav, filterBasin: filter }));
     }
   }, [basinShapes])
