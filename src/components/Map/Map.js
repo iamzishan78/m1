@@ -1740,7 +1740,6 @@ export default function Map() {
       const findBounds = (wells) => {
         let latArray = wells.map((item) => item.properties.latitude);
         let longArray = wells.map((item) => item.properties.longitude);
-        console.log(latArray, longArray);
 
         latArray = latArray.filter((item) => item !== 0);
         longArray = longArray.filter((item) => item !== 0);
@@ -1750,7 +1749,7 @@ export default function Map() {
         let maxLong = Math.max(...longArray);
         let minLong = Math.min(...longArray);
 
-        if (fitBounds) {
+        if (fitBounds && fitBounds.maxLat && fitBounds.minLat && fitBounds.maxLong && fitBounds.minLong) {
           const {
             maxLat: maxLatSApp,
             minLat: minLatSApp,
@@ -1797,7 +1796,14 @@ export default function Map() {
           "GLOUnits",
           "GLOUnitLabels",
           "wellpoints",
-          "welllines"
+          "welllines",
+          "interest",
+          "interest_labels",
+          "parcel",
+          "parcel_labels",
+          "Tracked Wells",
+          "Tracked Owners",
+          "Tags Filter"
         ];
         if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
           const basinShapes = stateNav.filterBasin;
@@ -1807,6 +1813,9 @@ export default function Map() {
               const featuresList = map.querySourceFeatures("composite", {
                 sourceLayer: layer.sourceLayer,
               });
+              if (layer == 'interest') {
+                console.log(featuresList);
+              }
               if (featuresList && featuresList.length > 0) {
                 const result = featuresList.filter((feature) => {
                   if (feature.geometry.type === "MultiPolygon") {
