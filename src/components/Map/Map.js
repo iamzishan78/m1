@@ -2341,8 +2341,8 @@ export default function Map() {
           });
         }
         isFilterSet = true;
-        geographyFilterCount += stateNav.aoiName.length;
-        totalCount += stateNav.aoiName.length;
+        geographyFilterCount += stateNav.parcelName.length;
+        totalCount += stateNav.parcelName.length;
       } else {
         setStateApp((stateApp) => ({
           ...stateApp,
