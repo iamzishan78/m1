@@ -1803,19 +1803,24 @@ export default function Map() {
           "parcel_labels",
           "Tracked Wells",
           "Tracked Owners",
-          "Tags Filter"
+          "Tags Filter",
+          "permits",
+          "rigs",
         ];
         if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
           const basinShapes = stateNav.filterBasin;
           filterLayers.forEach((filterLayer) => {
             const layer = map.getLayer(filterLayer);
             if (layer) {
-              const featuresList = map.querySourceFeatures("composite", {
-                sourceLayer: layer.sourceLayer,
-              });
-              if (layer == 'interest') {
-                console.log(featuresList);
+              let featuresList = [];
+              if (layer.source === "composite") {
+                featuresList = map.querySourceFeatures("composite", {
+                  sourceLayer: layer.sourceLayer,
+                });
+              } else {
+                featuresList = map.querySourceFeatures(layer.source);
               }
+              console.log(layer, featuresList);
               if (featuresList && featuresList.length > 0) {
                 const result = featuresList.filter((feature) => {
                   if (feature.geometry.type === "MultiPolygon") {
