@@ -172,6 +172,16 @@ export const userDefinedLayers = [
         },
       },
     ],
+    interactionProps: {
+      hoverActions: {
+        mouseMove: {
+          cursor: "pointer",
+        },
+        mouseLeave: {
+          cursor: "",
+        },
+      },
+    },
   },
   {
     name: "Title",
@@ -222,6 +232,16 @@ export const userDefinedLayers = [
         },
       },
     ],
+    interactionProps: {
+      hoverActions: {
+        mouseMove: {
+          cursor: "pointer",
+        },
+        mouseLeave: {
+          cursor: "",
+        },
+      },
+    },
   },
 
   {

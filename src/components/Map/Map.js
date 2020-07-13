@@ -3129,10 +3129,6 @@ export default function Map() {
 
         const well = stateApp.styleLayers[wellIndex];
 
-        if (well.wellPointClick) {
-          map.off("click", "wellpoints", well.wellPointClick);
-        }
-
         if (well.wellMouseMove) {
           map.off("mousemove", "wellpoints", well.wellMouseMove);
           map.off("mousemove", "welllines", well.wellMouseMove);
@@ -3143,15 +3139,10 @@ export default function Map() {
           map.off("mouseleave", "welllines", well.wellMouseLeave);
         }
 
-        if (well.wellLineClick) {
-          map.off("click", "welllines", well.wellLineClick);
-        }
-
         if (
           stateApp.checkedLayersInteraction.length > 0 &&
           selectedLayerIntereaction.indexOf(wellIndex) > -1
         ) {
-          // map.on("click", "wellpoints", wellPointClick);
 
           map.on("mousemove", "wellpoints", wellMouseMove);
 
@@ -3161,13 +3152,10 @@ export default function Map() {
 
           map.on("mouseleave", "welllines", wellMouseLeave);
 
-          // map.on("click", "welllines", wellLineClick);
 
           const wellcp = { ...well };
           wellcp.wellMouseLeave = wellMouseLeave;
           wellcp.wellMouseMove = wellMouseMove;
-          // wellcp.wellPointClick = wellPointClick;
-          // wellcp.wellLineClick = wellLineClick;
 
           const styleLayers = stateApp.styleLayers.slice(0);
           styleLayers[wellIndex] = wellcp;
