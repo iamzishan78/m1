@@ -27,7 +27,7 @@ export default () => {
     const layerData = groupBy(stateApp.customLayers, "layer")['parcel'];
     if (layerData && layerData.length > 0) {
       setParcelData(layerData);
-      setParcelNameList(layerData.map(layer => layer.name));
+      setParcelNameList(layerData.filter(layer => layer.name).map(layer => layer.name));
     }
     
   }, [stateApp.customLayers]);

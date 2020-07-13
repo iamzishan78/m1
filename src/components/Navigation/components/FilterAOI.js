@@ -27,7 +27,7 @@ export default () => {
     const layerData = groupBy(stateApp.customLayers, "layer")['interest'];
     if (layerData && layerData.length > 0) {
       setAOIData(layerData);
-      setAOINameList(layerData.map(layer => layer.name));
+      setAOINameList(layerData.filter(layer => layer.name).map(layer => layer.name));
     }    
   }, [stateApp.customLayers]);
 
