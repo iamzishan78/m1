@@ -1737,35 +1737,30 @@ export default function Map() {
 
       let fitBounds = {...stateApp.fitBounds};
 
-      const findBounds = (wells) => {
-        let latArray = wells.map((item) => item.properties.latitude);
-        let longArray = wells.map((item) => item.properties.longitude);
-
-        latArray = latArray.filter((item) => item !== 0);
-        longArray = longArray.filter((item) => item !== 0);
-
-        let maxLat = Math.max(...latArray);
-        let minLat = Math.min(...latArray);
-        let maxLong = Math.max(...longArray);
-        let minLong = Math.min(...longArray);
-
+      const findBounds = (shapes) => {
+        let bound = null;
         if (fitBounds && fitBounds.maxLat && fitBounds.minLat && fitBounds.maxLong && fitBounds.minLong) {
-          const {
-            maxLat: maxLatSApp,
-            minLat: minLatSApp,
-            maxLong: maxLongSApp,
-            minLong: minLongSApp,
-          } = fitBounds;
-
-          return {
-            maxLat: maxLatSApp < maxLat ? maxLat : maxLatSApp,
-            minLat: minLatSApp > minLat ? minLat : minLatSApp,
-            maxLong: maxLongSApp < maxLong ? maxLong : maxLongSApp,
-            minLong: minLongSApp > minLong ? minLong : minLongSApp,
-          };
+          bound = fitBounds;
         }
-
-        return { maxLat, minLat, maxLong, minLong };
+        if (shapes && shapes.length > 0) {
+          shapes.forEach(shape => {
+            const bbox = turf.bbox(shape);
+            if (bound) {
+              bound.minLong = bound.minLong > bbox[0] ? bbox[0] : bound.minLong;
+              bound.minLat = bound.minLat > bbox[1] ? bbox[1] : bound.minLat;
+              bound.maxLong = bound.maxLong < bbox[2] ? bbox[2] : bound.maxLong;
+              bound.maxLat = bound.maxLat < bbox[3] ? bbox[3] : bound.maxLat;
+            } else {
+              bound = {
+                minLong: bbox[0],
+                minLat: bbox[1],
+                maxLong: bbox[2],
+                maxLat: bbox[3],
+              }
+            }
+          })
+        }
+        return bound;
       };
 
       if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
@@ -1809,6 +1804,7 @@ export default function Map() {
         ];
         if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
           const basinShapes = stateNav.filterBasin;
+          fitBounds = findBounds(basinShapes);
           filterLayers.forEach((filterLayer) => {
             const layer = map.getLayer(filterLayer);
             if (layer) {
@@ -1920,9 +1916,6 @@ export default function Map() {
 
                 // console.log(ids);
                 if (ids.length > 0) {
-                  if (filterLayer === 'wellpoints') {
-                    fitBounds = findBounds(result);
-                  }
                   if (!filterCustomArray[filterLayer]) {
                     filterCustomArray[filterLayer] = [];
                   }
@@ -1978,13 +1971,16 @@ export default function Map() {
         }
         let aoiName = stateNav.aoiName;
         if (aoiName) {
-          filterCustomArray['interest'] = [
+          if (!filterCustomArray['interest']) {
+            filterCustomArray['interest'] = [];
+          }
+          filterCustomArray['interest'].push([
             "match",
             ["get", "shapeLabel"],
             aoiName,
             true,
             false
-          ];
+          ]);
         }
         const filterLayers = [
           "GLOLeases",
@@ -2003,6 +1999,7 @@ export default function Map() {
         ];
         if (stateNav.filterAOI && stateNav.filterAOI.length > 0) {
           const aoiShapes = stateNav.filterAOI;
+          fitBounds = findBounds(aoiShapes);
           filterLayers.forEach((filterLayer) => {
             const layer = map.getLayer(filterLayer);
             if (layer) {
@@ -2014,7 +2011,6 @@ export default function Map() {
               } else {
                 featuresList = map.querySourceFeatures(layer.source);
               }
-              console.log(layer, featuresList);
               if (featuresList && featuresList.length > 0) {
                 const result = featuresList.filter((feature) => {
                   if (feature.geometry.type === "MultiPolygon") {
@@ -2106,11 +2102,7 @@ export default function Map() {
                 ids = ids.filter(onlyUnique);
 
                 // console.log(ids);
-                if (ids.length > 0) {
-                  if (filterLayer === 'wellpoints') {
-                    fitBounds = findBounds(result);
-                  }
-  
+                if (ids.length > 0) {  
                   if (!filterCustomArray[filterLayer]) {
                     filterCustomArray[filterLayer] = [];
                   }
@@ -2170,13 +2162,16 @@ export default function Map() {
         }
         let parcelName = stateNav.parcelName;
         if (parcelName) {
-          filterCustomArray['parcel'] = [
+          if (!filterCustomArray['parcel']) {
+            filterCustomArray['parcel'] = [];
+          }
+          filterCustomArray['parcel'].push([
             "match",
             ["get", "shapeLabel"],
             parcelName,
             true,
             false
-          ];
+          ]);
         }
         const filterLayers = [
           "GLOLeases",
@@ -2195,6 +2190,7 @@ export default function Map() {
         ];
         if (stateNav.filterParcel && stateNav.filterParcel.length > 0) {
           const parcelShapes = stateNav.filterParcel;
+          fitBounds = findBounds(parcelShapes);
           filterLayers.forEach((filterLayer) => {
             const layer = map.getLayer(filterLayer);
             if (layer) {
@@ -2299,10 +2295,6 @@ export default function Map() {
 
                 // console.log(ids);
                 if (ids.length > 0) {
-                  if (filterLayer === 'wellpoints') {
-                    fitBounds = findBounds(result);
-                  }
-
                   if (!filterCustomArray[filterLayer]) {
                     filterCustomArray[filterLayer] = [];
                   }
