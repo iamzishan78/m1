@@ -4,7 +4,7 @@ import { AppContext } from "../../AppContext";
 import { CircularProgress } from "@material-ui/core";
 import Chip from "@material-ui/core/Chip";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import { USERAVAILABLETAGSQUERY } from "../../graphQL/useQueryUserAvailableTags";
 import { TAGSBYOBJECTSIDS } from "../../graphQL/useQueryTagsByObjectsIds";
@@ -15,10 +15,45 @@ import Grid from "@material-ui/core/Grid";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
+import ClearIcon from "@material-ui/icons/Clear";
+
+const AntSwitch = withStyles((theme) => ({
+  root: {
+    width: 28,
+    height: 16,
+    padding: 0,
+    display: "flex",
+  },
+  switchBase: {
+    padding: 2,
+    color: theme.palette.grey[500],
+    "&$checked": {
+      transform: "translateX(12px)",
+      color: theme.palette.common.white,
+      "& + $track": {
+        opacity: 1,
+        backgroundColor: "#12ABE0",
+        borderColor: "#12ABE0",
+      },
+    },
+  },
+  thumb: {
+    width: 12,
+    height: 12,
+    boxShadow: "none",
+  },
+  track: {
+    border: `1px solid ${theme.palette.grey[500]}`,
+    borderRadius: 16 / 2,
+    opacity: 1,
+    backgroundColor: theme.palette.common.white,
+  },
+  checked: {},
+}))(Switch);
 
 const useStyles = makeStyles((theme) => ({
   rootDiv: {
-    width: (props) => (props.width ? props.width : "500px"),
+    width: ({ width }) => (width ? width : "500px"),
     "& > * + *": {
       marginTop: theme.spacing(5),
     },
@@ -27,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   switchButtom: {
+    width: "fit-content",
     alignSelf: "flex-end",
     marginRight: 0,
     "& span.MuiTypography-body1": {
@@ -40,20 +76,56 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignSelf: "unset",
     margin: 0,
-    "& h3": { margin: "0 0 0 13px", color: "#8D8D8D !important" },
+    "& .MuiTypography-root": {
+      display: "none",
+    },
+    "& .h4Before": { margin: "0 13px", color: "#202020 !important" },
+    "& .h4After": { margin: "0 0 0 13px", color: "#B7B7B7 !important" },
   },
+  chip: {
+    "& .MuiChip-root": {
+      backgroundColor: "#ECEDED",
+      color: "#606060",
+    },
+  },
+  // input: {
+  //   "& input": {
+  //     color: ({ textValue }) => (textValue ? "" : "#008ebf"),
+  //     backgroundColor: ({ textValue }) => (textValue ? "" : "#D5F4FF"),
+  //     maxWidth: ({ textValue }) => (textValue ? "" : "33px"),
+  //     width: ({ textValue }) => (textValue ? "" : "33px"),
+  //     height: ({ textValue }) => (textValue ? "" : "32px"),
+  //     fontSize: ({ textValue }) => (textValue ? "" : "25px"),
+  //     margin: ({ textValue }) => (textValue ? "" : "3px"),
+  //     padding: ({ textValue }) => (textValue ? "" : "0px !important"),
+  //     borderRadius: ({ textValue }) => (textValue ? "" : "50%"),
+  //     textAlign: ({ textValue }) => (textValue ? "" : "center"),
+  //     cursor: ({ textValue }) => (textValue ? "" : "pointer"),
+  //     "&:hover": {
+  //       boxShadow: ({ textValue }) =>
+  //         textValue
+  //           ? ""
+  //           : "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
+  //       backgroundColor: ({ textValue }) =>
+  //         textValue ? "" : "rgba(0, 0, 0, 0.08)",
+  //       transition: ({ textValue }) =>
+  //         textValue
+  //           ? ""
+  //           : "background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+  //     },
+  //   },
+  // },
 }));
 
 export default function Tags(props) {
   const [stateApp] = useContext(AppContext);
-  const classes = useStyles(props);
-
   const [tagsArray, setTagsArray] = useState([]);
   const [userAvailableTagsArray, setUserAvailableTagsArray] = useState([]);
   const [textValue, setTextValue] = useState("");
   const [loadingTags, setLoadingTags] = useState(true);
   const [addInDropDown, setAddInDropDown] = useState(false);
   const [publicTag, setPublicTag] = useState(true);
+  const classes = useStyles({ ...props, textValue });
 
   const [getTagsByObjectId, { data: dataTags }] = useLazyQuery(
     TAGSBYOBJECTIDQUERY,
@@ -377,14 +449,24 @@ export default function Tags(props) {
           } ${!publicTag ? classes.switchTextDeselected : ""}`}
           control={
             <React.Fragment>
-              {props.publicLeftBottom && <h3>Tags</h3>}
-              <Switch
+              {props.publicLeftBottom && <h4 className="h4Before">Tags</h4>}
+              {/* <Switch
                 size="small"
                 checked={publicTag}
                 onChange={() => {
                   setPublicTag(!publicTag);
                 }}
+              /> */}
+
+              <AntSwitch
+                checked={publicTag}
+                onChange={() => {
+                  setPublicTag(!publicTag);
+                }}
+                name="checkedC"
               />
+
+              {props.publicLeftBottom && <h4 className="h4After">Shared</h4>}
             </React.Fragment>
           }
           label="Shared"
@@ -403,6 +485,7 @@ export default function Tags(props) {
           </Grid>
           <Grid item xs={12}>
             <Autocomplete
+              className={classes.chip}
               multiple
               id="tags-outlined"
               onChange={(e, newValue) => {
@@ -427,9 +510,9 @@ export default function Tags(props) {
                             ? tag._id
                             : tag.ids.join("???|||///")
                         }
-                        variant="outlined"
                         label={tag.tag}
                         {...getTagProps({ index })}
+                        deleteIcon={<ClearIcon />}
                       />
                     );
                   }
@@ -439,7 +522,9 @@ export default function Tags(props) {
                 <TextField
                   {...params}
                   variant="outlined"
+                  className={classes.input}
                   label={!props.publicLeftBottom ? "Tags" : null}
+                  // placeholder="+"
                   placeholder="New..."
                   fullWidth
                   value={textValue}

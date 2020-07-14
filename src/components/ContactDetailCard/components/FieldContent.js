@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
       lineHeight: "1.43",
     },
   },
-  notAvailableP: { color: "#898989b0", fontSize: "13px" },
+  notAvailableP: { color: "#bababaab", fontSize: "13px" },
   loader: {
     position: "relative",
     top: "-37px",

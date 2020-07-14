@@ -47,8 +47,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "15px",
   },
   border: {
-    borderBottom: "solid 1px rgb(212, 227, 247)",
-    borderLeft: "solid 1px rgb(212, 227, 247)",
+    borderBottom: "solid 1px #eaeaea",
   },
   rightColumnGrid: {
     paddingTop: "5px",
@@ -56,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "0",
   },
   dataSect: {
-    color: "#595959",
+    color: "#757575",
     width: "100%",
     marginTop: "10px",
     "& p": {
@@ -78,20 +77,30 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: "15px",
   },
   userIcon: {
-    margin: "20px",
+    marginRight: "15px",
     float: "left",
   },
   userName: {
-    color: "#595959",
+    color: "#919191",
     minWidth: "50%",
+    maxWidth: "calc( 100% - 400px)",
     float: "left",
-    "& h1": { marginBottom: "0" },
-    "& p": { marginBottom: "0" },
+    "& h2": {
+      margin: "0",
+      color: "#202020",
+      fontSize: "1.7em",
+      maxWidth: "100%",
+    },
+    "& p": {
+      margin: "0",
+      maxWidth: "100%",
+    },
     "& h4": { margin: "0" },
+    "& a": { color: "#12ABE0 !important" },
   },
   tags: {
     "& fieldset": {
-      border: "1px solid rgba(32, 32, 32, 0)",
+      border: "none",
     },
   },
   ownersTable: {
@@ -102,11 +111,13 @@ const useStyles = makeStyles((theme) => ({
   },
   addressIcon: { top: "3px", position: "relative" },
   socialMediaSection: {
-    float: "right",
+    // float: "right",
+    verticalAlign: "sub",
+    "& svg": { fontSize: "1.7rem" },
   },
   mainGridContainer: {
     height: "100%",
-    "& a": { color: "#12ABE0" },
+    "& a": { color: "#757575" },
     "& .MuiPopover-paper": {
       zIndex: "1700",
     },
@@ -114,11 +125,18 @@ const useStyles = makeStyles((theme) => ({
   twitterIcon: {
     background: "#17AADD",
     color: "#fff",
-    height: "18px",
-    width: "18px",
+    height: "21px",
+    width: "21px",
     padding: "1px",
     margin: "3px",
     borderRadius: "2px",
+    // background: "#17AADD",
+    // color: "#fff",
+    // height: "24px",
+    // width: "24px",
+    // padding: "3px",
+    // margin: "3px",
+    // borderRadius: "50%",
   },
   notAvailableP: { color: "#898989b0", fontSize: "13px" },
   leftColumnTopRigthCorner: {
@@ -132,13 +150,22 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: "none !important",
     },
     "& button": {
-      color: "#757575",
-      margin: "5px",
-      padding: " 1px 3px 1px 4px",
-      fontSize: "0.75rem",
-      "& .MuiButton-startIcon.MuiButton-iconSizeSmall": {
-        marginRight: "2px",
-      },
+      backgroundColor: "#D5F4FF",
+      color: "#14ABDF",
+      margin: "0 5px",
+      padding: "2px 12px",
+      fontSize: "0.85rem",
+      boxShadow: "none",
+      textTransform: "none",
+      // "& .MuiButton-startIcon.MuiButton-iconSizeSmall": {
+      //   marginRight: "2px",
+      // },
+    },
+    "& .MuiButton-contained:hover": {
+      color: "#1da2cf",
+      backgroundColor: "rgba(0, 0, 0, 0.08)",
+      boxShadow:
+        "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
     },
   },
   userSmallLoader: {
@@ -148,6 +175,7 @@ const useStyles = makeStyles((theme) => ({
     top: "8px",
     left: "2px",
   },
+  noTextDecoration: { textDecoration: "none" },
 }));
 
 export default function ContactDetailCard(props) {
@@ -221,15 +249,27 @@ export default function ContactDetailCard(props) {
           <Grid item container>
             {/*/////////// section 1 //////////// */}
 
-            <Grid item xs={12} className={classes.border}>
+            <Grid
+              item
+              xs={12}
+              style={{
+                padding: "20px 25px",
+              }}
+              className={classes.border}
+            >
               <div className={classes.leftColumnTopRigthCorner}>
+                <Button
+                  variant="contained"
+                  // size="small"
+                  onClick={() => {}}
+                >
+                  Buy Info
+                </Button>
                 {contactData.primaryEmail && (
                   <a href={"mailto:" + contactData.primaryEmail}>
                     <Button
                       variant="contained"
-                      size="small"
-                      variant="outlined"
-                      startIcon={<MailOutlineIcon />}
+                      //  size="small"
                     >
                       Email
                     </Button>
@@ -238,9 +278,7 @@ export default function ContactDetailCard(props) {
 
                 <Button
                   variant="contained"
-                  size="small"
-                  variant="outlined"
-                  startIcon={<DeleteIcon />}
+                  // size="small"
                   onClick={() => {
                     setOpenDialog(true);
                   }}
@@ -251,11 +289,11 @@ export default function ContactDetailCard(props) {
               <div>
                 <div className={classes.userIcon}>
                   <StyleBadge badgeContent={5} color={"primary"}>
-                    <Avatar name={contactData.name} size="80" round />
+                    <Avatar name={contactData.name} size="93" round />
                   </StyleBadge>
                 </div>
                 <div className={classes.userName}>
-                  <h1 style={{ width: "max-content" }}>
+                  <h2 style={{ width: "max-content" }}>
                     {/* {contactData.name} */}
 
                     <FieldContent
@@ -310,7 +348,7 @@ export default function ContactDetailCard(props) {
                         </span>
                       )}
                     </FieldContent>
-                  </h1>
+                  </h2>
                   <h4>
                     <FieldContent
                       childrenLeft
@@ -325,14 +363,8 @@ export default function ContactDetailCard(props) {
                         zip: contactData.zip,
                         country: contactData.country,
                       }}
-                    >
-                      <RoomIcon
-                        className={classes.addressIcon}
-                        fontSize="small"
-                      />
-                    </FieldContent>
+                    />
                   </h4>
-
                   <h4>
                     <FieldContent
                       childrenLeft
@@ -343,15 +375,19 @@ export default function ContactDetailCard(props) {
                         companyName: contactData.companyName,
                         jobTitle: contactData.jobTitle,
                       }}
-                    >
-                      <LocationCityIcon
-                        className={classes.addressIcon}
-                        fontSize="small"
-                      />
-                    </FieldContent>
+                    />
                   </h4>
                 </div>
               </div>
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              style={{
+                padding: "20px 15px 10px 15px",
+              }}
+              className={classes.border}
+            >
               <div className={classes.tags}>
                 <Tags
                   width="100%"
@@ -383,6 +419,7 @@ export default function ContactDetailCard(props) {
                     <a
                       href={`mailto:${contactData.primaryEmail}`}
                       target="_blank"
+                      className={classes.noTextDecoration}
                     >
                       {contactData.primaryEmail}
                     </a>
@@ -401,6 +438,7 @@ export default function ContactDetailCard(props) {
                     <a
                       href={`mailto:${contactData.secondaryEmail}`}
                       target="_blank"
+                      className={classes.noTextDecoration}
                     >
                       {contactData.secondaryEmail}
                     </a>
@@ -656,7 +694,7 @@ export default function ContactDetailCard(props) {
         {/*/////////// rigth column //////////// */}
         <Grid
           className={classes.border}
-          style={{ MinHeight: "100%" }}
+          style={{ MinHeight: "100%", backgroundColor: "#F0F6F8" }}
           item
           xs={3}
         >
