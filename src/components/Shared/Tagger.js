@@ -16,6 +16,7 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import ClearIcon from "@material-ui/icons/Clear";
+import "./Tagger.css";
 
 const AntSwitch = withStyles((theme) => ({
   root: {
@@ -62,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   switchButtom: {
+    float: "right",
     width: "fit-content",
     alignSelf: "flex-end",
     marginRight: 0,
@@ -73,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
     color: "rgb(141, 141, 141)",
   },
   publicLeftBottom: {
+    float: "none",
     flexDirection: "row",
     alignSelf: "unset",
     margin: 0,
@@ -83,49 +86,61 @@ const useStyles = makeStyles((theme) => ({
     "& .h4After": { margin: "0 0 0 13px", color: "#B7B7B7 !important" },
   },
   chip: {
+    "& .MuiAutocomplete-inputRoot": { minHeight: "56px" },
     "& .MuiChip-root": {
       backgroundColor: "#ECEDED",
       color: "#606060",
     },
   },
-  // input: {
-  //   "& input": {
-  //     color: ({ textValue }) => (textValue ? "" : "#008ebf"),
-  //     backgroundColor: ({ textValue }) => (textValue ? "" : "#D5F4FF"),
-  //     maxWidth: ({ textValue }) => (textValue ? "" : "33px"),
-  //     width: ({ textValue }) => (textValue ? "" : "33px"),
-  //     height: ({ textValue }) => (textValue ? "" : "32px"),
-  //     fontSize: ({ textValue }) => (textValue ? "" : "25px"),
-  //     margin: ({ textValue }) => (textValue ? "" : "3px"),
-  //     padding: ({ textValue }) => (textValue ? "" : "0px !important"),
-  //     borderRadius: ({ textValue }) => (textValue ? "" : "50%"),
-  //     textAlign: ({ textValue }) => (textValue ? "" : "center"),
-  //     cursor: ({ textValue }) => (textValue ? "" : "pointer"),
-  //     "&:hover": {
-  //       boxShadow: ({ textValue }) =>
-  //         textValue
-  //           ? ""
-  //           : "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
-  //       backgroundColor: ({ textValue }) =>
-  //         textValue ? "" : "rgba(0, 0, 0, 0.08)",
-  //       transition: ({ textValue }) =>
-  //         textValue
-  //           ? ""
-  //           : "background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-  //     },
-  //   },
-  // },
+  input: {
+    "& input": {
+      caretColor: ({ showPlusAddIcon }) =>
+        !showPlusAddIcon ? "" : "transparent",
+      color: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "#008ebf"),
+      backgroundColor: ({ showPlusAddIcon }) =>
+        !showPlusAddIcon ? "" : "#D5F4FF",
+      maxWidth: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "33px"),
+      width: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "33px"),
+      height: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "32px"),
+      fontSize: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "25px"),
+      margin: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "3px"),
+      padding: ({ showPlusAddIcon }) =>
+        !showPlusAddIcon ? "" : "0px !important",
+      borderRadius: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "50%"),
+      textAlign: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "center"),
+      cursor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "pointer"),
+      "&:hover": {
+        boxShadow: ({ showPlusAddIcon }) =>
+          !showPlusAddIcon
+            ? ""
+            : "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
+        backgroundColor: ({ showPlusAddIcon }) =>
+          !showPlusAddIcon ? "" : "rgba(0, 0, 0, 0.08)",
+        transition: ({ showPlusAddIcon }) =>
+          !showPlusAddIcon
+            ? ""
+            : "background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+      },
+    },
+  },
 }));
 
 export default function Tags(props) {
   const [stateApp] = useContext(AppContext);
   const [tagsArray, setTagsArray] = useState([]);
   const [userAvailableTagsArray, setUserAvailableTagsArray] = useState([]);
+  const [tFActive, setTFActive] = useState(false);
   const [textValue, setTextValue] = useState("");
   const [loadingTags, setLoadingTags] = useState(true);
   const [addInDropDown, setAddInDropDown] = useState(false);
   const [publicTag, setPublicTag] = useState(true);
-  const classes = useStyles({ ...props, textValue });
+
+  const showPlusAddIcon = () => {
+    if (tFActive || textValue) return false;
+    return true;
+  };
+
+  const classes = useStyles({ ...props, showPlusAddIcon: showPlusAddIcon() });
 
   const [getTagsByObjectId, { data: dataTags }] = useLazyQuery(
     TAGSBYOBJECTIDQUERY,
@@ -442,7 +457,12 @@ export default function Tags(props) {
 
   const TogglePublicButton = () => {
     return (
-      <FormGroup>
+      <FormGroup style={{ display: "block" }}>
+        {!props.publicLeftBottom && (
+          <h3 style={{ width: "fit-content", margin: "0", float: "left" }}>
+            Tags
+          </h3>
+        )}
         <FormControlLabel
           className={`${classes.switchButtom} ${
             props.publicLeftBottom ? classes.publicLeftBottom : ""
@@ -450,14 +470,6 @@ export default function Tags(props) {
           control={
             <React.Fragment>
               {props.publicLeftBottom && <h4 className="h4Before">Tags</h4>}
-              {/* <Switch
-                size="small"
-                checked={publicTag}
-                onChange={() => {
-                  setPublicTag(!publicTag);
-                }}
-              /> */}
-
               <AntSwitch
                 checked={publicTag}
                 onChange={() => {
@@ -523,13 +535,18 @@ export default function Tags(props) {
                   {...params}
                   variant="outlined"
                   className={classes.input}
-                  label={!props.publicLeftBottom ? "Tags" : null}
-                  // placeholder="+"
-                  placeholder="New..."
+                  // label={!props.publicLeftBottom ? "Tags" : null}
+                  placeholder={!showPlusAddIcon() ? "" : "+"}
                   fullWidth
                   value={textValue}
                   onChange={(e) => {
                     setTextValue(e.target.value);
+                  }}
+                  onClick={() => {
+                    setTFActive(true);
+                  }}
+                  onBlur={() => {
+                    setTFActive(false);
                   }}
                 />
               )}
