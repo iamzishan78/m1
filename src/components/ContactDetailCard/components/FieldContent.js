@@ -17,9 +17,7 @@ import { AppContext } from "../../../AppContext";
 const useStyles = makeStyles((theme) => ({
   fieldContentP: {
     visibility: ({ loading }) => (loading ? "hidden" : "visible"),
-    margin: ({ noMargin }) => {
-      if (noMargin) return "0";
-    },
+    margin: ({ noMargin }) => (noMargin ? "0" : "5px 10px"),
     width: ({ noMargin }) => {
       if (noMargin) return "fit-content";
     },
@@ -38,10 +36,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "22px",
   },
   editTextField: {
-    paddingRight: ({ fieldsCount }) => (fieldsCount > 1 ? null : "13px"),
+    paddingRight: ({ fieldsCount }) => (fieldsCount > 1 ? null : "0"),
     "& .MuiInputBase-root": {
       fontSize: "0.875rem",
-      padding: "10px",
+      padding: "9px 10px",
       lineHeight: "1.43",
     },
   },
@@ -59,14 +57,16 @@ const useStyles = makeStyles((theme) => ({
   },
   buttonsRow: { textAlign: "right", top: "-2px", position: "relative" },
   foodText: {
+    zIndex: "50",
+    position: "absolute",
+    right: "5px",
+    bottom: "14px",
     fontSize: "10px",
     color: "#6e6e6e",
     margin: "0 !important",
     textAlign: "right",
-    float: "right",
-    marginLeft: "10px",
-    height: "8px",
-    paddingRight: "13px",
+    height: "0",
+    paddingRight: "0",
     "& span": {
       fontWeight: "bold",
     },

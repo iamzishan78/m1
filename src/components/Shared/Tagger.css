@@ -1,4 +1,5 @@
-.MuiAutocomplete-inputRoot[class*="MuiOutlinedInput-root"]
+#taggerRoot
+  .MuiAutocomplete-inputRoot[class*="MuiOutlinedInput-root"]
   .MuiAutocomplete-input {
   padding: 0 !important;
 }

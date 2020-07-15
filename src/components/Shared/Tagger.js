@@ -489,7 +489,7 @@ export default function Tags(props) {
   };
 
   return (
-    <div className={classes.rootDiv}>
+    <div id="taggerRoot" className={classes.rootDiv}>
       {!loadingTags ? (
         <Grid container>
           <Grid item xs={12}>

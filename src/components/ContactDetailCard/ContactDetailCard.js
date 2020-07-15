@@ -55,15 +55,26 @@ const useStyles = makeStyles((theme) => ({
     margin: "0",
   },
   dataSect: {
+    borderTop: "2px solid #C9C9C9",
+    margin: "23px 28px",
     color: "#757575",
     width: "100%",
-    marginTop: "10px",
+    // marginTop: "10px",
     "& p": {
-      margin: "10px",
       wordWrap: "break-word",
     },
     "& .dataLabels": {
       fontWeight: "bold",
+    },
+    "& > .MuiGrid-item": {
+      borderBottom: "2px solid #C9C9C9",
+      borderRight: "2px solid #C9C9C9",
+      position: "relative",
+    },
+    "& .fieldName": {
+      borderLeft: "2px solid #C9C9C9",
+      backgroundColor: "#EBEBEB",
+      "& p": { margin: "8px 10px" },
     },
   },
   pDealCard: {
@@ -111,7 +122,6 @@ const useStyles = makeStyles((theme) => ({
   },
   addressIcon: { top: "3px", position: "relative" },
   socialMediaSection: {
-    // float: "right",
     verticalAlign: "sub",
     "& svg": { fontSize: "1.7rem" },
   },
@@ -130,13 +140,6 @@ const useStyles = makeStyles((theme) => ({
     padding: "1px",
     margin: "3px",
     borderRadius: "2px",
-    // background: "#17AADD",
-    // color: "#fff",
-    // height: "24px",
-    // width: "24px",
-    // padding: "3px",
-    // margin: "3px",
-    // borderRadius: "50%",
   },
   notAvailableP: { color: "#898989b0", fontSize: "13px" },
   leftColumnTopRigthCorner: {
@@ -157,9 +160,6 @@ const useStyles = makeStyles((theme) => ({
       fontSize: "0.85rem",
       boxShadow: "none",
       textTransform: "none",
-      // "& .MuiButton-startIcon.MuiButton-iconSizeSmall": {
-      //   marginRight: "2px",
-      // },
     },
     "& .MuiButton-contained:hover": {
       color: "#1da2cf",
@@ -172,7 +172,7 @@ const useStyles = makeStyles((theme) => ({
     height: "0px",
     width: "22px",
     position: "relative",
-    top: "8px",
+    top: "6px",
     left: "2px",
   },
   noTextDecoration: { textDecoration: "none" },
@@ -380,6 +380,7 @@ export default function ContactDetailCard(props) {
                 </div>
               </div>
             </Grid>
+            {/*/////////// section 2 //////////// */}
             <Grid
               item
               xs={12}
@@ -398,19 +399,19 @@ export default function ContactDetailCard(props) {
               </div>
             </Grid>
 
-            {/*/////////// section 2 //////////// */}
-            <Grid
-              item
-              xs={12}
-              container
-              className={`${classes.border} ${classes.dataSect}`}
-              spacing={0}
-            >
-              <Grid item xs={6} container spacing={1}>
-                <Grid item xs={5}>
+            {/*/////////// section 3 //////////// */}
+            <Grid item xs={12} container className={classes.border} spacing={0}>
+              <Grid
+                item
+                xs={12}
+                container
+                className={classes.dataSect}
+                spacing={0}
+              >
+                <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">Primary Email</p>
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={9}>
                   <FieldContent
                     onlyChildren
                     id={contactData._id}
@@ -426,10 +427,10 @@ export default function ContactDetailCard(props) {
                   </FieldContent>
                 </Grid>
 
-                <Grid item xs={5}>
+                <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">Secondary Email</p>
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={9}>
                   <FieldContent
                     onlyChildren
                     id={contactData._id}
@@ -445,40 +446,40 @@ export default function ContactDetailCard(props) {
                   </FieldContent>
                 </Grid>
 
-                <Grid item xs={5}>
+                <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">Mobile Phone</p>
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={9}>
                   <FieldContent
                     id={contactData._id}
                     content={{ mobilePhone: contactData.mobilePhone }}
                   />
                 </Grid>
 
-                <Grid item xs={5}>
+                <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">Home Phone</p>
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={9}>
                   <FieldContent
                     id={contactData._id}
                     content={{ homePhone: contactData.homePhone }}
                   />
                 </Grid>
 
-                <Grid item xs={5}>
+                <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">Alternate Phone</p>
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={9}>
                   <FieldContent
                     id={contactData._id}
                     content={{ AltPhone: contactData.AltPhone }}
                   />
                 </Grid>
 
-                <Grid item xs={5}>
+                <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">Primary Address</p>
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={9}>
                   <FieldContent
                     name=""
                     id={contactData._id}
@@ -493,10 +494,10 @@ export default function ContactDetailCard(props) {
                   />
                 </Grid>
 
-                <Grid item xs={5}>
+                <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">Secondary Address</p>
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={9}>
                   <FieldContent
                     name=""
                     id={contactData._id}
@@ -510,23 +511,21 @@ export default function ContactDetailCard(props) {
                     }}
                   />
                 </Grid>
-              </Grid>
 
-              <Grid item xs={6} container spacing={1}>
-                <Grid item xs={5}>
+                <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">Relatives</p>
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={9}>
                   <FieldContent
                     id={contactData._id}
                     content={{ relatives: contactData.relatives }}
                   />
                 </Grid>
 
-                <Grid item xs={5}>
+                <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">Linkedln Profile</p>
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={9}>
                   <FieldContent
                     onlyChildren
                     id={contactData._id}
@@ -548,10 +547,10 @@ export default function ContactDetailCard(props) {
                   </FieldContent>
                 </Grid>
 
-                <Grid item xs={5}>
+                <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">Facebook Profile</p>
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={9}>
                   <FieldContent
                     onlyChildren
                     id={contactData._id}
@@ -573,10 +572,10 @@ export default function ContactDetailCard(props) {
                   </FieldContent>
                 </Grid>
 
-                <Grid item xs={5}>
+                <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">Twitter Profile</p>
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={9}>
                   <FieldContent
                     onlyChildren
                     id={contactData._id}
@@ -598,20 +597,20 @@ export default function ContactDetailCard(props) {
                   </FieldContent>
                 </Grid>
 
-                <Grid item xs={5}>
+                <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">Lead Source</p>
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={9}>
                   <FieldContent
                     id={contactData._id}
                     content={{ leadSource: contactData.leadSource }}
                   />
                 </Grid>
 
-                <Grid item xs={5}>
+                <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">Created By</p>
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={9}>
                   {contactData.createBy && contactData.createBy.name === null && (
                     <div className={classes.userSmallLoader}>
                       <CircularProgress size={22} color="secondary" />
@@ -619,7 +618,7 @@ export default function ContactDetailCard(props) {
                   )}
                   {(contactData.createBy && contactData.createBy.name) ||
                   contactData.createAt ? (
-                    <p style={{ minHeight: "28px" }}>
+                    <p style={{ margin: "8px 10px" }}>
                       {contactData.createBy && contactData.createBy.name
                         ? contactData.createBy.name
                         : ""}
@@ -636,10 +635,10 @@ export default function ContactDetailCard(props) {
                   )}
                 </Grid>
 
-                <Grid item xs={5}>
+                <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">Last Update By</p>
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={9}>
                   {contactData.lastUpdateBy &&
                     contactData.lastUpdateBy.name === null && (
                       <div className={classes.userSmallLoader}>
@@ -649,7 +648,7 @@ export default function ContactDetailCard(props) {
                   {(contactData.lastUpdateBy &&
                     contactData.lastUpdateBy.name) ||
                   contactData.lastUpdateAt ? (
-                    <p style={{ minHeight: "28px" }}>
+                    <p style={{ margin: "8px 10px" }}>
                       {contactData.lastUpdateBy && contactData.lastUpdateBy.name
                         ? contactData.lastUpdateBy.name
                         : ""}
@@ -672,7 +671,7 @@ export default function ContactDetailCard(props) {
               <RecentConversations header={"Recent Conversations"} />
             </Grid>
 
-            {/*/////////// section 3 //////////// */}
+            {/*/////////// section 4 //////////// */}
             {contactData &&
               contactData.owners &&
               contactData.owners.length > 0 && (
