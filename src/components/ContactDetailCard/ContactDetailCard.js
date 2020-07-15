@@ -29,6 +29,10 @@ import Deals from "../Shared/Deals";
 import LeadScore from "../Shared/LeadScore";
 import { AppContext } from "../../AppContext";
 import RecentConversations from "../Shared/RecentConversations";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import SearchIcon from "@material-ui/icons/Search";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -59,7 +63,6 @@ const useStyles = makeStyles((theme) => ({
     margin: "23px 28px",
     color: "#757575",
     width: "100%",
-    // marginTop: "10px",
     "& p": {
       wordWrap: "break-word",
     },
@@ -76,6 +79,9 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#EBEBEB",
       "& p": { margin: "8px 10px" },
     },
+  },
+  SectMargin: {
+    margin: "23px 28px",
   },
   pDealCard: {
     fontWeight: "bold !important",
@@ -154,7 +160,7 @@ const useStyles = makeStyles((theme) => ({
     },
     "& button": {
       backgroundColor: "#D5F4FF",
-      color: "#14ABDF",
+      color: theme.palette.secondary.main,
       margin: "0 5px",
       padding: "2px 12px",
       fontSize: "0.85rem",
@@ -666,12 +672,69 @@ export default function ContactDetailCard(props) {
               </Grid>
             </Grid>
 
-            {/*/////////// Recent Converstaion. //////////// */}
+            {/*/////////// new section //////////// */}
             <Grid item xs={12} className={`${classes.border}`}>
-              <RecentConversations header={"Recent Conversations"} />
+              <div className={classes.SectMargin}>
+                <Grid item xs={12} style={{ minHeight: "33px" }}>
+                  <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
+                    Lead Stage Changed:
+                    <span style={{ fontWeight: "normal" }}> 4 months ago</span>
+                  </h4>
+                  <h4 style={{ margin: "0 0 13px 0", float: "right" }}>
+                    Last Contacted:
+                    <span style={{ fontWeight: "normal" }}> 2 hours ago</span>
+                  </h4>
+                </Grid>
+
+                <Grid
+                  item
+                  xs={12}
+                  style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}
+                ></Grid>
+              </div>
             </Grid>
 
-            {/*/////////// section 4 //////////// */}
+            {/*/////////// Recent Converstaion. //////////// */}
+            <Grid item xs={12} className={`${classes.border}`}>
+              <div className={classes.SectMargin}>
+                <RecentConversations header={"Recent Conversations"} />
+              </div>
+            </Grid>
+
+            {/*/////////// new section //////////// */}
+            <Grid item xs={12} className={`${classes.border}`}>
+              <div className={classes.SectMargin}>
+                <Grid item xs={12}>
+                  <h4 style={{ marginBottom: "8px" }}>
+                    Add Wells and Parcels to this contact
+                  </h4>
+                </Grid>
+                <Grid item xs={12}>
+                  <Autocomplete
+                    options={[]}
+                    getOptionLabel={(option) => option}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        size="small"
+                        placeholder="Search Wells, Parcels"
+                        variant="outlined"
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <InputAdornment>
+                              <SearchIcon htmlColor="#929292" />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+              </div>
+            </Grid>
+
+            {/*/////////// table section //////////// */}
             {contactData &&
               contactData.owners &&
               contactData.owners.length > 0 && (
@@ -680,11 +743,13 @@ export default function ContactDetailCard(props) {
                   xs={12}
                   className={`${classes.border} ${classes.ownersTable}`}
                 >
-                  <M1nTable
-                    parent="ownersPerContacts"
-                    ownersIdsArray={contactData.owners}
-                    contactId={props.contactId}
-                  />
+                  <div className={classes.SectMargin}>
+                    <M1nTable
+                      parent="ownersPerContacts"
+                      ownersIdsArray={contactData.owners}
+                      contactId={props.contactId}
+                    />
+                  </div>
                 </Grid>
               )}
           </Grid>

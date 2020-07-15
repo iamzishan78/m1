@@ -116,11 +116,11 @@ const useStyles = makeStyles((theme) => ({
             : "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
         backgroundColor: ({ showPlusAddIcon }) =>
           !showPlusAddIcon ? "" : "rgba(0, 0, 0, 0.08)",
-        transition: ({ showPlusAddIcon }) =>
-          !showPlusAddIcon
-            ? ""
-            : "background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
       },
+      transition: ({ showPlusAddIcon }) =>
+        !showPlusAddIcon
+          ? ""
+          : "background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
     },
   },
 }));
