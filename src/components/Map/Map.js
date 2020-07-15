@@ -311,6 +311,11 @@ export default function Map() {
         clusterMaxZoom: 6,
       });
 
+      map.addSource(`${config.sourceProps[0]}_filter`, {
+        type: 'geojson',
+        data: geoJson,
+      });
+
       // -> add layer
       
       map.addLayer({
@@ -947,7 +952,7 @@ export default function Map() {
                         type: "Feature",
                         properties: feature,
                         geometry: {
-                          type: selectLayerProps.dataProps.dataTypeId,
+                          type: selectLayerProps.dataProps[i].dataTypeId,
                           coordinates: [feature.longitude, feature.latitude],
                         },
                       };
@@ -991,6 +996,12 @@ export default function Map() {
                     cluster: true,
                     clusterRadius: 50,
                     clusterMaxZoom: 6,
+                  });
+                  const filterLayerId = selectLayerProps.sourceProps[i].sourceId + '_filter';
+                  console.log(filterLayerId);
+                  map.addSource(filterLayerId, {
+                    type: selectLayerProps.sourceProps[i].sourceType,
+                    data: myGeoJSONData,
                   });
                 } else {
                   map.addSource(selectLayerProps.sourceProps[i].sourceId, {
@@ -1763,17 +1774,39 @@ export default function Map() {
         return bound;
       };
 
+      const setLayerSource = (layerId, source, sourceLayer = null) => {
+        const oldLayers = map.getStyle().layers;
+        const layerIndex = oldLayers.findIndex(l => l.id === layerId);
+        const layerDef = oldLayers[layerIndex];
+        const before = oldLayers[layerIndex + 1] && oldLayers[layerIndex + 1].id;
+        layerDef.source = source;
+        if (sourceLayer) {
+            layerDef['source-layer'] = sourceLayer;
+        }
+        map.removeLayer(layerId);
+        map.addLayer(layerDef, before);
+    }
+
       const filterShapeAction = (shapeList, filterLayers) => {
         filterLayers.forEach((filterLayer) => {
-          const layer = map.getLayer(filterLayer);
+          let layer = map.getLayer(filterLayer);
           if (layer) {
+            if (layer.type == 'circle' && layer.id != 'wellpoints') {
+              if (!layer.source.includes('_filter')) {
+                const filterSource = layer.source + '_filter';
+                setLayerSource(layer.id, filterSource);
+                layer = map.getLayer(filterLayer);
+                console.log(layer);
+              }
+            }
             let featuresList = [];
             if (layer.source === "composite") {
               featuresList = map.querySourceFeatures("composite", {
                 sourceLayer: layer.sourceLayer,
               });
             } else {
-              featuresList = map.querySourceFeatures(layer.source);
+              // console.log(map.getSource(layer.source));
+              featuresList = map.getSource(layer.source)._data.features;
             }
             console.log(layer, featuresList);
             if (featuresList && featuresList.length > 0) {
@@ -1846,8 +1879,12 @@ export default function Map() {
                       }
                       return false
                     } else {
-                      if (turf.booleanContains(shapeList[i], feature)) {
-                        return true;
+                      if (feature.geometry.type == 'Point' && (typeof feature.geometry.coordinates[0] != 'number' || typeof feature.geometry.coordinates[1] != 'number')) {
+                        console.log(feature, filterLayer);
+                      } else {
+                        if (turf.booleanContains(shapeList[i], feature)) {
+                          return true;
+                        }
                       }
                     }
                   }
@@ -1878,7 +1915,7 @@ export default function Map() {
                 if (!filterCustomArray[filterLayer]) {
                   filterCustomArray[filterLayer] = [];
                 }
-                if (['wellpoints', 'welllines'].indexOf(filterLayer) > -1) {
+                if (['wellpoints', 'welllines', 'Tracked Wells', 'Tracked Owners', 'Tags Filter'].indexOf(filterLayer) > -1) {
                   filterCustomArray[filterLayer].push([
                     "match",
                     ["get", "id"],
@@ -2250,6 +2287,11 @@ export default function Map() {
           "GLOLeaseLabels",
           "GLOUnits",
           "GLOUnitLabels",
+          "Tracked Wells",
+          "Tracked Owners",
+          "Tags Filter",
+          "permits",
+          "rigs",
         ];
         filterLayers.forEach(filterLayer => {
           if (filterCustomArray[filterLayer]) {
@@ -2258,6 +2300,17 @@ export default function Map() {
               map.setFilter(filterLayer, filterCustomArray[filterLayer][0]);  
             } else {
               map.setFilter(filterLayer, filterCustomArray[filterLayer]);
+            }
+          } else {
+            const layer = map.getLayer(filterLayer);
+            if (layer) {
+              map.setFilter(filterLayer, null);
+              if (layer.type == 'circle' && layer.id != 'wellpoints') {
+                if (layer.source.includes('_filter')) {
+                  const clusterSource = layer.source.replace('_filter', '');
+                  setLayerSource(layer.id, clusterSource);
+                }
+              }
             }
           }
         });
