@@ -638,7 +638,7 @@ export default function Map() {
           if (map.getLayer(k)) {
             map.setLayoutProperty(k, "visibility", "none");
           }
-          if (l.clusterProps) {
+          if (l.layerProps && l.layerProps.clusterProps) {
             if (map.getLayer(k+'-clusters-counts')) {
               map.setLayoutProperty(k+'-clusters-counts', "visibility", "none");
             }
@@ -1823,7 +1823,7 @@ export default function Map() {
         }
         map.removeLayer(layerId);
         map.addLayer(layerDef, before);
-    }
+      }
 
       const filterShapeAction = (shapeList, filterLayers) => {
         filterLayers.forEach((filterLayer) => {
