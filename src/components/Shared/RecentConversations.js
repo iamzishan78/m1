@@ -75,9 +75,6 @@ export default ({
   // dataList
 }) => {
   const classes = useStyles();
-  const [rows, setRows] = useState([]);
-  const [columns, setColumns] = useState({});
-  const [options, setOptions] = useState({});
 
   return (
     <div className={classes.root}>

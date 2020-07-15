@@ -7,18 +7,12 @@ import Comments from "../Shared/Comments";
 import Tags from "../Shared/Tagger";
 import Avatar from "react-avatar";
 import M1nTable from "../Shared/M1nTable/M1nTable";
-import RoomIcon from "@material-ui/icons/Room";
 import Badge from "@material-ui/core/Badge";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
-import MailOutlineIcon from "@material-ui/icons/MailOutline";
-import DeleteIcon from "@material-ui/icons/Delete";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
-import { IconButton } from "@material-ui/core";
-import Tooltip from "@material-ui/core/Tooltip";
 import FieldContent from "./components/FieldContent";
-import LocationCityIcon from "@material-ui/icons/LocationCity";
 import { CONTACT } from "../../graphQL/useQueryContact";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -33,6 +27,7 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import Divider from "@material-ui/core/Divider";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -763,7 +758,7 @@ export default function ContactDetailCard(props) {
           xs={3}
         >
           <div style={{ marginBottom: "4px" }}>
-            <Grid container className={classes.rightColumnGrid} spacing={1}>
+            <Grid container className={classes.rightColumnGrid} spacing={0}>
               {/* //////////// Deal Card ////////////// */}
 
               {/* TEMPORARY COMMENT OUT. DO NOT DELETE. */}
@@ -782,35 +777,34 @@ export default function ContactDetailCard(props) {
              */}
 
               <Grid item xs={12}>
-                <Paper className={classes.paper}>
-                  <Deals
-                    contact={contactData}
-                    transactData={transactData}
-                    transactId={transactId}
-                  />
-                </Paper>
-                <Paper className={classes.paper}>
-                  <LeadScore
-                    score={5}
-                    //lastSeen={""}
-                    lastContacted={"6 months ago"}
-                    lastModified={"3 months ago"}
-                  />
-                </Paper>
-                <Paper className={classes.paper}>
-                  <Comments
-                    targetSourceId={contactData._id}
-                    targetLabel="contact"
-                  />
-                </Paper>
+                <Deals
+                  contact={contactData}
+                  transactData={transactData}
+                  transactId={transactId}
+                />
+                <Divider />
               </Grid>
+
               <Grid item xs={12}>
-                <Paper className={classes.paper}>
-                  <Activities
-                    id={contactData._id}
-                    activityLog={contactData.activityLog}
-                  />
-                </Paper>
+                <LeadScore score={5} lastContacted={"Jun 24, 2020"} />
+                <Divider />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Comments
+                  targetSourceId={contactData._id}
+                  targetLabel="contact"
+                  
+                />
+                <Divider />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Activities
+                  id={contactData._id}
+                  activityLog={contactData.activityLog}
+                />
+                <Divider />
               </Grid>
             </Grid>
           </div>
