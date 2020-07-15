@@ -1776,6 +1776,25 @@ export default function Map() {
 
       const setLayerSource = (layerId, source, sourceLayer = null) => {
         const oldLayers = map.getStyle().layers;
+        const cluster_layer = `${layerId}-clusters`;
+        const cluster_counts_layer = `${layerId}-clusters-counts`;
+        if (source.includes('_filter')) {
+          if (map.getLayer(cluster_layer)) {
+            map.setLayoutProperty(cluster_layer, "visibility", 'none');
+          }
+
+          if (map.getLayer(cluster_counts_layer)) {
+            map.setLayoutProperty(cluster_counts_layer, "visibility", 'none');
+          }
+        } else {
+          if (map.getLayer(cluster_layer)) {
+            map.setLayoutProperty(cluster_layer, "visibility", 'visible');
+          }
+
+          if (map.getLayer(cluster_counts_layer)) {
+            map.setLayoutProperty(cluster_counts_layer, "visibility", 'visible');
+          }
+        }
         const layerIndex = oldLayers.findIndex(l => l.id === layerId);
         const layerDef = oldLayers[layerIndex];
         const before = oldLayers[layerIndex + 1] && oldLayers[layerIndex + 1].id;
@@ -1796,7 +1815,6 @@ export default function Map() {
                 const filterSource = layer.source + '_filter';
                 setLayerSource(layer.id, filterSource);
                 layer = map.getLayer(filterLayer);
-                console.log(layer);
               }
             }
             let featuresList = [];
@@ -1806,9 +1824,9 @@ export default function Map() {
               });
             } else {
               // console.log(map.getSource(layer.source));
+              // featuresList = map.querySourceFeatures(layer.source);
               featuresList = map.getSource(layer.source)._data.features;
             }
-            console.log(layer, featuresList);
             if (featuresList && featuresList.length > 0) {
               const result = featuresList.filter((feature) => {
                 if (feature.geometry.type === "MultiPolygon") {
@@ -1877,14 +1895,12 @@ export default function Map() {
                           return true;
                         }
                       }
-                      return false
                     } else {
-                      if (feature.geometry.type == 'Point' && (typeof feature.geometry.coordinates[0] != 'number' || typeof feature.geometry.coordinates[1] != 'number')) {
-                        console.log(feature, filterLayer);
-                      } else {
-                        if (turf.booleanContains(shapeList[i], feature)) {
-                          return true;
-                        }
+                      if (
+                        feature.geometry.coordinates[0] &&
+                        feature.geometry.coordinates[1] &&
+                        turf.booleanContains(shapeList[i], feature)) {
+                        return true;
                       }
                     }
                   }
@@ -1893,7 +1909,7 @@ export default function Map() {
               });
 
               let ids = result.map(function (feature) {
-                if (['wellpoints', 'welllines'].indexOf(filterLayer) > -1) {
+                if (['wellpoints', 'welllines', 'Tracked Wells', 'Tracked Owners', 'Tags Filter'].indexOf(filterLayer) > -1) {
                   return feature.properties.id;
                 } else if (['interest', 'parcel'].indexOf(filterLayer) > -1) {
                   return feature.properties.shapeLabel;
@@ -1910,7 +1926,6 @@ export default function Map() {
 
               ids = ids.filter(onlyUnique);
 
-              // console.log(ids);
               if (ids.length > 0) {
                 if (!filterCustomArray[filterLayer]) {
                   filterCustomArray[filterLayer] = [];
@@ -2369,6 +2384,26 @@ export default function Map() {
         map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);
         map.setFilter("wellsHeatmapRecentlyDrilled", [">",["get", "daysSinceDrilled"],0,]);
         map.setFilter("wellsHeatmapRecentlyCompleted", [">",["get", "daysSinceCompletion"],0,]);
+
+        const filterLayers = [
+          "Tracked Wells",
+          "Tracked Owners",
+          "Tags Filter",
+          "permits",
+          "rigs",
+        ];
+        filterLayers.forEach(filterLayer => {
+          const layer = map.getLayer(filterLayer);
+          if (layer) {
+            map.setFilter(filterLayer, null);
+            if (layer.type == 'circle') {
+              if (layer.source.includes('_filter')) {
+                const clusterSource = layer.source.replace('_filter', '');
+                setLayerSource(layer.id, clusterSource);
+              }
+            }
+          }
+        });
       }
     }
     console.log("filters applied");
