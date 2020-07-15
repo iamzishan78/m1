@@ -1,7 +1,7 @@
 export const styleLayers = [
   {
     name: "Permits",
-    id: ["permits-clusters-counts", "permits-clusters", "permits"],
+    id: ["permits"],
     sourceProps: ["permits_source"],
     layerProps: {
       layerId: ["permits"],
@@ -49,7 +49,7 @@ export const styleLayers = [
   },
   {
     name: "Rig Activity",
-    id: ["rigs-clusters-counts", "rigs-clusters", "rigs"],
+    id: ["rigs"],
     sourceProps: ["rigs_source"],
     layerProps: {
       layerId: ["rigs"],
