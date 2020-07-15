@@ -77,6 +77,9 @@ const AppProvider = (props) => {
     tempCheckedUserDefinedLayer: null,
     checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
     editingUserDefinedLayers: [],
+    csvContactsList: [],
+    csvContactsListToSend: [],
+    activeStepNumber: 0,
     checkedLayersInteraction: [0, 1, 2],
     selectedLayerId: null,
     openWellDetails: false,
@@ -88,6 +91,9 @@ const AppProvider = (props) => {
     currentFeature: undefined,
     wellListFromSearch: null,
     wellListFromTagsFilter: null,
+    m1neralHeaders : [],
+    mappedHeadersFromCSV: [],
+
     activateLayers: (layerContainerVarName, layerNumber) => {
       let added = false;
       setStateApp((stateApp) => {

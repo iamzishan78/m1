@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
 import WellCardProvider from "../../../WellCard/WellCardProvider";
@@ -815,7 +816,9 @@ export default function SubTable(props) {
                   props.targetLabel.slice(1)
                 }s`}
               >
-                <IconButton size="medium" onClick={(e) => {}}>
+                <IconButton size="medium" onClick={(e) => {
+                  routeChange('/bulkupload')
+                }}>
                   <BackupIcon />
                 </IconButton>
               </Tooltip>
@@ -902,6 +905,12 @@ export default function SubTable(props) {
     },
   };
 
+  let history = useHistory();
+
+  let routeChange =(route)=> {
+    history.push(route);
+  }
+  
   return (rows && rows.length > 0 && !props.addAble) ||
     (rows && props.addAble) ? (
     <div className={classes.root}>
