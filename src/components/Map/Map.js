@@ -1922,7 +1922,6 @@ export default function Map() {
                     } else {
                       if (
                         feature.geometry.coordinates[0] &&
-                        feature.geometry.coordinates[1] &&
                         turf.booleanContains(shapeList[i], feature)) {
                         return true;
                       }
