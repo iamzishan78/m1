@@ -1838,6 +1838,7 @@ export default function Map() {
             }
             let featuresList = [];
             if (layer.source === "composite") {
+              console.log(map.getSource(layer.source));
               featuresList = map.querySourceFeatures("composite", {
                 sourceLayer: layer.sourceLayer,
               });
@@ -1993,6 +1994,8 @@ export default function Map() {
           "Tags Filter",
           "permits",
           "rigs",
+          "interest",
+          "parcel"
         ];
         if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
           const basinShapes = stateNav.filterBasin;
@@ -2024,13 +2027,7 @@ export default function Map() {
           if (!filterCustomArray['interest']) {
             filterCustomArray['interest'] = [];
           }
-          filterCustomArray['interest'].push([
-            "match",
-            ["get", "shapeLabel"],
-            aoiName,
-            true,
-            false
-          ]);
+          filterCustomArray['interest'].push(aoiName);
         }
         const filterLayers = [
           "GLOLeases",
@@ -2044,6 +2041,7 @@ export default function Map() {
           "Tags Filter",
           "permits",
           "rigs",
+          "parcel"
         ];
         if (stateNav.filterAOI && stateNav.filterAOI.length > 0) {
           const aoiShapes = stateNav.filterAOI;
@@ -2075,13 +2073,7 @@ export default function Map() {
           if (!filterCustomArray['parcel']) {
             filterCustomArray['parcel'] = [];
           }
-          filterCustomArray['parcel'].push([
-            "match",
-            ["get", "shapeLabel"],
-            parcelName,
-            true,
-            false
-          ]);
+          filterCustomArray['parcel'].push(parcelName);
         }
         const filterLayers = [
           "GLOLeases",
@@ -2095,6 +2087,7 @@ export default function Map() {
           "Tags Filter",
           "permits",
           "rigs",
+          "interest",
         ];
         if (stateNav.filterParcel && stateNav.filterParcel.length > 0) {
           const parcelShapes = stateNav.filterParcel;
@@ -2197,6 +2190,8 @@ export default function Map() {
           "Tags Filter",
           "permits",
           "rigs",
+          "interest",
+          "parcel"
         ];
         const filterFeature = stateNav.filterDrawing[1];
         filterShapeAction([filterFeature], filterLayers);
@@ -2266,20 +2261,19 @@ export default function Map() {
         ]);
 
         const filterLayers = [
-          "GLOLeases",
           "GLOLeaseLabels",
-          "GLOUnits",
           "GLOUnitLabels",
           "Tracked Wells",
           "Tracked Owners",
           "Tags Filter",
+          "interest",
+          "parcel",
           "permits",
           "rigs",
         ];
         filterLayers.forEach(filterLayer => {
           if (filterCustomArray[filterLayer]) {
-            
-            if (['wellpoints', 'welllines', 'Tracked Wells', 'Tracked Owners', 'Tags Filter'].indexOf(filterLayer) > -1) {
+            if (['Tracked Wells', 'Tracked Owners', 'Tags Filter'].indexOf(filterLayer) > -1) {
               map.setFilter(filterLayer, [
                 "match",
                 ["get", "id"],
@@ -2311,19 +2305,38 @@ export default function Map() {
                 false,
               ]);
             } else {
-              map.setFilter(filterLayer, [
-                "match",
-                ["get", "VIEWID"],
-                mergeArrays(filterCustomArray[filterLayer]),
-                true,
-                false,
-              ]);
-            }
-            console.log(filterCustomArray[filterLayer]);
-            if (filterCustomArray[filterLayer].length == 1) {
-              map.setFilter(filterLayer, filterCustomArray[filterLayer][0]);  
-            } else {
-              map.setFilter(filterLayer, filterCustomArray[filterLayer]);
+              const baseLayer= filterLayer.replace('Labels', 's');
+              if (filterCustomArray[baseLayer]) {
+                map.setFilter(filterLayer, [
+                  "match",
+                  ["get", "VIEWID"],
+                  mergeArrays(filterCustomArray[baseLayer]),
+                  true,
+                  false,
+                ]);
+                map.setFilter(baseLayer, [
+                  "match",
+                  ["get", "VIEWID"],
+                  mergeArrays(filterCustomArray[baseLayer]),
+                  true,
+                  false,
+                ]);
+              } else {
+                map.setFilter(filterLayer, [
+                  "match",
+                  ["get", "VIEWID"],
+                  mergeArrays(filterCustomArray[filterLayer]),
+                  true,
+                  false,
+                ]);
+                map.setFilter(baseLayer, [
+                  "match",
+                  ["get", "VIEWID"],
+                  mergeArrays(filterCustomArray[filterLayer]),
+                  true,
+                  false,
+                ]);
+              }
             }
           } else {
             const layer = map.getLayer(filterLayer);
@@ -2331,6 +2344,9 @@ export default function Map() {
               map.setFilter(filterLayer, null);
               if (map.getLayer(filterLayer + '_labels')) {
                 map.setFilter(filterLayer + '_labels', null);
+              }
+              if (map.getLayer(filterLayer.replace('Labels', 's'))) {
+                map.setFilter(filterLayer.replace('Labels', 's'), null);
               }
               if (layer.type == 'circle' && layer.id != 'wellpoints') {
                 if (layer.source.includes('_filter')) {
