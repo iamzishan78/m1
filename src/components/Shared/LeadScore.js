@@ -1,108 +1,56 @@
-import React, { useState, useEffect, useContext } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: "#fff",
-    marginTop: "8px",
-    marginBottom: "8px",
+    margin: "23px",
   },
   leadScore: {
-    width: "120px",
-    height: "120px",
-    backgroundColor: "white",
-    color: "#0033de",
-    border: "4px solid",
+    width: "90px",
+    height: "90px",
+    border: `5px solid #63E1F7`,
     borderRadius: "100%",
     margin: "0 auto",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center"
-  },
-  leadTitle: {
     justifyContent: "center",
-    alignItems: "center"
   },
-  leadInfoTitle: {
-    fontWeight: 'bold'
-  }
+  cardContent: { width: "100%", display: "flex" },
+  leftColumn: {
+    textAlign: "center",
+    marginRight: "18px",
+  },
+  LCFooter: { width: "100%", color: "#757575", marginBottom: "0" },
+  lastContactedSpan: { fontWeight: "normal", marginBottom: "0" },
+  scoreVariations: { color: "#757575", marginTop: "0", fontWeight: "normal" },
 }));
 
-export default function LeadScore({
-  score,
-  lastSeen,
-  lastContacted,
-  lastModified,
-}) {
-  // const [stateTransact, setStateTransact] = useContext(TransactContext);
-
+export default function LeadScore({ score, lastContacted }) {
   const classes = useStyles();
 
   return (
-    <Card className={classes.root} variant="outlined">
-      <CardActions classes={classes.leadTitle}>
-        <Typography variant="button" gutterBottom>
-          Lead Score
-        </Typography>
-      </CardActions>
-      <CardContent>
-        <div>
-          <div
-            style={{
-              textAlign: "center",
-            }}
-          >
-            <div className={classes.leadScore}>
-              <Typography variant="h4">
-                {score}
-              </Typography>
-            </div>
+    <div className={classes.root}>
+      <h4 style={{ width: "100%" }}>Lead Score</h4>
+      <div className={classes.cardContent}>
+        <div className={classes.leftColumn}>
+          <div className={classes.leadScore}>
+            <Typography variant="h4">{score}</Typography>
           </div>
-          <div
-            style={{
-              textAlign: "center",
-              marginBottom: "15px",
-            }}
-          >
-           {/* <Typography variant="button" component="p" className={classes.leadInfoTitle}>
-              Last Seen:
-            </Typography>
-            <Typography variant="caption" component="p">
-              {lastSeen || "--"}
-            </Typography> */}
-          </div>
-          <div
-            style={{
-              textAlign: "center",
-              marginBottom: "15px",
-            }}
-          >
-            <Typography variant="button" component="p" className={classes.leadInfoTitle}>
-              Last contacted:
-            </Typography>
-            <Typography variant="caption" component="p">
-              {lastContacted || "--"}
-            </Typography>
-          </div>
-          <div
-            style={{
-              textAlign: "center",
-              marginBottom: "15px",
-            }}
-          >
-            <Typography variant="button" component="p" className={classes.leadInfoTitle}>
-              Last modified:
-            </Typography>
-            <Typography variant="caption" component="p">
-              {lastModified || "--"}
-            </Typography>
-          </div>
+          <h4 className={classes.LCFooter}>Cold</h4>
         </div>
-      </CardContent>
-    </Card>
+
+        <div>
+          <h5 className={classes.scoreVariations}>
+            Lead score up 0% in the last 30 days
+          </h5>
+          <h5 style={{ color: "#757575" }}>
+            Last Contacted
+            <br />
+            <span className={classes.lastContactedSpan}>{lastContacted}</span>
+          </h5>
+        </div>
+      </div>
+    </div>
   );
 }

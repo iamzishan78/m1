@@ -35,14 +35,18 @@ import BackupIcon from "@material-ui/icons/Backup";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Divider from "@material-ui/core/Divider";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
+import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
+import CellContentEdition from "./SubComponents/CellContentEdition";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
+  },
+  table: {
+    "& .MuiTableCell-body": {
+      paddingTop: "12px",
+      paddingBottom: "12px",
+    },
   },
   icons: {
     backgroundColor: "#efefef",
@@ -105,6 +109,7 @@ const useStyles = makeStyles((theme) => ({
   addIcon: { "& .MuiIconButton-root:hover": { color: "#011133" } },
   cellDataDiv: {
     padding: "10px",
+    position: "relative",
     borderRadius: "7px",
     width: "fit-content",
     cursor: "text",
@@ -146,7 +151,7 @@ export default function SubTable(props) {
   const [m1nSelectedRowsIds, setM1nSelectedRowsIds] = useState([]);
   const [m1nSelectedRowsTracks, setM1nSelectedRowsTracks] = useState([]);
 
-  const [completelyDelete, setCompletelyDelete] = useState("false");
+  // const [completelyDelete, setCompletelyDelete] = useState("false");
 
   useEffect(() => {
     if (props.rows) {
@@ -558,69 +563,76 @@ export default function SubTable(props) {
             }
             break;
 
-          // case "contactName":
-          //   {
-          //     column.options = {
-          //       ...column.options,
-          //       customBodyRender: (value, tableMeta, updateValue) => {
-          //         if (value === "" || value === null || !value) {
-          //           return value;
-          //         }
-
-          //         return (
-          //           <div
-          //             className={classes.cellDataDiv}
-          //             onClick={(e) => {
-          //               e.preventDefault();
-          //               e.stopPropagation();
-          //             }}
-          //           >
-          //             {value}{" "}
-          //             {value === "Jim Adler" && ( //////temporary to demo only
-          //               <Tooltip title="Purchased contact info">
-          //                 <MonetizationOnIcon
-          //                   fontSize="small"
-          //                   style={{
-          //                     color: "#082768",
-          //                     verticalAlign: "middle",
-          //                   }}
-          //                 />
-          //               </Tooltip>
-          //             )}
-          //           </div>
-          //         );
-          //       },
-          //     };
-          //   }
-          //   break;
+          case "fullContactAddress":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <CellContentEdition
+                      id={tableMeta.rowData[0]}
+                      content={{
+                        address1: tableMeta.rowData[1],
+                        address2: tableMeta.rowData[2],
+                        city: tableMeta.rowData[3],
+                        state: tableMeta.rowData[4],
+                        zip: tableMeta.rowData[5],
+                        country: tableMeta.rowData[6],
+                      }}
+                      targetLabel={props.targetLabel}
+                    />
+                  );
+                },
+              };
+            }
+            break;
 
           default:
             {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  if (value === "" || value === null || !value) {
-                    return value;
+                  const valueFormatter = (v) => {
+                    if (column.name === "appraisedValue")
+                      return formatter.format(v);
+
+                    if (column.name === "lastUpdateAt")
+                      return anyToDate(v).toLocaleString("en-US", {
+                        year: "numeric",
+                        day: "numeric",
+                        month: "numeric",
+                      });
+
+                    return v;
+                  };
+
+                  ////// if non editable column
+                  if (!column.editable) {
+                    //// if no value
+                    if (value === "" || value === null || !value) return value;
+
+                    //// if value
+                    return (
+                      <div
+                        className={classes.cellDataDiv}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
+                        {valueFormatter(value)}
+                      </div>
+                    );
                   }
 
+                  ////// if editable column
+
                   return (
-                    <div
-                      className={classes.cellDataDiv}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                    >
-                      {column.name === "appraisedValue"
-                        ? formatter.format(value)
-                        : column.name === "lastUpdateAt"
-                        ? anyToDate(value).toLocaleString("en-US", {
-                            year: "numeric",
-                            day: "numeric",
-                            month: "numeric",
-                          })
-                        : value}
-                    </div>
+                    <CellContentEdition
+                      id={tableMeta.rowData[0]}
+                      content={{ [column.name]: valueFormatter(value) }}
+                      targetLabel={props.targetLabel}
+                    />
                   );
                 },
               };
@@ -938,7 +950,9 @@ export default function SubTable(props) {
                 openDialog === "wellsPerOwner"
               ? "lg"
               : openDialog === "addContact" ||
-                openDialog === "addOwnerToContact"
+                openDialog === "addOwnerToContact" ||
+                openDialog === "deleteOwnersFromContact" ||
+                openDialog === "deleteContact"
               ? "xs"
               : "sm"
           }
@@ -1021,9 +1035,9 @@ export default function SubTable(props) {
               deleteFunc={props.deleteFunc}
               m1nSelectedRowsIds={m1nSelectedRowsIds}
               setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-              completelyDelete={completelyDelete}
+              // completelyDelete={completelyDelete}
             >
-              {props.header === "Owner's Contacts" && (
+              {/* {props.header === "Owner's Contacts" && (
                 <RadioGroup
                   value={completelyDelete}
                   onChange={(event) => {
@@ -1049,7 +1063,12 @@ export default function SubTable(props) {
                     }?`}
                   />
                 </RadioGroup>
-              )}
+              )} */}
+
+              {props.header === "Owner's Contacts" &&
+                `Do you want to remove the contact${
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                } from this owner?`}
 
               {props.header === "Contacts" &&
                 `Do you want to permanently delete the contact${

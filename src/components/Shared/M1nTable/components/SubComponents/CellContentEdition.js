@@ -5,49 +5,52 @@ import { IconButton } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 import TextField from "@material-ui/core/TextField";
-import EditionPopover from "./EditionPopover";
+import EditionPopover from "../../../../ContactDetailCard/components/EditionPopover";
 import ClearSharpIcon from "@material-ui/icons/ClearSharp";
 import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 import Button from "@material-ui/core/Button";
 import { useMutation } from "@apollo/react-hooks";
-import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
+import { UPDATECONTACT } from "../../../../../graphQL/useMutationUpdateContact";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { AppContext } from "../../../AppContext";
+import { AppContext } from "../../../../../AppContext";
+import $ from "jquery";
 
 const useStyles = makeStyles((theme) => ({
   fieldContentP: {
-    visibility: ({ loading }) => (loading ? "hidden" : "visible"),
-    margin: ({ noMargin }) => (noMargin ? "0" : "5px 10px"),
+    visibility: ({ loading, edit, fieldsCount }) =>
+      loading || (edit && fieldsCount <= 1) ? "hidden" : "visible",
+    margin: "0",
     width: ({ noMargin }) => {
       if (noMargin) return "fit-content";
     },
     borderRadius: "4px",
-    "&:hover": {
-      background: ({ noMargin }) => (noMargin ? "whitesmoke" : "#FFFFFF"),
-    },
-    "& #contPencilIcon": {
-      visibility: "hidden",
-    },
-    "&:hover #contPencilIcon": {
-      visibility: "visible",
-    },
+
+    whiteSpace: "pre-wrap",
   },
   pencilIcon: {
     fontSize: "22px",
   },
   editTextField: {
-    paddingRight: ({ fieldsCount }) => (fieldsCount > 1 ? null : "0"),
+    position: ({ fieldsCount }) => (fieldsCount > 1 ? null : "absolute"),
+    top: "0",
+    left: "0",
+    zIndex: "50",
+    paddingRight: ({ fieldsCount }) => (fieldsCount > 1 ? null : "20px"),
     "& .MuiInputBase-root": {
+      backgroundColor: "#fff",
       fontSize: "0.875rem",
-      padding: "9px 10px",
+      padding: "10px",
       lineHeight: "1.43",
     },
+    "& textarea": {
+      width: "inherit",
+    },
   },
-  notAvailableP: { color: "#bababaab", fontSize: "13px" },
+  notAvailableP: { color: "#898989b0", fontSize: "13px" },
   loader: {
-    position: "relative",
-    top: "-37px",
+    top: "calc( 50% - 11px)",
     left: "10px",
+    position: "absolute",
   },
   popoverButton: {
     margin: "0 0 4px 8px",
@@ -57,19 +60,36 @@ const useStyles = makeStyles((theme) => ({
   },
   buttonsRow: { textAlign: "right", top: "-2px", position: "relative" },
   foodText: {
-    zIndex: "50",
     position: "absolute",
-    right: "5px",
-    bottom: "14px",
+    bottom: "0",
+    right: "0",
     fontSize: "10px",
     color: "#6e6e6e",
     margin: "0 !important",
     textAlign: "right",
     height: "0",
-    paddingRight: "0",
+    paddingRight: "20px",
     "& span": {
       fontWeight: "bold",
     },
+  },
+  cellDataDiv: {
+    padding: "10px 30px 10px 10px",
+    position: "relative",
+    borderRadius: "7px",
+    cursor: "text",
+    "&:hover": {
+      backgroundColor: ({ edit }) => (edit ? null : "#fff"),
+      "& .hiddenEditIcons": {
+        visibility: ({ edit }) => (edit ? null : "visible"),
+      },
+    },
+  },
+  hiddenEditIcons: {
+    position: "absolute",
+    right: "0",
+    top: "Calc(50% - 13px)",
+    visibility: "hidden",
   },
 }));
 
@@ -83,7 +103,14 @@ function PencilEditIcon({
   const classes = useStyles();
   return (
     <React.Fragment>
-      <EditionPopover anchorEl={anchorEl} setAnchorEl={setAnchorEl}>
+      <EditionPopover
+        anchorEl={anchorEl}
+        setAnchorEl={setAnchorEl}
+        transformOrigin={{
+          vertical: "center",
+          horizontal: "center",
+        }}
+      >
         <Grid container spacing={0} style={{ width: "200px" }}>
           <Grid className={classes.buttonsRow} item xs={12}>
             <Button
@@ -92,24 +119,24 @@ function PencilEditIcon({
               variant="outlined"
               className={classes.popoverButton}
               startIcon={<CheckSharpIcon />}
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 handleUpdating();
               }}
-            >
-              {" "}
-            </Button>
+            />
             <Button
               variant="contained"
               size="small"
               variant="outlined"
               className={classes.popoverButton}
               startIcon={<ClearSharpIcon />}
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 setAnchorEl(null);
               }}
-            >
-              {" "}
-            </Button>
+            />
           </Grid>
 
           {content.map((textF, i) => (
@@ -123,13 +150,13 @@ function PencilEditIcon({
         <IconButton
           size="small"
           onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
             onClick(e);
           }}
+          className={`hiddenEditIcons ${classes.hiddenEditIcons}`}
         >
-          <CreateTwoToneIcon
-            id="contPencilIcon"
-            className={classes.pencilIcon}
-          />
+          <CreateTwoToneIcon fontSize="small" color="secondary" />
         </IconButton>
       </Tooltip>
     </React.Fragment>
@@ -167,63 +194,85 @@ const textFieldLabels = (field) => {
   return field.charAt(0).toUpperCase() + field.slice(1);
 };
 
-export default function FieldContent({
+export default function CellContentEdition({
   children,
   id,
   content,
   childrenLeft,
   onlyChildren,
   name,
-  noMargin,
   noInputFooter,
+  targetLabel,
 }) {
-  //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
+  //////////// id - brings the object id //////////////////////////////////////////////////////////////////////////
   //////////// content - brings an object with fielNames and values ///////////////////////////////////////////////
   //////////// childrenLeft - will move the chilren components to the left side of the field values//optional//////
   ////////////              - default childrens to rigth///////////////////////////////////////////////////////////
   //////////// onlyChildren - will show only the children components, no field values  //optional//////////////////
   //////////// name - will be part of the Not Available text, better use in compound fiels  //optional/////////////
-  //////////// noMargin - no p tag margin  //optional//////////////////////////////////////////////////////////////
   //////////// noInputFooter //optional////////////////////////////////////////////////////////////////////////////
+  //////////// targetLabel - brings the object type we are updating here //////////////////////////////////////////
 
   const [stateApp] = React.useContext(AppContext);
   const [edit, setEdit] = useState(null);
   const [editContent, setEditContent] = useState({ content });
+  const [cellId, setCellId] = useState(0);
   const [fieldsCount, setFieldsCount] = useState(0);
+  const [height, setHeight] = useState(null);
+  const [width, setWidth] = useState(null);
 
   const [updateContact, { loading }] = useMutation(UPDATECONTACT);
-  const classes = useStyles({ noMargin, loading, fieldsCount });
+  const classes = useStyles({ loading, fieldsCount, edit });
 
   useEffect(() => {
     if (content) {
       setEditContent({ ...content });
 
       let count = 0;
+      let cId = "";
       for (const fieldName in content) {
         if (content.hasOwnProperty(fieldName)) {
           count++;
+          cId += fieldName;
         }
       }
       setFieldsCount(count);
+      setCellId(cId);
     }
   }, [content]);
 
   useEffect(() => {
     if (fieldsCount <= 1) {
+      //// set focus
       let fieldName;
       for (const key in editContent) {
         fieldName = key;
         break;
       }
-      if (document.getElementById("fieldContentInput" + fieldName))
-        document.getElementById("fieldContentInput" + fieldName).focus();
+      if (document.getElementById("fieldContentInput" + id + fieldName))
+        document.getElementById("fieldContentInput" + id + fieldName).focus();
+
+      //// resize height to fit its content, using jQuery
+      if (edit === false) {
+        $(document).ready(function () {
+          if (
+            $("#" + id + fieldName) &&
+            $("#fieldContentInput" + id + fieldName) &&
+            !$("#fieldContentInput" + id + fieldName).height()
+          ) {
+            $("#" + id + fieldName).css({
+              height: "auto",
+            });
+          }
+        });
+      }
     }
-  }, [edit]);
+  }, [edit, fieldsCount]);
 
   const handleEditClick = (e) => {
     e.persist();
     e.preventDefault();
-    setEdit(!edit ? e.currentTarget : null);
+    setEdit(!edit ? e.currentTarget : false);
   };
 
   const handleUpdating = () => {
@@ -240,26 +289,30 @@ export default function FieldContent({
     }
 
     if (differences) {
-      updateContact({
-        variables: {
-          contact: trimmedEditContent,
-        },
-        refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
-        awaitRefetchQueries: true,
-      });
+      if (targetLabel === "contact") {
+        updateContact({
+          variables: {
+            contact: trimmedEditContent,
+          },
+          refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
+          awaitRefetchQueries: true,
+        });
+      }
+      //// add here your mutation for another targetLabel
     }
 
-    setEdit(null);
+    setEdit(false);
   };
 
   let inputsArray = [];
+
   if (edit) {
     for (const fieldName in editContent) {
       if (editContent.hasOwnProperty(fieldName)) {
         inputsArray.push(
           <TextField
-            key={"fieldContentInput" + fieldName}
-            id={"fieldContentInput" + fieldName}
+            key={"fieldContentInput" + id + fieldName}
+            id={"fieldContentInput" + id + fieldName}
             className={classes.editTextField}
             variant="outlined"
             size="small"
@@ -280,7 +333,7 @@ export default function FieldContent({
               event.stopPropagation();
               if (event.key === "Escape") {
                 if (fieldsCount <= 1) {
-                  setEdit(null);
+                  setEdit(false);
                   setEditContent((editContent) => ({
                     ...editContent,
                     [fieldName]: content[fieldName],
@@ -293,32 +346,43 @@ export default function FieldContent({
                 handleUpdating();
               }
             }}
-            onBlur={() => {
+            onBlur={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               if (fieldsCount <= 1) {
-                setEdit(null);
+                setEdit(false);
                 setEditContent((editContent) => ({
                   ...editContent,
                   [fieldName]: content[fieldName],
                 }));
               }
             }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
           />
         );
       }
     }
-
-    if (fieldsCount <= 1) {
-      return [
-        inputsArray,
-        noInputFooter ? null : (
-          <p key="2" className={classes.foodText}>
-            <span>Return</span> to save
-          </p>
-        ),
-      ]; /////return an input if only one field
-    }
   }
 
+  //// ajusting the main div height to the input heigth, using jQuery
+  if (fieldsCount <= 1) {
+    $(document).ready(function () {
+      if (
+        $("#" + id + cellId) &&
+        $("#fieldContentInput" + id + cellId) &&
+        $("#fieldContentInput" + id + cellId).height()
+      ) {
+        $("#" + id + cellId).css({
+          height: $("#fieldContentInput" + id + cellId).height() + 20,
+        });
+      }
+    });
+  }
+
+  //// joining all fields content
   let textArray = [];
   for (const key in content) {
     if (content.hasOwnProperty(key) && content[key] && content[key] !== "") {
@@ -335,8 +399,30 @@ export default function FieldContent({
     }
   }
 
+  //// add "Return to save" footer
+  const inputsArrayWithFooter = () => {
+    if (fieldsCount <= 1) {
+      return [
+        inputsArray,
+        noInputFooter ? null : (
+          <p key="2" className={classes.foodText}>
+            <span>Return</span> to save
+          </p>
+        ),
+      ]; /////return an input if only one field
+    }
+  };
+
   return (
-    <React.Fragment>
+    <div
+      id={id + cellId}
+      className={classes.cellDataDiv}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+    >
+      {edit && fieldsCount <= 1 && inputsArrayWithFooter()}
       <p
         className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${
           classes.fieldContentP
@@ -352,7 +438,7 @@ export default function FieldContent({
           : `${name ? name + " " : ""} Not Available`}
         <PencilEditIcon
           handleUpdating={handleUpdating}
-          anchorEl={edit}
+          anchorEl={edit && fieldsCount > 1 ? edit : null}
           setAnchorEl={setEdit}
           content={inputsArray}
           onClick={handleEditClick}
@@ -368,6 +454,6 @@ export default function FieldContent({
           ></CircularProgress>
         </div>
       )}
-    </React.Fragment>
+    </div>
   );
 }

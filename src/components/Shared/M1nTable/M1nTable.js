@@ -466,9 +466,82 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
-  { name: "contactName", label: "Name" },
-  { name: "fullAddress", label: "Primary Address" },
-  { name: "leadSource", label: "Lead Source" },
+  {
+    name: "address1",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "address2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "city",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "state",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "zip",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "country",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+
+  { name: "name", label: "Name", editable: true },
+  { name: "fullContactAddress", label: "Primary Address", editable: true },
+  { name: "leadSource", label: "Lead Source", editable: true },
   { name: "lastUpdateBy.name", label: "Updated By" },
   { name: "lastUpdateAt", label: "Last Updated" },
   // { name: "primaryEmail", label: "Primary Email" },
@@ -481,25 +554,7 @@ const ContactsHeadCells = [
   //   label: "Home Phone",
   // },
   // {
-  //   name: "address1",
-  //   label: "Address",
-  // },
-  // {
-  //   name: "address2",
-  //   label: "Address-2",
-  // },
-  // {
-  //   name: "city",
-  //   label: "City",
-  // },
-  // {
-  //   name: "state",
-  //   label: "State",
-  // },
-  // {
-  //   name: "zip",
-  //   label: "Zipcode",
-  // },
+
   {
     name: "tags",
     label: "Tags ",
@@ -684,8 +739,10 @@ export default function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners") {
       setTargetLabel("owner");
+      setHeader("Owners");
+      setAddAble(false);
     }
-  }, []);
+  }, [props.parent]);
 
   useEffect(() => {
     if (
@@ -728,7 +785,6 @@ export default function M1nTable(props) {
       } else {
         setRows([]);
         setLoading(false);
-        setAddAble(false);
       }
     }
   }, [dataTracks]);
@@ -800,7 +856,7 @@ export default function M1nTable(props) {
         const cleanAvailableTags = [...new Set(availableTags)];
 
         setRows(dataOwners.owners.results);
-        setHeader("Owners");
+
         setColumns(
           cleanAvailableTags.length > 0
             ? TrackedOwnersHeadCells.map((column) => {
@@ -845,7 +901,7 @@ export default function M1nTable(props) {
           setRows([]);
         }
       }
-      setAddAble(false);
+
       setLoading(false);
     }
   }, [
@@ -861,8 +917,10 @@ export default function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "trackWells") {
       setTargetLabel("well");
+      setHeader("Wells");
+      setAddAble(false);
     }
-  }, []);
+  }, [props.paren]);
 
   useEffect(() => {
     if (
@@ -897,7 +955,6 @@ export default function M1nTable(props) {
       } else {
         setRows([]);
         setLoading(false);
-        setAddAble(false);
       }
     }
   }, [dataTracks]);
@@ -944,7 +1001,7 @@ export default function M1nTable(props) {
         const cleanAvailableTags = [...new Set(availableTags)];
 
         setRows(dataWells.wells.results);
-        setHeader("Wells");
+
         setColumns(
           cleanAvailableTags.length > 0
             ? WellsHeadCells.map((column) => {
@@ -989,7 +1046,7 @@ export default function M1nTable(props) {
           setRows([]);
         }
       }
-      setAddAble(false);
+
       setLoading(false);
     }
   }, [dataWells, dataTagSamples, dataCommentsCounter]);
@@ -1006,6 +1063,8 @@ export default function M1nTable(props) {
       stateApp.user.mongoId
     ) {
       setTargetLabel("well");
+      setHeader("Wells");
+      setAddAble(false);
       getWells({
         variables: {
           wellIdArray: props.wellsIdsArray,
@@ -1081,7 +1140,7 @@ export default function M1nTable(props) {
         const cleanAvailableTags = [...new Set(availableTags)];
 
         setRows(dataWells.wells.results);
-        setHeader("Wells");
+
         setColumns(
           cleanAvailableTags.length > 0
             ? WellsHeadCells.map((column) => {
@@ -1120,7 +1179,7 @@ export default function M1nTable(props) {
       } else {
         setRows([]);
       }
-      setAddAble(false);
+
       setLoading(false);
     }
   }, [dataWells, dataTagSamples, dataCommentsCounter, dataTracks]);
@@ -1132,6 +1191,8 @@ export default function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell") {
       setTargetLabel("owner");
+      setHeader("Owners Per Well");
+      setAddAble(false);
       getWellOwners({
         variables: { id: props.selectedWell.id },
       });
@@ -1166,8 +1227,6 @@ export default function M1nTable(props) {
           }
         });
 
-        setHeader("Owners Per Well");
-
         getOwnersWells({
           variables: {
             ownersIds: objectsIdsArray,
@@ -1186,7 +1245,6 @@ export default function M1nTable(props) {
         setLoading(false);
         setRows([]);
       }
-      setAddAble(false);
     }
   }, [dataWellOwners, dataTracks]);
 
@@ -1310,7 +1368,7 @@ export default function M1nTable(props) {
       props.contactId
     ) {
       setTargetLabel("owner");
-
+      setHeader("Interest Owners Tied to Contact");
       getContactInM1nTable({
         variables: {
           contactId: props.contactId,
@@ -1321,33 +1379,47 @@ export default function M1nTable(props) {
 
   useEffect(() => {
     if (
+      props.contactId &&
       props.parent &&
       props.parent === "ownersPerContacts" &&
       dataContact &&
-      dataContact.contact &&
-      dataContact.contact.owners &&
-      dataContact.contact.owners.length > 0
+      dataContact.contact
     ) {
-      getOwners({
-        variables: {
-          ownerIdArray: dataContact.contact.owners,
-          authToken: stateApp.user.authToken,
-        },
-      });
-      getOwnersWells({
-        variables: {
-          ownersIds: dataContact.contact.owners,
-        },
+      if (dataContact.contact.owners && dataContact.contact.owners.length > 0) {
+        getOwners({
+          variables: {
+            ownerIdArray: dataContact.contact.owners,
+            authToken: stateApp.user.authToken,
+          },
+        });
+        getOwnersWells({
+          variables: {
+            ownersIds: dataContact.contact.owners,
+          },
+        });
+      } else {
+        setLoading(false);
+        setRows([]);
+        setStateApp((state) => ({
+          ...state,
+          universalCircularLoaderAct: false,
+        }));
+      }
+
+      setAddAble({
+        parent: props.contactId,
+        type: "ownerToContact",
+        existingOwners: dataContact.contact.owners
+          ? dataContact.contact.owners
+          : [],
       });
     }
-  }, [dataContact]);
+  }, [props.contactId, dataContact]);
 
   useEffect(() => {
     if (
       props.parent &&
       props.parent === "ownersPerContacts" &&
-      dataContact &&
-      dataContact.contact &&
       dataOwners &&
       dataTracks &&
       dataTracks.tracksByUserAndObjectType &&
@@ -1390,8 +1462,6 @@ export default function M1nTable(props) {
           }
         });
 
-        setHeader("Interest Owners Tied to Contact");
-
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
@@ -1409,14 +1479,8 @@ export default function M1nTable(props) {
           universalCircularLoaderAct: false,
         }));
       }
-
-      setAddAble({
-        parent: props.contactId,
-        type: "ownerToContact",
-        existingOwners: dataContact.contact.owners,
-      });
     }
-  }, [dataOwners, dataTracks, dataOwnersWells, props.contactId, dataContact]);
+  }, [dataOwners, dataTracks, dataOwnersWells]);
 
   useEffect(() => {
     if (
@@ -1555,6 +1619,8 @@ export default function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "ownerContacts" && props.ownerId) {
       setTargetLabel("contact");
+      setHeader("Owner's Contacts");
+      setAddAble({ parent: props.ownerId, type: "contactToOwner" });
       getContactsByOwnerId({
         variables: { objectId: props.ownerId },
       });
@@ -1591,7 +1657,6 @@ export default function M1nTable(props) {
             }
           }
         });
-        setHeader("Owner's Contacts");
 
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
@@ -1603,7 +1668,6 @@ export default function M1nTable(props) {
         setLoading(false);
         setRows([]);
       }
-      setAddAble({ parent: props.ownerId, type: "contactToOwner" });
     }
   }, [dataContactsByOwnerId, dataTracks]);
 
@@ -1622,8 +1686,8 @@ export default function M1nTable(props) {
       dataContactsByOwnerId.contactsByOwnerId.forEach((contact) => {
         contact.commentsCounter = 0;
         contact.tags = [[], 0];
-        contact.fullAddress = joinAddress(contact);
-        contact.contactName = contact.name;
+        // contact.fullContactAddress = joinAddress(contact);
+        // contact.contactName = contact.name;
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (contact._id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -1693,20 +1757,20 @@ export default function M1nTable(props) {
       setDeleteFunc(() => (contactsIdsToDelete, completelyDelete) => {
         if (contactsIdsToDelete) {
           if (completelyDelete) {
-            for (let i = 0; i < contactsIdsToDelete.length; i++) {
-              removeContact({
-                variables: {
-                  contactId: contactsIdsToDelete[i],
-                },
-                refetchQueries: [
-                  "getContacts",
-                  "getContactsByOwnerId",
-                  "getContactsCounter",
-                  "getContact",
-                ],
-                awaitRefetchQueries: true,
-              });
-            }
+            // for (let i = 0; i < contactsIdsToDelete.length; i++) {
+            //   removeContact({
+            //     variables: {
+            //       contactId: contactsIdsToDelete[i],
+            //     },
+            //     refetchQueries: [
+            //       "getContacts",
+            //       "getContactsByOwnerId",
+            //       "getContactsCounter",
+            //       "getContact",
+            //     ],
+            //     awaitRefetchQueries: true,
+            //   });
+            // }
           } else {
             for (let i = 0; i < contactsIdsToDelete.length; i++) {
               addRemoveOwnerToAContact({
@@ -1737,6 +1801,8 @@ export default function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "Contacts") {
       setTargetLabel("contact");
+      setHeader("Contacts");
+      setAddAble({ parent: false, type: "contact" });
       getContacts();
       setUploadIcon(true);
     }
@@ -1770,8 +1836,6 @@ export default function M1nTable(props) {
           }
         });
 
-        setHeader("Contacts");
-
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
@@ -1782,7 +1846,6 @@ export default function M1nTable(props) {
         setLoading(false);
         setRows([]);
       }
-      setAddAble({ parent: false, type: "contact" });
     }
   }, [dataContacts, dataTracks]);
 
@@ -1801,8 +1864,8 @@ export default function M1nTable(props) {
       dataContacts.contacts.forEach((contact) => {
         contact.commentsCounter = 0;
         contact.tags = [[], 0];
-        contact.fullAddress = joinAddress(contact);
-        contact.contactName = contact.name;
+        // contact.fullContactAddress = joinAddress(contact);
+        // contact.contactName = contact.name;
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (contact._id === dataCommentsCounter.commentsCounter[i]._id) {

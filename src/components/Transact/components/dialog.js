@@ -52,7 +52,7 @@ export default function TransactDialog(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   // const [title, setTitle] = useState(props.contact ? props.contact.name : ""); // title change from contact.name to dealName
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
-  const [label, setLabel] = useState(""); 
+  const [label, setLabel] = useState("");
   const [stage, setStage] = useState("");
   const [description, setDescription] = useState("");
   const [contact, setContact] = useState(
@@ -180,7 +180,7 @@ export default function TransactDialog(props) {
 
   return (
     <Dialog
-      open={stateApp.dealDialog}
+      open={stateApp.dealDialog ? stateApp.dealDialog : false}
       onClose={handleClose}
       aria-labelledby="form-dialog-title"
       fullWidth

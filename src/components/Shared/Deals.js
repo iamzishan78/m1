@@ -174,7 +174,7 @@ export default function Activities({ contact, ...props }) {
                 variant="contained"
                 color="secondary"
                 onClick={handleOpenDialog}
-                gutterBottom
+                // gutterBottom
               >
                 Add Deal
               </Button>
