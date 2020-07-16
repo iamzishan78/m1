@@ -115,6 +115,14 @@ const useStyles = makeStyles((theme) => ({
       border: "none",
     },
   },
+  Comments: {
+    "& fieldset": {
+      border: "2px solid #DADEDF",
+    },
+    "& textarea": {
+      fontSize: "0.85rem",
+    },
+  },
   ownersTable: {
     visibility: "hidden",
     "&  .MuiPaper-root>*": {
@@ -790,11 +798,11 @@ export default function ContactDetailCard(props) {
                 <Divider />
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={12} className={classes.Comments}>
                 <Comments
                   targetSourceId={contactData._id}
                   targetLabel="contact"
-                  
+                  detailCard
                 />
                 <Divider />
               </Grid>
