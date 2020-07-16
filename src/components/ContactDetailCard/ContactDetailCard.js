@@ -185,7 +185,14 @@ const useStyles = makeStyles((theme) => ({
     left: "2px",
   },
   noTextDecoration: { textDecoration: "none" },
+  grey: {
+    color: theme.palette.getContrastText("#808080"),
+    backgroundColor: "#808080 !important",
+  },
 }));
+
+
+
 
 export default function ContactDetailCard(props) {
   const classes = useStyles();
@@ -230,8 +237,8 @@ export default function ContactDetailCard(props) {
   const StyleBadge = withStyles({
     badge: {
       transform: "unset",
-      background: "white",
-      color: "#0033de",
+      background: "#38c52e",
+      color: "#fff",
       border: "2px solid",
       width: "30px",
       height: "30px",
@@ -297,8 +304,11 @@ export default function ContactDetailCard(props) {
               </div>
               <div>
                 <div className={classes.userIcon}>
-                  <StyleBadge badgeContent={5} color={"primary"}>
-                    <Avatar name={contactData.name} size="93" round />
+                  <StyleBadge 
+                  badgeContent={5} 
+                  //color={"#f6c16b"}
+                  >
+                    <Avatar className={classes.grey} name={contactData.name} size="93" round />
                   </StyleBadge>
                 </div>
                 <div className={classes.userName}>
