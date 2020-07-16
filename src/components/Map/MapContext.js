@@ -463,7 +463,6 @@ const MapContextProvider = (props) => {
     styleLayers: styleLayers,
     heatLayers: heatLayers,
     userFileLayers: [],
-    //userServiceLayers: userServiceLayers,
     baseMapLayers: baseMapLayers,
     userDefinedLayers: userDefinedLayers,
     checkedLayers: [0, 3],

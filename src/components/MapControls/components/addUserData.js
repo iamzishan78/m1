@@ -24,6 +24,7 @@ export default function AddUserData(props) {
 
   const [isOpen, setIsOpen] = useState(true);
   const [inputFiles, setInputFiles] = useState(null);
+  const [inputURL, setInputURL] = useState(null);
 
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
@@ -74,6 +75,17 @@ export default function AddUserData(props) {
     })
   }
 
+  const handleURLinput = (e) => {
+    let inputURL = e.target.value;
+    console.log(inputURL);
+    if (inputURL.endsWith(".geojson")) {
+      let existingFileLayers = stateMap.userFileLayers
+      existingFileLayers.push(inputURL);
+      console.log('INPUT URL ADDED:: ', inputURL)
+      setInputFiles(inputFiles => ({ userFileLayers: [...existingFileLayers] }));
+    }
+  }
+
   return (
     <ClickAwayListener onClickAway={handleClose}>
       <Dialog open={isOpen} onClose={handleClose}>
@@ -99,6 +111,7 @@ export default function AddUserData(props) {
             label="Esri Feature Service URL"
             type="url"
             fullWidth
+            onChange={handleURLinput}
           />
           <Typography gutterBottom>
           </Typography>
