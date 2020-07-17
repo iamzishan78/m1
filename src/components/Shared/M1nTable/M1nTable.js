@@ -739,10 +739,15 @@ export default function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners") {
       setTargetLabel("owner");
-      setHeader("Owners");
+
+      if (props.header) {
+        setHeader(props.header);
+      } else {
+        setHeader("Owners");
+      }
       setAddAble(false);
     }
-  }, [props.parent]);
+  }, [props.parent, props.header]);
 
   useEffect(() => {
     if (
@@ -917,10 +922,15 @@ export default function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "trackWells") {
       setTargetLabel("well");
-      setHeader("Wells");
+
+      if (props.header) {
+        setHeader(props.header);
+      } else {
+        setHeader("Wells");
+      }
       setAddAble(false);
     }
-  }, [props.paren]);
+  }, [props.parent, props.header]);
 
   useEffect(() => {
     if (

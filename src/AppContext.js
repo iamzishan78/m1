@@ -59,7 +59,11 @@ const AppProvider = (props) => {
     //   taggedWells: null,
     // },
     wellSelectedCoordinates: [],
-    universalCircularLoaderAct: false, //set it to true to show a loader in the center of the viewport
+    universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
+    mapGridCardActivated: false,
+    searchResultData: [], //// mapGridCard Data
+    viewportData: [], //// mapGridCard Data
+    trackedData: [], //// mapGridCard Data
 
     //Map State
     mapCircularLoaderAct: false,
