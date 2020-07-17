@@ -58,6 +58,7 @@
     "react-trello": "^2.2.6",
     "react-twitter-embed": "^3.0.3",
     "react-window": "^1.8.5",
+    "shapefile": "^0.6.6",
     "styled-components": "^4.4.1",
     "typescript": "^3.9.5",
     "uid": "^1.0.0",
