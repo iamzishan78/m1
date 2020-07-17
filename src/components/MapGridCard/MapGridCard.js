@@ -306,23 +306,27 @@ export default function MapGridCard(props) {
     );
   };
 
+  const blackOut = () => (
+    <div
+      style={{
+        position: "fixed",
+        top: "0",
+        left: "0",
+        width: "100vw",
+        height: "100vh",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        zIndex: "199",
+      }}
+      onClick={() => {
+        setExpanded(false);
+      }}
+    />
+  );
+
   return expanded ? (
     <>
       {CardReturn()}
-      <div
-        style={{
-          position: "fixed",
-          top: "0",
-          left: "0",
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          zIndex: "199",
-        }}
-        onClick={() => {
-          setExpanded(false);
-        }}
-      />
+      {blackOut()}
     </>
   ) : (
     <Draggable>{CardReturn()}</Draggable>
