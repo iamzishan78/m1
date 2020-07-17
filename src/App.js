@@ -22,6 +22,7 @@ import ContactsProvider from "./components/Contacts/ContactsProvider";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
 import DashboardProvider from "./components/Dashboard/DashboardProvider";
 import StudioProvider from "./components/Studio/StudioProvider";
+import BulkUpload from "./components/BulkUpload/BulkUpload"
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
@@ -268,6 +269,11 @@ function App() {
                       exact
                       path="/studio"
                       component={StudioProvider}
+                    />
+                    <PrivateRoute
+                    exact
+                    path="/bulkupload"
+                    component={BulkUpload}
                     />
                     {/* <Route component={NotFoundRedirect} /> */}
                   </NavigationProvider>
