@@ -1,152 +1,74 @@
-import React, { useState, useContext, useCallback, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
 import Switch from "@material-ui/core/Switch";
 import { NavigationContext } from "../NavigationContext";
-import { useLazyQuery } from "@apollo/react-hooks";
-import { WELLSQUERY } from "../../../graphQL/useQueryWells";
-import { TRACKSBYUSERANDOBJECTTYPE } from "../../../graphQL/useQueryTracksByUserAndObjectType";
 import { AppContext } from "../../../AppContext";
-import { MapControlsContext } from "../../MapControls/MapControlsContext";
-import { MapContext } from "../../Map/MapContext";
-import SimpleUserTable from "../../Providers/TrackWellsProvider";
+import { FormLabel } from "@material-ui/core";
+import WellIcon from "../../Shared/svgIcons/well";
+import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles({
-  input: {
-    margin: 20,
-    maxWidth: 168,
-    minWidth: 167,
-  },
-  inputLabel: {
-    color: "black",
-    minWidth: 249,
-    maxWidth: 250,
-    marginLeft: 20,
-  },
-  noOwners: {
-    padding: "6px 0px",
-    display: "flex",
+  mainDiv: {
+    padding: "0px 15px",
+    border: "1px solid #C4C4C4",
+    borderRadius: "4px",
+    "&:hover": {
+      border: "1px solid black",
+    },
   },
   noOwnersToggle: {
-    marginLeft: 20,
+    float: "right",
+    marginTop: "7.5px",
+  },
+  IconButton: {
+    marginRight: "10px",
+    "&:hover": {
+      backgroundColor: "#fff",
+      cursor: "context-menu",
+    },
   },
 });
 
-const data2 = SimpleUserTable;
-
-export default function FilterOwnerCount() {
+export default function FilterTrackedWells() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [tracks, setTracks] = useState(false);
-  const [idArray, setIdArray] = useState(null);
-
-  // const [firstWell , setFirstWell] = useState(null);
-  // const [stateMapControls, setStateMapControls] = useContext(
-  //   MapControlsContext
-  // );
-
-  const [stateMap, setStateMap] = useContext(MapContext);
-
-  const [stateApp, setStateApp] = useContext(AppContext);
-
-  const [rows, setRows] = React.useState([]);
-  const [loading, setLoading] = useState(true);
-  const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
-  const [tracksByUserAndObjectType, { data: dataTracks }] = useLazyQuery(
-    TRACKSBYUSERANDOBJECTTYPE
-  );
+  const [stateApp] = useContext(AppContext);
 
   useEffect(() => {
-    if (stateApp.user && stateApp.user.mongoId) {
-      setLoading(true);
-
-      tracksByUserAndObjectType({
-        variables: {
-          userId: stateApp.user.mongoId,
-          objectType: "well",
-        },
-      });
-    }
-  }, [stateApp.user]);
-
-  useEffect(() => {
-    if (dataTracks && dataTracks.tracksByUserAndObjectType) {
-      if (dataTracks.tracksByUserAndObjectType.length !== 0) {
-        const tracksIdArray = dataTracks.tracksByUserAndObjectType.map(
-          (track) => track.trackOn
-        );
-
-        getWells({
-          variables: {
-            wellIdArray: tracksIdArray,
-            authToken: stateApp.user.authToken,
-          },
-        });
-      } else {
-        setRows([]);
-        setLoading(false);
-      }
-    }
-  }, [dataTracks]);
-
-  useEffect(() => {
-    if (dataWells) {
-      if (
-        dataWells.wells &&
-        dataWells.wells.results &&
-        dataWells.wells.results.length > 0
-      ) {
-        const idArray = dataWells.wells.results.map((item) => item.api);
-
-        setIdArray(idArray);
-      } else {
-        setRows([]);
-      }
-      setLoading(false);
-    }
-  }, [dataWells]);
+    if (stateApp.checkedUserDefinedLayers)
+      if (stateApp.checkedUserDefinedLayers.indexOf(3) === -1)
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          filterTrackedWells: false,
+        }));
+      else
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          filterTrackedWells: true,
+        }));
+  }, [stateApp.checkedUserDefinedLayers]);
 
   const toggleTracks = () => {
-    setTracks((tracks) => !tracks);
+    if (!stateApp.activateUserDefinedLayers(3))
+      stateApp.deactivateUserDefinedLayers(3);
+    else stateApp.deactivateWellLayer();
   };
 
-  useEffect(() => {
-    if (idArray) {
-      let filter;
-
-      if (idArray && idArray.length) {
-        filter = ["match", ["get", "api"], idArray, true, false];
-      } else {
-        filter = null;
-      }
-
-      setStateNav((stateNav) => ({ ...stateNav, filterTrackedWells: filter }));
-      setStateApp({
-        ...stateApp,
-        trackedWellArray: dataWells,
-        trackFilterOn: true,
-      });
-    }
-  }, [tracks]);
-
   return (
-    <div>
-      <div className={classes.noOwners}>
-        <Typography
-          className={classes.inputLabel}
-          htmlFor="select-multiple-chip1"
-        >
-          Tracked Wells
-        </Typography>
-        <Switch
-          className={classes.noOwnersToggle}
-          checked={tracks}
-          onChange={toggleTracks}
-          color="primary"
-          name="checked"
-          inputProps={{ "aria-label": "primary checkbox" }}
-        />
-      </div>
+    <div className={classes.mainDiv}>
+      <IconButton className={classes.IconButton}>
+        <WellIcon className={classes.icon} color="#808080" opacity="1.0" />
+      </IconButton>
+      <FormLabel>Tracked Wells</FormLabel>
+      <Switch
+        disabled={!(stateApp.trackedwells && stateApp.trackedwells.length > 0)}
+        className={classes.noOwnersToggle}
+        checked={stateNav.filterTrackedWells}
+        onChange={toggleTracks}
+        color="secondary"
+        name="checked"
+        inputProps={{ "aria-label": "primary checkbox" }}
+      />
     </div>
   );
 }

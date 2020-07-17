@@ -15,7 +15,7 @@ import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 //import IconButton from '@material-ui/core/IconButton';
 //import EditIcon from '@material-ui/icons/Edit';
 import { MapControlsContext } from "../MapControlsContext";
-import { MapContext } from "../../Map/MapContext";
+import { AppContext } from "../../../AppContext";
 import { Divider } from "@material-ui/core";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import Collapse from '@material-ui/core/Collapse';
@@ -58,14 +58,14 @@ export default function CheckboxListHeatmaps(props) {
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
-  const [stateMap, setStateMap] = useContext(MapContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   //const theme = useTheme()
   const classes = useStyles();
   const handleToggle = idx => () => {
     console.log(idx);
-    console.log("toggle stateMap.checkedHeats before", stateMap.checkedHeats);
-    const currentIndex = stateMap.checkedHeats.indexOf(idx);
-    const newChecked = [...stateMap.checkedHeats];
+    console.log("toggle stateApp.checkedHeats before", stateApp.checkedHeats);
+    const currentIndex = stateApp.checkedHeats.indexOf(idx);
+    const newChecked = [...stateApp.checkedHeats];
 
     if (currentIndex === -1) {
       newChecked.push(idx);
@@ -74,9 +74,9 @@ export default function CheckboxListHeatmaps(props) {
     }
     console.log("newchecked", newChecked);
 
-    setStateMap(stateMap => ({ ...stateMap, checkedHeats: newChecked }));
+    setStateApp(stateApp => ({ ...stateApp, checkedHeats: newChecked }));
 
-    console.log("toggle stateMap.checkedHeats after", stateMap.checkedHeats);
+    console.log("toggle stateApp.checkedHeats after", stateApp.checkedHeats);
   };
 
 
@@ -88,12 +88,12 @@ export default function CheckboxListHeatmaps(props) {
     }
   
     const items = reorder(
-      stateMap.heatLayers,
+      stateApp.heatLayers,
       result.source.index,
       result.destination.index
     );
   
-    let checkedHeats = stateMap.checkedHeats.slice(0);
+    let checkedHeats = stateApp.checkedHeats.slice(0);
     const sourceIndex = checkedHeats.indexOf(result.source.index)
     
     let direction = 0;
@@ -118,8 +118,8 @@ export default function CheckboxListHeatmaps(props) {
       checkedHeats[sourceIndex] = result.destination.index;
     }
   
-    setStateMap({
-      ...stateMap, 
+    setStateApp({
+      ...stateApp, 
       heatLayers: items,
       checkedHeats: checkedHeats
     });
@@ -214,7 +214,7 @@ export default function CheckboxListHeatmaps(props) {
 
 
         {/* 
-        {stateMap.heatLayers.map((layer, index) => {
+        {stateApp.heatLayers.map((layer, index) => {
           const labelId = `checkbox-list-label-${index}`;
 
           return (
@@ -225,8 +225,8 @@ export default function CheckboxListHeatmaps(props) {
                   checkedIcon={<VisibilityIcon htmlColor="#fff" />}
                   edge="start"
                   checked={
-                    stateMap.checkedHeats
-                      ? stateMap.checkedHeats.indexOf(index) !== -1
+                    stateApp.checkedHeats
+                      ? stateApp.checkedHeats.indexOf(index) !== -1
                       : false
                   }
                   tabIndex={-1}
@@ -247,7 +247,7 @@ export default function CheckboxListHeatmaps(props) {
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <List className={classes.list}>
-                    {stateMap.heatLayers.map((layer, index) => {
+                    {stateApp.heatLayers.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
                       return (
                         <Draggable key={labelId} draggableId={labelId} index={index}>
@@ -268,8 +268,8 @@ export default function CheckboxListHeatmaps(props) {
                                   checkedIcon={<VisibilityIcon htmlColor="#fff" />}
                                   edge="start"
                                   checked={
-                                    stateMap.checkedHeats
-                                      ? stateMap.checkedHeats.indexOf(index) !== -1
+                                    stateApp.checkedHeats
+                                      ? stateApp.checkedHeats.indexOf(index) !== -1
                                       : false
                                   }
                                   tabIndex={-1}

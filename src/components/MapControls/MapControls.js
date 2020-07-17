@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { MapControlsContext } from "./MapControlsContext";
 import { AppContext } from "../../AppContext";
-import { MapContext } from "../Map/MapContext";
 
 //material-ui components
 import SpeedDial from "@material-ui/lab/SpeedDial";
@@ -90,7 +89,7 @@ export default function MapControls(props) {
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
-  const [stateMap, setStateMap] = useContext(MapContext);
+  
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
   const { changeHeatmaps, changeLayers } = props;
@@ -121,15 +120,15 @@ export default function MapControls(props) {
       anchorEl: anchorEl,
     });
 
-    setStateMap({
-      ...stateMap,
-      toggle3d: action === "threed" ? !stateMap.toggle3d : stateMap.toggle3d,
-      toggleZoomOut: action === "zoomout" ? !stateMap.toggleZoomOut : stateMap.toggleZoomOut,
+    setStateApp({
+      ...stateApp,
+      toggle3d: action === "threed" ? !stateApp.toggle3d : stateApp.toggle3d,
+      toggleZoomOut: action === "zoomout" ? !stateApp.toggleZoomOut : stateApp.toggleZoomOut,
     });
 
-    if (stateMap.draw.getMode() !== "simple_select") {
+    if (stateApp.draw.getMode() !== "simple_select") {
       setStateApp({ ...stateApp, editDraw: false });
-      stateMap.draw.changeMode("simple_select");
+      stateApp.draw.changeMode("simple_select");
     }
   };
 

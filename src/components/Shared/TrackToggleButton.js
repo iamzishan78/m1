@@ -15,20 +15,18 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "50%",
     border: 0,
     color: (props) => (props.dark ? "rgb(1,17,51)" : "#fff"),
-    backgroundColor: "transparent !important",
+    // backgroundColor: "transparent !important",
     "&:hover": {
       backgroundColor: (props) =>
         props.dark ? "#dadbde !important" : "#031d40 !important",
     },
   },
-
-  selected2: {
-    color: "rgba(1, 17, 51, 0.97) !important",
-    background: "rgba(1, 17, 51, 0)",
-    "&:hover": {
-      color: "#fff",
-      background: "#efefef",
-    },
+  aaa: { backgroundColor: "green" },
+  hiddenLoader: {
+    position: "absolute",
+    backgroundColor: "#EDF8FC",
+    borderRadius: "50%",
+    visibility: "hidden", //visible
   },
 }));
 
@@ -39,6 +37,36 @@ export default function TrackToggleButton(props) {
   const [toggleCreateRemoveTrack, { data, loading }] = useMutation(TOGGLETRACK);
 
   useEffect(() => {
+    //// if selected multiple buttons set all loader
+    if (props.multipleIds) {
+      if (loading) {
+        for (let i = 0; i < props.multipleIds.length; i++) {
+          if (
+            document.getElementById(
+              props.targetLabel + props.multipleIds[i] + "loader"
+            )
+          )
+            document.getElementById(
+              props.targetLabel + props.multipleIds[i] + "loader"
+            ).style.visibility = "visible";
+        }
+      } else {
+        for (let i = 0; i < props.multipleIds.length; i++) {
+          if (
+            document.getElementById(
+              props.targetLabel + props.multipleIds[i] + "loader"
+            )
+          )
+            document.getElementById(
+              props.targetLabel + props.multipleIds[i] + "loader"
+            ).style.visibility = "hidden";
+        }
+      }
+    }
+  }, [loading, props.multipleIds]);
+
+  useEffect(() => {
+    console.log("Target: ", props.target);
     if (props.target) {
       if (props.target.isTracked) {
         setSelected(true);
@@ -59,17 +87,38 @@ export default function TrackToggleButton(props) {
   }, [data]);
 
   const handleToggle = () => {
-    toggleCreateRemoveTrack({
-      variables: {
-        track: {
-          user: stateApp.user.mongoId,
-          objectType: props.targetLabel,
-          trackOn: props.targetSourceId,
+    if (!props.multipleIds || !props.multipleTracks) {
+      toggleCreateRemoveTrack({
+        variables: {
+          track: {
+            user: stateApp.user.mongoId,
+            objectType: props.targetLabel,
+            trackOn: props.targetSourceId,
+          },
         },
-      },
-      refetchQueries: ["tracksByUserAndObjectType", "trackByUserAndObjectId"], ////add all queries for components with track icons////
-      awaitRefetchQueries: true,
-    });
+        refetchQueries: ["tracksByUserAndObjectType", "trackByUserAndObjectId"], ////add all queries for components with track icons////
+        awaitRefetchQueries: true,
+      });
+    } else {
+      for (let i = 0; i < props.multipleIds.length; i++) {
+        if (props.target.isTracked === props.multipleTracks[i]) {
+          toggleCreateRemoveTrack({
+            variables: {
+              track: {
+                user: stateApp.user.mongoId,
+                objectType: props.targetLabel,
+                trackOn: props.multipleIds[i],
+              },
+            },
+            refetchQueries: [
+              "tracksByUserAndObjectType",
+              "trackByUserAndObjectId",
+            ], ////add all queries for components with track icons////
+            awaitRefetchQueries: true,
+          });
+        }
+      }
+    }
   };
 
   return (
@@ -80,12 +129,17 @@ export default function TrackToggleButton(props) {
             props.targetLabel.charAt(0).toUpperCase() +
             props.targetLabel.slice(1)
           : ""
-      }`}
+      }${props.targetLabel && props.multiSelectMouseHoverColor ? "s" : ""}`}
       placement="top"
     >
       <ToggleButton
+        style={{
+          backgroundColor: "transparent",
+        }}
+        id={props.id ? props.id : ""}
         size="small"
-        classes={{ root: classes.root }}
+        // classes={{ root: classes.root }}
+        className={classes.root}
         value="check"
         selected={selected}
         onChange={(e) => {
@@ -93,13 +147,37 @@ export default function TrackToggleButton(props) {
           e.persist();
           handleToggle();
         }}
+        onMouseOver={(e) => {
+          if (props.multiSelectMouseHoverColor && props.idBase)
+            props.multiSelectMouseHoverColor(props.idBase, "#dadbde");
+        }}
+        onMouseOut={(e) => {
+          if (props.multiSelectMouseHoverColor && props.idBase)
+            props.multiSelectMouseHoverColor(props.idBase, "transparent");
+        }}
       >
         {loading ? (
-          <CircularProgress size={28} color="secondary"></CircularProgress>
+          <CircularProgress size={28} color="secondary" />
         ) : selected ? (
-          <MyLocationIcon color="secondary" />
+          <>
+            <MyLocationIcon color="secondary" />
+            <CircularProgress
+              className={classes.hiddenLoader}
+              id={props.targetLabel + props.targetSourceId + "loader"}
+              size={28}
+              color="secondary"
+            />
+          </>
         ) : (
-          <MyLocationIcon />
+          <>
+            <MyLocationIcon />
+            <CircularProgress
+              className={classes.hiddenLoader}
+              id={props.targetLabel + props.targetSourceId + "loader"}
+              size={28}
+              color="secondary"
+            />
+          </>
         )}
       </ToggleButton>
     </Tooltip>

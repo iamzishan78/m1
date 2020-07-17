@@ -4,36 +4,21 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { NavigationContext } from "../NavigationContext";
 import FilterOwnerCount from "./FilterOwnerCount";
-import FilterOwnerInterestSum from "./FilterOwnerInterestSum";
+import Grid from "@material-ui/core/Grid";
+// import FilterOwnerInterestSum from "./FilterOwnerInterestSum";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: "flex",
-    flexWrap: "wrap",
-    flexDirection: "column",
-    justifyContent: "space-around",
-    flexGrow: 1
-  },
-  row: {
-    display: "flex",
-    flexWrap: "wrap",
-    flexDirection: "row"
-  },
+const useStyles = makeStyles((theme) => ({
   formControl: {
-    margin: "15px",
-    // minWidth: 120,
-    // maxWidth: 300,
-    color: "black"
-  }
+    color: "black",
+  },
 }));
 
 const interestList = [
   "ROYALTY INTEREST",
   "OVERRIDE ROYALTY",
   "WORKING INTEREST",
-  "PRODUCTION PAYMENT"
+  "PRODUCTION PAYMENT",
 ];
-
 
 const ownerTypesList = [
   "RELIGIOUS INSTITUTIONS",
@@ -43,9 +28,8 @@ const ownerTypesList = [
   "CORPORATIONS",
   "EDUCATIONAL INSTITUTIONS",
   "INDIVIDUALS",
-  "UNKNOWN"
+  "UNKNOWN",
 ];
-
 
 export default function FilterFormOwner() {
   const classes = useStyles();
@@ -59,17 +43,16 @@ export default function FilterFormOwner() {
   const [interests, setInterests] = useState(interestList);
   const [ownerTypes, setOwnerTypes] = useState(ownerTypesList);
 
+  // there is an opportunity to break these out into seperate components
+  // instead of including it on a form.
 
-  // there is an opportunity to break these out into seperate components 
-  // instead of including it on a form. 
-    
-  const setFilterInterest = interestNames => {
+  const setFilterInterest = (interestNames) => {
     let filter;
     let filters = [];
     let check;
     if (interestNames) {
-      check = interestNames.map(val => val);
-      check.forEach(option => {
+      check = interestNames.map((val) => val);
+      check.forEach((option) => {
         if (option === "ROYALTY INTEREST") {
           filters.push(["get", "interestTypeRoyaltyInterest"]);
         }
@@ -86,27 +69,27 @@ export default function FilterFormOwner() {
       if (filters && filters.length > 0) {
         filters.unshift("any");
         filter = filters;
-        setStateNav(stateNav => ({
+        setStateNav((stateNav) => ({
           ...stateNav,
-          filterAllInterestTypes: filter
+          filterAllInterestTypes: filter,
         }));
       } else {
         filter = null;
-        setStateNav(stateNav => ({
+        setStateNav((stateNav) => ({
           ...stateNav,
-          filterAllInterestTypes: filter
+          filterAllInterestTypes: filter,
         }));
       }
     }
   };
 
-  const setFilterOwnerType = ownerTypeNames => {
+  const setFilterOwnerType = (ownerTypeNames) => {
     let filter;
     let filters = [];
     let check;
     if (ownerTypeNames) {
-      check = ownerTypeNames.map(val => val);
-      check.forEach(option => {
+      check = ownerTypeNames.map((val) => val);
+      check.forEach((option) => {
         if (option === "RELIGIOUS INSTITUTIONS") {
           filters.push(["get", "ownershipTypeReligiousInstitutions"]);
         }
@@ -135,52 +118,58 @@ export default function FilterFormOwner() {
       if (filters && filters.length > 0) {
         filters.unshift("any");
         filter = filters;
-        setStateNav(stateNav => ({
+        setStateNav((stateNav) => ({
           ...stateNav,
-          filterAllOwnershipTypes: filter
+          filterAllOwnershipTypes: filter,
         }));
       } else {
         filter = null;
-        setStateNav(stateNav => ({
+        setStateNav((stateNav) => ({
           ...stateNav,
-          filterAllOwnershipTypes: filter
+          filterAllOwnershipTypes: filter,
         }));
       }
     }
   };
 
-  const handleChangeInterest = event => {
+  const handleChangeInterest = (event) => {
     // console.log(event);
     setInterestName(event);
     setFilterInterest(event);
-    setStateNav(stateNav => ({
+    setStateNav((stateNav) => ({
       ...stateNav,
-      interestName: event
+      interestName: event,
     }));
   };
 
-  const handleChangeOwnerType = event => {
+  const handleChangeOwnerType = (event) => {
     // console.log(event);
     setOwnerTypeName(event);
     setFilterOwnerType(event);
-    setStateNav(stateNav => ({
+    setStateNav((stateNav) => ({
       ...stateNav,
-      ownerTypeName: event
+      ownerTypeName: event,
     }));
   };
 
   return (
-    <div className={classes.row}>
-      <div className={classes.root}>
+    <Grid
+      container
+      item
+      spacing={2}
+      style={{ padding: "8px", width: "100%", margin: "0" }}
+    >
+      <Grid item sm={12}>
         <Autocomplete
+          ChipProps={{ color: "secondary" }}
           className={classes.formControl}
           defaultValue={interestName}
           onChange={(event, newValue) => {
             handleChangeInterest(newValue);
           }}
           multiple
-          options={interests.map(option => option)}
-          renderInput={params => (
+          options={interests.map((option) => option)}
+          renderInput={(params) => (
             <form autoComplete="off">
               <TextField
                 {...params}
@@ -193,16 +182,18 @@ export default function FilterFormOwner() {
           )}
           disableListWrap
         />
-
+      </Grid>
+      <Grid item sm={12}>
         <Autocomplete
+          ChipProps={{ color: "secondary" }}
           className={classes.formControl}
           defaultValue={ownerTypeName}
           onChange={(event, newValue) => {
             handleChangeOwnerType(newValue);
           }}
           multiple
-          options={ownerTypes.map(option => option)}
-          renderInput={params => (
+          options={ownerTypes.map((option) => option)}
+          renderInput={(params) => (
             <form autoComplete="off">
               <TextField
                 {...params}
@@ -215,16 +206,13 @@ export default function FilterFormOwner() {
           )}
           disableListWrap
         />
-        
-      <FilterOwnerCount/>
+      </Grid>
+
+      <FilterOwnerCount />
 
       {/* TEMPORARY COMMENT OUT BELOW
       FEATURE WORKS AND WILL HELP WITH M1 LOCAL DEBUGGING
-      <FilterOwnerInterestSum/> */}
-
-
-
-      </div>
-    </div>
+      <Grid item sm={12}><FilterOwnerInterestSum/> </Grid>*/}
+    </Grid>
   );
 }

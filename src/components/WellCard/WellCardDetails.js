@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { AppContext } from "../../AppContext";
 import { WellCardContext } from "./WellCardContext";
-import { MapContext } from "./../Map/MapContext";
 import { makeStyles } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core/styles";
 import { purple } from "@material-ui/core/colors";
@@ -17,14 +16,9 @@ import CardActions from "@material-ui/core/CardActions";
 import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
-//import Table from '@material-ui/core/Table';
-//import TableBody from '@material-ui/core/TableBody';
-//import TableCell from '@material-ui/core/TableCell';
-//import TableRow from '@material-ui/core/TableRow';
 
 //custom components
 import WellIcon from "./components/svgIcons/WellIcon";
-//import ExpandIcon from './components/svgIcons/ExpandIcon';
 import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
 import TrackIcon from "./components/svgIcons/TrackIcon";
 import ProductionIcon from "./components/svgIcons/ProductionIcon";
@@ -34,7 +28,6 @@ import CardDetailsMap from "./components/CardDetailsMap";
 import TableSummary from "./components/TableSummary";
 
 import QuadProvider from "../Quad/QuadProvider";
-// import OwnersProvider from "../Owners/OwnersProvider";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import WellProdChartProvider from "../WellProdChart/WellProdChartProvider";
 import TrackToggleButton from "../Shared/TrackToggleButton";
@@ -52,8 +45,6 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 
-//import { WellData } from './data/welldata'
-
 const useStyles = makeStyles((theme) => ({
   grid: {
     // height: "100%",
@@ -65,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     display: "flex",
     justifyContent: "space-around",
+    height: "100%",
     // paddingBottom: "10px",
   },
   gridItemGrey: {
@@ -79,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: "1px solid rgb(190, 190, 190)",
   },
   gridWidthScroll: {
-    height: "calc(100% - 88px)",
+    maxHeight: "calc(100% - 88px)",
     overflow: "auto",
   },
   card: {
@@ -164,7 +156,7 @@ const useStyles = makeStyles((theme) => ({
 export default function WellCardDetails(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
-  const [stateMap, setStateMap] = useContext(MapContext);
+
   const [target, setTarget] = useState(null);
   const classes = useStyles();
   useEffect(() => {
@@ -319,12 +311,16 @@ export default function WellCardDetails(props) {
         <CompletionDateCard />
         <FirstProdDateCard />
       </Grid>
-      <Grid item sm={12} className={classes.gridWidthScroll}>
-        <Grid item className={classes.gridItem}>
-          <TableSummary summary={props.summary} />
-          <CardDetailsMap />
-        </Grid>
+      <Grid item sm={12} container className={classes.gridWidthScroll}>
+        <Grid item sm={12} container style={{ height: "482px" }}>
+          <Grid item sm={6} className={classes.gridItem}>
+            <TableSummary summary={props.summary} />
+          </Grid>
 
+          <Grid item sm={6} className={classes.gridItem}>
+            <CardDetailsMap />
+          </Grid>
+        </Grid>
         <Grid item sm={12}>
           <Taps
             tabLabels={[

@@ -25,7 +25,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import ExpandIcon from "../../WellCard/components/svgIcons/ExpandIcon";
-import { MapContext } from "../../Map/MapContext";
+import { AppContext } from "../../../AppContext";
 
 // Helpers for area calcs
 import { area, convertArea, length } from "@turf/turf";
@@ -49,6 +49,19 @@ const useStyles = makeStyles(theme => ({
     position: "relative",
     top: "10vh",
     left: "10vw"
+  },
+
+  cardPopup: {
+    fontFamily: "Poppins",
+    fontStyle: "normal",
+    fontSize: ".75rem",
+    background: "#011133",
+    borderStyle: "solid",
+    borderWidth: "thin",
+    borderColor: "#011133",
+    width: "325px",
+    height: "auto",
+    position: "relative",
   },
 
   cardHeader: {
@@ -151,12 +164,15 @@ export default function SpatialDataCard(props) {
     sdNotes,
     sdGrossAcres,
   } = props.selectedFeature.properties;
+  const { cardClass = "card" } = props;
   const [dataType, setDataType] = useState(sdType);
   const [dataName, setDataName] = useState(shapeLabel);
   const [dataProject, setDataProject] = useState(projectName);
   const [grossAcres, setGrossAcres] = useState(sdGrossAcres);
   const [dataNotes, setDataNotes] = useState(sdNotes);
-  const [stateMap] = useContext(MapContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [showError, setShowError] = useState(false);
+  
 
   const inputLabel = useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);
@@ -168,21 +184,76 @@ export default function SpatialDataCard(props) {
     setDataNotes(sdNotes);
   }, [props.selectedFeature]);
 
+  useEffect(() => {
+    let udName = ""
+    switch (dataType) {
+      case "interest":
+        udName = "Area of Interest";
+        break;
+      case "parcel":
+        udName = "Parcels";
+        break;
+      default:
+        udName = "";
+        break;
+    }
+    if (udName) {
+      const layerIndex = stateApp.userDefinedLayers.findIndex(layer => layer.name === udName);
+      setStateApp({
+        ...stateApp,
+        tempCheckedUserDefinedLayers: layerIndex
+      });
+    } else {
+      setStateApp({
+        ...stateApp,
+        tempCheckedUserDefinedLayers: null
+      });
+    }
+  }, [dataType]);
+
   const updateDataNotes = evt => {
     let updatedNotes = evt.target.value;
     setDataNotes(updatedNotes);
   };
   const saveSpatialData = () => {
-    const spatialData = {
-      sdType: dataType === "" ? "interest" : dataType,
-      shapeLabel: dataName,
-      projectName: dataProject,
-      sdGrossAcres: grossAcres,
-      // sdNotes: dataNotes
-    };
-    props.saveSpatialData(spatialData, dataType);
+    if (dataName) {
+      const spatialData = {
+        sdType: dataType === "" ? "interest" : dataType,
+        shapeLabel: dataName,
+        projectName: dataProject,
+        sdGrossAcres: grossAcres,
+        // sdNotes: dataNotes
+      };
+      props.saveSpatialData(spatialData, dataType);
+  
+      const tmpChecked = stateApp.tempCheckedUserDefinedLayers;
+      const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
+      if (tmpChecked != null && stateApp.checkedUserDefinedLayers.indexOf(tmpChecked) === -1) {
+        checkedLayers.push(tmpChecked)
+      }
+      setStateApp({
+        ...stateApp,
+        checkedUserDefinedLayers: checkedLayers,
+        tempCheckedUserDefinedLayers: null
+      })
+    } else {
+      setShowError(true);
+    }
   };
+
+  const closeSpatialDataCard = () => {
+    setStateApp({
+      ...stateApp,
+      tempCheckedUserDefinedLayers: null
+    });
+    props.closeSpatialDataCard();
+  }
+
   const deleteSpatialData = () => {
+    setStateApp({
+      ...stateApp,
+      tempCheckedUserDefinedLayers: null
+    });
     props.deleteSpatialDataAndShape();
   };
   const calculateLandArea = () => {
@@ -201,7 +272,7 @@ export default function SpatialDataCard(props) {
   };
 
   return (
-    <Card className={classes.card}>
+    <Card className={classes[cardClass]}>
       <CardHeader
         className={classes.cardHeader}
         classes={{
@@ -219,7 +290,7 @@ export default function SpatialDataCard(props) {
               />
             </IconButton>
 
-            <IconButton color="secondary" onClick={props.closeSpatialDataCard}>
+            <IconButton color="secondary" onClick={closeSpatialDataCard}>
               <CloseIcon fontSize="medium" />
             </IconButton>
           </div>
@@ -241,9 +312,9 @@ export default function SpatialDataCard(props) {
             >
               <MenuItem value="interest">Area of Interest</MenuItem>
               <MenuItem value="parcel">Parcel/Tract</MenuItem>
-              {/* {stateMap.currentFeature &&
-                stateMap.currentFeature.geometry.type === "Polygon" &&
-                !stateMap.currentFeature.properties.isCircle && (
+              {/* {stateApp.currentFeature &&
+                stateApp.currentFeature.geometry.type === "Polygon" &&
+                !stateApp.currentFeature.properties.isCircle && (
                   <MenuItem value="title">Title Opinion</MenuItem>
                 )} */}
             </Select>
@@ -258,10 +329,13 @@ export default function SpatialDataCard(props) {
                 variant="outlined"
                 label="Name"
                 type="text"
+                error={showError}
                 //placeholder= "Enter Name"
                 value={dataName}
                 autoComplete="disabled"
                 onChange={evt => setDataName(evt.target.value)}
+                helperText={showError ? 'Name is required!' : ''}
+                required
               ></TextField>
             </div>
             <div className={classes.TextField}>

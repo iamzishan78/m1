@@ -4,20 +4,31 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import NumberFormat from "react-number-format";
 import { NavigationContext } from "../NavigationContext";
-import Box from '@material-ui/core/Box';
+import { FormLabel } from "@material-ui/core";
 
 const useStyles = makeStyles({
+  divBordersMinMax: {
+    display: "flow-root",
+    padding: "3.5px 15px 5.5px 15px",
+    border: "1px solid #C4C4C4",
+    borderRadius: "4px",
+    "&:hover": {
+      border: "1px solid black",
+    },
+  },
   input: {
-    margin: 20,
-    maxWidth: 168,
-    minWidth: 167
+    marginLeft: "30px",
+    width: "160px",
+    //float: "right",
+    "& input": { color: "#17AADD" },
   },
   inputLabel: {
-    color: "black",
-    minWidth: 249,
-    maxWidth: 450,
-    marginLeft: 20
-  }
+    position: "relative",
+    top: "11.5px",
+  },
+  ownersToggle: {
+    paddingLeft: "20px",
+  },
 });
 
 export default function FilterOwnerConfidence() {
@@ -41,31 +52,28 @@ export default function FilterOwnerConfidence() {
       filter = null;
     }
     if (!min && max) {
-      filter = ["all", ["<=", ["get", "ownerMatchConfidence"], max/100]];
+      filter = ["all", ["<=", ["get", "ownerMatchConfidence"], max / 100]];
       console.log("add filter", filter);
     } else if (min && !max) {
-      filter = ["all", [">=", ["get", "ownerMatchConfidence"], min/100]];
+      filter = ["all", [">=", ["get", "ownerMatchConfidence"], min / 100]];
       console.log("add filter", filter);
     } else if (min && max) {
       if (min < max) {
         filter = [
           "all",
-          [">=", ["get", "ownerMatchConfidence"], min/100],
-          ["<=", ["get", "ownerMatchConfidence"], max/100]
+          [">=", ["get", "ownerMatchConfidence"], min / 100],
+          ["<=", ["get", "ownerMatchConfidence"], max / 100],
         ];
         console.log("add filter", filter);
       }
-    } 
-    else {
+    } else {
       filter = null;
     }
 
-    setStateNav(stateNav => ({
+    setStateNav((stateNav) => ({
       ...stateNav,
-      filterOwnerConfidence: filter
+      filterOwnerConfidence: filter,
     }));
-
-
   }, [setStateNav, valueMaxDisplay, valueMinDisplay]);
 
   useEffect(() => {
@@ -75,20 +83,20 @@ export default function FilterOwnerConfidence() {
         if (checkStateNav && checkStateNav.length === 3) {
           const recallMin = checkStateNav[1][2];
           const recallMax = checkStateNav[2][2];
-          setValueMinDisplay(recallMin*100);
-          setValueMaxDisplay(recallMax*100);
+          setValueMinDisplay(recallMin * 100);
+          setValueMaxDisplay(recallMax * 100);
         }
       }
       if (!valueMaxDisplay) {
         if (checkStateNav && checkStateNav[1][0] === "<=") {
           const recallMax = checkStateNav[1][2];
-          setValueMaxDisplay(recallMax*100);
+          setValueMaxDisplay(recallMax * 100);
         }
       }
       if (!valueMinDisplay) {
         if (checkStateNav && checkStateNav[1][0] === ">=") {
           const recallMin = checkStateNav[1][2];
-          setValueMinDisplay(recallMin*100);
+          setValueMinDisplay(recallMin * 100);
         }
       }
     };
@@ -104,26 +112,32 @@ export default function FilterOwnerConfidence() {
     }
   }, [setFilter, stateNav.ownerConfidenceWell]);
 
-  const handleChangeMin = event => {
+  const handleChangeMin = (event) => {
     setValueMinDisplay(event.target.value.replace(/,/g, ""));
     setOwnerConfidenceWell(event.target.id);
-    setStateNav(stateNav => ({ ...stateNav, ownerConfidenceWell: event.target.id }));
+    setStateNav((stateNav) => ({
+      ...stateNav,
+      ownerConfidenceWell: event.target.id,
+    }));
     if (event.target.value === "") {
-      setStateNav(stateNav => ({
+      setStateNav((stateNav) => ({
         ...stateNav,
-        filterOwnerConfidence: null
+        filterOwnerConfidence: null,
       }));
     }
   };
 
-  const handleChangeMax = event => {
+  const handleChangeMax = (event) => {
     setValueMaxDisplay(event.target.value.replace(/,/g, ""));
     setOwnerConfidenceWell(event.target.id);
-    setStateNav(stateNav => ({ ...stateNav, ownerConfidenceWell: event.target.id }));
+    setStateNav((stateNav) => ({
+      ...stateNav,
+      ownerConfidenceWell: event.target.id,
+    }));
     if (event.target.value === "") {
-      setStateNav(stateNav => ({
+      setStateNav((stateNav) => ({
         ...stateNav,
-        filterOwnerConfidence: null
+        filterOwnerConfidence: null,
       }));
     }
   };
@@ -140,7 +154,7 @@ export default function FilterOwnerConfidence() {
     }
   }, [valueMaxDisplay, valueMinDisplay]);
 
-  const allowNumbersOnly = e => {
+  const allowNumbersOnly = (e) => {
     let code = e.which ? e.which : e.keyCode;
     if (code > 31 && (code < 48 || code > 57)) {
       e.preventDefault();
@@ -148,67 +162,60 @@ export default function FilterOwnerConfidence() {
   };
 
   return (
-    <div>
-      <div>
-      <Typography
-        className={classes.inputLabel}
-        htmlFor="select-multiple-chip1"
-      >
+    <React.Fragment>
+      <div className={classes.divBordersMinMax}>
+        <FormLabel className={classes.inputLabel}>
           Owner Confidence Score
-      </Typography>
-      <NumberFormat
-        id="OwnerConfidenceMin"
-        value={valueMinDisplay}
-        onChange={handleChangeMin}
-        thousandSeparator={true}
-        customInput={TextField}
-        className={classes.input}
-        aria-labelledby="range-number"
-        type="text"
-        label="Min"
-        variant="outlined"
-        onKeyPress={e => allowNumbersOnly(e)}
-        InputProps={{
-          inputProps: {
-            min: 0,
-            max: 1,
-          }
-        }}
-      />
-      <NumberFormat
-        id="OwnerConfidenceMax"
-        value={valueMaxDisplay}
-        onChange={handleChangeMax}
-        thousandSeparator={true}
-        customInput={TextField}
-        className={classes.input}
-        aria-labelledby="range-number"
-        type="text"
-        label="Max"
-        variant="outlined"
-        onKeyPress={e => allowNumbersOnly(e)}
-        error={error}
-        helperText={errorText}
-        InputProps={{
-          inputProps: {
-            min: 0,
-            max: 1,
-          }
-        }}
-      />
+        </FormLabel>
+
+        <NumberFormat
+          id="OwnerConfidenceMin"
+          value={valueMinDisplay}
+          onChange={handleChangeMin}
+          thousandSeparator={true}
+          customInput={TextField}
+          className={classes.input}
+          aria-labelledby="range-number"
+          type="text"
+          label="Min"
+          size="small"
+          onKeyPress={(e) => allowNumbersOnly(e)}
+          InputProps={{
+            inputProps: {
+              min: 0,
+              max: 1,
+            },
+          }}
+        />
+        <NumberFormat
+          id="OwnerConfidenceMax"
+          value={valueMaxDisplay}
+          onChange={handleChangeMax}
+          thousandSeparator={true}
+          customInput={TextField}
+          className={classes.input}
+          aria-labelledby="range-number"
+          type="text"
+          label="Max"
+          size="small"
+          onKeyPress={(e) => allowNumbersOnly(e)}
+          error={error}
+          helperText={errorText}
+          InputProps={{
+            inputProps: {
+              min: 0,
+              max: 1,
+            },
+          }}
+        />
       </div>
-
-
-      <div className={classes.inputLabel}>
-        <Box>
-        <Typography variant='caption' align='left' display='inline' >
-            *M1neral’s proprietary owner confidence score enriches public and consumer datasets 
-            with intelligence to attach a confidence metric on owner records in relation to a well asset. 
+      <div style={{ textAlign: "center" }}>
+        <Typography variant="caption">
+          *M1neral’s proprietary owner confidence score enriches public and
+          consumer datasets with intelligence to attach a confidence metric on
+          owner records in relation to a well asset.
         </Typography>
-        </Box>
       </div>
-
-
-    </div>
+    </React.Fragment>
   );
 }

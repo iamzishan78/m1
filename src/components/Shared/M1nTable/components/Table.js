@@ -22,33 +22,55 @@ import WellIcon from "../../svgIcons/well";
 import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
 import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import AddContactDialogContent from "./SubComponents/AddContactDialogContent";
+import AddOwnerToContactDialogContent from "./SubComponents/AddOwnerToContactDialogContent";
+import DeleteConfirmationDialogContent from "./SubComponents/DeleteConfirmationDialogContent";
+import Button from "@material-ui/core/Button";
+import LocalPrintshopRoundedIcon from "@material-ui/icons/LocalPrintshopRounded";
+import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
+import ContactPhoneRoundedIcon from "@material-ui/icons/ContactPhoneRounded";
+import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
+import PrintLabelsDialogContent from "./SubComponents/PrintLabelsDialogContent";
+import SendMailersDialogContent from "./SubComponents/SendMailersDialogContent";
+import BackupIcon from "@material-ui/icons/Backup";
+import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
+import DeleteIcon from "@material-ui/icons/Delete";
+import Divider from "@material-ui/core/Divider";
+import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
+import CellContentEdition from "./SubComponents/CellContentEdition";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
   },
+  table: {
+    "& .MuiTableCell-body": {
+      paddingTop: "12px",
+      paddingBottom: "12px",
+    },
+  },
   icons: {
     backgroundColor: "#efefef",
     marginLeft: "auto",
     "&:hover": {
-      backgroundColor: "#dadbde",
+      backgroundColor: "#dadbde !important",
     },
   },
   iconSelected: {
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: `${theme.palette.secondary.main} !important`,
     color: "#011133 !important",
     "& p": {
       color: "#011133 !important",
     },
   },
   TagSample: {
+    backgroundColor: "#efefef",
     color: "rgb(1,17,51)",
     borderRadius: "12px",
     width: "100%",
     maxWidth: "180px",
     minWidth: "80px",
     "&:hover": {
-      backgroundColor: "#DADBDE",
+      backgroundColor: "#dadbde !important",
       cursor: "pointer",
     },
     "& .first": {
@@ -84,15 +106,21 @@ const useStyles = makeStyles((theme) => ({
       height: "100%",
     },
   },
-  addIcon: { "& :hover": { color: "#011133" } },
+  addIcon: { "& .MuiIconButton-root:hover": { color: "#011133" } },
   cellDataDiv: {
     padding: "10px",
+    position: "relative",
     borderRadius: "7px",
     width: "fit-content",
     cursor: "text",
     "&:hover": {
       backgroundColor: "#fff !important",
     },
+  },
+  multiSelectionTopBarButtons: {
+    margin: "6px 12px",
+    fontWeight: "600",
+    color: "#082768",
   },
 }));
 
@@ -119,6 +147,12 @@ export default function SubTable(props) {
   const [title, setTitle] = useState("");
   const [subTitle, setSubTitle] = useState("");
 
+  const [m1nSelectedRowsIndexes, setM1nSelectedRowsIndexes] = useState([]);
+  const [m1nSelectedRowsIds, setM1nSelectedRowsIds] = useState([]);
+  const [m1nSelectedRowsTracks, setM1nSelectedRowsTracks] = useState([]);
+
+  // const [completelyDelete, setCompletelyDelete] = useState("false");
+
   useEffect(() => {
     if (props.rows) {
       setRows([
@@ -128,6 +162,30 @@ export default function SubTable(props) {
       ]);
     }
   }, [props.rows]);
+
+  useEffect(() => {
+    if (rows && m1nSelectedRowsIndexes) {
+      if (rows.length > 0 && m1nSelectedRowsIndexes.length > 0) {
+        let selectedRowsTracks = m1nSelectedRowsIndexes.map((ind) => {
+          if (rows[ind] && rows[ind].isTracked) return rows[ind].isTracked;
+        });
+        setM1nSelectedRowsTracks(selectedRowsTracks);
+      } else setM1nSelectedRowsTracks([]);
+    }
+  }, [rows, m1nSelectedRowsIndexes, props.columns]);
+
+  const multiSelectMouseHoverColor = (id, color) => {
+    for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+      if (
+        document.getElementById(
+          id + m1nSelectedRowsIds[i] + m1nSelectedRowsIndexes[i]
+        )
+      )
+        document.getElementById(
+          id + m1nSelectedRowsIds[i] + m1nSelectedRowsIndexes[i]
+        ).style.backgroundColor = color;
+    }
+  };
 
   ////setting all icons columns/////
   useEffect(() => {
@@ -139,12 +197,33 @@ export default function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
                   return (
                     <TrackToggleButton
+                      id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                       target={{ isTracked: value }}
                       targetLabel={props.targetLabel}
                       targetSourceId={tableMeta.rowData[0]}
                       dark
+                      multipleIds={
+                        m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !==
+                          -1 && m1nSelectedRowsIndexes.length > 1
+                          ? m1nSelectedRowsIds
+                          : null
+                      }
+                      multipleTracks={
+                        m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !==
+                          -1 && m1nSelectedRowsIndexes.length > 1
+                          ? m1nSelectedRowsTracks
+                          : null
+                      }
+                      multiSelectMouseHoverColor={
+                        m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !==
+                          -1 && m1nSelectedRowsIndexes.length > 1
+                          ? multiSelectMouseHoverColor
+                          : null
+                      }
+                      idBase={id}
                     />
                   );
                 },
@@ -157,6 +236,8 @@ export default function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
+
                   return (
                     <Tooltip
                       title={
@@ -169,6 +250,7 @@ export default function SubTable(props) {
                         color="secondary"
                       >
                         <IconButton
+                          id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                           size="medium"
                           color="primary"
                           className={`${classes.icons} ${
@@ -189,6 +271,24 @@ export default function SubTable(props) {
                             );
                           }}
                           aria-label="show comments"
+                          onMouseOver={() => {
+                            if (
+                              m1nSelectedRowsIndexes.indexOf(
+                                tableMeta.rowIndex
+                              ) !== -1 &&
+                              m1nSelectedRowsIndexes.length > 1
+                            )
+                              multiSelectMouseHoverColor(id, "#dadbde");
+                          }}
+                          onMouseOut={() => {
+                            if (
+                              m1nSelectedRowsIndexes.indexOf(
+                                tableMeta.rowIndex
+                              ) !== -1 &&
+                              m1nSelectedRowsIndexes.length > 1
+                            )
+                              multiSelectMouseHoverColor(id, "#efefef");
+                          }}
                         >
                           <ChatIcon />
                         </IconButton>
@@ -330,7 +430,7 @@ export default function SubTable(props) {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
-                                tableMeta.rowData[2],
+                                tableMeta.rowData[0],
                                 "owner"
                               );
                             }
@@ -402,12 +502,14 @@ export default function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
                   return (
                     <Tooltip
-                      title={value[1] === 0 ? "Add Tags" : "Tags"}
+                      title={value && value[1] === 0 ? "Add Tags" : "Tags"}
                       placement="top"
                     >
                       <Badge
+                        id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                         className={`${classes.TagSample} ${
                           colInd === tableMeta.columnIndex &&
                           rowInd === tableMeta.rowIndex
@@ -426,6 +528,24 @@ export default function SubTable(props) {
                             "tag"
                           );
                         }}
+                        onMouseOver={() => {
+                          if (
+                            m1nSelectedRowsIndexes.indexOf(
+                              tableMeta.rowIndex
+                            ) !== -1 &&
+                            m1nSelectedRowsIndexes.length > 1
+                          )
+                            multiSelectMouseHoverColor(id, "#dadbde");
+                        }}
+                        onMouseOut={() => {
+                          if (
+                            m1nSelectedRowsIndexes.indexOf(
+                              tableMeta.rowIndex
+                            ) !== -1 &&
+                            m1nSelectedRowsIndexes.length > 1
+                          )
+                            multiSelectMouseHoverColor(id, "#efefef");
+                        }}
                       >
                         {value[0] && value[0].length > 0 ? (
                           <React.Fragment>
@@ -442,27 +562,77 @@ export default function SubTable(props) {
               };
             }
             break;
+
+          case "fullContactAddress":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <CellContentEdition
+                      id={tableMeta.rowData[0]}
+                      content={{
+                        address1: tableMeta.rowData[1],
+                        address2: tableMeta.rowData[2],
+                        city: tableMeta.rowData[3],
+                        state: tableMeta.rowData[4],
+                        zip: tableMeta.rowData[5],
+                        country: tableMeta.rowData[6],
+                      }}
+                      targetLabel={props.targetLabel}
+                    />
+                  );
+                },
+              };
+            }
+            break;
+
           default:
             {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  if (value === "" || value === null || !value) {
-                    return value;
+                  const valueFormatter = (v) => {
+                    if (column.name === "appraisedValue")
+                      return formatter.format(v);
+
+                    if (column.name === "lastUpdateAt")
+                      return anyToDate(v).toLocaleString("en-US", {
+                        year: "numeric",
+                        day: "numeric",
+                        month: "numeric",
+                      });
+
+                    return v;
+                  };
+
+                  ////// if non editable column
+                  if (!column.editable) {
+                    //// if no value
+                    if (value === "" || value === null || !value) return value;
+
+                    //// if value
+                    return (
+                      <div
+                        className={classes.cellDataDiv}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
+                        {valueFormatter(value)}
+                      </div>
+                    );
                   }
 
+                  ////// if editable column
+
                   return (
-                    <div
-                      className={classes.cellDataDiv}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                    >
-                      {column.name === "appraisedValue"
-                        ? formatter.format(value)
-                        : value}
-                    </div>
+                    <CellContentEdition
+                      id={tableMeta.rowData[0]}
+                      content={{ [column.name]: valueFormatter(value) }}
+                      targetLabel={props.targetLabel}
+                    />
                   );
                 },
               };
@@ -472,7 +642,15 @@ export default function SubTable(props) {
       });
       setColumns([...props.columns]);
     }
-  }, [props.columns, props.rows, colInd, rowInd]);
+  }, [
+    props.columns,
+    props.rows,
+    colInd,
+    rowInd,
+    m1nSelectedRowsIds,
+    m1nSelectedRowsIndexes,
+    m1nSelectedRowsTracks,
+  ]);
 
   const handleExpandClick = async (cIndex, rIndex, idOrValues, type) => {
     setColInd(cIndex);
@@ -493,6 +671,11 @@ export default function SubTable(props) {
   };
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+      expandedCard: false,
+    }));
   };
 
   const options = {
@@ -505,34 +688,186 @@ export default function SubTable(props) {
         : props.rows && props.rows.length > 10
         ? [10, 25]
         : [],
+    selectableRows: "multiple",
+    //// triggers when a row/s is selected ////
+    onRowsSelect: (currentRowsSelected, rowsSelected) => {
+      if (rowsSelected && rowsSelected.length > 0) {
+        let indexArray = rowsSelected.map((d) => d.index).sort((a, b) => a - b);
+        if (rows && indexArray) {
+          if (rows.length > 0 && indexArray.length > 0) {
+            let selectedRows = rows.filter(
+              (row, index) => indexArray.indexOf(index) !== -1
+            );
+            let selectedRowsIds = selectedRows.map((row) => {
+              if (row.id) return row.id;
+              if (row.Id) return row.Id;
+              if (row._id) return row._id;
+            });
 
-    selectableRows: "none",
+            setM1nSelectedRowsIds(selectedRowsIds);
+          } else setM1nSelectedRowsIds([]);
+        }
+        setM1nSelectedRowsIndexes(indexArray);
+      } else {
+        setM1nSelectedRowsIndexes([]);
+        setM1nSelectedRowsIds([]);
+      }
+    },
+    onRowsDelete: (rowsDeleted) => {
+      handleExpandClick(null, null, null, "deleteOwnersFromContact");
+      return false;
+    },
+    rowsSelected: m1nSelectedRowsIndexes,
+    //// allows you to customize the top bar of selected items ////
+    customToolbarSelect:
+      props.header === "Interest Owners Tied to Contact"
+        ? false
+        : (selectedRows, displayData, setSelectedRow) => {
+            //// if contacts set the multi selection top bar: ////
+            if (
+              props.header === "Owner's Contacts" ||
+              props.header === "Contacts"
+            ) {
+              const getSelectedRows = () => {
+                const selectedRows = [];
+                for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+                  selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+                }
+                return selectedRows;
+              };
+
+              return (
+                <div
+                  style={{
+                    height: "48px",
+                    display: "flex",
+                  }}
+                >
+                  <Button
+                    color="secondary"
+                    startIcon={<ContactPhoneRoundedIcon />}
+                    className={classes.multiSelectionTopBarButtons}
+                    onClick={() => {
+                      handleExpandClick(
+                        null,
+                        null,
+                        getSelectedRows(),
+                        "buyContactsInfo"
+                      );
+                    }}
+                  >
+                    Buy Info
+                  </Button>
+                  <Button
+                    color="secondary"
+                    startIcon={<EmailRoundedIcon />}
+                    className={classes.multiSelectionTopBarButtons}
+                    onClick={() => {
+                      handleExpandClick(
+                        null,
+                        null,
+                        getSelectedRows(),
+                        "sendMailers"
+                      );
+                    }}
+                  >
+                    Mailers
+                  </Button>
+                  <Button
+                    color="secondary"
+                    startIcon={<LocalPrintshopRoundedIcon />}
+                    className={classes.multiSelectionTopBarButtons}
+                    onClick={() => {
+                      handleExpandClick(
+                        null,
+                        null,
+                        getSelectedRows(),
+                        "printLabels"
+                      );
+                    }}
+                  >
+                    Labels
+                  </Button>
+                  <Divider orientation="vertical" flexItem />
+                  <Tooltip title={"Delete"}>
+                    <IconButton
+                      size="medium"
+                      style={{ margin: "0 5px" }}
+                      onClick={(e) => {
+                        handleExpandClick(null, null, null, "deleteContact");
+                      }}
+                      aria-label="delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              );
+            }
+
+            //// default empty top bar ////
+            return (
+              <div
+                style={{
+                  height: "48px",
+                }}
+              />
+            );
+          },
 
     customToolbar: () => {
       return (
-        props.addAble && (
-          //////Add Icon/////////////////////////
-          <Tooltip
-            title={`Add${
-              props.targetLabel
-                ? " " +
+        <>
+          {props.uploadIcon && (
+            //////Upload Icon/////////////////////////
+            <span className={classes.addIcon}>
+              <Tooltip
+                title={`Upload ${
                   props.targetLabel.charAt(0).toUpperCase() +
                   props.targetLabel.slice(1)
-                : ""
-            }`}
-          >
-            <IconButton
-              size="medium"
-              className={classes.addIcon}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleExpandClick(null, null, null, "add");
-              }}
-            >
-              <AddCircleOutlineRoundedIcon />
-            </IconButton>
-          </Tooltip>
-        )
+                }s`}
+              >
+                <IconButton size="medium" onClick={(e) => {}}>
+                  <BackupIcon />
+                </IconButton>
+              </Tooltip>
+            </span>
+          )}
+          {props.addAble && (
+            //////Add Icon/////////////////////////
+            <span className={classes.addIcon}>
+              <Tooltip
+                title={`Add${
+                  props.targetLabel
+                    ? " " +
+                      props.targetLabel.charAt(0).toUpperCase() +
+                      props.targetLabel.slice(1)
+                    : ""
+                }`}
+              >
+                <IconButton
+                  size="medium"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (
+                      props.addAble.type &&
+                      (props.addAble.type === "contact" ||
+                        props.addAble.type === "contactToOwner")
+                    )
+                      handleExpandClick(null, null, null, "addContact");
+                    if (
+                      props.addAble.type &&
+                      props.addAble.type === "ownerToContact"
+                    )
+                      handleExpandClick(null, null, null, "addOwnerToContact");
+                  }}
+                >
+                  <AddCircleOutlineRoundedIcon />
+                </IconButton>
+              </Tooltip>
+            </span>
+          )}
+        </>
       );
     },
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
@@ -600,7 +935,10 @@ export default function SubTable(props) {
             openDialog === "owner" ||
             openDialog === "wellsPerOwner" ||
             openDialog === "ownerContacts" ||
-            openDialog === "ownersPerContacts"
+            openDialog === "ownersPerContacts" ||
+            openDialog === "buyContactsInfo" ||
+            openDialog === "sendMailers" ||
+            openDialog === "printLabels"
               ? true
               : false
           }
@@ -611,7 +949,10 @@ export default function SubTable(props) {
                 openDialog === "ownersPerContacts" ||
                 openDialog === "wellsPerOwner"
               ? "lg"
-              : openDialog === "add"
+              : openDialog === "addContact" ||
+                openDialog === "addOwnerToContact" ||
+                openDialog === "deleteOwnersFromContact" ||
+                openDialog === "deleteContact"
               ? "xs"
               : "sm"
           }
@@ -621,6 +962,12 @@ export default function SubTable(props) {
               focus
               targetSourceId={expandedObject}
               targetLabel={props.targetLabel}
+              multipleIds={
+                m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
+                m1nSelectedRowsIndexes.length > 1
+                  ? m1nSelectedRowsIds
+                  : null
+              }
             />
           )}
           {openDialog === "tag" && (
@@ -628,12 +975,18 @@ export default function SubTable(props) {
               <Tags
                 targetSourceId={expandedObject}
                 targetLabel={props.targetLabel}
+                multipleIds={
+                  m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
+                  m1nSelectedRowsIndexes.length > 1
+                    ? m1nSelectedRowsIds
+                    : null
+                }
               />
             </div>
           )}
           {openDialog === "owner" && (
             <M1nTable
-              selectedWell={{ api: expandedObject }}
+              selectedWell={{ id: expandedObject }}
               parent="OwnersPerWell"
             />
           )}
@@ -647,13 +1000,104 @@ export default function SubTable(props) {
             <M1nTable
               parent="ownersPerContacts"
               ownersIdsArray={expandedObject}
+              contactId={rows[rowInd]._id}
             />
           )}
 
-          {openDialog === "add" && props.targetLabel === "contact" && (
+          {openDialog === "addContact" && props.targetLabel === "contact" && (
             <AddContactDialogContent
               onClose={handleCloseDialog}
               parent={props.addAble.parent}
+            />
+          )}
+          {openDialog === "addOwnerToContact" && (
+            <AddOwnerToContactDialogContent
+              onClose={handleCloseDialog}
+              parent={props.addAble.parent}
+              existingOwners={props.addAble.existingOwners}
+            />
+          )}
+          {openDialog === "deleteOwnersFromContact" && (
+            <DeleteConfirmationDialogContent
+              onClose={handleCloseDialog}
+              deleteFunc={props.deleteFunc}
+              m1nSelectedRowsIds={m1nSelectedRowsIds}
+              setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+            >
+              {`Do you want to permanently delete the owner${
+                m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+              } from  this contact?`}
+            </DeleteConfirmationDialogContent>
+          )}
+          {openDialog === "deleteContact" && (
+            <DeleteConfirmationDialogContent
+              onClose={handleCloseDialog}
+              deleteFunc={props.deleteFunc}
+              m1nSelectedRowsIds={m1nSelectedRowsIds}
+              setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              // completelyDelete={completelyDelete}
+            >
+              {/* {props.header === "Owner's Contacts" && (
+                <RadioGroup
+                  value={completelyDelete}
+                  onChange={(event) => {
+                    setCompletelyDelete(event.target.value);
+                  }}
+                >
+                  <FormControlLabel
+                    value={"false"}
+                    control={<Radio />}
+                    label={`Do you want to remove the contact${
+                      m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
+                        ? "s"
+                        : ""
+                    } only from this owner?`}
+                  />
+                  <FormControlLabel
+                    value={"true"}
+                    control={<Radio />}
+                    label={`Do you want to permanently delete the contact${
+                      m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
+                        ? "s"
+                        : ""
+                    }?`}
+                  />
+                </RadioGroup>
+              )} */}
+
+              {props.header === "Owner's Contacts" &&
+                `Do you want to remove the contact${
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                } from this owner?`}
+
+              {props.header === "Contacts" &&
+                `Do you want to permanently delete the contact${
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                }?`}
+            </DeleteConfirmationDialogContent>
+          )}
+          {openDialog === "buyContactsInfo" && (
+            <BuyContactsInfoDialogContent
+              onClose={handleCloseDialog}
+              rows={expandedObject}
+              setRows={setExpandedObject}
+              setSelectedRow={setSelectedRow}
+            />
+          )}
+          {openDialog === "sendMailers" && (
+            <SendMailersDialogContent
+              onClose={handleCloseDialog}
+              rows={expandedObject}
+              setRows={setExpandedObject}
+              setSelectedRow={setSelectedRow}
+            />
+          )}
+          {openDialog === "printLabels" && (
+            <PrintLabelsDialogContent
+              onClose={handleCloseDialog}
+              rows={expandedObject}
+              setRows={setExpandedObject}
+              setSelectedRow={setSelectedRow}
             />
           )}
         </Dialog>

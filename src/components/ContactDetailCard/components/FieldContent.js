@@ -17,9 +17,7 @@ import { AppContext } from "../../../AppContext";
 const useStyles = makeStyles((theme) => ({
   fieldContentP: {
     visibility: ({ loading }) => (loading ? "hidden" : "visible"),
-    margin: ({ noMargin }) => {
-      if (noMargin) return "0";
-    },
+    margin: ({ noMargin }) => (noMargin ? "0" : "5px 10px"),
     width: ({ noMargin }) => {
       if (noMargin) return "fit-content";
     },
@@ -38,14 +36,14 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "22px",
   },
   editTextField: {
-    paddingRight: ({ fieldsCount }) => (fieldsCount > 1 ? null : "13px"),
+    paddingRight: ({ fieldsCount }) => (fieldsCount > 1 ? null : "0"),
     "& .MuiInputBase-root": {
       fontSize: "0.875rem",
-      padding: "10px",
+      padding: "9px 10px",
       lineHeight: "1.43",
     },
   },
-  notAvailableP: { color: "#898989b0", fontSize: "13px" },
+  notAvailableP: { color: "#bababaab", fontSize: "13px" },
   loader: {
     position: "relative",
     top: "-37px",
@@ -59,14 +57,16 @@ const useStyles = makeStyles((theme) => ({
   },
   buttonsRow: { textAlign: "right", top: "-2px", position: "relative" },
   foodText: {
+    zIndex: "50",
+    position: "absolute",
+    right: "5px",
+    bottom: "14px",
     fontSize: "10px",
     color: "#6e6e6e",
     margin: "0 !important",
     textAlign: "right",
-    float: "right",
-    marginLeft: "10px",
-    height: "8px",
-    paddingRight: "13px",
+    height: "0",
+    paddingRight: "0",
     "& span": {
       fontWeight: "bold",
     },
@@ -95,7 +95,9 @@ function PencilEditIcon({
               onClick={() => {
                 handleUpdating();
               }}
-            ></Button>
+            >
+              {" "}
+            </Button>
             <Button
               variant="contained"
               size="small"
@@ -105,7 +107,9 @@ function PencilEditIcon({
               onClick={() => {
                 setAnchorEl(null);
               }}
-            ></Button>
+            >
+              {" "}
+            </Button>
           </Grid>
 
           {content.map((textF, i) => (
@@ -115,7 +119,7 @@ function PencilEditIcon({
           ))}
         </Grid>
       </EditionPopover>
-      <Tooltip title={"Edit"}>
+      <Tooltip title={"Edit"} placement="top">
         <IconButton
           size="small"
           onClick={(e) => {
@@ -318,7 +322,16 @@ export default function FieldContent({
   let textArray = [];
   for (const key in content) {
     if (content.hasOwnProperty(key) && content[key] && content[key] !== "") {
-      textArray.push(content[key]);
+      if (
+        key === "zip" ||
+        key === "country" ||
+        key === "zipAlt" ||
+        key === "countryAlt"
+      ) {
+        textArray = [[textArray.join(", "), content[key]].join(" ")];
+      } else if (key === "jobTitle") {
+        textArray = [[textArray.join(", "), content[key]].join(" - ")];
+      } else textArray.push(content[key]);
     }
   }
 

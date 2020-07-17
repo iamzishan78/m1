@@ -18,24 +18,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import Base from './base';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import Base from "./base";
 
 export default class CursorClick extends Component {
   static propTypes = {
     /** Set the height of the icon, ex. '16px' */
-    height: PropTypes.string
+    height: PropTypes.string,
   };
 
   static defaultProps = {
-    height: '16px',
-    predefinedClassName: 'data-ex-icons-cursorclick'
+    height: "16px",
+    predefinedClassName: "data-ex-icons-cursorclick",
   };
 
   render() {
     return (
-      <Base {...this.props}>
+      <Base
+        {...this.props}
+        color={this.props.color ? this.props.color : ""}
+      >
         <g transform="scale(1.2, 1.2) translate(0, 2)">
           <polygon points="22.5,11.1 27.6,43.9 35.3,37.3 43,49 48.8,45 41,33.2 49,28.3 " />
           <path

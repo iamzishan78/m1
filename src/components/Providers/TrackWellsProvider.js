@@ -9,7 +9,6 @@ import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAnd
 import { AppContext } from "../../AppContext";
 
 // import { MapControlsContext } from "../../MapControls/MapControlsContext";
-// import { MapContext } from "../../Map/MapContext";
 
 const SimpleUserTable = (props) => {
   //   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -30,7 +29,7 @@ const SimpleUserTable = (props) => {
   //     MapControlsContext
   //   );
 
-  //   const [stateMap, setStateMap] = useContext(MapContext);
+  //   
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, setRows] = React.useState([]);

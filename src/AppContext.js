@@ -1,6 +1,12 @@
 import React, { useState, createContext, useEffect } from "react";
-
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
+import {
+  styleLayers,
+  userDefinedLayers,
+  heatLayers,
+  baseMapLayers,
+} from "./LayerConfig";
 
 const AppContext = createContext([{}, () => {}]);
 
@@ -15,10 +21,13 @@ const AppProvider = (props) => {
     signUpUserType: null,
     wellCount: 500,
     wells: null,
+    trackedwells: null,
+    trackedOwnerWells: null,
     selectedWell: null,
     selectedWellId: null,
     customLayers: [],
     editDraw: false,
+    editLayer: true,
     selectedOwner: null,
     owners: null,
     popupOpen: false, //map used in flyto
@@ -26,6 +35,7 @@ const AppProvider = (props) => {
     flyTo: null, //map used in flyto
     fitBounds: null, //map used in fitBounds
     selectedTitleOpinionId: null,
+    selectedUserDefinedLayer: null,
     featureOrMapShape: {},
     filters: [],
     filtersMockDb: null,
@@ -49,6 +59,91 @@ const AppProvider = (props) => {
     //   taggedWells: null,
     // },
     wellSelectedCoordinates: [],
+    universalCircularLoaderAct: false, //set it to true to show a loader in the center of the viewport
+
+    //Map State
+    mapCircularLoaderAct: false,
+    mapboxglAccessToken:
+      "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJjanYycGJxbG8yN3JsM3lsYTdnMXZoeHh1In0.tTNECYKDPtcrzivWTiZcIQ",
+    selectedWellApi: null,
+    styleLayers: styleLayers,
+    heatLayers: heatLayers,
+    baseMapLayers: baseMapLayers,
+    userDefinedLayers: userDefinedLayers,
+    tempCheckedLayer: null,
+    checkedLayers: [2, 5],
+    checkedHeats: [],
+    checkedBaseLayers: [0, 1, 2, 3, 4, 5],
+    checkedUserDefinedLayers: [0, 2],
+    tempCheckedUserDefinedLayer: null,
+    checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
+    editingUserDefinedLayers: [],
+    checkedLayersInteraction: [0, 1, 2],
+    selectedLayerId: null,
+    openWellDetails: false,
+    sourceLoaded: false,
+    toggle3d: null,
+    toggleZoomOut: null,
+    map: null,
+    draw: null,
+    currentFeature: undefined,
+    wellListFromSearch: null,
+    wellListFromTagsFilter: null,
+    activateLayers: (layerContainerVarName, layerNumber) => {
+      let added = false;
+      setStateApp((stateApp) => {
+        const currentIndex = stateApp[layerContainerVarName].indexOf(
+          layerNumber
+        );
+        const newChecked = [...stateApp[layerContainerVarName]];
+        if (currentIndex === -1) {
+          newChecked.push(layerNumber);
+          added = true;
+        }
+        return {
+          ...stateApp,
+          [layerContainerVarName]: newChecked,
+          popupOpen: false,
+          selectedWell: null,
+          mapCircularLoaderAct: false,
+        };
+      });
+      return added;
+    },
+    deactivateLayers: (layerContainerVarName, layerNumber) => {
+      let deleted = false;
+      setStateApp((stateApp) => {
+        const currentIndex = stateApp[layerContainerVarName].indexOf(
+          layerNumber
+        );
+        const newChecked = [...stateApp[layerContainerVarName]];
+        if (currentIndex !== -1) {
+          newChecked.splice(currentIndex, 1);
+          deleted = true;
+        }
+
+        return {
+          ...stateApp,
+          [layerContainerVarName]: newChecked,
+          popupOpen: false,
+          selectedWell: null,
+          mapCircularLoaderAct: false,
+        };
+      });
+      return deleted;
+    },
+    activateUserDefinedLayers: (layerNumber) => {
+      return stateApp.activateLayers("checkedUserDefinedLayers", layerNumber);
+    },
+    deactivateUserDefinedLayers: (layerNumber) => {
+      return stateApp.deactivateLayers("checkedUserDefinedLayers", layerNumber);
+    },
+    activateWellLayer: () => {
+      return stateApp.activateLayers("checkedLayers", 2);
+    },
+    deactivateWellLayer: () => {
+      return stateApp.deactivateLayers("checkedLayers", 0);
+    },
   });
 
   useEffect(() => {
@@ -70,9 +165,43 @@ const AppProvider = (props) => {
     wait();
   }, []);
 
+  useEffect(() => {
+    if (
+      stateApp.checkedUserDefinedLayers &&
+      stateApp.checkedUserDefinedLayers.indexOf(4) === -1 &&
+      stateApp.checkedUserDefinedLayers.indexOf(3) === -1 &&
+      stateApp.checkedLayers.indexOf(2) === -1
+    ) {
+      stateApp.activateWellLayer();
+    }
+  }, [stateApp.checkedUserDefinedLayers]);
+
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>
       {props.children}
+      {stateApp.universalCircularLoaderAct && (
+        <div
+          style={{
+            position: "fixed",
+            top: "0",
+            left: "0",
+            height: "100vh",
+            width: "100vw",
+            zIndex: "100000",
+          }}
+        >
+          <CircularProgress
+            style={{
+              position: "fixed",
+              top: "calc(50vh - 16px)",
+              left: "calc(50vw - 40px)",
+              color: "#12ABE0",
+            }}
+            size={80}
+            disableShrink
+          />
+        </div>
+      )}
     </AppContext.Provider>
   );
 };

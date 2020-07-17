@@ -163,7 +163,7 @@ const RssFeed = () => {
         className={classes.header}
       />
 
-      <List style={{ maxHeight: "calc(100% - 40px)", overflow: "auto" }}>
+      <List style={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
         {news.map(({ feed, article, source, image }, i) => {
           const thumbImage = image || feed.image || article.enclosure.link;
           const mainImage = article.enclosure.link || feed.image || image;

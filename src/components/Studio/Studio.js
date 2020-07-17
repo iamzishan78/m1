@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { AppContext } from '../../AppContext'
 import { StudioContext } from './StudioContext'
-import { MapContext } from '../Map/MapContext'
 import { Container } from '@material-ui/core';
 import Iframe from 'react-iframe';
 import { makeStyles } from "@material-ui/core/styles";
@@ -37,8 +36,8 @@ export default function Studio() {
          
          <Iframe 
               className={classes.iframe} 
-              // url="https://studio.m1neral.com"  
-              url="https://m1studio-dev.azurewebsites.net/"
+              url="https://studio.m1neral.com"  
+              // url="https://m1studio-dev.azurewebsites.net/"
               frameBorder="0" 
               scrolling="no"
               /> 

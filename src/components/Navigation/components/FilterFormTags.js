@@ -2,11 +2,12 @@ import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../NavigationContext";
 import FilterTags from "./FilterTags";
+import FilterTrackedOwners from "./FilterTrackedOwners";
 import FilterTrackedWells from "./FilterTrackedWells";
 import Grid from "@material-ui/core/Grid";
-import { WELLSMINMAXLATLONGFROMIDSARRAY } from "../../../graphQL/useQueryWellsMinMaxLatLongFromIdsArray";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { AppContext } from "../../../AppContext";
+import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 
 const useStyles = makeStyles((theme) => ({
   gridItem: {
@@ -18,10 +19,9 @@ const useStyles = makeStyles((theme) => ({
 export default function FilterFormProduction() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [, setStateApp] = useContext(AppContext);
-  const [getWellsMinMaxLatLongFromIdsArray, { data }] = useLazyQuery(
-    WELLSMINMAXLATLONGFROMIDSARRAY
-  );
+  const [stateApp, setStateApp] = useContext(AppContext);
+
+  const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
 
   useEffect(() => {
     let filter;
@@ -35,9 +35,10 @@ export default function FilterFormProduction() {
 
       filter = ["match", ["get", "id"], IdsArray, true, false];
 
-      getWellsMinMaxLatLongFromIdsArray({
+      getWells({
         variables: {
-          idsArray: IdsArray,
+          wellIdArray: IdsArray,
+          authToken: stateApp.user.authToken,
         },
       });
     } else {
@@ -48,28 +49,22 @@ export default function FilterFormProduction() {
   }, [stateNav.wellsIdsFromTags]);
 
   useEffect(() => {
-    if (data) {
-      if (
-        data.wellsMinMaxLatLongFromIdsArray &&
-        data.wellsMinMaxLatLongFromIdsArray.length > 0 &&
-        data.wellsMinMaxLatLongFromIdsArray[0].maxLat &&
-        data.wellsMinMaxLatLongFromIdsArray[0].minLat &&
-        data.wellsMinMaxLatLongFromIdsArray[0].maxLong &&
-        data.wellsMinMaxLatLongFromIdsArray[0].minLong
-      ) {
-        ///////////Setting Filters Bounds////////
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          fitBounds: data.wellsMinMaxLatLongFromIdsArray[0],
-        }));
-      } else {
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          fitBounds: null,
-        }));
-      }
+    if (
+      dataWells &&
+      dataWells.wells &&
+      dataWells.wells.results &&
+      dataWells.wells.results.length !== 0
+    ) {
+      console.log("wells data from tags filter", dataWells.wells.results);
+
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        wellListFromTagsFilter: dataWells.wells.results,
+      }));
+      stateApp.activateUserDefinedLayers(5);
+      // stateApp.deactivateWellLayer();
     }
-  }, [data]);
+  }, [dataWells]);
 
   return (
     <Grid
@@ -81,8 +76,11 @@ export default function FilterFormProduction() {
       <Grid item sm={12} className={classes.gridItem}>
         <FilterTags />
       </Grid>
-      <Grid item sm={12} className={classes.gridItem}>
+      <Grid item sm={6} className={classes.gridItem}>
         <FilterTrackedWells />
+      </Grid>
+      <Grid item sm={6} className={classes.gridItem}>
+        <FilterTrackedOwners />
       </Grid>
     </Grid>
   );

@@ -18,19 +18,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import Base from './base';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import Base from "./base";
 
 export default class Bug extends Component {
   static propTypes = {
     /** Set the height of the icon, ex. '16px' */
-    height: PropTypes.string
+    height: PropTypes.string,
   };
 
   static defaultProps = {
-    height: '20px',
-    predefinedClassName: 'data-ex-icons-bug'
+    width: "24px",
+    height: "24px",
+    predefinedClassName: "data-ex-icons-bug",
   };
 
   render() {

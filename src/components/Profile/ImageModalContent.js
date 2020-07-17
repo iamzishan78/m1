@@ -13,7 +13,7 @@ import React, {
   useContext,
   useEffect,
   useRef,
-  useState
+  useState,
 } from "react";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
@@ -48,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
 }));
-
 
 const getResizedCanvas = (canvas, newWidth, newHeight) => {
   const tmpCanvas = document.createElement("canvas");
@@ -93,7 +92,10 @@ const ImageModalContent = () => {
   const [crop, setCrop] = useState({ unit: "%", width: 70, aspect: 1 });
   const [completedCrop, setCompletedCrop] = useState(null);
 
-  const { selectedImage } = stateProfile;
+  const {
+    selectedImage,
+    fields: { fullname, displayname },
+  } = stateProfile;
 
   const onLoad = useCallback((img) => {
     imgRef.current = img;
@@ -136,13 +138,21 @@ const ImageModalContent = () => {
     );
     await setStateProfile({
       ...stateProfile,
-      fields: { ...stateProfile.fields, profileImage },
+      fields: {
+        ...stateProfile.fields,
+        profileImage
+      },
       isImageModalOpen: false,
     });
   };
 
-  const handleClose = () => {
-    setStateProfile({ ...stateProfile, isImageModalOpen: false });
+  const handleClose = async () => {
+    imgRef.current = null;
+    await setStateProfile({
+      ...stateProfile,
+      selectedImage: null,
+      isImageModalOpen: false,
+    });
   };
 
   return (
@@ -180,12 +190,12 @@ const ImageModalContent = () => {
                       }}
                     />
                   ) : (
-                    <Avatar>{"DU"}</Avatar>
+                    <Avatar>{fullname}</Avatar>
                   )}
                 </Grid>
                 <Grid item xs zeroMinWidth>
-                  <Typography noWrap>{"Danns"}</Typography>
-                  <Typography noWrap>{"Test"}</Typography>
+                  <Typography noWrap>{fullname}</Typography>
+                  <Typography noWrap>{displayname}</Typography>
                 </Grid>
               </Grid>
             </Paper>

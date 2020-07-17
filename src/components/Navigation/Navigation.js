@@ -3,6 +3,7 @@ import { borders } from "@material-ui/system";
 import { shadows } from "@material-ui/system";
 import { Paper } from "@material-ui/core";
 import { NavigationContext } from "./NavigationContext";
+import { TransactContext } from "../Transact/TransactContext";
 import { AppContext } from "../../AppContext";
 import { useHistory, useLocation } from "react-router-dom";
 import clsx from "clsx";
@@ -13,8 +14,8 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 //@material-ui components
 import AppBar from "@material-ui/core/AppBar";
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import LayersIcon from '@material-ui/icons/Layers';
+import DashboardIcon from "@material-ui/icons/Dashboard";
+import LayersIcon from "@material-ui/icons/Layers";
 //import Avatar from "@material-ui/core/Avatar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -98,6 +99,8 @@ import Search from "./components/Search";
 
 import Avatar from "react-avatar";
 import ContactFormModal from "./components/ContactFormModal";
+import { GETPROFILEIMAGE } from "../../graphQL/useQueryGetProfile";
+import { useLazyQuery } from "@apollo/react-hooks";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -143,8 +146,8 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
   },
   drawerOpenLogo: {
-    paddingLeft: '50px',
-    paddingTop: '10px',
+    paddingLeft: "50px",
+    paddingTop: "10px",
   },
   drawerOpen: {
     // background: "rgba(255, 255, 255, 1.0)",
@@ -202,10 +205,10 @@ const useStyles = makeStyles((theme) => ({
     },
     marginRight: theme.spacing(2),
     marginLeft: 5,
-    width: "30%",
+    width: "34%",
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
-      width: "30%",
+      width: "34%",
     },
   },
   searchInput: {
@@ -390,10 +393,13 @@ const useStyles = makeStyles((theme) => ({
     margin: "0px",
   },
   cardContent: {
-    height: "400px",
+    maxHeight: "400px",
     backgroundColor: "#fff",
     padding: "0px",
-    overflow: "scroll",
+    overflow: "auto",
+    "&:last-child": {
+      paddingBottom: "0",
+    },
   },
   cardAction: {
     flexGrow: 1,
@@ -541,7 +547,7 @@ const useStyles = makeStyles((theme) => ({
     bottom: "30px",
     background: "rgba(255, 255, 255, 1.0)",
     "& .MuiListItem-gutters": {
-      paddingRight: "20px",
+      paddingRight: "30px",
     },
   },
 }));
@@ -643,7 +649,6 @@ export default function Navigation(props) {
   const theme = useTheme();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-
   const [openSupportCenter, setOpenSupportCenter] = useState(false);
   const [openContactForm, setOpenContactForm] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -657,6 +662,37 @@ export default function Navigation(props) {
   const [disableApply, setDisableApply] = useState(true);
   const [matchLocation, setMatchLocation] = useState(false);
   const [matchTrack, setMatchTrack] = useState(false);
+  const [matchTransact, setMatchTransact] = useState(false);
+  const [matchFind, setMatchFind] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
+  const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE);
+  useEffect(() => {
+    if (stateApp?.user?.email) {
+      getProfileImage({
+        variables: { email: stateApp.user.email },
+        fetchPolicy: "network-only",
+      });
+    }
+  }, [stateApp.user]);
+
+  useEffect(() => {
+    if (
+      profiledata &&
+      profiledata.data &&
+      profiledata.data.profileByEmail &&
+      profiledata.data.profileByEmail.profile
+    ) {
+      const {
+        data: {
+          profileByEmail: {
+            profile: { profileImage },
+          },
+        },
+      } = profiledata;
+      setProfileImage(profileImage);
+    }
+  }, [profiledata]);
+
   let history = useHistory();
   let location = useLocation();
 
@@ -794,10 +830,20 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   useEffect(() => {
+    if (location.pathname === "/transact") {
+      setMatchTransact(true);
+    } else {
+      setMatchTransact(false);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
     if (location.pathname === "/") {
       setMatchLocation(true);
+      setMatchFind(true);
     } else {
       setMatchLocation(false);
+      setMatchFind(false);
     }
   }, [location.pathname]);
 
@@ -825,9 +871,9 @@ export default function Navigation(props) {
   };
 
   const openProfile = (event) => {
-    event.preventDefault()
-    handleMenuClose()
-    setStateNav({...stateNav, isProfileOpen:true})
+    event.preventDefault();
+    handleMenuClose();
+    setStateNav({ ...stateNav, isProfileOpen: true });
   };
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -843,8 +889,11 @@ export default function Navigation(props) {
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
         Logout
       </MenuItem>
-      <MenuItem className={classes.userMenuItem} onClick={(e)=>openProfile(e)}>
-        <Link to="/profile" style={{textDecoration: 'none', color: 'black'}}>
+      <MenuItem
+        className={classes.userMenuItem}
+        onClick={(e) => openProfile(e)}
+      >
+        <Link to="/profile" style={{ textDecoration: "none", color: "black" }}>
           Profile
         </Link>
       </MenuItem>
@@ -928,6 +977,14 @@ export default function Navigation(props) {
     );
   };
 
+  const handleClickAddDeal = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      dealDialog: true,
+      activeDeal: { cardId: null, laneId: null }
+    }));
+  };
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -969,11 +1026,28 @@ export default function Navigation(props) {
               />
             ) : null}
 
-            <div className={classes.search}>
-              <Search />
-            </div>
+            {matchFind ? (
+              <div className={classes.search} id="searchBarDivParent">
+                <Search />
+              </div>
+            ) : null}
 
             <div className={classes.grow1} />
+            {matchTransact ? (
+              <div>
+                <div ref={anchorEl} className={classes.filterTabs}>
+                  <Button
+                    onClick={handleClickAddDeal}
+                    color="secondary"
+                    variant="contained"
+                  >
+                    Add Deal
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: "none" }}></div>
+            )}
 
             {matchTrack ? (
               <div
@@ -1044,7 +1118,9 @@ export default function Navigation(props) {
                       icon={
                         <Badge
                           badgeContent={
-                            stateApp.wells ? stateApp.wells.length : 0
+                            stateApp.trackedwells
+                              ? stateApp.trackedwells.length
+                              : 0
                           }
                           color="secondary"
                         >
@@ -1154,7 +1230,7 @@ export default function Navigation(props) {
                         <LocalOfferIcon htmlColor="#fff" opacity="1" />
                       </Badge>
                     }
-                    aria-label="tags"
+                    aria-label="tags and Tracks"
                   />
                   <Tab
                     //disabled={true}
@@ -1171,9 +1247,7 @@ export default function Navigation(props) {
                     aria-label="ai"
                   />
 
-                  {/* TEMPORARY COMMENT OUT. 
-                  BELOW COMPONENT IS FOR CAMILO'S FILTER SAVE HANDLER */}
-                  {/* <Tab
+                  <Tab
                     value={7}
                     classes={{ root: classes.tab }}
                     style={{ paddingTop: 10 }}
@@ -1186,7 +1260,7 @@ export default function Navigation(props) {
                       </Badge>
                     }
                     aria-label="filter settings"
-                  />*/}
+                  />
                 </Tabs>
               </div>
             ) : (
@@ -1197,7 +1271,11 @@ export default function Navigation(props) {
               style={{ left: "8.5px" }}
               onClick={handleProfileMenuOpen}
             >
-              <Avatar name={stateApp.user.name} size="38" round />
+              {profileImage ? (
+                <Avatar src={profileImage} size="38" round />
+              ) : (
+                <Avatar name={stateApp.user.name} size="38" round />
+              )}
             </IconButton>
           </Toolbar>
         ) : (
@@ -1268,9 +1346,8 @@ export default function Navigation(props) {
         open={openDrawer}
       >
         <div className={classes.toolbar}>
-
           <div className={classes.drawerOpenLogo}>
-          <M1neralLogo/>
+            <M1neralLogo />
           </div>
 
           <IconButton color="secondary" onClick={handleDrawerClose}>
@@ -1399,8 +1476,6 @@ export default function Navigation(props) {
             </ListItemSecondaryAction>
           </ListItem>
 
-
-
           {/* <ListItem
             classes={{
               root: classes.menuListItem,
@@ -1417,8 +1492,6 @@ export default function Navigation(props) {
             <ListItemText primary="M1Studio" />
           </ListItem> */}
 
-
-
           <ListItem
             classes={{
               root: classes.menuListItem,
@@ -1430,7 +1503,7 @@ export default function Navigation(props) {
             key="studio"
           >
             <ListItemIcon>
-              <LayersIcon/>
+              <LayersIcon />
             </ListItemIcon>
             <ListItemText primary="Studio" />
 
@@ -1444,9 +1517,7 @@ export default function Navigation(props) {
                 beta
               </Button>
             </ListItemSecondaryAction>
-
           </ListItem>
-
 
           <ListItem
             classes={{
@@ -1455,7 +1526,7 @@ export default function Navigation(props) {
             }}
             button
             selected={stateNav.selectedMenuIndexTitle === 1}
-            //onClick={(event) => handleListItemClick(event, 0, "/title")}
+            onClick={(event) => handleListItemClick(event, 0, "/title")}
             key="title"
           >
             <ListItemIcon>
@@ -1473,12 +1544,6 @@ export default function Navigation(props) {
               </Button>
             </ListItemSecondaryAction>
           </ListItem>
-
-
-
-
-
-
         </List>
         <Divider variant="middle" className={classes.menuListBottomDivider} />
         <List className={classes.menuListBottom}>
@@ -1532,22 +1597,24 @@ export default function Navigation(props) {
             </ListItemSecondaryAction> */}
           </ListItem>
           {supportDrawer && (
-            <div className={classes.supportDrawer}>
-              <List component="div">
-                <ListItem button onClick={() => setOpenSupportCenter(true)}>
-                  <ListItemIcon>
-                    <HeadsetIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Support Center" />
-                </ListItem>
-                <ListItem button onClick={requestDemo}>
-                  <ListItemIcon>
-                    <DesktopWindowsIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Request Demo" />
-                </ListItem>
-              </List>
-            </div>
+            <ClickAwayListener onClickAway={() => setSupportDrawer(false)}>
+              <div className={classes.supportDrawer}>
+                <List component="div">
+                  <ListItem button onClick={() => setOpenSupportCenter(true)}>
+                    <ListItemIcon>
+                      <HeadsetIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Support Center" />
+                  </ListItem>
+                  <ListItem button onClick={requestDemo}>
+                    <ListItemIcon>
+                      <DesktopWindowsIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Request Demo" />
+                  </ListItem>
+                </List>
+              </div>
+            </ClickAwayListener>
           )}
 
           <SupportCenterModal
@@ -1593,7 +1660,7 @@ export default function Navigation(props) {
           </ListItem> */}
         </List>
       </Drawer>
-  
+
       {openFilterCard ? (
         <div ref={anchorEl} className={classes.tabPanelWrapper}>
           <TabPanel value={value} index={0} dir={theme.direction}>
@@ -1772,7 +1839,7 @@ export default function Navigation(props) {
                     </div>
                   }
                   title="Filter"
-                  subheader="Tags"
+                  subheader="Tags and Tracks"
                 />
                 {/* <CardActions
                   classes={{

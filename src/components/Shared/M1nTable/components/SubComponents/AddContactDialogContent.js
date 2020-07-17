@@ -80,17 +80,26 @@ export default function AddContactDialogContent(props) {
   const [
     getContacts,
     { loading: loadingContacts, data: dataContacts },
-  ] = useLazyQuery(CONTACTSQUERY);
+  ] = useLazyQuery(CONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
   const [
     getContactsByOwnerId,
     { loading: loadingContactsByOwnerId, data: dataContactsByOwnerId },
-  ] = useLazyQuery(CONTACTSBYOWNERSID);
+  ] = useLazyQuery(CONTACTSBYOWNERSID, {
+    fetchPolicy: "cache-and-network",
+  });
   const [addContact] = useMutation(ADDCONTACT);
   const [addRemoveOwnerToAContact] = useMutation(ADDREMOVEOWNERTOACONTACT);
 
   useEffect(() => {
-    if (props.parent) {
+    if (props.parent || props.setDealsContact) {
       getContacts();
+    }
+  }, [props.parent, props.setDealsContact]);
+
+  useEffect(() => {
+    if (props.parent) {
       getContactsByOwnerId({
         variables: { objectId: props.parent },
       });
@@ -164,6 +173,27 @@ export default function AddContactDialogContent(props) {
 
   const handleClickAdd = (e) => {
     e.preventDefault();
+
+    if (props.dealsPage) {
+      if (activeTapIndex === 0) {
+        addContact({
+          variables: {
+            contact: {
+              ...newContact,
+              createBy: stateApp.user.mongoId,
+              lastUpdateBy: stateApp.user.mongoId,
+            },
+          },
+          refetchQueries: ["getContacts"],
+          awaitRefetchQueries: true,
+        });
+        props.setDealsContact(newContact);
+      } else if (activeTapIndex === 1) {
+        props.setDealsContact(existingContact);
+      }
+      handleClickDialogClose(e);
+      return;
+    }
 
     if (props.parent && activeTapIndex === 1) {
       //////update///// existingContact   //////////
@@ -445,6 +475,7 @@ export default function AddContactDialogContent(props) {
             tabLabels={["Add New", "Select Existing"]}
             tabPanels={[addNew(), selectExisting()]}
             whichTapIsActive={whichTapIsActive}
+            backgroundColor="#fff"
           />
         ) : (
           addNew()

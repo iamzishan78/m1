@@ -1,22 +1,34 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
 import NumberFormat from "react-number-format";
 import { NavigationContext } from "../NavigationContext";
+import { FormLabel } from "@material-ui/core";
 
 const useStyles = makeStyles({
+  divBordersMinMax: {
+    padding: "3.5px 15px 5.5px 9px",
+    border: "1px solid #C4C4C4",
+    borderRadius: "4px",
+    "&:hover": {
+      border: "1px solid black",
+    },
+    display: "flex",
+    alignItems: "center",
+  },
   input: {
-    margin: 20,
-    maxWidth: 168,
-    minWidth: 167
+    marginLeft: "30px",
+    width: "160px",
+    float: "right",
+    "& input": { color: "#17AADD" },
   },
   inputLabel: {
-    color: "black",
-    minWidth: 249,
-    maxWidth: 250,
-    marginLeft: 20
-  }
+    float: "left",
+    display: "block",
+    width: "200px",
+    textAlign: "center",
+    lineHeight: "1.2",
+  },
 });
 
 export default function FirstMonthWater(props) {
@@ -57,7 +69,7 @@ export default function FirstMonthWater(props) {
         filter = [
           "all",
           [">=", ["get", id.toString()], min],
-          ["<=", ["get", id.toString()], max]
+          ["<=", ["get", id.toString()], max],
         ];
         console.log("add filter", filter);
       }
@@ -65,9 +77,9 @@ export default function FirstMonthWater(props) {
       filter = null;
     }
 
-    setStateNav(stateNav => ({
+    setStateNav((stateNav) => ({
       ...stateNav,
-      [filterName]: filter
+      [filterName]: filter,
     }));
   }, [filterName, id, setStateNav, valueMaxDisplay, valueMinDisplay]);
 
@@ -107,22 +119,22 @@ export default function FirstMonthWater(props) {
     }
   }, [setFilter, stateNav.prodOptions]);
 
-  const handleChangeMin = event => {
+  const handleChangeMin = (event) => {
     setValueMinDisplay(event.target.value.replace(/,/g, ""));
     if (event.target.value === "") {
-      setStateNav(stateNav => ({
+      setStateNav((stateNav) => ({
         ...stateNav,
-        [filterName]: null
+        [filterName]: null,
       }));
     }
   };
 
-  const handleChangeMax = event => {
+  const handleChangeMax = (event) => {
     setValueMaxDisplay(event.target.value.replace(/,/g, ""));
     if (event.target.value === "") {
-      setStateNav(stateNav => ({
+      setStateNav((stateNav) => ({
         ...stateNav,
-        [filterName]: null
+        [filterName]: null,
       }));
     }
   };
@@ -139,7 +151,7 @@ export default function FirstMonthWater(props) {
     }
   }, [valueMaxDisplay, valueMinDisplay]);
 
-  const allowNumbersOnly = e => {
+  const allowNumbersOnly = (e) => {
     let code = e.which ? e.which : e.keyCode;
     if (code > 31 && (code < 48 || code > 57)) {
       e.preventDefault();
@@ -147,13 +159,11 @@ export default function FirstMonthWater(props) {
   };
 
   return (
-    <div>
-      <Typography
-        className={classes.inputLabel}
-        htmlFor="select-multiple-chip1"
-      >
+    <div className={classes.divBordersMinMax}>
+      <FormLabel className={classes.inputLabel}>
         {name} {type}
-      </Typography>
+      </FormLabel>
+
       <NumberFormat
         value={valueMinDisplay}
         onChange={handleChangeMin}
@@ -164,14 +174,14 @@ export default function FirstMonthWater(props) {
         aria-labelledby="range-number"
         type="text"
         label="Min"
-        variant="outlined"
-        onKeyPress={e => allowNumbersOnly(e)}
+        size="small"
+        onKeyPress={(e) => allowNumbersOnly(e)}
         InputProps={{
           inputProps: {
             min: Number.MIN_SAFE_INTEGER,
             max: Number.MAX_SAFE_INTEGER - 1,
-            step: 1000
-          }
+            step: 1000,
+          },
         }}
       />
       <NumberFormat
@@ -184,16 +194,16 @@ export default function FirstMonthWater(props) {
         aria-labelledby="range-number"
         type="text"
         label="Max"
-        variant="outlined"
-        onKeyPress={e => allowNumbersOnly(e)}
+        size="small"
+        onKeyPress={(e) => allowNumbersOnly(e)}
         error={error}
         helperText={errorText}
         InputProps={{
           inputProps: {
             min: Number.MIN_SAFE_INTEGER + 1,
             max: Number.MAX_SAFE_INTEGER,
-            step: 1000
-          }
+            step: 1000,
+          },
         }}
       />
     </div>

@@ -4,9 +4,10 @@ import { AppContext } from "../../AppContext";
 import { CircularProgress } from "@material-ui/core";
 import Chip from "@material-ui/core/Chip";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import { USERAVAILABLETAGSQUERY } from "../../graphQL/useQueryUserAvailableTags";
+import { TAGSBYOBJECTSIDS } from "../../graphQL/useQueryTagsByObjectsIds";
 import { TAGSBYOBJECTIDQUERY } from "../../graphQL/useQueryTagsByObjectId";
 import { UPSERTTAG } from "../../graphQL/useMutationUpsertTag";
 import { REMOVETAG } from "../../graphQL/useMutationRemoveTag";
@@ -14,10 +15,46 @@ import Grid from "@material-ui/core/Grid";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
+import ClearIcon from "@material-ui/icons/Clear";
+import "./Tagger.css";
+
+const AntSwitch = withStyles((theme) => ({
+  root: {
+    width: 28,
+    height: 16,
+    padding: 0,
+    display: "flex",
+  },
+  switchBase: {
+    padding: 2,
+    color: theme.palette.grey[500],
+    "&$checked": {
+      transform: "translateX(12px)",
+      color: theme.palette.common.white,
+      "& + $track": {
+        opacity: 1,
+        backgroundColor: "#12ABE0",
+        borderColor: "#12ABE0",
+      },
+    },
+  },
+  thumb: {
+    width: 12,
+    height: 12,
+    boxShadow: "none",
+  },
+  track: {
+    border: `1px solid ${theme.palette.grey[500]}`,
+    borderRadius: 16 / 2,
+    opacity: 1,
+    backgroundColor: theme.palette.common.white,
+  },
+  checked: {},
+}))(Switch);
 
 const useStyles = makeStyles((theme) => ({
   rootDiv: {
-    width: (props) => (props.width ? props.width : "500px"),
+    width: ({ width }) => (width ? width : "500px"),
     "& > * + *": {
       marginTop: theme.spacing(5),
     },
@@ -26,6 +63,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   switchButtom: {
+    float: "right",
+    width: "fit-content",
     alignSelf: "flex-end",
     marginRight: 0,
     "& span.MuiTypography-body1": {
@@ -36,29 +75,90 @@ const useStyles = makeStyles((theme) => ({
     color: "rgb(141, 141, 141)",
   },
   publicLeftBottom: {
+    float: "none",
     flexDirection: "row",
     alignSelf: "unset",
     margin: 0,
-    "& h3": { margin: "0 0 0 13px", color: "#8D8D8D !important" },
+    "& .MuiTypography-root": {
+      display: "none",
+    },
+    "& .h4Before": { margin: "0 13px", color: "#202020 !important" },
+    "& .h4After": { margin: "0 0 0 13px", color: "#B7B7B7 !important" },
+  },
+  chip: {
+    "& .MuiAutocomplete-inputRoot": { minHeight: "56px" },
+    "& .MuiChip-root": {
+      backgroundColor: "#ECEDED",
+      color: "#606060",
+    },
+  },
+  input: {
+    "& input": {
+      caretColor: ({ showPlusAddIcon }) =>
+        !showPlusAddIcon ? "" : "transparent",
+      color: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "#008ebf"),
+      backgroundColor: ({ showPlusAddIcon }) =>
+        !showPlusAddIcon ? "" : "#D5F4FF",
+      maxWidth: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "33px"),
+      width: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "33px"),
+      height: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "32px"),
+      fontSize: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "25px"),
+      margin: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "3px"),
+      padding: ({ showPlusAddIcon }) =>
+        !showPlusAddIcon ? "" : "0px !important",
+      borderRadius: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "50%"),
+      textAlign: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "center"),
+      cursor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "pointer"),
+      "&:hover": {
+        boxShadow: ({ showPlusAddIcon }) =>
+          !showPlusAddIcon
+            ? ""
+            : "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
+        backgroundColor: ({ showPlusAddIcon }) =>
+          !showPlusAddIcon ? "" : "rgba(0, 0, 0, 0.08)",
+      },
+      transition: ({ showPlusAddIcon }) =>
+        !showPlusAddIcon
+          ? ""
+          : "background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+    },
   },
 }));
 
 export default function Tags(props) {
   const [stateApp] = useContext(AppContext);
-  const classes = useStyles(props);
-
   const [tagsArray, setTagsArray] = useState([]);
   const [userAvailableTagsArray, setUserAvailableTagsArray] = useState([]);
+  const [tFActive, setTFActive] = useState(false);
   const [textValue, setTextValue] = useState("");
   const [loadingTags, setLoadingTags] = useState(true);
   const [addInDropDown, setAddInDropDown] = useState(false);
   const [publicTag, setPublicTag] = useState(true);
 
+  const showPlusAddIcon = () => {
+    if (tFActive || textValue) return false;
+    return true;
+  };
+
+  const classes = useStyles({ ...props, showPlusAddIcon: showPlusAddIcon() });
+
   const [getTagsByObjectId, { data: dataTags }] = useLazyQuery(
-    TAGSBYOBJECTIDQUERY
+    TAGSBYOBJECTIDQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
+  const [getTagsByObjectsIds, { data: dataTagsMultiIds }] = useLazyQuery(
+    TAGSBYOBJECTSIDS,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
   const [getUserAvailableTags, { data: dataUserAvailableTags }] = useLazyQuery(
-    USERAVAILABLETAGSQUERY
+    USERAVAILABLETAGSQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
   const [upsertTag] = useMutation(UPSERTTAG);
   const [removeTag] = useMutation(REMOVETAG);
@@ -67,13 +167,22 @@ export default function Tags(props) {
 
   ////All Object Tag For The Input
   useEffect(() => {
-    setLoadingTags(true);
-    getTagsByObjectId({
-      variables: {
-        objectId: props.targetSourceId,
-      },
-    });
-  }, [props.targetSourceId]);
+    if (!props.multipleIds) {
+      setLoadingTags(true);
+      getTagsByObjectId({
+        variables: {
+          objectId: props.targetSourceId,
+        },
+      });
+    } else {
+      getTagsByObjectsIds({
+        variables: {
+          objectsIdsArray: props.multipleIds,
+          userId: stateApp.user.mongoId,
+        },
+      });
+    }
+  }, [props.targetSourceId, props.multipleIds]);
 
   useEffect(() => {
     if (dataTags && dataTags.tagsByObjectId) {
@@ -81,6 +190,38 @@ export default function Tags(props) {
     }
     setLoadingTags(false);
   }, [dataTags]);
+
+  useEffect(() => {
+    if (dataTagsMultiIds && dataTagsMultiIds.tagsByObjectsIds) {
+      const checkIfUserMatch = (user) => {
+        for (let i = 0; i < user.length; i++) {
+          if (user[i]._id !== stateApp.user.mongoId) return false;
+        }
+        return user[0];
+      };
+
+      let tags = [];
+      for (let i = 0; i < dataTagsMultiIds.tagsByObjectsIds.length; i++) {
+        const element = dataTagsMultiIds.tagsByObjectsIds[i];
+        if (
+          element.taggedOn.length === props.multipleIds.length &&
+          element.public.filter((v) => v === publicTag).length ===
+            props.multipleIds.length
+        ) {
+          tags.push({
+            ...element,
+            user: checkIfUserMatch(element.user)
+              ? checkIfUserMatch(element.user)
+              : { name: "", email: "" },
+            public: publicTag,
+          });
+        }
+      }
+
+      setTagsArray(tags);
+    }
+    setLoadingTags(false);
+  }, [dataTagsMultiIds, publicTag]);
 
   ////All User Available Tags For The DropDown
   useEffect(() => {
@@ -94,7 +235,11 @@ export default function Tags(props) {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (dataUserAvailableTags && dataUserAvailableTags.userAvailableTags) {
+    if (
+      dataUserAvailableTags &&
+      dataUserAvailableTags.userAvailableTags &&
+      tagsArray
+    ) {
       let defaultTags = [
         "High Cash Flow",
         "Interested Seller",
@@ -122,7 +267,7 @@ export default function Tags(props) {
         ...dataUserAvailableTags.userAvailableTags,
       ]);
     }
-  }, [dataUserAvailableTags]);
+  }, [dataUserAvailableTags, tagsArray]);
 
   ///////////////////// INSERTING NEW TAG ///////////////////////////////////////////////
 
@@ -141,7 +286,7 @@ export default function Tags(props) {
 
   const NewTag = (tagText) => {
     tagText = UpperAndCleanTagText(tagText);
-    if (tagText === addInDropDown && addInDropDown) {
+    if (addInDropDown && tagText === addInDropDown) {
       tagText = UpperAndCleanTagText(textValue);
     }
     setTextValue("");
@@ -153,15 +298,64 @@ export default function Tags(props) {
       }
     });
     if (!found) {
-      upsertTag({
-        variables: {
-          tag: {
-            tag: tagText,
-            public: publicTag,
-            user: stateApp.user.mongoId,
-            taggedOn: props.targetSourceId,
-            objectType: props.targetLabel,
+      if (!props.multipleIds) {
+        upsertTag({
+          variables: {
+            tag: {
+              tag: tagText,
+              public: publicTag,
+              user: stateApp.user.mongoId,
+              taggedOn: props.targetSourceId,
+              objectType: props.targetLabel,
+            },
           },
+          refetchQueries: [
+            "getTagsByObjectId",
+            "getUserAvailableTags",
+            "getTagSamples",
+            "getUserAvailableFilterTags",
+            "getObjectsFromTagsArray",
+            "getWellsIdsFromTagsArray",
+            "getOwnersIdsFromTagsArray",
+          ],
+          awaitRefetchQueries: true,
+        });
+      } else {
+        for (let i = 0; i < props.multipleIds.length; i++) {
+          upsertTag({
+            variables: {
+              tag: {
+                tag: tagText,
+                public: publicTag,
+                user: stateApp.user.mongoId,
+                taggedOn: props.multipleIds[i],
+                objectType: props.targetLabel,
+              },
+            },
+            refetchQueries: [
+              "getTagsByObjectId",
+              "getUserAvailableTags",
+              "getTagSamples",
+              "getUserAvailableFilterTags",
+              "getObjectsFromTagsArray",
+              "getWellsIdsFromTagsArray",
+              "getOwnersIdsFromTagsArray",
+              "getTagsByObjectsIds",
+            ],
+            awaitRefetchQueries: true,
+          });
+        }
+      }
+    }
+  };
+
+  ///////////////////// DELETING A TAG ///////////////////////////////////////////////
+
+  const DeleteTag = (TagIdOIds) => {
+    if (!props.multipleIds)
+      removeTag({
+        variables: {
+          tagId: TagIdOIds,
         },
         refetchQueries: [
           "getTagsByObjectId",
@@ -171,30 +365,32 @@ export default function Tags(props) {
           "getObjectsFromTagsArray",
           "getWellsIdsFromTagsArray",
           "getOwnersIdsFromTagsArray",
+          "getTagsByObjectsIds",
         ],
         awaitRefetchQueries: true,
       });
+    else {
+      let ids = TagIdOIds.split("???|||///");
+
+      for (let i = 0; i < ids.length; i++) {
+        removeTag({
+          variables: {
+            tagId: ids[i],
+          },
+          refetchQueries: [
+            "getTagsByObjectId",
+            "getUserAvailableTags",
+            "getTagSamples",
+            "getUserAvailableFilterTags",
+            "getObjectsFromTagsArray",
+            "getWellsIdsFromTagsArray",
+            "getOwnersIdsFromTagsArray",
+            "getTagsByObjectsIds",
+          ],
+          awaitRefetchQueries: true,
+        });
+      }
     }
-  };
-
-  ///////////////////// DELETING A TAG ///////////////////////////////////////////////
-
-  const DeleteTag = (tagId) => {
-    removeTag({
-      variables: {
-        tagId: tagId,
-      },
-      refetchQueries: [
-        "getTagsByObjectId",
-        "getUserAvailableTags",
-        "getTagSamples",
-        "getUserAvailableFilterTags",
-        "getObjectsFromTagsArray",
-        "getWellsIdsFromTagsArray",
-        "getOwnersIdsFromTagsArray",
-      ],
-      awaitRefetchQueries: true,
-    });
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -207,14 +403,14 @@ export default function Tags(props) {
       NewTag(v[v.length - 1]);
     } else if (e.target.tagName === "svg" || e.target.tagName === "path") {
       ////A tag was deleted
-      let TagId;
+      let TagIdOIds;
       if (e.target.tagName === "svg") {
-        TagId = e.target.parentNode.id;
+        TagIdOIds = e.target.parentNode.id;
       }
       if (e.target.tagName === "path") {
-        TagId = e.target.parentNode.parentNode.id;
+        TagIdOIds = e.target.parentNode.parentNode.id;
       }
-      DeleteTag(TagId);
+      DeleteTag(TagIdOIds);
     } else {
       if (e.type === "click") {
         ////A new tag by click on the dropdown
@@ -235,8 +431,11 @@ export default function Tags(props) {
   };
 
   const AddingAddRowToDropDown = () => {
-    const { cleanArray } = cleanDropDownArray();
+    let { cleanArray } = cleanDropDownArray();
 
+    // if (props.multipleIds && userAvailableTagsArray) {
+    //   cleanArray = [...userAvailableTagsArray];
+    // }
     if (addInDropDown) {
       cleanArray.unshift(addInDropDown);
     }
@@ -258,21 +457,28 @@ export default function Tags(props) {
 
   const TogglePublicButton = () => {
     return (
-      <FormGroup>
+      <FormGroup style={{ display: "block" }}>
+        {!props.publicLeftBottom && (
+          <h3 style={{ width: "fit-content", margin: "0", float: "left" }}>
+            Tags
+          </h3>
+        )}
         <FormControlLabel
           className={`${classes.switchButtom} ${
             props.publicLeftBottom ? classes.publicLeftBottom : ""
           } ${!publicTag ? classes.switchTextDeselected : ""}`}
           control={
             <React.Fragment>
-              {props.publicLeftBottom && <h3>Tags</h3>}
-              <Switch
-                size="small"
+              {props.publicLeftBottom && <h4 className="h4Before">Tags</h4>}
+              <AntSwitch
                 checked={publicTag}
                 onChange={() => {
                   setPublicTag(!publicTag);
                 }}
+                name="checkedC"
               />
+
+              {props.publicLeftBottom && <h4 className="h4After">Shared</h4>}
             </React.Fragment>
           }
           label="Shared"
@@ -283,7 +489,7 @@ export default function Tags(props) {
   };
 
   return (
-    <div className={classes.rootDiv}>
+    <div id="taggerRoot" className={classes.rootDiv}>
       {!loadingTags ? (
         <Grid container>
           <Grid item xs={12}>
@@ -291,6 +497,7 @@ export default function Tags(props) {
           </Grid>
           <Grid item xs={12}>
             <Autocomplete
+              className={classes.chip}
               multiple
               id="tags-outlined"
               onChange={(e, newValue) => {
@@ -310,10 +517,14 @@ export default function Tags(props) {
                     return (
                       <Chip
                         key={index}
-                        id={tag._id}
-                        variant="outlined"
+                        id={
+                          !props.multipleIds
+                            ? tag._id
+                            : tag.ids.join("???|||///")
+                        }
                         label={tag.tag}
                         {...getTagProps({ index })}
+                        deleteIcon={<ClearIcon />}
                       />
                     );
                   }
@@ -323,12 +534,19 @@ export default function Tags(props) {
                 <TextField
                   {...params}
                   variant="outlined"
-                  label={!props.publicLeftBottom ? "Tags" : null}
-                  placeholder="New..."
+                  className={classes.input}
+                  // label={!props.publicLeftBottom ? "Tags" : null}
+                  placeholder={!showPlusAddIcon() ? "" : "+"}
                   fullWidth
                   value={textValue}
                   onChange={(e) => {
                     setTextValue(e.target.value);
+                  }}
+                  onClick={() => {
+                    setTFActive(true);
+                  }}
+                  onBlur={() => {
+                    setTFActive(false);
                   }}
                 />
               )}

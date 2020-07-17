@@ -11,6 +11,7 @@ import { TransactContext } from "./TransactContext";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { UPDATETRANSACTION } from "../../graphQL/useMutationUpdateTransaction";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Button from "@material-ui/core/Button";
 import Dialog from "./components/dialog";
 
 const data_file = {
@@ -115,6 +116,7 @@ const data_file = {
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100%",
+    backgroundColor: "#efefef",
   },
   list: {
     overflowX: "auto !important",
@@ -124,12 +126,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Transact() {
   const classes = useStyles();
-  const [stateApp] = useContext(AppContext);
-  const [stateTransact, setStateTransact] = useContext(TransactContext);
+  // const [stateTransact, setStateTransact] = useContext(TransactContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [transactData, setTransactData] = useState();
   const [id, setId] = useState();
-  const [cardId, setCardId] = useState();
-  const [laneId, setLaneId] = useState();
 
   const [getTransactionData, { loading, data }] = useLazyQuery(TRANSACTIONDATA);
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
@@ -144,12 +144,44 @@ export default function Transact() {
     }
   }, [stateApp.user]);
 
+  const getTitle = (laneID) => {
+    switch (laneID) {
+      case "lane1":
+        return "Offer Preperation";
+      case "lane2":
+        return "Offer Extended";
+      case "lane3":
+        return "Accepted - Due Diligence";
+      case "lane4":
+        return "Deal Closed";
+      case "lane5":
+        return "Offer Rejected";
+      default:
+        return "Offer Preperation";
+    }
+  };
+
+  const getLanesWithFixedTitles = (lanes) => {
+    return lanes.map((lane) => {
+      let title = getTitle(lane.id);
+      return { ...lane, title };
+    });
+  };
+
   useEffect(() => {
-    if (data && data.transactionData && data.transactionData.allData) {
-      setTransactData(data.transactionData.allData);
+    if (
+      data &&
+      data.transactionData &&
+      data.transactionData.allData &&
+      data.transactionData.allData.lanes
+    ) {
+      setTransactData({
+        ...data.transactionData.allData,
+        lanes: getLanesWithFixedTitles(data.transactionData.allData.lanes),
+      });
       setId(data.transactionData._id);
     }
-  }, [data]);
+  }, [loading, data]);
 
   const handleDataChange = (newData) => {
     updateTransaction({
@@ -163,33 +195,30 @@ export default function Transact() {
   };
 
   const handleCardClick = (cardId, metadata, laneId) => {
-    setCardId(cardId);
-    setLaneId(laneId);
-    setStateTransact((stateTransact) => ({
-      ...stateTransact,
-      openDialog: true,
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      dealDialog: true,
+      activeDeal: {
+        cardId,
+        laneId,
+      },
     }));
   };
 
   return !loading && data && transactData ? (
     <div className={classes.root}>
-      <Dialog
-        cardId={cardId}
-        laneId={laneId}
-        transactData={transactData}
-        handleDataChange={handleDataChange}
-      />
+      <Dialog transactData={transactData} handleDataChange={handleDataChange} />
       <Board
         className={classes.list}
-        style={{ backgroundColor: " #eeeeee" }}
+        style={{ backgroundColor: "#efefef" }}
         data={transactData}
         draggable={true}
-        laneDraggable={true}
+        laneDraggable={false}
         cardDraggable={true}
-        collapsibleLanes={false}
-        editable={true}
-        canAddLanes={true}
-        editLaneTitle={true}
+        collapsibleLanes={true}
+        editable={false}
+        canAddLanes={false}
+        editLaneTitle={false}
         hideCardDeleteIcon={false}
         onDataChange={handleDataChange}
         onCardClick={handleCardClick}

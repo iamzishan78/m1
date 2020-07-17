@@ -2,10 +2,10 @@ import React from 'react';
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 
-export default function useQueryWell(api) {
+export default function useQueryWell(id) {
 
   const WELLQUERY = gql`query {
-    well(wellId:"${api}") {
+    well(wellId:"${id}") {
       wellName
     }
   }`

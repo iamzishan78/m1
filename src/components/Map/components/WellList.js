@@ -4,7 +4,6 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { AppContext } from '../../../AppContext';
-import { MapContext } from '../MapContext';
 import { NavigationContext } from '../../Navigation/NavigationContext';
 import { MapControlsContext } from '../../MapControls/MapControlsContext';
 
@@ -51,7 +50,7 @@ const useStyles = makeStyles(theme => ({
 export default function WellList() {
   const [stateApp, setStateApp] = useContext(AppContext)
     const [stateNav, setStateNav] = useContext(NavigationContext)
-    const [stateMap, setStateMap] = useContext(MapContext)
+    const [stateApp, setStateApp] = useContext(MapContext)
     const [stateCont, setStateCont] = useContext(MapControlsContext)
     const [wells, setWells] = useState([])
 
@@ -59,18 +58,18 @@ export default function WellList() {
 
   useEffect( () => {
 
-    if(stateApp.wells){
-      setWells(stateApp.wells)
+    if(stateApp.trackedwells){
+      setWells(stateApp.trackedwells)
     }
-  },[stateApp.wells])
+  },[stateApp.trackedwells])
 
   const handleWellClick = (well) => {
     //console.log('flyto',well)
     
-    setStateMap(state => ({...state, popupOpen:false}))
+    setStateApp(state => ({...state, popupOpen:false}))
     setStateApp(state => ({ ...state, selectedWell:well }))
-    setStateMap(state => ({ ...state, selectedWellId:well.id }))
-    setStateMap(state => ({...state,flyTo:well}))
+    setStateApp(state => ({ ...state, selectedWellId:well.id }))
+    setStateApp(state => ({...state,flyTo:well}))
     
 }
 

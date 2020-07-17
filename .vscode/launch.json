@@ -5,7 +5,7 @@
             "name": "Launch Edge",
             "request": "launch",
             "type": "pwa-msedge",
-            "runtimeExecutable": "dev",
+            "runtimeExecutable": "canary",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}/src"
         },
