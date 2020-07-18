@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
-import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import Comments from "../Shared/Comments";
 import Tags from "../Shared/Tagger";
@@ -28,6 +27,9 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Divider from "@material-ui/core/Divider";
+import RightDialog from "./components/RightDialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -191,9 +193,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-
-
 export default function ContactDetailCard(props) {
   const classes = useStyles();
   const [openDialog, setOpenDialog] = useState(false);
@@ -201,12 +200,22 @@ export default function ContactDetailCard(props) {
   const [transactData, setTransactData] = useState();
   const [transactId, setTransactId] = useState();
   const [contactData, setContactData] = useState(null);
+  const [rightDialogOpen, setRightDialogOpen] = useState(false);
   const [getContact, { loading, data }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
   });
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
     TRANSACTIONDATA
   );
+
+  const handleClickRightDialogOpen = (e) => {
+    e.preventDefault();
+    setRightDialogOpen(true);
+  };
+  const handleClickRightDialogClose = (e) => {
+    e.preventDefault();
+    setRightDialogOpen(false);
+  };
 
   useEffect(() => {
     if (props.contactId) {
@@ -304,11 +313,16 @@ export default function ContactDetailCard(props) {
               </div>
               <div>
                 <div className={classes.userIcon}>
-                  <StyleBadge 
-                  badgeContent={5} 
-                  //color={"#f6c16b"}
+                  <StyleBadge
+                    badgeContent={5}
+                    //color={"#f6c16b"}
                   >
-                    <Avatar className={classes.grey} name={contactData.name} size="93" round />
+                    <Avatar
+                      className={classes.grey}
+                      name={contactData.name}
+                      size="93"
+                      round
+                    />
                   </StyleBadge>
                 </div>
                 <div className={classes.userName}>
@@ -813,6 +827,8 @@ export default function ContactDetailCard(props) {
                   targetSourceId={contactData._id}
                   targetLabel="contact"
                   detailCard
+                  top={2}
+                  viewAll={handleClickRightDialogOpen}
                 />
                 <Divider />
               </Grid>
@@ -833,6 +849,21 @@ export default function ContactDetailCard(props) {
           handleCloseExpandableCard={props.handleCloseExpandableCard}
           id={contactData._id}
         />
+
+        <RightDialog
+          open={rightDialogOpen}
+          handleClickDialogClose={handleClickRightDialogClose}
+          width="450px"
+        >
+          <Grid item xs={12} className={classes.Comments}>
+            <Comments
+              targetSourceId={contactData._id}
+              targetLabel="contact"
+              handleRightDialogClose={handleClickRightDialogClose}
+            />
+          </Grid>
+        </RightDialog>
+
         {loading && (
           <div
             style={{

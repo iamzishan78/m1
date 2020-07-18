@@ -36,7 +36,6 @@ import BackupIcon from "@material-ui/icons/Backup";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Divider from "@material-ui/core/Divider";
-import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import CellContentEdition from "./SubComponents/CellContentEdition";
 import Avatar from "react-avatar";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
@@ -49,12 +48,14 @@ const useStyles = makeStyles((theme) => ({
   },
   table: {
     "& .MuiTableCell-body": {
-      paddingTop: "12px",
-      paddingBottom: "12px",
+      padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
+    },
+    "& .MuiTableHead-root": {
+      "& th": { backgroundColor: "#F2F2F2", zIndex: "auto" },
     },
   },
   icons: {
-    backgroundColor: "#efefef",
+    backgroundColor: (props) => (props.dense ? "transparent" : "#efefef"),
     marginLeft: "auto",
     "&:hover": {
       backgroundColor: "#dadbde !important",
@@ -78,18 +79,22 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#dadbde !important",
       cursor: "pointer",
     },
+    "& p": {
+      marginTop: (props) => (props.dense ? "5px" : "13px"),
+      marginBottom: (props) => (props.dense ? "5px" : "13px"),
+    },
     "& .first": {
-      marginLeft: "13px",
+      marginLeft: (props) => (props.dense ? "5px" : "13px"),
       height: "20px",
       overflow: "hidden",
       wordBreak: "break-all",
     },
     "& .two": {
-      marginRight: "13px",
+      marginRight: (props) => (props.dense ? "5px" : "13px"),
     },
     "& .three": {
-      marginLeft: "13px",
-      marginRight: "13px",
+      marginLeft: (props) => (props.dense ? "5px" : "13px"),
+      marginRight: (props) => (props.dense ? "5px" : "13px"),
       color: "darkgrey",
     },
   },
@@ -136,7 +141,8 @@ var formatter = new Intl.NumberFormat("en-US", {
 });
 
 export default function SubTable(props) {
-  const classes = useStyles();
+  const classes = useStyles(props);
+
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, setRows] = useState();
   const [columns, setColumns] = useState([]);
@@ -229,6 +235,7 @@ export default function SubTable(props) {
                           : null
                       }
                       idBase={id}
+                      iconZiseSmall={props.dense ? true : undefined}
                     />
                   );
                 },
@@ -256,7 +263,7 @@ export default function SubTable(props) {
                       >
                         <IconButton
                           id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
-                          size="medium"
+                          size={props.dense ? "small" : "medium"}
                           color="primary"
                           className={`${classes.icons} ${
                             !value || value === 0 ? classes.noCommentsIcon : ""
@@ -319,7 +326,7 @@ export default function SubTable(props) {
                         color="secondary"
                       >
                         <IconButton
-                          size="medium"
+                          size={props.dense ? "small" : "medium"}
                           color="primary"
                           className={`${classes.icons} ${
                             !value || value.length === 0
@@ -374,7 +381,7 @@ export default function SubTable(props) {
                         color="secondary"
                       >
                         <IconButton
-                          size="medium"
+                          size={props.dense ? "small" : "medium"}
                           color="primary"
                           className={`${classes.icons} ${
                             !value || value === 0 ? classes.noCommentsIcon : ""
@@ -419,7 +426,7 @@ export default function SubTable(props) {
                         color="secondary"
                       >
                         <IconButton
-                          size="medium"
+                          size={props.dense ? "small" : "medium"}
                           color="primary"
                           className={`${classes.icons} ${
                             !value ? classes.noOwnersIcon : ""
@@ -467,7 +474,7 @@ export default function SubTable(props) {
                         color="secondary"
                       >
                         <IconButton
-                          size="medium"
+                          size={props.dense ? "small" : "medium"}
                           color="primary"
                           className={`${classes.icons} ${
                             !value || value.length === 0
