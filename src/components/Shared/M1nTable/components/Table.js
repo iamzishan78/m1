@@ -39,6 +39,8 @@ import Divider from "@material-ui/core/Divider";
 import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import CellContentEdition from "./SubComponents/CellContentEdition";
 import Avatar from '@material-ui/core/Avatar';
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -653,9 +655,10 @@ export default function SubTable(props) {
                       {props.targetLabel === "contact" &&
                         column.name === "name" && (
                           ///////////////////////////////////////////////////
-                          <Avatar>
-                            {valueFormatter(value[0])}
+                          <ListItemAvatar>
+                          <Avatar name={valueFormatter(value[0])} round>
                           </Avatar>
+                          </ListItemAvatar>
                           ///////////////////////////////////////////////////
                         )}
                       <CellContentEdition
