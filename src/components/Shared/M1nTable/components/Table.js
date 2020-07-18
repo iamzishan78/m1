@@ -38,7 +38,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Divider from "@material-ui/core/Divider";
 import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import CellContentEdition from "./SubComponents/CellContentEdition";
-import Avatar from '@material-ui/core/Avatar';
+import Avatar from "react-avatar";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 
 
@@ -656,8 +656,7 @@ export default function SubTable(props) {
                         column.name === "name" && (
                           ///////////////////////////////////////////////////
                           <ListItemAvatar>
-                          <Avatar name={valueFormatter(value[0])} round>
-                          </Avatar>
+                          <Avatar name={valueFormatter(value)} src="/broken-image.jpg" size="35" round/>
                           </ListItemAvatar>
                           ///////////////////////////////////////////////////
                         )}
