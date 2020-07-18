@@ -653,7 +653,9 @@ export default function SubTable(props) {
                       {props.targetLabel === "contact" &&
                         column.name === "name" && (
                           ///////////////////////////////////////////////////
-                          <Avatar></Avatar>
+                          <Avatar>
+                            {valueFormatter(value[0])}
+                          </Avatar>
                           ///////////////////////////////////////////////////
                         )}
                       <CellContentEdition
