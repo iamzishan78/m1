@@ -210,6 +210,11 @@ export default function Map() {
           (item) => item.trackOn
         );
 
+        setStateApp((state) => ({
+          ...state,
+          owners: objectsIdsArray,
+        }));
+
         getOwnersWells({
           variables: {
             ownersIds: objectsIdsArray,
@@ -2375,6 +2380,7 @@ export default function Map() {
             map.setFilter("parcel_labels", filterCustomArray["parcel"]);
           }
         } else {
+
           map.setFilter("parcel", null);
           map.setFilter("parcel_labels", null);
         }

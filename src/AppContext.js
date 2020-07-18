@@ -61,9 +61,9 @@ const AppProvider = (props) => {
     wellSelectedCoordinates: [],
     universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
     mapGridCardActivated: false,
-    searchResultData: [], //// mapGridCard Data
-    viewportData: [], //// mapGridCard Data
-    trackedData: [], //// mapGridCard Data
+    searchResultData: [], //// mapGridCard Search Data
+    viewportData: [], //// mapGridCard Viewport Data
+    trackedDataCount: 0, //// mapGridCard Viewport tracked count
 
     //Map State
     mapCircularLoaderAct: false,
@@ -79,7 +79,7 @@ const AppProvider = (props) => {
     checkedHeats: [],
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
     checkedUserDefinedLayers: [0, 2],
-    userFileLayers:[],
+    userFileLayers: [],
     tempCheckedUserDefinedLayer: null,
     checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
     editingUserDefinedLayers: [],
@@ -97,7 +97,7 @@ const AppProvider = (props) => {
     currentFeature: undefined,
     wellListFromSearch: null,
     wellListFromTagsFilter: null,
-    m1neralHeaders : [],
+    m1neralHeaders: [],
     mappedHeadersFromCSV: [],
 
     activateLayers: (layerContainerVarName, layerNumber) => {
@@ -186,6 +186,19 @@ const AppProvider = (props) => {
       stateApp.activateWellLayer();
     }
   }, [stateApp.checkedUserDefinedLayers]);
+
+  useEffect(() => {
+    setStateApp((state) => ({
+      ...state,
+      trackedDataCount:
+        (!stateApp.owners || !stateApp.owners.length
+          ? 0
+          : stateApp.owners.length) +
+        (!stateApp.trackedwells || !stateApp.trackedwells.length
+          ? 0
+          : stateApp.trackedwells.length),
+    }));
+  }, [stateApp.owners, stateApp.trackedwells]);
 
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>

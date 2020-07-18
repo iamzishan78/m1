@@ -157,14 +157,17 @@ export default function TrackToggleButton(props) {
         }}
       >
         {loading ? (
-          <CircularProgress size={28} color="secondary" />
+          <CircularProgress
+            size={props.iconZiseSmall ? 18 : 28}
+            color="secondary"
+          />
         ) : selected ? (
           <>
             <MyLocationIcon color="secondary" />
             <CircularProgress
               className={classes.hiddenLoader}
               id={props.targetLabel + props.targetSourceId + "loader"}
-              size={28}
+              size={props.iconZiseSmall ? 18 : 28}
               color="secondary"
             />
           </>
@@ -174,7 +177,7 @@ export default function TrackToggleButton(props) {
             <CircularProgress
               className={classes.hiddenLoader}
               id={props.targetLabel + props.targetSourceId + "loader"}
-              size={28}
+              size={props.iconZiseSmall ? 18 : 28}
               color="secondary"
             />
           </>

@@ -1979,6 +1979,7 @@ export default function M1nTable(props) {
         targetLabel={targetLabel}
         deleteFunc={deleteFunc}
         uploadIcon={uploadIcon}
+        dense={props.dense ? props.dense : undefined}
       />
     </Container>
   );

@@ -30,11 +30,7 @@ function TabPanel(props) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box p={3}>{children}</Box>}
     </div>
   );
 }
@@ -74,12 +70,6 @@ const useStyles = makeStyles((theme) => ({
   },
   tapsPanels: {
     "& .MuiBox-root": { padding: "0" },
-    "& .MuiTableHead-root": {
-      "& th": { backgroundColor: "#F2F2F2" },
-    },
-    "& td": {
-      padding: "0 !important", //////
-    },
   },
   tapsPanelsPadding: {
     "& .MuiBox-root": { padding: "0" },
@@ -135,7 +125,7 @@ const TabPanels = ({ panels, value }) => {
     panels &&
     panels.length &&
     panels.map((panel, i) => (
-      <TabPanel value={value} index={i} className={classes.tapsPanels}>
+      <TabPanel key={i} value={value} index={i} className={classes.tapsPanels}>
         {panel}
       </TabPanel>
     ))
@@ -175,7 +165,7 @@ export default function MapGridCard(props) {
                 {...a11yProps(1)}
               />
               <Tab
-                label={`Tracked (${stateApp.trackedData.length})`}
+                label={`Tracked (${stateApp.trackedDataCount})`}
                 {...a11yProps(2)}
               />
             </Tabs>
@@ -232,12 +222,12 @@ export default function MapGridCard(props) {
               <TabPanels
                 value={searchTapValue}
                 panels={[
-                  <p>panel1</p>,
-                  <p>panel2</p>,
-                  <p>panel3</p>,
-                  <p>panel4</p>,
-                  <p>panel5</p>,
-                  <p>panel6</p>,
+                  <div>panel1</div>,
+                  <div>panel2</div>,
+                  <div>panel3</div>,
+                  <div>panel4</div>,
+                  <div>panel5</div>,
+                  <div>panel6</div>,
                 ]}
               />
             </div>
@@ -258,10 +248,10 @@ export default function MapGridCard(props) {
               <TabPanels
                 value={viewportTapValue}
                 panels={[
-                  <p>panel1</p>,
-                  <p>panel2</p>,
-                  <p>panel3</p>,
-                  <p>panel4</p>,
+                  <div>panel1</div>,
+                  <div>panel2</div>,
+                  <div>panel3</div>,
+                  <div>panel4</div>,
                 ]}
               />
             </div>
@@ -278,6 +268,7 @@ export default function MapGridCard(props) {
                 value={trackedTapValue}
                 panels={[
                   <M1nTable
+                    dense
                     parent="trackWells"
                     header={
                       <TabLabels
@@ -288,6 +279,7 @@ export default function MapGridCard(props) {
                     }
                   />,
                   <M1nTable
+                    dense
                     parent="trackOwners"
                     header={
                       <TabLabels
