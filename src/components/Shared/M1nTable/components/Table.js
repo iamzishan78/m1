@@ -633,12 +633,45 @@ export default function SubTable(props) {
 
                   ////// if editable column
 
+                  // if (props.targetLabel === "contact" && column.name === "name")
+                  //   return (
+                  //     <CellContentEdition
+                  //       id={tableMeta.rowData[0]}
+                  //       content={{ [column.name]: valueFormatter(value) }}
+                  //       targetLabel={props.targetLabel}
+                  //       childrenLeft
+                  //     >
+                  //       <div
+                  //         style={{
+                  //           backgroundColor: "red",
+                  //           width: "30px",
+                  //           height: "25px",
+                  //         }}
+                  //       />
+                  //     </CellContentEdition>
+                  //   );
+
                   return (
-                    <CellContentEdition
-                      id={tableMeta.rowData[0]}
-                      content={{ [column.name]: valueFormatter(value) }}
-                      targetLabel={props.targetLabel}
-                    />
+                    <div style={{ display: "flex" }}>
+                      {props.targetLabel === "contact" &&
+                        column.name === "name" && (
+                          ///////////////////////////////////////////////////
+                          <div
+                            style={{
+                              backgroundColor: "red",
+                              width: "30px",
+                              height: "25px",
+                              margin: "auto 0",
+                            }}
+                          />
+                          ///////////////////////////////////////////////////
+                        )}
+                      <CellContentEdition
+                        id={tableMeta.rowData[0]}
+                        content={{ [column.name]: valueFormatter(value) }}
+                        targetLabel={props.targetLabel}
+                      />
+                    </div>
                   );
                 },
               };
@@ -833,9 +866,12 @@ export default function SubTable(props) {
                   props.targetLabel.slice(1)
                 }s`}
               >
-                <IconButton size="medium" onClick={(e) => {
-                  routeChange('/bulkupload')
-                }}>
+                <IconButton
+                  size="medium"
+                  onClick={(e) => {
+                    routeChange("/bulkupload");
+                  }}
+                >
                   <BackupIcon />
                 </IconButton>
               </Tooltip>
@@ -924,10 +960,10 @@ export default function SubTable(props) {
 
   let history = useHistory();
 
-  let routeChange =(route)=> {
+  let routeChange = (route) => {
     history.push(route);
-  }
-  
+  };
+
   return (rows && rows.length > 0 && !props.addAble) ||
     (rows && props.addAble) ? (
     <div className={classes.root}>
