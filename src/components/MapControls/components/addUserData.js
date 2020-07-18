@@ -6,7 +6,7 @@ import React, {
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { MapControlsContext } from "../MapControlsContext";
-import { MapContext } from "../../Map/MapContext";
+import { AppContext } from "../../../AppContext";
 import DragIndicator from "@material-ui/icons/DragIndicator";
 import RootRef from "@material-ui/core/RootRef";
 import Dialog from '@material-ui/core/Dialog';
@@ -29,11 +29,11 @@ export default function AddUserData(props) {
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
-  const [stateMap, setStateMap] = useContext(MapContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   const handleClose = () => {
     setIsOpen(false);
-    setStateMapControls(stateMapControls => ({ ...stateMapControls, addData: false }));
+    //setStateMapControls(stateMapControls => ({ ...stateMapControls }));
   };
 
   async function handleFileInput(fileObj) {
@@ -57,11 +57,11 @@ export default function AddUserData(props) {
   const handleApplyChanges = () => {
     console.log('Apply Changes');
     let fileContent = inputFiles;
-    let existingFileLayers = stateMap.userFileLayers
+    let existingFileLayers = stateApp.userFileLayers;
     existingFileLayers.push(fileContent);
     console.log('USER FILE LAYERS:: ', existingFileLayers)
 
-    setStateMap(stateMap => ({ ...stateMap, userFileLayers: [...existingFileLayers] }));
+    setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
   }
 
   const handleFileAsync = (file) => {
@@ -79,7 +79,7 @@ export default function AddUserData(props) {
     let inputURL = e.target.value;
     console.log(inputURL);
     if (inputURL.endsWith(".geojson")) {
-      let existingFileLayers = stateMap.userFileLayers
+      let existingFileLayers = stateApp.userFileLayers
       existingFileLayers.push(inputURL);
       console.log('INPUT URL ADDED:: ', inputURL)
       setInputFiles(inputFiles => ({ userFileLayers: [...existingFileLayers] }));

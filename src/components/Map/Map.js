@@ -780,8 +780,8 @@ export default function Map() {
 
   /////////////////// HANDLE ADD USER DATA //////////////////////
   useEffect(() => {
-    console.log('USE EFFECT - USER DATA ADDED::', stateMap.userFileLayers)
-    let userFileLayers = stateMap.userFileLayers;
+    console.log('USE EFFECT - USER DATA ADDED::', stateApp.userFileLayers)
+    let userFileLayers = stateApp.userFileLayers;
 
     /// parse array of user input layers 
     userFileLayers.map((fileLayer, idx) => {
@@ -827,7 +827,7 @@ export default function Map() {
         });
       }
     });
-  }, [stateMap.userFileLayers])
+  }, [stateApp.userFileLayers])
 
   useEffect(() => {
     ///////////////// EFFECT FOR SHOWING TRACKED WELLS /////////////////
