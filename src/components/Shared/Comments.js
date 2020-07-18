@@ -457,7 +457,8 @@ export default function Comments(props) {
                 <h4
                   className={classes.viewAll}
                   onClick={(e) => {
-                    props.viewAll(e);
+                    e.preventDefault();
+                    props.viewAll("comments");
                   }}
                 >
                   View All

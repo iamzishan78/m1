@@ -208,9 +208,8 @@ export default function ContactDetailCard(props) {
     TRANSACTIONDATA
   );
 
-  const handleClickRightDialogOpen = (e) => {
-    e.preventDefault();
-    setRightDialogOpen(true);
+  const handleClickRightDialogOpen = (childrenToOpen) => {
+    setRightDialogOpen(childrenToOpen);
   };
   const handleClickRightDialogClose = (e) => {
     e.preventDefault();
@@ -851,17 +850,19 @@ export default function ContactDetailCard(props) {
         />
 
         <RightDialog
-          open={rightDialogOpen}
+          open={rightDialogOpen ? true : false}
           handleClickDialogClose={handleClickRightDialogClose}
           width="450px"
         >
-          <Grid item xs={12} className={classes.Comments}>
-            <Comments
-              targetSourceId={contactData._id}
-              targetLabel="contact"
-              handleRightDialogClose={handleClickRightDialogClose}
-            />
-          </Grid>
+          {rightDialogOpen === "comments" && (
+            <Grid item xs={12} className={classes.Comments}>
+              <Comments
+                targetSourceId={contactData._id}
+                targetLabel="contact"
+                handleRightDialogClose={handleClickRightDialogClose}
+              />
+            </Grid>
+          )}
         </RightDialog>
 
         {loading && (
