@@ -38,6 +38,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Divider from "@material-ui/core/Divider";
 import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import CellContentEdition from "./SubComponents/CellContentEdition";
+import Avatar from '@material-ui/core/Avatar';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -570,6 +572,8 @@ export default function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   return (
+                    <div>
+                    <Avatar></Avatar>
                     <CellContentEdition
                       id={tableMeta.rowData[0]}
                       content={{
@@ -582,6 +586,7 @@ export default function SubTable(props) {
                       }}
                       targetLabel={props.targetLabel}
                     />
+                    </div>
                   );
                 },
               };
