@@ -572,8 +572,6 @@ export default function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   return (
-                    <div>
-                    <Avatar></Avatar>
                     <CellContentEdition
                       id={tableMeta.rowData[0]}
                       content={{
@@ -586,7 +584,6 @@ export default function SubTable(props) {
                       }}
                       targetLabel={props.targetLabel}
                     />
-                    </div>
                   );
                 },
               };
@@ -656,14 +653,7 @@ export default function SubTable(props) {
                       {props.targetLabel === "contact" &&
                         column.name === "name" && (
                           ///////////////////////////////////////////////////
-                          <div
-                            style={{
-                              backgroundColor: "red",
-                              width: "30px",
-                              height: "25px",
-                              margin: "auto 0",
-                            }}
-                          />
+                          <Avatar></Avatar>
                           ///////////////////////////////////////////////////
                         )}
                       <CellContentEdition
