@@ -1393,7 +1393,7 @@ export default function Navigation(props) {
             <ListItemText primary="Find" />
           </ListItem>
 
-          <ListItem
+          {/* <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected,
@@ -1407,17 +1407,7 @@ export default function Navigation(props) {
               <MyLocationIcon />
             </ListItemIcon>
             <ListItemText primary="Track" />
-            {/* <ListItemSecondaryAction>
-              <Button
-                disabled
-                className={classes.betaSideNav4}
-                edge="end"
-                aria-label="beta"
-              >
-                beta
-              </Button>
-            </ListItemSecondaryAction> */}
-          </ListItem>
+          </ListItem> */}
 
           <ListItem
             classes={{
