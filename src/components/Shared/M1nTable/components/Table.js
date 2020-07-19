@@ -664,6 +664,7 @@ export default function SubTable(props) {
                           ///////////////////////////////////////////////////
                           // <ConfigProvider colors={['red', 'green', 'blue']}>
                           <Avatar color={Avatar.getRandomColor(value,['#b5d2f6', '#ade2e9', '#eaeaea','#f2c1e2','#d7d6fb'])}
+                                  fgColor = "#000"
                                   name={valueFormatter(value)} 
                                   size="35" 
                                   round/>
