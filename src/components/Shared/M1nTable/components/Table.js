@@ -37,7 +37,7 @@ import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Divider from "@material-ui/core/Divider";
 import CellContentEdition from "./SubComponents/CellContentEdition";
-import Avatar from "react-avatar";
+import Avatar, { ConfigProvider } from 'react-avatar';
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 
 
@@ -662,9 +662,12 @@ export default function SubTable(props) {
                       {props.targetLabel === "contact" &&
                         column.name === "name" && (
                           ///////////////////////////////////////////////////
-                          <ListItemAvatar>
-                          <Avatar name={valueFormatter(value)} src="/broken-image.jpg" size="35" round/>
-                          </ListItemAvatar>
+                          // <ConfigProvider colors={['red', 'green', 'blue']}>
+                          <Avatar color={Avatar.getRandomColor(value,['#b5d2f6', '#ade2e9', '#eaeaea','#f2c1e2','#d7d6fb'])}
+                                  name={valueFormatter(value)} 
+                                  size="35" 
+                                  round/>
+                          // </ConfigProvider>
                           ///////////////////////////////////////////////////
                         )}
                       <CellContentEdition
