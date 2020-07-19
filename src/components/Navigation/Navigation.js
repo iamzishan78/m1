@@ -1538,7 +1538,8 @@ export default function Navigation(props) {
         </List>
         <Divider variant="middle" className={classes.menuListBottomDivider} />
         <List className={classes.menuListBottom}>
-          <ListItem
+
+          {/* <ListItem
             classes={{
               root: classes.menuListItemDisabled,
               selected: classes.menuListItemSelected,
@@ -1552,17 +1553,7 @@ export default function Navigation(props) {
               <NotificationsActiveIcon />
             </ListItemIcon>
             <ListItemText primary="Alerts" />
-            {/* <ListItemSecondaryAction>
-              <Button
-                disabled
-                className={classes.betaSideNav}
-                edge="end"
-                aria-label="beta"
-              >
-                beta
-              </Button>
-            </ListItemSecondaryAction> */}
-          </ListItem>
+          </ListItem> */}
 
           {/* support menu */}
           <ListItem
