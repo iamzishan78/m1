@@ -72,7 +72,8 @@ const dataList = [
 
 export default ({
   header,
-  // dataList
+  // dataList,
+  ...props
 }) => {
   const classes = useStyles();
 
@@ -80,7 +81,17 @@ export default ({
     <div className={classes.root}>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
         <h4 style={{ margin: "0 0 8px 0", float: "left" }}>{header}</h4>
-        <h4 className={classes.viewAll}>View All</h4>
+        <h4
+          className={classes.viewAll}
+          onClick={() => {
+            props.handleOpenExpandableCard(
+              "Pass your card content here",
+              "Conversations"
+            );
+          }}
+        >
+          View All
+        </h4>
       </Grid>
       <Grid item xs={12}>
         <List className={classes.root} style={{ padding: "0" }}>

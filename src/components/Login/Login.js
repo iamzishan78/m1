@@ -113,13 +113,24 @@ const Login = (props) => {
       stateApp.myMSALObj
         .handleRedirectPromise()
         .then((tokenResponse) => {
+
           const accountObj = tokenResponse
             ? tokenResponse.account
-            : stateApp.myMSALObj.getAccount();
+            : (() => { 
+              const currentAccounts = stateApp.myMSALObj.getAllAccounts();
+              return currentAccounts && currentAccounts.length === 1
+                ? currentAccounts[0]
+                : () => {
+                  // Add choose account code here
+                  return;
+                }
+            })();
 
           if (accountObj) {
             // Account object was retrieved, continue with app progress
             console.log("id_token acquired at: " + new Date().toString());
+            // Account object is now an array! what do we do if multiple users are signed in on the same browser?
+            // Passing first account as default for now
             finishAADAuth(accountObj);
           } else {
             if (tokenResponse && tokenResponse.tokenType === "Bearer") {
@@ -204,6 +215,7 @@ const Login = (props) => {
     request.account = accountObj;
 
     request.scopes = readProfileRequest.scopes;
+    request.loginHint = request.account.username;
     const readProfileLoginResponse = await ssoSilent(request).catch((error) => {
       //do some error stuff
       console.log(error);
@@ -235,6 +247,7 @@ const Login = (props) => {
     }
 
     request.scopes = authGraphQLRequest.scopes;
+    request.loginHint = request.account.username;
     const authGraphQLLoginResponse = await ssoSilent(request).catch((error) => {
       //do some error stuff
       console.log(error);
@@ -244,6 +257,7 @@ const Login = (props) => {
       return;
     }
 
+    authGraphQLRequest.account = request.account;
     const authGraphQLToken = await getTokenPopup(authGraphQLRequest).catch(
       (error) => {
         //do some error stuff
@@ -393,7 +407,7 @@ const Login = (props) => {
         console.log(error);
       });
     console.log(loginResponse);
-    if (stateApp.myMSALObj.getAccount()) {
+    if (stateApp.myMSALObj.getAllAccounts()) {
       return loginResponse;
     }
   }
@@ -402,7 +416,7 @@ const Login = (props) => {
     console.log("request made to ssoSilent at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes.toString());
 
-    stateApp.myMSALObj.authModule.config.authOptions.redirectUri =
+    stateApp.myMSALObj.config.auth.redirectUri =
       msalConfig().auth.redirectUri + "auth.html";
 
     const loginResponse = await stateApp.myMSALObj
@@ -411,10 +425,10 @@ const Login = (props) => {
         console.log(error);
       });
 
-    stateApp.myMSALObj.authModule.config.authOptions.redirectUri = msalConfig().auth.redirectUri;
+    stateApp.myMSALObj.config.auth.redirectUri = msalConfig().auth.redirectUri;
 
     console.log(loginResponse);
-    if (stateApp.myMSALObj.getAccount()) {
+    if (stateApp.myMSALObj.getAllAccounts()) {
       return loginResponse;
     }
   }
@@ -479,7 +493,9 @@ const Login = (props) => {
         console.log(response);
         return response;
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+      })
   }
 
   async function callProfileGraphQL(endpoint, accessToken) {

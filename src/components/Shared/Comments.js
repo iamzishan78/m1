@@ -25,6 +25,7 @@ import { UPSERTCOMMENT } from "../../graphQL/useMutationUpsertComment";
 import { REMOVECOMMENT } from "../../graphQL/useMutationRemoveComment";
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
+import CloseIcon from "@material-ui/icons/Close";
 
 const AntSwitch = withStyles((theme) => ({
   root: {
@@ -73,9 +74,14 @@ const useStyles = makeStyles((theme) => ({
   content: {
     height: "100%",
     padding: "0",
-    padding: (props) => (props.detailCard ? "0 23px 0 23px" : "0"),
+    padding: (props) =>
+      props.detailCard
+        ? "0 23px 0 23px"
+        : props.handleRightDialogClose
+        ? "0 0 0 8px"
+        : "0",
     overflowY: "auto",
-    maxHeight: "60vh",
+    maxHeight: (props) => (props.handleRightDialogClose ? "none" : "60vh"),
   },
   list: {
     width: "100%",
@@ -151,6 +157,9 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "normal",
     "&:hover": { color: "#757575" },
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+  },
+  closeIcon: {
+    color: theme.palette.secondary.main,
   },
   sharedCommentLabel: {
     width: "fit-content",
@@ -415,6 +424,8 @@ export default function Comments(props) {
     }
   }, [props.focus]);
 
+  let commentsDisplayedCount = 0;
+
   return (
     <Card
       className={classes.root}
@@ -429,7 +440,7 @@ export default function Comments(props) {
 
       <CardActions
         style={
-          props.detailCard
+          props.detailCard || props.handleRightDialogClose
             ? {
                 padding: "23px 23px 8px 23px",
               }
@@ -437,17 +448,38 @@ export default function Comments(props) {
         }
       >
         <Grid container>
-          {props.detailCard && (
+          {(props.detailCard || props.handleRightDialogClose) && (
             <Grid item xs={12} style={{ minHeight: "35px" }}>
               <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
                 Recent Comments
               </h4>
-              <h4 className={classes.viewAll}>View All</h4>
+              {props.viewAll ? (
+                <h4
+                  className={classes.viewAll}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    props.viewAll("comments");
+                  }}
+                >
+                  View All
+                </h4>
+              ) : (
+                <IconButton
+                  onClick={(e) => {
+                    if (props.handleRightDialogClose)
+                      props.handleRightDialogClose(e);
+                  }}
+                  size="small"
+                  style={{ float: "right", top: "-5px", right: "-5px" }}
+                >
+                  <CloseIcon className={classes.closeIcon} fontSize="small" />
+                </IconButton>
+              )}
             </Grid>
           )}
           <Grid item xs={12} style={{ marginBottom: "8px" }}>
             <FormGroup style={{ display: "block" }}>
-              {props.detailCard && (
+              {(props.detailCard || props.handleRightDialogClose) && (
                 <h4 className={classes.sharedCommentLabel}>Share comments</h4>
               )}
               <FormControlLabel
@@ -465,7 +497,11 @@ export default function Comments(props) {
                     />
                   </React.Fragment>
                 }
-                label={!props.detailCard ? "Shared" : ""}
+                label={
+                  !props.detailCard && !props.handleRightDialogClose
+                    ? "Shared"
+                    : ""
+                }
                 labelPlacement="start"
               />
             </FormGroup>
@@ -477,8 +513,16 @@ export default function Comments(props) {
               }`}
               id="commentInput"
               variant="outlined"
-              label={props.detailCard ? null : "Comments"}
-              placeholder={props.detailCard ? "Add Comments" : null}
+              label={
+                props.detailCard || props.handleRightDialogClose
+                  ? null
+                  : "Comments"
+              }
+              placeholder={
+                props.detailCard || props.handleRightDialogClose
+                  ? "Add Comments"
+                  : null
+              }
               multiline
               rows="4"
               onChange={(e) => {
@@ -519,6 +563,7 @@ export default function Comments(props) {
         style={{
           paddingBottom:
             props.detailCard && commentsArray.length > 0 ? "23px" : "0",
+          height: props.handleRightDialogClose ? "calc(100vh - 218px)" : null,
         }}
       >
         {!loadingComments ? (
@@ -528,9 +573,19 @@ export default function Comments(props) {
                 ? ((publicComment && comment.public) ||
                     (!publicComment &&
                       stateApp.user.email === comment.user.email &&
-                      !comment.public)) && (
+                      !comment.public)) &&
+                  (commentsDisplayedCount += 1) &&
+                  (props.top && props.top < commentsDisplayedCount ? null : (
                     //// ListItem ////
                     <>
+                      {commentsDisplayedCount !== 1 && (
+                        <Divider
+                          style={{
+                            marginTop: "13px",
+                            marginBottom: "13px",
+                          }}
+                        />
+                      )}
                       {/* //// name and date line //// */}
                       <h5 className={classes.nameAndDateLine}>{`${
                         comment.user.name
@@ -566,19 +621,10 @@ export default function Comments(props) {
                       >
                         Delete
                       </h5>
-
-                      {index + 1 !== commentsArray.length && (
-                        <Divider
-                          style={{
-                            marginTop: "13px",
-                            marginBottom: "13px",
-                          }}
-                        />
-                      )}
                     </>
-                    //// ListItem  End ////
-                  )
-                : ((publicComment && comment.public) ||
+                  ))
+                : //// ListItem  End ////
+                  ((publicComment && comment.public) ||
                     (!publicComment &&
                       stateApp.user.email === comment.user.email &&
                       !comment.public)) && (

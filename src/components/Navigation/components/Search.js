@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme) => ({
   },
   historyPopover: {
     "& .MuiPopover-paper": {
-      width: "100% !important",
+      width: "calc(100% - 42px) !important",
       maxWidth: "none !important",
       minWidth: "unset !important",
       maxHeight: "55vh !important",
@@ -121,6 +121,10 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#EFEFEF",
       cursor: "pointer",
     },
+  },
+  startAdornmentIcon: {
+    padding: "6px 8px",
+    cursor: "pointer",
   },
 }));
 
@@ -1127,9 +1131,9 @@ export default function Search() {
             ...params.InputProps,
             startAdornment: (
               <InputAdornment>
-                <IconButton>
+                <div className={classes.startAdornmentIcon}>
                   <SearchIcon htmlColor="#fff" />
-                </IconButton>
+                </div>
               </InputAdornment>
             ),
             endAdornment: (

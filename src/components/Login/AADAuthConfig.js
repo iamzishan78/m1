@@ -17,6 +17,9 @@ export const msalConfig = (tenantId, clientId) => {
   return {
     auth: {
       clientId: clientId,
+      // authority: 'https://m1neralb2ctenant1.b2clogin.com/m1neralb2ctenant1.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in_v2_preview',
+      // knownAuthorities: ['m1neralb2ctenant1.b2clogin.com'],
+      // validateAuthority: false,
       authority: `https://login.microsoftonline.com/${
         tenantId ? tenantId : "common"
       }`,

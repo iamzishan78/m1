@@ -96,6 +96,7 @@ import FilterFormAI from "./components/FilterFormAI";
 
 import InputBase from "@material-ui/core/InputBase";
 import Search from "./components/Search";
+import SearchBarWithToggleButton from "./components/SearchBarWithToggleButton";
 
 import Avatar from "react-avatar";
 import ContactFormModal from "./components/ContactFormModal";
@@ -200,9 +201,9 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     borderRadius: theme.shape.borderRadius,
     backgroundColor: fade(theme.palette.common.white, 0.15),
-    "&:hover": {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
-    },
+    // "&:hover": {
+    //   backgroundColor: fade(theme.palette.common.white, 0.25),
+    // },
     marginRight: theme.spacing(2),
     marginLeft: 5,
     width: "34%",
@@ -981,7 +982,7 @@ export default function Navigation(props) {
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: true,
-      activeDeal: { cardId: null, laneId: null }
+      activeDeal: { cardId: null, laneId: null },
     }));
   };
 
@@ -1028,7 +1029,7 @@ export default function Navigation(props) {
 
             {matchFind ? (
               <div className={classes.search} id="searchBarDivParent">
-                <Search />
+                <SearchBarWithToggleButton />
               </div>
             ) : null}
 
@@ -1392,7 +1393,7 @@ export default function Navigation(props) {
             <ListItemText primary="Find" />
           </ListItem>
 
-          <ListItem
+          {/* <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected,
@@ -1406,17 +1407,7 @@ export default function Navigation(props) {
               <MyLocationIcon />
             </ListItemIcon>
             <ListItemText primary="Track" />
-            {/* <ListItemSecondaryAction>
-              <Button
-                disabled
-                className={classes.betaSideNav4}
-                edge="end"
-                aria-label="beta"
-              >
-                beta
-              </Button>
-            </ListItemSecondaryAction> */}
-          </ListItem>
+          </ListItem> */}
 
           <ListItem
             classes={{
@@ -1547,7 +1538,8 @@ export default function Navigation(props) {
         </List>
         <Divider variant="middle" className={classes.menuListBottomDivider} />
         <List className={classes.menuListBottom}>
-          <ListItem
+
+          {/* <ListItem
             classes={{
               root: classes.menuListItemDisabled,
               selected: classes.menuListItemSelected,
@@ -1561,17 +1553,7 @@ export default function Navigation(props) {
               <NotificationsActiveIcon />
             </ListItemIcon>
             <ListItemText primary="Alerts" />
-            {/* <ListItemSecondaryAction>
-              <Button
-                disabled
-                className={classes.betaSideNav}
-                edge="end"
-                aria-label="beta"
-              >
-                beta
-              </Button>
-            </ListItemSecondaryAction> */}
-          </ListItem>
+          </ListItem> */}
 
           {/* support menu */}
           <ListItem

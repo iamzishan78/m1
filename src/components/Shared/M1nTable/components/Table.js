@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
 import WellCardProvider from "../../../WellCard/WellCardProvider";
@@ -35,8 +36,9 @@ import BackupIcon from "@material-ui/icons/Backup";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Divider from "@material-ui/core/Divider";
-import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import CellContentEdition from "./SubComponents/CellContentEdition";
+import Avatar, { ConfigProvider } from "react-avatar";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,12 +46,14 @@ const useStyles = makeStyles((theme) => ({
   },
   table: {
     "& .MuiTableCell-body": {
-      paddingTop: "12px",
-      paddingBottom: "12px",
+      padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
+    },
+    "& .MuiTableHead-root": {
+      "& th": { backgroundColor: "#F2F2F2", zIndex: "auto" },
     },
   },
   icons: {
-    backgroundColor: "#efefef",
+    backgroundColor: (props) => (props.dense ? "transparent" : "#efefef"),
     marginLeft: "auto",
     "&:hover": {
       backgroundColor: "#dadbde !important",
@@ -73,18 +77,22 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#dadbde !important",
       cursor: "pointer",
     },
+    "& p": {
+      marginTop: (props) => (props.dense ? "5px" : "13px"),
+      marginBottom: (props) => (props.dense ? "5px" : "13px"),
+    },
     "& .first": {
-      marginLeft: "13px",
+      marginLeft: (props) => (props.dense ? "5px" : "13px"),
       height: "20px",
       overflow: "hidden",
       wordBreak: "break-all",
     },
     "& .two": {
-      marginRight: "13px",
+      marginRight: (props) => (props.dense ? "5px" : "13px"),
     },
     "& .three": {
-      marginLeft: "13px",
-      marginRight: "13px",
+      marginLeft: (props) => (props.dense ? "5px" : "13px"),
+      marginRight: (props) => (props.dense ? "5px" : "13px"),
       color: "darkgrey",
     },
   },
@@ -131,7 +139,8 @@ var formatter = new Intl.NumberFormat("en-US", {
 });
 
 export default function SubTable(props) {
-  const classes = useStyles();
+  const classes = useStyles(props);
+
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, setRows] = useState();
   const [columns, setColumns] = useState([]);
@@ -224,6 +233,7 @@ export default function SubTable(props) {
                           : null
                       }
                       idBase={id}
+                      iconZiseSmall={props.dense ? true : undefined}
                     />
                   );
                 },
@@ -251,7 +261,7 @@ export default function SubTable(props) {
                       >
                         <IconButton
                           id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
-                          size="medium"
+                          size={props.dense ? "small" : "medium"}
                           color="primary"
                           className={`${classes.icons} ${
                             !value || value === 0 ? classes.noCommentsIcon : ""
@@ -314,7 +324,7 @@ export default function SubTable(props) {
                         color="secondary"
                       >
                         <IconButton
-                          size="medium"
+                          size={props.dense ? "small" : "medium"}
                           color="primary"
                           className={`${classes.icons} ${
                             !value || value.length === 0
@@ -369,7 +379,7 @@ export default function SubTable(props) {
                         color="secondary"
                       >
                         <IconButton
-                          size="medium"
+                          size={props.dense ? "small" : "medium"}
                           color="primary"
                           className={`${classes.icons} ${
                             !value || value === 0 ? classes.noCommentsIcon : ""
@@ -414,7 +424,7 @@ export default function SubTable(props) {
                         color="secondary"
                       >
                         <IconButton
-                          size="medium"
+                          size={props.dense ? "small" : "medium"}
                           color="primary"
                           className={`${classes.icons} ${
                             !value ? classes.noOwnersIcon : ""
@@ -462,7 +472,7 @@ export default function SubTable(props) {
                         color="secondary"
                       >
                         <IconButton
-                          size="medium"
+                          size={props.dense ? "small" : "medium"}
                           color="primary"
                           className={`${classes.icons} ${
                             !value || value.length === 0
@@ -625,14 +635,36 @@ export default function SubTable(props) {
                     );
                   }
 
-                  ////// if editable column
-
                   return (
-                    <CellContentEdition
-                      id={tableMeta.rowData[0]}
-                      content={{ [column.name]: valueFormatter(value) }}
-                      targetLabel={props.targetLabel}
-                    />
+                    <div style={{ display: "flex" }}>
+                      {
+                        props.targetLabel === "contact" &&
+                          column.name === "name" && (
+                            ///////////////////////////////////////////////////
+                            // <ConfigProvider colors={['red', 'green', 'blue']}>
+                            <Avatar
+                              color={Avatar.getRandomColor(value, [
+                                "#b5d2f6",
+                                "#ade2e9",
+                                "#eaeaea",
+                                "#f2c1e2",
+                                "#d7d6fb",
+                              ])}
+                              fgColor="#000"
+                              name={valueFormatter(value)}
+                              size="35"
+                              round
+                            />
+                          )
+                        // </ConfigProvider>
+                        ///////////////////////////////////////////////////
+                      }
+                      <CellContentEdition
+                        id={tableMeta.rowData[0]}
+                        content={{ [column.name]: valueFormatter(value) }}
+                        targetLabel={props.targetLabel}
+                      />
+                    </div>
                   );
                 },
               };
@@ -827,7 +859,12 @@ export default function SubTable(props) {
                   props.targetLabel.slice(1)
                 }s`}
               >
-                <IconButton size="medium" onClick={(e) => {}}>
+                <IconButton
+                  size="medium"
+                  onClick={(e) => {
+                    routeChange("/bulkupload");
+                  }}
+                >
                   <BackupIcon />
                 </IconButton>
               </Tooltip>
@@ -907,11 +944,17 @@ export default function SubTable(props) {
             handleCloseExpandableCard={handleCloseExpandableCard}
           />
         );
-        setTitle("Contact");
+        setTitle("CONTACT DETAILS");
         setSubTitle(" ");
         handleOpenExpandableCard();
       }
     },
+  };
+
+  let history = useHistory();
+
+  let routeChange = (route) => {
+    history.push(route);
   };
 
   return (rows && rows.length > 0 && !props.addAble) ||
@@ -1035,36 +1078,7 @@ export default function SubTable(props) {
               deleteFunc={props.deleteFunc}
               m1nSelectedRowsIds={m1nSelectedRowsIds}
               setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-              // completelyDelete={completelyDelete}
             >
-              {/* {props.header === "Owner's Contacts" && (
-                <RadioGroup
-                  value={completelyDelete}
-                  onChange={(event) => {
-                    setCompletelyDelete(event.target.value);
-                  }}
-                >
-                  <FormControlLabel
-                    value={"false"}
-                    control={<Radio />}
-                    label={`Do you want to remove the contact${
-                      m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                        ? "s"
-                        : ""
-                    } only from this owner?`}
-                  />
-                  <FormControlLabel
-                    value={"true"}
-                    control={<Radio />}
-                    label={`Do you want to permanently delete the contact${
-                      m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                        ? "s"
-                        : ""
-                    }?`}
-                  />
-                </RadioGroup>
-              )} */}
-
               {props.header === "Owner's Contacts" &&
                 `Do you want to remove the contact${
                   m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
@@ -1132,7 +1146,7 @@ export default function SubTable(props) {
                 : selectedRow._id
             }
             targetLabel={props.targetLabel}
-            noTrackAvailable={title === "Contact" ? true : false}
+            noTrackAvailable={props.targetLabel === "contact" ? true : false}
           />
         </Dialog>
       )}
