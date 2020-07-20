@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import moment from "moment";
+import { useMutation } from "@apollo/react-hooks";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
@@ -16,6 +17,7 @@ import TimelineDot from "@material-ui/lab/TimelineDot";
 import Icon from "@material-ui/core/Icon";
 import FastfoodIcon from "@material-ui/icons/Fastfood";
 import AddActivityModal from "../ContactDetailCard/components/AddActivityModal";
+import { UPDATECONTACT } from "../../graphQL/useMutationUpdateContact";
 
 import EnvelopeIcon from "../Shared/svgIcons/envelope.js";
 import PhoneIcon from "../Shared/svgIcons/phone.js";
@@ -60,10 +62,22 @@ const useStyles = makeStyles((theme) => ({
   iconRoot: {
     textAlign: "center",
   },
+  deleteLine: {
+    textDecoration: "underline",
+    color: "#757575",
+    display: "block",
+    margin: "0",
+    fontWeight: "normal",
+    "&:hover": {
+      color: theme.palette.primary.main,
+      cursor: "pointer",
+    },
+  },
 }));
 
 export default function Activities({ activityLog, user_id, ...props }) {
   const [activityModalOpen, setActivityModalOpen] = useState(false);
+  const [updateContact] = useMutation(UPDATECONTACT);
 
   const classes = useStyles();
 
@@ -97,10 +111,40 @@ export default function Activities({ activityLog, user_id, ...props }) {
     );
   };
 
+  const deleteActivity = (act) => {
+    let newActLog = [...activityLog];
+    const index =
+      newActLog &&
+      newActLog.findIndex(
+        (activity) =>
+          activity.dateTime === act.dateTime && activity.user_id === act.user_id
+      );
+    if (index > -1) {
+      newActLog.splice(index, 1);
+      newActLog.forEach((v) => delete v.__typename);
+      updateContact({
+        variables: {
+          contact: {
+            _id: props.id,
+            activityLog: [...newActLog],
+          },
+        },
+        refetchQueries: ["getContact"],
+        awaitRefetchQueries: true,
+      });
+    }
+  };
+
+  console.log("Activities: ", activityLog);
+
   const sortedActivityLog =
     activityLog && activityLog.length > 0
-      ? activityLog.filter(activity => activity.user_id === user_id).sort((a, b) => moment(b.dateTime).diff(moment(a.dateTime)))
+      ? activityLog
+          .filter((activity) => activity.user_id === user_id)
+          .sort((a, b) => moment(b.dateTime).diff(moment(a.dateTime)))
       : [];
+
+  console.log("Sorted: ", sortedActivityLog);
 
   return (
     <Card className={classes.root} variant="outlined">
@@ -149,7 +193,14 @@ export default function Activities({ activityLog, user_id, ...props }) {
                 <Typography variant="body1">{activity.notes}</Typography>
                 <Typography variant="body2" className={classes.blue}>
                   {activity.fullname} –{" "}
-                  {moment(activity.dateTime).format("MMMM D, YYYY hh:mm a")}
+                  {moment(activity.dateTime).format("MMMM D, YYYY hh:mm a")}{" "}
+                  <br />
+                  <h5
+                    className={classes.deleteLine}
+                    onClick={() => deleteActivity(activity)}
+                  >
+                    Delete
+                  </h5>
                 </Typography>
               </div>
             </TimelineContent>
