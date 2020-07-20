@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Activities({ activityLog, ...props }) {
+export default function Activities({ activityLog, user_id, ...props }) {
   const [activityModalOpen, setActivityModalOpen] = useState(false);
 
   const classes = useStyles();
@@ -99,7 +99,7 @@ export default function Activities({ activityLog, ...props }) {
 
   const sortedActivityLog =
     activityLog && activityLog.length > 0
-      ? activityLog.sort((a, b) => moment(b.dateTime).diff(moment(a.dateTime)))
+      ? activityLog.filter(activity => activity.user_id === user_id).sort((a, b) => moment(b.dateTime).diff(moment(a.dateTime)))
       : [];
 
   return (

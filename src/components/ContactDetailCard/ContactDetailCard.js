@@ -835,6 +835,7 @@ export default function ContactDetailCard(props) {
               <Grid item xs={12}>
                 <Activities
                   id={contactData._id}
+                  user_id={stateApp.user.email}
                   activityLog={contactData.activityLog}
                 />
                 <Divider />
