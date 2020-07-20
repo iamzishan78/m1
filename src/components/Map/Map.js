@@ -1915,7 +1915,9 @@ export default function Map() {
                           type: "Polygon",
                           coordinates: filterCoordinates,
                         };
-                        if (turf.booleanContains(filterGeometry, feature)) {
+                        if (
+                          feature.geometry.coordinates[0] &&
+                          turf.booleanContains(filterGeometry, feature)) {
                           return true;
                         }
                       }
