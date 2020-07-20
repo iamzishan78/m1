@@ -37,10 +37,8 @@ import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Divider from "@material-ui/core/Divider";
 import CellContentEdition from "./SubComponents/CellContentEdition";
-import Avatar, { ConfigProvider } from 'react-avatar';
+import Avatar, { ConfigProvider } from "react-avatar";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -637,40 +635,30 @@ export default function SubTable(props) {
                     );
                   }
 
-                  ////// if editable column
-
-                  // if (props.targetLabel === "contact" && column.name === "name")
-                  //   return (
-                  //     <CellContentEdition
-                  //       id={tableMeta.rowData[0]}
-                  //       content={{ [column.name]: valueFormatter(value) }}
-                  //       targetLabel={props.targetLabel}
-                  //       childrenLeft
-                  //     >
-                  //       <div
-                  //         style={{
-                  //           backgroundColor: "red",
-                  //           width: "30px",
-                  //           height: "25px",
-                  //         }}
-                  //       />
-                  //     </CellContentEdition>
-                  //   );
-
                   return (
                     <div style={{ display: "flex" }}>
-                      {props.targetLabel === "contact" &&
-                        column.name === "name" && (
-                          ///////////////////////////////////////////////////
-                          // <ConfigProvider colors={['red', 'green', 'blue']}>
-                          <Avatar color={Avatar.getRandomColor(value,['#b5d2f6', '#ade2e9', '#eaeaea','#f2c1e2','#d7d6fb'])}
-                                  fgColor = "#000"
-                                  name={valueFormatter(value)} 
-                                  size="35" 
-                                  round/>
-                          // </ConfigProvider>
-                          ///////////////////////////////////////////////////
-                        )}
+                      {
+                        props.targetLabel === "contact" &&
+                          column.name === "name" && (
+                            ///////////////////////////////////////////////////
+                            // <ConfigProvider colors={['red', 'green', 'blue']}>
+                            <Avatar
+                              color={Avatar.getRandomColor(value, [
+                                "#b5d2f6",
+                                "#ade2e9",
+                                "#eaeaea",
+                                "#f2c1e2",
+                                "#d7d6fb",
+                              ])}
+                              fgColor="#000"
+                              name={valueFormatter(value)}
+                              size="35"
+                              round
+                            />
+                          )
+                        // </ConfigProvider>
+                        ///////////////////////////////////////////////////
+                      }
                       <CellContentEdition
                         id={tableMeta.rowData[0]}
                         content={{ [column.name]: valueFormatter(value) }}
@@ -956,7 +944,7 @@ export default function SubTable(props) {
             handleCloseExpandableCard={handleCloseExpandableCard}
           />
         );
-        setTitle("Contact");
+        setTitle("CONTACT DETAILS");
         setSubTitle(" ");
         handleOpenExpandableCard();
       }
@@ -1090,36 +1078,7 @@ export default function SubTable(props) {
               deleteFunc={props.deleteFunc}
               m1nSelectedRowsIds={m1nSelectedRowsIds}
               setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-              // completelyDelete={completelyDelete}
             >
-              {/* {props.header === "Owner's Contacts" && (
-                <RadioGroup
-                  value={completelyDelete}
-                  onChange={(event) => {
-                    setCompletelyDelete(event.target.value);
-                  }}
-                >
-                  <FormControlLabel
-                    value={"false"}
-                    control={<Radio />}
-                    label={`Do you want to remove the contact${
-                      m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                        ? "s"
-                        : ""
-                    } only from this owner?`}
-                  />
-                  <FormControlLabel
-                    value={"true"}
-                    control={<Radio />}
-                    label={`Do you want to permanently delete the contact${
-                      m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                        ? "s"
-                        : ""
-                    }?`}
-                  />
-                </RadioGroup>
-              )} */}
-
               {props.header === "Owner's Contacts" &&
                 `Do you want to remove the contact${
                   m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
@@ -1187,7 +1146,7 @@ export default function SubTable(props) {
                 : selectedRow._id
             }
             targetLabel={props.targetLabel}
-            noTrackAvailable={title === "Contact" ? true : false}
+            noTrackAvailable={props.targetLabel === "contact" ? true : false}
           />
         </Dialog>
       )}
