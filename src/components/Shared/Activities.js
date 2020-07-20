@@ -76,6 +76,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Activities({ activityLog, user_id, ...props }) {
+  const [selectedActivity, setSelectedActivity] = useState(null);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
   const [updateContact] = useMutation(UPDATECONTACT);
 
@@ -135,6 +136,16 @@ export default function Activities({ activityLog, user_id, ...props }) {
     }
   };
 
+  const updateActivity = (activity) => {
+    setSelectedActivity(activity);
+    setActivityModalOpen(true);
+  };
+
+  const addActivity = () => {
+    setSelectedActivity(null);
+    setActivityModalOpen(true);
+  };
+
   console.log("Activities: ", activityLog);
 
   const sortedActivityLog =
@@ -153,6 +164,7 @@ export default function Activities({ activityLog, user_id, ...props }) {
         onClose={() => setActivityModalOpen(false)}
         id={props.id}
         activityLog={activityLog}
+        selectedActivity={selectedActivity}
       />
       <CardActions>
         <Grid container justify="space-between">
@@ -164,7 +176,7 @@ export default function Activities({ activityLog, user_id, ...props }) {
           <Grid item>
             <Typography
               variant="button"
-              onClick={() => setActivityModalOpen(true)}
+              onClick={addActivity}
               gutterBottom
               style={{ cursor: "pointer" }}
             >
@@ -190,7 +202,12 @@ export default function Activities({ activityLog, user_id, ...props }) {
             </TimelineSeparator>
             <TimelineContent>
               <div className={classes.timelineText}>
-                <Typography variant="body1">{activity.notes}</Typography>
+                <Typography
+                  variant="body1"
+                  onClick={() => updateActivity(activity)}
+                >
+                  {activity.notes}
+                </Typography>
                 <Typography variant="body2" className={classes.blue}>
                   {activity.fullname} –{" "}
                   {moment(activity.dateTime).format("MMMM D, YYYY hh:mm a")}{" "}

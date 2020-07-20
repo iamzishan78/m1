@@ -61,8 +61,9 @@ const initialErrors = {
 
 function AddActivityModal(props) {
   const classes = useStyles();
-  const { open, onClose } = props;
+  const { open, onClose, selectedActivity } = props;
   const [stateApp] = useContext(AppContext);
+  const [addNew, setAddNew] = useState(true);
 
   console.log("USER: ", stateApp);
 
@@ -72,6 +73,20 @@ function AddActivityModal(props) {
 
   const [dateTime, setDateTime] = useState(new Date());
   const [errors, setErrors] = useState({ ...initialErrors });
+
+  useEffect(() => {
+    if (selectedActivity !== null) {
+      setAddNew(false);
+      setActivityType(selectedActivity.type);
+      setNotes(selectedActivity.notes);
+      setDateTime(selectedActivity.dateTime);
+    } else {
+      setAddNew(true);
+      setActivityType("general");
+      setNotes("");
+      setDateTime(new Date());
+    }
+  }, [selectedActivity]);
 
   //   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
   //     COMMENTSBYOBJECTIDQUERY
@@ -241,18 +256,18 @@ function AddActivityModal(props) {
             onClick={addActivity}
             disabled={loading}
           >
-            Add
+            {addNew ? "Add" : "Update"}
           </Button>
           {loading ? (
             <CircularProgress color="secondary" className={classes.progress} />
           ) : called && !loading ? (
             addActivityStatus.success ? (
               <Typography color="secondary" variant="subtitle2" gutterBottom>
-                Activity added.
+                Activity {addNew ? "added" : "updated"}.
               </Typography>
             ) : (
               <Typography color="primary" variant="subtitle2" gutterBottom>
-                Unable to add activity.
+                Unable to {addNew ? "add" : "update"} activity.
               </Typography>
             )
           ) : null}
