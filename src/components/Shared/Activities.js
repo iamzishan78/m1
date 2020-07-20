@@ -203,6 +203,7 @@ export default function Activities({ activityLog, user_id, ...props }) {
             <TimelineContent>
               <div className={classes.timelineText}>
                 <Typography
+                  style={{ cursor: "pointer" }}
                   variant="body1"
                   onClick={() => updateActivity(activity)}
                 >

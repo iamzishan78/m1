@@ -153,11 +153,56 @@ function AddActivityModal(props) {
     });
   };
 
+  const updateActivity = () => {
+    if (updateErrors()) return;
+
+    let activityLog = props.activityLog
+      ? props.activityLog.map((act) => ({
+          type: act.type,
+          notes: act.notes,
+          dateTime: act.dateTime,
+          user_id: act.user_id,
+        }))
+      : [];
+
+    let newActLog = [...activityLog];
+    const index =
+      newActLog &&
+      newActLog.findIndex(
+        (activity) =>
+          activity.dateTime === selectedActivity.dateTime &&
+          activity.user_id === selectedActivity.user_id
+      );
+    if (index > -1) {
+      newActLog[index] = {
+        ...selectedActivity,
+        dateTime:
+          typeof dateTime.toISOString === "function"
+            ? dateTime.toISOString()
+            : dateTime,
+        type: activityType,
+        notes,
+      };
+      newActLog.forEach((v) => delete v.__typename);
+
+      updateContact({
+        variables: {
+          contact: {
+            _id: props.id,
+            activityLog: [...newActLog],
+          },
+        },
+        refetchQueries: ["getContact"],
+        awaitRefetchQueries: true,
+      });
+    }
+  };
+
   useEffect(() => {
-    if (called && !loading && addActivityStatus.success === true) {
+    if (called && !loading && addActivityStatus.success === true && addNew) {
       clearFields();
     }
-  }, [called, loading, addActivityStatus]);
+  }, [called, loading, addActivityStatus, addNew]);
 
   return (
     <Dialog
@@ -253,7 +298,9 @@ function AddActivityModal(props) {
             color="secondary"
             size="large"
             disableElevation
-            onClick={addActivity}
+            onClick={() => {
+              addNew ? addActivity() : updateActivity();
+            }}
             disabled={loading}
           >
             {addNew ? "Add" : "Update"}
