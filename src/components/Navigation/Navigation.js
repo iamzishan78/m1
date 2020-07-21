@@ -103,6 +103,25 @@ import ContactFormModal from "./components/ContactFormModal";
 import { GETPROFILEIMAGE } from "../../graphQL/useQueryGetProfile";
 import { useLazyQuery } from "@apollo/react-hooks";
 
+
+import {
+  MuiThemeProvider,
+  createMuiTheme,
+  withStyles
+} from "@material-ui/core/styles";
+
+const theme = createMuiTheme({
+  overrides: {
+    MuiButton: {
+      root: {
+        '&:hover': {
+          backgroundColor: "#fff"
+        }
+      }
+    }
+  }
+})
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -610,8 +629,8 @@ const M1neralLogoNavNoAuth = (props) => (
 );
 const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   width: 200px;
-  padding-left: 15px;
-  padding-right: 50px;
+  padding-left: 10px;
+  padding-right: 15px;
 `;
 
 const M1neralLogoLogin = styled(M1neralLogoNavNoAuth)`
@@ -920,6 +939,10 @@ export default function Navigation(props) {
     setOpenDrawer(true);
   };
 
+  const handleClickLogo = () => {
+    setStateApp((stateApp) => ({ ...stateApp, toggleZoomOut: true }));
+  };
+
   const handleDrawerClose = () => {
     setOpenDrawer(false);
   };
@@ -1003,7 +1026,12 @@ export default function Navigation(props) {
                   {theme.direction === "rtl" ? <MenuIcon /> : <MenuIcon />}
                 </IconButton>
 
+                <div style={{marginRight: '35px'}}>
+                <Button color='secondary' size="large" onClick={handleClickLogo} className={classes.margin}>
                 <M1neralLogoWhiteLetters />
+                </Button>
+                </div>
+
               </div>
             ) : null}
 

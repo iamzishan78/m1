@@ -47,8 +47,8 @@ const AppProvider = (props) => {
     trackedWellArray: [],
     userSnap: false,
     mapVars: {
-      zoom: 5.88,
-      center: { lng: -98.8, lat: 31.6 },
+      zoom: 4.88,
+      center: { lng: -98.8, lat: 38 },
       pitch: 0,
       bearing: 0,
       styleId: "Outdoors",

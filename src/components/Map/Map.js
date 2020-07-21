@@ -2929,111 +2929,6 @@ export default function Map() {
           });
         });
 
-        // var customData = {
-        //     features: [
-        //         {
-        //             type: "Feature",
-        //             properties: {
-        //                 title: 'Well: Hancock "A"7',
-        //             },
-        //             geometry: {
-        //                 coordinates: [-98.453338, 33.71002],
-        //                 type: "Point",
-        //             },
-        //         },
-        //         {
-        //             type: "Feature",
-        //             properties: {
-        //                 title: "M1NERAL",
-        //                 description: "A lakefront park on Chicago's south side",
-        //             },
-        //             geometry: {
-        //                 coordinates: [-95.363557, 29.759138],
-        //                 type: "Point",
-        //             },
-        //         },
-        //         {
-        //             type: "Feature",
-        //             properties: {
-        //                 title: "Jacob Avery",
-        //                 description: "A large park in Chicago's Austin neighborhood",
-        //             },
-        //             geometry: {
-        //                 coordinates: [-95.096123, 29.537716],
-        //                 type: "Point",
-        //             },
-        //         },
-        //     ],
-        //     type: "FeatureCollection",
-        // };
-
-        // function forwardGeocoder(query) {
-        //   return new Promise ((resolve, reject) => {
-
-        //       const endpoint = 'https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2019-05-06&$count=true&searchFields=WellName,ApiNumber&$top=5&search=' + query;
-
-        //       const headers = new Headers();
-        //       headers.append('Content-Type', 'application/json')
-        //       headers.append('api-key', '1AE3C6346B38CEB007191D51CFDDFF65');
-
-        //       const options = {
-        //         method: 'GET',
-        //         headers: headers
-        //       };
-
-        //       console.log("request made to cognitive search at: " + new Date().toString());
-
-        //       fetch(endpoint, options)
-        //           .then((response) => response.json())
-        //           .then((response) => {
-        //             console.log(response);
-        //             resolve(response.value);
-        //           })
-        //           .catch((error) => {
-        //             console.log(error)
-        //             resolve();
-        //           })
-
-        //       // for (var i = 0; i < customData.features.length; i++) {
-        //       //   var feature = customData.features[i];
-        //       //   // handle queries with different capitalization than the source data by calling toLowerCase()
-        //       //   if (
-        //       //     feature.properties.title
-        //       //       .toLowerCase()
-        //       //       .search(query.toLowerCase()) !== -1
-        //       //   ) {
-        //       //     // add a tree emoji as a prefix for custom data results
-        //       //     // using carmen geojson format: https://github.com/mapbox/carmen/blob/master/carmen-geojson.md
-        //       //     feature["place_name"] = "🌲 " + feature.properties.title;
-        //       //     feature["center"] = feature.geometry.coordinates;
-        //       //     feature["place_type"] = ["park"];
-        //       //     matchingFeatures.push(feature);
-        //       //   }
-        //       // }
-        //       // return matchingFeatures;
-
-        //   })
-        // }
-
-        // var geocoder = new MapboxGeocoder({
-        //   accessToken: mapboxgl.accessToken,
-        //   mapboxgl: mapboxgl,
-        //   localGeocoder: forwardGeocoder,
-        //   //types: 'poi',
-        //   //placeholder: 'Enter Search'
-        //   zoom: 18,
-        // });
-
-        // if (
-        //     document.getElementById("searchBar") &&
-        //     document.getElementById("searchBar").childNodes.length === 0
-        // ) {
-        //     document
-        //         .getElementById("searchBar")
-        //         .appendChild(Search);
-        //     setSearch(Search);
-        // }
-
         let Draw = new MapboxDraw({
           displayControlsDefault: false,
           userProperties: true,
@@ -3114,17 +3009,6 @@ export default function Map() {
         map.off("mousemove", mapMouseMove);
 
         map.on("mousemove", mapMouseMove);
-
-        // map.on("draw.selectionchange", ({features}) => {
-        //   const [feature] = features;
-        //   if (mapClick && mapClick.mapClickHandler) {
-        //     if (feature) {
-        //       map.off("click", mapClick.mapClickHandler);
-        //     } else {
-        //       map.on("click", mapClick.mapClickHandler);
-        //     }
-        //   }
-        // });
 
         console.log("map extra components complete");
       }
@@ -3334,8 +3218,8 @@ export default function Map() {
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
         map.flyTo({
-          center: { lng: -98.8, lat: 31.6 },
-          zoom: 5.88,
+          center: { lng: -98.8, lat: 38 },
+          zoom: 4.88,
           pitch: 0,
           bearing: 0,
           speed: 0.5,
