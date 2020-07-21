@@ -299,6 +299,7 @@ export default function Map() {
     const configIndex = stateApp.styleLayers.findIndex((value) => value.name === layerName);
     const config = stateApp.styleLayers[configIndex];
     const checkedPosition = stateApp.checkedLayers.indexOf(configIndex);
+    const checkedInteraction = stateApp.checkedLayersInteraction.indexOf(configIndex);
     console.log(config);
 
     // -> add source
@@ -355,6 +356,30 @@ export default function Map() {
 
       map.setLayoutProperty(clusterVar, "visibility", checkedPosition > -1 ? 'visible' : 'none');
       map.setLayoutProperty(clusterLabelBar, "visibility", checkedPosition > -1 ? 'visible' : 'none');
+
+      if (checkedInteraction > -1) {
+        const mouseMoveHandler = (e) => {
+          map.getCanvas().style.cursor = "pointer";
+        };
+      
+        const mouseLeaveHandler = (e) => {
+          map.getCanvas().style.cursor = "";
+        };
+        map.on("mousemove", layerName, mouseMoveHandler);
+        map.on("mouseleave", layerName, mouseLeaveHandler);
+        map.on("mousemove", clusterVar, mouseMoveHandler);
+        map.on("mouseleave", clusterVar, mouseLeaveHandler);
+        map.on("mousemove", clusterLabelBar, mouseMoveHandler);
+        map.on("mouseleave", clusterLabelBar, mouseLeaveHandler);
+        config.mouseMoveHandler = mouseMoveHandler;
+        config.mouseLeaveHandler = mouseLeaveHandler;
+        const styleLayers = stateApp.styleLayers.slice(0);
+        styleLayers[configIndex] = config;
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          styleLayers
+        }));
+      }
     }
   }
 
@@ -2830,11 +2855,11 @@ export default function Map() {
 
  
 
-  const wellMouseMove = (e) => {
+  const mouseMoveHandler = (e) => {
     map.getCanvas().style.cursor = "pointer";
   };
 
-  const wellMouseLeave = (e) => {
+  const mouseLeaveHandler = (e) => {
     map.getCanvas().style.cursor = "";
   };
 
@@ -3066,63 +3091,64 @@ export default function Map() {
         // map.boxZoom.enable();
         // map.touchZoomRotate.enable();
 
-        const selectedLayerIntereaction = stateApp.checkedLayersInteraction.slice(0);
-        const wellIndex = stateApp.styleLayers.findIndex(
-          (layer) => layer.name === "Wells"
-        );
+        const selectedLayerIntereactions = stateApp.checkedLayersInteraction.slice(0);
+        const styleLayers = stateApp.styleLayers.slice(0);
+        styleLayers.forEach((config, layerIndex) => {
+          // const config = stateApp.styleLayers[layerIndex];
+          if (config.mouseMoveHandler) {
+            if (config.layerProps) {
+              map.off("mousemove", config.id[0], config.mouseMoveHandler);
+              map.off("mousemove", config.id[0]+'-clusters', config.mouseMoveHandler);
+              map.off("mousemove", config.id[0]+'-clusters-counts', config.mouseMoveHandler);
+            } else {
+              map.off("mousemove", "wellpoints", config.mouseMoveHandler);
+              map.off("mousemove", "welllines", config.mouseMoveHandler);
+            }
+          }
+          if (config.mouseLeaveHandler) {
+            if (config.layerProps) {
+              map.off("mouseleave", config.id[0], config.mouseLeaveHandler);
+              map.off("mouseleave", config.id[0]+'-clusters', config.mouseLeaveHandler);
+              map.off("mouseleave", config.id[0]+'-clusters-counts', config.mouseLeaveHandler);
+            } else {
+              map.off("mouseleave", "wellpoints", config.mouseLeaveHandler);
+              map.off("mouseleave", "welllines", config.mouseLeaveHandler);
+            }
+          }
 
-        const well = stateApp.styleLayers[wellIndex];
+          if (selectedLayerIntereactions.length > 0 && selectedLayerIntereactions.indexOf(layerIndex) > -1) {
+            if (config.layerProps) {
+              map.on("mousemove", config.id[0], mouseMoveHandler);
+              map.on("mousemove", config.id[0]+'-clusters', mouseMoveHandler);
+              map.on("mousemove", config.id[0]+'-clusters-counts', mouseMoveHandler);
+              map.on("mouseleave", config.id[0], mouseLeaveHandler);
+              map.on("mouseleave", config.id[0]+'-clusters', mouseLeaveHandler);
+              map.on("mouseleave", config.id[0]+'-clusters-counts', mouseLeaveHandler);
+            } else {
+              map.on("mousemove", "wellpoints", mouseMoveHandler);
+              map.on("mouseleave", "wellpoints", mouseLeaveHandler);
+              map.on("mousemove", "welllines", mouseMoveHandler);
+              map.on("mouseleave", "welllines", mouseLeaveHandler);
+            }
 
-        if (well.wellMouseMove) {
-          map.off("mousemove", "wellpoints", well.wellMouseMove);
-          map.off("mousemove", "welllines", well.wellMouseMove);
-        }
-
-        if (well.wellMouseLeave) {
-          map.off("mouseleave", "wellpoints", well.wellMouseLeave);
-          map.off("mouseleave", "welllines", well.wellMouseLeave);
-        }
-
-        if (
-          stateApp.checkedLayersInteraction.length > 0 &&
-          selectedLayerIntereaction.indexOf(wellIndex) > -1
-        ) {
-
-          map.on("mousemove", "wellpoints", wellMouseMove);
-
-          map.on("mouseleave", "wellpoints", wellMouseLeave);
-
-          map.on("mousemove", "welllines", wellMouseMove);
-
-          map.on("mouseleave", "welllines", wellMouseLeave);
+            const configcp = { ...config };
+            configcp.mouseMoveHandler = mouseMoveHandler;
+            configcp.mouseLeaveHandler = mouseLeaveHandler;
+  
+            styleLayers[layerIndex] = configcp;
+          }
 
 
-          const wellcp = { ...well };
-          wellcp.wellMouseLeave = wellMouseLeave;
-          wellcp.wellMouseMove = wellMouseMove;
+        });
 
-          const styleLayers = stateApp.styleLayers.slice(0);
-          styleLayers[wellIndex] = wellcp;
+        setStateApp({
+          ...stateApp,
+          styleLayers,
+        });
 
-          setStateApp({
-            ...stateApp,
-            styleLayers,
-          });
-        }
         map.off("mousemove", mapMouseMove);
 
         map.on("mousemove", mapMouseMove);
-
-        // map.on("draw.selectionchange", ({features}) => {
-        //   const [feature] = features;
-        //   if (mapClick && mapClick.mapClickHandler) {
-        //     if (feature) {
-        //       map.off("click", mapClick.mapClickHandler);
-        //     } else {
-        //       map.on("click", mapClick.mapClickHandler);
-        //     }
-        //   }
-        // });
 
         console.log("map extra components complete");
       }
