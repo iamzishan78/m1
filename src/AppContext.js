@@ -78,7 +78,7 @@ const AppProvider = (props) => {
     checkedLayers: [2, 5],
     checkedHeats: [],
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
-    checkedUserDefinedLayers: [0, 2],
+    checkedUserDefinedLayers: [],
     userFileLayers: [],
     tempCheckedUserDefinedLayer: null,
     checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],

@@ -226,7 +226,6 @@ export default function Map() {
 
   useEffect(() => {
     if (customLayerData && customLayerData.customLayers) {
-      console.log("Custom Layer data", customLayerData.customLayers);
       setStateApp((state) => ({
         ...state,
         customLayers: customLayerData.customLayers,
@@ -264,16 +263,17 @@ export default function Map() {
         dataWells.wells &&
         dataWells.wells.results &&
         dataWells.wells.results.length > 0
-      )
+      ) {
         setStateApp((state) => ({
           ...state,
           trackedwells: dataWells.wells.results,
         }));
-      else
+      } else {
         setStateApp((state) => ({
           ...state,
           trackedwells: null,
         }));
+      }
     }
   }, [dataWells]);
 
@@ -383,6 +383,166 @@ export default function Map() {
     }
   }
 
+  const setUserDefinedLayer = (data, layerName, map) => {
+    const configIndex = stateApp.userDefinedLayers.findIndex((value) => value.name === layerName);
+    const config = stateApp.userDefinedLayers[configIndex];
+    let beforelayer = null;
+    for (let i = 0; i < config.id.length; i++) {
+            
+      // -> fetch data
+      let layerData = [];
+      if (config.dataProps[i].dataId == "trackedWellsWells") {
+        layerData = data;
+      } else if (
+        config.dataProps[i].dataId == "trackedOwnersWells"
+      ) {
+        layerData = data;
+      } else if (
+        config.dataProps[i].dataId == "wellsFromSearch"
+      ) {
+        layerData = data;
+      } else if (
+        config.dataProps[i].dataId == "wellsFromTagsFilter"
+      ) {
+        layerData = data;
+      } else {
+        const dataId = config.dataProps[i].dataId;
+
+        const groupBy = (arr, property) => {
+          return arr.reduce((memo, x) => {
+            if (!memo[x[property]]) {
+              memo[x[property]] = [];
+            }
+            memo[x[property]].push(x);
+            return memo;
+          }, {});
+        };
+
+        layerData = groupBy(data, "layer")[dataId];
+      }
+
+      if (layerData && layerData.length !== 0) {
+        // -> make GEOJSON
+
+        const makeGeoJSON = (data) => {
+          return {
+            type: "FeatureCollection",
+            features: data.map((feature) => {
+              if (config.dataProps[i].dataTypeId == "Point") {
+                return {
+                  type: "Feature",
+                  properties: feature,
+                  geometry: {
+                    type: config.dataProps[i].dataTypeId,
+                    coordinates: [feature.longitude, feature.latitude],
+                  },
+                };
+              } else {
+                return JSON.parse(feature.shape);
+              }
+            }),
+          };
+        };
+
+        const myGeoJSONData = makeGeoJSON(layerData);
+
+        // -> add source
+        if (config.dataProps[i].dataTypeId == "Point") {
+          map.addSource(config.sourceProps[i].sourceId, {
+            type: config.sourceProps[i].sourceType,
+            data: myGeoJSONData,
+            cluster: true,
+            clusterRadius: 50,
+            clusterMaxZoom: 6,
+          });
+          const filterLayerId = config.sourceProps[i].sourceId + '_filter';
+          map.addSource(filterLayerId, {
+            type: config.sourceProps[i].sourceType,
+            data: myGeoJSONData,
+          });
+        } else {
+          map.addSource(config.sourceProps[i].sourceId, {
+            type: config.sourceProps[i].sourceType,
+            data: myGeoJSONData,
+            promoteId: { original: "id" },
+          });
+        }
+
+        // -> add layer
+        // eslint-disable-next-line eqeqeq
+        if (config.layerProps[i].layerType == "symbol") {
+          map.addLayer({
+            id: config.layerProps[i].layerId,
+            type: config.layerProps[i].layerType,
+            source: config.sourceProps[i].sourceId,
+            layout: config.layerProps[i].symbolProps,
+          });
+        } else {
+          map.addLayer({
+            id: config.layerProps[i].layerId,
+            type: config.layerProps[i].layerType,
+            source: config.sourceProps[i].sourceId,
+            paint: config.layerProps[i].paintProps,
+          });
+        }
+
+        map.setLayoutProperty(config.layerProps[i].layerId, "visibility", "none");
+
+        // -> add cluster layer
+
+        if (
+          config &&
+          config.layerProps &&
+          config.layerProps[i].clusterProps
+        ) {
+          var clusterVar =
+            config.layerProps[i].layerId + "-clusters";
+          var clusterLabelBar =
+            config.layerProps[i].layerId + "-clusters-counts";
+
+          map.addLayer({
+            id: clusterLabelBar,
+            type: "symbol",
+            source: config.sourceProps[i].sourceId,
+            filter: ["has", "point_count"],
+            layout:
+              config.layerProps[i].clusterProps
+                .clusterSymbolProps,
+          });
+          map.setLayoutProperty(clusterLabelBar, "visibility", "none");
+          if (beforelayer) {
+            map.moveLayer(clusterLabelBar, beforelayer);
+          }
+          beforelayer = clusterLabelBar;
+
+          map.addLayer({
+            id: clusterVar,
+            type: config.layerProps[i].layerType,
+            source: config.sourceProps[i].sourceId,
+            filter: ["has", "point_count"],
+            paint:
+              config.layerProps[i].clusterProps
+                .clusterPaintProps,
+          });
+          map.setLayoutProperty(clusterVar, "visibility", "none");
+          if (beforelayer) {
+            map.moveLayer(clusterVar, beforelayer);
+          }
+          beforelayer = clusterVar;
+        }
+
+        if (beforelayer) {
+          map.moveLayer(
+            config.layerProps[i].layerId,
+            beforelayer
+          );
+        }
+        beforelayer = config.layerProps[i].layerId;
+        
+      }
+    }
+  }
+
   useEffect(() => {
     if (permitData && permitData.permits && permitData.permits.length > 0 && map) {
       setLayer(permitData.permits, "Permits", map);
@@ -416,18 +576,36 @@ export default function Map() {
         dataWellsForOwnerWellTrackLayer.wells &&
         dataWellsForOwnerWellTrackLayer.wells.results &&
         dataWellsForOwnerWellTrackLayer.wells.results.length > 0
-      )
+      ) {
         setStateApp((state) => ({
           ...state,
           trackedOwnerWells: dataWellsForOwnerWellTrackLayer.wells.results,
         }));
-      else
+      } else {
         setStateApp((state) => ({
           ...state,
           trackedOwnerWells: null,
         }));
+      }
     }
   }, [dataWellsForOwnerWellTrackLayer]);
+
+  useEffect(() => {
+    if (stateApp.trackedOwnerWells && stateApp.trackedwells && stateApp.customLayers && map) {
+      if (!map.getLayer("Tracked Wells")) {
+        setUserDefinedLayer(stateApp.trackedwells, "Tracked Wells", map);
+      }
+      if (!map.getLayer("Tracked Owners")) {
+        setUserDefinedLayer(stateApp.trackedOwnerWells, "Tracked Owners", map);
+      }
+      if (!map.getLayer("interest")) {
+        setUserDefinedLayer(stateApp.customLayers, "Area of Interest", map);
+      }
+      if (!map.getLayer("parcel")) {
+        setUserDefinedLayer(stateApp.customLayers, "Parcels", map);
+      }
+    }
+  }, [stateApp.trackedOwnerWells, stateApp.trackedwells, stateApp.customLayers, map]);
 
   useEffect(() => {
     const wellLineClick = (currentFeature) => {
@@ -1012,22 +1190,27 @@ export default function Map() {
               if (map.getLayer(layerId)) {
                 map.setLayoutProperty(layerId, "visibility", "visible");
                 map.getSource(selectLayerProps.sourceProps[i].sourceId).setData(myGeoJSONData);
-                let clusterLabelBar = layerId + "-clusters-counts";
-                if (map.getLayer(clusterLabelBar)) {
-                  map.setLayoutProperty(clusterLabelBar, "visibility", "visible");
-                  if (beforelayer) {
-                    map.moveLayer(clusterLabelBar, beforelayer);
+                map.getSource(selectLayerProps.sourceProps[i].sourceId + '_filter').setData(myGeoJSONData);
+                const layer = map.getLayer(layerId);
+                console.log(layer.source);
+                if (!layer.source.includes('_filter')) {
+                  let clusterLabelBar = layerId + "-clusters-counts";
+                  if (map.getLayer(clusterLabelBar)) {
+                    map.setLayoutProperty(clusterLabelBar, "visibility", "visible");
+                    if (beforelayer) {
+                      map.moveLayer(clusterLabelBar, beforelayer);
+                    }
+                    beforelayer = clusterLabelBar;
                   }
-                  beforelayer = clusterLabelBar;
-                }
 
-                let clusterVar = layerId + "-clusters";
-                if (map.getLayer(clusterVar)) {
-                  map.setLayoutProperty(clusterVar, "visibility", "visible");
-                  if (beforelayer) {
-                    map.moveLayer(clusterVar, beforelayer);
+                  let clusterVar = layerId + "-clusters";
+                  if (map.getLayer(clusterVar)) {
+                    map.setLayoutProperty(clusterVar, "visibility", "visible");
+                    if (beforelayer) {
+                      map.moveLayer(clusterVar, beforelayer);
+                    }
+                    beforelayer = clusterVar;
                   }
-                  beforelayer = clusterVar;
                 }
               } else {
                 // -> add source
@@ -1873,7 +2056,7 @@ export default function Map() {
               // featuresList = map.querySourceFeatures(layer.source);
               featuresList = map.getSource(layer.source)._data.features;
             }
-            // console.log(filterLayer, featuresList);
+            console.log(filterLayer, featuresList);
             if (featuresList && featuresList.length > 0) {
               const result = featuresList.filter((feature) => {
                 if (feature.geometry.type === "MultiPolygon") {
