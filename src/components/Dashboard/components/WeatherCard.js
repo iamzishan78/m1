@@ -119,6 +119,7 @@ const WeatherCard = () => {
       }
     };
     getForecast();
+    console.log('forecast',forecast)
   }, [location,weatherkey]);
 
   return (
