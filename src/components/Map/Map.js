@@ -554,15 +554,13 @@ export default function Map() {
           }
           // sLayers = [...sLayers, ...styleLayer.id];
           if (styleLayer.layerProps && styleLayer.layerProps.clusterProps) {
-            if (map.getLayer(styleLayer.id[1])) {
-              layers.push(styleLayer.id[1]);
-            }
-            if (map.getLayer(styleLayer.id[2])) {
-              layers.push(styleLayer.id[2]);
-            }
-            const clusterLayerId = styleLayer.id[1];
-            if (map.getLayer(clusterLayerId)) {
-              clusterUDLayers.push(clusterLayerId);
+            if (map.getLayer(styleLayer.id[0])) {
+              const clusterLayerId = styleLayer.id[0] + "-clusters";
+              if (map.getLayer(clusterLayerId)) {
+                layers.push(clusterLayerId);
+                clusterUDLayers.push(clusterLayerId);
+              }
+              layers.push(styleLayer.id[0]);
             }
           }
         }
