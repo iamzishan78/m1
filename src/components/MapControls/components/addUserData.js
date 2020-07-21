@@ -18,6 +18,8 @@ import Button from '@material-ui/core/Button';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import TextField from '@material-ui/core/TextField';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
+var shapefile = require("shapefile");
+
 
 
 export default function AddUserData(props) {
@@ -65,14 +67,29 @@ export default function AddUserData(props) {
   }
 
   const handleFileAsync = (file) => {
-    return new Promise((resolve, reject) => {
-      fetch(file[0].data)
-        .then((response) => response.json())
-        .then((response) => {
-          resolve(response);
-        })
-        .catch((error) => reject(error));
-    })
+    let fileName = file[0].file.name;
+    console.log(fileName);
+    if (fileName.endsWith(".geojson")) {
+      return new Promise((resolve, reject) => {
+        fetch(file[0].data)
+          .then((response) =>
+            response.json())
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => reject(error));
+      })
+    } else if (fileName.endsWith(".shp")) {
+      console.log("SHAPEFILE!");
+      shapefile.open(file[0].data)
+        .then(source => source.read()
+          .then(function log(result) {
+            if (result.done) return;
+            console.log(result.value);
+            return source.read().then(log);
+          }))
+        .catch(error => console.error(error.stack));
+    }
   }
 
   const handleURLinput = (e) => {
@@ -100,8 +117,8 @@ export default function AddUserData(props) {
             onDelete={(fileObj) => console.log('Removed File:', fileObj)}
             onAlert={handleOnAlert}
             filesLimit={1}
-            dropzoneText=" Drag and Drop a GeoJSON or Shapefile."
-            acceptedFiles={[".geojson", ".zip"]}
+            dropzoneText="Drag and Drop a GeoJSON or Shapefile."
+            acceptedFiles={[".geojson", ".shp", ".prj"]}
             maxFileSize={600000000}
           ></DropzoneAreaBase>
           <TextField
