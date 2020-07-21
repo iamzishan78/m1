@@ -62,6 +62,7 @@ const AppProvider = (props) => {
     universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
     mapGridCardActivated: false,
     searchResultData: [], //// mapGridCard Search Data
+    searchloading: false, //// mapGridCard Search loading
     viewportData: [], //// mapGridCard Viewport Data
     trackedDataCount: 0, //// mapGridCard Viewport tracked count
 

@@ -49,7 +49,14 @@ const useStyles = makeStyles((theme) => ({
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
     },
     "& .MuiTableHead-root": {
-      "& th": { backgroundColor: "#F2F2F2", zIndex: "auto" },
+      "& th": {
+        backgroundColor: "#F2F2F2",
+        zIndex: "auto",
+        padding: (props) => (props.dense ? "10px" : null),
+      },
+      "& .MuiTableCell-paddingCheckbox": {
+        padding: (props) => (props.dense ? "0 !important" : "16px"),
+      },
     },
   },
   icons: {
@@ -142,7 +149,7 @@ export default function SubTable(props) {
   const classes = useStyles(props);
 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [rows, setRows] = useState();
+  const [rows, setRows] = useState(null);
   const [columns, setColumns] = useState([]);
 
   const [colInd, setColInd] = useState();
@@ -164,13 +171,15 @@ export default function SubTable(props) {
 
   useEffect(() => {
     if (props.rows) {
-      setRows([
-        ...props.rows.sort((a, b) => {
-          return b.isTracked - a.isTracked;
-        }),
-      ]);
+      if (props.orderByTracks)
+        setRows([
+          ...props.rows.sort((a, b) => {
+            return b.isTracked - a.isTracked;
+          }),
+        ]);
+      else setRows([...props.rows]);
     }
-  }, [props.rows]);
+  }, [props.rows, props.orderByTracks]);
 
   useEffect(() => {
     if (rows && m1nSelectedRowsIndexes) {
@@ -957,207 +966,244 @@ export default function SubTable(props) {
     history.push(route);
   };
 
-  return (rows && rows.length > 0 && !props.addAble) ||
-    (rows && props.addAble) ? (
-    <div className={classes.root}>
-      <MUIDataTable
-        className={classes.table}
-        title={props.header}
-        data={rows}
-        columns={columns}
-        options={options}
-      />
+  return (
+    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+      {rows ? (
+        <div className={classes.root}>
+          <MUIDataTable
+            className={classes.table}
+            title={props.header}
+            data={rows}
+            columns={columns}
+            options={options}
+          />
 
-      {openDialog && (
-        <Dialog
-          className={classes.dialog}
-          open={openDialog ? true : false}
-          onClose={handleCloseDialog}
-          fullWidth={
-            openDialog === "comment" ||
-            openDialog === "owner" ||
-            openDialog === "wellsPerOwner" ||
-            openDialog === "ownerContacts" ||
-            openDialog === "ownersPerContacts" ||
-            openDialog === "buyContactsInfo" ||
-            openDialog === "sendMailers" ||
-            openDialog === "printLabels"
-              ? true
-              : false
-          }
-          maxWidth={
-            openDialog === "ownerContacts"
-              ? "xl"
-              : openDialog === "owner" ||
+          {openDialog && (
+            <Dialog
+              className={classes.dialog}
+              open={openDialog ? true : false}
+              onClose={handleCloseDialog}
+              fullWidth={
+                openDialog === "comment" ||
+                openDialog === "owner" ||
+                openDialog === "wellsPerOwner" ||
+                openDialog === "ownerContacts" ||
                 openDialog === "ownersPerContacts" ||
-                openDialog === "wellsPerOwner"
-              ? "lg"
-              : openDialog === "addContact" ||
-                openDialog === "addOwnerToContact" ||
-                openDialog === "deleteOwnersFromContact" ||
-                openDialog === "deleteContact"
-              ? "xs"
-              : "sm"
-          }
-        >
-          {openDialog === "comment" && (
-            <Comments
-              focus
-              targetSourceId={expandedObject}
-              targetLabel={props.targetLabel}
-              multipleIds={
-                m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
-                m1nSelectedRowsIndexes.length > 1
-                  ? m1nSelectedRowsIds
-                  : null
+                openDialog === "buyContactsInfo" ||
+                openDialog === "sendMailers" ||
+                openDialog === "printLabels"
+                  ? true
+                  : false
               }
-            />
+              maxWidth={
+                openDialog === "ownerContacts"
+                  ? "xl"
+                  : openDialog === "owner" ||
+                    openDialog === "ownersPerContacts" ||
+                    openDialog === "wellsPerOwner"
+                  ? "lg"
+                  : openDialog === "addContact" ||
+                    openDialog === "addOwnerToContact" ||
+                    openDialog === "deleteOwnersFromContact" ||
+                    openDialog === "deleteContact"
+                  ? "xs"
+                  : "sm"
+              }
+            >
+              {openDialog === "comment" && (
+                <Comments
+                  focus
+                  targetSourceId={expandedObject}
+                  targetLabel={props.targetLabel}
+                  multipleIds={
+                    m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
+                    m1nSelectedRowsIndexes.length > 1
+                      ? m1nSelectedRowsIds
+                      : null
+                  }
+                />
+              )}
+              {openDialog === "tag" && (
+                <div className={classes.tagsDiv}>
+                  <Tags
+                    targetSourceId={expandedObject}
+                    targetLabel={props.targetLabel}
+                    multipleIds={
+                      m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
+                      m1nSelectedRowsIndexes.length > 1
+                        ? m1nSelectedRowsIds
+                        : null
+                    }
+                  />
+                </div>
+              )}
+              {openDialog === "owner" && (
+                <M1nTable
+                  selectedWell={{ id: expandedObject }}
+                  parent="OwnersPerWell"
+                />
+              )}
+              {openDialog === "wellsPerOwner" && (
+                <M1nTable
+                  wellsIdsArray={expandedObject}
+                  parent="WellsPerOwner"
+                />
+              )}
+              {openDialog === "ownerContacts" && (
+                <M1nTable parent="ownerContacts" ownerId={expandedObject} />
+              )}
+              {openDialog === "ownersPerContacts" && (
+                <M1nTable
+                  parent="ownersPerContacts"
+                  ownersIdsArray={expandedObject}
+                  contactId={rows[rowInd]._id}
+                />
+              )}
+
+              {openDialog === "addContact" &&
+                props.targetLabel === "contact" && (
+                  <AddContactDialogContent
+                    onClose={handleCloseDialog}
+                    parent={props.addAble.parent}
+                  />
+                )}
+              {openDialog === "addOwnerToContact" && (
+                <AddOwnerToContactDialogContent
+                  onClose={handleCloseDialog}
+                  parent={props.addAble.parent}
+                  existingOwners={props.addAble.existingOwners}
+                />
+              )}
+              {openDialog === "deleteOwnersFromContact" && (
+                <DeleteConfirmationDialogContent
+                  onClose={handleCloseDialog}
+                  deleteFunc={props.deleteFunc}
+                  m1nSelectedRowsIds={m1nSelectedRowsIds}
+                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+                >
+                  {`Do you want to permanently delete the owner${
+                    m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
+                      ? "s"
+                      : ""
+                  } from  this contact?`}
+                </DeleteConfirmationDialogContent>
+              )}
+              {openDialog === "deleteContact" && (
+                <DeleteConfirmationDialogContent
+                  onClose={handleCloseDialog}
+                  deleteFunc={props.deleteFunc}
+                  m1nSelectedRowsIds={m1nSelectedRowsIds}
+                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+                >
+                  {props.header === "Owner's Contacts" &&
+                    `Do you want to remove the contact${
+                      m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
+                        ? "s"
+                        : ""
+                    } from this owner?`}
+
+                  {props.header === "Contacts" &&
+                    `Do you want to permanently delete the contact${
+                      m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
+                        ? "s"
+                        : ""
+                    }?`}
+                </DeleteConfirmationDialogContent>
+              )}
+              {openDialog === "buyContactsInfo" && (
+                <BuyContactsInfoDialogContent
+                  onClose={handleCloseDialog}
+                  rows={expandedObject}
+                  setRows={setExpandedObject}
+                  setSelectedRow={setSelectedRow}
+                />
+              )}
+              {openDialog === "sendMailers" && (
+                <SendMailersDialogContent
+                  onClose={handleCloseDialog}
+                  rows={expandedObject}
+                  setRows={setExpandedObject}
+                  setSelectedRow={setSelectedRow}
+                />
+              )}
+              {openDialog === "printLabels" && (
+                <PrintLabelsDialogContent
+                  onClose={handleCloseDialog}
+                  rows={expandedObject}
+                  setRows={setExpandedObject}
+                  setSelectedRow={setSelectedRow}
+                />
+              )}
+            </Dialog>
           )}
-          {openDialog === "tag" && (
-            <div className={classes.tagsDiv}>
-              <Tags
-                targetSourceId={expandedObject}
+
+          {showExpandableCard && (
+            <Dialog
+              className={classes.dialogExpCard}
+              fullWidth
+              maxWidth="xl"
+              open={showExpandableCard}
+              onClose={handleCloseExpandableCard}
+            >
+              <ExpandableCardProvider
+                expanded={true}
+                handleCloseExpandableCard={handleCloseExpandableCard}
+                component={subComponent}
+                title={title}
+                subTitle={subTitle}
+                parent="table"
+                mouseX={0}
+                mouseY={0}
+                position="relative"
+                cardLeft={"0"}
+                cardTop={"0"}
+                zIndex={1201}
+                cardWidthExpanded="100%"
+                cardHeightExpanded="100%"
+                targetSourceId={
+                  props.targetLabel === "owner" || props.targetLabel === "well"
+                    ? selectedRow.id
+                    : selectedRow._id
+                }
                 targetLabel={props.targetLabel}
-                multipleIds={
-                  m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
-                  m1nSelectedRowsIndexes.length > 1
-                    ? m1nSelectedRowsIds
-                    : null
+                noTrackAvailable={
+                  props.targetLabel === "contact" ? true : false
                 }
               />
-            </div>
+            </Dialog>
           )}
-          {openDialog === "owner" && (
-            <M1nTable
-              selectedWell={{ id: expandedObject }}
-              parent="OwnersPerWell"
-            />
-          )}
-          {openDialog === "wellsPerOwner" && (
-            <M1nTable wellsIdsArray={expandedObject} parent="WellsPerOwner" />
-          )}
-          {openDialog === "ownerContacts" && (
-            <M1nTable parent="ownerContacts" ownerId={expandedObject} />
-          )}
-          {openDialog === "ownersPerContacts" && (
-            <M1nTable
-              parent="ownersPerContacts"
-              ownersIdsArray={expandedObject}
-              contactId={rows[rowInd]._id}
-            />
-          )}
-
-          {openDialog === "addContact" && props.targetLabel === "contact" && (
-            <AddContactDialogContent
-              onClose={handleCloseDialog}
-              parent={props.addAble.parent}
-            />
-          )}
-          {openDialog === "addOwnerToContact" && (
-            <AddOwnerToContactDialogContent
-              onClose={handleCloseDialog}
-              parent={props.addAble.parent}
-              existingOwners={props.addAble.existingOwners}
-            />
-          )}
-          {openDialog === "deleteOwnersFromContact" && (
-            <DeleteConfirmationDialogContent
-              onClose={handleCloseDialog}
-              deleteFunc={props.deleteFunc}
-              m1nSelectedRowsIds={m1nSelectedRowsIds}
-              setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-            >
-              {`Do you want to permanently delete the owner${
-                m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
-              } from  this contact?`}
-            </DeleteConfirmationDialogContent>
-          )}
-          {openDialog === "deleteContact" && (
-            <DeleteConfirmationDialogContent
-              onClose={handleCloseDialog}
-              deleteFunc={props.deleteFunc}
-              m1nSelectedRowsIds={m1nSelectedRowsIds}
-              setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-            >
-              {props.header === "Owner's Contacts" &&
-                `Do you want to remove the contact${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
-                } from this owner?`}
-
-              {props.header === "Contacts" &&
-                `Do you want to permanently delete the contact${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
-                }?`}
-            </DeleteConfirmationDialogContent>
-          )}
-          {openDialog === "buyContactsInfo" && (
-            <BuyContactsInfoDialogContent
-              onClose={handleCloseDialog}
-              rows={expandedObject}
-              setRows={setExpandedObject}
-              setSelectedRow={setSelectedRow}
-            />
-          )}
-          {openDialog === "sendMailers" && (
-            <SendMailersDialogContent
-              onClose={handleCloseDialog}
-              rows={expandedObject}
-              setRows={setExpandedObject}
-              setSelectedRow={setSelectedRow}
-            />
-          )}
-          {openDialog === "printLabels" && (
-            <PrintLabelsDialogContent
-              onClose={handleCloseDialog}
-              rows={expandedObject}
-              setRows={setExpandedObject}
-              setSelectedRow={setSelectedRow}
-            />
-          )}
-        </Dialog>
+        </div>
+      ) : (
+        <MUIDataTable
+          className={classes.table}
+          title={props.header}
+          data={[
+            {
+              loader: " ",
+            },
+          ]}
+          columns={[{ name: "loader", label: " " }]}
+          options={options}
+        />
+        // <Skeleton variant="rect" height={200} style={{ minWidth: "100%" }}>
+        //   <Typography variant="button" style={{ visibility: "visible" }}>
+        //     Not Available
+        //   </Typography>
+        // </Skeleton>
       )}
-
-      {showExpandableCard && (
-        <Dialog
-          className={classes.dialogExpCard}
-          fullWidth
-          maxWidth="xl"
-          open={showExpandableCard}
-          onClose={handleCloseExpandableCard}
+      {props.loading && (
+        <div
+          style={{
+            padding: "15px",
+            position: "absolute",
+            top: "95px",
+            left: "30px",
+            zIndex: "150",
+          }}
         >
-          <ExpandableCardProvider
-            expanded={true}
-            handleCloseExpandableCard={handleCloseExpandableCard}
-            component={subComponent}
-            title={title}
-            subTitle={subTitle}
-            parent="table"
-            mouseX={0}
-            mouseY={0}
-            position="relative"
-            cardLeft={"0"}
-            cardTop={"0"}
-            zIndex={1201}
-            cardWidthExpanded="100%"
-            cardHeightExpanded="100%"
-            targetSourceId={
-              props.targetLabel === "owner" || props.targetLabel === "well"
-                ? selectedRow.id
-                : selectedRow._id
-            }
-            targetLabel={props.targetLabel}
-            noTrackAvailable={props.targetLabel === "contact" ? true : false}
-          />
-        </Dialog>
+          <CircularProgress size={80} disableShrink color="secondary" />
+        </div>
       )}
     </div>
-  ) : props.loading || !rows ? (
-    <div style={{ padding: "15px" }}>
-      <CircularProgress size={80} disableShrink color="secondary" />
-    </div>
-  ) : (
-    <Skeleton variant="rect" height={300}>
-      <Typography variant="button">Not Available</Typography>
-    </Skeleton>
   );
 }
