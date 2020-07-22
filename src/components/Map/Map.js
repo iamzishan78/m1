@@ -301,45 +301,57 @@ export default function Map() {
     const config = stateApp.styleLayers[configIndex];
     const checkedPosition = stateApp.checkedLayers.indexOf(configIndex);
     const checkedInteraction = stateApp.checkedLayersInteraction.indexOf(configIndex);
-    console.log(config);
+    console.log(layerName, config);
 
     // -> add source
     if (config) {
-      map.addSource(config.sourceProps[0], {
-        type: 'geojson',
-        data: geoJson,
-        cluster: true,
-        clusterRadius: 50,
-        clusterMaxZoom: 6,
-      });
+      if (map.getSource(config.sourceProps[0])) {
+        map.getSource(config.sourceProps[0]).setData(geoJson);
+      } else {
+        map.addSource(config.sourceProps[0], {
+          type: 'geojson',
+          data: geoJson,
+          cluster: true,
+          clusterRadius: 50,
+          clusterMaxZoom: 6,
+        });
+      }
 
-      map.addSource(`${config.sourceProps[0]}_filter`, {
-        type: 'geojson',
-        data: geoJson,
-      });
+      if (map.getSource(`${config.sourceProps[0]}_filter`)) {
+        map.getSource(`${config.sourceProps[0]}_filter`).setData(geoJson);
+      } else {
+        map.addSource(`${config.sourceProps[0]}_filter`, {
+          type: 'geojson',
+          data: geoJson,
+        });
+      }
 
       // -> add layer
-      if (config.layerProps.layerType[0] !== 'symbol') {
-        map.addLayer({
-          id: config.layerProps.layerId[0],
-          type: config.layerProps.layerType[0],
-          source: config.sourceProps[0],
-          paint: config.layerProps.paintProps,
-          layout: {
-            visibility: checkedPosition > -1 ? 'visible' : 'none'
-          }
-        });
+      if (map.getLayer(config.layerProps.layerId[0])) {
+        map.setLayoutProperty(config.layerProps.layerId[0], "visibility", checkedPosition > -1 ? 'visible' : 'none');
       } else {
-        map.addLayer({
-          id: config.layerProps.layerId[0],
-          type: config.layerProps.layerType[0],
-          source: config.sourceProps[0],
-          // paint: config.layerProps.paintProps,
-          layout: {
-            ...config.layerProps.layoutProps,
-            visibility: checkedPosition > -1 ? 'visible' : 'none'
-          }
-        });
+        if (config.layerProps.layerType[0] !== 'symbol') {
+          map.addLayer({
+            id: config.layerProps.layerId[0],
+            type: config.layerProps.layerType[0],
+            source: config.sourceProps[0],
+            paint: config.layerProps.paintProps,
+            layout: {
+              visibility: checkedPosition > -1 ? 'visible' : 'none'
+            }
+          });
+        } else {
+          map.addLayer({
+            id: config.layerProps.layerId[0],
+            type: config.layerProps.layerType[0],
+            source: config.sourceProps[0],
+            // paint: config.layerProps.paintProps,
+            layout: {
+              ...config.layerProps.layoutProps,
+              visibility: checkedPosition > -1 ? 'visible' : 'none'
+            }
+          });
+        }
       }
 
 
@@ -348,27 +360,34 @@ export default function Map() {
       const clusterLabelBar =
         config.layerProps.layerId[0] + "-clusters-counts";
 
-      map.addLayer({
-        id: clusterLabelBar,
-        type: "symbol",
-        source: config.sourceProps[0],
-        filter: ["has", "point_count"],
-        layout:
-        config.layerProps.clusterProps
-            .clusterSymbolProps,
-      });
+      if (map.getLayer(clusterLabelBar)) {
+        map.setLayoutProperty(clusterLabelBar, "visibility", checkedPosition > -1 ? 'visible' : 'none');
+      } else {
+        map.addLayer({
+          id: clusterLabelBar,
+          type: "symbol",
+          source: config.sourceProps[0],
+          filter: ["has", "point_count"],
+          layout:
+          config.layerProps.clusterProps
+              .clusterSymbolProps,
+        });
+        map.setLayoutProperty(clusterLabelBar, "visibility", checkedPosition > -1 ? 'visible' : 'none');
+      }
 
-      map.addLayer({
-        id: clusterVar,
-        type: "circle",
-        source: config.sourceProps[0],
-        filter: ["has", "point_count"],
-        paint: config.layerProps.clusterProps
-            .clusterPaintProps,
-      });
-
-      map.setLayoutProperty(clusterVar, "visibility", checkedPosition > -1 ? 'visible' : 'none');
-      map.setLayoutProperty(clusterLabelBar, "visibility", checkedPosition > -1 ? 'visible' : 'none');
+      if (map.getLayer(clusterVar)) {
+        map.setLayoutProperty(clusterVar, "visibility", checkedPosition > -1 ? 'visible' : 'none');
+      } else {
+        map.addLayer({
+          id: clusterVar,
+          type: "circle",
+          source: config.sourceProps[0],
+          filter: ["has", "point_count"],
+          paint: config.layerProps.clusterProps
+              .clusterPaintProps,
+        });
+        map.setLayoutProperty(clusterVar, "visibility", checkedPosition > -1 ? 'visible' : 'none');
+      }
 
       if (checkedInteraction > -1) {
         const mouseMoveHandler = (e) => {
@@ -564,7 +583,7 @@ export default function Map() {
       getPermits({
         variables: {
           offset: nextOffset,
-          amount: 5000
+          amount: 500
         }
       });
     }
@@ -573,11 +592,12 @@ export default function Map() {
   useEffect(() => {
     if (rigData && rigData.rigs && rigData.rigs.length > 0) {
       const nextOffset = rigs.length + rigData.rigs.length;
-
+      setRigData([...rigs, ...rigData.rigs]);
+      
       getRigs({
         variables: {
           offset: nextOffset,
-          amount: 5000
+          amount: 500
         }
       });
       
