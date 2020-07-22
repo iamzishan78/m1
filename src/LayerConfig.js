@@ -47,18 +47,68 @@ export const styleLayers = [
       }
     }
   },
+  // {
+  //   name: "Rig Activity",
+  //   id: ["rigs"],
+  //   sourceProps: ["rigs_source"],
+  //   layerProps: {
+  //     layerId: ["rigs"],
+  //     layerType: ["circle"],
+  //     paintProps: {
+  //       "circle-radius": 5,
+  //       "circle-color": "#666666",
+  //       "circle-stroke-width": 2,
+  //       "circle-stroke-color": "#fff",
+  //     },
+  //     clusterProps: {
+  //       clusterPaintProps: {
+  //         "circle-color": {
+  //           property: "point_count",
+  //           type: "interval",
+  //           stops: [
+  //             [0, "#666666"],
+  //             [100, "#666666"],
+  //             [750, "#666666"],
+  //           ],
+  //         },
+  //         "circle-radius": [
+  //           "step",
+  //           ["get", "point_count"],
+  //           20,
+  //           5,
+  //           25,
+  //           10,
+  //           30,
+  //           20,
+  //           35,
+  //         ],
+
+  //         "circle-stroke-width": 5,
+  //         "circle-stroke-color": "#fff",
+  //       },
+  //       clusterSymbolProps: {
+  //         "text-field": "{point_count}",
+  //         "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+  //         "text-size": 12,
+  //       },
+  //     }
+  //   }
+  // },
   {
     name: "Rig Activity",
     id: ["rigs"],
     sourceProps: ["rigs_source"],
     layerProps: {
       layerId: ["rigs"],
-      layerType: ["circle"],
+      layerType: ["symbol"],
+      layoutProps: {
+        'icon-image': 'marker-lg',
+      },
       paintProps: {
-        "circle-radius": 5,
-        "circle-color": "#666666",
-        "circle-stroke-width": 2,
-        "circle-stroke-color": "#fff",
+        // "circle-radius": 5,
+        // "circle-color": "#666666",
+        // "circle-stroke-width": 2,
+        // "circle-stroke-color": "#fff",
       },
       clusterProps: {
         clusterPaintProps: {

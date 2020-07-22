@@ -9,8 +9,8 @@ import LayersIcon from "@material-ui/icons/Layers";
 import LanguageIcon from "@material-ui/icons/Language";
 import EditIcon from "@material-ui/icons/Edit";
 import MenuIcon from "@material-ui/icons/Menu";
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-import QueueIcon from '@material-ui/icons/Queue';
+import AddCircleIcon from "@material-ui/icons/AddCircle";
+import QueueIcon from "@material-ui/icons/Queue";
 //import ToggleButton from "@material-ui/lab/ToggleButton";
 // import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 // import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -27,7 +27,7 @@ import GpsFixedIcon from "@material-ui/icons/GpsFixed";
 import GpsNotFixedIcon from "@material-ui/icons/GpsNotFixed";
 import GradientIcon from "@material-ui/icons/Gradient";
 import { default as Cube3d } from "../Shared/svgIcons/cube-3d";
-import AspectRatioOutlinedIcon from '@material-ui/icons/AspectRatioOutlined';
+import AspectRatioOutlinedIcon from "@material-ui/icons/AspectRatioOutlined";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -89,7 +89,7 @@ export default function MapControls(props) {
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
-  
+
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
   const { changeHeatmaps, changeLayers } = props;
@@ -109,8 +109,16 @@ export default function MapControls(props) {
     let anchorEl = e.currentTarget;
     if (action === "track") {
       anchorEl = null;
-      if (stateMapControls.selectedControl === "track") {
-        action = null;
+      if (stateApp.mapGridCardActivated === "track") {
+        setStateApp((state) => ({
+          ...state,
+          mapGridCardActivated: false,
+        }));
+      } else {
+        setStateApp((state) => ({
+          ...state,
+          mapGridCardActivated: "track",
+        }));
       }
     }
 
@@ -120,11 +128,12 @@ export default function MapControls(props) {
       anchorEl: anchorEl,
     });
 
-    setStateApp({
+    setStateApp((stateApp) => ({
       ...stateApp,
       toggle3d: action === "threed" ? !stateApp.toggle3d : stateApp.toggle3d,
-      toggleZoomOut: action === "zoomout" ? !stateApp.toggleZoomOut : stateApp.toggleZoomOut,
-    });
+      toggleZoomOut:
+        action === "zoomout" ? !stateApp.toggleZoomOut : stateApp.toggleZoomOut,
+    }));
 
     if (stateApp.draw.getMode() !== "simple_select") {
       setStateApp({ ...stateApp, editDraw: false });
@@ -135,7 +144,12 @@ export default function MapControls(props) {
   const createSpeedDialActions = () => {
     const actions = [
       {
-        icon: stateMapControls.selectedControl !== "track" ? <GpsNotFixedIcon /> : <GpsFixedIcon />,
+        icon:
+          stateApp.mapGridCardActivated !== "track" ? (
+            <GpsNotFixedIcon />
+          ) : (
+            <GpsFixedIcon />
+          ),
         name: "Tracked",
         action: "track",
       },
@@ -145,8 +159,8 @@ export default function MapControls(props) {
         icon: <GradientIcon id="heatMaps" />,
         name: "Heatmaps",
         action: "heatMaps",
-      }, 
-      {icon: <QueueIcon id="add" />, name: "Add Data", action: "add"},
+      },
+      { icon: <QueueIcon id="add" />, name: "Add Data", action: "add" },
       {
         icon: !stateApp.editDraw ? <EditIcon /> : <CancelIcon />,
         name: "Draw",
@@ -161,7 +175,7 @@ export default function MapControls(props) {
         icon: <AspectRatioOutlinedIcon />,
         name: "Toggle Zoom Out",
         action: "zoomout",
-      },      
+      },
     ];
 
     return actions.map((action) => (
@@ -190,11 +204,11 @@ export default function MapControls(props) {
       case "heatMaps":
         return <CheckboxListHeatmaps changeHeatmaps={changeHeatmaps} />;
       case "add":
-        return <AddUserData/>;
+        return <AddUserData />;
       case "draw":
         return <DrawShapes />;
-      case "track":
-        return <TrackedWellsMapCard />;
+      // case "track":
+      //   return <TrackedWellsMapCard />;
       default:
         return null;
     }

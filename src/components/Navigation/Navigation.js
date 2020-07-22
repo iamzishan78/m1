@@ -103,6 +103,25 @@ import ContactFormModal from "./components/ContactFormModal";
 import { GETPROFILEIMAGE } from "../../graphQL/useQueryGetProfile";
 import { useLazyQuery } from "@apollo/react-hooks";
 
+
+import {
+  MuiThemeProvider,
+  createMuiTheme,
+  withStyles
+} from "@material-ui/core/styles";
+
+const theme = createMuiTheme({
+  overrides: {
+    MuiButton: {
+      root: {
+        '&:hover': {
+          backgroundColor: "#fff"
+        }
+      }
+    }
+  }
+})
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -610,8 +629,8 @@ const M1neralLogoNavNoAuth = (props) => (
 );
 const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   width: 200px;
-  padding-left: 15px;
-  padding-right: 50px;
+  padding-left: 10px;
+  padding-right: 15px;
 `;
 
 const M1neralLogoLogin = styled(M1neralLogoNavNoAuth)`
@@ -920,6 +939,10 @@ export default function Navigation(props) {
     setOpenDrawer(true);
   };
 
+  const handleClickLogo = () => {
+    setStateApp((stateApp) => ({ ...stateApp, toggleZoomOut: true }));
+  };
+
   const handleDrawerClose = () => {
     setOpenDrawer(false);
   };
@@ -1003,7 +1026,12 @@ export default function Navigation(props) {
                   {theme.direction === "rtl" ? <MenuIcon /> : <MenuIcon />}
                 </IconButton>
 
+                <div style={{marginRight: '35px'}}>
+                <Button color='secondary' size="large" onClick={handleClickLogo} className={classes.margin}>
                 <M1neralLogoWhiteLetters />
+                </Button>
+                </div>
+
               </div>
             ) : null}
 
@@ -1393,7 +1421,7 @@ export default function Navigation(props) {
             <ListItemText primary="Find" />
           </ListItem>
 
-          <ListItem
+          {/* <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected,
@@ -1407,17 +1435,7 @@ export default function Navigation(props) {
               <MyLocationIcon />
             </ListItemIcon>
             <ListItemText primary="Track" />
-            {/* <ListItemSecondaryAction>
-              <Button
-                disabled
-                className={classes.betaSideNav4}
-                edge="end"
-                aria-label="beta"
-              >
-                beta
-              </Button>
-            </ListItemSecondaryAction> */}
-          </ListItem>
+          </ListItem> */}
 
           <ListItem
             classes={{
@@ -1548,7 +1566,8 @@ export default function Navigation(props) {
         </List>
         <Divider variant="middle" className={classes.menuListBottomDivider} />
         <List className={classes.menuListBottom}>
-          <ListItem
+
+          {/* <ListItem
             classes={{
               root: classes.menuListItemDisabled,
               selected: classes.menuListItemSelected,
@@ -1562,17 +1581,7 @@ export default function Navigation(props) {
               <NotificationsActiveIcon />
             </ListItemIcon>
             <ListItemText primary="Alerts" />
-            {/* <ListItemSecondaryAction>
-              <Button
-                disabled
-                className={classes.betaSideNav}
-                edge="end"
-                aria-label="beta"
-              >
-                beta
-              </Button>
-            </ListItemSecondaryAction> */}
-          </ListItem>
+          </ListItem> */}
 
           {/* support menu */}
           <ListItem

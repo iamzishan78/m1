@@ -15,9 +15,9 @@ export default function Contacts() {
 
   return (
     
-    <div className={classes.root}>
-      <M1nTable parent="Contacts" />
-    </div>
+    // <div className={classes.root}>
+      <M1nTable dense parent="Contacts" />
+    // </div>
 
     
   );
