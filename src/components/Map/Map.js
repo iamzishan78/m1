@@ -105,6 +105,7 @@ export default function Map() {
   const [draw, setDraw] = useState(null);
   const [drawStatus, setDrawStatus] = useState(false);
   const [rigs, setRigData] = useState([]);
+  const [permits, setPermitData] = useState([]);
   const [drawingFilterFeatureId, setDrawingFilterFeatureId] = useState(null);
   // const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
@@ -556,15 +557,22 @@ export default function Map() {
   }
 
   useEffect(() => {
-    if (permitData && permitData.permits && permitData.permits.length > 0 && map) {
-      setLayer(permitData.permits, "Permits", map);
+    if (permitData && permitData.permits && permitData.permits.length > 0) {
+      const nextOffset = permits.length + permitData.permits.length;
+      setPermitData([...permits, ...permitData.permits]);
+
+      getPermits({
+        variables: {
+          offset: nextOffset,
+          amount: 5000
+        }
+      });
     }
-  }, [permitData, map]);
+  }, [permitData]);
 
   useEffect(() => {
     if (rigData && rigData.rigs && rigData.rigs.length > 0) {
-      const nextOffset = rigs.length + rigData.rigs.length
-      setRigData([...rigs, ...rigData.rigs]);
+      const nextOffset = rigs.length + rigData.rigs.length;
 
       getRigs({
         variables: {
@@ -575,6 +583,12 @@ export default function Map() {
       
     }
   }, [rigData]);
+
+  useEffect(() => {
+    if (permits.length > 0 && map) {
+      setLayer(permits, "Permits", map);
+    }
+  }, [permits, map]);
 
   useEffect(() => {
     if (rigs.length > 0 && map) {
@@ -2982,7 +2996,12 @@ export default function Map() {
     const abortController = new AbortController();
     const signal = abortController.signal;
 
-    getPermits();
+    getPermits({
+      variables: {
+        offset: 0,
+        amount: 500
+      }
+    });
     getRigs({
       variables: {
         offset: 0,
