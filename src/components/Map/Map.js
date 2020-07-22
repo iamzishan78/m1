@@ -314,15 +314,25 @@ export default function Map() {
 
       // -> add layer
 
-      map.addLayer({
-        id: config.layerProps.layerId[0],
-        type: config.layerProps.layerType[0],
-        source: config.sourceProps[0],
-        paint: config.layerProps.paintProps,
-        layout: {
-          visibility: checkedPosition > -1 ? "visible" : "none",
-        },
-      });
+      if(config.layerProps.layerId[0] =='rigs'){
+        map.addLayer({
+          id: config.layerProps.layerId[0],
+          type: config.layerProps.layerType[0],
+          source: `${config.sourceProps[0]}_filter`,
+          paint: config.layerProps.paintProps,
+          layout: config.layerProps.layoutProps, 
+        });
+      } else {
+        map.addLayer({
+          id: config.layerProps.layerId[0],
+          type: config.layerProps.layerType[0],
+          source: config.sourceProps[0],
+          paint: config.layerProps.paintProps,
+          layout: {
+            visibility: checkedPosition > -1 ? "visible" : "none",
+          },
+        });
+      }
 
       const clusterVar = config.layerProps.layerId[0] + "-clusters";
       const clusterLabelBar = config.layerProps.layerId[0] + "-clusters-counts";
