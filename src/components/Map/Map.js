@@ -176,11 +176,7 @@ export default function Map() {
         },
       });
 
-      getCustomLayers({
-        variables: {
-          userId: stateApp.user.mongoId,
-        },
-      });
+      getCustomLayers();
     }
   }, [stateApp.user]);
 
@@ -226,10 +222,10 @@ export default function Map() {
   }, [dataTracksOwner]);
 
   useEffect(() => {
-    if (customLayerData && customLayerData.customLayers) {
+    if (customLayerData && customLayerData.allCustomLayers) {
       setStateApp((state) => ({
         ...state,
-        customLayers: customLayerData.customLayers,
+        customLayers: customLayerData.allCustomLayers,
         selectedUserDefinedLayer: null,
         editLayer: false,
         popupOpen: false,
@@ -593,7 +589,7 @@ export default function Map() {
     if (rigData && rigData.rigs && rigData.rigs.length > 0) {
       const nextOffset = rigs.length + rigData.rigs.length;
       setRigData([...rigs, ...rigData.rigs]);
-      
+
       getRigs({
         variables: {
           offset: nextOffset,
@@ -1235,8 +1231,12 @@ export default function Map() {
               console.log("layerId: " + layerId);
               if (map.getLayer(layerId)) {
                 map.setLayoutProperty(layerId, "visibility", "visible");
-                map.getSource(selectLayerProps.sourceProps[i].sourceId).setData(myGeoJSONData);
-                map.getSource(selectLayerProps.sourceProps[i].sourceId + '_filter').setData(myGeoJSONData);
+                if (map.getSource(selectLayerProps.sourceProps[i].sourceId)) {
+                  map.getSource(selectLayerProps.sourceProps[i].sourceId).setData(myGeoJSONData);
+                }
+                if (map.getSource(selectLayerProps.sourceProps[i].sourceId + '_filter')) {
+                  map.getSource(selectLayerProps.sourceProps[i].sourceId + '_filter').setData(myGeoJSONData);
+                }
                 const layer = map.getLayer(layerId);
                 console.log(layer.source);
                 if (!layer.source.includes('_filter')) {
