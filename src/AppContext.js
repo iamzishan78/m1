@@ -47,8 +47,8 @@ const AppProvider = (props) => {
     trackedWellArray: [],
     userSnap: false,
     mapVars: {
-      zoom: 5.88,
-      center: { lng: -98.8, lat: 31.6 },
+      zoom: 4.88,
+      center: { lng: -98.8, lat: 38 },
       pitch: 0,
       bearing: 0,
       styleId: "Outdoors",
@@ -62,6 +62,7 @@ const AppProvider = (props) => {
     universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
     mapGridCardActivated: false,
     searchResultData: [], //// mapGridCard Search Data
+    searchloading: false, //// mapGridCard Search loading
     viewportData: [], //// mapGridCard Viewport Data
     trackedDataCount: 0, //// mapGridCard Viewport tracked count
 

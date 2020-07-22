@@ -318,16 +318,28 @@ export default function Map() {
       });
 
       // -> add layer
-      
-      map.addLayer({
-        id: config.layerProps.layerId[0],
-        type: config.layerProps.layerType[0],
-        source: config.sourceProps[0],
-        paint: config.layerProps.paintProps,
-        layout: {
-          visibility: checkedPosition > -1 ? 'visible' : 'none'
-        }
-      });
+      if (config.layerProps.layerType[0] !== 'symbol') {
+        map.addLayer({
+          id: config.layerProps.layerId[0],
+          type: config.layerProps.layerType[0],
+          source: config.sourceProps[0],
+          paint: config.layerProps.paintProps,
+          layout: {
+            visibility: checkedPosition > -1 ? 'visible' : 'none'
+          }
+        });
+      } else {
+        map.addLayer({
+          id: config.layerProps.layerId[0],
+          type: config.layerProps.layerType[0],
+          source: config.sourceProps[0],
+          // paint: config.layerProps.paintProps,
+          layout: {
+            ...config.layerProps.layoutProps,
+            visibility: checkedPosition > -1 ? 'visible' : 'none'
+          }
+        });
+      }
 
 
       const clusterVar =
@@ -347,7 +359,7 @@ export default function Map() {
 
       map.addLayer({
         id: clusterVar,
-        type: config.layerProps.layerType[0],
+        type: "circle",
         source: config.sourceProps[0],
         filter: ["has", "point_count"],
         paint: config.layerProps.clusterProps

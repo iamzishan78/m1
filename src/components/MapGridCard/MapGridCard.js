@@ -13,7 +13,6 @@ import IconButton from "@material-ui/core/IconButton";
 import PropTypes from "prop-types";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import MapGridCardSearch from "./components/MapGridCardSearch";
 import M1nTable from "../Shared/M1nTable/M1nTable";
@@ -50,7 +49,7 @@ function a11yProps(index) {
 
 const useStyles = makeStyles((theme) => ({
   rootList: {
-    width: ({ expanded }) => (expanded ? "96vw" : "55vw"),
+    width: ({ expanded }) => (expanded ? "96vw" : "60vw"),
     height: ({ expanded }) => (expanded ? "82vh" : "60vh"),
     position: "relative",
     left: "2vw",
@@ -64,8 +63,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   appBar: {
+    cursor: "move",
     "& .MuiIconButton-root:hover": {
       backgroundColor: "rgba(255, 255, 255, 0.08)",
+    },
+    "& button": {
+      cursor: "pointer",
     },
   },
   tapsPanels: {
@@ -77,6 +80,7 @@ const useStyles = makeStyles((theme) => ({
   mainPanelsDiv: {
     maxHeight: "calc(100% - 114px)",
     overflow: "auto",
+    height: "calc(100% - 114px)",
   },
   tapsLabelsButtons: {
     boxShadow: "none",
@@ -132,6 +136,61 @@ const TabPanels = ({ panels, value }) => {
   );
 };
 
+const wellsColumnHeaders = [
+  {
+    name: "WellName",
+    label: "Name",
+  },
+  {
+    name: "ApiNumber",
+    label: "Api",
+  },
+  {
+    name: "Latitude",
+    label: "Latitude",
+  },
+  {
+    name: "Longitude",
+    label: "Longitude",
+  },
+];
+const ownersColumnHeaders = [
+  {
+    name: "OwnerName",
+    label: "Name",
+  },
+  {
+    name: "FullAddress",
+    label: "Address",
+  },
+];
+const operatorsColumnHeaders = [
+  {
+    name: "Operator",
+    label: "Name",
+  },
+];
+const leasesColumnHeaders = [
+  {
+    name: "Lease",
+    label: "Lease",
+  },
+  {
+    name: "LeaseId",
+    label: "Lease Id",
+  },
+];
+const locationsColumnHeaders = [
+  {
+    name: "Primary",
+    label: " ",
+  },
+  {
+    name: "Secondary",
+    label: " ",
+  },
+];
+
 export default function MapGridCard(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [mainTapValue, setMainTapValue] = useState(0);
@@ -143,7 +202,65 @@ export default function MapGridCard(props) {
 
   const handleMainTapChange = (event, newValue) => {
     setMainTapValue(newValue);
+    if (newValue === 2)
+      setStateApp((state) => ({
+        ...state,
+        mapGridCardActivated: "track",
+      }));
   };
+
+  useEffect(() => {
+    if (
+      stateApp.mapGridCardActivated &&
+      stateApp.mapGridCardActivated === "track" &&
+      mainTapValue !== 2
+    ) {
+      setMainTapValue(2);
+    }
+  }, [stateApp.mapGridCardActivated]);
+
+  const getTargetFromSearchTaps = () => {
+    switch (searchTapValue) {
+      case 6:
+        return "location";
+      case 5:
+        return "parcel";
+      case 4:
+        return "interest";
+      case 3:
+        return "lease";
+      case 2:
+        return "operator";
+      case 1:
+        return "owner";
+      default:
+        return "well";
+    }
+  };
+
+  const SearchTabPanels = () => (
+    <TabLabels
+      labels={[
+        "Wells",
+        "Owners",
+        "Operators",
+        "Leases",
+        "Interests",
+        "Parcels",
+        "Locations",
+      ]}
+      value={searchTapValue}
+      setValue={(n) => {
+        setSearchTapValue(n);
+        if (searchTapValue !== n)
+          setStateApp((state) => ({
+            ...state,
+            searchResultData: [],
+            searchloading: true,
+          }));
+      }}
+    />
+  );
 
   const CardReturn = () => {
     return (
@@ -157,20 +274,24 @@ export default function MapGridCard(props) {
               aria-label="simple tabs example"
             >
               <Tab
+                className="cancelDraggableEffect"
                 label={`Search Result (${stateApp.searchResultData.length})`}
                 {...a11yProps(0)}
               />
               <Tab
+                className="cancelDraggableEffect"
                 label={`Viewport (${stateApp.viewportData.length})`}
                 {...a11yProps(1)}
               />
               <Tab
+                className="cancelDraggableEffect"
                 label={`Tracked (${stateApp.trackedDataCount})`}
                 {...a11yProps(2)}
               />
             </Tabs>
 
             <IconButton
+              className="cancelDraggableEffect"
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -184,6 +305,7 @@ export default function MapGridCard(props) {
               )}
             </IconButton>
             <IconButton
+              className="cancelDraggableEffect"
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -198,8 +320,13 @@ export default function MapGridCard(props) {
           </Toolbar>
         </AppBar>
 
-        <MapGridCardSearch />
-        <div className={classes.mainPanelsDiv}>
+        <MapGridCardSearch
+          ativateSearchPanel={() => {
+            if (mainTapValue !== 0) setMainTapValue(0);
+          }}
+          searchOption={getTargetFromSearchTaps()}
+        />
+        <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`}>
           {/* //// search panel //// */}
           <TabPanel
             value={mainTapValue}
@@ -207,27 +334,64 @@ export default function MapGridCard(props) {
             className={classes.tapsPanelsPadding}
           >
             <div style={{ position: "relative" }}>
-              <TabLabels
-                labels={[
-                  "Wells",
-                  "Operators",
-                  "Interests",
-                  "Leases",
-                  "Parcels",
-                  "Locations",
-                ]}
-                value={searchTapValue}
-                setValue={setSearchTapValue}
-              />
               <TabPanels
                 value={searchTapValue}
                 panels={[
-                  <div>panel1</div>,
-                  <div>panel2</div>,
-                  <div>panel3</div>,
-                  <div>panel4</div>,
-                  <div>panel5</div>,
-                  <div>panel6</div>,
+                  <M1nTable
+                    dense
+                    parent="search"
+                    privateColumns={wellsColumnHeaders}
+                    targetLabel={getTargetFromSearchTaps()}
+                    header={<SearchTabPanels />}
+                    showTags
+                    showComments
+                    showTracks
+                  />,
+                  <M1nTable
+                    dense
+                    parent="search"
+                    privateColumns={ownersColumnHeaders}
+                    targetLabel={getTargetFromSearchTaps()}
+                    header={<SearchTabPanels />}
+                    showTags
+                    showComments
+                    showTracks
+                  />,
+                  <M1nTable
+                    dense
+                    parent="search"
+                    privateColumns={operatorsColumnHeaders}
+                    targetLabel={getTargetFromSearchTaps()}
+                    header={<SearchTabPanels />}
+                  />,
+                  <M1nTable
+                    dense
+                    parent="search"
+                    privateColumns={leasesColumnHeaders}
+                    targetLabel={getTargetFromSearchTaps()}
+                    header={<SearchTabPanels />}
+                  />,
+                  <M1nTable
+                    dense
+                    parent="search"
+                    privateColumns={[]}
+                    targetLabel={getTargetFromSearchTaps()}
+                    header={<SearchTabPanels />}
+                  />,
+                  <M1nTable
+                    dense
+                    parent="search"
+                    privateColumns={[]}
+                    targetLabel={getTargetFromSearchTaps()}
+                    header={<SearchTabPanels />}
+                  />,
+                  <M1nTable
+                    dense
+                    parent="search"
+                    privateColumns={locationsColumnHeaders}
+                    targetLabel={getTargetFromSearchTaps()}
+                    header={<SearchTabPanels />}
+                  />,
                 ]}
               />
             </div>
@@ -321,6 +485,8 @@ export default function MapGridCard(props) {
       {blackOut()}
     </>
   ) : (
-    <Draggable>{CardReturn()}</Draggable>
+    <Draggable cancel={'[class*="cancelDraggableEffect"]'}>
+      {CardReturn()}
+    </Draggable>
   );
 }
