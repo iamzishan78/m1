@@ -404,7 +404,11 @@ export default function MapGridCardSearch(props) {
   ]);
 
   return (
-    <form className={classes.root} noValidate autoComplete="off">
+    <form
+      className={`cancelDraggableEffect ${classes.root}`}
+      noValidate
+      autoComplete="off"
+    >
       <TextField
         id="mapGridCardSearch-basic"
         type="search"

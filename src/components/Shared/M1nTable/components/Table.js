@@ -58,6 +58,9 @@ const useStyles = makeStyles((theme) => ({
         padding: (props) => (props.dense ? "0 !important" : "16px"),
       },
     },
+    "& tr": {
+      paddingRight: (props) => (props.dense ? "12px" : null),
+    },
   },
   icons: {
     backgroundColor: (props) => (props.dense ? "transparent" : "#efefef"),
@@ -167,8 +170,6 @@ export default function SubTable(props) {
   const [m1nSelectedRowsIds, setM1nSelectedRowsIds] = useState([]);
   const [m1nSelectedRowsTracks, setM1nSelectedRowsTracks] = useState([]);
 
-  // const [completelyDelete, setCompletelyDelete] = useState("false");
-
   useEffect(() => {
     if (props.rows) {
       if (props.orderByTracks)
@@ -263,6 +264,7 @@ export default function SubTable(props) {
                         !value || value === 0 ? "Add Comments" : "Comments"
                       }
                       placement="top"
+                      style={{ marginRight: "10px" }}
                     >
                       <Badge
                         badgeContent={value ? value : null}
@@ -327,6 +329,7 @@ export default function SubTable(props) {
                     <Tooltip
                       title={value.length > 0 ? "Wells" : "Not Available"}
                       placement="top"
+                      style={{ marginRight: "10px" }}
                     >
                       <Badge
                         badgeContent={value.length > 0 ? value.length : null}
@@ -382,6 +385,7 @@ export default function SubTable(props) {
                     <Tooltip
                       title={value || value === 0 ? "Contacts" : "Add Contact"}
                       placement="top"
+                      style={{ marginRight: "10px" }}
                     >
                       <Badge
                         badgeContent={value ? value : null}
@@ -427,6 +431,7 @@ export default function SubTable(props) {
                     <Tooltip
                       title={value ? "Owners" : "Not Available"}
                       placement="top"
+                      style={{ marginRight: "10px" }}
                     >
                       <Badge
                         badgeContent={value ? value : null}
@@ -475,6 +480,7 @@ export default function SubTable(props) {
                     <Tooltip
                       title={value.length > 0 ? "Owners" : "Not Available"}
                       placement="top"
+                      style={{ marginRight: "10px" }}
                     >
                       <Badge
                         badgeContent={value.length > 0 ? value.length : null}
@@ -523,59 +529,61 @@ export default function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
                   return (
-                    <Tooltip
-                      title={value && value[1] === 0 ? "Add Tags" : "Tags"}
-                      placement="top"
-                    >
-                      <Badge
-                        id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
-                        className={`${classes.TagSample} ${
-                          colInd === tableMeta.columnIndex &&
-                          rowInd === tableMeta.rowIndex
-                            ? classes.iconSelected
-                            : ""
-                        }`}
-                        badgeContent={value[1]}
-                        color="secondary"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleExpandClick(
-                            tableMeta.columnIndex,
-                            tableMeta.rowIndex,
-                            tableMeta.rowData[0],
-                            "tag"
-                          );
-                        }}
-                        onMouseOver={() => {
-                          if (
-                            m1nSelectedRowsIndexes.indexOf(
-                              tableMeta.rowIndex
-                            ) !== -1 &&
-                            m1nSelectedRowsIndexes.length > 1
-                          )
-                            multiSelectMouseHoverColor(id, "#dadbde");
-                        }}
-                        onMouseOut={() => {
-                          if (
-                            m1nSelectedRowsIndexes.indexOf(
-                              tableMeta.rowIndex
-                            ) !== -1 &&
-                            m1nSelectedRowsIndexes.length > 1
-                          )
-                            multiSelectMouseHoverColor(id, "#efefef");
-                        }}
+                    <div style={{ marginRight: "10px" }}>
+                      <Tooltip
+                        title={value && value[1] === 0 ? "Add Tags" : "Tags"}
+                        placement="top"
                       >
-                        {value[0] && value[0].length > 0 ? (
-                          <React.Fragment>
-                            <p className="first">{value[0].join(", ")}</p>
-                            <p className="two">...</p>
-                          </React.Fragment>
-                        ) : (
-                          <p className="three">No Tags</p>
-                        )}
-                      </Badge>
-                    </Tooltip>
+                        <Badge
+                          id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                          className={`${classes.TagSample} ${
+                            colInd === tableMeta.columnIndex &&
+                            rowInd === tableMeta.rowIndex
+                              ? classes.iconSelected
+                              : ""
+                          }`}
+                          badgeContent={value[1]}
+                          color="secondary"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleExpandClick(
+                              tableMeta.columnIndex,
+                              tableMeta.rowIndex,
+                              tableMeta.rowData[0],
+                              "tag"
+                            );
+                          }}
+                          onMouseOver={() => {
+                            if (
+                              m1nSelectedRowsIndexes.indexOf(
+                                tableMeta.rowIndex
+                              ) !== -1 &&
+                              m1nSelectedRowsIndexes.length > 1
+                            )
+                              multiSelectMouseHoverColor(id, "#dadbde");
+                          }}
+                          onMouseOut={() => {
+                            if (
+                              m1nSelectedRowsIndexes.indexOf(
+                                tableMeta.rowIndex
+                              ) !== -1 &&
+                              m1nSelectedRowsIndexes.length > 1
+                            )
+                              multiSelectMouseHoverColor(id, "#efefef");
+                          }}
+                        >
+                          {value[0] && value[0].length > 0 ? (
+                            <React.Fragment>
+                              <p className="first">{value[0].join(", ")}</p>
+                              <p className="two">...</p>
+                            </React.Fragment>
+                          ) : (
+                            <p className="three">No Tags</p>
+                          )}
+                        </Badge>
+                      </Tooltip>
+                    </div>
                   );
                 },
               };
@@ -721,6 +729,7 @@ export default function SubTable(props) {
 
   const options = {
     filterType: "multiselect",
+    rowsPerPage: props.startPaginationAt ? props.startPaginationAt : 10,
     rowsPerPageOptions:
       props.rows && props.rows.length > 100
         ? [10, 25, 100, 1000]
@@ -968,7 +977,7 @@ export default function SubTable(props) {
 
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
-      {rows ? (
+      {rows && !props.loading ? (
         <div className={classes.root}>
           <MUIDataTable
             className={classes.table}
