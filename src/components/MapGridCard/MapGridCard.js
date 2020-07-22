@@ -63,8 +63,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   appBar: {
+    cursor: "move",
     "& .MuiIconButton-root:hover": {
       backgroundColor: "rgba(255, 255, 255, 0.08)",
+    },
+    "& button": {
+      cursor: "pointer",
     },
   },
   tapsPanels: {
@@ -76,6 +80,7 @@ const useStyles = makeStyles((theme) => ({
   mainPanelsDiv: {
     maxHeight: "calc(100% - 114px)",
     overflow: "auto",
+    height: "calc(100% - 114px)",
   },
   tapsLabelsButtons: {
     boxShadow: "none",
@@ -197,7 +202,22 @@ export default function MapGridCard(props) {
 
   const handleMainTapChange = (event, newValue) => {
     setMainTapValue(newValue);
+    if (newValue === 2)
+      setStateApp((state) => ({
+        ...state,
+        mapGridCardActivated: "track",
+      }));
   };
+
+  useEffect(() => {
+    if (
+      stateApp.mapGridCardActivated &&
+      stateApp.mapGridCardActivated === "track" &&
+      mainTapValue !== 2
+    ) {
+      setMainTapValue(2);
+    }
+  }, [stateApp.mapGridCardActivated]);
 
   const getTargetFromSearchTaps = () => {
     switch (searchTapValue) {
@@ -232,7 +252,7 @@ export default function MapGridCard(props) {
       value={searchTapValue}
       setValue={(n) => {
         setSearchTapValue(n);
-        if (stateApp.searchResultData.length > 0 && searchTapValue !== n)
+        if (searchTapValue !== n)
           setStateApp((state) => ({
             ...state,
             searchResultData: [],
@@ -254,20 +274,24 @@ export default function MapGridCard(props) {
               aria-label="simple tabs example"
             >
               <Tab
+                className="cancelDraggableEffect"
                 label={`Search Result (${stateApp.searchResultData.length})`}
                 {...a11yProps(0)}
               />
               <Tab
+                className="cancelDraggableEffect"
                 label={`Viewport (${stateApp.viewportData.length})`}
                 {...a11yProps(1)}
               />
               <Tab
+                className="cancelDraggableEffect"
                 label={`Tracked (${stateApp.trackedDataCount})`}
                 {...a11yProps(2)}
               />
             </Tabs>
 
             <IconButton
+              className="cancelDraggableEffect"
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -281,6 +305,7 @@ export default function MapGridCard(props) {
               )}
             </IconButton>
             <IconButton
+              className="cancelDraggableEffect"
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -301,7 +326,7 @@ export default function MapGridCard(props) {
           }}
           searchOption={getTargetFromSearchTaps()}
         />
-        <div className={classes.mainPanelsDiv}>
+        <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`}>
           {/* //// search panel //// */}
           <TabPanel
             value={mainTapValue}
@@ -460,6 +485,8 @@ export default function MapGridCard(props) {
       {blackOut()}
     </>
   ) : (
-    <Draggable>{CardReturn()}</Draggable>
+    <Draggable cancel={'[class*="cancelDraggableEffect"]'}>
+      {CardReturn()}
+    </Draggable>
   );
 }

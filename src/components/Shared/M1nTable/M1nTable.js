@@ -731,6 +731,7 @@ export default function M1nTable(props) {
   const [deleteFunc, setDeleteFunc] = useState(null);
   const [showTracks, setShowTracks] = useState(true);
   const [orderByTracks, setOrderByTracks] = useState(true);
+  const [startPaginationAt, setStartPaginationAt] = useState();
 
   ////////////Queries begin///////////////////////////////////////////////
 
@@ -1885,6 +1886,7 @@ export default function M1nTable(props) {
       setAddAble({ parent: false, type: "contact" });
       getContacts();
       setUploadIcon(true);
+      setStartPaginationAt(100);
     }
   }, [props.parent]);
 
@@ -2008,7 +2010,7 @@ export default function M1nTable(props) {
     }
   }, [dataContacts, dataTracks, dataTagSamples, dataCommentsCounter]);
 
-  ////////////Contact begin//////////Delete//////////////////////////////
+  ////////////Contact Delete begin////////////////////////////////////////
 
   useEffect(() => {
     if (props.parent && props.parent === "Contacts") {
@@ -2057,8 +2059,9 @@ export default function M1nTable(props) {
       setHeader(props.header);
       setAddAble(false);
       setOrderByTracks(false);
+      setStartPaginationAt(100);
       if (stateApp.searchResultData.length > 0) {
-        setLoading(true);
+        // setLoading(true);
         const objectsIdsArray = stateApp.searchResultData.map(
           (result) => result.Id
         );
@@ -2221,6 +2224,7 @@ export default function M1nTable(props) {
         uploadIcon={uploadIcon}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={orderByTracks}
+        startPaginationAt={startPaginationAt}
       />
     </Container>
   );
