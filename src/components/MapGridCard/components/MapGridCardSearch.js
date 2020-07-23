@@ -254,7 +254,7 @@ export default function MapGridCardSearch(props) {
   );
 
   React.useEffect(() => {
-    if (inputValue === "") {
+    if (stateApp.searchInputValue === "") {
       setStateApp((state) => ({
         ...state,
         searchResultData: [],
@@ -268,7 +268,7 @@ export default function MapGridCardSearch(props) {
 
       Promise.all([
         props.searchOption == "well"
-          ? callWellSearch({ input: inputValue }, (results) => {
+          ? callWellSearch({ input: stateApp.searchInputValue }, (results) => {
               if (results) {
                 const indexSource = results["@odata.context"].substring(
                   results["@odata.context"].indexOf("('") + 2,
@@ -286,7 +286,7 @@ export default function MapGridCardSearch(props) {
             })
           : null,
         props.searchOption == "owner"
-          ? callOwnerSearch({ input: inputValue }, (results) => {
+          ? callOwnerSearch({ input: stateApp.searchInputValue }, (results) => {
               if (results) {
                 const indexSource = results["@odata.context"].substring(
                   results["@odata.context"].indexOf("('") + 2,
@@ -311,25 +311,28 @@ export default function MapGridCardSearch(props) {
             })
           : null,
         props.searchOption == "operator"
-          ? callOperatorSearch({ input: inputValue }, (results) => {
-              if (results) {
-                const indexSource = results["@odata.context"].substring(
-                  results["@odata.context"].indexOf("('") + 2,
-                  results["@odata.context"].indexOf("')")
-                );
-                console.log(indexSource);
-                newOptions = [...results.value];
-              }
+          ? callOperatorSearch(
+              { input: stateApp.searchInputValue },
+              (results) => {
+                if (results) {
+                  const indexSource = results["@odata.context"].substring(
+                    results["@odata.context"].indexOf("('") + 2,
+                    results["@odata.context"].indexOf("')")
+                  );
+                  console.log(indexSource);
+                  newOptions = [...results.value];
+                }
 
-              setStateApp((state) => ({
-                ...state,
-                searchResultData: [...newOptions],
-                searchloading: false,
-              }));
-            })
+                setStateApp((state) => ({
+                  ...state,
+                  searchResultData: [...newOptions],
+                  searchloading: false,
+                }));
+              }
+            )
           : null,
         props.searchOption == "lease"
-          ? callLeaseSearch({ input: inputValue }, (results) => {
+          ? callLeaseSearch({ input: stateApp.searchInputValue }, (results) => {
               if (results) {
                 const indexSource = results["@odata.context"].substring(
                   results["@odata.context"].indexOf("('") + 2,
@@ -363,38 +366,41 @@ export default function MapGridCardSearch(props) {
             })
           : null,
         props.searchOption == "location"
-          ? callMapboxSearch({ input: inputValue }, (results) => {
-              if (results && results.features) {
-                newOptions = [
-                  ...results.features.map((result) => {
-                    return {
-                      ...result,
-                      Id: result.id,
-                      Primary: result.text ? result.text : "",
-                      Secondary: result.place_name
-                        ? result.place_name.indexOf(result.text + ", ") === 0
-                          ? result.place_name.slice(
-                              result.place_name.indexOf(", ") + 2,
-                              result.place_name.length
-                            )
-                          : result.place_name
-                        : "",
-                    };
-                  }),
-                ];
-              }
+          ? callMapboxSearch(
+              { input: stateApp.searchInputValue },
+              (results) => {
+                if (results && results.features) {
+                  newOptions = [
+                    ...results.features.map((result) => {
+                      return {
+                        ...result,
+                        Id: result.id,
+                        Primary: result.text ? result.text : "",
+                        Secondary: result.place_name
+                          ? result.place_name.indexOf(result.text + ", ") === 0
+                            ? result.place_name.slice(
+                                result.place_name.indexOf(", ") + 2,
+                                result.place_name.length
+                              )
+                            : result.place_name
+                          : "",
+                      };
+                    }),
+                  ];
+                }
 
-              setStateApp((state) => ({
-                ...state,
-                searchResultData: [...newOptions],
-                searchloading: false,
-              }));
-            })
+                setStateApp((state) => ({
+                  ...state,
+                  searchResultData: [...newOptions],
+                  searchloading: false,
+                }));
+              }
+            )
           : null,
       ]);
     })();
   }, [
-    inputValue,
+    stateApp.searchInputValue,
     callWellSearch,
     callOwnerSearch,
     callOperatorSearch,
@@ -427,13 +433,14 @@ export default function MapGridCardSearch(props) {
           ),
         }}
         onClick={props.ativateSearchPanel}
-        value={inputValue}
+        value={stateApp.searchInputValue}
         onChange={(event) => {
-          setInputValue(event.target.value);
+          // setInputValue(event.target.value);
           if (!stateApp.searchloading)
             setStateApp((state) => ({
               ...state,
               searchloading: true,
+              searchInputValue: event.target.value,
             }));
         }}
       />

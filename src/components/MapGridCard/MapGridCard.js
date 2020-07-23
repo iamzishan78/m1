@@ -61,9 +61,9 @@ const useStyles = makeStyles((theme) => ({
     opacity: ({ mapGridCardActivated }) =>
       mapGridCardActivated === "min" ? "0.6" : "1",
     transition:
-      "opacity 0.2s ease-out, transform 0.2s ease-out, width 0.3s ease-out, height 0.3s ease-out",
+      "opacity 0.2s ease-out, transform 0.05s ease-out, width 0.3s ease-out, height 0.3s ease-out",
     WebkitTransition:
-      "opacity 0.2s ease-out, transform 0.2s ease-out, width 0.3s ease-out, height 0.3s ease-out",
+      "opacity 0.2s ease-out, transform 0.05s ease-out, width 0.3s ease-out, height 0.3s ease-out",
     width: ({ mapGridCardActivated }) =>
       mapGridCardActivated === "min"
         ? "600px"
