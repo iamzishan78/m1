@@ -2500,6 +2500,14 @@ export default function Map() {
             true,
             false,
           ]]);
+        } else if (Object.keys(filterCustomArray).length > 0) {
+          map.setFilter("wellpoints", [
+            "match",
+            ["get", "id"],
+            "-1",
+            true,
+            false,
+          ]);
         } else {
           map.setFilter("wellpoints", filterArray);
         }
@@ -2511,6 +2519,14 @@ export default function Map() {
             true,
             false,
           ]]);
+        } else if (Object.keys(filterCustomArray).length > 0) {
+          map.setFilter("welllines", [
+            "match",
+            ["get", "id"],
+            "-1",
+            true,
+            false,
+          ]);
         } else {
           map.setFilter("welllines", filterArray);
         }
