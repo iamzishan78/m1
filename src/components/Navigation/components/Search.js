@@ -427,7 +427,7 @@ export default function Search() {
     //   return undefined;
     // }
 
-    if (inputValue === "") {
+    if (stateApp.searchInputValue === "") {
       setOptions(value ? [value] : []);
       return undefined;
     }
@@ -437,170 +437,191 @@ export default function Search() {
 
       Promise.all([
         searchOption == "all" || searchOption == "wells"
-          ? callWellSearch({ input: inputValue }, searchTop, (results) => {
-              if (results) {
-                const indexSource = results["@odata.context"].substring(
-                  results["@odata.context"].indexOf("('") + 2,
-                  results["@odata.context"].indexOf("')")
-                );
+          ? callWellSearch(
+              { input: stateApp.searchInputValue },
+              searchTop,
+              (results) => {
+                if (results) {
+                  const indexSource = results["@odata.context"].substring(
+                    results["@odata.context"].indexOf("('") + 2,
+                    results["@odata.context"].indexOf("')")
+                  );
 
-                console.log(indexSource);
-                newOptions = [
-                  ...results.value.map((result) => {
-                    result.Score = result["@search.score"];
-                    delete result["@search.score"];
-                    return {
-                      ...result,
-                      Source: indexSource,
-                      Primary: result.WellName,
-                      Secondary: result.ApiNumber,
-                    };
-                  }),
-                  ...newOptions,
-                ];
-
-                setMaxMinWellsScore(maxMinScore(results.value));
-              }
-
-              setOptions(newOptions);
-              setLoadingWells(false);
-            })
-          : null,
-        searchOption == "all" || searchOption == "owners"
-          ? callOwnerSearch({ input: inputValue }, searchTop, (results) => {
-              if (results) {
-                const indexSource = results["@odata.context"].substring(
-                  results["@odata.context"].indexOf("('") + 2,
-                  results["@odata.context"].indexOf("')")
-                );
-                console.log(indexSource);
-                newOptions = [
-                  ...results.value.map((result) => {
-                    result.Score = result["@search.score"];
-                    delete result["@search.score"];
-                    return {
-                      ...result,
-                      Source: indexSource,
-                      Primary: result.OwnerName,
-                      Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}`,
-                    };
-                  }),
-                  ...newOptions,
-                ];
-
-                setMaxMinOwnersScore(maxMinScore(results.value));
-              }
-
-              setOptions(newOptions);
-              setLoadingOwners(false);
-            })
-          : null,
-        searchOption == "all" || searchOption == "operators"
-          ? callOperatorSearch({ input: inputValue }, searchTop, (results) => {
-              if (results) {
-                const indexSource = results["@odata.context"].substring(
-                  results["@odata.context"].indexOf("('") + 2,
-                  results["@odata.context"].indexOf("')")
-                );
-                console.log(indexSource);
-                newOptions = [
-                  ...results.value.map((result) => {
-                    result.Score = result["@search.score"];
-                    delete result["@search.score"];
-                    return {
-                      ...result,
-                      Source: indexSource,
-                      Primary: result.Operator,
-                      Secondary: null,
-                    };
-                  }),
-                  ...newOptions,
-                ];
-
-                setMaxMinOperatosScore(maxMinScore(results.value));
-              }
-
-              setOptions(newOptions);
-              setLoadingOperators(false);
-            })
-          : null,
-        searchOption == "all" || searchOption == "leases"
-          ? callLeaseSearch({ input: inputValue }, searchTop, (results) => {
-              if (results) {
-                const indexSource = results["@odata.context"].substring(
-                  results["@odata.context"].indexOf("('") + 2,
-                  results["@odata.context"].indexOf("')")
-                );
-                console.log(indexSource);
-                newOptions = [
-                  ...results.value.map((result) => {
-                    result.Score = result["@search.score"];
-                    delete result["@search.score"];
-
-                    return {
-                      ...result,
-                      Source: indexSource,
-                      Primary:
-                        result.Lease &&
-                        (result.Lease === "" ||
-                          result.Lease === "N/A" ||
-                          result.Lease === "(N/A)")
-                          ? "--"
-                          : result.Lease,
-                      Secondary:
-                        result.LeaseId &&
-                        (result.LeaseId === "" ||
-                          result.LeaseId === "N/A" ||
-                          result.LeaseId === "(N/A)")
-                          ? null
-                          : result.LeaseId,
-                    };
-                  }),
-                  ...newOptions,
-                ];
-
-                setMaxMinLeasesScore(maxMinScore(results.value));
-              }
-
-              setOptions(newOptions);
-              setLoadingLeases(false);
-            })
-          : null,
-        searchOption == "all" || searchOption == "locations"
-          ? callMapboxSearch({ input: inputValue }, searchTop, (results) => {
-              if (results) {
-                let resultsMod = results.features
-                  ? results.features.map((result) => {
+                  console.log(indexSource);
+                  newOptions = [
+                    ...results.value.map((result) => {
+                      result.Score = result["@search.score"];
+                      delete result["@search.score"];
                       return {
                         ...result,
-                        Id: result.id,
-                        Source: "mapboxSearch",
-                        Score: result.relevance ? result.relevance : 0,
-                        Primary: result.text ? result.text : "",
-                        Secondary: result.place_name
-                          ? result.place_name.indexOf(result.text + ", ") === 0
-                            ? result.place_name.slice(
-                                result.place_name.indexOf(", ") + 2,
-                                result.place_name.length
-                              )
-                            : result.place_name
-                          : "",
+                        Source: indexSource,
+                        Primary: result.WellName,
+                        Secondary: result.ApiNumber,
                       };
-                    })
-                  : [];
+                    }),
+                    ...newOptions,
+                  ];
 
-                newOptions = [...newOptions, ...resultsMod];
-                setMaxMinMapboxSearchScore(maxMinScore(resultsMod));
+                  setMaxMinWellsScore(maxMinScore(results.value));
+                }
+
+                setOptions(newOptions);
+                setLoadingWells(false);
               }
+            )
+          : null,
+        searchOption == "all" || searchOption == "owners"
+          ? callOwnerSearch(
+              { input: stateApp.searchInputValue },
+              searchTop,
+              (results) => {
+                if (results) {
+                  const indexSource = results["@odata.context"].substring(
+                    results["@odata.context"].indexOf("('") + 2,
+                    results["@odata.context"].indexOf("')")
+                  );
+                  console.log(indexSource);
+                  newOptions = [
+                    ...results.value.map((result) => {
+                      result.Score = result["@search.score"];
+                      delete result["@search.score"];
+                      return {
+                        ...result,
+                        Source: indexSource,
+                        Primary: result.OwnerName,
+                        Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}`,
+                      };
+                    }),
+                    ...newOptions,
+                  ];
 
-              setOptions(newOptions);
-              setLoadingMapboxSearch(false);
-            })
+                  setMaxMinOwnersScore(maxMinScore(results.value));
+                }
+
+                setOptions(newOptions);
+                setLoadingOwners(false);
+              }
+            )
+          : null,
+        searchOption == "all" || searchOption == "operators"
+          ? callOperatorSearch(
+              { input: stateApp.searchInputValue },
+              searchTop,
+              (results) => {
+                if (results) {
+                  const indexSource = results["@odata.context"].substring(
+                    results["@odata.context"].indexOf("('") + 2,
+                    results["@odata.context"].indexOf("')")
+                  );
+                  console.log(indexSource);
+                  newOptions = [
+                    ...results.value.map((result) => {
+                      result.Score = result["@search.score"];
+                      delete result["@search.score"];
+                      return {
+                        ...result,
+                        Source: indexSource,
+                        Primary: result.Operator,
+                        Secondary: null,
+                      };
+                    }),
+                    ...newOptions,
+                  ];
+
+                  setMaxMinOperatosScore(maxMinScore(results.value));
+                }
+
+                setOptions(newOptions);
+                setLoadingOperators(false);
+              }
+            )
+          : null,
+        searchOption == "all" || searchOption == "leases"
+          ? callLeaseSearch(
+              { input: stateApp.searchInputValue },
+              searchTop,
+              (results) => {
+                if (results) {
+                  const indexSource = results["@odata.context"].substring(
+                    results["@odata.context"].indexOf("('") + 2,
+                    results["@odata.context"].indexOf("')")
+                  );
+                  console.log(indexSource);
+                  newOptions = [
+                    ...results.value.map((result) => {
+                      result.Score = result["@search.score"];
+                      delete result["@search.score"];
+
+                      return {
+                        ...result,
+                        Source: indexSource,
+                        Primary:
+                          result.Lease &&
+                          (result.Lease === "" ||
+                            result.Lease === "N/A" ||
+                            result.Lease === "(N/A)")
+                            ? "--"
+                            : result.Lease,
+                        Secondary:
+                          result.LeaseId &&
+                          (result.LeaseId === "" ||
+                            result.LeaseId === "N/A" ||
+                            result.LeaseId === "(N/A)")
+                            ? null
+                            : result.LeaseId,
+                      };
+                    }),
+                    ...newOptions,
+                  ];
+
+                  setMaxMinLeasesScore(maxMinScore(results.value));
+                }
+
+                setOptions(newOptions);
+                setLoadingLeases(false);
+              }
+            )
+          : null,
+        searchOption == "all" || searchOption == "locations"
+          ? callMapboxSearch(
+              { input: stateApp.searchInputValue },
+              searchTop,
+              (results) => {
+                if (results) {
+                  let resultsMod = results.features
+                    ? results.features.map((result) => {
+                        return {
+                          ...result,
+                          Id: result.id,
+                          Source: "mapboxSearch",
+                          Score: result.relevance ? result.relevance : 0,
+                          Primary: result.text ? result.text : "",
+                          Secondary: result.place_name
+                            ? result.place_name.indexOf(result.text + ", ") ===
+                              0
+                              ? result.place_name.slice(
+                                  result.place_name.indexOf(", ") + 2,
+                                  result.place_name.length
+                                )
+                              : result.place_name
+                            : "",
+                        };
+                      })
+                    : [];
+
+                  newOptions = [...newOptions, ...resultsMod];
+                  setMaxMinMapboxSearchScore(maxMinScore(resultsMod));
+                }
+
+                setOptions(newOptions);
+                setLoadingMapboxSearch(false);
+              }
+            )
           : null,
       ]);
     })();
   }, [
-    inputValue,
+    stateApp.searchInputValue,
     callWellSearch,
     callOwnerSearch,
     callOperatorSearch,
@@ -790,6 +811,15 @@ export default function Search() {
 
       setSearchHistory(newValue);
       setValue(newValue);
+      setStateApp((state) => ({
+        ...state,
+        mapGridCardActiveTap: 0,
+        searchInputValue: newValue.Primary
+          ? newValue.Primary
+          : newValue.Secondary
+          ? newValue.Secondary
+          : "",
+      }));
 
       //// setting map loader
       setStateApp((stateApp) => ({ ...stateApp, mapCircularLoaderAct: true }));
@@ -1122,7 +1152,17 @@ export default function Search() {
         }}
         onInputChange={(event, newInputValue, reason) => {
           if (reason == "input") {
-            setInputValue(newInputValue);
+            // setInputValue(newInputValue);
+            setStateApp((state) => ({
+              ...state,
+              mapGridCardActiveTap:
+                newInputValue === ""
+                  ? stateApp.mapGridCardActiveTap === 0
+                    ? 1
+                    : stateApp.mapGridCardActiveTap
+                  : 0,
+              searchInputValue: newInputValue,
+            }));
 
             if (newInputValue !== "") {
               //// setting loader
@@ -1236,11 +1276,18 @@ export default function Search() {
                                     ? "locations"
                                     : "all"
                                 );
-                                setInputValue(
-                                  option.Primary
+                                // setInputValue(
+                                //   option.Primary
+                                //     ? option.Primary
+                                //     : option.Secondary
+                                // );
+                                setStateApp((state) => ({
+                                  ...state,
+                                  mapGridCardActiveTap: 0,
+                                  searchInputValue: option.Primary
                                     ? option.Primary
-                                    : option.Secondary
-                                );
+                                    : option.Secondary,
+                                }));
                                 handleChange({
                                   ...option,
                                   searchId: search._id,
