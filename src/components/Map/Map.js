@@ -1144,13 +1144,30 @@ export default function Map() {
     }
 
     // this section adds the updated list of layers
-    const tmpCheckedLayer = stateApp.tempCheckedUserDefinedLayers;
+    const tmpCheckedLayer = stateApp.tempCheckedUserDefinedLayer;
+    const tmpCheckedAOILayer = stateApp.tempCheckedAOILayer;
+    const tmpCheckedParcelLayer = stateApp.tempCheckedParcleLayer;
+
     const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
     if (
       tmpCheckedLayer != null &&
       stateApp.checkedUserDefinedLayers.indexOf(tmpCheckedLayer) === -1
     ) {
       checkedLayers.push(tmpCheckedLayer);
+    }
+
+    if (
+      tmpCheckedAOILayer != null &&
+      stateApp.checkedUserDefinedLayers.indexOf(tmpCheckedAOILayer) === -1
+    ) {
+      checkedLayers.push(tmpCheckedAOILayer);
+    }
+
+    if (
+      tmpCheckedParcelLayer != null &&
+      stateApp.checkedUserDefinedLayers.indexOf(tmpCheckedParcelLayer) === -1
+    ) {
+      checkedLayers.push(tmpCheckedParcelLayer);
     }
 
     if (map && checkedLayers.length > 0) {
@@ -1237,7 +1254,6 @@ export default function Map() {
                   map.getSource(selectLayerProps.sourceProps[i].sourceId + '_filter').setData(myGeoJSONData);
                 }
                 const layer = map.getLayer(layerId);
-                console.log(layer.source);
                 if (!layer.source.includes('_filter')) {
                   let clusterLabelBar = layerId + "-clusters-counts";
                   if (map.getLayer(clusterLabelBar)) {
@@ -1530,7 +1546,9 @@ export default function Map() {
     map,
     stateApp.checkedUserDefinedLayers,
     stateApp.checkedUserDefinedLayersInteraction,
-    stateApp.tempCheckedUserDefinedLayers,
+    stateApp.tempCheckedUserDefinedLayer,
+    stateApp.tempCheckedAOILayer,
+    stateApp.tempCheckedParcleLayer,
     stateApp.customLayers,
     stateApp.trackedwells,
     stateApp.trackedOwnerWells,
@@ -2102,7 +2120,6 @@ export default function Map() {
               // featuresList = map.querySourceFeatures(layer.source);
               featuresList = map.getSource(layer.source)._data.features;
             }
-            console.log(filterLayer, featuresList);
             if (featuresList && featuresList.length > 0) {
               const result = featuresList.filter((feature) => {
                 if (feature.geometry.type === "MultiPolygon") {
@@ -2271,11 +2288,11 @@ export default function Map() {
       if (stateNav.filterAOI && stateNav.filterAOI.length > 0) {
         const {userDefinedLayers, checkedUserDefinedLayers} = stateApp;
         const aoiIndex = userDefinedLayers.findIndex((userDefinedLayer) => userDefinedLayer.name === "Area of Interest");
-        
+
         if (checkedUserDefinedLayers.indexOf(aoiIndex) === -1) {
           setStateApp((stateApp) => ({
             ...stateApp,
-            tempCheckedUserDefinedLayer: aoiIndex
+            tempCheckedAOILayer: aoiIndex
           }));
         }
         let aoiName = stateNav.aoiName;
@@ -2310,7 +2327,7 @@ export default function Map() {
       } else {
         setStateApp((stateApp) => ({
           ...stateApp,
-          tempCheckedUserDefinedLayer: null
+          tempCheckedAOILayer: null
         }));
       }
 
@@ -2321,7 +2338,7 @@ export default function Map() {
         if (checkedUserDefinedLayers.indexOf(parcelIndex) === -1) {
           setStateApp((stateApp) => ({
             ...stateApp,
-            tempCheckedUserDefinedLayer: parcelIndex
+            tempCheckedParcleLayer: parcelIndex
           }));
         }
         let parcelName = stateNav.parcelName;
@@ -2356,7 +2373,7 @@ export default function Map() {
       } else {
         setStateApp((stateApp) => ({
           ...stateApp,
-          tempCheckedUserDefinedLayer: null
+          tempCheckedParcleLayer: null
         }));
       }
 
@@ -2597,7 +2614,6 @@ export default function Map() {
           } else {
             const layer = map.getLayer(filterLayer);
             if (Object.keys(filterCustomArray).length > 0) {
-              console.log(filterLayer, filterCustomArray);
               if (layer) {
                 if (['Tracked Wells', 'Tracked Owners', 'Tags Filter'].indexOf(filterLayer) > -1) {
                   map.setFilter(filterLayer, [
