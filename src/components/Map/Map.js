@@ -341,7 +341,7 @@ export default function Map() {
             id: config.layerProps.layerId[0],
             type: config.layerProps.layerType[0],
             source: config.sourceProps[0],
-            // paint: config.layerProps.paintProps,
+            paint: config.layerProps.paintProps,
             layout: {
               ...config.layerProps.layoutProps,
               visibility: checkedPosition > -1 ? 'visible' : 'none'
@@ -3307,6 +3307,13 @@ export default function Map() {
         setStateApp({ ...stateApp, map: newMap, draw: Draw });
 
         newMap.on("load", function (e) {
+          
+          newMap.loadImage('./sprites/marker-icon.png', function(error, image) {
+            if (error) throw error;
+            // add image to the active style and make it SDF-enabled
+            newMap.addImage('marker-icon', image, { sdf: true });
+          });
+
           setDraw(Draw);
           setMap(newMap);
           console.log("set new map complete", newMap.loaded());

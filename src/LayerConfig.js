@@ -102,13 +102,12 @@ export const styleLayers = [
       layerId: ["rigs"],
       layerType: ["symbol"],
       layoutProps: {
-        'icon-image': 'marker-lg',
+        'icon-image': 'marker-icon',
       },
       paintProps: {
-        // "circle-radius": 5,
-        // "circle-color": "#666666",
-        // "circle-stroke-width": 2,
-        // "circle-stroke-color": "#fff",
+        "icon-color": "#00ff00",
+        "icon-halo-color": "#fff",
+        "icon-halo-width": 2
       },
       clusterProps: {
         clusterPaintProps: {
