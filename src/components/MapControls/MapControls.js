@@ -109,7 +109,10 @@ export default function MapControls(props) {
     let anchorEl = e.currentTarget;
     if (action === "track") {
       anchorEl = null;
-      if (stateApp.mapGridCardActivated === "track") {
+      if (
+        stateApp.mapGridCardActiveTap === 2 &&
+        stateApp.mapGridCardActivated
+      ) {
         setStateApp((state) => ({
           ...state,
           mapGridCardActivated: false,
@@ -117,7 +120,8 @@ export default function MapControls(props) {
       } else {
         setStateApp((state) => ({
           ...state,
-          mapGridCardActivated: "track",
+          mapGridCardActivated: true,
+          mapGridCardActiveTap: 2,
         }));
       }
     }
@@ -145,10 +149,11 @@ export default function MapControls(props) {
     const actions = [
       {
         icon:
-          stateApp.mapGridCardActivated !== "track" ? (
-            <GpsNotFixedIcon />
-          ) : (
+          stateApp.mapGridCardActiveTap === 2 &&
+          stateApp.mapGridCardActivated ? (
             <GpsFixedIcon />
+          ) : (
+            <GpsNotFixedIcon />
           ),
         name: "Tracked",
         action: "track",

@@ -687,6 +687,18 @@ const SearchsHeadCells = [
       filterType: "dropdown",
     },
   },
+  {
+    name: "coordinates",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 ];
 
 ////////////HeadCells end///////////////////////////////////////////////
@@ -1055,6 +1067,17 @@ export default function M1nTable(props) {
           well.isTracked = true;
           well.commentsCounter = 0;
           well.tags = [[], 0];
+          well.coordinates = [];
+          if (well.longitude || well.Longitude) {
+            well.coordinates.push(
+              well.longitude ? well.longitude : well.Longitude
+            );
+          }
+          if (well.latitude || well.Latitude) {
+            well.coordinates.push(
+              well.latitude ? well.latitude : well.Latitude
+            );
+          }
 
           for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
             if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -1083,8 +1106,21 @@ export default function M1nTable(props) {
 
         setRows(dataWells.wells.results);
 
-        setColumns(
-          cleanAvailableTags.length > 0
+        const flyToColumn = {
+          name: "coordinates",
+          label: " ",
+          options: {
+            filter: false,
+            sort: false,
+            searchable: false,
+            download: false,
+            print: false,
+            viewColumns: false,
+          },
+        };
+
+        setColumns([
+          ...(cleanAvailableTags.length > 0
             ? WellsHeadCells.map((column) => {
                 if (column.name === "tags") {
                   return {
@@ -1111,8 +1147,9 @@ export default function M1nTable(props) {
                   };
                 }
                 return column;
-              })
-        );
+              })),
+          flyToColumn,
+        ]);
 
         setStateApp((state) => ({
           ...state,
@@ -2111,6 +2148,18 @@ export default function M1nTable(props) {
         stateApp.searchResultData.forEach((result) => {
           result.id = result.Id;
 
+          if (props.targetLabel && props.targetLabel == "well") {
+            result.coordinates = [];
+            if (result.Longitude) {
+              result.coordinates.push(result.Longitude);
+              result.longitude = result.Longitude;
+            }
+            if (result.Latitude) {
+              result.coordinates.push(result.Latitude);
+              result.latitude = result.Latitude;
+            }
+          }
+
           if (props.showComments) {
             result.commentsCounter = 0;
             for (
@@ -2189,6 +2238,8 @@ export default function M1nTable(props) {
         }
         if (props.showComments) buildingColumns.push(SearchsHeadCells[2]);
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
+        if (props.targetLabel && props.targetLabel == "well")
+          buildingColumns.push(SearchsHeadCells[4]);
 
         setColumns([...buildingColumns]);
         setRows([...stateApp.searchResultData]);

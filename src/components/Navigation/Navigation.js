@@ -103,24 +103,23 @@ import ContactFormModal from "./components/ContactFormModal";
 import { GETPROFILEIMAGE } from "../../graphQL/useQueryGetProfile";
 import { useLazyQuery } from "@apollo/react-hooks";
 
-
 import {
   MuiThemeProvider,
   createMuiTheme,
-  withStyles
+  withStyles,
 } from "@material-ui/core/styles";
 
 const theme = createMuiTheme({
   overrides: {
     MuiButton: {
       root: {
-        '&:hover': {
-          backgroundColor: "#fff"
-        }
-      }
-    }
-  }
-})
+        "&:hover": {
+          backgroundColor: "#fff",
+        },
+      },
+    },
+  },
+});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -225,10 +224,11 @@ const useStyles = makeStyles((theme) => ({
     // },
     marginRight: theme.spacing(2),
     marginLeft: 5,
-    width: "34%",
+    width: ({ stateApp }) => (stateApp.mapGridCardActivated ? "80px" : "34%"),
+    transition: "width 0.5s",
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
-      width: "34%",
+      // width: "34%",
     },
   },
   searchInput: {
@@ -665,7 +665,6 @@ TabPanel.propTypes = {
 const drawerWidth = "250px";
 
 export default function Navigation(props) {
-  const classes = useStyles();
   const theme = useTheme();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -685,6 +684,7 @@ export default function Navigation(props) {
   const [matchTransact, setMatchTransact] = useState(false);
   const [matchFind, setMatchFind] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
+  const classes = useStyles({ stateApp });
   const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE);
   useEffect(() => {
     if (stateApp?.user?.email) {
@@ -1026,12 +1026,16 @@ export default function Navigation(props) {
                   {theme.direction === "rtl" ? <MenuIcon /> : <MenuIcon />}
                 </IconButton>
 
-                <div style={{marginRight: '35px'}}>
-                <Button color='secondary' size="large" onClick={handleClickLogo} className={classes.margin}>
-                <M1neralLogoWhiteLetters />
-                </Button>
+                <div style={{ marginRight: "35px" }}>
+                  <Button
+                    color="secondary"
+                    size="large"
+                    onClick={handleClickLogo}
+                    className={classes.margin}
+                  >
+                    <M1neralLogoWhiteLetters />
+                  </Button>
                 </div>
-
               </div>
             ) : null}
 
@@ -1566,7 +1570,6 @@ export default function Navigation(props) {
         </List>
         <Divider variant="middle" className={classes.menuListBottomDivider} />
         <List className={classes.menuListBottom}>
-
           {/* <ListItem
             classes={{
               root: classes.menuListItemDisabled,
