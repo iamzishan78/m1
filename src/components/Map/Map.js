@@ -1228,7 +1228,6 @@ export default function Map() {
               const myGeoJSONData = makeGeoJSON(layerData);
 
               const layerId = selectLayerProps.layerProps[i].layerId;
-              console.log("layerId: " + layerId);
               if (map.getLayer(layerId)) {
                 map.setLayoutProperty(layerId, "visibility", "visible");
                 if (map.getSource(selectLayerProps.sourceProps[i].sourceId)) {
@@ -1341,91 +1340,92 @@ export default function Map() {
                   }
                   beforelayer = clusterVar;
                 }
-                // -> add interaction (note to change later w/ interaction panel)
-                if (selectLayerProps && selectLayerProps.interactionProps) {
-                  const availableInteraction =
-                    stateApp.checkedUserDefinedLayersInteraction.indexOf(l) !==
-                    -1;
-                  if (selectLayerProps.interactionProps.mouseClick) {
-                    var clusterVar =
-                      selectLayerProps.layerProps[i].layerId + "-clusters";
+              }
+              
+              // -> add interaction (note to change later w/ interaction panel)
+              if (selectLayerProps && selectLayerProps.interactionProps) {
+                const availableInteraction =
+                  stateApp.checkedUserDefinedLayersInteraction.indexOf(l) !==
+                  -1;
+                if (selectLayerProps.interactionProps.mouseClick) {
+                  var clusterVar =
+                    selectLayerProps.layerProps[i].layerId + "-clusters";
+                }
+
+                if (
+                  selectLayerProps &&
+                  selectLayerProps.interactionProps &&
+                  selectLayerProps.interactionProps.hoverActions
+                ) {
+                  var clusterVar =
+                    selectLayerProps.layerProps[i].layerId + "-clusters";
+
+                  if (
+                    selectLayerProps.interactionProps.hoverActions.mouseMove
+                  ) {
+                    const mouseMoveHandler = () => {
+                      map.getCanvas().style.cursor =
+                        selectLayerProps.interactionProps.hoverActions.mouseMove.cursor;
+                    };
+                    if (
+                      selectLayerProps.interactionProps.hoverActions
+                        .mouseMoveHandler
+                    ) {
+                      const oldHander =
+                        selectLayerProps.interactionProps.hoverActions
+                          .mouseMoveHandler;
+                      map.off(
+                        "mousemove",
+                        selectLayerProps.layerProps[i].layerId,
+                        oldHander
+                      );
+                      map.off("mousemove", clusterVar, oldHander);
+                    }
+                    if (availableInteraction) {
+                      map.on(
+                        "mousemove",
+                        selectLayerProps.layerProps[i].layerId,
+                        mouseMoveHandler
+                      );
+                      map.on("mousemove", clusterVar, mouseMoveHandler);
+                      selectLayerProps.interactionProps.hoverActions.mouseMoveHandler = mouseMoveHandler;
+                    }
                   }
 
                   if (
-                    selectLayerProps &&
-                    selectLayerProps.interactionProps &&
-                    selectLayerProps.interactionProps.hoverActions
+                    selectLayerProps.interactionProps.hoverActions.mouseLeave
                   ) {
-                    var clusterVar =
-                      selectLayerProps.layerProps[i].layerId + "-clusters";
-
+                    const mouseLeaveHandler = () => {
+                      map.getCanvas().style.cursor =
+                        selectLayerProps.interactionProps.hoverActions.mouseLeave.cursor;
+                    };
                     if (
-                      selectLayerProps.interactionProps.hoverActions.mouseMove
+                      selectLayerProps.interactionProps.hoverActions
+                        .mouseLeaveHandler
                     ) {
-                      const mouseMoveHandler = () => {
-                        map.getCanvas().style.cursor =
-                          selectLayerProps.interactionProps.hoverActions.mouseMove.cursor;
-                      };
-                      if (
+                      const oldHander =
                         selectLayerProps.interactionProps.hoverActions
-                          .mouseMoveHandler
-                      ) {
-                        const oldHander =
-                          selectLayerProps.interactionProps.hoverActions
-                            .mouseMoveHandler;
-                        map.off(
-                          "mousemove",
-                          selectLayerProps.layerProps[i].layerId,
-                          oldHander
-                        );
-                        map.off("mousemove", clusterVar, oldHander);
-                      }
-                      if (availableInteraction) {
-                        map.on(
-                          "mousemove",
-                          selectLayerProps.layerProps[i].layerId,
-                          mouseMoveHandler
-                        );
-                        map.on("mousemove", clusterVar, mouseMoveHandler);
-                        selectLayerProps.interactionProps.hoverActions.mouseMoveHandler = mouseMoveHandler;
-                      }
+                          .mouseMoveHandler;
+                      map.off(
+                        "mouseleave",
+                        selectLayerProps.layerProps[i].layerId,
+                        oldHander
+                      );
+                      map.off("mouseleave", clusterVar, oldHander);
                     }
-
-                    if (
-                      selectLayerProps.interactionProps.hoverActions.mouseLeave
-                    ) {
-                      const mouseLeaveHandler = () => {
-                        map.getCanvas().style.cursor =
-                          selectLayerProps.interactionProps.hoverActions.mouseLeave.cursor;
-                      };
-                      if (
-                        selectLayerProps.interactionProps.hoverActions
-                          .mouseLeaveHandler
-                      ) {
-                        const oldHander =
-                          selectLayerProps.interactionProps.hoverActions
-                            .mouseMoveHandler;
-                        map.off(
-                          "mouseleave",
-                          selectLayerProps.layerProps[i].layerId,
-                          oldHander
-                        );
-                        map.off("mouseleave", clusterVar, oldHander);
-                      }
-                      if (availableInteraction) {
-                        map.on(
-                          "mouseleave",
-                          selectLayerProps.layerProps[i].layerId,
-                          mouseLeaveHandler
-                        );
-                        map.on("mouseleave", clusterVar, mouseLeaveHandler);
-                        selectLayerProps.interactionProps.hoverActions.mouseLeaveHandler = mouseLeaveHandler;
-                      }
+                    if (availableInteraction) {
+                      map.on(
+                        "mouseleave",
+                        selectLayerProps.layerProps[i].layerId,
+                        mouseLeaveHandler
+                      );
+                      map.on("mouseleave", clusterVar, mouseLeaveHandler);
+                      selectLayerProps.interactionProps.hoverActions.mouseLeaveHandler = mouseLeaveHandler;
                     }
                   }
-
-                  layerList[l] = selectLayerProps;
                 }
+
+                layerList[l] = selectLayerProps;
               }
 
               if (beforelayer) {
