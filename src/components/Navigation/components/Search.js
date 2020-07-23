@@ -89,10 +89,35 @@ const useStyles = makeStyles((theme) => ({
     zIndex: "2000",
     color: "#5f5f5f",
   },
+  root: {
+    height: "42px",
+    width: "100%",
+    "& .MuiAutocomplete-inputRoot": { maxHeight: "42px" },
+  },
   textF: {
-    "& input": { color: "#ffffffc9", height: "5px" },
+    "& input": {
+      color: "#ffffffc9",
+      height: "5px",
+      minWidth: "0 !important",
+      visibility: ({ stateApp }) =>
+        stateApp.mapGridCardActivated ? "hidden" : "unset",
+      opacity: ({ stateApp }) => (stateApp.mapGridCardActivated ? "0" : "1"),
+      transition: "opacity 0.5s linear",
+    },
+    // "& .MuiInputAdornment-root": {
+    //   padding: "6px 0 6px 8px",
+    //   height: "23px",
+    // },
     "& .MuiInputBase-adornedStart, .MuiInputBase-adornedEnd": {
       padding: "9px 0 !important",
+    },
+  },
+  endAdornmentIcon: {
+    opacity: ({ stateApp }) => (stateApp.mapGridCardActivated ? "0" : "1"),
+    transition: "opacity 1.2s linear",
+    "& button": {
+      width: ({ stateApp }) => (stateApp.mapGridCardActivated ? "0" : ""),
+      transition: "width 1s ",
     },
   },
   score: {
@@ -123,13 +148,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   startAdornmentIcon: {
-    padding: "6px 8px",
     cursor: "pointer",
+    height: "23px",
   },
 }));
 
 export default function Search() {
-  const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
@@ -153,6 +177,7 @@ export default function Search() {
   const [loadingLeases, setLoadingLeases] = React.useState(false);
   const [loadingOperators, setLoadingOperators] = React.useState(false);
   const [loadingMapboxSearch, setLoadingMapboxSearch] = React.useState(false);
+  const classes = useStyles({ stateApp });
 
   const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(
     OWNERWELLSQUERY
@@ -892,487 +917,507 @@ export default function Search() {
   }
 
   return (
-    <Autocomplete
-      id="cognitive-search-autocomplete"
-      getOptionLabel={(option, value) => option.Primary}
-      forcePopupIcon
-      filterOptions={(x) => x}
-      options={optionsWithHeader}
-      groupBy={(option) => {
-        if (option.Source === "lod2019-index") return "Owners";
-        if (option.Source === "wellheader-index") return "Wells";
-        if (option.Source === "operator-index") return "Operators";
-        if (option.Source === "lease-index") return "Leases";
-        if (option.Source === "mapboxSearch") return "Locations";
-        if (option.Source === "loader") return "loader";
-        return "header";
-      }}
-      // leftIconButton={<SearchIcon />}
-      renderGroup={(option) => {
-        if (option.group === "loader")
-          return (
-            <CircularProgress
-              key="loader"
-              style={{ margin: "10px 0 0 48%" }}
-              size={28}
-              color="secondary"
-            />
-          );
+    <div className={classes.root}>
+      <Autocomplete
+        id="cognitive-search-autocomplete"
+        getOptionLabel={(option, value) => option.Primary}
+        forcePopupIcon
+        filterOptions={(x) => x}
+        options={optionsWithHeader}
+        groupBy={(option) => {
+          if (option.Source === "lod2019-index") return "Owners";
+          if (option.Source === "wellheader-index") return "Wells";
+          if (option.Source === "operator-index") return "Operators";
+          if (option.Source === "lease-index") return "Leases";
+          if (option.Source === "mapboxSearch") return "Locations";
+          if (option.Source === "loader") return "loader";
+          return "header";
+        }}
+        // leftIconButton={<SearchIcon />}
+        renderGroup={(option) => {
+          if (option.group === "loader")
+            return (
+              <CircularProgress
+                key="loader"
+                style={{ margin: "10px 0 0 48%" }}
+                size={28}
+                color="secondary"
+              />
+            );
 
-        return option.group === "header" ? (
-          <Grid
-            key={option.group}
-            container
-            item
-            spacing={0}
-            style={{
-              position: "relative",
-              top: "0",
-              backgroundColor: "#ffffff",
-              paddingBottom:
-                (searchOption === "all" &&
-                  (loadingWells ||
-                    loadingOwners ||
-                    loadingOperators ||
-                    loadingLeases ||
-                    loadingMapboxSearch)) ||
-                (searchOption === "wells" && loadingWells) ||
-                (searchOption === "owners" && loadingOwners) ||
-                (searchOption === "operators" && loadingOperators) ||
-                (searchOption === "leases" && loadingLeases) ||
-                (searchOption === "locations" && loadingMapboxSearch) ||
-                options.length === 0
-                  ? "0"
-                  : "9px",
-            }}
-          >
+          return option.group === "header" ? (
             <Grid
+              key={option.group}
+              container
               item
-              xs={12}
+              spacing={0}
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                margin: "0 4px",
+                position: "relative",
+                top: "0",
+                backgroundColor: "#ffffff",
+                paddingBottom:
+                  (searchOption === "all" &&
+                    (loadingWells ||
+                      loadingOwners ||
+                      loadingOperators ||
+                      loadingLeases ||
+                      loadingMapboxSearch)) ||
+                  (searchOption === "wells" && loadingWells) ||
+                  (searchOption === "owners" && loadingOwners) ||
+                  (searchOption === "operators" && loadingOperators) ||
+                  (searchOption === "leases" && loadingLeases) ||
+                  (searchOption === "locations" && loadingMapboxSearch) ||
+                  options.length === 0
+                    ? "0"
+                    : "9px",
               }}
             >
-              <Button
-                className={classes.headerButtons}
-                variant={searchOption === "all" ? "contained" : "outlined"}
-                size="small"
-                color={searchOption === "all" ? "secondary" : "primary"}
-                onClick={() => {
-                  setSearchTop(5);
-                  setSearchOption("all");
+              <Grid
+                item
+                xs={12}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  margin: "0 4px",
                 }}
               >
-                All
-              </Button>
-              <Button
-                className={classes.headerButtons}
-                variant={searchOption === "wells" ? "contained" : "outlined"}
-                size="small"
-                color={searchOption === "wells" ? "secondary" : "primary"}
-                onClick={() => {
-                  setSearchTop(5);
-                  setSearchOption("wells");
-                }}
-              >
-                Wells
-              </Button>
-              <Button
-                className={classes.headerButtons}
-                variant={searchOption === "owners" ? "contained" : "outlined"}
-                size="small"
-                color={searchOption === "owners" ? "secondary" : "primary"}
-                onClick={() => {
-                  setSearchTop(5);
-                  setSearchOption("owners");
-                }}
-              >
-                Owners
-              </Button>
-              <Button
-                className={classes.headerButtons}
-                variant={
-                  searchOption === "operators" ? "contained" : "outlined"
-                }
-                size="small"
-                color={searchOption === "operators" ? "secondary" : "primary"}
-                onClick={() => {
-                  setSearchTop(5);
-                  setSearchOption("operators");
-                }}
-              >
-                Operators
-              </Button>
-              <Button
-                className={classes.headerButtons}
-                variant={searchOption === "leases" ? "contained" : "outlined"}
-                size="small"
-                color={searchOption === "leases" ? "secondary" : "primary"}
-                onClick={() => {
-                  setSearchTop(5);
-                  setSearchOption("leases");
-                }}
-              >
-                Leases
-              </Button>
-              <Button
-                className={classes.headerButtons}
-                variant={
-                  searchOption === "locations" ? "contained" : "outlined"
-                }
-                size="small"
-                color={searchOption === "locations" ? "secondary" : "primary"}
-                onClick={() => {
-                  setSearchTop(5);
-                  setSearchOption("locations");
-                }}
-              >
-                Locations
-              </Button>
+                <Button
+                  className={classes.headerButtons}
+                  variant={searchOption === "all" ? "contained" : "outlined"}
+                  size="small"
+                  color={searchOption === "all" ? "secondary" : "primary"}
+                  onClick={() => {
+                    setSearchTop(5);
+                    setSearchOption("all");
+                  }}
+                >
+                  All
+                </Button>
+                <Button
+                  className={classes.headerButtons}
+                  variant={searchOption === "wells" ? "contained" : "outlined"}
+                  size="small"
+                  color={searchOption === "wells" ? "secondary" : "primary"}
+                  onClick={() => {
+                    setSearchTop(5);
+                    setSearchOption("wells");
+                  }}
+                >
+                  Wells
+                </Button>
+                <Button
+                  className={classes.headerButtons}
+                  variant={searchOption === "owners" ? "contained" : "outlined"}
+                  size="small"
+                  color={searchOption === "owners" ? "secondary" : "primary"}
+                  onClick={() => {
+                    setSearchTop(5);
+                    setSearchOption("owners");
+                  }}
+                >
+                  Owners
+                </Button>
+                <Button
+                  className={classes.headerButtons}
+                  variant={
+                    searchOption === "operators" ? "contained" : "outlined"
+                  }
+                  size="small"
+                  color={searchOption === "operators" ? "secondary" : "primary"}
+                  onClick={() => {
+                    setSearchTop(5);
+                    setSearchOption("operators");
+                  }}
+                >
+                  Operators
+                </Button>
+                <Button
+                  className={classes.headerButtons}
+                  variant={searchOption === "leases" ? "contained" : "outlined"}
+                  size="small"
+                  color={searchOption === "leases" ? "secondary" : "primary"}
+                  onClick={() => {
+                    setSearchTop(5);
+                    setSearchOption("leases");
+                  }}
+                >
+                  Leases
+                </Button>
+                <Button
+                  className={classes.headerButtons}
+                  variant={
+                    searchOption === "locations" ? "contained" : "outlined"
+                  }
+                  size="small"
+                  color={searchOption === "locations" ? "secondary" : "primary"}
+                  onClick={() => {
+                    setSearchTop(5);
+                    setSearchOption("locations");
+                  }}
+                >
+                  Locations
+                </Button>
+              </Grid>
             </Grid>
-          </Grid>
-        ) : (
-          (searchOption === "all" ||
-            searchOption === option.group.toLowerCase()) && (
-            <Grid key={option.group} container item>
-              <Grid container item xs={12} className={classes.groupsHeaders}>
-                <Grid item item xs={6}>
-                  <h3 className={classes.groupsHeadersText}>{option.group}</h3>
+          ) : (
+            (searchOption === "all" ||
+              searchOption === option.group.toLowerCase()) && (
+              <Grid key={option.group} container item>
+                <Grid container item xs={12} className={classes.groupsHeaders}>
+                  <Grid item item xs={6}>
+                    <h3 className={classes.groupsHeadersText}>
+                      {option.group}
+                    </h3>
+                  </Grid>
+                  <Grid item xs={6} style={{ textAlign: "right" }}>
+                    {searchTop === 5 ? (
+                      <Button
+                        size="small"
+                        className={classes.groupsButton}
+                        onClick={() => {
+                          setSearchTop(200);
+                          setSearchOption(
+                            option.group === "Owners"
+                              ? "owners"
+                              : option.group === "Wells"
+                              ? "wells"
+                              : option.group === "Operators"
+                              ? "operators"
+                              : option.group === "Leases"
+                              ? "leases"
+                              : option.group === "Locations"
+                              ? "locations"
+                              : "all"
+                          );
+                        }}
+                      >
+                        See All Results
+                      </Button>
+                    ) : (
+                      <Button
+                        size="small"
+                        className={classes.groupsButton}
+                        onClick={() => {
+                          setSearchTop(5);
+                          setSearchOption("all");
+                        }}
+                      >
+                        See Less
+                      </Button>
+                    )}
+                  </Grid>
                 </Grid>
-                <Grid item xs={6} style={{ textAlign: "right" }}>
-                  {searchTop === 5 ? (
-                    <Button
-                      size="small"
-                      className={classes.groupsButton}
-                      onClick={() => {
-                        setSearchTop(200);
-                        setSearchOption(
-                          option.group === "Owners"
-                            ? "owners"
-                            : option.group === "Wells"
-                            ? "wells"
-                            : option.group === "Operators"
-                            ? "operators"
-                            : option.group === "Leases"
-                            ? "leases"
-                            : option.group === "Locations"
-                            ? "locations"
-                            : "all"
-                        );
+                <Grid item xs={12}>
+                  {option.children}
+                </Grid>
+              </Grid>
+            )
+          );
+        }}
+        autoComplete
+        includeInputInList
+        value={value}
+        onChange={(event, newValue) => {
+          handleChange(newValue);
+        }}
+        onInputChange={(event, newInputValue, reason) => {
+          if (reason == "input") {
+            setInputValue(newInputValue);
+
+            if (newInputValue !== "") {
+              //// setting loader
+              if (searchOption === "all") {
+                setLoadingWells(true);
+                setLoadingOwners(true);
+                setLoadingOperators(true);
+                setLoadingLeases(true);
+                setLoadingMapboxSearch(true);
+              }
+              if (searchOption === "wells") setLoadingWells(true);
+              if (searchOption === "owners") setLoadingOwners(true);
+              if (searchOption === "operators") setLoadingOperators(true);
+              if (searchOption === "leases") setLoadingLeases(true);
+              if (searchOption === "locations") setLoadingMapboxSearch(true);
+            } else {
+              // setValue(null);
+              setOptions([]);
+              setLoadingWells(false);
+              setLoadingOwners(false);
+              setLoadingOperators(false);
+              setLoadingLeases(false);
+              setLoadingMapboxSearch(false);
+            }
+          }
+        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            fullWidth
+            placeholder="Search by well name, API, owner, operator, lease or a location"
+            InputProps={{
+              ...params.InputProps,
+              startAdornment: (
+                <InputAdornment className={classes.startAdornmentIcon}>
+                  <Button
+                    style={{ minWidth: "0", height: "42px" }}
+                    onClick={() => {
+                      if (stateApp.mapGridCardActivated)
+                        setStateApp((state) => ({
+                          ...state,
+                          mapGridCardActivated: false,
+                        }));
+                    }}
+                  >
+                    <SearchIcon htmlColor="#fff" />
+                  </Button>
+                </InputAdornment>
+              ),
+              endAdornment: !stateApp.mapGridCardActivated && (
+                <InputAdornment className={classes.endAdornmentIcon}>
+                  <div>
+                    <Tooltip title="Search History" placement="top">
+                      <IconButton
+                        onClick={(event) => {
+                          setAnchorEl(event.currentTarget);
+                        }}
+                      >
+                        <ArrowDropDownIcon htmlColor="#fff" />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Popover
+                      onBlur={() => {
+                        setAnchorEl(null);
                       }}
-                    >
-                      See All Results
-                    </Button>
-                  ) : (
-                    <Button
-                      size="small"
-                      className={classes.groupsButton}
-                      onClick={() => {
-                        setSearchTop(5);
-                        setSearchOption("all");
+                      open={Boolean(anchorEl)}
+                      anchorEl={anchorEl}
+                      onClose={() => {
+                        setAnchorEl(null);
                       }}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "right",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      style={{
+                        width: document.getElementById("searchBarDivParent")
+                          ? document.getElementById("searchBarDivParent")
+                              .offsetWidth
+                          : "400px",
+                      }}
+                      className={classes.historyPopover}
                     >
-                      See Less
-                    </Button>
+                      {searchHistoryList && searchHistoryList.length > 0 ? (
+                        searchHistoryList.map((search, i) => {
+                          let option = search.searchData;
+                          const parts = parse(option.Primary, Array());
+
+                          return (
+                            <Box
+                              p={1}
+                              key={i}
+                              className={classes.historyRow}
+                              onClick={() => {
+                                setSearchTop(5);
+                                setSearchOption(
+                                  option.Source === "lod2019-index"
+                                    ? "owners"
+                                    : option.Source === "wellheader-index"
+                                    ? "wells"
+                                    : option.Source === "operator-index"
+                                    ? "operators"
+                                    : option.Source === "lease-index"
+                                    ? "leases"
+                                    : option.group === "mapboxSearch"
+                                    ? "locations"
+                                    : "all"
+                                );
+                                setInputValue(
+                                  option.Primary
+                                    ? option.Primary
+                                    : option.Secondary
+                                );
+                                handleChange({
+                                  ...option,
+                                  searchId: search._id,
+                                });
+                              }}
+                            >
+                              <Grid container spacing={0}>
+                                <Grid container item xs={9} alignItems="center">
+                                  <Grid item>
+                                    {option.Source === "lod2019-index" && (
+                                      <PersonIcon className={classes.icon} />
+                                    )}
+                                    {option.Source === "operator-index" && (
+                                      <OperatorIcon
+                                        className={classes.icon}
+                                        color={"#757575"}
+                                      />
+                                    )}
+                                    {option.Source === "wellheader-index" && (
+                                      <WellIcon
+                                        className={classes.icon}
+                                        color={"#757575"}
+                                        opacity="1.0"
+                                        small
+                                      />
+                                    )}
+                                    {option.Source === "lease-index" && (
+                                      <LeaseIcon
+                                        className={classes.icon}
+                                        color={"#757575"}
+                                      />
+                                    )}
+                                    {option.Source === "mapboxSearch" && (
+                                      <LocationOnIcon
+                                        className={classes.icon}
+                                      />
+                                    )}
+                                  </Grid>
+                                  <Grid item xs>
+                                    {parts.map((part, index) => (
+                                      <span
+                                        key={index}
+                                        style={{
+                                          fontWeight: part.highlight
+                                            ? 700
+                                            : 400,
+                                        }}
+                                      >
+                                        {part.text}
+                                      </span>
+                                    ))}
+
+                                    {option && option.Secondary && (
+                                      <Typography
+                                        variant="body2"
+                                        color="textSecondary"
+                                      >
+                                        {option.Secondary}
+                                      </Typography>
+                                    )}
+                                  </Grid>
+                                </Grid>
+                                <Grid container item xs={3} alignItems="center">
+                                  <Grid item>
+                                    <Typography
+                                      variant="body2"
+                                      style={{ color: "rgb(80, 187, 223)" }}
+                                    >
+                                      {new Intl.DateTimeFormat("en-US", {
+                                        year: "2-digit",
+                                        month: "2-digit",
+                                        day: "2-digit",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      }).format(search.ts)}
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
+                              </Grid>
+                            </Box>
+                          );
+                        })
+                      ) : (
+                        <Box p={1}>
+                          <Typography>There is no history yet.</Typography>
+                        </Box>
+                      )}
+                    </Popover>
+                  </div>
+                </InputAdornment>
+              ),
+            }}
+            className={classes.textF}
+          />
+        )}
+        renderOption={(option) => {
+          if (option.Source === "header" || option.group === "loader")
+            return null;
+          const parts = parse(option.Primary, Array());
+
+          return (
+            <Grid container spacing={0}>
+              <Grid container item xs={11} alignItems="center">
+                <Grid item>
+                  {option.Source === "lod2019-index" && (
+                    <PersonIcon className={classes.icon} />
+                  )}
+                  {option.Source === "operator-index" && (
+                    <OperatorIcon className={classes.icon} color={"#757575"} />
+                  )}
+                  {option.Source === "wellheader-index" && (
+                    <WellIcon
+                      className={classes.icon}
+                      color={"#757575"}
+                      opacity="1.0"
+                      small
+                    />
+                  )}
+                  {option.Source === "lease-index" && (
+                    <LeaseIcon className={classes.icon} color={"#757575"} />
+                  )}
+                  {option.Source === "mapboxSearch" && (
+                    <LocationOnIcon className={classes.icon} />
+                  )}
+                </Grid>
+                <Grid item xs>
+                  {parts.map((part, index) => (
+                    <span
+                      key={index}
+                      style={{ fontWeight: part.highlight ? 700 : 400 }}
+                    >
+                      {part.text}
+                    </span>
+                  ))}
+
+                  {option && option.Secondary && (
+                    <Typography variant="body2" color="textSecondary">
+                      {option.Secondary}
+                    </Typography>
                   )}
                 </Grid>
               </Grid>
-              <Grid item xs={12}>
-                {option.children}
-              </Grid>
-            </Grid>
-          )
-        );
-      }}
-      autoComplete
-      includeInputInList
-      value={value}
-      onChange={(event, newValue) => {
-        handleChange(newValue);
-      }}
-      onInputChange={(event, newInputValue, reason) => {
-        if (reason == "input") {
-          setInputValue(newInputValue);
-
-          if (newInputValue !== "") {
-            //// setting loader
-            if (searchOption === "all") {
-              setLoadingWells(true);
-              setLoadingOwners(true);
-              setLoadingOperators(true);
-              setLoadingLeases(true);
-              setLoadingMapboxSearch(true);
-            }
-            if (searchOption === "wells") setLoadingWells(true);
-            if (searchOption === "owners") setLoadingOwners(true);
-            if (searchOption === "operators") setLoadingOperators(true);
-            if (searchOption === "leases") setLoadingLeases(true);
-            if (searchOption === "locations") setLoadingMapboxSearch(true);
-          } else {
-            // setValue(null);
-            setOptions([]);
-            setLoadingWells(false);
-            setLoadingOwners(false);
-            setLoadingOperators(false);
-            setLoadingLeases(false);
-            setLoadingMapboxSearch(false);
-          }
-        }
-      }}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="outlined"
-          fullWidth
-          placeholder="Search by well name, API, owner, operator, lease or a location"
-          InputProps={{
-            ...params.InputProps,
-            startAdornment: (
-              <InputAdornment>
-                <div className={classes.startAdornmentIcon}>
-                  <SearchIcon htmlColor="#fff" />
-                </div>
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment>
-                <div>
-                  <Tooltip title="Search History" placement="top">
-                    <IconButton
-                      onClick={(event) => {
-                        setAnchorEl(event.currentTarget);
-                      }}
-                    >
-                      <ArrowDropDownIcon htmlColor="#fff" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Popover
-                    onBlur={() => {
-                      setAnchorEl(null);
-                    }}
-                    open={Boolean(anchorEl)}
-                    anchorEl={anchorEl}
-                    onClose={() => {
-                      setAnchorEl(null);
-                    }}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "right",
-                    }}
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
+              <Grid container item xs={1} alignItems="center">
+                <Grid item style={{ position: "relative" }}>
+                  <div
+                    className={classes.score}
                     style={{
-                      width: document.getElementById("searchBarDivParent")
-                        ? document.getElementById("searchBarDivParent")
-                            .offsetWidth
-                        : "400px",
+                      zIndex: "1300",
+                      backgroundColor: "#12ABE0",
                     }}
-                    className={classes.historyPopover}
-                  >
-                    {searchHistoryList && searchHistoryList.length > 0 ? (
-                      searchHistoryList.map((search, i) => {
-                        let option = search.searchData;
-                        const parts = parse(option.Primary, Array());
-
-                        return (
-                          <Box
-                            p={1}
-                            key={i}
-                            className={classes.historyRow}
-                            onClick={() => {
-                              setSearchTop(5);
-                              setSearchOption(
-                                option.Source === "lod2019-index"
-                                  ? "owners"
-                                  : option.Source === "wellheader-index"
-                                  ? "wells"
-                                  : option.Source === "operator-index"
-                                  ? "operators"
-                                  : option.Source === "lease-index"
-                                  ? "leases"
-                                  : option.group === "mapboxSearch"
-                                  ? "locations"
-                                  : "all"
-                              );
-                              setInputValue(
-                                option.Primary
-                                  ? option.Primary
-                                  : option.Secondary
-                              );
-                              handleChange({ ...option, searchId: search._id });
-                            }}
-                          >
-                            <Grid container spacing={0}>
-                              <Grid container item xs={9} alignItems="center">
-                                <Grid item>
-                                  {option.Source === "lod2019-index" && (
-                                    <PersonIcon className={classes.icon} />
-                                  )}
-                                  {option.Source === "operator-index" && (
-                                    <OperatorIcon
-                                      className={classes.icon}
-                                      color={"#757575"}
-                                    />
-                                  )}
-                                  {option.Source === "wellheader-index" && (
-                                    <WellIcon
-                                      className={classes.icon}
-                                      color={"#757575"}
-                                      opacity="1.0"
-                                      small
-                                    />
-                                  )}
-                                  {option.Source === "lease-index" && (
-                                    <LeaseIcon
-                                      className={classes.icon}
-                                      color={"#757575"}
-                                    />
-                                  )}
-                                  {option.Source === "mapboxSearch" && (
-                                    <LocationOnIcon className={classes.icon} />
-                                  )}
-                                </Grid>
-                                <Grid item xs>
-                                  {parts.map((part, index) => (
-                                    <span
-                                      key={index}
-                                      style={{
-                                        fontWeight: part.highlight ? 700 : 400,
-                                      }}
-                                    >
-                                      {part.text}
-                                    </span>
-                                  ))}
-
-                                  {option && option.Secondary && (
-                                    <Typography
-                                      variant="body2"
-                                      color="textSecondary"
-                                    >
-                                      {option.Secondary}
-                                    </Typography>
-                                  )}
-                                </Grid>
-                              </Grid>
-                              <Grid container item xs={3} alignItems="center">
-                                <Grid item>
-                                  <Typography
-                                    variant="body2"
-                                    style={{ color: "rgb(80, 187, 223)" }}
-                                  >
-                                    {new Intl.DateTimeFormat("en-US", {
-                                      year: "2-digit",
-                                      month: "2-digit",
-                                      day: "2-digit",
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    }).format(search.ts)}
-                                  </Typography>
-                                </Grid>
-                              </Grid>
-                            </Grid>
-                          </Box>
-                        );
-                      })
-                    ) : (
-                      <Box p={1}>
-                        <Typography>There is no history yet.</Typography>
-                      </Box>
-                    )}
-                  </Popover>
-                </div>
-              </InputAdornment>
-            ),
-          }}
-          className={classes.textF}
-        />
-      )}
-      renderOption={(option) => {
-        if (option.Source === "header" || option.group === "loader")
-          return null;
-        const parts = parse(option.Primary, Array());
-
-        return (
-          <Grid container spacing={0}>
-            <Grid container item xs={11} alignItems="center">
-              <Grid item>
-                {option.Source === "lod2019-index" && (
-                  <PersonIcon className={classes.icon} />
-                )}
-                {option.Source === "operator-index" && (
-                  <OperatorIcon className={classes.icon} color={"#757575"} />
-                )}
-                {option.Source === "wellheader-index" && (
-                  <WellIcon
-                    className={classes.icon}
-                    color={"#757575"}
-                    opacity="1.0"
-                    small
                   />
-                )}
-                {option.Source === "lease-index" && (
-                  <LeaseIcon className={classes.icon} color={"#757575"} />
-                )}
-                {option.Source === "mapboxSearch" && (
-                  <LocationOnIcon className={classes.icon} />
-                )}
-              </Grid>
-              <Grid item xs>
-                {parts.map((part, index) => (
-                  <span
-                    key={index}
-                    style={{ fontWeight: part.highlight ? 700 : 400 }}
-                  >
-                    {part.text}
-                  </span>
-                ))}
-
-                {option && option.Secondary && (
-                  <Typography variant="body2" color="textSecondary">
-                    {option.Secondary}
-                  </Typography>
-                )}
+                  <div
+                    className={classes.score}
+                    style={{
+                      zIndex: "1301",
+                      backgroundImage:
+                        "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
+                      opacity: calcScoreOpacity(
+                        option.Source === "lod2019-index"
+                          ? maxMinOwnersScore
+                          : option.Source === "wellheader-index"
+                          ? maxMinWellsScore
+                          : option.Source === "operator-index"
+                          ? maxMinOperatosScore
+                          : option.Source === "lease-index"
+                          ? maxMinLeasesScore
+                          : maxMinMapboxSearchScore,
+                        option.Score
+                      ).toString(),
+                    }}
+                  />
+                </Grid>
               </Grid>
             </Grid>
-            <Grid container item xs={1} alignItems="center">
-              <Grid item style={{ position: "relative" }}>
-                <div
-                  className={classes.score}
-                  style={{
-                    zIndex: "1300",
-                    backgroundColor: "#12ABE0",
-                  }}
-                />
-                <div
-                  className={classes.score}
-                  style={{
-                    zIndex: "1301",
-                    backgroundImage:
-                      "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
-                    opacity: calcScoreOpacity(
-                      option.Source === "lod2019-index"
-                        ? maxMinOwnersScore
-                        : option.Source === "wellheader-index"
-                        ? maxMinWellsScore
-                        : option.Source === "operator-index"
-                        ? maxMinOperatosScore
-                        : option.Source === "lease-index"
-                        ? maxMinLeasesScore
-                        : maxMinMapboxSearchScore,
-                      option.Score
-                    ).toString(),
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        );
-      }}
-    />
+          );
+        }}
+      />
+    </div>
   );
 }

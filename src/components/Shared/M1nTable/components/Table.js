@@ -39,6 +39,8 @@ import Divider from "@material-ui/core/Divider";
 import CellContentEdition from "./SubComponents/CellContentEdition";
 import Avatar, { ConfigProvider } from "react-avatar";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import MapLocation from "../../svgIcons/MapLocation";
+import RoomIcon from "@material-ui/icons/Room";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -211,6 +213,76 @@ export default function SubTable(props) {
     if (props.columns) {
       props.columns.forEach((column) => {
         switch (column.name) {
+          case "coordinates":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
+
+                  return (
+                    <Tooltip
+                      title={
+                        !value || value.length < 2
+                          ? "Not Available"
+                          : "Fly To Map"
+                      }
+                      placement="top"
+                      style={{ marginRight: "10px" }}
+                    >
+                      <IconButton
+                        id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                        size={props.dense ? "small" : "medium"}
+                        color="secondary"
+                        className={`${classes.icons} ${
+                          !value || value.length < 2
+                            ? classes.noCommentsIcon
+                            : ""
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (value && value.length === 2)
+                            setStateApp((state) => ({
+                              ...state,
+                              popupOpen: false,
+                              selectedWell: null,
+                              selectedWellId: tableMeta.rowData[0],
+                              flyTo: {
+                                longitude: value[0],
+                                latitude: value[1],
+                              },
+                              mapGridCardActivated: "min",
+                            }));
+                        }}
+                        aria-label="fly"
+                        // onMouseOver={() => {
+                        //   if (
+                        //     m1nSelectedRowsIndexes.indexOf(
+                        //       tableMeta.rowIndex
+                        //     ) !== -1 &&
+                        //     m1nSelectedRowsIndexes.length > 1
+                        //   )
+                        //     multiSelectMouseHoverColor(id, "#dadbde");
+                        // }}
+                        // onMouseOut={() => {
+                        //   if (
+                        //     m1nSelectedRowsIndexes.indexOf(
+                        //       tableMeta.rowIndex
+                        //     ) !== -1 &&
+                        //     m1nSelectedRowsIndexes.length > 1
+                        //   )
+                        //     multiSelectMouseHoverColor(id, "#efefef");
+                        // }}
+                      >
+                        <RoomIcon />
+                      </IconButton>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
+
           case "isTracked":
             {
               column.options = {
