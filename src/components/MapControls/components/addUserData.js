@@ -82,19 +82,31 @@ export default function AddUserData(props) {
     } else if (fileName.endsWith(".shp")) {
       console.log("SHAPEFILE!");
       return new Promise((resolve, reject) => {
+        let geoJSON = {
+          type: "FeatureCollection",
+          features: []
+        }
+
         fetch(file[0].data)
           .then((response) => {
+            //convert data URL to stream readable object 
             const reader = response.body.getReader();
-
+          
             shapefile.open(reader)
               .then(source => source.read()
+                  //gets called once
                 .then(function log(result) {
-                    if (result.done) return;
-                    console.log(result.value);
-                    return source.read().then(log);
+                    if (result.done) resolve(geoJSON);
+                    //push result.value into feature array
+                    geoJSON.features.push(result.value);
+                    //console.log(result.value);
+                    source.read().then(log); 
+                    //return valid geojson
                 })
               )
             .catch(error => console.error(error.stack));
+
+            
           })
           .then((response) => {
             resolve(response);
