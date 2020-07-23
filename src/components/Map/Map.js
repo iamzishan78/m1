@@ -1110,11 +1110,11 @@ export default function Map() {
 
   useEffect(() => {
     // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
-    setStateApp((state) => ({
-      ...state,
-      popupOpen: false,
-      selectedUserDefinedLayer: undefined,
-    }));
+    // setStateApp((state) => ({
+    //   ...state,
+    //   popupOpen: false,
+    //   selectedUserDefinedLayer: undefined,
+    // }));
 
     if (stateApp.userDefinedLayers.length > 0 && map) {
 
