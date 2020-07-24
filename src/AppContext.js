@@ -61,8 +61,10 @@ const AppProvider = (props) => {
     wellSelectedCoordinates: [],
     universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
     mapGridCardActivated: false,
+    mapGridCardActiveTap: 1,
     searchResultData: [], //// mapGridCard Search Data
     searchloading: false, //// mapGridCard Search loading
+    searchInputValue: "",
     viewportData: [], //// mapGridCard Viewport Data
     trackedDataCount: 0, //// mapGridCard Viewport tracked count
 
