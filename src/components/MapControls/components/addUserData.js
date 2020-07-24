@@ -66,11 +66,11 @@ export default function AddUserData(props) {
     setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
   }
 
-  const handleFileAsync = (file) => {
+  const handleFileAsync = async (file) => {
     let fileName = file[0].file.name;
     console.log(fileName);
     if (fileName.endsWith(".geojson")) {
-      return new Promise((resolve, reject) => {
+      return await new Promise((resolve, reject) => {
         fetch(file[0].data)
           .then((response) =>
             response.json())
@@ -81,7 +81,7 @@ export default function AddUserData(props) {
       })
     } else if (fileName.endsWith(".shp")) {
       console.log("SHAPEFILE!");
-      return new Promise((resolve, reject) => {
+      return await new Promise((resolve, reject) => {
         let geoJSON = {
           type: "FeatureCollection",
           features: []
@@ -92,24 +92,17 @@ export default function AddUserData(props) {
             //convert data URL to stream readable object 
             const reader = response.body.getReader();
           
-            shapefile.open(reader)
+            shapefile.read(reader)
               .then(source => source.read()
-                  //gets called once
-                .then(function log(result) {
-                    if (result.done) resolve(geoJSON);
-                    //push result.value into feature array
-                    geoJSON.features.push(result.value);
-                    //console.log(result.value);
-                    source.read().then(log); 
-                    //return valid geojson
-                })
+              .then(function log(result) {
+                if (result.done) {
+                  resolve(geoJSON);
+                }
+                geoJSON.features.push(result.value);
+                return source.read().then(log);
+              })
               )
-            .catch(error => console.error(error.stack));
-
-            
-          })
-          .then((response) => {
-            resolve(response);
+              .catch(error => console.error(error.stack));
           })
           .catch((error) => reject(error));
       })      
