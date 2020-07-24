@@ -31,11 +31,26 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#fff",
   },
   timelineItemRight: {
+    "&:hover": {
+      backgroundColor: "#F0F6F8",
+    },
+    paddingLeft: "10px",
     "&:before": {
       content: "none",
     },
   },
-
+  timelineItemRightToday: {
+    paddingLeft: "10px",
+    "&:before": {
+      content: "none",
+    },
+  },
+  itemHeading: {
+    cursor: "pointer",
+    "&:hover": {
+      color: "#000",
+    },
+  },
   timelineText: {
     "& .MuiTypography-body1": { fontSize: "0.85rem" },
     "& .MuiTypography-body2": { fontSize: "0.7rem" },
@@ -186,7 +201,7 @@ export default function Activities({ activityLog, user_id, ...props }) {
         </Grid>
       </CardActions>
       <Timeline>
-        <TimelineItem className={classes.timelineItemRight}>
+        <TimelineItem className={classes.timelineItemRightToday}>
           <TimelineSeparator style={{ transform: "translateX(-5px)" }}>
             <TimelineDot className={classes.todayDot}>Today</TimelineDot>
             <TimelineConnector />
@@ -203,7 +218,7 @@ export default function Activities({ activityLog, user_id, ...props }) {
             <TimelineContent>
               <div className={classes.timelineText}>
                 <Typography
-                  style={{ cursor: "pointer" }}
+                  className={classes.itemHeading}
                   variant="body1"
                   onClick={() => updateActivity(activity)}
                 >
