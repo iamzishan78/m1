@@ -218,6 +218,14 @@ export const userDefinedLayers = [
           "text-allow-overlap": true,
           "text-anchor": "center",
           "text-field": "{label}",
+          "text-size": [
+            "interpolate",
+            ["exponential", 1],
+            ["zoom"],
+            0,0,
+            // 11,0,
+            22,30
+            ],
         },
       },
     ],
@@ -278,6 +286,14 @@ export const userDefinedLayers = [
           "text-allow-overlap": true,
           "text-anchor": "center",
           "text-field": "{label}",
+          "text-size": [
+            "interpolate",
+            ["exponential", 1],
+            ["zoom"],
+            0,0,
+            // 11,0,
+            22,30
+            ],
         },
       },
     ],
