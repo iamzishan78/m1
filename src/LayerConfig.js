@@ -103,6 +103,17 @@ export const styleLayers = [
       layerType: ["symbol"],
       layoutProps: {
         'icon-image': 'marker-icon',
+        'icon-allow-overlap': true,
+        'icon-size': 2,
+        'text-field': 'H',
+        'text-font': [
+            'Open Sans Bold',
+            'Arial Unicode MS Bold'
+        ],
+        'text-size': 11,
+        'text-transform': 'uppercase',
+        'text-letter-spacing': 0.05,
+        'text-offset': [0, -0.5]
       },
       paintProps: {
         "icon-color": "#00ff00",
