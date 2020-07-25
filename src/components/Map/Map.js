@@ -48,6 +48,8 @@ import { spatialDataAttributes } from "../MapControls/components/DrawShapes/cons
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 import MapGridCard from "../MapGridCard/MapGridCard";
 
+import MarkerIcon from './sprites/marker-icon.png';
+
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
     width: "100%",
@@ -3399,7 +3401,7 @@ export default function Map() {
 
         newMap.on("load", function (e) {
           
-          newMap.loadImage('./sprites/marker-icon.png', function(error, image) {
+          newMap.loadImage(MarkerIcon, function(error, image) {
             if (error) throw error;
             // add image to the active style and make it SDF-enabled
             newMap.addImage('marker-icon', image, { sdf: true });
