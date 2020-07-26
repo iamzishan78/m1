@@ -16,6 +16,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { FormLabel } from "@material-ui/core";
 import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import Tooltip from "@material-ui/core/Tooltip";
+import { useLazyQuery } from "@apollo/react-hooks";
+import { GETPERSONDATA } from "../../../../../graphQL/useQueryGetPersonData";
 
 const styles = (theme) => ({
   root: {
@@ -120,6 +122,20 @@ const useStyles = makeStyles({
 
 export default function BuyContactsInfoDialogContent(props) {
   const classes = useStyles();
+  const [getPersonDataQuery, { data }] = useLazyQuery(GETPERSONDATA) // response in { data }
+
+  const loadPersonData = () => { // TODO
+    getPersonDataQuery({
+      variables: {
+        firstName: props.rows[0].name.split(" ")[0],
+        lastName: props.rows[0].name.split(" ")[1],
+        address: joinAddress(props.rows[0]),
+        city: '',
+        state: '',
+      },
+      fetchPolicy: "network-only",
+    })
+  }
 
   useEffect(() => {
     if (!props.rows || props.rows.length === 0) props.onClose();
@@ -249,7 +265,7 @@ export default function BuyContactsInfoDialogContent(props) {
         >
           Cancel
         </Button>
-        <Button onClick={() => {}} color="secondary" variant="contained">
+        <Button onClick={() => { loadPersonData(); }} color="secondary" variant="contained">
           Buy Now
         </Button>
       </DialogActions>
