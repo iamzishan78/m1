@@ -102,13 +102,23 @@ export const styleLayers = [
       layerId: ["rigs"],
       layerType: ["symbol"],
       layoutProps: {
-        'icon-image': 'marker-lg',
+        'icon-image': 'marker-icon',
+        'icon-allow-overlap': true,
+        'icon-size': 2,
+        'text-field': 'H',
+        'text-font': [
+            'Open Sans Bold',
+            'Arial Unicode MS Bold'
+        ],
+        'text-size': 11,
+        'text-transform': 'uppercase',
+        'text-letter-spacing': 0.05,
+        'text-offset': [0, -0.5]
       },
       paintProps: {
-        // "circle-radius": 5,
-        // "circle-color": "#666666",
-        // "circle-stroke-width": 2,
-        // "circle-stroke-color": "#fff",
+        "icon-color": "#00ff00",
+        "icon-halo-color": "#fff",
+        "icon-halo-width": 2
       },
       clusterProps: {
         clusterPaintProps: {
@@ -219,6 +229,14 @@ export const userDefinedLayers = [
           "text-allow-overlap": true,
           "text-anchor": "center",
           "text-field": "{label}",
+          "text-size": [
+            "interpolate",
+            ["exponential", 1],
+            ["zoom"],
+            0,0,
+            // 11,0,
+            22,30
+            ],
         },
       },
     ],
@@ -279,6 +297,14 @@ export const userDefinedLayers = [
           "text-allow-overlap": true,
           "text-anchor": "center",
           "text-field": "{label}",
+          "text-size": [
+            "interpolate",
+            ["exponential", 1],
+            ["zoom"],
+            0,0,
+            // 11,0,
+            22,30
+            ],
         },
       },
     ],

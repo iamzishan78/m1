@@ -47,6 +47,8 @@ import { RIGSQUERY } from '../../graphQL/useQueryRigs';
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 
+import MarkerIcon from './sprites/marker-icon.png';
+
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
     width: "100%",
@@ -341,7 +343,7 @@ export default function Map() {
             id: config.layerProps.layerId[0],
             type: config.layerProps.layerType[0],
             source: config.sourceProps[0],
-            // paint: config.layerProps.paintProps,
+            paint: config.layerProps.paintProps,
             layout: {
               ...config.layerProps.layoutProps,
               visibility: checkedPosition > -1 ? 'visible' : 'none'
@@ -3339,6 +3341,13 @@ export default function Map() {
         setStateApp({ ...stateApp, map: newMap, draw: Draw });
 
         newMap.on("load", function (e) {
+          
+          newMap.loadImage(MarkerIcon, function(error, image) {
+            if (error) throw error;
+            // add image to the active style and make it SDF-enabled
+            newMap.addImage('marker-icon', image, { sdf: true });
+          });
+
           setDraw(Draw);
           setMap(newMap);
           console.log("set new map complete", newMap.loaded());
