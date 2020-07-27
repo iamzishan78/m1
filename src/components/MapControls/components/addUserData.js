@@ -18,6 +18,7 @@ import Button from '@material-ui/core/Button';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import TextField from '@material-ui/core/TextField';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
+import { readProfileRequest } from "../../Login/AADAuthConfig";
 var shapefile = require("shapefile");
 
 
@@ -66,7 +67,7 @@ export default function AddUserData(props) {
     setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
   }
 
-  const handleFileAsync = async (file) => {
+  async function handleFileAsync(file) {
     let fileName = file[0].file.name;
     console.log(fileName);
     if (fileName.endsWith(".geojson")) {
@@ -81,31 +82,24 @@ export default function AddUserData(props) {
       })
     } else if (fileName.endsWith(".shp")) {
       console.log("SHAPEFILE!");
-      return await new Promise((resolve, reject) => {
-        let geoJSON = {
-          type: "FeatureCollection",
-          features: []
-        }
+      let inputFile = file[0].data;
+      let geoJSON = {
+        type: "FeatureCollection",
+        features: []
+      }
 
-        fetch(file[0].data)
+      return await new Promise((resolve, reject) => {
+        fetch(inputFile)
           .then((response) => {
-            //convert data URL to stream readable object 
             const reader = response.body.getReader();
-          
-            shapefile.read(reader)
-              .then(source => source.read()
-              .then(function log(result) {
-                if (result.done) {
-                  resolve(geoJSON);
-                }
-                geoJSON.features.push(result.value);
-                return source.read().then(log);
-              })
-              )
-              .catch(error => console.error(error.stack));
+            shapefile.open(reader)
+              .then(source => source.read())
+              .then(({ done, value }) => {
+                geoJSON.features.push(value);
+                resolve(geoJSON);
+              }).catch(error => console.log(error))
           })
-          .catch((error) => reject(error));
-      })      
+      })
     }
   }
 
