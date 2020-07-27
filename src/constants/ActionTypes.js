@@ -1,4 +1,10 @@
-// Common Module
-export const FETCH_ERROR = "fetch_error";
-export const SHOW_MESSAGE = "SHOW_MESSAGE";
-export const HIDE_MESSAGE = "HIDE_MESSAGE";
+// Notifications Module
+export const SHOW_INFO_MESSAGE = "SHOW_INFO_MESSAGE";
+export const SHOW_SUCCESS_MESSAGE = "SHOW_SUCCESS_MESSAGE";
+export const SHOW_wARNING_MESSAGE = "SHOW_wARNING_MESSAGE";
+export const SHOW_ERROR_MESSAGE = "SHOW_ERROR_MESSAGE";
+
+export const HIDE_INFO_MESSAGE = "HIDE_INFO_MESSAGE";
+export const HIDE_SUCCESS_MESSAGE = "HIDE_SUCCESS_MESSAGE";
+export const HIDE_wARNING_MESSAGE = "HIDE_wARNING_MESSAGE";
+export const HIDE_ERROR_MESSAGE = "HIDE_ERROR_MESSAGE";

@@ -1,11 +1,11 @@
 import { combineReducers } from "redux";
 import { connectRouter } from "connected-react-router";
-import Common from "./Common";
+import Notifications from "./Notifications";
 
 const createRootReducer = (history) =>
   combineReducers({
     router: connectRouter(history),
-    common: Common,
+    notifications: Notifications,
     //// .....
   });
 

@@ -41,6 +41,13 @@ import Avatar, { ConfigProvider } from "react-avatar";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import MapLocation from "../../svgIcons/MapLocation";
 import RoomIcon from "@material-ui/icons/Room";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  showInfoMessage,
+  showSuccessMessage,
+  showWarningMessage,
+  showErrorMessage,
+} from "../../../../actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -152,6 +159,7 @@ var formatter = new Intl.NumberFormat("en-US", {
 
 export default function SubTable(props) {
   const classes = useStyles(props);
+  const dispatch = useDispatch();
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, setRows] = useState(null);
@@ -181,6 +189,17 @@ export default function SubTable(props) {
           }),
         ]);
       else setRows([...props.rows]);
+
+      dispatch(showInfoMessage("The Contacts table finished loading")); //////////////////////////////////////////
+      setTimeout(() => {
+        dispatch(showSuccessMessage("Another type of Notification Message"));
+      }, 2500);
+      setTimeout(() => {
+        dispatch(showWarningMessage("Warning you our app is amazing!!"));
+      }, 5000);
+      setTimeout(() => {
+        dispatch(showErrorMessage("lol, we never have errors!!"));
+      }, 7500);
     }
   }, [props.rows, props.orderByTracks]);
 

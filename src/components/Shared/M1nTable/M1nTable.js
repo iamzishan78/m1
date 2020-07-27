@@ -36,7 +36,6 @@ import { CONTACT } from "../../../graphQL/useQueryContact";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
 
 import { useDispatch, useSelector } from "react-redux";
-import { showMessage, hideMessage } from "../../../actions";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
@@ -735,6 +734,7 @@ const joinAddress = (row) => {
 
 export default function M1nTable(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, setRows] = useState();
   const [header, setHeader] = useState("");

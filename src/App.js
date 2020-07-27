@@ -34,6 +34,8 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { CircularProgress } from "@material-ui/core";
 import Profile from "./components/Profile/Profile";
 
+import Notifications from "./components/Notifications/Notifications";
+
 //redux
 import { Provider as ReduxProvider } from "react-redux";
 import { ConnectedRouter } from "connected-react-router";
@@ -212,6 +214,7 @@ function App() {
 
   return (
     <ReduxProvider store={store}>
+      <Notifications />
       <AppProvider>
         <SetApolloClient
           setApolloClient={updateApolloClient}
@@ -224,68 +227,64 @@ function App() {
               <MuiPickersUtilsProvider utils={MomentUtils}>
                 <ConnectedRouter history={history}>
                   {/* <Router> */}
-                    <Switch>
-                      <NavigationProvider>
-                        <PrivateRoute exact path="/" component={MapProvider} />
-                        <PrivateRoute
-                          exact
-                          path="/profile"
-                          component={Profile}
-                        />
-                        <Route exact path="/signup" component={SignUpCard} />
-                        <Route
-                          exact
-                          path="/forgotpassword"
-                          component={ForgotPassword}
-                        />
-                        <PrivateRoute
-                          exact
-                          path="/track"
-                          component={TrackProvider}
-                        />
-                        <PrivateRoute
-                          exact
-                          path="/transact"
-                          component={TransactProvider}
-                        />
-                        <PrivateRoute
-                          exact
-                          path="/title"
-                          component={TitleOpinionProvider}
-                        />
-                        <PrivateRoute
-                          exact
-                          path="/alerts"
-                          component={AlertsProvider}
-                        />
-                        <PrivateRoute
-                          exact
-                          path="/titleopinion"
-                          component={TitleOpinionProvider}
-                        />
-                        <PrivateRoute
-                          exact
-                          path="/contacts"
-                          component={ContactsProvider}
-                        />
-                        <PrivateRoute
-                          exact
-                          path="/dashboard"
-                          component={DashboardProvider}
-                        />
-                        <PrivateRoute
-                          exact
-                          path="/studio"
-                          component={StudioProvider}
-                        />
-                        <PrivateRoute
-                          exact
-                          path="/bulkupload"
-                          component={BulkUpload}
-                        />
-                        {/* <Route component={NotFoundRedirect} /> */}
-                      </NavigationProvider>
-                    </Switch>
+                  <Switch>
+                    <NavigationProvider>
+                      <PrivateRoute exact path="/" component={MapProvider} />
+                      <PrivateRoute exact path="/profile" component={Profile} />
+                      <Route exact path="/signup" component={SignUpCard} />
+                      <Route
+                        exact
+                        path="/forgotpassword"
+                        component={ForgotPassword}
+                      />
+                      <PrivateRoute
+                        exact
+                        path="/track"
+                        component={TrackProvider}
+                      />
+                      <PrivateRoute
+                        exact
+                        path="/transact"
+                        component={TransactProvider}
+                      />
+                      <PrivateRoute
+                        exact
+                        path="/title"
+                        component={TitleOpinionProvider}
+                      />
+                      <PrivateRoute
+                        exact
+                        path="/alerts"
+                        component={AlertsProvider}
+                      />
+                      <PrivateRoute
+                        exact
+                        path="/titleopinion"
+                        component={TitleOpinionProvider}
+                      />
+                      <PrivateRoute
+                        exact
+                        path="/contacts"
+                        component={ContactsProvider}
+                      />
+                      <PrivateRoute
+                        exact
+                        path="/dashboard"
+                        component={DashboardProvider}
+                      />
+                      <PrivateRoute
+                        exact
+                        path="/studio"
+                        component={StudioProvider}
+                      />
+                      <PrivateRoute
+                        exact
+                        path="/bulkupload"
+                        component={BulkUpload}
+                      />
+                      {/* <Route component={NotFoundRedirect} /> */}
+                    </NavigationProvider>
+                  </Switch>
                   {/* </Router> */}
                 </ConnectedRouter>
               </MuiPickersUtilsProvider>
