@@ -22,7 +22,7 @@ import ContactsProvider from "./components/Contacts/ContactsProvider";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
 import DashboardProvider from "./components/Dashboard/DashboardProvider";
 import StudioProvider from "./components/Studio/StudioProvider";
-import BulkUpload from "./components/BulkUpload/BulkUpload"
+import BulkUpload from "./components/BulkUpload/BulkUpload";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
@@ -32,7 +32,14 @@ import { ApolloProvider } from "@apollo/react-hooks";
 import ApolloClient from "apollo-boost";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { CircularProgress } from "@material-ui/core";
-import Profile from "./components/Profile/Profile"
+import Profile from "./components/Profile/Profile";
+
+//redux
+import { Provider as ReduxProvider } from "react-redux";
+import { ConnectedRouter } from "connected-react-router";
+import configureStore, { history } from "./store";
+
+const store = configureStore(/ provide initial state if any /);
 
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
 const theme = createMuiTheme({
@@ -99,9 +106,7 @@ const SetApolloClient = (props) => {
       props.setApolloClientToken(stateApp.user.authToken);
     }
   }, [stateApp.user]);
-  
 
-  
   useEffect(() => {
     if (stateApp.userSnap === true) {
       var script = document.createElement("script");
@@ -119,15 +124,13 @@ const SetApolloClient = (props) => {
       return () => {
         document.body.removeChild(script);
       };
-    } else if (stateApp.userSnap === false){
+    } else if (stateApp.userSnap === false) {
       const feedbackScript = document.querySelector("#feedback-script");
       feedbackScript && feedbackScript.remove();
       const element = document.getElementsByName("us-entrypoint-button");
       element && element[0] && element[0].remove();
     }
   }, [stateApp.userSnap]);
-
-
 
   /*  useEffect( () => {
       if(stateApp.user && stateApp.apolloClientEndpoint){
@@ -207,85 +210,92 @@ function App() {
     }
   };
 
-
   return (
-    <AppProvider>
-      <SetApolloClient
-        setApolloClient={updateApolloClient}
-        setApolloClientEndpoint={updateApolloClientEndpoint}
-        setApolloClientToken={updateApolloClientToken}
-      />
-      {apolloClient ? (
-        <ApolloProvider client={apolloClient}>
-          <MuiThemeProvider theme={theme}>
-            <MuiPickersUtilsProvider utils={MomentUtils}>
-              <Router>
-                <Switch>
-                  <NavigationProvider>
-                    <PrivateRoute exact path="/" component={MapProvider} />
-                    <PrivateRoute exact path="/profile" component={Profile} />
-                    <Route exact path="/signup" component={SignUpCard} />
-                    <Route
-                      exact
-                      path="/forgotpassword"
-                      component={ForgotPassword}
-                    />
-                    <PrivateRoute
-                      exact
-                      path="/track"
-                      component={TrackProvider}
-                    />
-                    <PrivateRoute
-                      exact
-                      path="/transact"
-                      component={TransactProvider}
-                    />
-                    <PrivateRoute
-                      exact
-                      path="/title"
-                      component={TitleOpinionProvider}
-                    />
-                    <PrivateRoute
-                      exact
-                      path="/alerts"
-                      component={AlertsProvider}
-                    />
-                    <PrivateRoute
-                      exact
-                      path="/titleopinion"
-                      component={TitleOpinionProvider}
-                    />
-                    <PrivateRoute
-                      exact
-                      path="/contacts"
-                      component={ContactsProvider}
-                    />
-                    <PrivateRoute
-                      exact
-                      path="/dashboard"
-                      component={DashboardProvider}
-                    />
-                    <PrivateRoute
-                      exact
-                      path="/studio"
-                      component={StudioProvider}
-                    />
-                    <PrivateRoute
-                    exact
-                    path="/bulkupload"
-                    component={BulkUpload}
-                    />
-                    {/* <Route component={NotFoundRedirect} /> */}
-                  </NavigationProvider>
-                </Switch>
-              </Router>
-            </MuiPickersUtilsProvider>
-          </MuiThemeProvider>
-        </ApolloProvider>
-      ) : (
-        <CircularProgress></CircularProgress>
-      )}
-    </AppProvider>
+    <ReduxProvider store={store}>
+      <AppProvider>
+        <SetApolloClient
+          setApolloClient={updateApolloClient}
+          setApolloClientEndpoint={updateApolloClientEndpoint}
+          setApolloClientToken={updateApolloClientToken}
+        />
+        {apolloClient ? (
+          <ApolloProvider client={apolloClient}>
+            <MuiThemeProvider theme={theme}>
+              <MuiPickersUtilsProvider utils={MomentUtils}>
+                <ConnectedRouter history={history}>
+                  {/* <Router> */}
+                    <Switch>
+                      <NavigationProvider>
+                        <PrivateRoute exact path="/" component={MapProvider} />
+                        <PrivateRoute
+                          exact
+                          path="/profile"
+                          component={Profile}
+                        />
+                        <Route exact path="/signup" component={SignUpCard} />
+                        <Route
+                          exact
+                          path="/forgotpassword"
+                          component={ForgotPassword}
+                        />
+                        <PrivateRoute
+                          exact
+                          path="/track"
+                          component={TrackProvider}
+                        />
+                        <PrivateRoute
+                          exact
+                          path="/transact"
+                          component={TransactProvider}
+                        />
+                        <PrivateRoute
+                          exact
+                          path="/title"
+                          component={TitleOpinionProvider}
+                        />
+                        <PrivateRoute
+                          exact
+                          path="/alerts"
+                          component={AlertsProvider}
+                        />
+                        <PrivateRoute
+                          exact
+                          path="/titleopinion"
+                          component={TitleOpinionProvider}
+                        />
+                        <PrivateRoute
+                          exact
+                          path="/contacts"
+                          component={ContactsProvider}
+                        />
+                        <PrivateRoute
+                          exact
+                          path="/dashboard"
+                          component={DashboardProvider}
+                        />
+                        <PrivateRoute
+                          exact
+                          path="/studio"
+                          component={StudioProvider}
+                        />
+                        <PrivateRoute
+                          exact
+                          path="/bulkupload"
+                          component={BulkUpload}
+                        />
+                        {/* <Route component={NotFoundRedirect} /> */}
+                      </NavigationProvider>
+                    </Switch>
+                  {/* </Router> */}
+                </ConnectedRouter>
+              </MuiPickersUtilsProvider>
+            </MuiThemeProvider>
+          </ApolloProvider>
+        ) : (
+          <CircularProgress></CircularProgress>
+        )}
+      </AppProvider>
+    </ReduxProvider>
   );
 }
 

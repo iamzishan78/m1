@@ -111,6 +111,11 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "calc(100% - 114px)",
     overflow: "auto",
     height: "calc(100% - 114px)",
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": { minHeight: "220px !important" },
+      },
+    },
   },
   tapsLabelsButtons: {
     boxShadow: "none",

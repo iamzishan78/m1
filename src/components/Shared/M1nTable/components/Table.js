@@ -213,7 +213,7 @@ export default function SubTable(props) {
     if (props.columns) {
       props.columns.forEach((column) => {
         switch (column.name) {
-          case "coordinates":
+          case "coordinates": //// fly to the map icon
             {
               column.options = {
                 ...column.options,
@@ -803,10 +803,8 @@ export default function SubTable(props) {
     filterType: "multiselect",
     rowsPerPage: props.startPaginationAt ? props.startPaginationAt : 10,
     rowsPerPageOptions:
-      props.rows && props.rows.length > 100
-        ? [10, 25, 100, 1000]
-        : props.rows && props.rows.length > 25
-        ? [10, 25, 100]
+      props.rows && props.rows.length > 25
+        ? [10, 25, 50]
         : props.rows && props.rows.length > 10
         ? [10, 25]
         : [],

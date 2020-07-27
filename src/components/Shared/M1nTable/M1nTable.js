@@ -35,6 +35,9 @@ import { ADDREMOVEOWNERTOACONTACT } from "../../../graphQL/useMutationAddRemoveO
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
 
+import { useDispatch, useSelector } from "react-redux";
+import { showMessage, hideMessage } from "../../../actions";
+
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
 }));
@@ -1923,7 +1926,7 @@ export default function M1nTable(props) {
       setAddAble({ parent: false, type: "contact" });
       getContacts();
       setUploadIcon(true);
-      setStartPaginationAt(100);
+      // setStartPaginationAt(50);
     }
   }, [props.parent]);
 
