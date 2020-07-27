@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const CUSTOMLAYERSQUERY = gql`
-  query getCustomLayers($userId: String) {
-    customLayers(userId: $userId) {
+  query getCustomLayers {
+    allCustomLayers {
       _id
       shape
       name

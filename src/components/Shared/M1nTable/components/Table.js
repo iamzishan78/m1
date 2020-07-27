@@ -39,6 +39,15 @@ import Divider from "@material-ui/core/Divider";
 import CellContentEdition from "./SubComponents/CellContentEdition";
 import Avatar, { ConfigProvider } from "react-avatar";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import MapLocation from "../../svgIcons/MapLocation";
+import RoomIcon from "@material-ui/icons/Room";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  showInfoMessage,
+  showSuccessMessage,
+  showWarningMessage,
+  showErrorMessage,
+} from "../../../../actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -150,6 +159,7 @@ var formatter = new Intl.NumberFormat("en-US", {
 
 export default function SubTable(props) {
   const classes = useStyles(props);
+  const dispatch = useDispatch();
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, setRows] = useState(null);
@@ -179,6 +189,17 @@ export default function SubTable(props) {
           }),
         ]);
       else setRows([...props.rows]);
+
+      dispatch(showInfoMessage("The Contacts table finished loading")); //////////////////////////////////////////
+      setTimeout(() => {
+        dispatch(showSuccessMessage("Another type of Notification Message"));
+      }, 2500);
+      setTimeout(() => {
+        dispatch(showWarningMessage("Warning you our app is amazing!!"));
+      }, 5000);
+      setTimeout(() => {
+        dispatch(showErrorMessage("lol, we never have errors!!"));
+      }, 7500);
     }
   }, [props.rows, props.orderByTracks]);
 
@@ -211,6 +232,76 @@ export default function SubTable(props) {
     if (props.columns) {
       props.columns.forEach((column) => {
         switch (column.name) {
+          case "coordinates": //// fly to the map icon
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
+
+                  return (
+                    <Tooltip
+                      title={
+                        !value || value.length < 2
+                          ? "Not Available"
+                          : "Fly To Map"
+                      }
+                      placement="top"
+                      style={{ marginRight: "10px" }}
+                    >
+                      <IconButton
+                        id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                        size={props.dense ? "small" : "medium"}
+                        color="secondary"
+                        className={`${classes.icons} ${
+                          !value || value.length < 2
+                            ? classes.noCommentsIcon
+                            : ""
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (value && value.length === 2)
+                            setStateApp((state) => ({
+                              ...state,
+                              popupOpen: false,
+                              selectedWell: null,
+                              selectedWellId: tableMeta.rowData[0],
+                              flyTo: {
+                                longitude: value[0],
+                                latitude: value[1],
+                              },
+                              mapGridCardActivated: "min",
+                            }));
+                        }}
+                        aria-label="fly"
+                        // onMouseOver={() => {
+                        //   if (
+                        //     m1nSelectedRowsIndexes.indexOf(
+                        //       tableMeta.rowIndex
+                        //     ) !== -1 &&
+                        //     m1nSelectedRowsIndexes.length > 1
+                        //   )
+                        //     multiSelectMouseHoverColor(id, "#dadbde");
+                        // }}
+                        // onMouseOut={() => {
+                        //   if (
+                        //     m1nSelectedRowsIndexes.indexOf(
+                        //       tableMeta.rowIndex
+                        //     ) !== -1 &&
+                        //     m1nSelectedRowsIndexes.length > 1
+                        //   )
+                        //     multiSelectMouseHoverColor(id, "#efefef");
+                        // }}
+                      >
+                        <RoomIcon />
+                      </IconButton>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
+
           case "isTracked":
             {
               column.options = {
@@ -731,10 +822,8 @@ export default function SubTable(props) {
     filterType: "multiselect",
     rowsPerPage: props.startPaginationAt ? props.startPaginationAt : 10,
     rowsPerPageOptions:
-      props.rows && props.rows.length > 100
-        ? [10, 25, 100, 1000]
-        : props.rows && props.rows.length > 25
-        ? [10, 25, 100]
+      props.rows && props.rows.length > 25
+        ? [10, 25, 50]
         : props.rows && props.rows.length > 10
         ? [10, 25]
         : [],
