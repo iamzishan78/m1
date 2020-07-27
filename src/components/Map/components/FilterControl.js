@@ -146,37 +146,50 @@ export default (props) => {
 
   const handleRemoveFilter = () => {
     setStateNav(stateNav => ({ ...stateNav, drawingMode: null, filterFeatureId: null, filterDrawing: []}));
-    setStateApp(stateApp => ({ ...stateApp, popupOpen: false}));
+    setStateApp(stateApp => ({ ...stateApp, popupOpen: false, zoomFault: null}));
   };
 
   const handleTrackWells = () => {
     const { map } = stateApp;
-    const points = map.queryRenderedFeatures({
-      layers: ["wellpoints", "welllines"]
-    });
-    const targetLabel = 'well';
-    const user = stateApp.user.mongoId;
-
-    setTrackWells(!isTrackWells);
-
-    if (points && points.length > 0) {
-      const tracks = [];
-      points.forEach((point) => {
-        const targetSourceId = point.properties.id.toLowerCase();
-        const track = {
-          user: user,
-          objectType: targetLabel,
-          trackOn: targetSourceId,
-        };
-        tracks.push(track);
+    const zoom = map.getZoom();
+    if (zoom >= 11) {
+      const points = map.queryRenderedFeatures({
+        layers: ["wellpoints", "welllines"]
       });
-      toggleCreateRemoveTracks({
-        variables: {
-          tracks: tracks,
-        },
-        refetchQueries: ["tracksByUserAndObjectType", "trackByUserAndObjectId"], ////add all queries for components with track icons////
-        awaitRefetchQueries: true,
-      });
+      const targetLabel = 'well';
+      const user = stateApp.user.mongoId;
+
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        zoomFault: null
+      }));
+
+      setTrackWells(!isTrackWells);
+
+      if (points && points.length > 0) {
+        const tracks = [];
+        points.forEach((point) => {
+          const targetSourceId = point.properties.id.toLowerCase();
+          const track = {
+            user: user,
+            objectType: targetLabel,
+            trackOn: targetSourceId,
+          };
+          tracks.push(track);
+        });
+        toggleCreateRemoveTracks({
+          variables: {
+            tracks: tracks,
+          },
+          refetchQueries: ["tracksByUserAndObjectType", "trackByUserAndObjectId"], ////add all queries for components with track icons////
+          awaitRefetchQueries: true,
+        });
+      }
+    } else {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        zoomFault: true
+      }));
     }
   }
 
@@ -212,25 +225,37 @@ export default (props) => {
 
   const handleTrackOwners = () => {
     const { map } = stateApp;
-    const points = map.queryRenderedFeatures({
-      layers: ["wellpoints", "welllines"]
-    });
-    setTrackOwners(!isTrackOwners);
-    // const targetLabel = 'owner';
-    // const user = stateApp.user.mongoId;
-
-    if (points && points.length > 0) {
-      const wellApiArray = [];
-      points.forEach((point) => {
-        // const targetSourceId = point.id;
-        const wellApi = point.properties.id;
-        wellApiArray.push(wellApi);
+    const zoom = map.getZoom();
+    if (zoom >= 11) {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        zoomFault: null
+      }));
+      const points = map.queryRenderedFeatures({
+        layers: ["wellpoints", "welllines"]
       });
-      getWellsOwners({
-        variables: {
-          api: wellApiArray,
-        },
-      })
+      setTrackOwners(!isTrackOwners);
+      // const targetLabel = 'owner';
+      // const user = stateApp.user.mongoId;
+  
+      if (points && points.length > 0) {
+        const wellApiArray = [];
+        points.forEach((point) => {
+          // const targetSourceId = point.id;
+          const wellApi = point.properties.id;
+          wellApiArray.push(wellApi);
+        });
+        getWellsOwners({
+          variables: {
+            api: wellApiArray,
+          },
+        })
+      }
+    } else {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        zoomFault: true
+      }));
     }
   }
 
