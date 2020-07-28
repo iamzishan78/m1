@@ -20,6 +20,7 @@ import Portal from "@material-ui/core/Portal";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
 import DrawStatus from "./components/DrawStatus";
+import ZoomFault from "./components/ZoomFault";
 import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
 import "./popup.css";
@@ -1403,11 +1404,7 @@ export default function Map() {
                 const availableInteraction =
                   stateApp.checkedUserDefinedLayersInteraction.indexOf(l) !==
                   -1;
-                if (selectLayerProps.interactionProps.mouseClick) {
-                  var clusterVar =
-                    selectLayerProps.layerProps[i].layerId + "-clusters";
-                }
-
+                console.log("move event check:", selectLayerProps.name);
                 if (
                   selectLayerProps &&
                   selectLayerProps.interactionProps &&
@@ -1435,16 +1432,32 @@ export default function Map() {
                         selectLayerProps.layerProps[i].layerId,
                         oldHander
                       );
-                      map.off("mousemove", clusterVar, oldHander);
+                      if (selectLayerProps.layerProps[i].clusterProps) {
+                        map.off("mousemove", clusterVar, oldHander);
+                      }
+                      console.log('off move actions');
                     }
                     if (availableInteraction) {
+                      let handler = null;
+                      if (
+                        selectLayerProps.interactionProps.hoverActions
+                          .mouseMoveHandler
+                      ) {
+                        handler = selectLayerProps.interactionProps.hoverActions.mouseMoveHandler;
+                      } else {
+                        handler = mouseMoveHandler;
+                      }
+
                       map.on(
                         "mousemove",
                         selectLayerProps.layerProps[i].layerId,
-                        mouseMoveHandler
+                        handler
                       );
-                      map.on("mousemove", clusterVar, mouseMoveHandler);
-                      selectLayerProps.interactionProps.hoverActions.mouseMoveHandler = mouseMoveHandler;
+                      if (selectLayerProps.layerProps[i].clusterProps) {
+                        map.on("mousemove", clusterVar, handler);
+                      }
+                      selectLayerProps.interactionProps.hoverActions.mouseMoveHandler = handler;
+                      console.log('on move actions');
                     }
                   }
 
@@ -1461,22 +1474,37 @@ export default function Map() {
                     ) {
                       const oldHander =
                         selectLayerProps.interactionProps.hoverActions
-                          .mouseMoveHandler;
+                          .mouseLeaveHandler;
                       map.off(
                         "mouseleave",
                         selectLayerProps.layerProps[i].layerId,
                         oldHander
                       );
-                      map.off("mouseleave", clusterVar, oldHander);
+                      if (selectLayerProps.layerProps[i].clusterProps) {
+                        map.off("mouseleave", clusterVar, oldHander);
+                      }
+                      console.log('off leave actions');
                     }
                     if (availableInteraction) {
+                      let handler = null;
+                      if (
+                        selectLayerProps.interactionProps.hoverActions
+                          .mouseLeaveHandler
+                      ) {
+                        handler = selectLayerProps.interactionProps.hoverActions.mouseLeaveHandler;
+                      } else {
+                        handler = mouseLeaveHandler;
+                      }
                       map.on(
                         "mouseleave",
                         selectLayerProps.layerProps[i].layerId,
                         mouseLeaveHandler
                       );
-                      map.on("mouseleave", clusterVar, mouseLeaveHandler);
+                      if (selectLayerProps.layerProps[i].clusterProps) {
+                        map.on("mouseleave", clusterVar, mouseLeaveHandler);
+                      }
                       selectLayerProps.interactionProps.hoverActions.mouseLeaveHandler = mouseLeaveHandler;
+                      console.log('on leave actions');
                     }
                   }
                 }
@@ -4156,6 +4184,7 @@ export default function Map() {
       </div>
       <MapControlsProvider />
       <DrawStatus drawingStatus={drawStatus} />
+      <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <Coordinates long={lng} lat={lat} />
       {stateApp.selectedUserDefinedLayer &&
         !stateApp.popupOpen &&

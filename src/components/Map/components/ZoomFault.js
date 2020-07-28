@@ -14,7 +14,8 @@ const useStyles = makeStyles(theme => ({
     top: '80px',
     height: '29px',
     position: "absolute",
-    borderRadius: '4px'
+    borderRadius: '4px',
+    color: 'red'
   }
 }))
 
@@ -25,7 +26,7 @@ export default function ZoomFault(props) {
     if (props.zoomFaultStatus) {
       return (
         <div className={classes.zoomFaultBox}>
-          Zoomlevel must greater than 11
+          Please zoom in to enable group track
         </div>
       )
     } else {
