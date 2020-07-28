@@ -99,6 +99,7 @@ const AppProvider = (props) => {
     toggleZoomOut: null,
     map: null,
     draw: null,
+    zoomFault: null,
     currentFeature: undefined,
     wellListFromSearch: null,
     wellListFromTagsFilter: null,

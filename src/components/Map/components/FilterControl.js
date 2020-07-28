@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, { useState, useContext, useEffect } from "react";
 import { useMutation, useLazyQuery } from "@apollo/react-hooks";
 
 import IconButton from "@material-ui/core/IconButton";
@@ -10,10 +10,10 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Collapse from "@material-ui/core/Collapse";
 
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import DeleteIcon from '@material-ui/icons/Delete';
-import MyLocationIcon from '@material-ui/icons/MyLocation';
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
+import DeleteIcon from "@material-ui/icons/Delete";
+import MyLocationIcon from "@material-ui/icons/MyLocation";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     width: "350px",
   },
   list: {
-    padding: '0',
+    padding: "0",
   },
 }));
 
@@ -112,7 +112,7 @@ const StyledMenu = withStyles({
 ));
 
 export default (props) => {
-  const classes = useStyles
+  const classes = useStyles;
   const [openedControl, setOpenControl] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openTrack, setOpenTrack] = useState(false);
@@ -120,7 +120,9 @@ export default (props) => {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [isTrackWells, setTrackWells] = useState(false);
   const [isTrackOwners, setTrackOwners] = useState(false);
-  const [toggleCreateRemoveTracks, { data, loading }] = useMutation(TOGGLETRACKS);
+  const [toggleCreateRemoveTracks, { data, loading }] = useMutation(
+    TOGGLETRACKS
+  );
 
   const [getWellsOwners, { data: dataWellsOwners }] = useLazyQuery(
     WELLSOWNERSQUERY
@@ -132,58 +134,80 @@ export default (props) => {
     } else {
       setAnchorEl(event.currentTarget);
     }
-    setOpenControl( !openedControl );
-  }
+    setOpenControl(!openedControl);
+  };
 
   const handleClose = () => {
     setAnchorEl(null);
-    setOpenControl( false );
-  }
+    setOpenControl(false);
+  };
 
   const handleOpenTrack = () => {
     setOpenTrack(!openTrack);
-  }
+  };
 
   const handleRemoveFilter = () => {
-    setStateNav(stateNav => ({ ...stateNav, drawingMode: null, filterFeatureId: null, filterDrawing: []}));
-    setStateApp(stateApp => ({ ...stateApp, popupOpen: false}));
+    setStateNav((stateNav) => ({
+      ...stateNav,
+      drawingMode: null,
+      filterFeatureId: null,
+      filterDrawing: [],
+    }));
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      popupOpen: false,
+      zoomFault: null,
+    }));
   };
 
   const handleTrackWells = () => {
     const { map } = stateApp;
-    const points = map.queryRenderedFeatures({
-      layers: ["wellpoints", "welllines"]
-    });
-    const targetLabel = 'well';
-    const user = stateApp.user.mongoId;
-
-    setTrackWells(!isTrackWells);
-
-    if (points && points.length > 0) {
-      const tracks = [];
-      points.forEach((point) => {
-        const targetSourceId = point.properties.id.toLowerCase();
-        const track = {
-          user: user,
-          objectType: targetLabel,
-          trackOn: targetSourceId,
-        };
-        tracks.push(track);
+    const zoom = map.getZoom();
+    if (zoom >= 11) {
+      const points = map.queryRenderedFeatures({
+        layers: ["wellpoints", "welllines"],
       });
-      toggleCreateRemoveTracks({
-        variables: {
-          tracks: tracks,
-        },
-        refetchQueries: ["tracksByUserAndObjectType", "trackByUserAndObjectId"], ////add all queries for components with track icons////
-        awaitRefetchQueries: true,
-      });
+      const targetLabel = "well";
+      const user = stateApp.user.mongoId;
+
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        zoomFault: null,
+      }));
+
+      setTrackWells(!isTrackWells);
+
+      if (points && points.length > 0) {
+        const tracks = [];
+        points.forEach((point) => {
+          const targetSourceId = point.properties.id.toLowerCase();
+          const track = {
+            user: user,
+            objectType: targetLabel,
+            trackOn: targetSourceId,
+          };
+          tracks.push(track);
+        });
+        toggleCreateRemoveTracks({
+          variables: {
+            tracks: tracks,
+          },
+          refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
+          awaitRefetchQueries: true,
+        });
+      }
+    } else {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        zoomFault: true,
+      }));
     }
-  }
+  };
 
   const trackOwners = (wellownerList) => {
     const user = stateApp.user.mongoId;
     const targetLabel = "owner";
-    const tracks = []
+    const tracks = [];
     wellownerList.forEach((well) => {
       well.owners.forEach((owner) => {
         const targetSourceId = owner.ownerId.toLowerCase();
@@ -191,63 +215,81 @@ export default (props) => {
           user: user,
           objectType: targetLabel,
           trackOn: targetSourceId,
-        }
+        };
         tracks.push(track);
       });
     });
     toggleCreateRemoveTracks({
       variables: {
-        tracks: tracks
+        tracks: tracks,
       },
-      refetchQueries: ["tracksByUserAndObjectType", "trackByUserAndObjectId"], ////add all queries for components with track icons////
+      refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
       awaitRefetchQueries: true,
     });
-  }
+  };
 
   useEffect(() => {
-    if (dataWellsOwners && dataWellsOwners.wellsOwners && dataWellsOwners.wellsOwners.length > 0) {
+    if (
+      dataWellsOwners &&
+      dataWellsOwners.wellsOwners &&
+      dataWellsOwners.wellsOwners.length > 0
+    ) {
       trackOwners(dataWellsOwners.wellsOwners);
     }
-  }, [dataWellsOwners])
+  }, [dataWellsOwners]);
 
   const handleTrackOwners = () => {
     const { map } = stateApp;
-    const points = map.queryRenderedFeatures({
-      layers: ["wellpoints", "welllines"]
-    });
-    setTrackOwners(!isTrackOwners);
-    // const targetLabel = 'owner';
-    // const user = stateApp.user.mongoId;
-
-    if (points && points.length > 0) {
-      const wellApiArray = [];
-      points.forEach((point) => {
-        // const targetSourceId = point.id;
-        const wellApi = point.properties.id;
-        wellApiArray.push(wellApi);
+    const zoom = map.getZoom();
+    if (zoom >= 11) {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        zoomFault: null,
+      }));
+      const points = map.queryRenderedFeatures({
+        layers: ["wellpoints", "welllines"],
       });
-      getWellsOwners({
-        variables: {
-          api: wellApiArray,
-        },
-      })
-    }
-  }
+      setTrackOwners(!isTrackOwners);
+      // const targetLabel = 'owner';
+      // const user = stateApp.user.mongoId;
 
-  const id = openedControl ? 'filter-control-popover' : undefined;
+      if (points && points.length > 0) {
+        const wellApiArray = [];
+        points.forEach((point) => {
+          // const targetSourceId = point.id;
+          const wellApi = point.properties.id;
+          wellApiArray.push(wellApi);
+        });
+        getWellsOwners({
+          variables: {
+            api: wellApiArray,
+          },
+        });
+      }
+    } else {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        zoomFault: true,
+      }));
+    }
+  };
+
+  const id = openedControl ? "filter-control-popover" : undefined;
 
   return (
     <React.Fragment>
-      <StyledIconButton onClick={toggleOpenContorl} aria-label="toggle" aria-describedby={id}>
-        {
-          openedControl ? (
-            <ArrowBackIosIcon  fontSize="small" />
-          ) : (
-            <ArrowForwardIosIcon  fontSize="small" />
-          )
-        }
+      <StyledIconButton
+        onClick={toggleOpenContorl}
+        aria-label="toggle"
+        aria-describedby={id}
+      >
+        {openedControl ? (
+          <ArrowBackIosIcon fontSize="small" />
+        ) : (
+          <ArrowForwardIosIcon fontSize="small" />
+        )}
       </StyledIconButton>
-      <StyledMenu 
+      <StyledMenu
         id={id}
         anchorEl={anchorEl}
         keepMounted
@@ -270,33 +312,27 @@ export default (props) => {
           </ListItemIcon>
           <ListItemText primary="Track" />
           {openTrack ? <ExpandLess /> : <ExpandMore />}
-          </StyledListItem2>
-          <Collapse in={openTrack} timeout="auto" unmountOnExit>
-            <List disablePadding>
-              <StyledListItem
-                ContainerComponent="li"
-                onClick={handleTrackWells}
-              >
-                <ListItemText
-                  primary="Wells"
+        </StyledListItem2>
+        <Collapse in={openTrack} timeout="auto" unmountOnExit>
+          <List disablePadding>
+            <StyledListItem ContainerComponent="li" onClick={handleTrackWells}>
+              <ListItemText primary="Wells" />
+              <ListItemIcon>
+                <MyLocationIcon
+                  color={isTrackWells ? "secondary" : "primary"}
                 />
-                <ListItemIcon>
-                  <MyLocationIcon color={isTrackWells ? 'secondary' : 'primary'} />
-                </ListItemIcon>
-              </StyledListItem>
-              <StyledListItem
-                ContainerComponent="li"
-                onClick={handleTrackOwners}
-              >
-                <ListItemText
-                  primary="Owners"
+              </ListItemIcon>
+            </StyledListItem>
+            <StyledListItem ContainerComponent="li" onClick={handleTrackOwners}>
+              <ListItemText primary="Owners" />
+              <ListItemIcon>
+                <MyLocationIcon
+                  color={isTrackOwners ? "secondary" : "primary"}
                 />
-                <ListItemIcon>
-                  <MyLocationIcon color={isTrackOwners ? 'secondary' : 'primary'} />
-                </ListItemIcon>
-              </StyledListItem>
-            </List>
-          </Collapse>
+              </ListItemIcon>
+            </StyledListItem>
+          </List>
+        </Collapse>
         <StyledListItem2 button onClick={handleRemoveFilter}>
           <ListItemIcon>
             <DeleteIcon fontSize="small" />
@@ -306,4 +342,4 @@ export default (props) => {
       </StyledMenu>
     </React.Fragment>
   );
-}
+};
