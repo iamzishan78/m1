@@ -20,6 +20,7 @@ import Portal from "@material-ui/core/Portal";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
 import DrawStatus from "./components/DrawStatus";
+import ZoomFault from "./components/ZoomFault";
 import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
 import "./popup.css";
@@ -1365,11 +1366,7 @@ export default function Map() {
                 const availableInteraction =
                   stateApp.checkedUserDefinedLayersInteraction.indexOf(l) !==
                   -1;
-                if (selectLayerProps.interactionProps.mouseClick) {
-                  var clusterVar =
-                    selectLayerProps.layerProps[i].layerId + "-clusters";
-                }
-
+                console.log("move event check:", selectLayerProps.name);
                 if (
                   selectLayerProps &&
                   selectLayerProps.interactionProps &&
@@ -1423,7 +1420,7 @@ export default function Map() {
                     ) {
                       const oldHander =
                         selectLayerProps.interactionProps.hoverActions
-                          .mouseMoveHandler;
+                          .mouseLeaveHandler;
                       map.off(
                         "mouseleave",
                         selectLayerProps.layerProps[i].layerId,
@@ -4018,6 +4015,7 @@ export default function Map() {
       </div>
       <MapControlsProvider />
       <DrawStatus drawingStatus={drawStatus} />
+      <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <Coordinates long={lng} lat={lat} />
       {stateApp.selectedUserDefinedLayer &&
         !stateApp.popupOpen &&
