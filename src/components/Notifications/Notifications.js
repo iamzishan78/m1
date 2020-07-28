@@ -32,31 +32,31 @@ export default function Notifications(props) {
   } = useSelector(({ notifications }) => notifications);
 
   useEffect(() => {
-    if (infoMessage && infoMessage !== "")
-      NotificationManager.info(infoMessage, null, 3000, () => {
-        dispatch(hideInfoMessage);
-      });
+    if (infoMessage && infoMessage !== "") {
+      NotificationManager.info(infoMessage, null, 4000);
+      dispatch(hideInfoMessage());
+    }
   }, [infoMessage]);
 
   useEffect(() => {
-    if (successMessage && successMessage !== "")
-      NotificationManager.success(successMessage, "Success", 3000, () => {
-        dispatch(hideSuccessMessage);
-      });
+    if (successMessage && successMessage !== "") {
+      NotificationManager.success(successMessage, "Success", 4000);
+      dispatch(hideSuccessMessage());
+    }
   }, [successMessage]);
 
   useEffect(() => {
-    if (warningMessage && warningMessage !== "")
-      NotificationManager.warning(warningMessage, "Warning", 3000, () => {
-        dispatch(hideWarningMessage);
-      });
+    if (warningMessage && warningMessage !== "") {
+      NotificationManager.warning(warningMessage, "Warning", 4000);
+      dispatch(hideWarningMessage());
+    }
   }, [warningMessage]);
 
   useEffect(() => {
-    if (errorMessage && errorMessage !== "")
-      NotificationManager.error(errorMessage, "Error", 3000, () => {
-        dispatch(hideErrorMessage);
-      });
+    if (errorMessage && errorMessage !== "") {
+      NotificationManager.error(errorMessage, "Error", 4000);
+      dispatch(hideErrorMessage());
+    }
   }, [errorMessage]);
 
   return (

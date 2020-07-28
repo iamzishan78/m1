@@ -205,6 +205,11 @@ export default function Map() {
           (item) => item.trackOn
         );
 
+        setStateApp((state) => ({
+          ...state,
+          owners: objectsIdsArray,
+        }));
+
         getOwnersWells({
           variables: {
             ownersIds: objectsIdsArray,
