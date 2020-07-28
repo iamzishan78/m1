@@ -13,7 +13,7 @@ import $ from "jquery";
 import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "./ExpandableCardContext";
 import ReportBugModal from "./components/ReportBugModal";
-import { TRACKBYUSERANDOBJECTID } from "../../graphQL/useQueryTrackByUserAndObjectId";
+import { TRACKBYOBJECTID } from "../../graphQL/useQueryTrackByObjectId";
 import TaggerWithIcon from "../Shared/TaggerWithIcon";
 import CommentsWithIcon from "../Shared/CommentsWithIcon";
 import TrackToggleButton from "../Shared/TrackToggleButton";
@@ -103,13 +103,13 @@ export default function ExpandableCard(props) {
   const classes = useStyles();
 
   const [
-    trackByUserAndObjectId,
+    trackByObjectId,
     { loading: loadingTrack, data: dataTrack },
-  ] = useLazyQuery(TRACKBYUSERANDOBJECTID);
+  ] = useLazyQuery(TRACKBYOBJECTID);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId && props.targetSourceId) {
-      trackByUserAndObjectId({
+      trackByObjectId({
         variables: {
           userId: stateApp.user.mongoId,
           objectId: props.targetSourceId.toLowerCase(),
@@ -121,7 +121,7 @@ export default function ExpandableCard(props) {
   useEffect(() => {
     if (dataTrack) {
       setTarget({
-        isTracked: dataTrack.trackByUserAndObjectId ? true : false,
+        isTracked: dataTrack.trackByObjectId ? true : false,
       });
     }
   }, [dataTrack]);

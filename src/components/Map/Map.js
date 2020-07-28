@@ -37,7 +37,7 @@ import DefaultFiltersTest from "./filtersDefaultTest";
 import FilterControl from "./components/FilterControl";
 import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { WELLSQUERY } from "../../graphQL/useQueryWells";
-import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAndObjectType";
+import { TRACKSBYOBJECTTYPE } from "../../graphQL/useQueryTracksByObjectType";
 import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
 import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
 import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
@@ -122,13 +122,12 @@ export default function Map() {
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = useState(true);
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
-  const [tracksByUserAndObjectType, { data: dataTracks }] = useLazyQuery(
-    TRACKSBYUSERANDOBJECTTYPE
+  const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(
+    TRACKSBYOBJECTTYPE
   );
-  const [
-    tracksByUserAndObjectTypeOwner,
-    { data: dataTracksOwner },
-  ] = useLazyQuery(TRACKSBYUSERANDOBJECTTYPE);
+  const [tracksByObjectTypeOwner, { data: dataTracksOwner }] = useLazyQuery(
+    TRACKSBYOBJECTTYPE
+  );
 
   const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(
     OWNERSWELLSQUERY
@@ -158,16 +157,14 @@ export default function Map() {
     if (stateApp.user && stateApp.user.mongoId) {
       setLoading(true);
 
-      tracksByUserAndObjectType({
+      tracksByObjectType({
         variables: {
-          userId: stateApp.user.mongoId,
           objectType: "well",
         },
       });
 
-      tracksByUserAndObjectTypeOwner({
+      tracksByObjectTypeOwner({
         variables: {
-          userId: stateApp.user.mongoId,
           objectType: "owner",
         },
       });
@@ -177,15 +174,15 @@ export default function Map() {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (dataTracks && dataTracks.tracksByUserAndObjectType) {
-      if (dataTracks.tracksByUserAndObjectType.length !== 0) {
-        const tracksIdArray = dataTracks.tracksByUserAndObjectType.map(
+    if (dataTracks && dataTracks.tracksByObjectType) {
+      if (dataTracks.tracksByObjectType.length !== 0) {
+        const tracksIdArray = dataTracks.tracksByObjectType.map(
           (track) => track.trackOn
         );
 
         // setStateApp((stateApp) => ({
         //   ...stateApp,
-        //   trackedwells: dataTracks.tracksByUserAndObjectType,
+        //   trackedwells: dataTracks.tracksByObjectType,
         // }));
 
         getWells({
@@ -202,9 +199,9 @@ export default function Map() {
   }, [dataTracks]);
 
   useEffect(() => {
-    if (dataTracksOwner && dataTracksOwner.tracksByUserAndObjectType) {
-      if (dataTracksOwner.tracksByUserAndObjectType.length !== 0) {
-        var objectsIdsArray = dataTracksOwner.tracksByUserAndObjectType.map(
+    if (dataTracksOwner && dataTracksOwner.tracksByObjectType) {
+      if (dataTracksOwner.tracksByObjectType.length !== 0) {
+        var objectsIdsArray = dataTracksOwner.tracksByObjectType.map(
           (item) => item.trackOn
         );
 

@@ -9,13 +9,11 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { AppContext } from "../../../AppContext";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
-import { TRACKSBYUSERANDOBJECTTYPE } from "../../../graphQL/useQueryTracksByUserAndObjectType";
+import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType";
 import { USERBYEMAIL } from "../../../graphQL/useQueryUserByEmail"; //////////////temporary while signed user fixed
 import Draggable from "react-draggable";
 
 const useStyles = makeStyles((theme) => ({
-
-
   rootList: {
     width: "250px",
     height: "10vh",
@@ -61,17 +59,16 @@ export default function TrackedWellsMapCard(props) {
   const [loading, setLoading] = useState(true);
 
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
-  const [tracksByUserAndObjectType, { data: dataTracks }] = useLazyQuery(
-    TRACKSBYUSERANDOBJECTTYPE
+  const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(
+    TRACKSBYOBJECTTYPE
   );
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
       setLoading(true);
 
-      tracksByUserAndObjectType({
+      tracksByObjectType({
         variables: {
-          userId: stateApp.user.mongoId,
           objectType: "well",
         },
       });
@@ -79,9 +76,9 @@ export default function TrackedWellsMapCard(props) {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (dataTracks && dataTracks.tracksByUserAndObjectType) {
-      if (dataTracks.tracksByUserAndObjectType.length !== 0) {
-        const tracksIdArray = dataTracks.tracksByUserAndObjectType.map(
+    if (dataTracks && dataTracks.tracksByObjectType) {
+      if (dataTracks.tracksByObjectType.length !== 0) {
+        const tracksIdArray = dataTracks.tracksByObjectType.map(
           (track) => track.trackOn
         );
 
@@ -120,20 +117,21 @@ export default function TrackedWellsMapCard(props) {
   }, [dataWells]);
 
   const handleListClick = (well) => {
-    setStateApp((state) => ({ 
+    /////////////////////////////////////////////
+    setStateApp((state) => ({
       ...state,
       popupOpen: false,
       selectedWell: null,
       selectedWellId: well.id,
-      flyTo: well ? {longitude: well.longitude, latitude: well.latitude} : null
+      flyTo: well
+        ? { longitude: well.longitude, latitude: well.latitude }
+        : null,
     }));
   };
 
   return rows && rows.length > 0 ? (
-
     <div className={classes.mapWrapper}>
       <Draggable>
-
         <div className={classes.rootList}>
           <List dense className={classes.wellList} aria-label="secondary wells">
             <ListItem className={classes.subHeader} key="subheader" button>
@@ -149,15 +147,16 @@ export default function TrackedWellsMapCard(props) {
                 key={well.wellName}
                 button
               >
-                <ListItemText primary={well.wellName} secondary={well.operator} />
+                <ListItemText
+                  primary={well.wellName}
+                  secondary={well.operator}
+                />
               </ListItem>
             ))}
           </List>
         </div>
-
       </Draggable>
     </div>
-
   ) : loading ? (
     <CircularProgress size={80} disableShrink color="secondary" />
   ) : (
