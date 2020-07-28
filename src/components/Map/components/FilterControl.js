@@ -157,6 +157,7 @@ export default (props) => {
       ...stateApp,
       popupOpen: false,
       zoomFault: null,
+      hugeRequest: null,
     }));
   };
 
@@ -173,33 +174,45 @@ export default (props) => {
       setStateApp((stateApp) => ({
         ...stateApp,
         zoomFault: null,
+        hugeRequest: null,
       }));
 
-      setTrackWells(!isTrackWells);
-
       if (points && points.length > 0) {
-        const tracks = [];
-        points.forEach((point) => {
-          const targetSourceId = point.properties.id.toLowerCase();
-          const track = {
-            user: user,
-            objectType: targetLabel,
-            trackOn: targetSourceId,
-          };
-          tracks.push(track);
-        });
-        toggleCreateRemoveTracks({
-          variables: {
-            tracks: tracks,
-          },
-          refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
-          awaitRefetchQueries: true,
-        });
+        if (points.length > 100) {
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            hugeRequest: true,
+          }));
+        } else {
+          setTrackWells(!isTrackWells);
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            hugeRequest: null,
+          }));
+          const tracks = [];
+          points.forEach((point) => {
+            const targetSourceId = point.properties.id.toLowerCase();
+            const track = {
+              user: user,
+              objectType: targetLabel,
+              trackOn: targetSourceId,
+            };
+            tracks.push(track);
+          });
+          toggleCreateRemoveTracks({
+            variables: {
+              tracks: tracks,
+            },
+            refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
+            awaitRefetchQueries: true,
+          });
+        }
       }
     } else {
       setStateApp((stateApp) => ({
         ...stateApp,
         zoomFault: true,
+        hugeRequest: null,
       }));
     }
   };
@@ -219,13 +232,24 @@ export default (props) => {
         tracks.push(track);
       });
     });
-    toggleCreateRemoveTracks({
-      variables: {
-        tracks: tracks,
-      },
-      refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
-      awaitRefetchQueries: true,
-    });
+    if (tracks.length > 100) {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        hugeRequest: true,
+      }));
+    } else {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        hugeRequest: null,
+      }));
+      toggleCreateRemoveTracks({
+        variables: {
+          tracks: tracks,
+        },
+        refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
+        awaitRefetchQueries: true,
+      });
+    }
   };
 
   useEffect(() => {
@@ -245,31 +269,45 @@ export default (props) => {
       setStateApp((stateApp) => ({
         ...stateApp,
         zoomFault: null,
+        hugeRequest: null,
       }));
       const points = map.queryRenderedFeatures({
         layers: ["wellpoints", "welllines"],
       });
-      setTrackOwners(!isTrackOwners);
+      
       // const targetLabel = 'owner';
       // const user = stateApp.user.mongoId;
 
       if (points && points.length > 0) {
-        const wellApiArray = [];
-        points.forEach((point) => {
-          // const targetSourceId = point.id;
-          const wellApi = point.properties.id;
-          wellApiArray.push(wellApi);
-        });
-        getWellsOwners({
-          variables: {
-            api: wellApiArray,
-          },
-        });
+        if (points.length > 100) {
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            hugeRequest: true,
+          }));
+        } else {
+          setTrackOwners(!isTrackOwners);
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            hugeRequest: null,
+          }));
+          const wellApiArray = [];
+          points.forEach((point) => {
+            // const targetSourceId = point.id;
+            const wellApi = point.properties.id;
+            wellApiArray.push(wellApi);
+          });
+          getWellsOwners({
+            variables: {
+              api: wellApiArray,
+            },
+          });
+        }
       }
     } else {
       setStateApp((stateApp) => ({
         ...stateApp,
         zoomFault: true,
+        hugeRequest: null,
       }));
     }
   };

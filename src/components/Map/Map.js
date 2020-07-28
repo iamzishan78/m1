@@ -21,6 +21,7 @@ import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
 import DrawStatus from "./components/DrawStatus";
 import ZoomFault from "./components/ZoomFault";
+import HugeRequest from "./components/HugeRequest";
 import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
 import "./popup.css";
@@ -1404,7 +1405,6 @@ export default function Map() {
                 const availableInteraction =
                   stateApp.checkedUserDefinedLayersInteraction.indexOf(l) !==
                   -1;
-                console.log("move event check:", selectLayerProps.name);
                 if (
                   selectLayerProps &&
                   selectLayerProps.interactionProps &&
@@ -1435,7 +1435,6 @@ export default function Map() {
                       if (selectLayerProps.layerProps[i].clusterProps) {
                         map.off("mousemove", clusterVar, oldHander);
                       }
-                      console.log('off move actions');
                     }
                     if (availableInteraction) {
                       let handler = null;
@@ -1457,7 +1456,6 @@ export default function Map() {
                         map.on("mousemove", clusterVar, handler);
                       }
                       selectLayerProps.interactionProps.hoverActions.mouseMoveHandler = handler;
-                      console.log('on move actions');
                     }
                   }
 
@@ -1483,7 +1481,6 @@ export default function Map() {
                       if (selectLayerProps.layerProps[i].clusterProps) {
                         map.off("mouseleave", clusterVar, oldHander);
                       }
-                      console.log('off leave actions');
                     }
                     if (availableInteraction) {
                       let handler = null;
@@ -1504,7 +1501,6 @@ export default function Map() {
                         map.on("mouseleave", clusterVar, mouseLeaveHandler);
                       }
                       selectLayerProps.interactionProps.hoverActions.mouseLeaveHandler = mouseLeaveHandler;
-                      console.log('on leave actions');
                     }
                   }
                 }
@@ -4185,6 +4181,7 @@ export default function Map() {
       <MapControlsProvider />
       <DrawStatus drawingStatus={drawStatus} />
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
+      <HugeRequest hugeRequestStatus={stateApp.hugeRequest} />
       <Coordinates long={lng} lat={lat} />
       {stateApp.selectedUserDefinedLayer &&
         !stateApp.popupOpen &&

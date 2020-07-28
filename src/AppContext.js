@@ -100,6 +100,7 @@ const AppProvider = (props) => {
     map: null,
     draw: null,
     zoomFault: null,
+    hugeRequest: null,
     currentFeature: undefined,
     wellListFromSearch: null,
     wellListFromTagsFilter: null,
