@@ -78,6 +78,12 @@ const useStyles = makeStyles((theme) => ({
       "& p": { margin: "8px 10px" },
     },
   },
+  gridStyling:{
+    "& .MuiListItem-container": {
+      borderBottom:'1px solid #c7c7c7'
+    },
+
+  },
   SectMargin: {
     margin: "23px 28px",
   },
@@ -119,6 +125,14 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   Comments: {
+    "& fieldset": {
+      border: "2px solid #DADEDF",
+    },
+    "& textarea": {
+      fontSize: "0.85rem",
+    },
+  },
+  CustomDialogBox: {
     "& fieldset": {
       border: "2px solid #DADEDF",
     },
@@ -890,22 +904,30 @@ export default function ContactDetailCard(props) {
         />
 
         {/* //// ViewAll in a right dialog //// */}
+       
         <RightDialog
           open={rightDialogOpen ? true : false}
           handleClickDialogClose={handleClickRightDialogClose}
           width="450px"
         >
           {rightDialogOpen === "comments" && (
-            <Grid item xs={12} className={classes.Comments}>
-              <Comments
-                targetSourceId={contactData._id}
-                targetLabel="contact"
-                handleRightDialogClose={handleClickRightDialogClose}
-              />
-            </Grid>
+            
+              <Grid item xs={12} className={classes.Comments}>
+                  <Comments
+                    className={classes.gridStyling}
+                    targetSourceId={contactData._id}
+                    targetLabel="contact"
+                    handleRightDialogClose={handleClickRightDialogClose}
+                    
+                  />
+               
+              </Grid>
+             
           )}
-        </RightDialog>
 
+          
+        </RightDialog>
+            
         {/* //// ViewAll in a full screen dialog //// */}
         {showExpandableCard && (
           <Dialog
