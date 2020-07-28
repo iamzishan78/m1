@@ -48,7 +48,7 @@ let formatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
-export default function Activities({ contact, ...props }) {
+export default function Deals({ contact, ...props }) {
   const [wonDeals, setWonDeals] = useState([]); // deal closed
   const [lostDeals, setLostDeals] = useState([]); // deal rejected
   const [activeDeals, setActiveDeals] = useState([]); // all other deals
@@ -60,6 +60,7 @@ export default function Activities({ contact, ...props }) {
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
+      console.log(stateApp.user);
       getTransactionData({
         variables: {
           userId: stateApp.user.mongoId,
@@ -127,6 +128,7 @@ export default function Activities({ contact, ...props }) {
       (card) =>
         (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     );
+    console.log("FORMAT: ", formatter.format(sum));
     return formatter.format(sum);
   };
 
