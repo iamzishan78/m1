@@ -66,7 +66,7 @@ export default function TrackToggleButton(props) {
   }, [loading, props.multipleIds]);
 
   useEffect(() => {
-    console.log("Target: ", props.target);
+    // console.log("Target: ", props.target);
     if (props.target) {
       if (props.target.isTracked) {
         setSelected(true);
@@ -96,7 +96,7 @@ export default function TrackToggleButton(props) {
             trackOn: props.targetSourceId,
           },
         },
-        refetchQueries: ["tracksByUserAndObjectType", "trackByUserAndObjectId"], ////add all queries for components with track icons////
+        refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
         awaitRefetchQueries: true,
       });
     } else {
@@ -110,10 +110,7 @@ export default function TrackToggleButton(props) {
                 trackOn: props.multipleIds[i],
               },
             },
-            refetchQueries: [
-              "tracksByUserAndObjectType",
-              "trackByUserAndObjectId",
-            ], ////add all queries for components with track icons////
+            refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
             awaitRefetchQueries: true,
           });
         }

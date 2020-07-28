@@ -47,18 +47,78 @@ export const styleLayers = [
       }
     }
   },
+  // {
+  //   name: "Rig Activity",
+  //   id: ["rigs"],
+  //   sourceProps: ["rigs_source"],
+  //   layerProps: {
+  //     layerId: ["rigs"],
+  //     layerType: ["circle"],
+  //     paintProps: {
+  //       "circle-radius": 5,
+  //       "circle-color": "#666666",
+  //       "circle-stroke-width": 2,
+  //       "circle-stroke-color": "#fff",
+  //     },
+  //     clusterProps: {
+  //       clusterPaintProps: {
+  //         "circle-color": {
+  //           property: "point_count",
+  //           type: "interval",
+  //           stops: [
+  //             [0, "#666666"],
+  //             [100, "#666666"],
+  //             [750, "#666666"],
+  //           ],
+  //         },
+  //         "circle-radius": [
+  //           "step",
+  //           ["get", "point_count"],
+  //           20,
+  //           5,
+  //           25,
+  //           10,
+  //           30,
+  //           20,
+  //           35,
+  //         ],
+
+  //         "circle-stroke-width": 5,
+  //         "circle-stroke-color": "#fff",
+  //       },
+  //       clusterSymbolProps: {
+  //         "text-field": "{point_count}",
+  //         "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+  //         "text-size": 12,
+  //       },
+  //     }
+  //   }
+  // },
   {
     name: "Rig Activity",
     id: ["rigs"],
     sourceProps: ["rigs_source"],
     layerProps: {
       layerId: ["rigs"],
-      layerType: ["circle"],
+      layerType: ["symbol"],
+      layoutProps: {
+        'icon-image': 'marker-icon',
+        'icon-allow-overlap': true,
+        'icon-size': 2,
+        'text-field': 'H',
+        'text-font': [
+            'Open Sans Bold',
+            'Arial Unicode MS Bold'
+        ],
+        'text-size': 11,
+        'text-transform': 'uppercase',
+        'text-letter-spacing': 0.05,
+        'text-offset': [0, -0.5]
+      },
       paintProps: {
-        "circle-radius": 5,
-        "circle-color": "#666666",
-        "circle-stroke-width": 2,
-        "circle-stroke-color": "#fff",
+        "icon-color": "#00ff00",
+        "icon-halo-color": "#fff",
+        "icon-halo-width": 2
       },
       clusterProps: {
         clusterPaintProps: {
@@ -169,6 +229,14 @@ export const userDefinedLayers = [
           "text-allow-overlap": true,
           "text-anchor": "center",
           "text-field": "{label}",
+          "text-size": [
+            "interpolate",
+            ["exponential", 1],
+            ["zoom"],
+            0,0,
+            // 11,0,
+            22,30
+            ],
         },
       },
     ],
@@ -229,6 +297,14 @@ export const userDefinedLayers = [
           "text-allow-overlap": true,
           "text-anchor": "center",
           "text-field": "{label}",
+          "text-size": [
+            "interpolate",
+            ["exponential", 1],
+            ["zoom"],
+            0,0,
+            // 11,0,
+            22,30
+            ],
         },
       },
     ],

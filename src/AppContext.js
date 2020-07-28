@@ -47,8 +47,8 @@ const AppProvider = (props) => {
     trackedWellArray: [],
     userSnap: false,
     mapVars: {
-      zoom: 5.88,
-      center: { lng: -98.8, lat: 31.6 },
+      zoom: 4.88,
+      center: { lng: -98.8, lat: 38 },
       pitch: 0,
       bearing: 0,
       styleId: "Outdoors",
@@ -61,7 +61,10 @@ const AppProvider = (props) => {
     wellSelectedCoordinates: [],
     universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
     mapGridCardActivated: false,
+    mapGridCardActiveTap: 1,
     searchResultData: [], //// mapGridCard Search Data
+    searchloading: false, //// mapGridCard Search loading
+    searchInputValue: "",
     viewportData: [], //// mapGridCard Viewport Data
     trackedDataCount: 0, //// mapGridCard Viewport tracked count
 
@@ -78,9 +81,11 @@ const AppProvider = (props) => {
     checkedLayers: [2, 5],
     checkedHeats: [],
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
-    checkedUserDefinedLayers: [0, 2],
+    checkedUserDefinedLayers: [0, 2, 3, 4],
     userFileLayers: [],
     tempCheckedUserDefinedLayer: null,
+    tempCheckedAOILayer: null,
+    tempCheckedParcleLayer: null,
     checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
     editingUserDefinedLayers: [],
     csvContactsList: [],
@@ -94,6 +99,7 @@ const AppProvider = (props) => {
     toggleZoomOut: null,
     map: null,
     draw: null,
+    zoomFault: null,
     currentFeature: undefined,
     wellListFromSearch: null,
     wellListFromTagsFilter: null,

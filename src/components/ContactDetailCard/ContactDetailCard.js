@@ -28,8 +28,9 @@ import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Divider from "@material-ui/core/Divider";
 import RightDialog from "./components/RightDialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
+import Dialog from "@material-ui/core/Dialog";
+import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
+import Toolbar from "@material-ui/core/Toolbar";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -191,16 +192,38 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.getContrastText("#808080"),
     backgroundColor: "#808080 !important",
   },
+  dialogExpCard: {
+    "& .MuiDialog-paperScrollPaper": {
+      height: "100%",
+    },
+  },
+  expTardTopBarNav: {
+    fontWeight: "normal",
+    flexGrow: 1,
+    "& span": {
+      color: theme.palette.secondary.main,
+    },
+  },
+  expTardTopBarNavContName: {
+    cursor: "pointer",
+    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+    "&:hover": { color: "#757575" },
+  },
 }));
 
 export default function ContactDetailCard(props) {
   const classes = useStyles();
   const [openDialog, setOpenDialog] = useState(false);
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [transactData, setTransactData] = useState();
   const [transactId, setTransactId] = useState();
   const [contactData, setContactData] = useState(null);
   const [rightDialogOpen, setRightDialogOpen] = useState(false);
+  const [showExpandableCard, setShowExpandableCard] = useState(false);
+  const [expCardSubComponent, setExpCardSubComponent] = useState(null);
+  const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(
+    null
+  );
   const [getContact, { loading, data }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
   });
@@ -214,6 +237,20 @@ export default function ContactDetailCard(props) {
   const handleClickRightDialogClose = (e) => {
     e.preventDefault();
     setRightDialogOpen(false);
+  };
+
+  const handleCloseExpandableCard = () => {
+    setShowExpandableCard(false);
+    // setStateApp((state) => ({
+    //   ...state,
+    //   popupOpen: false,
+    //   expandedCard: false,
+    // }));
+  };
+  const handleOpenExpandableCard = (subComponent, subComponentTitle) => {
+    setExpCardSubComponent(subComponent);
+    setExpCardSubComponentTitle(subComponentTitle);
+    setShowExpandableCard(true);
   };
 
   useEffect(() => {
@@ -723,7 +760,10 @@ export default function ContactDetailCard(props) {
             {/*/////////// Recent Converstaion. //////////// */}
             <Grid item xs={12} className={`${classes.border}`}>
               <div className={classes.SectMargin}>
-                <RecentConversations header={"Recent Conversations"} />
+                <RecentConversations
+                  header={"Recent Conversations"}
+                  handleOpenExpandableCard={handleOpenExpandableCard}
+                />
               </div>
             </Grid>
 
@@ -850,6 +890,7 @@ export default function ContactDetailCard(props) {
           id={contactData._id}
         />
 
+        {/* //// ViewAll in a right dialog //// */}
         <RightDialog
           open={rightDialogOpen ? true : false}
           handleClickDialogClose={handleClickRightDialogClose}
@@ -865,6 +906,64 @@ export default function ContactDetailCard(props) {
             </Grid>
           )}
         </RightDialog>
+
+        {/* //// ViewAll in a full screen dialog //// */}
+        {showExpandableCard && (
+          <Dialog
+            className={classes.dialogExpCard}
+            fullWidth
+            maxWidth="xl"
+            open={showExpandableCard}
+            onClose={handleCloseExpandableCard}
+          >
+            <ExpandableCardProvider
+              expanded={true}
+              handleCloseExpandableCard={handleCloseExpandableCard}
+              title={"CONTACT DETAILS"}
+              subTitle={" "}
+              parent="table"
+              mouseX={0}
+              mouseY={0}
+              position="relative"
+              cardLeft={"0"}
+              cardTop={"0"}
+              zIndex={1201}
+              cardWidthExpanded="100%"
+              cardHeightExpanded="100%"
+              targetSourceId={props.contactId}
+              targetLabel={"contact"}
+              noTrackAvailable={true}
+              component={
+                <div
+                  style={{
+                    height: "100%",
+                    width: "100%",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  {/* //// ViewAll card top bar //// */}
+                  <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
+                    <h3 className={classes.expTardTopBarNav}>
+                      <span>Leads</span>
+                      {" > "}
+                      <span
+                        className={classes.expTardTopBarNavContName}
+                        onClick={handleCloseExpandableCard}
+                      >
+                        {contactData && contactData.name
+                          ? contactData.name
+                          : ""}
+                      </span>
+                      {" > "}
+                      {expCardSubComponentTitle}
+                    </h3>
+                  </Toolbar>
+                  {expCardSubComponent}
+                </div>
+              }
+            />
+          </Dialog>
+        )}
 
         {loading && (
           <div

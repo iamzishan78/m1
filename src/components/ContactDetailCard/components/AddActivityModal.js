@@ -233,7 +233,7 @@ function AddActivityModal(props) {
         /> */}
         <DateTimePicker
           value={dateTime}
-          disablePast
+          //disablePast
           fullWidth
           className={classes.inputFieldDate}
           onChange={setDateTime}

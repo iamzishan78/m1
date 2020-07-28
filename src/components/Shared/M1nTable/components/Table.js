@@ -37,10 +37,17 @@ import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Divider from "@material-ui/core/Divider";
 import CellContentEdition from "./SubComponents/CellContentEdition";
-import Avatar, { ConfigProvider } from 'react-avatar';
+import Avatar, { ConfigProvider } from "react-avatar";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-
-
+import MapLocation from "../../svgIcons/MapLocation";
+import RoomIcon from "@material-ui/icons/Room";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  showInfoMessage,
+  showSuccessMessage,
+  showWarningMessage,
+  showErrorMessage,
+} from "../../../../actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,7 +58,17 @@ const useStyles = makeStyles((theme) => ({
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
     },
     "& .MuiTableHead-root": {
-      "& th": { backgroundColor: "#F2F2F2", zIndex: "auto" },
+      "& th": {
+        backgroundColor: "#F2F2F2",
+        zIndex: "auto",
+        padding: (props) => (props.dense ? "10px" : null),
+      },
+      "& .MuiTableCell-paddingCheckbox": {
+        padding: (props) => (props.dense ? "0 !important" : "16px"),
+      },
+    },
+    "& tr": {
+      paddingRight: (props) => (props.dense ? "12px" : null),
     },
   },
   icons: {
@@ -142,9 +159,10 @@ var formatter = new Intl.NumberFormat("en-US", {
 
 export default function SubTable(props) {
   const classes = useStyles(props);
+  const dispatch = useDispatch();
 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [rows, setRows] = useState();
+  const [rows, setRows] = useState(null);
   const [columns, setColumns] = useState([]);
 
   const [colInd, setColInd] = useState();
@@ -162,17 +180,30 @@ export default function SubTable(props) {
   const [m1nSelectedRowsIds, setM1nSelectedRowsIds] = useState([]);
   const [m1nSelectedRowsTracks, setM1nSelectedRowsTracks] = useState([]);
 
-  // const [completelyDelete, setCompletelyDelete] = useState("false");
-
   useEffect(() => {
     if (props.rows) {
-      setRows([
-        ...props.rows.sort((a, b) => {
-          return b.isTracked - a.isTracked;
-        }),
-      ]);
+      if (props.orderByTracks)
+        setRows([
+          ...props.rows.sort((a, b) => {
+            return b.isTracked - a.isTracked;
+          }),
+        ]);
+      else setRows([...props.rows]);
+
+      if (props.target === "contact") {
+        dispatch(showInfoMessage("The Contacts table finished loading")); //////////////////////////////////////////
+        setTimeout(() => {
+          dispatch(showSuccessMessage("Another type of Notification Message"));
+        }, 2500);
+        setTimeout(() => {
+          dispatch(showWarningMessage("Warning you our app is amazing!!"));
+        }, 5000);
+        setTimeout(() => {
+          dispatch(showErrorMessage("lol, we never have errors!!"));
+        }, 7500);
+      }
     }
-  }, [props.rows]);
+  }, [props.rows, props.orderByTracks]);
 
   useEffect(() => {
     if (rows && m1nSelectedRowsIndexes) {
@@ -203,6 +234,76 @@ export default function SubTable(props) {
     if (props.columns) {
       props.columns.forEach((column) => {
         switch (column.name) {
+          case "coordinates": //// fly to the map icon
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
+
+                  return (
+                    <Tooltip
+                      title={
+                        !value || value.length < 2
+                          ? "Not Available"
+                          : "Fly To Map"
+                      }
+                      placement="top"
+                      style={{ marginRight: "10px" }}
+                    >
+                      <IconButton
+                        id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                        size={props.dense ? "small" : "medium"}
+                        color="secondary"
+                        className={`${classes.icons} ${
+                          !value || value.length < 2
+                            ? classes.noCommentsIcon
+                            : ""
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (value && value.length === 2)
+                            setStateApp((state) => ({
+                              ...state,
+                              popupOpen: false,
+                              selectedWell: null,
+                              selectedWellId: tableMeta.rowData[0],
+                              flyTo: {
+                                longitude: value[0],
+                                latitude: value[1],
+                              },
+                              mapGridCardActivated: "min",
+                            }));
+                        }}
+                        aria-label="fly"
+                        // onMouseOver={() => {
+                        //   if (
+                        //     m1nSelectedRowsIndexes.indexOf(
+                        //       tableMeta.rowIndex
+                        //     ) !== -1 &&
+                        //     m1nSelectedRowsIndexes.length > 1
+                        //   )
+                        //     multiSelectMouseHoverColor(id, "#dadbde");
+                        // }}
+                        // onMouseOut={() => {
+                        //   if (
+                        //     m1nSelectedRowsIndexes.indexOf(
+                        //       tableMeta.rowIndex
+                        //     ) !== -1 &&
+                        //     m1nSelectedRowsIndexes.length > 1
+                        //   )
+                        //     multiSelectMouseHoverColor(id, "#efefef");
+                        // }}
+                      >
+                        <RoomIcon />
+                      </IconButton>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
+
           case "isTracked":
             {
               column.options = {
@@ -256,6 +357,7 @@ export default function SubTable(props) {
                         !value || value === 0 ? "Add Comments" : "Comments"
                       }
                       placement="top"
+                      style={{ marginRight: "10px" }}
                     >
                       <Badge
                         badgeContent={value ? value : null}
@@ -320,6 +422,7 @@ export default function SubTable(props) {
                     <Tooltip
                       title={value.length > 0 ? "Wells" : "Not Available"}
                       placement="top"
+                      style={{ marginRight: "10px" }}
                     >
                       <Badge
                         badgeContent={value.length > 0 ? value.length : null}
@@ -375,6 +478,7 @@ export default function SubTable(props) {
                     <Tooltip
                       title={value || value === 0 ? "Contacts" : "Add Contact"}
                       placement="top"
+                      style={{ marginRight: "10px" }}
                     >
                       <Badge
                         badgeContent={value ? value : null}
@@ -420,6 +524,7 @@ export default function SubTable(props) {
                     <Tooltip
                       title={value ? "Owners" : "Not Available"}
                       placement="top"
+                      style={{ marginRight: "10px" }}
                     >
                       <Badge
                         badgeContent={value ? value : null}
@@ -468,6 +573,7 @@ export default function SubTable(props) {
                     <Tooltip
                       title={value.length > 0 ? "Owners" : "Not Available"}
                       placement="top"
+                      style={{ marginRight: "10px" }}
                     >
                       <Badge
                         badgeContent={value.length > 0 ? value.length : null}
@@ -516,59 +622,61 @@ export default function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
                   return (
-                    <Tooltip
-                      title={value && value[1] === 0 ? "Add Tags" : "Tags"}
-                      placement="top"
-                    >
-                      <Badge
-                        id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
-                        className={`${classes.TagSample} ${
-                          colInd === tableMeta.columnIndex &&
-                          rowInd === tableMeta.rowIndex
-                            ? classes.iconSelected
-                            : ""
-                        }`}
-                        badgeContent={value[1]}
-                        color="secondary"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleExpandClick(
-                            tableMeta.columnIndex,
-                            tableMeta.rowIndex,
-                            tableMeta.rowData[0],
-                            "tag"
-                          );
-                        }}
-                        onMouseOver={() => {
-                          if (
-                            m1nSelectedRowsIndexes.indexOf(
-                              tableMeta.rowIndex
-                            ) !== -1 &&
-                            m1nSelectedRowsIndexes.length > 1
-                          )
-                            multiSelectMouseHoverColor(id, "#dadbde");
-                        }}
-                        onMouseOut={() => {
-                          if (
-                            m1nSelectedRowsIndexes.indexOf(
-                              tableMeta.rowIndex
-                            ) !== -1 &&
-                            m1nSelectedRowsIndexes.length > 1
-                          )
-                            multiSelectMouseHoverColor(id, "#efefef");
-                        }}
+                    <div style={{ marginRight: "10px" }}>
+                      <Tooltip
+                        title={value && value[1] === 0 ? "Add Tags" : "Tags"}
+                        placement="top"
                       >
-                        {value[0] && value[0].length > 0 ? (
-                          <React.Fragment>
-                            <p className="first">{value[0].join(", ")}</p>
-                            <p className="two">...</p>
-                          </React.Fragment>
-                        ) : (
-                          <p className="three">No Tags</p>
-                        )}
-                      </Badge>
-                    </Tooltip>
+                        <Badge
+                          id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                          className={`${classes.TagSample} ${
+                            colInd === tableMeta.columnIndex &&
+                            rowInd === tableMeta.rowIndex
+                              ? classes.iconSelected
+                              : ""
+                          }`}
+                          badgeContent={value[1]}
+                          color="secondary"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleExpandClick(
+                              tableMeta.columnIndex,
+                              tableMeta.rowIndex,
+                              tableMeta.rowData[0],
+                              "tag"
+                            );
+                          }}
+                          onMouseOver={() => {
+                            if (
+                              m1nSelectedRowsIndexes.indexOf(
+                                tableMeta.rowIndex
+                              ) !== -1 &&
+                              m1nSelectedRowsIndexes.length > 1
+                            )
+                              multiSelectMouseHoverColor(id, "#dadbde");
+                          }}
+                          onMouseOut={() => {
+                            if (
+                              m1nSelectedRowsIndexes.indexOf(
+                                tableMeta.rowIndex
+                              ) !== -1 &&
+                              m1nSelectedRowsIndexes.length > 1
+                            )
+                              multiSelectMouseHoverColor(id, "#efefef");
+                          }}
+                        >
+                          {value[0] && value[0].length > 0 ? (
+                            <React.Fragment>
+                              <p className="first">{value[0].join(", ")}</p>
+                              <p className="two">...</p>
+                            </React.Fragment>
+                          ) : (
+                            <p className="three">No Tags</p>
+                          )}
+                        </Badge>
+                      </Tooltip>
+                    </div>
                   );
                 },
               };
@@ -637,40 +745,30 @@ export default function SubTable(props) {
                     );
                   }
 
-                  ////// if editable column
-
-                  // if (props.targetLabel === "contact" && column.name === "name")
-                  //   return (
-                  //     <CellContentEdition
-                  //       id={tableMeta.rowData[0]}
-                  //       content={{ [column.name]: valueFormatter(value) }}
-                  //       targetLabel={props.targetLabel}
-                  //       childrenLeft
-                  //     >
-                  //       <div
-                  //         style={{
-                  //           backgroundColor: "red",
-                  //           width: "30px",
-                  //           height: "25px",
-                  //         }}
-                  //       />
-                  //     </CellContentEdition>
-                  //   );
-
                   return (
                     <div style={{ display: "flex" }}>
-                      {props.targetLabel === "contact" &&
-                        column.name === "name" && (
-                          ///////////////////////////////////////////////////
-                          // <ConfigProvider colors={['red', 'green', 'blue']}>
-                          <Avatar color={Avatar.getRandomColor(value,['#b5d2f6', '#ade2e9', '#eaeaea','#f2c1e2','#d7d6fb'])}
-                                  fgColor = "#000"
-                                  name={valueFormatter(value)} 
-                                  size="35" 
-                                  round/>
-                          // </ConfigProvider>
-                          ///////////////////////////////////////////////////
-                        )}
+                      {
+                        props.targetLabel === "contact" &&
+                          column.name === "name" && (
+                            ///////////////////////////////////////////////////
+                            // <ConfigProvider colors={['red', 'green', 'blue']}>
+                            <Avatar
+                              color={Avatar.getRandomColor(value, [
+                                "#b5d2f6",
+                                "#ade2e9",
+                                "#eaeaea",
+                                "#f2c1e2",
+                                "#d7d6fb",
+                              ])}
+                              fgColor="#000"
+                              name={valueFormatter(value)}
+                              size="35"
+                              round
+                            />
+                          )
+                        // </ConfigProvider>
+                        ///////////////////////////////////////////////////
+                      }
                       <CellContentEdition
                         id={tableMeta.rowData[0]}
                         content={{ [column.name]: valueFormatter(value) }}
@@ -724,11 +822,10 @@ export default function SubTable(props) {
 
   const options = {
     filterType: "multiselect",
+    rowsPerPage: props.startPaginationAt ? props.startPaginationAt : 10,
     rowsPerPageOptions:
-      props.rows && props.rows.length > 100
-        ? [10, 25, 100, 1000]
-        : props.rows && props.rows.length > 25
-        ? [10, 25, 100]
+      props.rows && props.rows.length > 25
+        ? [10, 25, 50]
         : props.rows && props.rows.length > 10
         ? [10, 25]
         : [],
@@ -956,7 +1053,7 @@ export default function SubTable(props) {
             handleCloseExpandableCard={handleCloseExpandableCard}
           />
         );
-        setTitle("Contact");
+        setTitle("CONTACT DETAILS");
         setSubTitle(" ");
         handleOpenExpandableCard();
       }
@@ -969,236 +1066,244 @@ export default function SubTable(props) {
     history.push(route);
   };
 
-  return (rows && rows.length > 0 && !props.addAble) ||
-    (rows && props.addAble) ? (
-    <div className={classes.root}>
-      <MUIDataTable
-        className={classes.table}
-        title={props.header}
-        data={rows}
-        columns={columns}
-        options={options}
-      />
+  return (
+    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+      {rows && !props.loading ? (
+        <div className={classes.root}>
+          <MUIDataTable
+            className={classes.table}
+            title={props.header}
+            data={rows}
+            columns={columns}
+            options={options}
+          />
 
-      {openDialog && (
-        <Dialog
-          className={classes.dialog}
-          open={openDialog ? true : false}
-          onClose={handleCloseDialog}
-          fullWidth={
-            openDialog === "comment" ||
-            openDialog === "owner" ||
-            openDialog === "wellsPerOwner" ||
-            openDialog === "ownerContacts" ||
-            openDialog === "ownersPerContacts" ||
-            openDialog === "buyContactsInfo" ||
-            openDialog === "sendMailers" ||
-            openDialog === "printLabels"
-              ? true
-              : false
-          }
-          maxWidth={
-            openDialog === "ownerContacts"
-              ? "xl"
-              : openDialog === "owner" ||
+          {openDialog && (
+            <Dialog
+              className={classes.dialog}
+              open={openDialog ? true : false}
+              onClose={handleCloseDialog}
+              fullWidth={
+                openDialog === "comment" ||
+                openDialog === "owner" ||
+                openDialog === "wellsPerOwner" ||
+                openDialog === "ownerContacts" ||
                 openDialog === "ownersPerContacts" ||
-                openDialog === "wellsPerOwner"
-              ? "lg"
-              : openDialog === "addContact" ||
-                openDialog === "addOwnerToContact" ||
-                openDialog === "deleteOwnersFromContact" ||
-                openDialog === "deleteContact"
-              ? "xs"
-              : "sm"
-          }
-        >
-          {openDialog === "comment" && (
-            <Comments
-              focus
-              targetSourceId={expandedObject}
-              targetLabel={props.targetLabel}
-              multipleIds={
-                m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
-                m1nSelectedRowsIndexes.length > 1
-                  ? m1nSelectedRowsIds
-                  : null
+                openDialog === "buyContactsInfo" ||
+                openDialog === "sendMailers" ||
+                openDialog === "printLabels"
+                  ? true
+                  : false
               }
-            />
-          )}
-          {openDialog === "tag" && (
-            <div className={classes.tagsDiv}>
-              <Tags
-                targetSourceId={expandedObject}
-                targetLabel={props.targetLabel}
-                multipleIds={
-                  m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
-                  m1nSelectedRowsIndexes.length > 1
-                    ? m1nSelectedRowsIds
-                    : null
-                }
-              />
-            </div>
-          )}
-          {openDialog === "owner" && (
-            <M1nTable
-              selectedWell={{ id: expandedObject }}
-              parent="OwnersPerWell"
-            />
-          )}
-          {openDialog === "wellsPerOwner" && (
-            <M1nTable wellsIdsArray={expandedObject} parent="WellsPerOwner" />
-          )}
-          {openDialog === "ownerContacts" && (
-            <M1nTable parent="ownerContacts" ownerId={expandedObject} />
-          )}
-          {openDialog === "ownersPerContacts" && (
-            <M1nTable
-              parent="ownersPerContacts"
-              ownersIdsArray={expandedObject}
-              contactId={rows[rowInd]._id}
-            />
-          )}
+              maxWidth={
+                openDialog === "ownerContacts"
+                  ? "xl"
+                  : openDialog === "owner" ||
+                    openDialog === "ownersPerContacts" ||
+                    openDialog === "wellsPerOwner"
+                  ? "lg"
+                  : openDialog === "addContact" ||
+                    openDialog === "addOwnerToContact" ||
+                    openDialog === "deleteOwnersFromContact" ||
+                    openDialog === "deleteContact"
+                  ? "xs"
+                  : "sm"
+              }
+            >
+              {openDialog === "comment" && (
+                <Comments
+                  focus
+                  targetSourceId={expandedObject}
+                  targetLabel={props.targetLabel}
+                  multipleIds={
+                    m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
+                    m1nSelectedRowsIndexes.length > 1
+                      ? m1nSelectedRowsIds
+                      : null
+                  }
+                />
+              )}
+              {openDialog === "tag" && (
+                <div className={classes.tagsDiv}>
+                  <Tags
+                    targetSourceId={expandedObject}
+                    targetLabel={props.targetLabel}
+                    multipleIds={
+                      m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
+                      m1nSelectedRowsIndexes.length > 1
+                        ? m1nSelectedRowsIds
+                        : null
+                    }
+                  />
+                </div>
+              )}
+              {openDialog === "owner" && (
+                <M1nTable
+                  selectedWell={{ id: expandedObject }}
+                  parent="OwnersPerWell"
+                />
+              )}
+              {openDialog === "wellsPerOwner" && (
+                <M1nTable
+                  wellsIdsArray={expandedObject}
+                  parent="WellsPerOwner"
+                />
+              )}
+              {openDialog === "ownerContacts" && (
+                <M1nTable parent="ownerContacts" ownerId={expandedObject} />
+              )}
+              {openDialog === "ownersPerContacts" && (
+                <M1nTable
+                  parent="ownersPerContacts"
+                  ownersIdsArray={expandedObject}
+                  contactId={rows[rowInd]._id}
+                />
+              )}
 
-          {openDialog === "addContact" && props.targetLabel === "contact" && (
-            <AddContactDialogContent
-              onClose={handleCloseDialog}
-              parent={props.addAble.parent}
-            />
-          )}
-          {openDialog === "addOwnerToContact" && (
-            <AddOwnerToContactDialogContent
-              onClose={handleCloseDialog}
-              parent={props.addAble.parent}
-              existingOwners={props.addAble.existingOwners}
-            />
-          )}
-          {openDialog === "deleteOwnersFromContact" && (
-            <DeleteConfirmationDialogContent
-              onClose={handleCloseDialog}
-              deleteFunc={props.deleteFunc}
-              m1nSelectedRowsIds={m1nSelectedRowsIds}
-              setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-            >
-              {`Do you want to permanently delete the owner${
-                m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
-              } from  this contact?`}
-            </DeleteConfirmationDialogContent>
-          )}
-          {openDialog === "deleteContact" && (
-            <DeleteConfirmationDialogContent
-              onClose={handleCloseDialog}
-              deleteFunc={props.deleteFunc}
-              m1nSelectedRowsIds={m1nSelectedRowsIds}
-              setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-              // completelyDelete={completelyDelete}
-            >
-              {/* {props.header === "Owner's Contacts" && (
-                <RadioGroup
-                  value={completelyDelete}
-                  onChange={(event) => {
-                    setCompletelyDelete(event.target.value);
-                  }}
+              {openDialog === "addContact" &&
+                props.targetLabel === "contact" && (
+                  <AddContactDialogContent
+                    onClose={handleCloseDialog}
+                    parent={props.addAble.parent}
+                  />
+                )}
+              {openDialog === "addOwnerToContact" && (
+                <AddOwnerToContactDialogContent
+                  onClose={handleCloseDialog}
+                  parent={props.addAble.parent}
+                  existingOwners={props.addAble.existingOwners}
+                />
+              )}
+              {openDialog === "deleteOwnersFromContact" && (
+                <DeleteConfirmationDialogContent
+                  onClose={handleCloseDialog}
+                  deleteFunc={props.deleteFunc}
+                  m1nSelectedRowsIds={m1nSelectedRowsIds}
+                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
-                  <FormControlLabel
-                    value={"false"}
-                    control={<Radio />}
-                    label={`Do you want to remove the contact${
+                  {`Do you want to permanently delete the owner${
+                    m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
+                      ? "s"
+                      : ""
+                  } from  this contact?`}
+                </DeleteConfirmationDialogContent>
+              )}
+              {openDialog === "deleteContact" && (
+                <DeleteConfirmationDialogContent
+                  onClose={handleCloseDialog}
+                  deleteFunc={props.deleteFunc}
+                  m1nSelectedRowsIds={m1nSelectedRowsIds}
+                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+                >
+                  {props.header === "Owner's Contacts" &&
+                    `Do you want to remove the contact${
                       m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
                         ? "s"
                         : ""
-                    } only from this owner?`}
-                  />
-                  <FormControlLabel
-                    value={"true"}
-                    control={<Radio />}
-                    label={`Do you want to permanently delete the contact${
+                    } from this owner?`}
+
+                  {props.header === "Contacts" &&
+                    `Do you want to permanently delete the contact${
                       m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
                         ? "s"
                         : ""
                     }?`}
-                  />
-                </RadioGroup>
-              )} */}
+                </DeleteConfirmationDialogContent>
+              )}
+              {openDialog === "buyContactsInfo" && (
+                <BuyContactsInfoDialogContent
+                  onClose={handleCloseDialog}
+                  rows={expandedObject}
+                  setRows={setExpandedObject}
+                  setSelectedRow={setSelectedRow}
+                />
+              )}
+              {openDialog === "sendMailers" && (
+                <SendMailersDialogContent
+                  onClose={handleCloseDialog}
+                  rows={expandedObject}
+                  setRows={setExpandedObject}
+                  setSelectedRow={setSelectedRow}
+                />
+              )}
+              {openDialog === "printLabels" && (
+                <PrintLabelsDialogContent
+                  onClose={handleCloseDialog}
+                  rows={expandedObject}
+                  setRows={setExpandedObject}
+                  setSelectedRow={setSelectedRow}
+                />
+              )}
+            </Dialog>
+          )}
 
-              {props.header === "Owner's Contacts" &&
-                `Do you want to remove the contact${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
-                } from this owner?`}
-
-              {props.header === "Contacts" &&
-                `Do you want to permanently delete the contact${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
-                }?`}
-            </DeleteConfirmationDialogContent>
+          {showExpandableCard && (
+            <Dialog
+              className={classes.dialogExpCard}
+              fullWidth
+              maxWidth="xl"
+              open={showExpandableCard}
+              onClose={handleCloseExpandableCard}
+            >
+              <ExpandableCardProvider
+                expanded={true}
+                handleCloseExpandableCard={handleCloseExpandableCard}
+                component={subComponent}
+                title={title}
+                subTitle={subTitle}
+                parent="table"
+                mouseX={0}
+                mouseY={0}
+                position="relative"
+                cardLeft={"0"}
+                cardTop={"0"}
+                zIndex={1201}
+                cardWidthExpanded="100%"
+                cardHeightExpanded="100%"
+                targetSourceId={
+                  props.targetLabel === "owner" || props.targetLabel === "well"
+                    ? selectedRow.id
+                    : selectedRow._id
+                }
+                targetLabel={props.targetLabel}
+                noTrackAvailable={
+                  props.targetLabel === "contact" ? true : false
+                }
+              />
+            </Dialog>
           )}
-          {openDialog === "buyContactsInfo" && (
-            <BuyContactsInfoDialogContent
-              onClose={handleCloseDialog}
-              rows={expandedObject}
-              setRows={setExpandedObject}
-              setSelectedRow={setSelectedRow}
-            />
-          )}
-          {openDialog === "sendMailers" && (
-            <SendMailersDialogContent
-              onClose={handleCloseDialog}
-              rows={expandedObject}
-              setRows={setExpandedObject}
-              setSelectedRow={setSelectedRow}
-            />
-          )}
-          {openDialog === "printLabels" && (
-            <PrintLabelsDialogContent
-              onClose={handleCloseDialog}
-              rows={expandedObject}
-              setRows={setExpandedObject}
-              setSelectedRow={setSelectedRow}
-            />
-          )}
-        </Dialog>
+        </div>
+      ) : (
+        <MUIDataTable
+          className={classes.table}
+          title={props.header}
+          data={[
+            {
+              loader: " ",
+            },
+          ]}
+          columns={[{ name: "loader", label: " " }]}
+          options={options}
+        />
+        // <Skeleton variant="rect" height={200} style={{ minWidth: "100%" }}>
+        //   <Typography variant="button" style={{ visibility: "visible" }}>
+        //     Not Available
+        //   </Typography>
+        // </Skeleton>
       )}
-
-      {showExpandableCard && (
-        <Dialog
-          className={classes.dialogExpCard}
-          fullWidth
-          maxWidth="xl"
-          open={showExpandableCard}
-          onClose={handleCloseExpandableCard}
+      {props.loading && (
+        <div
+          style={{
+            padding: "15px",
+            position: "absolute",
+            top: "95px",
+            left: "30px",
+            zIndex: "150",
+          }}
         >
-          <ExpandableCardProvider
-            expanded={true}
-            handleCloseExpandableCard={handleCloseExpandableCard}
-            component={subComponent}
-            title={title}
-            subTitle={subTitle}
-            parent="table"
-            mouseX={0}
-            mouseY={0}
-            position="relative"
-            cardLeft={"0"}
-            cardTop={"0"}
-            zIndex={1201}
-            cardWidthExpanded="100%"
-            cardHeightExpanded="100%"
-            targetSourceId={
-              props.targetLabel === "owner" || props.targetLabel === "well"
-                ? selectedRow.id
-                : selectedRow._id
-            }
-            targetLabel={props.targetLabel}
-            noTrackAvailable={title === "Contact" ? true : false}
-          />
-        </Dialog>
+          <CircularProgress size={80} disableShrink color="secondary" />
+        </div>
       )}
     </div>
-  ) : props.loading || !rows ? (
-    <div style={{ padding: "15px" }}>
-      <CircularProgress size={80} disableShrink color="secondary" />
-    </div>
-  ) : (
-    <Skeleton variant="rect" height={300}>
-      <Typography variant="button">Not Available</Typography>
-    </Skeleton>
   );
 }
