@@ -5,7 +5,7 @@ import Switch from "@material-ui/core/Switch";
 // import { NavigationContext } from "../NavigationContext";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { WELLSQUERY } from "../../graphQL/useQueryWells";
-import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAndObjectType";
+import { TRACKSBYOBJECTTYPE } from "../../graphQL/useQuerytracksByObjectType";
 import { AppContext } from "../../AppContext";
 
 // import { MapControlsContext } from "../../MapControls/MapControlsContext";
@@ -29,24 +29,23 @@ const SimpleUserTable = (props) => {
   //     MapControlsContext
   //   );
 
-  //   
+  //
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = useState(true);
 
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
-  const [tracksByUserAndObjectType, { data: dataTracks }] = useLazyQuery(
-    TRACKSBYUSERANDOBJECTTYPE
+  const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(
+    TRACKSBYOBJECTTYPE
   );
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
       setLoading(true);
 
-      tracksByUserAndObjectType({
+      tracksByObjectType({
         variables: {
-          userId: stateApp.user.mongoId,
           objectType: "well",
         },
       });
@@ -54,9 +53,9 @@ const SimpleUserTable = (props) => {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (dataTracks && dataTracks.tracksByUserAndObjectType) {
-      if (dataTracks.tracksByUserAndObjectType.length !== 0) {
-        const tracksIdArray = dataTracks.tracksByUserAndObjectType.map(
+    if (dataTracks && dataTracks.tracksByObjectType) {
+      if (dataTracks.tracksByObjectType.length !== 0) {
+        const tracksIdArray = dataTracks.tracksByObjectType.map(
           (track) => track.trackOn
         );
 

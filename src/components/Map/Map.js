@@ -37,7 +37,7 @@ import DefaultFiltersTest from "./filtersDefaultTest";
 import FilterControl from "./components/FilterControl";
 import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { WELLSQUERY } from "../../graphQL/useQueryWells";
-import { TRACKSBYUSERANDOBJECTTYPE } from "../../graphQL/useQueryTracksByUserAndObjectType";
+import { TRACKSBYOBJECTTYPE } from "../../graphQL/useQueryTracksByObjectType";
 import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
 import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
 import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
@@ -47,8 +47,7 @@ import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 import MapGridCard from "../MapGridCard/MapGridCard";
-
-import MarkerIcon from './sprites/marker-icon.png';
+import MarkerIcon from "./sprites/marker-icon.png";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -123,13 +122,12 @@ export default function Map() {
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = useState(true);
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
-  const [tracksByUserAndObjectType, { data: dataTracks }] = useLazyQuery(
-    TRACKSBYUSERANDOBJECTTYPE
+  const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(
+    TRACKSBYOBJECTTYPE
   );
-  const [
-    tracksByUserAndObjectTypeOwner,
-    { data: dataTracksOwner },
-  ] = useLazyQuery(TRACKSBYUSERANDOBJECTTYPE);
+  const [tracksByObjectTypeOwner, { data: dataTracksOwner }] = useLazyQuery(
+    TRACKSBYOBJECTTYPE
+  );
 
   const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(
     OWNERSWELLSQUERY
@@ -159,16 +157,14 @@ export default function Map() {
     if (stateApp.user && stateApp.user.mongoId) {
       setLoading(true);
 
-      tracksByUserAndObjectType({
+      tracksByObjectType({
         variables: {
-          userId: stateApp.user.mongoId,
           objectType: "well",
         },
       });
 
-      tracksByUserAndObjectTypeOwner({
+      tracksByObjectTypeOwner({
         variables: {
-          userId: stateApp.user.mongoId,
           objectType: "owner",
         },
       });
@@ -178,15 +174,15 @@ export default function Map() {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (dataTracks && dataTracks.tracksByUserAndObjectType) {
-      if (dataTracks.tracksByUserAndObjectType.length !== 0) {
-        const tracksIdArray = dataTracks.tracksByUserAndObjectType.map(
+    if (dataTracks && dataTracks.tracksByObjectType) {
+      if (dataTracks.tracksByObjectType.length !== 0) {
+        const tracksIdArray = dataTracks.tracksByObjectType.map(
           (track) => track.trackOn
         );
 
         // setStateApp((stateApp) => ({
         //   ...stateApp,
-        //   trackedwells: dataTracks.tracksByUserAndObjectType,
+        //   trackedwells: dataTracks.tracksByObjectType,
         // }));
 
         getWells({
@@ -203,11 +199,16 @@ export default function Map() {
   }, [dataTracks]);
 
   useEffect(() => {
-    if (dataTracksOwner && dataTracksOwner.tracksByUserAndObjectType) {
-      if (dataTracksOwner.tracksByUserAndObjectType.length !== 0) {
-        var objectsIdsArray = dataTracksOwner.tracksByUserAndObjectType.map(
+    if (dataTracksOwner && dataTracksOwner.tracksByObjectType) {
+      if (dataTracksOwner.tracksByObjectType.length !== 0) {
+        var objectsIdsArray = dataTracksOwner.tracksByObjectType.map(
           (item) => item.trackOn
         );
+
+        setStateApp((state) => ({
+          ...state,
+          owners: objectsIdsArray,
+        }));
 
         getOwnersWells({
           variables: {
@@ -1169,13 +1170,30 @@ export default function Map() {
     }
 
     // this section adds the updated list of layers
-    const tmpCheckedLayer = stateApp.tempCheckedUserDefinedLayers;
+    const tmpCheckedLayer = stateApp.tempCheckedUserDefinedLayer;
+    const tmpCheckedAOILayer = stateApp.tempCheckedAOILayer;
+    const tmpCheckedParcelLayer = stateApp.tempCheckedParcleLayer;
+
     const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
     if (
       tmpCheckedLayer != null &&
       stateApp.checkedUserDefinedLayers.indexOf(tmpCheckedLayer) === -1
     ) {
       checkedLayers.push(tmpCheckedLayer);
+    }
+
+    if (
+      tmpCheckedAOILayer != null &&
+      stateApp.checkedUserDefinedLayers.indexOf(tmpCheckedAOILayer) === -1
+    ) {
+      checkedLayers.push(tmpCheckedAOILayer);
+    }
+
+    if (
+      tmpCheckedParcelLayer != null &&
+      stateApp.checkedUserDefinedLayers.indexOf(tmpCheckedParcelLayer) === -1
+    ) {
+      checkedLayers.push(tmpCheckedParcelLayer);
     }
 
     if (map && checkedLayers.length > 0) {
@@ -1271,7 +1289,6 @@ export default function Map() {
                     .setData(myGeoJSONData);
                 }
                 const layer = map.getLayer(layerId);
-                console.log(layer.source);
                 if (!layer.source.includes("_filter")) {
                   let clusterLabelBar = layerId + "-clusters-counts";
                   if (map.getLayer(clusterLabelBar)) {
@@ -1380,7 +1397,7 @@ export default function Map() {
                   beforelayer = clusterVar;
                 }
               }
-              
+
               // -> add interaction (note to change later w/ interaction panel)
               if (selectLayerProps && selectLayerProps.interactionProps) {
                 const availableInteraction =
@@ -1572,7 +1589,9 @@ export default function Map() {
     map,
     stateApp.checkedUserDefinedLayers,
     stateApp.checkedUserDefinedLayersInteraction,
-    stateApp.tempCheckedUserDefinedLayers,
+    stateApp.tempCheckedUserDefinedLayer,
+    stateApp.tempCheckedAOILayer,
+    stateApp.tempCheckedParcleLayer,
     stateApp.customLayers,
     stateApp.trackedwells,
     stateApp.trackedOwnerWells,
@@ -2155,7 +2174,6 @@ export default function Map() {
               // featuresList = map.querySourceFeatures(layer.source);
               featuresList = map.getSource(layer.source)._data.features;
             }
-            console.log(filterLayer, featuresList);
             if (featuresList && featuresList.length > 0) {
               const result = featuresList.filter((feature) => {
                 if (feature.geometry.type === "MultiPolygon") {
@@ -2342,7 +2360,7 @@ export default function Map() {
         if (checkedUserDefinedLayers.indexOf(aoiIndex) === -1) {
           setStateApp((stateApp) => ({
             ...stateApp,
-            tempCheckedUserDefinedLayer: aoiIndex,
+            tempCheckedAOILayer: aoiIndex,
           }));
         }
         let aoiName = stateNav.aoiName;
@@ -2377,7 +2395,7 @@ export default function Map() {
       } else {
         setStateApp((stateApp) => ({
           ...stateApp,
-          tempCheckedUserDefinedLayer: null,
+          tempCheckedAOILayer: null,
         }));
       }
 
@@ -2390,7 +2408,7 @@ export default function Map() {
         if (checkedUserDefinedLayers.indexOf(parcelIndex) === -1) {
           setStateApp((stateApp) => ({
             ...stateApp,
-            tempCheckedUserDefinedLayer: parcelIndex,
+            tempCheckedParcleLayer: parcelIndex,
           }));
         }
         let parcelName = stateNav.parcelName;
@@ -2425,7 +2443,7 @@ export default function Map() {
       } else {
         setStateApp((stateApp) => ({
           ...stateApp,
-          tempCheckedUserDefinedLayer: null,
+          tempCheckedParcleLayer: null,
         }));
       }
 
@@ -2555,6 +2573,14 @@ export default function Map() {
               false,
             ],
           ]);
+        } else if (Object.keys(filterCustomArray).length > 0) {
+          map.setFilter("wellpoints", [
+            "match",
+            ["get", "id"],
+            "-1",
+            true,
+            false,
+          ]);
         } else {
           map.setFilter("wellpoints", filterArray);
         }
@@ -2568,6 +2594,14 @@ export default function Map() {
               true,
               false,
             ],
+          ]);
+        } else if (Object.keys(filterCustomArray).length > 0) {
+          map.setFilter("welllines", [
+            "match",
+            ["get", "id"],
+            "-1",
+            true,
+            false,
           ]);
         } else {
           map.setFilter("welllines", filterArray);
@@ -2676,7 +2710,6 @@ export default function Map() {
           } else {
             const layer = map.getLayer(filterLayer);
             if (Object.keys(filterCustomArray).length > 0) {
-              console.log(filterLayer, filterCustomArray);
               if (layer) {
                 if (
                   ["Tracked Wells", "Tracked Owners", "Tags Filter"].indexOf(
@@ -3400,11 +3433,10 @@ export default function Map() {
         setStateApp({ ...stateApp, map: newMap, draw: Draw });
 
         newMap.on("load", function (e) {
-          
-          newMap.loadImage(MarkerIcon, function(error, image) {
+          newMap.loadImage(MarkerIcon, function (error, image) {
             if (error) throw error;
             // add image to the active style and make it SDF-enabled
-            newMap.addImage('marker-icon', image, { sdf: true });
+            newMap.addImage("marker-icon", image, { sdf: true });
           });
 
           setDraw(Draw);
