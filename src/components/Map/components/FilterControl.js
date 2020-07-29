@@ -185,10 +185,22 @@ export default (props) => {
           }));
         } else {
           setTrackWells(!isTrackWells);
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            hugeRequest: null,
-          }));
+          const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
+          const userDefinedLayers = stateApp.userDefinedLayers;
+          const trackWellIndex = userDefinedLayers.findIndex((item) => item.name === "Tracked Wells")
+          if (checkedLayers.indexOf(trackWellIndex) > -1) {
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              hugeRequest: null,
+            }));
+          } else {
+            checkedLayers.push(trackWellIndex);
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              hugeRequest: null,
+              checkedUserDefinedLayers: checkedLayers
+            }));
+          }
           const tracks = [];
           points.forEach((point) => {
             const targetSourceId = point.properties.id.toLowerCase();
@@ -238,10 +250,23 @@ export default (props) => {
         hugeRequest: true,
       }));
     } else {
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        hugeRequest: null,
-      }));
+      setTrackOwners(!isTrackOwners);
+      const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
+      const userDefinedLayers = stateApp.userDefinedLayers;
+      const trackOwnerIndex = userDefinedLayers.findIndex((item) => item.name === "Tracked Owners")
+      if (checkedLayers.indexOf(trackOwnerIndex) > -1) {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          hugeRequest: null,
+        }));
+      } else {
+        checkedLayers.push(trackOwnerIndex);
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          hugeRequest: null,
+          checkedUserDefinedLayers: checkedLayers
+        }));
+      }
       toggleCreateRemoveTracks({
         variables: {
           tracks: tracks,
@@ -285,7 +310,7 @@ export default (props) => {
             hugeRequest: true,
           }));
         } else {
-          setTrackOwners(!isTrackOwners);
+          
           setStateApp((stateApp) => ({
             ...stateApp,
             hugeRequest: null,
