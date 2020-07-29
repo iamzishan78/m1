@@ -160,7 +160,7 @@ export default function Deals({ contact, ...props }) {
 
   const handleOpenDialog = (deal) => {
     const laneId = deal ? deal.laneId : null;
-    const cardId = deal ? deal.cardId : null;
+    const cardId = deal ? deal.id : null;
 
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -178,6 +178,7 @@ export default function Deals({ contact, ...props }) {
         <Dialog
           transactData={data?.transactionData?.allData}
           handleDataChange={handleDataChange}
+          selectRowOpenContact={props.selectRowOpenContact}
           contact={contact}
         />
         <CardActions>

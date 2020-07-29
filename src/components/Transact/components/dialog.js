@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import uuid from "uuid";
+import { useLazyQuery } from "@apollo/react-hooks";
 import NumberFormat from "react-number-format";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
@@ -17,6 +18,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { TransactContext } from "../TransactContext";
 import { AppContext } from "../../../AppContext";
 import AddContactDialogContent from "../../Shared/M1nTable/components/SubComponents/AddContactDialogContent";
+import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
 
 const useStyles = makeStyles((theme) => ({
   label: {
@@ -59,6 +61,12 @@ export default function TransactDialog(props) {
     props.contact ? { name: props.contact.name, _id: props.contact._id } : {}
   );
   const [openContactDialog, setOpenContactDialog] = useState(false);
+  // const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
+
+  const openContact = () => {
+    handleClose();
+    props.selectRowOpenContact(contact);
+  };
 
   useEffect(() => {
     const cardId = stateApp.activeDeal?.cardId;
@@ -233,31 +241,29 @@ export default function TransactDialog(props) {
             />
           )}
 
-          {!props.contact && (
-            <ButtonGroup
-              fullWidth
-              variant="contained"
-              color="primary"
-              aria-label="contained primary button group"
-            >
-              <Button onClick={() => setOpenContactDialog(true)}>
-                Add / Select Contact
-              </Button>
+          <ButtonGroup
+            fullWidth
+            variant="contained"
+            color="primary"
+            aria-label="contained primary button group"
+          >
+            <Button onClick={() => setOpenContactDialog(true)}>
+              Add / Select Contact
+            </Button>
 
+            {contact && (
               <Button
-                component="a"
-                href="http://www.google.com"
-                target="_blank"
                 disabled={
                   (Object.keys(contact).length === 0 &&
                     contact.constructor === Object) ||
                   contact === null
                 }
+                onClick={() => openContact()}
               >
                 View Contact
               </Button>
-            </ButtonGroup>
-          )}
+            )}
+          </ButtonGroup>
         </FormControl>
 
         <FormControl margin="dense" fullWidth size="small">

@@ -820,6 +820,30 @@ export default function SubTable(props) {
     }));
   };
 
+  // 'view contact' on deals modal
+  const selectRowOpenContact = (contact) => {
+    const rowIndex = rows.findIndex((r) => r._id === contact._id);
+    const row = rows[rowIndex];
+
+    setSelectedRow(rows);
+
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedContact: row.id,
+    }));
+
+    setSubComponent(
+      <ContactDetailCard
+        selectRowOpenContact={selectRowOpenContact}
+        contactId={row._id}
+        handleCloseExpandableCard={handleCloseExpandableCard}
+      />
+    );
+    setTitle("CONTACT DETAILS");
+    setSubTitle(" ");
+    handleOpenExpandableCard();
+  };
+
   const options = {
     filterType: "multiselect",
     rowsPerPage: props.startPaginationAt ? props.startPaginationAt : 10,
@@ -1049,6 +1073,7 @@ export default function SubTable(props) {
 
         setSubComponent(
           <ContactDetailCard
+            selectRowOpenContact={selectRowOpenContact}
             contactId={rows[dataIndex]._id}
             handleCloseExpandableCard={handleCloseExpandableCard}
           />
