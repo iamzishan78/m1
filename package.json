@@ -51,6 +51,7 @@
     "react-draggable": "^4.4.3",
     "react-iframe": "^1.8.0",
     "react-image-crop": "^8.6.4",
+    "react-json-view": "^1.19.1",
     "react-material-ui-form-validator": "^2.0.10",
     "react-notifications": "^1.6.0",
     "react-number-format": "^4.4.1",
