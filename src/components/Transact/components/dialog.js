@@ -150,7 +150,7 @@ export default function TransactDialog(props) {
         } else {
           transactData.lanes[laneIndex].cards[cardIndex] = updatedCard;
         }
-      } else if (cardId === null && laneId === null) {
+      } else if (!cardId && !laneId) {
         // add new
 
         transactData.lanes.forEach((lane) => {

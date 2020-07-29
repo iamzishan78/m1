@@ -83,6 +83,7 @@ export default function AddContactDialogContent(props) {
   ] = useLazyQuery(CONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
   });
+
   const [
     getContactsByOwnerId,
     { loading: loadingContactsByOwnerId, data: dataContactsByOwnerId },
@@ -120,6 +121,7 @@ export default function AddContactDialogContent(props) {
         const tempIdArray = dataContactsByOwnerId.contactsByOwnerId.map(
           (cont) => cont._id
         );
+
 
         setContacts([
           ...dataContacts.contacts.filter(
@@ -248,7 +250,11 @@ export default function AddContactDialogContent(props) {
                 style={{ minWidth: "325.6px" }}
                 options={contacts}
                 getOptionLabel={(option) =>
-                  option && option.name ? option.name : option ? option : ""
+                  option && option.name
+                    ? option.name
+                    : typeof option === "string"
+                    ? option
+                    : ""
                 }
                 autoComplete
                 autoSelect

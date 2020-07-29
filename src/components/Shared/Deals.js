@@ -41,6 +41,13 @@ const useStyles = makeStyles((theme) => ({
   todayDot: {
     fontSize: "8px",
   },
+  dealTitle: {
+    cursor: "pointer",
+    "&:hover": {
+      fontWeight: "bold",
+      textDecoration: "underline",
+    },
+  },
 }));
 
 let formatter = new Intl.NumberFormat("en-US", {
@@ -119,7 +126,8 @@ export default function Deals({ contact, ...props }) {
       (card) =>
         (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     );
-    return formatter.format(sum);
+    const formatted = formatter.format(sum);
+    return formatted.slice(0, formatted.length - 3);
   };
 
   const sumWonDeals = () => {
@@ -129,7 +137,12 @@ export default function Deals({ contact, ...props }) {
         (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     );
     console.log("FORMAT: ", formatter.format(sum));
-    return formatter.format(sum);
+    const formatted = formatter.format(sum);
+    return formatted.slice(0, formatted.length - 3);
+  };
+
+  const editDeal = (deal) => {
+    console.log("DEAL: ", deal);
   };
 
   const handleDataChange = (newData) => {
@@ -145,13 +158,16 @@ export default function Deals({ contact, ...props }) {
     }
   };
 
-  const handleOpenDialog = () => {
+  const handleOpenDialog = (deal) => {
+    const laneId = deal ? deal.laneId : null;
+    const cardId = deal ? deal.cardId : null;
+
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: true,
       activeDeal: {
-        laneId: null,
-        cardId: null,
+        laneId,
+        cardId,
       },
     }));
   };
@@ -222,7 +238,12 @@ export default function Deals({ contact, ...props }) {
               <TableBody>
                 {allDeals.map((deal) => (
                   <TableRow key={deal.id}>
-                    <TableCell component="th" scope="row">
+                    <TableCell
+                      component="th"
+                      scope="row"
+                      className={classes.dealTitle}
+                      onClick={() => handleOpenDialog(deal)}
+                    >
                       {deal.title}
                     </TableCell>
                     <TableCell>{deal.label}</TableCell>
