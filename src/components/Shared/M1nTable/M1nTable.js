@@ -807,6 +807,7 @@ export default function M1nTable(props) {
   ////////////General begin///////////////////////////////////////////////
 
   useEffect(() => {
+    console.log('ue mintable 1')
     if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks) {
       setLoading(true);
 
@@ -822,6 +823,8 @@ export default function M1nTable(props) {
 
   ////////////Tracked Owners begin///////////////////////////////////////////////
   useEffect(() => {
+    console.log('ue mintable 2')
+
     if (props.parent && props.parent === "trackOwners") {
       setTargetLabel("owner");
 
@@ -835,6 +838,8 @@ export default function M1nTable(props) {
   }, [props.parent, props.header]);
 
   useEffect(() => {
+    console.log('ue mintable 3')
+
     if (
       props.parent &&
       props.parent === "trackOwners" &&
@@ -880,6 +885,8 @@ export default function M1nTable(props) {
   }, [dataTracks]);
 
   useEffect(() => {
+    console.log('ue mintable 4')
+
     if (props.parent && props.parent === "trackOwners" && dataOwners) {
       if (
         dataOwners.owners &&
@@ -1005,6 +1012,8 @@ export default function M1nTable(props) {
 
   ////////////Tracked Wells begin///////////////////////////////////////////////
   useEffect(() => {
+    console.log('ue mintable 5')
+
     if (props.parent && props.parent === "trackWells") {
       setTargetLabel("well");
 
@@ -1018,6 +1027,8 @@ export default function M1nTable(props) {
   }, [props.parent, props.header]);
 
   useEffect(() => {
+    console.log('ue mintable 6')
+
     if (
       props.parent &&
       props.parent === "trackWells" &&
@@ -1055,6 +1066,8 @@ export default function M1nTable(props) {
   }, [dataTracks]);
 
   useEffect(() => {
+    console.log('ue mintable 7')
+
     if (props.parent && props.parent === "trackWells" && dataWells) {
       if (
         dataWells.wells &&
@@ -1175,6 +1188,8 @@ export default function M1nTable(props) {
   ////////////Wells Per Owner begin///////////////////////////////////////////
 
   useEffect(() => {
+    console.log('ue mintable 8')
+
     if (
       props.parent &&
       props.parent === "WellsPerOwner" &&
@@ -1207,6 +1222,8 @@ export default function M1nTable(props) {
   }, [props.wellsIdsArray, stateApp.user]);
 
   useEffect(() => {
+    console.log('ue mintable 9')
+
     if (props.parent && props.parent === "WellsPerOwner" && dataWells) {
       if (
         dataWells.wells &&
@@ -1305,6 +1322,8 @@ export default function M1nTable(props) {
   ////////////Owners Per Well begin///////////////////////////////////////////////
 
   useEffect(() => {
+    console.log('ue mintable 10')
+
     if (props.parent && props.parent === "OwnersPerWell") {
       setTargetLabel("owner");
       setHeader("Owners Per Well");
@@ -1316,6 +1335,8 @@ export default function M1nTable(props) {
   }, [props.selectedWell]);
 
   useEffect(() => {
+    console.log('ue mintable 11')
+
     if (
       props.parent &&
       props.parent === "OwnersPerWell" &&
@@ -1359,6 +1380,8 @@ export default function M1nTable(props) {
   }, [dataWellOwners, dataTracks]);
 
   useEffect(() => {
+    console.log('ue mintable 12')
+
     if (
       props.parent &&
       props.parent === "OwnersPerWell" &&
@@ -1472,6 +1495,8 @@ export default function M1nTable(props) {
   ////////////Owners Per Contact begin///////////////////////////////////////////////
 
   useEffect(() => {
+    console.log('ue mintable 13')
+
     if (
       props.parent &&
       props.parent === "ownersPerContacts" &&
@@ -1488,6 +1513,8 @@ export default function M1nTable(props) {
   }, [props.contactId]);
 
   useEffect(() => {
+    console.log('ue mintable 14')
+
     if (
       props.contactId &&
       props.parent &&
@@ -1527,6 +1554,8 @@ export default function M1nTable(props) {
   }, [props.contactId, dataContact]);
 
   useEffect(() => {
+    console.log('ue mintable 15')
+
     if (
       props.parent &&
       props.parent === "ownersPerContacts" &&
@@ -1587,6 +1616,8 @@ export default function M1nTable(props) {
   }, [dataOwners, dataTracks, dataOwnersWells]);
 
   useEffect(() => {
+    console.log('ue mintable 16')
+
     if (
       props.parent &&
       props.parent === "ownersPerContacts" &&
@@ -1684,6 +1715,8 @@ export default function M1nTable(props) {
   ////////////Owners Per Contact begin//////////Delete//////////////////////////////
 
   useEffect(() => {
+    console.log('ue mintable 17')
+
     if (
       props.parent &&
       props.parent === "ownersPerContacts" &&
@@ -1721,6 +1754,8 @@ export default function M1nTable(props) {
   ////////////Contacts Per Owner begin///////////////////////////////////////////////
 
   useEffect(() => {
+    console.log('ue mintable 18')
+
     if (props.parent && props.parent === "ownerContacts" && props.ownerId) {
       setTargetLabel("contact");
       setHeader("Owner's Contacts");
@@ -1732,6 +1767,8 @@ export default function M1nTable(props) {
   }, [props.ownerId]);
 
   useEffect(() => {
+    console.log('ue mintable 19')
+
     if (
       props.parent &&
       props.parent === "ownerContacts" &&
@@ -1770,6 +1807,8 @@ export default function M1nTable(props) {
   }, [dataContactsByOwnerId, dataTracks]);
 
   useEffect(() => {
+    console.log('ue mintable 20')
+
     if (
       props.parent &&
       props.parent === "ownerContacts" &&
@@ -1851,6 +1890,8 @@ export default function M1nTable(props) {
   ////////////Contact Per Owner begin//////////Delete//////////////////////////////
 
   useEffect(() => {
+    console.log('ue mintable 21')
+
     if (props.parent && props.parent === "ownerContacts" && props.ownerId) {
       setDeleteFunc(() => (contactsIdsToDelete, completelyDelete) => {
         if (contactsIdsToDelete) {
@@ -1897,6 +1938,8 @@ export default function M1nTable(props) {
   ////////////Contacts begin///////////////////////////////////////////////
 
   useEffect(() => {
+    console.log('ue mintable 22')
+
     if (props.parent && props.parent === "Contacts") {
       setTargetLabel("contact");
       setHeader("Contacts");
@@ -1908,6 +1951,8 @@ export default function M1nTable(props) {
   }, [props.parent]);
 
   useEffect(() => {
+    console.log('ue mintable 23')
+
     if (
       props.parent &&
       props.parent === "Contacts" &&
@@ -1943,6 +1988,8 @@ export default function M1nTable(props) {
   }, [dataContacts, dataTracks]);
 
   useEffect(() => {
+    console.log('ue mintable 24')
+
     if (
       props.parent &&
       props.parent === "Contacts" &&
@@ -2024,6 +2071,8 @@ export default function M1nTable(props) {
   ////////////Contact Delete begin////////////////////////////////////////
 
   useEffect(() => {
+    console.log('ue mintable 25')
+
     if (props.parent && props.parent === "Contacts") {
       setDeleteFunc(() => (contactsIdsToDelete) => {
         if (contactsIdsToDelete) {
@@ -2050,12 +2099,16 @@ export default function M1nTable(props) {
 
   //////////// Search begin///////////////////////////////////////////////
   useEffect(() => {
+    console.log('ue mintable 26')
+
     if (stateApp.searchloading) {
       setLoading(true);
     }
   }, [stateApp.searchloading]);
 
   useEffect(() => {
+    console.log('ue mintable 27')
+
     if (
       props.parent &&
       props.parent === "search" &&
@@ -2107,6 +2160,8 @@ export default function M1nTable(props) {
   ]);
 
   useEffect(() => {
+    console.log('ue mintable 28')
+
     if (
       props.parent &&
       props.parent === "search" &&

@@ -156,6 +156,7 @@ export default function Map() {
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
+      console.log('useEffect 1')
       setLoading(true);
 
       tracksByObjectType({
@@ -200,6 +201,7 @@ export default function Map() {
   }, [dataTracks]);
 
   useEffect(() => {
+    console.log('useEffect 2')
     if (dataTracksOwner && dataTracksOwner.tracksByObjectType) {
       if (dataTracksOwner.tracksByObjectType.length !== 0) {
         var objectsIdsArray = dataTracksOwner.tracksByObjectType.map(
@@ -221,6 +223,8 @@ export default function Map() {
   }, [dataTracksOwner]);
 
   useEffect(() => {
+    console.log('useEffect 3')
+
     if (customLayerData && customLayerData.allCustomLayers) {
       setStateApp((state) => ({
         ...state,
@@ -233,6 +237,8 @@ export default function Map() {
   }, [customLayerData]);
 
   useEffect(() => {
+    console.log('useEffect 4')
+
     if (dataOwnersWells && dataOwnersWells.length !== 0) {
       console.log(dataOwnersWells.ownersWells);
       var ownerObjectIds = dataOwnersWells.ownersWells.map(
@@ -253,6 +259,8 @@ export default function Map() {
   }, [dataOwnersWells]);
 
   useEffect(() => {
+    console.log('useEffect 5')
+
     if (dataWells) {
       if (
         dataWells.wells &&
@@ -574,6 +582,8 @@ export default function Map() {
   };
 
   useEffect(() => {
+    console.log('useEffect 6')
+
     if (permitData && permitData.permits && permitData.permits.length > 0) {
       const nextOffset = permits.length + permitData.permits.length;
       setPermitData([...permits, ...permitData.permits]);
@@ -588,6 +598,8 @@ export default function Map() {
   }, [permitData]);
 
   useEffect(() => {
+    console.log('useEffect 7')
+
     if (rigData && rigData.rigs && rigData.rigs.length > 0) {
       const nextOffset = rigs.length + rigData.rigs.length;
       setRigData([...rigs, ...rigData.rigs]);
@@ -602,18 +614,24 @@ export default function Map() {
   }, [rigData]);
 
   useEffect(() => {
+    console.log('useEffect 8')
+
     if (permits.length > 0 && map) {
       setLayer(permits, "Permits", map);
     }
   }, [permits, map]);
 
   useEffect(() => {
+    console.log('useEffect 9')
+
     if (rigs.length > 0 && map) {
       setLayer(rigs, "Rig Activity", map);
     }
   }, [rigs, map]);
 
   useEffect(() => {
+    console.log('useEffect 10')
+
     if (dataWellsForOwnerWellTrackLayer) {
       if (
         dataWellsForOwnerWellTrackLayer.wells &&
@@ -634,6 +652,8 @@ export default function Map() {
   }, [dataWellsForOwnerWellTrackLayer]);
 
   useEffect(() => {
+    console.log('useEffect 11')
+
     if (
       stateApp.trackedOwnerWells &&
       stateApp.trackedwells &&
@@ -661,6 +681,8 @@ export default function Map() {
   ]);
 
   useEffect(() => {
+    console.log('useEffect 12')
+
     const wellLineClick = (currentFeature) => {
       console.log("clicked well lines", currentFeature);
 
@@ -877,6 +899,8 @@ export default function Map() {
   ]);
 
   useEffect(() => {
+    console.log('useEffect 14')
+
     // USE EFFECT FOR M1 LAYER HANDLES
     console.log("layer ue start");
 
@@ -968,6 +992,8 @@ export default function Map() {
   ]);
 
   useEffect(() => {
+    console.log('useEffect 15')
+
     // USE EFFECT FOR BASEMAP LAYER HANDLING
     console.log("basemap layer ue start");
     if (stateApp.baseMapLayers.length > 0 && map) {
@@ -1009,6 +1035,8 @@ export default function Map() {
   }, [map, stateApp.checkedBaseLayers, stateApp.baseMapLayers]);
 
   useEffect(() => {
+    console.log('useEffect 16')
+
     // USE EFFECT FOR HEATMAP LAYER HANDLES
     console.log("heatmap layer ue start");
     if (stateApp.heatLayers.length > 0 && map) {
@@ -1050,6 +1078,8 @@ export default function Map() {
   }, [map, stateApp.checkedHeats, stateApp.heatLayers]);
 
   useEffect(() => {
+    console.log('useEffect 17')
+
     ///////////////// EFFECT FOR SHOWING TRACKED WELLS /////////////////
 
     if (map && stateApp.trackFilterOn && stateApp.trackedWellArray) {
@@ -1137,6 +1167,8 @@ export default function Map() {
   }, [stateApp.trackFilterOn]);
 
   useEffect(() => {
+    console.log('useEffect 18')
+
     // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
     // setStateApp((state) => ({
     //   ...state,
@@ -1628,6 +1660,8 @@ export default function Map() {
   ]);
 
   useEffect(() => {
+    console.log('useEffect 19')
+
     if (showExpandableCard) {
       setTransform("transform: none");
     } else {
@@ -1636,6 +1670,8 @@ export default function Map() {
   }, [showExpandableCard]);
 
   useEffect(() => {
+    console.log('useEffect 20')
+
     if (stateNav.m1neralDefaultsOnOff) {
       setDefaultsCheckOnOff((defaultsCheckOnOff) => !defaultsCheckOnOff);
     }
@@ -1645,6 +1681,8 @@ export default function Map() {
   }, [stateNav.m1neralCehckOnOff, stateNav.m1neralDefaultsOnOff]);
 
   useEffect(() => {
+    console.log('useEffect 21')
+
     console.log("filter ue start");
     //applies filter when one of the filters change
     if (map) {
@@ -2940,6 +2978,8 @@ export default function Map() {
   ]);
 
   useEffect(() => {
+    console.log('useEffect 22')
+
     //sets style of map when changed in Map Controls
     if (stateApp.selectedLayerId && map) {
       if (stateApp.selectedLayerId) {
@@ -3025,6 +3065,8 @@ export default function Map() {
   );
 
   useEffect(() => {
+    console.log('useEffect 23')
+
     console.log("wellSelected", stateApp.wellSelected);
     console.log("wellSelectedCoordinates", stateApp.wellSelectedCoordinates);
 
@@ -3072,7 +3114,10 @@ export default function Map() {
   }, [stateApp.wellSelectedCoordinates]);
 
   useEffect(() => {
+    
+
     (async () => {
+      console.log('useEffect 24')
       if (
         map &&
         stateApp.selectedWellId &&
@@ -3156,6 +3201,8 @@ export default function Map() {
   }, [stateApp.wellSelectedCoordinates]);
 
   useEffect(() => {
+    console.log('useEffect 25')
+
     const req = new Request(
       "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
       {
@@ -3205,6 +3252,8 @@ export default function Map() {
   }, []);
 
   useEffect(() => {
+    console.log('useEffect 26')
+
     if (map) {
       setStateApp((stateApp) => ({
         ...stateApp,
@@ -3259,6 +3308,8 @@ export default function Map() {
   };
 
   useEffect(() => {
+    console.log('useEffect 27')
+
     console.log("map ue start");
     if (mapStyles.length > 0) {
       // const SET_INITIAL_MAP_STYLE = "Satellite";
@@ -3588,6 +3639,8 @@ export default function Map() {
 
   // Use effect for removing shape filter
   useEffect(() => {
+    console.log('useEffect 28')
+
     if (stateNav.filterDrawing && stateNav.filterDrawing.length === 0) {
       if (draw) draw.delete(drawingFilterFeatureId);
       setStateNav((stateNav) => ({
@@ -3606,6 +3659,8 @@ export default function Map() {
 
   // Use effect for adding shape filter
   useEffect(() => {
+    console.log('useEffect 29')
+
     function drawCreateListener(e) {
       if (stateNav.drawingMode !== null) {
         let feature = e.features[0];
@@ -3657,6 +3712,8 @@ export default function Map() {
   }, [stateNav.filterFeatureId]);
 
   useEffect(() => {
+    console.log('useEffect 30')
+
     if (draw && stateNav.filterDrawing && stateNav.filterDrawing.length == 2) {
       console.log("initialize filter draw");
       const feature = stateNav.filterDrawing[1];
@@ -3667,6 +3724,8 @@ export default function Map() {
   }, [draw]);
 
   useEffect(() => {
+    console.log('useEffect 31')
+
     if (map) {
       return () => {
         var list = document.getElementById("searchBar");
@@ -3708,6 +3767,8 @@ export default function Map() {
   }, [map]);
 
   useEffect(() => {
+    console.log('useEffect 32')
+
     ////// USE EFFECT TO MANAGE THE FLY TO FEATURE
 
     if (map && stateApp.flyTo) {
@@ -3730,6 +3791,8 @@ export default function Map() {
   }, [createPopUp, map, stateApp.flyTo]);
 
   useEffect(() => {
+    console.log('useEffect 33')
+
     ////// USE EFFECT TO MANAGE THE FIT BOUNDS TO FEATURE
 
     if (
@@ -3786,6 +3849,8 @@ export default function Map() {
   }, [map, stateApp.fitBounds]);
 
   useEffect(() => {
+    console.log('useEffect 35')
+
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
         map.flyTo({
@@ -3827,7 +3892,9 @@ export default function Map() {
     }
   }, [stateApp.toggleZoomOut]);
 
-  useEffect(() => {
+  useEffect(() => {      
+    console.log('useEffect 36')
+
     if (map && stateApp.toggle3d) {
       if (stateApp.toggle3d === true) {
         if (map.getPitch() == 0 && map.getBearing() == 0) {
@@ -3854,6 +3921,8 @@ export default function Map() {
   }, [stateApp.toggle3d]);
 
   useEffect(() => {
+    console.log('useEffect 38')
+
     console.log(
       "Drawing status check",
       stateApp.editDraw,
@@ -4125,32 +4194,37 @@ export default function Map() {
     }
   };
 
-  // useEffect(() => {
-  //   if (stateApp.userSnap === true) {
-  //     var script = document.createElement("script");
-  //     script.type = "text/javascript";
-  //     script.src =
-  //       "//api.usersnap.com/load/64ab8ea7-9417-41a0-b565-eb7ad69da871.js";
-  //     script.async = true;
-  //     script.setAttribute("id", "feedback-script");
+  useEffect(() => {
+    console.log('useEffect 40')
 
-  //     var x = document.getElementsByTagName("script")[0];
-  //     x.parentNode.insertBefore(script, x);
+    if (stateApp.userSnap === true) {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src =
+        "//api.usersnap.com/load/64ab8ea7-9417-41a0-b565-eb7ad69da871.js";
+      script.async = true;
+      script.setAttribute("id", "feedback-script");
 
-  //     document.body.appendChild(script);
+      var x = document.getElementsByTagName("script")[0];
+      x.parentNode.insertBefore(script, x);
 
-  //     return () => {
-  //       document.body.removeChild(script);
-  //     };
-  //   } else if (stateApp.userSnap === false){
-  //     const feedbackScript = document.querySelector("#feedback-script");
-  //     feedbackScript && feedbackScript.remove();
-  //     const element = document.getElementsByName("us-entrypoint-button");
-  //     element && element[0] && element[0].remove();
-  //   }
-  // }, [stateApp.userSnap]);
+      document.body.appendChild(script);
+
+      return () => {
+        document.body.removeChild(script);
+      };
+    } else if (stateApp.userSnap === false){
+      const feedbackScript = document.querySelector("#feedback-script");
+      feedbackScript && feedbackScript.remove();
+      const element = document.getElementsByName("us-entrypoint-button");
+      element && element[0] && element[0].remove();
+    }
+  }, [stateApp.userSnap]);
+
 
   useEffect(() => {
+    console.log('useEffect 41')
+
     if (stateApp.editingUserDefinedLayers.length > 0) {
       const { map } = stateApp;
 
