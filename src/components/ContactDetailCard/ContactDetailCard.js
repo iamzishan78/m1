@@ -38,10 +38,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { toggleRightColumn } from "../../actions";
 import MessageRoundedIcon from "@material-ui/icons/MessageRounded";
 import DescriptionRoundedIcon from "@material-ui/icons/DescriptionRounded";
-import ThumbsUpDownRoundedIcon from "@material-ui/icons/ThumbsUpDownRounded";
 import Card from "@material-ui/core/Card";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import HandShake from "../Shared/svgIcons/HandShake";
+import Parcels from "./components/Parcels";
+import WellsCard from "./components/WellsCard";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -94,11 +96,10 @@ const useStyles = makeStyles((theme) => ({
       "& p": { margin: "8px 10px" },
     },
   },
-  gridStyling:{
+  gridStyling: {
     "& .MuiListItem-container": {
-      borderBottom:'1px solid #c7c7c7'
+      borderBottom: "1px solid #c7c7c7",
     },
-
   },
   SectMargin: {
     margin: "23px 28px",
@@ -688,156 +689,159 @@ export default function ContactDetailCard(props) {
                 />
               </Grid>
 
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">Relatives</p>
-              </Grid>
-              <Grid item xs={9}>
-                <FieldContent
-                  id={contactData._id}
-                  content={{ relatives: contactData.relatives }}
-                />
-              </Grid>
-
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">Linkedln Profile</p>
-              </Grid>
-              <Grid item xs={9}>
-                <FieldContent
-                  onlyChildren
-                  id={contactData._id}
-                  content={{ linkedln: contactData.linkedln }}
-                >
-                  {contactData.linkedln && (
-                    <a
-                      href={`${
-                        !contactData.linkedln.startsWith("http") &&
-                        !contactData.linkedln.startsWith("//")
-                          ? "//"
-                          : ""
-                      }${contactData.linkedln}`}
-                      target="_blank"
+              {basicInfExp && (
+                <>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">Relatives</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <FieldContent
+                      id={contactData._id}
+                      content={{ relatives: contactData.relatives }}
+                    />
+                  </Grid>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">Linkedln Profile</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <FieldContent
+                      onlyChildren
+                      id={contactData._id}
+                      content={{ linkedln: contactData.linkedln }}
                     >
-                      {contactData.linkedln}
-                    </a>
-                  )}
-                </FieldContent>
-              </Grid>
-
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">Facebook Profile</p>
-              </Grid>
-              <Grid item xs={9}>
-                <FieldContent
-                  onlyChildren
-                  id={contactData._id}
-                  content={{ facebook: contactData.facebook }}
-                >
-                  {contactData.facebook && (
-                    <a
-                      href={`${
-                        !contactData.facebook.startsWith("http") &&
-                        !contactData.facebook.startsWith("//")
-                          ? "//"
-                          : ""
-                      }${contactData.facebook}`}
-                      target="_blank"
+                      {contactData.linkedln && (
+                        <a
+                          href={`${
+                            !contactData.linkedln.startsWith("http") &&
+                            !contactData.linkedln.startsWith("//")
+                              ? "//"
+                              : ""
+                          }${contactData.linkedln}`}
+                          target="_blank"
+                        >
+                          {contactData.linkedln}
+                        </a>
+                      )}
+                    </FieldContent>
+                  </Grid>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">Facebook Profile</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <FieldContent
+                      onlyChildren
+                      id={contactData._id}
+                      content={{ facebook: contactData.facebook }}
                     >
-                      {contactData.facebook}
-                    </a>
-                  )}
-                </FieldContent>
-              </Grid>
-
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">Twitter Profile</p>
-              </Grid>
-              <Grid item xs={9}>
-                <FieldContent
-                  onlyChildren
-                  id={contactData._id}
-                  content={{ twitter: contactData.twitter }}
-                >
-                  {contactData.twitter && (
-                    <a
-                      href={`${
-                        !contactData.twitter.startsWith("http") &&
-                        !contactData.twitter.startsWith("//")
-                          ? "//"
-                          : ""
-                      }${contactData.twitter}`}
-                      target="_blank"
+                      {contactData.facebook && (
+                        <a
+                          href={`${
+                            !contactData.facebook.startsWith("http") &&
+                            !contactData.facebook.startsWith("//")
+                              ? "//"
+                              : ""
+                          }${contactData.facebook}`}
+                          target="_blank"
+                        >
+                          {contactData.facebook}
+                        </a>
+                      )}
+                    </FieldContent>
+                  </Grid>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">Twitter Profile</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <FieldContent
+                      onlyChildren
+                      id={contactData._id}
+                      content={{ twitter: contactData.twitter }}
                     >
-                      {contactData.twitter}
-                    </a>
-                  )}
-                </FieldContent>
-              </Grid>
+                      {contactData.twitter && (
+                        <a
+                          href={`${
+                            !contactData.twitter.startsWith("http") &&
+                            !contactData.twitter.startsWith("//")
+                              ? "//"
+                              : ""
+                          }${contactData.twitter}`}
+                          target="_blank"
+                        >
+                          {contactData.twitter}
+                        </a>
+                      )}
+                    </FieldContent>
+                  </Grid>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">Lead Source</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <FieldContent
+                      id={contactData._id}
+                      content={{ leadSource: contactData.leadSource }}
+                    />
+                  </Grid>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">Created By</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    {contactData.createBy &&
+                      contactData.createBy.name === null && (
+                        <div className={classes.userSmallLoader}>
+                          <CircularProgress size={22} color="secondary" />
+                        </div>
+                      )}
+                    {(contactData.createBy && contactData.createBy.name) ||
+                    contactData.createAt ? (
+                      <p style={{ margin: "8px 10px" }}>
+                        {contactData.createBy && contactData.createBy.name
+                          ? contactData.createBy.name
+                          : ""}
 
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">Lead Source</p>
-              </Grid>
-              <Grid item xs={9}>
-                <FieldContent
-                  id={contactData._id}
-                  content={{ leadSource: contactData.leadSource }}
-                />
-              </Grid>
-
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">Created By</p>
-              </Grid>
-              <Grid item xs={9}>
-                {contactData.createBy && contactData.createBy.name === null && (
-                  <div className={classes.userSmallLoader}>
-                    <CircularProgress size={22} color="secondary" />
-                  </div>
-                )}
-                {(contactData.createBy && contactData.createBy.name) ||
-                contactData.createAt ? (
-                  <p style={{ margin: "8px 10px" }}>
-                    {contactData.createBy && contactData.createBy.name
-                      ? contactData.createBy.name
-                      : ""}
-
-                    {`${
-                      contactData.createAt
-                        ? " - " +
-                          anyToDate(contactData.createAt).toLocaleString()
-                        : ""
-                    }`}
-                  </p>
-                ) : (
-                  <p className={classes.notAvailableP}>Not Available</p>
-                )}
-              </Grid>
-
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">Last Update By</p>
-              </Grid>
-              <Grid item xs={9}>
-                {contactData.lastUpdateBy &&
-                  contactData.lastUpdateBy.name === null && (
-                    <div className={classes.userSmallLoader}>
-                      <CircularProgress size={22} color="secondary" />
-                    </div>
-                  )}
-                {(contactData.lastUpdateBy && contactData.lastUpdateBy.name) ||
-                contactData.lastUpdateAt ? (
-                  <p style={{ margin: "8px 10px" }}>
-                    {contactData.lastUpdateBy && contactData.lastUpdateBy.name
-                      ? contactData.lastUpdateBy.name
-                      : ""}
-                    {`${
-                      contactData.lastUpdateAt
-                        ? " - " +
-                          anyToDate(contactData.lastUpdateAt).toLocaleString()
-                        : ""
-                    }`}
-                  </p>
-                ) : (
-                  <p className={classes.notAvailableP}>Not Available</p>
-                )}
-              </Grid>
+                        {`${
+                          contactData.createAt
+                            ? " - " +
+                              anyToDate(contactData.createAt).toLocaleString()
+                            : ""
+                        }`}
+                      </p>
+                    ) : (
+                      <p className={classes.notAvailableP}>Not Available</p>
+                    )}
+                  </Grid>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">Last Update By</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    {contactData.lastUpdateBy &&
+                      contactData.lastUpdateBy.name === null && (
+                        <div className={classes.userSmallLoader}>
+                          <CircularProgress size={22} color="secondary" />
+                        </div>
+                      )}
+                    {(contactData.lastUpdateBy &&
+                      contactData.lastUpdateBy.name) ||
+                    contactData.lastUpdateAt ? (
+                      <p style={{ margin: "8px 10px" }}>
+                        {contactData.lastUpdateBy &&
+                        contactData.lastUpdateBy.name
+                          ? contactData.lastUpdateBy.name
+                          : ""}
+                        {`${
+                          contactData.lastUpdateAt
+                            ? " - " +
+                              anyToDate(
+                                contactData.lastUpdateAt
+                              ).toLocaleString()
+                            : ""
+                        }`}
+                      </p>
+                    ) : (
+                      <p className={classes.notAvailableP}>Not Available</p>
+                    )}
+                  </Grid>
+                </>
+              )}
             </Grid>
             <Grid item xs={12}>
               <h4
@@ -878,10 +882,18 @@ export default function ContactDetailCard(props) {
             <Grid item xs={12}>
               <Grid container spacing={2}>
                 <Grid item xs={4}>
-                  <Card raised style={{ minHeight: "35px" }}></Card>
+                  <Card raised style={{ minHeight: "35px" }}>
+                    <WellsCard
+                      handleOpenExpandableCard={handleOpenExpandableCard}
+                    />
+                  </Card>
                 </Grid>
                 <Grid item xs={4}>
-                  <Card raised style={{ minHeight: "35px" }}></Card>
+                  <Card raised style={{ minHeight: "35px" }}>
+                    <Parcels
+                      handleOpenExpandableCard={handleOpenExpandableCard}
+                    />
+                  </Card>
                 </Grid>
                 <Grid item xs={4}>
                   <Card raised style={{ minHeight: "35px" }}>
@@ -992,8 +1004,11 @@ export default function ContactDetailCard(props) {
           </IconButton>
           {shrinkRightColumn || showShrinkColumnContent ? (
             <div style={{ width: "68px" }}>
-              <IconButton className={classes.shrinkRightColumnIcons}>
-                <ThumbsUpDownRoundedIcon />
+              <IconButton
+                className={classes.shrinkRightColumnIcons}
+                style={{ padding: "8px" }}
+              >
+                <HandShake />
               </IconButton>
 
               <IconButton className={classes.shrinkRightColumnIcons}>
@@ -1062,30 +1077,24 @@ export default function ContactDetailCard(props) {
         />
 
         {/* //// ViewAll in a right dialog //// */}
-       
+
         <RightDialog
           open={rightDialogOpen ? true : false}
           handleClickDialogClose={handleClickRightDialogClose}
           width="450px"
         >
           {rightDialogOpen === "comments" && (
-            
-              <Grid item xs={12} className={classes.Comments}>
-                  <Comments
-                    className={classes.gridStyling}
-                    targetSourceId={contactData._id}
-                    targetLabel="contact"
-                    handleRightDialogClose={handleClickRightDialogClose}
-                    
-                  />
-               
-              </Grid>
-             
+            <Grid item xs={12} className={classes.Comments}>
+              <Comments
+                className={classes.gridStyling}
+                targetSourceId={contactData._id}
+                targetLabel="contact"
+                handleRightDialogClose={handleClickRightDialogClose}
+              />
+            </Grid>
           )}
-
-          
         </RightDialog>
-            
+
         {/* //// ViewAll in a full screen dialog //// */}
         {showExpandableCard && (
           <Dialog

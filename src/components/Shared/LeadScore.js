@@ -4,7 +4,7 @@ import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: "23px",
+    margin: "23px 23px 0 23px",
   },
   leadScore: {
     width: "80px",
