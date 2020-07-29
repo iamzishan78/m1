@@ -2066,6 +2066,7 @@ export default function M1nTable(props) {
       stateApp.user &&
       stateApp.user.mongoId
     ) {
+      console.log("xxxxxxxxxxxxxx");
       setTargetLabel(props.targetLabel);
       setHeader(props.header);
       setAddAble(false);
