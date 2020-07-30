@@ -10,6 +10,7 @@ import {
 
 //components
 import Login from "./components/Login/Login";
+import LoginB2C from "./components/Login/LoginB2C";
 import SignUpCard from "./components/Login/SignUpCard";
 import ForgotPassword from "./components/Login/ForgotPassword";
 import NavigationProvider from "./components/Navigation/NavigationProvider";
@@ -163,7 +164,7 @@ const PrivateRoute = ({ component, ...options }) => {
   const finalComponent =
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
       ? component
-      : Login;
+      : LoginB2C;
 
   return <Route {...options} component={finalComponent} />;
 };
