@@ -65,6 +65,16 @@ const localStyles = makeStyles((theme) => ({
     flexDirection: "row",
     justifyContent: "center",
   },
+  termsAndPrivacy: {
+    color: "#fff",
+    "& a": {
+      color: "#fff",
+      textDecoration: "none",
+      "&:hover": {
+        color: theme.palette.secondary.main,
+      },
+    },
+  },
 }));
 
 const M1neralLogoNavNoAuth = (props) => (
@@ -113,18 +123,17 @@ const Login = (props) => {
       stateApp.myMSALObj
         .handleRedirectPromise()
         .then((tokenResponse) => {
-
           const accountObj = tokenResponse
             ? tokenResponse.account
-            : (() => { 
-              const currentAccounts = stateApp.myMSALObj.getAllAccounts();
-              return currentAccounts && currentAccounts.length === 1
-                ? currentAccounts[0]
-                : () => {
-                  // Add choose account code here
-                  return;
-                }
-            })();
+            : (() => {
+                const currentAccounts = stateApp.myMSALObj.getAllAccounts();
+                return currentAccounts && currentAccounts.length === 1
+                  ? currentAccounts[0]
+                  : () => {
+                      // Add choose account code here
+                      return;
+                    };
+              })();
 
           if (accountObj) {
             // Account object was retrieved, continue with app progress
@@ -495,7 +504,7 @@ const Login = (props) => {
       })
       .catch((error) => {
         console.log(error);
-      })
+      });
   }
 
   async function callProfileGraphQL(endpoint, accessToken) {
@@ -619,8 +628,14 @@ const Login = (props) => {
           © 2020 M1neral, LLC. All Rights Reserved.
         </div>
 
-        <div>
-          <a  href="https://m1neral.com/TOS.pdf"   target="_blank"  > Terms of Service |  </a>        <a href="https://m1neral.com/Privacy.pdf" target="_blank"> Privacy Policy </a> 
+        <div className={localClass.termsAndPrivacy}>
+          <a href="https://m1neral.com/TOS.pdf" target="_blank">
+            Terms of Service
+          </a>
+          {" | "}
+          <a href="https://m1neral.com/Privacy.pdf" target="_blank">
+            Privacy Policy
+          </a>
         </div>
 
         <div
