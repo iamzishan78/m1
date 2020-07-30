@@ -28,51 +28,63 @@ export default function AddUserData(props) {
   const [isOpen, setIsOpen] = useState(true);
   const [inputFiles, setInputFiles] = useState(null);
   const [inputURL, setInputURL] = useState(null);
-
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
   const [stateApp, setStateApp] = useContext(AppContext);
 
+  const [open, setOpen] = React.useState(false);
+
   const handleClose = () => {
-    setIsOpen(false);
-    //setStateMapControls(stateMapControls => ({ ...stateMapControls }));
+
+    setStateMapControls((state) => ({ ...state, anchorEl: null }));
   };
 
+  const windowClose = () => { setIsOpen(!isOpen); }
+
+  // const handleClose = () => {
+  //   setIsOpen(false);
+  //   //setStateMapControls(stateMapControls => ({ ...stateMapControls }));
+  // };
+
   async function handleFileInput(fileObj) {
-    console.log('Added Files:', fileObj)
-    console.log(typeof fileObj);
-
-    try {
-      let fileContent = await handleFileAsync(fileObj);
-      console.log('FILE CONTENT: ', fileContent);
-      setInputFiles(fileContent);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  const handleOnAlert = (message, variant) => {
-    console.log(`${variant}: ${message}`)
-  }
-
-
-  const handleApplyChanges = () => {
-    console.log('Apply Changes');
-    let fileContent = inputFiles;
+    console.log('ADDED FILES:', fileObj)
+    let fileContent = await handleFileAsync(fileObj);
     let existingFileLayers = stateApp.userFileLayers;
     existingFileLayers.push(fileContent);
-    console.log('USER FILE LAYERS:: ', existingFileLayers)
-
     setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
   }
 
+  const handleURLinput = (e) => {
+    let input = e.target.value;
+    if (input.endsWith(".geojson")) {
+      console.log("GEOJSON SERVICE LAYER")
+      let existingFileLayers = stateApp.userFileLayers;
+      existingFileLayers.push(input);
+      setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
+
+    } else {
+      console.log("TILE SERVICE LAYER")
+      let existingServiceLayers = stateApp.userServiceLayers
+      existingServiceLayers.push(input);
+      console.log('INPUT URL ADDED:: ', input)
+      setStateApp(stateApp => ({ ...stateApp, userServiceLayers: [...existingServiceLayers] }));
+      console.log("USER SERVICE LAYERS STATE CHANGE", stateApp.userServiceLayers)
+      // setInputURL(input);
+    }
+  }
+
   async function handleFileAsync(file) {
+    let inputFile = file[0].data;
     let fileName = file[0].file.name;
-    console.log(fileName);
+    let geoJSON = {
+      type: "FeatureCollection",
+      features: []
+    }
+
     if (fileName.endsWith(".geojson")) {
       return await new Promise((resolve, reject) => {
-        fetch(file[0].data)
+        fetch(inputFile)
           .then((response) =>
             response.json())
           .then((response) => {
@@ -81,42 +93,34 @@ export default function AddUserData(props) {
           .catch((error) => reject(error));
       })
     } else if (fileName.endsWith(".shp")) {
-      console.log("SHAPEFILE!");
-      let inputFile = file[0].data;
-      let geoJSON = {
-        type: "FeatureCollection",
-        features: []
-      }
-
       return await new Promise((resolve, reject) => {
         fetch(inputFile)
           .then((response) => {
             const reader = response.body.getReader();
             shapefile.open(reader)
               .then(source => source.read())
-              .then(({ done, value }) => {
+              .then((value) => {
                 geoJSON.features.push(value);
                 resolve(geoJSON);
-              }).catch(error => console.log(error))
+              }).catch(error => reject(error))
           })
       })
     }
   }
 
-  const handleURLinput = (e) => {
-    let inputURL = e.target.value;
-    console.log(inputURL);
-    if (inputURL.endsWith(".geojson")) {
-      let existingFileLayers = stateApp.userFileLayers
-      existingFileLayers.push(inputURL);
-      console.log('INPUT URL ADDED:: ', inputURL)
-      setInputFiles(inputFiles => ({ userFileLayers: [...existingFileLayers] }));
-    }
+
+
+  const handleApplyChanges = () => {
+    console.log('Apply Changes');
+
   }
 
+  const handleOnAlert = (message, variant) => {
+    console.log(`${variant}: ${message}`)
+  }
   return (
     <ClickAwayListener onClickAway={handleClose}>
-      <Dialog open={isOpen} onClose={handleClose}>
+      <Dialog open={isOpen} onClose={windowClose}>
         <DialogTitle>
           Add Data
         </DialogTitle>
@@ -145,10 +149,10 @@ export default function AddUserData(props) {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleApplyChanges} color="primary">
+          {/* <Button autoFocus onClick={handleApplyChanges} color="primary">
             Apply Changes
-          </Button>
-          <Button autoFocus onClick={handleClose} color="primary">
+          </Button> */}
+          <Button autoFocus onClick={windowClose} color="primary">
             Close
           </Button>
         </DialogActions>

@@ -1046,6 +1046,111 @@ export default function Map() {
     }
   }, [map, stateApp.checkedHeats, stateApp.heatLayers]);
 
+ 
+  useEffect(() => {
+    // USE EFFECT FOR USER FILE LAYERS
+    console.log('USE EFFECT FILE LAYER ADDED::', stateApp.userFileLayers)
+    let userFileLayers = stateApp.userFileLayers;
+
+    /// parse array of user input file data 
+    userFileLayers.map((fileLayer, idx) => {
+      var mapSource = map.getSource(`${idx}`);
+
+      if (mapSource == undefined) {
+        //assign file data to data source
+        map.addSource(`${idx}`, {
+          'type': 'geojson',
+          'data': fileLayer
+        });
+        map.addLayer({
+          'id': `polygon${idx}`,
+          'type': 'fill',
+          'source': `${idx}`,
+          'layout': {},
+          'paint': {
+            'fill-color': '#088',
+            'fill-opacity': 0.8,
+            'fill-outline-color': 'rgba(20, 100, 25, 1)'
+          },
+          'filter': ['==', '$type', 'Polygon']
+        });
+        map.addLayer({
+          'id': `point${idx}`,
+          'type': 'circle',
+          'source': `${idx}`,
+          'paint': {
+            'circle-radius': 6,
+            'circle-color': '#B42222'
+          },
+          'filter': ['==', '$type', 'Point']
+        });
+         map.addLayer({
+          'id': `line${idx}`,
+          'type': 'circle',
+          'source': `${idx}`,
+          'paint': {
+            'circle-radius': 6,
+            'circle-color': '#B42222'
+          },
+          'filter': ['==', '$type', 'LineString']
+        });
+      }
+    });
+  }, [stateApp.userFileLayers])
+
+  useEffect(() => {
+    // USE EFFECT FOR USER SERVICE LAYERS
+     console.log('USE EFFECT SERVICE LAYER ADDED::', stateApp.userServiceLayers)
+    // let userFileLayers = stateApp.userFileLayers;
+
+    // /// parse array of user input file data 
+    // userFileLayers.map((fileLayer, idx) => {
+    //   var mapSource = map.getSource(`${idx}`);
+
+    //   if (mapSource == undefined) {
+    //     //assign file data to data source
+    //     map.addSource(`${idx}`, {
+    //       'type': 'geojson',
+    //       'data': fileLayer
+    //     });
+    //     map.addLayer({
+    //       'id': `polygon${idx}`,
+    //       'type': 'fill',
+    //       'source': `${idx}`,
+    //       'layout': {},
+    //       'paint': {
+    //         'fill-color': '#088',
+    //         'fill-opacity': 0.8,
+    //         'fill-outline-color': 'rgba(20, 100, 25, 1)'
+    //       },
+    //       'filter': ['==', '$type', 'Polygon']
+    //     });
+    //     map.addLayer({
+    //       'id': `point${idx}`,
+    //       'type': 'circle',
+    //       'source': `${idx}`,
+    //       'paint': {
+    //         'circle-radius': 6,
+    //         'circle-color': '#B42222'
+    //       },
+    //       'filter': ['==', '$type', 'Point']
+    //     });
+    //      map.addLayer({
+    //       'id': `line${idx}`,
+    //       'type': 'circle',
+    //       'source': `${idx}`,
+    //       'paint': {
+    //         'circle-radius': 6,
+    //         'circle-color': '#B42222'
+    //       },
+    //       'filter': ['==', '$type', 'LineString']
+    //     });
+    //   }
+    // });
+  }, [stateApp.userServiceLayers])
+
+
+
   useEffect(() => {
     ///////////////// EFFECT FOR SHOWING TRACKED WELLS /////////////////
 
