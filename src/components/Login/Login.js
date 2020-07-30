@@ -619,13 +619,9 @@ const Login = (props) => {
           © 2020 M1neral, LLC. All Rights Reserved.
         </div>
 
-        {/* <div
-          style={{
-            color: "#fff",
-          }}
-        >
-          Terms of Service | Privacy Policy
-        </div> */}
+        <div>
+          <a  href="https://m1neral.com/TOS.pdf"   target="_blank"  > Terms of Service |  </a>        <a href="https://m1neral.com/Privacy.pdf" target="_blank"> Privacy Policy </a> 
+        </div>
 
         <div
           style={{
