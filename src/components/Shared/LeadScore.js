@@ -4,12 +4,12 @@ import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: "23px",
+    margin: "23px 23px 0 23px",
   },
   leadScore: {
-    width: "90px",
-    height: "90px",
-    border: `5px solid #63E1F7`,
+    width: "80px",
+    height: "80px",
+    border: `5px solid #BCE7EE`,
     borderRadius: "100%",
     margin: "0 auto",
     display: "flex",
@@ -21,7 +21,12 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     marginRight: "18px",
   },
-  LCFooter: { width: "100%", color: "#757575", marginBottom: "0" },
+  LCFooter: {
+    fontWeight: "inherit",
+    color: "#757575",
+    marginTop: "0",
+    float: "right",
+  },
   lastContactedSpan: { fontWeight: "normal", marginBottom: "0" },
   scoreVariations: { color: "#757575", marginTop: "0", fontWeight: "normal" },
 }));
@@ -31,13 +36,17 @@ export default function LeadScore({ score, lastContacted }) {
 
   return (
     <div className={classes.root}>
-      <h4 style={{ width: "100%" }}>Lead Score</h4>
+      <div>
+        <h4 style={{ marginTop: "0", float: "left" }}>Lead Score</h4>
+        <h4 className={classes.LCFooter}>Cold</h4>
+      </div>
       <div className={classes.cardContent}>
         <div className={classes.leftColumn}>
           <div className={classes.leadScore}>
-            <Typography variant="h4">{score}</Typography>
+            <Typography variant="h4" style={{ color: "rgb(130 204 216)" }}>
+              {score}
+            </Typography>
           </div>
-          <h4 className={classes.LCFooter}>Cold</h4>
         </div>
 
         <div>

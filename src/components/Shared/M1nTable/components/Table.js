@@ -206,20 +206,6 @@ export default function SubTable(props) {
           }),
         ]);
       else setRows([...props.rows]);
-
-      if (props.targetLabel === "contact") {
-        ////////////////////////////////////////////////////////////////////////////////
-        dispatch(showInfoMessage("The Contacts table finished loading"));
-        setTimeout(() => {
-          dispatch(showSuccessMessage("Another type of Notification Message"));
-        }, 2500);
-        setTimeout(() => {
-          dispatch(showWarningMessage("Warning you our app is amazing!!"));
-        }, 5000);
-        setTimeout(() => {
-          dispatch(showErrorMessage("lol, we never have errors!!"));
-        }, 7500);
-      }
     }
   }, [props.rows, props.orderByTracks]);
 
