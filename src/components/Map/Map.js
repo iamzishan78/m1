@@ -462,114 +462,119 @@ export default function Map() {
       }
 
       if (layerData && layerData.length !== 0) {
-        // -> make GEOJSON
 
-        const makeGeoJSON = (data) => {
-          return {
-            type: "FeatureCollection",
-            features: data.map((feature) => {
-              if (config.dataProps[i].dataTypeId == "Point") {
-                return {
-                  type: "Feature",
-                  properties: feature,
-                  geometry: {
-                    type: config.dataProps[i].dataTypeId,
-                    coordinates: [feature.longitude, feature.latitude],
-                  },
-                };
-              } else {
-                return JSON.parse(feature.shape);
-              }
-            }),
+        const layerId = config.layerProps[i].layerId;
+
+        if (!map.getLayer(layerId)) {
+          // -> make GEOJSON
+
+          const makeGeoJSON = (data) => {
+            return {
+              type: "FeatureCollection",
+              features: data.map((feature) => {
+                if (config.dataProps[i].dataTypeId == "Point") {
+                  return {
+                    type: "Feature",
+                    properties: feature,
+                    geometry: {
+                      type: config.dataProps[i].dataTypeId,
+                      coordinates: [feature.longitude, feature.latitude],
+                    },
+                  };
+                } else {
+                  return JSON.parse(feature.shape);
+                }
+              }),
+            };
           };
-        };
 
-        const myGeoJSONData = makeGeoJSON(layerData);
+          const myGeoJSONData = makeGeoJSON(layerData);
 
-        // -> add source
-        if (config.dataProps[i].dataTypeId == "Point") {
-          map.addSource(config.sourceProps[i].sourceId, {
-            type: config.sourceProps[i].sourceType,
-            data: myGeoJSONData,
-            cluster: true,
-            clusterRadius: 50,
-            clusterMaxZoom: 6,
-          });
-          const filterLayerId = config.sourceProps[i].sourceId + "_filter";
-          map.addSource(filterLayerId, {
-            type: config.sourceProps[i].sourceType,
-            data: myGeoJSONData,
-          });
-        } else {
-          map.addSource(config.sourceProps[i].sourceId, {
-            type: config.sourceProps[i].sourceType,
-            data: myGeoJSONData,
-            promoteId: { original: "id" },
-          });
-        }
-
-        // -> add layer
-        // eslint-disable-next-line eqeqeq
-        if (config.layerProps[i].layerType == "symbol") {
-          map.addLayer({
-            id: config.layerProps[i].layerId,
-            type: config.layerProps[i].layerType,
-            source: config.sourceProps[i].sourceId,
-            layout: config.layerProps[i].symbolProps,
-          });
-        } else {
-          map.addLayer({
-            id: config.layerProps[i].layerId,
-            type: config.layerProps[i].layerType,
-            source: config.sourceProps[i].sourceId,
-            paint: config.layerProps[i].paintProps,
-          });
-        }
-
-        map.setLayoutProperty(
-          config.layerProps[i].layerId,
-          "visibility",
-          "none"
-        );
-
-        // -> add cluster layer
-
-        if (config && config.layerProps && config.layerProps[i].clusterProps) {
-          var clusterVar = config.layerProps[i].layerId + "-clusters";
-          var clusterLabelBar =
-            config.layerProps[i].layerId + "-clusters-counts";
-
-          map.addLayer({
-            id: clusterLabelBar,
-            type: "symbol",
-            source: config.sourceProps[i].sourceId,
-            filter: ["has", "point_count"],
-            layout: config.layerProps[i].clusterProps.clusterSymbolProps,
-          });
-          map.setLayoutProperty(clusterLabelBar, "visibility", "none");
-          if (beforelayer) {
-            map.moveLayer(clusterLabelBar, beforelayer);
+          // -> add source
+          if (config.dataProps[i].dataTypeId == "Point") {
+            map.addSource(config.sourceProps[i].sourceId, {
+              type: config.sourceProps[i].sourceType,
+              data: myGeoJSONData,
+              cluster: true,
+              clusterRadius: 50,
+              clusterMaxZoom: 6,
+            });
+            const filterLayerId = config.sourceProps[i].sourceId + "_filter";
+            map.addSource(filterLayerId, {
+              type: config.sourceProps[i].sourceType,
+              data: myGeoJSONData,
+            });
+          } else {
+            map.addSource(config.sourceProps[i].sourceId, {
+              type: config.sourceProps[i].sourceType,
+              data: myGeoJSONData,
+              promoteId: { original: "id" },
+            });
           }
-          beforelayer = clusterLabelBar;
 
-          map.addLayer({
-            id: clusterVar,
-            type: config.layerProps[i].layerType,
-            source: config.sourceProps[i].sourceId,
-            filter: ["has", "point_count"],
-            paint: config.layerProps[i].clusterProps.clusterPaintProps,
-          });
-          map.setLayoutProperty(clusterVar, "visibility", "none");
-          if (beforelayer) {
-            map.moveLayer(clusterVar, beforelayer);
+          // -> add layer
+          // eslint-disable-next-line eqeqeq
+          if (config.layerProps[i].layerType == "symbol") {
+            map.addLayer({
+              id: config.layerProps[i].layerId,
+              type: config.layerProps[i].layerType,
+              source: config.sourceProps[i].sourceId,
+              layout: config.layerProps[i].symbolProps,
+            });
+          } else {
+            map.addLayer({
+              id: config.layerProps[i].layerId,
+              type: config.layerProps[i].layerType,
+              source: config.sourceProps[i].sourceId,
+              paint: config.layerProps[i].paintProps,
+            });
           }
-          beforelayer = clusterVar;
-        }
 
-        if (beforelayer) {
-          map.moveLayer(config.layerProps[i].layerId, beforelayer);
+          map.setLayoutProperty(
+            config.layerProps[i].layerId,
+            "visibility",
+            "none"
+          );
+
+          // -> add cluster layer
+
+          if (config && config.layerProps && config.layerProps[i].clusterProps) {
+            var clusterVar = config.layerProps[i].layerId + "-clusters";
+            var clusterLabelBar =
+              config.layerProps[i].layerId + "-clusters-counts";
+
+            map.addLayer({
+              id: clusterLabelBar,
+              type: "symbol",
+              source: config.sourceProps[i].sourceId,
+              filter: ["has", "point_count"],
+              layout: config.layerProps[i].clusterProps.clusterSymbolProps,
+            });
+            map.setLayoutProperty(clusterLabelBar, "visibility", "none");
+            if (beforelayer) {
+              map.moveLayer(clusterLabelBar, beforelayer);
+            }
+            beforelayer = clusterLabelBar;
+
+            map.addLayer({
+              id: clusterVar,
+              type: config.layerProps[i].layerType,
+              source: config.sourceProps[i].sourceId,
+              filter: ["has", "point_count"],
+              paint: config.layerProps[i].clusterProps.clusterPaintProps,
+            });
+            map.setLayoutProperty(clusterVar, "visibility", "none");
+            if (beforelayer) {
+              map.moveLayer(clusterVar, beforelayer);
+            }
+            beforelayer = clusterVar;
+          }
+
+          if (beforelayer) {
+            map.moveLayer(config.layerProps[i].layerId, beforelayer);
+          }
+          beforelayer = config.layerProps[i].layerId;
         }
-        beforelayer = config.layerProps[i].layerId;
       }
     }
   };
@@ -2933,6 +2938,9 @@ export default function Map() {
     stateNav.filterDrawing,
     stateNav.filterTags,
     stateNav.selectedTags,
+    stateApp.trackedOwnerWells,
+    stateApp.trackedwells,
+    stateApp.customLayers,
   ]);
 
   useEffect(() => {
