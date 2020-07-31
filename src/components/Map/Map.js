@@ -46,6 +46,7 @@ import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
 import { RIGSQUERY } from "../../graphQL/useQueryRigs";
+import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 import MapGridCard from "../MapGridCard/MapGridCard";
@@ -110,6 +111,7 @@ export default function Map() {
   const [drawStatus, setDrawStatus] = useState(false);
   const [rigs, setRigData] = useState([]);
   const [permits, setPermitData] = useState([]);
+  const [abstracts, setAbstractData] = useState([]);
   const [drawingFilterFeatureId, setDrawingFilterFeatureId] = useState(null);
   // const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
@@ -152,6 +154,8 @@ export default function Map() {
   const [getPermits, { data: permitData }] = useLazyQuery(PERMITSQUERY);
 
   const [getRigs, { data: rigData }] = useLazyQuery(RIGSQUERY);
+
+  const [getAbstractGeo, { data: abstractData }] = useLazyQuery(ABSTRACTGEOQUERY);
 
   /////end/////////temporary
 
@@ -3274,6 +3278,31 @@ export default function Map() {
     }
   }, [stateApp.mapVars.styleId]);
 
+  useEffect(() => {
+    if (abstractData && abstractData.abstractGeo && abstractData.abstractGeo.length > 0) {
+      const data = abstractData.abstractGeo
+      const makeGeoJSON = (data) => {
+        return {
+          type: "FeatureCollection",
+          features: data.map((feature) => {
+            const line = turf.polygonToLine(JSON.parse(feature.geo_json));
+            return line;
+            
+          }),
+        };
+      };
+
+      const geoJson = makeGeoJSON(data);
+
+      console.log(geoJson);
+
+      console.log(map, map.getSource('abstract_geo_source'), map.getLayer('abstract_geo_layer'));
+
+      map.getSource('abstract_geo_source').setData(geoJson);
+
+    }
+  }, [abstractData])
+
   useLayoutEffect(() => {
     if (stateApp.popupOpen === false) {
       let popUps = document.getElementsByClassName("mapboxgl-popup");
@@ -3513,6 +3542,37 @@ export default function Map() {
           },
         });
         newMap.addControl(Draw);
+
+        const abstractControl = (e) => {
+          const map = e.target;
+          if (map.getZoom() >= 16) {
+            const bounds = map.getBounds();
+            const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+            const bboxPolygon = turf.bboxPolygon(bbox);
+            let polygonString = "POLYGON((";
+            bboxPolygon.geometry.coordinates[0].forEach((coordinate, index) => {
+              polygonString += coordinate[0] + ' ' + coordinate[1];
+              if (index < bboxPolygon.geometry.coordinates[0].length - 1) {
+                polygonString += ', ';
+              }
+            });
+            polygonString += "))";
+
+            getAbstractGeo({
+              variables: {
+                polygon: polygonString
+              }
+            });
+            
+          }
+        }
+
+        newMap.on('zoomend', function(e) {
+          abstractControl(e);
+        });
+        newMap.on('moveend', function(e) {
+          abstractControl(e);
+        });
         setStateApp({ ...stateApp, map: newMap, draw: Draw });
 
         newMap.on("load", function (e) {
@@ -3521,6 +3581,29 @@ export default function Map() {
             // add image to the active style and make it SDF-enabled
             newMap.addImage("marker-icon", image, { sdf: true });
           });
+
+          newMap.addSource("abstract_geo_source", {
+            type: 'geojson',
+            data: {
+              'type': 'Feature',
+              'properties': {},
+              'geometry': {}
+            }
+          });
+          
+          newMap.addLayer({
+            id: 'abstract_geo_layer',
+            type: 'line',
+            source: 'abstract_geo_source',
+            layout: {
+              'line-join': 'round',
+              'line-cap': 'round'
+            },
+            paint: {
+              'line-color': '#888',
+              'line-width': 8
+            }
+          })
 
           setDraw(Draw);
           setMap(newMap);
