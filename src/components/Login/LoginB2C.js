@@ -214,10 +214,10 @@ const LoginB2C = (props) => {
           let tenantToLogin = tenantsCredentials(tenantUser);
 
           if (!tenantToLogin) {
-            tenantToLogin = "M1neral";
+            tenantToLogin = { "name": "M1neral" };
           }
 
-          await handledAADSignIn(tenantToLogin, updateTenantFlags);
+          await handledAADSignIn(tenantToLogin.name, updateTenantFlags);
         } catch {
           setLoadingSigInButton(false);
         }
