@@ -164,7 +164,7 @@ const PrivateRoute = ({ component, ...options }) => {
   const finalComponent =
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
       ? component
-      : LoginB2C;
+      : Login;
 
   return <Route {...options} component={finalComponent} />;
 };
