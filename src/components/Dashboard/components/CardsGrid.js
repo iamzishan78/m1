@@ -11,6 +11,7 @@ import TwitterCard from "./TwitterCard";
 import StockCard from "./StockCard";
 import RigsCard from "./RigsCard"
 import RSSFeed from "./RssFeed"
+import PermitsCard from "./PermitsCard"
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -34,7 +35,7 @@ const SortableItem = SortableElement(({ content }) => {
     if(ele=="x"){
       var arr = [3,3,4,4,6];
     } else if(ele=="2x"){
-      var arr = [5,8,8,8,8];
+      var arr = [6,6,8,8,6];
     } else if(ele=="bi"){
       var arr = [5,9,12,12,12];
     } else if(ele=="full"){
@@ -85,11 +86,13 @@ const SortableList = SortableContainer(({ items }) => {
 const CardGrid = () => {
   const [stateDashboard, setStateDashboard] = useContext(DashboardContext);
   const [items, setItems] = useState([
-    { el: <RigsCard title={5} />, size: "bi", key: 1 },
-    { el: <StockCard title={3} />, size: "x", key: 2},
-    { el: <ProdCard title={1} />, size: "bi", key: 3 },
-    { el: <RSSFeed title={4} />, size: "x", key: 4 },
-    { el: <TwitterCard title={2} />, size: "x", key: 5 },   
+    { el: <RigsCard title={5} />, size: "2x", key: 1 },
+    { el: <PermitsCard title={6} />, size: "2x", key: 2 },
+    { el: <ProdCard title={1} />, size: "2x", key: 3 }, 
+    { el: <StockCard title={3} />, size: "x", key: 4 },
+    { el: <TwitterCard title={2} />, size: "x", key: 5 },
+    { el: <RSSFeed title={4} />, size: "x", key: 6 },
+       
     
     
   ]);
