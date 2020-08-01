@@ -22,8 +22,8 @@ import smag from "./RSSFeedIcons/smag.webp";
 const useStyles = makeStyles((theme) => ({
   header: {
     padding: "8px 8px 0 8px",
-    backgroundColor: "#011133",
-    color: "white",
+    backgroundColor: "#FFFFF",
+    color: "black",
   },
   container: {},
   listitem: {
@@ -34,22 +34,22 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: "16px",
   },
   source: {
-    fontSize: "8px",
-    marginLeft: "8px",
+    fontSize: "12px",
+    marginLeft: "0px",
   },
   title: {
-    fontSize: "12px",
+    fontSize: "14px",
     margin: "2px 0",
     fontWeight: "bold",
     textDecoration: "none",
     color: "black",
   },
   content: {
-    fontSize: "10px",
+    fontSize: "12px",
     marginBottom: "2px",
   },
   date: {
-    fontSize: "8px",
+    fontSize: "10px",
   },
   paper: {
     margin: "8px 4px",
@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
 
 const DragHandle = sortableHandle(() => (
   <IconButton aria-label="drag">
-    <DragIndicatorOutlinedIcon fontSize="default" htmlColor="#fff" />
+    <DragIndicatorOutlinedIcon fontSize="default" htmlColor="#808080" />
   </IconButton>
 ));
 
@@ -180,7 +180,7 @@ const RssFeed = () => {
               >
                 <Grid item xs={9} zeroMinWidth>
                   <Grid container alignItems="center">
-                    {!!thumbImage ? (
+                    {/* {!!thumbImage ? (
                       <CardMedia
                         className={classes.thumb}
                         component={"img"}
@@ -191,7 +191,7 @@ const RssFeed = () => {
                       <M1neralIconSvg
                         size={{ height: "16px", width: "16px" }}
                       />
-                    )}
+                    )} */}
                     <Typography noWrap className={classes.source}>
                       {cleanedText(feed.title)}
                     </Typography>{" "}
@@ -199,14 +199,14 @@ const RssFeed = () => {
                   <Typography
                     component="a"
                     href={article.link}
-                    variant="h2"
+                    variant="h1"
                     className={classes.title}
                     target="_blank"
                   >
-                    {truncate(article.title, 50)}
+                    {truncate(article.title, 75)}
                   </Typography>
                   <Typography className={classes.content}>
-                    {truncate(cleanedText(article.content), 100)}
+                    {truncate(cleanedText(article.content), 150)}
                   </Typography>
                   <Typography noWrap className={classes.date}>
                     {sentenceCase(time)}
