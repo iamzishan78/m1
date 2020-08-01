@@ -15,8 +15,8 @@ import InputBase from "@material-ui/core/InputBase";
 const useStyles = makeStyles((theme) => ({
   header: {
     padding: "8px 8px 0 8px",
-    backgroundColor:'#FFFFF',
-    color: 'black'
+    backgroundColor:'#011133',
+    color: 'white'
   },
   boldtxt: {
     fontWeight: "bold",
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 
 const DragHandle = sortableHandle(() => (
   <IconButton aria-label="drag">
-    <DragIndicatorOutlinedIcon fontSize="default" htmlColor="#808080" />
+    <DragIndicatorOutlinedIcon fontSize="default" htmlColor="#fff" />
   </IconButton>
 ));
 
@@ -74,7 +74,7 @@ const TwitterCard = () => {
       <CardHeader
         className={classes.header}
         action={<DragHandle />}
-        title={`Twitter Feed`}
+        title={`Twitter`}
       />
       <Paper
         component="form"
