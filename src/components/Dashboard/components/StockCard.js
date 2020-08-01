@@ -17,14 +17,14 @@ import Iframe from 'react-iframe';
 const useStyles = makeStyles((theme) => ({
   header: {
     padding: "8px 8px 0 8px",
-    backgroundColor:'#FFFFF',
-    color: 'black'
+    backgroundColor:'#011133',
+    color: 'white'
   },
 }));
 
 const DragHandle = sortableHandle(() => (
   <IconButton aria-label="drag">
-    <DragIndicatorOutlinedIcon fontSize="default" htmlColor="#808080"/>
+    <DragIndicatorOutlinedIcon fontSize="default" htmlColor="#fff"/>
   </IconButton>
 ));
 
