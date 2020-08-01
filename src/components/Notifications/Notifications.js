@@ -29,7 +29,7 @@ export default function Notifications(props) {
     successMessage,
     warningMessage,
     errorMessage,
-  } = useSelector(({ notifications }) => notifications);
+  } = useSelector(({ Notifications }) => Notifications);
 
   useEffect(() => {
     if (infoMessage && infoMessage !== "") {

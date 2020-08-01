@@ -31,6 +31,19 @@ import RightDialog from "./components/RightDialog";
 import Dialog from "@material-ui/core/Dialog";
 import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
 import Toolbar from "@material-ui/core/Toolbar";
+import IconButton from "@material-ui/core/IconButton";
+import ArrowForwardIosRoundedIcon from "@material-ui/icons/ArrowForwardIosRounded";
+import ArrowBackIosRoundedIcon from "@material-ui/icons/ArrowBackIosRounded";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleRightColumn } from "../../actions";
+import MessageRoundedIcon from "@material-ui/icons/MessageRounded";
+import DescriptionRoundedIcon from "@material-ui/icons/DescriptionRounded";
+import Card from "@material-ui/core/Card";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import HandShake from "../Shared/svgIcons/HandShake";
+import Parcels from "./components/Parcels";
+import WellsCard from "./components/WellsCard";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -52,13 +65,18 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: "solid 1px #eaeaea",
   },
   rightColumnGrid: {
-    paddingTop: "5px",
-    width: "100%",
+    display: "block",
     margin: "0",
+    minHeight: "100%",
+    backgroundColor: "#F0F6F8",
+    position: "relative",
+    transition: "width 0.3s ease-out",
+    WebkitTransition: "width 0.3s ease-out",
+    width: ({ shrinkRightColumn }) => (shrinkRightColumn ? "68px" : "37%"),
   },
   dataSect: {
     borderTop: "2px solid #C9C9C9",
-    margin: "23px 28px",
+    // margin: "23px 28px",
     color: "#757575",
     width: "100%",
     "& p": {
@@ -78,11 +96,10 @@ const useStyles = makeStyles((theme) => ({
       "& p": { margin: "8px 10px" },
     },
   },
-  gridStyling:{
+  gridStyling: {
     "& .MuiListItem-container": {
-      borderBottom:'1px solid #c7c7c7'
+      borderBottom: "1px solid #c7c7c7",
     },
-
   },
   SectMargin: {
     margin: "23px 28px",
@@ -152,7 +169,7 @@ const useStyles = makeStyles((theme) => ({
     "& svg": { fontSize: "1.7rem" },
   },
   mainGridContainer: {
-    height: "100%",
+    display: "flex",
     "& a": { color: "#757575" },
     "& .MuiPopover-paper": {
       zIndex: "1700",
@@ -223,10 +240,59 @@ const useStyles = makeStyles((theme) => ({
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
     "&:hover": { color: "#757575" },
   },
+  leftColumn: {
+    MinHeight: "100%",
+    backgroundColor: "#fff",
+    flexGrow: "1",
+    transition: "width 0.3s ease-out",
+    WebkitTransition: "width 0.3s ease-out",
+  },
+  shrinkRightColumn: {
+    position: "absolute",
+    top: "55px",
+    left: "-13px",
+    backgroundColor: theme.palette.secondary.main,
+    color: "#fff",
+    boxShadow:
+      "0px 2px 7px 2px rgba(0,0,0,0.15), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)",
+    padding: "5px",
+    "& svg": { fontSize: "1rem" },
+    "&:hover": {
+      backgroundColor: "#EBEBEB",
+      color: theme.palette.secondary.main,
+    },
+  },
+  shrinkRightColumnIcons: {
+    backgroundColor: "#6094a030",
+    color: theme.palette.secondary.main,
+    margin: "10px",
+  },
+  viewAll: {
+    margin: "0 0 8px 0",
+    float: "right",
+    color: theme.palette.secondary.main,
+    cursor: "pointer",
+    fontWeight: "normal",
+    "&:hover": { color: "#757575" },
+    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+  },
+  showAll: {
+    margin: "8px 0 0 0",
+    float: "right",
+    color: theme.palette.secondary.main,
+    cursor: "pointer",
+    fontWeight: "normal",
+    "&:hover": { color: "#757575" },
+    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+  },
 }));
 
 export default function ContactDetailCard(props) {
-  const classes = useStyles();
+  const dispatch = useDispatch();
+  const shrinkRightColumn = useSelector(
+    ({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn
+  );
+  const classes = useStyles({ ...props, shrinkRightColumn });
   const [openDialog, setOpenDialog] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [transactData, setTransactData] = useState();
@@ -235,6 +301,9 @@ export default function ContactDetailCard(props) {
   const [rightDialogOpen, setRightDialogOpen] = useState(false);
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
+  const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
+  const [basicInfExp, setBasicInfExp] = useState(false);
+
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(
     null
   );
@@ -266,6 +335,12 @@ export default function ContactDetailCard(props) {
     setExpCardSubComponentTitle(subComponentTitle);
     setShowExpandableCard(true);
   };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setShowShrinkColumnContent(shrinkRightColumn);
+    }, 300);
+  }, [shrinkRightColumn]);
 
   useEffect(() => {
     if (props.contactId) {
@@ -314,257 +389,124 @@ export default function ContactDetailCard(props) {
 
   return (
     contactData && (
-      <Grid container spacing={0} className={classes.mainGridContainer}>
+      <div className={classes.mainGridContainer}>
         {/*/////////// left column //////////// */}
-        <Grid
-          item
-          xs={9}
-          style={{ MinHeight: "100%", backgroundColor: "#fff" }}
-        >
-          <Grid item container>
-            {/*/////////// section 1 //////////// */}
+        <Grid container className={classes.leftColumn}>
+          {/*/////////// section 1 //////////// */}
 
-            <Grid
-              item
-              xs={12}
-              style={{
-                padding: "20px 25px",
-              }}
-              className={classes.border}
-            >
-              <div className={classes.leftColumnTopRigthCorner}>
-                <Button
-                  variant="contained"
-                  // size="small"
-                  onClick={() => {}}
-                >
-                  Buy Info
-                </Button>
-                {contactData.primaryEmail && (
-                  <a href={"mailto:" + contactData.primaryEmail}>
-                    <Button
-                      variant="contained"
-                      //  size="small"
-                    >
-                      Email
-                    </Button>
-                  </a>
-                )}
-
-                <Button
-                  variant="contained"
-                  // size="small"
-                  onClick={() => {
-                    setOpenDialog(true);
-                  }}
-                >
-                  Delete
-                </Button>
-              </div>
-              <div>
-                <div className={classes.userIcon}>
-                  <StyleBadge
-                    badgeContent={5}
-                    //color={"#f6c16b"}
-                  >
-                    <Avatar
-                      className={classes.grey}
-                      name={contactData.name}
-                      size="93"
-                      round
-                    />
-                  </StyleBadge>
-                </div>
-                <div className={classes.userName}>
-                  <h2 style={{ width: "max-content" }}>
-                    {/* {contactData.name} */}
-
-                    <FieldContent
-                      noInputFooter
-                      noMargin
-                      id={contactData._id}
-                      content={{ name: contactData.name }}
-                    >
-                      {(contactData.facebook ||
-                        contactData.twitte ||
-                        contactData.linkedln) && (
-                        <span className={classes.socialMediaSection}>
-                          {contactData.facebook && (
-                            <a
-                              href={`${
-                                !contactData.facebook.startsWith("http") &&
-                                !contactData.facebook.startsWith("//")
-                                  ? "//"
-                                  : ""
-                              }${contactData.facebook}`}
-                              target="_blank"
-                            >
-                              <FacebookIcon />
-                            </a>
-                          )}
-                          {contactData.twitter && (
-                            <a
-                              href={`${
-                                !contactData.twitter.startsWith("http") &&
-                                !contactData.twitter.startsWith("//")
-                                  ? "//"
-                                  : ""
-                              }${contactData.twitter}`}
-                              target="_blank"
-                            >
-                              <TwitterIcon className={classes.twitterIcon} />
-                            </a>
-                          )}
-                          {contactData.linkedln && (
-                            <a
-                              href={`${
-                                !contactData.linkedln.startsWith("http") &&
-                                !contactData.linkedln.startsWith("//")
-                                  ? "//"
-                                  : ""
-                              }${contactData.linkedln}`}
-                              target="_blank"
-                            >
-                              <LinkedInIcon />
-                            </a>
-                          )}
-                        </span>
-                      )}
-                    </FieldContent>
-                  </h2>
-                  <h4>
-                    <FieldContent
-                      childrenLeft
-                      noMargin
-                      name="Address"
-                      id={contactData._id}
-                      content={{
-                        address1: contactData.address1,
-                        address2: contactData.address2,
-                        city: contactData.city,
-                        state: contactData.state,
-                        zip: contactData.zip,
-                        country: contactData.country,
-                      }}
-                    />
-                  </h4>
-                  <h4>
-                    <FieldContent
-                      childrenLeft
-                      noMargin
-                      name={"Company Name Or Job Title"}
-                      id={contactData._id}
-                      content={{
-                        companyName: contactData.companyName,
-                        jobTitle: contactData.jobTitle,
-                      }}
-                    />
-                  </h4>
-                </div>
-              </div>
-            </Grid>
-            {/*/////////// section 2 //////////// */}
-            <Grid
-              item
-              xs={12}
-              style={{
-                padding: "20px 15px 10px 15px",
-              }}
-              className={classes.border}
-            >
-              <div className={classes.tags}>
-                <Tags
-                  width="100%"
-                  targetSourceId={contactData._id}
-                  targetLabel="contact"
-                  publicLeftBottom
-                />
-              </div>
-            </Grid>
-
-            {/*/////////// section 3 //////////// */}
-            <Grid item xs={12} container className={classes.border} spacing={0}>
-              <Grid
-                item
-                xs={12}
-                container
-                className={classes.dataSect}
-                spacing={0}
+          <Grid
+            item
+            xs={12}
+            style={{
+              padding: "20px 25px",
+            }}
+            className={classes.border}
+          >
+            <div className={classes.leftColumnTopRigthCorner}>
+              <Button
+                variant="contained"
+                // size="small"
+                onClick={() => {}}
               >
-                <Grid item xs={3} className="fieldName">
-                  <p className="dataLabels">Primary Email</p>
-                </Grid>
-                <Grid item xs={9}>
-                  <FieldContent
-                    onlyChildren
-                    id={contactData._id}
-                    content={{ primaryEmail: contactData.primaryEmail }}
+                Buy Info
+              </Button>
+              {contactData.primaryEmail && (
+                <a href={"mailto:" + contactData.primaryEmail}>
+                  <Button
+                    variant="contained"
+                    //  size="small"
                   >
-                    <a
-                      href={`mailto:${contactData.primaryEmail}`}
-                      target="_blank"
-                      className={classes.noTextDecoration}
-                    >
-                      {contactData.primaryEmail}
-                    </a>
-                  </FieldContent>
-                </Grid>
+                    Email
+                  </Button>
+                </a>
+              )}
 
-                <Grid item xs={3} className="fieldName">
-                  <p className="dataLabels">Secondary Email</p>
-                </Grid>
-                <Grid item xs={9}>
+              <Button
+                variant="contained"
+                // size="small"
+                onClick={() => {
+                  setOpenDialog(true);
+                }}
+              >
+                Delete
+              </Button>
+            </div>
+            <div>
+              <div className={classes.userIcon}>
+                <StyleBadge
+                  badgeContent={5}
+                  //color={"#f6c16b"}
+                >
+                  <Avatar
+                    className={classes.grey}
+                    name={contactData.name}
+                    size="93"
+                    round
+                  />
+                </StyleBadge>
+              </div>
+              <div className={classes.userName}>
+                <h2 style={{ width: "max-content" }}>
+                  {/* {contactData.name} */}
+
                   <FieldContent
-                    onlyChildren
+                    noInputFooter
+                    noMargin
                     id={contactData._id}
-                    content={{ secondaryEmail: contactData.secondaryEmail }}
+                    content={{ name: contactData.name }}
                   >
-                    <a
-                      href={`mailto:${contactData.secondaryEmail}`}
-                      target="_blank"
-                      className={classes.noTextDecoration}
-                    >
-                      {contactData.secondaryEmail}
-                    </a>
+                    {(contactData.facebook ||
+                      contactData.twitte ||
+                      contactData.linkedln) && (
+                      <span className={classes.socialMediaSection}>
+                        {contactData.facebook && (
+                          <a
+                            href={`${
+                              !contactData.facebook.startsWith("http") &&
+                              !contactData.facebook.startsWith("//")
+                                ? "//"
+                                : ""
+                            }${contactData.facebook}`}
+                            target="_blank"
+                          >
+                            <FacebookIcon />
+                          </a>
+                        )}
+                        {contactData.twitter && (
+                          <a
+                            href={`${
+                              !contactData.twitter.startsWith("http") &&
+                              !contactData.twitter.startsWith("//")
+                                ? "//"
+                                : ""
+                            }${contactData.twitter}`}
+                            target="_blank"
+                          >
+                            <TwitterIcon className={classes.twitterIcon} />
+                          </a>
+                        )}
+                        {contactData.linkedln && (
+                          <a
+                            href={`${
+                              !contactData.linkedln.startsWith("http") &&
+                              !contactData.linkedln.startsWith("//")
+                                ? "//"
+                                : ""
+                            }${contactData.linkedln}`}
+                            target="_blank"
+                          >
+                            <LinkedInIcon />
+                          </a>
+                        )}
+                      </span>
+                    )}
                   </FieldContent>
-                </Grid>
-
-                <Grid item xs={3} className="fieldName">
-                  <p className="dataLabels">Mobile Phone</p>
-                </Grid>
-                <Grid item xs={9}>
+                </h2>
+                <h4>
                   <FieldContent
-                    id={contactData._id}
-                    content={{ mobilePhone: contactData.mobilePhone }}
-                  />
-                </Grid>
-
-                <Grid item xs={3} className="fieldName">
-                  <p className="dataLabels">Home Phone</p>
-                </Grid>
-                <Grid item xs={9}>
-                  <FieldContent
-                    id={contactData._id}
-                    content={{ homePhone: contactData.homePhone }}
-                  />
-                </Grid>
-
-                <Grid item xs={3} className="fieldName">
-                  <p className="dataLabels">Alternate Phone</p>
-                </Grid>
-                <Grid item xs={9}>
-                  <FieldContent
-                    id={contactData._id}
-                    content={{ AltPhone: contactData.AltPhone }}
-                  />
-                </Grid>
-
-                <Grid item xs={3} className="fieldName">
-                  <p className="dataLabels">Primary Address</p>
-                </Grid>
-                <Grid item xs={9}>
-                  <FieldContent
-                    name=""
+                    childrenLeft
+                    noMargin
+                    name="Address"
                     id={contactData._id}
                     content={{
                       address1: contactData.address1,
@@ -575,275 +517,510 @@ export default function ContactDetailCard(props) {
                       country: contactData.country,
                     }}
                   />
-                </Grid>
-
-                <Grid item xs={3} className="fieldName">
-                  <p className="dataLabels">Secondary Address</p>
-                </Grid>
-                <Grid item xs={9}>
+                </h4>
+                <h4>
                   <FieldContent
-                    name=""
+                    childrenLeft
+                    noMargin
+                    name={"Company Name Or Job Title"}
                     id={contactData._id}
                     content={{
-                      address1Alt: contactData.address1Alt,
-                      address2Alt: contactData.address2Alt,
-                      cityAlt: contactData.cityAlt,
-                      stateAlt: contactData.stateAlt,
-                      zipAlt: contactData.zipAlt,
-                      countryAlt: contactData.countryAlt,
+                      companyName: contactData.companyName,
+                      jobTitle: contactData.jobTitle,
                     }}
                   />
-                </Grid>
+                </h4>
+              </div>
+            </div>
+          </Grid>
+          {/*/////////// section 2 //////////// */}
+          <Grid
+            item
+            xs={12}
+            style={{
+              padding: "20px 15px 10px 15px",
+            }}
+            className={classes.border}
+          >
+            <div className={classes.tags}>
+              <Tags
+                width="100%"
+                targetSourceId={contactData._id}
+                targetLabel="contact"
+                publicLeftBottom
+              />
+            </div>
+          </Grid>
 
-                <Grid item xs={3} className="fieldName">
-                  <p className="dataLabels">Relatives</p>
-                </Grid>
-                <Grid item xs={9}>
-                  <FieldContent
-                    id={contactData._id}
-                    content={{ relatives: contactData.relatives }}
+          {/*/////////// section 3 //////////// */}
+          <Grid
+            item
+            xs={12}
+            container
+            className={classes.border}
+            spacing={0}
+            style={{ padding: "23px 28px" }}
+          >
+            <Grid item xs={12}>
+              <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
+                Basic Information
+              </h4>
+              <h4
+                className={classes.viewAll}
+                onClick={() => {
+                  handleOpenExpandableCard(
+                    "Pass your card content here",
+                    "Detailed Information"
+                  );
+                }}
+              >
+                View All
+              </h4>
+            </Grid>
+
+            <Grid
+              item
+              xs={12}
+              container
+              className={classes.dataSect}
+              spacing={0}
+            >
+              <Grid item xs={3} className="fieldName">
+                <p className="dataLabels">Primary Email</p>
+              </Grid>
+              <Grid item xs={9}>
+                <FieldContent
+                  onlyChildren
+                  id={contactData._id}
+                  content={{ primaryEmail: contactData.primaryEmail }}
+                >
+                  <a
+                    href={`mailto:${contactData.primaryEmail}`}
+                    target="_blank"
+                    className={classes.noTextDecoration}
+                  >
+                    {contactData.primaryEmail}
+                  </a>
+                </FieldContent>
+              </Grid>
+
+              <Grid item xs={3} className="fieldName">
+                <p className="dataLabels">Secondary Email</p>
+              </Grid>
+              <Grid item xs={9}>
+                <FieldContent
+                  onlyChildren
+                  id={contactData._id}
+                  content={{ secondaryEmail: contactData.secondaryEmail }}
+                >
+                  <a
+                    href={`mailto:${contactData.secondaryEmail}`}
+                    target="_blank"
+                    className={classes.noTextDecoration}
+                  >
+                    {contactData.secondaryEmail}
+                  </a>
+                </FieldContent>
+              </Grid>
+
+              <Grid item xs={3} className="fieldName">
+                <p className="dataLabels">Mobile Phone</p>
+              </Grid>
+              <Grid item xs={9}>
+                <FieldContent
+                  id={contactData._id}
+                  content={{ mobilePhone: contactData.mobilePhone }}
+                />
+              </Grid>
+
+              <Grid item xs={3} className="fieldName">
+                <p className="dataLabels">Home Phone</p>
+              </Grid>
+              <Grid item xs={9}>
+                <FieldContent
+                  id={contactData._id}
+                  content={{ homePhone: contactData.homePhone }}
+                />
+              </Grid>
+
+              <Grid item xs={3} className="fieldName">
+                <p className="dataLabels">Alternate Phone</p>
+              </Grid>
+              <Grid item xs={9}>
+                <FieldContent
+                  id={contactData._id}
+                  content={{ AltPhone: contactData.AltPhone }}
+                />
+              </Grid>
+
+              <Grid item xs={3} className="fieldName">
+                <p className="dataLabels">Primary Address</p>
+              </Grid>
+              <Grid item xs={9}>
+                <FieldContent
+                  name=""
+                  id={contactData._id}
+                  content={{
+                    address1: contactData.address1,
+                    address2: contactData.address2,
+                    city: contactData.city,
+                    state: contactData.state,
+                    zip: contactData.zip,
+                    country: contactData.country,
+                  }}
+                />
+              </Grid>
+
+              <Grid item xs={3} className="fieldName">
+                <p className="dataLabels">Secondary Address</p>
+              </Grid>
+              <Grid item xs={9}>
+                <FieldContent
+                  name=""
+                  id={contactData._id}
+                  content={{
+                    address1Alt: contactData.address1Alt,
+                    address2Alt: contactData.address2Alt,
+                    cityAlt: contactData.cityAlt,
+                    stateAlt: contactData.stateAlt,
+                    zipAlt: contactData.zipAlt,
+                    countryAlt: contactData.countryAlt,
+                  }}
+                />
+              </Grid>
+
+              {basicInfExp && (
+                <>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">Relatives</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <FieldContent
+                      id={contactData._id}
+                      content={{ relatives: contactData.relatives }}
+                    />
+                  </Grid>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">Linkedln Profile</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <FieldContent
+                      onlyChildren
+                      id={contactData._id}
+                      content={{ linkedln: contactData.linkedln }}
+                    >
+                      {contactData.linkedln && (
+                        <a
+                          href={`${
+                            !contactData.linkedln.startsWith("http") &&
+                            !contactData.linkedln.startsWith("//")
+                              ? "//"
+                              : ""
+                          }${contactData.linkedln}`}
+                          target="_blank"
+                        >
+                          {contactData.linkedln}
+                        </a>
+                      )}
+                    </FieldContent>
+                  </Grid>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">Facebook Profile</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <FieldContent
+                      onlyChildren
+                      id={contactData._id}
+                      content={{ facebook: contactData.facebook }}
+                    >
+                      {contactData.facebook && (
+                        <a
+                          href={`${
+                            !contactData.facebook.startsWith("http") &&
+                            !contactData.facebook.startsWith("//")
+                              ? "//"
+                              : ""
+                          }${contactData.facebook}`}
+                          target="_blank"
+                        >
+                          {contactData.facebook}
+                        </a>
+                      )}
+                    </FieldContent>
+                  </Grid>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">Twitter Profile</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <FieldContent
+                      onlyChildren
+                      id={contactData._id}
+                      content={{ twitter: contactData.twitter }}
+                    >
+                      {contactData.twitter && (
+                        <a
+                          href={`${
+                            !contactData.twitter.startsWith("http") &&
+                            !contactData.twitter.startsWith("//")
+                              ? "//"
+                              : ""
+                          }${contactData.twitter}`}
+                          target="_blank"
+                        >
+                          {contactData.twitter}
+                        </a>
+                      )}
+                    </FieldContent>
+                  </Grid>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">Lead Source</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <FieldContent
+                      id={contactData._id}
+                      content={{ leadSource: contactData.leadSource }}
+                    />
+                  </Grid>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">Created By</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    {contactData.createBy &&
+                      contactData.createBy.name === null && (
+                        <div className={classes.userSmallLoader}>
+                          <CircularProgress size={22} color="secondary" />
+                        </div>
+                      )}
+                    {(contactData.createBy && contactData.createBy.name) ||
+                    contactData.createAt ? (
+                      <p style={{ margin: "8px 10px" }}>
+                        {contactData.createBy && contactData.createBy.name
+                          ? contactData.createBy.name
+                          : ""}
+
+                        {`${
+                          contactData.createAt
+                            ? " - " +
+                              anyToDate(contactData.createAt).toLocaleString()
+                            : ""
+                        }`}
+                      </p>
+                    ) : (
+                      <p className={classes.notAvailableP}>Not Available</p>
+                    )}
+                  </Grid>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">Last Update By</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    {contactData.lastUpdateBy &&
+                      contactData.lastUpdateBy.name === null && (
+                        <div className={classes.userSmallLoader}>
+                          <CircularProgress size={22} color="secondary" />
+                        </div>
+                      )}
+                    {(contactData.lastUpdateBy &&
+                      contactData.lastUpdateBy.name) ||
+                    contactData.lastUpdateAt ? (
+                      <p style={{ margin: "8px 10px" }}>
+                        {contactData.lastUpdateBy &&
+                        contactData.lastUpdateBy.name
+                          ? contactData.lastUpdateBy.name
+                          : ""}
+                        {`${
+                          contactData.lastUpdateAt
+                            ? " - " +
+                              anyToDate(
+                                contactData.lastUpdateAt
+                              ).toLocaleString()
+                            : ""
+                        }`}
+                      </p>
+                    ) : (
+                      <p className={classes.notAvailableP}>Not Available</p>
+                    )}
+                  </Grid>
+                </>
+              )}
+            </Grid>
+            <Grid item xs={12}>
+              <h4
+                className={classes.showAll}
+                onClick={() => {
+                  setBasicInfExp(!basicInfExp);
+                }}
+              >
+                Show {!basicInfExp ? "More" : "Less"}
+                {!basicInfExp ? (
+                  <ExpandMoreIcon
+                    style={{ position: "relative", top: "8px" }}
                   />
-                </Grid>
-
-                <Grid item xs={3} className="fieldName">
-                  <p className="dataLabels">Linkedln Profile</p>
-                </Grid>
-                <Grid item xs={9}>
-                  <FieldContent
-                    onlyChildren
-                    id={contactData._id}
-                    content={{ linkedln: contactData.linkedln }}
-                  >
-                    {contactData.linkedln && (
-                      <a
-                        href={`${
-                          !contactData.linkedln.startsWith("http") &&
-                          !contactData.linkedln.startsWith("//")
-                            ? "//"
-                            : ""
-                        }${contactData.linkedln}`}
-                        target="_blank"
-                      >
-                        {contactData.linkedln}
-                      </a>
-                    )}
-                  </FieldContent>
-                </Grid>
-
-                <Grid item xs={3} className="fieldName">
-                  <p className="dataLabels">Facebook Profile</p>
-                </Grid>
-                <Grid item xs={9}>
-                  <FieldContent
-                    onlyChildren
-                    id={contactData._id}
-                    content={{ facebook: contactData.facebook }}
-                  >
-                    {contactData.facebook && (
-                      <a
-                        href={`${
-                          !contactData.facebook.startsWith("http") &&
-                          !contactData.facebook.startsWith("//")
-                            ? "//"
-                            : ""
-                        }${contactData.facebook}`}
-                        target="_blank"
-                      >
-                        {contactData.facebook}
-                      </a>
-                    )}
-                  </FieldContent>
-                </Grid>
-
-                <Grid item xs={3} className="fieldName">
-                  <p className="dataLabels">Twitter Profile</p>
-                </Grid>
-                <Grid item xs={9}>
-                  <FieldContent
-                    onlyChildren
-                    id={contactData._id}
-                    content={{ twitter: contactData.twitter }}
-                  >
-                    {contactData.twitter && (
-                      <a
-                        href={`${
-                          !contactData.twitter.startsWith("http") &&
-                          !contactData.twitter.startsWith("//")
-                            ? "//"
-                            : ""
-                        }${contactData.twitter}`}
-                        target="_blank"
-                      >
-                        {contactData.twitter}
-                      </a>
-                    )}
-                  </FieldContent>
-                </Grid>
-
-                <Grid item xs={3} className="fieldName">
-                  <p className="dataLabels">Lead Source</p>
-                </Grid>
-                <Grid item xs={9}>
-                  <FieldContent
-                    id={contactData._id}
-                    content={{ leadSource: contactData.leadSource }}
+                ) : (
+                  <ExpandLessIcon
+                    style={{ position: "relative", top: "8px" }}
                   />
-                </Grid>
+                )}
+              </h4>
+            </Grid>
+          </Grid>
 
-                <Grid item xs={3} className="fieldName">
-                  <p className="dataLabels">Created By</p>
-                </Grid>
-                <Grid item xs={9}>
-                  {contactData.createBy && contactData.createBy.name === null && (
-                    <div className={classes.userSmallLoader}>
-                      <CircularProgress size={22} color="secondary" />
-                    </div>
-                  )}
-                  {(contactData.createBy && contactData.createBy.name) ||
-                  contactData.createAt ? (
-                    <p style={{ margin: "8px 10px" }}>
-                      {contactData.createBy && contactData.createBy.name
-                        ? contactData.createBy.name
-                        : ""}
+          {/*/////////// new section //////////// */}
+          <Grid
+            container
+            item
+            xs={12}
+            className={`${classes.border}`}
+            style={{ padding: "23px 28px" }}
+            spacing={0}
+          >
+            <Grid item xs={12}>
+              <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
+                Associated Interest
+              </h4>
+            </Grid>
 
-                      {`${
-                        contactData.createAt
-                          ? " - " +
-                            anyToDate(contactData.createAt).toLocaleString()
-                          : ""
-                      }`}
-                    </p>
-                  ) : (
-                    <p className={classes.notAvailableP}>Not Available</p>
-                  )}
+            <Grid item xs={12}>
+              <Grid container spacing={2}>
+                <Grid item xs={4}>
+                  <Card raised style={{ minHeight: "35px" }}>
+                    <WellsCard
+                      handleOpenExpandableCard={handleOpenExpandableCard}
+                    />
+                  </Card>
                 </Grid>
-
-                <Grid item xs={3} className="fieldName">
-                  <p className="dataLabels">Last Update By</p>
+                <Grid item xs={4}>
+                  <Card raised style={{ minHeight: "35px" }}>
+                    <Parcels
+                      handleOpenExpandableCard={handleOpenExpandableCard}
+                    />
+                  </Card>
                 </Grid>
-                <Grid item xs={9}>
-                  {contactData.lastUpdateBy &&
-                    contactData.lastUpdateBy.name === null && (
-                      <div className={classes.userSmallLoader}>
-                        <CircularProgress size={22} color="secondary" />
-                      </div>
-                    )}
-                  {(contactData.lastUpdateBy &&
-                    contactData.lastUpdateBy.name) ||
-                  contactData.lastUpdateAt ? (
-                    <p style={{ margin: "8px 10px" }}>
-                      {contactData.lastUpdateBy && contactData.lastUpdateBy.name
-                        ? contactData.lastUpdateBy.name
-                        : ""}
-                      {`${
-                        contactData.lastUpdateAt
-                          ? " - " +
-                            anyToDate(contactData.lastUpdateAt).toLocaleString()
-                          : ""
-                      }`}
-                    </p>
-                  ) : (
-                    <p className={classes.notAvailableP}>Not Available</p>
-                  )}
+                <Grid item xs={4}>
+                  <Card raised style={{ minHeight: "35px" }}>
+                    <LeadScore score={5} lastContacted={"Jun 24, 2020"} />
+                  </Card>
                 </Grid>
               </Grid>
             </Grid>
+          </Grid>
 
-            {/*/////////// new section //////////// */}
-            <Grid item xs={12} className={`${classes.border}`}>
+          {/*/////////// new section //////////// */}
+          <Grid item xs={12} className={`${classes.border}`}>
+            <div className={classes.SectMargin}>
+              <Grid item xs={12} style={{ minHeight: "33px" }}>
+                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
+                  Lead Stage Changed:
+                  <span style={{ fontWeight: "normal" }}> 4 months ago</span>
+                </h4>
+                <h4 style={{ margin: "0 0 13px 0", float: "right" }}>
+                  Last Contacted:
+                  <span style={{ fontWeight: "normal" }}> 2 hours ago</span>
+                </h4>
+              </Grid>
+
+              <Grid
+                item
+                xs={12}
+                style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}
+              ></Grid>
+            </div>
+          </Grid>
+
+          {/*/////////// Recent Converstaion. //////////// */}
+          <Grid item xs={12} className={`${classes.border}`}>
+            <div className={classes.SectMargin}>
+              <RecentConversations
+                header={"Recent Conversations"}
+                handleOpenExpandableCard={handleOpenExpandableCard}
+              />
+            </div>
+          </Grid>
+
+          {/*/////////// new section //////////// */}
+          <Grid item xs={12} className={`${classes.border}`}>
+            <div className={classes.SectMargin}>
+              <Grid item xs={12}>
+                <h4 style={{ marginBottom: "8px" }}>
+                  Add Wells and Parcels to this contact
+                </h4>
+              </Grid>
+              <Grid item xs={12}>
+                <Autocomplete
+                  options={[]}
+                  getOptionLabel={(option) => option}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      size="small"
+                      placeholder="Search Wells, Parcels"
+                      variant="outlined"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment>
+                            <SearchIcon htmlColor="#929292" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+              </Grid>
+            </div>
+          </Grid>
+
+          {/*/////////// table section //////////// */}
+          {contactData && contactData.owners && contactData.owners.length > 0 && (
+            <Grid
+              item
+              xs={12}
+              className={`${classes.border} ${classes.ownersTable}`}
+            >
               <div className={classes.SectMargin}>
-                <Grid item xs={12} style={{ minHeight: "33px" }}>
-                  <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
-                    Lead Stage Changed:
-                    <span style={{ fontWeight: "normal" }}> 4 months ago</span>
-                  </h4>
-                  <h4 style={{ margin: "0 0 13px 0", float: "right" }}>
-                    Last Contacted:
-                    <span style={{ fontWeight: "normal" }}> 2 hours ago</span>
-                  </h4>
-                </Grid>
-
-                <Grid
-                  item
-                  xs={12}
-                  style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}
-                ></Grid>
-              </div>
-            </Grid>
-
-            {/*/////////// Recent Converstaion. //////////// */}
-            <Grid item xs={12} className={`${classes.border}`}>
-              <div className={classes.SectMargin}>
-                <RecentConversations
-                  header={"Recent Conversations"}
-                  handleOpenExpandableCard={handleOpenExpandableCard}
+                <M1nTable
+                  parent="ownersPerContacts"
+                  ownersIdsArray={contactData.owners}
+                  contactId={props.contactId}
                 />
               </div>
             </Grid>
-
-            {/*/////////// new section //////////// */}
-            <Grid item xs={12} className={`${classes.border}`}>
-              <div className={classes.SectMargin}>
-                <Grid item xs={12}>
-                  <h4 style={{ marginBottom: "8px" }}>
-                    Add Wells and Parcels to this contact
-                  </h4>
-                </Grid>
-                <Grid item xs={12}>
-                  <Autocomplete
-                    options={[]}
-                    getOptionLabel={(option) => option}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        size="small"
-                        placeholder="Search Wells, Parcels"
-                        variant="outlined"
-                        InputProps={{
-                          ...params.InputProps,
-                          startAdornment: (
-                            <InputAdornment>
-                              <SearchIcon htmlColor="#929292" />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    )}
-                  />
-                </Grid>
-              </div>
-            </Grid>
-
-            {/*/////////// table section //////////// */}
-            {contactData &&
-              contactData.owners &&
-              contactData.owners.length > 0 && (
-                <Grid
-                  item
-                  xs={12}
-                  className={`${classes.border} ${classes.ownersTable}`}
-                >
-                  <div className={classes.SectMargin}>
-                    <M1nTable
-                      parent="ownersPerContacts"
-                      ownersIdsArray={contactData.owners}
-                      contactId={props.contactId}
-                    />
-                  </div>
-                </Grid>
-              )}
-          </Grid>
+          )}
         </Grid>
 
         {/*/////////// rigth column //////////// */}
-        <Grid
-          className={classes.border}
-          style={{ MinHeight: "100%", backgroundColor: "#F0F6F8" }}
-          item
-          xs={3}
-        >
-          <div style={{ marginBottom: "4px" }}>
-            <Grid container className={classes.rightColumnGrid} spacing={0}>
+        <div className={classes.rightColumnGrid}>
+          <IconButton
+            size="small"
+            className={classes.shrinkRightColumn}
+            onClick={() => {
+              dispatch(toggleRightColumn());
+            }}
+          >
+            {shrinkRightColumn ? (
+              <ArrowBackIosRoundedIcon />
+            ) : (
+              <ArrowForwardIosRoundedIcon />
+            )}
+          </IconButton>
+          {shrinkRightColumn || showShrinkColumnContent ? (
+            <div style={{ width: "68px" }}>
+              <IconButton
+                className={classes.shrinkRightColumnIcons}
+                style={{ padding: "8px" }}
+              >
+                <HandShake />
+              </IconButton>
+
+              <IconButton className={classes.shrinkRightColumnIcons}>
+                <MessageRoundedIcon />
+              </IconButton>
+
+              <IconButton className={classes.shrinkRightColumnIcons}>
+                <DescriptionRoundedIcon />
+              </IconButton>
+            </div>
+          ) : (
+            <Grid container spacing={0} id="expandedRCContent">
               {/* //////////// Deal Card ////////////// */}
 
               {/* TEMPORARY COMMENT OUT. DO NOT DELETE. */}
@@ -870,11 +1047,6 @@ export default function ContactDetailCard(props) {
                 <Divider />
               </Grid>
 
-              <Grid item xs={12}>
-                <LeadScore score={5} lastContacted={"Jun 24, 2020"} />
-                <Divider />
-              </Grid>
-
               <Grid item xs={12} className={classes.Comments}>
                 <Comments
                   targetSourceId={contactData._id}
@@ -894,8 +1066,9 @@ export default function ContactDetailCard(props) {
                 <Divider />
               </Grid>
             </Grid>
-          </div>
-        </Grid>
+          )}
+        </div>
+
         <ConfirmationDialog
           openDialog={openDialog}
           handleDialogClose={setOpenDialog}
@@ -904,30 +1077,24 @@ export default function ContactDetailCard(props) {
         />
 
         {/* //// ViewAll in a right dialog //// */}
-       
+
         <RightDialog
           open={rightDialogOpen ? true : false}
           handleClickDialogClose={handleClickRightDialogClose}
           width="450px"
         >
           {rightDialogOpen === "comments" && (
-            
-              <Grid item xs={12} className={classes.Comments}>
-                  <Comments
-                    className={classes.gridStyling}
-                    targetSourceId={contactData._id}
-                    targetLabel="contact"
-                    handleRightDialogClose={handleClickRightDialogClose}
-                    
-                  />
-               
-              </Grid>
-             
+            <Grid item xs={12} className={classes.Comments}>
+              <Comments
+                className={classes.gridStyling}
+                targetSourceId={contactData._id}
+                targetLabel="contact"
+                handleRightDialogClose={handleClickRightDialogClose}
+              />
+            </Grid>
           )}
-
-          
         </RightDialog>
-            
+
         {/* //// ViewAll in a full screen dialog //// */}
         {showExpandableCard && (
           <Dialog
@@ -999,7 +1166,7 @@ export default function ContactDetailCard(props) {
             <CircularProgress size={80} disableShrink color="secondary" />
           </div>
         )}
-      </Grid>
+      </div>
     )
   );
 }

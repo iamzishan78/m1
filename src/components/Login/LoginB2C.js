@@ -2,12 +2,14 @@ import React, { useState, useContext, useEffect } from "react";
 import { AppContext } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../Navigation/NavigationContext";
-import SignInCard from "./SignInCard";
+import SignInCardB2C from "./SignInCardB2C";
 import { Button, Typography } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import styled from "styled-components";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import RenderSignUpControls from "./RenderSignUpControls";
+
+import { tenantB2C, msalConfigB2C, loginRequestB2C } from "./AADB2CAuthConfig";
 
 import {
   tenantsCredentials,
@@ -16,6 +18,8 @@ import {
   readProfileRequest,
   authGraphQLRequest,
 } from "./AADAuthConfig";
+
+import * as msal2 from "@azure/msal";
 import * as msal from "@azure/msal-browser";
 
 const localStyles = makeStyles((theme) => ({
@@ -65,16 +69,6 @@ const localStyles = makeStyles((theme) => ({
     flexDirection: "row",
     justifyContent: "center",
   },
-  termsAndPrivacy: {
-    color: "#fff",
-    "& a": {
-      color: "#fff",
-      textDecoration: "none",
-      "&:hover": {
-        color: theme.palette.secondary.main,
-      },
-    },
-  },
 }));
 
 const M1neralLogoNavNoAuth = (props) => (
@@ -109,7 +103,7 @@ const M1neralLogo2 = styled(M1neralLogoNavNoAuth)`
   padding-bottom: 20px;
 `;
 
-const Login = (props) => {
+const LoginB2C = (props) => {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [, setStateNav] = useContext(NavigationContext);
 
@@ -169,6 +163,71 @@ const Login = (props) => {
       if (stateApp.myMSALObj === false) setLoading(false);
     }
   }, [stateApp.myMSALObj, signingIn]);
+
+  const handledAADB2CSignIn = async (updateTenantFlags) => {
+    let tenant = tenantB2C;
+
+    if (tenant) {
+      setSigningIn(true);
+      setLoadingSigInButton(true);
+
+      let myMSALObj = new msal2.UserAgentApplication(
+        msalConfigB2C(tenant.tenantId, tenant.clientId)
+      );
+
+      const signInType = "loginPopup";
+
+      if (signInType === "loginPopup") {
+        try {
+          const loginResponse = await myMSALObj
+            .loginPopup(loginRequestB2C)
+            .catch((error) => {
+              //do some error stuff
+              console.log(error);
+              updateTenantFlags(error);
+              setLoadingSigInButton(false);
+            });
+          if (!loginResponse) {
+            //do some error stuff
+            updateTenantFlags("Log in Failed");
+            setLoadingSigInButton(false);
+
+            return;
+          }
+
+          console.log("id_token acquired at: " + new Date().toString());
+          console.log(loginResponse);
+
+          const userAccount = loginResponse["account"];
+
+          //Get user info
+          const emailAddress = userAccount.idToken.emails[0];
+          const idp = userAccount.idToken.idp;
+          const username = userAccount.idToken.name;
+          console.log(`id provider: ${idp}, username: ${username}`);
+
+          // According to the email address domain, sign in proper tenant, this domain name will be the tenant.
+          var domain = emailAddress.substring(
+            emailAddress.lastIndexOf("@") + 1
+          );
+          var tenantUser = domain.split(".")[0];
+          let tenantToLogin = tenantsCredentials(tenantUser);
+
+          if (!tenantToLogin) {
+            tenantToLogin = { "name": "M1neral" };
+          }
+
+          await handledAADSignIn(tenantToLogin.name, updateTenantFlags);
+        } catch {
+          setLoadingSigInButton(false);
+        }
+      } else if (signInType === "loginRedirect") {
+        // No need to implement at this point.
+      }
+    } else {
+      updateTenantFlags("Wrong Tenant Name");
+    }
+  };
 
   const handledAADSignIn = async (tenantName, updateTenantFlags) => {
     let tenant = tenantsCredentials(tenantName);
@@ -538,9 +597,9 @@ const Login = (props) => {
       </div>
 
       <div className={localClass.cardContainer}>
-        <SignInCard
+        <SignInCardB2C
           ready={loadingSigInButton}
-          handleAADSignIn={handledAADSignIn}
+          handleAADB2CSignIn={handledAADB2CSignIn}
         />
 
         <div>
@@ -628,15 +687,13 @@ const Login = (props) => {
           © 2020 M1neral, LLC. All Rights Reserved.
         </div>
 
-        <div className={localClass.termsAndPrivacy}>
-          <a href="https://m1neral.com/TOS.pdf" target="_blank">
-            Terms of Service
-          </a>
-          {" | "}
-          <a href="https://m1neral.com/Privacy.pdf" target="_blank">
-            Privacy Policy
-          </a>
-        </div>
+        {/* <div
+          style={{
+            color: "#fff",
+          }}
+        >
+          Terms of Service | Privacy Policy
+        </div> */}
 
         <div
           style={{
@@ -651,4 +708,4 @@ const Login = (props) => {
   );
 };
 
-export default Login;
+export default LoginB2C;

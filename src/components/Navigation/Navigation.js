@@ -880,6 +880,8 @@ export default function Navigation(props) {
   const handleLogout = async () => {
     setAnchorEl(null);
     sessionStorage.clear();
+    localStorage.clear();
+
     window.location.replace(window.location.origin);
 
     // setStateApp((stateApp) => ({ ...stateApp, user: null }));
