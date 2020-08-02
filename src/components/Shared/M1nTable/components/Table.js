@@ -47,6 +47,7 @@ import {
   showSuccessMessage,
   showWarningMessage,
   showErrorMessage,
+  setMapGridCardState,
 } from "../../../../actions";
 
 const useStyles = makeStyles((theme) => ({
@@ -276,8 +277,11 @@ export default function SubTable(props) {
                                 longitude: value[0],
                                 latitude: value[1],
                               },
-                              mapGridCardActivated: "min",
                             }));
+
+                          dispatch(
+                            setMapGridCardState({ mapGridCardActivated: "min" })
+                          );
                         }}
                         aria-label="fly"
                         // onMouseOver={() => {
@@ -1272,7 +1276,7 @@ export default function SubTable(props) {
           </Dialog>
         )}
       </div>
-      )
+
       {props.loading && (
         <div
           style={{

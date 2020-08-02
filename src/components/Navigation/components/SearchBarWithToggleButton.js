@@ -6,6 +6,8 @@ import Search from "./Search";
 import GridOnIcon from "@material-ui/icons/GridOn";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
+import { useDispatch } from "react-redux";
+import { toggleMapGridCardAtived } from "../../../actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SearchBarWithToggleButton() {
+  const dispatch = useDispatch();
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
@@ -52,10 +55,7 @@ export default function SearchBarWithToggleButton() {
         <Button
           className={classes.gridOnIcon}
           onClick={() => {
-            setStateApp((state) => ({
-              ...state,
-              mapGridCardActivated: !state.mapGridCardActivated,
-            }));
+            dispatch(toggleMapGridCardAtived());
           }}
         >
           <GridOnIcon />
