@@ -9,7 +9,7 @@ import styled from "styled-components";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import RenderSignUpControls from "./RenderSignUpControls";
 
-import { tenantB2C, msalConfigB2C, loginRequestB2C } from "./AADB2CAuthConfig";
+import { tenantB2C, msalB2CConfig, loginRequestB2C } from "./AADB2CAuthConfig";
 
 import {
   tenantsCredentials,
@@ -113,6 +113,8 @@ const LoginB2C = (props) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("LoginB2C useEffect is called");
+
     if (stateApp.myMSALObj && !signingIn) {
       stateApp.myMSALObj
         .handleRedirectPromise()
@@ -159,11 +161,58 @@ const LoginB2C = (props) => {
           sessionStorage.clear();
           window.location.replace(window.location.origin);
         });
+    } else if (stateApp.myMSALB2CObj) {
+      stateApp.myMSALB2CObj.handleRedirectCallback((error, loginResponse) => {
+        // msal requires a redirect callback, even though can't use it to
+        // get the result as it will redirect again after it has the result
+        // and not provide the result of the call back on the second
+        // redirect.
+
+        if (error) {
+          console.log(error);
+          // updateTenantFlags(error);
+          setLoadingSigInButton(false);
+        }
+        if (!loginResponse) {
+          //do some error stuff
+          // updateTenantFlags("Log in Failed");
+          setLoadingSigInButton(false);
+
+          return;
+        } else {
+          console.log("id_token acquired at: " + new Date().toString());
+
+          let tenantName = tenantNameToLogin(loginResponse);
+          handledAADSignInWithoutTenantFlags(tenantName);
+        }
+      });
     } else {
       if (stateApp.myMSALObj === false) setLoading(false);
     }
-  }, [stateApp.myMSALObj, signingIn]);
+  }, [stateApp.myMSALObj, stateApp.myMSALB2CObj, signingIn]);
 
+  const tenantNameToLogin = (loginResponse) => {
+    console.log(loginResponse);
+
+    const userAccount = loginResponse["account"];
+
+    //Get user info
+    const emailAddress = userAccount.idToken.emails[0];
+    const idp = userAccount.idToken.idp;
+    const username = userAccount.idToken.name;
+    console.log(`id provider: ${idp}, username: ${username}`);
+
+    // According to the email address domain, sign in proper tenant, this domain name will be the tenant.
+    var domain = emailAddress.substring(emailAddress.lastIndexOf("@") + 1);
+    var tenantUser = domain.split(".")[0];
+    let tenantNameToLogin = tenantsCredentials(tenantUser);
+
+    if (!tenantNameToLogin) {
+      tenantNameToLogin = "M1neral";
+    }
+    console.log(`tenant to Login is ${tenantNameToLogin}`);
+    return tenantNameToLogin;
+  };
   const handledAADB2CSignIn = async (updateTenantFlags) => {
     let tenant = tenantB2C;
 
@@ -171,15 +220,26 @@ const LoginB2C = (props) => {
       setSigningIn(true);
       setLoadingSigInButton(true);
 
-      let myMSALObj = new msal2.UserAgentApplication(
-        msalConfigB2C(tenant.tenantId, tenant.clientId)
-      );
+      let myMSALB2CObj = stateApp.myMSALB2CObj;
 
-      const signInType = "loginPopup";
+      if (!stateApp.myMSALB2CObj) {
+        myMSALB2CObj = new msal2.UserAgentApplication(
+          msalB2CConfig(tenant.tenantId, tenant.clientId)
+        );
+
+        setStateApp({
+          ...stateApp,
+          myMSALB2CObj,
+        });
+      }
+
+      window.sessionStorage.setItem("tenantB2CName", tenant.name);
+
+      const signInType = "loginRedirect";
 
       if (signInType === "loginPopup") {
         try {
-          const loginResponse = await myMSALObj
+          const loginResponse = await myMSALB2CObj
             .loginPopup(loginRequestB2C)
             .catch((error) => {
               //do some error stuff
@@ -196,33 +256,14 @@ const LoginB2C = (props) => {
           }
 
           console.log("id_token acquired at: " + new Date().toString());
-          console.log(loginResponse);
+          let tenantName = tenantNameToLogin(loginResponse);
 
-          const userAccount = loginResponse["account"];
-
-          //Get user info
-          const emailAddress = userAccount.idToken.emails[0];
-          const idp = userAccount.idToken.idp;
-          const username = userAccount.idToken.name;
-          console.log(`id provider: ${idp}, username: ${username}`);
-
-          // According to the email address domain, sign in proper tenant, this domain name will be the tenant.
-          var domain = emailAddress.substring(
-            emailAddress.lastIndexOf("@") + 1
-          );
-          var tenantUser = domain.split(".")[0];
-          let tenantToLogin = tenantsCredentials(tenantUser);
-
-          if (!tenantToLogin) {
-            tenantToLogin = "M1neral";
-          }
-
-          await handledAADSignIn(tenantToLogin, updateTenantFlags);
+          await handledAADSignIn(tenantName, updateTenantFlags);
         } catch {
           setLoadingSigInButton(false);
         }
       } else if (signInType === "loginRedirect") {
-        // No need to implement at this point.
+        myMSALB2CObj.loginRedirect(loginRequestB2C);
       }
     } else {
       updateTenantFlags("Wrong Tenant Name");
@@ -275,6 +316,51 @@ const LoginB2C = (props) => {
       }
     } else {
       updateTenantFlags("Wrong Tenant Name");
+    }
+  };
+
+  const handledAADSignInWithoutTenantFlags = async (tenantName) => {
+    let tenant = tenantsCredentials(tenantName);
+    if (tenant) {
+      setSigningIn(true);
+      setLoadingSigInButton(true);
+
+      let myMSALObj = stateApp.myMSALObj;
+
+      if (!stateApp.myMSALObj) {
+        myMSALObj = new msal.PublicClientApplication(
+          msalConfig(tenant.tenantId, tenant.clientId)
+        );
+
+        setStateApp({
+          ...stateApp,
+          myMSALObj,
+          apolloClientEndpoint: tenant.apolloClientEndpoint,
+        });
+      }
+
+      window.sessionStorage.setItem("tenantName", tenant.name);
+
+      const signInType = "loginRedirect";
+
+      if (signInType === "loginPopup") {
+        stateApp.myMSALObj = myMSALObj; /////
+        const loginResponse = await signInPopup(loginRequest).catch((error) => {
+          //do some error stuff
+          console.log(error);
+          setLoadingSigInButton(false);
+        });
+        if (!loginResponse) {
+          //do some error stuff
+          setLoadingSigInButton(false);
+
+          return;
+        }
+
+        await finishAADAuth(loginResponse);
+      } else if (signInType === "loginRedirect") {
+        myMSALObj.loginRedirect(loginRequest);
+      }
     }
   };
 
