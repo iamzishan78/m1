@@ -96,27 +96,112 @@ export default function Map() {
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
-  const [filtersDefault, setFiltersDefault] = useState(
+  const [filtersDefault, FiltersDefault] = useState(
     stateApp.user.defaultFilters ? stateApp.user.defaultFilters : []
   );
-  const [lng, setLng] = useState();
-  const [lat, setLat] = useState();
-  const [transform, setTransform] = useState("transform: inherit");
+  const setFiltersDefault = (state) => {
+    if(filtersDefault != state) {
+      FiltersDefault(state)
+    }
+  }
+  const [lng, Lng] = useState();
+  const setLng = (state) => {
+    if(lng != state) {
+      // Lng(state)
+    }
+  }
+  const [lat, Lat] = useState();
+  const setLat = (state) => {
+    if(lat != state) {
+      // Lat(state)
+    }
+  }
+  const [transform, Transform] = useState("transform: inherit");
+  const setTransform = (state) => {
+    if(transform != state) {
+      Transform(state)
+    }
+  }
   const container = useRef(null);
-  const [showExpandableCard, setShowExpandableCard] = useState(false);
-  const [mapStyles, setMapStyles] = useState([]);
-  const [wellsTileset, setwellsTileset] = useState();
-  const [defaultsCheckOnOff, setDefaultsCheckOnOff] = useState(true);
-  const [m1neralCheckOnOff, setM1neralCheckOnOff] = useState(true);
-  const [map, setMap] = useState(null);
-  const [mapClick, setMapClick] = useState(null);
-  const [draw, setDraw] = useState(null);
-  const [drawStatus, setDrawStatus] = useState(false);
-  const [rigs, setRigData] = useState([]);
-  const [permits, setPermitData] = useState([]);
-  const [drawingFilterFeatureId, setDrawingFilterFeatureId] = useState(null);
+  const [showExpandableCard, ShowExpandableCard] = useState(false);
+  const setShowExpandableCard = (state) => {
+    if(showExpandableCard != state) {
+      ShowExpandableCard(state)
+    }
+  }
+  const [mapStyles, MapStyles] = useState([]);
+  const setMapStyles = (state) => {
+    if(mapStyles != state) {
+      MapStyles(state)
+    }
+  }
+  const [wellsTileset, WellsTileset] = useState();
+  const setWellsTileset = (state) => {
+    if(wellsTileset != state) {
+      WellsTileset(state)
+    }
+  }
+  const [defaultsCheckOnOff, DefaultsCheckOnOff] = useState(true);
+  const setDefaultsCheckOnOff = (state) => {
+    if(defaultsCheckOnOff != state) {
+      DefaultsCheckOnOff(state)
+    }
+  }
+  const [m1neralCheckOnOff, M1neralCheckOnOff] = useState(true);
+  const setM1neralCheckOnOff = (state) => {
+    if(m1neralCheckOnOff != state) {
+      M1neralCheckOnOff(state)
+    }
+  }
+  const [map, Map] = useState(null);
+  const setMap = (state) => {
+    if(map != state) {
+      Map(state)
+    }
+  }
+  const [mapClick, MapClick] = useState(null);
+  const setMapClick = (state) => {
+    if(mapClick != state) {
+      MapClick(state)
+    }
+  }
+  const [draw, Draw] = useState(null);
+  const setDraw = (state) => {
+    if(draw != state) {
+      Draw(state)
+    }
+  }
+  const [drawStatus, DrawStatus] = useState(false);
+  const setDrawStatus = (state) => {
+    if(drawStatus != state) {
+      DrawStatus(state)
+    }
+  }
+  const [rigs, RigData] = useState([]);
+  const setRigData = (state) => {
+    if(rigs != state) {
+      RigData(state)
+    }
+  }
+  const [permits, PermitData] = useState([]);
+  const setPermitData = (state) => {
+    if(permits != state) {
+      PermitData(state)
+    }
+  }
+  const [drawingFilterFeatureId, DrawingFilterFeatureId] = useState(null);
+  const setDrawingFilterFeatureId = (state) => {
+    if(drawingFilterFeatureId != state) {
+      DrawingFilterFeatureId(state)
+    }
+  }
   // const [geocoder, setGeocoder] = useState(null);
-  const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
+  const [anchorElPoPOver, AnchorElPoPOver] = useState(null);
+  const setAnchorElPoPOver = (state) => {
+    if(anchorElPoPOver != state) {
+      AnchorElPoPOver(state)
+    }
+  }
   const mapEl = useRef(null);
 
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
@@ -125,8 +210,18 @@ export default function Map() {
 
   //////begin////////temporary
 
-  const [rows, setRows] = React.useState([]);
-  const [loading, setLoading] = useState(true);
+  const [rows, Rows] = React.useState([]);
+  const setRows = (state) => {
+    if(rows != state) {
+      Rows(state)
+    }
+  }
+  const [loading, Loading] = useState(true);
+  const setLoading = (state) => {
+    if(loading != state) {
+      Loading(state)
+    }
+  }
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
   const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(
     TRACKSBYOBJECTTYPE
@@ -3346,7 +3441,7 @@ export default function Map() {
             .find((element) => element.indexOf("m1neral.wells") > -1)
             .replace("mapbox://", "")}`
         );
-        setwellsTileset(
+        setWellsTileset(
           mapStyles[index].sources.composite.url
             .split(",")
             .find((element) => element.indexOf("m1neral.wells") > -1)
@@ -4263,7 +4358,7 @@ export default function Map() {
         </div>
       </div>
       <MapControlsProvider />
-      <DrawStatus drawingStatus={drawStatus} />
+      {/* <DrawStatus drawingStatus={drawStatus} /> */}
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <Coordinates long={lng} lat={lat} />
       {stateApp.selectedUserDefinedLayer &&

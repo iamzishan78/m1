@@ -239,10 +239,30 @@ export default function MapGridCard(props) {
   } = useSelector(({ MapGridCard }) => MapGridCard);
   const [stateApp, setStateApp] = useContext(AppContext);
   // const [mainTapValue, setMainTapValue] = useState(1);
-  const [searchTapValue, setSearchTapValue] = useState(0);
-  const [viewportTapValue, setViewportTapValue] = useState(0);
-  const [trackedTapValue, setTrackedTapValue] = useState(0);
-  const [expanded, setExpanded] = useState(false);
+  const [searchTapValue, SearchTapValue] = useState(0);
+  const setSearchTapValue = (state) => {
+    if(searchTapValue != state) {
+      SearchTapValue(state)
+    }
+  }
+  const [viewportTapValue, ViewportTapValue] = useState(0);
+  const setViewportTapValue = (state) => {
+    if(viewportTapValue != state) {
+      ViewportTapValue(state)
+    }
+  }
+  const [trackedTapValue, TrackedTapValue] = useState(0);
+  const setTrackedTapValue = (state) => {
+    if(trackedTapValue != state) {
+      TrackedTapValue(state)
+    }
+  }
+  const [expanded, Expanded] = useState(false);
+  const setExpanded = (state) => {
+    if(expanded != state) {
+      Expanded(state)
+    }
+  }
   const classes = useStyles({
     mapGridCardActivated,
   });
