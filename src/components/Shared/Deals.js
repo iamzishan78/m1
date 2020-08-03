@@ -136,13 +136,8 @@ export default function Deals({ contact, ...props }) {
       (card) =>
         (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     );
-    console.log("FORMAT: ", formatter.format(sum));
     const formatted = formatter.format(sum);
     return formatted.slice(0, formatted.length - 3);
-  };
-
-  const editDeal = (deal) => {
-    console.log("DEAL: ", deal);
   };
 
   const handleDataChange = (newData) => {
@@ -152,7 +147,7 @@ export default function Deals({ contact, ...props }) {
           transactionId: data.transactionData._id,
           transaction: { allData: newData, user: stateApp.user.mongoId },
         },
-        refetchQueries: ["getTransactionData"],
+        refetchQueries: ["getTransactionData", "getContact", "getContacts"],
         awaitRefetchQueries: true,
       });
     }

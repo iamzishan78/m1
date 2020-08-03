@@ -90,7 +90,15 @@ export default function AddContactDialogContent(props) {
   ] = useLazyQuery(CONTACTSBYOWNERSID, {
     fetchPolicy: "cache-and-network",
   });
-  const [addContact] = useMutation(ADDCONTACT);
+  // const [addContact, { called: calledAddContact, data: dataAddContact }] = useMutation(ADDCONTACT);
+  const [
+    addContact,
+    {
+      data: addContactData,
+      called: addContactCalled,
+      loading: addContactLoading,
+    },
+  ] = useMutation(ADDCONTACT);
   const [addRemoveOwnerToAContact] = useMutation(ADDREMOVEOWNERTOACONTACT);
 
   useEffect(() => {
@@ -122,7 +130,6 @@ export default function AddContactDialogContent(props) {
           (cont) => cont._id
         );
 
-
         setContacts([
           ...dataContacts.contacts.filter(
             (cont) => tempIdArray.indexOf(cont._id) === -1
@@ -136,8 +143,9 @@ export default function AddContactDialogContent(props) {
 
   useEffect(() => {
     if (
-      (activeTapIndex === 1 && existingContact.name !== "") ||
-      (activeTapIndex === 0 && newContact.name.trim() !== "")
+      ((activeTapIndex === 1 && existingContact.name !== "") ||
+        (activeTapIndex === 0 && newContact.name.trim() !== "")) &&
+      !validated
     ) {
       setValidated(true);
     } else {
@@ -166,6 +174,17 @@ export default function AddContactDialogContent(props) {
     });
   };
 
+  useEffect(() => {
+    if (addContactData && addContactCalled && !addContactLoading) {
+      if (props.dealsPage) {
+        props.setDealsContact(addContactData.addContact.contact);
+        props.onClose();
+        setActiveTapIndex(0);
+        emptyStates();
+      }
+    }
+  }, [addContactData, addContactCalled, addContactLoading]);
+
   const handleClickDialogClose = (e) => {
     e.preventDefault();
     props.onClose();
@@ -186,14 +205,19 @@ export default function AddContactDialogContent(props) {
               lastUpdateBy: stateApp.user.mongoId,
             },
           },
-          refetchQueries: ["getContacts"],
+          refetchQueries: [
+            "getContacts",
+            "getContactsByOwnerId",
+            "getContactsCounter",
+            "getContact",
+          ],
           awaitRefetchQueries: true,
         });
-        props.setDealsContact(newContact);
+        e.preventDefault();
       } else if (activeTapIndex === 1) {
         props.setDealsContact(existingContact);
+        handleClickDialogClose(e);
       }
-      handleClickDialogClose(e);
       return;
     }
 

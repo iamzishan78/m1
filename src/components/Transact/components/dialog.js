@@ -132,7 +132,7 @@ export default function TransactDialog(props) {
         const lane = transactData.lanes[laneIndex];
         const cardIndex = lane.cards.findIndex((card) => card.id === cardId);
         const card = lane.cards[cardIndex];
-
+        
         const updatedCard = {
           // dealName: dealName.trim(),
           // title: contact?.name.trim(),
@@ -141,9 +141,10 @@ export default function TransactDialog(props) {
           label: label ? label.trim() : "",
           description: description ? description.trim() : "",
           laneId: newStage,
-          contactId: contact?._id,
+          contactId: contact?._id ? contact._id : uuid(),
           id: card.id,
         };
+
 
         if (card.laneId !== newStage) {
           if (cardIndex > -1) {
@@ -172,7 +173,7 @@ export default function TransactDialog(props) {
               label: label ? label.trim() : "",
               description: description ? description.trim() : "",
               id: uuid(),
-              contactId: contact?._id,
+              contactId: contact?._id ? contact._id : uuid(),
               laneId: newStage,
             };
             cards.push(newCard);
