@@ -206,6 +206,13 @@ export default function Map() {
   }
   const mapEl = useRef(null);
 
+  const [hoveredStateId, HoveredStateId] = useState(null);
+  const setHoveredStateId = (state) => {
+    if (state != hoveredStateId) {
+      HoveredStateId(state);
+    }
+  }
+
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
 
   //////////// TEMP UNTIL PROVIDER IS MADE //////////
@@ -3381,14 +3388,12 @@ export default function Map() {
 
   useEffect(() => {
     if (abstractData && abstractData.abstractGeo && abstractData.abstractGeo.length > 0) {
-      const data = abstractData.abstractGeo
+      const data = abstractData.abstractGeo;
       const makeGeoJSON = (data) => {
         return {
           type: "FeatureCollection",
           features: data.map((feature) => {
-            const line = turf.polygonToLine(JSON.parse(feature.geo_json));
-            return line;
-            
+            return JSON.parse(feature.geo_json);
           }),
         };
       };
@@ -3686,9 +3691,24 @@ export default function Map() {
           newMap.addSource("abstract_geo_source", {
             type: 'geojson',
             data: {
-              'type': 'Feature',
-              'properties': {},
-              'geometry': {}
+              'type': 'FeatureCollection',
+              'features': []
+            },
+            promoteId: 'abstract_n'
+          });
+
+          newMap.addLayer({
+            id: 'abstract_geo_fill_layer',
+            type: 'fill',
+            source: 'abstract_geo_source',
+            paint: {
+              'fill-color': '#888',
+              'fill-opacity': [
+                'case',
+                ['boolean', ['feature-state', 'hover'], false],
+                0.5,
+                0
+              ]
             }
           });
           
@@ -3702,9 +3722,51 @@ export default function Map() {
             },
             paint: {
               'line-color': '#888',
-              'line-width': 8
+              'line-width': 2
             }
-          })
+          });
+
+          newMap.addLayer({
+            id: 'abstract_geo_label_layer',
+            type: 'symbol',
+            source: 'abstract_geo_source',
+            layout: {
+              'text-field': '{abstract_l}',
+              'text-anchor': 'center',
+            },
+            paint: {
+              "text-color": '#888'
+            }
+          });
+
+          newMap.on('mousemove', 'abstract_geo_fill_layer', function(e) {
+            const map = e.target;
+            if (e.features.length > 0) {
+              console.log(hoveredStateId, e.features[0].id);
+              if (hoveredStateId) {
+                map.setFeatureState(
+                  { source: 'abstract_geo_source', id: hoveredStateId },
+                  { hover: false }
+                );
+              }
+              setHoveredStateId(e.features[0].id);
+              map.setFeatureState(
+                { source: 'abstract_geo_source', id: e.features[0].id },
+                { hover: true }
+              );
+            }
+          });
+
+          newMap.on('mouseleave', 'abstract_geo_fill_layer', function(e) {
+            const map = e.target;
+            if (hoveredStateId) {
+              map.setFeatureState(
+                { source: 'abstract_geo_source', id: hoveredStateId },
+                { hover: false }
+              );
+            }
+            setHoveredStateId(null);
+          });
 
           setDraw(Draw);
           setMap(newMap);
