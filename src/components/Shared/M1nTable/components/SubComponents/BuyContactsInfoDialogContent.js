@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
@@ -17,8 +18,8 @@ import { FormLabel } from "@material-ui/core";
 import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useLazyQuery } from "@apollo/react-hooks";
-import { GETPERSONDATA, GETPERSONDATALOOKUP } from "../../../../../graphQL/useQueryGetPersonData";
-import ReactJson from 'react-json-view'
+import { GETPERSONDATA } from "../../../../../graphQL/useQueryGetPersonData";
+import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 
 const styles = (theme) => ({
   root: {
@@ -123,16 +124,29 @@ const useStyles = makeStyles({
 
 export default function BuyContactsInfoDialogContent(props) {
   const classes = useStyles();
-  const [getPersonDataQuery, { data: personsData }] = useLazyQuery(GETPERSONDATA)
+  const dispatch = useDispatch();
+
+  const [getPersonDataQuery, { data: personsData }] = useLazyQuery(GETPERSONDATA, {
+    onCompleted: data => {
+      console.log(data)
+      props.onClose()
+      if (data.getPersonData.allSuccess) {
+        dispatch(showSuccessMessage("All records saved successfully"))
+      } else {
+        dispatch(showErrorMessage("Error occurred"))
+      }
+    }
+  })
 
   function loadPersonData() {
     let persons = []
     for (const row of props.rows) {
       let person = {
         fullName: row.name,
-        address: joinAddress(row),
-        city: '',
-        state: '',
+        address: row.address1 + (row.address2 ? ", " + row.address2 : ''),
+        city: row.city,
+        state: row.state,
+        country: row.country
       }
       persons.push(person)
     }
@@ -140,7 +154,6 @@ export default function BuyContactsInfoDialogContent(props) {
     getPersonDataQuery({
       variables: { persons }
     })
-    
   }
 
   useEffect(() => {
@@ -275,22 +288,6 @@ export default function BuyContactsInfoDialogContent(props) {
           Buy Now
         </Button>
       </DialogActions>
-      <DialogContent>
-      { personsData && personsData.getPersonData &&
-        personsData.getPersonData.map((personData, index) => (
-          <DialogContent>
-            <h4>Records for person with index {index}</h4>
-            <ReactJson src={personData} />
-          </DialogContent>
-      ))}
-      { personsDataLookup && personsDataLookup.getPersonDataLookup &&
-        personsDataLookup.getPersonDataLookup.map((personData, index) => (
-          <DialogContent>
-            <h4>Records for person with index {index}</h4>
-            <ReactJson src={personData} />
-          </DialogContent>
-      ))}
-      </DialogContent>
 
     </React.Fragment>
   );
