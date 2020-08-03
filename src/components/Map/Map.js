@@ -50,6 +50,7 @@ import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 import MapGridCard from "../MapGridCard/MapGridCard";
+import { useDispatch, useSelector } from "react-redux";
 import MarkerIcon from "./sprites/marker-icon.png";
 
 const useStyles = makeStyles((theme) => ({
@@ -88,33 +89,121 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Map() {
   let classes = useStyles();
+  const dispatch = useDispatch();
+  const mapGridCardActivated = useSelector(
+    ({ MapGridCard }) => MapGridCard.mapGridCardActivated
+  );
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
-  const [filtersDefault, setFiltersDefault] = useState(
+  const [filtersDefault, FiltersDefault] = useState(
     stateApp.user.defaultFilters ? stateApp.user.defaultFilters : []
   );
-  const [lng, setLng] = useState();
-  const [lat, setLat] = useState();
-  const [transform, setTransform] = useState("transform: inherit");
+  const setFiltersDefault = (state) => {
+    if(filtersDefault != state) {
+      FiltersDefault(state)
+    }
+  }
+  const [lng, Lng] = useState();
+  const setLng = (state) => {
+    if(lng != state) {
+      // Lng(state)
+    }
+  }
+  const [lat, Lat] = useState();
+  const setLat = (state) => {
+    if(lat != state) {
+      // Lat(state)
+    }
+  }
+  const [transform, Transform] = useState("transform: inherit");
+  const setTransform = (state) => {
+    if(transform != state) {
+      Transform(state)
+    }
+  }
   const container = useRef(null);
-  const [showExpandableCard, setShowExpandableCard] = useState(false);
-  const [mapStyles, setMapStyles] = useState([]);
-  const [wellsTileset, setwellsTileset] = useState();
-  const [defaultsCheckOnOff, setDefaultsCheckOnOff] = useState(true);
-  const [m1neralCheckOnOff, setM1neralCheckOnOff] = useState(true);
-  const [map, setMap] = useState(null);
-  const [mapClick, setMapClick] = useState(null);
-  const [draw, setDraw] = useState(null);
-  const [drawStatus, setDrawStatus] = useState(false);
-  const [rigs, setRigData] = useState([]);
-  const [permits, setPermitData] = useState([]);
-  const [abstracts, setAbstractData] = useState([]);
-  const [drawingFilterFeatureId, setDrawingFilterFeatureId] = useState(null);
+  const [showExpandableCard, ShowExpandableCard] = useState(false);
+  const setShowExpandableCard = (state) => {
+    if(showExpandableCard != state) {
+      ShowExpandableCard(state)
+    }
+  }
+  const [mapStyles, MapStyles] = useState([]);
+  const setMapStyles = (state) => {
+    if(mapStyles != state) {
+      MapStyles(state)
+    }
+  }
+  const [wellsTileset, WellsTileset] = useState();
+  const setWellsTileset = (state) => {
+    if(wellsTileset != state) {
+      WellsTileset(state)
+    }
+  }
+  const [defaultsCheckOnOff, DefaultsCheckOnOff] = useState(true);
+  const setDefaultsCheckOnOff = (state) => {
+    if(defaultsCheckOnOff != state) {
+      DefaultsCheckOnOff(state)
+    }
+  }
+  const [m1neralCheckOnOff, M1neralCheckOnOff] = useState(true);
+  const setM1neralCheckOnOff = (state) => {
+    if(m1neralCheckOnOff != state) {
+      M1neralCheckOnOff(state)
+    }
+  }
+  const [map, Map] = useState(null);
+  const setMap = (state) => {
+    if(map != state) {
+      Map(state)
+    }
+  }
+  const [mapClick, MapClick] = useState(null);
+  const setMapClick = (state) => {
+    if(mapClick != state) {
+      MapClick(state)
+    }
+  }
+  const [draw, Draw] = useState(null);
+  const setDraw = (state) => {
+    if(draw != state) {
+      Draw(state)
+    }
+  }
+  const [drawStatus, DrawStatus] = useState(false);
+  const setDrawStatus = (state) => {
+    if(drawStatus != state) {
+      DrawStatus(state)
+    }
+  }
+  const [rigs, RigData] = useState([]);
+  const setRigData = (state) => {
+    if(rigs != state) {
+      RigData(state)
+    }
+  }
+  const [permits, PermitData] = useState([]);
+  const setPermitData = (state) => {
+    if(permits != state) {
+      PermitData(state)
+    }
+  }
+  const [drawingFilterFeatureId, DrawingFilterFeatureId] = useState(null);
+  const setDrawingFilterFeatureId = (state) => {
+    if(drawingFilterFeatureId != state) {
+      DrawingFilterFeatureId(state)
+    }
+  }
   // const [geocoder, setGeocoder] = useState(null);
-  const [anchorElPoPOver, setAnchorElPoPOver] = useState(null);
+  const [anchorElPoPOver, AnchorElPoPOver] = useState(null);
+  const setAnchorElPoPOver = (state) => {
+    if(anchorElPoPOver != state) {
+      AnchorElPoPOver(state)
+    }
+  }
   const mapEl = useRef(null);
 
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
@@ -123,8 +212,18 @@ export default function Map() {
 
   //////begin////////temporary
 
-  const [rows, setRows] = React.useState([]);
-  const [loading, setLoading] = useState(true);
+  const [rows, Rows] = React.useState([]);
+  const setRows = (state) => {
+    if(rows != state) {
+      Rows(state)
+    }
+  }
+  const [loading, Loading] = useState(true);
+  const setLoading = (state) => {
+    if(loading != state) {
+      Loading(state)
+    }
+  }
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
   const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(
     TRACKSBYOBJECTTYPE
@@ -161,7 +260,7 @@ export default function Map() {
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
-      console.log('useEffect 1')
+      console.log("useEffect 1");
       setLoading(true);
 
       tracksByObjectType({
@@ -206,7 +305,7 @@ export default function Map() {
   }, [dataTracks]);
 
   useEffect(() => {
-    console.log('useEffect 2')
+    console.log("useEffect 2");
     if (dataTracksOwner && dataTracksOwner.tracksByObjectType) {
       if (dataTracksOwner.tracksByObjectType.length !== 0) {
         var objectsIdsArray = dataTracksOwner.tracksByObjectType.map(
@@ -228,7 +327,7 @@ export default function Map() {
   }, [dataTracksOwner]);
 
   useEffect(() => {
-    console.log('useEffect 3')
+    console.log("useEffect 3");
 
     if (customLayerData && customLayerData.allCustomLayers) {
       setStateApp((state) => ({
@@ -242,7 +341,7 @@ export default function Map() {
   }, [customLayerData]);
 
   useEffect(() => {
-    console.log('useEffect 4')
+    console.log("useEffect 4");
 
     if (dataOwnersWells && dataOwnersWells.length !== 0) {
       console.log(dataOwnersWells.ownersWells);
@@ -264,7 +363,7 @@ export default function Map() {
   }, [dataOwnersWells]);
 
   useEffect(() => {
-    console.log('useEffect 5')
+    console.log("useEffect 5");
 
     if (dataWells) {
       if (
@@ -592,7 +691,7 @@ export default function Map() {
   };
 
   useEffect(() => {
-    console.log('useEffect 6')
+    console.log("useEffect 6");
 
     if (permitData && permitData.permits && permitData.permits.length > 0) {
       const nextOffset = permits.length + permitData.permits.length;
@@ -608,7 +707,7 @@ export default function Map() {
   }, [permitData]);
 
   useEffect(() => {
-    console.log('useEffect 7')
+    console.log("useEffect 7");
 
     if (rigData && rigData.rigs && rigData.rigs.length > 0) {
       const nextOffset = rigs.length + rigData.rigs.length;
@@ -624,7 +723,7 @@ export default function Map() {
   }, [rigData]);
 
   useEffect(() => {
-    console.log('useEffect 8')
+    console.log("useEffect 8");
 
     if (permits.length > 0 && map) {
       setLayer(permits, "Permits", map);
@@ -632,7 +731,7 @@ export default function Map() {
   }, [permits, map]);
 
   useEffect(() => {
-    console.log('useEffect 9')
+    console.log("useEffect 9");
 
     if (rigs.length > 0 && map) {
       setLayer(rigs, "Rig Activity", map);
@@ -640,7 +739,7 @@ export default function Map() {
   }, [rigs, map]);
 
   useEffect(() => {
-    console.log('useEffect 10')
+    console.log("useEffect 10");
 
     if (dataWellsForOwnerWellTrackLayer) {
       if (
@@ -662,7 +761,7 @@ export default function Map() {
   }, [dataWellsForOwnerWellTrackLayer]);
 
   useEffect(() => {
-    console.log('useEffect 11')
+    console.log("useEffect 11");
 
     if (
       stateApp.trackedOwnerWells &&
@@ -691,7 +790,7 @@ export default function Map() {
   ]);
 
   useEffect(() => {
-    console.log('useEffect 12')
+    console.log("useEffect 12");
 
     const wellLineClick = (currentFeature) => {
       console.log("clicked well lines", currentFeature);
@@ -909,7 +1008,7 @@ export default function Map() {
   ]);
 
   useEffect(() => {
-    console.log('useEffect 14')
+    console.log("useEffect 14");
 
     // USE EFFECT FOR M1 LAYER HANDLES
     console.log("layer ue start");
@@ -1002,7 +1101,7 @@ export default function Map() {
   ]);
 
   useEffect(() => {
-    console.log('useEffect 15')
+    console.log("useEffect 15");
 
     // USE EFFECT FOR BASEMAP LAYER HANDLING
     console.log("basemap layer ue start");
@@ -1045,7 +1144,7 @@ export default function Map() {
   }, [map, stateApp.checkedBaseLayers, stateApp.baseMapLayers]);
 
   useEffect(() => {
-    console.log('useEffect 16')
+    console.log("useEffect 16");
 
     // USE EFFECT FOR HEATMAP LAYER HANDLES
     console.log("heatmap layer ue start");
@@ -1088,7 +1187,7 @@ export default function Map() {
   }, [map, stateApp.checkedHeats, stateApp.heatLayers]);
 
   useEffect(() => {
-    console.log('useEffect 17')
+    console.log("useEffect 17");
 
     ///////////////// EFFECT FOR SHOWING TRACKED WELLS /////////////////
 
@@ -1177,7 +1276,7 @@ export default function Map() {
   }, [stateApp.trackFilterOn]);
 
   useEffect(() => {
-    console.log('useEffect 18')
+    console.log("useEffect 18");
 
     // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
     // setStateApp((state) => ({
@@ -1483,7 +1582,9 @@ export default function Map() {
                         selectLayerProps.interactionProps.hoverActions
                           .mouseMoveHandler
                       ) {
-                        handler = selectLayerProps.interactionProps.hoverActions.mouseMoveHandler;
+                        handler =
+                          selectLayerProps.interactionProps.hoverActions
+                            .mouseMoveHandler;
                       } else {
                         handler = mouseMoveHandler;
                       }
@@ -1529,7 +1630,9 @@ export default function Map() {
                         selectLayerProps.interactionProps.hoverActions
                           .mouseLeaveHandler
                       ) {
-                        handler = selectLayerProps.interactionProps.hoverActions.mouseLeaveHandler;
+                        handler =
+                          selectLayerProps.interactionProps.hoverActions
+                            .mouseLeaveHandler;
                       } else {
                         handler = mouseLeaveHandler;
                       }
@@ -1665,7 +1768,7 @@ export default function Map() {
   ]);
 
   useEffect(() => {
-    console.log('useEffect 19')
+    console.log("useEffect 19");
 
     if (showExpandableCard) {
       setTransform("transform: none");
@@ -1675,7 +1778,7 @@ export default function Map() {
   }, [showExpandableCard]);
 
   useEffect(() => {
-    console.log('useEffect 20')
+    console.log("useEffect 20");
 
     if (stateNav.m1neralDefaultsOnOff) {
       setDefaultsCheckOnOff((defaultsCheckOnOff) => !defaultsCheckOnOff);
@@ -1686,7 +1789,7 @@ export default function Map() {
   }, [stateNav.m1neralCehckOnOff, stateNav.m1neralDefaultsOnOff]);
 
   useEffect(() => {
-    console.log('useEffect 21')
+    console.log("useEffect 21");
 
     console.log("filter ue start");
     //applies filter when one of the filters change
@@ -2986,7 +3089,7 @@ export default function Map() {
   ]);
 
   useEffect(() => {
-    console.log('useEffect 22')
+    console.log("useEffect 22");
 
     //sets style of map when changed in Map Controls
     if (stateApp.selectedLayerId && map) {
@@ -3073,7 +3176,7 @@ export default function Map() {
   );
 
   useEffect(() => {
-    console.log('useEffect 23')
+    console.log("useEffect 23");
 
     console.log("wellSelected", stateApp.wellSelected);
     console.log("wellSelectedCoordinates", stateApp.wellSelectedCoordinates);
@@ -3122,10 +3225,8 @@ export default function Map() {
   }, [stateApp.wellSelectedCoordinates]);
 
   useEffect(() => {
-    
-
     (async () => {
-      console.log('useEffect 24')
+      console.log("useEffect 24");
       if (
         map &&
         stateApp.selectedWellId &&
@@ -3209,7 +3310,7 @@ export default function Map() {
   }, [stateApp.wellSelectedCoordinates]);
 
   useEffect(() => {
-    console.log('useEffect 25')
+    console.log("useEffect 25");
 
     const req = new Request(
       "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
@@ -3260,7 +3361,7 @@ export default function Map() {
   }, []);
 
   useEffect(() => {
-    console.log('useEffect 26')
+    console.log("useEffect 26");
 
     if (map) {
       setStateApp((stateApp) => ({
@@ -3341,7 +3442,7 @@ export default function Map() {
   };
 
   useEffect(() => {
-    console.log('useEffect 27')
+    console.log("useEffect 27");
 
     console.log("map ue start");
     if (mapStyles.length > 0) {
@@ -3372,7 +3473,7 @@ export default function Map() {
             .find((element) => element.indexOf("m1neral.wells") > -1)
             .replace("mapbox://", "")}`
         );
-        setwellsTileset(
+        setWellsTileset(
           mapStyles[index].sources.composite.url
             .split(",")
             .find((element) => element.indexOf("m1neral.wells") > -1)
@@ -3726,7 +3827,7 @@ export default function Map() {
 
   // Use effect for removing shape filter
   useEffect(() => {
-    console.log('useEffect 28')
+    console.log("useEffect 28");
 
     if (stateNav.filterDrawing && stateNav.filterDrawing.length === 0) {
       if (draw) draw.delete(drawingFilterFeatureId);
@@ -3746,7 +3847,7 @@ export default function Map() {
 
   // Use effect for adding shape filter
   useEffect(() => {
-    console.log('useEffect 29')
+    console.log("useEffect 29");
 
     function drawCreateListener(e) {
       if (stateNav.drawingMode !== null) {
@@ -3799,7 +3900,7 @@ export default function Map() {
   }, [stateNav.filterFeatureId]);
 
   useEffect(() => {
-    console.log('useEffect 30')
+    console.log("useEffect 30");
 
     if (draw && stateNav.filterDrawing && stateNav.filterDrawing.length == 2) {
       console.log("initialize filter draw");
@@ -3811,7 +3912,7 @@ export default function Map() {
   }, [draw]);
 
   useEffect(() => {
-    console.log('useEffect 31')
+    console.log("useEffect 31");
 
     if (map) {
       return () => {
@@ -3854,7 +3955,7 @@ export default function Map() {
   }, [map]);
 
   useEffect(() => {
-    console.log('useEffect 32')
+    console.log("useEffect 32");
 
     ////// USE EFFECT TO MANAGE THE FLY TO FEATURE
 
@@ -3878,7 +3979,7 @@ export default function Map() {
   }, [createPopUp, map, stateApp.flyTo]);
 
   useEffect(() => {
-    console.log('useEffect 33')
+    console.log("useEffect 33");
 
     ////// USE EFFECT TO MANAGE THE FIT BOUNDS TO FEATURE
 
@@ -3936,7 +4037,7 @@ export default function Map() {
   }, [map, stateApp.fitBounds]);
 
   useEffect(() => {
-    console.log('useEffect 35')
+    console.log("useEffect 35");
 
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
@@ -3979,8 +4080,8 @@ export default function Map() {
     }
   }, [stateApp.toggleZoomOut]);
 
-  useEffect(() => {      
-    console.log('useEffect 36')
+  useEffect(() => {
+    console.log("useEffect 36");
 
     if (map && stateApp.toggle3d) {
       if (stateApp.toggle3d === true) {
@@ -4008,7 +4109,7 @@ export default function Map() {
   }, [stateApp.toggle3d]);
 
   useEffect(() => {
-    console.log('useEffect 38')
+    console.log("useEffect 38");
 
     console.log(
       "Drawing status check",
@@ -4282,7 +4383,7 @@ export default function Map() {
   };
 
   useEffect(() => {
-    console.log('useEffect 40')
+    console.log("useEffect 40");
 
     if (stateApp.userSnap === true) {
       var script = document.createElement("script");
@@ -4300,7 +4401,7 @@ export default function Map() {
       return () => {
         document.body.removeChild(script);
       };
-    } else if (stateApp.userSnap === false){
+    } else if (stateApp.userSnap === false) {
       const feedbackScript = document.querySelector("#feedback-script");
       feedbackScript && feedbackScript.remove();
       const element = document.getElementsByName("us-entrypoint-button");
@@ -4308,9 +4409,8 @@ export default function Map() {
     }
   }, [stateApp.userSnap]);
 
-
   useEffect(() => {
-    console.log('useEffect 41')
+    console.log("useEffect 41");
 
     if (stateApp.editingUserDefinedLayers.length > 0) {
       const { map } = stateApp;
@@ -4344,7 +4444,7 @@ export default function Map() {
         </div>
       </div>
       <MapControlsProvider />
-      <DrawStatus drawingStatus={drawStatus} />
+      {/* <DrawStatus drawingStatus={drawStatus} /> */}
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <HugeRequest hugeRequestStatus={stateApp.hugeRequest} />
       <Coordinates long={lng} lat={lat} />
@@ -4358,7 +4458,7 @@ export default function Map() {
             deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
           />
         )}
-      {stateApp.mapGridCardActivated && <MapGridCard />}
+      {mapGridCardActivated && <MapGridCard />}
       <div id="tempPopupHolder" className={classes.portal} ref={container} />
       <Portal container={container.current}>
         {stateApp.popupOpen ? (

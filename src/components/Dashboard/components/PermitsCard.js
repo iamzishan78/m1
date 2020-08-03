@@ -17,7 +17,7 @@ import Iframe from 'react-iframe';
 const useStyles = makeStyles((theme) => ({
   header: {
     padding: "8px 8px 0 8px",
-    backgroundColor:'#FFFFF',
+    backgroundColor:'#FFFFFF',
     color: 'black'
   },
   frame: {
@@ -33,7 +33,7 @@ const DragHandle = sortableHandle(() => (
 
 
 
-const ProdCard = ({ title }) => {
+const PermitsCard = ({ title }) => {
 
 
   const classes = useStyles();
@@ -42,7 +42,7 @@ const ProdCard = ({ title }) => {
     <div>
     <CardHeader
       action={<DragHandle />}
-      title={'Production by State/County'}
+      title={'Permits by State/County'}
       className={classes.header}
     />
 
@@ -50,14 +50,8 @@ const ProdCard = ({ title }) => {
     <Iframe 
       width="100%"
       height="700px"
-      //height="10000px"
-      position='relative'
-      display='initial'
-      paddingTop="10px"
-      frameBorder="0"
-      scrolling="yes"
-      allowFullScreen="true"
-      url="https://app.powerbi.com/view?r=eyJrIjoiNDVlNmExN2MtYTlmOC00NTQ5LWFmYmEtZDQ1MThmNWUxNzA5IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9" 
+      paddintTop="10px"
+      url="https://app.powerbi.com/view?r=eyJrIjoiY2ExMzQ4Y2ItYzlkMy00NThkLTkxMGMtNTQ3ZjY0YzZjZTc1IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9" 
       /> 
     </div>
 
@@ -67,4 +61,4 @@ const ProdCard = ({ title }) => {
 
   );
 };
-export default ProdCard;
+export default PermitsCard;

@@ -7,6 +7,8 @@ import {
   heatLayers,
   baseMapLayers,
 } from "./LayerConfig";
+import { useDispatch } from "react-redux";
+import { setMapGridCardState } from "./actions";
 
 const AppContext = createContext([{}, () => {}]);
 
@@ -60,13 +62,6 @@ const AppProvider = (props) => {
     // },
     wellSelectedCoordinates: [],
     universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
-    mapGridCardActivated: false,
-    mapGridCardActiveTap: 1,
-    searchResultData: [], //// mapGridCard Search Data
-    searchloading: false, //// mapGridCard Search loading
-    searchInputValue: "",
-    viewportData: [], //// mapGridCard Viewport Data
-    trackedDataCount: 0, //// mapGridCard Viewport tracked count
 
     //Map State
     mapCircularLoaderAct: false,
@@ -164,6 +159,8 @@ const AppProvider = (props) => {
     },
   });
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     async function wait() {
       let tenantName = window.sessionStorage.getItem("tenantName");
@@ -195,16 +192,17 @@ const AppProvider = (props) => {
   }, [stateApp.checkedUserDefinedLayers]);
 
   useEffect(() => {
-    setStateApp((state) => ({
-      ...state,
-      trackedDataCount:
-        (!stateApp.owners || !stateApp.owners.length
-          ? 0
-          : stateApp.owners.length) +
-        (!stateApp.trackedwells || !stateApp.trackedwells.length
-          ? 0
-          : stateApp.trackedwells.length),
-    }));
+    dispatch(
+      setMapGridCardState({
+        trackedDataCount:
+          (!stateApp.owners || !stateApp.owners.length
+            ? 0
+            : stateApp.owners.length) +
+          (!stateApp.trackedwells || !stateApp.trackedwells.length
+            ? 0
+            : stateApp.trackedwells.length),
+      })
+    );
   }, [stateApp.owners, stateApp.trackedwells]);
 
   return (
