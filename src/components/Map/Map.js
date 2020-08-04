@@ -206,7 +206,7 @@ export default function Map() {
   }
   const mapEl = useRef(null);
 
-  const [hoveredStateId, HoveredStateId] = useState(null);
+  const [hoveredStateId, HoveredStateId] = useState(-1);
   const setHoveredStateId = (state) => {
     if (state != hoveredStateId) {
       HoveredStateId(state);
@@ -3447,6 +3447,40 @@ export default function Map() {
   };
 
   useEffect(() => {
+    if (map) {
+      map.on('mousemove', 'abstract_geo_fill_layer', function(e) {
+        const map = e.target;
+        if (e.features.length > 0) {
+          if (hoveredStateId) {
+            map.setFeatureState(
+              { source: 'abstract_geo_source', id: hoveredStateId },
+              { hover: false }
+            );
+          }
+          setHoveredStateId(e.features[0].id);
+          map.setFeatureState(
+            { source: 'abstract_geo_source', id: e.features[0].id },
+            { hover: true }
+          );
+        }
+      });
+
+      map.on('mouseleave', 'abstract_geo_fill_layer', function(e) {
+        const map = e.target;
+        
+        if (hoveredStateId) {
+          map.setFeatureState(
+            { source: 'abstract_geo_source', id: hoveredStateId },
+            { hover: false }
+          );
+        }
+        setHoveredStateId(null);
+      });
+    }
+    console.log(hoveredStateId);
+  }, [hoveredStateId, map])
+
+  useEffect(() => {
     console.log("useEffect 27");
 
     console.log("map ue start");
@@ -3739,34 +3773,6 @@ export default function Map() {
             }
           });
 
-          newMap.on('mousemove', 'abstract_geo_fill_layer', function(e) {
-            const map = e.target;
-            if (e.features.length > 0) {
-              console.log(hoveredStateId, e.features[0].id);
-              if (hoveredStateId) {
-                map.setFeatureState(
-                  { source: 'abstract_geo_source', id: hoveredStateId },
-                  { hover: false }
-                );
-              }
-              setHoveredStateId(e.features[0].id);
-              map.setFeatureState(
-                { source: 'abstract_geo_source', id: e.features[0].id },
-                { hover: true }
-              );
-            }
-          });
-
-          newMap.on('mouseleave', 'abstract_geo_fill_layer', function(e) {
-            const map = e.target;
-            if (hoveredStateId) {
-              map.setFeatureState(
-                { source: 'abstract_geo_source', id: hoveredStateId },
-                { hover: false }
-              );
-            }
-            setHoveredStateId(null);
-          });
 
           setDraw(Draw);
           setMap(newMap);
