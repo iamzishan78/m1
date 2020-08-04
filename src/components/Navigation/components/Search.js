@@ -31,6 +31,8 @@ import Popover from "@material-ui/core/Popover";
 import Tooltip from "@material-ui/core/Tooltip";
 import Box from "@material-ui/core/Box";
 import { CircularProgress } from "@material-ui/core";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -99,9 +101,9 @@ const useStyles = makeStyles((theme) => ({
       color: "#ffffffc9",
       height: "5px",
       minWidth: "0 !important",
-      visibility: ({ stateApp }) =>
-        stateApp.mapGridCardActivated ? "hidden" : "unset",
-      opacity: ({ stateApp }) => (stateApp.mapGridCardActivated ? "0" : "1"),
+      visibility: ({ mapGridCardActivated }) =>
+        mapGridCardActivated ? "hidden" : "unset",
+      opacity: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : "1"),
       transition: "opacity 0.5s linear",
     },
     // "& .MuiInputAdornment-root": {
@@ -113,10 +115,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   endAdornmentIcon: {
-    opacity: ({ stateApp }) => (stateApp.mapGridCardActivated ? "0" : "1"),
+    opacity: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : "1"),
     transition: "opacity 1.2s linear",
     "& button": {
-      width: ({ stateApp }) => (stateApp.mapGridCardActivated ? "0" : ""),
+      width: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : ""),
       transition: "width 1s ",
     },
   },
@@ -154,6 +156,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Search() {
+  const dispatch = useDispatch();
+  const {
+    mapGridCardActivated,
+    mapGridCardActiveTap,
+    searchInputValue,
+  } = useSelector(({ MapGridCard }) => MapGridCard);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
@@ -177,7 +185,7 @@ export default function Search() {
   const [loadingLeases, setLoadingLeases] = React.useState(false);
   const [loadingOperators, setLoadingOperators] = React.useState(false);
   const [loadingMapboxSearch, setLoadingMapboxSearch] = React.useState(false);
-  const classes = useStyles({ stateApp });
+  const classes = useStyles({ mapGridCardActivated });
 
   const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(
     OWNERWELLSQUERY
@@ -427,7 +435,7 @@ export default function Search() {
     //   return undefined;
     // }
 
-    if (stateApp.searchInputValue === "") {
+    if (searchInputValue === "") {
       setOptions(value ? [value] : []);
       return undefined;
     }
@@ -438,7 +446,7 @@ export default function Search() {
       Promise.all([
         searchOption == "all" || searchOption == "wells"
           ? callWellSearch(
-              { input: stateApp.searchInputValue },
+              { input: searchInputValue },
               searchTop,
               (results) => {
                 if (results) {
@@ -472,7 +480,7 @@ export default function Search() {
           : null,
         searchOption == "all" || searchOption == "owners"
           ? callOwnerSearch(
-              { input: stateApp.searchInputValue },
+              { input: searchInputValue },
               searchTop,
               (results) => {
                 if (results) {
@@ -505,7 +513,7 @@ export default function Search() {
           : null,
         searchOption == "all" || searchOption == "operators"
           ? callOperatorSearch(
-              { input: stateApp.searchInputValue },
+              { input: searchInputValue },
               searchTop,
               (results) => {
                 if (results) {
@@ -538,7 +546,7 @@ export default function Search() {
           : null,
         searchOption == "all" || searchOption == "leases"
           ? callLeaseSearch(
-              { input: stateApp.searchInputValue },
+              { input: searchInputValue },
               searchTop,
               (results) => {
                 if (results) {
@@ -584,7 +592,7 @@ export default function Search() {
           : null,
         searchOption == "all" || searchOption == "locations"
           ? callMapboxSearch(
-              { input: stateApp.searchInputValue },
+              { input: searchInputValue },
               searchTop,
               (results) => {
                 if (results) {
@@ -621,7 +629,7 @@ export default function Search() {
       ]);
     })();
   }, [
-    stateApp.searchInputValue,
+    searchInputValue,
     callWellSearch,
     callOwnerSearch,
     callOperatorSearch,
@@ -811,15 +819,17 @@ export default function Search() {
 
       setSearchHistory(newValue);
       setValue(newValue);
-      setStateApp((state) => ({
-        ...state,
-        mapGridCardActiveTap: 0,
-        searchInputValue: newValue.Primary
-          ? newValue.Primary
-          : newValue.Secondary
-          ? newValue.Secondary
-          : "",
-      }));
+
+      dispatch(
+        setMapGridCardState({
+          mapGridCardActiveTap: 0,
+          searchInputValue: newValue.Primary
+            ? newValue.Primary
+            : newValue.Secondary
+            ? newValue.Secondary
+            : "",
+        })
+      );
 
       //// setting map loader
       setStateApp((stateApp) => ({ ...stateApp, mapCircularLoaderAct: true }));
@@ -1153,16 +1163,18 @@ export default function Search() {
         onInputChange={(event, newInputValue, reason) => {
           if (reason == "input") {
             // setInputValue(newInputValue);
-            setStateApp((state) => ({
-              ...state,
-              mapGridCardActiveTap:
-                newInputValue === ""
-                  ? stateApp.mapGridCardActiveTap === 0
-                    ? 1
-                    : stateApp.mapGridCardActiveTap
-                  : 0,
-              searchInputValue: newInputValue,
-            }));
+
+            dispatch(
+              setMapGridCardState({
+                mapGridCardActiveTap:
+                  newInputValue === ""
+                    ? mapGridCardActiveTap === 0
+                      ? 1
+                      : mapGridCardActiveTap
+                    : 0,
+                searchInputValue: newInputValue,
+              })
+            );
 
             if (newInputValue !== "") {
               //// setting loader
@@ -1202,18 +1214,15 @@ export default function Search() {
                   <Button
                     style={{ minWidth: "0", height: "42px" }}
                     onClick={() => {
-                      if (stateApp.mapGridCardActivated)
-                        setStateApp((state) => ({
-                          ...state,
-                          mapGridCardActivated: false,
-                        }));
+                      if (mapGridCardActivated)
+                        dispatch(toggleMapGridCardAtived());
                     }}
                   >
                     <SearchIcon htmlColor="#fff" />
                   </Button>
                 </InputAdornment>
               ),
-              endAdornment: !stateApp.mapGridCardActivated && (
+              endAdornment: !mapGridCardActivated && (
                 <InputAdornment className={classes.endAdornmentIcon}>
                   <div>
                     <Tooltip title="Search History" placement="top">
@@ -1281,13 +1290,15 @@ export default function Search() {
                                 //     ? option.Primary
                                 //     : option.Secondary
                                 // );
-                                setStateApp((state) => ({
-                                  ...state,
-                                  mapGridCardActiveTap: 0,
-                                  searchInputValue: option.Primary
-                                    ? option.Primary
-                                    : option.Secondary,
-                                }));
+
+                                dispatch(
+                                  setMapGridCardState({
+                                    mapGridCardActiveTap: 0,
+                                    searchInputValue: option.Primary
+                                      ? option.Primary
+                                      : option.Secondary,
+                                  })
+                                );
                                 handleChange({
                                   ...option,
                                   searchId: search._id,

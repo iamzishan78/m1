@@ -5,30 +5,15 @@ import { AppContext } from "../../../AppContext";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
 import parse from "autosuggest-highlight/parse";
 import throttle from "lodash/throttle";
-import Button from "@material-ui/core/Button";
-import PersonIcon from "@material-ui/icons/Person";
-import WellIcon from "../../Shared/svgIcons/well";
-import OperatorIcon from "../../Shared/svgIcons/operator";
-import LeaseIcon from "../../Shared/svgIcons/lease";
-import IconButton from "@material-ui/core/IconButton";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import { OWNERWELLSQUERY } from "../../../graphQL/useQueryOwnerWells ";
 import { useLazyQuery, useMutation } from "@apollo/react-hooks";
-import { WELLSQUERY } from "../../../graphQL/useQueryWells";
-import { OPERATORSLATSLONS } from "../../../graphQL/useQueryOperatorLatsLonsArray";
-import { LEASELATSLONS } from "../../../graphQL/useQueryLeaseLatsLonsArray";
 import { USERSEARCHHISTORY } from "../../../graphQL/useQueryUserSearchHistory";
 import { ADDSEARCHHISTORY } from "../../../graphQL/useMutationAddSearchHistory";
 import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHistory";
 import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
-import Popover from "@material-ui/core/Popover";
-import Tooltip from "@material-ui/core/Tooltip";
-import Box from "@material-ui/core/Box";
+import { useDispatch, useSelector } from "react-redux";
+import { setMapGridCardState } from "../../../actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -77,6 +62,10 @@ const joinAddress = (row) => {
 
 export default function MapGridCardSearch(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const { searchInputValue, searchloading } = useSelector(
+    ({ MapGridCard }) => MapGridCard
+  );
   const [stateApp, setStateApp] = useContext(AppContext);
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState([]);
@@ -254,12 +243,10 @@ export default function MapGridCardSearch(props) {
   );
 
   React.useEffect(() => {
-    if (stateApp.searchInputValue === "") {
-      setStateApp((state) => ({
-        ...state,
-        searchResultData: [],
-        searchloading: false,
-      }));
+    if (searchInputValue === "") {
+      dispatch(
+        setMapGridCardState({ searchResultData: [], searchloading: false })
+      );
       return undefined;
     }
 
@@ -268,7 +255,7 @@ export default function MapGridCardSearch(props) {
 
       Promise.all([
         props.searchOption == "well"
-          ? callWellSearch({ input: stateApp.searchInputValue }, (results) => {
+          ? callWellSearch({ input: searchInputValue }, (results) => {
               if (results) {
                 const indexSource = results["@odata.context"].substring(
                   results["@odata.context"].indexOf("('") + 2,
@@ -278,15 +265,17 @@ export default function MapGridCardSearch(props) {
                 console.log(indexSource);
                 newOptions = [...results.value];
               }
-              setStateApp((state) => ({
-                ...state,
-                searchResultData: [...newOptions],
-                searchloading: false,
-              }));
+
+              dispatch(
+                setMapGridCardState({
+                  searchResultData: [...newOptions],
+                  searchloading: false,
+                })
+              );
             })
           : null,
         props.searchOption == "owner"
-          ? callOwnerSearch({ input: stateApp.searchInputValue }, (results) => {
+          ? callOwnerSearch({ input: searchInputValue }, (results) => {
               if (results) {
                 const indexSource = results["@odata.context"].substring(
                   results["@odata.context"].indexOf("('") + 2,
@@ -303,36 +292,35 @@ export default function MapGridCardSearch(props) {
                 ];
               }
 
-              setStateApp((state) => ({
-                ...state,
-                searchResultData: [...newOptions],
-                searchloading: false,
-              }));
+              dispatch(
+                setMapGridCardState({
+                  searchResultData: [...newOptions],
+                  searchloading: false,
+                })
+              );
             })
           : null,
         props.searchOption == "operator"
-          ? callOperatorSearch(
-              { input: stateApp.searchInputValue },
-              (results) => {
-                if (results) {
-                  const indexSource = results["@odata.context"].substring(
-                    results["@odata.context"].indexOf("('") + 2,
-                    results["@odata.context"].indexOf("')")
-                  );
-                  console.log(indexSource);
-                  newOptions = [...results.value];
-                }
+          ? callOperatorSearch({ input: searchInputValue }, (results) => {
+              if (results) {
+                const indexSource = results["@odata.context"].substring(
+                  results["@odata.context"].indexOf("('") + 2,
+                  results["@odata.context"].indexOf("')")
+                );
+                console.log(indexSource);
+                newOptions = [...results.value];
+              }
 
-                setStateApp((state) => ({
-                  ...state,
+              dispatch(
+                setMapGridCardState({
                   searchResultData: [...newOptions],
                   searchloading: false,
-                }));
-              }
-            )
+                })
+              );
+            })
           : null,
         props.searchOption == "lease"
-          ? callLeaseSearch({ input: stateApp.searchInputValue }, (results) => {
+          ? callLeaseSearch({ input: searchInputValue }, (results) => {
               if (results) {
                 const indexSource = results["@odata.context"].substring(
                   results["@odata.context"].indexOf("('") + 2,
@@ -358,49 +346,48 @@ export default function MapGridCardSearch(props) {
                 ];
               }
 
-              setStateApp((state) => ({
-                ...state,
-                searchResultData: [...newOptions],
-                searchloading: false,
-              }));
+              dispatch(
+                setMapGridCardState({
+                  searchResultData: [...newOptions],
+                  searchloading: false,
+                })
+              );
             })
           : null,
         props.searchOption == "location"
-          ? callMapboxSearch(
-              { input: stateApp.searchInputValue },
-              (results) => {
-                if (results && results.features) {
-                  newOptions = [
-                    ...results.features.map((result) => {
-                      return {
-                        ...result,
-                        Id: result.id,
-                        Primary: result.text ? result.text : "",
-                        Secondary: result.place_name
-                          ? result.place_name.indexOf(result.text + ", ") === 0
-                            ? result.place_name.slice(
-                                result.place_name.indexOf(", ") + 2,
-                                result.place_name.length
-                              )
-                            : result.place_name
-                          : "",
-                      };
-                    }),
-                  ];
-                }
+          ? callMapboxSearch({ input: searchInputValue }, (results) => {
+              if (results && results.features) {
+                newOptions = [
+                  ...results.features.map((result) => {
+                    return {
+                      ...result,
+                      Id: result.id,
+                      Primary: result.text ? result.text : "",
+                      Secondary: result.place_name
+                        ? result.place_name.indexOf(result.text + ", ") === 0
+                          ? result.place_name.slice(
+                              result.place_name.indexOf(", ") + 2,
+                              result.place_name.length
+                            )
+                          : result.place_name
+                        : "",
+                    };
+                  }),
+                ];
+              }
 
-                setStateApp((state) => ({
-                  ...state,
+              dispatch(
+                setMapGridCardState({
                   searchResultData: [...newOptions],
                   searchloading: false,
-                }));
-              }
-            )
+                })
+              );
+            })
           : null,
       ]);
     })();
   }, [
-    stateApp.searchInputValue,
+    searchInputValue,
     callWellSearch,
     callOwnerSearch,
     callOperatorSearch,
@@ -433,15 +420,16 @@ export default function MapGridCardSearch(props) {
           ),
         }}
         onClick={props.ativateSearchPanel}
-        value={stateApp.searchInputValue}
+        value={searchInputValue}
         onChange={(event) => {
           // setInputValue(event.target.value);
-          if (!stateApp.searchloading)
-            setStateApp((state) => ({
-              ...state,
-              searchloading: true,
-              searchInputValue: event.target.value,
-            }));
+          if (!searchloading)
+            dispatch(
+              setMapGridCardState({
+                searchloading: true,
+                searchInputValue: event.target.value,
+              })
+            );
         }}
       />
     </form>

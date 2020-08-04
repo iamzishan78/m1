@@ -20,7 +20,7 @@ import Dialog from "../Transact/components/dialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
   },
   timelineItemRight: {
     "&:before": {
@@ -169,7 +169,7 @@ export default function Deals({ contact, ...props }) {
 
   return (
     !loading && (
-      <Card className={classes.root} variant="outlined">
+      <div className={classes.root} variant="outlined">
         <Dialog
           transactData={data?.transactionData?.allData}
           handleDataChange={handleDataChange}
@@ -252,7 +252,7 @@ export default function Deals({ contact, ...props }) {
         ) : (
           <CardContent>No deals found</CardContent>
         )}
-      </Card>
+      </div>
     )
   );
 }

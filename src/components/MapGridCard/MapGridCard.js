@@ -16,7 +16,9 @@ import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
 import MapGridCardSearch from "./components/MapGridCardSearch";
 import M1nTable from "../Shared/M1nTable/M1nTable";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "@material-ui/core/Button";
+import { setMapGridCardState } from "../../actions";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -47,7 +49,10 @@ function a11yProps(index) {
   };
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme) => {
+  console.log(`ue mapgridcard makestyles ${theme}`)
+
+  return ({
   card: {
     "& .noDrag": {
       transform: "translate(0px, 0px) !important",
@@ -129,9 +134,12 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
     "&:hover": { color: "#757575", boxShadow: "none !important" },
   },
-}));
+})}
+);
 
 const TabLabels = ({ labels, value, setValue }) => {
+  console.log(`ue mapgridcard tablabels ${labels, value, setValue}`)
+
   const classes = useStyles();
   return (
     <>
@@ -159,6 +167,8 @@ const TabLabels = ({ labels, value, setValue }) => {
 };
 
 const TabPanels = ({ panels, value }) => {
+  console.log(`ue mapgridcard tabpanels ${panels, value}`)
+
   const classes = useStyles();
   return (
     panels &&
@@ -226,23 +236,50 @@ const locationsColumnHeaders = [
   },
 ];
 
-export default function MapGridCard(props) {
-  const [stateApp, setStateApp] = useContext(AppContext);
+function MapGridCard(props) {
+  const dispatch = useDispatch();
+  const {
+    mapGridCardActivated,
+    mapGridCardActiveTap,
+    searchResultData,
+    viewportData,
+    trackedDataCount,
+  } = useSelector(({ MapGridCard }) => MapGridCard);
+  // const [stateApp, setStateApp] = useContext(AppContext);
   // const [mainTapValue, setMainTapValue] = useState(1);
-  const [searchTapValue, setSearchTapValue] = useState(0);
-  const [viewportTapValue, setViewportTapValue] = useState(0);
-  const [trackedTapValue, setTrackedTapValue] = useState(0);
-  const [expanded, setExpanded] = useState(false);
+  const [searchTapValue, SearchTapValue] = useState(0);
+  const setSearchTapValue = (state) => {
+    if(searchTapValue != state) {
+      SearchTapValue(state)
+    }
+  }
+  const [viewportTapValue, ViewportTapValue] = useState(0);
+  const setViewportTapValue = (state) => {
+    if(viewportTapValue != state) {
+      ViewportTapValue(state)
+    }
+  }
+  const [trackedTapValue, TrackedTapValue] = useState(0);
+  const setTrackedTapValue = (state) => {
+    if(trackedTapValue != state) {
+      TrackedTapValue(state)
+    }
+  }
+  const [expanded, Expanded] = useState(false);
+  const setExpanded = (state) => {
+    if(expanded != state) {
+      Expanded(state)
+    }
+  }
   const classes = useStyles({
-    mapGridCardActivated: stateApp.mapGridCardActivated,
+    mapGridCardActivated,
   });
 
   const handleMainTapChange = (event, newValue) => {
+    console.log(`ue mapgridcard handlemaintapchange ${newValue}`)
+
     // setMainTapValue(newValue);
-    setStateApp((state) => ({
-      ...state,
-      mapGridCardActiveTap: newValue,
-    }));
+    dispatch(setMapGridCardState({ mapGridCardActiveTap: newValue }));
   };
 
   // useEffect(() => {
@@ -288,11 +325,9 @@ export default function MapGridCard(props) {
       setValue={(n) => {
         setSearchTapValue(n);
         if (searchTapValue !== n)
-          setStateApp((state) => ({
-            ...state,
-            searchResultData: [],
-            searchloading: true,
-          }));
+          dispatch(
+            setMapGridCardState({ searchResultData: [], searchloading: true })
+          );
       }}
     />
   );
@@ -300,45 +335,40 @@ export default function MapGridCard(props) {
   const CardReturn = () => {
     return (
       <Card
-        className={`${
-          stateApp.mapGridCardActivated === "exp" ? "noDrag" : ""
-        } ${classes.rootList}`}
+        className={`${mapGridCardActivated === "exp" ? "noDrag" : ""} ${
+          classes.rootList
+        }`}
       >
         <AppBar
           position="static"
           className={`${
-            stateApp.mapGridCardActivated === "exp"
-              ? "cancelDraggableEffect"
-              : ""
+            mapGridCardActivated === "exp" ? "cancelDraggableEffect" : ""
           } ${classes.appBar}`}
           onClick={() => {
-            if (stateApp.mapGridCardActivated === "min")
-              setStateApp((state) => ({
-                ...state,
-                mapGridCardActivated: true,
-              }));
+            if (mapGridCardActivated === "min")
+              dispatch(setMapGridCardState({ mapGridCardActivated: true }));
           }}
         >
           <Toolbar style={{ paddingRight: "0" }}>
             <Tabs
               className={classes.tapsRoot}
-              value={stateApp.mapGridCardActiveTap}
+              value={mapGridCardActiveTap}
               onChange={handleMainTapChange}
               aria-label="simple tabs example"
             >
               <Tab
                 className="cancelDraggableEffect"
-                label={`Search Result (${stateApp.searchResultData.length})`}
+                label={`Search Result (${searchResultData.length})`}
                 {...a11yProps(0)}
               />
               <Tab
                 className="cancelDraggableEffect"
-                label={`Viewport (${stateApp.viewportData.length})`}
+                label={`Viewport (${viewportData.length})`}
                 {...a11yProps(1)}
               />
               <Tab
                 className="cancelDraggableEffect"
-                label={`Tracked (${stateApp.trackedDataCount})`}
+                label={`Tracked (${trackedDataCount})`}
                 {...a11yProps(2)}
               />
             </Tabs>
@@ -349,14 +379,16 @@ export default function MapGridCard(props) {
                 e.stopPropagation();
                 e.preventDefault();
                 // setExpanded(!expanded);
-                setStateApp((state) => ({
-                  ...state,
-                  mapGridCardActivated:
-                    stateApp.mapGridCardActivated === "exp" ? true : "exp",
-                }));
+
+                dispatch(
+                  setMapGridCardState({
+                    mapGridCardActivated:
+                      mapGridCardActivated === "exp" ? true : "exp",
+                  })
+                );
               }}
             >
-              {stateApp.mapGridCardActivated === "exp" ? (
+              {mapGridCardActivated === "exp" ? (
                 <ShrinkIcon viewBox="0 0 64 64" htmlColor="#fff" />
               ) : (
                 <ExpandIcon viewBox="0 0 64 64" htmlColor="#fff" />
@@ -367,10 +399,7 @@ export default function MapGridCard(props) {
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                setStateApp((state) => ({
-                  ...state,
-                  mapGridCardActivated: false,
-                }));
+                dispatch(setMapGridCardState({ mapGridCardActivated: false }));
               }}
             >
               <CloseIcon htmlColor="#fff" />
@@ -380,20 +409,16 @@ export default function MapGridCard(props) {
 
         <MapGridCardSearch
           ativateSearchPanel={() => {
-            if (stateApp.mapGridCardActiveTap !== 0)
-              handleMainTapChange(null, 0);
-            if (stateApp.mapGridCardActivated === "min")
-              setStateApp((state) => ({
-                ...state,
-                mapGridCardActivated: true,
-              }));
+            if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
+            if (mapGridCardActivated === "min")
+              dispatch(setMapGridCardState({ mapGridCardActivated: true }));
           }}
           searchOption={getTargetFromSearchTaps()}
         />
         <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`}>
           {/* //// search panel //// */}
           <TabPanel
-            value={stateApp.mapGridCardActiveTap}
+            value={mapGridCardActiveTap}
             index={0}
             className={classes.tapsPanelsPadding}
           >
@@ -463,7 +488,7 @@ export default function MapGridCard(props) {
 
           {/* //// viewport panel //// */}
           <TabPanel
-            value={stateApp.mapGridCardActiveTap}
+            value={mapGridCardActiveTap}
             index={1}
             className={classes.tapsPanelsPadding}
           >
@@ -487,7 +512,7 @@ export default function MapGridCard(props) {
 
           {/* //// tracked panel //// */}
           <TabPanel
-            value={stateApp.mapGridCardActiveTap}
+            value={mapGridCardActiveTap}
             index={2}
             className={classes.tapsPanelsPadding}
           >
@@ -538,24 +563,28 @@ export default function MapGridCard(props) {
         zIndex: "1299",
       }}
       onClick={() => {
-        setStateApp((state) => ({
-          ...state,
-          mapGridCardActivated: true,
-        }));
+        dispatch(setMapGridCardState({ mapGridCardActivated: true }));
       }}
     />
   );
 
   return (
     <div className={classes.card}>
-      {stateApp.mapGridCardActivated === "min" ? (
+      {mapGridCardActivated === "min" ? (
         CardReturn()
       ) : (
         <Draggable cancel={'[class*="cancelDraggableEffect"]'}>
           {CardReturn()}
         </Draggable>
       )}
-      {stateApp.mapGridCardActivated === "exp" && blackOut()}
+      {mapGridCardActivated === "exp" && blackOut()}
     </div>
   );
 }
+
+function areEqual(prevProps, nextProps) {
+  console.log(`${prevProps.mapGridCardActivated} ... ${nextProps.mapGridCardActivated}`)
+  return Object.is(prevProps.mapGridCardActivated, nextProps.mapGridCardActivated);
+}
+
+export default React.memo(MapGridCard, areEqual);

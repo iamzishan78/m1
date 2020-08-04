@@ -16,6 +16,9 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { FormLabel } from "@material-ui/core";
 import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import Tooltip from "@material-ui/core/Tooltip";
+import { useLazyQuery } from "@apollo/react-hooks";
+import { GETPERSONDATA, GETPERSONDATALOOKUP } from "../../../../../graphQL/useQueryGetPersonData";
+import ReactJson from 'react-json-view'
 
 const styles = (theme) => ({
   root: {
@@ -120,6 +123,33 @@ const useStyles = makeStyles({
 
 export default function BuyContactsInfoDialogContent(props) {
   const classes = useStyles();
+  const [getPersonDataQuery, { data: personsData }] = useLazyQuery(GETPERSONDATA)
+  const [getPersonDataLookupQuery, { data: personsDataLookup }] = useLazyQuery(GETPERSONDATALOOKUP)
+
+  function loadPersonData(type) {
+    let persons = []
+    for (const row of props.rows) {
+      let person = {
+        firstName: row.name.split(" ")[0], // remove `firstName`, `lastName`, make `name`
+        lastName: row.name.split(" ")[1],
+        address: joinAddress(row),
+        city: '',
+        state: '',
+      }
+      persons.push(person)
+    }
+
+    if (type == 'lookup') {
+      getPersonDataLookupQuery({
+        variables: { persons }
+      })
+    } else {
+      getPersonDataQuery({
+        variables: { persons }
+      })
+    }
+    
+  }
 
   useEffect(() => {
     if (!props.rows || props.rows.length === 0) props.onClose();
@@ -249,10 +279,30 @@ export default function BuyContactsInfoDialogContent(props) {
         >
           Cancel
         </Button>
-        <Button onClick={() => {}} color="secondary" variant="contained">
+        <Button onClick={() => { loadPersonData('api'); }} color="secondary" variant="contained">
           Buy Now
         </Button>
+        <Button onClick={() => { loadPersonData('lookup'); }} color="secondary" variant="contained">
+          Buy Now (Lookup)
+        </Button>
       </DialogActions>
+      <DialogContent>
+      { personsData && personsData.getPersonData &&
+        personsData.getPersonData.map((personData, index) => (
+          <DialogContent>
+            <h4>Records for person with index {index}</h4>
+            <ReactJson src={personData} />
+          </DialogContent>
+      ))}
+      { personsDataLookup && personsDataLookup.getPersonDataLookup &&
+        personsDataLookup.getPersonDataLookup.map((personData, index) => (
+          <DialogContent>
+            <h4>Records for person with index {index}</h4>
+            <ReactJson src={personData} />
+          </DialogContent>
+      ))}
+      </DialogContent>
+
     </React.Fragment>
   );
 }

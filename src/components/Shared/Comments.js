@@ -26,6 +26,7 @@ import { REMOVECOMMENT } from "../../graphQL/useMutationRemoveComment";
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import CloseIcon from "@material-ui/icons/Close";
+import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 
 const AntSwitch = withStyles((theme) => ({
   root: {
@@ -426,6 +427,16 @@ export default function Comments(props) {
 
   let commentsDisplayedCount = 0;
 
+  var formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumSignificantDigits: 21,
+  });
+
+  const valueFormatter = (v) => {
+    return v;
+  };
+
   return (
     <Card
       className={classes.root}
@@ -634,7 +645,18 @@ export default function Comments(props) {
                       alignItems="flex-start"
                     >
                       <ListItemAvatar className={classes.avatar}>
-                        <Avatar name={comment.user.name} size="35" round />
+                        <Avatar 
+                          name={comment.user.name} 
+                          color={Avatar.getRandomColor(comment.user.email, [
+                            "#b5d2f6",
+                            "#ade2e9",
+                            "#eaeaea",
+                            "#f2c1e2",
+                            "#d7d6fb",
+                          ])}
+                          fgColor="#000"
+                          size="35" 
+                          round />
                       </ListItemAvatar>
                       <ListItemText
                         className={classes.listItemText}
