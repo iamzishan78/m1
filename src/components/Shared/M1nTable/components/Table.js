@@ -175,28 +175,98 @@ var formatter = new Intl.NumberFormat("en-US", {
   maximumSignificantDigits: 21,
 });
 
-export default function SubTable(props) {
+function SubTable(props) {
   const classes = useStyles(props);
   const dispatch = useDispatch();
 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [rows, setRows] = useState(null);
-  const [columns, setColumns] = useState([]);
+  const [rows, Rows] = useState(null);
+  const setRows = (state) => {
+    if(rows != state) {
+      Rows(state)
+    }
+  }
+  const [columns, Columns] = useState([]);
+  const setColumns = (state) => {
+    if(columns != state) {
+      Columns(state)
+    }
+  }
 
-  const [colInd, setColInd] = useState();
-  const [rowInd, setRowInd] = useState();
-  const [expandedObject, setExpandedObject] = useState();
-  const [openDialog, setOpenDialog] = useState(false);
+  const [colInd, ColInd] = useState();
+  const setColInd = (state) => {
+    if(colInd != state) {
+      ColInd(state)
+    }
+  }
+  const [rowInd, RowInd] = useState();
+  const setRowInd = (state) => {
+    if(rowInd != state) {
+      RowInd(state)
+    }
+  }
+  const [expandedObject, ExpandedObject] = useState();
+  const setExpandedObject = (state) => {
+    if(expandedObject != state) {
+      ExpandedObject(state)
+    }
+  }
+  const [openDialog, OpenDialog] = useState(false);
+  const setOpenDialog = (state) => {
+    if(openDialog != state) {
+      OpenDialog(state)
+    }
+  }
 
-  const [showExpandableCard, setShowExpandableCard] = useState(false);
-  const [selectedRow, setSelectedRow] = useState();
-  const [subComponent, setSubComponent] = useState(null);
-  const [title, setTitle] = useState("");
-  const [subTitle, setSubTitle] = useState("");
+  const [showExpandableCard, ShowExpandableCard] = useState(false);
+  const setShowExpandableCard = (state) => {
+    if(showExpandableCard != state) {
+      ShowExpandableCard(state)
+    }
+  }
+  const [selectedRow, SelectedRow] = useState();
+  const setSelectedRow = (state) => {
+    if(selectedRow != state) {
+      SelectedRow(state)
+    }
+  }
+  const [subComponent, SubComponent] = useState(null);
+  const setSubComponent = (state) => {
+    if(subComponent != state) {
+      SubComponent(state)
+    }
+  }
+  const [title, Title] = useState("");
+  const setTitle = (state) => {
+    if(title != state) {
+      Title(state)
+    }
+  }
+  const [subTitle, SubTitle] = useState("");
+  const setSubTitle = (state) => {
+    if(subTitle != state) {
+      SubTitle(state)
+    }
+  }
 
-  const [m1nSelectedRowsIndexes, setM1nSelectedRowsIndexes] = useState([]);
-  const [m1nSelectedRowsIds, setM1nSelectedRowsIds] = useState([]);
-  const [m1nSelectedRowsTracks, setM1nSelectedRowsTracks] = useState([]);
+  const [m1nSelectedRowsIndexes, M1nSelectedRowsIndexes] = useState([]);
+  const setM1nSelectedRowsIndexes = (state) => {
+    if(m1nSelectedRowsIndexes != state) {
+      M1nSelectedRowsIndexes(state)
+    }
+  }
+  const [m1nSelectedRowsIds, M1nSelectedRowsIds] = useState([]);
+  const setM1nSelectedRowsIds = (state) => {
+    if(m1nSelectedRowsIds != state) {
+      M1nSelectedRowsIds(state)
+    }
+  }
+  const [m1nSelectedRowsTracks, M1nSelectedRowsTracks] = useState([]);
+  const setM1nSelectedRowsTracks = (state) => {
+    if(m1nSelectedRowsTracks != state) {
+      M1nSelectedRowsTracks(state)
+    }
+  }
 
   useEffect(() => {
     if (props.rows) {
@@ -1293,3 +1363,9 @@ export default function SubTable(props) {
     </div>
   );
 }
+
+function areEqual(prevProps, nextProps) {
+  return true;
+}
+
+export default React.memo(SubTable);

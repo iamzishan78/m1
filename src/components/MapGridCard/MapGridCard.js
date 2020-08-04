@@ -49,7 +49,10 @@ function a11yProps(index) {
   };
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme) => {
+  console.log(`ue mapgridcard makestyles ${theme}`)
+
+  return ({
   card: {
     "& .noDrag": {
       transform: "translate(0px, 0px) !important",
@@ -131,9 +134,12 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
     "&:hover": { color: "#757575", boxShadow: "none !important" },
   },
-}));
+})}
+);
 
 const TabLabels = ({ labels, value, setValue }) => {
+  console.log(`ue mapgridcard tablabels ${labels, value, setValue}`)
+
   const classes = useStyles();
   return (
     <>
@@ -161,6 +167,8 @@ const TabLabels = ({ labels, value, setValue }) => {
 };
 
 const TabPanels = ({ panels, value }) => {
+  console.log(`ue mapgridcard tabpanels ${panels, value}`)
+
   const classes = useStyles();
   return (
     panels &&
@@ -228,7 +236,7 @@ const locationsColumnHeaders = [
   },
 ];
 
-export default function MapGridCard(props) {
+function MapGridCard(props) {
   const dispatch = useDispatch();
   const {
     mapGridCardActivated,
@@ -237,7 +245,7 @@ export default function MapGridCard(props) {
     viewportData,
     trackedDataCount,
   } = useSelector(({ MapGridCard }) => MapGridCard);
-  const [stateApp, setStateApp] = useContext(AppContext);
+  // const [stateApp, setStateApp] = useContext(AppContext);
   // const [mainTapValue, setMainTapValue] = useState(1);
   const [searchTapValue, SearchTapValue] = useState(0);
   const setSearchTapValue = (state) => {
@@ -268,6 +276,8 @@ export default function MapGridCard(props) {
   });
 
   const handleMainTapChange = (event, newValue) => {
+    console.log(`ue mapgridcard handlemaintapchange ${newValue}`)
+
     // setMainTapValue(newValue);
     dispatch(setMapGridCardState({ mapGridCardActiveTap: newValue }));
   };
@@ -571,3 +581,10 @@ export default function MapGridCard(props) {
     </div>
   );
 }
+
+function areEqual(prevProps, nextProps) {
+  console.log(`${prevProps.mapGridCardActivated} ... ${nextProps.mapGridCardActivated}`)
+  return Object.is(prevProps.mapGridCardActivated, nextProps.mapGridCardActivated);
+}
+
+export default React.memo(MapGridCard, areEqual);
