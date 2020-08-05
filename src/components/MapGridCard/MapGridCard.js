@@ -50,95 +50,108 @@ function a11yProps(index) {
 }
 
 const useStyles = makeStyles((theme) => {
-  console.log(`ue mapgridcard makestyles ${theme}`)
+  console.log(`ue mapgridcard makestyles ${theme}`);
 
-  return ({
-  card: {
-    "& .noDrag": {
-      transform: "translate(0px, 0px) !important",
-      transition:
-        "transform 0.3s ease-out, width 0.3s ease-out, height 0.3s ease-out",
-      WebkitTransition:
-        "transform 0.3s ease-out, width 0.3s ease-out, height 0.3s ease-out",
-    },
-  },
-  rootList: {
-    opacity: ({ mapGridCardActivated }) =>
-      mapGridCardActivated === "min" ? "0.6" : "1",
-    transition:
-      "opacity 0.2s ease-out, transform 0.05s ease-out, width 0.3s ease-out, height 0.3s ease-out",
-    WebkitTransition:
-      "opacity 0.2s ease-out, transform 0.05s ease-out, width 0.3s ease-out, height 0.3s ease-out",
-    width: ({ mapGridCardActivated }) =>
-      mapGridCardActivated === "min"
-        ? "600px"
-        : mapGridCardActivated === "exp"
-        ? "96vw"
-        : "57vw",
-    height: ({ mapGridCardActivated }) =>
-      mapGridCardActivated === "min"
-        ? "114px"
-        : mapGridCardActivated === "exp"
-        ? "91vh"
-        : "60vh",
-    left: ({ mapGridCardActivated }) =>
-      mapGridCardActivated === "exp" ? "2vw" : "2vw",
-    top: ({ mapGridCardActivated }) =>
-      mapGridCardActivated === "exp" ? "5vh" : "12vh",
-    zIndex: "1300",
-    position: "fixed",
-  },
-  tapsRoot: {
-    flexGrow: 1,
-    "& .MuiTab-root": {
-      textTransform: "none",
-    },
-  },
-  appBar: {
-    cursor: ({ mapGridCardActivated }) =>
-      mapGridCardActivated === "exp" || mapGridCardActivated === "min"
-        ? "context-menu"
-        : "move",
-    "& .MuiIconButton-root:hover": {
-      backgroundColor: "rgba(255, 255, 255, 0.08)",
-    },
-    "& button": {
-      cursor: "pointer",
-    },
-  },
-  tapsPanels: {
-    "& .MuiBox-root": { padding: "0" },
-  },
-  tapsPanelsPadding: {
-    "& .MuiBox-root": { padding: "0" },
-  },
-  mainPanelsDiv: {
-    maxHeight: "calc(100% - 114px)",
-    overflow: "auto",
-    height: "calc(100% - 114px)",
-    "& div": {
-      "&>.MuiPaper-root": {
-        "&>:nth-child(3)": { minHeight: "220px !important" },
+  return {
+    card: {
+      "& .noDrag": {
+        transform: "translate(0px, 0px) !important",
+        transition:
+          "transform 0.3s ease-out, width 0.3s ease-out, height 0.3s ease-out",
+        WebkitTransition:
+          "transform 0.3s ease-out, width 0.3s ease-out, height 0.3s ease-out",
       },
     },
-  },
-  tapsLabelsButtons: {
-    boxShadow: "none",
-    backgroundColor: "#fff",
-    color: "#757575",
-    "&:hover": { boxShadow: "none !important" },
-  },
-  tapsLabelsButtonsSelected: {
-    boxShadow: "none",
-    color: "#fff",
-    backgroundColor: theme.palette.secondary.main,
-    "&:hover": { color: "#757575", boxShadow: "none !important" },
-  },
-})}
-);
+    rootList: {
+      opacity: ({ mapGridCardActivated }) =>
+        mapGridCardActivated === "min" ? "0.6" : "1",
+      transition:
+        "opacity 0.2s ease-out, transform 0.05s ease-out, width 0.3s ease-out, height 0.3s ease-out",
+      WebkitTransition:
+        "opacity 0.2s ease-out, transform 0.05s ease-out, width 0.3s ease-out, height 0.3s ease-out",
+      width: ({ mapGridCardActivated }) =>
+        mapGridCardActivated === "min"
+          ? "600px"
+          : mapGridCardActivated === "exp"
+          ? "96vw"
+          : "57vw",
+      height: ({ mapGridCardActivated }) =>
+        mapGridCardActivated === "min"
+          ? "114px"
+          : mapGridCardActivated === "exp"
+          ? "91vh"
+          : "60vh",
+      left: ({ mapGridCardActivated }) =>
+        mapGridCardActivated === "exp" ? "2vw" : "2vw",
+      top: ({ mapGridCardActivated }) =>
+        mapGridCardActivated === "exp" ? "5vh" : "12vh",
+      zIndex: "1300",
+      position: "fixed",
+    },
+    tapsRoot: {
+      flexGrow: 1,
+      "& .MuiTab-root": {
+        textTransform: "none",
+      },
+    },
+    appBar: {
+      cursor: ({ mapGridCardActivated }) =>
+        mapGridCardActivated === "exp" || mapGridCardActivated === "min"
+          ? "context-menu"
+          : "move",
+      "& .MuiIconButton-root:hover": {
+        backgroundColor: "rgba(255, 255, 255, 0.08)",
+      },
+      "& button": {
+        cursor: "pointer",
+      },
+    },
+    tapsPanels: {
+      "& .MuiBox-root": { padding: "0" },
+    },
+    tapsPanelsPadding: {
+      "& .MuiBox-root": { padding: "0" },
+    },
+    mainPanelsDiv: {
+      maxHeight: "calc(100% - 64px)",
+      overflow: "auto",
+      height: "calc(100% - 64px)",
+      "& div": {
+        "&>.MuiPaper-root": {
+          "&>:nth-child(3)": {
+            //   transition:
+            //   "min-height 0.3s ease-out",
+            // WebkitTransition:
+            //   "min-height 0.3s ease-out",
+            minHeight: ({ mapGridCardActiveTap, mapGridCardActivated }) =>
+              mapGridCardActiveTap === 0
+                ? mapGridCardActivated === "exp"
+                  ? "calc(91vh - 233px)"
+                  : "calc(60vh - 233px)"
+                : mapGridCardActivated === "exp"
+                ? "calc(91vh - 183px)"
+                : "calc(60vh - 183px)",
+          },
+        },
+      },
+    },
+    tapsLabelsButtons: {
+      boxShadow: "none",
+      backgroundColor: "#fff",
+      color: "#757575",
+      "&:hover": { boxShadow: "none !important" },
+    },
+    tapsLabelsButtonsSelected: {
+      boxShadow: "none",
+      color: "#fff",
+      backgroundColor: theme.palette.secondary.main,
+      "&:hover": { color: "#757575", boxShadow: "none !important" },
+    },
+  };
+});
 
 const TabLabels = ({ labels, value, setValue }) => {
-  console.log(`ue mapgridcard tablabels ${labels, value, setValue}`)
+  console.log(`ue mapgridcard tablabels ${(labels, value, setValue)}`);
 
   const classes = useStyles();
   return (
@@ -167,7 +180,7 @@ const TabLabels = ({ labels, value, setValue }) => {
 };
 
 const TabPanels = ({ panels, value }) => {
-  console.log(`ue mapgridcard tabpanels ${panels, value}`)
+  console.log(`ue mapgridcard tabpanels ${(panels, value)}`);
 
   const classes = useStyles();
   return (
@@ -245,41 +258,38 @@ function MapGridCard(props) {
     viewportData,
     trackedDataCount,
   } = useSelector(({ MapGridCard }) => MapGridCard);
-  // const [stateApp, setStateApp] = useContext(AppContext);
-  // const [mainTapValue, setMainTapValue] = useState(1);
   const [searchTapValue, SearchTapValue] = useState(0);
   const setSearchTapValue = (state) => {
-    if(searchTapValue != state) {
-      SearchTapValue(state)
+    if (searchTapValue != state) {
+      SearchTapValue(state);
     }
-  }
+  };
   const [viewportTapValue, ViewportTapValue] = useState(0);
   const setViewportTapValue = (state) => {
-    if(viewportTapValue != state) {
-      ViewportTapValue(state)
+    if (viewportTapValue != state) {
+      ViewportTapValue(state);
     }
-  }
+  };
   const [trackedTapValue, TrackedTapValue] = useState(0);
   const setTrackedTapValue = (state) => {
-    if(trackedTapValue != state) {
-      TrackedTapValue(state)
+    if (trackedTapValue != state) {
+      TrackedTapValue(state);
     }
-  }
-  const [expanded, Expanded] = useState(false);
-  const setExpanded = (state) => {
-    if(expanded != state) {
-      Expanded(state)
-    }
-  }
+  };
+
   const classes = useStyles({
     mapGridCardActivated,
+    mapGridCardActiveTap,
   });
 
   const handleMainTapChange = (event, newValue) => {
-    console.log(`ue mapgridcard handlemaintapchange ${newValue}`)
+    console.log(`ue mapgridcard handlemaintapchange ${newValue}`);
 
-    // setMainTapValue(newValue);
-    dispatch(setMapGridCardState({ mapGridCardActiveTap: newValue }));
+    dispatch(
+      setMapGridCardState({
+        mapGridCardActiveTap: newValue,
+      })
+    );
   };
 
   // useEffect(() => {
@@ -361,15 +371,15 @@ function MapGridCard(props) {
                 label={`Search Result (${searchResultData.length})`}
                 {...a11yProps(0)}
               />
-              <Tab
+              {/* <Tab
                 className="cancelDraggableEffect"
                 label={`Viewport (${viewportData.length})`}
                 {...a11yProps(1)}
-              />
+              /> */}
               <Tab
                 className="cancelDraggableEffect"
                 label={`Tracked (${trackedDataCount})`}
-                {...a11yProps(2)}
+                {...a11yProps(1)}
               />
             </Tabs>
 
@@ -378,7 +388,6 @@ function MapGridCard(props) {
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                // setExpanded(!expanded);
 
                 dispatch(
                   setMapGridCardState({
@@ -407,14 +416,14 @@ function MapGridCard(props) {
           </Toolbar>
         </AppBar>
 
-        <MapGridCardSearch
+        {/* <MapGridCardSearch
           ativateSearchPanel={() => {
             if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
             if (mapGridCardActivated === "min")
               dispatch(setMapGridCardState({ mapGridCardActivated: true }));
           }}
           searchOption={getTargetFromSearchTaps()}
-        />
+        /> */}
         <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`}>
           {/* //// search panel //// */}
           <TabPanel
@@ -422,6 +431,14 @@ function MapGridCard(props) {
             index={0}
             className={classes.tapsPanelsPadding}
           >
+            <MapGridCardSearch
+              ativateSearchPanel={() => {
+                if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
+                if (mapGridCardActivated === "min")
+                  dispatch(setMapGridCardState({ mapGridCardActivated: true }));
+              }}
+              searchOption={getTargetFromSearchTaps()}
+            />
             <div style={{ position: "relative" }}>
               <TabPanels
                 value={searchTapValue}
@@ -487,7 +504,7 @@ function MapGridCard(props) {
           </TabPanel>
 
           {/* //// viewport panel //// */}
-          <TabPanel
+          {/* <TabPanel
             value={mapGridCardActiveTap}
             index={1}
             className={classes.tapsPanelsPadding}
@@ -508,12 +525,12 @@ function MapGridCard(props) {
                 ]}
               />
             </div>
-          </TabPanel>
+          </TabPanel> */}
 
           {/* //// tracked panel //// */}
           <TabPanel
             value={mapGridCardActiveTap}
-            index={2}
+            index={1}
             className={classes.tapsPanelsPadding}
           >
             <div style={{ position: "relative" }}>
@@ -582,9 +599,4 @@ function MapGridCard(props) {
   );
 }
 
-function areEqual(prevProps, nextProps) {
-  console.log(`${prevProps.mapGridCardActivated} ... ${nextProps.mapGridCardActivated}`)
-  return Object.is(prevProps.mapGridCardActivated, nextProps.mapGridCardActivated);
-}
-
-export default React.memo(MapGridCard, areEqual);
+export default React.memo(MapGridCard);

@@ -107,13 +107,13 @@ export default function Map() {
   const [lng, Lng] = useState();
   const setLng = (state) => {
     if(lng != state) {
-      Lng(state)
+      // Lng(state)
     }
   }
   const [lat, Lat] = useState();
   const setLat = (state) => {
     if(lat != state) {
-      Lat(state)
+      // Lat(state)
     }
   }
   const [transform, Transform] = useState("transform: inherit");
@@ -4371,9 +4371,7 @@ export default function Map() {
             deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
           />
         )}
-      {mapGridCardActivated && <MapGridCard 
-          mapGridCardActivated={mapGridCardActivated}
-        />}
+      {mapGridCardActivated && <MapGridCard />}
       <div id="tempPopupHolder" className={classes.portal} ref={container} />
       <Portal container={container.current}>
         {stateApp.popupOpen ? (

@@ -5,7 +5,7 @@ import {
 
 const INIT_STATE = {
   mapGridCardActivated: false,
-  mapGridCardActiveTap: 1,
+  mapGridCardActiveTap: 0,
   searchResultData: [], //// mapGridCard Search Data
   searchloading: false, //// mapGridCard Search loading
   searchInputValue: "",

@@ -36,6 +36,7 @@ import { CONTACT } from "../../../graphQL/useQueryContact";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
 
 import { useDispatch, useSelector } from "react-redux";
+import { deepEqualObjects } from "../functions";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
@@ -732,76 +733,76 @@ const joinAddress = (row) => {
   return textArray.join(", ");
 };
 
-export default function M1nTable(props) {
+function M1nTable(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, Rows] = useState();
   const setRows = (state) => {
-    if(rows != state) {
-      Rows(state)
+    if (rows != state) {
+      Rows(state);
     }
-  }
+  };
   const [header, Header] = useState("");
   const setHeader = (state) => {
-    if(header != state) {
-      Header(state)
+    if (header != state) {
+      Header(state);
     }
-  }
+  };
   const [columns, Columns] = useState([]);
   const setColumns = (state) => {
-    if(columns != state) {
-      Columns(state)
+    if (columns != state) {
+      Columns(state);
     }
-  }
+  };
   const [loading, Loading] = useState(true);
   const setLoading = (state) => {
-    if(loading != state) {
-      Loading(state)
+    if (loading != state) {
+      Loading(state);
     }
-  }
+  };
   const [addAble, AddAble] = useState(true);
   const setAddAble = (state) => {
-    if(addAble != state) {
-      AddAble(state)
+    if (addAble != state) {
+      AddAble(state);
     }
-  }
+  };
   const [uploadIcon, UploadIcon] = useState(null);
   const setUploadIcon = (state) => {
-    if(uploadIcon != state) {
-      UploadIcon(state)
+    if (uploadIcon != state) {
+      UploadIcon(state);
     }
-  }
+  };
   const [targetLabel, TargetLabel] = useState(null);
   const setTargetLabel = (state) => {
-    if(targetLabel != state) {
-      TargetLabel(state)
+    if (targetLabel != state) {
+      TargetLabel(state);
     }
-  }
+  };
   const [deleteFunc, DeleteFunc] = useState(null);
   const setDeleteFunc = (state) => {
-    if(deleteFunc != state) {
-      DeleteFunc(state)
+    if (deleteFunc != state) {
+      DeleteFunc(state);
     }
-  }
+  };
   const [showTracks, ShowTracks] = useState(true);
   const setShowTracks = (state) => {
-    if(showTracks != state) {
-      ShowTracks(state)
+    if (showTracks != state) {
+      ShowTracks(state);
     }
-  }
+  };
   const [orderByTracks, OrderByTracks] = useState(true);
   const setOrderByTracks = (state) => {
-    if(orderByTracks != state) {
-      OrderByTracks(state)
+    if (orderByTracks != state) {
+      OrderByTracks(state);
     }
-  }
+  };
   const [startPaginationAt, StartPaginationAt] = useState();
   const setStartPaginationAt = (state) => {
-    if(startPaginationAt != state) {
-      StartPaginationAt(state)
+    if (startPaginationAt != state) {
+      StartPaginationAt(state);
     }
-  }
+  };
   const { searchloading, searchResultData } = useSelector(
     ({ MapGridCard }) => MapGridCard
   );
@@ -2332,3 +2333,5 @@ export default function M1nTable(props) {
     </Container>
   );
 }
+
+export default React.memo(M1nTable, deepEqualObjects);

@@ -63,7 +63,7 @@ const joinAddress = (row) => {
 export default function MapGridCardSearch(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { searchInputValue, searchloading } = useSelector(
+  const { searchInputValue, searchloading, searchResultData } = useSelector(
     ({ MapGridCard }) => MapGridCard
   );
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -244,9 +244,10 @@ export default function MapGridCardSearch(props) {
 
   React.useEffect(() => {
     if (searchInputValue === "") {
-      dispatch(
-        setMapGridCardState({ searchResultData: [], searchloading: false })
-      );
+      if (searchResultData.length !== 0 && searchloading !== false)
+        dispatch(
+          setMapGridCardState({ searchResultData: [], searchloading: false })
+        );
       return undefined;
     }
 
