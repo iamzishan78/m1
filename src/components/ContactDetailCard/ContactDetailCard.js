@@ -44,6 +44,7 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import HandShake from "../Shared/svgIcons/HandShake";
 import Parcels from "./components/Parcels";
 import WellsCard from "./components/WellsCard";
+import RecentActivities from "../RecentActivities/RecentActivities";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -923,6 +924,19 @@ export default function ContactDetailCard(props) {
                 xs={12}
                 style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}
               ></Grid>
+            </div>
+          </Grid>
+
+          {/*/////////// Recent Activities. //////////// */}
+          <Grid item xs={12} className={`${classes.border}`}>
+            <div className={classes.SectMargin}>
+              <RecentActivities
+                header={"Recent Activities"}
+                handleOpenExpandableCard={handleOpenExpandableCard}
+                id={contactData._id}
+                user_id={stateApp.user.email}
+                activityLog={contactData.activityLog}
+              />
             </div>
           </Grid>
 
