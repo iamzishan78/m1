@@ -28,6 +28,8 @@ import GpsNotFixedIcon from "@material-ui/icons/GpsNotFixed";
 import GradientIcon from "@material-ui/icons/Gradient";
 import { default as Cube3d } from "../Shared/svgIcons/cube-3d";
 import AspectRatioOutlinedIcon from "@material-ui/icons/AspectRatioOutlined";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleMapGridCardAtived, setMapGridCardState } from "../../actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -86,6 +88,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function MapControls(props) {
+  const dispatch = useDispatch();
+  const { mapGridCardActivated, mapGridCardActiveTap } = useSelector(
+    ({ MapGridCard }) => MapGridCard
+  );
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
@@ -109,20 +115,15 @@ export default function MapControls(props) {
     let anchorEl = e.currentTarget;
     if (action === "track") {
       anchorEl = null;
-      if (
-        stateApp.mapGridCardActiveTap === 2 &&
-        stateApp.mapGridCardActivated
-      ) {
-        setStateApp((state) => ({
-          ...state,
-          mapGridCardActivated: false,
-        }));
+      if (mapGridCardActiveTap === 1 && mapGridCardActivated) {
+        dispatch(toggleMapGridCardAtived());
       } else {
-        setStateApp((state) => ({
-          ...state,
-          mapGridCardActivated: true,
-          mapGridCardActiveTap: 2,
-        }));
+        dispatch(
+          setMapGridCardState({
+            mapGridCardActivated: true,
+            mapGridCardActiveTap: 1,
+          })
+        );
       }
     }
 
@@ -149,8 +150,7 @@ export default function MapControls(props) {
     const actions = [
       {
         icon:
-          stateApp.mapGridCardActiveTap === 2 &&
-          stateApp.mapGridCardActivated ? (
+          mapGridCardActiveTap === 1 && mapGridCardActivated ? (
             <GpsFixedIcon />
           ) : (
             <GpsNotFixedIcon />
