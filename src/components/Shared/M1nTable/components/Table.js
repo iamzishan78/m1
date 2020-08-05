@@ -1368,8 +1368,4 @@ function SubTable(props) {
   );
 }
 
-function areEqual(prevProps, nextProps) {
-  return true;
-}
-
 export default React.memo(SubTable, deepEqualObjects);
