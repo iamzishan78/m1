@@ -7,6 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import parse from "autosuggest-highlight/parse";
 import throttle from "lodash/throttle";
+import debounce from "lodash/debounce";
 import { AppContext } from "../../../AppContext";
 import Button from "@material-ui/core/Button";
 import PersonIcon from "@material-ui/icons/Person";
@@ -261,7 +262,7 @@ function Search() {
 
   const callWellSearch = React.useMemo(
     () =>
-      throttle((request, top, callback) => {
+      debounce((request, top, callback) => {
         const endpoint =
           "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2019-05-06&$count=true&searchFields=WellName,ApiNumber&$top=" +
           top +
@@ -290,13 +291,13 @@ function Search() {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 
   const callOwnerSearch = React.useMemo(
     () =>
-      throttle((request, top, callback) => {
+      debounce((request, top, callback) => {
         const endpoint =
           "https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName%2CAddress1&%24top=" +
           top +
@@ -325,13 +326,13 @@ function Search() {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 
   const callOperatorSearch = React.useMemo(
     () =>
-      throttle((request, top, callback) => {
+      debounce((request, top, callback) => {
         const endpoint =
           "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2019-05-06&$count=true&searchFields=Operator&$top=" +
           top +
@@ -360,13 +361,13 @@ function Search() {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 
   const callLeaseSearch = React.useMemo(
     () =>
-      throttle((request, top, callback) => {
+      debounce((request, top, callback) => {
         const endpoint =
           "https://m1search.search.windows.net/indexes/lease-index/docs?api-version=2019-05-06&$count=true&searchFields=Lease,LeaseId&$top=" +
           top +
@@ -395,13 +396,13 @@ function Search() {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 
   const callMapboxSearch = React.useMemo(
     () =>
-      throttle((request, top, callback) => {
+      debounce((request, top, callback) => {
         const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${
           request.input
         }.json?access_token=${
@@ -424,7 +425,7 @@ function Search() {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 

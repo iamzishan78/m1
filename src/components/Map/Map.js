@@ -4371,7 +4371,9 @@ export default function Map() {
             deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
           />
         )}
-      {mapGridCardActivated && <MapGridCard />}
+      {mapGridCardActivated && <MapGridCard  
+        mapGridCardActivated={mapGridCardActivated}
+      />}
       <div id="tempPopupHolder" className={classes.portal} ref={container} />
       <Portal container={container.current}>
         {stateApp.popupOpen ? (
