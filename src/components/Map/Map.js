@@ -52,6 +52,7 @@ import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/d
 import MapGridCard from "../MapGridCard/MapGridCard";
 import { useDispatch, useSelector } from "react-redux";
 import MarkerIcon from "./sprites/marker-icon.png";
+import { usePickerState } from "@material-ui/pickers";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -210,6 +211,18 @@ export default function Map() {
   const setHoveredStateId = (state) => {
     if (state != hoveredStateId) {
       HoveredStateId(state);
+    }
+  }
+
+  const [hoverUdIds, HoverUdIds] = useState([]);
+  const setHoverUdIds = (id) => {
+    const ids = hoverUdIds.slice(0);
+    if (ids.indexOf(id) > -1) {
+      const tmpIds = ids.filter(item => item != id);
+      HoverUdIds(tmpIds)
+    } else {
+      ids.push(id);
+      HoverUdIds(ids);
     }
   }
 
@@ -626,7 +639,7 @@ export default function Map() {
             map.addSource(config.sourceProps[i].sourceId, {
               type: config.sourceProps[i].sourceType,
               data: myGeoJSONData,
-              promoteId: { original: "id" },
+              promoteId: "id",
             });
           }
 
@@ -877,6 +890,26 @@ export default function Map() {
       map.resize();
     };
 
+    const udLayerHighlightHandler = (feature) => {
+
+      const id = feature.id;
+      console.log(hoverUdIds, id);
+      if (hoverUdIds.indexOf(id) > -1) {
+        console.log("remove Hover");
+        map.setFeatureState(
+          { source: feature.source, id: feature.id },
+          { hover: false }
+        );
+      } else {
+        console.log("set Hover");
+        map.setFeatureState(
+          { source: feature.source, id: feature.id },
+          { hover: true }
+        );
+      }
+      setHoverUdIds(id);
+    }
+
     const clusterClickHandler = (feature, map) => {
       var clusterId = feature.properties.cluster_id;
       map
@@ -971,6 +1004,16 @@ export default function Map() {
         layers: layers,
       });
 
+      if (!window.event.ctrlKey && hoverUdIds.length > 0) {
+        for(let i = 0; i < hoverUdIds.length; i ++) {
+          map.setFeatureState(
+            { source: 'parcel_source', id: hoverUdIds[i] },
+            { hover: false }
+          );
+          HoverUdIds([]);
+        }
+      }
+
       if (features && features.length > 0) {
         const feature = features[0];
         console.log("stacked layers click info", features);
@@ -983,7 +1026,12 @@ export default function Map() {
             layerClickHander(feature);
             break;
           case udLayers.indexOf(layerId) > -1:
-            udLayerClickHandler(feature);
+            if (window.event.ctrlKey && feature.source == 'parcel_source') {
+              udLayerHighlightHandler(feature);
+            } else {
+              udLayerClickHandler(feature);
+            }
+            console.log("userDefined:", window.event.ctrlKey);
             break;
           case layerId === "wellpoints":
             wellPointClick(feature);
@@ -1012,6 +1060,7 @@ export default function Map() {
     stateApp.checkedUserDefinedLayersInteraction,
     stateApp.checkedLayers,
     stateApp.checkedUserDefinedLayers,
+    hoverUdIds,
   ]);
 
   useEffect(() => {
@@ -1482,7 +1531,7 @@ export default function Map() {
                   map.addSource(selectLayerProps.sourceProps[i].sourceId, {
                     type: selectLayerProps.sourceProps[i].sourceType,
                     data: myGeoJSONData,
-                    promoteId: { original: "id" },
+                    promoteId: "id",
                   });
                 }
 
