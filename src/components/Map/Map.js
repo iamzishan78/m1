@@ -47,6 +47,7 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
 import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
+import { ABSTRACTGEOQUERYCONTAINS, ABSTRACTGEOCONTAINSQUERY } from "../../graphQL/useQueryAbstractGeoContains";
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 import MapGridCard from "../MapGridCard/MapGridCard";
@@ -270,6 +271,7 @@ export default function Map() {
   const [getRigs, { data: rigData }] = useLazyQuery(RIGSQUERY);
 
   const [getAbstractGeo, { data: abstractData }] = useLazyQuery(ABSTRACTGEOQUERY);
+  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY); 
 
   /////end/////////temporary
 
@@ -3446,6 +3448,25 @@ export default function Map() {
 
       map.getSource('abstract_geo_source').setData(geoJson);
 
+    }
+  }, [abstractData])
+
+  useEffect(() => {
+    if (abstractContainsData && abstractContainsData.abstractGeoContains && abstractContainsData.abstractGeoContains.length > 0) {
+      const data = abstractContainsData.abstractGeoContains;
+      const makeGeoJSON = (data) => {
+        return {
+          type: "FeatureCollection",
+          features: data.map((feature) => {
+            return JSON.parse(feature.geo_json);
+          }),
+        };
+      };
+
+      const geoJson = makeGeoJSON(data);
+
+      map.getSource('abstract_geo_source').setData(geoJson);
+
       if (filterAbstract) {
         for(let i = 0; i < geoJson.features.length; i ++) {
           const id = geoJson.features[i].properties.abstract_n;
@@ -3458,7 +3479,7 @@ export default function Map() {
       }
 
     }
-  }, [abstractData])
+  }, [abstractContainsData])
 
   useLayoutEffect(() => {
     if (stateApp.popupOpen === false) {
@@ -4042,7 +4063,7 @@ export default function Map() {
         });
         polygonString += "))";
 
-        getAbstractGeo({
+        getAbstractGeoContains({
           variables: {
             polygon: polygonString
           }
@@ -4083,7 +4104,7 @@ export default function Map() {
         });
         polygonString += "))";
 
-        getAbstractGeo({
+        getAbstractGeoContains({
           variables: {
             polygon: polygonString
           }
