@@ -129,7 +129,17 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
   },
-  button: {
+  buttonback: {
+    color: "#17aadd",
+    fontWeight: 900,
+    padding: "3px 25px",
+    marginRight: theme.spacing(1),
+    backgroundColor: "#d5f4fd",
+  },
+  buttonselect: {
+    backgroundColor: "#17aadd",
+    fontWeight: 900,
+    padding: "3px 25px",
     marginRight: theme.spacing(1),
   },
   instructions: {
@@ -252,7 +262,7 @@ export default function CustomizedSteppers(props) {
           </div>
           <div style={mapping_buttons_div}>
             {stateApp.activeStepNumber < 3 ? (
-              <Button onClick={handleBack} className={classes.button}>
+              <Button onClick={handleBack} className={classes.buttonback}>
                 Back
               </Button>
             ) : null}
@@ -261,7 +271,7 @@ export default function CustomizedSteppers(props) {
                 variant="contained"
                 color="primary"
                 onClick={handleNext}
-                className={classes.button}
+                className={classes.buttonselect}
               >
                 {stateApp.activeStepNumber >= steps.length - 2
                   ? stateApp.activeStepNumber === steps.length - 1
