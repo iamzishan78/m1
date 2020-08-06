@@ -8,7 +8,6 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import Taps from "../../../Taps";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import FormLabel from "@material-ui/core/FormLabel";
 import { Grid } from "@material-ui/core";
 import { AppContext } from "../../../../../AppContext";
 import { Modals } from "../../../../../styles/Modal";

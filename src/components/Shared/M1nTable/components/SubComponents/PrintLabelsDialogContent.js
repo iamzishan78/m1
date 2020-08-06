@@ -9,7 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import DialogContent from "@material-ui/core/DialogContent";
-import DeleteIcon from "@material-ui/icons/Delete";
+import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -117,7 +117,7 @@ export default function PrintLabelsDialogContent(props) {
         <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={props.onClose}/>
       </DialogTitle>
       <DialogContent>
-        <Grid container spacing={2} style={{ paddingBottom: "10px" }}>
+        <Grid container spacing={1} style={{ paddingBottom: "10px" }}>
           <h3 style={{padding: 0, marginTop: '20px', marginBottom: 0}}>Recipient Name</h3>
           <Grid item xs={12}>
             <Autocomplete
@@ -145,7 +145,7 @@ export default function PrintLabelsDialogContent(props) {
               )}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} style={{marginTop: '15px'}}>
             <h3 style={{margin: "0"}}>
               Label To Print
             </h3>
@@ -162,7 +162,7 @@ export default function PrintLabelsDialogContent(props) {
                   {row.name}
                 </FormLabel>
                 <FormLabel className={modalClass.inputContent}>
-                 <DeleteIcon fontSize="small" style={{cursor:'pointer', float:'right'}} onClick={()=> {
+                 <DeleteOutlinedIcon fontSize="small" style={{cursor:'pointer', float:'right'}} onClick={()=> {
                     let reducedRows = [...props.rows];
                     reducedRows.splice(index, 1);
                     props.setRows(reducedRows);

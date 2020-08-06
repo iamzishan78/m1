@@ -20,23 +20,31 @@ const Modals = makeStyles((theme) => ({
         cursor:'pointer', float:'right'
       },
       inputContainer: {
-        backgroundColor: '#BEEEFF',
-        padding: '1px',
+        backgroundColor: '#f0fbff',
         margin: '5px',
-        height: '100%'
+        padding: '0px',
+        border: 1,
+        borderRadius: 7
+      },
+      greyedInputContainer: {
+        backgroundColor: '#f3f3f3',
+        margin: '5px',
+        border: 1,
+        borderRadius: 7
       },
       inputContent: {
         float: "right",
-        padding: '1%'
+        padding: '1%',
+        fontSize: '15px'
       },
       inputLabel: {
         float: "left",
         textAlign: "center",
-        padding: '1.5%'
+        padding: '1.5%',
+        fontSize: '15px'
       },
       actionButtons: {
-        marginTop: '10px',
-        marginBottom: '5px'
+        margin: '15px'
       }
 }));
 

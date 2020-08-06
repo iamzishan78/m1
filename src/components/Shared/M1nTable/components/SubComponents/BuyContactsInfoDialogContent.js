@@ -12,7 +12,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import DialogContent from "@material-ui/core/DialogContent";
-import DeleteIcon from "@material-ui/icons/Delete";
+import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import ReactJson from 'react-json-view'
 
@@ -133,7 +133,7 @@ export default function BuyContactsInfoDialogContent(props) {
         <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={props.onClose}/>
       </DialogTitle>
       <DialogContent>
-        <Grid container spacing={2}>
+        <Grid container spacing={1}>
           <Grid item xs={12}>
             <h3 style={{padding: 0, marginTop: '20px', marginBottom: 0}}>Credits</h3>
           </Grid>
@@ -146,7 +146,7 @@ export default function BuyContactsInfoDialogContent(props) {
               {currentCredits && currentCredits > 1 ? "s" : ""}
             </FormLabel>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} style={{marginTop: '15px'}}>
             <h3 style={{margin: "0"}}>
               Contact To Purchase
             </h3>
@@ -163,7 +163,7 @@ export default function BuyContactsInfoDialogContent(props) {
                   {row.name}
                 </FormLabel>
                 <FormLabel className={modalClass.inputContent}>
-                 <DeleteIcon fontSize="small" style={{cursor:'pointer', float:'right'}} onClick={()=> {
+                 <DeleteOutlinedIcon fontSize="small" style={{cursor:'pointer', float:'right'}} onClick={()=> {
                     let reducedRows = [...props.rows];
                     reducedRows.splice(index, 1);
                     props.setRows(reducedRows);
@@ -171,24 +171,14 @@ export default function BuyContactsInfoDialogContent(props) {
                 </FormLabel>
               </Grid>
             ))}
-          <Grid item xs={6}>
-            <h3 style={{ margin: "0" }}>TOTAL</h3>
-          </Grid>
-          <Grid
-            item
-            xs={6}
-            style={{
-              display: "flex",
-              placeContent: "flex-end",
-              alignSelf: "flex-end",
-            }}
-          >
-            <h3 style={{ margin: "0 3px" }}>
-              {props.rows && props.rows.length ? props.rows.length : ""} CREDIT
-              {props.rows && props.rows.length && props.rows.length > 1
-                ? "S"
-                : ""}
-            </h3>
+          <Grid item xs={12} className={modalClass.greyedInputContainer}>
+            <h3 style={{float: "left", margin: '5px'}}>TOTAL</h3>
+            <h3 style={{float: "right", margin: '5px'}}>
+                {props.rows && props.rows.length ? props.rows.length : ""} CREDIT
+                {props.rows && props.rows.length && props.rows.length > 1
+                  ? "S"
+                  : ""}
+              </h3>
           </Grid>
         </Grid>
       </DialogContent>
