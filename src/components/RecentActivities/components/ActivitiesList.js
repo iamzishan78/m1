@@ -65,10 +65,10 @@ const useStyles = makeStyles((theme) => ({
   timelineText: {
     "& .MuiTypography-body1": {
       fontSize: "0.85rem",
-      color: "rgb(120,120,120)",
+      color: "rgb(170,170,170)",
       fontWeight: "bold",
     },
-    "& .MuiTypography-body2": { fontSize: "0.7rem", color: "rgb(120,120,120)" },
+    "& .MuiTypography-body2": { fontSize: "0.7rem", color: "rgb(190,190,190)" },
     "&  p": {
       margin: "0",
     },
