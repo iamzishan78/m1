@@ -207,13 +207,6 @@ export default function Map() {
   }
   const mapEl = useRef(null);
 
-  const [hoveredStateId, HoveredStateId] = useState(-1);
-  const setHoveredStateId = (state) => {
-    if (state != hoveredStateId) {
-      HoveredStateId(state);
-    }
-  }
-
   const [hoverUdIds, HoverUdIds] = useState([]);
   const setHoverUdIds = (id) => {
     const ids = hoverUdIds.slice(0);
@@ -226,17 +219,7 @@ export default function Map() {
     }
   }
 
-  const [hoverAbstractIds, HoverAbstractIds] = useState([]);
-  const setHoverAbstractIds = (id) => {
-    const ids = hoverAbstractIds.slice(0);
-    if (ids.indexOf(id) > -1) {
-      const tmpIds = ids.filter(item => item != id);
-      HoverAbstractIds(tmpIds)
-    } else {
-      ids.push(id);
-      HoverAbstractIds(ids);
-    }
-  }
+  const [filterAbstract, setFilterAbstract] = useState(false);
 
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
 
@@ -3463,6 +3446,17 @@ export default function Map() {
 
       map.getSource('abstract_geo_source').setData(geoJson);
 
+      if (filterAbstract) {
+        for(let i = 0; i < geoJson.features.length; i ++) {
+          const id = geoJson.features[i].properties.abstract_n;
+          map.setFeatureState(
+            { source: 'abstract_geo_source', id: id },
+            { click: true }
+          )
+        }
+        setFilterAbstract(false);
+      }
+
     }
   }, [abstractData])
 
@@ -4039,6 +4033,23 @@ export default function Map() {
       if (stateNav.drawingMode !== null) {
         let feature = e.features[0];
 
+        let polygonString = "POLYGON((";
+        feature.geometry.coordinates[0].forEach((coordinate, index) => {
+          polygonString += coordinate[0] + ' ' + coordinate[1];
+          if (index < feature.geometry.coordinates[0].length - 1) {
+            polygonString += ', ';
+          }
+        });
+        polygonString += "))";
+
+        getAbstractGeo({
+          variables: {
+            polygon: polygonString
+          }
+        });
+
+        setFilterAbstract(true);
+
         //delete feature, and create a copy with custom id
         draw.delete(feature.id);
         feature.id = stateNav.filterFeatureId;
@@ -4062,6 +4073,23 @@ export default function Map() {
         e.features[0].id.includes("draw_rectangle")
       ) {
         let feature = e.features[0];
+
+        let polygonString = "POLYGON((";
+        feature.geometry.coordinates[0].forEach((coordinate, index) => {
+          polygonString += coordinate[0] + ' ' + coordinate[1];
+          if (index < feature.geometry.coordinates[0].length - 1) {
+            polygonString += ', ';
+          }
+        });
+        polygonString += "))";
+
+        getAbstractGeo({
+          variables: {
+            polygon: polygonString
+          }
+        });
+
+        setFilterAbstract(true);
 
         createFilterPopup(feature, map);
 
