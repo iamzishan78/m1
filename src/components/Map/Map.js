@@ -226,6 +226,18 @@ export default function Map() {
     }
   }
 
+  const [hoverAbstractIds, HoverAbstractIds] = useState([]);
+  const setHoverAbstractIds = (id) => {
+    const ids = hoverAbstractIds.slice(0);
+    if (ids.indexOf(id) > -1) {
+      const tmpIds = ids.filter(item => item != id);
+      HoverAbstractIds(tmpIds)
+    } else {
+      ids.push(id);
+      HoverAbstractIds(ids);
+    }
+  }
+
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
 
   //////////// TEMP UNTIL PROVIDER IS MADE //////////
@@ -3449,10 +3461,6 @@ export default function Map() {
 
       const geoJson = makeGeoJSON(data);
 
-      console.log(geoJson);
-
-      console.log(map, map.getSource('abstract_geo_source'), map.getLayer('abstract_geo_layer'));
-
       map.getSource('abstract_geo_source').setData(geoJson);
 
     }
@@ -3497,16 +3505,70 @@ export default function Map() {
 
   useEffect(() => {
     if (map) {
+      map.on('click', 'abstract_geo_fill_layer', function(e) {
+        const map = e.target;
+        if (e.features.length > 0) {
+          if (window.event.ctrlKey) {
+            const featureState = map.getFeatureState({
+              source: 'abstract_geo_source',
+              id: e.features[0].id
+            });
+            console.log(featureState);
+            if (featureState && featureState.click) {
+              map.setFeatureState(
+                { source: 'abstract_geo_source', id: e.features[0].id },
+                { click: false }
+              );
+            } else {
+              map.setFeatureState(
+                { source: 'abstract_geo_source', id: e.features[0].id },
+                { click: true }
+              );
+            }
+          } else {
+            const featuresList = map.getSource('abstract_geo_source')._data.features;
+            for (let i = 0; i < featuresList.length; i ++) {
+              const id = featuresList[i].properties.abstract_n;
+              const featureState = map.getFeatureState({
+                source: 'abstract_geo_source',
+                id: id
+              });
+
+              if (featureState && featureState.click) {
+                map.setFeatureState(
+                  { source: 'abstract_geo_source', id: id },
+                  { click: false }
+                );
+              }
+            }
+
+            map.setFeatureState(
+              { source: 'abstract_geo_source', id: e.features[0].id },
+              { click: true }
+            );
+          }
+        }
+      });
+
       map.on('mousemove', 'abstract_geo_fill_layer', function(e) {
         const map = e.target;
         if (e.features.length > 0) {
-          if (hoveredStateId) {
-            map.setFeatureState(
-              { source: 'abstract_geo_source', id: hoveredStateId },
-              { hover: false }
-            );
+          const featuresList = map.getSource('abstract_geo_source')._data.features;
+          for (let i = 0; i < featuresList.length; i ++) {
+            const id = featuresList[i].properties.abstract_n;
+            const featureState = map.getFeatureState({
+              source: 'abstract_geo_source',
+              id: id
+            });
+
+            if (featureState && featureState.hover) {
+              map.setFeatureState(
+                { source: 'abstract_geo_source', id: id },
+                { hover: false }
+              );
+            }
           }
-          setHoveredStateId(e.features[0].id);
+
           map.setFeatureState(
             { source: 'abstract_geo_source', id: e.features[0].id },
             { hover: true }
@@ -3517,17 +3579,24 @@ export default function Map() {
       map.on('mouseleave', 'abstract_geo_fill_layer', function(e) {
         const map = e.target;
         
-        if (hoveredStateId) {
-          map.setFeatureState(
-            { source: 'abstract_geo_source', id: hoveredStateId },
-            { hover: false }
-          );
+        const featuresList = map.getSource('abstract_geo_source')._data.features;
+        for (let i = 0; i < featuresList.length; i ++) {
+          const id = featuresList[i].properties.abstract_n;
+          const featureState = map.getFeatureState({
+            source: 'abstract_geo_source',
+            id: id
+          });
+
+          if (featureState && featureState.hover) {
+            map.setFeatureState(
+              { source: 'abstract_geo_source', id: id },
+              { hover: false }
+            );
+          }
         }
-        setHoveredStateId(null);
       });
     }
-    console.log(hoveredStateId);
-  }, [hoveredStateId, map])
+  }, [map])
 
   useEffect(() => {
     console.log("useEffect 27");
@@ -3788,8 +3857,8 @@ export default function Map() {
               'fill-color': '#888',
               'fill-opacity': [
                 'case',
-                ['boolean', ['feature-state', 'hover'], false],
-                0.5,
+                ['boolean', ['feature-state', 'hover'], false], 0.5,
+                ['boolean', ['feature-state', 'click'], false], 0.5,
                 0
               ]
             }
