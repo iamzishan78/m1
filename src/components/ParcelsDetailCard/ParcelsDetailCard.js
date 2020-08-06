@@ -85,6 +85,10 @@ export default function ParcelsDetailCard(props) {
     owners: [],
   });
 
+  const setQtrQtr = (qtrQtr) => {
+    setParcelData((parcelData) => ({ ...parcelData, qtrQtr }));
+  };
+
   // return stateApp.selectedOwner ?
   return (
     <Grid container className={classes.gridWidthScroll} spacing={0}>
@@ -142,7 +146,7 @@ export default function ParcelsDetailCard(props) {
         >
           <Grid container spacing={2}>
             <Grid item xs={12} style={{ display: "flex" }}>
-              <QtrQtrSelector parcelData={parcelData} />
+              <QtrQtrSelector parcelData={parcelData} setQtrQtr={setQtrQtr} />
               <div style={{ width: "Calc( 100% - 273px)" }}>
                 <p className="formLabel" style={{ marginTop: "0" }}>
                   Gross Acres
