@@ -1241,7 +1241,6 @@ function SubTable(props) {
                 contactId={rows[rowInd]._id}
               />
             )}
-
             {openDialog === "addContact" && props.targetLabel === "contact" && (
               <AddContactDialogContent
                 onClose={handleCloseDialog}
