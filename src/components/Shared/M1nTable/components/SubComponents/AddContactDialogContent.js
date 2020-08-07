@@ -3,18 +3,21 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
-import { Grid } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
-import { makeStyles } from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import Taps from "../../../Taps";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import { Grid } from "@material-ui/core";
+import { AppContext } from "../../../../../AppContext";
+import { Modals } from "../../../../../styles/Modal";
 import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { CONTACTSQUERY } from "../../../../../graphQL/useQueryContacts";
 import { CONTACTSBYOWNERSID } from "../../../../../graphQL/useQueryContactsByOwnerId";
 import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
 import { ADDREMOVEOWNERTOACONTACT } from "../../../../../graphQL/useMutationAddRemoveOwnerToAContact";
-import Taps from "../../../Taps";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { AppContext } from "../../../../../AppContext";
+import { makeStyles } from "@material-ui/core/styles";
+
 
 const phonenumber = (inputtxt) => {
   if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
@@ -239,6 +242,7 @@ export default function AddContactDialogContent(props) {
   const selectExisting = () => {
     return (
       <React.Fragment>
+        <div style={{paddingTop: '15%'}}>
         {!loadingContacts && !loadingContactsByOwnerId ? (
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -274,6 +278,7 @@ export default function AddContactDialogContent(props) {
         ) : (
           <CircularProgress size={40} disableShrink color="secondary" />
         )}
+        </div>
       </React.Fragment>
     );
   };
@@ -283,12 +288,12 @@ export default function AddContactDialogContent(props) {
       <React.Fragment>
         <Grid container spacing={2}>
           <Grid item xs={12}>
+            <h3>Name</h3>
             <TextField
               size="small"
+              placeholder="E.g. Jacob"
               className={classes.maxWidth}
-              label="Name"
               multiline
-              variant="outlined"
               value={newContact.name}
               onChange={(e) => {
                 setNewContact({
@@ -299,12 +304,12 @@ export default function AddContactDialogContent(props) {
             />
           </Grid>
           <Grid item xs={6}>
+            <h3>Mobile Phone</h3>
             <TextField
               size="small"
+              placeholder="E.g. xxx-xxx-xxxx"
               className={classes.maxWidth}
-              label="Mobile Phone"
               multiline
-              variant="outlined"
               value={newContact.mobilePhone}
               onChange={(e) => {
                 if (phonenumber(e.target.value)) {
@@ -317,12 +322,12 @@ export default function AddContactDialogContent(props) {
             />
           </Grid>
           <Grid item xs={6}>
+            <h3>Home Phone</h3>
             <TextField
               size="small"
+              placeholder="E.g. xxx-xxx-xxxx"
               className={classes.maxWidth}
-              label="Home Phone"
               multiline
-              variant="outlined"
               value={newContact.homePhone}
               onChange={(e) => {
                 if (phonenumber(e.target.value)) {
@@ -335,12 +340,12 @@ export default function AddContactDialogContent(props) {
             />
           </Grid>
           <Grid item xs={12}>
+            <h3>Email</h3>
             <TextField
               size="small"
+              placeholder="E.g. jacob@m1neral.com"
               className={classes.maxWidth}
-              label="Email"
               multiline
-              variant="outlined"
               value={newContact.primaryEmail}
               onChange={(e) => {
                 if (email(e.target.value)) {
@@ -353,12 +358,11 @@ export default function AddContactDialogContent(props) {
             />
           </Grid>
           <Grid item xs={12}>
+            <h3>Address #1</h3>
             <TextField
               size="small"
               className={classes.maxWidth}
-              label="Address 1"
               multiline
-              variant="outlined"
               value={newContact.address1}
               onChange={(e) => {
                 setNewContact({
@@ -369,12 +373,11 @@ export default function AddContactDialogContent(props) {
             />
           </Grid>
           <Grid item xs={12}>
+            <h3>Address #2</h3>
             <TextField
               size="small"
               className={classes.maxWidth}
-              label="Address 2"
               multiline
-              variant="outlined"
               value={newContact.address2}
               onChange={(e) => {
                 setNewContact({
@@ -385,12 +388,11 @@ export default function AddContactDialogContent(props) {
             />
           </Grid>
           <Grid item xs={12}>
+            <h3>City</h3>
             <TextField
               size="small"
               className={classes.maxWidth}
-              label="City"
               multiline
-              variant="outlined"
               value={newContact.city}
               onChange={(e) => {
                 setNewContact({
@@ -401,12 +403,11 @@ export default function AddContactDialogContent(props) {
             />
           </Grid>
           <Grid item xs={6}>
+            <h3>State</h3>
             <TextField
               size="small"
               className={classes.maxWidth}
-              label="State"
               multiline
-              variant="outlined"
               value={newContact.state}
               onChange={(e) => {
                 setNewContact({
@@ -417,12 +418,11 @@ export default function AddContactDialogContent(props) {
             />
           </Grid>
           <Grid item xs={6}>
+            <h3>Zip Code</h3>
             <TextField
               size="small"
               className={classes.maxWidth}
-              label="Zip Code"
               multiline
-              variant="outlined"
               value={newContact.zip}
               onChange={(e) => {
                 if (zipCopde(e.target.value)) {
@@ -435,12 +435,11 @@ export default function AddContactDialogContent(props) {
             />
           </Grid>
           <Grid item xs={12}>
+            <h3>Country</h3>
             <TextField
-              size="small"
+              size="Country"
               className={classes.maxWidth}
-              label="Country"
               multiline
-              variant="outlined"
               value={newContact.country}
               onChange={(e) => {
                 setNewContact({
@@ -460,14 +459,13 @@ export default function AddContactDialogContent(props) {
   };
 
   const classes = useStyles(contacts && contacts.length > 0 ? true : false);
+  const modalClass = Modals();
 
   return !loadingContacts && !loadingContactsByOwnerId ? (
     <React.Fragment>
-      <DialogTitle
-        id="alert-dialog-slide-title"
-        className={classes.dialogTitle}
-      >
+      <DialogTitle className={modalClass.title} id="customized-dialog-title">
         Add a Contact
+        <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={props.onClose}/>
       </DialogTitle>
       <DialogContent dividers className={classes.dialogContent}>
         {contacts && contacts.length > 0 ? (

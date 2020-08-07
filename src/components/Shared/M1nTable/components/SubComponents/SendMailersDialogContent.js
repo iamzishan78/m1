@@ -1,19 +1,18 @@
 import React, { useEffect } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
+import { Grid } from "@material-ui/core";
+import { Modals } from "../../../../../styles/Modal";
 import DialogActions from "@material-ui/core/DialogActions";
+import FormLabel from "@material-ui/core/FormLabel";
 import Button from "@material-ui/core/Button";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import DialogContent from "@material-ui/core/DialogContent";
-import { Grid } from "@material-ui/core";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableRow from "@material-ui/core/TableRow";
-import DeleteIcon from "@material-ui/icons/Delete";
 import TextField from "@material-ui/core/TextField";
+import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 const styles = (theme) => ({
   root: {
@@ -93,6 +92,7 @@ const useStyles = makeStyles({});
 
 export default function SendMailersDialogContent(props) {
   const classes = useStyles();
+  const modalClass = Modals();
 
   useEffect(() => {
     if (!props.rows || props.rows.length === 0) props.onClose();
@@ -100,74 +100,50 @@ export default function SendMailersDialogContent(props) {
 
   return (
     <React.Fragment>
-      <DialogTitle id="customized-dialog-title" onClose={props.onClose}>
+      <DialogTitle className={modalClass.title} id="customized-dialog-title">
         Mailing Campaign
+        <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={props.onClose}/>
       </DialogTitle>
       <DialogContent>
-        <Grid container spacing={2} style={{ paddingBottom: "10px" }}>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <h3 style={{padding: 0, marginTop: '20px', marginBottom: 0}}>Name</h3>
+          </Grid>
           <Grid item xs={12}>
             <TextField
-              label="Name"
               margin="none"
-              variant="outlined"
+              placeholder="E.g. Jacob"
               style={{ width: "100%", marginBottom: "10px" }}
             />
           </Grid>
-          <Grid item xs={6}>
-            <h3 style={{ margin: "0" }}>
-              {props.rows && props.rows.length ? props.rows.length : ""} Owner
-              {props.rows && props.rows.length && props.rows.length > 1
-                ? "s"
-                : ""}{" "}
-              To Send Mailers
+          <Grid item xs={12} style={{marginTop: '15px'}}>
+            <h3 style={{margin: "0"}}>
+              Send Mailers
             </h3>
           </Grid>
-          <Grid item xs={12}>
-            <Table size="small" aria-label="a dense table">
-              <TableBody
-                style={{ borderTop: "1px solid rgba(224, 224, 224, 1)" }}
-              >
-                {props.rows &&
-                  props.rows.map((row, index) => (
-                    <TableRow key={row._id}>
-                      <TableCell
-                        component="th"
-                        scope="row"
-                        style={{ padding: "0 0 0 10px", fontSize: "0.8rem" }}
-                      >
-                        {row.name}
-                      </TableCell>
-
-                      <TableCell
-                        align="right"
-                        style={{ padding: "0 0 0 10px", fontSize: "0.8rem" }}
-                      >
-                        {joinAddress(row)}
-                      </TableCell>
-                      <TableCell
-                        align="right"
-                        style={{ padding: "0 0 0 10px", fontSize: "0.8rem" }}
-                      >
-                        <IconButton
-                          aria-label="delete"
-                          onClick={() => {
-                            let reducedRows = [...props.rows];
-                            reducedRows.splice(index, 1);
-                            props.setRows(reducedRows);
-                          }}
-                          size="small"
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
+          <Grid item xs={12} style={{margin: 0, paddingTop: 0}}>
+            <FormLabel>
+              {props.rows && props.rows.length ? props.rows.length : ""} selected
+            </FormLabel>
           </Grid>
+          {props.rows &&
+            props.rows.map((row, index) => (
+              <Grid item xs={12} className={modalClass.inputContainer}>
+                <FormLabel className={modalClass.inputLabel}>
+                  {row.name}
+                </FormLabel>
+                <FormLabel className={modalClass.inputContent}>
+                 <DeleteOutlinedIcon fontSize="small" style={{cursor:'pointer', float:'right'}} onClick={()=> {
+                    let reducedRows = [...props.rows];
+                    reducedRows.splice(index, 1);
+                    props.setRows(reducedRows);
+                 }}/>
+                </FormLabel>
+              </Grid>
+            ))}
         </Grid>
       </DialogContent>
-      <DialogActions>
+      <DialogActions className={modalClass.actionButtons}>
         <Button
           onClick={() => {
             props.onClose();
