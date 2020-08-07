@@ -77,7 +77,7 @@ const rows = [
 
 const main_div = {
   textAlign: "center",
-  padding: "1.5vh",
+  padding: "10px 12%",
 };
 const upload_box = {
   margin: "0 auto",
@@ -85,9 +85,7 @@ const upload_box = {
   borderRadius: "0px !important",
   background: "#f7f7f7",
 };
-const upload_box_div = {
-  height: "30vh",
-};
+
 const big_text = {
   fontSize: "20px",
   fontWeight: "bold",
@@ -99,11 +97,17 @@ const small_grey_text = {
   color: "#a6a6a6",
 };
 const big_grey_text = {
-  fontSize: "20px",
+  fontSize: "15px",
   color: "#a6a6a6",
 };
 const padding_div_top = {
   paddingTop: "3vh",
+};
+const padding_div = {
+  padding: "16px 0",
+};
+const padidng_20 = {
+  padding: "20px 0",
 };
 const normal_padidng = {
   padding: "5vh",
@@ -127,18 +131,16 @@ const style_papaer = {
   margin: "0px auto",
 };
 const uploadText = {
-  paddingBottom: "15px",
+  paddingBottom: "8px",
   color: "#a6a6a6",
 };
 const linkContent = {
+  fontSize: "15px",
   textDecorationLine: "none",
   color: "rgba(23, 170, 221, 1)",
 };
 const mainContent = {
-  padding: "3vh",
-};
-const padding_1vh = {
-  padding: "1vh",
+  padding: "14px 0",
 };
 
 const StyledTableCell = withStyles((theme) => ({
@@ -210,10 +212,10 @@ export default function CSVFileReader(props) {
       <div style={{ ...big_text, ...padding_div_top }}>
         Select a File to Import
       </div>
-      <div style={{ ...text_grey, ...padding_div_top }}>
+      <div style={{ ...text_grey, ...padding_div }}>
         Don't forget to upload CSV with first row containing the column headers
       </div>
-      <div style={{ ...padding_div_top, ...upload_box_div }}>
+      <div>
         <CSVReader
           onDrop={handleOnDrop}
           onError={handleOnError}
@@ -231,7 +233,7 @@ export default function CSVFileReader(props) {
           </Button>
         </CSVReader>
       </div>
-      <div style={{ ...text_grey, ...normal_padidng }}>
+      <div style={{ ...text_grey, ...padidng_20 }}>
         Your data is private. We don't share relationships with anyone
       </div>
       <div style={sample_table_area}>
@@ -239,7 +241,7 @@ export default function CSVFileReader(props) {
           Preferred File Setup
         </div>
         <div style={mainContent}>
-          <div style={{ ...big_grey_text, ...padding_1vh }}>
+          <div style={big_grey_text}>
             A CSV with these columns will yield good results
           </div>
           <a

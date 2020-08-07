@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { Radio } from "@material-ui/core";
+import { Radio, Checkbox } from "@material-ui/core";
 import clsx from "clsx";
 import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
@@ -20,10 +20,9 @@ import { ADDBULKCONTACT } from "../../../graphQL/useMutationAddBulkContacts";
 
 const QontoConnector = withStyles({
   alternativeLabel: {
-    flexDirection: "column-reverse",
-    top: 49,
-    left: "calc(-50% + 16px)",
-    right: "calc(50% + 16px)",
+    flexDirection: "column",
+    left: "calc(-50% + 12px)",
+    right: "calc(50% + 12px)",
   },
   active: {
     "& $line": {
@@ -44,7 +43,7 @@ const QontoConnector = withStyles({
 
 const NewSteplabel = withStyles({
   alternativeLabel: {
-    flexDirection: "column-reverse !important",
+    flexDirection: "column !important",
   },
   active: {
     color: "#17aadd !important",
@@ -59,7 +58,7 @@ const useQontoStepIconStyles = makeStyles({
     display: "flex",
     height: 22,
     alignItems: "center",
-    flexDirection: "column-reverse !important",
+    flexDirection: "column !important",
   },
   active: {
     color: "#17aadd",
@@ -76,15 +75,16 @@ const useQontoStepIconStyles = makeStyles({
     fontSize: 18,
   },
   alternativeLabel: {
-    flexDirection: "column-reverse !important",
+    flexDirection: "column !important",
   },
 });
 
 const style_radio = {
-  padding: "0px",
   color: "#17aadd",
   width: 15,
   height: 15,
+  border: "3px solid #17aadd",
+  borderRadius: "50%",
 };
 const style_hollow_grey = {
   height: 15,
@@ -104,11 +104,11 @@ function QontoStepIcon(props) {
       })}
     >
       {completed ? (
-        <div className={classes.circle} />
+        <Checkbox style={style_radio} color="primary" checked={true} />
       ) : active ? (
-        <Radio style={style_radio} color="primary" checked={true} />
+        <Checkbox style={style_radio} color="primary" checked={true} />
       ) : (
-        <div style={style_hollow_grey} />
+        <Checkbox style={style_hollow_grey} color="primary" checked={true} />
       )}
     </div>
   );
@@ -158,7 +158,7 @@ const mapping_buttons_div = {
   textAlign: "center",
 };
 const stepper_style = {
-  padding: "3px 24px",
+  padding: "35px 24px",
 };
 export default function CustomizedSteppers(props) {
   const classes = useStyles();
@@ -248,8 +248,6 @@ export default function CustomizedSteppers(props) {
           </Step>
         ))}
       </Stepper>
-      <br />
-      <hr />
       <div>
         <div>
           <div>
