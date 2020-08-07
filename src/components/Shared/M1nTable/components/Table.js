@@ -47,7 +47,9 @@ import {
   showSuccessMessage,
   showWarningMessage,
   showErrorMessage,
+  setMapGridCardState,
 } from "../../../../actions";
+import { deepEqualObjects } from "../../functions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -174,28 +176,98 @@ var formatter = new Intl.NumberFormat("en-US", {
   maximumSignificantDigits: 21,
 });
 
-export default function SubTable(props) {
+function SubTable(props) {
   const classes = useStyles(props);
   const dispatch = useDispatch();
 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [rows, setRows] = useState(null);
-  const [columns, setColumns] = useState([]);
+  const [rows, Rows] = useState([]);
+  const setRows = (state) => {
+    if (!deepEqualObjects(rows, state)) {
+      Rows(state);
+    }
+  };
+  const [columns, Columns] = useState([]);
+  const setColumns = (state) => {
+    if (!deepEqualObjects(columns, state)) {
+      Columns(state);
+    }
+  };
 
-  const [colInd, setColInd] = useState();
-  const [rowInd, setRowInd] = useState();
-  const [expandedObject, setExpandedObject] = useState();
-  const [openDialog, setOpenDialog] = useState(false);
+  const [colInd, ColInd] = useState();
+  const setColInd = (state) => {
+    if (!deepEqualObjects(colInd, state)) {
+      ColInd(state);
+    }
+  };
+  const [rowInd, RowInd] = useState();
+  const setRowInd = (state) => {
+    if (!deepEqualObjects(rowInd, state)) {
+      RowInd(state);
+    }
+  };
+  const [expandedObject, ExpandedObject] = useState();
+  const setExpandedObject = (state) => {
+    if (!deepEqualObjects(expandedObject, state)) {
+      ExpandedObject(state);
+    }
+  };
+  const [openDialog, OpenDialog] = useState(false);
+  const setOpenDialog = (state) => {
+    if (!deepEqualObjects(openDialog, state)) {
+      OpenDialog(state);
+    }
+  };
 
-  const [showExpandableCard, setShowExpandableCard] = useState(false);
-  const [selectedRow, setSelectedRow] = useState();
-  const [subComponent, setSubComponent] = useState(null);
-  const [title, setTitle] = useState("");
-  const [subTitle, setSubTitle] = useState("");
+  const [showExpandableCard, ShowExpandableCard] = useState(false);
+  const setShowExpandableCard = (state) => {
+    if (!deepEqualObjects(showExpandableCard, state)) {
+      ShowExpandableCard(state);
+    }
+  };
+  const [selectedRow, SelectedRow] = useState();
+  const setSelectedRow = (state) => {
+    if (!deepEqualObjects(selectedRow, state)) {
+      SelectedRow(state);
+    }
+  };
+  const [subComponent, SubComponent] = useState(null);
+  const setSubComponent = (state) => {
+    if (!deepEqualObjects(subComponent, state)) {
+      SubComponent(state);
+    }
+  };
+  const [title, Title] = useState("");
+  const setTitle = (state) => {
+    if (!deepEqualObjects(title, state)) {
+      Title(state);
+    }
+  };
+  const [subTitle, SubTitle] = useState("");
+  const setSubTitle = (state) => {
+    if (!deepEqualObjects(subTitle, state)) {
+      SubTitle(state);
+    }
+  };
 
-  const [m1nSelectedRowsIndexes, setM1nSelectedRowsIndexes] = useState([]);
-  const [m1nSelectedRowsIds, setM1nSelectedRowsIds] = useState([]);
-  const [m1nSelectedRowsTracks, setM1nSelectedRowsTracks] = useState([]);
+  const [m1nSelectedRowsIndexes, M1nSelectedRowsIndexes] = useState([]);
+  const setM1nSelectedRowsIndexes = (state) => {
+    if (!deepEqualObjects(m1nSelectedRowsIndexes, state)) {
+      M1nSelectedRowsIndexes(state);
+    }
+  };
+  const [m1nSelectedRowsIds, M1nSelectedRowsIds] = useState([]);
+  const setM1nSelectedRowsIds = (state) => {
+    if (!deepEqualObjects(m1nSelectedRowsIds, state)) {
+      M1nSelectedRowsIds(state);
+    }
+  };
+  const [m1nSelectedRowsTracks, M1nSelectedRowsTracks] = useState([]);
+  const setM1nSelectedRowsTracks = (state) => {
+    if (!deepEqualObjects(m1nSelectedRowsTracks, state)) {
+      M1nSelectedRowsTracks(state);
+    }
+  };
 
   useEffect(() => {
     if (props.rows) {
@@ -266,7 +338,7 @@ export default function SubTable(props) {
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (value && value.length === 2)
+                          if (value && value.length === 2) {
                             setStateApp((state) => ({
                               ...state,
                               popupOpen: false,
@@ -276,8 +348,14 @@ export default function SubTable(props) {
                                 longitude: value[0],
                                 latitude: value[1],
                               },
-                              mapGridCardActivated: "min",
                             }));
+
+                            dispatch(
+                              setMapGridCardState({
+                                mapGridCardActivated: "min",
+                              })
+                            );
+                          }
                         }}
                         aria-label="fly"
                         // onMouseOver={() => {
@@ -1272,7 +1350,7 @@ export default function SubTable(props) {
           </Dialog>
         )}
       </div>
-      )
+
       {props.loading && (
         <div
           style={{
@@ -1289,3 +1367,14 @@ export default function SubTable(props) {
     </div>
   );
 }
+
+function areEqual(prevProps, nextProps) {
+  if (!deepEqualObjects(prevProps, nextProps)) {
+    // console.log(`${prevProps.toString()} ... ${nextProps.toString()}`)
+    return false;
+  }
+
+  return true
+}
+
+export default React.memo(SubTable, areEqual);

@@ -101,6 +101,7 @@ import SearchBarWithToggleButton from "./components/SearchBarWithToggleButton";
 import Avatar from "react-avatar";
 import ContactFormModal from "./components/ContactFormModal";
 import { GETPROFILEIMAGE } from "../../graphQL/useQueryGetProfile";
+import { useDispatch, useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/react-hooks";
 
 import {
@@ -224,7 +225,8 @@ const useStyles = makeStyles((theme) => ({
     // },
     marginRight: theme.spacing(2),
     marginLeft: 5,
-    width: ({ stateApp }) => (stateApp.mapGridCardActivated ? "80px" : "34%"),
+    width: ({ mapGridCardActivated }) =>
+      mapGridCardActivated ? "80px" : "34%",
     transition: "width 0.5s",
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
@@ -665,6 +667,10 @@ TabPanel.propTypes = {
 const drawerWidth = "250px";
 
 export default function Navigation(props) {
+  const dispatch = useDispatch();
+  const mapGridCardActivated = useSelector(
+    ({ MapGridCard }) => MapGridCard.mapGridCardActivated
+  );
   const theme = useTheme();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -684,7 +690,7 @@ export default function Navigation(props) {
   const [matchTransact, setMatchTransact] = useState(false);
   const [matchFind, setMatchFind] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
-  const classes = useStyles({ stateApp });
+  const classes = useStyles({ mapGridCardActivated });
   const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE);
   useEffect(() => {
     if (stateApp?.user?.email) {
