@@ -16,7 +16,7 @@ import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
 import MapGridCardSearch from "./components/MapGridCardSearch";
 import M1nTable from "../Shared/M1nTable/M1nTable";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import Button from "@material-ui/core/Button";
 import { setMapGridCardState } from "../../actions";
 
@@ -179,7 +179,12 @@ const TabLabels = ({ labels, value, setValue }) => {
   );
 };
 
-const TabPanels = ({ panels, value }) => {
+function tabPanelsPropsAreEqual(prevProps, nextProps) {
+  console.log(`${prevProps.value} ... ${nextProps.value}`)
+  return Object.is(prevProps.value, nextProps.value);
+}
+
+const TabPanels = React.memo(({ panels, value }) => {
   console.log(`ue mapgridcard tabpanels ${(panels, value)}`);
 
   const classes = useStyles();
@@ -192,7 +197,7 @@ const TabPanels = ({ panels, value }) => {
       </TabPanel>
     ))
   );
-};
+}, tabPanelsPropsAreEqual);
 
 const wellsColumnHeaders = [
   {
@@ -257,7 +262,9 @@ function MapGridCard(props) {
     searchResultData,
     viewportData,
     trackedDataCount,
-  } = useSelector(({ MapGridCard }) => MapGridCard);
+  } = useSelector(({ MapGridCard }) => MapGridCard,
+    shallowEqual
+  );
   const [searchTapValue, SearchTapValue] = useState(0);
   const setSearchTapValue = (state) => {
     if (searchTapValue != state) {
@@ -334,10 +341,11 @@ function MapGridCard(props) {
       value={searchTapValue}
       setValue={(n) => {
         setSearchTapValue(n);
-        if (searchTapValue !== n)
+        if (searchTapValue !== n) {
           dispatch(
             setMapGridCardState({ searchResultData: [], searchloading: true })
           );
+        }
       }}
     />
   );
@@ -355,8 +363,9 @@ function MapGridCard(props) {
             mapGridCardActivated === "exp" ? "cancelDraggableEffect" : ""
           } ${classes.appBar}`}
           onClick={() => {
-            if (mapGridCardActivated === "min")
+            if (mapGridCardActivated === "min") {
               dispatch(setMapGridCardState({ mapGridCardActivated: true }));
+            }
           }}
         >
           <Toolbar style={{ paddingRight: "0" }}>
@@ -434,8 +443,9 @@ function MapGridCard(props) {
             <MapGridCardSearch
               ativateSearchPanel={() => {
                 if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
-                if (mapGridCardActivated === "min")
+                if (mapGridCardActivated === "min") {
                   dispatch(setMapGridCardState({ mapGridCardActivated: true }));
+                }
               }}
               searchOption={getTargetFromSearchTaps()}
             />
@@ -599,4 +609,9 @@ function MapGridCard(props) {
   );
 }
 
-export default React.memo(MapGridCard);
+function areEqual(prevProps, nextProps) {
+  console.log(`${prevProps.mapGridCardActivated} ... ${nextProps.mapGridCardActivated}`)
+  return Object.is(prevProps.mapGridCardActivated, nextProps.mapGridCardActivated);
+}
+
+export default React.memo(MapGridCard, areEqual);

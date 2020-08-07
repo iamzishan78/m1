@@ -6,6 +6,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import parse from "autosuggest-highlight/parse";
 import throttle from "lodash/throttle";
+import debounce from "lodash/debounce";
 import { useMutation } from "@apollo/react-hooks";
 import { CircularProgress } from "@material-ui/core";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -37,7 +38,7 @@ export default function AddOwnerToContactDialogContent(props) {
 
   const callOwnerSearch = React.useMemo(
     () =>
-      throttle((request, top, callback) => {
+      debounce((request, top, callback) => {
         const endpoint =
           "https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName%2CAddress1&%24top=" +
           top +
@@ -61,7 +62,7 @@ export default function AddOwnerToContactDialogContent(props) {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 

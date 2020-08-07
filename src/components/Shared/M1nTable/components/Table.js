@@ -181,90 +181,90 @@ function SubTable(props) {
   const dispatch = useDispatch();
 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [rows, Rows] = useState(null);
+  const [rows, Rows] = useState([]);
   const setRows = (state) => {
-    if (rows != state) {
+    if (!deepEqualObjects(rows, state)) {
       Rows(state);
     }
   };
   const [columns, Columns] = useState([]);
   const setColumns = (state) => {
-    if (columns != state) {
+    if (!deepEqualObjects(columns, state)) {
       Columns(state);
     }
   };
 
   const [colInd, ColInd] = useState();
   const setColInd = (state) => {
-    if (colInd != state) {
+    if (!deepEqualObjects(colInd, state)) {
       ColInd(state);
     }
   };
   const [rowInd, RowInd] = useState();
   const setRowInd = (state) => {
-    if (rowInd != state) {
+    if (!deepEqualObjects(rowInd, state)) {
       RowInd(state);
     }
   };
   const [expandedObject, ExpandedObject] = useState();
   const setExpandedObject = (state) => {
-    if (expandedObject != state) {
+    if (!deepEqualObjects(expandedObject, state)) {
       ExpandedObject(state);
     }
   };
   const [openDialog, OpenDialog] = useState(false);
   const setOpenDialog = (state) => {
-    if (openDialog != state) {
+    if (!deepEqualObjects(openDialog, state)) {
       OpenDialog(state);
     }
   };
 
   const [showExpandableCard, ShowExpandableCard] = useState(false);
   const setShowExpandableCard = (state) => {
-    if (showExpandableCard != state) {
+    if (!deepEqualObjects(showExpandableCard, state)) {
       ShowExpandableCard(state);
     }
   };
   const [selectedRow, SelectedRow] = useState();
   const setSelectedRow = (state) => {
-    if (selectedRow != state) {
+    if (!deepEqualObjects(selectedRow, state)) {
       SelectedRow(state);
     }
   };
   const [subComponent, SubComponent] = useState(null);
   const setSubComponent = (state) => {
-    if (subComponent != state) {
+    if (!deepEqualObjects(subComponent, state)) {
       SubComponent(state);
     }
   };
   const [title, Title] = useState("");
   const setTitle = (state) => {
-    if (title != state) {
+    if (!deepEqualObjects(title, state)) {
       Title(state);
     }
   };
   const [subTitle, SubTitle] = useState("");
   const setSubTitle = (state) => {
-    if (subTitle != state) {
+    if (!deepEqualObjects(subTitle, state)) {
       SubTitle(state);
     }
   };
 
   const [m1nSelectedRowsIndexes, M1nSelectedRowsIndexes] = useState([]);
   const setM1nSelectedRowsIndexes = (state) => {
-    if (m1nSelectedRowsIndexes != state) {
+    if (!deepEqualObjects(m1nSelectedRowsIndexes, state)) {
       M1nSelectedRowsIndexes(state);
     }
   };
   const [m1nSelectedRowsIds, M1nSelectedRowsIds] = useState([]);
   const setM1nSelectedRowsIds = (state) => {
-    if (m1nSelectedRowsIds != state) {
+    if (!deepEqualObjects(m1nSelectedRowsIds, state)) {
       M1nSelectedRowsIds(state);
     }
   };
   const [m1nSelectedRowsTracks, M1nSelectedRowsTracks] = useState([]);
   const setM1nSelectedRowsTracks = (state) => {
-    if (m1nSelectedRowsTracks != state) {
+    if (!deepEqualObjects(m1nSelectedRowsTracks, state)) {
       M1nSelectedRowsTracks(state);
     }
   };
@@ -1368,4 +1368,13 @@ function SubTable(props) {
   );
 }
 
-export default React.memo(SubTable, deepEqualObjects);
+function areEqual(prevProps, nextProps) {
+  if (!deepEqualObjects(prevProps, nextProps)) {
+    // console.log(`${prevProps.toString()} ... ${nextProps.toString()}`)
+    return false;
+  }
+
+  return true
+}
+
+export default React.memo(SubTable, areEqual);

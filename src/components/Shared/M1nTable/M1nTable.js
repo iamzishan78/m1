@@ -737,69 +737,69 @@ function M1nTable(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [rows, Rows] = useState();
+  const [rows, Rows] = useState([]);
   const setRows = (state) => {
-    if (rows != state) {
+    if (!deepEqualObjects(rows, state)) {
       Rows(state);
     }
   };
   const [header, Header] = useState("");
   const setHeader = (state) => {
-    if (header != state) {
+    if (!deepEqualObjects(header, state)) {
       Header(state);
     }
   };
   const [columns, Columns] = useState([]);
   const setColumns = (state) => {
-    if (columns != state) {
+    if (!deepEqualObjects(columns, state)) {
       Columns(state);
     }
   };
   const [loading, Loading] = useState(true);
   const setLoading = (state) => {
-    if (loading != state) {
+    if (!deepEqualObjects(loading, state)) {
       Loading(state);
     }
   };
   const [addAble, AddAble] = useState(true);
   const setAddAble = (state) => {
-    if (addAble != state) {
+    if (!deepEqualObjects(addAble, state)) {
       AddAble(state);
     }
   };
   const [uploadIcon, UploadIcon] = useState(null);
   const setUploadIcon = (state) => {
-    if (uploadIcon != state) {
+    if (!deepEqualObjects(uploadIcon, state)) {
       UploadIcon(state);
     }
   };
   const [targetLabel, TargetLabel] = useState(null);
   const setTargetLabel = (state) => {
-    if (targetLabel != state) {
+    if (!deepEqualObjects(targetLabel, state)) {
       TargetLabel(state);
     }
   };
   const [deleteFunc, DeleteFunc] = useState(null);
   const setDeleteFunc = (state) => {
-    if (deleteFunc != state) {
+    if (!deepEqualObjects(deleteFunc, state)) {
       DeleteFunc(state);
     }
   };
   const [showTracks, ShowTracks] = useState(true);
   const setShowTracks = (state) => {
-    if (showTracks != state) {
+    if (!deepEqualObjects(showTracks, state)) {
       ShowTracks(state);
     }
   };
   const [orderByTracks, OrderByTracks] = useState(true);
   const setOrderByTracks = (state) => {
-    if (orderByTracks != state) {
+    if (!deepEqualObjects(orderByTracks, state)) {
       OrderByTracks(state);
     }
   };
   const [startPaginationAt, StartPaginationAt] = useState();
   const setStartPaginationAt = (state) => {
-    if (startPaginationAt != state) {
+    if (!deepEqualObjects(startPaginationAt, state)) {
       StartPaginationAt(state);
     }
   };
@@ -2334,4 +2334,13 @@ function M1nTable(props) {
   );
 }
 
-export default React.memo(M1nTable, deepEqualObjects);
+function areEqual(prevProps, nextProps) {
+  if (!deepEqualObjects(prevProps, nextProps)) {
+    // console.log(`${prevProps.toString()} ... ${nextProps.toString()}`)
+    return false;
+  }
+
+  return true
+}
+
+export default React.memo(M1nTable, areEqual);
