@@ -36,7 +36,7 @@ import { CONTACT } from "../../../graphQL/useQueryContact";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
 
 import { useDispatch, useSelector } from "react-redux";
-import { deepEqualObjects } from "../functions";
+import { deepEqualObjects, deepEqual } from "../functions";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
@@ -739,67 +739,67 @@ function M1nTable(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, Rows] = useState([]);
   const setRows = (state) => {
-    if (!deepEqualObjects(rows, state)) {
+    if (!deepEqual(rows, state)) {
       Rows(state);
     }
   };
   const [header, Header] = useState("");
   const setHeader = (state) => {
-    if (!deepEqualObjects(header, state)) {
+    if (!deepEqual(header, state)) {
       Header(state);
     }
   };
   const [columns, Columns] = useState([]);
   const setColumns = (state) => {
-    if (!deepEqualObjects(columns, state)) {
+    if (!deepEqual(columns, state)) {
       Columns(state);
     }
   };
   const [loading, Loading] = useState(true);
   const setLoading = (state) => {
-    if (!deepEqualObjects(loading, state)) {
+    if (!deepEqual(loading, state)) {
       Loading(state);
     }
   };
   const [addAble, AddAble] = useState(true);
   const setAddAble = (state) => {
-    if (!deepEqualObjects(addAble, state)) {
+    if (!deepEqual(addAble, state)) {
       AddAble(state);
     }
   };
   const [uploadIcon, UploadIcon] = useState(null);
   const setUploadIcon = (state) => {
-    if (!deepEqualObjects(uploadIcon, state)) {
+    if (!deepEqual(uploadIcon, state)) {
       UploadIcon(state);
     }
   };
   const [targetLabel, TargetLabel] = useState(null);
   const setTargetLabel = (state) => {
-    if (!deepEqualObjects(targetLabel, state)) {
+    if (!deepEqual(targetLabel, state)) {
       TargetLabel(state);
     }
   };
   const [deleteFunc, DeleteFunc] = useState(null);
   const setDeleteFunc = (state) => {
-    if (!deepEqualObjects(deleteFunc, state)) {
+    if (!deepEqual(deleteFunc, state)) {
       DeleteFunc(state);
     }
   };
   const [showTracks, ShowTracks] = useState(true);
   const setShowTracks = (state) => {
-    if (!deepEqualObjects(showTracks, state)) {
+    if (!deepEqual(showTracks, state)) {
       ShowTracks(state);
     }
   };
   const [orderByTracks, OrderByTracks] = useState(true);
   const setOrderByTracks = (state) => {
-    if (!deepEqualObjects(orderByTracks, state)) {
+    if (!deepEqual(orderByTracks, state)) {
       OrderByTracks(state);
     }
   };
   const [startPaginationAt, StartPaginationAt] = useState();
   const setStartPaginationAt = (state) => {
-    if (!deepEqualObjects(startPaginationAt, state)) {
+    if (!deepEqual(startPaginationAt, state)) {
       StartPaginationAt(state);
     }
   };
@@ -2340,7 +2340,7 @@ function areEqual(prevProps, nextProps) {
     return false;
   }
 
-  return true
+  return true;
 }
 
 export default React.memo(M1nTable, areEqual);

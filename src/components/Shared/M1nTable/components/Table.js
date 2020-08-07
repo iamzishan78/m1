@@ -49,7 +49,7 @@ import {
   showErrorMessage,
   setMapGridCardState,
 } from "../../../../actions";
-import { deepEqualObjects } from "../../functions";
+import { deepEqualObjects, deepEqual } from "../../functions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -183,88 +183,88 @@ function SubTable(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, Rows] = useState([]);
   const setRows = (state) => {
-    if (!deepEqualObjects(rows, state)) {
+    if (!deepEqual(rows, state)) {
       Rows(state);
     }
   };
   const [columns, Columns] = useState([]);
   const setColumns = (state) => {
-    if (!deepEqualObjects(columns, state)) {
+    if (!deepEqual(columns, state)) {
       Columns(state);
     }
   };
 
   const [colInd, ColInd] = useState();
   const setColInd = (state) => {
-    if (!deepEqualObjects(colInd, state)) {
+    if (!deepEqual(colInd, state)) {
       ColInd(state);
     }
   };
   const [rowInd, RowInd] = useState();
   const setRowInd = (state) => {
-    if (!deepEqualObjects(rowInd, state)) {
+    if (!deepEqual(rowInd, state)) {
       RowInd(state);
     }
   };
   const [expandedObject, ExpandedObject] = useState();
   const setExpandedObject = (state) => {
-    if (!deepEqualObjects(expandedObject, state)) {
+    if (!deepEqual(expandedObject, state)) {
       ExpandedObject(state);
     }
   };
   const [openDialog, OpenDialog] = useState(false);
   const setOpenDialog = (state) => {
-    if (!deepEqualObjects(openDialog, state)) {
+    if (!deepEqual(openDialog, state)) {
       OpenDialog(state);
     }
   };
 
   const [showExpandableCard, ShowExpandableCard] = useState(false);
   const setShowExpandableCard = (state) => {
-    if (!deepEqualObjects(showExpandableCard, state)) {
+    if (!deepEqual(showExpandableCard, state)) {
       ShowExpandableCard(state);
     }
   };
   const [selectedRow, SelectedRow] = useState();
   const setSelectedRow = (state) => {
-    if (!deepEqualObjects(selectedRow, state)) {
+    if (!deepEqual(selectedRow, state)) {
       SelectedRow(state);
     }
   };
   const [subComponent, SubComponent] = useState(null);
   const setSubComponent = (state) => {
-    if (!deepEqualObjects(subComponent, state)) {
+    if (!deepEqual(subComponent, state)) {
       SubComponent(state);
     }
   };
   const [title, Title] = useState("");
   const setTitle = (state) => {
-    if (!deepEqualObjects(title, state)) {
+    if (!deepEqual(title, state)) {
       Title(state);
     }
   };
   const [subTitle, SubTitle] = useState("");
   const setSubTitle = (state) => {
-    if (!deepEqualObjects(subTitle, state)) {
+    if (!deepEqual(subTitle, state)) {
       SubTitle(state);
     }
   };
 
   const [m1nSelectedRowsIndexes, M1nSelectedRowsIndexes] = useState([]);
   const setM1nSelectedRowsIndexes = (state) => {
-    if (!deepEqualObjects(m1nSelectedRowsIndexes, state)) {
+    if (!deepEqual(m1nSelectedRowsIndexes, state)) {
       M1nSelectedRowsIndexes(state);
     }
   };
   const [m1nSelectedRowsIds, M1nSelectedRowsIds] = useState([]);
   const setM1nSelectedRowsIds = (state) => {
-    if (!deepEqualObjects(m1nSelectedRowsIds, state)) {
+    if (!deepEqual(m1nSelectedRowsIds, state)) {
       M1nSelectedRowsIds(state);
     }
   };
   const [m1nSelectedRowsTracks, M1nSelectedRowsTracks] = useState([]);
   const setM1nSelectedRowsTracks = (state) => {
-    if (!deepEqualObjects(m1nSelectedRowsTracks, state)) {
+    if (!deepEqual(m1nSelectedRowsTracks, state)) {
       M1nSelectedRowsTracks(state);
     }
   };
@@ -904,7 +904,7 @@ function SubTable(props) {
 
   const options = {
     filterType: "multiselect",
-    rowsPerPage: props.startPaginationAt ? props.startPaginationAt : 10,
+    rowsPerPage: props.startPaginationAt ? props.startPaginationAt : 25,
     rowsPerPageOptions:
       props.rows && props.rows.length > 25
         ? [10, 25, 50]
@@ -1373,7 +1373,7 @@ function areEqual(prevProps, nextProps) {
     return false;
   }
 
-  return true
+  return true;
 }
 
 export default React.memo(SubTable, areEqual);
