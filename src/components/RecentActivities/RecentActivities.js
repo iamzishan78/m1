@@ -33,8 +33,25 @@ export default ({
 }) => {
   const classes = useStyles();
 
+  // const updateActivity = (activity) => {
+  //   setSelectedActivity(activity);
+  //   setActivityModalOpen(true);
+  // };
+
+  // const addActivity = () => {
+  //   setSelectedActivity(null);
+  //   setActivityModalOpen(true);
+  // };
+
   return (
     <div className={classes.root}>
+      {/* <AddActivityModal
+        open={activityModalOpen}
+        onClose={() => setActivityModalOpen(false)}
+        id={props.id}
+        activityLog={activityLog}
+        selectedActivity={selectedActivity}
+      /> */}
       <Grid item xs={12} style={{ minHeight: "28px" }}>
         <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
           Recent Activities
@@ -54,12 +71,7 @@ export default ({
         <h4
           className={classes.viewAll}
           style={{ marginRight: "10px" }}
-          onClick={() => {
-            props.handleOpenExpandableCard(
-              "Pass your card content here",
-              "Conversations"
-            );
-          }}
+          // onClick={addActivity}
         >
           Add New
         </h4>
