@@ -12,16 +12,13 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import DialogContent from "@material-ui/core/DialogContent";
-import { Grid } from "@material-ui/core";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { FormLabel } from "@material-ui/core";
 import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import Tooltip from "@material-ui/core/Tooltip";
-import { useLazyQuery } from "@apollo/react-hooks";
 import { GETPERSONDATA } from "../../../../../graphQL/useQueryGetPersonData";
 import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
@@ -103,7 +100,6 @@ const joinAddress = (row) => {
 };
 
 export default function BuyContactsInfoDialogContent(props) {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const modalClass = Modals();
 
