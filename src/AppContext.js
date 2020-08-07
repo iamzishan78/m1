@@ -44,6 +44,7 @@ const AppProvider = (props) => {
     filtersAdd: null,
     filtersOnOff: null,
     filtersDefaultOnoff: null,
+    filterSelectAllAbstract: false,
     selectedContact: null,
     trackFilterOn: null,
     trackedWellArray: [],

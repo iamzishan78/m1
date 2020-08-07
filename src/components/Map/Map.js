@@ -3466,20 +3466,21 @@ export default function Map() {
       const geoJson = makeGeoJSON(data);
 
       map.getSource('abstract_geo_source').setData(geoJson);
-
-      if (filterAbstract) {
-        for(let i = 0; i < geoJson.features.length; i ++) {
-          const id = geoJson.features[i].properties.abstract_n;
-          map.setFeatureState(
-            { source: 'abstract_geo_source', id: id },
-            { click: true }
-          )
-        }
-        setFilterAbstract(false);
-      }
-
     }
   }, [abstractContainsData])
+
+  useEffect(() => {
+    if (map) {
+      const featuresList = map.getSource('abstract_geo_source')._data.features;
+      for (let i = 0; i < featuresList.length; i ++) {
+        const id = featuresList[i].properties.abstract_n;
+        map.setFeatureState(
+          { source: 'abstract_geo_source', id: id },
+          { click: stateApp.filterSelectAllAbstract }
+        );
+      }
+    }
+  }, [stateApp.filterSelectAllAbstract, map])
 
   useLayoutEffect(() => {
     if (stateApp.popupOpen === false) {

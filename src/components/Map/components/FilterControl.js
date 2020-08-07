@@ -13,6 +13,7 @@ import Collapse from "@material-ui/core/Collapse";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import DeleteIcon from "@material-ui/icons/Delete";
+import SelectAllIcon from '@material-ui/icons/SelectAll';
 import MyLocationIcon from "@material-ui/icons/MyLocation";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
@@ -158,6 +159,13 @@ export default (props) => {
       popupOpen: false,
       zoomFault: null,
       hugeRequest: null,
+    }));
+  };
+
+  const handleSelectAllAbstract = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      filterSelectAllAbstract: !stateApp.filterSelectAllAbstract
     }));
   };
 
@@ -396,6 +404,12 @@ export default (props) => {
             </StyledListItem>
           </List>
         </Collapse>
+        <StyledListItem2 button onClick={handleSelectAllAbstract}>
+          <ListItemIcon>
+            <SelectAllIcon fontSize="small" color={stateApp.filterSelectAllAbstract ? "secondary" : "primary"} />
+          </ListItemIcon>
+          <ListItemText primary="HighLight" />
+        </StyledListItem2>
         <StyledListItem2 button onClick={handleRemoveFilter}>
           <ListItemIcon>
             <DeleteIcon fontSize="small" />
