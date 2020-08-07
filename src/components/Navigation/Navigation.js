@@ -188,7 +188,7 @@ const useStyles = makeStyles((theme) => ({
     // background: "rgba(255, 255, 255, 1.0)",
     background: "rgba(250, 250, 250, 1.0)",
     width: drawerWidth,
-    height: "100vh",
+    height: "100%",
     top: "0",
     //boxShadow: "1px 0px 100vw black",
     transition: theme.transitions.create("width", {
