@@ -1,3 +1,5 @@
+import * as msal2 from "@azure/msal";
+
 const tenants = JSON.parse(process.env.REACT_APP_TENANS_CREDENTIALS);
 export const tenantB2C = JSON.parse(
   process.env.REACT_APP_TENANS_B2C_CREDENTIAL
@@ -12,7 +14,7 @@ export const tenantsCredentials = (tenantName) => {
   return found;
 };
 
-const b2cPolicies = {
+const B2CPolicies = {
   names: {
     signUpSignIn: "b2c_1_susi",
     forgotPassword: "b2c_1_reset",
@@ -29,13 +31,13 @@ const b2cPolicies = {
   },
 };
 // Config object to be passed to Msal on creation
-export const msalConfigB2C = (tenantId, clientId) => {
+export const msalB2CConfig = (tenantId, clientId) => {
   console.log(`tenantId: ${tenantId}, clientId: ${clientId}`);
   const path = `${window.location.protocol}//${window.location.host}`;
   return {
     auth: {
       clientId: clientId,
-      authority: b2cPolicies.authorities.signUpSignIn.authority,
+      authority: B2CPolicies.authorities.signUpSignIn.authority,
       validateAuthority: false,
     },
     cache: {
@@ -44,6 +46,9 @@ export const msalConfigB2C = (tenantId, clientId) => {
     },
   };
 };
+
+export const MSALB2CObj = (tenantId, clientId) =>
+  new msal2.UserAgentApplication(msalB2CConfig(tenantId, clientId));
 
 export const loginRequestB2C = {
   scopes: ["openid", "profile", "email", "offline_access"],
