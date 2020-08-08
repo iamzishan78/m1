@@ -14,33 +14,44 @@ import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
 import TimelineConnector from "@material-ui/lab/TimelineConnector";
 import TimelineContent from "@material-ui/lab/TimelineContent";
 import TimelineDot from "@material-ui/lab/TimelineDot";
+import SvgIcon from "@material-ui/core/SvgIcon";
+import EmailIcon from "@material-ui/icons/Email";
+import PhoneIcon from "@material-ui/icons/Phone";
+import StarIcon from "@material-ui/icons/Star";
+import PeopleIcon from "@material-ui/icons/People";
 import Icon from "@material-ui/core/Icon";
 import FastfoodIcon from "@material-ui/icons/Fastfood";
-import AddActivityModal from "../ContactDetailCard/components/AddActivityModal";
-import { UPDATECONTACT } from "../../graphQL/useMutationUpdateContact";
+import AddActivityModal from "../../ContactDetailCard/components/AddActivityModal";
+import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 
-import EnvelopeIcon from "../Shared/svgIcons/envelope.js";
-import PhoneIcon from "../Shared/svgIcons/phone.js";
-import StarIcon from "../Shared/svgIcons/star.js";
-import MeetingIcon from "../Shared/svgIcons/meeting.js";
-import { ProfileContext } from "../Profile/ProfileContext";
-import { GETPROFILE } from "../../graphQL/useQueryGetProfile";
+// import EnvelopeIcon from "../../Shared/svgIcons/envelope.js";
+// import PhoneIcon from "../../Shared/svgIcons/phone.js";
+// import StarIcon from "../../Shared/svgIcons/star.js";
+// import MeetingIcon from "../../Shared/svgIcons/meeting.js";
+import { ProfileContext } from "../../Profile/ProfileContext";
+import { GETPROFILE } from "../../../graphQL/useQueryGetProfile";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "#fff",
   },
+  timelineDot: {
+    margin: 0,
+    boxShadow: "0px 2px 2px #ddd",
+    borderColor: "#ddd",
+  },
+  timelineContent: {
+    paddingTop: 0,
+  },
   timelineItemRight: {
-    "&:hover": {
-      backgroundColor: "#F0F6F8",
-    },
-    paddingLeft: "10px",
+    // "&:hover": {
+    //   backgroundColor: "#F0F6F8",
+    // },
     "&:before": {
       content: "none",
     },
   },
   timelineItemRightToday: {
-    paddingLeft: "10px",
     "&:before": {
       content: "none",
     },
@@ -52,8 +63,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   timelineText: {
-    "& .MuiTypography-body1": { fontSize: "0.85rem" },
-    "& .MuiTypography-body2": { fontSize: "0.7rem" },
+    "& .MuiTypography-body1": {
+      fontSize: "0.85rem",
+      color: "rgb(170,170,170)",
+      fontWeight: "bold",
+    },
+    "& .MuiTypography-body2": { fontSize: "0.7rem", color: "rgb(190,190,190)" },
     "&  p": {
       margin: "0",
     },
@@ -61,26 +76,17 @@ const useStyles = makeStyles((theme) => ({
   blue: {
     color: theme.palette.secondary.main,
   },
-  todayDot: {
-    fontSize: "8px",
-    paddingLeft: "10px",
-    paddingRight: "10px",
-    borderRadius: "20px",
-    color: "#000",
-    backgroundColor: "#d9d9d9",
-  },
   imageIcon: {
     height: "100%",
     padding: "3px",
     display: "block",
+    color: "blue",
   },
   iconRoot: {
     textAlign: "center",
   },
   deleteLine: {
     textDecoration: "underline",
-    color: "#757575",
-    display: "block",
     margin: "0",
     fontWeight: "normal",
     "&:hover": {
@@ -88,9 +94,15 @@ const useStyles = makeStyles((theme) => ({
       cursor: "pointer",
     },
   },
+  timelineRoot: {
+    padding: 0,
+  },
+  itemIcon: {
+    padding: "2px",
+  },
 }));
 
-export default function Activities({ activityLog, user_id, ...props }) {
+export default function ActivitiesList({ activityLog, user_id, ...props }) {
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
   const [updateContact] = useMutation(UPDATECONTACT);
@@ -98,33 +110,38 @@ export default function Activities({ activityLog, user_id, ...props }) {
   const classes = useStyles();
 
   const getIcon = (activityType) => {
-    let icon = "";
+    // let icon = "";
     switch (activityType) {
       case "general":
-        icon = "star_icon";
-        break;
+        return <StarIcon className={classes.itemIcon} color="secondary" />;
+      // icon = "star_icon";
+      // break;
       case "phone":
-        icon = "phone_call_icon";
-        break;
+        return <PhoneIcon className={classes.itemIcon} color="secondary" />;
+      // icon = "phone_call_icon";
+      // break;
       case "email":
-        icon = "envelope_icon";
-        break;
+        return <EmailIcon className={classes.itemIcon} color="secondary" />;
+      // icon = "envelope_icon";
+      // break;
       case "meeting":
-        icon = "meeting_icon";
-        break;
+        return <PeopleIcon className={classes.itemIcon} color="secondary" />;
+      // icon = "meeting_icon";
+      // break;
       default:
-        icon = "star_icon";
+        return <StarIcon className={classes.itemIcon} color="secondary" />;
+      // icon = "star_icon";
     }
 
-    return (
-      <Icon classes={{ root: classes.iconRoot }}>
-        <img
-          className={classes.imageIcon}
-          src={require(`../Shared/svgIcons/${icon}.svg`)}
-          alt={activityType}
-        />
-      </Icon>
-    );
+    // return (
+    //   <Icon classes={{ root: classes.iconRoot }} color="secondary">
+    //     <img
+    //       className={classes.imageIcon}
+    //       src={require(`../../Shared/svgIcons/${icon}.svg`)}
+    //       alt={activityType}
+    //     />
+    //   </Icon>
+    // );
   };
 
   const deleteActivity = (act) => {
@@ -163,59 +180,26 @@ export default function Activities({ activityLog, user_id, ...props }) {
 
   console.log("Activities: ", activityLog);
 
-  const sortedActivityLog =
+  let sortedActivityLog =
     activityLog && activityLog.length > 0
       ? activityLog
-          .filter((activity) => activity.user_id === user_id)
-          .sort((a, b) => moment(b.dateTime).diff(moment(a.dateTime)))
+          .filter((activity) => activity.user_id === user_id) // get only current user's activities
+          .sort((a, b) => moment(b.dateTime).diff(moment(a.dateTime))) // sort activities according to date
+          .slice(0, 3) // only get latest 3
       : [];
 
-  console.log("Sorted: ", sortedActivityLog);
-
   return (
-    <Card className={classes.root} variant="outlined">
-      <AddActivityModal
-        open={activityModalOpen}
-        onClose={() => setActivityModalOpen(false)}
-        id={props.id}
-        activityLog={activityLog}
-        selectedActivity={selectedActivity}
-      />
-      <CardActions>
-        <Grid container justify="space-between">
-          <Grid item>
-            <Typography variant="button" gutterBottom>
-              Recent Activities
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Typography
-              variant="button"
-              onClick={addActivity}
-              gutterBottom
-              style={{ cursor: "pointer" }}
-            >
-              Add Activity
-            </Typography>
-          </Grid>
-        </Grid>
-      </CardActions>
-      <Timeline>
-        <TimelineItem className={classes.timelineItemRightToday}>
-          <TimelineSeparator style={{ transform: "translateX(-5px)" }}>
-            <TimelineDot className={classes.todayDot}>Today</TimelineDot>
-            <TimelineConnector />
-          </TimelineSeparator>
-        </TimelineItem>
+    <div className={classes.root}>
+      <Timeline className={classes.timelineRoot}>
         {sortedActivityLog.map((activity, i) => (
           <TimelineItem key={i} className={classes.timelineItemRight}>
             <TimelineSeparator>
-              <TimelineDot variant="outlined">
+              <TimelineDot variant="outlined" className={classes.timelineDot}>
                 {getIcon(activity.type)}
               </TimelineDot>
-              {i + 1 !== activityLog.length && <TimelineConnector />}
+              {i + 1 < sortedActivityLog.length && <TimelineConnector />}
             </TimelineSeparator>
-            <TimelineContent>
+            <TimelineContent className={classes.timelineContent}>
               <div className={classes.timelineText}>
                 <Typography
                   className={classes.itemHeading}
@@ -225,21 +209,20 @@ export default function Activities({ activityLog, user_id, ...props }) {
                   {activity.notes}
                 </Typography>
                 <Typography variant="body2" className={classes.blue}>
-                  {activity.fullname} –{" "}
-                  {moment(activity.dateTime).format("MMMM D, YYYY hh:mm a")}{" "}
-                  <br />
-                  <h5
+                  {activity.fullname} ●{" "}
+                  {moment(activity.dateTime).format("MMMM D, YYYY hh:mm a")} ●{" "}
+                  <span
                     className={classes.deleteLine}
                     onClick={() => deleteActivity(activity)}
                   >
                     Delete
-                  </h5>
+                  </span>
                 </Typography>
               </div>
             </TimelineContent>
           </TimelineItem>
         ))}
       </Timeline>
-    </Card>
+    </div>
   );
 }

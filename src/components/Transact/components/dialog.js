@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import uuid from "uuid";
+import { useLazyQuery } from "@apollo/react-hooks";
 import NumberFormat from "react-number-format";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
@@ -17,6 +18,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { TransactContext } from "../TransactContext";
 import { AppContext } from "../../../AppContext";
 import AddContactDialogContent from "../../Shared/M1nTable/components/SubComponents/AddContactDialogContent";
+import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
 
 const useStyles = makeStyles((theme) => ({
   label: {
@@ -59,6 +61,12 @@ export default function TransactDialog(props) {
     props.contact ? { name: props.contact.name, _id: props.contact._id } : {}
   );
   const [openContactDialog, setOpenContactDialog] = useState(false);
+  // const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
+
+  const openContact = () => {
+    handleClose();
+    props.selectRowOpenContact(contact);
+  };
 
   useEffect(() => {
     const cardId = stateApp.activeDeal?.cardId;
@@ -124,7 +132,7 @@ export default function TransactDialog(props) {
         const lane = transactData.lanes[laneIndex];
         const cardIndex = lane.cards.findIndex((card) => card.id === cardId);
         const card = lane.cards[cardIndex];
-
+        
         const updatedCard = {
           // dealName: dealName.trim(),
           // title: contact?.name.trim(),
@@ -133,9 +141,10 @@ export default function TransactDialog(props) {
           label: label ? label.trim() : "",
           description: description ? description.trim() : "",
           laneId: newStage,
-          contactId: contact?._id,
+          contactId: contact?._id ? contact._id : uuid(),
           id: card.id,
         };
+
 
         if (card.laneId !== newStage) {
           if (cardIndex > -1) {
@@ -150,7 +159,7 @@ export default function TransactDialog(props) {
         } else {
           transactData.lanes[laneIndex].cards[cardIndex] = updatedCard;
         }
-      } else if (cardId === null && laneId === null) {
+      } else if (!cardId && !laneId) {
         // add new
 
         transactData.lanes.forEach((lane) => {
@@ -164,7 +173,7 @@ export default function TransactDialog(props) {
               label: label ? label.trim() : "",
               description: description ? description.trim() : "",
               id: uuid(),
-              contactId: contact?._id,
+              contactId: contact?._id ? contact._id : uuid(),
               laneId: newStage,
             };
             cards.push(newCard);
@@ -233,31 +242,29 @@ export default function TransactDialog(props) {
             />
           )}
 
-          {!props.contact && (
-            <ButtonGroup
-              fullWidth
-              variant="contained"
-              color="primary"
-              aria-label="contained primary button group"
-            >
-              <Button onClick={() => setOpenContactDialog(true)}>
-                Add / Select Contact
-              </Button>
+          <ButtonGroup
+            fullWidth
+            variant="contained"
+            color="primary"
+            aria-label="contained primary button group"
+          >
+            <Button onClick={() => setOpenContactDialog(true)}>
+              Add / Select Contact
+            </Button>
 
+            {contact && (
               <Button
-                component="a"
-                href="http://www.google.com"
-                target="_blank"
                 disabled={
                   (Object.keys(contact).length === 0 &&
                     contact.constructor === Object) ||
                   contact === null
                 }
+                onClick={() => openContact()}
               >
                 View Contact
               </Button>
-            </ButtonGroup>
-          )}
+            )}
+          </ButtonGroup>
         </FormControl>
 
         <FormControl margin="dense" fullWidth size="small">

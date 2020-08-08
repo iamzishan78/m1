@@ -61,8 +61,9 @@ const initialErrors = {
 
 function AddActivityModal(props) {
   const classes = useStyles();
-  const { open, onClose } = props;
+  const { open, onClose, selectedActivity } = props;
   const [stateApp] = useContext(AppContext);
+  const [addNew, setAddNew] = useState(true);
 
   console.log("USER: ", stateApp);
 
@@ -72,6 +73,20 @@ function AddActivityModal(props) {
 
   const [dateTime, setDateTime] = useState(new Date());
   const [errors, setErrors] = useState({ ...initialErrors });
+
+  useEffect(() => {
+    if (selectedActivity !== null) {
+      setAddNew(false);
+      setActivityType(selectedActivity.type);
+      setNotes(selectedActivity.notes);
+      setDateTime(selectedActivity.dateTime);
+    } else {
+      setAddNew(true);
+      setActivityType("general");
+      setNotes("");
+      setDateTime(new Date());
+    }
+  }, [selectedActivity]);
 
   //   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
   //     COMMENTSBYOBJECTIDQUERY
@@ -138,11 +153,56 @@ function AddActivityModal(props) {
     });
   };
 
+  const updateActivity = () => {
+    if (updateErrors()) return;
+
+    let activityLog = props.activityLog
+      ? props.activityLog.map((act) => ({
+          type: act.type,
+          notes: act.notes,
+          dateTime: act.dateTime,
+          user_id: act.user_id,
+        }))
+      : [];
+
+    let newActLog = [...activityLog];
+    const index =
+      newActLog &&
+      newActLog.findIndex(
+        (activity) =>
+          activity.dateTime === selectedActivity.dateTime &&
+          activity.user_id === selectedActivity.user_id
+      );
+    if (index > -1) {
+      newActLog[index] = {
+        ...selectedActivity,
+        dateTime:
+          typeof dateTime.toISOString === "function"
+            ? dateTime.toISOString()
+            : dateTime,
+        type: activityType,
+        notes,
+      };
+      newActLog.forEach((v) => delete v.__typename);
+
+      updateContact({
+        variables: {
+          contact: {
+            _id: props.id,
+            activityLog: [...newActLog],
+          },
+        },
+        refetchQueries: ["getContact"],
+        awaitRefetchQueries: true,
+      });
+    }
+  };
+
   useEffect(() => {
-    if (called && !loading && addActivityStatus.success === true) {
+    if (called && !loading && addActivityStatus.success === true && addNew) {
       clearFields();
     }
-  }, [called, loading, addActivityStatus]);
+  }, [called, loading, addActivityStatus, addNew]);
 
   return (
     <Dialog
@@ -238,21 +298,23 @@ function AddActivityModal(props) {
             color="secondary"
             size="large"
             disableElevation
-            onClick={addActivity}
+            onClick={() => {
+              addNew ? addActivity() : updateActivity();
+            }}
             disabled={loading}
           >
-            Add
+            {addNew ? "Add" : "Update"}
           </Button>
           {loading ? (
             <CircularProgress color="secondary" className={classes.progress} />
           ) : called && !loading ? (
             addActivityStatus.success ? (
               <Typography color="secondary" variant="subtitle2" gutterBottom>
-                Activity added.
+                Activity {addNew ? "added" : "updated"}.
               </Typography>
             ) : (
               <Typography color="primary" variant="subtitle2" gutterBottom>
-                Unable to add activity.
+                Unable to {addNew ? "add" : "update"} activity.
               </Typography>
             )
           ) : null}
