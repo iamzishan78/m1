@@ -12,18 +12,18 @@ export default function ConfirmationDialog(props) {
 
   const handleAccept = () => {
     props.handleDialogClose(false);
-    removeContact({
-      variables: {
-        contactId: props.id,
-      },
-      refetchQueries: [
-        "getContacts",
-        "getContactsByOwnerId",
-        "getContactsCounter",
-        "getContact",
-      ],
-      awaitRefetchQueries: true,
-    });
+    // removeContact({
+    //   variables: {
+    //     contactId: props.id,
+    //   },
+    //   refetchQueries: [
+    //     "getContacts",
+    //     "getContactsByOwnerId",
+    //     "getContactsCounter",
+    //     "getContact",
+    //   ],
+    //   awaitRefetchQueries: true,
+    // });
     props.handleCloseExpandableCard();
   };
 

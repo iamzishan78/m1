@@ -2112,18 +2112,18 @@ function M1nTable(props) {
       setDeleteFunc(() => (contactsIdsToDelete) => {
         if (contactsIdsToDelete) {
           for (let i = 0; i < contactsIdsToDelete.length; i++) {
-            removeContact({
-              variables: {
-                contactId: contactsIdsToDelete[i],
-              },
-              refetchQueries: [
-                "getContacts",
-                "getContactsByOwnerId",
-                "getContactsCounter",
-                "getContact",
-              ],
-              awaitRefetchQueries: true,
-            });
+            // removeContact({
+            //   variables: {
+            //     contactId: contactsIdsToDelete[i],
+            //   },
+            //   refetchQueries: [
+            //     "getContacts",
+            //     "getContactsByOwnerId",
+            //     "getContactsCounter",
+            //     "getContact",
+            //   ],
+            //   awaitRefetchQueries: true,
+            // });
           }
         }
       });
