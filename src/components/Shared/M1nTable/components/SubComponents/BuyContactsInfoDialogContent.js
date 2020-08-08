@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { FormLabel } from "@material-ui/core";
 import { useLazyQuery } from "@apollo/react-hooks";
-import { GETPERSONDATA, GETPERSONDATALOOKUP } from "../../../../../graphQL/useQueryGetPersonData";
 import { Grid } from "@material-ui/core";
 import { Modals } from "../../../../../styles/Modal";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -12,6 +12,15 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import DialogContent from "@material-ui/core/DialogContent";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableRow from "@material-ui/core/TableRow";
+import DeleteIcon from "@material-ui/icons/Delete";
+import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
+import Tooltip from "@material-ui/core/Tooltip";
+import { GETPERSONDATA } from "../../../../../graphQL/useQueryGetPersonData";
+import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import ReactJson from 'react-json-view'
@@ -91,33 +100,37 @@ const joinAddress = (row) => {
 };
 
 export default function BuyContactsInfoDialogContent(props) {
+  const dispatch = useDispatch();
   const modalClass = Modals();
-  const [getPersonDataQuery, { data: personsData }] = useLazyQuery(GETPERSONDATA)
-  const [getPersonDataLookupQuery, { data: personsDataLookup }] = useLazyQuery(GETPERSONDATALOOKUP)
 
-  function loadPersonData(type) {
+  const [getPersonDataQuery, { data: personsData }] = useLazyQuery(GETPERSONDATA, {
+    onCompleted: data => {
+      console.log(data)
+      props.onClose()
+      if (data.getPersonData.allSuccess) {
+        dispatch(showSuccessMessage("All records saved successfully"))
+      } else {
+        dispatch(showErrorMessage("Error occurred"))
+      }
+    }
+  })
+
+  function loadPersonData() {
     let persons = []
     for (const row of props.rows) {
       let person = {
-        firstName: row.name.split(" ")[0], // remove `firstName`, `lastName`, make `name`
-        lastName: row.name.split(" ")[1],
-        address: joinAddress(row),
-        city: '',
-        state: '',
+        fullName: row.name,
+        address: row.address1 + (row.address2 ? ", " + row.address2 : ''),
+        city: row.city,
+        state: row.state,
+        country: row.country
       }
       persons.push(person)
     }
 
-    if (type == 'lookup') {
-      getPersonDataLookupQuery({
-        variables: { persons }
-      })
-    } else {
-      getPersonDataQuery({
-        variables: { persons }
-      })
-    }
-    
+    getPersonDataQuery({
+      variables: { persons }
+    })
   }
 
   useEffect(() => {
@@ -191,29 +204,10 @@ export default function BuyContactsInfoDialogContent(props) {
         >
           Cancel
         </Button>
-        <Button onClick={() => { loadPersonData('api'); }} color="secondary" variant="contained">
+        <Button onClick={() => { loadPersonData() }} color="secondary" variant="contained">
           Buy Now
         </Button>
-        <Button onClick={() => { loadPersonData('lookup'); }} color="secondary" variant="contained">
-          Buy Now (Lookup)
-        </Button>
       </DialogActions>
-      <DialogContent>
-      { personsData && personsData.getPersonData &&
-        personsData.getPersonData.map((personData, index) => (
-          <DialogContent>
-            <h4>Records for person with index {index}</h4>
-            <ReactJson src={personData} />
-          </DialogContent>
-      ))}
-      { personsDataLookup && personsDataLookup.getPersonDataLookup &&
-        personsDataLookup.getPersonDataLookup.map((personData, index) => (
-          <DialogContent>
-            <h4>Records for person with index {index}</h4>
-            <ReactJson src={personData} />
-          </DialogContent>
-      ))}
-      </DialogContent>
 
     </React.Fragment>
   );

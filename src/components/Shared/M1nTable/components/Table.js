@@ -907,7 +907,7 @@ function SubTable(props) {
     rowsPerPage: props.startPaginationAt ? props.startPaginationAt : 25,
     rowsPerPageOptions:
       props.rows && props.rows.length > 25
-        ? [10, 25, 50]
+        ? [10, 25, 50, 100]
         : props.rows && props.rows.length > 10
         ? [10, 25]
         : [],

@@ -5,9 +5,3 @@ export const GETPERSONDATA = gql`
         getPersonData(persons: $persons)
     }
 `
-
-export const GETPERSONDATALOOKUP = gql`
-    query getPersonDataLookup($persons: [JSON]) {
-        getPersonDataLookup(persons: $persons)
-    }
-`
