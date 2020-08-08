@@ -13,15 +13,20 @@ const useStyles = makeStyles((theme) => ({
     padding: "20px",
     border: "2px solid #F9F8EC",
     borderRadius: "8px",
+    display: "flex",
+    flexDirection: "column",
   },
   summaryHeading: {
     textAlign: "center",
     textTransform: "uppercase",
+    marginBottom: "10px",
+    color: "#888887",
+    fontWeight: "bold",
   },
   gridContainer: {
     display: "grid",
     gridTemplateColumns: "auto auto",
-    gridGap: "10px",
+    gridGap: "20px",
   },
   gridItem: {
     padding: "5px",
@@ -33,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
   redIcon: {
     color: "#C189AE",
-    backgroundIcon: "#F3D5E9",
+    backgroundColor: "#F3D5E9",
   },
   greenIcon: {
     color: "#75C2CC",
@@ -44,9 +49,18 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#D7D6FB",
   },
   activityDetails: {
-    marginLeft: "5px",
+    marginLeft: "10px",
     display: "flex",
     flexDirection: "column",
+    color: "#888887",
+    alignSelf: "center",
+  },
+  quantity: {
+    fontSize: "15px",
+  },
+  type: {
+    fontSize: "11px",
+    textTransform: "uppercase",
   },
 }));
 
@@ -57,15 +71,15 @@ function SummarySection({ activity }) {
     let color = "Icon";
     let Icon = <EmailIcon />;
     switch (type) {
-      case "email":
+      case "emails":
         color = `blue${color}`;
         Icon = <EmailIcon />;
         break;
-      case "campaign":
+      case "campaigns":
         color = `red${color}`;
         Icon = <EventNoteIcon />;
         break;
-      case "phone":
+      case "calls":
         color = `green${color}`;
         Icon = <PhoneIcon />;
         break;
@@ -85,8 +99,8 @@ function SummarySection({ activity }) {
     <div className={classes.gridItem}>
       {getIcon(activity.type)}
       <div className={classes.activityDetails}>
-        <span>{activity.type}</span>
-        <span>{activity.quantity}</span>
+        <span className={classes.quantity}>{activity.quantity}</span>
+        <span className={classes.type}>{activity.type}</span>
       </div>
     </div>
   );
@@ -105,9 +119,9 @@ export default function ActivitySummary() {
         Activity Summary
       </Typography>
       <div className={classes.gridContainer}>
-        <SummarySection activity={{ type: "email", quantity: 20 }} />
-        <SummarySection activity={{ type: "campaign", quantity: 30 }} />
-        <SummarySection activity={{ type: "phone", quantity: 40 }} />
+        <SummarySection activity={{ type: "emails", quantity: 20 }} />
+        <SummarySection activity={{ type: "campaigns", quantity: 30 }} />
+        <SummarySection activity={{ type: "calls", quantity: 40 }} />
         <SummarySection activity={{ type: "sms", quantity: 50 }} />
       </div>
     </div>

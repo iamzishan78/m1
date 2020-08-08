@@ -91,7 +91,7 @@ export default ({
           activityLog={contactData.activityLog}
         /> */}
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={4} style={{ minWidth: "fit-content" }}>
             <ActivitySummary />
           </Grid>
         </Grid>
