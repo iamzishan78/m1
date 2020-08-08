@@ -77,7 +77,7 @@ const rows = [
 
 const main_div = {
   textAlign: "center",
-  padding: "1.5vh",
+  padding: "10px 12%",
 };
 const upload_box = {
   margin: "0 auto",
