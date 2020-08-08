@@ -271,6 +271,8 @@ function AddActivityModal(props) {
             <MenuItem value={"phone"}>Phone Call</MenuItem>
             <MenuItem value={"email"}>Email</MenuItem>
             <MenuItem value={"meeting"}>Meeting</MenuItem>
+            <MenuItem value={"sms"}>SMS</MenuItem>
+            <MenuItem value={"campaign"}>Campaign</MenuItem>
           </Select>
         </FormControl>
 

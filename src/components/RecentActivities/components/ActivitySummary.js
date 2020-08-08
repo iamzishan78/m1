@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Typography from "@material-ui/core/Typography";
 import EmailIcon from "@material-ui/icons/Email";
 import EventNoteIcon from "@material-ui/icons/EventNote";
@@ -67,19 +67,28 @@ const useStyles = makeStyles((theme) => ({
 function SummarySection({ activity }) {
   const classes = useStyles();
 
+  const typeMapping = {
+    sms: "sms",
+    phone: "calls",
+    campaign: "campaigns",
+    email: "emails",
+  };
+  const typeName = typeMapping[activity.type];
+
   const getIcon = (type) => {
     let color = "Icon";
     let Icon = <EmailIcon />;
+
     switch (type) {
-      case "emails":
+      case "email":
         color = `blue${color}`;
         Icon = <EmailIcon />;
         break;
-      case "campaigns":
+      case "campaign":
         color = `red${color}`;
         Icon = <EventNoteIcon />;
         break;
-      case "calls":
+      case "phone":
         color = `green${color}`;
         Icon = <PhoneIcon />;
         break;
@@ -100,14 +109,20 @@ function SummarySection({ activity }) {
       {getIcon(activity.type)}
       <div className={classes.activityDetails}>
         <span className={classes.quantity}>{activity.quantity}</span>
-        <span className={classes.type}>{activity.type}</span>
+        <span className={classes.type}>{typeName}</span>
       </div>
     </div>
   );
 }
 
-export default function ActivitySummary() {
+export default function ActivitySummary({ activityLog }) {
   const classes = useStyles();
+
+  const getQuantityForType = (type) => {
+    return activityLog.filter((act) => act.type === type).length;
+  };
+
+  const types = ["email", "campaign", "phone", "sms"];
 
   return (
     <div className={classes.summaryRoot}>
@@ -119,10 +134,11 @@ export default function ActivitySummary() {
         Activity Summary
       </Typography>
       <div className={classes.gridContainer}>
-        <SummarySection activity={{ type: "emails", quantity: 20 }} />
-        <SummarySection activity={{ type: "campaigns", quantity: 30 }} />
-        <SummarySection activity={{ type: "calls", quantity: 40 }} />
-        <SummarySection activity={{ type: "sms", quantity: 50 }} />
+        {types.map((type, i) => (
+          <SummarySection
+            activity={{ type, quantity: getQuantityForType(type) }}
+          />
+        ))}
       </div>
     </div>
   );

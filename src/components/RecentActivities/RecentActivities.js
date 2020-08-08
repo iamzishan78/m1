@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 import ActivitiesList from "./components/ActivitiesList";
 import ActivitySummary from "./components/ActivitySummary";
+import AddActivityModal from "../ContactDetailCard/components/AddActivityModal";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,26 +33,28 @@ export default ({
   ...props
 }) => {
   const classes = useStyles();
+  const [activityModalOpen, setActivityModalOpen] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState(null);
 
-  // const updateActivity = (activity) => {
-  //   setSelectedActivity(activity);
-  //   setActivityModalOpen(true);
-  // };
+  const updateActivity = (activity) => {
+    setSelectedActivity(activity);
+    setActivityModalOpen(true);
+  };
 
-  // const addActivity = () => {
-  //   setSelectedActivity(null);
-  //   setActivityModalOpen(true);
-  // };
+  const addActivity = () => {
+    setSelectedActivity(null);
+    setActivityModalOpen(true);
+  };
 
   return (
     <div className={classes.root}>
-      {/* <AddActivityModal
+      <AddActivityModal
         open={activityModalOpen}
         onClose={() => setActivityModalOpen(false)}
         id={props.id}
-        activityLog={activityLog}
+        activityLog={props.activityLog}
         selectedActivity={selectedActivity}
-      /> */}
+      />
       <Grid item xs={12} style={{ minHeight: "28px" }}>
         <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
           Recent Activities
@@ -71,28 +74,24 @@ export default ({
         <h4
           className={classes.viewAll}
           style={{ marginRight: "10px" }}
-          // onClick={addActivity}
+          onClick={addActivity}
         >
           Add New
         </h4>
       </Grid>
 
       <Grid item xs={12}>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} style={{ flexWrap: "nowrap" }}>
           <Grid item xs={7}>
             <ActivitiesList
               id={props.id}
               user_id={props.user_id}
               activityLog={props.activityLog}
+              updateActivity={updateActivity}
             />
-            {/* <Activities
-          id={contactData._id}
-          user_id={stateApp.user.email}
-          activityLog={contactData.activityLog}
-        /> */}
           </Grid>
           <Grid item xs={4} style={{ minWidth: "fit-content" }}>
-            <ActivitySummary />
+            <ActivitySummary activityLog={props.activityLog} />
           </Grid>
         </Grid>
       </Grid>
