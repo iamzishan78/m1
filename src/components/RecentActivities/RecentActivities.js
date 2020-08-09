@@ -4,7 +4,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 import ActivitiesList from "./components/ActivitiesList";
 import ActivitySummary from "./components/ActivitySummary";
-import AddActivityModal from "../ContactDetailCard/components/AddActivityModal";
+import RightDialog from "../ContactDetailCard/components/RightDialog";
+import AddActivityDialog from "../ContactDetailCard/components/AddActivityDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,13 +49,25 @@ export default ({
 
   return (
     <div className={classes.root}>
-      <AddActivityModal
+      {/* <AddActivityModal
         open={activityModalOpen}
         onClose={() => setActivityModalOpen(false)}
         id={props.id}
         activityLog={props.activityLog}
         selectedActivity={selectedActivity}
-      />
+      /> */}
+      <RightDialog
+        open={activityModalOpen ? true : false}
+        handleClickDialogClose={() => setActivityModalOpen(false)}
+        width="450px"
+      >
+        <AddActivityDialog
+          onClose={() => setActivityModalOpen(false)}
+          id={props.id}
+          activityLog={props.activityLog}
+          selectedActivity={selectedActivity}
+        />
+      </RightDialog>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
         <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
           Recent Activities

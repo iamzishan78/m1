@@ -17,7 +17,6 @@ import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery } from "@apollo/react-hooks";
 import ConfirmationDialog from "./components/ConfirmationDialog";
-import Activities from "../Shared/Activities";
 import Deals from "../Shared/Deals";
 import LeadScore from "../Shared/LeadScore";
 import { AppContext } from "../../AppContext";
@@ -387,6 +386,24 @@ export default function ContactDetailCard(props) {
       setTransactId(tData.transactionData._id);
     }
   }, [tData, tLoading]);
+
+  const getRightDialogComponent = () => {
+    switch (rightDialogOpen) {
+      case "comments":
+        return (
+          <Grid item xs={12} className={classes.Comments}>
+            <Comments
+              className={classes.gridStyling}
+              targetSourceId={contactData._id}
+              targetLabel="contact"
+              handleRightDialogClose={handleClickRightDialogClose}
+            />
+          </Grid>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     contactData && (
@@ -1094,21 +1111,27 @@ export default function ContactDetailCard(props) {
 
         {/* //// ViewAll in a right dialog //// */}
 
+        {/* <RightDialog
+          open={true}
+          handleClickDialogClose={handleClickRightDialogClose}
+          width="450px"
+        >
+          <Grid item xs={12} className={classes.Comments}>
+            <AddActivityDialog
+              onClose={handleClickRightDialogClose}
+              id={contactData._id}
+              activityLog={contactData.activityLog}
+              selectedActivity={selectedActivity}
+            />
+          </Grid>
+        </RightDialog> */}
+
         <RightDialog
           open={rightDialogOpen ? true : false}
           handleClickDialogClose={handleClickRightDialogClose}
           width="450px"
         >
-          {rightDialogOpen === "comments" && (
-            <Grid item xs={12} className={classes.Comments}>
-              <Comments
-                className={classes.gridStyling}
-                targetSourceId={contactData._id}
-                targetLabel="contact"
-                handleRightDialogClose={handleClickRightDialogClose}
-              />
-            </Grid>
-          )}
+          {getRightDialogComponent()}
         </RightDialog>
 
         {/* //// ViewAll in a full screen dialog //// */}
