@@ -13,6 +13,7 @@ import Collapse from "@material-ui/core/Collapse";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import DeleteIcon from "@material-ui/icons/Delete";
+import SelectAllIcon from '@material-ui/icons/SelectAll';
 import MyLocationIcon from "@material-ui/icons/MyLocation";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
@@ -157,6 +158,14 @@ export default (props) => {
       ...stateApp,
       popupOpen: false,
       zoomFault: null,
+      hugeRequest: null,
+    }));
+  };
+
+  const handleSelectAllAbstract = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      filterSelectAllAbstract: !stateApp.filterSelectAllAbstract
     }));
   };
 
@@ -173,33 +182,57 @@ export default (props) => {
       setStateApp((stateApp) => ({
         ...stateApp,
         zoomFault: null,
+        hugeRequest: null,
       }));
 
-      setTrackWells(!isTrackWells);
-
       if (points && points.length > 0) {
-        const tracks = [];
-        points.forEach((point) => {
-          const targetSourceId = point.properties.id.toLowerCase();
-          const track = {
-            user: user,
-            objectType: targetLabel,
-            trackOn: targetSourceId,
-          };
-          tracks.push(track);
-        });
-        toggleCreateRemoveTracks({
-          variables: {
-            tracks: tracks,
-          },
-          refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
-          awaitRefetchQueries: true,
-        });
+        if (points.length > 100) {
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            hugeRequest: true,
+          }));
+        } else {
+          setTrackWells(!isTrackWells);
+          const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
+          const userDefinedLayers = stateApp.userDefinedLayers;
+          const trackWellIndex = userDefinedLayers.findIndex((item) => item.name === "Tracked Wells")
+          if (checkedLayers.indexOf(trackWellIndex) > -1) {
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              hugeRequest: null,
+            }));
+          } else {
+            checkedLayers.push(trackWellIndex);
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              hugeRequest: null,
+              checkedUserDefinedLayers: checkedLayers
+            }));
+          }
+          const tracks = [];
+          points.forEach((point) => {
+            const targetSourceId = point.properties.id.toLowerCase();
+            const track = {
+              user: user,
+              objectType: targetLabel,
+              trackOn: targetSourceId,
+            };
+            tracks.push(track);
+          });
+          toggleCreateRemoveTracks({
+            variables: {
+              tracks: tracks,
+            },
+            refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
+            awaitRefetchQueries: true,
+          });
+        }
       }
     } else {
       setStateApp((stateApp) => ({
         ...stateApp,
         zoomFault: true,
+        hugeRequest: null,
       }));
     }
   };
@@ -219,13 +252,37 @@ export default (props) => {
         tracks.push(track);
       });
     });
-    toggleCreateRemoveTracks({
-      variables: {
-        tracks: tracks,
-      },
-      refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
-      awaitRefetchQueries: true,
-    });
+    if (tracks.length > 100) {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        hugeRequest: true,
+      }));
+    } else {
+      setTrackOwners(!isTrackOwners);
+      const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
+      const userDefinedLayers = stateApp.userDefinedLayers;
+      const trackOwnerIndex = userDefinedLayers.findIndex((item) => item.name === "Tracked Owners")
+      if (checkedLayers.indexOf(trackOwnerIndex) > -1) {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          hugeRequest: null,
+        }));
+      } else {
+        checkedLayers.push(trackOwnerIndex);
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          hugeRequest: null,
+          checkedUserDefinedLayers: checkedLayers
+        }));
+      }
+      toggleCreateRemoveTracks({
+        variables: {
+          tracks: tracks,
+        },
+        refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
+        awaitRefetchQueries: true,
+      });
+    }
   };
 
   useEffect(() => {
@@ -245,31 +302,45 @@ export default (props) => {
       setStateApp((stateApp) => ({
         ...stateApp,
         zoomFault: null,
+        hugeRequest: null,
       }));
       const points = map.queryRenderedFeatures({
         layers: ["wellpoints", "welllines"],
       });
-      setTrackOwners(!isTrackOwners);
+      
       // const targetLabel = 'owner';
       // const user = stateApp.user.mongoId;
 
       if (points && points.length > 0) {
-        const wellApiArray = [];
-        points.forEach((point) => {
-          // const targetSourceId = point.id;
-          const wellApi = point.properties.id;
-          wellApiArray.push(wellApi);
-        });
-        getWellsOwners({
-          variables: {
-            api: wellApiArray,
-          },
-        });
+        if (points.length > 100) {
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            hugeRequest: true,
+          }));
+        } else {
+          
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            hugeRequest: null,
+          }));
+          const wellApiArray = [];
+          points.forEach((point) => {
+            // const targetSourceId = point.id;
+            const wellApi = point.properties.id;
+            wellApiArray.push(wellApi);
+          });
+          getWellsOwners({
+            variables: {
+              api: wellApiArray,
+            },
+          });
+        }
       }
     } else {
       setStateApp((stateApp) => ({
         ...stateApp,
         zoomFault: true,
+        hugeRequest: null,
       }));
     }
   };
@@ -333,6 +404,12 @@ export default (props) => {
             </StyledListItem>
           </List>
         </Collapse>
+        <StyledListItem2 button onClick={handleSelectAllAbstract}>
+          <ListItemIcon>
+            <SelectAllIcon fontSize="small" color={stateApp.filterSelectAllAbstract ? "secondary" : "primary"} />
+          </ListItemIcon>
+          <ListItemText primary="HighLight" />
+        </StyledListItem2>
         <StyledListItem2 button onClick={handleRemoveFilter}>
           <ListItemIcon>
             <DeleteIcon fontSize="small" />
