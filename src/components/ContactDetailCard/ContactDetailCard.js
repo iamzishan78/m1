@@ -1073,14 +1073,14 @@ export default function ContactDetailCard(props) {
                 <Divider />
               </Grid>
 
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Activities
                   id={contactData._id}
                   user_id={stateApp.user.email}
                   activityLog={contactData.activityLog}
                 />
                 <Divider />
-              </Grid>
+              </Grid> */}
             </Grid>
           )}
         </div>
