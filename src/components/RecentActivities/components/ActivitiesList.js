@@ -17,6 +17,8 @@ import TimelineDot from "@material-ui/lab/TimelineDot";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import EmailIcon from "@material-ui/icons/Email";
 import PhoneIcon from "@material-ui/icons/Phone";
+import ChatIcon from "@material-ui/icons/Chat";
+import EventNoteIcon from "@material-ui/icons/EventNote";
 import StarIcon from "@material-ui/icons/Star";
 import PeopleIcon from "@material-ui/icons/People";
 import Icon from "@material-ui/core/Icon";
@@ -103,45 +105,27 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ActivitiesList({ activityLog, user_id, ...props }) {
-  const [selectedActivity, setSelectedActivity] = useState(null);
-  const [activityModalOpen, setActivityModalOpen] = useState(false);
   const [updateContact] = useMutation(UPDATECONTACT);
 
   const classes = useStyles();
 
   const getIcon = (activityType) => {
-    // let icon = "";
     switch (activityType) {
       case "general":
         return <StarIcon className={classes.itemIcon} color="secondary" />;
-      // icon = "star_icon";
-      // break;
       case "phone":
         return <PhoneIcon className={classes.itemIcon} color="secondary" />;
-      // icon = "phone_call_icon";
-      // break;
       case "email":
         return <EmailIcon className={classes.itemIcon} color="secondary" />;
-      // icon = "envelope_icon";
-      // break;
       case "meeting":
         return <PeopleIcon className={classes.itemIcon} color="secondary" />;
-      // icon = "meeting_icon";
-      // break;
+      case "sms":
+        return <ChatIcon className={classes.itemIcon} color="secondary" />;
+      case "campaign":
+        return <EventNoteIcon className={classes.itemIcon} color="secondary" />;
       default:
         return <StarIcon className={classes.itemIcon} color="secondary" />;
-      // icon = "star_icon";
     }
-
-    // return (
-    //   <Icon classes={{ root: classes.iconRoot }} color="secondary">
-    //     <img
-    //       className={classes.imageIcon}
-    //       src={require(`../../Shared/svgIcons/${icon}.svg`)}
-    //       alt={activityType}
-    //     />
-    //   </Icon>
-    // );
   };
 
   const deleteActivity = (act) => {
@@ -166,16 +150,6 @@ export default function ActivitiesList({ activityLog, user_id, ...props }) {
         awaitRefetchQueries: true,
       });
     }
-  };
-
-  const updateActivity = (activity) => {
-    setSelectedActivity(activity);
-    setActivityModalOpen(true);
-  };
-
-  const addActivity = () => {
-    setSelectedActivity(null);
-    setActivityModalOpen(true);
   };
 
   console.log("Activities: ", activityLog);
@@ -204,7 +178,7 @@ export default function ActivitiesList({ activityLog, user_id, ...props }) {
                 <Typography
                   className={classes.itemHeading}
                   variant="body1"
-                  onClick={() => updateActivity(activity)}
+                  onClick={() => props.updateActivity(activity)}
                 >
                   {activity.notes}
                 </Typography>
