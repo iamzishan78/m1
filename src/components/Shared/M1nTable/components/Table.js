@@ -220,9 +220,9 @@ function SubTable(props) {
   };
 
   const [showExpandableCard, ShowExpandableCard] = useState(false);
-  const setShowExpandableCard = (NewState) => {
+  const setShowExpandableCard = (newState) => {
     ShowExpandableCard((state) => {
-      if (!deepEqual(state, NewState)) return NewState;
+      if (!deepEqual(state, newState)) return newState;
       return state;
     });
   };
