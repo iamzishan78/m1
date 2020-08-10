@@ -220,29 +220,11 @@ function SubTable(props) {
   };
 
   const [showExpandableCard, ShowExpandableCard] = useState(false);
-  const setShowExpandableCard = (state) => {
-    // console.log(
-    //   "&&&&&&&&111111111 ",
-    //   JSON.stringify(state),
-    //   JSON.stringify(showExpandableCard),
-    //   JSON.stringify(!deepEqual(showExpandableCard, state)),
-    //   props.targetLabel
-    // );
-
-    // if (!deepEqual(showExpandableCard, state)) {
-    ShowExpandableCard((st) => {
-      console.log(
-        "&&&&&&&&111111111 ",
-        JSON.stringify(state),
-        JSON.stringify(st),
-        JSON.stringify(!deepEqual(st, state)),
-        props.targetLabel
-      );
-      if (!deepEqual(st, state)) return state;
-
-      return st;
+  const setShowExpandableCard = (NewState) => {
+    ShowExpandableCard((state) => {
+      if (!deepEqual(state, NewState)) return NewState;
+      return state;
     });
-    // }
   };
   useEffect(() => {
     console.log("&&&&&&&&222222222 ", showExpandableCard, props.targetLabel);
