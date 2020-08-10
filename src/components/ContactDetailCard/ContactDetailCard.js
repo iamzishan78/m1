@@ -1008,11 +1008,11 @@ export default function ContactDetailCard(props) {
               className={`${classes.border} ${classes.ownersTable}`}
             >
               <div className={classes.SectMargin}>
-                <M1nTable
+                {/* <M1nTable
                   parent="ownersPerContacts"
                   ownersIdsArray={contactData.owners}
                   contactId={props.contactId}
-                />
+                /> */}
               </div>
             </Grid>
           )}

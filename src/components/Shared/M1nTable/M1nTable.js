@@ -34,6 +34,7 @@ import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { ADDREMOVEOWNERTOACONTACT } from "../../../graphQL/useMutationAddRemoveOwnerToAContact";
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
+import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqualObjects, deepEqual } from "../functions";
@@ -860,6 +861,8 @@ function M1nTable(props) {
   const [addRemoveOwnerToAContact] = useMutation(ADDREMOVEOWNERTOACONTACT);
   //////////
   const [removeContact] = useMutation(REMOVECONTACT);
+
+  const [updateContact] = useMutation(UPDATECONTACT);
 
   ////////////Queries end///////////////////////////////////////////////
 
@@ -2107,28 +2110,37 @@ function M1nTable(props) {
   ////////////Contact Delete begin////////////////////////////////////////
 
   useEffect(() => {
-    if (props.parent && props.parent === "Contacts") {
+    if (
+      props.parent &&
+      props.parent === "Contacts" &&
+      stateApp.user &&
+      stateApp.user.mongoId
+    ) {
       console.log("ue mintable 25");
       setDeleteFunc(() => (contactsIdsToDelete) => {
         if (contactsIdsToDelete) {
           for (let i = 0; i < contactsIdsToDelete.length; i++) {
-            // removeContact({
-            //   variables: {
-            //     contactId: contactsIdsToDelete[i],
-            //   },
-            //   refetchQueries: [
-            //     "getContacts",
-            //     "getContactsByOwnerId",
-            //     "getContactsCounter",
-            //     "getContact",
-            //   ],
-            //   awaitRefetchQueries: true,
-            // });
+            updateContact({
+              variables: {
+                contact: {
+                  _id: contactsIdsToDelete[i],
+                  lastUpdateBy: stateApp.user.mongoId,
+                  IsDeleted: true,
+                },
+              },
+              refetchQueries: [
+                "getContacts",
+                "getContactsByOwnerId",
+                "getContact",
+                "getContactsCounter",
+              ],
+              awaitRefetchQueries: true,
+            });
           }
         }
       });
     }
-  }, [props.parent]);
+  }, [props.parent, stateApp.user]);
 
   ////////////Contacts end///////////////////////////////////////////////
 

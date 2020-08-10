@@ -221,10 +221,33 @@ function SubTable(props) {
 
   const [showExpandableCard, ShowExpandableCard] = useState(false);
   const setShowExpandableCard = (state) => {
-    if (!deepEqual(showExpandableCard, state)) {
-      ShowExpandableCard(state);
-    }
+    // console.log(
+    //   "&&&&&&&&111111111 ",
+    //   JSON.stringify(state),
+    //   JSON.stringify(showExpandableCard),
+    //   JSON.stringify(!deepEqual(showExpandableCard, state)),
+    //   props.targetLabel
+    // );
+
+    // if (!deepEqual(showExpandableCard, state)) {
+    ShowExpandableCard((st) => {
+      console.log(
+        "&&&&&&&&111111111 ",
+        JSON.stringify(state),
+        JSON.stringify(st),
+        JSON.stringify(!deepEqual(st, state)),
+        props.targetLabel
+      );
+      if (!deepEqual(st, state)) return state;
+
+      return st;
+    });
+    // }
   };
+  useEffect(() => {
+    console.log("&&&&&&&&222222222 ", showExpandableCard, props.targetLabel);
+  }, [showExpandableCard]);
+
   const [selectedRow, SelectedRow] = useState();
   const setSelectedRow = (state) => {
     if (!deepEqual(selectedRow, state)) {
@@ -284,9 +307,11 @@ function SubTable(props) {
   useEffect(() => {
     if (rows && m1nSelectedRowsIndexesRef.current) {
       if (rows.length > 0 && m1nSelectedRowsIndexesRef.current.length > 0) {
-        let selectedRowsTracks = m1nSelectedRowsIndexesRef.current.map((ind) => {
-          if (rows[ind] && rows[ind].isTracked) return rows[ind].isTracked;
-        });
+        let selectedRowsTracks = m1nSelectedRowsIndexesRef.current.map(
+          (ind) => {
+            if (rows[ind] && rows[ind].isTracked) return rows[ind].isTracked;
+          }
+        );
         setM1nSelectedRowsTracks(selectedRowsTracks);
       } else setM1nSelectedRowsTracks([]);
     }
@@ -296,11 +321,15 @@ function SubTable(props) {
     for (let i = 0; i < m1nSelectedRowsIndexesRef.current.length; i++) {
       if (
         document.getElementById(
-          id + m1nSelectedRowsIdsRef.current[i] + m1nSelectedRowsIndexesRef.current[i]
+          id +
+            m1nSelectedRowsIdsRef.current[i] +
+            m1nSelectedRowsIndexesRef.current[i]
         )
       )
         document.getElementById(
-          id + m1nSelectedRowsIdsRef.current[i] + m1nSelectedRowsIndexesRef.current[i]
+          id +
+            m1nSelectedRowsIdsRef.current[i] +
+            m1nSelectedRowsIndexesRef.current[i]
         ).style.backgroundColor = color;
     }
   };
@@ -400,20 +429,23 @@ function SubTable(props) {
                       targetSourceId={tableMeta.rowData[0]}
                       dark
                       multipleIds={
-                        m1nSelectedRowsIndexesRef.current.indexOf(tableMeta.rowIndex) !==
-                          -1 && m1nSelectedRowsIndexesRef.current.length > 1
+                        m1nSelectedRowsIndexesRef.current.indexOf(
+                          tableMeta.rowIndex
+                        ) !== -1 && m1nSelectedRowsIndexesRef.current.length > 1
                           ? m1nSelectedRowsIdsRef.current
                           : null
                       }
                       multipleTracks={
-                        m1nSelectedRowsIndexesRef.current.indexOf(tableMeta.rowIndex) !==
-                          -1 && m1nSelectedRowsIndexesRef.current.length > 1
+                        m1nSelectedRowsIndexesRef.current.indexOf(
+                          tableMeta.rowIndex
+                        ) !== -1 && m1nSelectedRowsIndexesRef.current.length > 1
                           ? m1nSelectedRowsTracks
                           : null
                       }
                       multiSelectMouseHoverColor={
-                        m1nSelectedRowsIndexesRef.current.indexOf(tableMeta.rowIndex) !==
-                          -1 && m1nSelectedRowsIndexesRef.current.length > 1
+                        m1nSelectedRowsIndexesRef.current.indexOf(
+                          tableMeta.rowIndex
+                        ) !== -1 && m1nSelectedRowsIndexesRef.current.length > 1
                           ? multiSelectMouseHoverColor
                           : null
                       }
@@ -866,13 +898,7 @@ function SubTable(props) {
       });
       setColumns([...props.columns]);
     }
-  }, [
-    props.columns,
-    props.rows,
-    colInd,
-    rowInd,
-    m1nSelectedRowsTracks,
-  ]);
+  }, [props.columns, props.rows, colInd, rowInd, m1nSelectedRowsTracks]);
 
   const handleExpandClick = async (cIndex, rIndex, idOrValues, type) => {
     setColInd(cIndex);
@@ -975,7 +1001,11 @@ function SubTable(props) {
             ) {
               const getSelectedRows = () => {
                 const selectedRows = [];
-                for (let i = 0; i < m1nSelectedRowsIndexesRef.current.length; i++) {
+                for (
+                  let i = 0;
+                  i < m1nSelectedRowsIndexesRef.current.length;
+                  i++
+                ) {
                   selectedRows.push(rows[m1nSelectedRowsIndexesRef.current[i]]);
                 }
                 return selectedRows;
@@ -1285,7 +1315,10 @@ function SubTable(props) {
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to permanently delete the owner${
-                  m1nSelectedRowsIdsRef.current && m1nSelectedRowsIdsRef.current.length > 1 ? "s" : ""
+                  m1nSelectedRowsIdsRef.current &&
+                  m1nSelectedRowsIdsRef.current.length > 1
+                    ? "s"
+                    : ""
                 } from  this contact?`}
               </DeleteConfirmationDialogContent>
             )}
@@ -1298,14 +1331,16 @@ function SubTable(props) {
               >
                 {props.header === "Owner's Contacts" &&
                   `Do you want to remove the contact${
-                    m1nSelectedRowsIdsRef.current && m1nSelectedRowsIdsRef.current.length > 1
+                    m1nSelectedRowsIdsRef.current &&
+                    m1nSelectedRowsIdsRef.current.length > 1
                       ? "s"
                       : ""
                   } from this owner?`}
 
                 {props.header === "Contacts" &&
-                  `Do you want to permanently delete the contact${
-                    m1nSelectedRowsIdsRef.current && m1nSelectedRowsIdsRef.current.length > 1
+                  `Do you want delete the contact${
+                    m1nSelectedRowsIdsRef.current &&
+                    m1nSelectedRowsIdsRef.current.length > 1
                       ? "s"
                       : ""
                   }?`}
@@ -1399,4 +1434,4 @@ function areEqual(prevProps, nextProps) {
   return true;
 }
 
-export default React.memo(SubTable, areEqual);
+export default React.memo(SubTable);
