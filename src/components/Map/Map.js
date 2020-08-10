@@ -222,6 +222,9 @@ export default function Map() {
 
   const [filterAbstract, setFilterAbstract] = useState(false);
 
+  const [mapMouseMoveHandler, setMapMouseMoveHandler] = useState(null);
+  const [mapMouseRClickHandler, setMapMouseRClickHandler] = useState(null);
+
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
 
   //////////// TEMP UNTIL PROVIDER IS MADE //////////
@@ -3847,6 +3850,15 @@ export default function Map() {
         newMap.on('moveend', function(e) {
           abstractControl(e);
         });
+
+        const mapFilterPolyOnRight = (e) => {
+          console.log("right click on the map");
+          let id = "draw_polygon" + Date.now();
+          setStateNav(stateNav => ({ ...stateNav, drawingMode: "draw_polygon", filterFeatureId: id}));
+        }
+
+        newMap.on("contextmenu", mapFilterPolyOnRight);
+
         setStateApp({ ...stateApp, map: newMap, draw: Draw });
 
         newMap.on("load", function (e) {
