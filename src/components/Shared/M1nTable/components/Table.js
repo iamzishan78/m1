@@ -42,14 +42,12 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import MapLocation from "../../svgIcons/MapLocation";
 import RoomIcon from "@material-ui/icons/Room";
 import { useDispatch, useSelector } from "react-redux";
+import { setMapGridCardState } from "../../../../actions";
 import {
-  showInfoMessage,
-  showSuccessMessage,
-  showWarningMessage,
-  showErrorMessage,
-  setMapGridCardState,
-} from "../../../../actions";
-import { deepEqualObjects, deepEqual } from "../../functions";
+  deepEqualObjects,
+  deepEqual,
+  setStateIfDeepEqual,
+} from "../../functions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -182,77 +180,52 @@ function SubTable(props) {
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, Rows] = useState([]);
-  const setRows = (state) => {
-    if (!deepEqual(rows, state)) {
-      Rows(state);
-    }
+  const setRows = (newState) => {
+    setStateIfDeepEqual(Rows, newState);
   };
   const [columns, Columns] = useState([]);
-  const setColumns = (state) => {
-    if (!deepEqual(columns, state)) {
-      Columns(state);
-    }
+  const setColumns = (newState) => {
+    setStateIfDeepEqual(Columns, newState);
   };
 
   const [colInd, ColInd] = useState();
-  const setColInd = (state) => {
-    if (!deepEqual(colInd, state)) {
-      ColInd(state);
-    }
+  const setColInd = (newState) => {
+    setStateIfDeepEqual(ColInd, newState);
   };
   const [rowInd, RowInd] = useState();
-  const setRowInd = (state) => {
-    if (!deepEqual(rowInd, state)) {
-      RowInd(state);
-    }
+  const setRowInd = (newState) => {
+    setStateIfDeepEqual(RowInd, newState);
   };
   const [expandedObject, ExpandedObject] = useState();
-  const setExpandedObject = (state) => {
-    if (!deepEqual(expandedObject, state)) {
-      ExpandedObject(state);
-    }
+  const setExpandedObject = (newState) => {
+    setStateIfDeepEqual(ExpandedObject, newState);
   };
   const [openDialog, OpenDialog] = useState(false);
-  const setOpenDialog = (state) => {
-    if (!deepEqual(openDialog, state)) {
-      OpenDialog(state);
-    }
+  const setOpenDialog = (newState) => {
+    setStateIfDeepEqual(OpenDialog, newState);
   };
 
   const [showExpandableCard, ShowExpandableCard] = useState(false);
   const setShowExpandableCard = (newState) => {
-    ShowExpandableCard((state) => {
-      if (!deepEqual(state, newState)) return newState;
-      return state;
-    });
+    setStateIfDeepEqual(ShowExpandableCard, newState);
   };
-  useEffect(() => {
-    console.log("&&&&&&&&222222222 ", showExpandableCard, props.targetLabel);
-  }, [showExpandableCard]);
 
   const [selectedRow, SelectedRow] = useState();
-  const setSelectedRow = (state) => {
-    if (!deepEqual(selectedRow, state)) {
-      SelectedRow(state);
-    }
+  const setSelectedRow = (newState) => {
+    setStateIfDeepEqual(SelectedRow, newState);
   };
+
   const [subComponent, SubComponent] = useState(null);
-  const setSubComponent = (state) => {
-    if (!deepEqual(subComponent, state)) {
-      SubComponent(state);
-    }
+  const setSubComponent = (newState) => {
+    setStateIfDeepEqual(SubComponent, newState);
   };
   const [title, Title] = useState("");
-  const setTitle = (state) => {
-    if (!deepEqual(title, state)) {
-      Title(state);
-    }
+  const setTitle = (newState) => {
+    setStateIfDeepEqual(Title, newState);
   };
   const [subTitle, SubTitle] = useState("");
-  const setSubTitle = (state) => {
-    if (!deepEqual(subTitle, state)) {
-      SubTitle(state);
-    }
+  const setSubTitle = (newState) => {
+    setStateIfDeepEqual(SubTitle, newState);
   };
 
   const m1nSelectedRowsIndexesRef = useRef([]);
@@ -268,10 +241,8 @@ function SubTable(props) {
     }
   };
   const [m1nSelectedRowsTracks, M1nSelectedRowsTracks] = useState([]);
-  const setM1nSelectedRowsTracks = (state) => {
-    if (!deepEqual(m1nSelectedRowsTracks, state)) {
-      M1nSelectedRowsTracks(state);
-    }
+  const setM1nSelectedRowsTracks = (newState) => {
+    setStateIfDeepEqual(M1nSelectedRowsTracks, newState);
   };
 
   useEffect(() => {
@@ -1416,4 +1387,4 @@ function areEqual(prevProps, nextProps) {
   return true;
 }
 
-export default React.memo(SubTable);
+export default React.memo(SubTable, areEqual);
