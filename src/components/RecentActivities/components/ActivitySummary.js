@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Typography from "@material-ui/core/Typography";
 import EmailIcon from "@material-ui/icons/Email";
 import EventNoteIcon from "@material-ui/icons/EventNote";
@@ -13,15 +13,20 @@ const useStyles = makeStyles((theme) => ({
     padding: "20px",
     border: "2px solid #F9F8EC",
     borderRadius: "8px",
+    display: "flex",
+    flexDirection: "column",
   },
   summaryHeading: {
     textAlign: "center",
     textTransform: "uppercase",
+    marginBottom: "10px",
+    color: "#888887",
+    fontWeight: "bold",
   },
   gridContainer: {
     display: "grid",
     gridTemplateColumns: "auto auto",
-    gridGap: "10px",
+    gridGap: "20px",
   },
   gridItem: {
     padding: "5px",
@@ -33,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
   redIcon: {
     color: "#C189AE",
-    backgroundIcon: "#F3D5E9",
+    backgroundColor: "#F3D5E9",
   },
   greenIcon: {
     color: "#75C2CC",
@@ -44,18 +49,36 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#D7D6FB",
   },
   activityDetails: {
-    marginLeft: "5px",
+    marginLeft: "10px",
     display: "flex",
     flexDirection: "column",
+    color: "#888887",
+    alignSelf: "center",
+  },
+  quantity: {
+    fontSize: "15px",
+  },
+  type: {
+    fontSize: "11px",
+    textTransform: "uppercase",
   },
 }));
 
 function SummarySection({ activity }) {
   const classes = useStyles();
 
+  const typeMapping = {
+    sms: "sms",
+    phone: "calls",
+    campaign: "campaigns",
+    email: "emails",
+  };
+  const typeName = typeMapping[activity.type];
+
   const getIcon = (type) => {
     let color = "Icon";
     let Icon = <EmailIcon />;
+
     switch (type) {
       case "email":
         color = `blue${color}`;
@@ -85,15 +108,21 @@ function SummarySection({ activity }) {
     <div className={classes.gridItem}>
       {getIcon(activity.type)}
       <div className={classes.activityDetails}>
-        <span>{activity.type}</span>
-        <span>{activity.quantity}</span>
+        <span className={classes.quantity}>{activity.quantity}</span>
+        <span className={classes.type}>{typeName}</span>
       </div>
     </div>
   );
 }
 
-export default function ActivitySummary() {
+export default function ActivitySummary({ activityLog }) {
   const classes = useStyles();
+
+  const getQuantityForType = (type) => {
+    return activityLog.filter((act) => act.type === type).length;
+  };
+
+  const types = ["email", "campaign", "phone", "sms"];
 
   return (
     <div className={classes.summaryRoot}>
@@ -105,10 +134,11 @@ export default function ActivitySummary() {
         Activity Summary
       </Typography>
       <div className={classes.gridContainer}>
-        <SummarySection activity={{ type: "email", quantity: 20 }} />
-        <SummarySection activity={{ type: "campaign", quantity: 30 }} />
-        <SummarySection activity={{ type: "phone", quantity: 40 }} />
-        <SummarySection activity={{ type: "sms", quantity: 50 }} />
+        {types.map((type, i) => (
+          <SummarySection
+            activity={{ type, quantity: getQuantityForType(type) }}
+          />
+        ))}
       </div>
     </div>
   );

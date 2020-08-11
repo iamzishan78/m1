@@ -112,13 +112,13 @@ export default function Map() {
   const [lng, Lng] = useState();
   const setLng = (state) => {
     if(lng != state) {
-      // Lng(state)
+      Lng(state)
     }
   }
   const [lat, Lat] = useState();
   const setLat = (state) => {
     if(lat != state) {
-      // Lat(state)
+      Lat(state)
     }
   }
   const [transform, Transform] = useState("transform: inherit");

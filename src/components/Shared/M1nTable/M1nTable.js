@@ -34,9 +34,10 @@ import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { ADDREMOVEOWNERTOACONTACT } from "../../../graphQL/useMutationAddRemoveOwnerToAContact";
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
+import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 
 import { useDispatch, useSelector } from "react-redux";
-import { deepEqualObjects, deepEqual } from "../functions";
+import { deepEqualObjects, setStateIfDeepEqual } from "../functions";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
@@ -738,71 +739,50 @@ function M1nTable(props) {
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, Rows] = useState([]);
-  const setRows = (state) => {
-    if (!deepEqual(rows, state)) {
-      Rows(state);
-    }
+  const setRows = (newState) => {
+    setStateIfDeepEqual(Rows, newState);
   };
   const [header, Header] = useState("");
-  const setHeader = (state) => {
-    if (!deepEqual(header, state)) {
-      Header(state);
-    }
+  const setHeader = (newState) => {
+    setStateIfDeepEqual(Header, newState);
   };
   const [columns, Columns] = useState([]);
-  const setColumns = (state) => {
-    if (!deepEqual(columns, state)) {
-      Columns(state);
-    }
+  const setColumns = (newState) => {
+    setStateIfDeepEqual(Columns, newState);
   };
   const [loading, Loading] = useState(true);
-  const setLoading = (state) => {
-    if (!deepEqual(loading, state)) {
-      Loading(state);
-    }
+  const setLoading = (newState) => {
+    setStateIfDeepEqual(Loading, newState);
   };
   const [addAble, AddAble] = useState(true);
-  const setAddAble = (state) => {
-    if (!deepEqual(addAble, state)) {
-      AddAble(state);
-    }
+  const setAddAble = (newState) => {
+    setStateIfDeepEqual(AddAble, newState);
   };
   const [uploadIcon, UploadIcon] = useState(null);
-  const setUploadIcon = (state) => {
-    if (!deepEqual(uploadIcon, state)) {
-      UploadIcon(state);
-    }
+  const setUploadIcon = (newState) => {
+    setStateIfDeepEqual(UploadIcon, newState);
   };
   const [targetLabel, TargetLabel] = useState(null);
-  const setTargetLabel = (state) => {
-    if (!deepEqual(targetLabel, state)) {
-      TargetLabel(state);
-    }
+  const setTargetLabel = (newState) => {
+    setStateIfDeepEqual(TargetLabel, newState);
   };
   const [deleteFunc, DeleteFunc] = useState(null);
-  const setDeleteFunc = (state) => {
-    if (!deepEqual(deleteFunc, state)) {
-      DeleteFunc(state);
-    }
+  const setDeleteFunc = (newState) => {
+    setStateIfDeepEqual(DeleteFunc, newState);
   };
   const [showTracks, ShowTracks] = useState(true);
-  const setShowTracks = (state) => {
-    if (!deepEqual(showTracks, state)) {
-      ShowTracks(state);
-    }
+  const setShowTracks = (newState) => {
+    setStateIfDeepEqual(ShowTracks, newState);
   };
   const [orderByTracks, OrderByTracks] = useState(true);
-  const setOrderByTracks = (state) => {
-    if (!deepEqual(orderByTracks, state)) {
-      OrderByTracks(state);
-    }
+  const setOrderByTracks = (newState) => {
+    setStateIfDeepEqual(OrderByTracks, newState);
   };
   const [startPaginationAt, StartPaginationAt] = useState();
-  const setStartPaginationAt = (state) => {
-    if (!deepEqual(startPaginationAt, state)) {
-      StartPaginationAt(state);
-    }
+  const setStartPaginationAt = (newState) => {
+    setStateIfDeepEqual(StartPaginationAt, newState);
   };
+
   const { searchloading, searchResultData } = useSelector(
     ({ MapGridCard }) => MapGridCard
   );
@@ -860,6 +840,8 @@ function M1nTable(props) {
   const [addRemoveOwnerToAContact] = useMutation(ADDREMOVEOWNERTOACONTACT);
   //////////
   const [removeContact] = useMutation(REMOVECONTACT);
+
+  const [updateContact] = useMutation(UPDATECONTACT);
 
   ////////////Queries end///////////////////////////////////////////////
 
@@ -2107,28 +2089,37 @@ function M1nTable(props) {
   ////////////Contact Delete begin////////////////////////////////////////
 
   useEffect(() => {
-    if (props.parent && props.parent === "Contacts") {
+    if (
+      props.parent &&
+      props.parent === "Contacts" &&
+      stateApp.user &&
+      stateApp.user.mongoId
+    ) {
       console.log("ue mintable 25");
       setDeleteFunc(() => (contactsIdsToDelete) => {
         if (contactsIdsToDelete) {
           for (let i = 0; i < contactsIdsToDelete.length; i++) {
-            // removeContact({
-            //   variables: {
-            //     contactId: contactsIdsToDelete[i],
-            //   },
-            //   refetchQueries: [
-            //     "getContacts",
-            //     "getContactsByOwnerId",
-            //     "getContactsCounter",
-            //     "getContact",
-            //   ],
-            //   awaitRefetchQueries: true,
-            // });
+            updateContact({
+              variables: {
+                contact: {
+                  _id: contactsIdsToDelete[i],
+                  lastUpdateBy: stateApp.user.mongoId,
+                  IsDeleted: true,
+                },
+              },
+              refetchQueries: [
+                "getContacts",
+                "getContactsByOwnerId",
+                "getContact",
+                "getContactsCounter",
+              ],
+              awaitRefetchQueries: true,
+            });
           }
         }
       });
     }
-  }, [props.parent]);
+  }, [props.parent, stateApp.user]);
 
   ////////////Contacts end///////////////////////////////////////////////
 
