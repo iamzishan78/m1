@@ -3839,7 +3839,7 @@ export default function Map() {
 
         const abstractControl = (e) => {
           const map = e.target;
-          if (map.getZoom() >= 16) {
+          if (map.getZoom() >= 12) {
             const bounds = map.getBounds();
             const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
             const bboxPolygon = turf.bboxPolygon(bbox);
