@@ -21,6 +21,7 @@ import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
 import DrawStatus from "./components/DrawStatus";
 import ZoomFault from "./components/ZoomFault";
+import TrackAbstract from "./components/TrackAbstract";
 import HugeRequest from "./components/HugeRequest";
 import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
@@ -3532,7 +3533,6 @@ export default function Map() {
               source: 'abstract_geo_source',
               id: e.features[0].id
             });
-            console.log(featureState);
             if (featureState && featureState.click) {
               map.setFeatureState(
                 { source: 'abstract_geo_source', id: e.features[0].id },
@@ -3546,25 +3546,42 @@ export default function Map() {
             }
           } else {
             const featuresList = map.getSource('abstract_geo_source')._data.features;
-            for (let i = 0; i < featuresList.length; i ++) {
-              const id = featuresList[i].properties.abstract_n;
-              const featureState = map.getFeatureState({
-                source: 'abstract_geo_source',
-                id: id
-              });
+            const currentFeatureState = map.getFeatureState({
+              source: 'abstract_geo_source',
+              id: e.features[0].id
+            });
+            if (currentFeatureState && currentFeatureState.click) {
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                showAbstractPopup: true
+              }));
+            } else {
+              for (let i = 0; i < featuresList.length; i ++) {
+                const id = featuresList[i].properties.abstract_n;
+                const featureState = map.getFeatureState({
+                  source: 'abstract_geo_source',
+                  id: id
+                });
 
-              if (featureState && featureState.click) {
-                map.setFeatureState(
-                  { source: 'abstract_geo_source', id: id },
-                  { click: false }
-                );
+                if (featureState && featureState.click) {
+                  map.setFeatureState(
+                    { source: 'abstract_geo_source', id: id },
+                    { click: false }
+                  );
+                }
               }
+
+              map.setFeatureState(
+                { source: 'abstract_geo_source', id: e.features[0].id },
+                { click: true }
+              );
+
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                showAbstractPopup: true
+              }));
             }
 
-            map.setFeatureState(
-              { source: 'abstract_geo_source', id: e.features[0].id },
-              { click: true }
-            );
           }
         }
       });
@@ -4693,6 +4710,7 @@ export default function Map() {
       </div>
       <MapControlsProvider />
       {/* <DrawStatus drawingStatus={drawStatus} /> */}
+      <TrackAbstract showAbstractPopup={stateApp.showAbstractPopup} />
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <HugeRequest hugeRequestStatus={stateApp.hugeRequest} />
       <Coordinates long={lng} lat={lat} />
