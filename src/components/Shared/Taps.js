@@ -48,8 +48,22 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
   },
   WellsDetailsCardAppBar: {
-    backgroundColor: (props) => (props.white ? "#FFFFFF" : "rgb(1,17,51)"),
+    backgroundColor: (props) => (props.white ? "#FFFFFF" : "#7a7d82"),
     color: (props) => (props.white ? "rgb(1,17,51)" : "#FFFFFF"),
+  },
+
+  indicator: {
+    backgroundColor: "#7a7d82",
+  },
+  selectedTab: {
+    "MuiTab-wrapper": {
+      background: "blue",
+    },
+    "& > span:nth-child(1)": {
+      backgroundColor: "#33b4e0",
+      borderRadius: "4px",
+      width: "90px",
+    },
   },
 }));
 
@@ -88,13 +102,20 @@ export default function Taps(props) {
         <Tabs
           value={value}
           onChange={handleChange}
-          indicatorColor="secondary"
           variant="scrollable"
           scrollButtons="auto"
+          classes={{ indicator: classes.indicator }}
           aria-label="scrollable auto tabs example"
         >
           {tabLabels.map((label, i) => {
-            return <Tab key={i} label={label} {...a11yProps(i)} />;
+            return (
+              <Tab
+                classes={{ selected: classes.selectedTab }}
+                key={i}
+                label={label}
+                {...a11yProps(i)}
+              />
+            );
           })}
         </Tabs>
       </AppBar>

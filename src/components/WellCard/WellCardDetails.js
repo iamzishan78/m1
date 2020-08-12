@@ -44,6 +44,7 @@ import WellApiCard from "../Shared/WellApiCard";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
+import Skeleton from "@material-ui/lab/Skeleton";
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -69,6 +70,8 @@ const useStyles = makeStyles((theme) => ({
     left: "0",
     paddingTop: "7px",
     borderBottom: "1px solid rgb(190, 190, 190)",
+    padding: "10px",
+    background: "#ebebeb",
   },
   gridWidthScroll: {
     maxHeight: "calc(100% - 88px)",
@@ -300,16 +303,56 @@ export default function WellCardDetails(props) {
   return stateApp.selectedWell ? (
     <React.Fragment>
       <Grid item sm={12} className={classes.gridItemGrey}>
-        <WellApiCard />
-        <WellTypeCard />
-        <WellStatusCard />
-        <Last12StatusCard />
-        <OwnerNumCard />
-        <ProfileCard />
-        <PermitDateCard />
-        <SpudDateCard />
-        <CompletionDateCard />
-        <FirstProdDateCard />
+        {stateApp.selectedWell ? (
+          <Skeleton variant="circle" width={50} height={50} />
+        ) : (
+          <WellApiCard />
+        )}
+        {stateApp.selectedWell ? (
+          <Skeleton variant="circle" width={50} height={50} />
+        ) : (
+          <WellTypeCard />
+        )}
+        {stateApp.selectedWell ? (
+          <Skeleton variant="circle" width={50} height={50} />
+        ) : (
+          <WellStatusCard />
+        )}
+        {stateApp.selectedWell ? (
+          <Skeleton variant="circle" width={50} height={50} />
+        ) : (
+          <Last12StatusCard />
+        )}
+        {stateApp.selectedWell ? (
+          <Skeleton variant="circle" width={50} height={50} />
+        ) : (
+          <OwnerNumCard />
+        )}
+        {stateApp.selectedWell ? (
+          <Skeleton variant="circle" width={50} height={50} />
+        ) : (
+          <ProfileCard />
+        )}
+        {stateApp.selectedWell ? (
+          <Skeleton variant="circle" width={50} height={50} />
+        ) : (
+          <PermitDateCard />
+        )}
+        {stateApp.selectedWell ? (
+          <Skeleton variant="circle" width={50} height={50} />
+        ) : (
+          <SpudDateCard />
+        )}
+        {stateApp.selectedWell ? (
+          <Skeleton variant="circle" width={50} height={50} />
+        ) : (
+          <CompletionDateCard />
+        )}
+        {stateApp.selectedWell ? (
+          <Skeleton variant="circle" width={50} height={50} />
+        ) : (
+          <FirstProdDateCard />
+        )}
       </Grid>
       <Grid item sm={12} container className={classes.gridWidthScroll}>
         <Grid item sm={12} container style={{ height: "482px" }}>
@@ -323,6 +366,7 @@ export default function WellCardDetails(props) {
         </Grid>
         <Grid item sm={12}>
           <Taps
+            className={classes.tabsContent}
             tabLabels={[
               "Well",
               "Owners",
