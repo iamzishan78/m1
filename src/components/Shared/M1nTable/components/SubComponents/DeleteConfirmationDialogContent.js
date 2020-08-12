@@ -1,14 +1,26 @@
 import React from "react";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
 import Button from "@material-ui/core/Button";
+import { Modals } from "../../../../../styles/Modal";
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import FormLabel from "@material-ui/core/FormLabel";
 
 export default function DeleteConfirmationDialogContent(props) {
+  const modalClass = Modals();
   return (
     <React.Fragment>
-      <DialogTitle style={{ textAlign: "center", padding: "24px 24px 0 24px" }}>
-        {props.children}
+      <DialogTitle className={modalClass.title} id="customized-dialog-title">
+        Delete Contact(s)
+        <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={props.onClose}/>
       </DialogTitle>
+      <DialogContent>
+        <h3 className={modalClass.inputLabel}>
+          {props.children}
+        </h3>
+      </DialogContent>
       <DialogActions>
         <Button
           onClick={() => {

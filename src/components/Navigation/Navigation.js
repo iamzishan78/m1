@@ -40,6 +40,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import PersonIcon from "@material-ui/icons/Person";
 import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -165,15 +166,29 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     left: 0,
   },
+
   drawerOpenLogo: {
-    paddingLeft: "50px",
+    paddingLeft: "10px",
     paddingTop: "10px",
   },
+
+  iconArrow: {
+    background: "rgba(23, 170, 221, 1)",
+    color: "#fff",
+    textAlign: "right",
+    padding: 0,
+    transition: "all 0.3s ease-in-out",
+    margin: "5px 15px 0px auto",
+    "&:hover": {
+      background: "rgba(1, 17, 51, 1.0)",
+    },
+  },
+
   drawerOpen: {
     // background: "rgba(255, 255, 255, 1.0)",
     background: "rgba(250, 250, 250, 1.0)",
     width: drawerWidth,
-    height: "100vh",
+    height: "100%",
     top: "0",
     //boxShadow: "1px 0px 100vw black",
     transition: theme.transitions.create("width", {
@@ -354,52 +369,21 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 12,
     color: "rgba(0, 0, 0, 0.52) !important ",
   },
-  betaSideNav2: {
-    textTransform: "inherit",
-    position: "relative",
-    fontWeight: 900,
-    left: -13,
-    fontSize: 12,
-    color: "rgba(228, 167, 115, 1) !important ",
-  },
+
   betaSideNav5: {
     textTransform: "inherit",
     position: "relative",
     fontWeight: 900,
-    left: -50,
-    fontSize: 12,
+    fontSize: 10,
     color: "rgba(228, 167, 115, 0.25) !important ",
   },
   betaSideNav3: {
     textTransform: "inherit",
-    left: -10,
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 900,
     color: "rgba(228, 167, 115, 1) !important ",
   },
-  betaSideNav6: {
-    textTransform: "inherit",
-    position: "relative",
-    fontWeight: 900,
-    left: -13,
-    fontSize: 12,
-    color: "rgba(228, 167, 115, 1) !important ",
-  },
-  betaSideNav7: {
-    textTransform: "inherit",
-    position: "relative",
-    fontWeight: 900,
-    left: -34,
-    fontSize: 12,
-    color: "rgba(228, 167, 115, 1) !important ",
-  },
-  betaSideNav4: {
-    textTransform: "inherit",
-    position: "relative",
-    left: -40,
-    fontSize: 12,
-    color: "rgba(0, 0, 0, 0.52) !important ",
-  },
+
   betaText: {
     fontSize: 10,
     top: 0,
@@ -433,7 +417,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "rgba(23, 170, 221, 1) !important",
   },
   menuList: {
-    paddingTop: "5%",
+    paddingTop: "15%",
     paddingBottom: "5%",
     position: "relative",
     //width: drawerWidth - 1,
@@ -442,21 +426,20 @@ const useStyles = makeStyles((theme) => ({
   },
   menuListBottom: {
     paddingTop: "5%",
-    paddingBottom: "15%",
     position: "absolute",
-    //width: drawerWidth - 1,
     bottom: "0",
   },
   menuListBottomDivider: {
     position: "relative",
     bottom: "90%",
   },
+
   menuListItem: {
     paddingBottom: "5%",
     width: drawerWidth,
     paddingTop: "5%",
     marginTop: "0%",
-    paddingLeft: "17%",
+    display: "flex",
     "&:hover": {
       backgroundColor: "Light Grey",
     },
@@ -471,7 +454,6 @@ const useStyles = makeStyles((theme) => ({
     //width: drawerWidth - 1,
     paddingTop: "5%",
     marginTop: "0%",
-    paddingLeft: "17%",
     "&:hover": {
       backgroundColor: "Light Grey",
     },
@@ -482,11 +464,13 @@ const useStyles = makeStyles((theme) => ({
   },
 
   menuListItemSelected: {
-    backgroundColor: "rgba(198, 210, 225, 0) !important",
+    backgroundColor: "rgba(23, 170, 221, 0.08) !important",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: "rgba(23,170,221,1.0)",
       fontWeight: "bold",
     },
+    borderLeft: "solid 4px  rgba(23,170,221,1.0)",
+    display: "flex",
   },
   avatarUser: {
     fontFamily: "Poppins",
@@ -571,6 +555,25 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiListItem-gutters": {
       paddingRight: "30px",
     },
+  },
+  tabContent: {
+    display: "flex",
+    alignItems: "center",
+  },
+  sideNavIcon: {
+    minWidth: 0,
+    marginRight: 8,
+  },
+  sideNavText: {
+    flex: 2,
+    marginRight: -8,
+  },
+  sideNavAction: {
+    top: "unset",
+    right: "unset",
+    position: "unset",
+    transform: "unset",
+    flex: 1,
   },
 }));
 
@@ -1391,7 +1394,11 @@ export default function Navigation(props) {
             <M1neralLogo />
           </div>
 
-          <IconButton color="secondary" onClick={handleDrawerClose}>
+          <IconButton
+            className={classes.iconArrow}
+            color="secondary"
+            onClick={handleDrawerClose}
+          >
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
@@ -1399,7 +1406,6 @@ export default function Navigation(props) {
             )}
           </IconButton>
         </div>
-        <Divider variant="middle" light="true" />
         <List className={classes.menuList}>
           <ListItem
             classes={{
@@ -1411,10 +1417,15 @@ export default function Navigation(props) {
             onClick={(event) => handleListItemClick(event, 0, "/dashboard")}
             key="dashboard"
           >
-            <ListItemIcon>
-              <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary="Dashboard" />
+            <div className={classes.tabContent}>
+              <ListItemIcon className={classes.sideNavIcon}>
+                <DashboardIcon />
+              </ListItemIcon>
+              <ListItemText
+                className={`${classes.sideNavText} uppercase`}
+                primary="Dashboard"
+              />
+            </div>
           </ListItem>
 
           <ListItem
@@ -1427,10 +1438,15 @@ export default function Navigation(props) {
             onClick={(event) => handleListItemClick(event, 0, "/")}
             key="home"
           >
-            <ListItemIcon>
-              <SearchIcon />
-            </ListItemIcon>
-            <ListItemText primary="Find" />
+            <div className={classes.tabContent}>
+              <ListItemIcon className={classes.sideNavIcon}>
+                <SearchIcon />
+              </ListItemIcon>
+              <ListItemText
+                className={`${classes.sideNavText} uppercase`}
+                primary="Find"
+              />
+            </div>
           </ListItem>
 
           {/* <ListItem
@@ -1465,20 +1481,25 @@ export default function Navigation(props) {
             }}
             key="contacts"
           >
-            <ListItemIcon>
-              <AccountCircleIcon />
-            </ListItemIcon>
-            <ListItemText primary="Contacts" />
-            <ListItemSecondaryAction>
-              <Button
-                disabled
-                className={classes.betaSideNav3}
-                edge="end"
-                aria-label="beta"
-              >
-                beta
-              </Button>
-            </ListItemSecondaryAction>
+            <div className={classes.tabContent}>
+              <ListItemIcon className={classes.sideNavIcon}>
+                <PersonIcon />
+              </ListItemIcon>
+              <ListItemText
+                className={`${classes.sideNavText} uppercase`}
+                primary="Contacts"
+              />
+              <ListItemSecondaryAction className={classes.sideNavAction}>
+                <Button
+                  disabled
+                  className={`${classes.betaSideNav3} uppercase`}
+                  edge="start"
+                  aria-label="beta"
+                >
+                  beta
+                </Button>
+              </ListItemSecondaryAction>
+            </div>
           </ListItem>
 
           <ListItem
@@ -1491,20 +1512,25 @@ export default function Navigation(props) {
             onClick={(event) => handleListItemClick(event, 0, "/transact")}
             key="transact"
           >
-            <ListItemIcon>
-              <ShoppingCartIcon />
-            </ListItemIcon>
-            <ListItemText primary="Transact" />
-            <ListItemSecondaryAction>
-              <Button
-                disabled
-                className={classes.betaSideNav2}
-                edge="end"
-                aria-label="beta"
-              >
-                beta
-              </Button>
-            </ListItemSecondaryAction>
+            <div className={classes.tabContent}>
+              <ListItemIcon className={classes.sideNavIcon}>
+                <ShoppingCartIcon />
+              </ListItemIcon>
+              <ListItemText
+                className={`${classes.sideNavText} uppercase`}
+                primary="Transact"
+              />
+              <ListItemSecondaryAction className={classes.sideNavAction}>
+                <Button
+                  disabled
+                  className={`${classes.betaSideNav3} uppercase`}
+                  edge="start"
+                  aria-label="beta"
+                >
+                  beta
+                </Button>
+              </ListItemSecondaryAction>
+            </div>
           </ListItem>
 
           {/* <ListItem
@@ -1533,21 +1559,25 @@ export default function Navigation(props) {
             onClick={(event) => handleListItemClick(event, 0, "/studio")}
             key="studio"
           >
-            <ListItemIcon>
-              <LayersIcon />
-            </ListItemIcon>
-            <ListItemText primary="Studio" />
-
-            <ListItemSecondaryAction>
-              <Button
-                disabled
-                className={classes.betaSideNav7}
-                edge="end"
-                aria-label="beta"
-              >
-                beta
-              </Button>
-            </ListItemSecondaryAction>
+            <div className={classes.tabContent}>
+              <ListItemIcon className={classes.sideNavIcon}>
+                <LayersIcon />
+              </ListItemIcon>
+              <ListItemText
+                className={`${classes.sideNavText} uppercase`}
+                primary="Studio"
+              />
+              <ListItemSecondaryAction className={classes.sideNavAction}>
+                <Button
+                  disabled
+                  className={`${classes.betaSideNav3} uppercase`}
+                  edge="end"
+                  aria-label="beta"
+                >
+                  beta
+                </Button>
+              </ListItemSecondaryAction>
+            </div>
           </ListItem>
 
           <ListItem
@@ -1560,23 +1590,28 @@ export default function Navigation(props) {
             onClick={(event) => handleListItemClick(event, 0, "/title")}
             key="title"
           >
-            <ListItemIcon>
-              <DescriptionIcon />
-            </ListItemIcon>
-            <ListItemText primary="Title" />
-            <ListItemSecondaryAction>
-              <Button
-                disabled
-                className={classes.betaSideNav5}
-                edge="end"
-                aria-label="beta"
-              >
-                beta
-              </Button>
-            </ListItemSecondaryAction>
+            <div className={classes.tabContent}>
+              <ListItemIcon className={classes.sideNavIcon}>
+                <DescriptionIcon />
+              </ListItemIcon>
+              <ListItemText
+                className={`${classes.sideNavText} uppercase`}
+                primary="Title"
+              />
+              <ListItemSecondaryAction className={classes.sideNavAction}>
+                <Button
+                  disabled
+                  className={classes.betaSideNav5}
+                  edge="end"
+                  aria-label="beta"
+                >
+                  BETA
+                </Button>
+              </ListItemSecondaryAction>
+            </div>
           </ListItem>
         </List>
-        <Divider variant="middle" className={classes.menuListBottomDivider} />
+        {/* <Divider variant="middle" className={classes.menuListBottomDivider} /> */}
         <List className={classes.menuListBottom}>
           {/* <ListItem
             classes={{
@@ -1606,10 +1641,15 @@ export default function Navigation(props) {
             onClick={() => toggleSupportDrawer()}
             key="support"
           >
-            <ListItemIcon>
-              <HeadsetMicIcon />
-            </ListItemIcon>
-            <ListItemText primary="Support" />
+            <div className={classes.tabContent}>
+              <ListItemIcon className={classes.sideNavIcon}>
+                <HeadsetMicIcon />
+              </ListItemIcon>
+              <ListItemText
+                className={`${classes.sideNavText} uppercase`}
+                primary="Support"
+              />
+            </div>
 
             {/* <ListItemSecondaryAction>
               <Button disabled className={classes.betaSideNav2} edge="end" aria-label="BETA">

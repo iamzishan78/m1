@@ -588,7 +588,7 @@ export default function Comments(props) {
                   (commentsDisplayedCount += 1) &&
                   (props.top && props.top < commentsDisplayedCount ? null : (
                     //// ListItem ////
-                    <>
+                    <div key={index}>
                       {commentsDisplayedCount !== 1 && (
                         <Divider
                           style={{
@@ -632,7 +632,7 @@ export default function Comments(props) {
                       >
                         Delete
                       </h5>
-                    </>
+                    </div>
                   ))
                 : //// ListItem  End ////
                   ((publicComment && comment.public) ||
@@ -645,8 +645,8 @@ export default function Comments(props) {
                       alignItems="flex-start"
                     >
                       <ListItemAvatar className={classes.avatar}>
-                        <Avatar 
-                          name={comment.user.name} 
+                        <Avatar
+                          name={comment.user.name}
                           color={Avatar.getRandomColor(comment.user.email, [
                             "#b5d2f6",
                             "#ade2e9",
@@ -655,8 +655,9 @@ export default function Comments(props) {
                             "#d7d6fb",
                           ])}
                           fgColor="#000"
-                          size="35" 
-                          round />
+                          size="35"
+                          round
+                        />
                       </ListItemAvatar>
                       <ListItemText
                         className={classes.listItemText}

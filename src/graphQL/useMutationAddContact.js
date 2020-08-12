@@ -7,6 +7,7 @@ export const ADDCONTACT = gql`
       message
       error
       contact {
+        _id
         name
         address1
         address2

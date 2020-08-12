@@ -18,6 +18,9 @@ import Button from '@material-ui/core/Button';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import TextField from '@material-ui/core/TextField';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
+import { readProfileRequest } from "../../Login/AADAuthConfig";
+var shapefile = require("shapefile");
+
 
 
 export default function AddUserData(props) {
@@ -25,70 +28,99 @@ export default function AddUserData(props) {
   const [isOpen, setIsOpen] = useState(true);
   const [inputFiles, setInputFiles] = useState(null);
   const [inputURL, setInputURL] = useState(null);
-
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
   const [stateApp, setStateApp] = useContext(AppContext);
 
+  const [open, setOpen] = React.useState(false);
+
   const handleClose = () => {
-    setIsOpen(false);
-    //setStateMapControls(stateMapControls => ({ ...stateMapControls }));
+
+    setStateMapControls((state) => ({ ...state, anchorEl: null }));
   };
 
-  async function handleFileInput(fileObj) {
-    console.log('Added Files:', fileObj)
-    console.log(typeof fileObj);
+  const windowClose = () => { setIsOpen(!isOpen); }
 
-    try {
-      let fileContent = await handleFileAsync(fileObj);
-      console.log('FILE CONTENT: ', fileContent);
-      setInputFiles(fileContent);
-    } catch (err) {
-      console.log(err);
+  // const handleClose = () => {
+  //   setIsOpen(false);
+  //   //setStateMapControls(stateMapControls => ({ ...stateMapControls }));
+  // };
+
+  async function handleFileInput(fileObj) {
+    console.log('ADDED FILES:', fileObj)
+    let fileContent = await handleFileAsync(fileObj);
+    let existingFileLayers = stateApp.userFileLayers;
+    existingFileLayers.push(fileContent);
+    setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
+  }
+
+  const handleURLinput = (e) => {
+    let input = e.target.value;
+    if (input.endsWith(".geojson")) {
+      console.log("GEOJSON SERVICE LAYER")
+      let existingFileLayers = stateApp.userFileLayers;
+      existingFileLayers.push(input);
+      setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
+
+    } else {
+      console.log("TILE SERVICE LAYER")
+      let existingServiceLayers = stateApp.userServiceLayers
+      existingServiceLayers.push(input);
+      console.log('INPUT URL ADDED:: ', input)
+      setStateApp(stateApp => ({ ...stateApp, userServiceLayers: [...existingServiceLayers] }));
+      console.log("USER SERVICE LAYERS STATE CHANGE", stateApp.userServiceLayers)
+      // setInputURL(input);
     }
+  }
+
+  async function handleFileAsync(file) {
+    let inputFile = file[0].data;
+    let fileName = file[0].file.name;
+    let geoJSON = {
+      type: "FeatureCollection",
+      features: []
+    }
+
+    if (fileName.endsWith(".geojson")) {
+      return await new Promise((resolve, reject) => {
+        fetch(inputFile)
+          .then((response) =>
+            response.json())
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => reject(error));
+      })
+    } else if (fileName.endsWith(".shp")) {
+      return await new Promise((resolve, reject) => {
+        fetch(inputFile)
+          .then((response) => {
+            const reader = response.body.getReader();
+            shapefile.open(reader)
+              .then(source => source.read())
+              .then((value) => {
+                geoJSON.features.push(value);
+                resolve(geoJSON);
+              }).catch(error => reject(error))
+          })
+      })
+    }
+  }
+
+
+
+  const handleApplyChanges = () => {
+    console.log('Apply Changes');
+
   }
 
   const handleOnAlert = (message, variant) => {
     console.log(`${variant}: ${message}`)
   }
-
-
-  const handleApplyChanges = () => {
-    console.log('Apply Changes');
-    let fileContent = inputFiles;
-    let existingFileLayers = stateApp.userFileLayers;
-    existingFileLayers.push(fileContent);
-    console.log('USER FILE LAYERS:: ', existingFileLayers)
-
-    setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
-  }
-
-  const handleFileAsync = (file) => {
-    return new Promise((resolve, reject) => {
-      fetch(file[0].data)
-        .then((response) => response.json())
-        .then((response) => {
-          resolve(response);
-        })
-        .catch((error) => reject(error));
-    })
-  }
-
-  const handleURLinput = (e) => {
-    let inputURL = e.target.value;
-    console.log(inputURL);
-    if (inputURL.endsWith(".geojson")) {
-      let existingFileLayers = stateApp.userFileLayers
-      existingFileLayers.push(inputURL);
-      console.log('INPUT URL ADDED:: ', inputURL)
-      setInputFiles(inputFiles => ({ userFileLayers: [...existingFileLayers] }));
-    }
-  }
-
   return (
     <ClickAwayListener onClickAway={handleClose}>
-      <Dialog open={isOpen} onClose={handleClose}>
+      <Dialog open={isOpen} onClose={windowClose}>
         <DialogTitle>
           Add Data
         </DialogTitle>
@@ -100,8 +132,8 @@ export default function AddUserData(props) {
             onDelete={(fileObj) => console.log('Removed File:', fileObj)}
             onAlert={handleOnAlert}
             filesLimit={1}
-            dropzoneText=" Drag and Drop a GeoJSON or Shapefile."
-            acceptedFiles={[".geojson", ".zip"]}
+            dropzoneText="Drag and Drop a GeoJSON or Shapefile."
+            acceptedFiles={[".geojson", ".shp", ".prj"]}
             maxFileSize={600000000}
           ></DropzoneAreaBase>
           <TextField
@@ -117,10 +149,10 @@ export default function AddUserData(props) {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleApplyChanges} color="primary">
+          {/* <Button autoFocus onClick={handleApplyChanges} color="primary">
             Apply Changes
-          </Button>
-          <Button autoFocus onClick={handleClose} color="primary">
+          </Button> */}
+          <Button autoFocus onClick={windowClose} color="primary">
             Close
           </Button>
         </DialogActions>

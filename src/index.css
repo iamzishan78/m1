@@ -4,6 +4,7 @@ html {
   height: 100%;
   /* overflow-y: hidden !important; */
 }
+
 body {
   margin: 0px;
   width: 100%;
@@ -12,6 +13,7 @@ body {
   overflow: auto !important;
   /* overflow-y: hidden !important; */
 }
+
 #root {
   margin: 0px;
   width: 100%;
@@ -21,4 +23,21 @@ body {
 
 #cognitive-search-autocomplete-popup {
   max-height: 55vh !important;
+}
+
+/* css herer */
+
+.capitalize {
+  text-transform: capitalize !important;
+}
+
+.uppercase {
+  text-transform: uppercase !important;
+}
+
+.lightblueBtn {
+  text-transform: capitalize !important;
+  background-color: rgba(23, 170, 221, 1) !important;
+  color: #fff !important;
+
 }

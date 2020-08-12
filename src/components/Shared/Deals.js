@@ -41,6 +41,13 @@ const useStyles = makeStyles((theme) => ({
   todayDot: {
     fontSize: "8px",
   },
+  dealTitle: {
+    cursor: "pointer",
+    "&:hover": {
+      fontWeight: "bold",
+      textDecoration: "underline",
+    },
+  },
 }));
 
 let formatter = new Intl.NumberFormat("en-US", {
@@ -48,7 +55,7 @@ let formatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
-export default function Activities({ contact, ...props }) {
+export default function Deals({ contact, ...props }) {
   const [wonDeals, setWonDeals] = useState([]); // deal closed
   const [lostDeals, setLostDeals] = useState([]); // deal rejected
   const [activeDeals, setActiveDeals] = useState([]); // all other deals
@@ -60,6 +67,7 @@ export default function Activities({ contact, ...props }) {
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
+      console.log(stateApp.user);
       getTransactionData({
         variables: {
           userId: stateApp.user.mongoId,
@@ -118,7 +126,8 @@ export default function Activities({ contact, ...props }) {
       (card) =>
         (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     );
-    return formatter.format(sum);
+    const formatted = formatter.format(sum);
+    return formatted.slice(0, formatted.length - 3);
   };
 
   const sumWonDeals = () => {
@@ -127,7 +136,8 @@ export default function Activities({ contact, ...props }) {
       (card) =>
         (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     );
-    return formatter.format(sum);
+    const formatted = formatter.format(sum);
+    return formatted.slice(0, formatted.length - 3);
   };
 
   const handleDataChange = (newData) => {
@@ -137,19 +147,22 @@ export default function Activities({ contact, ...props }) {
           transactionId: data.transactionData._id,
           transaction: { allData: newData, user: stateApp.user.mongoId },
         },
-        refetchQueries: ["getTransactionData"],
+        refetchQueries: ["getTransactionData", "getContact", "getContacts"],
         awaitRefetchQueries: true,
       });
     }
   };
 
-  const handleOpenDialog = () => {
+  const handleOpenDialog = (deal) => {
+    const laneId = deal ? deal.laneId : null;
+    const cardId = deal ? deal.id : null;
+
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: true,
       activeDeal: {
-        laneId: null,
-        cardId: null,
+        laneId,
+        cardId,
       },
     }));
   };
@@ -160,6 +173,7 @@ export default function Activities({ contact, ...props }) {
         <Dialog
           transactData={data?.transactionData?.allData}
           handleDataChange={handleDataChange}
+          selectRowOpenContact={props.selectRowOpenContact}
           contact={contact}
         />
         <CardActions>
@@ -220,7 +234,12 @@ export default function Activities({ contact, ...props }) {
               <TableBody>
                 {allDeals.map((deal) => (
                   <TableRow key={deal.id}>
-                    <TableCell component="th" scope="row">
+                    <TableCell
+                      component="th"
+                      scope="row"
+                      className={classes.dealTitle}
+                      onClick={() => handleOpenDialog(deal)}
+                    >
                       {deal.title}
                     </TableCell>
                     <TableCell>{deal.label}</TableCell>
