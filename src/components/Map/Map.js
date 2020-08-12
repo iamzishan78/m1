@@ -21,6 +21,7 @@ import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
 import DrawStatus from "./components/DrawStatus";
 import ZoomFault from "./components/ZoomFault";
+import TrackAbstract from "./components/TrackAbstract";
 import HugeRequest from "./components/HugeRequest";
 import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
@@ -221,6 +222,9 @@ export default function Map() {
   }
 
   const [filterAbstract, setFilterAbstract] = useState(false);
+
+  const [mapMouseMoveHandler, setMapMouseMoveHandler] = useState(null);
+  const [mapMouseRClickHandler, setMapMouseRClickHandler] = useState(null);
 
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
 
@@ -3634,7 +3638,6 @@ export default function Map() {
               source: 'abstract_geo_source',
               id: e.features[0].id
             });
-            console.log(featureState);
             if (featureState && featureState.click) {
               map.setFeatureState(
                 { source: 'abstract_geo_source', id: e.features[0].id },
@@ -3648,25 +3651,42 @@ export default function Map() {
             }
           } else {
             const featuresList = map.getSource('abstract_geo_source')._data.features;
-            for (let i = 0; i < featuresList.length; i ++) {
-              const id = featuresList[i].properties.abstract_n;
-              const featureState = map.getFeatureState({
-                source: 'abstract_geo_source',
-                id: id
-              });
+            const currentFeatureState = map.getFeatureState({
+              source: 'abstract_geo_source',
+              id: e.features[0].id
+            });
+            if (currentFeatureState && currentFeatureState.click) {
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                showAbstractPopup: true
+              }));
+            } else {
+              for (let i = 0; i < featuresList.length; i ++) {
+                const id = featuresList[i].properties.abstract_n;
+                const featureState = map.getFeatureState({
+                  source: 'abstract_geo_source',
+                  id: id
+                });
 
-              if (featureState && featureState.click) {
-                map.setFeatureState(
-                  { source: 'abstract_geo_source', id: id },
-                  { click: false }
-                );
+                if (featureState && featureState.click) {
+                  map.setFeatureState(
+                    { source: 'abstract_geo_source', id: id },
+                    { click: false }
+                  );
+                }
               }
+
+              map.setFeatureState(
+                { source: 'abstract_geo_source', id: e.features[0].id },
+                { click: true }
+              );
+
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                showAbstractPopup: true
+              }));
             }
 
-            map.setFeatureState(
-              { source: 'abstract_geo_source', id: e.features[0].id },
-              { click: true }
-            );
           }
         }
       });
@@ -3924,7 +3944,7 @@ export default function Map() {
 
         const abstractControl = (e) => {
           const map = e.target;
-          if (map.getZoom() >= 16) {
+          if (map.getZoom() >= 12) {
             const bounds = map.getBounds();
             const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
             const bboxPolygon = turf.bboxPolygon(bbox);
@@ -3952,6 +3972,15 @@ export default function Map() {
         newMap.on('moveend', function(e) {
           abstractControl(e);
         });
+
+        const mapFilterPolyOnRight = (e) => {
+          console.log("right click on the map");
+          let id = "draw_polygon" + Date.now();
+          setStateNav(stateNav => ({ ...stateNav, drawingMode: "draw_polygon", filterFeatureId: id}));
+        }
+
+        newMap.on("contextmenu", mapFilterPolyOnRight);
+
         setStateApp({ ...stateApp, map: newMap, draw: Draw });
 
         newMap.on("load", function (e) {
@@ -4786,6 +4815,7 @@ export default function Map() {
       </div>
       <MapControlsProvider />
       {/* <DrawStatus drawingStatus={drawStatus} /> */}
+      <TrackAbstract showAbstractPopup={stateApp.showAbstractPopup} />
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <HugeRequest hugeRequestStatus={stateApp.hugeRequest} />
       <Coordinates long={lng} lat={lat} />
