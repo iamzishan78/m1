@@ -35,7 +35,7 @@ import SpudDateCard from "../Shared/SpudDateCard";
 import WellApiCard from "../Shared/WellApiCard";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
-import { Divider } from "@material-ui/core";
+import { Tabs, Tab } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -61,7 +61,6 @@ const useStyles = makeStyles((theme) => ({
     left: "0",
     paddingTop: "7px",
     borderBottom: "1px solid rgb(190, 190, 190)",
-    padding: "10px",
     background: "#ebebeb",
   },
   gridWidthScroll: {
@@ -148,11 +147,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function WellCardDetails(props) {
+  const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
-
+  const [tabValue, setTabValue] = React.useState(0);
   const [target, setTarget] = useState(null);
-  const classes = useStyles();
+
   useEffect(() => {
     if (props.target) {
       setTarget(props.target);
@@ -166,6 +166,9 @@ export default function WellCardDetails(props) {
     });
   };
 
+  const handleTabValueChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
   const handleChangeGas = (event) => {
     setStateWellCard({
       ...stateWellCard,
@@ -294,16 +297,24 @@ export default function WellCardDetails(props) {
   return stateApp.selectedWell ? (
     <React.Fragment>
       <Grid item sm={12} className={classes.gridItemGrey}>
-        <WellApiCard />
-        <WellTypeCard />
-        <WellStatusCard />
-        <Last12StatusCard />
-        <OwnerNumCard />
-        <ProfileCard />
-        <PermitDateCard />
-        <SpudDateCard />
-        <CompletionDateCard />
-        <FirstProdDateCard />
+        <Tabs
+          value={tabValue}
+          onChange={handleTabValueChange}
+          indicatorColor="primary"
+          variant="scrollable"
+          scrollButtons="auto"
+        >
+          <Tab label={<WellApiCard />} />
+          <Tab label={<WellTypeCard />} />
+          <Tab label={<WellStatusCard />} />
+          <Tab label={<Last12StatusCard />} />
+          <Tab label={<OwnerNumCard />} />
+          <Tab label={<ProfileCard />} />
+          <Tab label={<PermitDateCard />} />
+          <Tab label={<SpudDateCard />} />
+          <Tab label={<CompletionDateCard />} />
+          <Tab label={<FirstProdDateCard />} />
+        </Tabs>
       </Grid>
       <Grid item sm={12} container className={classes.gridWidthScroll}>
         <Grid item sm={12} container style={{ height: "482px" }}>
