@@ -340,24 +340,6 @@ function SubTable(props) {
                           }
                         }}
                         aria-label="fly"
-                        // onMouseOver={() => {
-                        //   if (
-                        //     m1nSelectedRowsIndexes.indexOf(
-                        //       tableMeta.rowIndex
-                        //     ) !== -1 &&
-                        //     m1nSelectedRowsIndexes.length > 1
-                        //   )
-                        //     multiSelectMouseHoverColor(id, "#dadbde");
-                        // }}
-                        // onMouseOut={() => {
-                        //   if (
-                        //     m1nSelectedRowsIndexes.indexOf(
-                        //       tableMeta.rowIndex
-                        //     ) !== -1 &&
-                        //     m1nSelectedRowsIndexes.length > 1
-                        //   )
-                        //     multiSelectMouseHoverColor(id, "#efefef");
-                        // }}
                       >
                         <RoomIcon />
                       </IconButton>
@@ -1378,13 +1360,4 @@ function SubTable(props) {
   );
 }
 
-function areEqual(prevProps, nextProps) {
-  if (!deepEqualObjects(prevProps, nextProps)) {
-    // console.log(`${prevProps.toString()} ... ${nextProps.toString()}`)
-    return false;
-  }
-
-  return true;
-}
-
-export default React.memo(SubTable, areEqual);
+export default React.memo(SubTable, deepEqualObjects);

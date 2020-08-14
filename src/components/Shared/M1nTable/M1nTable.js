@@ -19,6 +19,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import { Container } from "@material-ui/core";
 import Table from "./components/Table";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Typography from "@material-ui/core/Typography";
 
 import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
@@ -33,6 +37,7 @@ import { CONTACTSBYOWNERSID } from "../../../graphQL/useQueryContactsByOwnerId";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { ADDREMOVEOWNERTOACONTACT } from "../../../graphQL/useMutationAddRemoveOwnerToAContact";
 import { CONTACT } from "../../../graphQL/useQueryContact";
+import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 
@@ -705,6 +710,82 @@ const SearchsHeadCells = [
   },
 ];
 
+const OwnersPerParcelHeadCells = [
+  {
+    name: "_id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  { name: "name", label: "Name" },
+  { name: "entity", label: "Entity" },
+  { name: "type", label: "Type" },
+  // { name: "depths", label: "Depths" },
+  // { name: "depthFrom", label: "Depth From" },
+  // { name: "depthTo", label: "Depth To" },
+  { name: "interest", label: "Interest" },
+  { name: "nma", label: "NMA" },
+  { name: "nra", label: "NRA" },
+  {
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
+  },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isTracked",
+    label: "Track",
+    options: {
+      searchable: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: ["Tracked", "Untracked"],
+        logic(tracked, filterVal) {
+          return !(
+            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+            (filterVal.indexOf("Untracked") >= 0 && !tracked)
+          );
+        },
+      },
+      filterType: "dropdown",
+    },
+  },
+];
+
 ////////////HeadCells end///////////////////////////////////////////////
 
 const capitalizeFirstLetter = (string) => {
@@ -842,6 +923,13 @@ function M1nTable(props) {
   const [removeContact] = useMutation(REMOVECONTACT);
 
   const [updateContact] = useMutation(UPDATECONTACT);
+  //////////
+  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
+    CUSTOMLAYER,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
 
   ////////////Queries end///////////////////////////////////////////////
 
@@ -2126,7 +2214,6 @@ function M1nTable(props) {
   //////////// Search begin///////////////////////////////////////////////
   useEffect(() => {
     if (searchloading) {
-      console.log("ue mintable 26");
       setLoading(true);
     }
   }, [searchloading]);
@@ -2142,8 +2229,6 @@ function M1nTable(props) {
       stateApp.user &&
       stateApp.user.mongoId
     ) {
-      console.log("ue mintable 27");
-      console.log("xxxxxxxxxxxxxx");
       setTargetLabel(props.targetLabel);
       setHeader(props.header);
       setAddAble(false);
@@ -2193,7 +2278,6 @@ function M1nTable(props) {
       (!props.showTracks || (dataTracks && dataTracks.tracksByObjectType)) &&
       props.privateColumns
     ) {
-      console.log("ue mintable 28");
       if (searchResultData.length > 0) {
         searchResultData.forEach((result) => {
           result.id = result.Id;
@@ -2303,6 +2387,271 @@ function M1nTable(props) {
   ]);
   //////////// Search end///////////////////////////////////////////////
 
+  ////////////Owners Per Parcel begin///////////////////////////////////////////////
+  const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] = useState(
+    "true"
+  );
+
+  function ParcelOwnersRadioButtons() {
+    const [value, setValue] = React.useState("true");
+
+    const handleChange = (event) => {
+      setValue(event.target.value);
+      setParcelOwnersRadioBValue(event.target.value);
+    };
+
+    return (
+      <div style={{ display: "flex" }}>
+        <Typography
+          variant="body1"
+          style={{ margin: "8px 25px 0 0", fontWeight: "bold" }}
+        >
+          Parcel Owners
+        </Typography>
+        <RadioGroup row value={value} onChange={handleChange}>
+          <FormControlLabel
+            value="true"
+            control={<Radio />}
+            label="All Depths"
+          />
+          <FormControlLabel
+            value="false"
+            control={<Radio />}
+            label="Footages/Formations"
+          />
+        </RadioGroup>
+      </div>
+    );
+  }
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerParcel" &&
+      props.customLayerId
+    ) {
+      setHeader(<ParcelOwnersRadioButtons />);
+
+      setTargetLabel("Parcel Owner");
+      getCustomLayer({
+        variables: {
+          id: props.customLayerId,
+        },
+      });
+
+      // setAddAble({
+      //   parent: props.contactId,
+      //   type: "ownerToContact",
+      //   existingOwners: dataCustomLayer.customLayer.owners
+      //     ? dataCustomLayer.customLayer.owners
+      //     : [],
+      // });
+    }
+  }, [props.contactId]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerParcel" &&
+      dataCustomLayer &&
+      dataCustomLayer.customLayer &&
+      stateApp.user
+    ) {
+      if (
+        dataCustomLayer.customLayer.owners &&
+        dataCustomLayer.customLayer.owners.length > 0
+      ) {
+        const objectsIdsArray = dataCustomLayer.customLayer.owners.map(
+          (owner) => owner._id
+        );
+
+        getCommentsCounter({
+          variables: {
+            objectsIdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+        getTagSamples({
+          variables: {
+            objectsIdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+      } else {
+        setLoading(false);
+        setRows([]);
+      }
+    }
+  }, [props.parent, dataCustomLayer, stateApp.user]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerParcel" &&
+      parcelOwnersRadioBValue &&
+      dataCustomLayer &&
+      dataCustomLayer.customLayer &&
+      dataCustomLayer.customLayer.owners &&
+      dataCustomLayer.customLayer.owners.length > 0 &&
+      dataTracks &&
+      dataTracks.tracksByObjectType &&
+      dataCommentsCounter &&
+      dataCommentsCounter.commentsCounter &&
+      dataTagSamples &&
+      dataTagSamples.tagSamples
+    ) {
+      const owners = dataCustomLayer.customLayer.owners.filter(
+        (parcelOwner) => {
+          if (
+            (parcelOwnersRadioBValue === "true" && parcelOwner.allDepths) ||
+            (parcelOwnersRadioBValue === "false" && !parcelOwner.allDepths)
+          ) {
+            parcelOwner.commentsCounter = 0;
+            parcelOwner.tags = [[], 0];
+            parcelOwner.isTracked = false;
+
+            parcelOwner.allDepths
+              ? (parcelOwner.depths = "All")
+              : (parcelOwner.depths = "");
+
+            for (
+              let i = 0;
+              i < dataCommentsCounter.commentsCounter.length;
+              i++
+            ) {
+              if (
+                parcelOwner._id === dataCommentsCounter.commentsCounter[i]._id
+              ) {
+                parcelOwner.commentsCounter =
+                  dataCommentsCounter.commentsCounter[i].total;
+                break;
+              }
+            }
+
+            for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+              if (parcelOwner._id === dataTagSamples.tagSamples[i]._id) {
+                parcelOwner.tags = [
+                  dataTagSamples.tagSamples[i].tags,
+                  dataTagSamples.tagSamples[i].total,
+                ];
+
+                break;
+              }
+            }
+
+            for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+              if (
+                parcelOwner._id === dataTracks.tracksByObjectType[i].trackOn
+              ) {
+                parcelOwner.isTracked = true;
+                break;
+              }
+            }
+
+            return true;
+          }
+        }
+      );
+
+      let availableTags = [];
+      dataTagSamples.tagSamples.map((sample) => {
+        availableTags = [...availableTags, ...sample.tags];
+      });
+      const cleanAvailableTags = [...new Set(availableTags)];
+
+      const OwnersPerParcelHeadCellsCopy = [...OwnersPerParcelHeadCells];
+      if (parcelOwnersRadioBValue === "true")
+        OwnersPerParcelHeadCellsCopy.splice(4, 0, {
+          name: "depths",
+          label: "Depths",
+        });
+      else
+        OwnersPerParcelHeadCellsCopy.splice(
+          4,
+          0,
+          { name: "depthFrom", label: "Depth From" },
+          { name: "depthTo", label: "Depth To" }
+        );
+
+      setColumns(
+        cleanAvailableTags.length > 0
+          ? OwnersPerParcelHeadCellsCopy.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
+                  },
+                };
+              }
+              return column;
+            })
+          : OwnersPerParcelHeadCellsCopy.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
+      );
+      setRows(owners);
+      setLoading(false);
+    }
+  }, [
+    parcelOwnersRadioBValue,
+    props.parent,
+    dataCustomLayer,
+    dataTracks,
+    dataTagSamples,
+    dataCommentsCounter,
+  ]);
+  ////////////Owners Per Parcel begin//////////Delete//////////////////////////////
+
+  // useEffect(() => {
+  //   if (
+  //     props.parent &&
+  //     props.parent === "ownersPerContacts" &&
+  //     props.contactId
+  //   ) {
+  //     console.log("ue mintable 17");
+  //     setDeleteFunc(() => (ownersIdsToDelete) => {
+  //       if (ownersIdsToDelete) {
+  //         setStateApp((state) => ({
+  //           ...state,
+  //           universalCircularLoaderAct: true,
+  //         }));
+  //         for (let i = 0; i < ownersIdsToDelete.length; i++) {
+  //           addRemoveOwnerToAContact({
+  //             variables: {
+  //               contactId: props.contactId,
+  //               ownerId: ownersIdsToDelete[i],
+  //             },
+  //             refetchQueries: [
+  //               "getContacts",
+  //               "getContactsByOwnerId",
+  //               "getContactsCounter",
+  //               "getContact",
+  //               "getContactInM1nTable",
+  //             ],
+  //             awaitRefetchQueries: true,
+  //           });
+  //         }
+  //       }
+  //     });
+  //   }
+  // }, [props.parent, props.contactId]);
+
+  ////////////Owners Per Parcel end/////////////////////////////////////////////////
+
   ////////////-----Add your code section here-----///////////////////////
 
   return (
@@ -2325,13 +2674,4 @@ function M1nTable(props) {
   );
 }
 
-function areEqual(prevProps, nextProps) {
-  if (!deepEqualObjects(prevProps, nextProps)) {
-    // console.log(`${prevProps.toString()} ... ${nextProps.toString()}`)
-    return false;
-  }
-
-  return true;
-}
-
-export default React.memo(M1nTable, areEqual);
+export default React.memo(M1nTable, deepEqualObjects);
