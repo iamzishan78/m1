@@ -77,12 +77,16 @@ const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: "100%",
+    padding: "0px 8px",
   },
   divider: {
     backgroundColor: "#d4d4d4",
     padding: "2px 0",
     borderRadius: "2px",
     margin: "4px 0",
+  },
+  gridListTile: {
+    padding: "8px !important",
   },
 }));
 const StyledBreadcrumb = withStyles((theme) => ({
@@ -140,7 +144,7 @@ export default function QuadSummary(props) {
   //graphQL
 
   return data && stateQuad.quadChart ? (
-    <div>
+    <div style={{ padding: "0px 5px 0px 25px" }}>
       <div className={classes.gridContainer}>
         <FormControl variant="outlined" className={classes.formControl}>
           <Select
@@ -161,7 +165,12 @@ export default function QuadSummary(props) {
           className={classes.gridList}
         >
           {stateQuad.quadChart.map((tile) => (
-            <GridListTile cols={1} rows={1} key={tile.metric}>
+            <GridListTile
+              className={classes.gridListTile}
+              cols={1}
+              rows={1}
+              key={tile.metric}
+            >
               <Card className={classes.card}>
                 <CardContent>
                   <Typography align="center" variant="h4">

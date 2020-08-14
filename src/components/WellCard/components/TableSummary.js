@@ -18,8 +18,7 @@ const useStyles = makeStyles({
   },
   tableContainer: {
     overflowX: "unset",
-    border: "2px solid #e3e3e3 !important",
-    padding: "8px",
+    margin: "8px",
     //minWidth: 650,
     //paddingRight: '20px'
     // minHeight: "419.556px",
@@ -31,7 +30,7 @@ const useStyles = makeStyles({
 
   tableRow: {
     "& > td": {
-      padding: "0px 8px !important",
+      padding: "4px 10px !important",
       border: "2px solid #e3e3e3",
     },
   },
@@ -68,11 +67,7 @@ export default function TableSummary(props) {
   return (
     <TableContainer className={classes.tableContainer} component={Paper}>
       {summary && (
-        <Table
-          className={classes.table}
-          aria-label="simple table"
-          loading={!summary}
-        >
+        <Table aria-label="simple table" loading={!summary}>
           <TableBody>
             <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>

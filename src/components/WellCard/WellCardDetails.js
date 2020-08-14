@@ -8,14 +8,6 @@ import { purple } from "@material-ui/core/colors";
 //material-ui components
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import Card from "@material-ui/core/Card";
-import Container from "@material-ui/core/Container";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardContent from "@material-ui/core/CardContent";
-import CardActions from "@material-ui/core/CardActions";
-import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
 
 //custom components
 import WellIcon from "./components/svgIcons/WellIcon";
@@ -41,10 +33,9 @@ import ProfileCard from "../Shared/ProfileCard";
 import WellTypeCard from "../Shared/WellTypeCard";
 import SpudDateCard from "../Shared/SpudDateCard";
 import WellApiCard from "../Shared/WellApiCard";
-import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
-import Skeleton from "@material-ui/lab/Skeleton";
+import { Divider } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -303,70 +294,29 @@ export default function WellCardDetails(props) {
   return stateApp.selectedWell ? (
     <React.Fragment>
       <Grid item sm={12} className={classes.gridItemGrey}>
-        {stateApp.selectedWell ? (
-          <Skeleton variant="circle" width={50} height={50} />
-        ) : (
-          <WellApiCard />
-        )}
-        {stateApp.selectedWell ? (
-          <Skeleton variant="circle" width={50} height={50} />
-        ) : (
-          <WellTypeCard />
-        )}
-        {stateApp.selectedWell ? (
-          <Skeleton variant="circle" width={50} height={50} />
-        ) : (
-          <WellStatusCard />
-        )}
-        {stateApp.selectedWell ? (
-          <Skeleton variant="circle" width={50} height={50} />
-        ) : (
-          <Last12StatusCard />
-        )}
-        {stateApp.selectedWell ? (
-          <Skeleton variant="circle" width={50} height={50} />
-        ) : (
-          <OwnerNumCard />
-        )}
-        {stateApp.selectedWell ? (
-          <Skeleton variant="circle" width={50} height={50} />
-        ) : (
-          <ProfileCard />
-        )}
-        {stateApp.selectedWell ? (
-          <Skeleton variant="circle" width={50} height={50} />
-        ) : (
-          <PermitDateCard />
-        )}
-        {stateApp.selectedWell ? (
-          <Skeleton variant="circle" width={50} height={50} />
-        ) : (
-          <SpudDateCard />
-        )}
-        {stateApp.selectedWell ? (
-          <Skeleton variant="circle" width={50} height={50} />
-        ) : (
-          <CompletionDateCard />
-        )}
-        {stateApp.selectedWell ? (
-          <Skeleton variant="circle" width={50} height={50} />
-        ) : (
-          <FirstProdDateCard />
-        )}
+        <WellApiCard />
+        <WellTypeCard />
+        <WellStatusCard />
+        <Last12StatusCard />
+        <OwnerNumCard />
+        <ProfileCard />
+        <PermitDateCard />
+        <SpudDateCard />
+        <CompletionDateCard />
+        <FirstProdDateCard />
       </Grid>
       <Grid item sm={12} container className={classes.gridWidthScroll}>
         <Grid item sm={12} container style={{ height: "482px" }}>
           <Grid item sm={6} className={classes.gridItem}>
             <TableSummary summary={props.summary} />
           </Grid>
-
+          {/* <Divider orientation="vertical" /> */}
           <Grid item sm={6} className={classes.gridItem}>
             <CardDetailsMap />
           </Grid>
         </Grid>
         <Grid item sm={12}>
           <Taps
-            className={classes.tabsContent}
             tabLabels={[
               "Well",
               "Owners",

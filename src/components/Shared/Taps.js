@@ -53,7 +53,13 @@ const useStyles = makeStyles((theme) => ({
   },
 
   indicator: {
-    backgroundColor: "#7a7d82",
+    backgroundColor: "#33b4e0",
+    height: "3px",
+  },
+  tabPanel: {
+    "& > div": {
+      margin: "0px !important",
+    },
   },
   selectedTab: {
     "MuiTab-wrapper": {
@@ -62,7 +68,6 @@ const useStyles = makeStyles((theme) => ({
     "& > span:nth-child(1)": {
       backgroundColor: "#33b4e0",
       borderRadius: "4px",
-      width: "90px",
     },
   },
 }));
@@ -121,11 +126,7 @@ export default function Taps(props) {
       </AppBar>
 
       {tabPanels.map((panel, i) => (
-        <TabPanel
-          /*style={{background: "#efefef"}}*/ key={i}
-          value={value}
-          index={i}
-        >
+        <TabPanel className={classes.tabPanel} key={i} value={value} index={i}>
           {panel}
         </TabPanel>
       ))}
