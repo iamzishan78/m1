@@ -2392,37 +2392,48 @@ function M1nTable(props) {
     "true"
   );
 
-  function ParcelOwnersRadioButtons() {
-    const [value, setValue] = React.useState("true");
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerParcel" &&
+      props.customLayerId
+    ) {
+      setHeader(
+        <div style={{ display: "flex" }}>
+          <Typography
+            variant="body1"
+            style={{ margin: "8px 25px 0 0", fontWeight: "bold" }}
+          >
+            Parcel Owners
+          </Typography>
+          <RadioGroup
+            row
+            value={parcelOwnersRadioBValue}
+            onChange={(event) => {
+              setParcelOwnersRadioBValue(event.target.value);
+            }}
+          >
+            <FormControlLabel
+              value="true"
+              control={<Radio />}
+              label="All Depths"
+            />
+            <FormControlLabel
+              value="false"
+              control={<Radio />}
+              label="Footages/Formations"
+            />
+          </RadioGroup>
+        </div>
+      );
 
-    const handleChange = (event) => {
-      setValue(event.target.value);
-      setParcelOwnersRadioBValue(event.target.value);
-    };
-
-    return (
-      <div style={{ display: "flex" }}>
-        <Typography
-          variant="body1"
-          style={{ margin: "8px 25px 0 0", fontWeight: "bold" }}
-        >
-          Parcel Owners
-        </Typography>
-        <RadioGroup row value={value} onChange={handleChange}>
-          <FormControlLabel
-            value="true"
-            control={<Radio />}
-            label="All Depths"
-          />
-          <FormControlLabel
-            value="false"
-            control={<Radio />}
-            label="Footages/Formations"
-          />
-        </RadioGroup>
-      </div>
-    );
-  }
+      setAddAble({
+        type: "ownerToParcel",
+        allDepths: parcelOwnersRadioBValue === "true" ? true : false,
+        customLayerId: props.customLayerId,
+      });
+    }
+  }, [props.contactId, props.customLayerId, parcelOwnersRadioBValue]);
 
   useEffect(() => {
     if (
@@ -2430,24 +2441,14 @@ function M1nTable(props) {
       props.parent === "ownersPerParcel" &&
       props.customLayerId
     ) {
-      setHeader(<ParcelOwnersRadioButtons />);
-
       setTargetLabel("Parcel Owner");
       getCustomLayer({
         variables: {
           id: props.customLayerId,
         },
       });
-
-      // setAddAble({
-      //   parent: props.contactId,
-      //   type: "ownerToContact",
-      //   existingOwners: dataCustomLayer.customLayer.owners
-      //     ? dataCustomLayer.customLayer.owners
-      //     : [],
-      // });
     }
-  }, [props.contactId]);
+  }, [props.contactId, props.customLayerId]);
 
   useEffect(() => {
     if (

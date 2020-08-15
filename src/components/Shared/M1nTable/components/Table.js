@@ -48,6 +48,7 @@ import {
   deepEqual,
   setStateIfDeepEqual,
 } from "../../functions";
+import AddParcelOwnerDialogContent from "./SubComponents/AddParcelOwnerDialogContent";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -1075,6 +1076,11 @@ function SubTable(props) {
                       props.addAble.type === "ownerToContact"
                     )
                       handleExpandClick(null, null, null, "addOwnerToContact");
+                    if (
+                      props.addAble.type &&
+                      props.addAble.type === "ownerToParcel"
+                    )
+                      handleExpandClick(null, null, null, "addOwnerToParcel");
                   }}
                 >
                   <AddCircleOutlineRoundedIcon />
@@ -1176,6 +1182,7 @@ function SubTable(props) {
                   openDialog === "wellsPerOwner"
                 ? "lg"
                 : openDialog === "addContact" ||
+                  openDialog === "addOwnerToParcel" ||
                   openDialog === "addOwnerToContact" ||
                   openDialog === "deleteOwnersFromContact" ||
                   openDialog === "deleteContact"
@@ -1236,10 +1243,17 @@ function SubTable(props) {
               />
             )}
             {openDialog === "addOwnerToContact" && (
-              <AddOwnerToContactDialogContent
+              <AddParcelOwnerDialogContent
                 onClose={handleCloseDialog}
                 parent={props.addAble.parent}
                 existingOwners={props.addAble.existingOwners}
+              />
+            )}
+            {openDialog === "addOwnerToParcel" && (
+              <AddParcelOwnerDialogContent
+                onClose={handleCloseDialog}
+                allDepths={props.addAble.allDepths}
+                customLayerId={props.addAble.customLayerId}
               />
             )}
             {openDialog === "deleteOwnersFromContact" && (
