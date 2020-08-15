@@ -25,6 +25,17 @@ const entities = [
   "Individuals",
   "Unknown",
 ];
+const types = [
+  "Unknown Interest",
+  "Leasehold",
+  "Royalty Interest (NPRI)",
+  "Fee Interest",
+  "Working Interest",
+  "Non-Executive Interest (NEMI)",
+  "Mineral Interest",
+  "Surface",
+  "Overriding Royalty Interest (ORRI)",
+];
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -45,7 +56,7 @@ export default function AddParcelOwnerDialogContent(props) {
   const [newOwner, setNewOwner] = useState({
     name: "",
     entity: "Unknown",
-    type: "",
+    type: "Unknown Interest",
     allDepths: props.allDepths,
     depthFrom: "",
     depthTo: "",
@@ -85,7 +96,7 @@ export default function AddParcelOwnerDialogContent(props) {
     setNewOwner({
       name: "",
       entity: "UNKNOWN",
-      type: "",
+      type: "Unknown Interest",
       allDepths: true,
       depthFrom: "",
       depthTo: "",
@@ -162,7 +173,7 @@ export default function AddParcelOwnerDialogContent(props) {
             <h3>Type</h3>
 
             <Autocomplete
-              options={[""]}
+              options={types}
               getOptionLabel={(option) => option}
               value={newOwner.type}
               onChange={(e, newInputValue) => {
