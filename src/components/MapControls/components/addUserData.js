@@ -19,7 +19,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import TextField from '@material-ui/core/TextField';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
 import { readProfileRequest } from "../../Login/AADAuthConfig";
-var shapefile = require("shapefile");
+//var shapefile = require("shapefile");
+import shp from 'shpjs';
 
 
 
@@ -50,6 +51,7 @@ export default function AddUserData(props) {
   async function handleFileInput(fileObj) {
     console.log('ADDED FILES:', fileObj)
     let fileContent = await handleFileAsync(fileObj);
+    console.log("FILE CONTENT::", fileContent)
     let existingFileLayers = stateApp.userFileLayers;
     existingFileLayers.push(fileContent);
     setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
@@ -78,8 +80,9 @@ export default function AddUserData(props) {
     let inputFile = file[0].data;
     let fileName = file[0].file.name;
     let geoJSON = {
-      type: "FeatureCollection",
-      features: []
+
+      "type": "FeatureCollection",
+      "data": []
     }
 
     if (fileName.endsWith(".geojson")) {
@@ -92,28 +95,24 @@ export default function AddUserData(props) {
           })
           .catch((error) => reject(error));
       })
-    } else if (fileName.endsWith(".shp")) {
+    } else if (fileName.endsWith(".zip")) {
       return await new Promise((resolve, reject) => {
+
         fetch(inputFile)
           .then((response) => {
             const reader = response.body.getReader();
-            shapefile.open(reader)
-              .then(source => source.read())
-              .then((value) => {
-                geoJSON.features.push(value);
-                resolve(geoJSON);
-              }).catch(error => reject(error))
+             shp(reader).then(geojson => {
+              console.log(geojson);
+              resolve(geojson);
           })
-      })
+          })
+      });
     }
   }
 
-
-
-  const handleApplyChanges = () => {
-    console.log('Apply Changes');
-
-  }
+  // const handleApplyChanges = () => {
+  //   console.log('Apply Changes');
+  // }
 
   const handleOnAlert = (message, variant) => {
     console.log(`${variant}: ${message}`)
@@ -133,7 +132,7 @@ export default function AddUserData(props) {
             onAlert={handleOnAlert}
             filesLimit={1}
             dropzoneText="Drag and Drop a GeoJSON or Shapefile."
-            acceptedFiles={[".geojson", ".shp", ".prj"]}
+            acceptedFiles={[".geojson", ".zip"]}
             maxFileSize={600000000}
           ></DropzoneAreaBase>
           <TextField
