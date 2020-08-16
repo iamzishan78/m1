@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
@@ -42,14 +42,13 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import MapLocation from "../../svgIcons/MapLocation";
 import RoomIcon from "@material-ui/icons/Room";
 import { useDispatch, useSelector } from "react-redux";
+import { setMapGridCardState } from "../../../../actions";
 import {
-  showInfoMessage,
-  showSuccessMessage,
-  showWarningMessage,
-  showErrorMessage,
-  setMapGridCardState,
-} from "../../../../actions";
-import { deepEqualObjects } from "../../functions";
+  deepEqualObjects,
+  deepEqual,
+  setStateIfDeepEqual,
+} from "../../functions";
+import AddParcelOwnerDialogContent from "./SubComponents/AddParcelOwnerDialogContent";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -182,91 +181,69 @@ function SubTable(props) {
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, Rows] = useState([]);
-  const setRows = (state) => {
-    if (!deepEqualObjects(rows, state)) {
-      Rows(state);
-    }
+  const setRows = (newState) => {
+    setStateIfDeepEqual(Rows, newState);
   };
   const [columns, Columns] = useState([]);
-  const setColumns = (state) => {
-    if (!deepEqualObjects(columns, state)) {
-      Columns(state);
-    }
+  const setColumns = (newState) => {
+    setStateIfDeepEqual(Columns, newState);
   };
 
   const [colInd, ColInd] = useState();
-  const setColInd = (state) => {
-    if (!deepEqualObjects(colInd, state)) {
-      ColInd(state);
-    }
+  const setColInd = (newState) => {
+    setStateIfDeepEqual(ColInd, newState);
   };
   const [rowInd, RowInd] = useState();
-  const setRowInd = (state) => {
-    if (!deepEqualObjects(rowInd, state)) {
-      RowInd(state);
-    }
+  const setRowInd = (newState) => {
+    setStateIfDeepEqual(RowInd, newState);
   };
   const [expandedObject, ExpandedObject] = useState();
-  const setExpandedObject = (state) => {
-    if (!deepEqualObjects(expandedObject, state)) {
-      ExpandedObject(state);
-    }
+  const setExpandedObject = (newState) => {
+    setStateIfDeepEqual(ExpandedObject, newState);
   };
   const [openDialog, OpenDialog] = useState(false);
-  const setOpenDialog = (state) => {
-    if (!deepEqualObjects(openDialog, state)) {
-      OpenDialog(state);
-    }
+  const setOpenDialog = (newState) => {
+    setStateIfDeepEqual(OpenDialog, newState);
   };
 
   const [showExpandableCard, ShowExpandableCard] = useState(false);
-  const setShowExpandableCard = (state) => {
-    if (!deepEqualObjects(showExpandableCard, state)) {
-      ShowExpandableCard(state);
-    }
-  };
-  const [selectedRow, SelectedRow] = useState();
-  const setSelectedRow = (state) => {
-    if (!deepEqualObjects(selectedRow, state)) {
-      SelectedRow(state);
-    }
-  };
-  const [subComponent, SubComponent] = useState(null);
-  const setSubComponent = (state) => {
-    if (!deepEqualObjects(subComponent, state)) {
-      SubComponent(state);
-    }
-  };
-  const [title, Title] = useState("");
-  const setTitle = (state) => {
-    if (!deepEqualObjects(title, state)) {
-      Title(state);
-    }
-  };
-  const [subTitle, SubTitle] = useState("");
-  const setSubTitle = (state) => {
-    if (!deepEqualObjects(subTitle, state)) {
-      SubTitle(state);
-    }
+  const setShowExpandableCard = (newState) => {
+    setStateIfDeepEqual(ShowExpandableCard, newState);
   };
 
-  const [m1nSelectedRowsIndexes, M1nSelectedRowsIndexes] = useState([]);
+  const [selectedRow, SelectedRow] = useState();
+  const setSelectedRow = (newState) => {
+    setStateIfDeepEqual(SelectedRow, newState);
+  };
+
+  const [subComponent, SubComponent] = useState(null);
+  const setSubComponent = (newState) => {
+    setStateIfDeepEqual(SubComponent, newState);
+  };
+  const [title, Title] = useState("");
+  const setTitle = (newState) => {
+    setStateIfDeepEqual(Title, newState);
+  };
+  const [subTitle, SubTitle] = useState("");
+  const setSubTitle = (newState) => {
+    setStateIfDeepEqual(SubTitle, newState);
+  };
+
+  const m1nSelectedRowsIndexesRef = useRef([]);
   const setM1nSelectedRowsIndexes = (state) => {
-    if (!deepEqualObjects(m1nSelectedRowsIndexes, state)) {
-      M1nSelectedRowsIndexes(state);
+    if (!deepEqual(m1nSelectedRowsIndexesRef.current, state)) {
+      m1nSelectedRowsIndexesRef.current = state;
     }
   };
-  const [m1nSelectedRowsIds, M1nSelectedRowsIds] = useState([]);
+  const m1nSelectedRowsIdsRef = useRef([]);
   const setM1nSelectedRowsIds = (state) => {
-    if (!deepEqualObjects(m1nSelectedRowsIds, state)) {
-      M1nSelectedRowsIds(state);
+    if (!deepEqual(m1nSelectedRowsIdsRef.current, state)) {
+      m1nSelectedRowsIdsRef.current = state;
     }
   };
   const [m1nSelectedRowsTracks, M1nSelectedRowsTracks] = useState([]);
-  const setM1nSelectedRowsTracks = (state) => {
-    if (!deepEqualObjects(m1nSelectedRowsTracks, state)) {
-      M1nSelectedRowsTracks(state);
-    }
+  const setM1nSelectedRowsTracks = (newState) => {
+    setStateIfDeepEqual(M1nSelectedRowsTracks, newState);
   };
 
   useEffect(() => {
@@ -282,25 +259,31 @@ function SubTable(props) {
   }, [props.rows, props.orderByTracks]);
 
   useEffect(() => {
-    if (rows && m1nSelectedRowsIndexes) {
-      if (rows.length > 0 && m1nSelectedRowsIndexes.length > 0) {
-        let selectedRowsTracks = m1nSelectedRowsIndexes.map((ind) => {
-          if (rows[ind] && rows[ind].isTracked) return rows[ind].isTracked;
-        });
+    if (rows && m1nSelectedRowsIndexesRef.current) {
+      if (rows.length > 0 && m1nSelectedRowsIndexesRef.current.length > 0) {
+        let selectedRowsTracks = m1nSelectedRowsIndexesRef.current.map(
+          (ind) => {
+            if (rows[ind] && rows[ind].isTracked) return rows[ind].isTracked;
+          }
+        );
         setM1nSelectedRowsTracks(selectedRowsTracks);
       } else setM1nSelectedRowsTracks([]);
     }
-  }, [rows, m1nSelectedRowsIndexes, props.columns]);
+  }, [rows, props.columns]);
 
   const multiSelectMouseHoverColor = (id, color) => {
-    for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+    for (let i = 0; i < m1nSelectedRowsIndexesRef.current.length; i++) {
       if (
         document.getElementById(
-          id + m1nSelectedRowsIds[i] + m1nSelectedRowsIndexes[i]
+          id +
+            m1nSelectedRowsIdsRef.current[i] +
+            m1nSelectedRowsIndexesRef.current[i]
         )
       )
         document.getElementById(
-          id + m1nSelectedRowsIds[i] + m1nSelectedRowsIndexes[i]
+          id +
+            m1nSelectedRowsIdsRef.current[i] +
+            m1nSelectedRowsIndexesRef.current[i]
         ).style.backgroundColor = color;
     }
   };
@@ -358,24 +341,6 @@ function SubTable(props) {
                           }
                         }}
                         aria-label="fly"
-                        // onMouseOver={() => {
-                        //   if (
-                        //     m1nSelectedRowsIndexes.indexOf(
-                        //       tableMeta.rowIndex
-                        //     ) !== -1 &&
-                        //     m1nSelectedRowsIndexes.length > 1
-                        //   )
-                        //     multiSelectMouseHoverColor(id, "#dadbde");
-                        // }}
-                        // onMouseOut={() => {
-                        //   if (
-                        //     m1nSelectedRowsIndexes.indexOf(
-                        //       tableMeta.rowIndex
-                        //     ) !== -1 &&
-                        //     m1nSelectedRowsIndexes.length > 1
-                        //   )
-                        //     multiSelectMouseHoverColor(id, "#efefef");
-                        // }}
                       >
                         <RoomIcon />
                       </IconButton>
@@ -400,20 +365,23 @@ function SubTable(props) {
                       targetSourceId={tableMeta.rowData[0]}
                       dark
                       multipleIds={
-                        m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !==
-                          -1 && m1nSelectedRowsIndexes.length > 1
-                          ? m1nSelectedRowsIds
+                        m1nSelectedRowsIndexesRef.current.indexOf(
+                          tableMeta.rowIndex
+                        ) !== -1 && m1nSelectedRowsIndexesRef.current.length > 1
+                          ? m1nSelectedRowsIdsRef.current
                           : null
                       }
                       multipleTracks={
-                        m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !==
-                          -1 && m1nSelectedRowsIndexes.length > 1
+                        m1nSelectedRowsIndexesRef.current.indexOf(
+                          tableMeta.rowIndex
+                        ) !== -1 && m1nSelectedRowsIndexesRef.current.length > 1
                           ? m1nSelectedRowsTracks
                           : null
                       }
                       multiSelectMouseHoverColor={
-                        m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !==
-                          -1 && m1nSelectedRowsIndexes.length > 1
+                        m1nSelectedRowsIndexesRef.current.indexOf(
+                          tableMeta.rowIndex
+                        ) !== -1 && m1nSelectedRowsIndexesRef.current.length > 1
                           ? multiSelectMouseHoverColor
                           : null
                       }
@@ -469,19 +437,19 @@ function SubTable(props) {
                           aria-label="show comments"
                           onMouseOver={() => {
                             if (
-                              m1nSelectedRowsIndexes.indexOf(
+                              m1nSelectedRowsIndexesRef.current.indexOf(
                                 tableMeta.rowIndex
                               ) !== -1 &&
-                              m1nSelectedRowsIndexes.length > 1
+                              m1nSelectedRowsIndexesRef.current.length > 1
                             )
                               multiSelectMouseHoverColor(id, "#dadbde");
                           }}
                           onMouseOut={() => {
                             if (
-                              m1nSelectedRowsIndexes.indexOf(
+                              m1nSelectedRowsIndexesRef.current.indexOf(
                                 tableMeta.rowIndex
                               ) !== -1 &&
-                              m1nSelectedRowsIndexes.length > 1
+                              m1nSelectedRowsIndexesRef.current.length > 1
                             )
                               multiSelectMouseHoverColor(id, "#efefef");
                           }}
@@ -731,19 +699,19 @@ function SubTable(props) {
                           }}
                           onMouseOver={() => {
                             if (
-                              m1nSelectedRowsIndexes.indexOf(
+                              m1nSelectedRowsIndexesRef.current.indexOf(
                                 tableMeta.rowIndex
                               ) !== -1 &&
-                              m1nSelectedRowsIndexes.length > 1
+                              m1nSelectedRowsIndexesRef.current.length > 1
                             )
                               multiSelectMouseHoverColor(id, "#dadbde");
                           }}
                           onMouseOut={() => {
                             if (
-                              m1nSelectedRowsIndexes.indexOf(
+                              m1nSelectedRowsIndexesRef.current.indexOf(
                                 tableMeta.rowIndex
                               ) !== -1 &&
-                              m1nSelectedRowsIndexes.length > 1
+                              m1nSelectedRowsIndexesRef.current.length > 1
                             )
                               multiSelectMouseHoverColor(id, "#efefef");
                           }}
@@ -866,15 +834,7 @@ function SubTable(props) {
       });
       setColumns([...props.columns]);
     }
-  }, [
-    props.columns,
-    props.rows,
-    colInd,
-    rowInd,
-    m1nSelectedRowsIds,
-    m1nSelectedRowsIndexes,
-    m1nSelectedRowsTracks,
-  ]);
+  }, [props.columns, props.rows, colInd, rowInd, m1nSelectedRowsTracks]);
 
   const handleExpandClick = async (cIndex, rIndex, idOrValues, type) => {
     setColInd(cIndex);
@@ -902,12 +862,36 @@ function SubTable(props) {
     }));
   };
 
+  // 'view contact' on deals modal
+  const selectRowOpenContact = (contact) => {
+    const rowIndex = rows.findIndex((r) => r._id === contact._id);
+    const row = rows[rowIndex];
+
+    setSelectedRow(rows);
+
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedContact: row.id,
+    }));
+
+    setSubComponent(
+      <ContactDetailCard
+        selectRowOpenContact={selectRowOpenContact}
+        contactId={row._id}
+        handleCloseExpandableCard={handleCloseExpandableCard}
+      />
+    );
+    setTitle("CONTACT DETAILS");
+    setSubTitle(" ");
+    handleOpenExpandableCard();
+  };
+
   const options = {
     filterType: "multiselect",
-    rowsPerPage: props.startPaginationAt ? props.startPaginationAt : 10,
+    rowsPerPage: props.startPaginationAt ? props.startPaginationAt : 25,
     rowsPerPageOptions:
       props.rows && props.rows.length > 25
-        ? [10, 25, 50]
+        ? [10, 25, 50, 100]
         : props.rows && props.rows.length > 10
         ? [10, 25]
         : [],
@@ -940,7 +924,7 @@ function SubTable(props) {
       handleExpandClick(null, null, null, "deleteOwnersFromContact");
       return false;
     },
-    rowsSelected: m1nSelectedRowsIndexes,
+    rowsSelected: m1nSelectedRowsIndexesRef.current,
     //// allows you to customize the top bar of selected items ////
     customToolbarSelect:
       props.header === "Interest Owners Tied to Contact"
@@ -953,8 +937,12 @@ function SubTable(props) {
             ) {
               const getSelectedRows = () => {
                 const selectedRows = [];
-                for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
-                  selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+                for (
+                  let i = 0;
+                  i < m1nSelectedRowsIndexesRef.current.length;
+                  i++
+                ) {
+                  selectedRows.push(rows[m1nSelectedRowsIndexesRef.current[i]]);
                 }
                 return selectedRows;
               };
@@ -1088,6 +1076,11 @@ function SubTable(props) {
                       props.addAble.type === "ownerToContact"
                     )
                       handleExpandClick(null, null, null, "addOwnerToContact");
+                    if (
+                      props.addAble.type &&
+                      props.addAble.type === "ownerToParcel"
+                    )
+                      handleExpandClick(null, null, null, "addOwnerToParcel");
                   }}
                 >
                   <AddCircleOutlineRoundedIcon />
@@ -1131,6 +1124,7 @@ function SubTable(props) {
 
         setSubComponent(
           <ContactDetailCard
+            selectRowOpenContact={selectRowOpenContact}
             contactId={rows[dataIndex]._id}
             handleCloseExpandableCard={handleCloseExpandableCard}
           />
@@ -1188,6 +1182,7 @@ function SubTable(props) {
                   openDialog === "wellsPerOwner"
                 ? "lg"
                 : openDialog === "addContact" ||
+                  openDialog === "addOwnerToParcel" ||
                   openDialog === "addOwnerToContact" ||
                   openDialog === "deleteOwnersFromContact" ||
                   openDialog === "deleteContact"
@@ -1201,9 +1196,9 @@ function SubTable(props) {
                 targetSourceId={expandedObject}
                 targetLabel={props.targetLabel}
                 multipleIds={
-                  m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
-                  m1nSelectedRowsIndexes.length > 1
-                    ? m1nSelectedRowsIds
+                  m1nSelectedRowsIndexesRef.current.indexOf(rowInd) !== -1 &&
+                  m1nSelectedRowsIndexesRef.current.length > 1
+                    ? m1nSelectedRowsIdsRef.current
                     : null
                 }
               />
@@ -1214,9 +1209,9 @@ function SubTable(props) {
                   targetSourceId={expandedObject}
                   targetLabel={props.targetLabel}
                   multipleIds={
-                    m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
-                    m1nSelectedRowsIndexes.length > 1
-                      ? m1nSelectedRowsIds
+                    m1nSelectedRowsIndexesRef.current.indexOf(rowInd) !== -1 &&
+                    m1nSelectedRowsIndexesRef.current.length > 1
+                      ? m1nSelectedRowsIdsRef.current
                       : null
                   }
                 />
@@ -1241,7 +1236,6 @@ function SubTable(props) {
                 contactId={rows[rowInd]._id}
               />
             )}
-
             {openDialog === "addContact" && props.targetLabel === "contact" && (
               <AddContactDialogContent
                 onClose={handleCloseDialog}
@@ -1249,21 +1243,31 @@ function SubTable(props) {
               />
             )}
             {openDialog === "addOwnerToContact" && (
-              <AddOwnerToContactDialogContent
+              <AddParcelOwnerDialogContent
                 onClose={handleCloseDialog}
                 parent={props.addAble.parent}
                 existingOwners={props.addAble.existingOwners}
+              />
+            )}
+            {openDialog === "addOwnerToParcel" && (
+              <AddParcelOwnerDialogContent
+                onClose={handleCloseDialog}
+                allDepths={props.addAble.allDepths}
+                customLayerId={props.addAble.customLayerId}
               />
             )}
             {openDialog === "deleteOwnersFromContact" && (
               <DeleteConfirmationDialogContent
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIds}
+                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to permanently delete the owner${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                  m1nSelectedRowsIdsRef.current &&
+                  m1nSelectedRowsIdsRef.current.length > 1
+                    ? "s"
+                    : ""
                 } from  this contact?`}
               </DeleteConfirmationDialogContent>
             )}
@@ -1271,19 +1275,21 @@ function SubTable(props) {
               <DeleteConfirmationDialogContent
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIds}
+                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {props.header === "Owner's Contacts" &&
                   `Do you want to remove the contact${
-                    m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
+                    m1nSelectedRowsIdsRef.current &&
+                    m1nSelectedRowsIdsRef.current.length > 1
                       ? "s"
                       : ""
                   } from this owner?`}
 
                 {props.header === "Contacts" &&
-                  `Do you want to permanently delete the contact${
-                    m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
+                  `Do you want delete the contact${
+                    m1nSelectedRowsIdsRef.current &&
+                    m1nSelectedRowsIdsRef.current.length > 1
                       ? "s"
                       : ""
                   }?`}
@@ -1368,13 +1374,4 @@ function SubTable(props) {
   );
 }
 
-function areEqual(prevProps, nextProps) {
-  if (!deepEqualObjects(prevProps, nextProps)) {
-    // console.log(`${prevProps.toString()} ... ${nextProps.toString()}`)
-    return false;
-  }
-
-  return true
-}
-
-export default React.memo(SubTable, areEqual);
+export default React.memo(SubTable, deepEqualObjects);

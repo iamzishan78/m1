@@ -218,8 +218,18 @@ export const userDefinedLayers = [
         layerId: "parcel",
         paintProps: {
           "fill-color": "#e07c71",
-          "fill-opacity": 0.4,
-          "fill-outline-color": "#e07c71",
+          "fill-opacity": [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            0.7,
+            0.4
+          ],
+          "fill-outline-color": [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            "#fc5b49",
+            "#e07c71"
+          ],
         },
       },
       {

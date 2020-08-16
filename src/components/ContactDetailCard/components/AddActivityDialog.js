@@ -1,15 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
-import { format } from "date-fns/esm";
-import moment from "moment";
 import { DateTimePicker } from "@material-ui/pickers";
-import { useMutation, useLazyQuery } from "@apollo/react-hooks";
-import styled from "styled-components";
+import { useMutation } from "@apollo/react-hooks";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import Dialog from "@material-ui/core/Dialog";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -33,10 +27,10 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
   inputField: {
-    marginBottom: "15px",
+    marginBottom: "30px",
   },
   inputFieldDate: {
-    marginBottom: "15px",
+    marginBottom: "30px",
     "& .MuiInputBase-input": {
       paddingTop: "10.5px",
       paddingBottom: "10.5px",
@@ -46,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "30px",
     verticalAlign: "middle",
   },
-  dialogFooter: { display: "flex", justifyContent: "space-between" },
+  dialogFooter: { display: "flex", justifyContent: "flex-start" },
 
   label: {
     backgroundColor: "white",
@@ -59,9 +53,9 @@ const initialErrors = {
   dateTime: false,
 };
 
-function AddActivityModal(props) {
+function AddActivityDialog(props) {
   const classes = useStyles();
-  const { open, onClose, selectedActivity } = props;
+  const { selectedActivity, onClose } = props;
   const [stateApp] = useContext(AppContext);
   const [addNew, setAddNew] = useState(true);
 
@@ -205,32 +199,11 @@ function AddActivityModal(props) {
   }, [called, loading, addActivityStatus, addNew]);
 
   return (
-    <Dialog
-      aria-labelledby="simple-dialog-title"
-      open={open}
-      onClose={onClose}
-      className={classes.root}
-    >
-      <DialogTitle id="simple-dialog-title" className={classes.dialogTitle}>
-        Activity Log
-      </DialogTitle>
-      <DialogContent>
-        {/* <TextField
-          fullWidth
-          variant="outlined"
-          label="Activity Date"
-          type="datetime-local"
-          className={classes.inputField}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          value={dateTime}
-          onChange={(e) => {
-            setDateTime(e.target.value);
-          }}
-          disabled={loading}
-          error={errors.dateTime}
-        /> */}
+    <div style={{ padding: "30px" }}>
+      <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
+        Recent Activities
+      </h4>
+      <div>
         <DateTimePicker
           value={dateTime}
           //disablePast
@@ -298,14 +271,25 @@ function AddActivityModal(props) {
           <Button
             variant="contained"
             color="secondary"
-            size="large"
+            size="medium"
             disableElevation
             onClick={() => {
               addNew ? addActivity() : updateActivity();
             }}
             disabled={loading}
           >
-            {addNew ? "Add" : "Update"}
+            {addNew ? "Save" : "Update"}
+          </Button>
+          <Button
+            variant="contained"
+            color="default"
+            size="medium"
+            disableElevation
+            onClick={onClose}
+            disabled={loading}
+            style={{ margin: "0px 20px 0px 20px" }}
+          >
+            Cancel
           </Button>
           {loading ? (
             <CircularProgress color="secondary" className={classes.progress} />
@@ -321,9 +305,9 @@ function AddActivityModal(props) {
             )
           ) : null}
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }
 
-export default AddActivityModal;
+export default AddActivityDialog;

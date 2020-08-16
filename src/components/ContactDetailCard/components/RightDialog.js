@@ -21,7 +21,7 @@ export default function AlertDialogSlide(props) {
         right: "0px !important",
         width: props.width ? String(props.width) : null,
         maxWidth: "100% !important",
-        height: "100vh !important",
+        minHeight: "100vh !important",
         margin: "0 !important",
       },
       "& .MuiListItem-container":{

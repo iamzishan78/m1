@@ -13,8 +13,11 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { ADDREMOVEOWNERTOACONTACT } from "../../../../../graphQL/useMutationAddRemoveOwnerToAContact";
 import { AppContext } from "../../../../../AppContext";
+import { Modals } from "../../../../../styles/Modal";
+
 
 const useStyles = makeStyles((theme) => ({
   dialogContent: {
@@ -28,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AddOwnerToContactDialogContent(props) {
   const classes = useStyles();
+  const modalClass = Modals();
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [value, setValue] = React.useState(null);
   const [inputValue, setInputValue] = React.useState("");
@@ -213,11 +217,11 @@ export default function AddOwnerToContactDialogContent(props) {
         }
       }}
       renderInput={(params) => (
-        <TextField
-          {...params}
-          label="Search by owner name or address"
-          variant="outlined"
-        />
+        <div>
+          <h3>Search by owner name or address</h3>
+          <TextField
+            {...params}/>
+        </div>
       )}
       renderOption={(option) => {
         if (option.group === "loader") {
@@ -257,11 +261,9 @@ export default function AddOwnerToContactDialogContent(props) {
 
   return (
     <React.Fragment>
-      <DialogTitle
-        id="alert-dialog-slide-title"
-        className={classes.dialogTitle}
-      >
+      <DialogTitle className={modalClass.title} id="customized-dialog-title">
         Add an Owner
+        <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={props.onClose}/>
       </DialogTitle>
       <DialogContent dividers className={classes.dialogContent}>
         {searchAutocomplete}
