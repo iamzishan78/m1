@@ -104,7 +104,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ActivitiesList({ activityLog, user_id, ...props }) {
+export default function ActivitiesList({
+  activityLog,
+  user_id,
+  viewAll,
+  ...props
+}) {
   const [updateContact] = useMutation(UPDATECONTACT);
 
   const classes = useStyles();
@@ -159,8 +164,11 @@ export default function ActivitiesList({ activityLog, user_id, ...props }) {
       ? activityLog
           .filter((activity) => activity.user_id === user_id) // get only current user's activities
           .sort((a, b) => moment(b.dateTime).diff(moment(a.dateTime))) // sort activities according to date
-          .slice(0, 3) // only get latest 3
       : [];
+
+  sortedActivityLog = viewAll
+    ? sortedActivityLog
+    : sortedActivityLog.slice(0, 3); // only get latest 3
 
   return (
     <div className={classes.root}>
