@@ -3,7 +3,7 @@ import React, {
   useState,
   useEffect,
 } from "react";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
+import { withStyles, makeStyles, responsiveFontSizes } from "@material-ui/core/styles";
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
@@ -19,7 +19,6 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import TextField from '@material-ui/core/TextField';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
 import { readProfileRequest } from "../../Login/AADAuthConfig";
-//var shapefile = require("shapefile");
 import shp from 'shpjs';
 
 
@@ -79,12 +78,7 @@ export default function AddUserData(props) {
   async function handleFileAsync(file) {
     let inputFile = file[0].data;
     let fileName = file[0].file.name;
-    let geoJSON = {
-
-      "type": "FeatureCollection",
-      "data": []
-    }
-
+  
     if (fileName.endsWith(".geojson")) {
       return await new Promise((resolve, reject) => {
         fetch(inputFile)
@@ -100,12 +94,15 @@ export default function AddUserData(props) {
 
         fetch(inputFile)
           .then((response) => {
-            const reader = response.body.getReader();
-             shp(reader).then(geojson => {
-              console.log(geojson);
-              resolve(geojson);
+            response.arrayBuffer()
+              .then(function (buffer) {
+                shp(buffer).then(geojson => {
+                  console.log(geojson);
+                  resolve(geojson);
+                })
+              })
           })
-          })
+
       });
     }
   }

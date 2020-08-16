@@ -1252,7 +1252,7 @@ export default function Map() {
     /// parse array of user input file data 
     userFileLayers.map((fileLayer, idx) => {
       var mapSource = map.getSource(`${idx}`);
-      let featureType = fileLayer
+      let featureType = fileLayer.type;
      
 
       if (mapSource == undefined) {
@@ -1275,7 +1275,6 @@ export default function Map() {
             'data': fileLayer
           });
         }
-
 
         map.addLayer({
           'id': `polygon${idx}`,
