@@ -3,10 +3,6 @@ import { useQuery } from "@apollo/react-hooks";
 import moment from "moment";
 import { useMutation } from "@apollo/react-hooks";
 import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Timeline from "@material-ui/lab/Timeline";
 import TimelineItem from "@material-ui/lab/TimelineItem";
@@ -14,24 +10,13 @@ import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
 import TimelineConnector from "@material-ui/lab/TimelineConnector";
 import TimelineContent from "@material-ui/lab/TimelineContent";
 import TimelineDot from "@material-ui/lab/TimelineDot";
-import SvgIcon from "@material-ui/core/SvgIcon";
 import EmailIcon from "@material-ui/icons/Email";
 import PhoneIcon from "@material-ui/icons/Phone";
 import ChatIcon from "@material-ui/icons/Chat";
 import EventNoteIcon from "@material-ui/icons/EventNote";
 import StarIcon from "@material-ui/icons/Star";
 import PeopleIcon from "@material-ui/icons/People";
-import Icon from "@material-ui/core/Icon";
-import FastfoodIcon from "@material-ui/icons/Fastfood";
-import AddActivityModal from "../../ContactDetailCard/components/AddActivityModal";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
-
-// import EnvelopeIcon from "../../Shared/svgIcons/envelope.js";
-// import PhoneIcon from "../../Shared/svgIcons/phone.js";
-// import StarIcon from "../../Shared/svgIcons/star.js";
-// import MeetingIcon from "../../Shared/svgIcons/meeting.js";
-import { ProfileContext } from "../../Profile/ProfileContext";
-import { GETPROFILE } from "../../../graphQL/useQueryGetProfile";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -156,8 +141,6 @@ export default function ActivitiesList({
       });
     }
   };
-
-  console.log("Activities: ", activityLog);
 
   let sortedActivityLog =
     activityLog && activityLog.length > 0

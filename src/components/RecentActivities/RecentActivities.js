@@ -118,16 +118,69 @@ function ActivityStats() {
   return (
     <div className={classes.activityStats}>
       <div className={classes.activityScore}>99</div>
-      {getStatsMessage("Last seen", "—")}
       {getStatsMessage("Last contacted", "8 hours ago")}
       {getStatsMessage("Last modified", "3 months ago")}
     </div>
   );
 }
 
-function ActivitiesFilter() {
+function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
   const classes = useStyles();
   const [timePeriod, setTimePeriod] = useState("all");
+
+  const handleChange = (e, type) => {
+    if (activitiesFilter && activitiesFilter.length > 0) {
+      let newActivitiesFilter = [...activitiesFilter];
+      if (e.target.checked) {
+        newActivitiesFilter.push(type);
+      } else {
+        const filterIndex = newActivitiesFilter.findIndex(
+          (act) => act === type
+        );
+        if (filterIndex !== -1) {
+          newActivitiesFilter.splice(filterIndex, 1);
+        }
+      }
+      setActivitiesFilter(newActivitiesFilter);
+    }
+  };
+
+  const getCheckboxItem = (type) => {
+    let name = "";
+    switch (type) {
+      case "general":
+        name = "General Updates";
+        break;
+      case "phone":
+        name = "Calls";
+        break;
+      case "email":
+        name = "Emails";
+        break;
+      case "meeting":
+        name = "Meetings";
+        break;
+      case "sms":
+        name = "SMS";
+        break;
+      case "campaign":
+        name = "Campaigns";
+        break;
+      default:
+        name = "General Updates";
+    }
+
+    return (
+      <Grid item xs={12} className={classes.checkBox}>
+        <h4 style={{ color: "#9A9A9A", margin: 0 }}>{name}</h4>
+        <Checkbox
+          checked={activitiesFilter.includes(type)}
+          onChange={(e) => handleChange(e, type)}
+          color="secondary"
+        />
+      </Grid>
+    );
+  };
 
   return (
     <div className={classes.activitiesFilter}>
@@ -168,35 +221,12 @@ function ActivitiesFilter() {
           </h4>
         </Grid>
 
-        <Grid item xs={12} className={classes.checkBox}>
-          <h4 style={{ color: "#9A9A9A", margin: 0 }}>General Updates</h4>
-          <Checkbox defaultChecked color="primary" />
-        </Grid>
-
-        <Grid item xs={12} className={classes.checkBox}>
-          <h4 style={{ color: "#9A9A9A", margin: 0 }}>Meetings</h4>
-          <Checkbox defaultChecked color="primary" />
-        </Grid>
-
-        <Grid item xs={12} className={classes.checkBox}>
-          <h4 style={{ color: "#9A9A9A", margin: 0 }}>Calls</h4>
-          <Checkbox defaultChecked color="primary" />
-        </Grid>
-
-        <Grid item xs={12} className={classes.checkBox}>
-          <h4 style={{ color: "#9A9A9A", margin: 0 }}>Campaigns</h4>
-          <Checkbox defaultChecked color="primary" />
-        </Grid>
-
-        <Grid item xs={12} className={classes.checkBox}>
-          <h4 style={{ color: "#9A9A9A" }}>SMS</h4>
-          <Checkbox defaultChecked color="primary" />
-        </Grid>
-
-        <Grid item xs={12} className={classes.checkBox}>
-          <h4 style={{ color: "#9A9A9A" }}>Emails</h4>
-          <Checkbox defaultChecked color="primary" />
-        </Grid>
+        {getCheckboxItem("general")}
+        {getCheckboxItem("meeting")}
+        {getCheckboxItem("phone")}
+        {getCheckboxItem("campaign")}
+        {getCheckboxItem("sms")}
+        {getCheckboxItem("email")}
       </div>
     </div>
   );
@@ -204,6 +234,18 @@ function ActivitiesFilter() {
 
 function ViewActivities({ id, user_id, activityLog, updateActivity }) {
   const classes = useStyles();
+  const [activitiesFilter, setActivitiesFilter] = useState([
+    "general",
+    "meeting",
+    "phone",
+    "campaign",
+    "sms",
+    "email",
+  ]);
+
+  const filteredActivities = activityLog.filter((act) =>
+    activitiesFilter.includes(act.type)
+  );
 
   return (
     <div className={classes.viewAllCard}>
@@ -212,14 +254,17 @@ function ViewActivities({ id, user_id, activityLog, updateActivity }) {
         <ActivitiesList
           id={id}
           user_id={user_id}
-          activityLog={activityLog}
+          activityLog={filteredActivities}
           updateActivity={updateActivity}
           viewAll={true}
         />
       </div>
       <div className={classes.activityCardRight}>
         <ActivityStats />
-        <ActivitiesFilter />
+        <ActivitiesFilter
+          activitiesFilter={activitiesFilter}
+          setActivitiesFilter={setActivitiesFilter}
+        />
       </div>
     </div>
   );

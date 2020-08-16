@@ -66,8 +66,6 @@ function AddActivityDialog(props) {
   const [stateApp] = useContext(AppContext);
   const [addNew, setAddNew] = useState(true);
 
-  console.log("USER: ", stateApp);
-
   const [updateContact, { called, loading, data }] = useMutation(UPDATECONTACT);
   const [activityType, setActivityType] = useState("general");
   const [notes, setNotes] = useState("");
@@ -88,13 +86,6 @@ function AddActivityDialog(props) {
       setDateTime(new Date());
     }
   }, [selectedActivity]);
-
-  //   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
-  //     COMMENTSBYOBJECTIDQUERY
-  //   );
-  // const [upsertComment] = useMutation(UPSERTCOMMENT);
-
-  console.log("DATAAAA: ", data);
 
   const addActivityStatus = data ? data.updateContact : null;
 
@@ -135,11 +126,6 @@ function AddActivityDialog(props) {
       notes,
       dateTime: dateTime.toISOString(),
       user_id: stateApp.user.email,
-    });
-
-    console.log("UPDATING ACTIVITY LOG: ", {
-      _id: props.id,
-      activityLog,
     });
 
     updateContact({
