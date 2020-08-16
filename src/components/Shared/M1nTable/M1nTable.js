@@ -19,6 +19,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import { Container } from "@material-ui/core";
 import Table from "./components/Table";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Typography from "@material-ui/core/Typography";
 
 import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
@@ -33,9 +37,12 @@ import { CONTACTSBYOWNERSID } from "../../../graphQL/useQueryContactsByOwnerId";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { ADDREMOVEOWNERTOACONTACT } from "../../../graphQL/useMutationAddRemoveOwnerToAContact";
 import { CONTACT } from "../../../graphQL/useQueryContact";
+import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
+import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 
 import { useDispatch, useSelector } from "react-redux";
+import { deepEqualObjects, setStateIfDeepEqual } from "../functions";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
@@ -703,6 +710,82 @@ const SearchsHeadCells = [
   },
 ];
 
+const OwnersPerParcelHeadCells = [
+  {
+    name: "_id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  { name: "name", label: "Name" },
+  { name: "entity", label: "Entity" },
+  { name: "type", label: "Type" },
+  // { name: "depths", label: "Depths" },
+  // { name: "depthFrom", label: "Depth From" },
+  // { name: "depthTo", label: "Depth To" },
+  { name: "interest", label: "Interest" },
+  { name: "nma", label: "NMA" },
+  { name: "nra", label: "NRA" },
+  {
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
+  },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isTracked",
+    label: "Track",
+    options: {
+      searchable: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: ["Tracked", "Untracked"],
+        logic(tracked, filterVal) {
+          return !(
+            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+            (filterVal.indexOf("Untracked") >= 0 && !tracked)
+          );
+        },
+      },
+      filterType: "dropdown",
+    },
+  },
+];
+
 ////////////HeadCells end///////////////////////////////////////////////
 
 const capitalizeFirstLetter = (string) => {
@@ -732,76 +815,55 @@ const joinAddress = (row) => {
   return textArray.join(", ");
 };
 
-export default function M1nTable(props) {
+function M1nTable(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [rows, Rows] = useState();
-  const setRows = (state) => {
-    if(rows != state) {
-      Rows(state)
-    }
-  }
+  const [rows, Rows] = useState([]);
+  const setRows = (newState) => {
+    setStateIfDeepEqual(Rows, newState);
+  };
   const [header, Header] = useState("");
-  const setHeader = (state) => {
-    if(header != state) {
-      Header(state)
-    }
-  }
+  const setHeader = (newState) => {
+    setStateIfDeepEqual(Header, newState);
+  };
   const [columns, Columns] = useState([]);
-  const setColumns = (state) => {
-    if(columns != state) {
-      Columns(state)
-    }
-  }
+  const setColumns = (newState) => {
+    setStateIfDeepEqual(Columns, newState);
+  };
   const [loading, Loading] = useState(true);
-  const setLoading = (state) => {
-    if(loading != state) {
-      Loading(state)
-    }
-  }
+  const setLoading = (newState) => {
+    setStateIfDeepEqual(Loading, newState);
+  };
   const [addAble, AddAble] = useState(true);
-  const setAddAble = (state) => {
-    if(addAble != state) {
-      AddAble(state)
-    }
-  }
+  const setAddAble = (newState) => {
+    setStateIfDeepEqual(AddAble, newState);
+  };
   const [uploadIcon, UploadIcon] = useState(null);
-  const setUploadIcon = (state) => {
-    if(uploadIcon != state) {
-      UploadIcon(state)
-    }
-  }
+  const setUploadIcon = (newState) => {
+    setStateIfDeepEqual(UploadIcon, newState);
+  };
   const [targetLabel, TargetLabel] = useState(null);
-  const setTargetLabel = (state) => {
-    if(targetLabel != state) {
-      TargetLabel(state)
-    }
-  }
+  const setTargetLabel = (newState) => {
+    setStateIfDeepEqual(TargetLabel, newState);
+  };
   const [deleteFunc, DeleteFunc] = useState(null);
-  const setDeleteFunc = (state) => {
-    if(deleteFunc != state) {
-      DeleteFunc(state)
-    }
-  }
+  const setDeleteFunc = (newState) => {
+    setStateIfDeepEqual(DeleteFunc, newState);
+  };
   const [showTracks, ShowTracks] = useState(true);
-  const setShowTracks = (state) => {
-    if(showTracks != state) {
-      ShowTracks(state)
-    }
-  }
+  const setShowTracks = (newState) => {
+    setStateIfDeepEqual(ShowTracks, newState);
+  };
   const [orderByTracks, OrderByTracks] = useState(true);
-  const setOrderByTracks = (state) => {
-    if(orderByTracks != state) {
-      OrderByTracks(state)
-    }
-  }
+  const setOrderByTracks = (newState) => {
+    setStateIfDeepEqual(OrderByTracks, newState);
+  };
   const [startPaginationAt, StartPaginationAt] = useState();
-  const setStartPaginationAt = (state) => {
-    if(startPaginationAt != state) {
-      StartPaginationAt(state)
-    }
-  }
+  const setStartPaginationAt = (newState) => {
+    setStateIfDeepEqual(StartPaginationAt, newState);
+  };
+
   const { searchloading, searchResultData } = useSelector(
     ({ MapGridCard }) => MapGridCard
   );
@@ -859,6 +921,15 @@ export default function M1nTable(props) {
   const [addRemoveOwnerToAContact] = useMutation(ADDREMOVEOWNERTOACONTACT);
   //////////
   const [removeContact] = useMutation(REMOVECONTACT);
+
+  const [updateContact] = useMutation(UPDATECONTACT);
+  //////////
+  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
+    CUSTOMLAYER,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
 
   ////////////Queries end///////////////////////////////////////////////
 
@@ -2106,20 +2177,29 @@ export default function M1nTable(props) {
   ////////////Contact Delete begin////////////////////////////////////////
 
   useEffect(() => {
-    if (props.parent && props.parent === "Contacts") {
+    if (
+      props.parent &&
+      props.parent === "Contacts" &&
+      stateApp.user &&
+      stateApp.user.mongoId
+    ) {
       console.log("ue mintable 25");
       setDeleteFunc(() => (contactsIdsToDelete) => {
         if (contactsIdsToDelete) {
           for (let i = 0; i < contactsIdsToDelete.length; i++) {
-            removeContact({
+            updateContact({
               variables: {
-                contactId: contactsIdsToDelete[i],
+                contact: {
+                  _id: contactsIdsToDelete[i],
+                  lastUpdateBy: stateApp.user.mongoId,
+                  IsDeleted: true,
+                },
               },
               refetchQueries: [
                 "getContacts",
                 "getContactsByOwnerId",
-                "getContactsCounter",
                 "getContact",
+                "getContactsCounter",
               ],
               awaitRefetchQueries: true,
             });
@@ -2127,14 +2207,13 @@ export default function M1nTable(props) {
         }
       });
     }
-  }, [props.parent]);
+  }, [props.parent, stateApp.user]);
 
   ////////////Contacts end///////////////////////////////////////////////
 
   //////////// Search begin///////////////////////////////////////////////
   useEffect(() => {
     if (searchloading) {
-      console.log("ue mintable 26");
       setLoading(true);
     }
   }, [searchloading]);
@@ -2150,8 +2229,6 @@ export default function M1nTable(props) {
       stateApp.user &&
       stateApp.user.mongoId
     ) {
-      console.log("ue mintable 27");
-      console.log("xxxxxxxxxxxxxx");
       setTargetLabel(props.targetLabel);
       setHeader(props.header);
       setAddAble(false);
@@ -2201,7 +2278,6 @@ export default function M1nTable(props) {
       (!props.showTracks || (dataTracks && dataTracks.tracksByObjectType)) &&
       props.privateColumns
     ) {
-      console.log("ue mintable 28");
       if (searchResultData.length > 0) {
         searchResultData.forEach((result) => {
           result.id = result.Id;
@@ -2311,6 +2387,272 @@ export default function M1nTable(props) {
   ]);
   //////////// Search end///////////////////////////////////////////////
 
+  ////////////Owners Per Parcel begin///////////////////////////////////////////////
+  const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] = useState(
+    "true"
+  );
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerParcel" &&
+      props.customLayerId
+    ) {
+      setHeader(
+        <div style={{ display: "flex" }}>
+          <Typography
+            variant="body1"
+            style={{ margin: "8px 25px 0 0", fontWeight: "bold" }}
+          >
+            Parcel Owners
+          </Typography>
+          <RadioGroup
+            row
+            value={parcelOwnersRadioBValue}
+            onChange={(event) => {
+              setParcelOwnersRadioBValue(event.target.value);
+            }}
+          >
+            <FormControlLabel
+              value="true"
+              control={<Radio />}
+              label="All Depths"
+            />
+            <FormControlLabel
+              value="false"
+              control={<Radio />}
+              label="Footages/Formations"
+            />
+          </RadioGroup>
+        </div>
+      );
+
+      setAddAble({
+        type: "ownerToParcel",
+        allDepths: parcelOwnersRadioBValue === "true" ? true : false,
+        customLayerId: props.customLayerId,
+      });
+    }
+  }, [props.contactId, props.customLayerId, parcelOwnersRadioBValue]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerParcel" &&
+      props.customLayerId
+    ) {
+      setTargetLabel("Parcel Owner");
+      getCustomLayer({
+        variables: {
+          id: props.customLayerId,
+        },
+      });
+    }
+  }, [props.contactId, props.customLayerId]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerParcel" &&
+      dataCustomLayer &&
+      dataCustomLayer.customLayer &&
+      stateApp.user
+    ) {
+      if (
+        dataCustomLayer.customLayer.owners &&
+        dataCustomLayer.customLayer.owners.length > 0
+      ) {
+        const objectsIdsArray = dataCustomLayer.customLayer.owners.map(
+          (owner) => owner._id
+        );
+
+        getCommentsCounter({
+          variables: {
+            objectsIdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+        getTagSamples({
+          variables: {
+            objectsIdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+      } else {
+        setLoading(false);
+        setRows([]);
+      }
+    }
+  }, [props.parent, dataCustomLayer, stateApp.user]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerParcel" &&
+      parcelOwnersRadioBValue &&
+      dataCustomLayer &&
+      dataCustomLayer.customLayer &&
+      dataCustomLayer.customLayer.owners &&
+      dataCustomLayer.customLayer.owners.length > 0 &&
+      dataTracks &&
+      dataTracks.tracksByObjectType &&
+      dataCommentsCounter &&
+      dataCommentsCounter.commentsCounter &&
+      dataTagSamples &&
+      dataTagSamples.tagSamples
+    ) {
+      const owners = dataCustomLayer.customLayer.owners.filter(
+        (parcelOwner) => {
+          if (
+            (parcelOwnersRadioBValue === "true" && parcelOwner.allDepths) ||
+            (parcelOwnersRadioBValue === "false" && !parcelOwner.allDepths)
+          ) {
+            parcelOwner.commentsCounter = 0;
+            parcelOwner.tags = [[], 0];
+            parcelOwner.isTracked = false;
+
+            parcelOwner.allDepths
+              ? (parcelOwner.depths = "All")
+              : (parcelOwner.depths = "");
+
+            for (
+              let i = 0;
+              i < dataCommentsCounter.commentsCounter.length;
+              i++
+            ) {
+              if (
+                parcelOwner._id === dataCommentsCounter.commentsCounter[i]._id
+              ) {
+                parcelOwner.commentsCounter =
+                  dataCommentsCounter.commentsCounter[i].total;
+                break;
+              }
+            }
+
+            for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+              if (parcelOwner._id === dataTagSamples.tagSamples[i]._id) {
+                parcelOwner.tags = [
+                  dataTagSamples.tagSamples[i].tags,
+                  dataTagSamples.tagSamples[i].total,
+                ];
+
+                break;
+              }
+            }
+
+            for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+              if (
+                parcelOwner._id === dataTracks.tracksByObjectType[i].trackOn
+              ) {
+                parcelOwner.isTracked = true;
+                break;
+              }
+            }
+
+            return true;
+          }
+        }
+      );
+
+      let availableTags = [];
+      dataTagSamples.tagSamples.map((sample) => {
+        availableTags = [...availableTags, ...sample.tags];
+      });
+      const cleanAvailableTags = [...new Set(availableTags)];
+
+      const OwnersPerParcelHeadCellsCopy = [...OwnersPerParcelHeadCells];
+      if (parcelOwnersRadioBValue === "true")
+        OwnersPerParcelHeadCellsCopy.splice(4, 0, {
+          name: "depths",
+          label: "Depths",
+        });
+      else
+        OwnersPerParcelHeadCellsCopy.splice(
+          4,
+          0,
+          { name: "depthFrom", label: "Depth From" },
+          { name: "depthTo", label: "Depth To" }
+        );
+
+      setColumns(
+        cleanAvailableTags.length > 0
+          ? OwnersPerParcelHeadCellsCopy.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
+                  },
+                };
+              }
+              return column;
+            })
+          : OwnersPerParcelHeadCellsCopy.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
+      );
+      setRows(owners);
+      setLoading(false);
+    }
+  }, [
+    parcelOwnersRadioBValue,
+    props.parent,
+    dataCustomLayer,
+    dataTracks,
+    dataTagSamples,
+    dataCommentsCounter,
+  ]);
+  ////////////Owners Per Parcel begin//////////Delete//////////////////////////////
+
+  // useEffect(() => {
+  //   if (
+  //     props.parent &&
+  //     props.parent === "ownersPerContacts" &&
+  //     props.contactId
+  //   ) {
+  //     console.log("ue mintable 17");
+  //     setDeleteFunc(() => (ownersIdsToDelete) => {
+  //       if (ownersIdsToDelete) {
+  //         setStateApp((state) => ({
+  //           ...state,
+  //           universalCircularLoaderAct: true,
+  //         }));
+  //         for (let i = 0; i < ownersIdsToDelete.length; i++) {
+  //           addRemoveOwnerToAContact({
+  //             variables: {
+  //               contactId: props.contactId,
+  //               ownerId: ownersIdsToDelete[i],
+  //             },
+  //             refetchQueries: [
+  //               "getContacts",
+  //               "getContactsByOwnerId",
+  //               "getContactsCounter",
+  //               "getContact",
+  //               "getContactInM1nTable",
+  //             ],
+  //             awaitRefetchQueries: true,
+  //           });
+  //         }
+  //       }
+  //     });
+  //   }
+  // }, [props.parent, props.contactId]);
+
+  ////////////Owners Per Parcel end/////////////////////////////////////////////////
+
   ////////////-----Add your code section here-----///////////////////////
 
   return (
@@ -2332,3 +2674,5 @@ export default function M1nTable(props) {
     </Container>
   );
 }
+
+export default React.memo(M1nTable, deepEqualObjects);

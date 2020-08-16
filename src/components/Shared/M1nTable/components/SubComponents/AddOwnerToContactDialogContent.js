@@ -6,14 +6,18 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import parse from "autosuggest-highlight/parse";
 import throttle from "lodash/throttle";
+import debounce from "lodash/debounce";
 import { useMutation } from "@apollo/react-hooks";
 import { CircularProgress } from "@material-ui/core";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { ADDREMOVEOWNERTOACONTACT } from "../../../../../graphQL/useMutationAddRemoveOwnerToAContact";
 import { AppContext } from "../../../../../AppContext";
+import { Modals } from "../../../../../styles/Modal";
+
 
 const useStyles = makeStyles((theme) => ({
   dialogContent: {
@@ -27,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AddOwnerToContactDialogContent(props) {
   const classes = useStyles();
+  const modalClass = Modals();
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [value, setValue] = React.useState(null);
   const [inputValue, setInputValue] = React.useState("");
@@ -37,7 +42,7 @@ export default function AddOwnerToContactDialogContent(props) {
 
   const callOwnerSearch = React.useMemo(
     () =>
-      throttle((request, top, callback) => {
+      debounce((request, top, callback) => {
         const endpoint =
           "https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName%2CAddress1&%24top=" +
           top +
@@ -61,7 +66,7 @@ export default function AddOwnerToContactDialogContent(props) {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 
@@ -212,11 +217,11 @@ export default function AddOwnerToContactDialogContent(props) {
         }
       }}
       renderInput={(params) => (
-        <TextField
-          {...params}
-          label="Search by owner name or address"
-          variant="outlined"
-        />
+        <div>
+          <h3>Search by owner name or address</h3>
+          <TextField
+            {...params}/>
+        </div>
       )}
       renderOption={(option) => {
         if (option.group === "loader") {
@@ -256,11 +261,9 @@ export default function AddOwnerToContactDialogContent(props) {
 
   return (
     <React.Fragment>
-      <DialogTitle
-        id="alert-dialog-slide-title"
-        className={classes.dialogTitle}
-      >
+      <DialogTitle className={modalClass.title} id="customized-dialog-title">
         Add an Owner
+        <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={props.onClose}/>
       </DialogTitle>
       <DialogContent dividers className={classes.dialogContent}>
         {searchAutocomplete}

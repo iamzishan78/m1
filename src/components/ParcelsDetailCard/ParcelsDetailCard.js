@@ -53,6 +53,7 @@ export default function ParcelsDetailCard(props) {
   const [stateApp] = useContext(AppContext);
   const classes = useStyles();
   const [parcelData, setParcelData] = useState({
+    _id: "5f2d60a70b0a02002146edfc",
     county: "Lea",
     state: "NM",
     meridian: null,
@@ -84,6 +85,10 @@ export default function ParcelsDetailCard(props) {
     legalDescription: "",
     owners: [],
   });
+
+  const setQtrQtr = (qtrQtr) => {
+    setParcelData((parcelData) => ({ ...parcelData, qtrQtr }));
+  };
 
   // return stateApp.selectedOwner ?
   return (
@@ -142,7 +147,7 @@ export default function ParcelsDetailCard(props) {
         >
           <Grid container spacing={2}>
             <Grid item xs={12} style={{ display: "flex" }}>
-              <QtrQtrSelector parcelData={parcelData} />
+              <QtrQtrSelector parcelData={parcelData} setQtrQtr={setQtrQtr} />
               <div style={{ width: "Calc( 100% - 273px)" }}>
                 <p className="formLabel" style={{ marginTop: "0" }}>
                   Gross Acres
@@ -216,7 +221,14 @@ export default function ParcelsDetailCard(props) {
       <Grid item sm={12}>
         <Taps
           tabLabels={["Owners", "Wells"]}
-          tabPanels={["Owners Table", "Wells Table"]}
+          tabPanels={[
+            <M1nTable
+              parent="ownersPerParcel"
+              customLayerId={parcelData._id}
+              dense
+            />,
+            "Wells Table",
+          ]}
         />
       </Grid>
     </Grid>

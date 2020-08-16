@@ -34,6 +34,7 @@ const AppProvider = (props) => {
     owners: null,
     popupOpen: false, //map used in flyto
     expandedCard: false,
+    showAbstractPopup: false,
     flyTo: null, //map used in flyto
     fitBounds: null, //map used in fitBounds
     selectedTitleOpinionId: null,
@@ -44,6 +45,7 @@ const AppProvider = (props) => {
     filtersAdd: null,
     filtersOnOff: null,
     filtersDefaultOnoff: null,
+    filterSelectAllAbstract: false,
     selectedContact: null,
     trackFilterOn: null,
     trackedWellArray: [],
@@ -78,6 +80,7 @@ const AppProvider = (props) => {
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
     checkedUserDefinedLayers: [0, 2, 3, 4],
     userFileLayers: [],
+    userServiceLayers: [],
     tempCheckedUserDefinedLayer: null,
     tempCheckedAOILayer: null,
     tempCheckedParcleLayer: null,
@@ -95,6 +98,7 @@ const AppProvider = (props) => {
     map: null,
     draw: null,
     zoomFault: null,
+    hugeRequest: null,
     currentFeature: undefined,
     wellListFromSearch: null,
     wellListFromTagsFilter: null,

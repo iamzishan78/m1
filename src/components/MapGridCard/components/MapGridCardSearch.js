@@ -7,12 +7,13 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import parse from "autosuggest-highlight/parse";
 import throttle from "lodash/throttle";
+import debounce from "lodash/debounce";
 import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { USERSEARCHHISTORY } from "../../../graphQL/useQueryUserSearchHistory";
 import { ADDSEARCHHISTORY } from "../../../graphQL/useMutationAddSearchHistory";
 import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHistory";
 import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { setMapGridCardState } from "../../../actions";
 
 const useStyles = makeStyles((theme) => ({
@@ -60,11 +61,12 @@ const joinAddress = (row) => {
   return textArray.join(", ");
 };
 
-export default function MapGridCardSearch(props) {
+function MapGridCardSearch(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { searchInputValue, searchloading } = useSelector(
-    ({ MapGridCard }) => MapGridCard
+  const { searchInputValue, searchloading, searchResultData } = useSelector(
+    ({ MapGridCard }) => MapGridCard,
+    shallowEqual
   );
   const [stateApp, setStateApp] = useContext(AppContext);
   const [inputValue, setInputValue] = React.useState("");
@@ -73,7 +75,7 @@ export default function MapGridCardSearch(props) {
 
   const callWellSearch = React.useMemo(
     () =>
-      throttle((request, callback) => {
+      debounce((request, callback) => {
         const endpoint =
           "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2019-05-06&$count=true&searchFields=WellName,ApiNumber&$top=" +
           searchTop +
@@ -102,13 +104,13 @@ export default function MapGridCardSearch(props) {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 
   const callOwnerSearch = React.useMemo(
     () =>
-      throttle((request, callback) => {
+      debounce((request, callback) => {
         const endpoint =
           "https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName%2CAddress1&%24top=" +
           searchTop +
@@ -137,13 +139,13 @@ export default function MapGridCardSearch(props) {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 
   const callOperatorSearch = React.useMemo(
     () =>
-      throttle((request, callback) => {
+      debounce((request, callback) => {
         const endpoint =
           "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2019-05-06&$count=true&searchFields=Operator&$top=" +
           searchTop +
@@ -172,13 +174,13 @@ export default function MapGridCardSearch(props) {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 
   const callLeaseSearch = React.useMemo(
     () =>
-      throttle((request, callback) => {
+      debounce((request, callback) => {
         const endpoint =
           "https://m1search.search.windows.net/indexes/lease-index/docs?api-version=2019-05-06&$count=true&searchFields=Lease,LeaseId&$top=" +
           searchTop +
@@ -207,13 +209,13 @@ export default function MapGridCardSearch(props) {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 
   const callMapboxSearch = React.useMemo(
     () =>
-      throttle((request, callback) => {
+      debounce((request, callback) => {
         const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${
           request.input
         }.json?access_token=${
@@ -238,15 +240,17 @@ export default function MapGridCardSearch(props) {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 
   React.useEffect(() => {
     if (searchInputValue === "") {
-      dispatch(
-        setMapGridCardState({ searchResultData: [], searchloading: false })
-      );
+      if (searchResultData.length !== 0 && searchloading !== false) {
+        dispatch(
+          setMapGridCardState({ searchResultData: [], searchloading: false })
+        );
+      }
       return undefined;
     }
 
@@ -423,15 +427,23 @@ export default function MapGridCardSearch(props) {
         value={searchInputValue}
         onChange={(event) => {
           // setInputValue(event.target.value);
-          if (!searchloading)
+          // if (!searchloading) {
             dispatch(
               setMapGridCardState({
                 searchloading: true,
                 searchInputValue: event.target.value,
               })
             );
+          // }
         }}
       />
     </form>
   );
 }
+
+function areEqual(prevProps, nextProps) {
+  console.log(`${prevProps.searchOption} ... ${nextProps.searchOption}`)
+  return Object.is(prevProps.searchOption, nextProps.searchOption);
+}
+
+export default React.memo(MapGridCardSearch, areEqual);

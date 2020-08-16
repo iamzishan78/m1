@@ -7,6 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import parse from "autosuggest-highlight/parse";
 import throttle from "lodash/throttle";
+import debounce from "lodash/debounce";
 import { AppContext } from "../../../AppContext";
 import Button from "@material-ui/core/Button";
 import PersonIcon from "@material-ui/icons/Person";
@@ -33,6 +34,7 @@ import Box from "@material-ui/core/Box";
 import { CircularProgress } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
+import { deepEqualObjects } from "../../Shared/functions";
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -155,7 +157,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Search() {
+function Search() {
   const dispatch = useDispatch();
   const {
     mapGridCardActivated,
@@ -260,7 +262,7 @@ export default function Search() {
 
   const callWellSearch = React.useMemo(
     () =>
-      throttle((request, top, callback) => {
+      debounce((request, top, callback) => {
         const endpoint =
           "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2019-05-06&$count=true&searchFields=WellName,ApiNumber&$top=" +
           top +
@@ -289,13 +291,13 @@ export default function Search() {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 
   const callOwnerSearch = React.useMemo(
     () =>
-      throttle((request, top, callback) => {
+      debounce((request, top, callback) => {
         const endpoint =
           "https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName%2CAddress1&%24top=" +
           top +
@@ -324,13 +326,13 @@ export default function Search() {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 
   const callOperatorSearch = React.useMemo(
     () =>
-      throttle((request, top, callback) => {
+      debounce((request, top, callback) => {
         const endpoint =
           "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2019-05-06&$count=true&searchFields=Operator&$top=" +
           top +
@@ -359,13 +361,13 @@ export default function Search() {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 
   const callLeaseSearch = React.useMemo(
     () =>
-      throttle((request, top, callback) => {
+      debounce((request, top, callback) => {
         const endpoint =
           "https://m1search.search.windows.net/indexes/lease-index/docs?api-version=2019-05-06&$count=true&searchFields=Lease,LeaseId&$top=" +
           top +
@@ -394,13 +396,13 @@ export default function Search() {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 
   const callMapboxSearch = React.useMemo(
     () =>
-      throttle((request, top, callback) => {
+      debounce((request, top, callback) => {
         const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${
           request.input
         }.json?access_token=${
@@ -423,7 +425,7 @@ export default function Search() {
           .catch((error) => {
             console.log(error);
           });
-      }, 200),
+      }, 500),
     []
   );
 
@@ -434,200 +436,202 @@ export default function Search() {
     // if (!autocompleteService.current) {
     //   return undefined;
     // }
+    if (!mapGridCardActivated) {
+      if (searchInputValue === "") {
+        setOptions(value ? [value] : []);
+        return undefined;
+      }
 
-    if (searchInputValue === "") {
-      setOptions(value ? [value] : []);
-      return undefined;
-    }
+      (async () => {
+        let newOptions = [];
 
-    (async () => {
-      let newOptions = [];
+        Promise.all([
+          searchOption == "all" || searchOption == "wells"
+            ? callWellSearch(
+                { input: searchInputValue },
+                searchTop,
+                (results) => {
+                  if (results) {
+                    const indexSource = results["@odata.context"].substring(
+                      results["@odata.context"].indexOf("('") + 2,
+                      results["@odata.context"].indexOf("')")
+                    );
 
-      Promise.all([
-        searchOption == "all" || searchOption == "wells"
-          ? callWellSearch(
-              { input: searchInputValue },
-              searchTop,
-              (results) => {
-                if (results) {
-                  const indexSource = results["@odata.context"].substring(
-                    results["@odata.context"].indexOf("('") + 2,
-                    results["@odata.context"].indexOf("')")
-                  );
-
-                  console.log(indexSource);
-                  newOptions = [
-                    ...results.value.map((result) => {
-                      result.Score = result["@search.score"];
-                      delete result["@search.score"];
-                      return {
-                        ...result,
-                        Source: indexSource,
-                        Primary: result.WellName,
-                        Secondary: result.ApiNumber,
-                      };
-                    }),
-                    ...newOptions,
-                  ];
-
-                  setMaxMinWellsScore(maxMinScore(results.value));
-                }
-
-                setOptions(newOptions);
-                setLoadingWells(false);
-              }
-            )
-          : null,
-        searchOption == "all" || searchOption == "owners"
-          ? callOwnerSearch(
-              { input: searchInputValue },
-              searchTop,
-              (results) => {
-                if (results) {
-                  const indexSource = results["@odata.context"].substring(
-                    results["@odata.context"].indexOf("('") + 2,
-                    results["@odata.context"].indexOf("')")
-                  );
-                  console.log(indexSource);
-                  newOptions = [
-                    ...results.value.map((result) => {
-                      result.Score = result["@search.score"];
-                      delete result["@search.score"];
-                      return {
-                        ...result,
-                        Source: indexSource,
-                        Primary: result.OwnerName,
-                        Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}`,
-                      };
-                    }),
-                    ...newOptions,
-                  ];
-
-                  setMaxMinOwnersScore(maxMinScore(results.value));
-                }
-
-                setOptions(newOptions);
-                setLoadingOwners(false);
-              }
-            )
-          : null,
-        searchOption == "all" || searchOption == "operators"
-          ? callOperatorSearch(
-              { input: searchInputValue },
-              searchTop,
-              (results) => {
-                if (results) {
-                  const indexSource = results["@odata.context"].substring(
-                    results["@odata.context"].indexOf("('") + 2,
-                    results["@odata.context"].indexOf("')")
-                  );
-                  console.log(indexSource);
-                  newOptions = [
-                    ...results.value.map((result) => {
-                      result.Score = result["@search.score"];
-                      delete result["@search.score"];
-                      return {
-                        ...result,
-                        Source: indexSource,
-                        Primary: result.Operator,
-                        Secondary: null,
-                      };
-                    }),
-                    ...newOptions,
-                  ];
-
-                  setMaxMinOperatosScore(maxMinScore(results.value));
-                }
-
-                setOptions(newOptions);
-                setLoadingOperators(false);
-              }
-            )
-          : null,
-        searchOption == "all" || searchOption == "leases"
-          ? callLeaseSearch(
-              { input: searchInputValue },
-              searchTop,
-              (results) => {
-                if (results) {
-                  const indexSource = results["@odata.context"].substring(
-                    results["@odata.context"].indexOf("('") + 2,
-                    results["@odata.context"].indexOf("')")
-                  );
-                  console.log(indexSource);
-                  newOptions = [
-                    ...results.value.map((result) => {
-                      result.Score = result["@search.score"];
-                      delete result["@search.score"];
-
-                      return {
-                        ...result,
-                        Source: indexSource,
-                        Primary:
-                          result.Lease &&
-                          (result.Lease === "" ||
-                            result.Lease === "N/A" ||
-                            result.Lease === "(N/A)")
-                            ? "--"
-                            : result.Lease,
-                        Secondary:
-                          result.LeaseId &&
-                          (result.LeaseId === "" ||
-                            result.LeaseId === "N/A" ||
-                            result.LeaseId === "(N/A)")
-                            ? null
-                            : result.LeaseId,
-                      };
-                    }),
-                    ...newOptions,
-                  ];
-
-                  setMaxMinLeasesScore(maxMinScore(results.value));
-                }
-
-                setOptions(newOptions);
-                setLoadingLeases(false);
-              }
-            )
-          : null,
-        searchOption == "all" || searchOption == "locations"
-          ? callMapboxSearch(
-              { input: searchInputValue },
-              searchTop,
-              (results) => {
-                if (results) {
-                  let resultsMod = results.features
-                    ? results.features.map((result) => {
+                    console.log(indexSource);
+                    newOptions = [
+                      ...results.value.map((result) => {
+                        result.Score = result["@search.score"];
+                        delete result["@search.score"];
                         return {
                           ...result,
-                          Id: result.id,
-                          Source: "mapboxSearch",
-                          Score: result.relevance ? result.relevance : 0,
-                          Primary: result.text ? result.text : "",
-                          Secondary: result.place_name
-                            ? result.place_name.indexOf(result.text + ", ") ===
-                              0
-                              ? result.place_name.slice(
-                                  result.place_name.indexOf(", ") + 2,
-                                  result.place_name.length
-                                )
-                              : result.place_name
-                            : "",
+                          Source: indexSource,
+                          Primary: result.WellName,
+                          Secondary: result.ApiNumber,
                         };
-                      })
-                    : [];
+                      }),
+                      ...newOptions,
+                    ];
 
-                  newOptions = [...newOptions, ...resultsMod];
-                  setMaxMinMapboxSearchScore(maxMinScore(resultsMod));
+                    setMaxMinWellsScore(maxMinScore(results.value));
+                  }
+
+                  setOptions(newOptions);
+                  setLoadingWells(false);
                 }
+              )
+            : null,
+          searchOption == "all" || searchOption == "owners"
+            ? callOwnerSearch(
+                { input: searchInputValue },
+                searchTop,
+                (results) => {
+                  if (results) {
+                    const indexSource = results["@odata.context"].substring(
+                      results["@odata.context"].indexOf("('") + 2,
+                      results["@odata.context"].indexOf("')")
+                    );
+                    console.log(indexSource);
+                    newOptions = [
+                      ...results.value.map((result) => {
+                        result.Score = result["@search.score"];
+                        delete result["@search.score"];
+                        return {
+                          ...result,
+                          Source: indexSource,
+                          Primary: result.OwnerName,
+                          Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}`,
+                        };
+                      }),
+                      ...newOptions,
+                    ];
 
-                setOptions(newOptions);
-                setLoadingMapboxSearch(false);
-              }
-            )
-          : null,
-      ]);
-    })();
+                    setMaxMinOwnersScore(maxMinScore(results.value));
+                  }
+
+                  setOptions(newOptions);
+                  setLoadingOwners(false);
+                }
+              )
+            : null,
+          searchOption == "all" || searchOption == "operators"
+            ? callOperatorSearch(
+                { input: searchInputValue },
+                searchTop,
+                (results) => {
+                  if (results) {
+                    const indexSource = results["@odata.context"].substring(
+                      results["@odata.context"].indexOf("('") + 2,
+                      results["@odata.context"].indexOf("')")
+                    );
+                    console.log(indexSource);
+                    newOptions = [
+                      ...results.value.map((result) => {
+                        result.Score = result["@search.score"];
+                        delete result["@search.score"];
+                        return {
+                          ...result,
+                          Source: indexSource,
+                          Primary: result.Operator,
+                          Secondary: null,
+                        };
+                      }),
+                      ...newOptions,
+                    ];
+
+                    setMaxMinOperatosScore(maxMinScore(results.value));
+                  }
+
+                  setOptions(newOptions);
+                  setLoadingOperators(false);
+                }
+              )
+            : null,
+          searchOption == "all" || searchOption == "leases"
+            ? callLeaseSearch(
+                { input: searchInputValue },
+                searchTop,
+                (results) => {
+                  if (results) {
+                    const indexSource = results["@odata.context"].substring(
+                      results["@odata.context"].indexOf("('") + 2,
+                      results["@odata.context"].indexOf("')")
+                    );
+                    console.log(indexSource);
+                    newOptions = [
+                      ...results.value.map((result) => {
+                        result.Score = result["@search.score"];
+                        delete result["@search.score"];
+
+                        return {
+                          ...result,
+                          Source: indexSource,
+                          Primary:
+                            result.Lease &&
+                            (result.Lease === "" ||
+                              result.Lease === "N/A" ||
+                              result.Lease === "(N/A)")
+                              ? "--"
+                              : result.Lease,
+                          Secondary:
+                            result.LeaseId &&
+                            (result.LeaseId === "" ||
+                              result.LeaseId === "N/A" ||
+                              result.LeaseId === "(N/A)")
+                              ? null
+                              : result.LeaseId,
+                        };
+                      }),
+                      ...newOptions,
+                    ];
+
+                    setMaxMinLeasesScore(maxMinScore(results.value));
+                  }
+
+                  setOptions(newOptions);
+                  setLoadingLeases(false);
+                }
+              )
+            : null,
+          searchOption == "all" || searchOption == "locations"
+            ? callMapboxSearch(
+                { input: searchInputValue },
+                searchTop,
+                (results) => {
+                  if (results) {
+                    let resultsMod = results.features
+                      ? results.features.map((result) => {
+                          return {
+                            ...result,
+                            Id: result.id,
+                            Source: "mapboxSearch",
+                            Score: result.relevance ? result.relevance : 0,
+                            Primary: result.text ? result.text : "",
+                            Secondary: result.place_name
+                              ? result.place_name.indexOf(
+                                  result.text + ", "
+                                ) === 0
+                                ? result.place_name.slice(
+                                    result.place_name.indexOf(", ") + 2,
+                                    result.place_name.length
+                                  )
+                                : result.place_name
+                              : "",
+                          };
+                        })
+                      : [];
+
+                    newOptions = [...newOptions, ...resultsMod];
+                    setMaxMinMapboxSearchScore(maxMinScore(resultsMod));
+                  }
+
+                  setOptions(newOptions);
+                  setLoadingMapboxSearch(false);
+                }
+              )
+            : null,
+        ]);
+      })();
+    }
   }, [
     searchInputValue,
     callWellSearch,
@@ -1479,3 +1483,5 @@ export default function Search() {
     </div>
   );
 }
+
+export default React.memo(Search, deepEqualObjects);
