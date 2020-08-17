@@ -78,7 +78,7 @@ export default function AddUserData(props) {
   async function handleFileAsync(file) {
     let inputFile = file[0].data;
     let fileName = file[0].file.name;
-  
+
     if (fileName.endsWith(".geojson")) {
       return await new Promise((resolve, reject) => {
         fetch(inputFile)
@@ -95,14 +95,13 @@ export default function AddUserData(props) {
         fetch(inputFile)
           .then((response) => {
             response.arrayBuffer()
-              .then(function (buffer) {
+              .then(buffer => {
                 shp(buffer).then(geojson => {
                   console.log(geojson);
                   resolve(geojson);
                 })
               })
           })
-
       });
     }
   }

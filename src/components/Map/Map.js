@@ -111,13 +111,13 @@ export default function Map() {
   }
   const [lng, Lng] = useState();
   const setLng = (state) => {
-    if(lng != state) {
+    if (lng != state) {
       Lng(state)
     }
   }
   const [lat, Lat] = useState();
   const setLat = (state) => {
-    if(lat != state) {
+    if (lat != state) {
       Lat(state)
     }
   }
@@ -275,7 +275,7 @@ export default function Map() {
   const [getRigs, { data: rigData }] = useLazyQuery(RIGSQUERY);
 
   const [getAbstractGeo, { data: abstractData }] = useLazyQuery(ABSTRACTGEOQUERY);
-  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY); 
+  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
 
   /////end/////////temporary
 
@@ -1006,7 +1006,7 @@ export default function Map() {
       });
 
       if (!window.event.ctrlKey && hoverUdIds.length > 0) {
-        for(let i = 0; i < hoverUdIds.length; i ++) {
+        for (let i = 0; i < hoverUdIds.length; i++) {
           map.setFeatureState(
             { source: 'parcel_source', id: hoverUdIds[i] },
             { hover: false }
@@ -1253,7 +1253,7 @@ export default function Map() {
     userFileLayers.map((fileLayer, idx) => {
       var mapSource = map.getSource(`${idx}`);
       let featureType = fileLayer.type;
-     
+
 
       if (mapSource == undefined) {
         console.log("FILE LAYER::", fileLayer)
@@ -1300,11 +1300,15 @@ export default function Map() {
         });
         map.addLayer({
           'id': `line${idx}`,
-          'type': 'circle',
+          'type': 'line',
           'source': `${idx}`,
+          'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
           'paint': {
-            'circle-radius': 6,
-            'circle-color': '#B42222'
+            'line-width': 8,
+            'line-color': '#088'
           },
           'filter': ['==', '$type', 'LineString']
         });
@@ -3598,7 +3602,7 @@ export default function Map() {
   useEffect(() => {
     if (map) {
       const featuresList = map.getSource('abstract_geo_source')._data.features;
-      for (let i = 0; i < featuresList.length; i ++) {
+      for (let i = 0; i < featuresList.length; i++) {
         const id = featuresList[i].properties.abstract_n;
         map.setFeatureState(
           { source: 'abstract_geo_source', id: id },
@@ -3647,7 +3651,7 @@ export default function Map() {
 
   useEffect(() => {
     if (map) {
-      map.on('click', 'abstract_geo_fill_layer', function(e) {
+      map.on('click', 'abstract_geo_fill_layer', function (e) {
         const map = e.target;
         if (e.features.length > 0) {
           if (window.event.ctrlKey) {
@@ -3678,7 +3682,7 @@ export default function Map() {
                 showAbstractPopup: true
               }));
             } else {
-              for (let i = 0; i < featuresList.length; i ++) {
+              for (let i = 0; i < featuresList.length; i++) {
                 const id = featuresList[i].properties.abstract_n;
                 const featureState = map.getFeatureState({
                   source: 'abstract_geo_source',
@@ -3708,11 +3712,11 @@ export default function Map() {
         }
       });
 
-      map.on('mousemove', 'abstract_geo_fill_layer', function(e) {
+      map.on('mousemove', 'abstract_geo_fill_layer', function (e) {
         const map = e.target;
         if (e.features.length > 0) {
           const featuresList = map.getSource('abstract_geo_source')._data.features;
-          for (let i = 0; i < featuresList.length; i ++) {
+          for (let i = 0; i < featuresList.length; i++) {
             const id = featuresList[i].properties.abstract_n;
             const featureState = map.getFeatureState({
               source: 'abstract_geo_source',
@@ -3734,11 +3738,11 @@ export default function Map() {
         }
       });
 
-      map.on('mouseleave', 'abstract_geo_fill_layer', function(e) {
+      map.on('mouseleave', 'abstract_geo_fill_layer', function (e) {
         const map = e.target;
-        
+
         const featuresList = map.getSource('abstract_geo_source')._data.features;
-        for (let i = 0; i < featuresList.length; i ++) {
+        for (let i = 0; i < featuresList.length; i++) {
           const id = featuresList[i].properties.abstract_n;
           const featureState = map.getFeatureState({
             source: 'abstract_geo_source',
@@ -3979,21 +3983,21 @@ export default function Map() {
                 polygon: polygonString
               }
             });
-            
+
           }
         }
 
-        newMap.on('zoomend', function(e) {
+        newMap.on('zoomend', function (e) {
           abstractControl(e);
         });
-        newMap.on('moveend', function(e) {
+        newMap.on('moveend', function (e) {
           abstractControl(e);
         });
 
         const mapFilterPolyOnRight = (e) => {
           console.log("right click on the map");
           let id = "draw_polygon" + Date.now();
-          setStateNav(stateNav => ({ ...stateNav, drawingMode: "draw_polygon", filterFeatureId: id}));
+          setStateNav(stateNav => ({ ...stateNav, drawingMode: "draw_polygon", filterFeatureId: id }));
         }
 
         newMap.on("contextmenu", mapFilterPolyOnRight);
@@ -4030,7 +4034,7 @@ export default function Map() {
               ]
             }
           });
-          
+
           newMap.addLayer({
             id: 'abstract_geo_layer',
             type: 'line',
