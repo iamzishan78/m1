@@ -14,12 +14,15 @@ import { UPDATEPARCELOWNER } from "../../../../../graphQL/useMutationUpdateParce
 import { UPDATECONTACT } from "../../../../../graphQL/useMutationUpdateContact";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../../../../AppContext";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import $ from "jquery";
 
 const useStyles = makeStyles((theme) => ({
   fieldContentP: {
-    visibility: ({ loading, edit, fieldsCount }) =>
-      loading || (edit && fieldsCount <= 1) ? "hidden" : "visible",
+    visibility: ({ loading, edit, fieldsCount, dropDownOptions }) =>
+      loading || (edit && fieldsCount <= 1 && !dropDownOptions)
+        ? "hidden"
+        : "visible",
     margin: "0",
     width: ({ noMargin }) => {
       if (noMargin) return "fit-content";
@@ -32,11 +35,13 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "22px",
   },
   editTextField: {
-    position: ({ fieldsCount }) => (fieldsCount > 1 ? null : "absolute"),
+    position: ({ fieldsCount, dropDownOptions }) =>
+      fieldsCount > 1 || dropDownOptions ? null : "absolute",
     top: "0",
     left: "0",
     zIndex: "50",
-    paddingRight: ({ fieldsCount }) => (fieldsCount > 1 ? null : "20px"),
+    paddingRight: ({ fieldsCount, dropDownOptions }) =>
+      fieldsCount > 1 || dropDownOptions ? null : "20px",
     "& .MuiInputBase-root": {
       backgroundColor: "#fff",
       fontSize: "0.875rem",
@@ -225,8 +230,6 @@ export default function CellContentEdition({
   const [editContent, setEditContent] = useState({ content });
   const [cellId, setCellId] = useState(0);
   const [fieldsCount, setFieldsCount] = useState(0);
-  const [height, setHeight] = useState(null);
-  const [width, setWidth] = useState(null);
 
   const [updateContact, { loading: loadingUpdContact }] = useMutation(
     UPDATECONTACT
@@ -237,10 +240,11 @@ export default function CellContentEdition({
   const classes = useStyles({
     loading: loadingUpdContact || loadingUpdPOwner,
     fieldsCount,
+    dropDownOptions,
     edit,
   });
 
-  useEffect(() => {
+  const toStart = () => {
     if (content) {
       setEditContent({ ...content });
 
@@ -255,10 +259,14 @@ export default function CellContentEdition({
       setFieldsCount(count);
       setCellId(cId);
     }
+  };
+
+  useEffect(() => {
+    toStart();
   }, [content]);
 
   useEffect(() => {
-    if (fieldsCount <= 1) {
+    if (fieldsCount <= 1 && !dropDownOptions) {
       //// set focus
       let fieldName;
       for (const key in editContent) {
@@ -338,28 +346,46 @@ export default function CellContentEdition({
     for (const fieldName in editContent) {
       if (editContent.hasOwnProperty(fieldName)) {
         inputsArray.push(
-          <TextField
-            key={"fieldContentInput" + id + fieldName}
-            id={"fieldContentInput" + id + fieldName}
-            className={classes.editTextField}
-            variant="outlined"
-            size="small"
-            fullWidth
-            label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
-            multiline
-            value={
-              editContent[fieldName] === null ? "" : editContent[fieldName]
-            }
-            onChange={(e) => {
-              e.persist();
-              setEditContent((editContent) => ({
-                ...editContent,
-                [fieldName]: e.target.value,
-              }));
-            }}
-            onKeyDown={(event) => {
-              event.stopPropagation();
-              if (event.key === "Escape") {
+          !dropDownOptions ? (
+            <TextField
+              key={"fieldContentInput" + id + fieldName}
+              id={"fieldContentInput" + id + fieldName}
+              className={classes.editTextField}
+              variant="outlined"
+              size="small"
+              fullWidth
+              label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
+              multiline
+              value={
+                editContent[fieldName] === null ? "" : editContent[fieldName]
+              }
+              onChange={(e) => {
+                e.persist();
+                setEditContent((editContent) => ({
+                  ...editContent,
+                  [fieldName]: e.target.value,
+                }));
+              }}
+              onKeyDown={(event) => {
+                event.stopPropagation();
+                if (event.key === "Escape") {
+                  if (fieldsCount <= 1) {
+                    setEdit(false);
+                    setEditContent((editContent) => ({
+                      ...editContent,
+                      [fieldName]: content[fieldName],
+                    }));
+                  }
+                }
+
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  handleUpdating();
+                }
+              }}
+              onBlur={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 if (fieldsCount <= 1) {
                   setEdit(false);
                   setEditContent((editContent) => ({
@@ -367,36 +393,54 @@ export default function CellContentEdition({
                     [fieldName]: content[fieldName],
                   }));
                 }
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            />
+          ) : (
+            <Autocomplete
+              key={"fieldContentInput" + id + fieldName}
+              id={"fieldContentInput" + id + fieldName}
+              className={classes.editTextField}
+              options={dropDownOptions}
+              getOptionLabel={(option) => option}
+              value={
+                editContent[fieldName] === null ? "" : editContent[fieldName]
               }
-
-              if (event.key === "Enter") {
-                event.preventDefault();
-                handleUpdating();
-              }
-            }}
-            onBlur={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (fieldsCount <= 1) {
-                setEdit(false);
+              onChange={(e, newInputValue) => {
                 setEditContent((editContent) => ({
                   ...editContent,
-                  [fieldName]: content[fieldName],
+                  [fieldName]: newInputValue,
                 }));
-              }
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-          />
+              }}
+              // value={newOwner.entity}
+              // onChange={(e, newInputValue) => {
+              //   setNewOwner({
+              //     ...newOwner,
+              //     entity: newInputValue ? newInputValue : "",
+              //   });
+              // }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                  label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
+                  multiline
+                />
+              )}
+            />
+          )
         );
       }
     }
   }
 
   //// ajusting the main div height to the input heigth, using jQuery
-  if (fieldsCount <= 1) {
+  if (fieldsCount <= 1 && !dropDownOptions) {
     $(document).ready(function () {
       if (
         $("#" + id + cellId) &&
@@ -450,7 +494,7 @@ export default function CellContentEdition({
         e.stopPropagation();
       }}
     >
-      {edit && fieldsCount <= 1 && inputsArrayWithFooter()}
+      {edit && !dropDownOptions && fieldsCount <= 1 && inputsArrayWithFooter()}
       <p
         className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${
           classes.fieldContentP
@@ -466,8 +510,13 @@ export default function CellContentEdition({
           : `${name ? name + " " : ""} Not Available`}
         <PencilEditIcon
           handleUpdating={handleUpdating}
-          anchorEl={edit && fieldsCount > 1 ? edit : null}
-          setAnchorEl={setEdit}
+          anchorEl={
+            (edit && fieldsCount > 1) || (edit && dropDownOptions) ? edit : null
+          }
+          setAnchorEl={(e) => {
+            setEdit(e);
+            toStart();
+          }}
           content={inputsArray}
           onClick={handleEditClick}
         />
