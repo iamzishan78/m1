@@ -1,64 +1,43 @@
-import React, { useContext,useState } from 'react';
-import { makeStyles,useTheme } from "@material-ui/core/styles";
-import Typography from '@material-ui/core/Typography'
-import WellIcon from './components/svgIcons/WellIcon'
-import { AppContext } from '../../AppContext'
+import React, { useContext, useState } from "react";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
+import WellIcon from "./components/svgIcons/WellIcon";
+import { AppContext } from "../../AppContext";
 
-import QuestionIcon from '@material-ui/icons/Help';
-import XIcon from '@material-ui/icons/HighlightOff';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import QuestionIcon from "@material-ui/icons/Help";
+import XIcon from "@material-ui/icons/HighlightOff";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
+const useStyles = makeStyles((theme) => ({
+  iconContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  tex1: {
+    colorPrimary: "white",
+  },
+}));
 
-const useStyles = makeStyles(theme => ({
-    iconContainer: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-
-    },
-    tex1: {
-      colorPrimary: 'white'
-    }
-  }))
-
-
-  
 export default function WellStatusCard() {
-    let classes = useStyles();
-    const [stateApp, setStateApp] = useContext(AppContext)
-    const WellStatusIcon = () => {
+  let classes = useStyles();
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const WellStatusIcon = () => {
+    console.log(stateApp.selectedWell.wellStatus);
+    console.log("*");
 
+    if (stateApp.selectedWell.wellStatus == "ACTIVE") {
+      return <CheckCircleIcon fontSize="large" />;
+    } else if (stateApp.selectedWell.wellStatus == "UNKNOWN") {
+      return <QuestionIcon fontSize="large" />;
+    } else {
+      return <XIcon fontSize="large" />;
+    }
+  };
 
-      console.log(stateApp.selectedWell.wellStatus)
-      console.log('*')
-
-      if(stateApp.selectedWell.wellStatus == "ACTIVE"){
-        return (
-          <CheckCircleIcon fontSize='large'/>
-        );
-      } else if(stateApp.selectedWell.wellStatus == "UNKNOWN") {
-        return (
-          <QuestionIcon fontSize='large'/>
-        );
-
-      } else {
-        return (
-          <XIcon fontSize='large'/>
-        );
-      }
-    };
-
-
-
-
-
-    return (
-      <div className={classes.iconContainer}>
-
-      <WellStatusIcon/>
-
-
-
+  return (
+    <div className={classes.iconContainer}>
+      <WellStatusIcon />
 
       <Typography
         //classes={classes.text1}
@@ -74,15 +53,11 @@ export default function WellStatusCard() {
       >
         {stateApp.selectedWell.wellStatus
           ? stateApp.selectedWell.wellStatus.toUpperCase()
-          : '--'}
+          : "--"}
       </Typography>
-      </div>
-
-
-    );
-  };
-
-
+    </div>
+  );
+}
 
 /* 
 import React, { useEffect, useState } from 'react'

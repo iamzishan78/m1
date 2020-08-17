@@ -13,16 +13,24 @@ import { AppContext } from "../../../AppContext";
 const useStyles = makeStyles({
   table: {
     //minWidth: 650,
-    paddingRight: "20px",
-    minHeight: "100%",
+    // paddingRight: "20px",
+    minHeight: "466.556px !important",
   },
   tableContainer: {
-    //minWidth: 650,
+    overflowX: "unset",
+    margin: "8px",
     //paddingRight: '20px'
-    // minHeight: "419.556px",
   },
   rowName: {
     fontWeight: "bold",
+    background: "#ebebeb",
+  },
+
+  tableRow: {
+    "& > td": {
+      padding: "4px 10px !important",
+      border: "2px solid #e3e3e3",
+    },
   },
 });
 
@@ -58,12 +66,12 @@ export default function TableSummary(props) {
     <TableContainer className={classes.tableContainer} component={Paper}>
       {summary && (
         <Table
-          className={classes.table}
           aria-label="simple table"
+          className={classes.table}
           loading={!summary}
         >
           <TableBody>
-            <TableRow>
+            <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 Lease
               </TableCell>
@@ -77,7 +85,7 @@ export default function TableSummary(props) {
               </TableCell>
               <TableCell>{summary.Field}</TableCell>
             </TableRow>
-            <TableRow>
+            <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 County
               </TableCell>
@@ -87,7 +95,7 @@ export default function TableSummary(props) {
               </TableCell>
               <TableCell>{formatFT(summary.MeasuredDepth)}</TableCell>
             </TableRow>
-            <TableRow>
+            <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 State
               </TableCell>
@@ -97,7 +105,7 @@ export default function TableSummary(props) {
               </TableCell>
               <TableCell>{formatFT(summary.TrueVerticalDepth)}</TableCell>
             </TableRow>
-            <TableRow>
+            <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 {summary.State === "TX" ? "Survey" : "Meridian"}
               </TableCell>
@@ -107,7 +115,7 @@ export default function TableSummary(props) {
               </TableCell>
               <TableCell>{formatFT(summary.LateralLength)}</TableCell>
             </TableRow>
-            <TableRow>
+            <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 {summary.State === "TX" ? "Block" : "Township"}
               </TableCell>
@@ -117,7 +125,7 @@ export default function TableSummary(props) {
               </TableCell>
               <TableCell>{summary.Latitude}</TableCell>
             </TableRow>
-            <TableRow>
+            <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 {summary.State === "TX" ? "Section" : "Range"}
               </TableCell>
@@ -127,7 +135,7 @@ export default function TableSummary(props) {
               </TableCell>
               <TableCell>{summary.Longitude}</TableCell>
             </TableRow>
-            <TableRow>
+            <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 {summary.State === "TX" ? "Abstract" : "Section"}
               </TableCell>
@@ -137,7 +145,7 @@ export default function TableSummary(props) {
               </TableCell>
               <TableCell>{summary.BHLatitude}</TableCell>
             </TableRow>
-            <TableRow>
+            <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 {summary.State === "TX" ? "Alt Survey" : ""}
               </TableCell>
