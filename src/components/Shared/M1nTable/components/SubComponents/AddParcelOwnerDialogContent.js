@@ -14,27 +14,30 @@ import { ADDOWNERTOAPARCEL } from "../../../../../graphQL/useMutationAddOwnerToA
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "../../../../../actions";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 const entities = [
-  "Religious Institutions",
-  "Governmental Bodies",
-  "Non Profits",
-  "Trusts",
-  "Corporations",
-  "Educational Institutions",
-  "Individuals",
+  "Corporation",
+  "Educational Institution",
+  "Governmental Body",
+  "Individual",
+  "Non Profit",
+  "Religious Institution",
+  "Trust",
   "Unknown",
 ];
 const types = [
-  "Unknown Interest",
-  "Leasehold",
-  "Royalty Interest (NPRI)",
   "Fee Interest",
-  "Working Interest",
-  "Non-Executive Interest (NEMI)",
+  "Leasehold",
   "Mineral Interest",
-  "Surface",
-  "Overriding Royalty Interest (ORRI)",
+  "Non-Executive Mineral Interest (NEMI)",
+  "Overriding Royalty (ORRI)",
+  "Royalty Interest (NPRI)",
+  "Surface Rights",
+  "Unknown",
+  "Working Interest",
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -56,14 +59,16 @@ export default function AddParcelOwnerDialogContent(props) {
   const [newOwner, setNewOwner] = useState({
     name: "",
     entity: "Unknown",
-    type: "Unknown Interest",
-    allDepths: props.allDepths,
+    type: "Unknown",
     depthFrom: "",
     depthTo: "",
     interest: "",
     nma: "",
     nra: "",
   });
+  const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] = useState(
+    "true"
+  );
 
   const [addOwnerToAParcel, { data: mutationData }] = useMutation(
     ADDOWNERTOAPARCEL
@@ -95,15 +100,15 @@ export default function AddParcelOwnerDialogContent(props) {
   const emptyStates = () => {
     setNewOwner({
       name: "",
-      entity: "UNKNOWN",
-      type: "Unknown Interest",
-      allDepths: true,
+      entity: "Unknown",
+      type: "Unknown",
       depthFrom: "",
       depthTo: "",
       interest: "",
       nma: "",
       nra: "",
     });
+    setParcelOwnersRadioBValue("true");
   };
 
   const handleClickDialogClose = () => {
@@ -117,7 +122,10 @@ export default function AddParcelOwnerDialogContent(props) {
     addOwnerToAParcel({
       variables: {
         customLayerId: props.customLayerId,
-        owner: newOwner,
+        owner:
+          parcelOwnersRadioBValue === "true"
+            ? { ...newOwner, depthFrom: "All depths", depthTo: "All depths" }
+            : newOwner,
       },
       refetchQueries: ["getCustomLayer"],
       awaitRefetchQueries: true,
@@ -192,8 +200,28 @@ export default function AddParcelOwnerDialogContent(props) {
               )}
             />
           </Grid>
+          <Grid item xs={12}>
+            <RadioGroup
+              row
+              value={parcelOwnersRadioBValue}
+              onChange={(event) => {
+                setParcelOwnersRadioBValue(event.target.value);
+              }}
+            >
+              <FormControlLabel
+                value="true"
+                control={<Radio />}
+                label="All Depths"
+              />
+              <FormControlLabel
+                value="false"
+                control={<Radio />}
+                label="Footages/Formations"
+              />
+            </RadioGroup>
+          </Grid>
 
-          {!props.allDepths && (
+          {parcelOwnersRadioBValue === "false" && (
             <Grid item xs={12}>
               <h3>Depth From</h3>
               <TextField
@@ -210,7 +238,7 @@ export default function AddParcelOwnerDialogContent(props) {
               />
             </Grid>
           )}
-          {!props.allDepths && (
+          {parcelOwnersRadioBValue === "false" && (
             <Grid item xs={12}>
               <h3>Depth To</h3>
               <TextField
@@ -229,7 +257,7 @@ export default function AddParcelOwnerDialogContent(props) {
           )}
 
           <Grid item xs={4}>
-            <h3>interest</h3>
+            <h3>Interest</h3>
             <TextField
               size="small"
               className={classes.maxWidth}

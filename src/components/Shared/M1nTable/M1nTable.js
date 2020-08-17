@@ -19,10 +19,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import { Container } from "@material-ui/core";
 import Table from "./components/Table";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Typography from "@material-ui/core/Typography";
 
 import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
@@ -723,15 +719,43 @@ const OwnersPerParcelHeadCells = [
       viewColumns: false,
     },
   },
-  { name: "name", label: "Name" },
-  { name: "entity", label: "Entity" },
-  { name: "type", label: "Type" },
-  // { name: "depths", label: "Depths" },
-  // { name: "depthFrom", label: "Depth From" },
-  // { name: "depthTo", label: "Depth To" },
-  { name: "interest", label: "Interest" },
-  { name: "nma", label: "NMA" },
-  { name: "nra", label: "NRA" },
+  { name: "name", label: "Name", editable: true },
+  {
+    name: "entity",
+    label: "Entity",
+    editable: true,
+    dropDownOptions: [
+      "Corporation",
+      "Educational Institution",
+      "Governmental Body",
+      "Individual",
+      "Non Profit",
+      "Religious Institution",
+      "Trust",
+      "Unknown",
+    ],
+  },
+  {
+    name: "type",
+    label: "Type",
+    editable: true,
+    dropDownOptions: [
+      "Fee Interest",
+      "Leasehold",
+      "Mineral Interest",
+      "Non-Executive Mineral Interest (NEMI)",
+      "Overriding Royalty (ORRI)",
+      "Royalty Interest (NPRI)",
+      "Surface Rights",
+      "Unknown",
+      "Working Interest",
+    ],
+  },
+  { name: "depthFrom", label: "Depth From", editable: true },
+  { name: "depthTo", label: "Depth To", editable: true },
+  { name: "interest", label: "Interest", editable: true },
+  { name: "nma", label: "NMA", editable: true },
+  { name: "nra", label: "NRA", editable: true },
   {
     name: "tags",
     label: "Tags ",
@@ -2388,52 +2412,6 @@ function M1nTable(props) {
   //////////// Search end///////////////////////////////////////////////
 
   ////////////Owners Per Parcel begin///////////////////////////////////////////////
-  const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] = useState(
-    "true"
-  );
-
-  useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "ownersPerParcel" &&
-      props.customLayerId
-    ) {
-      setHeader(
-        <div style={{ display: "flex" }}>
-          <Typography
-            variant="body1"
-            style={{ margin: "8px 25px 0 0", fontWeight: "bold" }}
-          >
-            Parcel Owners
-          </Typography>
-          <RadioGroup
-            row
-            value={parcelOwnersRadioBValue}
-            onChange={(event) => {
-              setParcelOwnersRadioBValue(event.target.value);
-            }}
-          >
-            <FormControlLabel
-              value="true"
-              control={<Radio />}
-              label="All Depths"
-            />
-            <FormControlLabel
-              value="false"
-              control={<Radio />}
-              label="Footages/Formations"
-            />
-          </RadioGroup>
-        </div>
-      );
-
-      setAddAble({
-        type: "ownerToParcel",
-        allDepths: parcelOwnersRadioBValue === "true" ? true : false,
-        customLayerId: props.customLayerId,
-      });
-    }
-  }, [props.contactId, props.customLayerId, parcelOwnersRadioBValue]);
 
   useEffect(() => {
     if (
@@ -2442,11 +2420,17 @@ function M1nTable(props) {
       props.customLayerId
     ) {
       setTargetLabel("Parcel Owner");
+      setHeader("Parcel Owners");
+      setAddAble({
+        type: "ownerToParcel",
+        customLayerId: props.customLayerId,
+      });
       getCustomLayer({
         variables: {
           id: props.customLayerId,
         },
       });
+      setLoading(true);
     }
   }, [props.contactId, props.customLayerId]);
 
@@ -2489,7 +2473,6 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "ownersPerParcel" &&
-      parcelOwnersRadioBValue &&
       dataCustomLayer &&
       dataCustomLayer.customLayer &&
       dataCustomLayer.customLayer.owners &&
@@ -2501,58 +2484,37 @@ function M1nTable(props) {
       dataTagSamples &&
       dataTagSamples.tagSamples
     ) {
-      const owners = dataCustomLayer.customLayer.owners.filter(
-        (parcelOwner) => {
-          if (
-            (parcelOwnersRadioBValue === "true" && parcelOwner.allDepths) ||
-            (parcelOwnersRadioBValue === "false" && !parcelOwner.allDepths)
-          ) {
-            parcelOwner.commentsCounter = 0;
-            parcelOwner.tags = [[], 0];
-            parcelOwner.isTracked = false;
+      dataCustomLayer.customLayer.owners.forEach((parcelOwner) => {
+        parcelOwner.commentsCounter = 0;
+        parcelOwner.tags = [[], 0];
+        parcelOwner.isTracked = false;
 
-            parcelOwner.allDepths
-              ? (parcelOwner.depths = "All")
-              : (parcelOwner.depths = "");
-
-            for (
-              let i = 0;
-              i < dataCommentsCounter.commentsCounter.length;
-              i++
-            ) {
-              if (
-                parcelOwner._id === dataCommentsCounter.commentsCounter[i]._id
-              ) {
-                parcelOwner.commentsCounter =
-                  dataCommentsCounter.commentsCounter[i].total;
-                break;
-              }
-            }
-
-            for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-              if (parcelOwner._id === dataTagSamples.tagSamples[i]._id) {
-                parcelOwner.tags = [
-                  dataTagSamples.tagSamples[i].tags,
-                  dataTagSamples.tagSamples[i].total,
-                ];
-
-                break;
-              }
-            }
-
-            for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-              if (
-                parcelOwner._id === dataTracks.tracksByObjectType[i].trackOn
-              ) {
-                parcelOwner.isTracked = true;
-                break;
-              }
-            }
-
-            return true;
+        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+          if (parcelOwner._id === dataCommentsCounter.commentsCounter[i]._id) {
+            parcelOwner.commentsCounter =
+              dataCommentsCounter.commentsCounter[i].total;
+            break;
           }
         }
-      );
+
+        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+          if (parcelOwner._id === dataTagSamples.tagSamples[i]._id) {
+            parcelOwner.tags = [
+              dataTagSamples.tagSamples[i].tags,
+              dataTagSamples.tagSamples[i].total,
+            ];
+
+            break;
+          }
+        }
+
+        for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+          if (parcelOwner._id === dataTracks.tracksByObjectType[i].trackOn) {
+            parcelOwner.isTracked = true;
+            break;
+          }
+        }
+      });
 
       let availableTags = [];
       dataTagSamples.tagSamples.map((sample) => {
@@ -2560,23 +2522,9 @@ function M1nTable(props) {
       });
       const cleanAvailableTags = [...new Set(availableTags)];
 
-      const OwnersPerParcelHeadCellsCopy = [...OwnersPerParcelHeadCells];
-      if (parcelOwnersRadioBValue === "true")
-        OwnersPerParcelHeadCellsCopy.splice(4, 0, {
-          name: "depths",
-          label: "Depths",
-        });
-      else
-        OwnersPerParcelHeadCellsCopy.splice(
-          4,
-          0,
-          { name: "depthFrom", label: "Depth From" },
-          { name: "depthTo", label: "Depth To" }
-        );
-
       setColumns(
         cleanAvailableTags.length > 0
-          ? OwnersPerParcelHeadCellsCopy.map((column) => {
+          ? OwnersPerParcelHeadCells.map((column) => {
               if (column.name === "tags") {
                 return {
                   ...column,
@@ -2591,7 +2539,7 @@ function M1nTable(props) {
               }
               return column;
             })
-          : OwnersPerParcelHeadCellsCopy.map((column) => {
+          : OwnersPerParcelHeadCells.map((column) => {
               if (column.name === "tags") {
                 return {
                   ...column,
@@ -2604,11 +2552,10 @@ function M1nTable(props) {
               return column;
             })
       );
-      setRows(owners);
+      setRows([...dataCustomLayer.customLayer.owners]);
       setLoading(false);
     }
   }, [
-    parcelOwnersRadioBValue,
     props.parent,
     dataCustomLayer,
     dataTracks,

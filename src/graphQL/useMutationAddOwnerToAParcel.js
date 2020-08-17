@@ -19,7 +19,6 @@ export const ADDOWNERTOAPARCEL = gql`
           name
           entity
           type
-          allDepths
           depthFrom
           depthTo
           interest

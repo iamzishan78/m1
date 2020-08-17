@@ -797,32 +797,29 @@ function SubTable(props) {
 
                   return (
                     <div style={{ display: "flex" }}>
-                      {
-                        props.targetLabel === "contact" &&
-                          column.name === "name" && (
-                            ///////////////////////////////////////////////////
-                            // <ConfigProvider colors={['red', 'green', 'blue']}>
-                            <Avatar
-                              color={Avatar.getRandomColor(value, [
-                                "#b5d2f6",
-                                "#ade2e9",
-                                "#eaeaea",
-                                "#f2c1e2",
-                                "#d7d6fb",
-                              ])}
-                              fgColor="#000"
-                              name={valueFormatter(value)}
-                              size="35"
-                              round
-                            />
-                          )
-                        // </ConfigProvider>
-                        ///////////////////////////////////////////////////
-                      }
+                      {props.targetLabel === "contact" &&
+                        column.name === "name" && (
+                          <Avatar
+                            color={Avatar.getRandomColor(value, [
+                              "#b5d2f6",
+                              "#ade2e9",
+                              "#eaeaea",
+                              "#f2c1e2",
+                              "#d7d6fb",
+                            ])}
+                            fgColor="#000"
+                            name={valueFormatter(value)}
+                            size="35"
+                            round
+                          />
+                        )}
                       <CellContentEdition
                         id={tableMeta.rowData[0]}
                         content={{ [column.name]: valueFormatter(value) }}
                         targetLabel={props.targetLabel}
+                        dropDownOptions={
+                          column.dropDownOptions ? column.dropDownOptions : null
+                        }
                       />
                     </div>
                   );
@@ -1252,7 +1249,6 @@ function SubTable(props) {
             {openDialog === "addOwnerToParcel" && (
               <AddParcelOwnerDialogContent
                 onClose={handleCloseDialog}
-                allDepths={props.addAble.allDepths}
                 customLayerId={props.addAble.customLayerId}
               />
             )}

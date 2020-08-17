@@ -10,6 +10,7 @@ import ClearSharpIcon from "@material-ui/icons/ClearSharp";
 import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 import Button from "@material-ui/core/Button";
 import { useMutation } from "@apollo/react-hooks";
+import { UPDATEPARCELOWNER } from "../../../../../graphQL/useMutationUpdateParcelOwner";
 import { UPDATECONTACT } from "../../../../../graphQL/useMutationUpdateContact";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../../../../AppContext";
@@ -61,8 +62,11 @@ const useStyles = makeStyles((theme) => ({
   buttonsRow: { textAlign: "right", top: "-2px", position: "relative" },
   foodText: {
     position: "absolute",
-    bottom: "0",
-    right: "0",
+    // bottom: "0",
+    // right: "0",
+    bottom: "14px",
+    zIndex: "51",
+    right: "3px",
     fontSize: "10px",
     color: "#6e6e6e",
     margin: "0 !important",
@@ -74,6 +78,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   cellDataDiv: {
+    minWidth: "100px",
     padding: "10px 30px 10px 10px",
     position: "relative",
     borderRadius: "7px",
@@ -203,6 +208,7 @@ export default function CellContentEdition({
   name,
   noInputFooter,
   targetLabel,
+  dropDownOptions,
 }) {
   //////////// id - brings the object id //////////////////////////////////////////////////////////////////////////
   //////////// content - brings an object with fielNames and values ///////////////////////////////////////////////
@@ -212,6 +218,7 @@ export default function CellContentEdition({
   //////////// name - will be part of the Not Available text, better use in compound fiels  //optional/////////////
   //////////// noInputFooter //optional////////////////////////////////////////////////////////////////////////////
   //////////// targetLabel - brings the object type we are updating here //////////////////////////////////////////
+  //////////// dropDownOptions - brings an array in case of autocomplete //////////////////////////////////////////
 
   const [stateApp] = React.useContext(AppContext);
   const [edit, setEdit] = useState(null);
@@ -221,8 +228,17 @@ export default function CellContentEdition({
   const [height, setHeight] = useState(null);
   const [width, setWidth] = useState(null);
 
-  const [updateContact, { loading }] = useMutation(UPDATECONTACT);
-  const classes = useStyles({ loading, fieldsCount, edit });
+  const [updateContact, { loading: loadingUpdContact }] = useMutation(
+    UPDATECONTACT
+  );
+  const [updateParcelOwner, { loading: loadingUpdPOwner }] = useMutation(
+    UPDATEPARCELOWNER
+  );
+  const classes = useStyles({
+    loading: loadingUpdContact || loadingUpdPOwner,
+    fieldsCount,
+    edit,
+  });
 
   useEffect(() => {
     if (content) {
@@ -276,10 +292,13 @@ export default function CellContentEdition({
   };
 
   const handleUpdating = () => {
-    let trimmedEditContent = {
-      _id: id,
-      lastUpdateBy: stateApp.user.mongoId,
-    };
+    let trimmedEditContent =
+      targetLabel === "contact"
+        ? {
+            _id: id,
+            lastUpdateBy: stateApp.user.mongoId,
+          }
+        : { _id: id };
     let differences = false;
     for (const field in editContent) {
       if (editContent[field] !== null) {
@@ -295,6 +314,15 @@ export default function CellContentEdition({
             contact: trimmedEditContent,
           },
           refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
+          awaitRefetchQueries: true,
+        });
+      }
+      if (targetLabel === "Parcel Owner") {
+        updateParcelOwner({
+          variables: {
+            owner: trimmedEditContent,
+          },
+          refetchQueries: ["getCustomLayer"],
           awaitRefetchQueries: true,
         });
       }
@@ -445,7 +473,7 @@ export default function CellContentEdition({
         />
         {!childrenLeft && !onlyChildren && children ? children : ""}
       </p>
-      {loading && (
+      {(loadingUpdContact || loadingUpdPOwner) && (
         <div style={{ height: "0", width: "0" }}>
           <CircularProgress
             className={classes.loader}
