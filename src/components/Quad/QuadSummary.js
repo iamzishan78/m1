@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
     alignContent: "center",
     justifyContent: "center",
-    padding: "16px",
+    padding: "8px",
   },
   bread: {
     display: "flex",
@@ -174,11 +174,11 @@ export default function QuadSummary(props) {
             >
               <Card className={classes.card}>
                 <CardContent>
-                  <Typography align="center" variant="h4">
+                  <Typography align="center" variant="h5">
                     {tile.metric.toUpperCase()}
                   </Typography>
                   <Divider className={classes.divider} />
-                  <Typography align="center" variant="h5">
+                  <Typography align="center" variant="h6">
                     {stateQuad.selectedRange === 12
                       ? new Intl.NumberFormat("en-US").format(tile.value12)
                       : stateQuad.selectedRange === 6

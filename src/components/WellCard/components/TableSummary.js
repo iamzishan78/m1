@@ -6,7 +6,6 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 // import TableHead from '@material-ui/core/TableHead';
 import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
 
 import { AppContext } from "../../../AppContext";
 
@@ -63,7 +62,7 @@ export default function TableSummary(props) {
   }, [props.summary, setSummary]);
 
   return (
-    <TableContainer className={classes.tableContainer} component={Paper}>
+    <TableContainer className={classes.tableContainer}>
       {summary && (
         <Table
           aria-label="simple table"
