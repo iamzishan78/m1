@@ -68,6 +68,7 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
     alignContent: "center",
     justifyContent: "center",
+    padding: "16px",
   },
   bread: {
     display: "flex",
@@ -77,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: "100%",
-    padding: "0px 8px",
+    padding: "0px 16px",
   },
   divider: {
     backgroundColor: "#d4d4d4",
@@ -86,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "4px 0",
   },
   gridListTile: {
-    padding: "8px !important",
+    padding: "16px !important",
   },
 }));
 const StyledBreadcrumb = withStyles((theme) => ({

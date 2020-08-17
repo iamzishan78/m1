@@ -35,7 +35,6 @@ import SpudDateCard from "../Shared/SpudDateCard";
 import WellApiCard from "../Shared/WellApiCard";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
-import { Tabs, Tab } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -297,24 +296,16 @@ export default function WellCardDetails(props) {
   return stateApp.selectedWell ? (
     <React.Fragment>
       <Grid item sm={12} className={classes.gridItemGrey}>
-        <Tabs
-          value={tabValue}
-          onChange={handleTabValueChange}
-          indicatorColor="primary"
-          variant="scrollable"
-          scrollButtons="auto"
-        >
-          <Tab label={<WellApiCard />} />
-          <Tab label={<WellTypeCard />} />
-          <Tab label={<WellStatusCard />} />
-          <Tab label={<Last12StatusCard />} />
-          <Tab label={<OwnerNumCard />} />
-          <Tab label={<ProfileCard />} />
-          <Tab label={<PermitDateCard />} />
-          <Tab label={<SpudDateCard />} />
-          <Tab label={<CompletionDateCard />} />
-          <Tab label={<FirstProdDateCard />} />
-        </Tabs>
+        <WellApiCard />
+        <WellTypeCard />
+        <WellStatusCard />
+        <Last12StatusCard />
+        <OwnerNumCard />
+        <ProfileCard />
+        <PermitDateCard />
+        <SpudDateCard />
+        <CompletionDateCard />
+        <FirstProdDateCard />
       </Grid>
       <Grid item sm={12} container className={classes.gridWidthScroll}>
         <Grid item sm={12} container style={{ height: "482px" }}>

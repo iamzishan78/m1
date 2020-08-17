@@ -13,15 +13,13 @@ import { AppContext } from "../../../AppContext";
 const useStyles = makeStyles({
   table: {
     //minWidth: 650,
-    paddingRight: "20px",
-    minHeight: "100%",
+    // paddingRight: "20px",
+    minHeight: "466.556px !important",
   },
   tableContainer: {
     overflowX: "unset",
     margin: "8px",
-    //minWidth: 650,
     //paddingRight: '20px'
-    // minHeight: "419.556px",
   },
   rowName: {
     fontWeight: "bold",
@@ -67,7 +65,11 @@ export default function TableSummary(props) {
   return (
     <TableContainer className={classes.tableContainer} component={Paper}>
       {summary && (
-        <Table aria-label="simple table" loading={!summary}>
+        <Table
+          aria-label="simple table"
+          className={classes.table}
+          loading={!summary}
+        >
           <TableBody>
             <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>

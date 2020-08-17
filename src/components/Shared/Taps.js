@@ -61,15 +61,6 @@ const useStyles = makeStyles((theme) => ({
       margin: "0px !important",
     },
   },
-  selectedTab: {
-    "MuiTab-wrapper": {
-      background: "blue",
-    },
-    "& > span:nth-child(1)": {
-      backgroundColor: "#33b4e0",
-      borderRadius: "4px",
-    },
-  },
 }));
 
 export default function Taps(props) {
@@ -113,14 +104,7 @@ export default function Taps(props) {
           aria-label="scrollable auto tabs example"
         >
           {tabLabels.map((label, i) => {
-            return (
-              <Tab
-                classes={{ selected: classes.selectedTab }}
-                key={i}
-                label={label}
-                {...a11yProps(i)}
-              />
-            );
+            return <Tab key={i} label={label} {...a11yProps(i)} />;
           })}
         </Tabs>
       </AppBar>
