@@ -20,6 +20,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import BaseMapStyles from "./components/BaseMapStyles";
 import CheckboxList from "./components/CheckboxList";
 import CheckboxListHeatmaps from "./components/CheckboxListHeatmaps";
+import ColorPickerDialog from './components/ColorPickerDialog';
 import AddUserData from "./components/addUserData";
 import DrawShapes from "./components/DrawShapes/DrawShapes";
 import TrackedWellsMapCard from "./components/TrackedWellsMapCard";
@@ -199,13 +200,20 @@ export default function MapControls(props) {
     ));
   };
 
+  const selectFileLayer = (layer) => {
+    setStateMapControls((stateMapControls) => ({
+      ...stateMapControls,
+      selectedFileLayer: layer
+    }));
+  }
+
   const openSelectedControl = () => {
     const { selectedControl } = stateMapControls;
     switch (selectedControl) {
       case "base":
         return <BaseMapStyles />;
       case "layer":
-        return <CheckboxList changeLayers={changeLayers} />;
+        return <CheckboxList changeLayers={changeLayers} selectFileLayer={selectFileLayer} />;
       case "heatMaps":
         return <CheckboxListHeatmaps changeHeatmaps={changeHeatmaps} />;
       case "add":
@@ -218,6 +226,13 @@ export default function MapControls(props) {
         return null;
     }
   };
+
+  const openColorPickerControl = () => {
+    const {selectedFileLayer} = stateMapControls;
+    if (selectedFileLayer) {
+      return <ColorPickerDialog layer={selectedFileLayer} />
+    }
+  }
 
   return (
     <div>
@@ -240,6 +255,7 @@ export default function MapControls(props) {
         {createSpeedDialActions()}
       </SpeedDial>
       {stateMapControls.selectedControl ? openSelectedControl() : null}
+      {stateMapControls.selectedFileLayer ? openColorPickerControl() : null}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 //import Button from '@material-ui/core/Button';
 import Menu from "@material-ui/core/Menu";
@@ -6,6 +6,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import RootRef from "@material-ui/core/RootRef";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+
 //import List from '@material-ui/core/List';
 //import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from "@material-ui/core/ListItemIcon";
@@ -26,6 +27,7 @@ import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import LayersIcon from "@material-ui/icons/Layers";
 import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
+import PaletteIcon from '@material-ui/icons/Palette';
 import ClickIcon from "..//..//Shared/svgIcons/cursor-click.js";
 import { borders } from "@material-ui/system";
 import Box from "@material-ui/core/Box";
@@ -61,6 +63,7 @@ export default function CheckboxList(props) {
     MapControlsContext
   );
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [userFileLayers, setUserFileLayer] = useState([]);
   //const theme = useTheme()
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
@@ -364,6 +367,19 @@ export default function CheckboxList(props) {
     return true;
   };
 
+  const handleColorPicker = (layer) => {
+    setStateMapControls((stateMapControls) => ({
+      ...stateMapControls,
+      selectedFileLayer: layer
+    }));
+  }
+
+  useEffect(() => {
+    if (stateApp.userFileLayers && stateApp.userFileLayers.length > 0) {
+      setUserFileLayer(stateApp.userFileLayers)
+    }
+  }, [stateApp.userFileLayers]);
+
   return (
     <ClickAwayListener onClickAway={handleClose}>
       <StyledMenu
@@ -598,6 +614,42 @@ export default function CheckboxList(props) {
                                   />
                                 </StyledListItem>
                               </Tooltip>
+                            </Box>
+                          )}
+                        </Draggable>
+                      );
+                    })}
+                    {userFileLayers.map((layer, index) => {
+                      const labelId = `file-list-label-${index}`;
+
+                      return (
+                        <Draggable
+                          key={labelId}
+                          draggableId={labelId}
+                          index={index + stateApp.userDefinedLayers.length}
+                        >
+                          {(provided, snapshot) => (
+                            <Box borderColor={layer.idColor} {...defaultProps}>
+                              <StyledListItem
+                                ContainerComponent="li"
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                              >
+                                <ListItemIcon {...provided.dragHandleProps}>
+                                  <DragIndicator />
+                                </ListItemIcon>
+
+                                <ListItemText
+                                  id={labelId}
+                                  primary={layer.layerName}
+                                />
+
+                                <div style={{ paddingRight: 20 }}>
+                                  <ListItemIcon onClick={() => handleColorPicker(layer)}>
+                                    <PaletteIcon />
+                                  </ListItemIcon>
+                                </div>
+                              </StyledListItem>
                             </Box>
                           )}
                         </Draggable>

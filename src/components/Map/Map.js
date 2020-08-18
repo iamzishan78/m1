@@ -1825,6 +1825,40 @@ export default function Map() {
   ]);
 
   useEffect(() => {
+    if (map && stateApp.userFileLayers && stateApp.userFileLayers.length > 0) {
+      const fileLayers = stateApp.userFileLayers;
+      fileLayers.forEach((fileLayer) => {
+        const layerName = fileLayer.layerName;
+        const geoJson = fileLayer.fileContent;
+        const sourceName = layerName + ' Source';
+        const type = fileLayer.layerType;
+        const paintProps = fileLayer.paintProps;
+        if (map.getLayer(layerName)) {
+          map.getSource(sourceName).setData(geoJson);
+          Object.keys(paintProps).forEach((key) => {
+            map.setPaintProperty(layerName, key, paintProps[key])
+          })
+        } else {
+          map.addSource(sourceName, {
+            type: 'geojson',
+            data: geoJson,
+          });
+        
+          map.addLayer({
+            id: layerName,
+            type: type,
+            source: sourceName,
+            paint: paintProps,
+          });
+        }
+      });
+    }
+  }, [
+    map,
+    stateApp.userFileLayers
+  ]);
+
+  useEffect(() => {
     console.log("useEffect 19");
 
     if (showExpandableCard) {
