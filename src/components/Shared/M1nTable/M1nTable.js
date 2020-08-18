@@ -36,6 +36,7 @@ import { CONTACT } from "../../../graphQL/useQueryContact";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
+import { UPDATEPARCELOWNER } from "../../../graphQL/useMutationUpdateParcelOwner";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -871,10 +872,10 @@ function M1nTable(props) {
   const setTargetLabel = (newState) => {
     setStateIfDeepEqual(TargetLabel, newState);
   };
-  const [deleteFunc, DeleteFunc] = useState(null);
-  const setDeleteFunc = (newState) => {
-    setStateIfDeepEqual(DeleteFunc, newState);
-  };
+  const [deleteFunc, setDeleteFunc] = useState(null);
+  // const setDeleteFunc = (newState) => {
+  //   setStateIfDeepEqual(DeleteFunc, newState);
+  // };
   const [showTracks, ShowTracks] = useState(true);
   const setShowTracks = (newState) => {
     setStateIfDeepEqual(ShowTracks, newState);
@@ -954,6 +955,8 @@ function M1nTable(props) {
       fetchPolicy: "cache-and-network",
     }
   );
+  //////////
+  const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
 
   ////////////Queries end///////////////////////////////////////////////
 
@@ -1858,7 +1861,6 @@ function M1nTable(props) {
       props.parent === "ownersPerContacts" &&
       props.contactId
     ) {
-      console.log("ue mintable 17");
       setDeleteFunc(() => (ownersIdsToDelete) => {
         if (ownersIdsToDelete) {
           setStateApp((state) => ({
@@ -2564,39 +2566,27 @@ function M1nTable(props) {
   ]);
   ////////////Owners Per Parcel begin//////////Delete//////////////////////////////
 
-  // useEffect(() => {
-  //   if (
-  //     props.parent &&
-  //     props.parent === "ownersPerContacts" &&
-  //     props.contactId
-  //   ) {
-  //     console.log("ue mintable 17");
-  //     setDeleteFunc(() => (ownersIdsToDelete) => {
-  //       if (ownersIdsToDelete) {
-  //         setStateApp((state) => ({
-  //           ...state,
-  //           universalCircularLoaderAct: true,
-  //         }));
-  //         for (let i = 0; i < ownersIdsToDelete.length; i++) {
-  //           addRemoveOwnerToAContact({
-  //             variables: {
-  //               contactId: props.contactId,
-  //               ownerId: ownersIdsToDelete[i],
-  //             },
-  //             refetchQueries: [
-  //               "getContacts",
-  //               "getContactsByOwnerId",
-  //               "getContactsCounter",
-  //               "getContact",
-  //               "getContactInM1nTable",
-  //             ],
-  //             awaitRefetchQueries: true,
-  //           });
-  //         }
-  //       }
-  //     });
-  //   }
-  // }, [props.parent, props.contactId]);
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerParcel" &&
+      props.customLayerId
+    ) {
+      setDeleteFunc(() => (ownersIdsToDelete) => {
+        if (ownersIdsToDelete && ownersIdsToDelete.length > 0) {
+          for (let i = 0; i < ownersIdsToDelete.length; i++) {
+            updateParcelOwner({
+              variables: {
+                owner: { _id: ownersIdsToDelete[i], IsDeleted: true },
+              },
+              refetchQueries: ["getCustomLayer"],
+              awaitRefetchQueries: true,
+            });
+          }
+        }
+      });
+    }
+  }, [props.parent, props.customLayerId]);
 
   ////////////Owners Per Parcel end/////////////////////////////////////////////////
 

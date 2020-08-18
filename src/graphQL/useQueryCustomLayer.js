@@ -9,8 +9,6 @@ export const CUSTOMLAYER = gql`
       layer
       user {
         _id
-        name
-        email
       }
       owners {
         _id

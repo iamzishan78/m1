@@ -1013,6 +1013,24 @@ function SubTable(props) {
               );
             }
 
+            //// if Parcel Owner set the multi selection top bar: ////
+            if (props.targetLabel === "Parcel Owner") {
+              return (
+                <Tooltip title={"Delete"}>
+                  <IconButton
+                    size="medium"
+                    style={{ margin: "0 5px" }}
+                    onClick={(e) => {
+                      handleExpandClick(null, null, null, "deleteParcelOwner");
+                    }}
+                    aria-label="delete"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              );
+            }
+
             //// default empty top bar ////
             return (
               <div
@@ -1240,7 +1258,7 @@ function SubTable(props) {
               />
             )}
             {openDialog === "addOwnerToContact" && (
-              <AddParcelOwnerDialogContent
+              <AddOwnerToContactDialogContent
                 onClose={handleCloseDialog}
                 parent={props.addAble.parent}
                 existingOwners={props.addAble.existingOwners}
@@ -1269,6 +1287,7 @@ function SubTable(props) {
             )}
             {openDialog === "deleteContact" && (
               <DeleteConfirmationDialogContent
+                header="Delete Contact(s)"
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
                 m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
@@ -1283,12 +1302,27 @@ function SubTable(props) {
                   } from this owner?`}
 
                 {props.header === "Contacts" &&
-                  `Do you want delete the contact${
+                  `Do you want to delete the contact${
                     m1nSelectedRowsIdsRef.current &&
                     m1nSelectedRowsIdsRef.current.length > 1
                       ? "s"
                       : ""
                   }?`}
+              </DeleteConfirmationDialogContent>
+            )}
+            {openDialog === "deleteParcelOwner" && (
+              <DeleteConfirmationDialogContent
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {`Do you want to delete the owner${
+                  m1nSelectedRowsIdsRef.current &&
+                  m1nSelectedRowsIdsRef.current.length > 1
+                    ? "s"
+                    : ""
+                }?`}
               </DeleteConfirmationDialogContent>
             )}
             {openDialog === "buyContactsInfo" && (

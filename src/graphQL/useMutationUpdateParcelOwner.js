@@ -16,6 +16,7 @@ export const UPDATEPARCELOWNER = gql`
         interest
         nma
         nra
+        IsDeleted
       }
     }
   }

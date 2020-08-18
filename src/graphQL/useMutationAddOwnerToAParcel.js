@@ -6,24 +6,18 @@ export const ADDOWNERTOAPARCEL = gql`
       success
       message
       error
-      customLayer {
+      parcelOwner {
         _id
         name
-        user {
+        entity
+        type
+        depthFrom
+        depthTo
+        interest
+        nma
+        nra
+        customLayer {
           _id
-          name
-          email
-        }
-        owners {
-          _id
-          name
-          entity
-          type
-          depthFrom
-          depthTo
-          interest
-          nma
-          nra
         }
       }
     }
