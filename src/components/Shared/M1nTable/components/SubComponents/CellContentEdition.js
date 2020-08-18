@@ -470,7 +470,7 @@ export default function CellContentEdition({
       } else textArray.push(content[key]);
     }
   }
-  const test;
+
   //// add "Return to save" footer
   const inputsArrayWithFooter = () => {
     if (fieldsCount <= 1) {
