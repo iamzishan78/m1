@@ -1251,31 +1251,13 @@ export default function Map() {
 
     /// parse array of user input file data 
     userFileLayers.map((fileLayer, idx) => {
-      var mapSource = map.getSource(`${idx}`);
-      let featureType = fileLayer.type;
-
-
+      let mapSource = map.getSource(`${idx}`);
+    
       if (mapSource == undefined) {
-        console.log("FILE LAYER::", fileLayer)
-        if (featureType == 'Feature') {
-          map.addSource(`${idx}`,
-            {
-              'type': 'geojson',
-              'data': {
-                'type': 'Feature',
-                'geometry': {
-                  'type': fileLayer.geometry.type,
-                  'coordinates': [fileLayer.geometry.coordinates]
-                }
-              }
-            });
-        } else if (featureType == 'FeatureCollection') {
-          map.addSource(`${idx}`, {
-            'type': 'geojson',
-            'data': fileLayer
-          });
-        }
-
+        map.addSource(`${idx}`, {
+          'type': 'geojson',
+          'data': fileLayer
+        });
         map.addLayer({
           'id': `polygon${idx}`,
           'type': 'fill',

@@ -32,11 +32,9 @@ export default function AddUserData(props) {
     MapControlsContext
   );
   const [stateApp, setStateApp] = useContext(AppContext);
-
   const [open, setOpen] = React.useState(false);
 
   const handleClose = () => {
-
     setStateMapControls((state) => ({ ...state, anchorEl: null }));
   };
 
@@ -57,29 +55,38 @@ export default function AddUserData(props) {
   }
 
   const handleURLinput = (e) => {
-    let input = e.target.value;
-    if (input.endsWith(".geojson")) {
-      console.log("GEOJSON SERVICE LAYER")
-      let existingFileLayers = stateApp.userFileLayers;
-      existingFileLayers.push(input);
-      setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
+   
+    if (e.key === 'Enter') {
+      let input = e.target.value;
+      console.log("ENTER:", input)
+      if (input.endsWith(".geojson")) {
 
-    } else {
-      console.log("TILE SERVICE LAYER")
-      let existingServiceLayers = stateApp.userServiceLayers
-      existingServiceLayers.push(input);
-      console.log('INPUT URL ADDED:: ', input)
-      setStateApp(stateApp => ({ ...stateApp, userServiceLayers: [...existingServiceLayers] }));
-      console.log("USER SERVICE LAYERS STATE CHANGE", stateApp.userServiceLayers)
-      // setInputURL(input);
+        console.log("GEOJSON SERVICE LAYER")
+        console.log(input);
+        console.log(typeof input);
+         let existingFileLayers = stateApp.userFileLayers;
+        existingFileLayers.push(input);
+        console.log('GEOJSON URL ADDED: ', existingFileLayers);
+        setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
+      } else {
+        console.log("TILE SERVICE LAYER")
+        let existingServiceLayers = stateApp.userServiceLayers
+        existingServiceLayers.push(input);
+        console.log('INPUT URL ADDED:: ', input)
+        setStateApp(stateApp => ({ ...stateApp, userServiceLayers: [...existingServiceLayers] }));
+        console.log("USER SERVICE LAYERS STATE CHANGE", stateApp.userServiceLayers)
+        // setInputURL(input);
+      }
     }
   }
+
 
   async function handleFileAsync(file) {
     let inputFile = file[0].data;
     let fileName = file[0].file.name;
 
     if (fileName.endsWith(".geojson")) {
+      console.log("GEOJSON Feature Service Path");
       return await new Promise((resolve, reject) => {
         fetch(inputFile)
           .then((response) =>
@@ -91,7 +98,6 @@ export default function AddUserData(props) {
       })
     } else if (fileName.endsWith(".zip")) {
       return await new Promise((resolve, reject) => {
-
         fetch(inputFile)
           .then((response) => {
             response.arrayBuffer()
@@ -105,6 +111,7 @@ export default function AddUserData(props) {
       });
     }
   }
+
 
   // const handleApplyChanges = () => {
   //   console.log('Apply Changes');
@@ -138,7 +145,7 @@ export default function AddUserData(props) {
             label="Esri Feature Service URL"
             type="url"
             fullWidth
-            onChange={handleURLinput}
+            onKeyPress={handleURLinput}
           />
           <Typography gutterBottom>
           </Typography>
