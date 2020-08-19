@@ -233,10 +233,10 @@ export default function WellCardDetails(props) {
 
   const wellInfo = () => (
     <Grid container spacing={2}>
-      <Grid item xs={12} sm={3}>
+      <Grid item xs={12} sm={2}>
         <QuadProvider />
       </Grid>
-      <Grid item xs={12} sm={9}>
+      <Grid item xs={12} sm={10}>
         <Grid item xs={12}>
           <div className={classes.toggle}>
             <FormControlLabel
