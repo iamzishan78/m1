@@ -119,7 +119,7 @@ const theme = createMuiTheme({
           backgroundColor: "#fff",
         },
       },
-    },
+    }
   },
 });
 
@@ -421,7 +421,6 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "5%",
     position: "relative",
     //width: drawerWidth - 1,
-
     top: "0%",
   },
   menuListBottom: {
@@ -483,8 +482,15 @@ const useStyles = makeStyles((theme) => ({
   badge: {
     backgroundColor: "red",
   },
+  userMenu: {
+    "& .MuiPaper-rounded": {
+      borderRadius: "0px"
+    }
+  },
   userMenuItem: {
-    color: "black",
+    padding : 10,
+    width: '250px',
+    color: "#1daee1"
   },
   actionWrapper: {
     flexGrow: 1,
@@ -910,23 +916,26 @@ export default function Navigation(props) {
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
-      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      getContentAnchorEl={null}
+      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      transformOrigin={{ vertical: "top", horizontal: "center" }}
       id={menuId}
       keepMounted
-      transformOrigin={{ vertical: "bottom", horizontal: "right" }}
       open={isMenuOpen}
       onClose={handleMenuClose}
+      className={classes.userMenu}
     >
-      <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
-        Logout
-      </MenuItem>
       <MenuItem
         className={classes.userMenuItem}
         onClick={(e) => openProfile(e)}
       >
-        <Link to="/profile" style={{ textDecoration: "none", color: "black" }}>
-          Profile
+        <Link to="/profile" style={{ textDecoration: "none", color: "#1daee1" }}>
+          <Typography variant="inherit">My Account</Typography>
         </Link>
+      </MenuItem>
+      <Divider/>
+      <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
+        <Typography variant="inherit">Logout</Typography>
       </MenuItem>
     </Menu>
   );
