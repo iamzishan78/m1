@@ -48,6 +48,8 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
 import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
+import { FILELAYERSQUERY } from "../../graphQL/useQueryFileLayers";
+import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 import { ABSTRACTGEOQUERYCONTAINS, ABSTRACTGEOCONTAINSQUERY } from "../../graphQL/useQueryAbstractGeoContains";
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
@@ -194,6 +196,8 @@ export default function Map() {
       PermitData(state)
     }
   }
+  const [fileLayerPreData, setFileLayerData] = useState([]);
+
   const [drawingFilterFeatureId, DrawingFilterFeatureId] = useState(null);
   const setDrawingFilterFeatureId = (state) => {
     if(drawingFilterFeatureId != state) {
@@ -261,6 +265,16 @@ export default function Map() {
     { data: customLayerData },
   ] = useLazyQuery(CUSTOMLAYERSQUERY, { fetchPolicy: "network-only" });
 
+  const [
+    getFileLayers,
+    { data: fileLayerData },
+  ] = useLazyQuery(FILELAYERSQUERY, { fetchPolicy: "network-only" });
+
+  const [
+    viewFile,
+    { data: viewFileResult },
+  ] = useLazyQuery(VIEWFILEQUERY, { fetchPolicy: "network-only" });
+
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 
   const [removeCustomLayer] = useMutation(REMOVECUSTOMLAYER);
@@ -295,6 +309,12 @@ export default function Map() {
           objectType: "owner",
         },
       });
+
+      getFileLayers({
+        variables: {
+          userId: stateApp.user.mongoId
+        }
+      })
 
       getCustomLayers();
     }
@@ -360,6 +380,79 @@ export default function Map() {
       }));
     }
   }, [customLayerData]);
+
+  useEffect(() => {
+    console.log("useEffect fileLayers");
+
+    if (fileLayerData && fileLayerData.fileLayers && fileLayerData.fileLayers.length > 0) {
+      setFileLayerData(fileLayerData.fileLayers);
+      const fileId = fileLayerData.fileLayers[0].file._id;
+      viewFile({
+        variables: {
+          fileId: fileId
+        }
+      });
+    }
+  }, [fileLayerData]);
+
+  const handleFileAsync = async (uri, internalKey, layerIndex) => {
+    if (uri && internalKey && layerIndex >= 0) {
+      let response = await fetch(uri, {
+                        headers: {
+                          "Content-Type": "text/plain; charset=UTF-8",
+                          "X-Ms-Blob-Type": "BlockBlob",
+                          "X-Ms-Meta-Internalkey": internalKey,
+                          "X-Ms-Version": "2015-02-21"
+                        },
+                        method: "GET",
+                      });
+      response = await response.json();
+      console.log(uri, internalKey, layerIndex, response);
+      let exsitingFileLayerPreData = fileLayerPreData.slice(0);
+      let currentFileLayerData = {...exsitingFileLayerPreData[layerIndex]};
+      currentFileLayerData.fileContent = response;
+      exsitingFileLayerPreData[layerIndex] = currentFileLayerData;
+      setFileLayerData(exsitingFileLayerPreData);
+      if (layerIndex != fileLayerPreData.length - 1) {
+        viewFile({
+          variables: {
+            fileId: fileLayerPreData[layerIndex + 1].file._id
+          }
+        });
+      } else {
+        let fileData = [];
+        for (let i = 0; i < fileLayerPreData.length; i ++) {
+          const layerName = fileLayerPreData[i].layerName;
+          let fileContent = {};
+          if (i == fileLayerPreData.length - 1) {
+            fileContent = response;
+          } else {
+            fileContent = fileLayerPreData[i].fileContent;
+          }
+          const idColor = fileLayerPreData[i].idColor;
+          const layerType = fileLayerPreData[i].layerType;
+          const paintProps = fileLayerPreData[i].paintProps;
+          const fileId = fileLayerPreData[i].file._id;
+          const fileLayerId = fileLayerPreData[i]._id;
+          fileData.push({fileLayerId, layerName, fileContent, idColor, layerType, paintProps, fileId});
+        }
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          userFileLayers: fileData
+        }));
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (viewFileResult && viewFileResult.viewFile) {
+      const result = viewFileResult.viewFile;
+      console.log(result);
+      const fileId = result.id;
+      const layerIndex = fileLayerPreData.findIndex((fileLayerData) => fileLayerData.file._id == fileId)
+      handleFileAsync(result.uri, result.internalKey, layerIndex);
+    }
+  }, [viewFileResult])
 
   useEffect(() => {
     console.log("useEffect 4");

@@ -3,6 +3,7 @@ import React, {
   useState,
   useEffect,
 } from "react";
+import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
@@ -15,6 +16,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 
+import { UPDATEFILELAYER } from "../../../graphQL/useMutationUpdateFileLayer";
+
 
 export default (props) => {
   const { layer } = props;
@@ -26,7 +29,9 @@ export default (props) => {
   );
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  
+  const [updateFileLayer, { data: fileLayer }] = useMutation(
+    UPDATEFILELAYER
+  );
 
   const handleClose = () => {
     setIsOpen(false);
@@ -61,19 +66,49 @@ export default (props) => {
       }
     }
 
-    const index = stateApp.userFileLayers.findIndex((fileLayer) => fileLayer.layerName == cpLayer.layerName);
-    const userFileLayers = stateApp.userFileLayers.slice(0);
-    userFileLayers[index] = layer;
-    console.log(userFileLayers);
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      userFileLayers: userFileLayers
-    }));
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      selectedFileLayer: null
-    }))
+    const fileLayerId = layer.fileLayerId;
+
+    updateFileLayer({
+      variables: {
+        fileLayerId: fileLayerId,
+        fileLayer: {
+          layerName: cpLayer.layerName,
+          user: stateApp.user.mongoId,
+          file: cpLayer.fileId,
+          idColor: cpLayer.idColor,
+          layerType: cpLayer.layerType,
+          paintProps: cpLayer.paintProps
+        }
+      }
+    });
   }
+
+  useEffect(() => {
+    if (fileLayer && fileLayer.updateFileLayer && fileLayer.updateFileLayer.success) {
+      const index = stateApp.userFileLayers.findIndex((fileLayer) => fileLayer.layerName == layer.layerName);
+      const userFileLayers = stateApp.userFileLayers.slice(0);
+
+      const fileLayerData = fileLayer.updateFileLayer.fileLayer;
+      const layerName = fileLayerData.layerName;
+      const fileContent = layer.fileContent;
+      const idColor = fileLayerData.idColor;
+      const layerType = fileLayerData.layerType;
+      const paintProps = fileLayerData.paintProps;
+      const fileId = fileLayerData.file._id;
+      const fileLayerId = fileLayerData._id
+
+      userFileLayers[index] = {fileLayerId, layerName, fileContent, idColor, layerType, paintProps, fileId};
+      console.log(userFileLayers);
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        userFileLayers: userFileLayers
+      }));
+      setStateMapControls((stateMapControls) => ({
+        ...stateMapControls,
+        selectedFileLayer: null
+      }))
+    }
+  }, [fileLayer])
 
   return (
     <ClickAwayListener onClickAway={handleClose}>

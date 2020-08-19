@@ -3,6 +3,7 @@ import React, {
   useState,
   useEffect,
 } from "react";
+import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { MapControlsContext } from "../MapControlsContext";
@@ -19,6 +20,8 @@ import Button from '@material-ui/core/Button';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import TextField from '@material-ui/core/TextField';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
+import { ADDFILE } from "../../../graphQL/useMutationAddFile";
+import { UPSERTFILELAYER } from "../../../graphQL/useMutationUpsertFileLayer";
 
 const random_rgb = () => {
   var o = Math.round, r = Math.random, s = 255;
@@ -38,6 +41,14 @@ export default function AddUserData(props) {
     MapControlsContext
   );
   const [stateApp, setStateApp] = useContext(AppContext);
+
+  const [addFile, { data: fileData }] = useMutation(
+    ADDFILE
+  );
+
+  const [upsertFileLayer, { data: fileLayer }] = useMutation(
+    UPSERTFILELAYER
+  );
 
   const handleClose = () => {
     setIsOpen(false);
@@ -61,13 +72,112 @@ export default function AddUserData(props) {
     console.log(`${variant}: ${message}`)
   }
 
+  useEffect(() => {
+    if (fileData && fileData.addFile) {
+      console.log(fileData.addFile);
+
+      // Upload file to MS Blob Stroage
+
+      let fileContent = inputFiles;
+
+      const url = fileData.addFile.uri;
+      const interal_key = fileData.addFile.internalKey
+      const file_id = fileData.addFile.id;
+
+      const content = JSON.stringify(fileContent);
+      const uploadDate = new Date().toUTCString()
+
+
+      fetch(url, {
+        headers: {
+          "Content-Type": "text/plain; charset=UTF-8",
+          "X-Ms-Blob-Type": "BlockBlob",
+          "X-Ms-Meta-Internalkey": interal_key,
+          "X-Ms-Version": "2015-02-21"
+        },
+        method: "PUT",
+        body: content
+      }).then((response) => response.text())
+      .then((response) => {
+        console.log(response);
+        const idColor = random_rgb();
+        let type = turf.getType(fileContent);
+        let paintProps = {};
+        if (type == 'Point' || type == 'MultiPoint') {
+          type = 'circle'
+        } else {
+          type = 'fill';
+        }
+        if (type == 'circle') {
+          paintProps = {
+            "circle-radius": 5,
+            "circle-color": idColor,
+            "circle-stroke-width": 2,
+            "circle-stroke-color": "#fff",
+          }
+        } else {
+          paintProps = {
+            "fill-color": idColor,
+            "fill-opacity": 0.4,
+            "fill-outline-color": idColor,
+          }
+        }
+        upsertFileLayer({
+          variables: {
+            fileLayer: {
+              layerName: layerName,
+              user: stateApp.user.mongoId,
+              file: file_id,
+              idColor: idColor,
+              layerType: type,
+              paintProps: paintProps
+            }
+          }
+        })
+        
+      })
+      .catch((error) => console.log(error));
+
+    }
+  }, [fileData])
+
+  useEffect(() => {
+    if (fileLayer && fileLayer.upsertFileLayer && fileLayer.upsertFileLayer.success) {
+      let existingFileLayers = stateApp.userFileLayers;
+      const fileLayerData = fileLayer.upsertFileLayer.fileLayer;
+      const layerName = fileLayerData.layerName;
+      const fileContent = inputFiles;
+      const idColor = fileLayerData.idColor;
+      const layerType = fileLayerData.layerType;
+      const paintProps = fileLayerData.paintProps;
+      const fileId = fileLayerData.file._id;
+      const fileLayerId = fileLayerData._id
+      existingFileLayers.push({fileLayerId, layerName, fileContent, idColor, layerType, paintProps, fileId});
+      console.log('USER FILE LAYERS:: ', existingFileLayers)
+      setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
+      setIsOpen(false);
+      setStateMapControls(stateMapControls => ({ ...stateMapControls, selectedControl: null }));
+    }
+  }, [fileLayer]);
+
 
   const handleApplyChanges = async () => {
     console.log('Apply Changes');
     if (!layerName) {
       setErrorr(true);
     } else {
-      let fileContent = inputFiles;
+      
+      const fileName = layerName.trim().toLowerCase().replace(' ', '_') + '.geojson';
+
+      const userId = stateApp.user.mongoId;
+
+      addFile({
+        variables: {
+          fileName,
+          userId
+        }
+      });
+
 
       // Upload file to MS Blob Stroage
       // const storageKey = "37i2O1eohYXCKeXF482DT8mEPqvkCPqxn1Q6cDwJdCE%3D";
@@ -102,34 +212,34 @@ export default function AddUserData(props) {
 
       // console.log(response.json());
 
-      let existingFileLayers = stateApp.userFileLayers;
-      const idColor = random_rgb();
-      let type = turf.getType(fileContent);
-      let paintProps = {};
-      if (type == 'Point' || type == 'MultiPoint') {
-        type = 'circle'
-      } else {
-        type = 'fill';
-      }
-      if (type == 'circle') {
-        paintProps = {
-          "circle-radius": 5,
-          "circle-color": idColor,
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "#fff",
-        }
-      } else {
-        paintProps = {
-          "fill-color": idColor,
-          "fill-opacity": 0.4,
-          "fill-outline-color": idColor,
-        }
-      }
-      existingFileLayers.push({layerName, fileContent, idColor, layerType: type, paintProps});
-      console.log('USER FILE LAYERS:: ', existingFileLayers)
-      setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
-      setIsOpen(false);
-      setStateMapControls(stateMapControls => ({ ...stateMapControls, selectedControl: null }));
+      // let existingFileLayers = stateApp.userFileLayers;
+      // const idColor = random_rgb();
+      // let type = turf.getType(fileContent);
+      // let paintProps = {};
+      // if (type == 'Point' || type == 'MultiPoint') {
+      //   type = 'circle'
+      // } else {
+      //   type = 'fill';
+      // }
+      // if (type == 'circle') {
+      //   paintProps = {
+      //     "circle-radius": 5,
+      //     "circle-color": idColor,
+      //     "circle-stroke-width": 2,
+      //     "circle-stroke-color": "#fff",
+      //   }
+      // } else {
+      //   paintProps = {
+      //     "fill-color": idColor,
+      //     "fill-opacity": 0.4,
+      //     "fill-outline-color": idColor,
+      //   }
+      // }
+      // existingFileLayers.push({layerName, fileContent, idColor, layerType: type, paintProps});
+      // console.log('USER FILE LAYERS:: ', existingFileLayers)
+      // setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
+      // setIsOpen(false);
+      // setStateMapControls(stateMapControls => ({ ...stateMapControls, selectedControl: null }));
     }
   }
 
