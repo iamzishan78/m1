@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     //width:'800px',
     // height:'400px',
     width: "auto",
-    height: "419px",
+    height: "440px",
     paddingTop: "2%",
     //  paddingRight: '8%',
     position: "relative",

@@ -41,6 +41,19 @@ const useStyles = makeStyles((theme) => ({
   gridList: {
     width: "auto",
     height: "auto",
+    padding: "8px 18px",
+    "&>:nth-child(1)": {
+      padding: "0px 16px 16px 0px !important",
+    },
+    "&>:nth-child(2)": {
+      padding: "0px 0px 16px 0px !important",
+    },
+    "&>:nth-child(3)": {
+      padding: "0px 16px 16px 0px !important",
+    },
+    "&>:nth-child(4)": {
+      padding: "0px 0px 16px 0px !important",
+    },
   },
   gridContainer: {
     width: "auto",
@@ -70,6 +83,14 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     padding: "8px",
   },
+  content: {
+    "&> h5": {
+      fontSize: "30px",
+    },
+    "&> h6": {
+      fontSize: "24px",
+    },
+  },
   bread: {
     display: "flex",
     justifyContent: "center",
@@ -86,9 +107,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "2px",
     margin: "4px 0",
   },
-  gridListTile: {
-    padding: "16px !important",
-  },
+  gridListTile: {},
 }));
 const StyledBreadcrumb = withStyles((theme) => ({
   root: {
@@ -145,61 +164,61 @@ export default function QuadSummary(props) {
   //graphQL
 
   return data && stateQuad.quadChart ? (
-    <div style={{ padding: "0px 5px 0px 25px" }}>
-      <div className={classes.gridContainer}>
-        <FormControl variant="outlined" className={classes.formControl}>
-          <Select
-            native
-            defaultValue={dropDownValue.value}
-            onChange={handleChangeRange}
-          >
-            <option value={0}>CUM</option>
-            <option value={1}>1 Month</option>
-            <option value={6}>6 Months</option>
-            <option value={12}>12 Months</option>
-          </Select>
-        </FormControl>
-        <GridList
-          cellHeight="auto"
-          // cellHeight = "300"//invalid prop
-          cols={2}
-          className={classes.gridList}
+    // <div style={{ padding: "0px 5px 0px 5px" }}>
+    <div className={classes.gridContainer}>
+      <FormControl variant="outlined" className={classes.formControl}>
+        <Select
+          native
+          defaultValue={dropDownValue.value}
+          onChange={handleChangeRange}
         >
-          {stateQuad.quadChart.map((tile) => (
-            <GridListTile
-              className={classes.gridListTile}
-              cols={1}
-              rows={1}
-              key={tile.metric}
-            >
-              <Card className={classes.card}>
-                <CardContent>
-                  <Typography align="center" variant="h5">
-                    {tile.metric.toUpperCase()}
-                  </Typography>
-                  <Divider className={classes.divider} />
-                  <Typography align="center" variant="h6">
-                    {stateQuad.selectedRange === 12
-                      ? new Intl.NumberFormat("en-US").format(tile.value12)
-                      : stateQuad.selectedRange === 6
-                      ? new Intl.NumberFormat("en-US").format(tile.value6)
-                      : stateQuad.selectedRange === 1
-                      ? new Intl.NumberFormat("en-US").format(tile.value1)
-                      : stateQuad.selectedRange === 0
-                      ? new Intl.NumberFormat("en-US").format(tile.cumulative)
-                      : "--"}
-                  </Typography>
-                  <Typography align="center" variant="h6">
-                    {tile.units}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </GridListTile>
-          ))}
-        </GridList>
-      </div>
+          <option value={0}>CUM</option>
+          <option value={1}>1 Month</option>
+          <option value={6}>6 Months</option>
+          <option value={12}>12 Months</option>
+        </Select>
+      </FormControl>
+      <GridList
+        cellHeight="auto"
+        // cellHeight = "300"//invalid prop
+        cols={2}
+        className={classes.gridList}
+      >
+        {stateQuad.quadChart.map((tile) => (
+          <GridListTile
+            className={classes.gridListTile}
+            cols={1}
+            rows={1}
+            key={tile.metric}
+          >
+            <Card className={classes.card}>
+              <CardContent className={classes.content}>
+                <Typography align="center" variant="h5">
+                  {tile.metric.toUpperCase()}
+                </Typography>
+                <Divider className={classes.divider} />
+                <Typography align="center" variant="h6">
+                  {stateQuad.selectedRange === 12
+                    ? new Intl.NumberFormat("en-US").format(tile.value12)
+                    : stateQuad.selectedRange === 6
+                    ? new Intl.NumberFormat("en-US").format(tile.value6)
+                    : stateQuad.selectedRange === 1
+                    ? new Intl.NumberFormat("en-US").format(tile.value1)
+                    : stateQuad.selectedRange === 0
+                    ? new Intl.NumberFormat("en-US").format(tile.cumulative)
+                    : "--"}
+                </Typography>
+                <Typography align="center" variant="h6">
+                  {tile.units}
+                </Typography>
+              </CardContent>
+            </Card>
+          </GridListTile>
+        ))}
+      </GridList>
     </div>
-  ) : loading ? (
+  ) : // </div>
+  loading ? (
     <CircularProgress size={80} disableShrink color="secondary" />
   ) : (
     <Skeleton variant="rect" height={325}>
