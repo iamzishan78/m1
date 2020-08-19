@@ -18,6 +18,7 @@ const B2CPolicies = {
   names: {
     signUpSignIn: "b2c_1_susi",
     forgotPassword: "b2c_1_reset",
+    signUpSignInCommon: "B2C_1A_SignUpOrSignInCommon",
   },
   authorities: {
     signUpSignIn: {
@@ -27,6 +28,10 @@ const B2CPolicies = {
     forgotPassword: {
       authority:
         "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/b2c_1_reset",
+    },
+    signUpSignInCommon: {
+      authority:
+        "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/B2C_1A_SignUpOrSignInCommon",
     },
   },
 };

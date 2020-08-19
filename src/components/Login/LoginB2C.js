@@ -111,10 +111,9 @@ const LoginB2C = (props) => {
   const [signingIn, setSigningIn] = useState(false);
   const [loadingSigInButton, setLoadingSigInButton] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loginErrorText, setLoginErrorText] = useState(null);
 
   useEffect(() => {
-    console.log("LoginB2C useEffect is called");
-
     if (stateApp.myMSALObj && !signingIn) {
       stateApp.myMSALObj
         .handleRedirectPromise()
@@ -143,6 +142,7 @@ const LoginB2C = (props) => {
               console.log("access_token acquired at: " + new Date().toString());
               console.log("now what???");
             } else if (tokenResponse === null) {
+              console.log("tokenResponse was null");
               // tokenResponse was null, attempt sign in or enter unauthenticated state for app
             } else {
               console.log(
@@ -150,7 +150,6 @@ const LoginB2C = (props) => {
                   tokenResponse
               );
             }
-            setLoading(false);
 
             sessionStorage.clear();
             window.location.replace(window.location.origin);
@@ -161,23 +160,24 @@ const LoginB2C = (props) => {
           sessionStorage.clear();
           window.location.replace(window.location.origin);
         });
-    } else if (stateApp.myMSALB2CObj) {
+    } else if (stateApp.myMSALB2CObj && !signingIn) {
+      setLoading(false);
       stateApp.myMSALB2CObj.handleRedirectCallback((error, loginResponse) => {
         // msal requires a redirect callback, even though can't use it to
         // get the result as it will redirect again after it has the result
         // and not provide the result of the call back on the second
         // redirect.
-
         if (error) {
           console.log(error);
-          // updateTenantFlags(error);
+          setLoginErrorText(error);
           setLoadingSigInButton(false);
+          sessionStorage.clear();
         }
         if (!loginResponse) {
           //do some error stuff
-          // updateTenantFlags("Log in Failed");
+          setLoginErrorText("Log in Failed");
           setLoadingSigInButton(false);
-
+          sessionStorage.clear();
           return;
         } else {
           console.log("id_token acquired at: " + new Date().toString());
@@ -210,7 +210,7 @@ const LoginB2C = (props) => {
 
     if (tenant) tenantNameToLogin = tenant.name;
     else tenantNameToLogin = "M1neral";
-    
+
     console.log(`tenant to Login is ${tenantNameToLogin}`);
     return tenantNameToLogin;
   };
@@ -687,6 +687,7 @@ const LoginB2C = (props) => {
         <SignInCardB2C
           ready={loadingSigInButton}
           handleAADB2CSignIn={handledAADB2CSignIn}
+          errorText={loginErrorText}
         />
 
         <div>

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import InputBase from "@material-ui/core/InputBase";
@@ -91,7 +91,7 @@ const BootstrapInput = withStyles((theme) => ({
 }))(InputBase);
 
 const SignInCardB2C = (props) => {
-  const { handleAADB2CSignIn } = props;
+  const { handleAADB2CSignIn, errorText } = props;
 
   const [, setStateApp] = useContext(AppContext);
   const classes = useStyles();
@@ -102,6 +102,10 @@ const SignInCardB2C = (props) => {
     placeholder: null,
     autoFocus: false,
   });
+
+  useEffect(() => {
+    setError(errorText);
+  }, [errorText]);
 
   const updateTenantFlags = (errorText) => {
     setTenantFlags({
