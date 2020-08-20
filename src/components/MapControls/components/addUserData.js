@@ -3,7 +3,7 @@ import React, {
   useState,
   useEffect,
 } from "react";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
+import { withStyles, makeStyles, responsiveFontSizes } from "@material-ui/core/styles";
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
@@ -19,7 +19,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import TextField from '@material-ui/core/TextField';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
 import { readProfileRequest } from "../../Login/AADAuthConfig";
-var shapefile = require("shapefile");
+import shp from 'shpjs';
 
 
 
@@ -32,11 +32,9 @@ export default function AddUserData(props) {
     MapControlsContext
   );
   const [stateApp, setStateApp] = useContext(AppContext);
-
   const [open, setOpen] = React.useState(false);
 
   const handleClose = () => {
-
     setStateMapControls((state) => ({ ...state, anchorEl: null }));
   };
 
@@ -50,39 +48,45 @@ export default function AddUserData(props) {
   async function handleFileInput(fileObj) {
     console.log('ADDED FILES:', fileObj)
     let fileContent = await handleFileAsync(fileObj);
+    console.log("FILE CONTENT::", fileContent)
     let existingFileLayers = stateApp.userFileLayers;
     existingFileLayers.push(fileContent);
     setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
   }
 
   const handleURLinput = (e) => {
-    let input = e.target.value;
-    if (input.endsWith(".geojson")) {
-      console.log("GEOJSON SERVICE LAYER")
-      let existingFileLayers = stateApp.userFileLayers;
-      existingFileLayers.push(input);
-      setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
+   
+    if (e.key === 'Enter') {
+      let input = e.target.value;
+      console.log("ENTER:", input)
+      if (input.endsWith(".geojson")) {
 
-    } else {
-      console.log("TILE SERVICE LAYER")
-      let existingServiceLayers = stateApp.userServiceLayers
-      existingServiceLayers.push(input);
-      console.log('INPUT URL ADDED:: ', input)
-      setStateApp(stateApp => ({ ...stateApp, userServiceLayers: [...existingServiceLayers] }));
-      console.log("USER SERVICE LAYERS STATE CHANGE", stateApp.userServiceLayers)
-      // setInputURL(input);
+        console.log("GEOJSON SERVICE LAYER")
+        console.log(input);
+        console.log(typeof input);
+         let existingFileLayers = stateApp.userFileLayers;
+        existingFileLayers.push(input);
+        console.log('GEOJSON URL ADDED: ', existingFileLayers);
+        setStateApp(stateApp => ({ ...stateApp, userFileLayers: [...existingFileLayers] }));
+      } else {
+        console.log("TILE SERVICE LAYER")
+        let existingServiceLayers = stateApp.userServiceLayers
+        existingServiceLayers.push(input);
+        console.log('INPUT URL ADDED:: ', input)
+        setStateApp(stateApp => ({ ...stateApp, userServiceLayers: [...existingServiceLayers] }));
+        console.log("USER SERVICE LAYERS STATE CHANGE", stateApp.userServiceLayers)
+        // setInputURL(input);
+      }
     }
   }
+
 
   async function handleFileAsync(file) {
     let inputFile = file[0].data;
     let fileName = file[0].file.name;
-    let geoJSON = {
-      type: "FeatureCollection",
-      features: []
-    }
 
     if (fileName.endsWith(".geojson")) {
+      console.log("GEOJSON Feature Service Path");
       return await new Promise((resolve, reject) => {
         fetch(inputFile)
           .then((response) =>
@@ -92,28 +96,26 @@ export default function AddUserData(props) {
           })
           .catch((error) => reject(error));
       })
-    } else if (fileName.endsWith(".shp")) {
+    } else if (fileName.endsWith(".zip")) {
       return await new Promise((resolve, reject) => {
         fetch(inputFile)
           .then((response) => {
-            const reader = response.body.getReader();
-            shapefile.open(reader)
-              .then(source => source.read())
-              .then((value) => {
-                geoJSON.features.push(value);
-                resolve(geoJSON);
-              }).catch(error => reject(error))
+            response.arrayBuffer()
+              .then(buffer => {
+                shp(buffer).then(geojson => {
+                  console.log(geojson);
+                  resolve(geojson);
+                })
+              })
           })
-      })
+      });
     }
   }
 
 
-
-  const handleApplyChanges = () => {
-    console.log('Apply Changes');
-
-  }
+  // const handleApplyChanges = () => {
+  //   console.log('Apply Changes');
+  // }
 
   const handleOnAlert = (message, variant) => {
     console.log(`${variant}: ${message}`)
@@ -133,7 +135,7 @@ export default function AddUserData(props) {
             onAlert={handleOnAlert}
             filesLimit={1}
             dropzoneText="Drag and Drop a GeoJSON or Shapefile."
-            acceptedFiles={[".geojson", ".shp", ".prj"]}
+            acceptedFiles={[".geojson", ".zip"]}
             maxFileSize={600000000}
           ></DropzoneAreaBase>
           <TextField
@@ -143,7 +145,7 @@ export default function AddUserData(props) {
             label="Esri Feature Service URL"
             type="url"
             fullWidth
-            onChange={handleURLinput}
+            onKeyPress={handleURLinput}
           />
           <Typography gutterBottom>
           </Typography>
