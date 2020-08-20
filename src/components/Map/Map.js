@@ -1932,10 +1932,14 @@ export default function Map() {
             map.setPaintProperty(layerName, key, paintProps[key])
           })
         } else {
-          map.addSource(sourceName, {
-            type: 'geojson',
-            data: geoJson,
-          });
+          if (map.getSource(sourceName)) {
+            map.getSource(sourceName).setData(geoJson);
+          } else {
+            map.addSource(sourceName, {
+              type: 'geojson',
+              data: geoJson,
+            });
+          }
         
           map.addLayer({
             id: layerName,
