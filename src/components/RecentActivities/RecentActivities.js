@@ -186,7 +186,7 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
   return (
     <div className={classes.activitiesFilter}>
       <h4 style={{ margin: "0 0 8px 0" }}>Filter</h4>
-      <FormControl
+      {/* <FormControl
         variant="outlined"
         fullWidth
         className={classes.inputField}
@@ -211,7 +211,7 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
         >
           <MenuItem value={"all"}>All Time Periods</MenuItem>
         </Select>
-      </FormControl>
+      </FormControl> */}
 
       <div className={classes.activityTypeCheckboxes}>
         <Grid item xs={12} style={{ minHeight: "35px" }}>
