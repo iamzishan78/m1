@@ -105,105 +105,105 @@ export default function Map() {
     stateApp.user.defaultFilters ? stateApp.user.defaultFilters : []
   );
   const setFiltersDefault = (state) => {
-    if(filtersDefault != state) {
+    if (filtersDefault != state) {
       FiltersDefault(state)
     }
   }
   const [lng, Lng] = useState();
   const setLng = (state) => {
-    if(lng != state) {
+    if (lng != state) {
       Lng(state)
     }
   }
   const [lat, Lat] = useState();
   const setLat = (state) => {
-    if(lat != state) {
+    if (lat != state) {
       Lat(state)
     }
   }
   const [transform, Transform] = useState("transform: inherit");
   const setTransform = (state) => {
-    if(transform != state) {
+    if (transform != state) {
       Transform(state)
     }
   }
   const container = useRef(null);
   const [showExpandableCard, ShowExpandableCard] = useState(false);
   const setShowExpandableCard = (state) => {
-    if(showExpandableCard != state) {
+    if (showExpandableCard != state) {
       ShowExpandableCard(state)
     }
   }
   const [mapStyles, MapStyles] = useState([]);
   const setMapStyles = (state) => {
-    if(mapStyles != state) {
+    if (mapStyles != state) {
       MapStyles(state)
     }
   }
   const [wellsTileset, WellsTileset] = useState();
   const setWellsTileset = (state) => {
-    if(wellsTileset != state) {
+    if (wellsTileset != state) {
       WellsTileset(state)
     }
   }
   const [defaultsCheckOnOff, DefaultsCheckOnOff] = useState(true);
   const setDefaultsCheckOnOff = (state) => {
-    if(defaultsCheckOnOff != state) {
+    if (defaultsCheckOnOff != state) {
       DefaultsCheckOnOff(state)
     }
   }
   const [m1neralCheckOnOff, M1neralCheckOnOff] = useState(true);
   const setM1neralCheckOnOff = (state) => {
-    if(m1neralCheckOnOff != state) {
+    if (m1neralCheckOnOff != state) {
       M1neralCheckOnOff(state)
     }
   }
   const [map, Map] = useState(null);
   const setMap = (state) => {
-    if(map != state) {
+    if (map != state) {
       Map(state)
     }
   }
   const [mapClick, MapClick] = useState(null);
   const setMapClick = (state) => {
-    if(mapClick != state) {
+    if (mapClick != state) {
       MapClick(state)
     }
   }
   const [draw, Draw] = useState(null);
   const setDraw = (state) => {
-    if(draw != state) {
+    if (draw != state) {
       Draw(state)
     }
   }
   const [drawStatus, DrawStatus] = useState(false);
   const setDrawStatus = (state) => {
-    if(drawStatus != state) {
+    if (drawStatus != state) {
       DrawStatus(state)
     }
   }
   const [rigs, RigData] = useState([]);
   const setRigData = (state) => {
-    if(rigs != state) {
+    if (rigs != state) {
       RigData(state)
     }
   }
   const [permits, PermitData] = useState([]);
   const setPermitData = (state) => {
-    if(permits != state) {
+    if (permits != state) {
       PermitData(state)
     }
   }
   const [drawingFilterFeatureId, DrawingFilterFeatureId] = useState(null);
   const setDrawingFilterFeatureId = (state) => {
-    if(drawingFilterFeatureId != state) {
+    if (drawingFilterFeatureId != state) {
       DrawingFilterFeatureId(state)
     }
   }
   // const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, AnchorElPoPOver] = useState(null);
   const setAnchorElPoPOver = (state) => {
-    if(anchorElPoPOver != state) {
+    if (anchorElPoPOver != state) {
       AnchorElPoPOver(state)
     }
   }
@@ -234,13 +234,13 @@ export default function Map() {
 
   const [rows, Rows] = React.useState([]);
   const setRows = (state) => {
-    if(rows != state) {
+    if (rows != state) {
       Rows(state)
     }
   }
   const [loading, Loading] = useState(true);
   const setLoading = (state) => {
-    if(loading != state) {
+    if (loading != state) {
       Loading(state)
     }
   }
@@ -275,7 +275,7 @@ export default function Map() {
   const [getRigs, { data: rigData }] = useLazyQuery(RIGSQUERY);
 
   const [getAbstractGeo, { data: abstractData }] = useLazyQuery(ABSTRACTGEOQUERY);
-  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY); 
+  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
 
   /////end/////////temporary
 
@@ -1006,7 +1006,7 @@ export default function Map() {
       });
 
       if (!window.event.ctrlKey && hoverUdIds.length > 0) {
-        for(let i = 0; i < hoverUdIds.length; i ++) {
+        for (let i = 0; i < hoverUdIds.length; i++) {
           map.setFeatureState(
             { source: 'parcel_source', id: hoverUdIds[i] },
             { hover: false }
@@ -1243,7 +1243,7 @@ export default function Map() {
     }
   }, [map, stateApp.checkedHeats, stateApp.heatLayers]);
 
- 
+
   useEffect(() => {
     // USE EFFECT FOR USER FILE LAYERS
     console.log('USE EFFECT FILE LAYER ADDED::', stateApp.userFileLayers)
@@ -1251,10 +1251,9 @@ export default function Map() {
 
     /// parse array of user input file data 
     userFileLayers.map((fileLayer, idx) => {
-      var mapSource = map.getSource(`${idx}`);
-
+      let mapSource = map.getSource(`${idx}`);
+    
       if (mapSource == undefined) {
-        //assign file data to data source
         map.addSource(`${idx}`, {
           'type': 'geojson',
           'data': fileLayer
@@ -1281,13 +1280,17 @@ export default function Map() {
           },
           'filter': ['==', '$type', 'Point']
         });
-         map.addLayer({
+        map.addLayer({
           'id': `line${idx}`,
-          'type': 'circle',
+          'type': 'line',
           'source': `${idx}`,
+          'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
           'paint': {
-            'circle-radius': 6,
-            'circle-color': '#B42222'
+            'line-width': 8,
+            'line-color': '#088'
           },
           'filter': ['==', '$type', 'LineString']
         });
@@ -1297,7 +1300,7 @@ export default function Map() {
 
   useEffect(() => {
     // USE EFFECT FOR USER SERVICE LAYERS
-     console.log('USE EFFECT SERVICE LAYER ADDED::', stateApp.userServiceLayers)
+    console.log('USE EFFECT SERVICE LAYER ADDED::', stateApp.userServiceLayers)
     // let userFileLayers = stateApp.userFileLayers;
 
     // /// parse array of user input file data 
@@ -3581,7 +3584,7 @@ export default function Map() {
   useEffect(() => {
     if (map) {
       const featuresList = map.getSource('abstract_geo_source')._data.features;
-      for (let i = 0; i < featuresList.length; i ++) {
+      for (let i = 0; i < featuresList.length; i++) {
         const id = featuresList[i].properties.abstract_n;
         map.setFeatureState(
           { source: 'abstract_geo_source', id: id },
@@ -3630,7 +3633,7 @@ export default function Map() {
 
   useEffect(() => {
     if (map) {
-      map.on('click', 'abstract_geo_fill_layer', function(e) {
+      map.on('click', 'abstract_geo_fill_layer', function (e) {
         const map = e.target;
         if (e.features.length > 0) {
           if (window.event.ctrlKey) {
@@ -3661,7 +3664,7 @@ export default function Map() {
                 showAbstractPopup: true
               }));
             } else {
-              for (let i = 0; i < featuresList.length; i ++) {
+              for (let i = 0; i < featuresList.length; i++) {
                 const id = featuresList[i].properties.abstract_n;
                 const featureState = map.getFeatureState({
                   source: 'abstract_geo_source',
@@ -3691,11 +3694,11 @@ export default function Map() {
         }
       });
 
-      map.on('mousemove', 'abstract_geo_fill_layer', function(e) {
+      map.on('mousemove', 'abstract_geo_fill_layer', function (e) {
         const map = e.target;
         if (e.features.length > 0) {
           const featuresList = map.getSource('abstract_geo_source')._data.features;
-          for (let i = 0; i < featuresList.length; i ++) {
+          for (let i = 0; i < featuresList.length; i++) {
             const id = featuresList[i].properties.abstract_n;
             const featureState = map.getFeatureState({
               source: 'abstract_geo_source',
@@ -3717,11 +3720,11 @@ export default function Map() {
         }
       });
 
-      map.on('mouseleave', 'abstract_geo_fill_layer', function(e) {
+      map.on('mouseleave', 'abstract_geo_fill_layer', function (e) {
         const map = e.target;
-        
+
         const featuresList = map.getSource('abstract_geo_source')._data.features;
-        for (let i = 0; i < featuresList.length; i ++) {
+        for (let i = 0; i < featuresList.length; i++) {
           const id = featuresList[i].properties.abstract_n;
           const featureState = map.getFeatureState({
             source: 'abstract_geo_source',
@@ -3962,21 +3965,21 @@ export default function Map() {
                 polygon: polygonString
               }
             });
-            
+
           }
         }
 
-        newMap.on('zoomend', function(e) {
+        newMap.on('zoomend', function (e) {
           abstractControl(e);
         });
-        newMap.on('moveend', function(e) {
+        newMap.on('moveend', function (e) {
           abstractControl(e);
         });
 
         const mapFilterPolyOnRight = (e) => {
           console.log("right click on the map");
           let id = "draw_polygon" + Date.now();
-          setStateNav(stateNav => ({ ...stateNav, drawingMode: "draw_polygon", filterFeatureId: id}));
+          setStateNav(stateNav => ({ ...stateNav, drawingMode: "draw_polygon", filterFeatureId: id }));
         }
 
         newMap.on("contextmenu", mapFilterPolyOnRight);
@@ -4013,7 +4016,7 @@ export default function Map() {
               ]
             }
           });
-          
+
           newMap.addLayer({
             id: 'abstract_geo_layer',
             type: 'line',
@@ -4829,7 +4832,7 @@ export default function Map() {
             deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
           />
         )}
-      {mapGridCardActivated && <MapGridCard  
+      {mapGridCardActivated && <MapGridCard
         mapGridCardActivated={mapGridCardActivated}
       />}
       <div id="tempPopupHolder" className={classes.portal} ref={container} />
@@ -4860,43 +4863,43 @@ export default function Map() {
                     targetLabel="well"
                   ></ExpandableCardProvider>
                 ) : (
-                  <Popover
-                    open={stateApp.expandedCard}
-                    anchorEl={anchorElPoPOver}
-                    anchorReference="anchorEl"
-                    style={{ width: "100%" }} //right:30, left: "-30px"}}
-                    BackdropProps={{ invisible: false }}
-                    anchorOrigin={{
-                      vertical: "center",
-                      horizontal: "center",
-                    }}
-                    transformOrigin={{
-                      vertical: "center",
-                      horizontal: "center",
-                    }}
-                  >
-                    <ExpandableCardProvider
-                      expanded={true}
-                      handleCloseExpandableCard={handleCloseExpandableCard}
-                      component={<WellCardProvider></WellCardProvider>}
-                      title={stateApp.selectedWell.wellName}
-                      subTitle={stateApp.selectedWell.operator}
-                      parent="map"
-                      mouseX={0}
-                      mouseY={0}
-                      position="relative"
-                      // cardLeft={"0px"}
-                      // cardTop={"0px"}
-                      zIndex={99}
-                      // cardWidth="380px"
-                      // cardHeight="380px"
-                      cardWidthExpanded="95vw"
-                      cardHeightExpanded="95vh"
-                      targetSourceId={stateApp.selectedWell.id}
-                      targetLabel="well"
-                    ></ExpandableCardProvider>
-                  </Popover>
-                )}
+                    <Popover
+                      open={stateApp.expandedCard}
+                      anchorEl={anchorElPoPOver}
+                      anchorReference="anchorEl"
+                      style={{ width: "100%" }} //right:30, left: "-30px"}}
+                      BackdropProps={{ invisible: false }}
+                      anchorOrigin={{
+                        vertical: "center",
+                        horizontal: "center",
+                      }}
+                      transformOrigin={{
+                        vertical: "center",
+                        horizontal: "center",
+                      }}
+                    >
+                      <ExpandableCardProvider
+                        expanded={true}
+                        handleCloseExpandableCard={handleCloseExpandableCard}
+                        component={<WellCardProvider></WellCardProvider>}
+                        title={stateApp.selectedWell.wellName}
+                        subTitle={stateApp.selectedWell.operator}
+                        parent="map"
+                        mouseX={0}
+                        mouseY={0}
+                        position="relative"
+                        // cardLeft={"0px"}
+                        // cardTop={"0px"}
+                        zIndex={99}
+                        // cardWidth="380px"
+                        // cardHeight="380px"
+                        cardWidthExpanded="95vw"
+                        cardHeightExpanded="95vh"
+                        targetSourceId={stateApp.selectedWell.id}
+                        targetLabel="well"
+                      ></ExpandableCardProvider>
+                    </Popover>
+                  )}
               </PortalD>
             )}
             {stateApp.selectedUserDefinedLayer && (
