@@ -17,6 +17,7 @@ steps:
 
 - script: |
     npm install
+    NODE_OPTIONS=--max_old_space_size=16384
     npm run build
   displayName: 'npm install and build'
 ## Copy the client to the staging directory
