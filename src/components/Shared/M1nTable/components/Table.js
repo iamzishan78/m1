@@ -48,6 +48,7 @@ import {
   deepEqual,
   setStateIfDeepEqual,
 } from "../../functions";
+import AddParcelOwnerDialogContent from "./SubComponents/AddParcelOwnerDialogContent";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -340,24 +341,6 @@ function SubTable(props) {
                           }
                         }}
                         aria-label="fly"
-                        // onMouseOver={() => {
-                        //   if (
-                        //     m1nSelectedRowsIndexes.indexOf(
-                        //       tableMeta.rowIndex
-                        //     ) !== -1 &&
-                        //     m1nSelectedRowsIndexes.length > 1
-                        //   )
-                        //     multiSelectMouseHoverColor(id, "#dadbde");
-                        // }}
-                        // onMouseOut={() => {
-                        //   if (
-                        //     m1nSelectedRowsIndexes.indexOf(
-                        //       tableMeta.rowIndex
-                        //     ) !== -1 &&
-                        //     m1nSelectedRowsIndexes.length > 1
-                        //   )
-                        //     multiSelectMouseHoverColor(id, "#efefef");
-                        // }}
                       >
                         <RoomIcon />
                       </IconButton>
@@ -814,32 +797,29 @@ function SubTable(props) {
 
                   return (
                     <div style={{ display: "flex" }}>
-                      {
-                        props.targetLabel === "contact" &&
-                          column.name === "name" && (
-                            ///////////////////////////////////////////////////
-                            // <ConfigProvider colors={['red', 'green', 'blue']}>
-                            <Avatar
-                              color={Avatar.getRandomColor(value, [
-                                "#b5d2f6",
-                                "#ade2e9",
-                                "#eaeaea",
-                                "#f2c1e2",
-                                "#d7d6fb",
-                              ])}
-                              fgColor="#000"
-                              name={valueFormatter(value)}
-                              size="35"
-                              round
-                            />
-                          )
-                        // </ConfigProvider>
-                        ///////////////////////////////////////////////////
-                      }
+                      {props.targetLabel === "contact" &&
+                        column.name === "name" && (
+                          <Avatar
+                            color={Avatar.getRandomColor(value, [
+                              "#b5d2f6",
+                              "#ade2e9",
+                              "#eaeaea",
+                              "#f2c1e2",
+                              "#d7d6fb",
+                            ])}
+                            fgColor="#000"
+                            name={valueFormatter(value)}
+                            size="35"
+                            round
+                          />
+                        )}
                       <CellContentEdition
                         id={tableMeta.rowData[0]}
                         content={{ [column.name]: valueFormatter(value) }}
                         targetLabel={props.targetLabel}
+                        dropDownOptions={
+                          column.dropDownOptions ? column.dropDownOptions : null
+                        }
                       />
                     </div>
                   );
@@ -1033,6 +1013,24 @@ function SubTable(props) {
               );
             }
 
+            //// if Parcel Owner set the multi selection top bar: ////
+            if (props.targetLabel === "Parcel Owner") {
+              return (
+                <Tooltip title={"Delete"}>
+                  <IconButton
+                    size="medium"
+                    style={{ margin: "0 5px" }}
+                    onClick={(e) => {
+                      handleExpandClick(null, null, null, "deleteParcelOwner");
+                    }}
+                    aria-label="delete"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              );
+            }
+
             //// default empty top bar ////
             return (
               <div
@@ -1093,6 +1091,11 @@ function SubTable(props) {
                       props.addAble.type === "ownerToContact"
                     )
                       handleExpandClick(null, null, null, "addOwnerToContact");
+                    if (
+                      props.addAble.type &&
+                      props.addAble.type === "ownerToParcel"
+                    )
+                      handleExpandClick(null, null, null, "addOwnerToParcel");
                   }}
                 >
                   <AddCircleOutlineRoundedIcon />
@@ -1194,6 +1197,7 @@ function SubTable(props) {
                   openDialog === "wellsPerOwner"
                 ? "lg"
                 : openDialog === "addContact" ||
+                  openDialog === "addOwnerToParcel" ||
                   openDialog === "addOwnerToContact" ||
                   openDialog === "deleteOwnersFromContact" ||
                   openDialog === "deleteContact"
@@ -1260,6 +1264,12 @@ function SubTable(props) {
                 existingOwners={props.addAble.existingOwners}
               />
             )}
+            {openDialog === "addOwnerToParcel" && (
+              <AddParcelOwnerDialogContent
+                onClose={handleCloseDialog}
+                customLayerId={props.addAble.customLayerId}
+              />
+            )}
             {openDialog === "deleteOwnersFromContact" && (
               <DeleteConfirmationDialogContent
                 onClose={handleCloseDialog}
@@ -1277,6 +1287,7 @@ function SubTable(props) {
             )}
             {openDialog === "deleteContact" && (
               <DeleteConfirmationDialogContent
+                header="Delete Contact(s)"
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
                 m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
@@ -1291,12 +1302,27 @@ function SubTable(props) {
                   } from this owner?`}
 
                 {props.header === "Contacts" &&
-                  `Do you want delete the contact${
+                  `Do you want to delete the contact${
                     m1nSelectedRowsIdsRef.current &&
                     m1nSelectedRowsIdsRef.current.length > 1
                       ? "s"
                       : ""
                   }?`}
+              </DeleteConfirmationDialogContent>
+            )}
+            {openDialog === "deleteParcelOwner" && (
+              <DeleteConfirmationDialogContent
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {`Do you want to delete the owner${
+                  m1nSelectedRowsIdsRef.current &&
+                  m1nSelectedRowsIdsRef.current.length > 1
+                    ? "s"
+                    : ""
+                }?`}
               </DeleteConfirmationDialogContent>
             )}
             {openDialog === "buyContactsInfo" && (
@@ -1378,13 +1404,4 @@ function SubTable(props) {
   );
 }
 
-function areEqual(prevProps, nextProps) {
-  if (!deepEqualObjects(prevProps, nextProps)) {
-    // console.log(`${prevProps.toString()} ... ${nextProps.toString()}`)
-    return false;
-  }
-
-  return true;
-}
-
-export default React.memo(SubTable, areEqual);
+export default React.memo(SubTable, deepEqualObjects);

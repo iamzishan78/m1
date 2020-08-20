@@ -40,23 +40,23 @@ export default function ConfirmationDialog(props) {
 
   const handleAccept = () => {
     props.handleDialogClose(false);
-    // setStateApp((state) => ({ ...state, universalCircularLoaderAct: true }));
-    // updateContact({
-    //   variables: {
-    //     contact: {
-    //       _id: props.id,
-    //       lastUpdateBy: stateApp.user.mongoId,
-    //       IsDeleted: true,
-    //     },
-    //   },
-    //   refetchQueries: [
-    //     "getContacts",
-    //     // "getContactsByOwnerId",
-    //     // "getContact",
-    //     "getContactsCounter",
-    //   ],
-    //   awaitRefetchQueries: true,
-    // });
+    setStateApp((state) => ({ ...state, universalCircularLoaderAct: true }));
+    updateContact({
+      variables: {
+        contact: {
+          _id: props.id,
+          lastUpdateBy: stateApp.user.mongoId,
+          IsDeleted: true,
+        },
+      },
+      refetchQueries: [
+        "getContacts",
+        // "getContactsByOwnerId",
+        // "getContact",
+        "getContactsCounter",
+      ],
+      awaitRefetchQueries: true,
+    });
     props.handleCloseExpandableCard();
   };
 

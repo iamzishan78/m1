@@ -9,6 +9,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     minHeight: "419.556px !important",
     overflow: "hidden !important",
+    padding: "10px",
   },
   map: {
     width: "100%",

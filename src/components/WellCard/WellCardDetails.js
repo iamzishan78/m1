@@ -8,14 +8,6 @@ import { purple } from "@material-ui/core/colors";
 //material-ui components
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import Card from "@material-ui/core/Card";
-import Container from "@material-ui/core/Container";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardContent from "@material-ui/core/CardContent";
-import CardActions from "@material-ui/core/CardActions";
-import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
 
 //custom components
 import WellIcon from "./components/svgIcons/WellIcon";
@@ -41,7 +33,6 @@ import ProfileCard from "../Shared/ProfileCard";
 import WellTypeCard from "../Shared/WellTypeCard";
 import SpudDateCard from "../Shared/SpudDateCard";
 import WellApiCard from "../Shared/WellApiCard";
-import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 
@@ -69,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
     left: "0",
     paddingTop: "7px",
     borderBottom: "1px solid rgb(190, 190, 190)",
+    background: "#ebebeb",
   },
   gridWidthScroll: {
     maxHeight: "calc(100% - 88px)",
@@ -154,11 +146,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function WellCardDetails(props) {
+  const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
-
+  const [tabValue, setTabValue] = React.useState(0);
   const [target, setTarget] = useState(null);
-  const classes = useStyles();
+
   useEffect(() => {
     if (props.target) {
       setTarget(props.target);
@@ -172,6 +165,9 @@ export default function WellCardDetails(props) {
     });
   };
 
+  const handleTabValueChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
   const handleChangeGas = (event) => {
     setStateWellCard({
       ...stateWellCard,
@@ -237,10 +233,10 @@ export default function WellCardDetails(props) {
 
   const wellInfo = () => (
     <Grid container spacing={2}>
-      <Grid item xs={12} sm={3}>
+      <Grid item xs={12} sm={2}>
         <QuadProvider />
       </Grid>
-      <Grid item xs={12} sm={9}>
+      <Grid item xs={12} sm={10}>
         <Grid item xs={12}>
           <div className={classes.toggle}>
             <FormControlLabel
@@ -316,7 +312,7 @@ export default function WellCardDetails(props) {
           <Grid item sm={6} className={classes.gridItem}>
             <TableSummary summary={props.summary} />
           </Grid>
-
+          {/* <Divider orientation="vertical" /> */}
           <Grid item sm={6} className={classes.gridItem}>
             <CardDetailsMap />
           </Grid>

@@ -9,7 +9,10 @@ import InputLabel from "@material-ui/core/InputLabel";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
 import Select from "@material-ui/core/Select";
+import Grid from "@material-ui/core/Grid";
 import { AppContext } from "../../../AppContext";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 
@@ -45,6 +48,10 @@ const useStyles = makeStyles((theme) => ({
   label: {
     backgroundColor: "white",
   },
+
+  closeIcon: {
+    color: theme.palette.secondary.main,
+  },
 }));
 
 const initialErrors = {
@@ -58,8 +65,6 @@ function AddActivityDialog(props) {
   const { selectedActivity, onClose } = props;
   const [stateApp] = useContext(AppContext);
   const [addNew, setAddNew] = useState(true);
-
-  console.log("USER: ", stateApp);
 
   const [updateContact, { called, loading, data }] = useMutation(UPDATECONTACT);
   const [activityType, setActivityType] = useState("general");
@@ -81,13 +86,6 @@ function AddActivityDialog(props) {
       setDateTime(new Date());
     }
   }, [selectedActivity]);
-
-  //   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
-  //     COMMENTSBYOBJECTIDQUERY
-  //   );
-  // const [upsertComment] = useMutation(UPSERTCOMMENT);
-
-  console.log("DATAAAA: ", data);
 
   const addActivityStatus = data ? data.updateContact : null;
 
@@ -128,11 +126,6 @@ function AddActivityDialog(props) {
       notes,
       dateTime: dateTime.toISOString(),
       user_id: stateApp.user.email,
-    });
-
-    console.log("UPDATING ACTIVITY LOG: ", {
-      _id: props.id,
-      activityLog,
     });
 
     updateContact({
@@ -200,9 +193,22 @@ function AddActivityDialog(props) {
 
   return (
     <div style={{ padding: "30px" }}>
-      <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
+      {/* <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
         Recent Activities
-      </h4>
+      </h4> */}
+      <Grid item xs={12} style={{ minHeight: "35px" }}>
+        <h4 style={{ margin: "0 0 30px 0", float: "left" }}>
+          Recent Activities
+        </h4>
+
+        <IconButton
+          onClick={onClose}
+          size="small"
+          style={{ float: "right", top: "-5px", right: "-5px" }}
+        >
+          <CloseIcon className={classes.closeIcon} fontSize="small" />
+        </IconButton>
+      </Grid>
       <div>
         <DateTimePicker
           value={dateTime}
