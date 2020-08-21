@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import MelissaTable from "./components/MelissaTable";
 import { makeStyles } from "@material-ui/core/styles";
-import FieldContent from "./../ContactDetailCard/components/FieldContent";
+import FieldContent, { LinkTypes }  from "./../ContactDetailCard/components/FieldContent";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -130,6 +130,126 @@ export default ({
 }) => {
   const [basicInfExp, setBasicInfExp] = useState(false);
   const classes = useStyles();
+
+  const basicInfoContent = {
+    'Primary Email': { data: { primaryEmail: props.contactData.primaryEmail }, linkType: LinkTypes.Mail },
+    'Secondary Email': { data: { secondaryEmail: props.contactData.secondaryEmail }, linkType: LinkTypes.Mail },
+    'Mobile Phone': { data: { mobilePhone: props.contactData.mobilePhone }, linkType: LinkTypes.None },
+    'Home Phone': { data: { homePhone: props.contactData.homePhone }, linkType: LinkTypes.None },
+    'Alternate Phone': { data: { AltPhone: props.contactData.AltPhone }, linkType: LinkTypes.None },
+    'Primary Address': { data: {
+      address1: props.contactData.address1,
+      address2: props.contactData.address2,
+      city: props.contactData.city,
+      state: props.contactData.state,
+      zip: props.contactData.zip,
+      country: props.contactData.country
+    }, linkType: LinkTypes.None },
+    'Secondary Address': { data: {
+      address1Alt: props.contactData.address1Alt,
+      address2Alt: props.contactData.address2Alt,
+      cityAlt: props.contactData.cityAlt,
+      stateAlt: props.contactData.stateAlt,
+      zipAlt: props.contactData.zipAlt,
+      countryAlt: props.contactData.countryAlt,
+    }, linkType: LinkTypes.None },
+  };
+
+  const basicInfoExpContent = {
+    'Relatives': { data: { relatives: props.contactData.relatives }, linkType: LinkTypes.None },
+    'Linkedln Profile': { data: { linkedln: props.contactData.linkedln }, linkType: LinkTypes.None, inner:
+      props.contactData.linkedln && (
+        <a
+          href={`${
+            !props.contactData.linkedln.startsWith("http") &&
+            !props.contactData.linkedln.startsWith("//")
+              ? "//"
+              : ""
+          }${props.contactData.linkedln}`}
+          target="_blank"
+        >
+          {props.contactData.linkedln}
+        </a>
+      )
+    },
+    'Facebook Profile': { data: { facebook: props.contactData.facebook }, linkType: LinkTypes.None, inner: 
+      props.contactData.facebook && (
+        <a
+          href={`${
+            !props.contactData.facebook.startsWith("http") &&
+            !props.contactData.facebook.startsWith("//")
+              ? "//"
+              : ""
+          }${props.contactData.facebook}`}
+          target="_blank"
+        >
+          {props.contactData.facebook}
+        </a>
+      )
+    },
+    'Twitter Profile': { data: { twitter: props.contactData.twitter }, linkType: LinkTypes.None, innner:
+      props.contactData.twitter && (
+        <a
+          href={`${
+            !props.contactData.twitter.startsWith("http") &&
+            !props.contactData.twitter.startsWith("//")
+              ? "//"
+              : ""
+          }${props.contactData.twitter}`}
+          target="_blank"
+        >
+          {props.contactData.twitter}
+        </a>
+      )
+    },
+    'Lead Source': { data: { leadSource: props.contactData.leadSource }, linkType: LinkTypes.None },
+    'Created By': { data: { primaryEmail: props.contactData.primaryEmail }, linkType: LinkTypes.None, inner:
+      props.contactData.createBy && props.contactData.createBy.name === null && (
+        <div className={classes.userSmallLoader}>
+          <CircularProgress size={22} color="secondary" />
+        </div>
+      )
+      (props.contactData.createBy && props.contactData.createBy.name) || props.contactData.createAt
+        ? (
+          `${
+            props.contactData.createBy && props.contactData.createBy.name
+              ? props.contactData.createBy.name
+              : ""
+          }
+          ${
+            props.contactData.createAt
+              ? " - " + anyToDate(props.contactData.createAt).toLocaleString()
+              : ""
+          }`
+        )
+        : (
+          <p className={classes.notAvailableP}>Not Available</p>
+        )
+    },
+    'Last Update By': { data: { primaryEmail: props.contactData.primaryEmail }, linkType: LinkTypes.None, inner:
+      props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name === null && (
+        <div className={classes.userSmallLoader}>
+          <CircularProgress size={22} color="secondary" />
+        </div>
+      )
+      (props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name) || props.contactData.lastUpdateAt
+        ? (
+          `${
+            props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name
+              ? props.contactData.lastUpdateBy.name
+              : ""
+          }
+          ${
+            props.contactData.lastUpdateAt
+              ? " - " + anyToDate(props.contactData.lastUpdateAt).toLocaleString()
+              : ""
+          }`
+        )
+        : (
+          <p className={classes.notAvailableP}>Not Available</p>
+        )
+    },
+  };
   
   return (
     <div className={classes.root}>
@@ -162,261 +282,42 @@ export default ({
         className={classes.dataSect}
         spacing={0}
       >
-        <Grid item xs={3} className="fieldName">
-          <p className="dataLabels">Primary Email</p>
-        </Grid>
-        <Grid item xs={9}>
-          <FieldContent
-            onlyChildren
-            id={props.contactData._id}
-            content={{ primaryEmail: props.contactData.primaryEmail }}
-          >
-            <a
-              href={`mailto:${props.contactData.primaryEmail}`}
-              target="_blank"
-              className={classes.noTextDecoration}
-            >
-              {props.contactData.primaryEmail}
-            </a>
-          </FieldContent>
-        </Grid>
-
-        <Grid item xs={3} className="fieldName">
-          <p className="dataLabels">Secondary Email</p>
-        </Grid>
-        <Grid item xs={9}>
-          <FieldContent
-            onlyChildren
-            id={props.contactData._id}
-            content={{ secondaryEmail: props.contactData.secondaryEmail }}
-          >
-            <a
-              href={`mailto:${props.contactData.secondaryEmail}`}
-              target="_blank"
-              className={classes.noTextDecoration}
-            >
-              {props.contactData.secondaryEmail}
-            </a>
-          </FieldContent>
-        </Grid>
-
-        <Grid item xs={3} className="fieldName">
-          <p className="dataLabels">Mobile Phone</p>
-        </Grid>
-        <Grid item xs={9}>
-          <FieldContent
-            id={props.contactData._id}
-            content={{ mobilePhone: props.contactData.mobilePhone }}
-          />
-        </Grid>
-
-        <Grid item xs={3} className="fieldName">
-          <p className="dataLabels">Home Phone</p>
-        </Grid>
-        <Grid item xs={9}>
-          <FieldContent
-            id={props.contactData._id}
-            content={{ homePhone: props.contactData.homePhone }}
-          />
-        </Grid>
-
-        <Grid item xs={3} className="fieldName">
-          <p className="dataLabels">Alternate Phone</p>
-        </Grid>
-        <Grid item xs={9}>
-          <FieldContent
-            id={props.contactData._id}
-            content={{ AltPhone: props.contactData.AltPhone }}
-          />
-        </Grid>
-
-        <Grid item xs={3} className="fieldName">
-          <p className="dataLabels">Primary Address</p>
-        </Grid>
-        <Grid item xs={9}>
-          <FieldContent
-            name=""
-            id={props.contactData._id}
-            content={{
-              address1: props.contactData.address1,
-              address2: props.contactData.address2,
-              city: props.contactData.city,
-              state: props.contactData.state,
-              zip: props.contactData.zip,
-              country: props.contactData.country,
-            }}
-          />
-        </Grid>
-
-        <Grid item xs={3} className="fieldName">
-          <p className="dataLabels">Secondary Address</p>
-        </Grid>
-        <Grid item xs={9}>
-          <FieldContent
-            name=""
-            id={props.contactData._id}
-            content={{
-              address1Alt: props.contactData.address1Alt,
-              address2Alt: props.contactData.address2Alt,
-              cityAlt: props.contactData.cityAlt,
-              stateAlt: props.contactData.stateAlt,
-              zipAlt: props.contactData.zipAlt,
-              countryAlt: props.contactData.countryAlt,
-            }}
-          />
-        </Grid>
+        {
+          Object.keys(basicInfoContent).map(key => 
+            <React.Fragment>
+              <Grid item xs={3} className="fieldName">
+                <p className="dataLabels">{ key }</p>
+              </Grid>
+              <Grid item xs={9}>
+                <FieldContent
+                  id={props.contactData._id}
+                  content={ basicInfoContent[key].data }
+                  linkType={ basicInfoContent[key].linkType }
+                />
+              </Grid>
+            </React.Fragment>
+          )
+        }
 
         {basicInfExp && (
           <>
-            <Grid item xs={3} className="fieldName">
-              <p className="dataLabels">Relatives</p>
-            </Grid>
-            <Grid item xs={9}>
-              <FieldContent
-                id={props.contactData._id}
-                content={{ relatives: props.contactData.relatives }}
-              />
-            </Grid>
-            <Grid item xs={3} className="fieldName">
-              <p className="dataLabels">Linkedln Profile</p>
-            </Grid>
-            <Grid item xs={9}>
-              <FieldContent
-                onlyChildren
-                id={props.contactData._id}
-                content={{ linkedln: props.contactData.linkedln }}
-              >
-                {props.contactData.linkedln && (
-                  <a
-                    href={`${
-                      !props.contactData.linkedln.startsWith("http") &&
-                      !props.contactData.linkedln.startsWith("//")
-                        ? "//"
-                        : ""
-                    }${props.contactData.linkedln}`}
-                    target="_blank"
-                  >
-                    {props.contactData.linkedln}
-                  </a>
-                )}
-              </FieldContent>
-            </Grid>
-            <Grid item xs={3} className="fieldName">
-              <p className="dataLabels">Facebook Profile</p>
-            </Grid>
-            <Grid item xs={9}>
-              <FieldContent
-                onlyChildren
-                id={props.contactData._id}
-                content={{ facebook: props.contactData.facebook }}
-              >
-                {props.contactData.facebook && (
-                  <a
-                    href={`${
-                      !props.contactData.facebook.startsWith("http") &&
-                      !props.contactData.facebook.startsWith("//")
-                        ? "//"
-                        : ""
-                    }${props.contactData.facebook}`}
-                    target="_blank"
-                  >
-                    {props.contactData.facebook}
-                  </a>
-                )}
-              </FieldContent>
-            </Grid>
-            <Grid item xs={3} className="fieldName">
-              <p className="dataLabels">Twitter Profile</p>
-            </Grid>
-            <Grid item xs={9}>
-              <FieldContent
-                onlyChildren
-                id={props.contactData._id}
-                content={{ twitter: props.contactData.twitter }}
-              >
-                {props.contactData.twitter && (
-                  <a
-                    href={`${
-                      !props.contactData.twitter.startsWith("http") &&
-                      !props.contactData.twitter.startsWith("//")
-                        ? "//"
-                        : ""
-                    }${props.contactData.twitter}`}
-                    target="_blank"
-                  >
-                    {props.contactData.twitter}
-                  </a>
-                )}
-              </FieldContent>
-            </Grid>
-            <Grid item xs={3} className="fieldName">
-              <p className="dataLabels">Lead Source</p>
-            </Grid>
-            <Grid item xs={9}>
-              <FieldContent
-                id={props.contactData._id}
-                content={{ leadSource: props.contactData.leadSource }}
-              />
-            </Grid>
-            <Grid item xs={3} className="fieldName">
-              <p className="dataLabels">Created By</p>
-            </Grid>
-            <Grid item xs={9}>
-              {props.contactData.createBy &&
-                props.contactData.createBy.name === null && (
-                  <div className={classes.userSmallLoader}>
-                    <CircularProgress size={22} color="secondary" />
-                  </div>
-                )}
-              {(props.contactData.createBy && props.contactData.createBy.name) ||
-              props.contactData.createAt ? (
-                <p style={{ margin: "8px 10px" }}>
-                  {props.contactData.createBy && props.contactData.createBy.name
-                    ? props.contactData.createBy.name
-                    : ""}
-
-                  {`${
-                    props.contactData.createAt
-                      ? " - " +
-                        anyToDate(props.contactData.createAt).toLocaleString()
-                      : ""
-                  }`}
-                </p>
-              ) : (
-                <p className={classes.notAvailableP}>Not Available</p>
-              )}
-            </Grid>
-            <Grid item xs={3} className="fieldName">
-              <p className="dataLabels">Last Update By</p>
-            </Grid>
-            <Grid item xs={9}>
-              {props.contactData.lastUpdateBy &&
-                props.contactData.lastUpdateBy.name === null && (
-                  <div className={classes.userSmallLoader}>
-                    <CircularProgress size={22} color="secondary" />
-                  </div>
-                )}
-              {(props.contactData.lastUpdateBy &&
-                props.contactData.lastUpdateBy.name) ||
-              props.contactData.lastUpdateAt ? (
-                <p style={{ margin: "8px 10px" }}>
-                  {props.contactData.lastUpdateBy &&
-                  props.contactData.lastUpdateBy.name
-                    ? props.contactData.lastUpdateBy.name
-                    : ""}
-                  {`${
-                    props.contactData.lastUpdateAt
-                      ? " - " +
-                        anyToDate(
-                          props.contactData.lastUpdateAt
-                        ).toLocaleString()
-                      : ""
-                  }`}
-                </p>
-              ) : (
-                <p className={classes.notAvailableP}>Not Available</p>
-              )}
-            </Grid>
+            {
+              Object.keys(basicInfoExpContent).map(key =>
+                <React.Fragment>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">{ key }</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <FieldContent
+                      onlyChildren={ basicInfoExpContent[key].inner ? true : false }
+                      id={props.contactData._id}
+                      content={ basicInfoExpContent[key].data }
+                      linkType={ basicInfoExpContent[key].linkType }
+                    >{ basicInfoExpContent[key].inner }</FieldContent>
+                  </Grid>
+                </React.Fragment>
+              )
+            }
           </>
         )}
       </Grid>
