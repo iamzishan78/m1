@@ -22,7 +22,7 @@ const useStyles = makeStyles({
     margin: "auto",
     maxWidth: 550,
     "&> div": {
-      padding: "60px 0 50px 0 !important",
+      padding: "50px 0 30px 0 !important",
       borderRadius: "0 !important",
     },
   },
