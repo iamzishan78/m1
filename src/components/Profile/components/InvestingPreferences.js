@@ -5,11 +5,59 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import Grid from "@material-ui/core/Grid";
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControl from "@material-ui/core/FormControl";
+import FormLabel from "@material-ui/core/FormLabel";
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import Select from '@material-ui/core/Select';
+import HelpIcon from '@material-ui/icons/Help';
 import { ThemeProvider, makeStyles  } from '@material-ui/core/styles';
 import { PanelTheme, PanelGeneralStyle} from '../../../styles/Panel';
 
 const InvestingPreferences = () => {
     const classes = PanelGeneralStyle();
+    const asset_type = [
+        'Operated Working Interests',
+        'Non-Operated Working Interests',
+        'Overriding Royalty Interests',
+        'Royalty Interests',
+        'Non-Producing Minerals',
+        'Oil Properties',
+        'Gas Properties',
+        'Pipeline',
+        'Primary Production',
+        'Water Flood',
+        'Drilling Prospects',
+        'Leases',
+        'Other Investment Objective'
+    ];
+    const region = [
+        'US',
+        'Midwest',
+        'Northeast',
+        'Nortwest',
+        'Southeast',
+        'Soutwest',
+        'Southern',
+        'Western'
+    ];
+    const vehicles = [
+        'Funds',
+        'Properties'
+    ];
+    const hold_period = [
+        'Less than 1 year',
+        '1-2 Years',
+        '3-5 Years',
+        '6-9 Years',
+        '10+ Years'
+    ];
+    const objectives = [
+        'Aggressive',
+        'Growth'
+    ];
+
     return(
         <Fragment>
             <ThemeProvider theme={PanelTheme}>
@@ -26,16 +74,87 @@ const InvestingPreferences = () => {
                             <AccordionDetails>
                                 <Grid container spacing={2} style={{flex: 1, flexDirection: 'row'}}>
                                     <Grid item sm={3}>
-                                        <h3>Asset Type</h3>
+                                        <FormControl style={{width: '100%', padding: 10}}>
+                                            <FormLabel component="legend">Asset Type</FormLabel>
+                                            <FormGroup>
+                                                {
+                                                    asset_type.map((item, index) => {
+                                                        return(
+                                                            <FormControlLabel
+                                                                control={<Checkbox key={index} name={index} />}
+                                                                label={item}
+                                                            />
+                                                        )
+                                                      })
+                                                }
+                                            </FormGroup>
+                                        </FormControl>
                                     </Grid>
                                     <Grid item sm={3}>
-                                        <h3>Region</h3>
+                                        <FormControl style={{width: '100%', padding: 10}}>
+                                            <FormLabel component="legend">Region</FormLabel>
+                                            <FormGroup>
+                                                {
+                                                    region.map((item, index) => {
+                                                        return(
+                                                            <FormControlLabel
+                                                                control={<Checkbox key={index} name={index} />}
+                                                                label={item}
+                                                            />
+                                                        )
+                                                      })
+                                                }
+                                            </FormGroup>
+                                        </FormControl>
                                     </Grid>
                                     <Grid item sm={3}>
-                                        <h3>Market & vehicles</h3>
+                                        <FormControl style={{width: '100%', padding: 10}}>
+                                            <FormLabel component="legend">Vehicles</FormLabel>
+                                            <FormGroup>
+                                                {
+                                                    vehicles.map((item, index) => {
+                                                        return(
+                                                            <FormControlLabel
+                                                                control={<Checkbox key={index} name={index} />}
+                                                                label={item}
+                                                            />
+                                                        )
+                                                      })
+                                                }
+                                            </FormGroup>
+                                        </FormControl>
                                     </Grid>
                                     <Grid item sm={3}>
-                                        <h3>Hold period & Objectives</h3>
+                                        <FormControl style={{width: '100%', padding: 10}}>
+                                            <FormLabel component="legend">Vehicles</FormLabel>
+                                            <FormGroup>
+                                                {
+                                                    hold_period.map((item, index) => {
+                                                        return(
+                                                            <FormControlLabel
+                                                                control={<Checkbox key={index} name={index} />}
+                                                                label={item}
+                                                            />
+                                                        )
+                                                      })
+                                                }
+                                            </FormGroup>
+                                        </FormControl>
+                                        <FormControl style={{width: '100%', padding: 10}}>
+                                            <FormLabel component="legend">Vehicles</FormLabel>
+                                            <FormGroup>
+                                                {
+                                                    objectives.map((item, index) => {
+                                                        return(
+                                                            <FormControlLabel
+                                                                control={<Checkbox key={index} name={index} />}
+                                                                label={item}
+                                                            />
+                                                        )
+                                                      })
+                                                }
+                                            </FormGroup>
+                                        </FormControl>
                                     </Grid>
                                 </Grid>
                             </AccordionDetails>
@@ -48,24 +167,73 @@ const InvestingPreferences = () => {
                             aria-controls="panel1a-content"
                             id="panel1a-header"
                             >
-                                <Typography className={classes.heading}>Investing Entities</Typography>
+                                <Typography className={classes.heading}>Investment Objectives</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Grid container spacing={2} style={{flex: 1, flexDirection: 'row'}}>
                                     <Grid item sm={6}>
                                         <Grid container spacing={2} style={{flex: 1, flexDirection: 'column'}}>
-                                            <Grid item sm={6}>
-                                                <h3>Expected</h3>
+                                            <Grid item sm={12}>
+                                                <FormControl variant="outlined" className={classes.formControl}>
+                                                    <FormLabel>Expected Total Investments in Next Twelve Months</FormLabel>
+                                                    <div style={{display:"inline-flex"}}>
+                                                        <Select
+                                                            native
+                                                            inputProps={{
+                                                                name: 'total-investment',
+                                                                id: 'total-investment',
+                                                            }}
+                                                            style={{width: '100%'}}
+                                                        >
+                                                        <option aria-label="None" value="" />
+                                                        <option value={null}>Undecided</option>
+                                                        </Select>
+                                                        <HelpIcon style={{fontSize: 40, color: '#8c8c8c', margin: 10}}/>
+                                                    </div>
+                                                    
+                                                </FormControl>
                                             </Grid>
-                                            <Grid item sm={6}>
-                                                <h3>Tolerance</h3>
+                                            <Grid item sm={12}>
+                                                <FormControl variant="outlined" className={classes.formControl}>
+                                                    <FormLabel>Risk Tolerance</FormLabel>
+                                                    <div style={{display: "inline-flex"}}>
+                                                        <Select
+                                                            native
+                                                            inputProps={{
+                                                                name: 'total-investment',
+                                                                id: 'total-investment',
+                                                            }}
+                                                            style={{width: '100%'}}
+                                                        >
+                                                        <option aria-label="None" value="" />
+                                                        <option value={null}>Undecided</option>
+                                                        </Select>
+                                                        <HelpIcon style={{fontSize: 40, color: '#8c8c8c', margin: 10}}/>
+                                                    </div>
+                                                </FormControl>
                                             </Grid>
                                         </Grid>
                                     </Grid>
                                     <Grid item sm={6}>
                                         <Grid container spacing={2} style={{flex: 1, flexDirection: 'column'}}>
                                             <Grid item sm={12}>
-                                                <h3>Investment</h3>
+                                                <FormControl variant="outlined" className={classes.formControl}>
+                                                    <FormLabel>Expected Investments Amount Per Project</FormLabel>
+                                                    <div style={{display: "inline-flex"}}>
+                                                        <Select
+                                                            native
+                                                            inputProps={{
+                                                                name: 'total-investment',
+                                                                id: 'total-investment',
+                                                            }}
+                                                            style={{width: '100%'}}
+                                                        >
+                                                        <option aria-label="None" value="" />
+                                                        <option value={null}>Undecided</option>
+                                                        </Select>
+                                                        <HelpIcon style={{fontSize: 40, color: '#8c8c8c', margin: 10}}/>
+                                                    </div>
+                                                </FormControl>
                                             </Grid>
                                         </Grid>
                                     </Grid>

@@ -17,6 +17,14 @@ const PanelTheme = createMuiTheme({
             borderColor: '#8c8c8c',
             boxShadow: '0px 0px 0px 0px'
         }
+      },
+      MuiFormLabel: {
+        root: {
+          fontWeight: 'bold',
+          fontColor: '#8c8c8c',
+          paddingTop: 5,
+          paddingBottom: 5
+        }
       }
     }
 });
@@ -33,6 +41,9 @@ const PanelGeneralStyle = makeStyles((theme) => ({
   heading: {
       color: '#727272',
       fontWeight: 'bold'
+  },
+  formControl: {
+    width: '100%'
   }
 }));
 

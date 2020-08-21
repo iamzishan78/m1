@@ -98,7 +98,7 @@ const newStyles = makeStyles((theme) => ({
   },
   contentSubroot: {
     flex: 1,
-    flexDirection: 'column',
+    flexDirection: 'column'
   },
   menuList: {
     color: '#b3b9ca',
@@ -252,11 +252,13 @@ const ProfileContent = () => {
         </Grid>
       </Grid>
       <Grid item sm={10}>
-        <Grid container className={newStyle.subroot}>
+        <Grid container className={newStyle.contentSubroot}>
           <Grid item sm={12}>
             <ProfileHeader />
           </Grid>
-          <Grid item sm={12}>
+          <Grid item sm={12} style={{
+            maxHeight: '735px', overflowY: "auto", overflowX: 'hidden'
+          }}>
             { displayContent }
           </Grid>
         </Grid>
