@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-// import MUIDataTable from "mui-datatables";
+import FieldContent, { FieldTypes }  from "./../../ContactDetailCard/components/FieldContent";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   MenuItem,
@@ -92,10 +92,102 @@ export default ({ ...props }) => {
   const classes = useStyles();
   
   return (
-    <div className={classes.root}>
-      {props.rows.map((value, index) => (
-        <div key={index}>{value}</div>
-      ))}
+    <div style={{ padding: "23px 28px" }}>
+      <Grid item xs={12} style={{ minHeight: "28px" }}>
+        <h4 style={{ margin: "0 0 13px 0" }}>
+          Basic Information
+        </h4>
+        <Grid
+          item
+          xs={12}
+          container
+          className={props.wrapperClass}
+          spacing={0}
+        >
+          {Object.entries(props.rows).map(([key, value]) => (
+            <React.Fragment>
+              <Grid item xs={3} className="fieldName">
+                <p className="dataLabels">{ key }</p>
+              </Grid>
+              <Grid item xs={9}>
+                <FieldContent
+                  onlyChildren={ value.inner ? true : false }
+                  content={ value.data }
+                  linkType={ value.linkType }
+                >{ value.inner }</FieldContent>
+              </Grid>
+            </React.Fragment>
+          ))}
+        </Grid>
+        {
+          props.melissaData && props.melissaData.melissaAddressRecords.length > 0 && props.melissaData.melissaAddressRecords[0].CurrentAddress
+            ?
+              <>
+                <h4 style={{ margin: "13px 0 13px 0" }}>
+                  Melissa Address Record
+                </h4>
+                <Grid
+                  item
+                  xs={12}
+                  container
+                  className={props.wrapperClass}
+                  spacing={0}
+                >
+                  {Object.entries(props.melissaData.melissaAddressRecords[0].CurrentAddress).map(([key, value]) => (
+                    <React.Fragment>
+                      <Grid item xs={3} className="fieldName">
+                        <p className="dataLabels">{ key }</p>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <FieldContent
+                          content={{ value }}
+                          fieldType={ FieldTypes.MelissaAddressRecord }
+                        />
+                      </Grid>
+                    </React.Fragment>
+                  ))}
+                </Grid>
+              </>
+            :
+              <h4 style={{ margin: "13px 0 13px 0"}}>
+                No Melissa Address Records found
+              </h4>
+        }
+        {
+          props.melissaData && props.melissaData.melissaRecords.length > 0
+            ?
+              <>
+                <h4 style={{ margin: "13px 0 13px 0"}}>
+                  Melissa Record
+                </h4>
+                <Grid
+                  item
+                  xs={12}
+                  container
+                  className={props.wrapperClass}
+                  spacing={0}
+                >
+                  {Object.entries(props.melissaData.melissaRecords[0]).map(([key, value]) => (
+                    <React.Fragment>
+                      <Grid item xs={3} className="fieldName">
+                        <p className="dataLabels">{ key }</p>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <FieldContent
+                          content={{ value }}
+                          fieldType={ FieldTypes.MelissaRecord }
+                        />
+                      </Grid>
+                    </React.Fragment>
+                  ))}
+                </Grid>
+              </>
+            :
+              <h4 style={{ margin: "13px 0 13px 0"}}>
+                No Melissa Records found
+              </h4>
+        }
+      </Grid>
     </div>
   );
 };

@@ -13,6 +13,7 @@ import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
+import { MELISSARECORDS } from "../../graphQL/useQueryGetMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery } from "@apollo/react-hooks";
 import ConfirmationDialog from "./components/ConfirmationDialog";
@@ -266,6 +267,7 @@ export default function ContactDetailCard(props) {
   const [transactData, setTransactData] = useState();
   const [transactId, setTransactId] = useState();
   const [contactData, setContactData] = useState(null);
+  const [melissaData, setMelissaData] = useState(null);
   const [rightDialogOpen, setRightDialogOpen] = useState(false);
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
@@ -279,6 +281,10 @@ export default function ContactDetailCard(props) {
   });
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
     TRANSACTIONDATA
+  );
+  const [getMelissaRecords, { data: mData }] = useLazyQuery(
+    MELISSARECORDS,
+    { fetchPolicy: "network-only" }
   );
 
   const handleClickRightDialogOpen = (childrenToOpen) => {
@@ -324,6 +330,22 @@ export default function ContactDetailCard(props) {
       setContactData(data.contact);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (props.contactId) {
+      getMelissaRecords({
+        variables: {
+          contactId: props.contactId,
+        },
+      });
+    }
+  }, [props.contactId]);
+
+  useEffect(() => {
+    if (mData && mData.getMelissaRecords.success === true) {
+      setMelissaData(mData.getMelissaRecords);
+    }
+  }, [mData]);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
@@ -532,6 +554,7 @@ export default function ContactDetailCard(props) {
               header={"Detailed Information"}
               contactData={contactData}
               handleOpenExpandableCard={handleOpenExpandableCard}
+              melissaData={melissaData}
               id={contactData._id}
             />
           </Grid>
@@ -811,7 +834,6 @@ export default function ContactDetailCard(props) {
               component={
                 <div
                   style={{
-                    height: "100%",
                     width: "100%",
                     backgroundColor: "#fff",
                   }}

@@ -112,6 +112,7 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#EBEBEB",
       "& p": { margin: "8px 10px" },
     },
+    "& a": { color: "#757575" },
   },
   showAll: {
     margin: "8px 0 0 0",
@@ -262,10 +263,9 @@ export default ({
           onClick={() => {
             props.handleOpenExpandableCard(
               <MelissaTable
-                rows={
-                  ['test1', 'test2', 'test3']
-                }
-                id={props.id}
+                rows={ {...basicInfoContent, ...basicInfoExpContent} }
+                wrapperClass={ classes.dataSect }
+                melissaData={ props.melissaData }
               />,
               "Detailed Information"
             );
@@ -283,7 +283,7 @@ export default ({
         spacing={0}
       >
         {
-          Object.keys(basicInfoContent).map(key => 
+          Object.entries(basicInfoContent).map(([key, row]) => 
             <React.Fragment>
               <Grid item xs={3} className="fieldName">
                 <p className="dataLabels">{ key }</p>
@@ -291,8 +291,8 @@ export default ({
               <Grid item xs={9}>
                 <FieldContent
                   id={props.contactData._id}
-                  content={ basicInfoContent[key].data }
-                  linkType={ basicInfoContent[key].linkType }
+                  content={ row.data }
+                  linkType={ row.linkType }
                 />
               </Grid>
             </React.Fragment>
@@ -302,18 +302,18 @@ export default ({
         {basicInfExp && (
           <>
             {
-              Object.keys(basicInfoExpContent).map(key =>
+              Object.entries(basicInfoExpContent).map(([key, row]) =>
                 <React.Fragment>
                   <Grid item xs={3} className="fieldName">
                     <p className="dataLabels">{ key }</p>
                   </Grid>
                   <Grid item xs={9}>
                     <FieldContent
-                      onlyChildren={ basicInfoExpContent[key].inner ? true : false }
+                      onlyChildren={ row.inner ? true : false }
                       id={props.contactData._id}
-                      content={ basicInfoExpContent[key].data }
-                      linkType={ basicInfoExpContent[key].linkType }
-                    >{ basicInfoExpContent[key].inner }</FieldContent>
+                      content={ row.data }
+                      linkType={ row.linkType }
+                    >{ row.inner }</FieldContent>
                   </Grid>
                 </React.Fragment>
               )

@@ -173,6 +173,12 @@ export const LinkTypes = Object.freeze({
   Simple: 2
 });
 
+export const FieldTypes = Object.freeze({
+  Contact: 0,
+  MelissaAddressRecord: 1,
+  MelissaRecord: 2
+});
+
 const ConditionalWrap = ({ condition, wrap, children }) => (
   condition ? wrap(children) : children
 );
@@ -186,7 +192,8 @@ export default function FieldContent({
   name,
   noMargin,
   noInputFooter,
-  linkType
+  linkType,
+  fieldType = FieldTypes.Contact
 }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
   //////////// content - brings an object with fielNames and values ///////////////////////////////////////////////
@@ -197,6 +204,7 @@ export default function FieldContent({
   //////////// noMargin - no p tag margin  //optional//////////////////////////////////////////////////////////////
   //////////// noInputFooter //optional////////////////////////////////////////////////////////////////////////////
   //////////// linkType - LinkTypes value //optional///////////////////////////////////////////////////////////////
+  //////////// fieldType - FieldTypes value //default value = Contact//////////////////////////////////////////////
 
   const [stateApp] = React.useContext(AppContext);
   const [edit, setEdit] = useState(null);
@@ -251,7 +259,7 @@ export default function FieldContent({
       }
     }
 
-    if (differences) {
+    if (differences && fieldType == FieldTypes.Contact) {
       updateContact({
         variables: {
           contact: trimmedEditContent,
@@ -368,13 +376,14 @@ export default function FieldContent({
           : `${name ? name + " " : ""} Not Available`
         }
         {
-          <PencilEditIcon
-            handleUpdating={handleUpdating}
-            anchorEl={edit}
-            setAnchorEl={setEdit}
-            content={inputsArray}
-            onClick={handleEditClick}
-          />
+          fieldType == FieldTypes.Contact &&
+            <PencilEditIcon
+              handleUpdating={handleUpdating}
+              anchorEl={edit}
+              setAnchorEl={setEdit}
+              content={inputsArray}
+              onClick={handleEditClick}
+            />
         }
         {!childrenLeft && !onlyChildren && children ? children : ""}
       </span>
