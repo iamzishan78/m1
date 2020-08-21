@@ -6,7 +6,7 @@ const main_div = {
   padding: "1.5vh",
 };
 const big_text = {
-  fontSize: "65px",
+  fontSize: "55px",
   fontWeight: "bold",
   color: "#504D4D",
 };
@@ -43,10 +43,10 @@ export default function BulkUpload(props) {
   return (
     <div style={main_div}>
       <div style={{ ...big_text, ...padding_div_top }}>
-        Sit tight as this may take
+        Sit tight as this may take a bit.
       </div>
       <div style={{ ...big_grey_text, ...padding_div_2 }}>
-        Our Robots are working their magic to quickly upload your contacts.
+        Our robots are working their magic to quickly upload your contacts.
       </div>
       <div style={{ ...padding_div_top }}>
         <img style={image_style} src="img/M1neral Robot.svg"></img>

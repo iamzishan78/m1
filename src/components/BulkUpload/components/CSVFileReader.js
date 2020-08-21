@@ -17,6 +17,15 @@ const useStyles = makeStyles({
     margin: "0px auto",
     fontSize: "14px",
   },
+  csvReader: {
+    padding: "14px 0 30px 0",
+    margin: "auto",
+    maxWidth: 550,
+    "&> div": {
+      padding: "60px 0 50px 0 !important",
+      borderRadius: "0 !important",
+    },
+  },
 });
 
 function createData(
@@ -36,42 +45,42 @@ const rows = [
   createData(
     "John",
     "Doe",
-    "H.no: 776",
-    "Florida",
-    "VA",
-    "1121",
-    "unknown@ukmansul.com",
-    "9982--1928"
+    "708 Main Street",
+    "Houston",
+    "TX",
+    "22031",
+    "john_doe@domain.com",
+    "123-456-7890"
   ),
   createData(
     "John",
     "Doe",
-    "H.no: 776",
-    "Florida",
-    "VA",
-    "1121",
-    "unknown@ukmansul.com",
-    "9982--1928"
+    "708 Main Street",
+    "Houston",
+    "TX",
+    "22031",
+    "john_doe@domain.com",
+    "123-456-7890"
   ),
   createData(
     "John",
     "Doe",
-    "H.no: 776",
-    "Florida",
-    "VA",
-    "1121",
-    "unknown@ukmansul.com",
-    "9982--1928"
+    "708 Main Street",
+    "Houston",
+    "TX",
+    "22031",
+    "john_doe@domain.com",
+    "123-456-7890"
   ),
   createData(
     "John",
     "Doe",
-    "H.no: 776",
-    "Florida",
-    "VA",
-    "1121",
-    "unknown@ukmansul.com",
-    "9982--1928"
+    "708 Main Street",
+    "Houston",
+    "TX",
+    "22031",
+    "john_doe@domain.com",
+    "123-456-7890"
   ),
 ];
 
@@ -82,9 +91,8 @@ const main_div = {
 const upload_box = {
   margin: "0 auto",
   width: "100%",
-  borderRadius: "0px !important",
-  background: "#f7f7f7",
-  padding: "60px 0 !important",
+  borderRadius: "0",
+  padding: "60px 0",
 };
 
 const big_text = {
@@ -147,12 +155,6 @@ const mainContent = {
   padding: "14px 0px 0px  0px",
 };
 
-const csvReader = {
-  padding: "14px 0 30px 0",
-  margin: "auto",
-  maxWidth: 550,
-  height: 240,
-};
 const StyledTableCell = withStyles((theme) => ({
   head: {
     fontWeight: "bold",
@@ -227,7 +229,7 @@ export default function CSVFileReader(props) {
       </div>
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          <div style={csvReader}>
+          <div className={classes.csvReader}>
             <CSVReader
               onDrop={handleOnDrop}
               onError={handleOnError}
@@ -263,7 +265,7 @@ export default function CSVFileReader(props) {
               return false;
             }}
           >
-            Download over CSV template and add your information
+            Download sample CSV template and then upload with your information
           </a>
         </div>
         <div style={{ ...padding_div_top, ...padding_div_bottom }}>
@@ -271,20 +273,32 @@ export default function CSVFileReader(props) {
             <Table className={classes.table} aria-label="simple table">
               <TableHead>
                 <TableRow>
+                  <StyledTableCell align="left">First Name</StyledTableCell>
+                  <StyledTableCell align="left">Last Name</StyledTableCell>
                   <StyledTableCell align="left">Street Address</StyledTableCell>
                   <StyledTableCell align="left">City</StyledTableCell>
+                  <StyledTableCell align="left">Zip</StyledTableCell>
                   <StyledTableCell align="left">State</StyledTableCell>
+                  <StyledTableCell align="left">Email</StyledTableCell>
                   <StyledTableCell align="left">Phone Number</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody style={table_body}>
                 {rows.map((row, i) => (
-                  <TableRow key={i + row.address}>
+                  <TableRow key={i + row.first_name}>
+                    <StyledTableCell align="left">
+                      {row.first_name}
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      {row.last_name}
+                    </StyledTableCell>
                     <StyledTableCell align="left">
                       {row.address}
                     </StyledTableCell>
                     <StyledTableCell align="left">{row.city}</StyledTableCell>
+                    <StyledTableCell align="left">{row.zip}</StyledTableCell>
                     <StyledTableCell align="left">{row.state}</StyledTableCell>
+                    <StyledTableCell align="left">{row.email}</StyledTableCell>
                     <StyledTableCell align="left">{row.phone}</StyledTableCell>
                   </TableRow>
                 ))}
