@@ -8,10 +8,12 @@ import Grid from "@material-ui/core/Grid";
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
+import TextField from "@material-ui/core/TextField";
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Select from '@material-ui/core/Select';
 import HelpIcon from '@material-ui/icons/Help';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { ThemeProvider, makeStyles  } from '@material-ui/core/styles';
 import { PanelTheme, PanelGeneralStyle} from '../../../styles/Panel';
 
@@ -32,7 +34,7 @@ const InvestingPreferences = () => {
         'Leases',
         'Other Investment Objective'
     ];
-    const region = [
+    const basin = [
         'US',
         'Midwest',
         'Northeast',
@@ -57,6 +59,22 @@ const InvestingPreferences = () => {
         'Aggressive',
         'Growth'
     ];
+    const expected_total_investment = [
+        'Less than $100,000',
+        '$100,000 - $249,999',
+        '$250,000 - $499,999',
+        '$500,000 - $999,999',
+        '$1,000,000+'
+    ];
+    const expected_investment_amount = [
+        '$10,000 - $24,999',
+        '$25,000 - $49,999',
+        '$50,000 - $99,999',
+        '$100,000 - $249,999',
+        '$250,000 - $499,999',
+        '$500,000 - $999,9999',
+        '$1,000,000+'
+    ];
 
     return(
         <Fragment>
@@ -69,7 +87,7 @@ const InvestingPreferences = () => {
                             aria-controls="panel1a-content"
                             id="panel1a-header"
                             >
-                                <Typography className={classes.heading}>Investing Entities</Typography>
+                                <Typography className={classes.heading}>Investing Interests</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Grid container spacing={2} style={{flex: 1, flexDirection: 'row'}}>
@@ -81,7 +99,7 @@ const InvestingPreferences = () => {
                                                     asset_type.map((item, index) => {
                                                         return(
                                                             <FormControlLabel
-                                                                control={<Checkbox key={index} name={index} />}
+                                                                control={<Checkbox key={`asset_${index}`} name={`asset_${index}`} />}
                                                                 label={item}
                                                             />
                                                         )
@@ -91,20 +109,27 @@ const InvestingPreferences = () => {
                                         </FormControl>
                                     </Grid>
                                     <Grid item sm={3}>
-                                        <FormControl style={{width: '100%', padding: 10}}>
-                                            <FormLabel component="legend">Region</FormLabel>
-                                            <FormGroup>
-                                                {
-                                                    region.map((item, index) => {
-                                                        return(
-                                                            <FormControlLabel
-                                                                control={<Checkbox key={index} name={index} />}
-                                                                label={item}
-                                                            />
-                                                        )
-                                                      })
-                                                }
-                                            </FormGroup>
+                                        <FormControl variant="outlined" className={classes.formControl}>
+                                            <FormLabel>Basin</FormLabel>
+                                            <Autocomplete
+                                                id="country-select-demo"
+                                                style={{ width: '100%' }}
+                                                options={basin}
+                                                classes={{
+                                                    option: classes.autocompleteOption,
+                                                }}
+                                                autoHighlight
+                                                getOptionLabel={(option) => option}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                    {...params}
+                                                    variant="outlined"
+                                                    inputProps={{
+                                                        ...params.inputProps,
+                                                    }}
+                                                    />
+                                                )}
+                                                />
                                         </FormControl>
                                     </Grid>
                                     <Grid item sm={3}>
@@ -115,7 +140,7 @@ const InvestingPreferences = () => {
                                                     vehicles.map((item, index) => {
                                                         return(
                                                             <FormControlLabel
-                                                                control={<Checkbox key={index} name={index} />}
+                                                                control={<Checkbox key={`vehicles_${index}`} name={`vehicles_${index}`} />}
                                                                 label={item}
                                                             />
                                                         )
@@ -132,7 +157,7 @@ const InvestingPreferences = () => {
                                                     hold_period.map((item, index) => {
                                                         return(
                                                             <FormControlLabel
-                                                                control={<Checkbox key={index} name={index} />}
+                                                                control={<Checkbox key={`hold_period_${index}`} name={`hold_period_${index}`} />}
                                                                 label={item}
                                                             />
                                                         )
@@ -147,7 +172,7 @@ const InvestingPreferences = () => {
                                                     objectives.map((item, index) => {
                                                         return(
                                                             <FormControlLabel
-                                                                control={<Checkbox key={index} name={index} />}
+                                                                control={<Checkbox key={`objectives_${index}`} name={`objectives_${index}`} />}
                                                                 label={item}
                                                             />
                                                         )
@@ -185,12 +210,17 @@ const InvestingPreferences = () => {
                                                             }}
                                                             style={{width: '100%'}}
                                                         >
-                                                        <option aria-label="None" value="" />
                                                         <option value={null}>Undecided</option>
+                                                        { 
+                                                            expected_total_investment.map((item, index) => {
+                                                                return(
+                                                                    <option value={index}>{item}</option>
+                                                                )
+                                                              })
+                                                        }
                                                         </Select>
                                                         <HelpIcon style={{fontSize: 40, color: '#8c8c8c', margin: 10}}/>
                                                     </div>
-                                                    
                                                 </FormControl>
                                             </Grid>
                                             <Grid item sm={12}>
@@ -205,8 +235,9 @@ const InvestingPreferences = () => {
                                                             }}
                                                             style={{width: '100%'}}
                                                         >
-                                                        <option aria-label="None" value="" />
                                                         <option value={null}>Undecided</option>
+                                                        <option value={'risk_averse'}>Risk Averse</option>
+                                                        <option value={'moderate'}>Moderate</option>
                                                         </Select>
                                                         <HelpIcon style={{fontSize: 40, color: '#8c8c8c', margin: 10}}/>
                                                     </div>
@@ -228,8 +259,14 @@ const InvestingPreferences = () => {
                                                             }}
                                                             style={{width: '100%'}}
                                                         >
-                                                        <option aria-label="None" value="" />
                                                         <option value={null}>Undecided</option>
+                                                        { 
+                                                            expected_investment_amount.map((item, index) => {
+                                                                return(
+                                                                    <option value={index}>{item}</option>
+                                                                )
+                                                              })
+                                                        }
                                                         </Select>
                                                         <HelpIcon style={{fontSize: 40, color: '#8c8c8c', margin: 10}}/>
                                                     </div>
@@ -241,7 +278,6 @@ const InvestingPreferences = () => {
                             </AccordionDetails>
                         </Accordion>
                     </Grid>
-                    
                 </Grid>
             </ThemeProvider>
         </Fragment>

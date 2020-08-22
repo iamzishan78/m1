@@ -19,6 +19,7 @@ import Profile from "./components/Profile";
 import ChangePassword from "./components/ChangePassword";
 import ElectronicConsent from "./components/ElectronicConsent";
 import EmailPreferences from "./components/EmailPreferences";
+import FinancialQualification from "./components/FinancialQualification";
 import InvestingEntities from "./components/InvestingEntities";
 import InvestingPreferences from "./components/InvestingPreferences";
 import InvestorDocuments from "./components/InvestorDocuments";
@@ -142,6 +143,7 @@ const ProfileContent = () => {
     'Profile',
     'Investing Entities',
     'Investing Preferences',
+    'Financial Qualification',
     'Email Preferences',
     'Privacy & Sharing',
     'Electronic Consent',
@@ -219,6 +221,7 @@ const ProfileContent = () => {
       <Profile/>,
       <InvestingEntities/>,
       <InvestingPreferences/>,
+      <FinancialQualification/>,
       <EmailPreferences/>,
       <PrivacyAndSharing/>,
       <ElectronicConsent/>,

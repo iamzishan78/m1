@@ -25,6 +25,11 @@ const PanelTheme = createMuiTheme({
           paddingTop: 5,
           paddingBottom: 5
         }
+      },
+      MuiFormControlLabel: {
+        label: {
+          color: '#8c8c8c',
+        },
       }
     }
 });
@@ -44,6 +49,13 @@ const PanelGeneralStyle = makeStyles((theme) => ({
   },
   formControl: {
     width: '100%'
+  },
+  autocompleteOption: {
+    fontSize: 15,
+    '& > span': {
+      marginRight: 10,
+      fontSize: 18,
+    },
   }
 }));
 
