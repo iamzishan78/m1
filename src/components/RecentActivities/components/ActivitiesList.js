@@ -145,7 +145,7 @@ export default function ActivitiesList({
   let sortedActivityLog =
     activityLog && activityLog.length > 0
       ? activityLog
-          .filter((activity) => activity.user_id === user_id) // get only current user's activities
+          // .filter((activity) => activity.user_id === user_id) // get only current user's activities
           .sort((a, b) => moment(b.dateTime).diff(moment(a.dateTime))) // sort activities according to date
       : [];
 
@@ -174,7 +174,7 @@ export default function ActivitiesList({
                   {activity.notes}
                 </Typography>
                 <Typography variant="body2" className={classes.blue}>
-                  {activity.fullname} ●{" "}
+                  {activity.fullname ? activity.fullname : activity.user_id} ●{" "}
                   {moment(activity.dateTime).format("MMMM D, YYYY hh:mm a")} ●{" "}
                   <span
                     className={classes.deleteLine}
