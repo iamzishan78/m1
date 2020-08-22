@@ -4,15 +4,23 @@ export const CUSTOMLAYER = gql`
   query getCustomLayer($id: ID) {
     customLayer(id: $id) {
       _id
-      name
       shape
+      name
       layer
       user {
         _id
       }
       owners {
         _id
+        ownerEntityId
         name
+        address1
+        address2
+        city
+        state
+        zip
+        country
+        globalOwner
         entity
         type
         depthFrom
@@ -20,6 +28,8 @@ export const CUSTOMLAYER = gql`
         interest
         nma
         nra
+        customLayer
+        IsDeleted
       }
     }
   }
