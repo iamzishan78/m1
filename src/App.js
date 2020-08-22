@@ -49,7 +49,7 @@ const theme = createMuiTheme({
   palette: {
     type: "light",
     common: { black: "#000", white: "#fff" },
-    background: { paper: "#fff", default: "#fafafa" },
+    background: { paper: "#fff", default: "#fff" },
     primary: {
       light: "rgba(75, 97, 143, 1)",
       main: "rgba(1, 17, 51, 1)",
@@ -165,7 +165,7 @@ const PrivateRoute = ({ component, ...options }) => {
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
       ? component
       : Login;
-      //: LoginB2C;
+  //: LoginB2C;
 
   return <Route {...options} component={finalComponent} />;
 };
@@ -206,7 +206,7 @@ function App() {
       };
       if (token) {
         apolloConfig.headers["X-ZUMO-AUTH"] = token;
-        //uncomment to run against local 
+        //uncomment to run against local
         // apolloConfig.uri = "http://localhost:7071/api/m1graph"
       }
 

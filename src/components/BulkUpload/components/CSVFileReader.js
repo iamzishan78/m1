@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../../AppContext";
-import { Button } from "@material-ui/core";
+import { Button, Grid } from "@material-ui/core";
 
 import { CSVReader } from "react-papaparse";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
@@ -16,6 +16,15 @@ const useStyles = makeStyles({
   table: {
     margin: "0px auto",
     fontSize: "14px",
+  },
+  csvReader: {
+    padding: "14px 0 30px 0",
+    margin: "auto",
+    maxWidth: 550,
+    "&> div": {
+      padding: "50px 0 30px 0 !important",
+      borderRadius: "0 !important",
+    },
   },
 });
 
@@ -36,42 +45,42 @@ const rows = [
   createData(
     "John",
     "Doe",
-    "H.no: 776",
-    "Florida",
-    "VA",
-    "1121",
-    "unknown@ukmansul.com",
-    "9982--1928"
+    "708 Main Street",
+    "Houston",
+    "TX",
+    "77002",
+    "john_doe@domain.com",
+    "123-456-7890"
   ),
   createData(
     "John",
     "Doe",
-    "H.no: 776",
-    "Florida",
-    "VA",
-    "1121",
-    "unknown@ukmansul.com",
-    "9982--1928"
+    "708 Main Street",
+    "Houston",
+    "TX",
+    "77002",
+    "john_doe@domain.com",
+    "123-456-7890"
   ),
   createData(
     "John",
     "Doe",
-    "H.no: 776",
-    "Florida",
-    "VA",
-    "1121",
-    "unknown@ukmansul.com",
-    "9982--1928"
+    "708 Main Street",
+    "Houston",
+    "TX",
+    "77002",
+    "john_doe@domain.com",
+    "123-456-7890"
   ),
   createData(
     "John",
     "Doe",
-    "H.no: 776",
-    "Florida",
-    "VA",
-    "1121",
-    "unknown@ukmansul.com",
-    "9982--1928"
+    "708 Main Street",
+    "Houston",
+    "TX",
+    "77002",
+    "john_doe@domain.com",
+    "123-456-7890"
   ),
 ];
 
@@ -82,8 +91,8 @@ const main_div = {
 const upload_box = {
   margin: "0 auto",
   width: "100%",
-  borderRadius: "0px !important",
-  background: "#f7f7f7",
+  borderRadius: "0",
+  padding: "60px 0",
 };
 
 const big_text = {
@@ -103,17 +112,20 @@ const big_grey_text = {
 const padding_div_top = {
   paddingTop: "3vh",
 };
+const padding_div_bottom = {
+  paddingBottom: "3vh",
+};
 const padding_div = {
   padding: "16px 0",
 };
 const padidng_20 = {
-  padding: "20px 0",
+  padding: "60px 0",
 };
 const normal_padidng = {
   padding: "5vh",
 };
 const text_grey = {
-  fontSize: "12px",
+  fontSize: "13px",
   fontWeight: "bold",
   color: "#a6a6a6",
 };
@@ -140,7 +152,7 @@ const linkContent = {
   color: "rgba(23, 170, 221, 1)",
 };
 const mainContent = {
-  padding: "14px 0",
+  padding: "14px 0px 0px  0px",
 };
 
 const StyledTableCell = withStyles((theme) => ({
@@ -148,12 +160,12 @@ const StyledTableCell = withStyles((theme) => ({
     fontWeight: "bold",
     border: "1px solid grey",
     fontSize: "12px",
-    padding: "2px 5px",
+    padding: "2px 16px",
   },
   body: {
     border: "1px solid grey",
     fontSize: "12px",
-    padding: "2px 5px",
+    padding: "2px 16px",
   },
 }))(TableCell);
 
@@ -215,27 +227,29 @@ export default function CSVFileReader(props) {
       <div style={{ ...text_grey, ...padding_div }}>
         Don't forget to upload CSV with first row containing the column headers
       </div>
-      <div>
-        <CSVReader
-          onDrop={handleOnDrop}
-          onError={handleOnError}
-          addRemoveButton
-          removeButtonColor="#659cef"
-          config={{
-            header: true,
-          }}
-          onRemoveFile={handleOnRemoveFile}
-          style={upload_box}
-        >
-          <span style={uploadText}>Drop File To Upload or</span>
-          <Button className="lightblueBtn" variant="contained">
-            Choose File
-          </Button>
-        </CSVReader>
-      </div>
-      <div style={{ ...text_grey, ...padidng_20 }}>
-        Your data is private. We don't share relationships with anyone
-      </div>
+      <Grid container spacing={1}>
+        <Grid item xs={12}>
+          <div className={classes.csvReader}>
+            <CSVReader
+              onDrop={handleOnDrop}
+              onError={handleOnError}
+              addRemoveButton
+              removeButtonColor="#659cef"
+              config={{
+                header: true,
+              }}
+              onRemoveFile={handleOnRemoveFile}
+              style={upload_box}
+            >
+              <span style={uploadText}>Drop File To Upload or</span>
+              <Button className="lightblueBtn" variant="contained">
+                Choose File
+              </Button>
+            </CSVReader>
+          </div>
+        </Grid>
+      </Grid>
+
       <div style={sample_table_area}>
         <div style={{ ...big_text, ...padding_div_top }}>
           Preferred File Setup
@@ -251,51 +265,46 @@ export default function CSVFileReader(props) {
               return false;
             }}
           >
-            Download over CSV template and add your information
+            Download sample CSV template and then upload with your information
           </a>
         </div>
-        <div style={{ ...padding_div_top }}>
+        <div style={{ ...padding_div_top, ...padding_div_bottom }}>
           <TableContainer component={Paper} style={style_papaer}>
             <Table className={classes.table} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <StyledTableCell>First Name</StyledTableCell>
-                  <StyledTableCell align="right">Last Name</StyledTableCell>
-                  <StyledTableCell align="right">
-                    Street Address
-                  </StyledTableCell>
-                  <StyledTableCell align="right">City</StyledTableCell>
-                  <StyledTableCell align="right">State</StyledTableCell>
-                  <StyledTableCell align="right">Zip</StyledTableCell>
-                  <StyledTableCell align="right">Email</StyledTableCell>
-                  <StyledTableCell align="right">Phone Number</StyledTableCell>
+                  <StyledTableCell align="left">First Name</StyledTableCell>
+                  <StyledTableCell align="left">Last Name</StyledTableCell>
+                  <StyledTableCell align="left">Street Address</StyledTableCell>
+                  <StyledTableCell align="left">City</StyledTableCell>
+                  <StyledTableCell align="left">State</StyledTableCell>
+                  <StyledTableCell align="left">Zip</StyledTableCell>
+                  <StyledTableCell align="left">Email</StyledTableCell>
+                  <StyledTableCell align="left">Phone Number</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody style={table_body}>
                 {rows.map((row, i) => (
                   <TableRow key={i + row.first_name}>
-                    <StyledTableCell component="th" scope="row">
+                    <StyledTableCell align="left">
                       {row.first_name}
                     </StyledTableCell>
-                    <StyledTableCell align="right">
+                    <StyledTableCell align="left">
                       {row.last_name}
                     </StyledTableCell>
-                    <StyledTableCell align="right">
+                    <StyledTableCell align="left">
                       {row.address}
                     </StyledTableCell>
-                    <StyledTableCell align="right">{row.city}</StyledTableCell>
-                    <StyledTableCell align="right">{row.state}</StyledTableCell>
-                    <StyledTableCell align="right">{row.zip}</StyledTableCell>
-                    <StyledTableCell align="right">{row.email}</StyledTableCell>
-                    <StyledTableCell align="right">{row.phone}</StyledTableCell>
+                    <StyledTableCell align="left">{row.city}</StyledTableCell>
+                    <StyledTableCell align="left">{row.state}</StyledTableCell>
+                    <StyledTableCell align="left">{row.zip}</StyledTableCell>
+                    <StyledTableCell align="left">{row.email}</StyledTableCell>
+                    <StyledTableCell align="left">{row.phone}</StyledTableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
-        </div>
-        <div style={{ ...small_grey_text, ...normal_padidng }}>
-          Sample data of CSV file
         </div>
       </div>
     </div>
