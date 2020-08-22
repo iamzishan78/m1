@@ -48,7 +48,7 @@ const rows = [
     "708 Main Street",
     "Houston",
     "TX",
-    "22031",
+    "77002",
     "john_doe@domain.com",
     "123-456-7890"
   ),
@@ -58,7 +58,7 @@ const rows = [
     "708 Main Street",
     "Houston",
     "TX",
-    "22031",
+    "77002",
     "john_doe@domain.com",
     "123-456-7890"
   ),
@@ -68,7 +68,7 @@ const rows = [
     "708 Main Street",
     "Houston",
     "TX",
-    "22031",
+    "77002",
     "john_doe@domain.com",
     "123-456-7890"
   ),
@@ -78,7 +78,7 @@ const rows = [
     "708 Main Street",
     "Houston",
     "TX",
-    "22031",
+    "77002",
     "john_doe@domain.com",
     "123-456-7890"
   ),
@@ -277,8 +277,8 @@ export default function CSVFileReader(props) {
                   <StyledTableCell align="left">Last Name</StyledTableCell>
                   <StyledTableCell align="left">Street Address</StyledTableCell>
                   <StyledTableCell align="left">City</StyledTableCell>
-                  <StyledTableCell align="left">Zip</StyledTableCell>
                   <StyledTableCell align="left">State</StyledTableCell>
+                  <StyledTableCell align="left">Zip</StyledTableCell>
                   <StyledTableCell align="left">Email</StyledTableCell>
                   <StyledTableCell align="left">Phone Number</StyledTableCell>
                 </TableRow>
@@ -296,8 +296,8 @@ export default function CSVFileReader(props) {
                       {row.address}
                     </StyledTableCell>
                     <StyledTableCell align="left">{row.city}</StyledTableCell>
-                    <StyledTableCell align="left">{row.zip}</StyledTableCell>
                     <StyledTableCell align="left">{row.state}</StyledTableCell>
+                    <StyledTableCell align="left">{row.zip}</StyledTableCell>
                     <StyledTableCell align="left">{row.email}</StyledTableCell>
                     <StyledTableCell align="left">{row.phone}</StyledTableCell>
                   </TableRow>
