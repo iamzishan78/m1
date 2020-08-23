@@ -51,8 +51,7 @@ const InvestingEntities = () => {
                                     <Grid item sm={12}>
                                         <FormControl style={{width: '100%', padding: 10}}>
                                             <FormLabel>Entity Information</FormLabel>
-                                            <TextField 
-                                                id="outlined-basic"
+                                            <TextField
                                                 style={{paddingTop: 10, paddingBottom: 10}}
                                                 inputProps={{
                                                     style: {
@@ -69,7 +68,6 @@ const InvestingEntities = () => {
                                                 <FormControl style={{width: '100%', padding: 10}}>
                                                     <FormLabel>Account type</FormLabel>
                                                     <TextField 
-                                                        id="outlined-basic"
                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                         inputProps={{
                                                             style: {
@@ -84,7 +82,6 @@ const InvestingEntities = () => {
                                                 <FormControl style={{width: '100%', padding: 10}}>
                                                     <FormLabel>Accredited</FormLabel>
                                                     <TextField 
-                                                        id="outlined-basic"
                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                         inputProps={{
                                                             style: {
@@ -103,7 +100,6 @@ const InvestingEntities = () => {
                                                 <FormControl style={{width: '100%', padding: 10}}>
                                                     <FormLabel>Tax ID / SSN</FormLabel>
                                                     <TextField 
-                                                        id="outlined-basic"
                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                         inputProps={{
                                                             style: {
@@ -147,7 +143,7 @@ const InvestingEntities = () => {
                                                                 <FormControl style={{width: '100%', padding: 10}}>
                                                                     <FormLabel>First Name *</FormLabel>
                                                                     <TextField 
-                                                                        id="outlined-basic"
+            
                                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                                         inputProps={{
                                                                             style: {
@@ -162,7 +158,7 @@ const InvestingEntities = () => {
                                                                 <FormControl style={{width: '100%', padding: 10}}>
                                                                     <FormLabel>Last Name *</FormLabel>
                                                                     <TextField 
-                                                                        id="outlined-basic"
+            
                                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                                         inputProps={{
                                                                             style: {
@@ -177,7 +173,7 @@ const InvestingEntities = () => {
                                                                 <FormControl style={{width: '100%', padding: 10}}>
                                                                     <FormLabel>Role *</FormLabel>
                                                                     <TextField 
-                                                                        id="outlined-basic"
+            
                                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                                         inputProps={{
                                                                             style: {
@@ -192,7 +188,7 @@ const InvestingEntities = () => {
                                                                 <FormControl style={{width: '100%', padding: 10}}>
                                                                     <FormLabel>Signatory *</FormLabel>
                                                                     <TextField 
-                                                                        id="outlined-basic"
+            
                                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                                         inputProps={{
                                                                             style: {
@@ -207,7 +203,7 @@ const InvestingEntities = () => {
                                                                 <FormControl style={{width: '100%', padding: 10}}>
                                                                     <FormLabel>Email *</FormLabel>
                                                                     <TextField 
-                                                                        id="outlined-basic"
+            
                                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                                         inputProps={{
                                                                             style: {
@@ -256,7 +252,6 @@ const InvestingEntities = () => {
                                                 <FormControl style={{width: '100%', padding: 10}}>
                                                     <FormLabel>Address *</FormLabel>
                                                     <TextField 
-                                                        id="outlined-basic"
                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                         inputProps={{
                                                             style: {
@@ -271,7 +266,6 @@ const InvestingEntities = () => {
                                                 <FormControl style={{width: '100%', padding: 10}}>
                                                     <FormLabel>City *</FormLabel>
                                                     <TextField 
-                                                        id="outlined-basic"
                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                         inputProps={{
                                                             style: {
@@ -290,7 +284,6 @@ const InvestingEntities = () => {
                                                 <FormControl style={{width: '100%', padding: 10}}>
                                                     <FormLabel>State *</FormLabel>
                                                     <TextField 
-                                                        id="outlined-basic"
                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                         inputProps={{
                                                             style: {
@@ -305,7 +298,6 @@ const InvestingEntities = () => {
                                                 <FormControl style={{width: '100%', padding: 10}}>
                                                     <FormLabel>Zip or Postal Code *</FormLabel>
                                                     <TextField 
-                                                        id="outlined-basic"
                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                         inputProps={{
                                                             style: {
@@ -324,7 +316,6 @@ const InvestingEntities = () => {
                                                 <FormControl style={{width: '100%', padding: 10}}>
                                                     <FormLabel>Country *</FormLabel>
                                                     <TextField 
-                                                        id="outlined-basic"
                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                         inputProps={{
                                                             style: {
@@ -356,7 +347,6 @@ const InvestingEntities = () => {
                                                 <FormControl style={{width: '100%', padding: 10}}>
                                                     <FormLabel>Mail *</FormLabel>
                                                     <TextField 
-                                                        id="outlined-basic"
                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                         inputProps={{
                                                             style: {

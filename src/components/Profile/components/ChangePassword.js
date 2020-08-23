@@ -37,7 +37,6 @@ const ChangePassword = () => {
                                                 <FormControl style={{width: '100%'}}>
                                                     <FormLabel>Old Password *</FormLabel>
                                                     <TextField 
-                                                        id="outlined-basic"
                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                         inputProps={{
                                                             style: {
@@ -52,7 +51,6 @@ const ChangePassword = () => {
                                                 <FormControl style={{width: '100%'}}>
                                                     <FormLabel>New Password *</FormLabel>
                                                     <TextField 
-                                                        id="outlined-basic"
                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                         inputProps={{
                                                             style: {
@@ -67,7 +65,6 @@ const ChangePassword = () => {
                                                 <FormControl style={{width: '100%'}}>
                                                     <FormLabel>New Password Confirmation*</FormLabel>
                                                     <TextField 
-                                                        id="outlined-basic"
                                                         style={{paddingTop: 10, paddingBottom: 10}}
                                                         inputProps={{
                                                             style: {

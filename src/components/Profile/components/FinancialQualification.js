@@ -194,7 +194,7 @@ const FinancialQualification = () => {
                                         { 
                                             annual_income.map((item, index) => {
                                                 return(
-                                                    <option value={index}>{item}</option>
+                                                    <option key={index} value={index}>{item}</option>
                                                 )
                                                 })
                                         }
@@ -229,7 +229,7 @@ const FinancialQualification = () => {
                                         { 
                                             approximate_net_worth.map((item, index) => {
                                                 return(
-                                                    <option value={index}>{item}</option>
+                                                    <option key={index} value={index}>{item}</option>
                                                 )
                                                 })
                                         }
@@ -264,7 +264,7 @@ const FinancialQualification = () => {
                                         { 
                                             approximate_liquid_net_worth.map((item, index) => {
                                                 return(
-                                                    <option value={index}>{item}</option>
+                                                    <option key={index} value={index}>{item}</option>
                                                 )
                                                 })
                                         }

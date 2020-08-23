@@ -68,7 +68,6 @@ const Profile = () => {
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>First Name *</FormLabel>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10}}
                                             inputProps={{
                                                 style: {
@@ -83,7 +82,6 @@ const Profile = () => {
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>Middle Name *</FormLabel>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10}}
                                             inputProps={{
                                                 style: {
@@ -98,7 +96,6 @@ const Profile = () => {
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>Last Name *</FormLabel>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10}}
                                             inputProps={{
                                                 style: {
@@ -114,7 +111,6 @@ const Profile = () => {
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>Display Name (Username)</FormLabel>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10}}
                                             inputProps={{
                                                 style: {
@@ -129,7 +125,6 @@ const Profile = () => {
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>SSS / Tax ID</FormLabel>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10}}
                                             inputProps={{
                                                 style: {
@@ -152,7 +147,6 @@ const Profile = () => {
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>Date of Birth</FormLabel>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10}}
                                             placeholder="MM/DD/YYYY"
                                             inputProps={{
@@ -187,7 +181,7 @@ const Profile = () => {
                                             <FormControl style={{width: '100%', padding: 10}}>
                                                 <FormLabel>Email *</FormLabel>
                                                 <TextField 
-                                                    id="outlined-basic"
+    
                                                     style={{paddingTop: 10, paddingBottom: 10}}
                                                     inputProps={{
                                                         style: {
@@ -204,7 +198,6 @@ const Profile = () => {
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>Address</FormLabel>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10}}
                                             inputProps={{
                                                 style: {
@@ -219,7 +212,6 @@ const Profile = () => {
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>City</FormLabel>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10}}
                                             inputProps={{
                                                 style: {
@@ -234,7 +226,6 @@ const Profile = () => {
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>State</FormLabel>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10}}
                                             inputProps={{
                                                 style: {
@@ -249,7 +240,6 @@ const Profile = () => {
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>Primary Phone</FormLabel>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10}}
                                             inputProps={{
                                                 style: {
@@ -264,7 +254,6 @@ const Profile = () => {
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>Mobile Phone</FormLabel>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10}}
                                             inputProps={{
                                                 style: {
@@ -279,7 +268,6 @@ const Profile = () => {
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>Work Phone</FormLabel>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10}}
                                             inputProps={{
                                                 style: {
@@ -309,7 +297,6 @@ const Profile = () => {
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>Company</FormLabel>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10}}
                                             inputProps={{
                                                 style: {
@@ -324,7 +311,6 @@ const Profile = () => {
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>Job Title</FormLabel>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10}}
                                             inputProps={{
                                                 style: {
@@ -354,7 +340,7 @@ const Profile = () => {
                                                 { 
                                                     industry_list.map((item, index) => {
                                                         return(
-                                                            <option value={index}>{item}</option>
+                                                            <option key={`industry_${index}`} value={index}>{item}</option>
                                                         )
                                                     })
                                                 }
@@ -398,7 +384,8 @@ const Profile = () => {
                                             investment_experience.map((item, index)=> {
                                                 return(
                                                     <FormControlLabel
-                                                        control={<Checkbox name={item} />}
+                                                        key={index}
+                                                        control={<Checkbox key={index} name={item} />}
                                                         label={item}
                                                     />
                                                 )
@@ -497,7 +484,6 @@ const Profile = () => {
                                     </Grid>
                                     <Grid item sm={6}>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10, width: '100%'}}
                                             inputProps={{
                                                 style: {
@@ -523,7 +509,6 @@ const Profile = () => {
                                     </Grid>
                                     <Grid item sm={4}>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10, width: '100%'}}
                                             multiline
                                             rows={5}
@@ -558,7 +543,6 @@ const Profile = () => {
                                     </Grid>
                                     <Grid item sm={6}>
                                         <TextField 
-                                            id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10, width: '100%'}}
                                             inputProps={{
                                                 style: {
