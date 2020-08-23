@@ -123,41 +123,39 @@ const ProfileDetails = () => {
             maxWidth={"xl"}
             classes={{ paper: newStyle.paper }}
             >
-
-            <Grid container className={newStyle.root}>
-                <Grid item sm={2}>
-                <Grid container className={newStyle.navSubroot}>
-                    <Grid item sm={12} style={{alignSelf: 'center', flex: 0.3, padding: '10%'}}>
-                    <img src={"https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"}
-                        alt="Profile picture"
-                        className={newStyle.profile_picture} />
-                    <h2 style={{color: '#fff'}}> Jacob Avery </h2>
+                <Grid container className={newStyle.root}>
+                    <Grid item sm={2}>
+                    <Grid container className={newStyle.navSubroot}>
+                        <Grid item sm={12} style={{alignSelf: 'center', flex: 0.3, padding: '10%'}}>
+                        <img src={"https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"}
+                            alt="Profile picture"
+                            className={newStyle.profile_picture} />
+                        <h2 style={{color: '#fff'}}> Jacob Avery </h2>
+                        </Grid>
+                        <Grid item sm={12} style={{flex: 1}}>
+                        <MenuList className={newStyle.menuList}>
+                            {
+                            list.map((item, index) => {
+                                return <MenuItem key={index} onClick={()=> {changeDisplayContent(index)}}>{item}</MenuItem>
+                            })
+                            }
+                        </MenuList>
+                        </Grid>
                     </Grid>
-                    <Grid item sm={12} style={{flex: 1}}>
-                    <MenuList className={newStyle.menuList}>
-                        {
-                        list.map((item, index) => {
-                            return <MenuItem key={index} onClick={()=> {changeDisplayContent(index)}}>{item}</MenuItem>
-                        })
-                        }
-                    </MenuList>
+                    </Grid>
+                    <Grid item sm={10}>
+                    <Grid container className={newStyle.contentSubroot}>
+                        <Grid item sm={12}>
+                        <ProfileHeader />
+                        </Grid>
+                        <Grid item sm={12} style={{
+                        maxHeight: '735px', overflowY: "auto", overflowX: 'hidden'
+                        }}>
+                        { displayContent }
+                        </Grid>
+                    </Grid>
                     </Grid>
                 </Grid>
-                </Grid>
-                <Grid item sm={10}>
-                <Grid container className={newStyle.contentSubroot}>
-                    <Grid item sm={12}>
-                    <ProfileHeader />
-                    </Grid>
-                    <Grid item sm={12} style={{
-                    maxHeight: '735px', overflowY: "auto", overflowX: 'hidden'
-                    }}>
-                    { displayContent }
-                    </Grid>
-                </Grid>
-                </Grid>
-            </Grid>
-
             </Dialog>
     </ProfileContextProvider> 
     )

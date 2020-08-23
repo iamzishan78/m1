@@ -10,15 +10,45 @@ import FormLabel from "@material-ui/core/FormLabel";
 import TextField from "@material-ui/core/TextField";
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import Select from '@material-ui/core/Select';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';    
 import Box from '@material-ui/core/Box';
+import LockIcon from '@material-ui/icons/Lock';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { PanelTheme, PanelGeneralStyle} from '../../../styles/Panel';
 
 const Profile = () => {
     const classes = PanelGeneralStyle();
+    const industry_list = [
+        'Computer Software',
+        'Construction',
+        'Engineering',
+        'Entertainment',
+        'Financial Services & Banking',
+        'Government',
+        'Government Contracting',
+        'Healthcare',
+        'Hospitality',
+        'Information Technology Services',
+        'Insurance',
+        'Legal',
+        'Management Consulting',
+        'Marketing & Advertising',
+        'No Industry Selected'
+    ];
+    const investment_experience = [
+        'Alternative assets',
+        'Bonds',
+        'Direct Real Estate Ownership',
+        'Private Equity',
+        'REITs',
+        'Stocks & Mutual Funds',
+        'Venture Capital'
+    ];
+
     return(
     <Fragment>
         <ThemeProvider theme={PanelTheme}>
@@ -105,9 +135,17 @@ const Profile = () => {
                                                 style: {
                                                     height: 40,
                                                     padding: '0 14px',
-                                                },
+                                                }
                                             }}
-                                            variant="outlined"/>
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <LockIcon style={{color: '#8c8c8c'}}/>
+                                                    </InputAdornment>
+                                                )
+                                            }}
+                                            variant="outlined"
+                                            />
                                     </FormControl>
                                 </Grid> 
                                 <Grid item sm={4}>
@@ -116,6 +154,7 @@ const Profile = () => {
                                         <TextField 
                                             id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10}}
+                                            placeholder="MM/DD/YYYY"
                                             inputProps={{
                                                 style: {
                                                     height: 40,
@@ -299,16 +338,28 @@ const Profile = () => {
                                 <Grid item sm={4}>
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>Industry</FormLabel>
-                                        <TextField 
-                                            id="outlined-basic"
-                                            style={{paddingTop: 10, paddingBottom: 10}}
-                                            inputProps={{
-                                                style: {
-                                                    height: 40,
-                                                    padding: '0 14px',
-                                                },
-                                            }}
-                                            variant="outlined"/>
+                                        <FormControl variant="outlined" className={classes.formControl} style={{paddingTop: 10}}>
+                                            <Select
+                                                native
+                                                inputProps={{
+                                                    name: 'industry',
+                                                    id: 'industry',
+                                                    style: {
+                                                        height: 40,
+                                                        padding: '0 14px'
+                                                    }
+                                                }}
+                                                style={{width: '100%'}}
+                                            >
+                                                { 
+                                                    industry_list.map((item, index) => {
+                                                        return(
+                                                            <option value={index}>{item}</option>
+                                                        )
+                                                    })
+                                                }
+                                            </Select>
+                                        </FormControl>
                                     </FormControl>
                                 </Grid>
                             </Grid>
@@ -341,31 +392,42 @@ const Profile = () => {
                             </Grid>
                             <Grid item sm={6}>
                                 <FormControl style={{width: '100%', padding: 10}}>
-                                    <FormLabel>General Investing Experience</FormLabel>
-                                    <RadioGroup aria-label="accredited" name="accredited" value={"1"} onChange={()=> {}} row>
-                                        <FormControlLabel value="1" control={<Radio />} label="Alternative assets" />
-                                        <FormControlLabel value="0" control={<Radio />} label="Bonds" />
-                                        <FormControlLabel value="0" control={<Radio />} label="Direct Real Estate Ownership" />
-                                        <FormControlLabel value="0" control={<Radio />} label="Private Equity" />
-                                        <FormControlLabel value="0" control={<Radio />} label="REITs" />
-                                        <FormControlLabel value="0" control={<Radio />} label="Stocks & Mutual Funds" />
-                                        <FormControlLabel value="0" control={<Radio />} label="Venture Capital" />
-                                    </RadioGroup>
+                                    <FormLabel component="legend">General Investing Experience</FormLabel>
+                                    <FormGroup>
+                                        {
+                                            investment_experience.map((item, index)=> {
+                                                return(
+                                                    <FormControlLabel
+                                                        control={<Checkbox name={item} />}
+                                                        label={item}
+                                                    />
+                                                )
+                                            })
+                                        }
+                                    </FormGroup>
                                 </FormControl>
                             </Grid>
                             <Grid item sm={4}>
                                 <FormControl style={{width: '100%', padding: 10}}>
                                     <FormLabel>CRE Investing Experience</FormLabel>
-                                    <TextField 
-                                        id="outlined-basic"
-                                        style={{paddingTop: 10, paddingBottom: 10}}
-                                        inputProps={{
-                                            style: {
-                                                height: 40,
-                                                padding: '0 14px',
-                                            },
-                                        }}
-                                        variant="outlined"/>
+                                    <FormControl variant="outlined" className={classes.formControl} style={{paddingTop: 10}}>
+                                            <Select
+                                                native
+                                                inputProps={{
+                                                    name: 'industry',
+                                                    id: 'industry',
+                                                    style: {
+                                                        height: 40,
+                                                        padding: '0 14px'
+                                                    }
+                                                }}
+                                                style={{width: '100%'}}
+                                            >
+                                            <option value="none">None</option>
+                                            <option value="moderate">Moderate</option>
+                                            <option value="extensive">Extensive</option>
+                                            </Select>
+                                        </FormControl>
                                 </FormControl>
                             </Grid>
                         </Grid>
@@ -459,10 +521,12 @@ const Profile = () => {
                                             </Box>
                                         </Typography>
                                     </Grid>
-                                    <Grid item sm={6}>
+                                    <Grid item sm={4}>
                                         <TextField 
                                             id="outlined-basic"
                                             style={{paddingTop: 10, paddingBottom: 10, width: '100%'}}
+                                            multiline
+                                            rows={5}
                                             inputProps={{
                                                 style: {
                                                     height: 40,
@@ -471,10 +535,20 @@ const Profile = () => {
                                             }}
                                             variant="outlined"/>
                                     </Grid>
+                                    <Grid item sm={2}>
+                                        <FormControl style={{width: '100%', padding: 10}}>
+                                            <FormGroup>
+                                                <FormControlLabel
+                                                    control={<Checkbox name="address" />}
+                                                    label="Same as above"
+                                                />
+                                                </FormGroup>
+                                        </FormControl>
+                                    </Grid>
                                 </Grid>
                             </Grid>
                             <Grid item sm={12}>
-                            <   Grid container>
+                                <Grid container>
                                     <Grid item sm={2}>
                                         <Typography component="div">
                                             <Box fontWeight="fontWeightBold" m={1}>

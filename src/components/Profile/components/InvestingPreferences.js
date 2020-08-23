@@ -204,6 +204,7 @@ const InvestingPreferences = () => {
                                                     <div style={{display:"inline-flex"}}>
                                                         <Select
                                                             native
+                                                            variant="outlined"
                                                             inputProps={{
                                                                 name: 'total-investment',
                                                                 id: 'total-investment',

@@ -16,6 +16,8 @@ import Card from '@material-ui/core/Card';
 import AddIcon from '@material-ui/icons/Add';
 import CardContent from '@material-ui/core/CardContent';
 import Divider from '@material-ui/core/Divider';
+import LockIcon from '@material-ui/icons/Lock';
+import InputAdornment from '@material-ui/core/InputAdornment';
 
 const InvestingEntities = () => {
     const classes = PanelGeneralStyle();
@@ -107,9 +109,17 @@ const InvestingEntities = () => {
                                                             style: {
                                                                 height: 40,
                                                                 padding: '0 14px',
-                                                            },
+                                                            }
                                                         }}
-                                                        variant="outlined"/>
+                                                        InputProps={{
+                                                            endAdornment: (
+                                                                <InputAdornment position="end">
+                                                                    <LockIcon style={{color: '#8c8c8c'}}/>
+                                                                </InputAdornment>
+                                                            )
+                                                        }}
+                                                        variant="outlined"
+                                                    />
                                                 </FormControl>
                                             </Grid>
                                         </Grid>
