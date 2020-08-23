@@ -34,6 +34,7 @@ import ApolloClient from "apollo-boost";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { CircularProgress } from "@material-ui/core";
 import Profile from "./components/Profile/Profile";
+import ProfileDetails from "./components/Profile/ProfileDetails";
 
 import Notifications from "./components/Notifications/Notifications";
 
@@ -235,6 +236,7 @@ function App() {
                     <NavigationProvider>
                       <PrivateRoute exact path="/" component={MapProvider} />
                       <PrivateRoute exact path="/profile" component={Profile} />
+                      <PrivateRoute exact path="/myaccount" component={ProfileDetails} />
                       <Route exact path="/signup" component={SignUpCard} />
                       <Route
                         exact

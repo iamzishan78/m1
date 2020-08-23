@@ -50,6 +50,7 @@
     "react-data-grid-m1n-version": "^1.0.1",
     "react-dom": "^16.13.1",
     "react-draggable": "^4.4.3",
+    "react-google-recaptcha": "^2.1.0",
     "react-iframe": "^1.8.0",
     "react-image-crop": "^8.6.4",
     "react-json-view": "^1.19.1",

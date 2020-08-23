@@ -928,9 +928,10 @@ export default function Navigation(props) {
       <MenuItem
         className={classes.userMenuItem}
         onClick={(e) => openProfile(e)}
+        containerElement={<Link to="/profile" />}
       >
-        <Link to="/profile" style={{ textDecoration: "none", color: "#1daee1" }}>
-          <Typography variant="inherit">My Account</Typography>
+        <Link to="/profile" style={{ textDecoration: "none", width: '100%' }}>
+          <Typography style={{ textDecoration: "none", color: "#1daee1" }} variant="inherit">My Account</Typography>
         </Link>
       </MenuItem>
       <Divider/>
