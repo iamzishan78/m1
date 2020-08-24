@@ -420,7 +420,7 @@ export default function Map() {
       for (let i = 0; i < stateApp.udLayerConfig.length; i ++) {
         const layerName = stateApp.udLayerConfig[i].layerName;
         const index = userDefinedLayers.findIndex((layer) => layer.name == layerName);
-        const paintConfig = stateApp.udLayerConfig[i].config.layerProps[0].paintProps;
+        userDefinedLayers[index].idColor = stateApp.udLayerConfig[i].config.idColor;
         userDefinedLayers[index].layerProps[0].paintProps = stateApp.udLayerConfig[i].config.layerProps[0].paintProps;
         if (stateApp.udLayerConfig[i].config.layerProps[0].clusterProps) {
           userDefinedLayers[index].layerProps[0].clusterProps = stateApp.udLayerConfig[i].config.layerProps[0].clusterProps;
