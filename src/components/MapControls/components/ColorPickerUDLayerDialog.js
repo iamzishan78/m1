@@ -47,12 +47,10 @@ export default (props) => {
   }
 
   const fillColorChange = (color) => {
-    console.log(color);
     setFillColor(color);
   }
 
   const strokeColorChange = (color) => {
-    console.log(color);
     setStrokeColor(color);
   }
 
@@ -112,21 +110,21 @@ export default (props) => {
         }
       });
     }
-
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      selectedUDLayer: null
-    }))
   }
 
   useEffect(() => {
     if (upsertedLayerConfig && upsertedLayerConfig.upsertLayerConfig && upsertedLayerConfig.upsertLayerConfig.success) {
       const udLayerConfig = stateApp.udLayerConfig.slice(0);
-      const layerConfig = upsertedLayerConfig.upsertLayerConfig.layerConfig;
+      const layerConfig = {...upsertedLayerConfig.upsertLayerConfig.layerConfig};
       udLayerConfig.push(layerConfig);
       setStateApp((stateApp) => ({
         ...stateApp,
         udLayerConfig
+      }));
+      setIsOpen(false);
+      setStateMapControls((stateMapControls) => ({
+        ...stateMapControls,
+        selectedUDLayer: null
       }));
     }
   }, [upsertedLayerConfig]);
@@ -134,12 +132,18 @@ export default (props) => {
   useEffect(() => {
     if (updatedLayerConfig && updatedLayerConfig.updateLayerConfig && updatedLayerConfig.updateLayerConfig.success) {
       const udLayerConfig = stateApp.udLayerConfig.slice(0);
-      const layerConfig = upsertedLayerConfig.updateLayerConfig.layerConfig;
+      const layerConfig = {...updatedLayerConfig.updateLayerConfig.layerConfig};
       const layerConfigIndex = udLayerConfig.findIndex((config) => config._id == layerConfig._id )
+      console.log(layerConfig);
       udLayerConfig[layerConfigIndex] = layerConfig;
       setStateApp((stateApp) => ({
         ...stateApp,
         udLayerConfig
+      }));
+      setIsOpen(false);
+      setStateMapControls((stateMapControls) => ({
+        ...stateMapControls,
+        selectedUDLayer: null
       }));
     }
   }, [updatedLayerConfig]);
