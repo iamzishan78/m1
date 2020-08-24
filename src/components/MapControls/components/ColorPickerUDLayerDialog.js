@@ -74,7 +74,7 @@ export default (props) => {
         if (config.layerProps[0].clusterProps) {
           config.layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[0][1] = '#' + fillColor.hex;
           config.layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[1][1] = '#' + fillColor.hex;
-          config.layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[1][1] = '#' + fillColor.hex;
+          config.layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[2][1] = '#' + fillColor.hex;
         }
       }
     }
