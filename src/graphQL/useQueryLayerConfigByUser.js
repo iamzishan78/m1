@@ -6,7 +6,7 @@ export const LAYERCONFIGSBYUSER = gql`
       _id
       config
       layerName
-      user: {
+      user {
         name
         email
       }
