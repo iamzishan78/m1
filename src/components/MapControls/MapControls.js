@@ -17,9 +17,9 @@ import QueueIcon from "@material-ui/icons/Queue";
 import CancelIcon from "@material-ui/icons/Cancel";
 import { makeStyles } from "@material-ui/core/styles";
 //components
-import BaseMapStyles from "./components/BaseMapStyles";
-import CheckboxList from "./components/CheckboxList";
-import CheckboxListHeatmaps from "./components/CheckboxListHeatmaps";
+import BaseMapStyles from "./BaseMapStyles";
+import CheckboxList from "./CheckboxList";
+import CheckboxListHeatmaps from "./CheckboxListHeatmaps";
 import AddUserData from "./components/addUserData";
 import DrawShapes from "./components/DrawShapes/DrawShapes";
 import TrackedWellsMapCard from "./components/TrackedWellsMapCard";

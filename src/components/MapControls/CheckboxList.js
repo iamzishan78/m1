@@ -17,8 +17,8 @@ import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import DragIndicator from "@material-ui/icons/DragIndicator";
 //import IconButton from '@material-ui/core/IconButton';
 //import EditIcon from '@material-ui/icons/Edit';
-import { MapControlsContext } from "../MapControlsContext";
-import { AppContext } from "../../../AppContext";
+import { MapControlsContext } from "./MapControlsContext";
+import { AppContext } from "../../AppContext";
 import Collapse from "@material-ui/core/Collapse";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -26,10 +26,10 @@ import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import LayersIcon from "@material-ui/icons/Layers";
 import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
-import ClickIcon from "..//..//Shared/svgIcons/cursor-click.js";
+import ClickIcon from "..//Shared/svgIcons/cursor-click.js";
 import { borders } from "@material-ui/system";
 import Box from "@material-ui/core/Box";
-import Tooltip from "@material-ui/core/Tooltip";
+import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
@@ -65,7 +65,12 @@ export default function CheckboxList(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const [openUD, setOpenUD] = React.useState(true);
-
+  const [state, setState] = React.useState({
+    checkedB: true,
+  });
+  const handleChange = (event) => {
+    setState({ ...state, [event.target.name]: event.target.checked });
+  };
   const handleClick = () => {
     setOpen(!open);
   };
@@ -413,10 +418,10 @@ export default function CheckboxList(props) {
                               <ListItemIcon {...provided.dragHandleProps}>
                                 <DragIndicator />
                               </ListItemIcon>
-
                               <ListItemText id={labelId} primary={layer.name} />
-
-                              {(layer.name === "Wells" || layer.name === "Permits" || layer.name === "Rig Activity") && (
+                              {(layer.name === "Wells" ||
+                                layer.name === "Permits" ||
+                                layer.name === "Rig Activity") && (
                                 <div style={{ paddingRight: 20 }}>
                                   <Checkbox
                                     icon={
@@ -438,23 +443,19 @@ export default function CheckboxList(props) {
                                   />
                                 </div>
                               )}
-
-                              <Checkbox
-                                icon={<VisibilityOffIcon htmlColor="#fff" />}
-                                checkedIcon={
-                                  <VisibilityIcon htmlColor="#fff" />
+                              <FormControlLabel
+                                control={
+                                  <Switch
+                                    checked={
+                                      stateApp.checkedLayers
+                                        ? stateApp.checkedLayers.indexOf(
+                                            index
+                                          ) !== -1
+                                        : false
+                                    }
+                                    onChange={handleToggle(index)}
+                                  />
                                 }
-                                edge="start"
-                                checked={
-                                  stateApp.checkedLayers
-                                    ? stateApp.checkedLayers.indexOf(index) !==
-                                      -1
-                                    : false
-                                }
-                                tabIndex={-1}
-                                disableRipple
-                                inputProps={{ "aria-labelledby": labelId }}
-                                onChange={handleToggle(index)}
                               />
                             </StyledListItem>
                           )}
@@ -563,38 +564,21 @@ export default function CheckboxList(props) {
                                     />
                                   </div>
 
-                                  <Checkbox
-                                    disabled={!ifLayerHaveData(layer)}
-                                    icon={
-                                      <VisibilityOffIcon
-                                        htmlColor={
-                                          !ifLayerHaveData(layer)
-                                            ? "rgb(127, 149, 199)"
-                                            : "#fff"
+                                  <FormControlLabel
+                                    control={
+                                      <Switch
+                                        checked={
+                                          stateApp.checkedUserDefinedLayers
+                                            ? stateApp.checkedUserDefinedLayers.indexOf(
+                                                index
+                                              ) !== -1
+                                            : false
                                         }
+                                        onChange={handleToggleUserDefined(
+                                          index
+                                        )}
                                       />
                                     }
-                                    checkedIcon={
-                                      <VisibilityIcon
-                                        htmlColor={
-                                          !ifLayerHaveData(layer)
-                                            ? "rgb(127, 149, 199)"
-                                            : "#fff"
-                                        }
-                                      />
-                                    }
-                                    edge="start"
-                                    checked={
-                                      stateApp.checkedUserDefinedLayers
-                                        ? stateApp.checkedUserDefinedLayers.indexOf(
-                                            index
-                                          ) !== -1
-                                        : false
-                                    }
-                                    tabIndex={-1}
-                                    disableRipple
-                                    inputProps={{ "aria-labelledby": labelId }}
-                                    onChange={handleToggleUserDefined(index)}
                                   />
                                 </StyledListItem>
                               </Tooltip>

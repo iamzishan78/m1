@@ -5,8 +5,8 @@ function MapBasicIcon() {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
-      width="90"
-      height="60"
+      width="150"
+      height="100"
       version="1.1"
       viewBox="0 0 1644.334 1093.587"
     >
