@@ -35,6 +35,10 @@ export default (props) => {
 
   const handleClose = () => {
     setIsOpen(false);
+    setStateMapControls((stateMapControls) => ({
+      ...stateMapControls,
+      selectedUDLayer: null
+    }));
   }
 
   const fillColorChange = (color) => {

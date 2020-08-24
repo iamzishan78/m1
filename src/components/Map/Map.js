@@ -50,6 +50,7 @@ import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
 import { FILELAYERSQUERY } from "../../graphQL/useQueryFileLayers";
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
+import { LAYERCONFIGSBYUSER } from "../../graphQL/useQueryLayerConfigByUser";
 import { ABSTRACTGEOQUERYCONTAINS, ABSTRACTGEOCONTAINSQUERY } from "../../graphQL/useQueryAbstractGeoContains";
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
@@ -291,6 +292,8 @@ export default function Map() {
   const [getAbstractGeo, { data: abstractData }] = useLazyQuery(ABSTRACTGEOQUERY);
   const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY); 
 
+  const [getLayerCongfigsByUser, { data: layerConfigs }] = useLazyQuery(LAYERCONFIGSBYUSER); 
+
   /////end/////////temporary
 
   useEffect(() => {
@@ -314,9 +317,15 @@ export default function Map() {
         variables: {
           userId: stateApp.user.mongoId
         }
-      })
+      });
 
       getCustomLayers();
+
+      getLayerCongfigsByUser({
+        variables: {
+          userId: stateApp.user.mongoId
+        }
+      });
     }
   }, [stateApp.user]);
 
@@ -394,6 +403,37 @@ export default function Map() {
       });
     }
   }, [fileLayerData]);
+
+  useEffect(() => {
+    if (layerConfigs && layerConfigs.layersConfigByUser && layerConfigs.layersConfigByUser.length > 0) {
+      const configs = layerConfigs.layersConfigByUser;
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        udLayerConfig: configs
+      }));
+    }
+  }, [layerConfigs]);
+
+  useEffect(() => {
+    const userDefinedLayers = stateApp.userDefinedLayers.slice(0);
+    if (stateApp.udLayerConfig && stateApp.udLayerConfig.length > 0) {
+      for (let i = 0; i < stateApp.udLayerConfig.length; i ++) {
+        const layerName = stateApp.udLayerConfig[i].layerName;
+        const index = userDefinedLayers.findIndex((layer) => layer.name == layerName);
+        const paintConfig = stateApp.udLayerConfig[i].config.layerProps[0].paintProps;
+        userDefinedLayers[index].layerProps[0].paintProps = stateApp.udLayerConfig[i].config.layerProps[0].paintProps;
+        if (stateApp.udLayerConfig[i].config.layerProps[0].clusterProps) {
+          userDefinedLayers[index].layerProps[0].clusterProps = stateApp.udLayerConfig[i].config.layerProps[0].clusterProps;
+        }
+      }
+
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        userDefinedLayers
+      }));
+
+    }
+  }, [stateApp.udLayerConfig])
 
   const handleFileAsync = async (uri, internalKey, layerIndex) => {
     if (uri && internalKey && layerIndex >= 0) {
@@ -799,6 +839,20 @@ export default function Map() {
             map.moveLayer(config.layerProps[i].layerId, beforelayer);
           }
           beforelayer = config.layerProps[i].layerId;
+        } else {
+          if (i == 0) {
+            const paintProps = config.layerProps[i].paintProps;
+            Object.keys(paintProps).forEach((key) => {
+              map.setPaintProperty(layerId, key, paintProps[key])
+            })
+            if (config.layerProps[i].clusterProps) {
+              const clusterProps = config.layerProps[i].clusterProps;
+              const clusterLayerId = layerId + "-clusters";
+              Object.keys(clusterProps.clusterPaintProps).forEach((key) => {
+                map.setPaintProperty(clusterLayerId, key, clusterProps.clusterPaintProps[key])
+              })
+            }
+          }
         }
       }
     }

@@ -374,6 +374,13 @@ export default function CheckboxList(props) {
     }));
   }
 
+  const handleColorPickerUDLayer = (layer) => {
+    setStateMapControls((stateMapControls) => ({
+      ...stateMapControls,
+      selectedUDLayer: layer
+    }));
+  }
+
   useEffect(() => {
     if (stateApp.userFileLayers && stateApp.userFileLayers.length > 0) {
       setUserFileLayer(stateApp.userFileLayers)
@@ -539,6 +546,11 @@ export default function CheckboxList(props) {
                                     }
                                   />
 
+                                  {/* Color Picker for UD Layer */}
+                                  <ListItemIcon onClick={() => handleColorPickerUDLayer(layer)}>
+                                    <PaletteIcon />
+                                  </ListItemIcon>
+
                                   <div style={{ paddingRight: 20 }}>
                                     <Checkbox
                                       disabled={!ifLayerHaveData(layer)}
@@ -644,11 +656,82 @@ export default function CheckboxList(props) {
                                   primary={layer.layerName}
                                 />
 
+                                <ListItemIcon onClick={() => handleColorPicker(layer)}>
+                                  <PaletteIcon />
+                                </ListItemIcon>
                                 <div style={{ paddingRight: 20 }}>
-                                  <ListItemIcon onClick={() => handleColorPicker(layer)}>
-                                    <PaletteIcon />
-                                  </ListItemIcon>
+                                  <Checkbox
+                                    disabled={!ifLayerHaveData(layer)}
+                                    icon={
+                                      <CancelOutlinedIcon
+                                        htmlColor={
+                                          !ifLayerHaveData(layer)
+                                            ? "rgb(127, 149, 199)"
+                                            : "#12abe0"
+                                        }
+                                      />
+                                    }
+                                    checkedIcon={
+                                      <ClickIcon
+                                        color={
+                                          !ifLayerHaveData(layer)
+                                            ? "rgb(127, 149, 199)"
+                                            : "#12abe0"
+                                        }
+                                      />
+                                    }
+                                    edge="start"
+                                    checked={
+                                      stateApp.checkedFileLayersInteraction
+                                        ? stateApp.checkedFileLayersInteraction.indexOf(
+                                            index
+                                          ) !== -1
+                                        : false
+                                    }
+                                    tabIndex={-1}
+                                    disableRipple
+                                    inputProps={{
+                                      "aria-labelledby": labelId,
+                                    }}
+                                    // onChange={handleToggleUserDefinedInteraction(
+                                    //   index
+                                    // )}
+                                  />
                                 </div>
+
+                                <Checkbox
+                                  disabled={!ifLayerHaveData(layer)}
+                                  icon={
+                                    <VisibilityOffIcon
+                                      htmlColor={
+                                        !ifLayerHaveData(layer)
+                                          ? "rgb(127, 149, 199)"
+                                          : "#fff"
+                                      }
+                                    />
+                                  }
+                                  checkedIcon={
+                                    <VisibilityIcon
+                                      htmlColor={
+                                        !ifLayerHaveData(layer)
+                                          ? "rgb(127, 149, 199)"
+                                          : "#fff"
+                                      }
+                                    />
+                                  }
+                                  edge="start"
+                                  checked={
+                                    stateApp.checkedFileLayers
+                                      ? stateApp.checkedFileLayers.indexOf(
+                                          index
+                                        ) !== -1
+                                      : false
+                                  }
+                                  tabIndex={-1}
+                                  disableRipple
+                                  inputProps={{ "aria-labelledby": labelId }}
+                                  // onChange={handleToggleUserDefined(index)}
+                                />
                               </StyledListItem>
                             </Box>
                           )}
