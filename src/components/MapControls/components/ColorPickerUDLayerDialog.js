@@ -69,12 +69,12 @@ export default (props) => {
       if (type == 'fill') {
         config.layerProps[0].paintProps['fill-color'] = '#' + fillColor.hex;
       }
-      if (type == 'circle') {
+      else if (type == 'circle') {
         config.layerProps[0].paintProps['circle-color'] = '#' + fillColor.hex;
-        if (config.layerProps[0].paintProps.clusterProps) {
-          config.layerProps[0].paintProps.clusterProps.clusterPaintProps['circle-color'].stops[0][1] = '#' + fillColor.hex;
-          config.layerProps[0].paintProps.clusterProps.clusterPaintProps['circle-color'].stops[1][1] = '#' + fillColor.hex;
-          config.layerProps[0].paintProps.clusterProps.clusterPaintProps['circle-color'].stops[1][1] = '#' + fillColor.hex;
+        if (config.layerProps[0].clusterProps) {
+          config.layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[0][1] = '#' + fillColor.hex;
+          config.layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[1][1] = '#' + fillColor.hex;
+          config.layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[1][1] = '#' + fillColor.hex;
         }
       }
     }
@@ -83,10 +83,10 @@ export default (props) => {
       if (type == 'fill') {
         config.layerProps[0].paintProps['fill-outline-color'] = '#' + strokeColor.hex;
       }
-      if (type == 'circle') {
+      else if (type == 'circle') {
         config.layerProps[0].paintProps['circle-stroke-color'] = '#' + strokeColor.hex;
-        if (config.layerProps[0].paintProps.clusterProps) {
-          config.layerProps[0].paintProps.clusterProps.clusterPaintProps['circle-stroke-color'] = '#' + strokeColor.hex;
+        if (config.layerProps[0].clusterProps) {
+          config.layerProps[0].clusterProps.clusterPaintProps['circle-stroke-color'] = '#' + strokeColor.hex;
         }
       }
     }
@@ -125,6 +125,7 @@ export default (props) => {
       const layerConfig = upsertedLayerConfig.upsertLayerConfig.layerConfig;
       udLayerConfig.push(layerConfig);
       setStateApp((stateApp) => ({
+        ...stateApp,
         udLayerConfig
       }));
     }
@@ -137,6 +138,7 @@ export default (props) => {
       const layerConfigIndex = udLayerConfig.findIndex((config) => config._id == layerConfig._id )
       udLayerConfig[layerConfigIndex] = layerConfig;
       setStateApp((stateApp) => ({
+        ...stateApp,
         udLayerConfig
       }));
     }

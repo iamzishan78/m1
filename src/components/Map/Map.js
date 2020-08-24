@@ -415,15 +415,16 @@ export default function Map() {
   }, [layerConfigs]);
 
   useEffect(() => {
+    console.log(stateApp.udLayerConfig);
     const userDefinedLayers = stateApp.userDefinedLayers.slice(0);
     if (stateApp.udLayerConfig && stateApp.udLayerConfig.length > 0) {
       for (let i = 0; i < stateApp.udLayerConfig.length; i ++) {
         const layerName = stateApp.udLayerConfig[i].layerName;
         const index = userDefinedLayers.findIndex((layer) => layer.name == layerName);
         userDefinedLayers[index].idColor = stateApp.udLayerConfig[i].config.idColor;
-        userDefinedLayers[index].layerProps[0].paintProps = stateApp.udLayerConfig[i].config.layerProps[0].paintProps;
+        userDefinedLayers[index].layerProps[0].paintProps = {...stateApp.udLayerConfig[i].config.layerProps[0].paintProps};
         if (stateApp.udLayerConfig[i].config.layerProps[0].clusterProps) {
-          userDefinedLayers[index].layerProps[0].clusterProps = stateApp.udLayerConfig[i].config.layerProps[0].clusterProps;
+          userDefinedLayers[index].layerProps[0].clusterProps = {...stateApp.udLayerConfig[i].config.layerProps[0].clusterProps};
         }
       }
 
@@ -839,20 +840,6 @@ export default function Map() {
             map.moveLayer(config.layerProps[i].layerId, beforelayer);
           }
           beforelayer = config.layerProps[i].layerId;
-        } else {
-          if (i == 0) {
-            const paintProps = config.layerProps[i].paintProps;
-            Object.keys(paintProps).forEach((key) => {
-              map.setPaintProperty(layerId, key, paintProps[key])
-            })
-            if (config.layerProps[i].clusterProps) {
-              const clusterProps = config.layerProps[i].clusterProps;
-              const clusterLayerId = layerId + "-clusters";
-              Object.keys(clusterProps.clusterPaintProps).forEach((key) => {
-                map.setPaintProperty(clusterLayerId, key, clusterProps.clusterPaintProps[key])
-              })
-            }
-          }
         }
       }
     }
@@ -1478,6 +1465,30 @@ export default function Map() {
       // });
     }
   }, [stateApp.trackFilterOn]);
+
+  useEffect(() => {
+    console.log("layerConfig Update");
+    if (stateApp.userDefinedLayers.length > 0 && map) {
+      stateApp.userDefinedLayers.forEach((l) => {
+        const k = l.id[0];
+        if (map.getLayer(k)) {
+          console.log(l.layerProps[0].paintProps);
+          const paintProps = l.layerProps[0].paintProps;
+          Object.keys(paintProps).forEach((key) => {
+            map.setPaintProperty(k, key, paintProps[key])
+          })
+          if (l.layerProps[0].clusterProps) {
+            const clusterProps = l.layerProps[0].clusterProps;
+            console.log(clusterProps);
+            const clusterLayerId = k + "-clusters";
+            Object.keys(clusterProps.clusterPaintProps).forEach((key) => {
+              map.setPaintProperty(clusterLayerId, key, clusterProps.clusterPaintProps[key])
+            })
+          }
+        }
+      });
+    }
+  }, [stateApp.userDefinedLayers, map]);
 
   useEffect(() => {
     console.log("useEffect 18");
