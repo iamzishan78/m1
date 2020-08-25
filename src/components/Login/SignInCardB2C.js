@@ -130,8 +130,12 @@ const SignInCardB2C = (props) => {
   };
 
   const signInAADB2C = () => {
-    setError(null);
-    handleAADB2CSignIn(updateTenantFlags);
+    if (tenant.trim() === "") {
+      updateTenantFlags();
+    } else {
+      setError(null);
+      handleAADB2CSignIn(tenant, updateTenantFlags);
+    }
   };
 
   const renderAADButtonAndLoader = props.ready ? (
@@ -166,9 +170,10 @@ const SignInCardB2C = (props) => {
       </div>
       {!props.ready ? (
         <React.Fragment>
-          {/* <div
+          {" "}
+          <div
             style={{
-              marginTop: "55px",
+              marginTop: "35px",
               fontSize: "14px",
               fontWeight: "900",
               fontFamily: "Tahoma, Geneva, sans-serif",
@@ -198,7 +203,7 @@ const SignInCardB2C = (props) => {
               setError(null);
             }}
             value={tenant}
-          /> */}
+          />{" "}
           {renderAADButtonAndLoader}
           {/* <div className={classes.cardFooter}>
             Don't have an account?

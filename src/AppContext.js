@@ -1,7 +1,10 @@
 import React, { useState, createContext, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
-import { MSALB2CObj, tenantB2C } from "./components/Login/AADB2CAuthConfig";
+import {
+  MSALB2CObj,
+  B2CTenantToLogin,
+} from "./components/Login/AADB2CAuthConfig";
 import {
   styleLayers,
   userDefinedLayers,
@@ -168,8 +171,8 @@ const AppProvider = (props) => {
 
   useEffect(() => {
     async function wait() {
+      /*
       let tenantName = window.sessionStorage.getItem("tenantName");
-      let tenantB2CName = window.sessionStorage.getItem("tenantB2CName");
 
       if (tenantName) {
         let tenant = tenantsCredentials(tenantName);
@@ -179,19 +182,23 @@ const AppProvider = (props) => {
           myMSALObj: myMSALObjInt,
           apolloClientEndpoint: tenant.apolloClientEndpoint,
         });
-      } else if (tenantB2CName) {
-        if (tenantB2CName) {
-          let tenant = tenantB2C;
-          let myMSALB2CObj = MSALB2CObj(tenant.tenantId, tenant.clientId);
-          setStateApp({
-            ...stateApp,
-            myMSALB2CObj: myMSALB2CObj,
-          });
-        } else {
-          setStateApp({ ...stateApp, myMSALObjB2C: false });
-        }
       } else {
         setStateApp({ ...stateApp, myMSALObj: false });
+      }
+      */
+      let tenantB2CName = window.sessionStorage.getItem("tenantB2CName");
+
+      if (tenantB2CName) {
+        let tenant = B2CTenantToLogin(tenantB2CName);
+        if (tenant) {
+          let myMSALB2CObjInt = MSALB2CObj(tenant.tenantId, tenant.clientId);
+          setStateApp({
+            ...stateApp,
+            myMSALB2CObj: myMSALB2CObjInt,
+          });
+        }
+      } else {
+        setStateApp({ ...stateApp, myMSALB2CObj: false });
       }
     }
     wait();

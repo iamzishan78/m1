@@ -9,18 +9,16 @@ import styled from "styled-components";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import RenderSignUpControls from "./RenderSignUpControls";
 
-import { tenantB2C, msalB2CConfig, loginRequestB2C } from "./AADB2CAuthConfig";
-
 import {
-  tenantsCredentials,
-  msalConfig,
-  loginRequest,
-  readProfileRequest,
-  authGraphQLRequest,
-} from "./AADAuthConfig";
+  B2CTenant,
+  MSALB2CObj,
+  msalB2CConfig,
+  loginRequestB2C,
+} from "./AADB2CAuthConfig";
 
-import * as msal2 from "@azure/msal";
-import * as msal from "@azure/msal-browser";
+import { readProfileRequest, authGraphQLRequest } from "./AADAuthConfig";
+
+import * as msalB2C from "@azure/msal";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -114,53 +112,7 @@ const LoginB2C = (props) => {
   const [loginErrorText, setLoginErrorText] = useState(null);
 
   useEffect(() => {
-    if (stateApp.myMSALObj && !signingIn) {
-      stateApp.myMSALObj
-        .handleRedirectPromise()
-        .then((tokenResponse) => {
-          const accountObj = tokenResponse
-            ? tokenResponse.account
-            : (() => {
-                const currentAccounts = stateApp.myMSALObj.getAllAccounts();
-                return currentAccounts && currentAccounts.length === 1
-                  ? currentAccounts[0]
-                  : () => {
-                      // Add choose account code here
-                      return;
-                    };
-              })();
-
-          if (accountObj) {
-            // Account object was retrieved, continue with app progress
-            console.log("id_token acquired at: " + new Date().toString());
-            // Account object is now an array! what do we do if multiple users are signed in on the same browser?
-            // Passing first account as default for now
-            finishAADAuth(accountObj);
-          } else {
-            if (tokenResponse && tokenResponse.tokenType === "Bearer") {
-              // No account object available, but access token was retrieved
-              console.log("access_token acquired at: " + new Date().toString());
-              console.log("now what???");
-            } else if (tokenResponse === null) {
-              console.log("tokenResponse was null");
-              // tokenResponse was null, attempt sign in or enter unauthenticated state for app
-            } else {
-              console.log(
-                "tokenResponse was not null but did not have any tokens: " +
-                  tokenResponse
-              );
-            }
-
-            sessionStorage.clear();
-            window.location.replace(window.location.origin);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-          sessionStorage.clear();
-          window.location.replace(window.location.origin);
-        });
-    } else if (stateApp.myMSALB2CObj && !signingIn) {
+    if (stateApp.myMSALB2CObj && !signingIn) {
       setLoading(false);
       stateApp.myMSALB2CObj.handleRedirectCallback((error, loginResponse) => {
         // msal requires a redirect callback, even though can't use it to
@@ -182,127 +134,54 @@ const LoginB2C = (props) => {
         } else {
           console.log("id_token acquired at: " + new Date().toString());
 
-          let tenantName = tenantNameToLogin(loginResponse);
-          handledAADSignInWithoutTenantFlags(tenantName);
+          const accountObj = loginResponse["account"];
+          console.log(accountObj);
+          finishAADAuth(accountObj["idToken"]);
         }
       });
     } else {
-      if (stateApp.myMSALObj === false) setLoading(false);
-    }
-  }, [stateApp.myMSALObj, stateApp.myMSALB2CObj, signingIn]);
-
-  const tenantNameToLogin = (loginResponse) => {
-    console.log(loginResponse);
-
-    const userAccount = loginResponse["account"];
-
-    //Get user info
-    const emailAddress = userAccount.idToken.emails[0];
-    const idp = userAccount.idToken.idp;
-    const username = userAccount.idToken.name;
-    console.log(`id provider: ${idp}, username: ${username}`);
-
-    // According to the email address domain, sign in proper tenant, this domain name will be the tenant.
-    var domain = emailAddress.substring(emailAddress.lastIndexOf("@") + 1);
-    var tenantUser = domain.split(".")[0];
-    let tenant = tenantsCredentials(tenantUser);
-    let tenantNameToLogin;
-
-    if (tenant) tenantNameToLogin = tenant.name;
-    else tenantNameToLogin = "M1neral";
-
-    console.log(`tenant to Login is ${tenantNameToLogin}`);
-    return tenantNameToLogin;
-  };
-  const handledAADB2CSignIn = async (updateTenantFlags) => {
-    let tenant = tenantB2C;
-
-    if (tenant) {
-      setSigningIn(true);
-      setLoadingSigInButton(true);
-
-      let myMSALB2CObj = stateApp.myMSALB2CObj;
-
-      if (!stateApp.myMSALB2CObj) {
-        myMSALB2CObj = new msal2.UserAgentApplication(
-          msalB2CConfig(tenant.tenantId, tenant.clientId)
-        );
-
-        setStateApp({
-          ...stateApp,
-          myMSALB2CObj,
-        });
+      if (stateApp.myMSALB2CObj === false) {
+        setLoading(false);
       }
+    }
+  }, [stateApp.myMSALB2CObj, signingIn]);
 
-      window.sessionStorage.setItem("tenantB2CName", tenant.name);
+  const handledAADB2CSignIn = async (tenant, updateTenantFlags) => {
+    let tenantB2C = B2CTenant(tenant);
+    if (!tenantB2C) {
+      updateTenantFlags("The company is not supported yet.");
+      setLoadingSigInButton(false);
+      return;
+    }
 
-      const signInType = "loginRedirect";
+    setSigningIn(true);
+    setLoadingSigInButton(true);
 
-      if (signInType === "loginPopup") {
-        try {
-          const loginResponse = await myMSALB2CObj
-            .loginPopup(loginRequestB2C)
-            .catch((error) => {
-              //do some error stuff
-              console.log(error);
-              updateTenantFlags(error);
-              setLoadingSigInButton(false);
-            });
-          if (!loginResponse) {
+    let myMSALB2CObj = stateApp.myMSALB2CObj;
+
+    if (!myMSALB2CObj) {
+      myMSALB2CObj = MSALB2CObj(tenantB2C.tenantId, tenantB2C.clientId);
+
+      setStateApp({
+        ...stateApp,
+        myMSALB2CObj,
+      });
+    }
+
+    window.sessionStorage.setItem("tenantB2CName", tenantB2C.name);
+
+    const signInType = "loginRedirect";
+
+    if (signInType === "loginPopup") {
+      try {
+        const loginResponse = await myMSALB2CObj
+          .loginPopup(loginRequestB2C)
+          .catch((error) => {
             //do some error stuff
-            updateTenantFlags("Log in Failed");
+            console.log(error);
+            updateTenantFlags(error);
             setLoadingSigInButton(false);
-
-            return;
-          }
-
-          console.log("id_token acquired at: " + new Date().toString());
-          let tenantName = tenantNameToLogin(loginResponse);
-
-          await handledAADSignIn(tenantName, updateTenantFlags);
-        } catch {
-          setLoadingSigInButton(false);
-        }
-      } else if (signInType === "loginRedirect") {
-        myMSALB2CObj.loginRedirect(loginRequestB2C);
-      }
-    } else {
-      updateTenantFlags("Wrong Tenant Name");
-    }
-  };
-
-  const handledAADSignIn = async (tenantName, updateTenantFlags) => {
-    let tenant = tenantsCredentials(tenantName);
-    if (tenant) {
-      setSigningIn(true);
-      setLoadingSigInButton(true);
-
-      let myMSALObj = stateApp.myMSALObj;
-
-      if (!stateApp.myMSALObj) {
-        myMSALObj = new msal.PublicClientApplication(
-          msalConfig(tenant.tenantId, tenant.clientId)
-        );
-
-        setStateApp({
-          ...stateApp,
-          myMSALObj,
-          apolloClientEndpoint: tenant.apolloClientEndpoint,
-        });
-      }
-
-      window.sessionStorage.setItem("tenantName", tenant.name);
-
-      const signInType = "loginRedirect";
-
-      if (signInType === "loginPopup") {
-        stateApp.myMSALObj = myMSALObj; /////
-        const loginResponse = await signInPopup(loginRequest).catch((error) => {
-          //do some error stuff
-          console.log(error);
-          updateTenantFlags(error);
-          setLoadingSigInButton(false);
-        });
+          });
         if (!loginResponse) {
           //do some error stuff
           updateTenantFlags("Log in Failed");
@@ -311,57 +190,14 @@ const LoginB2C = (props) => {
           return;
         }
 
-        await finishAADAuth(loginResponse);
-      } else if (signInType === "loginRedirect") {
-        myMSALObj.loginRedirect(loginRequest);
+        console.log("id_token acquired at: " + new Date().toString());
+        const accountObj = loginResponse["account"];
+        await finishAADAuth(accountObj);
+      } catch {
+        setLoadingSigInButton(false);
       }
-    } else {
-      updateTenantFlags("Wrong Tenant Name");
-    }
-  };
-
-  const handledAADSignInWithoutTenantFlags = async (tenantName) => {
-    let tenant = tenantsCredentials(tenantName);
-    if (tenant) {
-      setSigningIn(true);
-      setLoadingSigInButton(true);
-
-      let myMSALObj = stateApp.myMSALObj;
-
-      if (!stateApp.myMSALObj) {
-        myMSALObj = new msal.PublicClientApplication(
-          msalConfig(tenant.tenantId, tenant.clientId)
-        );
-
-        setStateApp({
-          ...stateApp,
-          myMSALObj,
-          apolloClientEndpoint: tenant.apolloClientEndpoint,
-        });
-      }
-
-      window.sessionStorage.setItem("tenantName", tenant.name);
-
-      const signInType = "loginRedirect";
-
-      if (signInType === "loginPopup") {
-        stateApp.myMSALObj = myMSALObj; /////
-        const loginResponse = await signInPopup(loginRequest).catch((error) => {
-          //do some error stuff
-          console.log(error);
-          setLoadingSigInButton(false);
-        });
-        if (!loginResponse) {
-          //do some error stuff
-          setLoadingSigInButton(false);
-
-          return;
-        }
-
-        await finishAADAuth(loginResponse);
-      } else if (signInType === "loginRedirect") {
-        myMSALObj.loginRedirect(loginRequest);
-      }
+    } else if (signInType === "loginRedirect") {
+      myMSALB2CObj.loginRedirect(loginRequestB2C);
     }
   };
 
@@ -370,7 +206,7 @@ const LoginB2C = (props) => {
     request.account = accountObj;
 
     request.scopes = readProfileRequest.scopes;
-    request.loginHint = request.account.username;
+    request.loginHint = request.account.name;
     const readProfileLoginResponse = await ssoSilent(request).catch((error) => {
       //do some error stuff
       console.log(error);
@@ -402,7 +238,7 @@ const LoginB2C = (props) => {
     }
 
     request.scopes = authGraphQLRequest.scopes;
-    request.loginHint = request.account.username;
+    request.loginHint = request.account.name;
     const authGraphQLLoginResponse = await ssoSilent(request).catch((error) => {
       //do some error stuff
       console.log(error);
@@ -483,31 +319,31 @@ const LoginB2C = (props) => {
       return;
     }
 
-    setStateApp((state) => ({
-      ...state,
-      user: {
-        id: readProfileResponse.id,
-        mongoId: mongoUser._id,
-        email: readProfileResponse.mail
-          ? readProfileResponse.mail
-          : readProfileResponse.userPrincipalName,
-        name: readProfileResponse.displayName,
-        authToken: authGraphQLResponse.authenticationToken,
-        authTokenExpires: new Date(
-          authGraphQLToken.expiresOn.setDate(
-            authGraphQLToken.expiresOn.getDate() + 14
-          )
-        ),
-        tenant: {
-          id: request.tenantId,
-          tenant: "M1neral",
-          graphQL: {
-            endpoint:
-              "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
-          },
-        },
-      },
-    }));
+    // setStateApp((state) => ({
+    //   ...state,
+    //   user: {
+    //     id: readProfileResponse.id,
+    //     mongoId: mongoUser._id,
+    //     email: readProfileResponse.mail
+    //       ? readProfileResponse.mail
+    //       : readProfileResponse.userPrincipalName,
+    //     name: readProfileResponse.displayName,
+    //     authToken: authGraphQLResponse.authenticationToken,
+    //     authTokenExpires: new Date(
+    //       authGraphQLToken.expiresOn.setDate(
+    //         authGraphQLToken.expiresOn.getDate() + 14
+    //       )
+    //     ),
+    //     tenant: {
+    //       id: request.tenantId,
+    //       tenant: "M1neral",
+    //       graphQL: {
+    //         endpoint:
+    //           "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
+    //       },
+    //     },
+    //   },
+    // }));
 
     setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
 
@@ -552,38 +388,24 @@ const LoginB2C = (props) => {
       .catch((error) => console.log(error));
   }
 
-  async function signInPopup(request) {
-    console.log("request made to signIn at: " + new Date().toString());
-    console.log("scopes requested: " + request.scopes.toString());
-
-    const loginResponse = await stateApp.myMSALObj
-      .loginPopup(request)
-      .catch(function (error) {
-        console.log(error);
-      });
-    console.log(loginResponse);
-    if (stateApp.myMSALObj.getAllAccounts()) {
-      return loginResponse;
-    }
-  }
-
   async function ssoSilent(request) {
     console.log("request made to ssoSilent at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes.toString());
 
-    stateApp.myMSALObj.config.auth.redirectUri =
-      msalConfig().auth.redirectUri + "auth.html";
+    stateApp.myMSALB2CObj.config.auth.redirectUri =
+      msalB2CConfig().auth.redirectUri + "auth.html";
 
-    const loginResponse = await stateApp.myMSALObj
+    const loginResponse = await stateApp.myMSALB2CObj
       .ssoSilent(request)
       .catch(function (error) {
         console.log(error);
       });
 
-    stateApp.myMSALObj.config.auth.redirectUri = msalConfig().auth.redirectUri;
+    stateApp.myMSALB2CObj.config.auth.redirectUri = msalB2CConfig().auth.redirectUri;
 
+    console.log("ssoSient response:");
     console.log(loginResponse);
-    if (stateApp.myMSALObj.getAllAccounts()) {
+    if (stateApp.myMSALB2CObj.getAllAccounts()) {
       return loginResponse;
     }
   }
@@ -592,13 +414,13 @@ const LoginB2C = (props) => {
     console.log("request made to getTokenPopup at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes.toString());
 
-    return await stateApp.myMSALObj
+    return await stateApp.myMSALB2CObj
       .acquireTokenSilent(request)
       .catch(async (error) => {
         console.log("silent token acquisition fails.");
-        if (error instanceof msal.InteractionRequiredAuthError) {
+        if (error instanceof msalB2C.InteractionRequiredAuthError) {
           console.log("acquiring token using popup");
-          return stateApp.myMSALObj
+          return stateApp.myMSALB2CObj
             .acquireTokenPopup(request)
             .catch((error) => {
               console.error(error);

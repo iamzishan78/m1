@@ -1,17 +1,31 @@
 import * as msal2 from "@azure/msal";
 
-const tenants = JSON.parse(process.env.REACT_APP_TENANS_CREDENTIALS);
-export const tenantB2C = JSON.parse(
-  process.env.REACT_APP_TENANS_B2C_CREDENTIAL
-);
+const REACT_APP_TENANS_B2C_CREDENTIALS = [
+  {
+    name: "mineralb2c",
+    tenantId: "8a5745e7-9ec5-4815-a505-795b18826191",
+    clientId: "ecdc741a-6b2c-4158-93d3-b5bccc2d7e76",
+  },
+];
+const REACT_APP_SUPPORTED_TENANTS = [
+  { adTenant: "M1neral", adB2CTenant: "mineralb2c" },
+];
+export const B2CTenant = (tenant) => {
+  const tenantB2CName = REACT_APP_SUPPORTED_TENANTS.reduce((_, e) => {
+    if (e.adTenant === tenant) return e.adB2CTenant;
+  }, null);
 
-export const tenantsCredentials = (tenantName) => {
-  let found;
-  for (let i = 0; i < tenants.length; i++) {
-    if (tenants[i].name.toUpperCase() === tenantName.toUpperCase())
-      found = tenants[i];
-  }
-  return found;
+  if (!tenantB2CName) return null;
+
+  return REACT_APP_TENANS_B2C_CREDENTIALS.reduce((_, e) => {
+    if (e.name === tenantB2CName) return e;
+  }, null);
+};
+
+export const B2CTenantToLogin = (tenantB2CName) => {
+  return REACT_APP_TENANS_B2C_CREDENTIALS.reduce((_, e) => {
+    if (e.name === tenantB2CName) return e;
+  }, null);
 };
 
 const B2CPolicies = {
@@ -35,15 +49,18 @@ const B2CPolicies = {
     },
   },
 };
+
 // Config object to be passed to Msal on creation
 export const msalB2CConfig = (tenantId, clientId) => {
   console.log(`tenantId: ${tenantId}, clientId: ${clientId}`);
   const path = `${window.location.protocol}//${window.location.host}`;
+
   return {
     auth: {
       clientId: clientId,
       authority: B2CPolicies.authorities.signUpSignIn.authority,
       validateAuthority: false,
+      redirectUri: `${path}/`,
     },
     cache: {
       cacheLocation: "localStorage", // This configures where your cache will be stored
