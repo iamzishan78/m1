@@ -421,10 +421,26 @@ export default function Map() {
       for (let i = 0; i < stateApp.udLayerConfig.length; i ++) {
         const layerName = stateApp.udLayerConfig[i].layerName;
         const index = userDefinedLayers.findIndex((layer) => layer.name == layerName);
-        userDefinedLayers[index].idColor = stateApp.udLayerConfig[i].config.idColor;
-        userDefinedLayers[index].layerProps[0].paintProps = {...stateApp.udLayerConfig[i].config.layerProps[0].paintProps};
-        if (stateApp.udLayerConfig[i].config.layerProps[0].clusterProps) {
-          userDefinedLayers[index].layerProps[0].clusterProps = {...stateApp.udLayerConfig[i].config.layerProps[0].clusterProps};
+        userDefinedLayers[index].idColor = stateApp.udLayerConfig[i].config.fillColor;
+        const layerType = userDefinedLayers[index].layerProps[0].layerType;
+        if (layerType == 'circle') {
+          if (stateApp.udLayerConfig[i].config.fillColor) {
+            userDefinedLayers[index].layerProps[0].paintProps['circle-color'] = stateApp.udLayerConfig[i].config.fillColor;
+            userDefinedLayers[index].layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[0][1] = stateApp.udLayerConfig[i].config.fillColor;
+            userDefinedLayers[index].layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[1][1] = stateApp.udLayerConfig[i].config.fillColor;
+            userDefinedLayers[index].layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[2][1] = stateApp.udLayerConfig[i].config.fillColor;
+          }
+          if (stateApp.udLayerConfig[i].config.strokeColor) {
+            userDefinedLayers[index].layerProps[0].paintProps['circle-stroke-color'] = stateApp.udLayerConfig[i].config.strokeColor;
+            userDefinedLayers[index].layerProps[0].clusterProps.clusterPaintProps['circle-stroke-color'] = stateApp.udLayerConfig[i].config.strokeColor;
+          }
+        } else if (layerType == 'fill') {
+          if (stateApp.udLayerConfig[i].config.fillColor) {
+            userDefinedLayers[index].layerProps[0].paintProps['fill-color'] = stateApp.udLayerConfig[i].config.fillColor;
+          }
+          if (stateApp.udLayerConfig[i].config.strokeColor) {
+            userDefinedLayers[index].layerProps[0].paintProps['fill-outline-color'] = stateApp.udLayerConfig[i].config.strokeColor;
+          }
         }
       }
 

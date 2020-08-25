@@ -61,60 +61,43 @@ export default (props) => {
     const udLayerConfig = stateApp.udLayerConfig;
     const layerIndex = udLayerConfig.findIndex((config) => config.layerName == layerName);
 
-    const config = {...layer};
-
-    const type = config.layerProps[0].layerType;
+    let config = {};
     if (fillColor && fillColor.hex) {
-      config.idColor = '#' + fillColor.hex;
-      if (type == 'fill') {
-        config.layerProps[0].paintProps['fill-color'] = '#' + fillColor.hex;
-      }
-      else if (type == 'circle') {
-        config.layerProps[0].paintProps['circle-color'] = '#' + fillColor.hex;
-        if (config.layerProps[0].clusterProps) {
-          config.layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[0][1] = '#' + fillColor.hex;
-          config.layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[1][1] = '#' + fillColor.hex;
-          config.layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[2][1] = '#' + fillColor.hex;
-        }
-      }
+      config.fillColor = '#' + fillColor.hex;
     }
 
     if (strokeColor && strokeColor.hex) {
-      if (type == 'fill') {
-        config.layerProps[0].paintProps['fill-outline-color'] = '#' + strokeColor.hex;
-      }
-      else if (type == 'circle') {
-        config.layerProps[0].paintProps['circle-stroke-color'] = '#' + strokeColor.hex;
-        if (config.layerProps[0].clusterProps) {
-          config.layerProps[0].clusterProps.clusterPaintProps['circle-stroke-color'] = '#' + strokeColor.hex;
-        }
-      }
+      config.strokeColor = '#' + strokeColor.hex;
     }
 
-    const layerConfig = {
-      config,
-      layerName,
-      user: stateApp.user.mongoId
-    }
-
-    console.log(layerConfig);
-
-    setLayerConfig(layerConfig);
-
-    if (layerIndex == -1) {
-      upsertLayerConfig({
-        variables: {
-          layerConfig
-        }
-      });
+    if (Object.keys(config) == 0) {
+      alert("Please select the color");
     } else {
-      const id = udLayerConfig[layerIndex]._id;
-      updateLayerConfig({
-        variables: {
-          layerConfigId: id,
-          layerConfig
-        }
-      });
+      const layerConfig = {
+        config,
+        layerName,
+        user: stateApp.user.mongoId
+      }
+  
+      console.log(layerConfig);
+  
+      setLayerConfig(layerConfig);
+  
+      if (layerIndex == -1) {
+        upsertLayerConfig({
+          variables: {
+            layerConfig
+          }
+        });
+      } else {
+        const id = udLayerConfig[layerIndex]._id;
+        updateLayerConfig({
+          variables: {
+            layerConfigId: id,
+            layerConfig
+          }
+        });
+      }
     }
   }
 
@@ -143,9 +126,10 @@ export default (props) => {
       console.log(layerConfig);
       console.log(tmplayerConfig);
       udLayerConfig[layerConfigIndex] = tmplayerConfig;
+      console.log(udLayerConfig);
       setStateApp((stateApp) => ({
         ...stateApp,
-        udLayerConfig
+        udLayerConfig: udLayerConfig
       }));
       setIsOpen(false);
       setStateMapControls((stateMapControls) => ({
