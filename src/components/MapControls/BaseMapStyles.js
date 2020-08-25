@@ -167,11 +167,12 @@ export default function BaseMapStyles(props) {
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
   const handleClose = () => {
+    setOpen(false);
     setStateMapControls((state) => ({ ...state, anchorEl: null }));
   };
   const [mapStyles, setMapStyles] = useState([]);
-  const [open, setOpen] = React.useState(false);
   const handleClick = () => {
     setOpen(!open);
   };
@@ -376,7 +377,7 @@ export default function BaseMapStyles(props) {
           <ListItemIcon>
             <LayersIcon />
           </ListItemIcon>
-          <ListItemText primary="Map Layers" />
+          <ListItemText primary="Base Map Layers" />
           {open ? <ExpandLess /> : <ExpandMore />}
         </StyledListItem2>
 
