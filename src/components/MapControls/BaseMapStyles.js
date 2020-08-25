@@ -169,7 +169,7 @@ export default function BaseMapStyles(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const handleClose = () => {
-    setOpen(false);
+    setOpen(true);
     setStateMapControls((state) => ({ ...state, anchorEl: null }));
   };
   const [mapStyles, setMapStyles] = useState([]);
