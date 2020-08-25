@@ -70,7 +70,7 @@ export default (props) => {
       config.strokeColor = '#' + strokeColor.hex;
     }
 
-    if (Object.keys(config) == 0) {
+    if (Object.keys(config).length == 0) {
       alert("Please select the color");
     } else {
       const layerConfig = {
@@ -125,7 +125,7 @@ export default (props) => {
       const layerConfigIndex = udLayerConfig.findIndex((config) => config._id == layerConfig._id )
       console.log(layerConfig);
       console.log(tmplayerConfig);
-      udLayerConfig[layerConfigIndex] = tmplayerConfig;
+      udLayerConfig[layerConfigIndex] = {...tmplayerConfig, _id: layerConfig._id};
       console.log(udLayerConfig);
       setStateApp((stateApp) => ({
         ...stateApp,
