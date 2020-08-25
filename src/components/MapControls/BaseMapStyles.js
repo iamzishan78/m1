@@ -52,6 +52,8 @@ const theme = createMuiTheme({
 const StyledMenu = withStyles({
   paper: {
     border: "1px solid #011133",
+    background: "#263451",
+
     "& .MuiMenu-list": {
       background: "#011133 !important",
       "& :nth-child(2)": {
