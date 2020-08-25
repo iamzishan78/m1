@@ -758,24 +758,36 @@ export default function Map() {
 
           // -> add source
           if (config.dataProps[i].dataTypeId == "Point") {
-            map.addSource(config.sourceProps[i].sourceId, {
-              type: config.sourceProps[i].sourceType,
-              data: myGeoJSONData,
-              cluster: true,
-              clusterRadius: 50,
-              clusterMaxZoom: 6,
-            });
+            if (map.getSource(config.sourceProps[i].sourceId)) {
+              map.getSource(config.sourceProps[i].sourceId).setData(myGeoJSONData);
+            } else {
+              map.addSource(config.sourceProps[i].sourceId, {
+                type: config.sourceProps[i].sourceType,
+                data: myGeoJSONData,
+                cluster: true,
+                clusterRadius: 50,
+                clusterMaxZoom: 6,
+              });
+            }
             const filterLayerId = config.sourceProps[i].sourceId + "_filter";
-            map.addSource(filterLayerId, {
-              type: config.sourceProps[i].sourceType,
-              data: myGeoJSONData,
-            });
+            if (map.getSource(filterLayerId)) {
+              map.getSource(filterLayerId).setData(myGeoJSONData);
+            } else {
+              map.addSource(filterLayerId, {
+                type: config.sourceProps[i].sourceType,
+                data: myGeoJSONData,
+              });
+            }
           } else {
-            map.addSource(config.sourceProps[i].sourceId, {
-              type: config.sourceProps[i].sourceType,
-              data: myGeoJSONData,
-              promoteId: "id",
-            });
+            if (map.getSource(config.sourceProps[i].sourceId)) {
+              map.getSource(config.sourceProps[i].sourceId).setData(myGeoJSONData);
+            } else {
+              map.addSource(config.sourceProps[i].sourceId, {
+                type: config.sourceProps[i].sourceType,
+                data: myGeoJSONData,
+                promoteId: "id",
+              });
+            }
           }
 
           // -> add layer
@@ -1672,26 +1684,36 @@ export default function Map() {
               } else {
                 // -> add source
                 if (selectLayerProps.dataProps[i].dataTypeId == "Point") {
-                  map.addSource(selectLayerProps.sourceProps[i].sourceId, {
-                    type: selectLayerProps.sourceProps[i].sourceType,
-                    data: myGeoJSONData,
-                    cluster: true,
-                    clusterRadius: 50,
-                    clusterMaxZoom: 6,
-                  });
-                  const filterLayerId =
-                    selectLayerProps.sourceProps[i].sourceId + "_filter";
-                  console.log(filterLayerId);
-                  map.addSource(filterLayerId, {
-                    type: selectLayerProps.sourceProps[i].sourceType,
-                    data: myGeoJSONData,
-                  });
+                  if (map.getSource(selectLayerProps.sourceProps[i].sourceId)) {
+                    map.getSource(selectLayerProps.sourceProps[i].sourceId).setData(myGeoJSONData);
+                  } else {
+                    map.addSource(selectLayerProps.sourceProps[i].sourceId, {
+                      type: selectLayerProps.sourceProps[i].sourceType,
+                      data: myGeoJSONData,
+                      cluster: true,
+                      clusterRadius: 50,
+                      clusterMaxZoom: 6,
+                    });
+                  }
+                  const filterLayerId = selectLayerProps.sourceProps[i].sourceId + "_filter";
+                  if (map.getSource(filterLayerId)) {
+                    map.getSource(filterLayerId).setData(myGeoJSONData);
+                  } else {
+                    map.addSource(filterLayerId, {
+                      type: selectLayerProps.sourceProps[i].sourceType,
+                      data: myGeoJSONData,
+                    });
+                  }
                 } else {
-                  map.addSource(selectLayerProps.sourceProps[i].sourceId, {
-                    type: selectLayerProps.sourceProps[i].sourceType,
-                    data: myGeoJSONData,
-                    promoteId: "id",
-                  });
+                  if (map.getSource(selectLayerProps.sourceProps[i].sourceId)) {
+                    map.getSource(selectLayerProps.sourceProps[i].sourceId).setData(myGeoJSONData);
+                  } else {
+                    map.addSource(selectLayerProps.sourceProps[i].sourceId, {
+                      type: selectLayerProps.sourceProps[i].sourceType,
+                      data: myGeoJSONData,
+                      promoteId: "id",
+                    });
+                  }
                 }
 
                 // -> add layer

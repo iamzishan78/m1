@@ -30,6 +30,8 @@ export default (props) => {
   );
   const [stateApp, setStateApp] = useContext(AppContext);
 
+  const [tmplayerConfig, setLayerConfig] = useState(null);
+
   const [updateLayerConfig, { data: updatedLayerConfig }] = useMutation(
     UPDATELAYERCONFIG
   );
@@ -62,7 +64,7 @@ export default (props) => {
     const config = {...layer};
 
     const type = config.layerProps[0].layerType;
-    if (fillColor) {
+    if (fillColor && fillColor.hex) {
       config.idColor = '#' + fillColor.hex;
       if (type == 'fill') {
         config.layerProps[0].paintProps['fill-color'] = '#' + fillColor.hex;
@@ -77,7 +79,7 @@ export default (props) => {
       }
     }
 
-    if (strokeColor) {
+    if (strokeColor && strokeColor.hex) {
       if (type == 'fill') {
         config.layerProps[0].paintProps['fill-outline-color'] = '#' + strokeColor.hex;
       }
@@ -94,6 +96,10 @@ export default (props) => {
       layerName,
       user: stateApp.user.mongoId
     }
+
+    console.log(layerConfig);
+
+    setLayerConfig(layerConfig);
 
     if (layerIndex == -1) {
       upsertLayerConfig({
@@ -135,7 +141,8 @@ export default (props) => {
       const layerConfig = {...updatedLayerConfig.updateLayerConfig.layerConfig};
       const layerConfigIndex = udLayerConfig.findIndex((config) => config._id == layerConfig._id )
       console.log(layerConfig);
-      udLayerConfig[layerConfigIndex] = layerConfig;
+      console.log(tmplayerConfig);
+      udLayerConfig[layerConfigIndex] = tmplayerConfig;
       setStateApp((stateApp) => ({
         ...stateApp,
         udLayerConfig
