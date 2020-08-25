@@ -29,6 +29,8 @@ export default (props) => {
   );
   const [stateApp, setStateApp] = useContext(AppContext);
 
+  const [tmpPaintProps, setPaintProps] = useState(null);
+
   const [updateFileLayer, { data: fileLayer }] = useMutation(
     UPDATEFILELAYER
   );
@@ -53,22 +55,27 @@ export default (props) => {
 
   const handleApplyChanges = () => {
     let cpLayer = {...layer};
+    let config = {};
     console.log(fillColor, strokeColor);
-    if (fillColor) {
+    if (fillColor && fillColor.hex) {
       cpLayer.idColor = '#' + fillColor.hex;
+      config.fillColor = '#' + fillColor.hex;
       if (cpLayer.type == 'circle') {
         cpLayer.paintProps['circle-color'] = '#' + fillColor.hex;
       } else {
         cpLayer.paintProps['fill-color'] = '#' + fillColor.hex;
       }
     }
-    if (strokeColor) {
+    if (strokeColor && strokeColor.hex) {
+      config.strokeColor = '#' + fillColor.hex;
       if (cpLayer.type == 'circle') {
         cpLayer.paintProps['circle-stroke-color'] = '#' + strokeColor.hex;
       } else {
         cpLayer.paintProps['fill-outline-color'] = '#' + strokeColor.hex;
       }
     }
+
+    setPaintProps(config);
 
     const fileLayerId = layer.fileLayerId;
 
@@ -95,9 +102,24 @@ export default (props) => {
       const fileLayerData = fileLayer.updateFileLayer.fileLayer;
       const layerName = fileLayerData.layerName;
       const fileContent = layer.fileContent;
-      const idColor = fileLayerData.idColor;
       const layerType = fileLayerData.layerType;
+      if (tmpPaintProps.fillColor) {
+        fileLayerData.idColor = tmpPaintProps.fillColor;
+        if (fileLayerData.type == 'circle') {
+          fileLayerData.paintProps['circle-color'] = tmpPaintProps.fillColor;
+        } else {
+          fileLayerData.paintProps['fill-color'] = tmpPaintProps.fillColor;
+        }
+      }
+      if (tmpPaintProps.strokeColor) {
+        if (fileLayerData.type == 'circle') {
+          fileLayerData.paintProps['circle-stroke-color'] = tmpPaintProps.strokeColor;
+        } else {
+          fileLayerData.paintProps['fill-outline-color'] = tmpPaintProps.strokeColor;
+        }
+      }
       const paintProps = fileLayerData.paintProps;
+      const idColor = fileLayerData.idColor;
       const fileId = fileLayerData.file._id;
       const fileLayerId = fileLayerData._id
 
