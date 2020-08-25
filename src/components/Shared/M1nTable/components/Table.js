@@ -820,6 +820,11 @@ function SubTable(props) {
                         dropDownOptions={
                           column.dropDownOptions ? column.dropDownOptions : null
                         }
+                        secondaryId={
+                          props.targetLabel === "Parcel Owner"
+                            ? tableMeta.rowData[1]
+                            : null
+                        }
                       />
                     </div>
                   );
@@ -1272,6 +1277,7 @@ function SubTable(props) {
             )}
             {openDialog === "deleteOwnersFromContact" && (
               <DeleteConfirmationDialogContent
+                header="Delete Owner(s)"
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
                 m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
@@ -1312,6 +1318,12 @@ function SubTable(props) {
             )}
             {openDialog === "deleteParcelOwner" && (
               <DeleteConfirmationDialogContent
+                header={`Delete Owner${
+                  m1nSelectedRowsIdsRef.current &&
+                  m1nSelectedRowsIdsRef.current.length > 1
+                    ? "s"
+                    : ""
+                }`}
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
                 m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}

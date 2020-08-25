@@ -214,6 +214,7 @@ export default function CellContentEdition({
   noInputFooter,
   targetLabel,
   dropDownOptions,
+  secondaryId,
 }) {
   //////////// id - brings the object id //////////////////////////////////////////////////////////////////////////
   //////////// content - brings an object with fielNames and values ///////////////////////////////////////////////
@@ -224,6 +225,7 @@ export default function CellContentEdition({
   //////////// noInputFooter //optional////////////////////////////////////////////////////////////////////////////
   //////////// targetLabel - brings the object type we are updating here //////////////////////////////////////////
   //////////// dropDownOptions - brings an array in case of autocomplete //////////////////////////////////////////
+  //////////// secondaryId //optional////////////////////////////////////////////////////////////////////////////
 
   const [stateApp] = React.useContext(AppContext);
   const [edit, setEdit] = useState(null);
@@ -300,13 +302,7 @@ export default function CellContentEdition({
   };
 
   const handleUpdating = () => {
-    let trimmedEditContent =
-      targetLabel === "contact"
-        ? {
-            _id: id,
-            lastUpdateBy: stateApp.user.mongoId,
-          }
-        : { _id: id };
+    let trimmedEditContent = { _id: id };
     let differences = false;
     for (const field in editContent) {
       if (editContent[field] !== null) {
@@ -317,6 +313,7 @@ export default function CellContentEdition({
 
     if (differences) {
       if (targetLabel === "contact") {
+        trimmedEditContent.lastUpdateBy = stateApp.user.mongoId;
         updateContact({
           variables: {
             contact: trimmedEditContent,
@@ -326,9 +323,10 @@ export default function CellContentEdition({
         });
       }
       if (targetLabel === "Parcel Owner") {
+        trimmedEditContent.ownerEntityId = secondaryId;
         updateParcelOwner({
           variables: {
-            owner: trimmedEditContent,
+            parcelOwner: trimmedEditContent,
           },
           refetchQueries: ["getCustomLayer"],
           awaitRefetchQueries: true,
@@ -415,13 +413,6 @@ export default function CellContentEdition({
                   [fieldName]: newInputValue,
                 }));
               }}
-              // value={newOwner.entity}
-              // onChange={(e, newInputValue) => {
-              //   setNewOwner({
-              //     ...newOwner,
-              //     entity: newInputValue ? newInputValue : "",
-              //   });
-              // }}
               renderInput={(params) => (
                 <TextField
                   {...params}

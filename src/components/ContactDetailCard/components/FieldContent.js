@@ -167,6 +167,22 @@ const textFieldLabels = (field) => {
   return field.charAt(0).toUpperCase() + field.slice(1);
 };
 
+export const LinkTypes = Object.freeze({
+  None: 0,
+  Mail: 1,
+  Simple: 2
+});
+
+export const FieldTypes = Object.freeze({
+  Contact: 0,
+  MelissaAddressRecord: 1,
+  MelissaRecord: 2
+});
+
+const ConditionalWrap = ({ condition, wrap, children }) => (
+  condition ? wrap(children) : children
+);
+
 export default function FieldContent({
   children,
   id,
@@ -176,6 +192,8 @@ export default function FieldContent({
   name,
   noMargin,
   noInputFooter,
+  linkType,
+  fieldType = FieldTypes.Contact
 }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
   //////////// content - brings an object with fielNames and values ///////////////////////////////////////////////
@@ -185,6 +203,8 @@ export default function FieldContent({
   //////////// name - will be part of the Not Available text, better use in compound fiels  //optional/////////////
   //////////// noMargin - no p tag margin  //optional//////////////////////////////////////////////////////////////
   //////////// noInputFooter //optional////////////////////////////////////////////////////////////////////////////
+  //////////// linkType - LinkTypes value //optional///////////////////////////////////////////////////////////////
+  //////////// fieldType - FieldTypes value //default value = Contact//////////////////////////////////////////////
 
   const [stateApp] = React.useContext(AppContext);
   const [edit, setEdit] = useState(null);
@@ -239,7 +259,7 @@ export default function FieldContent({
       }
     }
 
-    if (differences) {
+    if (differences && fieldType == FieldTypes.Contact) {
       updateContact({
         variables: {
           contact: trimmedEditContent,
@@ -335,6 +355,40 @@ export default function FieldContent({
     }
   }
 
+  const getHrefValue = (linkValue, linkType) => {
+    if (linkType == LinkTypes.Mail)
+      return `mailto:${ linkValue }`;
+    else
+      return linkValue;
+  }
+
+  const renderOutput = 
+    (
+      <span>
+        { childrenLeft && !onlyChildren && children ? children : "" }
+        {
+          textArray.length > 0
+          ? onlyChildren
+            ? children
+              ? children
+              : ""
+            : textArray.join(", ")
+          : `${name ? name + " " : ""} Not Available`
+        }
+        {
+          fieldType == FieldTypes.Contact &&
+            <PencilEditIcon
+              handleUpdating={handleUpdating}
+              anchorEl={edit}
+              setAnchorEl={setEdit}
+              content={inputsArray}
+              onClick={handleEditClick}
+            />
+        }
+        {!childrenLeft && !onlyChildren && children ? children : ""}
+      </span>
+    );
+
   return (
     <React.Fragment>
       <p
@@ -342,22 +396,16 @@ export default function FieldContent({
           classes.fieldContentP
         }`}
       >
-        {childrenLeft && !onlyChildren && children ? children : ""}
-        {textArray.length > 0
-          ? onlyChildren
-            ? children
-              ? children
-              : ""
-            : textArray.join(", ")
-          : `${name ? name + " " : ""} Not Available`}
-        <PencilEditIcon
-          handleUpdating={handleUpdating}
-          anchorEl={edit}
-          setAnchorEl={setEdit}
-          content={inputsArray}
-          onClick={handleEditClick}
-        />
-        {!childrenLeft && !onlyChildren && children ? children : ""}
+        {
+          ((linkType == LinkTypes.Mail || linkType == LinkTypes.Simple) && textArray.length > 0)
+            ?
+              (<a
+                href={ getHrefValue(textArray.join(", "), linkType) }
+                target="_blank"
+                className={classes.noTextDecoration}
+              >{ renderOutput }</a>)
+            : renderOutput
+        }
       </p>
       {loading && (
         <div style={{ height: "0", width: "0" }}>

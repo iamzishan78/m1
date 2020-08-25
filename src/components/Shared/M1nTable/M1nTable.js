@@ -720,6 +720,18 @@ const OwnersPerParcelHeadCells = [
       viewColumns: false,
     },
   },
+  {
+    name: "ownerEntityId",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
   { name: "name", label: "Name", editable: true },
   {
     name: "entity",
@@ -2577,7 +2589,7 @@ function M1nTable(props) {
           for (let i = 0; i < ownersIdsToDelete.length; i++) {
             updateParcelOwner({
               variables: {
-                owner: { _id: ownersIdsToDelete[i], IsDeleted: true },
+                parcelOwner: { _id: ownersIdsToDelete[i], IsDeleted: true },
               },
               refetchQueries: ["getCustomLayer"],
               awaitRefetchQueries: true,

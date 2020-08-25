@@ -38,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
   viewAllCard: {
     display: "flex",
     justifyContent: "space-between",
+    backgroundColor: "#ffffff",
   },
   inputField: {
     marginBottom: "30px",
@@ -129,7 +130,7 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
   const [timePeriod, setTimePeriod] = useState("all");
 
   const handleChange = (e, type) => {
-    if (activitiesFilter && activitiesFilter.length > 0) {
+    if (activitiesFilter) {
       let newActivitiesFilter = [...activitiesFilter];
       if (e.target.checked) {
         newActivitiesFilter.push(type);
@@ -185,7 +186,7 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
   return (
     <div className={classes.activitiesFilter}>
       <h4 style={{ margin: "0 0 8px 0" }}>Filter</h4>
-      <FormControl
+      {/* <FormControl
         variant="outlined"
         fullWidth
         className={classes.inputField}
@@ -210,13 +211,18 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
         >
           <MenuItem value={"all"}>All Time Periods</MenuItem>
         </Select>
-      </FormControl>
+      </FormControl> */}
 
       <div className={classes.activityTypeCheckboxes}>
         <Grid item xs={12} style={{ minHeight: "35px" }}>
           <h4 style={{ margin: "0 0 20px 0", float: "left" }}>Activity Type</h4>
 
-          <h4 className={classes.textBtn} onClick={() => {}}>
+          <h4
+            className={classes.textBtn}
+            onClick={() => {
+              setActivitiesFilter([]);
+            }}
+          >
             Clear
           </h4>
         </Grid>
@@ -232,7 +238,13 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
   );
 }
 
-function ViewActivities({ id, user_id, activityLog, updateActivity }) {
+function ViewActivities({
+  id,
+  user_id,
+  activityLog,
+  updateActivity,
+  addActivity,
+}) {
   const classes = useStyles();
   const [activitiesFilter, setActivitiesFilter] = useState([
     "general",
@@ -260,6 +272,13 @@ function ViewActivities({ id, user_id, activityLog, updateActivity }) {
         />
       </div>
       <div className={classes.activityCardRight}>
+        <h4
+          className={classes.viewAll}
+          style={{ margin: "20px 10px 0 0" }}
+          onClick={addActivity}
+        >
+          Add New
+        </h4>
         <ActivityStats />
         <ActivitiesFilter
           activitiesFilter={activitiesFilter}
@@ -323,6 +342,7 @@ export default ({
                 user_id={props.user_id}
                 activityLog={props.activityLog}
                 updateActivity={updateActivity}
+                addActivity={addActivity}
               />,
               "Activities"
             );

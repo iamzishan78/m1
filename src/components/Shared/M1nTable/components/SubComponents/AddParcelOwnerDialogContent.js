@@ -65,6 +65,7 @@ export default function AddParcelOwnerDialogContent(props) {
     interest: "",
     nma: "",
     nra: "",
+    customLayer: props.customLayerId,
   });
   const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] = useState(
     "true"
@@ -107,6 +108,7 @@ export default function AddParcelOwnerDialogContent(props) {
       interest: "",
       nma: "",
       nra: "",
+      customLayer: props.customLayerId,
     });
     setParcelOwnersRadioBValue("true");
   };
@@ -121,8 +123,7 @@ export default function AddParcelOwnerDialogContent(props) {
 
     addOwnerToAParcel({
       variables: {
-        customLayerId: props.customLayerId,
-        owner:
+        parcelOwner:
           parcelOwnersRadioBValue === "true"
             ? { ...newOwner, depthFrom: "All depths", depthTo: "All depths" }
             : newOwner,

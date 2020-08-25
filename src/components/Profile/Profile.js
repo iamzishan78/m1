@@ -11,11 +11,12 @@ import ProfileTitle from "./ProfileTitle";
 
 const useStyles = makeStyles(() => ({
   paper: {
-    marginTop: "64px",
+    marginTop: "100px",
     marginLeft: "auto",
     marginBottom: "auto",
-    minWidth: "400px",
     maxHeight: "calc(100% - 72px)",
+    minHeight: "85%",
+    overflow: 'hidden'
   },
 }));
 
@@ -36,12 +37,14 @@ const Profile = () => {
         onClose={handleClose}
         aria-labelledby="profile-dialog"
         open={isProfileOpen}
+        fullWidth={true}
+        maxWidth={"xl"}
         classes={{ paper: classes.paper }}
       >
-        <ImageModal/>
-        <ProfileTitle />
+        {/* <ImageModal/> */}
+        {/* <ProfileTitle /> */}
         <ProfileContent />
-        <ProfileActions />
+        {/* <ProfileActions /> */}
       </Dialog>
     </ProfileContextProvider>
   );

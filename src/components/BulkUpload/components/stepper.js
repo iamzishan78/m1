@@ -154,11 +154,11 @@ function getSteps() {
 
 const mapping_buttons_div = {
   maxWidth: "20%",
-  margin: "0px auto",
+  margin: "8px auto",
   textAlign: "center",
 };
 const stepper_style = {
-  padding: "35px 24px",
+  padding: "35px 0px",
 };
 export default function CustomizedSteppers(props) {
   const classes = useStyles();
@@ -275,7 +275,7 @@ export default function CustomizedSteppers(props) {
                   ? stateApp.activeStepNumber === steps.length - 1
                     ? "Done"
                     : "Upload"
-                  : "Submit"}
+                  : "Continue"}
               </Button>
             ) : null}
           </div>

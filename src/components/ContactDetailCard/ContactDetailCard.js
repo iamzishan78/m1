@@ -10,10 +10,10 @@ import Badge from "@material-ui/core/Badge";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
-import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
+import { MELISSARECORDS } from "../../graphQL/useQueryGetMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery } from "@apollo/react-hooks";
 import ConfirmationDialog from "./components/ConfirmationDialog";
@@ -39,12 +39,11 @@ import { toggleRightColumn } from "../../actions";
 import MessageRoundedIcon from "@material-ui/icons/MessageRounded";
 import DescriptionRoundedIcon from "@material-ui/icons/DescriptionRounded";
 import Card from "@material-ui/core/Card";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import HandShake from "../Shared/svgIcons/HandShake";
 import Parcels from "./components/Parcels";
 import WellsCard from "./components/WellsCard";
 import RecentActivities from "../RecentActivities/RecentActivities";
+import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -74,28 +73,6 @@ const useStyles = makeStyles((theme) => ({
     transition: "width 0.3s ease-out",
     WebkitTransition: "width 0.3s ease-out",
     width: ({ shrinkRightColumn }) => (shrinkRightColumn ? "68px" : "37%"),
-  },
-  dataSect: {
-    borderTop: "2px solid #C9C9C9",
-    // margin: "23px 28px",
-    color: "#757575",
-    width: "100%",
-    "& p": {
-      wordWrap: "break-word",
-    },
-    "& .dataLabels": {
-      fontWeight: "bold",
-    },
-    "& > .MuiGrid-item": {
-      borderBottom: "2px solid #C9C9C9",
-      borderRight: "2px solid #C9C9C9",
-      position: "relative",
-    },
-    "& .fieldName": {
-      borderLeft: "2px solid #C9C9C9",
-      backgroundColor: "#EBEBEB",
-      "& p": { margin: "8px 10px" },
-    },
   },
   gridStyling: {
     "& .MuiListItem-container": {
@@ -277,15 +254,6 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": { color: "#757575" },
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
-  showAll: {
-    margin: "8px 0 0 0",
-    float: "right",
-    color: theme.palette.secondary.main,
-    cursor: "pointer",
-    fontWeight: "normal",
-    "&:hover": { color: "#757575" },
-    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-  },
 }));
 
 export default function ContactDetailCard(props) {
@@ -299,11 +267,11 @@ export default function ContactDetailCard(props) {
   const [transactData, setTransactData] = useState();
   const [transactId, setTransactId] = useState();
   const [contactData, setContactData] = useState(null);
+  const [melissaData, setMelissaData] = useState(null);
   const [rightDialogOpen, setRightDialogOpen] = useState(false);
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
-  const [basicInfExp, setBasicInfExp] = useState(false);
 
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(
     null
@@ -313,6 +281,10 @@ export default function ContactDetailCard(props) {
   });
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
     TRANSACTIONDATA
+  );
+  const [getMelissaRecords, { data: mData }] = useLazyQuery(
+    MELISSARECORDS,
+    { fetchPolicy: "network-only" }
   );
 
   const handleClickRightDialogOpen = (childrenToOpen) => {
@@ -358,6 +330,22 @@ export default function ContactDetailCard(props) {
       setContactData(data.contact);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (props.contactId) {
+      getMelissaRecords({
+        variables: {
+          contactId: props.contactId,
+        },
+      });
+    }
+  }, [props.contactId]);
+
+  useEffect(() => {
+    if (mData && mData.getMelissaRecords.success === true) {
+      setMelissaData(mData.getMelissaRecords);
+    }
+  }, [mData]);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
@@ -562,307 +550,13 @@ export default function ContactDetailCard(props) {
             spacing={0}
             style={{ padding: "23px 28px" }}
           >
-            <Grid item xs={12}>
-              <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
-                Basic Information
-              </h4>
-              <h4
-                className={classes.viewAll}
-                onClick={() => {
-                  handleOpenExpandableCard(
-                    "Pass your card content here",
-                    "Detailed Information"
-                  );
-                }}
-              >
-                View All
-              </h4>
-            </Grid>
-
-            <Grid
-              item
-              xs={12}
-              container
-              className={classes.dataSect}
-              spacing={0}
-            >
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">Primary Email</p>
-              </Grid>
-              <Grid item xs={9}>
-                <FieldContent
-                  onlyChildren
-                  id={contactData._id}
-                  content={{ primaryEmail: contactData.primaryEmail }}
-                >
-                  <a
-                    href={`mailto:${contactData.primaryEmail}`}
-                    target="_blank"
-                    className={classes.noTextDecoration}
-                  >
-                    {contactData.primaryEmail}
-                  </a>
-                </FieldContent>
-              </Grid>
-
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">Secondary Email</p>
-              </Grid>
-              <Grid item xs={9}>
-                <FieldContent
-                  onlyChildren
-                  id={contactData._id}
-                  content={{ secondaryEmail: contactData.secondaryEmail }}
-                >
-                  <a
-                    href={`mailto:${contactData.secondaryEmail}`}
-                    target="_blank"
-                    className={classes.noTextDecoration}
-                  >
-                    {contactData.secondaryEmail}
-                  </a>
-                </FieldContent>
-              </Grid>
-
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">Mobile Phone</p>
-              </Grid>
-              <Grid item xs={9}>
-                <FieldContent
-                  id={contactData._id}
-                  content={{ mobilePhone: contactData.mobilePhone }}
-                />
-              </Grid>
-
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">Home Phone</p>
-              </Grid>
-              <Grid item xs={9}>
-                <FieldContent
-                  id={contactData._id}
-                  content={{ homePhone: contactData.homePhone }}
-                />
-              </Grid>
-
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">Alternate Phone</p>
-              </Grid>
-              <Grid item xs={9}>
-                <FieldContent
-                  id={contactData._id}
-                  content={{ AltPhone: contactData.AltPhone }}
-                />
-              </Grid>
-
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">Primary Address</p>
-              </Grid>
-              <Grid item xs={9}>
-                <FieldContent
-                  name=""
-                  id={contactData._id}
-                  content={{
-                    address1: contactData.address1,
-                    address2: contactData.address2,
-                    city: contactData.city,
-                    state: contactData.state,
-                    zip: contactData.zip,
-                    country: contactData.country,
-                  }}
-                />
-              </Grid>
-
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">Secondary Address</p>
-              </Grid>
-              <Grid item xs={9}>
-                <FieldContent
-                  name=""
-                  id={contactData._id}
-                  content={{
-                    address1Alt: contactData.address1Alt,
-                    address2Alt: contactData.address2Alt,
-                    cityAlt: contactData.cityAlt,
-                    stateAlt: contactData.stateAlt,
-                    zipAlt: contactData.zipAlt,
-                    countryAlt: contactData.countryAlt,
-                  }}
-                />
-              </Grid>
-
-              {basicInfExp && (
-                <>
-                  <Grid item xs={3} className="fieldName">
-                    <p className="dataLabels">Relatives</p>
-                  </Grid>
-                  <Grid item xs={9}>
-                    <FieldContent
-                      id={contactData._id}
-                      content={{ relatives: contactData.relatives }}
-                    />
-                  </Grid>
-                  <Grid item xs={3} className="fieldName">
-                    <p className="dataLabels">Linkedln Profile</p>
-                  </Grid>
-                  <Grid item xs={9}>
-                    <FieldContent
-                      onlyChildren
-                      id={contactData._id}
-                      content={{ linkedln: contactData.linkedln }}
-                    >
-                      {contactData.linkedln && (
-                        <a
-                          href={`${
-                            !contactData.linkedln.startsWith("http") &&
-                            !contactData.linkedln.startsWith("//")
-                              ? "//"
-                              : ""
-                          }${contactData.linkedln}`}
-                          target="_blank"
-                        >
-                          {contactData.linkedln}
-                        </a>
-                      )}
-                    </FieldContent>
-                  </Grid>
-                  <Grid item xs={3} className="fieldName">
-                    <p className="dataLabels">Facebook Profile</p>
-                  </Grid>
-                  <Grid item xs={9}>
-                    <FieldContent
-                      onlyChildren
-                      id={contactData._id}
-                      content={{ facebook: contactData.facebook }}
-                    >
-                      {contactData.facebook && (
-                        <a
-                          href={`${
-                            !contactData.facebook.startsWith("http") &&
-                            !contactData.facebook.startsWith("//")
-                              ? "//"
-                              : ""
-                          }${contactData.facebook}`}
-                          target="_blank"
-                        >
-                          {contactData.facebook}
-                        </a>
-                      )}
-                    </FieldContent>
-                  </Grid>
-                  <Grid item xs={3} className="fieldName">
-                    <p className="dataLabels">Twitter Profile</p>
-                  </Grid>
-                  <Grid item xs={9}>
-                    <FieldContent
-                      onlyChildren
-                      id={contactData._id}
-                      content={{ twitter: contactData.twitter }}
-                    >
-                      {contactData.twitter && (
-                        <a
-                          href={`${
-                            !contactData.twitter.startsWith("http") &&
-                            !contactData.twitter.startsWith("//")
-                              ? "//"
-                              : ""
-                          }${contactData.twitter}`}
-                          target="_blank"
-                        >
-                          {contactData.twitter}
-                        </a>
-                      )}
-                    </FieldContent>
-                  </Grid>
-                  <Grid item xs={3} className="fieldName">
-                    <p className="dataLabels">Lead Source</p>
-                  </Grid>
-                  <Grid item xs={9}>
-                    <FieldContent
-                      id={contactData._id}
-                      content={{ leadSource: contactData.leadSource }}
-                    />
-                  </Grid>
-                  <Grid item xs={3} className="fieldName">
-                    <p className="dataLabels">Created By</p>
-                  </Grid>
-                  <Grid item xs={9}>
-                    {contactData.createBy &&
-                      contactData.createBy.name === null && (
-                        <div className={classes.userSmallLoader}>
-                          <CircularProgress size={22} color="secondary" />
-                        </div>
-                      )}
-                    {(contactData.createBy && contactData.createBy.name) ||
-                    contactData.createAt ? (
-                      <p style={{ margin: "8px 10px" }}>
-                        {contactData.createBy && contactData.createBy.name
-                          ? contactData.createBy.name
-                          : ""}
-
-                        {`${
-                          contactData.createAt
-                            ? " - " +
-                              anyToDate(contactData.createAt).toLocaleString()
-                            : ""
-                        }`}
-                      </p>
-                    ) : (
-                      <p className={classes.notAvailableP}>Not Available</p>
-                    )}
-                  </Grid>
-                  <Grid item xs={3} className="fieldName">
-                    <p className="dataLabels">Last Update By</p>
-                  </Grid>
-                  <Grid item xs={9}>
-                    {contactData.lastUpdateBy &&
-                      contactData.lastUpdateBy.name === null && (
-                        <div className={classes.userSmallLoader}>
-                          <CircularProgress size={22} color="secondary" />
-                        </div>
-                      )}
-                    {(contactData.lastUpdateBy &&
-                      contactData.lastUpdateBy.name) ||
-                    contactData.lastUpdateAt ? (
-                      <p style={{ margin: "8px 10px" }}>
-                        {contactData.lastUpdateBy &&
-                        contactData.lastUpdateBy.name
-                          ? contactData.lastUpdateBy.name
-                          : ""}
-                        {`${
-                          contactData.lastUpdateAt
-                            ? " - " +
-                              anyToDate(
-                                contactData.lastUpdateAt
-                              ).toLocaleString()
-                            : ""
-                        }`}
-                      </p>
-                    ) : (
-                      <p className={classes.notAvailableP}>Not Available</p>
-                    )}
-                  </Grid>
-                </>
-              )}
-            </Grid>
-            <Grid item xs={12}>
-              <h4
-                className={classes.showAll}
-                onClick={() => {
-                  setBasicInfExp(!basicInfExp);
-                }}
-              >
-                Show {!basicInfExp ? "More" : "Less"}
-                {!basicInfExp ? (
-                  <ExpandMoreIcon
-                    style={{ position: "relative", top: "8px" }}
-                  />
-                ) : (
-                  <ExpandLessIcon
-                    style={{ position: "relative", top: "8px" }}
-                  />
-                )}
-              </h4>
-            </Grid>
+            <ContactDetailedInfo
+              header={"Detailed Information"}
+              contactData={contactData}
+              handleOpenExpandableCard={handleOpenExpandableCard}
+              melissaData={melissaData}
+              id={contactData._id}
+            />
           </Grid>
 
           {/*/////////// new section //////////// */}
@@ -1140,7 +834,6 @@ export default function ContactDetailCard(props) {
               component={
                 <div
                   style={{
-                    height: "100%",
                     width: "100%",
                     backgroundColor: "#fff",
                   }}
