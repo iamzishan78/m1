@@ -167,9 +167,8 @@ export default function BaseMapStyles(props) {
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
   const handleClose = () => {
-    setOpen(true);
     setStateMapControls((state) => ({ ...state, anchorEl: null }));
   };
   const [mapStyles, setMapStyles] = useState([]);
