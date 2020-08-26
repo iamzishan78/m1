@@ -38,6 +38,7 @@ export const CONTACT = gql`
       leadSource
       companyName
       jobTitle
+      leadStage
       activityLog {
         type
         notes

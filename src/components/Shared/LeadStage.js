@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useMutation } from "@apollo/react-hooks";
+import { UPDATECONTACT } from "../../graphQL/useMutationUpdateContact";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -74,9 +76,8 @@ const Step = ({ name, active, onClick }) => {
   );
 };
 
-export default function LeadStage() {
-  const [stage, setStage] = useState("Contacted");
-
+export default function LeadStage({ leadStage, id }) {
+  const [updateContact] = useMutation(UPDATECONTACT);
   const leadStages = [
     "New",
     "Contacted",
@@ -86,10 +87,26 @@ export default function LeadStage() {
     "Converted/Unqualified",
   ];
 
-  let index = leadStages.findIndex((stg) => stg === stage);
+  let index = leadStages.findIndex((stg) => stg === leadStage);
   if (index === -1) index = 0;
 
   const classes = useStyles();
+
+  const setStage = (stg) => {
+    if(stg === leadStage) return;
+    console.log(`setting stage ${leadStage} to ${stg} for id ${id}`)
+    updateContact({
+      variables: {
+        contact: {
+          _id: id,
+          leadStage: stg,
+        },
+      },
+      refetchQueries: ["getContact"],
+      awaitRefetchQueries: true,
+    });
+  };
+
   return (
     <div className={classes.stepper}>
       {leadStages.map((stg, i) => (

@@ -283,10 +283,9 @@ export default function ContactDetailCard(props) {
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
     TRANSACTIONDATA
   );
-  const [getMelissaRecords, { data: mData }] = useLazyQuery(
-    MELISSARECORDS,
-    { fetchPolicy: "network-only" }
-  );
+  const [getMelissaRecords, { data: mData }] = useLazyQuery(MELISSARECORDS, {
+    fetchPolicy: "network-only",
+  });
 
   const handleClickRightDialogOpen = (childrenToOpen) => {
     setRightDialogOpen(childrenToOpen);
@@ -376,6 +375,8 @@ export default function ContactDetailCard(props) {
       setTransactId(tData.transactionData._id);
     }
   }, [tData, tLoading]);
+
+  console.log("Contact data: ", contactData)
 
   return (
     contactData && (
@@ -619,7 +620,12 @@ export default function ContactDetailCard(props) {
                 xs={12}
                 style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}
               >
-                <LeadStage />
+                <LeadStage
+                  leadStage={
+                    contactData.leadStage ? contactData.leadStage : "New"
+                  }
+                  id={contactData._id}
+                />
               </Grid>
             </div>
           </Grid>
