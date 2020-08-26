@@ -20,6 +20,7 @@ import ConfirmationDialog from "./components/ConfirmationDialog";
 import Activities from "../Shared/Activities";
 import Deals from "../Shared/Deals";
 import LeadScore from "../Shared/LeadScore";
+import LeadStage from "../Shared/LeadStage";
 import { AppContext } from "../../AppContext";
 import RecentConversations from "../Shared/RecentConversations";
 import TextField from "@material-ui/core/TextField";
@@ -617,7 +618,9 @@ export default function ContactDetailCard(props) {
                 item
                 xs={12}
                 style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}
-              ></Grid>
+              >
+                <LeadStage />
+              </Grid>
             </div>
           </Grid>
 
