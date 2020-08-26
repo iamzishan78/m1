@@ -195,6 +195,7 @@ const AppProvider = (props) => {
           setStateApp({
             ...stateApp,
             myMSALB2CObj: myMSALB2CObjInt,
+            apolloClientEndpoint: tenant.apolloClientEndpoint,
           });
         }
       } else {

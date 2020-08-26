@@ -5,6 +5,7 @@ const REACT_APP_TENANS_B2C_CREDENTIALS = [
     name: "mineralb2c",
     tenantId: "8a5745e7-9ec5-4815-a505-795b18826191",
     clientId: "ecdc741a-6b2c-4158-93d3-b5bccc2d7e76",
+    apolloClientEndpoint: "https://m1c3graphql.azurewebsites.net/api/m1graph?code=cpWTIzbdIQtWuHfW1qGQQh6PwwqJaIftGrjq6ZZBOKlklCWQ/EKBYg==",
   },
 ];
 const REACT_APP_SUPPORTED_TENANTS = [
@@ -86,9 +87,9 @@ const tokenRequest = {
 };
 
 export const readProfileRequestB2C = {
-  scopes: ["https://graph.microsoft.com/User.Read"],
+  scopes: ["https://graph.microsoft.com/User.Read"]
 };
 
 export const authGraphQLRequestB2C = {
-  scopes: ["https://management.azure.com/user_impersonation"],
+  scopes: ["https://mineralb2c.onmicrosoft.com/api/user_impersonation"]
 };

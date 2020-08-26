@@ -16,7 +16,7 @@ import {
   loginRequestB2C,
 } from "./AADB2CAuthConfig";
 
-import { readProfileRequest, authGraphQLRequest } from "./AADAuthConfig";
+import { readProfileRequestB2C, authGraphQLRequestB2C } from "./AADB2CAuthConfig";
 
 import * as msalB2C from "@azure/msal";
 
@@ -149,7 +149,7 @@ const LoginB2C = (props) => {
   const handledAADB2CSignIn = async (tenant, updateTenantFlags) => {
     let tenantB2C = B2CTenant(tenant);
     if (!tenantB2C) {
-      updateTenantFlags("The company is not supported yet.");
+      //updateTenantFlags("The company is not supported yet.");
       setLoadingSigInButton(false);
       return;
     }
@@ -179,12 +179,12 @@ const LoginB2C = (props) => {
           .catch((error) => {
             //do some error stuff
             console.log(error);
-            updateTenantFlags(error);
+            //updateTenantFlags(error);
             setLoadingSigInButton(false);
           });
         if (!loginResponse) {
           //do some error stuff
-          updateTenantFlags("Log in Failed");
+          //updateTenantFlags("Log in Failed");
           setLoadingSigInButton(false);
 
           return;
@@ -205,39 +205,40 @@ const LoginB2C = (props) => {
     const request = {};
     request.account = accountObj;
 
-    request.scopes = readProfileRequest.scopes;
-    request.loginHint = request.account.name;
-    const readProfileLoginResponse = await ssoSilent(request).catch((error) => {
-      //do some error stuff
-      console.log(error);
-    });
-    if (!readProfileLoginResponse) {
-      //do some error stuff
-      return;
-    }
+    // // !!!cannot directly access MS services using delegated permissions!!!
+    // request.scopes = readProfileRequestB2C.scopes;
+    // request.loginHint = request.account.name;
+    // const readProfileLoginResponse = await ssoSilent(request).catch((error) => {
+    //   //do some error stuff
+    //   console.log(error);
+    // });
+    // if (!readProfileLoginResponse) {
+    //   //do some error stuff
+    //   return;
+    // }
 
-    const readProfileToken = await getTokenPopup(request).catch((error) => {
-      //do some error stuff
-      console.log(error);
-    });
-    if (!readProfileToken) {
-      //do some error stuff
-      return;
-    }
+    // const readProfileToken = await getTokenPopup(request).catch((error) => {
+    //   //do some error stuff
+    //   console.log(error);
+    // });
+    // if (!readProfileToken) {
+    //   //do some error stuff
+    //   return;
+    // }
 
-    const readProfileResponse = await callMSGraph(
-      "https://graph.microsoft.com/v1.0/me",
-      readProfileToken.accessToken
-    ).catch((error) => {
-      //do some error stuff
-      console.log(error);
-    });
-    if (!readProfileResponse) {
-      //do some error stuff
-      return;
-    }
+    // const readProfileResponse = await callMSGraph(
+    //   "https://graph.microsoft.com/v1.0/me",
+    //   readProfileToken.accessToken
+    // ).catch((error) => {
+    //   //do some error stuff
+    //   console.log(error);
+    // });
+    // if (!readProfileResponse) {
+    //   //do some error stuff
+    //   return;
+    // }
 
-    request.scopes = authGraphQLRequest.scopes;
+    request.scopes = authGraphQLRequestB2C.scopes;
     request.loginHint = request.account.name;
     const authGraphQLLoginResponse = await ssoSilent(request).catch((error) => {
       //do some error stuff
@@ -248,21 +249,21 @@ const LoginB2C = (props) => {
       return;
     }
 
-    authGraphQLRequest.account = request.account;
-    const authGraphQLToken = await getTokenPopup(authGraphQLRequest).catch(
-      (error) => {
-        //do some error stuff
-        console.log(error);
-      }
-    );
-    if (!authGraphQLToken) {
-      //do some error stuff
-      return;
-    }
+    // authGraphQLRequestB2C.account = request.account;
+    // const authGraphQLToken = await getTokenPopup(authGraphQLRequestB2C).catch(
+    //   (error) => {
+    //     //do some error stuff
+    //     console.log(error);
+    //   }
+    // );
+    // if (!authGraphQLToken) {
+    //   //do some error stuff
+    //   return;
+    // }
 
     const authGraphQLResponse = await callAuthGraphQL(
       `${new URL(stateApp.apolloClientEndpoint).origin}/.auth/login/aad`,
-      authGraphQLToken.accessToken
+      authGraphQLLoginResponse.accessToken
     ).catch((error) => {
       //do some error stuff
       console.log(error);
@@ -304,10 +305,14 @@ const LoginB2C = (props) => {
 
     const mongoUser = await getMongoDBUser(
       {
-        email: readProfileResponse.mail
-          ? readProfileResponse.mail
-          : readProfileResponse.userPrincipalName,
-        name: readProfileResponse.displayName,
+        email: accountObj.emails && accountObj.emails.length > 0
+        ? accountObj.emails[0]
+        : accountObj.sub,
+        name: accountObj.name
+        // email: readProfileResponse.mail
+        //   ? readProfileResponse.mail
+        //   : readProfileResponse.userPrincipalName,
+        // name: readProfileResponse.displayName,
       },
       authGraphQLResponse.authenticationToken
     ).catch((error) => {
@@ -319,31 +324,36 @@ const LoginB2C = (props) => {
       return;
     }
 
-    // setStateApp((state) => ({
-    //   ...state,
-    //   user: {
-    //     id: readProfileResponse.id,
-    //     mongoId: mongoUser._id,
-    //     email: readProfileResponse.mail
-    //       ? readProfileResponse.mail
-    //       : readProfileResponse.userPrincipalName,
-    //     name: readProfileResponse.displayName,
-    //     authToken: authGraphQLResponse.authenticationToken,
-    //     authTokenExpires: new Date(
-    //       authGraphQLToken.expiresOn.setDate(
-    //         authGraphQLToken.expiresOn.getDate() + 14
-    //       )
-    //     ),
-    //     tenant: {
-    //       id: request.tenantId,
-    //       tenant: "M1neral",
-    //       graphQL: {
-    //         endpoint:
-    //           "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
-    //       },
-    //     },
-    //   },
-    // }));
+    setStateApp((state) => ({
+      ...state,
+      user: {
+        id: accountObj.oid,
+        //id: readProfileResponse.id,
+        mongoId: mongoUser._id,
+        email: accountObj.emails && accountObj.emails.length > 0
+        ? accountObj.emails[0]
+        : accountObj.sub,
+        name: accountObj.name,
+        // email: readProfileResponse.mail
+        //   ? readProfileResponse.mail
+        //   : readProfileResponse.userPrincipalName,
+        // name: readProfileResponse.displayName,
+        authToken: authGraphQLResponse.authenticationToken,
+        authTokenExpires: new Date(
+          authGraphQLLoginResponse.expiresOn.setDate(
+            authGraphQLLoginResponse.expiresOn.getDate() + 14
+          )
+        ),
+        tenant: {
+          id: request.tenantId,
+          tenant: "M1neral",
+          graphQL: {
+            endpoint:
+              "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
+          },
+        },
+      },
+    }));
 
     setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
 
@@ -390,7 +400,7 @@ const LoginB2C = (props) => {
 
   async function ssoSilent(request) {
     console.log("request made to ssoSilent at: " + new Date().toString());
-    console.log("scopes requested: " + request.scopes.toString());
+    console.log("scopes requested: " + request.scopes);
 
     stateApp.myMSALB2CObj.config.auth.redirectUri =
       msalB2CConfig().auth.redirectUri + "auth.html";
@@ -412,7 +422,7 @@ const LoginB2C = (props) => {
 
   async function getTokenPopup(request) {
     console.log("request made to getTokenPopup at: " + new Date().toString());
-    console.log("scopes requested: " + request.scopes.toString());
+    console.log("scopes requested: " + request.scopes);
 
     return await stateApp.myMSALB2CObj
       .acquireTokenSilent(request)
