@@ -53,24 +53,8 @@ const StyledMenu = withStyles({
   paper: {
     border: "1px solid #011133",
     background: "#263451",
-
     "& .MuiMenu-list": {
       background: "#011133 !important",
-      "& :nth-child(2)": {
-        float: "left",
-      },
-      "& :nth-child(3)": {
-        float: "left",
-        display: "grid",
-      },
-      "& :nth-child(4)": {},
-      "& :nth-child(5)": {
-        float: "left",
-        display: "grid",
-      },
-      "& :nth-child(6)": {
-        display: "grid",
-      },
     },
   },
 })((props) => (
@@ -127,29 +111,34 @@ const StyledMenuHeaderItem = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important",
-    width: "546px",
+    width: "400px",
   },
   nested: {
     paddingLeft: theme.spacing(6),
     paddingRight: theme.spacing(6),
   },
-  listUi: {
+  boxtext: {
+    textAlign: "center",
+    margin: "auto",
+  },
+  imageBox: {
+    "& :nth-child(1)": {
+      float: "left",
+      display: "grid",
+    },
     "& :nth-child(2)": {
-      float: "unset !important",
+      float: "left",
+      display: "grid",
     },
     "& :nth-child(3)": {
-      float: "unset !important",
-      display: "flex !important",
+      display: "grid",
     },
     "& :nth-child(4)": {
-      display: "flex !important",
+      float: "left",
+      display: "grid",
     },
     "& :nth-child(5)": {
-      float: "flex !important",
-      display: "flex !important",
-    },
-    "& :nth-child(6)": {
-      display: "flex !important",
+      display: "grid",
     },
   },
 }));
@@ -309,33 +298,34 @@ export default function BaseMapStyles(props) {
         >
           <ListItemText primary="Base Map" />
         </StyledMenuHeaderItem>
+        <div className={classes.imageBox}>
+          {mapStyles.map((style) => (
+            <StyledMenuItem
+              disableRipple
+              key={style.id}
+              role={undefined}
+              onClick={() => {
+                setStateApp((stateApp) => ({
+                  ...stateApp,
+                  mapVars: { ...stateApp.mapVars, styleId: style.name },
+                }));
 
-        {mapStyles.map((style) => (
-          <StyledMenuItem
-            disableRipple
-            key={style.id}
-            role={undefined}
-            onClick={() => {
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                mapVars: { ...stateApp.mapVars, styleId: style.name },
-              }));
-
-              handleClose();
-            }}
-          >
-            <ThemeProvider theme={theme}>
-              <div>{style.name == "Outdoors" && <MapOutdoorIcon />}</div>
-              <div>{style.name == "Satellite" && <MapSatelliteIcon />}</div>
-              <div>{style.name == "Light" && <MapLightIcon />}</div>
-              <div>{style.name == "Dark" && <MapDarkIcon />}</div>
-              <div>{style.name == "Basic" && <MapBasicIcon />}</div>
-              <div>
-                <ListItemText primary={style.name} />
-              </div>
-            </ThemeProvider>
-          </StyledMenuItem>
-        ))}
+                handleClose();
+              }}
+            >
+              <ThemeProvider theme={theme}>
+                <div>{style.name == "Outdoors" && <MapOutdoorIcon />}</div>
+                <div>{style.name == "Satellite" && <MapSatelliteIcon />}</div>
+                <div>{style.name == "Light" && <MapLightIcon />}</div>
+                <div>{style.name == "Dark" && <MapDarkIcon />}</div>
+                <div>{style.name == "Basic" && <MapBasicIcon />}</div>
+                <div className={classes.boxtext}>
+                  <ListItemText primary={style.name} />
+                </div>
+              </ThemeProvider>
+            </StyledMenuItem>
+          ))}
+        </div>
 
         {/* <StyledListItem2 button onClick={handleClick}>
           <ListItemIcon>
@@ -387,7 +377,7 @@ export default function BaseMapStyles(props) {
             <Droppable droppableId="droppable">
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
-                  <List className={classes.listUi} style={{ padding: 0 }}>
+                  <List style={{ padding: 0 }}>
                     {stateApp.baseMapLayers.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
                       return (
