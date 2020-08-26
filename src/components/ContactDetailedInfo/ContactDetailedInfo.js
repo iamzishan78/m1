@@ -205,12 +205,13 @@ export default ({
     },
     'Lead Source': { data: { leadSource: props.contactData.leadSource }, linkType: LinkTypes.None },
     'Created By': { data: { primaryEmail: props.contactData.primaryEmail }, linkType: LinkTypes.None, inner:
-      props.contactData.createBy && props.contactData.createBy.name === null && (
+      props.contactData.createBy && props.contactData.createBy.name === null 
+      && (
         <div className={classes.userSmallLoader}>
           <CircularProgress size={22} color="secondary" />
         </div>
-      )
-      (props.contactData.createBy && props.contactData.createBy.name) || props.contactData.createAt
+      ) && 
+       (props.contactData.createBy && props.contactData.createBy.name) || props.contactData.createAt
         ? (
           `${
             props.contactData.createBy && props.contactData.createBy.name
@@ -228,12 +229,13 @@ export default ({
         )
     },
     'Last Update By': { data: { primaryEmail: props.contactData.primaryEmail }, linkType: LinkTypes.None, inner:
-      props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name === null && (
+      props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name === null 
+      && (
         <div className={classes.userSmallLoader}>
           <CircularProgress size={22} color="secondary" />
         </div>
       )
-      (props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name) || props.contactData.lastUpdateAt
+      && (props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name) || props.contactData.lastUpdateAt
         ? (
           `${
             props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name
