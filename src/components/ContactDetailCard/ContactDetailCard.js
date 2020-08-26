@@ -282,10 +282,9 @@ export default function ContactDetailCard(props) {
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
     TRANSACTIONDATA
   );
-  const [getMelissaRecords, { data: mData }] = useLazyQuery(
-    MELISSARECORDS,
-    { fetchPolicy: "network-only" }
-  );
+  const [getMelissaRecords, { data: mData }] = useLazyQuery(MELISSARECORDS, {
+    fetchPolicy: "network-only",
+  });
 
   const handleClickRightDialogOpen = (childrenToOpen) => {
     setRightDialogOpen(childrenToOpen);
@@ -442,6 +441,7 @@ export default function ContactDetailCard(props) {
                     noInputFooter
                     noMargin
                     id={contactData._id}
+                    entity={contactData.entity}
                     content={{ name: contactData.name }}
                   >
                     {(contactData.facebook ||
@@ -497,6 +497,7 @@ export default function ContactDetailCard(props) {
                     noMargin
                     name="Address"
                     id={contactData._id}
+                    entity={contactData.entity}
                     content={{
                       address1: contactData.address1,
                       address2: contactData.address2,
@@ -513,6 +514,7 @@ export default function ContactDetailCard(props) {
                     noMargin
                     name={"Company Name Or Job Title"}
                     id={contactData._id}
+                    entity={contactData.entity}
                     content={{
                       companyName: contactData.companyName,
                       jobTitle: contactData.jobTitle,
@@ -678,7 +680,7 @@ export default function ContactDetailCard(props) {
           </Grid>
 
           {/*/////////// table section //////////// */}
-          {contactData && contactData.owners && contactData.owners.length > 0 && (
+          {/* {contactData && contactData.owners && contactData.owners.length > 0 && (
             <Grid
               item
               xs={12}
@@ -692,7 +694,7 @@ export default function ContactDetailCard(props) {
                 />
               </div>
             </Grid>
-          )}
+          )} */}
         </Grid>
 
         {/*/////////// rigth column //////////// */}
