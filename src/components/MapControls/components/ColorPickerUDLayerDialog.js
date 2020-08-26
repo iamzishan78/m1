@@ -61,6 +61,8 @@ export default (props) => {
     const udLayerConfig = stateApp.udLayerConfig;
     const layerIndex = udLayerConfig.findIndex((config) => config.layerName == layerName);
 
+    console.log("before apply cahnge", stateApp.udLayerConfig);
+
     let config = {};
     if (fillColor && fillColor.hex) {
       config.fillColor = '#' + fillColor.hex;
@@ -120,13 +122,12 @@ export default (props) => {
 
   useEffect(() => {
     if (updatedLayerConfig && updatedLayerConfig.updateLayerConfig && updatedLayerConfig.updateLayerConfig.success) {
+      console.log(stateApp.udLayerConfig);
       const udLayerConfig = stateApp.udLayerConfig.slice(0);
       const layerConfig = {...updatedLayerConfig.updateLayerConfig.layerConfig};
       const layerConfigIndex = udLayerConfig.findIndex((config) => config._id == layerConfig._id )
-      console.log(layerConfig);
-      console.log(tmplayerConfig);
       udLayerConfig[layerConfigIndex] = {...tmplayerConfig, _id: layerConfig._id};
-      console.log(udLayerConfig);
+      console.log("before set state value", udLayerConfig);
       setStateApp((stateApp) => ({
         ...stateApp,
         udLayerConfig: udLayerConfig

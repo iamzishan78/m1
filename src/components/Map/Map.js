@@ -231,6 +231,8 @@ export default function Map() {
   const [mapMouseMoveHandler, setMapMouseMoveHandler] = useState(null);
   const [mapMouseRClickHandler, setMapMouseRClickHandler] = useState(null);
 
+  const [isLoadedLayerConfig, setIsLoadedLayerConfig] = useState(false);
+
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
 
   //////////// TEMP UNTIL PROVIDER IS MADE //////////
@@ -292,7 +294,7 @@ export default function Map() {
   const [getAbstractGeo, { data: abstractData }] = useLazyQuery(ABSTRACTGEOQUERY);
   const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY); 
 
-  const [getLayerCongfigsByUser, { data: layerConfigs }] = useLazyQuery(LAYERCONFIGSBYUSER); 
+  const [getLayerCongfigsByUser, { data: layerConfigsById }] = useLazyQuery(LAYERCONFIGSBYUSER); 
 
   /////end/////////temporary
 
@@ -319,13 +321,14 @@ export default function Map() {
         }
       });
 
-      getCustomLayers();
-
       getLayerCongfigsByUser({
         variables: {
           userId: stateApp.user.mongoId
         }
       });
+
+      getCustomLayers();
+
     }
   }, [stateApp.user]);
 
@@ -405,14 +408,16 @@ export default function Map() {
   }, [fileLayerData]);
 
   useEffect(() => {
-    if (layerConfigs && layerConfigs.layersConfigByUser && layerConfigs.layersConfigByUser.length > 0) {
-      const configs = layerConfigs.layersConfigByUser;
+    if (layerConfigsById && layerConfigsById.layersConfigByUser && layerConfigsById.layersConfigByUser.length > 0 && !isLoadedLayerConfig) {
+      const configs = layerConfigsById.layersConfigByUser;
+      setIsLoadedLayerConfig(true);
+      console.log("layerconfig set once time", configs);
       setStateApp((stateApp) => ({
         ...stateApp,
         udLayerConfig: configs
       }));
     }
-  }, [layerConfigs]);
+  }, [layerConfigsById]);
 
   useEffect(() => {
     console.log(stateApp.udLayerConfig);
