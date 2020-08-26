@@ -314,13 +314,13 @@ export default function CellContentEdition({
     if (differences) {
       if (targetLabel === "contact") {
         trimmedEditContent.lastUpdateBy = stateApp.user.mongoId;
-        updateContact({
-          variables: {
-            contact: trimmedEditContent,
-          },
-          refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
-          awaitRefetchQueries: true,
-        });
+        // updateContact({
+        //   variables: {
+        //     contact: trimmedEditContent,
+        //   },
+        //   refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
+        //   awaitRefetchQueries: true,
+        // });
       }
       if (targetLabel === "Parcel Owner") {
         trimmedEditContent.ownerEntityId = secondaryId;

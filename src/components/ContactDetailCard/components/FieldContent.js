@@ -260,13 +260,13 @@ export default function FieldContent({
     }
 
     if (differences && fieldType == FieldTypes.Contact) {
-      updateContact({
-        variables: {
-          contact: trimmedEditContent,
-        },
-        refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
-        awaitRefetchQueries: true,
-      });
+      // updateContact({
+      //   variables: {
+      //     contact: trimmedEditContent,
+      //   },
+      //   refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
+      //   awaitRefetchQueries: true,
+      // });
     }
 
     setEdit(null);
