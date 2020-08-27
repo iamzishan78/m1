@@ -22,9 +22,10 @@ import { UPSERTLAYERCONFIG } from "../../../graphQL/useMutationUpsertLayerConfig
 
 export default (props) => {
   const { layer } = props;
+  const existStrokeColor = layer.layerProps[0].layerType == 'fill' ? layer.layerProps[0].paintProps["fill-outline-color"] : layer.layerProps[0].paintProps["circle-stroke-color"];
   const [isOpen, setIsOpen] = useState(true);
   const [fillColor, setFillColor] = useState(layer.idColor);
-  const [strokeColor, setStrokeColor] = useState(layer.idColor);
+  const [strokeColor, setStrokeColor] = useState(existStrokeColor);
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );

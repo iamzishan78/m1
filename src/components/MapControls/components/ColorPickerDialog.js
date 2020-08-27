@@ -21,9 +21,10 @@ import { UPDATEFILELAYER } from "../../../graphQL/useMutationUpdateFileLayer";
 
 export default (props) => {
   const { layer } = props;
+  const existStrokeColor = layer.type == 'fill' ? layer.paintProps['fill-outline-color'] : layer.paintProps['circle-stroke-color'];
   const [isOpen, setIsOpen] = useState(true);
   const [fillColor, setFillColor] = useState(layer.idColor);
-  const [strokeColor, setStrokeColor] = useState(layer.idColor);
+  const [strokeColor, setStrokeColor] = useState(existStrokeColor);
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
@@ -67,7 +68,7 @@ export default (props) => {
       }
     }
     if (strokeColor && strokeColor.hex) {
-      config.strokeColor = '#' + fillColor.hex;
+      config.strokeColor = '#' + strokeColor.hex;
       if (cpLayer.type == 'circle') {
         cpLayer.paintProps['circle-stroke-color'] = '#' + strokeColor.hex;
       } else {
