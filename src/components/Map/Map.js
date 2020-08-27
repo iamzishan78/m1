@@ -483,6 +483,7 @@ export default function Map() {
         });
       } else {
         let fileData = [];
+        let checkedFileLayers = [];
         for (let i = 0; i < fileLayerPreData.length; i ++) {
           const layerName = fileLayerPreData[i].layerName;
           let fileContent = {};
@@ -497,10 +498,12 @@ export default function Map() {
           const fileId = fileLayerPreData[i].file._id;
           const fileLayerId = fileLayerPreData[i]._id;
           fileData.push({fileLayerId, layerName, fileContent, idColor, layerType, paintProps, fileId});
+          checkedFileLayers.push(i);
         }
         setStateApp((stateApp) => ({
           ...stateApp,
-          userFileLayers: fileData
+          userFileLayers: fileData,
+          checkedFileLayers: checkedFileLayers
         }));
       }
     }
@@ -2028,7 +2031,7 @@ export default function Map() {
   useEffect(() => {
     if (map && stateApp.userFileLayers && stateApp.userFileLayers.length > 0) {
       const fileLayers = stateApp.userFileLayers;
-      fileLayers.forEach((fileLayer) => {
+      fileLayers.forEach((fileLayer, index) => {
         const layerName = fileLayer.layerName;
         const geoJson = fileLayer.fileContent;
         const sourceName = layerName + ' Source';
@@ -2056,11 +2059,17 @@ export default function Map() {
             paint: paintProps,
           });
         }
+        if (stateApp.checkedFileLayers.indexOf(index) === -1) {
+          map.setLayoutProperty(layerName, "visibility", "none");
+        } else {
+          map.setLayoutProperty(layerName, "visibility", "visible");
+        }
       });
     }
   }, [
     map,
-    stateApp.userFileLayers
+    stateApp.userFileLayers,
+    stateApp.checkedFileLayers,
   ]);
 
   useEffect(() => {
