@@ -11,6 +11,7 @@ import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 import Button from "@material-ui/core/Button";
 import { useMutation } from "@apollo/react-hooks";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
+import { UPDATEMELISSA, UPDATEMELISSAADDRESS } from "../../../graphQL/useMutationUpdateMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../../AppContext";
 
@@ -186,6 +187,8 @@ export default function FieldContent({
   children,
   id,
   entity,
+  melissaRecordId = null,
+  melissaAddressRecordId = null,
   content,
   childrenLeft,
   onlyChildren,
@@ -197,6 +200,8 @@ export default function FieldContent({
 }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
   //////////// entity - brings the entity id tide to the contact //////////////////////////////////////////////////
+  //////////// melissaRecordId - brings the melissa record id tide to the contact /////////////////////////////////
+  //////////// melissaAddressRecordId - brings the melissa address record id tide to the contact //////////////////
   //////////// content - brings an object with fielNames and values ///////////////////////////////////////////////
   //////////// childrenLeft - will move the chilren components to the left side of the field values//optional//////
   ////////////              - default childrens to rigth///////////////////////////////////////////////////////////
@@ -210,9 +215,12 @@ export default function FieldContent({
   const [stateApp] = React.useContext(AppContext);
   const [edit, setEdit] = useState(null);
   const [editContent, setEditContent] = useState({ content });
+  const [showContent, setShowContent] = useState(content);
   const [fieldsCount, setFieldsCount] = useState(0);
 
   const [updateContact, { loading }] = useMutation(UPDATECONTACT);
+  const [updateMelissa, { melissaLoading }] = useMutation(UPDATEMELISSA);
+  const [updateMelissaAddress, { melissaAddressLoading }] = useMutation(UPDATEMELISSAADDRESS);
   const classes = useStyles({ noMargin, loading, fieldsCount });
 
   useEffect(() => {
@@ -248,27 +256,51 @@ export default function FieldContent({
   };
 
   const handleUpdating = () => {
-    let trimmedEditContent = {
-      _id: id,
-      lastUpdateBy: stateApp.user.mongoId,
-    };
-    if (entity) trimmedEditContent.entity = entity;
-    let differences = false;
-    for (const field in editContent) {
-      if (editContent[field] !== null) {
-        trimmedEditContent[field] = editContent[field].trim();
-        if (editContent[field].trim() !== content[field]) differences = true;
+    if (fieldType == FieldTypes.Contact) {
+      let trimmedEditContent = {
+        _id: id,
+        lastUpdateBy: stateApp.user.mongoId,
+      };
+      if (entity) trimmedEditContent.entity = entity;
+      let differences = false;
+      for (const field in editContent) {
+        if (editContent[field] !== null) {
+          trimmedEditContent[field] = editContent[field].trim();
+          if (editContent[field].trim() !== content[field]) differences = true;
+        }
       }
-    }
 
-    if (differences && fieldType == FieldTypes.Contact) {
-      updateContact({
+      if (differences) {
+        updateContact({
+          variables: {
+            contact: trimmedEditContent,
+          },
+          refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
+          awaitRefetchQueries: true,
+        });
+      }
+    } else if (fieldType == FieldTypes.MelissaRecord) {
+      let entries = Object.entries(editContent)[0];
+      let key = entries[0];
+      let updatedValue = entries[1];
+      updateMelissa({
         variables: {
-          contact: trimmedEditContent,
+          melissaRecord: {
+            _id: melissaRecordId,
+            [key]: updatedValue
+          }
         },
-        refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
-        awaitRefetchQueries: true,
-      });
+        refetchQueries: ["getMelissaRecords"],
+        awaitRefetchQueries: true
+      }).then(
+        res => {
+          content = { [key]: updatedValue };
+          setShowContent(content);
+          setEditContent({ ...content });
+        },
+      );;
+    } else if (fieldType == FieldTypes.MelissaAddressRecord) {
+      
     }
 
     setEdit(null);
@@ -342,18 +374,18 @@ export default function FieldContent({
   }
 
   let textArray = [];
-  for (const key in content) {
-    if (content.hasOwnProperty(key) && content[key] && content[key] !== "") {
+  for (const key in showContent) {
+    if (showContent.hasOwnProperty(key) && showContent[key] && showContent[key] !== "") {
       if (
         key === "zip" ||
         key === "country" ||
         key === "zipAlt" ||
         key === "countryAlt"
       ) {
-        textArray = [[textArray.join(", "), content[key]].join(" ")];
+        textArray = [[textArray.join(", "), showContent[key]].join(" ")];
       } else if (key === "jobTitle") {
-        textArray = [[textArray.join(", "), content[key]].join(" - ")];
-      } else textArray.push(content[key]);
+        textArray = [[textArray.join(", "), showContent[key]].join(" - ")];
+      } else textArray.push(showContent[key]);
     }
   }
 
@@ -372,15 +404,13 @@ export default function FieldContent({
             : ""
           : textArray.join(", ")
         : `${name ? name + " " : ""} Not Available`}
-      {fieldType == FieldTypes.Contact && (
-        <PencilEditIcon
-          handleUpdating={handleUpdating}
-          anchorEl={edit}
-          setAnchorEl={setEdit}
-          content={inputsArray}
-          onClick={handleEditClick}
-        />
-      )}
+      <PencilEditIcon
+        handleUpdating={handleUpdating}
+        anchorEl={edit}
+        setAnchorEl={setEdit}
+        content={inputsArray}
+        onClick={handleEditClick}
+      />
       {!childrenLeft && !onlyChildren && children ? children : ""}
     </span>
   );
