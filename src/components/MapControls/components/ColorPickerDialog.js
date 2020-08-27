@@ -39,7 +39,7 @@ export default (props) => {
     setIsOpen(false);
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
-      selectedUDLayer: null
+      selectedFileLayer: null
     }));
   }
 
