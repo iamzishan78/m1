@@ -741,13 +741,14 @@ function SubTable(props) {
                   return (
                     <CellContentEdition
                       id={tableMeta.rowData[0]}
+                      entityId={tableMeta.rowData[1]}
                       content={{
-                        address1: tableMeta.rowData[1],
-                        address2: tableMeta.rowData[2],
-                        city: tableMeta.rowData[3],
-                        state: tableMeta.rowData[4],
-                        zip: tableMeta.rowData[5],
-                        country: tableMeta.rowData[6],
+                        address1: tableMeta.rowData[2],
+                        address2: tableMeta.rowData[3],
+                        city: tableMeta.rowData[4],
+                        state: tableMeta.rowData[5],
+                        zip: tableMeta.rowData[6],
+                        country: tableMeta.rowData[7],
                       }}
                       targetLabel={props.targetLabel}
                     />
@@ -820,8 +821,9 @@ function SubTable(props) {
                         dropDownOptions={
                           column.dropDownOptions ? column.dropDownOptions : null
                         }
-                        secondaryId={
-                          props.targetLabel === "Parcel Owner"
+                        entityId={
+                          props.targetLabel === "Parcel Owner" ||
+                          props.targetLabel === "contact"
                             ? tableMeta.rowData[1]
                             : null
                         }

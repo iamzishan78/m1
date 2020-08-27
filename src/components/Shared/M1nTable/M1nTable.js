@@ -473,6 +473,18 @@ const ContactsHeadCells = [
     },
   },
   {
+    name: "entity",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
     name: "address1",
     options: {
       display: false,
@@ -582,18 +594,18 @@ const ContactsHeadCells = [
       },
     },
   },
-  {
-    name: "owners", //ownerPerContactCount
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  // {
+  //   name: "owners", //ownerPerContactCount
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
   {
     name: "commentsCounter",
     label: " ",
@@ -1040,9 +1052,9 @@ function M1nTable(props) {
             userId: stateApp.user.mongoId,
           },
         });
-        getContactsCounter({
-          variables: { objectsIdsArray: tracksIdArray },
-        });
+        // getContactsCounter({
+        //   variables: { objectsIdsArray: tracksIdArray },
+        // });
       } else {
         setRows([]);
         setLoading(false);
@@ -1059,8 +1071,8 @@ function M1nTable(props) {
         dataOwners.owners.results.length > 0 &&
         dataCommentsCounter &&
         dataCommentsCounter.commentsCounter &&
-        dataContactsCounter &&
-        dataContactsCounter.contactsCounter &&
+        // dataContactsCounter &&
+        // dataContactsCounter.contactsCounter &&
         dataTagSamples &&
         dataTagSamples.tagSamples &&
         dataOwnersWells
@@ -1102,13 +1114,13 @@ function M1nTable(props) {
             }
           }
 
-          for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
-            if (owner.id === dataContactsCounter.contactsCounter[i]._id) {
-              owner.contactsCounter =
-                dataContactsCounter.contactsCounter[i].total;
-              break;
-            }
-          }
+          // for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
+          //   if (owner.id === dataContactsCounter.contactsCounter[i]._id) {
+          //     owner.contactsCounter =
+          //       dataContactsCounter.contactsCounter[i].total;
+          //     break;
+          //   }
+          // }
         });
 
         let availableTags = [];
@@ -1170,7 +1182,7 @@ function M1nTable(props) {
     dataOwners,
     dataTagSamples,
     dataCommentsCounter,
-    dataContactsCounter,
+    // dataContactsCounter,
     dataOwnersWells,
   ]);
   ////////////Tracked Owners end///////////////////////////////////////////////
@@ -1527,9 +1539,9 @@ function M1nTable(props) {
         getTagSamples({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
-        getContactsCounter({
-          variables: { objectsIdsArray: objectsIdsArray },
-        });
+        // getContactsCounter({
+        //   variables: { objectsIdsArray: objectsIdsArray },
+        // });
       } else {
         setLoading(false);
         setRows([]);
@@ -1546,8 +1558,8 @@ function M1nTable(props) {
       dataWellOwners.wellOwners.length > 0 &&
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter &&
-      dataContactsCounter &&
-      dataContactsCounter.contactsCounter &&
+      // dataContactsCounter &&
+      // dataContactsCounter.contactsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples &&
       dataOwnersWells
@@ -1589,13 +1601,13 @@ function M1nTable(props) {
           }
         }
 
-        for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
-          if (wellOwner.id === dataContactsCounter.contactsCounter[i]._id) {
-            wellOwner.contactsCounter =
-              dataContactsCounter.contactsCounter[i].total;
-            break;
-          }
-        }
+        // for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
+        //   if (wellOwner.id === dataContactsCounter.contactsCounter[i]._id) {
+        //     wellOwner.contactsCounter =
+        //       dataContactsCounter.contactsCounter[i].total;
+        //     break;
+        //   }
+        // }
       });
 
       let availableTags = [];
@@ -1643,7 +1655,7 @@ function M1nTable(props) {
     dataTracks,
     dataTagSamples,
     dataCommentsCounter,
-    dataContactsCounter,
+    // dataContactsCounter,
     dataOwnersWells,
   ]);
 
@@ -1755,9 +1767,9 @@ function M1nTable(props) {
         getTagSamples({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
-        getContactsCounter({
-          variables: { objectsIdsArray: objectsIdsArray },
-        });
+        // getContactsCounter({
+        //   variables: { objectsIdsArray: objectsIdsArray },
+        // });
       } else {
         setLoading(false);
         setRows([]);
@@ -1779,8 +1791,8 @@ function M1nTable(props) {
       dataOwners.owners.results.length > 0 &&
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter &&
-      dataContactsCounter &&
-      dataContactsCounter.contactsCounter &&
+      // dataContactsCounter &&
+      // dataContactsCounter.contactsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples
     ) {
@@ -1809,13 +1821,13 @@ function M1nTable(props) {
           }
         }
 
-        for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
-          if (wellOwner.id === dataContactsCounter.contactsCounter[i]._id) {
-            wellOwner.contactsCounter =
-              dataContactsCounter.contactsCounter[i].total;
-            break;
-          }
-        }
+        // for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
+        //   if (wellOwner.id === dataContactsCounter.contactsCounter[i]._id) {
+        //     wellOwner.contactsCounter =
+        //       dataContactsCounter.contactsCounter[i].total;
+        //     break;
+        //   }
+        // }
       });
 
       let availableTags = [];
@@ -1863,7 +1875,7 @@ function M1nTable(props) {
     dataTracks,
     dataTagSamples,
     dataCommentsCounter,
-    dataContactsCounter,
+    // dataContactsCounter,
   ]);
   ////////////Owners Per Contact begin//////////Delete//////////////////////////////
 
@@ -1910,9 +1922,9 @@ function M1nTable(props) {
       setTargetLabel("contact");
       setHeader("Owner's Contacts");
       setAddAble({ parent: props.ownerId, type: "contactToOwner" });
-      getContactsByOwnerId({
-        variables: { objectId: props.ownerId },
-      });
+      // getContactsByOwnerId({
+      //   variables: { objectId: props.ownerId },
+      // });
     }
   }, [props.ownerId]);
 

@@ -214,7 +214,7 @@ export default function CellContentEdition({
   noInputFooter,
   targetLabel,
   dropDownOptions,
-  secondaryId,
+  entityId,
 }) {
   //////////// id - brings the object id //////////////////////////////////////////////////////////////////////////
   //////////// content - brings an object with fielNames and values ///////////////////////////////////////////////
@@ -225,7 +225,7 @@ export default function CellContentEdition({
   //////////// noInputFooter //optional////////////////////////////////////////////////////////////////////////////
   //////////// targetLabel - brings the object type we are updating here //////////////////////////////////////////
   //////////// dropDownOptions - brings an array in case of autocomplete //////////////////////////////////////////
-  //////////// secondaryId //optional////////////////////////////////////////////////////////////////////////////
+  //////////// entityId //optional////////////////////////////////////////////////////////////////////////////
 
   const [stateApp] = React.useContext(AppContext);
   const [edit, setEdit] = useState(null);
@@ -314,6 +314,7 @@ export default function CellContentEdition({
     if (differences) {
       if (targetLabel === "contact") {
         trimmedEditContent.lastUpdateBy = stateApp.user.mongoId;
+        trimmedEditContent.entity = entityId;
         updateContact({
           variables: {
             contact: trimmedEditContent,
@@ -323,7 +324,7 @@ export default function CellContentEdition({
         });
       }
       if (targetLabel === "Parcel Owner") {
-        trimmedEditContent.ownerEntityId = secondaryId;
+        trimmedEditContent.ownerEntityId = entityId;
         updateParcelOwner({
           variables: {
             parcelOwner: trimmedEditContent,

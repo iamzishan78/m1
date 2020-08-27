@@ -7,7 +7,7 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Taps from "../../../Taps";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { Grid } from "@material-ui/core";
 import { AppContext } from "../../../../../AppContext";
 import { Modals } from "../../../../../styles/Modal";
@@ -17,7 +17,6 @@ import { CONTACTSBYOWNERSID } from "../../../../../graphQL/useQueryContactsByOwn
 import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
 import { ADDREMOVEOWNERTOACONTACT } from "../../../../../graphQL/useMutationAddRemoveOwnerToAContact";
 import { makeStyles } from "@material-ui/core/styles";
-
 
 const phonenumber = (inputtxt) => {
   if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
@@ -78,7 +77,7 @@ export default function AddContactDialogContent(props) {
     country: "",
     state: "",
     zip: "",
-    owners: props.parent ? [props.parent] : [],
+    // owners: props.parent ? [props.parent] : [],
   });
   const [
     getContacts,
@@ -93,7 +92,7 @@ export default function AddContactDialogContent(props) {
   ] = useLazyQuery(CONTACTSBYOWNERSID, {
     fetchPolicy: "cache-and-network",
   });
-  // const [addContact, { called: calledAddContact, data: dataAddContact }] = useMutation(ADDCONTACT);
+
   const [
     addContact,
     {
@@ -110,13 +109,13 @@ export default function AddContactDialogContent(props) {
     }
   }, [props.parent, props.setDealsContact]);
 
-  useEffect(() => {
-    if (props.parent) {
-      getContactsByOwnerId({
-        variables: { objectId: props.parent },
-      });
-    }
-  }, [props.parent]);
+  // useEffect(() => {
+  //   if (props.parent) {
+  //     getContactsByOwnerId({
+  //       variables: { objectId: props.parent },
+  //     });
+  //   }
+  // }, [props.parent]);
 
   useEffect(() => {
     if (
@@ -210,7 +209,7 @@ export default function AddContactDialogContent(props) {
           },
           refetchQueries: [
             "getContacts",
-            "getContactsByOwnerId",
+            // "getContactsByOwnerId",
             "getContactsCounter",
             "getContact",
           ],
@@ -224,23 +223,23 @@ export default function AddContactDialogContent(props) {
       return;
     }
 
-    if (props.parent && activeTapIndex === 1) {
-      //////update///// existingContact   //////////
+    // if (props.parent && activeTapIndex === 1) {
+    //   //////update///// existingContact   //////////
 
-      addRemoveOwnerToAContact({
-        variables: {
-          contactId: existingContact._id,
-          ownerId: props.parent,
-        },
-        refetchQueries: [
-          "getContacts",
-          "getContactsByOwnerId",
-          "getContactsCounter",
-          "getContact",
-        ],
-        awaitRefetchQueries: true,
-      });
-    }
+    //   addRemoveOwnerToAContact({
+    //     variables: {
+    //       contactId: existingContact._id,
+    //       ownerId: props.parent,
+    //     },
+    //     refetchQueries: [
+    //       "getContacts",
+    //       // "getContactsByOwnerId",
+    //       "getContactsCounter",
+    //       "getContact",
+    //     ],
+    //     awaitRefetchQueries: true,
+    //   });
+    // }
 
     if (!props.parent || (props.parent && activeTapIndex === 0)) {
       //////add new///// newContact ////////////
@@ -254,7 +253,7 @@ export default function AddContactDialogContent(props) {
         },
         refetchQueries: [
           "getContacts",
-          "getContactsByOwnerId",
+          // "getContactsByOwnerId",
           "getContactsCounter",
           "getContact",
         ],
@@ -268,46 +267,46 @@ export default function AddContactDialogContent(props) {
   const selectExisting = () => {
     return (
       <React.Fragment>
-        <div style={{paddingTop: '15%'}}>
-        {!loadingContacts && !loadingContactsByOwnerId ? (
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Autocomplete
-                size="small"
-                className={classes.maxWidth}
-                style={{ minWidth: "325.6px" }}
-                options={contacts}
-                getOptionLabel={(option) =>
-                  option && option.name
-                    ? option.name
-                    : typeof option === "string"
-                    ? option
-                    : ""
-                }
-                autoComplete
-                autoSelect
-                disableClearable
-                includeInputInList
-                value={existingContact.name}
-                disabled={!contacts || contacts.length === 0}
-                onChange={(e, newValue) => {
-                  setExistingContact(newValue);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Contacts"
-                    variant="outlined"
-                    fullWidth
-                    multiline
-                  />
-                )}
-              />
+        <div style={{ paddingTop: "15%" }}>
+          {!loadingContacts && !loadingContactsByOwnerId ? (
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <Autocomplete
+                  size="small"
+                  className={classes.maxWidth}
+                  style={{ minWidth: "325.6px" }}
+                  options={contacts}
+                  getOptionLabel={(option) =>
+                    option && option.name
+                      ? option.name
+                      : typeof option === "string"
+                      ? option
+                      : ""
+                  }
+                  autoComplete
+                  autoSelect
+                  disableClearable
+                  includeInputInList
+                  value={existingContact.name}
+                  disabled={!contacts || contacts.length === 0}
+                  onChange={(e, newValue) => {
+                    setExistingContact(newValue);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Contacts"
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                    />
+                  )}
+                />
+              </Grid>
             </Grid>
-          </Grid>
-        ) : (
-          <CircularProgress size={40} disableShrink color="secondary" />
-        )}
+          ) : (
+            <CircularProgress size={40} disableShrink color="secondary" />
+          )}
         </div>
       </React.Fragment>
     );
@@ -495,19 +494,25 @@ export default function AddContactDialogContent(props) {
     <React.Fragment>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
         Add a Contact
-        <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={props.onClose}/>
+        <HighlightOffIcon
+          fontSize="large"
+          className={modalClass.titleClose}
+          onClick={props.onClose}
+        />
       </DialogTitle>
       <DialogContent dividers className={classes.dialogContent}>
-        {contacts && contacts.length > 0 ? (
-          <Taps
-            tabLabels={["Add New", "Select Existing"]}
-            tabPanels={[addNew(), selectExisting()]}
-            whichTapIsActive={whichTapIsActive}
-            backgroundColor="#fff"
-          />
-        ) : (
+        {
+          // contacts && contacts.length > 0 ? (
+          //   <Taps
+          //     tabLabels={["Add New", "Select Existing"]}
+          //     tabPanels={[addNew(), selectExisting()]}
+          //     whichTapIsActive={whichTapIsActive}
+          //     backgroundColor="#fff"
+          //   />
+          // ) : (
           addNew()
-        )}
+          // )
+        }
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClickDialogClose} color="primary">

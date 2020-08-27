@@ -4,11 +4,11 @@ function isObject(object) {
 
 export const deepEqualObjects = (object1, object2) => {
   if (Object.is(object1, object2)) {
-    return true
+    return true;
   }
-  
+
   if (!object1 || !object2) {
-    return false
+    return false;
   }
 
   const keys1 = Object.keys(object1);
