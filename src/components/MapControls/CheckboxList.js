@@ -660,30 +660,19 @@ export default function CheckboxList(props) {
                                   </ListItemIcon>
                                 </div>
 
-                                <Checkbox
-                                  disabled={!ifLayerHaveData(layer)}
-                                  icon={
-                                    <VisibilityOffIcon
-                                      htmlColor={"#fff"}
+                                <FormControlLabel
+                                  control={
+                                    <Switch
+                                      checked={
+                                        stateApp.checkedFileLayers
+                                          ? stateApp.checkedFileLayers.indexOf(
+                                              index
+                                            ) !== -1
+                                          : false
+                                      }
+                                      onChange={handleToggleFile(index)}
                                     />
                                   }
-                                  checkedIcon={
-                                    <VisibilityIcon
-                                      htmlColor={"#fff"}
-                                    />
-                                  }
-                                  edge="start"
-                                  checked={
-                                    stateApp.checkedFileLayers
-                                      ? stateApp.checkedFileLayers.indexOf(
-                                          index
-                                        ) !== -1
-                                      : false
-                                  }
-                                  tabIndex={-1}
-                                  disableRipple
-                                  inputProps={{ "aria-labelledby": labelId }}
-                                  onChange={handleToggleFile(index)}
                                 />
                               </StyledListItem>
                             </Box>
