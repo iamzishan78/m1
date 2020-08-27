@@ -409,7 +409,7 @@ export default function AddContactDialogContent(props) {
           <Grid item xs={12}>
             <h3>Country</h3>
             <TextField
-              size="Country"
+              size="small"
               className={classes.maxWidth}
               multiline
               value={newContact.country}
