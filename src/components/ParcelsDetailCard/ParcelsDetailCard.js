@@ -53,6 +53,7 @@ export default function ParcelsDetailCard(props) {
   const [stateApp] = useContext(AppContext);
   const classes = useStyles();
   const [parcelData, setParcelData] = useState({
+    _id: "5f2d60a70b0a02002146edfc",
     county: "Lea",
     state: "NM",
     meridian: null,
@@ -220,7 +221,14 @@ export default function ParcelsDetailCard(props) {
       <Grid item sm={12}>
         <Taps
           tabLabels={["Owners", "Wells"]}
-          tabPanels={["Owners Table", "Wells Table"]}
+          tabPanels={[
+            <M1nTable
+              parent="ownersPerParcel"
+              customLayerId={parcelData._id}
+              dense
+            />,
+            "Wells Table",
+          ]}
         />
       </Grid>
     </Grid>

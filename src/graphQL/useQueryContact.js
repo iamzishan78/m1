@@ -4,6 +4,7 @@ export const CONTACT = gql`
   query getContact($contactId: ID) {
     contact(contactId: $contactId) {
       _id
+      entity
       name
       address1
       address2
@@ -38,6 +39,7 @@ export const CONTACT = gql`
       leadSource
       companyName
       jobTitle
+      IsDeleted
       activityLog {
         type
         notes

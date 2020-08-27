@@ -23,7 +23,6 @@ import { GETPERSONDATA } from "../../../../../graphQL/useQueryGetPersonData";
 import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import ReactJson from 'react-json-view'
 
 const styles = (theme) => ({
   root: {
@@ -119,17 +118,30 @@ export default function BuyContactsInfoDialogContent(props) {
     let persons = []
     for (const row of props.rows) {
       let person = {
+        id: row._id,
         fullName: row.name,
         address: row.address1 + (row.address2 ? ", " + row.address2 : ''),
         city: row.city,
         state: row.state,
-        country: row.country
+        country: row.country,
+        postal: row.zip
       }
+
+      if (
+        (!person.address || !person.city || !person.state) &&
+        !person.postal
+      ) {
+        dispatch(showErrorMessage("Invalid data: [state, city, address] or [ZIP code] required"))
+        return
+      }
+
       persons.push(person)
     }
 
     getPersonDataQuery({
-      variables: { persons }
+      variables: { persons },
+      refetchQueries: ["getMelissaRecords"],
+      awaitRefetchQueries: true,
     })
   }
 

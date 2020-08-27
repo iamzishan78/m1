@@ -33,8 +33,10 @@ import { CONTACTSBYOWNERSID } from "../../../graphQL/useQueryContactsByOwnerId";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { ADDREMOVEOWNERTOACONTACT } from "../../../graphQL/useMutationAddRemoveOwnerToAContact";
 import { CONTACT } from "../../../graphQL/useQueryContact";
+import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
+import { UPDATEPARCELOWNER } from "../../../graphQL/useMutationUpdateParcelOwner";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -471,6 +473,18 @@ const ContactsHeadCells = [
     },
   },
   {
+    name: "entity",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
     name: "address1",
     options: {
       display: false,
@@ -580,18 +594,18 @@ const ContactsHeadCells = [
       },
     },
   },
-  {
-    name: "owners", //ownerPerContactCount
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  // {
+  //   name: "owners", //ownerPerContactCount
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
   {
     name: "commentsCounter",
     label: " ",
@@ -705,6 +719,122 @@ const SearchsHeadCells = [
   },
 ];
 
+const OwnersPerParcelHeadCells = [
+  {
+    name: "_id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "ownerEntityId",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  { name: "name", label: "Name", editable: true },
+  {
+    name: "entity",
+    label: "Entity",
+    editable: true,
+    dropDownOptions: [
+      "Corporation",
+      "Educational Institution",
+      "Governmental Body",
+      "Individual",
+      "Non Profit",
+      "Religious Institution",
+      "Trust",
+      "Unknown",
+    ],
+  },
+  {
+    name: "type",
+    label: "Type",
+    editable: true,
+    dropDownOptions: [
+      "Fee Interest",
+      "Leasehold",
+      "Mineral Interest",
+      "Non-Executive Mineral Interest (NEMI)",
+      "Overriding Royalty (ORRI)",
+      "Royalty Interest (NPRI)",
+      "Surface Rights",
+      "Unknown",
+      "Working Interest",
+    ],
+  },
+  { name: "depthFrom", label: "Depth From", editable: true },
+  { name: "depthTo", label: "Depth To", editable: true },
+  { name: "interest", label: "Interest", editable: true },
+  { name: "nma", label: "NMA", editable: true },
+  { name: "nra", label: "NRA", editable: true },
+  {
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
+  },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isTracked",
+    label: "Track",
+    options: {
+      searchable: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: ["Tracked", "Untracked"],
+        logic(tracked, filterVal) {
+          return !(
+            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+            (filterVal.indexOf("Untracked") >= 0 && !tracked)
+          );
+        },
+      },
+      filterType: "dropdown",
+    },
+  },
+];
+
 ////////////HeadCells end///////////////////////////////////////////////
 
 const capitalizeFirstLetter = (string) => {
@@ -766,10 +896,10 @@ function M1nTable(props) {
   const setTargetLabel = (newState) => {
     setStateIfDeepEqual(TargetLabel, newState);
   };
-  const [deleteFunc, DeleteFunc] = useState(null);
-  const setDeleteFunc = (newState) => {
-    setStateIfDeepEqual(DeleteFunc, newState);
-  };
+  const [deleteFunc, setDeleteFunc] = useState(null);
+  // const setDeleteFunc = (newState) => {
+  //   setStateIfDeepEqual(DeleteFunc, newState);
+  // };
   const [showTracks, ShowTracks] = useState(true);
   const setShowTracks = (newState) => {
     setStateIfDeepEqual(ShowTracks, newState);
@@ -842,6 +972,15 @@ function M1nTable(props) {
   const [removeContact] = useMutation(REMOVECONTACT);
 
   const [updateContact] = useMutation(UPDATECONTACT);
+  //////////
+  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
+    CUSTOMLAYER,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
+  //////////
+  const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
 
   ////////////Queries end///////////////////////////////////////////////
 
@@ -913,9 +1052,9 @@ function M1nTable(props) {
             userId: stateApp.user.mongoId,
           },
         });
-        getContactsCounter({
-          variables: { objectsIdsArray: tracksIdArray },
-        });
+        // getContactsCounter({
+        //   variables: { objectsIdsArray: tracksIdArray },
+        // });
       } else {
         setRows([]);
         setLoading(false);
@@ -932,8 +1071,8 @@ function M1nTable(props) {
         dataOwners.owners.results.length > 0 &&
         dataCommentsCounter &&
         dataCommentsCounter.commentsCounter &&
-        dataContactsCounter &&
-        dataContactsCounter.contactsCounter &&
+        // dataContactsCounter &&
+        // dataContactsCounter.contactsCounter &&
         dataTagSamples &&
         dataTagSamples.tagSamples &&
         dataOwnersWells
@@ -975,13 +1114,13 @@ function M1nTable(props) {
             }
           }
 
-          for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
-            if (owner.id === dataContactsCounter.contactsCounter[i]._id) {
-              owner.contactsCounter =
-                dataContactsCounter.contactsCounter[i].total;
-              break;
-            }
-          }
+          // for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
+          //   if (owner.id === dataContactsCounter.contactsCounter[i]._id) {
+          //     owner.contactsCounter =
+          //       dataContactsCounter.contactsCounter[i].total;
+          //     break;
+          //   }
+          // }
         });
 
         let availableTags = [];
@@ -1043,7 +1182,7 @@ function M1nTable(props) {
     dataOwners,
     dataTagSamples,
     dataCommentsCounter,
-    dataContactsCounter,
+    // dataContactsCounter,
     dataOwnersWells,
   ]);
   ////////////Tracked Owners end///////////////////////////////////////////////
@@ -1400,9 +1539,9 @@ function M1nTable(props) {
         getTagSamples({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
-        getContactsCounter({
-          variables: { objectsIdsArray: objectsIdsArray },
-        });
+        // getContactsCounter({
+        //   variables: { objectsIdsArray: objectsIdsArray },
+        // });
       } else {
         setLoading(false);
         setRows([]);
@@ -1419,8 +1558,8 @@ function M1nTable(props) {
       dataWellOwners.wellOwners.length > 0 &&
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter &&
-      dataContactsCounter &&
-      dataContactsCounter.contactsCounter &&
+      // dataContactsCounter &&
+      // dataContactsCounter.contactsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples &&
       dataOwnersWells
@@ -1462,13 +1601,13 @@ function M1nTable(props) {
           }
         }
 
-        for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
-          if (wellOwner.id === dataContactsCounter.contactsCounter[i]._id) {
-            wellOwner.contactsCounter =
-              dataContactsCounter.contactsCounter[i].total;
-            break;
-          }
-        }
+        // for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
+        //   if (wellOwner.id === dataContactsCounter.contactsCounter[i]._id) {
+        //     wellOwner.contactsCounter =
+        //       dataContactsCounter.contactsCounter[i].total;
+        //     break;
+        //   }
+        // }
       });
 
       let availableTags = [];
@@ -1516,7 +1655,7 @@ function M1nTable(props) {
     dataTracks,
     dataTagSamples,
     dataCommentsCounter,
-    dataContactsCounter,
+    // dataContactsCounter,
     dataOwnersWells,
   ]);
 
@@ -1628,9 +1767,9 @@ function M1nTable(props) {
         getTagSamples({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
-        getContactsCounter({
-          variables: { objectsIdsArray: objectsIdsArray },
-        });
+        // getContactsCounter({
+        //   variables: { objectsIdsArray: objectsIdsArray },
+        // });
       } else {
         setLoading(false);
         setRows([]);
@@ -1652,8 +1791,8 @@ function M1nTable(props) {
       dataOwners.owners.results.length > 0 &&
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter &&
-      dataContactsCounter &&
-      dataContactsCounter.contactsCounter &&
+      // dataContactsCounter &&
+      // dataContactsCounter.contactsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples
     ) {
@@ -1682,13 +1821,13 @@ function M1nTable(props) {
           }
         }
 
-        for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
-          if (wellOwner.id === dataContactsCounter.contactsCounter[i]._id) {
-            wellOwner.contactsCounter =
-              dataContactsCounter.contactsCounter[i].total;
-            break;
-          }
-        }
+        // for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
+        //   if (wellOwner.id === dataContactsCounter.contactsCounter[i]._id) {
+        //     wellOwner.contactsCounter =
+        //       dataContactsCounter.contactsCounter[i].total;
+        //     break;
+        //   }
+        // }
       });
 
       let availableTags = [];
@@ -1736,7 +1875,7 @@ function M1nTable(props) {
     dataTracks,
     dataTagSamples,
     dataCommentsCounter,
-    dataContactsCounter,
+    // dataContactsCounter,
   ]);
   ////////////Owners Per Contact begin//////////Delete//////////////////////////////
 
@@ -1746,7 +1885,6 @@ function M1nTable(props) {
       props.parent === "ownersPerContacts" &&
       props.contactId
     ) {
-      console.log("ue mintable 17");
       setDeleteFunc(() => (ownersIdsToDelete) => {
         if (ownersIdsToDelete) {
           setStateApp((state) => ({
@@ -1784,9 +1922,9 @@ function M1nTable(props) {
       setTargetLabel("contact");
       setHeader("Owner's Contacts");
       setAddAble({ parent: props.ownerId, type: "contactToOwner" });
-      getContactsByOwnerId({
-        variables: { objectId: props.ownerId },
-      });
+      // getContactsByOwnerId({
+      //   variables: { objectId: props.ownerId },
+      // });
     }
   }, [props.ownerId]);
 
@@ -2126,7 +2264,6 @@ function M1nTable(props) {
   //////////// Search begin///////////////////////////////////////////////
   useEffect(() => {
     if (searchloading) {
-      console.log("ue mintable 26");
       setLoading(true);
     }
   }, [searchloading]);
@@ -2142,8 +2279,6 @@ function M1nTable(props) {
       stateApp.user &&
       stateApp.user.mongoId
     ) {
-      console.log("ue mintable 27");
-      console.log("xxxxxxxxxxxxxx");
       setTargetLabel(props.targetLabel);
       setHeader(props.header);
       setAddAble(false);
@@ -2193,7 +2328,6 @@ function M1nTable(props) {
       (!props.showTracks || (dataTracks && dataTracks.tracksByObjectType)) &&
       props.privateColumns
     ) {
-      console.log("ue mintable 28");
       if (searchResultData.length > 0) {
         searchResultData.forEach((result) => {
           result.id = result.Id;
@@ -2303,6 +2437,183 @@ function M1nTable(props) {
   ]);
   //////////// Search end///////////////////////////////////////////////
 
+  ////////////Owners Per Parcel begin///////////////////////////////////////////////
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerParcel" &&
+      props.customLayerId
+    ) {
+      setTargetLabel("Parcel Owner");
+      setHeader("Parcel Owners");
+      setAddAble({
+        type: "ownerToParcel",
+        customLayerId: props.customLayerId,
+      });
+      getCustomLayer({
+        variables: {
+          id: props.customLayerId,
+        },
+      });
+      setLoading(true);
+    }
+  }, [props.contactId, props.customLayerId]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerParcel" &&
+      dataCustomLayer &&
+      dataCustomLayer.customLayer &&
+      stateApp.user
+    ) {
+      if (
+        dataCustomLayer.customLayer.owners &&
+        dataCustomLayer.customLayer.owners.length > 0
+      ) {
+        const objectsIdsArray = dataCustomLayer.customLayer.owners.map(
+          (owner) => owner._id
+        );
+
+        getCommentsCounter({
+          variables: {
+            objectsIdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+        getTagSamples({
+          variables: {
+            objectsIdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+      } else {
+        setLoading(false);
+        setRows([]);
+      }
+    }
+  }, [props.parent, dataCustomLayer, stateApp.user]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerParcel" &&
+      dataCustomLayer &&
+      dataCustomLayer.customLayer &&
+      dataCustomLayer.customLayer.owners &&
+      dataCustomLayer.customLayer.owners.length > 0 &&
+      dataTracks &&
+      dataTracks.tracksByObjectType &&
+      dataCommentsCounter &&
+      dataCommentsCounter.commentsCounter &&
+      dataTagSamples &&
+      dataTagSamples.tagSamples
+    ) {
+      dataCustomLayer.customLayer.owners.forEach((parcelOwner) => {
+        parcelOwner.commentsCounter = 0;
+        parcelOwner.tags = [[], 0];
+        parcelOwner.isTracked = false;
+
+        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+          if (parcelOwner._id === dataCommentsCounter.commentsCounter[i]._id) {
+            parcelOwner.commentsCounter =
+              dataCommentsCounter.commentsCounter[i].total;
+            break;
+          }
+        }
+
+        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+          if (parcelOwner._id === dataTagSamples.tagSamples[i]._id) {
+            parcelOwner.tags = [
+              dataTagSamples.tagSamples[i].tags,
+              dataTagSamples.tagSamples[i].total,
+            ];
+
+            break;
+          }
+        }
+
+        for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+          if (parcelOwner._id === dataTracks.tracksByObjectType[i].trackOn) {
+            parcelOwner.isTracked = true;
+            break;
+          }
+        }
+      });
+
+      let availableTags = [];
+      dataTagSamples.tagSamples.map((sample) => {
+        availableTags = [...availableTags, ...sample.tags];
+      });
+      const cleanAvailableTags = [...new Set(availableTags)];
+
+      setColumns(
+        cleanAvailableTags.length > 0
+          ? OwnersPerParcelHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
+                  },
+                };
+              }
+              return column;
+            })
+          : OwnersPerParcelHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
+      );
+      setRows([...dataCustomLayer.customLayer.owners]);
+      setLoading(false);
+    }
+  }, [
+    props.parent,
+    dataCustomLayer,
+    dataTracks,
+    dataTagSamples,
+    dataCommentsCounter,
+  ]);
+  ////////////Owners Per Parcel begin//////////Delete//////////////////////////////
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "ownersPerParcel" &&
+      props.customLayerId
+    ) {
+      setDeleteFunc(() => (ownersIdsToDelete) => {
+        if (ownersIdsToDelete && ownersIdsToDelete.length > 0) {
+          for (let i = 0; i < ownersIdsToDelete.length; i++) {
+            updateParcelOwner({
+              variables: {
+                parcelOwner: { _id: ownersIdsToDelete[i], IsDeleted: true },
+              },
+              refetchQueries: ["getCustomLayer"],
+              awaitRefetchQueries: true,
+            });
+          }
+        }
+      });
+    }
+  }, [props.parent, props.customLayerId]);
+
+  ////////////Owners Per Parcel end/////////////////////////////////////////////////
+
   ////////////-----Add your code section here-----///////////////////////
 
   return (
@@ -2325,13 +2636,4 @@ function M1nTable(props) {
   );
 }
 
-function areEqual(prevProps, nextProps) {
-  if (!deepEqualObjects(prevProps, nextProps)) {
-    // console.log(`${prevProps.toString()} ... ${nextProps.toString()}`)
-    return false;
-  }
-
-  return true;
-}
-
-export default React.memo(M1nTable, areEqual);
+export default React.memo(M1nTable, deepEqualObjects);

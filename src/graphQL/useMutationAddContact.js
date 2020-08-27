@@ -8,6 +8,7 @@ export const ADDCONTACT = gql`
       error
       contact {
         _id
+        entity
         name
         address1
         address2

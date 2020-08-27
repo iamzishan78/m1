@@ -24,45 +24,41 @@ export default function AlertDialogSlide(props) {
         minHeight: "100vh !important",
         margin: "0 !important",
       },
-      "& .MuiListItem-container":{
-          borderBottom:'1px solid #c7c7c7'
+      "& .MuiListItem-container": {
+        borderBottom: "1px solid #c7c7c7",
       },
-      "& .MuiListItemText-primary":{
-        color:'#c8c8c8'
+      "& .MuiListItemText-primary": {
+        color: "#c8c8c8",
       },
-      "& .MuiListItemText-secondary":{
-        color:'#c7c7c7!important'
+      "& .MuiListItemText-secondary": {
+        color: "#c7c7c7!important",
       },
-      "& .MuiList-padding":{
-        padding: '23px 23px 8px'
+      "& .MuiList-padding": {
+        padding: "23px 23px 8px",
       },
-      "& svg":{
-        fill:'#c8c8c8'
-      }
+      "& svg": {
+        fill: "#c8c8c8",
+      },
     },
   }));
-  
+
   const classes = useStyles();
   return (
-    
-      <Dialog
-        className={classes.dialog}
-        open={props.open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={props.handleClickDialogClose}
-        aria-labelledby="alert-dialog-slide-title"
-        aria-describedby="alert-dialog-slide-description"
-      >
-        {props.header && (
-          <DialogTitle id="alert-dialog-slide-title">
-            {props.header}
-          </DialogTitle>
-        )}
+    <Dialog
+      className={classes.dialog}
+      open={props.open}
+      TransitionComponent={Transition}
+      keepMounted
+      onClose={props.handleClickDialogClose}
+      aria-labelledby="alert-dialog-slide-title"
+      aria-describedby="alert-dialog-slide-description"
+      style={{ zIndex: 9999 }}
+    >
+      {props.header && (
+        <DialogTitle id="alert-dialog-slide-title">{props.header}</DialogTitle>
+      )}
 
-        {props.children}
-        
-      </Dialog>
+      {props.children}
+    </Dialog>
   );
-  
 }

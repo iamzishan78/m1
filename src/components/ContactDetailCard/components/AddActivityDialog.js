@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { DateTimePicker } from "@material-ui/pickers";
 import { useMutation } from "@apollo/react-hooks";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -7,9 +6,11 @@ import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
 import Select from "@material-ui/core/Select";
+import Grid from "@material-ui/core/Grid";
 import { AppContext } from "../../../AppContext";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 
@@ -29,6 +30,11 @@ const useStyles = makeStyles((theme) => ({
   inputField: {
     marginBottom: "30px",
   },
+  inputFieldDateRoot: {
+    "& .MuiDialog-root": {
+      zIndex: 99999,
+    },
+  },
   inputFieldDate: {
     marginBottom: "30px",
     "& .MuiInputBase-input": {
@@ -45,6 +51,10 @@ const useStyles = makeStyles((theme) => ({
   label: {
     backgroundColor: "white",
   },
+
+  closeIcon: {
+    color: theme.palette.secondary.main,
+  },
 }));
 
 const initialErrors = {
@@ -53,19 +63,22 @@ const initialErrors = {
   dateTime: false,
 };
 
+const getCurrentDateTime = () => {
+  let dt = new Date().toISOString();
+  return dt.slice(0, dt.length - 1);
+};
+
 function AddActivityDialog(props) {
   const classes = useStyles();
   const { selectedActivity, onClose } = props;
   const [stateApp] = useContext(AppContext);
   const [addNew, setAddNew] = useState(true);
 
-  console.log("USER: ", stateApp);
-
   const [updateContact, { called, loading, data }] = useMutation(UPDATECONTACT);
   const [activityType, setActivityType] = useState("general");
   const [notes, setNotes] = useState("");
 
-  const [dateTime, setDateTime] = useState(new Date());
+  const [dateTime, setDateTime] = useState(getCurrentDateTime());
   const [errors, setErrors] = useState({ ...initialErrors });
 
   useEffect(() => {
@@ -78,23 +91,16 @@ function AddActivityDialog(props) {
       setAddNew(true);
       setActivityType("general");
       setNotes("");
-      setDateTime(new Date());
+      setDateTime(getCurrentDateTime());
     }
   }, [selectedActivity]);
-
-  //   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
-  //     COMMENTSBYOBJECTIDQUERY
-  //   );
-  // const [upsertComment] = useMutation(UPSERTCOMMENT);
-
-  console.log("DATAAAA: ", data);
 
   const addActivityStatus = data ? data.updateContact : null;
 
   const clearFields = () => {
     setNotes("");
     setActivityType("general");
-    setDateTime(new Date());
+    setDateTime(getCurrentDateTime());
   };
 
   const updateErrors = () => {
@@ -126,13 +132,8 @@ function AddActivityDialog(props) {
     activityLog.push({
       type: activityType,
       notes,
-      dateTime: dateTime.toISOString(),
+      dateTime: dateTime,
       user_id: stateApp.user.email,
-    });
-
-    console.log("UPDATING ACTIVITY LOG: ", {
-      _id: props.id,
-      activityLog,
     });
 
     updateContact({
@@ -170,11 +171,8 @@ function AddActivityDialog(props) {
     if (index > -1) {
       newActLog[index] = {
         ...selectedActivity,
-        dateTime:
-          typeof dateTime.toISOString === "function"
-            ? dateTime.toISOString()
-            : dateTime,
         type: activityType,
+        dateTime,
         notes,
       };
       newActLog.forEach((v) => delete v.__typename);
@@ -200,11 +198,24 @@ function AddActivityDialog(props) {
 
   return (
     <div style={{ padding: "30px" }}>
-      <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
+      {/* <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
         Recent Activities
-      </h4>
-      <div>
-        <DateTimePicker
+      </h4> */}
+      <Grid item xs={12} style={{ minHeight: "35px" }}>
+        <h4 style={{ margin: "0 0 30px 0", float: "left" }}>
+          Recent Activities
+        </h4>
+
+        <IconButton
+          onClick={onClose}
+          size="small"
+          style={{ float: "right", top: "-5px", right: "-5px" }}
+        >
+          <CloseIcon className={classes.closeIcon} fontSize="small" />
+        </IconButton>
+      </Grid>
+      <div className={classes.inputFieldDateRoot}>
+        {/* <DateTimePicker
           value={dateTime}
           //disablePast
           fullWidth
@@ -214,6 +225,25 @@ function AddActivityDialog(props) {
           showTodayButton
           disabled={loading}
           inputVariant="outlined"
+        /> */}
+
+        <TextField
+          variant="outlined"
+          fullWidth
+          size="small"
+          id="datetime-local"
+          labelId="datetime-local-label"
+          // label="Activity Date"
+          type="datetime-local"
+          value={dateTime}
+          onChange={(e) => {
+            console.log("PREV: ", dateTime);
+            console.log("setting: ", e.target.value);
+            setDateTime(e.target.value);
+          }}
+          disabled={loading}
+          className={classes.inputField}
+          label="Activity Date"
         />
 
         <FormControl
@@ -229,6 +259,7 @@ function AddActivityDialog(props) {
             Activity Type
           </InputLabel>
           <Select
+            native
             labelId="demo-simple-select-outlined-label"
             id="demo-simple-select-outlined"
             value={activityType}
@@ -240,12 +271,12 @@ function AddActivityDialog(props) {
             disabled={loading}
             error={errors.activityType}
           >
-            <MenuItem value={"general"}>General Update</MenuItem>
-            <MenuItem value={"phone"}>Phone Call</MenuItem>
-            <MenuItem value={"email"}>Email</MenuItem>
-            <MenuItem value={"meeting"}>Meeting</MenuItem>
-            <MenuItem value={"sms"}>SMS</MenuItem>
-            <MenuItem value={"campaign"}>Campaign</MenuItem>
+            <option value={"general"}>General Update</option>
+            <option value={"phone"}>Phone Call</option>
+            <option value={"email"}>Email</option>
+            <option value={"meeting"}>Meeting</option>
+            <option value={"sms"}>SMS</option>
+            <option value={"campaign"}>Campaign</option>
           </Select>
         </FormControl>
 

@@ -26,7 +26,7 @@ const main_div = {
 };
 const style_papaer = {
   background: "none",
-  maxWidth: "435px",
+  maxWidth: "550px",
   margin: "15px auto",
   boxShadow: "none",
 };
@@ -34,15 +34,15 @@ const table_cell_input = {
   padding: "3px",
 };
 const big_text = {
-  fontSize: "20px",
+  fontSize: "27px",
   fontWeight: "bold",
   color: "#101010",
 };
 const padding_div_top = {
-  paddingTop: "2vh",
+  paddingTop: "1.3vh",
 };
 const text_grey = {
-  fontSize: "12px",
+  fontSize: "15px",
   fontWeight: "bold",
   color: "#a6a6a6",
 };
@@ -54,6 +54,7 @@ const headers_input = {
   height: "4vh",
   background: "unset",
   padding: "0 8px",
+  color: "#a6a6a6",
 };
 
 const StyledTableCell = withStyles((theme) => ({
@@ -61,12 +62,14 @@ const StyledTableCell = withStyles((theme) => ({
     fontWeight: "bold",
     border: "1px solid #ddd",
     padding: "8px 15px",
+    color: "#a6a6a6",
     // background: "white",
   },
   body: {
     fontWeight: "bold",
     border: "1px solid #ddd",
     padding: "0px 15px",
+    color: "#a6a6a6",
   },
 }))(TableCell);
 

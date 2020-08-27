@@ -9,6 +9,9 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  NODE_OPTIONS: --max_old_space_size=16384
+
 steps:
 - task: NodeTool@0
   inputs:
@@ -17,6 +20,7 @@ steps:
 
 - script: |
     npm install
+    echo $NODE_OPTIONS
     npm run build
   displayName: 'npm install and build'
 ## Copy the client to the staging directory
