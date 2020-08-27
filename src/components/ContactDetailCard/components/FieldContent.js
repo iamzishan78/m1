@@ -266,7 +266,7 @@ export default function FieldContent({
         variables: {
           contact: trimmedEditContent,
         },
-        refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
+        refetchQueries: ["getContacts", "getContact"],
         awaitRefetchQueries: true,
       });
     }

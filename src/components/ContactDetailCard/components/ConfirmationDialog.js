@@ -51,9 +51,7 @@ export default function ConfirmationDialog(props) {
       },
       refetchQueries: [
         "getContacts",
-        // "getContactsByOwnerId",
         // "getContact",
-        "getContactsCounter",
       ],
       awaitRefetchQueries: true,
     });
