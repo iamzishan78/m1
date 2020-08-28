@@ -124,7 +124,7 @@ const SignInCardB2C = (props) => {
       if (e.keyCode === 13) {
         e.preventDefault();
         setError(null);
-        handleAADB2CSignIn(updateTenantFlags);
+        handleAADB2CSignIn(tenant, updateTenantFlags);
       }
     }
   };
