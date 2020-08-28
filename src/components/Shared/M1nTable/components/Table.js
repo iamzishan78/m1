@@ -23,7 +23,6 @@ import WellIcon from "../../svgIcons/well";
 import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
 import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import AddContactDialogContent from "./SubComponents/AddContactDialogContent";
-import AddOwnerToContactDialogContent from "./SubComponents/AddOwnerToContactDialogContent";
 import DeleteConfirmationDialogContent from "./SubComponents/DeleteConfirmationDialogContent";
 import Button from "@material-ui/core/Button";
 import LocalPrintshopRoundedIcon from "@material-ui/icons/LocalPrintshopRounded";
@@ -519,52 +518,52 @@ function SubTable(props) {
               };
             }
             break;
-          case "contactsCounter":
-            {
-              column.options = {
-                ...column.options,
-                customBodyRender: (value, tableMeta, updateValue) => {
-                  return (
-                    <Tooltip
-                      title={value || value === 0 ? "Contacts" : "Add Contact"}
-                      placement="top"
-                      style={{ marginRight: "10px" }}
-                    >
-                      <Badge
-                        badgeContent={value ? value : null}
-                        color="secondary"
-                      >
-                        <IconButton
-                          size={props.dense ? "small" : "medium"}
-                          color="primary"
-                          className={`${classes.icons} ${
-                            !value || value === 0 ? classes.noCommentsIcon : ""
-                          } ${
-                            colInd === tableMeta.columnIndex &&
-                            rowInd === tableMeta.rowIndex
-                              ? classes.iconSelected
-                              : ""
-                          }`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleExpandClick(
-                              tableMeta.columnIndex,
-                              tableMeta.rowIndex,
-                              tableMeta.rowData[0],
-                              "ownerContacts"
-                            );
-                          }}
-                          aria-label="show contacs"
-                        >
-                          <ContactPhoneIcon />
-                        </IconButton>
-                      </Badge>
-                    </Tooltip>
-                  );
-                },
-              };
-            }
-            break;
+          // case "contactsCounter":
+          //   {
+          //     column.options = {
+          //       ...column.options,
+          //       customBodyRender: (value, tableMeta, updateValue) => {
+          //         return (
+          //           <Tooltip
+          //             title={value || value === 0 ? "Contacts" : "Add Contact"}
+          //             placement="top"
+          //             style={{ marginRight: "10px" }}
+          //           >
+          //             <Badge
+          //               badgeContent={value ? value : null}
+          //               color="secondary"
+          //             >
+          //               <IconButton
+          //                 size={props.dense ? "small" : "medium"}
+          //                 color="primary"
+          //                 className={`${classes.icons} ${
+          //                   !value || value === 0 ? classes.noCommentsIcon : ""
+          //                 } ${
+          //                   colInd === tableMeta.columnIndex &&
+          //                   rowInd === tableMeta.rowIndex
+          //                     ? classes.iconSelected
+          //                     : ""
+          //                 }`}
+          //                 onClick={(e) => {
+          //                   e.stopPropagation();
+          //                   handleExpandClick(
+          //                     tableMeta.columnIndex,
+          //                     tableMeta.rowIndex,
+          //                     tableMeta.rowData[0],
+          //                     "ownerContacts"
+          //                   );
+          //                 }}
+          //                 aria-label="show contacs"
+          //               >
+          //                 <ContactPhoneIcon />
+          //               </IconButton>
+          //             </Badge>
+          //           </Tooltip>
+          //         );
+          //       },
+          //     };
+          //   }
+          //   break;
           case "ownerCount":
             {
               column.options = {
@@ -645,12 +644,12 @@ function SubTable(props) {
                           onClick={(e) => {
                             e.stopPropagation();
                             if (value.length > 0) {
-                              handleExpandClick(
-                                tableMeta.columnIndex,
-                                tableMeta.rowIndex,
-                                value,
-                                "ownersPerContacts"
-                              );
+                              // handleExpandClick(
+                              //   tableMeta.columnIndex,
+                              //   tableMeta.rowIndex,
+                              //   value,
+                              //   "ownersPerContacts"
+                              // );
                             }
                           }}
                           aria-label="show owners"
@@ -741,13 +740,14 @@ function SubTable(props) {
                   return (
                     <CellContentEdition
                       id={tableMeta.rowData[0]}
+                      entityId={tableMeta.rowData[1]}
                       content={{
-                        address1: tableMeta.rowData[1],
-                        address2: tableMeta.rowData[2],
-                        city: tableMeta.rowData[3],
-                        state: tableMeta.rowData[4],
-                        zip: tableMeta.rowData[5],
-                        country: tableMeta.rowData[6],
+                        address1: tableMeta.rowData[2],
+                        address2: tableMeta.rowData[3],
+                        city: tableMeta.rowData[4],
+                        state: tableMeta.rowData[5],
+                        zip: tableMeta.rowData[6],
+                        country: tableMeta.rowData[7],
                       }}
                       targetLabel={props.targetLabel}
                     />
@@ -820,8 +820,9 @@ function SubTable(props) {
                         dropDownOptions={
                           column.dropDownOptions ? column.dropDownOptions : null
                         }
-                        secondaryId={
-                          props.targetLabel === "Parcel Owner"
+                        entityId={
+                          props.targetLabel === "Parcel Owner" ||
+                          props.targetLabel === "contact"
                             ? tableMeta.rowData[1]
                             : null
                         }
@@ -1085,17 +1086,9 @@ function SubTable(props) {
                   size="medium"
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (
-                      props.addAble.type &&
-                      (props.addAble.type === "contact" ||
-                        props.addAble.type === "contactToOwner")
-                    )
+                    if (props.addAble.type && props.addAble.type === "contact")
                       handleExpandClick(null, null, null, "addContact");
-                    if (
-                      props.addAble.type &&
-                      props.addAble.type === "ownerToContact"
-                    )
-                      handleExpandClick(null, null, null, "addOwnerToContact");
+
                     if (
                       props.addAble.type &&
                       props.addAble.type === "ownerToParcel"
@@ -1186,8 +1179,6 @@ function SubTable(props) {
               openDialog === "comment" ||
               openDialog === "owner" ||
               openDialog === "wellsPerOwner" ||
-              openDialog === "ownerContacts" ||
-              openDialog === "ownersPerContacts" ||
               openDialog === "buyContactsInfo" ||
               openDialog === "sendMailers" ||
               openDialog === "printLabels"
@@ -1195,15 +1186,10 @@ function SubTable(props) {
                 : false
             }
             maxWidth={
-              openDialog === "ownerContacts"
-                ? "xl"
-                : openDialog === "owner" ||
-                  openDialog === "ownersPerContacts" ||
-                  openDialog === "wellsPerOwner"
+              openDialog === "owner" || openDialog === "wellsPerOwner"
                 ? "lg"
                 : openDialog === "addContact" ||
                   openDialog === "addOwnerToParcel" ||
-                  openDialog === "addOwnerToContact" ||
                   openDialog === "deleteOwnersFromContact" ||
                   openDialog === "deleteContact"
                 ? "xs"
@@ -1246,29 +1232,14 @@ function SubTable(props) {
             {openDialog === "wellsPerOwner" && (
               <M1nTable wellsIdsArray={expandedObject} parent="WellsPerOwner" />
             )}
-            {openDialog === "ownerContacts" && (
-              <M1nTable parent="ownerContacts" ownerId={expandedObject} />
-            )}
-            {openDialog === "ownersPerContacts" && (
-              <M1nTable
-                parent="ownersPerContacts"
-                ownersIdsArray={expandedObject}
-                contactId={rows[rowInd]._id}
-              />
-            )}
+
             {openDialog === "addContact" && props.targetLabel === "contact" && (
               <AddContactDialogContent
                 onClose={handleCloseDialog}
                 parent={props.addAble.parent}
               />
             )}
-            {openDialog === "addOwnerToContact" && (
-              <AddOwnerToContactDialogContent
-                onClose={handleCloseDialog}
-                parent={props.addAble.parent}
-                existingOwners={props.addAble.existingOwners}
-              />
-            )}
+
             {openDialog === "addOwnerToParcel" && (
               <AddParcelOwnerDialogContent
                 onClose={handleCloseDialog}

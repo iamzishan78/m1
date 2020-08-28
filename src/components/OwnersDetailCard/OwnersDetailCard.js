@@ -33,10 +33,7 @@ export default function OwnersDetailCard(props) {
               parent="WellsPerOwner"
               wellsIdsArray={props.wellsIdsArray}
             />,
-            <M1nTable
-              parent="ownerContacts"
-              ownerId={stateApp.selectedOwner.id}
-            />,
+            "Contacts",
           ]}
         />
       </Grid>

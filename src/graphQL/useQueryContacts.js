@@ -4,6 +4,7 @@ export const CONTACTSQUERY = gql`
   query getContacts {
     contacts {
       _id
+      entity
       name
       address1
       address2

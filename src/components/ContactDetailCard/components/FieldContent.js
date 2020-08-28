@@ -170,22 +170,22 @@ const textFieldLabels = (field) => {
 export const LinkTypes = Object.freeze({
   None: 0,
   Mail: 1,
-  Simple: 2
+  Simple: 2,
 });
 
 export const FieldTypes = Object.freeze({
   Contact: 0,
   MelissaAddressRecord: 1,
-  MelissaRecord: 2
+  MelissaRecord: 2,
 });
 
-const ConditionalWrap = ({ condition, wrap, children }) => (
-  condition ? wrap(children) : children
-);
+const ConditionalWrap = ({ condition, wrap, children }) =>
+  condition ? wrap(children) : children;
 
 export default function FieldContent({
   children,
   id,
+  entity,
   content,
   childrenLeft,
   onlyChildren,
@@ -193,9 +193,10 @@ export default function FieldContent({
   noMargin,
   noInputFooter,
   linkType,
-  fieldType = FieldTypes.Contact
+  fieldType = FieldTypes.Contact,
 }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
+  //////////// entity - brings the entity id tide to the contact //////////////////////////////////////////////////
   //////////// content - brings an object with fielNames and values ///////////////////////////////////////////////
   //////////// childrenLeft - will move the chilren components to the left side of the field values//optional//////
   ////////////              - default childrens to rigth///////////////////////////////////////////////////////////
@@ -251,6 +252,7 @@ export default function FieldContent({
       _id: id,
       lastUpdateBy: stateApp.user.mongoId,
     };
+    if (entity) trimmedEditContent.entity = entity;
     let differences = false;
     for (const field in editContent) {
       if (editContent[field] !== null) {
@@ -264,7 +266,7 @@ export default function FieldContent({
         variables: {
           contact: trimmedEditContent,
         },
-        refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
+        refetchQueries: ["getContacts", "getContact"],
         awaitRefetchQueries: true,
       });
     }
@@ -356,38 +358,32 @@ export default function FieldContent({
   }
 
   const getHrefValue = (linkValue, linkType) => {
-    if (linkType == LinkTypes.Mail)
-      return `mailto:${ linkValue }`;
-    else
-      return linkValue;
-  }
+    if (linkType == LinkTypes.Mail) return `mailto:${linkValue}`;
+    else return linkValue;
+  };
 
-  const renderOutput = 
-    (
-      <span>
-        { childrenLeft && !onlyChildren && children ? children : "" }
-        {
-          textArray.length > 0
-          ? onlyChildren
+  const renderOutput = (
+    <span>
+      {childrenLeft && !onlyChildren && children ? children : ""}
+      {textArray.length > 0
+        ? onlyChildren
+          ? children
             ? children
-              ? children
-              : ""
-            : textArray.join(", ")
-          : `${name ? name + " " : ""} Not Available`
-        }
-        {
-          fieldType == FieldTypes.Contact &&
-            <PencilEditIcon
-              handleUpdating={handleUpdating}
-              anchorEl={edit}
-              setAnchorEl={setEdit}
-              content={inputsArray}
-              onClick={handleEditClick}
-            />
-        }
-        {!childrenLeft && !onlyChildren && children ? children : ""}
-      </span>
-    );
+            : ""
+          : textArray.join(", ")
+        : `${name ? name + " " : ""} Not Available`}
+      {fieldType == FieldTypes.Contact && (
+        <PencilEditIcon
+          handleUpdating={handleUpdating}
+          anchorEl={edit}
+          setAnchorEl={setEdit}
+          content={inputsArray}
+          onClick={handleEditClick}
+        />
+      )}
+      {!childrenLeft && !onlyChildren && children ? children : ""}
+    </span>
+  );
 
   return (
     <React.Fragment>
@@ -396,16 +392,18 @@ export default function FieldContent({
           classes.fieldContentP
         }`}
       >
-        {
-          ((linkType == LinkTypes.Mail || linkType == LinkTypes.Simple) && textArray.length > 0)
-            ?
-              (<a
-                href={ getHrefValue(textArray.join(", "), linkType) }
-                target="_blank"
-                className={classes.noTextDecoration}
-              >{ renderOutput }</a>)
-            : renderOutput
-        }
+        {(linkType == LinkTypes.Mail || linkType == LinkTypes.Simple) &&
+        textArray.length > 0 ? (
+          <a
+            href={getHrefValue(textArray.join(", "), linkType)}
+            target="_blank"
+            className={classes.noTextDecoration}
+          >
+            {renderOutput}
+          </a>
+        ) : (
+          renderOutput
+        )}
       </p>
       {loading && (
         <div style={{ height: "0", width: "0" }}>
