@@ -901,8 +901,12 @@ function SubTable(props) {
     selectableRows: "multiple",
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
+      // console.log("currentRowsSelected", JSON.stringify(currentRowsSelected));
+      // console.log("rowsSelected", JSON.stringify(rowsSelected));
       if (rowsSelected && rowsSelected.length > 0) {
-        let indexArray = rowsSelected.map((d) => d.index).sort((a, b) => a - b);
+        let indexArray = rowsSelected
+          .map((d) => d.dataIndex)
+          .sort((a, b) => a - b);
         if (rows && indexArray) {
           if (rows.length > 0 && indexArray.length > 0) {
             let selectedRows = rows.filter(
