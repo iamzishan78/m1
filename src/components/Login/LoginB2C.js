@@ -14,9 +14,8 @@ import {
   MSALB2CObj,
   msalB2CConfig,
   loginRequestB2C,
+  authGraphQLRequestB2C,
 } from "./AADB2CAuthConfig";
-
-import { readProfileRequestB2C, authGraphQLRequestB2C } from "./AADB2CAuthConfig";
 
 import * as msalB2C from "@azure/msal";
 
@@ -149,7 +148,7 @@ const LoginB2C = (props) => {
   const handledAADB2CSignIn = async (tenant, updateTenantFlags) => {
     let tenantB2C = B2CTenant(tenant);
     if (!tenantB2C) {
-      //updateTenantFlags("The company is not supported yet.");
+      updateTenantFlags("The company is not supported yet.");
       setLoadingSigInButton(false);
       return;
     }
@@ -179,12 +178,12 @@ const LoginB2C = (props) => {
           .catch((error) => {
             //do some error stuff
             console.log(error);
-            //updateTenantFlags(error);
+            updateTenantFlags(error);
             setLoadingSigInButton(false);
           });
         if (!loginResponse) {
           //do some error stuff
-          //updateTenantFlags("Log in Failed");
+          updateTenantFlags("Log in Failed");
           setLoadingSigInButton(false);
 
           return;
@@ -305,10 +304,11 @@ const LoginB2C = (props) => {
 
     const mongoUser = await getMongoDBUser(
       {
-        email: accountObj.emails && accountObj.emails.length > 0
-        ? accountObj.emails[0]
-        : accountObj.sub,
-        name: accountObj.name
+        email:
+          accountObj.emails && accountObj.emails.length > 0
+            ? accountObj.emails[0]
+            : accountObj.sub,
+        name: accountObj.name,
         // email: readProfileResponse.mail
         //   ? readProfileResponse.mail
         //   : readProfileResponse.userPrincipalName,
@@ -330,9 +330,10 @@ const LoginB2C = (props) => {
         id: accountObj.oid,
         //id: readProfileResponse.id,
         mongoId: mongoUser._id,
-        email: accountObj.emails && accountObj.emails.length > 0
-        ? accountObj.emails[0]
-        : accountObj.sub,
+        email:
+          accountObj.emails && accountObj.emails.length > 0
+            ? accountObj.emails[0]
+            : accountObj.sub,
         name: accountObj.name,
         // email: readProfileResponse.mail
         //   ? readProfileResponse.mail
