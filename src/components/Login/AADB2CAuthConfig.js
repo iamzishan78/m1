@@ -25,6 +25,7 @@ export const B2CTenantToLogin = (tenantB2CName) => {
 const B2CPolicies = {
   names: {
     signUpSignIn: "b2c_1_susi",
+    signIn: "b2c_1_si",
     forgotPassword: "b2c_1_reset",
     signUpSignInCommon: "B2C_1A_SignUpOrSignInCommon",
   },
@@ -32,6 +33,10 @@ const B2CPolicies = {
     signUpSignIn: {
       authority:
         "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/B2C_1_susi",
+    },
+    signIn: {
+      authority:
+        "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/B2C_1_si",
     },
     forgotPassword: {
       authority:
@@ -52,7 +57,7 @@ export const msalB2CConfig = (tenantId, clientId) => {
   return {
     auth: {
       clientId: clientId,
-      authority: B2CPolicies.authorities.signUpSignIn.authority,
+      authority: B2CPolicies.authorities.signIn.authority,
       validateAuthority: false,
       redirectUri: `${path}/`,
     },
