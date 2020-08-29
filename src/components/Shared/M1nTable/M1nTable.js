@@ -28,10 +28,7 @@ import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
 import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType";
 import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
-import { CONTACSCOUNTER } from "../../../graphQL/useQueryContactsCounter";
-import { CONTACTSBYOWNERSID } from "../../../graphQL/useQueryContactsByOwnerId";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
-import { ADDREMOVEOWNERTOACONTACT } from "../../../graphQL/useMutationAddRemoveOwnerToAContact";
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
@@ -99,18 +96,18 @@ const TrackedOwnersHeadCells = [
       },
     },
   },
-  {
-    name: "contactsCounter",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  // {
+  //   name: "contactsCounter",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
 
   /* 
   // TEMPORARY COMMENT OUT. DO NOT DELETE 
@@ -286,18 +283,18 @@ const OwnersPerWellHeadCells = [
       },
     },
   },
-  {
-    name: "contactsCounter",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  // {
+  //   name: "contactsCounter",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
 
   /*   
 // TEMPORARY COMMENT OUT. DO NOT DELETE 
@@ -394,18 +391,18 @@ const OwnersPerContactsHeadCells = [
       },
     },
   },
-  {
-    name: "contactsCounter",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  // {
+  //   name: "contactsCounter",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
 
   /*   
   // TEMPORARY COMMENT OUT. DO NOT REMOVE 
@@ -934,12 +931,6 @@ function M1nTable(props) {
   const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(TAGSAMPLES, {
     fetchPolicy: "cache-and-network",
   });
-  const [getContactsCounter, { data: dataContactsCounter }] = useLazyQuery(
-    CONTACSCOUNTER,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
   //////////
   const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
   const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(
@@ -952,13 +943,6 @@ function M1nTable(props) {
     WELLOWNERSQUERY
   );
   //////////
-  const [getContactsByOwnerId, { data: dataContactsByOwnerId }] = useLazyQuery(
-    CONTACTSBYOWNERSID,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
-  //////////
   const [getContactInM1nTable, { data: dataContact }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
   });
@@ -966,8 +950,6 @@ function M1nTable(props) {
   const [getContacts, { data: dataContacts }] = useLazyQuery(CONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
   });
-  //////////
-  const [addRemoveOwnerToAContact] = useMutation(ADDREMOVEOWNERTOACONTACT);
   //////////
   const [removeContact] = useMutation(REMOVECONTACT);
 
@@ -1052,9 +1034,6 @@ function M1nTable(props) {
             userId: stateApp.user.mongoId,
           },
         });
-        // getContactsCounter({
-        //   variables: { objectsIdsArray: tracksIdArray },
-        // });
       } else {
         setRows([]);
         setLoading(false);
@@ -1071,8 +1050,6 @@ function M1nTable(props) {
         dataOwners.owners.results.length > 0 &&
         dataCommentsCounter &&
         dataCommentsCounter.commentsCounter &&
-        // dataContactsCounter &&
-        // dataContactsCounter.contactsCounter &&
         dataTagSamples &&
         dataTagSamples.tagSamples &&
         dataOwnersWells
@@ -1081,7 +1058,6 @@ function M1nTable(props) {
           owner.isTracked = true;
           owner.commentsCounter = 0;
           owner.tags = [[], 0];
-          owner.contactsCounter = 0;
           owner.wellsCounter = [];
 
           if (dataOwnersWells.ownersWells) {
@@ -1113,14 +1089,6 @@ function M1nTable(props) {
               break;
             }
           }
-
-          // for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
-          //   if (owner.id === dataContactsCounter.contactsCounter[i]._id) {
-          //     owner.contactsCounter =
-          //       dataContactsCounter.contactsCounter[i].total;
-          //     break;
-          //   }
-          // }
         });
 
         let availableTags = [];
@@ -1178,13 +1146,7 @@ function M1nTable(props) {
         }
       }
     }
-  }, [
-    dataOwners,
-    dataTagSamples,
-    dataCommentsCounter,
-    // dataContactsCounter,
-    dataOwnersWells,
-  ]);
+  }, [dataOwners, dataTagSamples, dataCommentsCounter, dataOwnersWells]);
   ////////////Tracked Owners end///////////////////////////////////////////////
 
   ////////////Tracked Wells begin///////////////////////////////////////////////
@@ -1539,9 +1501,6 @@ function M1nTable(props) {
         getTagSamples({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
-        // getContactsCounter({
-        //   variables: { objectsIdsArray: objectsIdsArray },
-        // });
       } else {
         setLoading(false);
         setRows([]);
@@ -1558,8 +1517,6 @@ function M1nTable(props) {
       dataWellOwners.wellOwners.length > 0 &&
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter &&
-      // dataContactsCounter &&
-      // dataContactsCounter.contactsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples &&
       dataOwnersWells
@@ -1568,7 +1525,6 @@ function M1nTable(props) {
       dataWellOwners.wellOwners.forEach((wellOwner) => {
         wellOwner.commentsCounter = 0;
         wellOwner.tags = [[], 0];
-        wellOwner.contactsCounter = 0;
         wellOwner.wellsCounter = [];
 
         if (dataOwnersWells.ownersWells) {
@@ -1600,14 +1556,6 @@ function M1nTable(props) {
             break;
           }
         }
-
-        // for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
-        //   if (wellOwner.id === dataContactsCounter.contactsCounter[i]._id) {
-        //     wellOwner.contactsCounter =
-        //       dataContactsCounter.contactsCounter[i].total;
-        //     break;
-        //   }
-        // }
       });
 
       let availableTags = [];
@@ -1655,444 +1603,10 @@ function M1nTable(props) {
     dataTracks,
     dataTagSamples,
     dataCommentsCounter,
-    // dataContactsCounter,
     dataOwnersWells,
   ]);
 
   ////////////Owners Per Well end///////////////////////////////////////////////
-
-  ////////////Owners Per Contact begin///////////////////////////////////////////////
-
-  useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "ownersPerContacts" &&
-      props.contactId
-    ) {
-      console.log("ue mintable 13");
-      setTargetLabel("owner");
-      setHeader("Interest Owners Tied to Contact");
-      getContactInM1nTable({
-        variables: {
-          contactId: props.contactId,
-        },
-      });
-    }
-  }, [props.contactId]);
-
-  useEffect(() => {
-    if (
-      props.contactId &&
-      props.parent &&
-      props.parent === "ownersPerContacts" &&
-      dataContact &&
-      dataContact.contact
-    ) {
-      console.log("ue mintable 14");
-      if (dataContact.contact.owners && dataContact.contact.owners.length > 0) {
-        getOwners({
-          variables: {
-            ownerIdArray: dataContact.contact.owners,
-            authToken: stateApp.user.authToken,
-          },
-        });
-        getOwnersWells({
-          variables: {
-            ownersIds: dataContact.contact.owners,
-          },
-        });
-      } else {
-        setLoading(false);
-        setRows([]);
-        setStateApp((state) => ({
-          ...state,
-          universalCircularLoaderAct: false,
-        }));
-      }
-
-      setAddAble({
-        parent: props.contactId,
-        type: "ownerToContact",
-        existingOwners: dataContact.contact.owners
-          ? dataContact.contact.owners
-          : [],
-      });
-    }
-  }, [props.contactId, dataContact]);
-
-  useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "ownersPerContacts" &&
-      dataOwners &&
-      dataTracks &&
-      dataTracks.tracksByObjectType &&
-      dataOwnersWells
-    ) {
-      console.log("ue mintable 15");
-      if (
-        dataOwners.owners &&
-        dataOwners.owners &&
-        dataOwners.owners.results.length > 0
-      ) {
-        const objectsIdsArray = [];
-        dataOwners.owners.results.forEach((wellOwner) => {
-          wellOwner.isTracked = false;
-          objectsIdsArray.push(wellOwner.id);
-
-          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-            if (wellOwner.id === dataTracks.tracksByObjectType[i].trackOn) {
-              wellOwner.isTracked = true;
-              break;
-            }
-          }
-
-          wellOwner.wellsCounter = [];
-
-          if (dataOwnersWells.ownersWells) {
-            for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
-              if (wellOwner.id === dataOwnersWells.ownersWells[i].ownerId) {
-                wellOwner.wellsCounter = dataOwnersWells.ownersWells[
-                  i
-                ].wells.map((well) => well.wellId);
-                break;
-              }
-            }
-          }
-        });
-
-        getCommentsCounter({
-          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
-        });
-        getTagSamples({
-          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
-        });
-        // getContactsCounter({
-        //   variables: { objectsIdsArray: objectsIdsArray },
-        // });
-      } else {
-        setLoading(false);
-        setRows([]);
-        setStateApp((state) => ({
-          ...state,
-          universalCircularLoaderAct: false,
-        }));
-      }
-    }
-  }, [dataOwners, dataTracks, dataOwnersWells]);
-
-  useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "ownersPerContacts" &&
-      dataOwners &&
-      dataOwners.owners &&
-      dataOwners.owners.results &&
-      dataOwners.owners.results.length > 0 &&
-      dataCommentsCounter &&
-      dataCommentsCounter.commentsCounter &&
-      // dataContactsCounter &&
-      // dataContactsCounter.contactsCounter &&
-      dataTagSamples &&
-      dataTagSamples.tagSamples
-    ) {
-      console.log("ue mintable 16");
-      dataOwners.owners.results.forEach((wellOwner) => {
-        wellOwner.commentsCounter = 0;
-        wellOwner.tags = [[], 0];
-        wellOwner.contactsCounter = 0;
-
-        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-          if (wellOwner.id === dataCommentsCounter.commentsCounter[i]._id) {
-            wellOwner.commentsCounter =
-              dataCommentsCounter.commentsCounter[i].total;
-            break;
-          }
-        }
-
-        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-          if (wellOwner.id === dataTagSamples.tagSamples[i]._id) {
-            wellOwner.tags = [
-              dataTagSamples.tagSamples[i].tags,
-              dataTagSamples.tagSamples[i].total,
-            ];
-
-            break;
-          }
-        }
-
-        // for (let i = 0; i < dataContactsCounter.contactsCounter.length; i++) {
-        //   if (wellOwner.id === dataContactsCounter.contactsCounter[i]._id) {
-        //     wellOwner.contactsCounter =
-        //       dataContactsCounter.contactsCounter[i].total;
-        //     break;
-        //   }
-        // }
-      });
-
-      let availableTags = [];
-      dataTagSamples.tagSamples.map((sample) => {
-        availableTags = [...availableTags, ...sample.tags];
-      });
-      const cleanAvailableTags = [...new Set(availableTags)];
-
-      setColumns(
-        cleanAvailableTags.length > 0
-          ? OwnersPerContactsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
-                    },
-                  },
-                };
-              }
-              return column;
-            })
-          : OwnersPerContactsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })
-      );
-      setRows(dataOwners.owners.results);
-      setLoading(false);
-      setStateApp((state) => ({ ...state, universalCircularLoaderAct: false }));
-    }
-  }, [
-    dataOwners,
-    dataTracks,
-    dataTagSamples,
-    dataCommentsCounter,
-    // dataContactsCounter,
-  ]);
-  ////////////Owners Per Contact begin//////////Delete//////////////////////////////
-
-  useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "ownersPerContacts" &&
-      props.contactId
-    ) {
-      setDeleteFunc(() => (ownersIdsToDelete) => {
-        if (ownersIdsToDelete) {
-          setStateApp((state) => ({
-            ...state,
-            universalCircularLoaderAct: true,
-          }));
-          for (let i = 0; i < ownersIdsToDelete.length; i++) {
-            addRemoveOwnerToAContact({
-              variables: {
-                contactId: props.contactId,
-                ownerId: ownersIdsToDelete[i],
-              },
-              refetchQueries: [
-                "getContacts",
-                "getContactsByOwnerId",
-                "getContactsCounter",
-                "getContact",
-                "getContactInM1nTable",
-              ],
-              awaitRefetchQueries: true,
-            });
-          }
-        }
-      });
-    }
-  }, [props.parent, props.contactId]);
-
-  ////////////Owners Per Contact end/////////////////////////////////////////////////
-
-  ////////////Contacts Per Owner begin///////////////////////////////////////////////
-
-  useEffect(() => {
-    if (props.parent && props.parent === "ownerContacts" && props.ownerId) {
-      console.log("ue mintable 18");
-      setTargetLabel("contact");
-      setHeader("Owner's Contacts");
-      setAddAble({ parent: props.ownerId, type: "contactToOwner" });
-      // getContactsByOwnerId({
-      //   variables: { objectId: props.ownerId },
-      // });
-    }
-  }, [props.ownerId]);
-
-  useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "ownerContacts" &&
-      dataContactsByOwnerId &&
-      dataTracks &&
-      dataTracks.tracksByObjectType
-    ) {
-      console.log("ue mintable 19");
-      if (
-        dataContactsByOwnerId.contactsByOwnerId &&
-        dataContactsByOwnerId.contactsByOwnerId.length > 0
-      ) {
-        const objectsIdsArray = [];
-        dataContactsByOwnerId.contactsByOwnerId.forEach((contact) => {
-          contact.isTracked = false;
-          objectsIdsArray.push(contact._id);
-
-          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-            if (contact.id === dataTracks.tracksByObjectType[i].trackOn) {
-              contact.isTracked = true;
-              break;
-            }
-          }
-        });
-
-        getCommentsCounter({
-          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
-        });
-        getTagSamples({
-          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
-        });
-      } else {
-        setLoading(false);
-        setRows([]);
-      }
-    }
-  }, [dataContactsByOwnerId, dataTracks]);
-
-  useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "ownerContacts" &&
-      dataContactsByOwnerId &&
-      dataContactsByOwnerId.contactsByOwnerId &&
-      dataContactsByOwnerId.contactsByOwnerId.length > 0 &&
-      dataCommentsCounter &&
-      dataCommentsCounter.commentsCounter &&
-      dataTagSamples &&
-      dataTagSamples.tagSamples
-    ) {
-      console.log("ue mintable 20");
-      dataContactsByOwnerId.contactsByOwnerId.forEach((contact) => {
-        contact.commentsCounter = 0;
-        contact.tags = [[], 0];
-        // contact.fullContactAddress = joinAddress(contact);
-        // contact.contactName = contact.name;
-
-        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-          if (contact._id === dataCommentsCounter.commentsCounter[i]._id) {
-            contact.commentsCounter =
-              dataCommentsCounter.commentsCounter[i].total;
-            break;
-          }
-        }
-
-        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-          if (contact._id === dataTagSamples.tagSamples[i]._id) {
-            contact.tags = [
-              dataTagSamples.tagSamples[i].tags,
-              dataTagSamples.tagSamples[i].total,
-            ];
-
-            break;
-          }
-        }
-      });
-
-      let availableTags = [];
-      dataTagSamples.tagSamples.map((sample) => {
-        availableTags = [...availableTags, ...sample.tags];
-      });
-      const cleanAvailableTags = [...new Set(availableTags)];
-
-      setColumns(
-        cleanAvailableTags.length > 0
-          ? ContactsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
-                    },
-                  },
-                };
-              }
-              return column;
-            })
-          : ContactsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })
-      );
-      setRows([...dataContactsByOwnerId.contactsByOwnerId]);
-      setLoading(false);
-    }
-  }, [dataContactsByOwnerId, dataTracks, dataTagSamples, dataCommentsCounter]);
-
-  ////////////Contact Per Owner begin//////////Delete//////////////////////////////
-
-  useEffect(() => {
-    if (props.parent && props.parent === "ownerContacts" && props.ownerId) {
-      console.log("ue mintable 21");
-      setDeleteFunc(() => (contactsIdsToDelete, completelyDelete) => {
-        if (contactsIdsToDelete) {
-          if (completelyDelete) {
-            // for (let i = 0; i < contactsIdsToDelete.length; i++) {
-            //   removeContact({
-            //     variables: {
-            //       contactId: contactsIdsToDelete[i],
-            //     },
-            //     refetchQueries: [
-            //       "getContacts",
-            //       "getContactsByOwnerId",
-            //       "getContactsCounter",
-            //       "getContact",
-            //     ],
-            //     awaitRefetchQueries: true,
-            //   });
-            // }
-          } else {
-            for (let i = 0; i < contactsIdsToDelete.length; i++) {
-              addRemoveOwnerToAContact({
-                variables: {
-                  contactId: contactsIdsToDelete[i],
-                  ownerId: props.ownerId,
-                },
-                refetchQueries: [
-                  "getContacts",
-                  "getContactsByOwnerId",
-                  "getContactsCounter",
-                  "getContact",
-                  "getContactInM1nTable",
-                ],
-                awaitRefetchQueries: true,
-              });
-            }
-          }
-        }
-      });
-    }
-  }, [props.parent, props.ownerId]);
-
-  ////////////Contacts Per Owner end///////////////////////////////////////////////
 
   ////////////Contacts begin///////////////////////////////////////////////
 
@@ -2245,12 +1759,7 @@ function M1nTable(props) {
                   IsDeleted: true,
                 },
               },
-              refetchQueries: [
-                "getContacts",
-                "getContactsByOwnerId",
-                "getContact",
-                "getContactsCounter",
-              ],
+              refetchQueries: ["getContacts", "getContact"],
               awaitRefetchQueries: true,
             });
           }

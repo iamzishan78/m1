@@ -26,7 +26,7 @@ export default function ConfirmationDialog(props) {
               : "The contact was successfully removed"
           )
         );
-        props.handleDialogClose(false);
+        // props.handleDialogClose(false);
         props.handleCloseExpandableCard();
         setStateApp((state) => ({
           ...state,
@@ -51,13 +51,10 @@ export default function ConfirmationDialog(props) {
       },
       refetchQueries: [
         "getContacts",
-        // "getContactsByOwnerId",
         // "getContact",
-        "getContactsCounter",
       ],
       awaitRefetchQueries: true,
     });
-    props.handleCloseExpandableCard();
   };
 
   return (

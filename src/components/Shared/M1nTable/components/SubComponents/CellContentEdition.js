@@ -319,7 +319,7 @@ export default function CellContentEdition({
           variables: {
             contact: trimmedEditContent,
           },
-          refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
+          refetchQueries: ["getContacts", "getContact"],
           awaitRefetchQueries: true,
         });
       }

@@ -48,6 +48,9 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
 import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
+import { FILELAYERSQUERY } from "../../graphQL/useQueryFileLayers";
+import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
+import { LAYERCONFIGSBYUSER } from "../../graphQL/useQueryLayerConfigByUser";
 import { ABSTRACTGEOQUERYCONTAINS, ABSTRACTGEOCONTAINSQUERY } from "../../graphQL/useQueryAbstractGeoContains";
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
@@ -194,6 +197,8 @@ export default function Map() {
       PermitData(state)
     }
   }
+  const [fileLayerPreData, setFileLayerData] = useState([]);
+
   const [drawingFilterFeatureId, DrawingFilterFeatureId] = useState(null);
   const setDrawingFilterFeatureId = (state) => {
     if (drawingFilterFeatureId != state) {
@@ -225,6 +230,8 @@ export default function Map() {
 
   const [mapMouseMoveHandler, setMapMouseMoveHandler] = useState(null);
   const [mapMouseRClickHandler, setMapMouseRClickHandler] = useState(null);
+
+  const [isLoadedLayerConfig, setIsLoadedLayerConfig] = useState(false);
 
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
 
@@ -261,6 +268,16 @@ export default function Map() {
     { data: customLayerData },
   ] = useLazyQuery(CUSTOMLAYERSQUERY, { fetchPolicy: "network-only" });
 
+  const [
+    getFileLayers,
+    { data: fileLayerData },
+  ] = useLazyQuery(FILELAYERSQUERY, { fetchPolicy: "network-only" });
+
+  const [
+    viewFile,
+    { data: viewFileResult },
+  ] = useLazyQuery(VIEWFILEQUERY, { fetchPolicy: "network-only" });
+
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 
   const [removeCustomLayer] = useMutation(REMOVECUSTOMLAYER);
@@ -276,6 +293,8 @@ export default function Map() {
 
   const [getAbstractGeo, { data: abstractData }] = useLazyQuery(ABSTRACTGEOQUERY);
   const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
+
+  const [getLayerCongfigsByUser, { data: layerConfigsById }] = useLazyQuery(LAYERCONFIGSBYUSER); 
 
   /////end/////////temporary
 
@@ -296,7 +315,20 @@ export default function Map() {
         },
       });
 
+      getFileLayers({
+        variables: {
+          userId: stateApp.user.mongoId
+        }
+      });
+
+      getLayerCongfigsByUser({
+        variables: {
+          userId: stateApp.user.mongoId
+        }
+      });
+
       getCustomLayers();
+
     }
   }, [stateApp.user]);
 
@@ -360,6 +392,132 @@ export default function Map() {
       }));
     }
   }, [customLayerData]);
+
+  useEffect(() => {
+    console.log("useEffect fileLayers");
+
+    if (fileLayerData && fileLayerData.fileLayers && fileLayerData.fileLayers.length > 0) {
+      setFileLayerData(fileLayerData.fileLayers);
+      const fileId = fileLayerData.fileLayers[0].file._id;
+      viewFile({
+        variables: {
+          fileId: fileId
+        }
+      });
+    }
+  }, [fileLayerData]);
+
+  useEffect(() => {
+    if (layerConfigsById && layerConfigsById.layersConfigByUser && layerConfigsById.layersConfigByUser.length > 0 && !isLoadedLayerConfig) {
+      const configs = layerConfigsById.layersConfigByUser;
+      setIsLoadedLayerConfig(true);
+      console.log("layerconfig set once time", configs);
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        udLayerConfig: configs
+      }));
+    }
+  }, [layerConfigsById]);
+
+  useEffect(() => {
+    console.log(stateApp.udLayerConfig);
+    const userDefinedLayers = stateApp.userDefinedLayers.slice(0);
+    if (stateApp.udLayerConfig && stateApp.udLayerConfig.length > 0) {
+      for (let i = 0; i < stateApp.udLayerConfig.length; i ++) {
+        const layerName = stateApp.udLayerConfig[i].layerName;
+        const index = userDefinedLayers.findIndex((layer) => layer.name == layerName);
+        userDefinedLayers[index].idColor = stateApp.udLayerConfig[i].config.fillColor;
+        const layerType = userDefinedLayers[index].layerProps[0].layerType;
+        if (layerType == 'circle') {
+          if (stateApp.udLayerConfig[i].config.fillColor) {
+            userDefinedLayers[index].layerProps[0].paintProps['circle-color'] = stateApp.udLayerConfig[i].config.fillColor;
+            userDefinedLayers[index].layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[0][1] = stateApp.udLayerConfig[i].config.fillColor;
+            userDefinedLayers[index].layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[1][1] = stateApp.udLayerConfig[i].config.fillColor;
+            userDefinedLayers[index].layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[2][1] = stateApp.udLayerConfig[i].config.fillColor;
+          }
+          if (stateApp.udLayerConfig[i].config.strokeColor) {
+            userDefinedLayers[index].layerProps[0].paintProps['circle-stroke-color'] = stateApp.udLayerConfig[i].config.strokeColor;
+            userDefinedLayers[index].layerProps[0].clusterProps.clusterPaintProps['circle-stroke-color'] = stateApp.udLayerConfig[i].config.strokeColor;
+          }
+        } else if (layerType == 'fill') {
+          if (stateApp.udLayerConfig[i].config.fillColor) {
+            userDefinedLayers[index].layerProps[0].paintProps['fill-color'] = stateApp.udLayerConfig[i].config.fillColor;
+          }
+          if (stateApp.udLayerConfig[i].config.strokeColor) {
+            userDefinedLayers[index].layerProps[0].paintProps['fill-outline-color'] = stateApp.udLayerConfig[i].config.strokeColor;
+          }
+        }
+      }
+
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        userDefinedLayers
+      }));
+
+    }
+  }, [stateApp.udLayerConfig])
+
+  const handleFileAsync = async (uri, internalKey, layerIndex) => {
+    if (uri && internalKey && layerIndex >= 0) {
+      let response = await fetch(uri, {
+                        headers: {
+                          "Content-Type": "text/plain; charset=UTF-8",
+                          "X-Ms-Blob-Type": "BlockBlob",
+                          "X-Ms-Meta-Internalkey": internalKey,
+                          "X-Ms-Version": "2015-02-21"
+                        },
+                        method: "GET",
+                      });
+      response = await response.json();
+      console.log(uri, internalKey, layerIndex, response);
+      let exsitingFileLayerPreData = fileLayerPreData.slice(0);
+      let currentFileLayerData = {...exsitingFileLayerPreData[layerIndex]};
+      currentFileLayerData.fileContent = response;
+      exsitingFileLayerPreData[layerIndex] = currentFileLayerData;
+      setFileLayerData(exsitingFileLayerPreData);
+      if (layerIndex != fileLayerPreData.length - 1) {
+        viewFile({
+          variables: {
+            fileId: fileLayerPreData[layerIndex + 1].file._id
+          }
+        });
+      } else {
+        let fileData = [];
+        let checkedFileLayers = [];
+        for (let i = 0; i < fileLayerPreData.length; i ++) {
+          const layerName = fileLayerPreData[i].layerName;
+          let fileContent = {};
+          if (i == fileLayerPreData.length - 1) {
+            fileContent = response;
+          } else {
+            fileContent = fileLayerPreData[i].fileContent;
+          }
+          const idColor = fileLayerPreData[i].idColor;
+          const layerType = fileLayerPreData[i].layerType;
+          const paintProps = fileLayerPreData[i].paintProps;
+          const fileId = fileLayerPreData[i].file._id;
+          const fileLayerId = fileLayerPreData[i]._id;
+          fileData.push({fileLayerId, layerName, fileContent, idColor, layerType, paintProps, fileId});
+          checkedFileLayers.push(i);
+        }
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          userFileLayers: fileData,
+          checkedFileLayers: checkedFileLayers
+        }));
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (viewFileResult && viewFileResult.viewFile) {
+      const result = viewFileResult.viewFile;
+      console.log(result);
+      const fileId = result.id;
+      const layerIndex = fileLayerPreData.findIndex((fileLayerData) => fileLayerData.file._id == fileId)
+      handleFileAsync(result.uri, result.internalKey, layerIndex);
+    }
+  }, [viewFileResult])
 
   useEffect(() => {
     console.log("useEffect 4");
@@ -624,24 +782,36 @@ export default function Map() {
 
           // -> add source
           if (config.dataProps[i].dataTypeId == "Point") {
-            map.addSource(config.sourceProps[i].sourceId, {
-              type: config.sourceProps[i].sourceType,
-              data: myGeoJSONData,
-              cluster: true,
-              clusterRadius: 50,
-              clusterMaxZoom: 6,
-            });
+            if (map.getSource(config.sourceProps[i].sourceId)) {
+              map.getSource(config.sourceProps[i].sourceId).setData(myGeoJSONData);
+            } else {
+              map.addSource(config.sourceProps[i].sourceId, {
+                type: config.sourceProps[i].sourceType,
+                data: myGeoJSONData,
+                cluster: true,
+                clusterRadius: 50,
+                clusterMaxZoom: 6,
+              });
+            }
             const filterLayerId = config.sourceProps[i].sourceId + "_filter";
-            map.addSource(filterLayerId, {
-              type: config.sourceProps[i].sourceType,
-              data: myGeoJSONData,
-            });
+            if (map.getSource(filterLayerId)) {
+              map.getSource(filterLayerId).setData(myGeoJSONData);
+            } else {
+              map.addSource(filterLayerId, {
+                type: config.sourceProps[i].sourceType,
+                data: myGeoJSONData,
+              });
+            }
           } else {
-            map.addSource(config.sourceProps[i].sourceId, {
-              type: config.sourceProps[i].sourceType,
-              data: myGeoJSONData,
-              promoteId: "id",
-            });
+            if (map.getSource(config.sourceProps[i].sourceId)) {
+              map.getSource(config.sourceProps[i].sourceId).setData(myGeoJSONData);
+            } else {
+              map.addSource(config.sourceProps[i].sourceId, {
+                type: config.sourceProps[i].sourceType,
+                data: myGeoJSONData,
+                promoteId: "id",
+              });
+            }
           }
 
           // -> add layer
@@ -1244,59 +1414,59 @@ export default function Map() {
   }, [map, stateApp.checkedHeats, stateApp.heatLayers]);
 
 
-  useEffect(() => {
-    // USE EFFECT FOR USER FILE LAYERS
-    console.log('USE EFFECT FILE LAYER ADDED::', stateApp.userFileLayers)
-    let userFileLayers = stateApp.userFileLayers;
+  // useEffect(() => {
+  //   // USE EFFECT FOR USER FILE LAYERS
+  //   console.log('USE EFFECT FILE LAYER ADDED::', stateApp.userFileLayers)
+  //   let userFileLayers = stateApp.userFileLayers;
 
-    /// parse array of user input file data 
-    userFileLayers.map((fileLayer, idx) => {
-      let mapSource = map.getSource(`${idx}`);
+  //   /// parse array of user input file data 
+  //   userFileLayers.map((fileLayer, idx) => {
+  //     let mapSource = map.getSource(`${idx}`);
     
-      if (mapSource == undefined) {
-        map.addSource(`${idx}`, {
-          'type': 'geojson',
-          'data': fileLayer
-        });
-        map.addLayer({
-          'id': `polygon${idx}`,
-          'type': 'fill',
-          'source': `${idx}`,
-          'layout': {},
-          'paint': {
-            'fill-color': '#088',
-            'fill-opacity': 0.8,
-            'fill-outline-color': 'rgba(20, 100, 25, 1)'
-          },
-          'filter': ['==', '$type', 'Polygon']
-        });
-        map.addLayer({
-          'id': `point${idx}`,
-          'type': 'circle',
-          'source': `${idx}`,
-          'paint': {
-            'circle-radius': 6,
-            'circle-color': '#B42222'
-          },
-          'filter': ['==', '$type', 'Point']
-        });
-        map.addLayer({
-          'id': `line${idx}`,
-          'type': 'line',
-          'source': `${idx}`,
-          'layout': {
-            'line-join': 'round',
-            'line-cap': 'round'
-          },
-          'paint': {
-            'line-width': 8,
-            'line-color': '#088'
-          },
-          'filter': ['==', '$type', 'LineString']
-        });
-      }
-    });
-  }, [stateApp.userFileLayers])
+  //     if (mapSource == undefined) {
+  //       map.addSource(`${idx}`, {
+  //         'type': 'geojson',
+  //         'data': fileLayer
+  //       });
+  //       map.addLayer({
+  //         'id': `polygon${idx}`,
+  //         'type': 'fill',
+  //         'source': `${idx}`,
+  //         'layout': {},
+  //         'paint': {
+  //           'fill-color': '#088',
+  //           'fill-opacity': 0.8,
+  //           'fill-outline-color': 'rgba(20, 100, 25, 1)'
+  //         },
+  //         'filter': ['==', '$type', 'Polygon']
+  //       });
+  //       map.addLayer({
+  //         'id': `point${idx}`,
+  //         'type': 'circle',
+  //         'source': `${idx}`,
+  //         'paint': {
+  //           'circle-radius': 6,
+  //           'circle-color': '#B42222'
+  //         },
+  //         'filter': ['==', '$type', 'Point']
+  //       });
+  //       map.addLayer({
+  //         'id': `line${idx}`,
+  //         'type': 'line',
+  //         'source': `${idx}`,
+  //         'layout': {
+  //           'line-join': 'round',
+  //           'line-cap': 'round'
+  //         },
+  //         'paint': {
+  //           'line-width': 8,
+  //           'line-color': '#088'
+  //         },
+  //         'filter': ['==', '$type', 'LineString']
+  //       });
+  //     }
+  //   });
+  // }, [stateApp.userFileLayers])
 
   useEffect(() => {
     // USE EFFECT FOR USER SERVICE LAYERS
@@ -1439,6 +1609,30 @@ export default function Map() {
       // });
     }
   }, [stateApp.trackFilterOn]);
+
+  useEffect(() => {
+    console.log("layerConfig Update");
+    if (stateApp.userDefinedLayers.length > 0 && map) {
+      stateApp.userDefinedLayers.forEach((l) => {
+        const k = l.id[0];
+        if (map.getLayer(k)) {
+          console.log(l.layerProps[0].paintProps);
+          const paintProps = l.layerProps[0].paintProps;
+          Object.keys(paintProps).forEach((key) => {
+            map.setPaintProperty(k, key, paintProps[key])
+          })
+          if (l.layerProps[0].clusterProps) {
+            const clusterProps = l.layerProps[0].clusterProps;
+            console.log(clusterProps);
+            const clusterLayerId = k + "-clusters";
+            Object.keys(clusterProps.clusterPaintProps).forEach((key) => {
+              map.setPaintProperty(clusterLayerId, key, clusterProps.clusterPaintProps[key])
+            })
+          }
+        }
+      });
+    }
+  }, [stateApp.userDefinedLayers, map]);
 
   useEffect(() => {
     console.log("useEffect 18");
@@ -1622,26 +1816,36 @@ export default function Map() {
               } else {
                 // -> add source
                 if (selectLayerProps.dataProps[i].dataTypeId == "Point") {
-                  map.addSource(selectLayerProps.sourceProps[i].sourceId, {
-                    type: selectLayerProps.sourceProps[i].sourceType,
-                    data: myGeoJSONData,
-                    cluster: true,
-                    clusterRadius: 50,
-                    clusterMaxZoom: 6,
-                  });
-                  const filterLayerId =
-                    selectLayerProps.sourceProps[i].sourceId + "_filter";
-                  console.log(filterLayerId);
-                  map.addSource(filterLayerId, {
-                    type: selectLayerProps.sourceProps[i].sourceType,
-                    data: myGeoJSONData,
-                  });
+                  if (map.getSource(selectLayerProps.sourceProps[i].sourceId)) {
+                    map.getSource(selectLayerProps.sourceProps[i].sourceId).setData(myGeoJSONData);
+                  } else {
+                    map.addSource(selectLayerProps.sourceProps[i].sourceId, {
+                      type: selectLayerProps.sourceProps[i].sourceType,
+                      data: myGeoJSONData,
+                      cluster: true,
+                      clusterRadius: 50,
+                      clusterMaxZoom: 6,
+                    });
+                  }
+                  const filterLayerId = selectLayerProps.sourceProps[i].sourceId + "_filter";
+                  if (map.getSource(filterLayerId)) {
+                    map.getSource(filterLayerId).setData(myGeoJSONData);
+                  } else {
+                    map.addSource(filterLayerId, {
+                      type: selectLayerProps.sourceProps[i].sourceType,
+                      data: myGeoJSONData,
+                    });
+                  }
                 } else {
-                  map.addSource(selectLayerProps.sourceProps[i].sourceId, {
-                    type: selectLayerProps.sourceProps[i].sourceType,
-                    data: myGeoJSONData,
-                    promoteId: "id",
-                  });
+                  if (map.getSource(selectLayerProps.sourceProps[i].sourceId)) {
+                    map.getSource(selectLayerProps.sourceProps[i].sourceId).setData(myGeoJSONData);
+                  } else {
+                    map.addSource(selectLayerProps.sourceProps[i].sourceId, {
+                      type: selectLayerProps.sourceProps[i].sourceType,
+                      data: myGeoJSONData,
+                      promoteId: "id",
+                    });
+                  }
                 }
 
                 // -> add layer
@@ -1930,6 +2134,50 @@ export default function Map() {
     stateApp.trackedOwnerWells,
     stateApp.wellListFromSearch,
     stateApp.wellListFromTagsFilter,
+  ]);
+
+  useEffect(() => {
+    if (map && stateApp.userFileLayers && stateApp.userFileLayers.length > 0) {
+      const fileLayers = stateApp.userFileLayers;
+      fileLayers.forEach((fileLayer, index) => {
+        const layerName = fileLayer.layerName;
+        const geoJson = fileLayer.fileContent;
+        const sourceName = layerName + ' Source';
+        const type = fileLayer.layerType;
+        const paintProps = fileLayer.paintProps;
+        if (map.getLayer(layerName)) {
+          map.getSource(sourceName).setData(geoJson);
+          Object.keys(paintProps).forEach((key) => {
+            map.setPaintProperty(layerName, key, paintProps[key])
+          })
+        } else {
+          if (map.getSource(sourceName)) {
+            map.getSource(sourceName).setData(geoJson);
+          } else {
+            map.addSource(sourceName, {
+              type: 'geojson',
+              data: geoJson,
+            });
+          }
+        
+          map.addLayer({
+            id: layerName,
+            type: type,
+            source: sourceName,
+            paint: paintProps,
+          });
+        }
+        if (stateApp.checkedFileLayers.indexOf(index) === -1) {
+          map.setLayoutProperty(layerName, "visibility", "none");
+        } else {
+          map.setLayoutProperty(layerName, "visibility", "visible");
+        }
+      });
+    }
+  }, [
+    map,
+    stateApp.userFileLayers,
+    stateApp.checkedFileLayers,
   ]);
 
   useEffect(() => {
