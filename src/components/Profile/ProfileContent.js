@@ -1,4 +1,3 @@
-import { useQuery } from "@apollo/react-hooks";
 import { Grid } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
@@ -10,7 +9,6 @@ import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/lab/Skeleton";
 import React, { useContext, useEffect } from "react";
 import { AppContext } from "../../AppContext";
-import { GETPROFILE } from "../../graphQL/useQueryGetProfile";
 import { ProfileContext } from "./ProfileContext";
 import { Link } from "react-router-dom";
 
@@ -60,57 +58,19 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   image: {
-    width: "100%",
-    height: "180px",
-    borderRadius: "4px",
+    width: 220,
+    height: 220,
+    borderRadius: "50%",
+    objectFit: "contain",
   },
 }));
 
 const ProfileContent = () => {
   const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
   const [stateProfile, setStateProfile] = useContext(ProfileContext);
   const {
-    user: { email },
-  } = stateApp;
-
-  const { data, error, loading } = useQuery(GETPROFILE, {
-    variables: { email },
-    fetchPolicy: "network-only",
-  });
-  const {
-    fields: { fullname, displayname, activity, phone, timezone, profileImage },
-    isImageModalOpen,
+    fields: { fullname, displayname, jobTitle, phone, profileImage}
   } = stateProfile;
-
-  useEffect(() => {
-    if (data?.profileByEmail?.profile) {
-      const {
-        profileByEmail: {
-          profile: {
-            fullname,
-            displayname,
-            activity,
-            phone,
-            timezone,
-            profileImage,
-          },
-        },
-      } = data;
-
-      setStateProfile({
-        ...stateProfile,
-        fields: {
-          fullname,
-          displayname,
-          activity,
-          phone,
-          timezone,
-          profileImage,
-        },
-      });
-    }
-  }, [data]);
 
   const onChange = ({ name, value }) => {
     setStateProfile({
@@ -202,7 +162,7 @@ const ProfileContent = () => {
             placeholder={"Your Role or Title"}
             helperText={"Let people know what you do"}
             name="activity"
-            value={activity}
+            value={jobTitle}
             onChange={({ target }) => onChange(target)}
           />
           <Box pb={2.5} />

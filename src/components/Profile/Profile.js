@@ -6,8 +6,9 @@ import { NavigationContext } from "../Navigation/NavigationContext";
 import ImageModal from "./ImageModal";
 import ProfileActions from "./ProfileActions";
 import ProfileContent from "./ProfileContent";
-import { ProfileContextProvider } from "./ProfileContext";
 import ProfileTitle from "./ProfileTitle";
+import { AppContext } from "../../AppContext";
+import { ProfileContext } from "./ProfileContext";
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -24,14 +25,13 @@ const Profile = () => {
   const { isProfileOpen } = stateNav;
   const classes = useStyles();
   const history = useHistory();
-
   const handleClose = () => {
     setStateNav({ ...stateNav, isProfileOpen: false });
     history.goBack();
   };
 
   return (
-    <ProfileContextProvider>
+    <div>
       <Dialog
         onClose={handleClose}
         aria-labelledby="profile-dialog"
@@ -39,12 +39,12 @@ const Profile = () => {
         maxWidth={"xl"}
         classes={{ paper: classes.paper }}
       >
-        <ImageModal/>
+        {isProfileOpen && <ImageModal/>}
         <ProfileTitle />
         <ProfileContent />
         <ProfileActions />
       </Dialog>
-    </ProfileContextProvider>
+    </div>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, Fragment } from "react";
+import React, { useContext, useReducer, Fragment, useEffect} from "react";
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -19,9 +19,31 @@ import LockIcon from '@material-ui/icons/Lock';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { PanelTheme, PanelGeneralStyle} from '../../../styles/Panel';
-
-const Profile = () => {
+import { ProfileContext } from "../ProfileContext";
+import { ProfileTabReducer } from "./reducers";
+import EventIcon from '@material-ui/icons/Event';
+import validateDate from "validate-date";
+const Profile = (props) => {
+   
+    const [stateProfile, setStateProfile] = useContext(ProfileContext);
+    const [state, dispatch] = useReducer(ProfileTabReducer, stateProfile.fields);
     const classes = PanelGeneralStyle();
+
+    useEffect(() => {
+        const fullname = `${state.firstname} ${state.middlename} ${state.lastname}`;
+        //console.log(state);
+        setStateProfile({...stateProfile, fields : {...state, fullname}})
+    }, [state]);
+
+    const formatPhone = (number) => {
+        const formatted = `${number}`.replace(/\D/g, "");
+        const match = formatted.match(/^(\d{3})(\d{3})(\d{4})$/);
+        if (match) {
+          return `(${match[1]}) ${match[2]}-${match[3]}`;
+        }
+        return number;
+      };
+
     const industry_list = [
         'Computer Software',
         'Construction',
@@ -75,6 +97,8 @@ const Profile = () => {
                                                     padding: '0 14px',
                                                 },
                                             }}
+                                            onChange={e=>dispatch({type:'firstname', value: e.target.value})}
+                                            value={state.firstname}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>
@@ -89,6 +113,8 @@ const Profile = () => {
                                                     padding: '0 14px',
                                                 },
                                             }}
+                                            onChange={e=>dispatch({type:'middlename', value: e.target.value})}
+                                            value={state.middlename}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid> 
@@ -103,6 +129,8 @@ const Profile = () => {
                                                     padding: '0 14px',
                                                 },
                                             }}
+                                            onChange={e=>dispatch({type:'lastname', value: e.target.value})}
+                                            value={state.lastname}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>
@@ -118,6 +146,8 @@ const Profile = () => {
                                                     padding: '0 14px',
                                                 },
                                             }}
+                                            onChange={e=>dispatch({type:'displayname', value: e.target.value})}
+                                            value={state.displayname}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>
@@ -139,6 +169,8 @@ const Profile = () => {
                                                     </InputAdornment>
                                                 )
                                             }}
+                                            onChange={e=>dispatch({type:'sss_tax_id', value: e.target.value})}
+                                            value={state.sss_tax_id}
                                             variant="outlined"
                                             />
                                     </FormControl>
@@ -154,7 +186,22 @@ const Profile = () => {
                                                     height: 40,
                                                     padding: '0 14px',
                                                 },
+
                                             }}
+                                            InputProps={{
+                                                style: {
+                                                    height: 40,
+                                                    padding: '0 14px',
+                                                },
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <EventIcon style={{color: '#8c8c8c'}}/>
+                                                    </InputAdornment>
+                                                )
+                                            }}
+                                            onChange={e=>dispatch({type:'dateOfBirth', value: e.target.value})}
+                                            value={state.dateOfBirth}
+                                            error={!validateDate(state.dateOfBirth, "boolean", "mm/dd/yyyy")}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>   
@@ -189,6 +236,9 @@ const Profile = () => {
                                                             padding: '0 14px',
                                                         },
                                                     }}
+                                                    value={state.email}
+                                                    disabled
+                                                    // onChange={e=> dispatch({type: 'email', value: e.target.value})}
                                                     variant="outlined"/>
                                             </FormControl>
                                         </Grid>
@@ -205,6 +255,8 @@ const Profile = () => {
                                                     padding: '0 14px',
                                                 },
                                             }}
+                                            onChange={e=>dispatch({type:'address', value: e.target.value})}
+                                            value={state.address}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>
@@ -219,6 +271,8 @@ const Profile = () => {
                                                     padding: '0 14px',
                                                 },
                                             }}
+                                            onChange={e=>dispatch({type:'city', value: e.target.value})}
+                                            value={state.city}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>
@@ -233,6 +287,8 @@ const Profile = () => {
                                                     padding: '0 14px',
                                                 },
                                             }}
+                                            onChange={e=>dispatch({type:'state', value: e.target.value})}
+                                            value={state.state}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>
@@ -247,6 +303,8 @@ const Profile = () => {
                                                     padding: '0 14px',
                                                 },
                                             }}
+                                            value={formatPhone(state.phone)}
+                                            onChange={e=> dispatch({type: 'phone', value: e.target.value})}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>
@@ -261,6 +319,8 @@ const Profile = () => {
                                                     padding: '0 14px',
                                                 },
                                             }}
+                                            onChange={e=>dispatch({type:'mobilephone', value: e.target.value})}
+                                            value={formatPhone(state.mobilephone)}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>
@@ -275,6 +335,8 @@ const Profile = () => {
                                                     padding: '0 14px',
                                                 },
                                             }}
+                                            onChange={e=>dispatch({type:'workphone', value: e.target.value})}
+                                            value={formatPhone(state.workphone)}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>
@@ -304,6 +366,8 @@ const Profile = () => {
                                                     padding: '0 14px',
                                                 },
                                             }}
+                                            onChange={e=>dispatch({type:'company', value: e.target.value})}
+                                            value={state.company}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>
@@ -318,6 +382,8 @@ const Profile = () => {
                                                     padding: '0 14px',
                                                 },
                                             }}
+                                            onChange={e=>dispatch({type:'jobTitle', value: e.target.value})}
+                                            value={state.jobTitle}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>
@@ -335,6 +401,8 @@ const Profile = () => {
                                                         padding: '0 14px'
                                                     }
                                                 }}
+                                                onChange={e=>dispatch({type:'industry', value: e.target.value})}
+                                                value={state.industry}
                                                 style={{width: '100%'}}
                                             >
                                                 { 
@@ -368,7 +436,12 @@ const Profile = () => {
                                     <Grid item sm={4}>
                                         <FormControl style={{width: '100%', padding: 10}}>
                                             <FormLabel>Are you an accredited investor?</FormLabel>
-                                            <RadioGroup aria-label="accredited" name="accredited" value={"1"} onChange={()=> {}} row>
+                                            <RadioGroup 
+                                                aria-label="accredited" 
+                                                name="accredited"
+                                                onChange={e=>dispatch({type:'isAccreditedInvestor', value: e.target.value})}
+                                                value={state.isAccreditedInvestor} row
+                                            >
                                                 <FormControlLabel value="1" control={<Radio />} label="Yes" />
                                                 <FormControlLabel value="0" control={<Radio />} label="No" />
                                             </RadioGroup>
@@ -385,7 +458,15 @@ const Profile = () => {
                                                 return(
                                                     <FormControlLabel
                                                         key={index}
-                                                        control={<Checkbox key={index} name={item} />}
+                                                        control={
+                                                            <Checkbox 
+                                                                key={index} 
+                                                                name={item}
+                                                                value={item}
+                                                                onChange={e=>dispatch({type:'investingExperience', value: e.target.value})}
+                                                                checked={state.investingExperience !== null && 
+                                                                        state.investingExperience.includes(item)}
+                                                            />}
                                                         label={item}
                                                     />
                                                 )
@@ -408,6 +489,8 @@ const Profile = () => {
                                                         padding: '0 14px'
                                                     }
                                                 }}
+                                                onChange={e=>dispatch({type:'CREexperience', value: e.target.value})}
+                                                value={state.CREexperience}
                                                 style={{width: '100%'}}
                                             >
                                             <option value="none">None</option>
@@ -437,15 +520,36 @@ const Profile = () => {
                                         <FormLabel component="legend">Email Notification</FormLabel>
                                         <FormGroup>
                                             <FormControlLabel
-                                                control={<Checkbox name="newsletter" />}
+                                                control={
+                                                <Checkbox 
+                                                    name="newsletter"
+                                                    value="newsletter"
+                                                    onChange={e=>dispatch({type:'emailNotifications', value: e.target.value})}
+                                                    checked={state.emailNotifications !== null && 
+                                                            state.emailNotifications.includes("newsletter")}
+                                                 />}
                                                 label="I would like to receive EnergyNet's weekly market report and newsletter"
                                             />
                                             <FormControlLabel
-                                                control={<Checkbox name="marketlease" />}
+                                                control={
+                                                    <Checkbox 
+                                                        name="marketlease"
+                                                        value="marketlease"
+                                                        onChange={e=>dispatch({type:'emailNotifications', value: e.target.value})}
+                                                        checked={state.emailNotifications !== null && 
+                                                                state.emailNotifications.includes("marketlease")}
+                                                    />}
                                                 label="I would like to receive information about upcoming government and market lease sales"
                                             />
                                             <FormControlLabel
-                                                control={<Checkbox name="relevantissue" />}
+                                                control={
+                                                    <Checkbox 
+                                                        name="relevantissue"
+                                                        value="relevantissue"
+                                                        onChange={e=>dispatch({type:'emailNotifications', value: e.target.value})}
+                                                        checked={state.emailNotifications !== null && 
+                                                                state.emailNotifications.includes("relevantissue")}
+                                                     />}
                                                 label="I would like to be notified of new and upcoming property sales relevant to my interests"
                                             />
                                             </FormGroup>
@@ -491,6 +595,8 @@ const Profile = () => {
                                                     padding: '0 14px'
                                                 },
                                             }}
+                                            value={state.employer}
+                                            onChange={e=>dispatch({type:'employer', value: e.target.value})}
                                             variant="outlined"/>
                                     </Grid>
                                 </Grid>
@@ -511,6 +617,9 @@ const Profile = () => {
                                         <TextField 
                                             style={{paddingTop: 10, paddingBottom: 10, width: '100%'}}
                                             multiline
+                                            value={state.employerAddress}
+                                            onChange={e=>dispatch({type:'employerAddress', value: e.target.value})}
+
                                             rows={5}
                                             inputProps={{
                                                 style: {
@@ -524,7 +633,12 @@ const Profile = () => {
                                         <FormControl style={{width: '100%', padding: 10}}>
                                             <FormGroup>
                                                 <FormControlLabel
-                                                    control={<Checkbox name="address" />}
+                                                    control={
+                                                        <Checkbox 
+                                                            name="address"
+                                                            onChange={e=>dispatch({type:'isSameFromAbove'})}
+                                                            checked={state.isSameFromAbove !== null && state.isSameFromAbove}
+                                                         />}
                                                     label="Same as above"
                                                 />
                                                 </FormGroup>
@@ -550,6 +664,8 @@ const Profile = () => {
                                                     padding: '0 14px'
                                                 },
                                             }}
+                                            value={state.job_title}
+                                            onChange={e=>dispatch({type:'job_title', value: e.target.value})}
                                             variant="outlined"/>
                                     </Grid>
                                 </Grid>

@@ -17,8 +17,15 @@ import Verification from "./components/Verification";
 import ProfileHeader from "./components/ProfileHeader";
 import Dialog from "@material-ui/core/Dialog";
 import { useHistory } from "react-router-dom";
-import { ProfileContextProvider } from "./ProfileContext";
-
+import { ProfileContext } from "./ProfileContext";
+import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
+import Badge from "@material-ui/core/Badge";
+import Tooltip from "@material-ui/core/Tooltip";
+import ImageModel from "./ImageModal";
+import { NavigationContext } from "../Navigation/NavigationContext";
+import Skeleton from "@material-ui/lab/Skeleton";
+import { useMutation } from "@apollo/react-hooks";
+import { UPSERTPROFILE } from "../../graphQL/useMutationUpsertProfile";
 const newStyles = makeStyles((theme) => ({
     dialogContent: {
       padding: 0,
@@ -51,7 +58,17 @@ const newStyles = makeStyles((theme) => ({
       height: 150,
       width: 150,
       border: 1,
-      borderRadius: 150
+      borderRadius: "50%",
+      objectFit: "contain",
+      backgroundColor: "#fff",
+    },
+    loading_image: {
+      height: 150,
+      width: 150,
+      border: 1,
+      padding: "38%",
+      borderRadius:"50%",
+      backgroundColor: "#fff",
     },
     paper: {
         marginTop: "100px",
@@ -61,13 +78,36 @@ const newStyles = makeStyles((theme) => ({
         minHeight: "85%",
         overflow: 'hidden'
       },
+    editIcon: {
+      backgroundColor: "hsla(1,50%,100%, 0.4)",
+      cursor: "pointer",
+      padding: 5,
+      borderRadius: "50%",
+      fontSize: 30,
+    },
+    skeleton: {
+      margin: 10,
+      width: "100%",
+      height: 50,
+      backgroundColor: "#f2f2f2",
+    }
   }));
 
 const ProfileDetails = () => {
-    const [selectedMenu, setSelectedMenu] = useState(0);
+    //const [selectedMenu, setSelectedMenu] = useState(0);
     const [displayContent, setDisplayContent] = useState([]);
     const [isDetailedViewOpen, setDetailedViewOpen] = useState(true);
-
+    const [stateProfile, setStateProfile] = useContext(ProfileContext);
+    const [stateNav, setStateNav] = useContext(NavigationContext);
+    const [updateProfile] = useMutation(UPSERTPROFILE);
+    const {
+      fields: { fullname, profileImage, email }, isSaving
+    } = stateProfile;
+    
+    useEffect(()=> {
+      changeDisplayContent(0);
+    }, []);
+      
     const list = [
       'Profile',
       'Investing Entities',
@@ -81,11 +121,7 @@ const ProfileDetails = () => {
       'Change Password',
       'Verification'
     ]
-
-    useEffect(()=> {
-      changeDisplayContent(0);
-    }, []);
-
+    
     const changeDisplayContent = (index) => {
       let return_display = [
         <Profile/>,
@@ -104,33 +140,93 @@ const ProfileDetails = () => {
     }
 
     const handleClose = () => {
+        setStateNav({ ...stateNav, isProfileOpen: true });
+        setStateProfile({
+          ...stateProfile,
+          isImageModalOpen: false
+        });
         setDetailedViewOpen(false);
         history.goBack();
       };
 
-      
+    const handleImage = (e) => {
+      if (e.target.files?.length > 0) {
+        const reader = new FileReader();
+        reader.addEventListener("load", () => 
+          setStateProfile({
+            ...stateProfile,
+            isImageModalOpen: true,
+            selectedImage: reader.result,
+          })
+        );
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    };
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      setStateProfile({...stateProfile, isSaving: true});
+      await updateProfile({
+        variables: { profileData: { ...stateProfile.fields } },
+      });
+      setStateProfile({...stateProfile, isSaving: false});
+    };
 
     const newStyle = newStyles();
     const history = useHistory();
 
     return(
-        <ProfileContextProvider>
+        <div>
+            <ImageModel/>
             <Dialog
             onClose={handleClose}
             aria-labelledby="myaccount-dialog"
             open={isDetailedViewOpen}
-            fullWidth={true}
+            fullWidth
             maxWidth={"xl"}
             classes={{ paper: newStyle.paper }}
             >
                 <Grid container className={newStyle.root}>
                     <Grid item sm={2}>
                     <Grid container className={newStyle.navSubroot}>
-                        <Grid item sm={12} style={{alignSelf: 'center', flex: 0.3, padding: '10%'}}>
-                        <img src={"https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"}
-                            alt="Profile picture"
-                            className={newStyle.profile_picture} />
-                        <h2 style={{color: '#fff'}}> Jacob Avery </h2>
+                        <Grid item sm={12} style={{alignSelf: 'center', flex: 0.3, paddingTop:"10%"}}>
+                        <input
+                          accept="image/*"
+                          style={{ display: "none" }}
+                          id="profile-image"
+                          type="file"
+                          name="profileimage"
+                          onChange={(e) => handleImage(e)}
+                        />
+                        <Badge
+                          overlap="circle"
+                          anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                          }}
+                          badgeContent={
+                            <label htmlFor="profile-image">
+                              <Tooltip title={`Upload a photo`} arrow placement="bottom-end">
+                                <AddAPhotoIcon
+                                  className={newStyle.editIcon}
+                                  />
+                              </Tooltip>
+                            </label>
+                            }
+                        >
+                          {
+                            profileImage !== null ? (
+                            <img 
+                              src={profileImage !== "" ? profileImage : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"}
+                              alt="Profile picture"
+                              className={newStyle.profile_picture} 
+                            />
+                            ) : (
+                              <Skeleton variant="circle" width={150} height={150}/>
+                            )
+                          }
+                        </Badge>
+                          <h2 style={{color: '#fff'}}>{fullname}</h2>
                         </Grid>
                         <Grid item sm={12} style={{flex: 1}}>
                         <MenuList className={newStyle.menuList}>
@@ -146,18 +242,30 @@ const ProfileDetails = () => {
                     <Grid item sm={10}>
                     <Grid container className={newStyle.contentSubroot}>
                         <Grid item sm={12}>
-                        <ProfileHeader />
+                        <ProfileHeader 
+                          handleSubmit={handleSubmit} 
+                          isSaving={isSaving} 
+                          handleClose={handleClose}/>
                         </Grid>
                         <Grid item sm={12} style={{
                         maxHeight: '735px', overflowY: "auto", overflowX: 'hidden'
                         }}>
-                        { displayContent }
+                        { email !== null ? displayContent : (
+                          <div>
+                            <Skeleton variant="rect" className={newStyle.skeleton} height={200} />
+                            <Skeleton variant="rect" className={newStyle.skeleton} />
+                            <Skeleton variant="rect" className={newStyle.skeleton} />
+                            <Skeleton variant="rect" className={newStyle.skeleton} />
+                            <Skeleton variant="rect" className={newStyle.skeleton} />
+                            <Skeleton variant="rect" className={newStyle.skeleton} />
+                          </div>
+                        )}
                         </Grid>
                     </Grid>
                     </Grid>
                 </Grid>
             </Dialog>
-    </ProfileContextProvider> 
+    </div> 
     )
 }
 

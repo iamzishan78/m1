@@ -1,4 +1,3 @@
-import React from "react";
 import gql from "graphql-tag";
 
 export const GETPROFILE = gql`
@@ -15,6 +14,27 @@ export const GETPROFILE = gql`
                 timezone
                 activity
                 ts
+                firstname
+                middlename
+                lastname
+                sss_tax_id
+                dateOfBirth
+                address
+                city
+                state
+                mobilephone
+                workphone
+                company
+                jobTitle
+                industry
+                isAccreditedInvestor,
+                investingExperience, 
+                CREexperience,
+                emailNotifications,
+                employer,
+                isSameFromAbove,
+                job_title,
+                employerAddress,
             }
         }
     }

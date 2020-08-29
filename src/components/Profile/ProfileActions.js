@@ -9,7 +9,7 @@ import { UPSERTPROFILE } from "../../graphQL/useMutationUpsertProfile";
 import { GETPROFILE } from "../../graphQL/useQueryGetProfile";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { ProfileContext } from "./ProfileContext";
-
+import { CircularProgress } from "@material-ui/core";
 const DialogActions = withStyles((theme) => ({
   root: {
     margin: 0,
@@ -18,15 +18,12 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 const ProfileActions = () => {
-  const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateProfile, setStateProfile] = useContext(ProfileContext);
-  const { isProfileOpen } = stateNav;
-  const {
-    user: { email },
-  } = stateApp;
-  const [updateProfile, { called, loading, data }] = useMutation(UPSERTPROFILE);
+
+  const [updateProfile] = useMutation(UPSERTPROFILE);
   const history = useHistory();
+  const {isSaving} = stateProfile;
 
   const handleClose = () => {
     setStateNav({ ...stateNav, isProfileOpen: false });
@@ -35,10 +32,12 @@ const ProfileActions = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setStateProfile({...stateProfile, isSaving: true});
     await updateProfile({
-      variables: { profileData: { ...stateProfile.fields, email } },
+      variables: { profileData: { ...stateProfile.fields} },
     });
     handleClose();
+    setStateProfile({...stateProfile, isSaving: false});
   };
 
   return (
@@ -59,8 +58,9 @@ const ProfileActions = () => {
         }}
         variant="outlined"
         onClick={handleSubmit}
+        endIcon={isSaving && <CircularProgress style={{width:12, height: 12}}/>}
       >
-        Save changes
+       {isSaving ? "Saving..." : "Save changes"}
       </Button>
     </DialogActions>
   );
