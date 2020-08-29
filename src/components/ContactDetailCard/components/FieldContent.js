@@ -298,9 +298,27 @@ export default function FieldContent({
           setShowContent(content);
           setEditContent({ ...content });
         },
-      );;
+      );
     } else if (fieldType == FieldTypes.MelissaAddressRecord) {
-      
+      let entries = Object.entries(editContent)[0];
+      let key = entries[0];
+      let updatedValue = entries[1];
+      updateMelissaAddress({
+        variables: {
+          melissaAddressRecord: {
+            _id: melissaAddressRecordId,
+            [key]: updatedValue
+          }
+        },
+        refetchQueries: ["getMelissaRecords"],
+        awaitRefetchQueries: true
+      }).then(
+        res => {
+          content = { [key]: updatedValue };
+          setShowContent(content);
+          setEditContent({ ...content });
+        },
+      );
     }
 
     setEdit(null);

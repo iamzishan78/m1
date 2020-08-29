@@ -141,7 +141,7 @@ export default ({ ...props }) => {
                       <Grid item xs={9}>
                         <FieldContent
                           melissaAddressRecordId={ props.melissaData.melissaAddressRecords[0]._id }
-                          content={{ key: value }}
+                          content={{ [key]: value }}
                           fieldType={ FieldTypes.MelissaAddressRecord }
                         />
                       </Grid>
