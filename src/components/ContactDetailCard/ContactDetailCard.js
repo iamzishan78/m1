@@ -17,6 +17,7 @@ import { MELISSARECORDS } from "../../graphQL/useQueryGetMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery } from "@apollo/react-hooks";
 import ConfirmationDialog from "./components/ConfirmationDialog";
+import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
 import Activities from "../Shared/Activities";
 import Deals from "../Shared/Deals";
 import LeadScore from "../Shared/LeadScore";
@@ -307,6 +308,12 @@ export default function ContactDetailCard(props) {
     setExpCardSubComponentTitle(subComponentTitle);
     setShowExpandableCard(true);
   };
+  const handleExpandClick = async (type) => {
+    setOpenDialog(type);
+  };
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
 
   useEffect(() => {
     setTimeout(() => {
@@ -393,7 +400,11 @@ export default function ContactDetailCard(props) {
             <Button
               variant="contained"
               // size="small"
-              onClick={() => {}}
+              onClick={() => {
+                handleExpandClick(
+                  "buyContactsInfo"
+                );
+              }}
             >
               Buy Info
             </Button>
@@ -412,7 +423,10 @@ export default function ContactDetailCard(props) {
               variant="contained"
               // size="small"
               onClick={() => {
-                setOpenDialog(true);
+                handleExpandClick(
+                  "deleteConfirmation"
+                );
+                //setOpenDialog(true);
               }}
             >
               Delete
@@ -780,12 +794,31 @@ export default function ContactDetailCard(props) {
         )}
       </div>
 
-      <ConfirmationDialog
-        openDialog={openDialog}
-        handleDialogClose={setOpenDialog}
-        handleCloseExpandableCard={props.handleCloseExpandableCard}
-        id={contactData._id}
-      />
+      {openDialog && (
+        <Dialog
+          className={classes.dialog}
+          open={openDialog ? true : false}
+          onClose={handleCloseDialog}
+          fullWidth={true}
+          maxWidth={"sm"}
+        >
+          {openDialog === "buyContactsInfo" && (
+            <BuyContactsInfoDialogContent
+              onClose={handleCloseDialog}
+              rows={ [contactData] }
+              setRows={() => { }}
+            />
+          )}
+          {openDialog === "deleteConfirmation" && (
+            <ConfirmationDialog
+              openDialog={openDialog}
+              handleDialogClose={setOpenDialog}
+              handleCloseExpandableCard={props.handleCloseExpandableCard}
+              id={contactData._id}
+            />
+          )}
+        </Dialog>
+      )}
 
       {/* //// ViewAll in a right dialog //// */}
 
