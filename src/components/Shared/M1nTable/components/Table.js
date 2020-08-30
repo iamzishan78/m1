@@ -564,6 +564,75 @@ function SubTable(props) {
           //     };
           //   }
           //   break;
+          case "isContact":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <Tooltip
+                      title={
+                        !value || value === "false"
+                          ? "Make It A Contact"
+                          : "Contact"
+                      }
+                      placement="top"
+                      style={{ marginRight: "10px" }}
+                    >
+                      <IconButton
+                        size={props.dense ? "small" : "medium"}
+                        color="primary"
+                        className={`${classes.icons} ${
+                          !value || value === "false"
+                            ? classes.noCommentsIcon
+                            : ""
+                        } ${
+                          colInd === tableMeta.columnIndex &&
+                          rowInd === tableMeta.rowIndex
+                            ? classes.iconSelected
+                            : ""
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // handleExpandClick(
+                          //   tableMeta.columnIndex,
+                          //   tableMeta.rowIndex,
+                          //   tableMeta.rowData[0],
+                          //   "ownerContacts"
+                          // );
+                          if (value && value !== "false") {
+                            setStateApp((stateApp) => ({
+                              ...stateApp,
+                              selectedContact: value,
+                            }));
+                            setSelectedRow({ _id: value });
+
+                            setSubComponent(
+                              <ContactDetailCard
+                                selectRowOpenContact={selectRowOpenContact}
+                                contactId={value}
+                                handleCloseExpandableCard={
+                                  handleCloseExpandableCard
+                                }
+                              />
+                            );
+                            setTitle("CONTACT DETAILS");
+                            setSubTitle(" ");
+                            handleOpenExpandableCard();
+                          } else {
+                            ///// lunch ask dialog
+                          }
+                        }}
+                        aria-label="show contact"
+                      >
+                        <ContactPhoneIcon />
+                      </IconButton>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
           case "ownerCount":
             {
               column.options = {

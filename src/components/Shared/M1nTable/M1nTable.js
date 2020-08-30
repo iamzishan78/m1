@@ -800,6 +800,18 @@ const OwnersPerParcelHeadCells = [
     },
   },
   {
+    name: "isContact",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
     name: "commentsCounter",
     label: " ",
     options: {
