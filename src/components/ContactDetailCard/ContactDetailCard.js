@@ -807,6 +807,13 @@ export default function ContactDetailCard(props) {
               onClose={handleCloseDialog}
               rows={ [contactData] }
               setRows={() => { }}
+              updateMelissaTable={() => {
+                getMelissaRecords({
+                  variables: {
+                    contactId: props.contactId,
+                  },
+                });
+              }}
             />
           )}
           {openDialog === "deleteConfirmation" && (
