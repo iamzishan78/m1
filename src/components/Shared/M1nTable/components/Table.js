@@ -40,6 +40,7 @@ import Avatar, { ConfigProvider } from "react-avatar";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import MapLocation from "../../svgIcons/MapLocation";
 import RoomIcon from "@material-ui/icons/Room";
+import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import { useDispatch, useSelector } from "react-redux";
 import { setMapGridCardState } from "../../../../actions";
 import {
@@ -165,6 +166,10 @@ const useStyles = makeStyles((theme) => ({
     margin: "6px 12px",
     fontWeight: "600",
     color: "#082768",
+  },
+  monetizationIcon: {
+    margin: "10px",
+    color: "#155388",
   },
 }));
 
@@ -827,6 +832,11 @@ function SubTable(props) {
                             : null
                         }
                       />
+                      {props.targetLabel === "contact" &&
+                        column.name === "name" &&
+                        tableMeta.rowData[props.columns.findIndex(val => val.name === "melissaRowsCount")] !== undefined && (
+                          <MonetizationOnIcon className={classes.monetizationIcon} />
+                        )}
                     </div>
                   );
                 },
