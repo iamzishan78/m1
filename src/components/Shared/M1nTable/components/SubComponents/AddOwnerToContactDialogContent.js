@@ -207,7 +207,6 @@ export default function AddOwnerToContactDialogContent(props) {
       )}
       renderOption={(option) => {
         if (option.group === "loader") {
-          console.log("rrrrrrrrr", option); /////////////////////////////////////////
           return null;
         }
 
@@ -236,7 +235,7 @@ export default function AddOwnerToContactDialogContent(props) {
             </Grid>
           );
         }
-        return null; //////////////////////////////////
+        return null;
       }}
     />
   );
