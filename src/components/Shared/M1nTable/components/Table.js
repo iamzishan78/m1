@@ -24,6 +24,7 @@ import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
 import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import AddContactDialogContent from "./SubComponents/AddContactDialogContent";
 import DeleteConfirmationDialogContent from "./SubComponents/DeleteConfirmationDialogContent";
+import MakeItAContactConfirmationDialogContent from "./SubComponents/MakeItAContactConfirmationDialogContent";
 import Button from "@material-ui/core/Button";
 import LocalPrintshopRoundedIcon from "@material-ui/icons/LocalPrintshopRounded";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
@@ -594,12 +595,7 @@ function SubTable(props) {
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          // handleExpandClick(
-                          //   tableMeta.columnIndex,
-                          //   tableMeta.rowIndex,
-                          //   tableMeta.rowData[0],
-                          //   "ownerContacts"
-                          // );
+
                           if (value && value !== "false") {
                             setStateApp((stateApp) => ({
                               ...stateApp,
@@ -620,7 +616,12 @@ function SubTable(props) {
                             setSubTitle(" ");
                             handleOpenExpandableCard();
                           } else {
-                            ///// lunch ask dialog
+                            handleExpandClick(
+                              tableMeta.columnIndex,
+                              tableMeta.rowIndex,
+                              tableMeta.rowData[1],
+                              "makeOwnerAContact"
+                            );
                           }
                         }}
                         aria-label="show contact"
@@ -1304,6 +1305,15 @@ function SubTable(props) {
             )}
             {openDialog === "wellsPerOwner" && (
               <M1nTable wellsIdsArray={expandedObject} parent="WellsPerOwner" />
+            )}
+            {openDialog === "makeOwnerAContact" && (
+              <MakeItAContactConfirmationDialogContent
+                header="New Contact"
+                onClose={handleCloseDialog}
+                // deleteFunc={props.deleteFunc}
+              >
+                {`Do you want to create a new Contact from this Owner?`}
+              </MakeItAContactConfirmationDialogContent>
             )}
 
             {openDialog === "addContact" && props.targetLabel === "contact" && (
