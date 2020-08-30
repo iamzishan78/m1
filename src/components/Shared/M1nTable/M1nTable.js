@@ -34,6 +34,7 @@ import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import { UPDATEPARCELOWNER } from "../../../graphQL/useMutationUpdateParcelOwner";
+import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRecords";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -634,6 +635,18 @@ const ContactsHeadCells = [
   //     filterType: "dropdown",
   //   },
   // },
+  {
+    name: "melissaRowsCount",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 ];
 
 const SearchsHeadCells = [
@@ -963,7 +976,10 @@ function M1nTable(props) {
   );
   //////////
   const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
-
+  //////////
+  const [getMelissaRowsCount, { data: dataMelissaRowsCount }] = useLazyQuery(MELISSARECORDSCOUNTBYIDS, {
+    fetchPolicy: "cache-and-network",
+  });
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
@@ -1651,6 +1667,9 @@ function M1nTable(props) {
         getTagSamples({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
+        getMelissaRowsCount({
+          variables: { objectsIdsArray },
+        })
       } else {
         setLoading(false);
         setRows([]);
@@ -1668,7 +1687,9 @@ function M1nTable(props) {
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
-      dataTagSamples.tagSamples
+      dataTagSamples.tagSamples &&
+      dataMelissaRowsCount &&
+      dataMelissaRowsCount.getMelissaRecordsCountForContactIds
     ) {
       console.log("ue mintable 24");
       dataContacts.contacts.forEach((contact) => {
@@ -1694,6 +1715,13 @@ function M1nTable(props) {
 
             break;
           }
+        }
+
+        let foundMelissaRowsCount = dataMelissaRowsCount.getMelissaRecordsCountForContactIds.find(value => {
+          return contact._id === value._id
+        });
+        if (foundMelissaRowsCount) {
+          contact.melissaRowsCount = foundMelissaRowsCount.total;
         }
       });
 
@@ -1736,7 +1764,7 @@ function M1nTable(props) {
       setRows([...dataContacts.contacts]);
       setLoading(false);
     }
-  }, [dataContacts, dataTracks, dataTagSamples, dataCommentsCounter]);
+  }, [dataContacts, dataTracks, dataTagSamples, dataCommentsCounter, dataMelissaRowsCount]);
 
   ////////////Contact Delete begin////////////////////////////////////////
 
