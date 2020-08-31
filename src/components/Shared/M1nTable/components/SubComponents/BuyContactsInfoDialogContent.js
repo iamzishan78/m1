@@ -38,7 +38,7 @@ const styles = (theme) => ({
 });
 
 const DialogTitle = withStyles(styles)((props) => {
-  const { children, classes, onClose, ...other } = props;
+  const { children, classes, onClose, updateMelissaTable, ...other } = props;
   return (
     <MuiDialogTitle disableTypography className={classes.root} {...other}>
       <Typography variant="h6">{children}</Typography>
@@ -104,9 +104,11 @@ export default function BuyContactsInfoDialogContent(props) {
 
   const [getPersonDataQuery, { data: personsData }] = useLazyQuery(GETPERSONDATA, {
     onCompleted: data => {
-      console.log(data)
       props.onClose()
       if (data.getPersonData.allSuccess) {
+        if (props.updateMelissaTable) {
+          props.updateMelissaTable()
+        }
         dispatch(showSuccessMessage("All records saved successfully"))
       } else {
         dispatch(showErrorMessage("Error occurred"))
