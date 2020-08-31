@@ -319,7 +319,7 @@ export default function CellContentEdition({
           variables: {
             contact: trimmedEditContent,
           },
-          refetchQueries: ["getContacts", "getContact"],
+          refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
           awaitRefetchQueries: true,
         });
       }
@@ -499,7 +499,7 @@ export default function CellContentEdition({
               ? children
               : ""
             : textArray.join(", ")
-          : `${name ? name + " " : ""} Not Available`}
+          : `${name ? name + " " : ""} N/A`}
         <PencilEditIcon
           handleUpdating={handleUpdating}
           anchorEl={

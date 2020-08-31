@@ -50,6 +50,8 @@ import {
   setStateIfDeepEqual,
 } from "../../functions";
 import AddParcelOwnerDialogContent from "./SubComponents/AddParcelOwnerDialogContent";
+import Convert_contact from "../../svgIcons/convert_contact";
+import Contact_card from "../../svgIcons/contact_card";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -579,8 +581,8 @@ function SubTable(props) {
                     <Tooltip
                       title={
                         !value || value === "false"
-                          ? "Make It A Contact"
-                          : "Contact"
+                          ? "Convert To Contact"
+                          : "Contact Details"
                       }
                       placement="top"
                       style={{ marginRight: "10px" }}
@@ -591,11 +593,6 @@ function SubTable(props) {
                         className={`${classes.icons} ${
                           !value || value === "false"
                             ? classes.noCommentsIcon
-                            : ""
-                        } ${
-                          colInd === tableMeta.columnIndex &&
-                          rowInd === tableMeta.rowIndex
-                            ? classes.iconSelected
                             : ""
                         }`}
                         onClick={(e) => {
@@ -631,7 +628,11 @@ function SubTable(props) {
                         }}
                         aria-label="show contact"
                       >
-                        <ContactPhoneIcon />
+                        {!value || value === "false" ? (
+                          <Convert_contact style={{ margin: "4px" }} />
+                        ) : (
+                          <Contact_card style={{ margin: "4px" }} />
+                        )}
                       </IconButton>
                     </Tooltip>
                   );
@@ -904,8 +905,14 @@ function SubTable(props) {
                       />
                       {props.targetLabel === "contact" &&
                         column.name === "name" &&
-                        tableMeta.rowData[props.columns.findIndex(val => val.name === "melissaRowsCount")] !== undefined && (
-                          <MonetizationOnIcon className={classes.monetizationIcon} />
+                        tableMeta.rowData[
+                          props.columns.findIndex(
+                            (val) => val.name === "melissaRowsCount"
+                          )
+                        ] !== undefined && (
+                          <MonetizationOnIcon
+                            className={classes.monetizationIcon}
+                          />
                         )}
                     </div>
                   );
@@ -1318,9 +1325,22 @@ function SubTable(props) {
             )}
             {openDialog === "makeOwnerAContact" && (
               <MakeItAContactConfirmationDialogContent
-                header="New Contact"
                 onClose={handleCloseDialog}
-                // deleteFunc={props.deleteFunc}
+                entity={expandedObject}
+                openContactDetailCard={(contactId) => {
+                  setSelectedRow({ _id: contactId });
+                  setSubComponent(
+                    <ContactDetailCard
+                      selectRowOpenContact={selectRowOpenContact}
+                      contactId={contactId}
+                      handleCloseExpandableCard={handleCloseExpandableCard}
+                    />
+                  );
+                  setTitle("CONTACT DETAILS");
+                  setSubTitle(" ");
+                  handleCloseDialog();
+                  handleOpenExpandableCard();
+                }}
               >
                 {`Do you want to create a new Contact from this Owner?`}
               </MakeItAContactConfirmationDialogContent>
