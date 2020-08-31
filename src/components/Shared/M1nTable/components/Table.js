@@ -24,6 +24,7 @@ import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
 import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import AddContactDialogContent from "./SubComponents/AddContactDialogContent";
 import DeleteConfirmationDialogContent from "./SubComponents/DeleteConfirmationDialogContent";
+import MakeItAContactConfirmationDialogContent from "./SubComponents/MakeItAContactConfirmationDialogContent";
 import Button from "@material-ui/core/Button";
 import LocalPrintshopRoundedIcon from "@material-ui/icons/LocalPrintshopRounded";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
@@ -569,6 +570,75 @@ function SubTable(props) {
           //     };
           //   }
           //   break;
+          case "isContact":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <Tooltip
+                      title={
+                        !value || value === "false"
+                          ? "Make It A Contact"
+                          : "Contact"
+                      }
+                      placement="top"
+                      style={{ marginRight: "10px" }}
+                    >
+                      <IconButton
+                        size={props.dense ? "small" : "medium"}
+                        color="primary"
+                        className={`${classes.icons} ${
+                          !value || value === "false"
+                            ? classes.noCommentsIcon
+                            : ""
+                        } ${
+                          colInd === tableMeta.columnIndex &&
+                          rowInd === tableMeta.rowIndex
+                            ? classes.iconSelected
+                            : ""
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+
+                          if (value && value !== "false") {
+                            setStateApp((stateApp) => ({
+                              ...stateApp,
+                              selectedContact: value,
+                            }));
+                            setSelectedRow({ _id: value });
+
+                            setSubComponent(
+                              <ContactDetailCard
+                                selectRowOpenContact={selectRowOpenContact}
+                                contactId={value}
+                                handleCloseExpandableCard={
+                                  handleCloseExpandableCard
+                                }
+                              />
+                            );
+                            setTitle("CONTACT DETAILS");
+                            setSubTitle(" ");
+                            handleOpenExpandableCard();
+                          } else {
+                            handleExpandClick(
+                              tableMeta.columnIndex,
+                              tableMeta.rowIndex,
+                              tableMeta.rowData[1],
+                              "makeOwnerAContact"
+                            );
+                          }
+                        }}
+                        aria-label="show contact"
+                      >
+                        <ContactPhoneIcon />
+                      </IconButton>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
           case "ownerCount":
             {
               column.options = {
@@ -911,8 +981,12 @@ function SubTable(props) {
     selectableRows: "multiple",
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
+      // console.log("currentRowsSelected", JSON.stringify(currentRowsSelected));
+      // console.log("rowsSelected", JSON.stringify(rowsSelected));
       if (rowsSelected && rowsSelected.length > 0) {
-        let indexArray = rowsSelected.map((d) => d.index).sort((a, b) => a - b);
+        let indexArray = rowsSelected
+          .map((d) => d.dataIndex)
+          .sort((a, b) => a - b);
         if (rows && indexArray) {
           if (rows.length > 0 && indexArray.length > 0) {
             let selectedRows = rows.filter(
@@ -1241,6 +1315,15 @@ function SubTable(props) {
             )}
             {openDialog === "wellsPerOwner" && (
               <M1nTable wellsIdsArray={expandedObject} parent="WellsPerOwner" />
+            )}
+            {openDialog === "makeOwnerAContact" && (
+              <MakeItAContactConfirmationDialogContent
+                header="New Contact"
+                onClose={handleCloseDialog}
+                // deleteFunc={props.deleteFunc}
+              >
+                {`Do you want to create a new Contact from this Owner?`}
+              </MakeItAContactConfirmationDialogContent>
             )}
 
             {openDialog === "addContact" && props.targetLabel === "contact" && (
