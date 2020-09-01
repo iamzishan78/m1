@@ -989,9 +989,12 @@ function M1nTable(props) {
   //////////
   const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
   //////////
-  const [getMelissaRowsCount, { data: dataMelissaRowsCount }] = useLazyQuery(MELISSARECORDSCOUNTBYIDS, {
-    fetchPolicy: "cache-and-network",
-  });
+  const [getMelissaRowsCount, { data: dataMelissaRowsCount }] = useLazyQuery(
+    MELISSARECORDSCOUNTBYIDS,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
@@ -1681,7 +1684,7 @@ function M1nTable(props) {
         });
         getMelissaRowsCount({
           variables: { objectsIdsArray },
-        })
+        });
       } else {
         setLoading(false);
         setRows([]);
@@ -1729,9 +1732,11 @@ function M1nTable(props) {
           }
         }
 
-        let foundMelissaRowsCount = dataMelissaRowsCount.getMelissaRecordsCountForContactIds.find(value => {
-          return contact._id === value._id
-        });
+        let foundMelissaRowsCount = dataMelissaRowsCount.getMelissaRecordsCountForContactIds.find(
+          (value) => {
+            return contact._id === value._id;
+          }
+        );
         if (foundMelissaRowsCount) {
           contact.melissaRowsCount = foundMelissaRowsCount.total;
         }
@@ -1776,7 +1781,13 @@ function M1nTable(props) {
       setRows([...dataContacts.contacts]);
       setLoading(false);
     }
-  }, [dataContacts, dataTracks, dataTagSamples, dataCommentsCounter, dataMelissaRowsCount]);
+  }, [
+    dataContacts,
+    dataTracks,
+    dataTagSamples,
+    dataCommentsCounter,
+    dataMelissaRowsCount,
+  ]);
 
   ////////////Contact Delete begin////////////////////////////////////////
 
@@ -1799,7 +1810,7 @@ function M1nTable(props) {
                   IsDeleted: true,
                 },
               },
-              refetchQueries: ["getContacts", "getContact"],
+              refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
               awaitRefetchQueries: true,
             });
           }

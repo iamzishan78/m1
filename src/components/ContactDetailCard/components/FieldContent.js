@@ -11,7 +11,10 @@ import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 import Button from "@material-ui/core/Button";
 import { useMutation } from "@apollo/react-hooks";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
-import { UPDATEMELISSA, UPDATEMELISSAADDRESS } from "../../../graphQL/useMutationUpdateMelissaRecords";
+import {
+  UPDATEMELISSA,
+  UPDATEMELISSAADDRESS,
+} from "../../../graphQL/useMutationUpdateMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../../AppContext";
 
@@ -220,7 +223,9 @@ export default function FieldContent({
 
   const [updateContact, { loading }] = useMutation(UPDATECONTACT);
   const [updateMelissa, { melissaLoading }] = useMutation(UPDATEMELISSA);
-  const [updateMelissaAddress, { melissaAddressLoading }] = useMutation(UPDATEMELISSAADDRESS);
+  const [updateMelissaAddress, { melissaAddressLoading }] = useMutation(
+    UPDATEMELISSAADDRESS
+  );
   const classes = useStyles({ noMargin, loading, fieldsCount });
 
   useEffect(() => {
@@ -275,7 +280,7 @@ export default function FieldContent({
           variables: {
             contact: trimmedEditContent,
           },
-          refetchQueries: ["getContacts", "getContact"],
+          refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
           awaitRefetchQueries: true,
         });
       }
@@ -287,18 +292,16 @@ export default function FieldContent({
         variables: {
           melissaRecord: {
             _id: melissaRecordId,
-            [key]: updatedValue
-          }
+            [key]: updatedValue,
+          },
         },
         refetchQueries: ["getMelissaRecords"],
-        awaitRefetchQueries: true
-      }).then(
-        res => {
-          content = { [key]: updatedValue };
-          setShowContent(content);
-          setEditContent({ ...content });
-        },
-      );
+        awaitRefetchQueries: true,
+      }).then((res) => {
+        content = { [key]: updatedValue };
+        setShowContent(content);
+        setEditContent({ ...content });
+      });
     } else if (fieldType == FieldTypes.MelissaAddressRecord) {
       let entries = Object.entries(editContent)[0];
       let key = entries[0];
@@ -307,18 +310,16 @@ export default function FieldContent({
         variables: {
           melissaAddressRecord: {
             _id: melissaAddressRecordId,
-            [key]: updatedValue
-          }
+            [key]: updatedValue,
+          },
         },
         refetchQueries: ["getMelissaRecords"],
-        awaitRefetchQueries: true
-      }).then(
-        res => {
-          content = { [key]: updatedValue };
-          setShowContent(content);
-          setEditContent({ ...content });
-        },
-      );
+        awaitRefetchQueries: true,
+      }).then((res) => {
+        content = { [key]: updatedValue };
+        setShowContent(content);
+        setEditContent({ ...content });
+      });
     }
 
     setEdit(null);
@@ -393,7 +394,11 @@ export default function FieldContent({
 
   let textArray = [];
   for (const key in showContent) {
-    if (showContent.hasOwnProperty(key) && showContent[key] && showContent[key] !== "") {
+    if (
+      showContent.hasOwnProperty(key) &&
+      showContent[key] &&
+      showContent[key] !== ""
+    ) {
       if (
         key === "zip" ||
         key === "country" ||
