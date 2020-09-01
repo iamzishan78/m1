@@ -280,9 +280,17 @@ export default function FieldContent({
         updateContact({
           variables: {
             contact: trimmedEditContent,
+            ignoreResponse: true
           },
-          refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
-          awaitRefetchQueries: true,
+          refetchQueries: ["getContacts"],
+          awaitRefetchQueries: false
+        }).then((res) => {
+          let entries = Object.entries(editContent)[0];
+          let key = entries[0];
+          let updatedValue = entries[1];
+          content = { [key]: updatedValue };
+          setShowContent(content);
+          setEditContent({ ...content });
         });
       }
     } else if (fieldType == FieldTypes.MelissaRecord) {
