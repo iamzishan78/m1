@@ -93,8 +93,8 @@ export default function LeadStage({ leadStage, id }) {
   const classes = useStyles();
 
   const setStage = (stg) => {
-    if(stg === leadStage) return;
-    console.log(`setting stage ${leadStage} to ${stg} for id ${id}`)
+    if (stg === leadStage) return;
+    console.log(`setting stage ${leadStage} to ${stg} for id ${id}`);
     updateContact({
       variables: {
         contact: {
@@ -102,8 +102,6 @@ export default function LeadStage({ leadStage, id }) {
           leadStage: stg,
         },
       },
-      refetchQueries: ["getContact"],
-      awaitRefetchQueries: true,
     });
   };
 
