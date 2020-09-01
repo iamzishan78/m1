@@ -21,6 +21,7 @@ import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubCompo
 import Activities from "../Shared/Activities";
 import Deals from "../Shared/Deals";
 import LeadScore from "../Shared/LeadScore";
+import LeadStage from "../Shared/LeadStage";
 import { AppContext } from "../../AppContext";
 import RecentConversations from "../Shared/RecentConversations";
 import TextField from "@material-ui/core/TextField";
@@ -332,6 +333,7 @@ export default function ContactDetailCard(props) {
   }, [props.contactId]);
 
   useEffect(() => {
+    console.log("SET CONTACT:", data);
     if (data && data.contact) {
       setContactData(data.contact);
     }
@@ -401,9 +403,7 @@ export default function ContactDetailCard(props) {
               variant="contained"
               // size="small"
               onClick={() => {
-                handleExpandClick(
-                  "buyContactsInfo"
-                );
+                handleExpandClick("buyContactsInfo");
               }}
             >
               Buy Info
@@ -423,9 +423,7 @@ export default function ContactDetailCard(props) {
               variant="contained"
               // size="small"
               onClick={() => {
-                handleExpandClick(
-                  "deleteConfirmation"
-                );
+                handleExpandClick("deleteConfirmation");
                 //setOpenDialog(true);
               }}
             >
@@ -632,10 +630,16 @@ export default function ContactDetailCard(props) {
               item
               xs={12}
               style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}
-            ></Grid>
+            >
+              <LeadStage
+                leadStage={
+                  contactData.leadStage ? contactData.leadStage : "New"
+                }
+                id={contactData._id}
+              />
+            </Grid>
           </div>
         </Grid>
-
         {/*/////////// Recent Activities. //////////// */}
         <Grid item xs={12} className={`${classes.border}`}>
           <div className={classes.SectMargin}>
@@ -805,8 +809,8 @@ export default function ContactDetailCard(props) {
           {openDialog === "buyContactsInfo" && (
             <BuyContactsInfoDialogContent
               onClose={handleCloseDialog}
-              rows={ [contactData] }
-              setRows={() => { }}
+              rows={[contactData]}
+              setRows={() => {}}
               updateMelissaTable={() => {
                 getMelissaRecords({
                   variables: {

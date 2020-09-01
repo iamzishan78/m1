@@ -39,6 +39,7 @@ export const CONTACT = gql`
       leadSource
       companyName
       jobTitle
+      leadStage
       IsDeleted
       activityLog {
         type

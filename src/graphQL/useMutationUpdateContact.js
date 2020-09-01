@@ -40,6 +40,7 @@ export const UPDATECONTACT = gql`
         linkedln
         facebook
         twitter
+        leadStage
         leadSource
         companyName
         jobTitle
