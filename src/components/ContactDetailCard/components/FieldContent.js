@@ -11,6 +11,10 @@ import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 import Button from "@material-ui/core/Button";
 import { useMutation } from "@apollo/react-hooks";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
+import {
+  UPDATEMELISSA,
+  UPDATEMELISSAADDRESS,
+} from "../../../graphQL/useMutationUpdateMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../../AppContext";
 
@@ -170,22 +174,24 @@ const textFieldLabels = (field) => {
 export const LinkTypes = Object.freeze({
   None: 0,
   Mail: 1,
-  Simple: 2
+  Simple: 2,
 });
 
 export const FieldTypes = Object.freeze({
   Contact: 0,
   MelissaAddressRecord: 1,
-  MelissaRecord: 2
+  MelissaRecord: 2,
 });
 
-const ConditionalWrap = ({ condition, wrap, children }) => (
-  condition ? wrap(children) : children
-);
+const ConditionalWrap = ({ condition, wrap, children }) =>
+  condition ? wrap(children) : children;
 
 export default function FieldContent({
   children,
   id,
+  entity,
+  melissaRecordId = null,
+  melissaAddressRecordId = null,
   content,
   childrenLeft,
   onlyChildren,
@@ -193,9 +199,12 @@ export default function FieldContent({
   noMargin,
   noInputFooter,
   linkType,
-  fieldType = FieldTypes.Contact
+  fieldType = FieldTypes.Contact,
 }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
+  //////////// entity - brings the entity id tide to the contact //////////////////////////////////////////////////
+  //////////// melissaRecordId - brings the melissa record id tide to the contact /////////////////////////////////
+  //////////// melissaAddressRecordId - brings the melissa address record id tide to the contact //////////////////
   //////////// content - brings an object with fielNames and values ///////////////////////////////////////////////
   //////////// childrenLeft - will move the chilren components to the left side of the field values//optional//////
   ////////////              - default childrens to rigth///////////////////////////////////////////////////////////
@@ -209,9 +218,14 @@ export default function FieldContent({
   const [stateApp] = React.useContext(AppContext);
   const [edit, setEdit] = useState(null);
   const [editContent, setEditContent] = useState({ content });
+  const [showContent, setShowContent] = useState(content);
   const [fieldsCount, setFieldsCount] = useState(0);
 
   const [updateContact, { loading }] = useMutation(UPDATECONTACT);
+  const [updateMelissa, { melissaLoading }] = useMutation(UPDATEMELISSA);
+  const [updateMelissaAddress, { melissaAddressLoading }] = useMutation(
+    UPDATEMELISSAADDRESS
+  );
   const classes = useStyles({ noMargin, loading, fieldsCount });
 
   useEffect(() => {
@@ -247,25 +261,64 @@ export default function FieldContent({
   };
 
   const handleUpdating = () => {
-    let trimmedEditContent = {
-      _id: id,
-      lastUpdateBy: stateApp.user.mongoId,
-    };
-    let differences = false;
-    for (const field in editContent) {
-      if (editContent[field] !== null) {
-        trimmedEditContent[field] = editContent[field].trim();
-        if (editContent[field].trim() !== content[field]) differences = true;
+    if (fieldType == FieldTypes.Contact) {
+      let trimmedEditContent = {
+        _id: id,
+        lastUpdateBy: stateApp.user.mongoId,
+      };
+      if (entity) trimmedEditContent.entity = entity;
+      let differences = false;
+      for (const field in editContent) {
+        if (editContent[field] !== null) {
+          trimmedEditContent[field] = editContent[field].trim();
+          if (editContent[field].trim() !== content[field]) differences = true;
+        }
       }
-    }
 
-    if (differences && fieldType == FieldTypes.Contact) {
-      updateContact({
+      if (differences) {
+        updateContact({
+          variables: {
+            contact: trimmedEditContent,
+          },
+          refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
+          awaitRefetchQueries: true,
+        });
+      }
+    } else if (fieldType == FieldTypes.MelissaRecord) {
+      let entries = Object.entries(editContent)[0];
+      let key = entries[0];
+      let updatedValue = entries[1];
+      updateMelissa({
         variables: {
-          contact: trimmedEditContent,
+          melissaRecord: {
+            _id: melissaRecordId,
+            [key]: updatedValue,
+          },
         },
-        refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
+        refetchQueries: ["getMelissaRecords"],
         awaitRefetchQueries: true,
+      }).then((res) => {
+        content = { [key]: updatedValue };
+        setShowContent(content);
+        setEditContent({ ...content });
+      });
+    } else if (fieldType == FieldTypes.MelissaAddressRecord) {
+      let entries = Object.entries(editContent)[0];
+      let key = entries[0];
+      let updatedValue = entries[1];
+      updateMelissaAddress({
+        variables: {
+          melissaAddressRecord: {
+            _id: melissaAddressRecordId,
+            [key]: updatedValue,
+          },
+        },
+        refetchQueries: ["getMelissaRecords"],
+        awaitRefetchQueries: true,
+      }).then((res) => {
+        content = { [key]: updatedValue };
+        setShowContent(content);
+        setEditContent({ ...content });
       });
     }
 
@@ -340,54 +393,50 @@ export default function FieldContent({
   }
 
   let textArray = [];
-  for (const key in content) {
-    if (content.hasOwnProperty(key) && content[key] && content[key] !== "") {
+  for (const key in showContent) {
+    if (
+      showContent.hasOwnProperty(key) &&
+      showContent[key] &&
+      showContent[key] !== ""
+    ) {
       if (
         key === "zip" ||
         key === "country" ||
         key === "zipAlt" ||
         key === "countryAlt"
       ) {
-        textArray = [[textArray.join(", "), content[key]].join(" ")];
+        textArray = [[textArray.join(", "), showContent[key]].join(" ")];
       } else if (key === "jobTitle") {
-        textArray = [[textArray.join(", "), content[key]].join(" - ")];
-      } else textArray.push(content[key]);
+        textArray = [[textArray.join(", "), showContent[key]].join(" - ")];
+      } else textArray.push(showContent[key]);
     }
   }
 
   const getHrefValue = (linkValue, linkType) => {
-    if (linkType == LinkTypes.Mail)
-      return `mailto:${ linkValue }`;
-    else
-      return linkValue;
-  }
+    if (linkType == LinkTypes.Mail) return `mailto:${linkValue}`;
+    else return linkValue;
+  };
 
-  const renderOutput = 
-    (
-      <span>
-        { childrenLeft && !onlyChildren && children ? children : "" }
-        {
-          textArray.length > 0
-          ? onlyChildren
+  const renderOutput = (
+    <span>
+      {childrenLeft && !onlyChildren && children ? children : ""}
+      {textArray.length > 0
+        ? onlyChildren
+          ? children
             ? children
-              ? children
-              : ""
-            : textArray.join(", ")
-          : `${name ? name + " " : ""} Not Available`
-        }
-        {
-          fieldType == FieldTypes.Contact &&
-            <PencilEditIcon
-              handleUpdating={handleUpdating}
-              anchorEl={edit}
-              setAnchorEl={setEdit}
-              content={inputsArray}
-              onClick={handleEditClick}
-            />
-        }
-        {!childrenLeft && !onlyChildren && children ? children : ""}
-      </span>
-    );
+            : ""
+          : textArray.join(", ")
+        : `${name ? name + " " : ""} Not Available`}
+      <PencilEditIcon
+        handleUpdating={handleUpdating}
+        anchorEl={edit}
+        setAnchorEl={setEdit}
+        content={inputsArray}
+        onClick={handleEditClick}
+      />
+      {!childrenLeft && !onlyChildren && children ? children : ""}
+    </span>
+  );
 
   return (
     <React.Fragment>
@@ -396,16 +445,18 @@ export default function FieldContent({
           classes.fieldContentP
         }`}
       >
-        {
-          ((linkType == LinkTypes.Mail || linkType == LinkTypes.Simple) && textArray.length > 0)
-            ?
-              (<a
-                href={ getHrefValue(textArray.join(", "), linkType) }
-                target="_blank"
-                className={classes.noTextDecoration}
-              >{ renderOutput }</a>)
-            : renderOutput
-        }
+        {(linkType == LinkTypes.Mail || linkType == LinkTypes.Simple) &&
+        textArray.length > 0 ? (
+          <a
+            href={getHrefValue(textArray.join(", "), linkType)}
+            target="_blank"
+            className={classes.noTextDecoration}
+          >
+            {renderOutput}
+          </a>
+        ) : (
+          renderOutput
+        )}
       </p>
       {loading && (
         <div style={{ height: "0", width: "0" }}>

@@ -182,8 +182,6 @@ export default function CustomizedSteppers(props) {
         },
         refetchQueries: [
           "getContacts",
-          "getContactsByOwnerId",
-          "getContactsCounter",
           "getContact",
         ],
         awaitRefetchQueries: true,

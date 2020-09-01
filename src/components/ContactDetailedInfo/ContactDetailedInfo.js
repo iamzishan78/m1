@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import MelissaTable from "./components/MelissaTable";
 import { makeStyles } from "@material-ui/core/styles";
-import FieldContent, { LinkTypes }  from "./../ContactDetailCard/components/FieldContent";
+import FieldContent, {
+  LinkTypes,
+} from "./../ContactDetailCard/components/FieldContent";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -125,41 +127,64 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default ({
-  header,
-  ...props
-}) => {
+export default ({ header, ...props }) => {
   const [basicInfExp, setBasicInfExp] = useState(false);
   const classes = useStyles();
 
   const basicInfoContent = {
-    'Primary Email': { data: { primaryEmail: props.contactData.primaryEmail }, linkType: LinkTypes.Mail },
-    'Secondary Email': { data: { secondaryEmail: props.contactData.secondaryEmail }, linkType: LinkTypes.Mail },
-    'Mobile Phone': { data: { mobilePhone: props.contactData.mobilePhone }, linkType: LinkTypes.None },
-    'Home Phone': { data: { homePhone: props.contactData.homePhone }, linkType: LinkTypes.None },
-    'Alternate Phone': { data: { AltPhone: props.contactData.AltPhone }, linkType: LinkTypes.None },
-    'Primary Address': { data: {
-      address1: props.contactData.address1,
-      address2: props.contactData.address2,
-      city: props.contactData.city,
-      state: props.contactData.state,
-      zip: props.contactData.zip,
-      country: props.contactData.country
-    }, linkType: LinkTypes.None },
-    'Secondary Address': { data: {
-      address1Alt: props.contactData.address1Alt,
-      address2Alt: props.contactData.address2Alt,
-      cityAlt: props.contactData.cityAlt,
-      stateAlt: props.contactData.stateAlt,
-      zipAlt: props.contactData.zipAlt,
-      countryAlt: props.contactData.countryAlt,
-    }, linkType: LinkTypes.None },
+    "Primary Email": {
+      data: { primaryEmail: props.contactData.primaryEmail },
+      linkType: LinkTypes.Mail,
+    },
+    "Secondary Email": {
+      data: { secondaryEmail: props.contactData.secondaryEmail },
+      linkType: LinkTypes.Mail,
+    },
+    "Mobile Phone": {
+      data: { mobilePhone: props.contactData.mobilePhone },
+      linkType: LinkTypes.None,
+    },
+    "Home Phone": {
+      data: { homePhone: props.contactData.homePhone },
+      linkType: LinkTypes.None,
+    },
+    "Alternate Phone": {
+      data: { AltPhone: props.contactData.AltPhone },
+      linkType: LinkTypes.None,
+    },
+    "Primary Address": {
+      data: {
+        address1: props.contactData.address1,
+        address2: props.contactData.address2,
+        city: props.contactData.city,
+        state: props.contactData.state,
+        zip: props.contactData.zip,
+        country: props.contactData.country,
+      },
+      linkType: LinkTypes.None,
+    },
+    "Secondary Address": {
+      data: {
+        address1Alt: props.contactData.address1Alt,
+        address2Alt: props.contactData.address2Alt,
+        cityAlt: props.contactData.cityAlt,
+        stateAlt: props.contactData.stateAlt,
+        zipAlt: props.contactData.zipAlt,
+        countryAlt: props.contactData.countryAlt,
+      },
+      linkType: LinkTypes.None,
+    },
   };
 
   const basicInfoExpContent = {
-    'Relatives': { data: { relatives: props.contactData.relatives }, linkType: LinkTypes.None },
-    'Linkedln Profile': { data: { linkedln: props.contactData.linkedln }, linkType: LinkTypes.None, inner:
-      props.contactData.linkedln && (
+    Relatives: {
+      data: { relatives: props.contactData.relatives },
+      linkType: LinkTypes.None,
+    },
+    "Linkedln Profile": {
+      data: { linkedln: props.contactData.linkedln },
+      linkType: LinkTypes.None,
+      inner: props.contactData.linkedln && (
         <a
           href={`${
             !props.contactData.linkedln.startsWith("http") &&
@@ -171,10 +196,12 @@ export default ({
         >
           {props.contactData.linkedln}
         </a>
-      )
+      ),
     },
-    'Facebook Profile': { data: { facebook: props.contactData.facebook }, linkType: LinkTypes.None, inner: 
-      props.contactData.facebook && (
+    "Facebook Profile": {
+      data: { facebook: props.contactData.facebook },
+      linkType: LinkTypes.None,
+      inner: props.contactData.facebook && (
         <a
           href={`${
             !props.contactData.facebook.startsWith("http") &&
@@ -186,10 +213,12 @@ export default ({
         >
           {props.contactData.facebook}
         </a>
-      )
+      ),
     },
-    'Twitter Profile': { data: { twitter: props.contactData.twitter }, linkType: LinkTypes.None, innner:
-      props.contactData.twitter && (
+    "Twitter Profile": {
+      data: { twitter: props.contactData.twitter },
+      linkType: LinkTypes.None,
+      innner: props.contactData.twitter && (
         <a
           href={`${
             !props.contactData.twitter.startsWith("http") &&
@@ -201,18 +230,23 @@ export default ({
         >
           {props.contactData.twitter}
         </a>
-      )
+      ),
     },
-    'Lead Source': { data: { leadSource: props.contactData.leadSource }, linkType: LinkTypes.None },
-    'Created By': { data: { primaryEmail: props.contactData.primaryEmail }, linkType: LinkTypes.None, inner:
-      props.contactData.createBy && props.contactData.createBy.name === null 
-      && (
-        <div className={classes.userSmallLoader}>
-          <CircularProgress size={22} color="secondary" />
-        </div>
-      ) && 
-       (props.contactData.createBy && props.contactData.createBy.name) || props.contactData.createAt
-        ? (
+    "Lead Source": {
+      data: { leadSource: props.contactData.leadSource },
+      linkType: LinkTypes.None,
+    },
+    "Created By": {
+      data: { primaryEmail: props.contactData.primaryEmail },
+      linkType: LinkTypes.None,
+      inner:
+        props.contactData.createBy &&
+        props.contactData.createBy.name === null ? (
+          <span className={classes.userSmallLoader}>
+            <CircularProgress size={22} color="secondary" />
+          </span>
+        ) : (props.contactData.createBy && props.contactData.createBy.name) ||
+          props.contactData.createAt ? (
           `${
             props.contactData.createBy && props.contactData.createBy.name
               ? props.contactData.createBy.name
@@ -223,37 +257,39 @@ export default ({
               ? " - " + anyToDate(props.contactData.createAt).toLocaleString()
               : ""
           }`
-        )
-        : (
+        ) : (
           <p className={classes.notAvailableP}>Not Available</p>
-        )
+        ),
     },
-    'Last Update By': { data: { primaryEmail: props.contactData.primaryEmail }, linkType: LinkTypes.None, inner:
-      props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name === null 
-      && (
-        <div className={classes.userSmallLoader}>
-          <CircularProgress size={22} color="secondary" />
-        </div>
-      )
-      && (props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name) || props.contactData.lastUpdateAt
-        ? (
+    "Last Update By": {
+      data: { primaryEmail: props.contactData.primaryEmail },
+      linkType: LinkTypes.None,
+      inner:
+        props.contactData.lastUpdateBy &&
+        props.contactData.lastUpdateBy.name === null ? (
+          <span className={classes.userSmallLoader}>
+            <CircularProgress size={22} color="secondary" />
+          </span>
+        ) : (props.contactData.lastUpdateBy &&
+            props.contactData.lastUpdateBy.name) ||
+          props.contactData.lastUpdateAt ? (
           `${
-            props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name
+            props.contactData.lastUpdateBy &&
+            props.contactData.lastUpdateBy.name
               ? props.contactData.lastUpdateBy.name
               : ""
           }
-          ${
-            props.contactData.lastUpdateAt
-              ? " - " + anyToDate(props.contactData.lastUpdateAt).toLocaleString()
-              : ""
-          }`
-        )
-        : (
+        ${
+          props.contactData.lastUpdateAt
+            ? " - " + anyToDate(props.contactData.lastUpdateAt).toLocaleString()
+            : ""
+        }`
+        ) : (
           <p className={classes.notAvailableP}>Not Available</p>
-        )
+        ),
     },
   };
-  
+
   return (
     <div className={classes.root}>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
@@ -265,9 +301,9 @@ export default ({
           onClick={() => {
             props.handleOpenExpandableCard(
               <MelissaTable
-                rows={ {...basicInfoContent, ...basicInfoExpContent} }
-                wrapperClass={ classes.dataSect }
-                melissaData={ props.melissaData }
+                rows={{ ...basicInfoContent, ...basicInfoExpContent }}
+                wrapperClass={classes.dataSect}
+                melissaData={props.melissaData}
               />,
               "Detailed Information"
             );
@@ -277,49 +313,43 @@ export default ({
         </h4>
       </Grid>
 
-      <Grid
-        item
-        xs={12}
-        container
-        className={classes.dataSect}
-        spacing={0}
-      >
-        {
-          Object.entries(basicInfoContent).map(([key, row]) => 
-            <React.Fragment>
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">{ key }</p>
-              </Grid>
-              <Grid item xs={9}>
-                <FieldContent
-                  id={props.contactData._id}
-                  content={ row.data }
-                  linkType={ row.linkType }
-                />
-              </Grid>
-            </React.Fragment>
-          )
-        }
+      <Grid item xs={12} container className={classes.dataSect} spacing={0}>
+        {Object.entries(basicInfoContent).map(([key, row]) => (
+          <React.Fragment>
+            <Grid item xs={3} className="fieldName">
+              <p className="dataLabels">{key}</p>
+            </Grid>
+            <Grid item xs={9}>
+              <FieldContent
+                id={props.contactData._id}
+                entity={props.contactData.entity}
+                content={row.data}
+                linkType={row.linkType}
+              />
+            </Grid>
+          </React.Fragment>
+        ))}
 
         {basicInfExp && (
           <>
-            {
-              Object.entries(basicInfoExpContent).map(([key, row]) =>
-                <React.Fragment>
-                  <Grid item xs={3} className="fieldName">
-                    <p className="dataLabels">{ key }</p>
-                  </Grid>
-                  <Grid item xs={9}>
-                    <FieldContent
-                      onlyChildren={ row.inner ? true : false }
-                      id={props.contactData._id}
-                      content={ row.data }
-                      linkType={ row.linkType }
-                    >{ row.inner }</FieldContent>
-                  </Grid>
-                </React.Fragment>
-              )
-            }
+            {Object.entries(basicInfoExpContent).map(([key, row]) => (
+              <React.Fragment>
+                <Grid item xs={3} className="fieldName">
+                  <p className="dataLabels">{key}</p>
+                </Grid>
+                <Grid item xs={9}>
+                  <FieldContent
+                    onlyChildren={row.inner ? true : false}
+                    id={props.contactData._id}
+                    entity={props.contactData.entity}
+                    content={row.data}
+                    linkType={row.linkType}
+                  >
+                    {row.inner}
+                  </FieldContent>
+                </Grid>
+              </React.Fragment>
+            ))}
           </>
         )}
       </Grid>
@@ -332,13 +362,9 @@ export default ({
         >
           Show {!basicInfExp ? "More" : "Less"}
           {!basicInfExp ? (
-            <ExpandMoreIcon
-              style={{ position: "relative", top: "8px" }}
-            />
+            <ExpandMoreIcon style={{ position: "relative", top: "8px" }} />
           ) : (
-            <ExpandLessIcon
-              style={{ position: "relative", top: "8px" }}
-            />
+            <ExpandLessIcon style={{ position: "relative", top: "8px" }} />
           )}
         </h4>
       </Grid>

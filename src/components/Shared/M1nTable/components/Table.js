@@ -23,8 +23,8 @@ import WellIcon from "../../svgIcons/well";
 import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
 import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import AddContactDialogContent from "./SubComponents/AddContactDialogContent";
-import AddOwnerToContactDialogContent from "./SubComponents/AddOwnerToContactDialogContent";
 import DeleteConfirmationDialogContent from "./SubComponents/DeleteConfirmationDialogContent";
+import MakeItAContactConfirmationDialogContent from "./SubComponents/MakeItAContactConfirmationDialogContent";
 import Button from "@material-ui/core/Button";
 import LocalPrintshopRoundedIcon from "@material-ui/icons/LocalPrintshopRounded";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
@@ -41,6 +41,7 @@ import Avatar, { ConfigProvider } from "react-avatar";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import MapLocation from "../../svgIcons/MapLocation";
 import RoomIcon from "@material-ui/icons/Room";
+import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import { useDispatch, useSelector } from "react-redux";
 import { setMapGridCardState } from "../../../../actions";
 import {
@@ -49,6 +50,8 @@ import {
   setStateIfDeepEqual,
 } from "../../functions";
 import AddParcelOwnerDialogContent from "./SubComponents/AddParcelOwnerDialogContent";
+import Convert_contact from "../../svgIcons/convert_contact";
+import Contact_card from "../../svgIcons/contact_card";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -166,6 +169,10 @@ const useStyles = makeStyles((theme) => ({
     margin: "6px 12px",
     fontWeight: "600",
     color: "#082768",
+  },
+  monetizationIcon: {
+    margin: "10px",
+    color: "#155388",
   },
 }));
 
@@ -519,46 +526,114 @@ function SubTable(props) {
               };
             }
             break;
-          case "contactsCounter":
+          // case "contactsCounter":
+          //   {
+          //     column.options = {
+          //       ...column.options,
+          //       customBodyRender: (value, tableMeta, updateValue) => {
+          //         return (
+          //           <Tooltip
+          //             title={value || value === 0 ? "Contacts" : "Add Contact"}
+          //             placement="top"
+          //             style={{ marginRight: "10px" }}
+          //           >
+          //             <Badge
+          //               badgeContent={value ? value : null}
+          //               color="secondary"
+          //             >
+          //               <IconButton
+          //                 size={props.dense ? "small" : "medium"}
+          //                 color="primary"
+          //                 className={`${classes.icons} ${
+          //                   !value || value === 0 ? classes.noCommentsIcon : ""
+          //                 } ${
+          //                   colInd === tableMeta.columnIndex &&
+          //                   rowInd === tableMeta.rowIndex
+          //                     ? classes.iconSelected
+          //                     : ""
+          //                 }`}
+          //                 onClick={(e) => {
+          //                   e.stopPropagation();
+          //                   handleExpandClick(
+          //                     tableMeta.columnIndex,
+          //                     tableMeta.rowIndex,
+          //                     tableMeta.rowData[0],
+          //                     "ownerContacts"
+          //                   );
+          //                 }}
+          //                 aria-label="show contacs"
+          //               >
+          //                 <ContactPhoneIcon />
+          //               </IconButton>
+          //             </Badge>
+          //           </Tooltip>
+          //         );
+          //       },
+          //     };
+          //   }
+          //   break;
+          case "isContact":
             {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   return (
                     <Tooltip
-                      title={value || value === 0 ? "Contacts" : "Add Contact"}
+                      title={
+                        !value || value === "false"
+                          ? "Convert To Contact"
+                          : "Contact Details"
+                      }
                       placement="top"
                       style={{ marginRight: "10px" }}
                     >
-                      <Badge
-                        badgeContent={value ? value : null}
-                        color="secondary"
-                      >
-                        <IconButton
-                          size={props.dense ? "small" : "medium"}
-                          color="primary"
-                          className={`${classes.icons} ${
-                            !value || value === 0 ? classes.noCommentsIcon : ""
-                          } ${
-                            colInd === tableMeta.columnIndex &&
-                            rowInd === tableMeta.rowIndex
-                              ? classes.iconSelected
-                              : ""
-                          }`}
-                          onClick={(e) => {
-                            e.stopPropagation();
+                      <IconButton
+                        size={props.dense ? "small" : "medium"}
+                        color="primary"
+                        className={`${classes.icons} ${
+                          !value || value === "false"
+                            ? classes.noCommentsIcon
+                            : ""
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+
+                          if (value && value !== "false") {
+                            setStateApp((stateApp) => ({
+                              ...stateApp,
+                              selectedContact: value,
+                            }));
+                            setSelectedRow({ _id: value });
+
+                            setSubComponent(
+                              <ContactDetailCard
+                                selectRowOpenContact={selectRowOpenContact}
+                                contactId={value}
+                                handleCloseExpandableCard={
+                                  handleCloseExpandableCard
+                                }
+                              />
+                            );
+                            setTitle("CONTACT DETAILS");
+                            setSubTitle(" ");
+                            handleOpenExpandableCard();
+                          } else {
                             handleExpandClick(
                               tableMeta.columnIndex,
                               tableMeta.rowIndex,
-                              tableMeta.rowData[0],
-                              "ownerContacts"
+                              tableMeta.rowData[1],
+                              "makeOwnerAContact"
                             );
-                          }}
-                          aria-label="show contacs"
-                        >
-                          <ContactPhoneIcon />
-                        </IconButton>
-                      </Badge>
+                          }
+                        }}
+                        aria-label="show contact"
+                      >
+                        {!value || value === "false" ? (
+                          <Convert_contact style={{ margin: "4px" }} />
+                        ) : (
+                          <Contact_card style={{ margin: "4px" }} />
+                        )}
+                      </IconButton>
                     </Tooltip>
                   );
                 },
@@ -645,12 +720,12 @@ function SubTable(props) {
                           onClick={(e) => {
                             e.stopPropagation();
                             if (value.length > 0) {
-                              handleExpandClick(
-                                tableMeta.columnIndex,
-                                tableMeta.rowIndex,
-                                value,
-                                "ownersPerContacts"
-                              );
+                              // handleExpandClick(
+                              //   tableMeta.columnIndex,
+                              //   tableMeta.rowIndex,
+                              //   value,
+                              //   "ownersPerContacts"
+                              // );
                             }
                           }}
                           aria-label="show owners"
@@ -741,13 +816,14 @@ function SubTable(props) {
                   return (
                     <CellContentEdition
                       id={tableMeta.rowData[0]}
+                      entityId={tableMeta.rowData[1]}
                       content={{
-                        address1: tableMeta.rowData[1],
-                        address2: tableMeta.rowData[2],
-                        city: tableMeta.rowData[3],
-                        state: tableMeta.rowData[4],
-                        zip: tableMeta.rowData[5],
-                        country: tableMeta.rowData[6],
+                        address1: tableMeta.rowData[2],
+                        address2: tableMeta.rowData[3],
+                        city: tableMeta.rowData[4],
+                        state: tableMeta.rowData[5],
+                        zip: tableMeta.rowData[6],
+                        country: tableMeta.rowData[7],
                       }}
                       targetLabel={props.targetLabel}
                     />
@@ -820,12 +896,24 @@ function SubTable(props) {
                         dropDownOptions={
                           column.dropDownOptions ? column.dropDownOptions : null
                         }
-                        secondaryId={
-                          props.targetLabel === "Parcel Owner"
+                        entityId={
+                          props.targetLabel === "Parcel Owner" ||
+                          props.targetLabel === "contact"
                             ? tableMeta.rowData[1]
                             : null
                         }
                       />
+                      {props.targetLabel === "contact" &&
+                        column.name === "name" &&
+                        tableMeta.rowData[
+                          props.columns.findIndex(
+                            (val) => val.name === "melissaRowsCount"
+                          )
+                        ] !== undefined && (
+                          <MonetizationOnIcon
+                            className={classes.monetizationIcon}
+                          />
+                        )}
                     </div>
                   );
                 },
@@ -900,8 +988,12 @@ function SubTable(props) {
     selectableRows: "multiple",
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
+      // console.log("currentRowsSelected", JSON.stringify(currentRowsSelected));
+      // console.log("rowsSelected", JSON.stringify(rowsSelected));
       if (rowsSelected && rowsSelected.length > 0) {
-        let indexArray = rowsSelected.map((d) => d.index).sort((a, b) => a - b);
+        let indexArray = rowsSelected
+          .map((d) => d.dataIndex)
+          .sort((a, b) => a - b);
         if (rows && indexArray) {
           if (rows.length > 0 && indexArray.length > 0) {
             let selectedRows = rows.filter(
@@ -1085,17 +1177,9 @@ function SubTable(props) {
                   size="medium"
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (
-                      props.addAble.type &&
-                      (props.addAble.type === "contact" ||
-                        props.addAble.type === "contactToOwner")
-                    )
+                    if (props.addAble.type && props.addAble.type === "contact")
                       handleExpandClick(null, null, null, "addContact");
-                    if (
-                      props.addAble.type &&
-                      props.addAble.type === "ownerToContact"
-                    )
-                      handleExpandClick(null, null, null, "addOwnerToContact");
+
                     if (
                       props.addAble.type &&
                       props.addAble.type === "ownerToParcel"
@@ -1186,8 +1270,6 @@ function SubTable(props) {
               openDialog === "comment" ||
               openDialog === "owner" ||
               openDialog === "wellsPerOwner" ||
-              openDialog === "ownerContacts" ||
-              openDialog === "ownersPerContacts" ||
               openDialog === "buyContactsInfo" ||
               openDialog === "sendMailers" ||
               openDialog === "printLabels"
@@ -1195,15 +1277,10 @@ function SubTable(props) {
                 : false
             }
             maxWidth={
-              openDialog === "ownerContacts"
-                ? "xl"
-                : openDialog === "owner" ||
-                  openDialog === "ownersPerContacts" ||
-                  openDialog === "wellsPerOwner"
+              openDialog === "owner" || openDialog === "wellsPerOwner"
                 ? "lg"
                 : openDialog === "addContact" ||
                   openDialog === "addOwnerToParcel" ||
-                  openDialog === "addOwnerToContact" ||
                   openDialog === "deleteOwnersFromContact" ||
                   openDialog === "deleteContact"
                 ? "xs"
@@ -1246,29 +1323,36 @@ function SubTable(props) {
             {openDialog === "wellsPerOwner" && (
               <M1nTable wellsIdsArray={expandedObject} parent="WellsPerOwner" />
             )}
-            {openDialog === "ownerContacts" && (
-              <M1nTable parent="ownerContacts" ownerId={expandedObject} />
+            {openDialog === "makeOwnerAContact" && (
+              <MakeItAContactConfirmationDialogContent
+                onClose={handleCloseDialog}
+                entity={expandedObject}
+                openContactDetailCard={(contactId) => {
+                  setSelectedRow({ _id: contactId });
+                  setSubComponent(
+                    <ContactDetailCard
+                      selectRowOpenContact={selectRowOpenContact}
+                      contactId={contactId}
+                      handleCloseExpandableCard={handleCloseExpandableCard}
+                    />
+                  );
+                  setTitle("CONTACT DETAILS");
+                  setSubTitle(" ");
+                  handleCloseDialog();
+                  handleOpenExpandableCard();
+                }}
+              >
+                {`Do you want to create a new Contact from this Owner?`}
+              </MakeItAContactConfirmationDialogContent>
             )}
-            {openDialog === "ownersPerContacts" && (
-              <M1nTable
-                parent="ownersPerContacts"
-                ownersIdsArray={expandedObject}
-                contactId={rows[rowInd]._id}
-              />
-            )}
+
             {openDialog === "addContact" && props.targetLabel === "contact" && (
               <AddContactDialogContent
                 onClose={handleCloseDialog}
                 parent={props.addAble.parent}
               />
             )}
-            {openDialog === "addOwnerToContact" && (
-              <AddOwnerToContactDialogContent
-                onClose={handleCloseDialog}
-                parent={props.addAble.parent}
-                existingOwners={props.addAble.existingOwners}
-              />
-            )}
+
             {openDialog === "addOwnerToParcel" && (
               <AddParcelOwnerDialogContent
                 onClose={handleCloseDialog}

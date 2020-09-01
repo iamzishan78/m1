@@ -30,6 +30,7 @@ export const CUSTOMLAYER = gql`
         nra
         customLayer
         IsDeleted
+        isContact
       }
     }
   }
