@@ -13,7 +13,7 @@ import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
-import { MELISSARECORDS } from "../../graphQL/useQueryGetMelissaRecords";
+import { LASTMELISSARECORD } from "../../graphQL/useQueryGetMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery } from "@apollo/react-hooks";
 import ConfirmationDialog from "./components/ConfirmationDialog";
@@ -283,7 +283,7 @@ export default function ContactDetailCard(props) {
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
     TRANSACTIONDATA
   );
-  const [getMelissaRecords, { data: mData }] = useLazyQuery(MELISSARECORDS, {
+  const [getLastMelissaRecord, { data: mData }] = useLazyQuery(LASTMELISSARECORD, {
     fetchPolicy: "network-only",
   });
 
@@ -339,7 +339,7 @@ export default function ContactDetailCard(props) {
 
   useEffect(() => {
     if (props.contactId) {
-      getMelissaRecords({
+      getLastMelissaRecord({
         variables: {
           contactId: props.contactId,
         },
@@ -348,8 +348,8 @@ export default function ContactDetailCard(props) {
   }, [props.contactId]);
 
   useEffect(() => {
-    if (mData && mData.getMelissaRecords.success === true) {
-      setMelissaData(mData.getMelissaRecords);
+    if (mData && mData.getLastMelissaRecord.success === true) {
+      setMelissaData(mData.getLastMelissaRecord);
     }
   }, [mData]);
 
@@ -808,7 +808,7 @@ export default function ContactDetailCard(props) {
               rows={ [contactData] }
               setRows={() => { }}
               updateMelissaTable={() => {
-                getMelissaRecords({
+                getLastMelissaRecord({
                   variables: {
                     contactId: props.contactId,
                   },
