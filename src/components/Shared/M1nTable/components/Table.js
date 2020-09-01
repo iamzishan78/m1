@@ -24,6 +24,7 @@ import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
 import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import AddContactDialogContent from "./SubComponents/AddContactDialogContent";
 import DeleteConfirmationDialogContent from "./SubComponents/DeleteConfirmationDialogContent";
+import MakeItAContactConfirmationDialogContent from "./SubComponents/MakeItAContactConfirmationDialogContent";
 import Button from "@material-ui/core/Button";
 import LocalPrintshopRoundedIcon from "@material-ui/icons/LocalPrintshopRounded";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
@@ -40,6 +41,7 @@ import Avatar, { ConfigProvider } from "react-avatar";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import MapLocation from "../../svgIcons/MapLocation";
 import RoomIcon from "@material-ui/icons/Room";
+import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import { useDispatch, useSelector } from "react-redux";
 import { setMapGridCardState } from "../../../../actions";
 import {
@@ -48,6 +50,8 @@ import {
   setStateIfDeepEqual,
 } from "../../functions";
 import AddParcelOwnerDialogContent from "./SubComponents/AddParcelOwnerDialogContent";
+import Convert_contact from "../../svgIcons/convert_contact";
+import Contact_card from "../../svgIcons/contact_card";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -165,6 +169,10 @@ const useStyles = makeStyles((theme) => ({
     margin: "6px 12px",
     fontWeight: "600",
     color: "#082768",
+  },
+  monetizationIcon: {
+    margin: "10px",
+    color: "#155388",
   },
 }));
 
@@ -564,6 +572,74 @@ function SubTable(props) {
           //     };
           //   }
           //   break;
+          case "isContact":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <Tooltip
+                      title={
+                        !value || value === "false"
+                          ? "Convert To Contact"
+                          : "Contact Details"
+                      }
+                      placement="top"
+                      style={{ marginRight: "10px" }}
+                    >
+                      <IconButton
+                        size={props.dense ? "small" : "medium"}
+                        color="primary"
+                        className={`${classes.icons} ${
+                          !value || value === "false"
+                            ? classes.noCommentsIcon
+                            : ""
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+
+                          if (value && value !== "false") {
+                            setStateApp((stateApp) => ({
+                              ...stateApp,
+                              selectedContact: value,
+                            }));
+                            setSelectedRow({ _id: value });
+
+                            setSubComponent(
+                              <ContactDetailCard
+                                selectRowOpenContact={selectRowOpenContact}
+                                contactId={value}
+                                handleCloseExpandableCard={
+                                  handleCloseExpandableCard
+                                }
+                              />
+                            );
+                            setTitle("CONTACT DETAILS");
+                            setSubTitle(" ");
+                            handleOpenExpandableCard();
+                          } else {
+                            handleExpandClick(
+                              tableMeta.columnIndex,
+                              tableMeta.rowIndex,
+                              tableMeta.rowData[1],
+                              "makeOwnerAContact"
+                            );
+                          }
+                        }}
+                        aria-label="show contact"
+                      >
+                        {!value || value === "false" ? (
+                          <Convert_contact style={{ margin: "4px" }} />
+                        ) : (
+                          <Contact_card style={{ margin: "4px" }} />
+                        )}
+                      </IconButton>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
           case "ownerCount":
             {
               column.options = {
@@ -827,6 +903,17 @@ function SubTable(props) {
                             : null
                         }
                       />
+                      {props.targetLabel === "contact" &&
+                        column.name === "name" &&
+                        tableMeta.rowData[
+                          props.columns.findIndex(
+                            (val) => val.name === "melissaRowsCount"
+                          )
+                        ] !== undefined && (
+                          <MonetizationOnIcon
+                            className={classes.monetizationIcon}
+                          />
+                        )}
                     </div>
                   );
                 },
@@ -901,8 +988,12 @@ function SubTable(props) {
     selectableRows: "multiple",
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
+      // console.log("currentRowsSelected", JSON.stringify(currentRowsSelected));
+      // console.log("rowsSelected", JSON.stringify(rowsSelected));
       if (rowsSelected && rowsSelected.length > 0) {
-        let indexArray = rowsSelected.map((d) => d.index).sort((a, b) => a - b);
+        let indexArray = rowsSelected
+          .map((d) => d.dataIndex)
+          .sort((a, b) => a - b);
         if (rows && indexArray) {
           if (rows.length > 0 && indexArray.length > 0) {
             let selectedRows = rows.filter(
@@ -1231,6 +1322,28 @@ function SubTable(props) {
             )}
             {openDialog === "wellsPerOwner" && (
               <M1nTable wellsIdsArray={expandedObject} parent="WellsPerOwner" />
+            )}
+            {openDialog === "makeOwnerAContact" && (
+              <MakeItAContactConfirmationDialogContent
+                onClose={handleCloseDialog}
+                entity={expandedObject}
+                openContactDetailCard={(contactId) => {
+                  setSelectedRow({ _id: contactId });
+                  setSubComponent(
+                    <ContactDetailCard
+                      selectRowOpenContact={selectRowOpenContact}
+                      contactId={contactId}
+                      handleCloseExpandableCard={handleCloseExpandableCard}
+                    />
+                  );
+                  setTitle("CONTACT DETAILS");
+                  setSubTitle(" ");
+                  handleCloseDialog();
+                  handleOpenExpandableCard();
+                }}
+              >
+                {`Do you want to create a new Contact from this Owner?`}
+              </MakeItAContactConfirmationDialogContent>
             )}
 
             {openDialog === "addContact" && props.targetLabel === "contact" && (

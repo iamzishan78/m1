@@ -173,7 +173,7 @@ export default function AddContactDialogContent(props) {
               lastUpdateBy: stateApp.user.mongoId,
             },
           },
-          refetchQueries: ["getContacts", "getContact"],
+          refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
           awaitRefetchQueries: true,
         });
         e.preventDefault();

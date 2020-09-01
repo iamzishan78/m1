@@ -52,6 +52,7 @@ export default function ConfirmationDialog(props) {
       refetchQueries: [
         "getContacts",
         // "getContact",
+        "getCustomLayer",
       ],
       awaitRefetchQueries: true,
     });

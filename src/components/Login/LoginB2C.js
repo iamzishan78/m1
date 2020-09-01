@@ -327,14 +327,11 @@ const LoginB2C = (props) => {
     setStateApp((state) => ({
       ...state,
       user: {
-        id: accountObj.oid,
+        id: accountObj.sub,
         //id: readProfileResponse.id,
         mongoId: mongoUser._id,
-        email:
-          accountObj.emails && accountObj.emails.length > 0
-            ? accountObj.emails[0]
-            : accountObj.sub,
-        name: accountObj.name,
+        email: mongoUser.email,
+        name: mongoUser.name,
         // email: readProfileResponse.mail
         //   ? readProfileResponse.mail
         //   : readProfileResponse.userPrincipalName,
