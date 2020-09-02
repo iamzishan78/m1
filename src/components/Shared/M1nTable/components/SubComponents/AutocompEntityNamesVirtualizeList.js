@@ -6,6 +6,33 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme, makeStyles } from "@material-ui/core/styles";
 import { VariableSizeList } from "react-window";
 import { Typography } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
+
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+const joinAddress = (row) => {
+  let rowData = {
+    address1: row.address1,
+    address2: row.address2,
+    city: row.city,
+    state: row.state,
+    zip: row.zip,
+    country: row.country,
+  };
+  let textArray = [];
+  for (const key in rowData) {
+    if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
+      if (key === "zip" || key === "country") {
+        textArray = [
+          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
+        ];
+      } else textArray.push(capitalizeFirstLetter(rowData[key]));
+    }
+  }
+
+  return textArray.join(", ");
+};
 
 const LISTBOX_PADDING = 8; // px
 
@@ -44,13 +71,14 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
   const { children, ...other } = props;
   const itemData = React.Children.toArray(children);
   const theme = useTheme();
-  const smUp = useMediaQuery(theme.breakpoints.up("sm"), { noSsr: true });
+  //   const smUp = useMediaQuery(theme.breakpoints.up("sm"), { noSsr: true });
   const itemCount = itemData.length;
-  const itemSize = smUp ? 36 : 48;
+  //   const itemSize = smUp ? 36 : 48;
+  const itemSize = 65;
 
   const getHeight = () => {
-    if (itemCount > 8) {
-      return 8 * itemSize;
+    if (itemCount > 4) {
+      return 4 * itemSize;
     }
     return itemCount * itemSize;
   };
@@ -161,7 +189,22 @@ export default function AutocompEntityNamesVirtualizeList(props) {
           return (
             <Typography style={{ color: "blue" }}>{option.name}</Typography>
           );
-        return <Typography>{option.name}</Typography>;
+
+        return (
+          <Grid container spacing={0}>
+            <Grid container item xs={12} alignItems="center">
+              <Grid item xs>
+                <span style={{ fontWeight: 400 }}>{option.name}</span>
+
+                <Typography variant="body2" color="textSecondary">
+                  {joinAddress(option)}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+        );
+
+        // return <Typography>{option.name}</Typography>;
       }}
     />
   );
