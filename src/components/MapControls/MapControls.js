@@ -23,6 +23,7 @@ import BaseMapStyles from "./BaseMapStyles";
 import CheckboxList from "./CheckboxList";
 import CheckboxListHeatmaps from "./CheckboxListHeatmaps";
 import AddUserData from "./components/addUserData";
+import AddALayer from "./components/addALayer";
 import DrawShapes from "./components/DrawShapes/DrawShapes";
 import TrackedWellsMapCard from "./components/TrackedWellsMapCard";
 import GpsFixedIcon from "@material-ui/icons/GpsFixed";
@@ -235,6 +236,13 @@ export default function MapControls(props) {
     }
   }
 
+  const openAddLayerControl = () => {
+    const {addLayer} = stateMapControls;
+    if (addLayer) {
+      return <AddALayer />
+    }
+  }
+
   return (
     <div>
       <SpeedDial
@@ -258,6 +266,7 @@ export default function MapControls(props) {
       {stateMapControls.selectedControl ? openSelectedControl() : null}
       {stateMapControls.selectedFileLayer ? openColorPickerControl() : null}
       {stateMapControls.selectedUDLayer ? openColorPickerUDControl() : null}
+      {stateMapControls.addLayer ? openAddLayerControl() : null}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import {
   userDefinedLayers,
   heatLayers,
   baseMapLayers,
+  layers,
 } from "./LayerConfig";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
@@ -72,6 +73,7 @@ const AppProvider = (props) => {
     selectedWellApi: null,
     styleLayers: styleLayers,
     heatLayers: heatLayers,
+    layers: layers,
     baseMapLayers: baseMapLayers,
     userDefinedLayers: userDefinedLayers,
     tempCheckedLayer: null,

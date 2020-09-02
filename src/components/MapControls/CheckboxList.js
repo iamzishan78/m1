@@ -10,13 +10,13 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 //import List from '@material-ui/core/List';
 //import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from "@material-ui/core/ListItemIcon";
-//import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from "@material-ui/core/ListItemText";
 import Checkbox from "@material-ui/core/Checkbox";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import DragIndicator from "@material-ui/icons/DragIndicator";
-//import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 //import EditIcon from '@material-ui/icons/Edit';
 import { MapControlsContext } from "./MapControlsContext";
 import { AppContext } from "../../AppContext";
@@ -195,6 +195,10 @@ export default function CheckboxList(props) {
         color: theme.palette.common.white,
         // },
       },
+      "& .MuiButton-textPrimary": {
+        color: theme.palette.common.white,
+        background: "#17acdd"
+      }
     },
   }))(MenuItem);
 
@@ -230,6 +234,13 @@ export default function CheckboxList(props) {
       anchorEl: null,
     }));
   };
+
+  const openAddLayer = () => {
+    setStateMapControls((stateMapControls) => ({
+      ...stateMapControls,
+      addLayer: true,
+    }));
+  }
 
   const onDragEnd = (result) => {
     // dropped outside the list
@@ -423,6 +434,11 @@ export default function CheckboxList(props) {
           className={classes.subHeaderItem}
         >
           <ListItemText primary="Layer Visibility" />
+          <ListItemSecondaryAction>
+            <Button onClick={openAddLayer} color="primary">
+              Add Layer
+            </Button>
+          </ListItemSecondaryAction>
         </StyledMenuItem>
 
         <StyledListItem2 button onClick={handleClick}>

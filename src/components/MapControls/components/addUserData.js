@@ -297,9 +297,9 @@ export default function AddUserData(props) {
           </Snackbar>
         </DialogContent>
         <DialogActions>
-          {/* <Button autoFocus onClick={handleApplyChanges} color="primary">
+          <Button autoFocus onClick={handleApplyChanges} color="primary">
             Apply Changes
-          </Button> */}
+          </Button>
           <Button autoFocus onClick={windowClose} color="primary">
             Close
           </Button>
