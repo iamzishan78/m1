@@ -14,6 +14,9 @@ const useStyles = makeStyles({
     "& > td": {
       border: "2px dashed #D7D7D7",
       padding: "0",
+      "&:hover": {
+        backgroundColor: "#BFEBFB !important",
+      },
     },
   },
 });

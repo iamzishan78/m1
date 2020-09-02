@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     height: "50%",
     "&:hover": {
       backgroundColor: ({ parcelData }) =>
-        parcelData.state !== "TXtemporaryRemoved" ? "#BFEBFB !important" : "",
+        parcelData.state !== "TX" ? "#BFEBFB !important" : "",
     },
   },
   qrt1: {
