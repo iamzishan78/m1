@@ -8,6 +8,7 @@ import M1nTable from "../Shared/M1nTable/M1nTable";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import QtrQtrSelector from "./components/QtrQtrSelector";
+import LeftTopSummary from "./components/LeftTopSummary";
 
 const useStyles = makeStyles((theme) => ({
   gridWidthScroll: {
@@ -55,11 +56,12 @@ export default function ParcelsDetailCard(props) {
   const [parcelData, setParcelData] = useState({
     _id: "5f2d60a70b0a02002146edfc",
     county: "Lea",
-    state: "NM",
-    meridian: null,
-    township: "026S",
-    range: "033E",
-    section: "027",
+    state: "TX",
+    Grid1: "00",
+    Grid2: "026S",
+    Grid3: "033E",
+    Grid4: "027",
+    Grid5: "123",
     qtrQtr: {
       nwnw: true,
       nenw: true,
@@ -90,54 +92,11 @@ export default function ParcelsDetailCard(props) {
     setParcelData((parcelData) => ({ ...parcelData, qtrQtr }));
   };
 
-  // return stateApp.selectedOwner ?
   return (
     <Grid container className={classes.gridWidthScroll} spacing={0}>
       <Grid item container sm={12}>
         <Grid item sm={2} className={classes.borderRight}>
-          <Grid container className={classes.dataSect}>
-            <Grid item xs={6} className="fieldName">
-              <p className="dataLabels">County</p>
-            </Grid>
-            <Grid item xs={6}>
-              <p>{parcelData.county}</p>
-            </Grid>
-
-            <Grid item xs={6} className="fieldName">
-              <p className="dataLabels">State</p>
-            </Grid>
-            <Grid item xs={6}>
-              <p>{parcelData.state}</p>
-            </Grid>
-
-            <Grid item xs={6} className="fieldName">
-              <p className="dataLabels">Meridian</p>
-            </Grid>
-            <Grid item xs={6}>
-              <p>{parcelData.meridian}</p>
-            </Grid>
-
-            <Grid item xs={6} className="fieldName">
-              <p className="dataLabels">Township</p>
-            </Grid>
-            <Grid item xs={6}>
-              <p>{parcelData.township}</p>
-            </Grid>
-
-            <Grid item xs={6} className="fieldName">
-              <p className="dataLabels">Range</p>
-            </Grid>
-            <Grid item xs={6}>
-              <p>{parcelData.range}</p>
-            </Grid>
-
-            <Grid item xs={6} className="fieldName">
-              <p className="dataLabels">Section</p>
-            </Grid>
-            <Grid item xs={6}>
-              <p>{parcelData.section}</p>
-            </Grid>
-          </Grid>
+          <LeftTopSummary parcelData={parcelData} />
         </Grid>
 
         <Grid
@@ -160,6 +119,7 @@ export default function ParcelsDetailCard(props) {
                 />
                 <p className="formLabel">Calc. Acres</p>
                 <TextField
+                  disabled
                   size="small"
                   value={parcelData.calcAcres}
                   variant="outlined"
@@ -168,48 +128,18 @@ export default function ParcelsDetailCard(props) {
                     readOnly: true,
                   }}
                 />
-                <p className="formLabel">Lease Status</p>
 
-                <Autocomplete
-                  value={parcelData.leaseStatus}
-                  options={["Active", "Unleased", "Expired"]}
-                  defaultValue="Unleased"
-                  getOptionLabel={(option) => option}
-                  onChange={(event, newValue) => {
-                    setParcelData({ ...parcelData, leaseStatus: newValue });
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      fullWidth
-                      size="small"
-                      variant="outlined"
-                    />
-                  )}
-                />
-
-                <p className="formLabel">Lease Royalty</p>
+                <p className="formLabel">Full Legal Description</p>
                 <TextField
                   size="small"
-                  value={parcelData.leaseRoyalty}
+                  multiline
+                  rows={12}
+                  value={parcelData.legalDescription}
                   variant="outlined"
                   fullWidth
+                  placeholder="Enter legal description here"
                 />
               </div>
-            </Grid>
-            <Grid item xs={12}>
-              <p className="formLabel" style={{ marginTop: "0" }}>
-                Full Legal Description
-              </p>
-              <TextField
-                size="small"
-                multiline
-                rows={4}
-                value={parcelData.legalDescription}
-                variant="outlined"
-                fullWidth
-                placeholder="Enter legal description here"
-              />
             </Grid>
           </Grid>
         </Grid>
@@ -232,7 +162,5 @@ export default function ParcelsDetailCard(props) {
         />
       </Grid>
     </Grid>
-    // ) : (
-    //   <CircularProgress color="secondary" />
   );
 }
