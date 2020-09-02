@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "5px",
     backgroundColor: "#E2E9F0",
   },
-  circle:{
+  circle: {
     backgroundColor: "#fff",
     width: 20,
     height: 20,
@@ -44,9 +44,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     right: "-10px",
     marginTop: "-10px",
-    boxShadow: "0px 0px 5px 2px #0002"
+    boxShadow: "0px 0px 5px 2px #0002",
   },
-  arrow:{
+  arrow: {
     position: "absolute",
     width: 8,
     height: 8,
@@ -55,8 +55,8 @@ const useStyles = makeStyles((theme) => ({
     transform: "rotate(45deg)",
     top: "50%",
     marginTop: "-4px",
-    left: "3px"
-  }
+    left: "3px",
+  },
 }));
 
 const Step = ({ name, active, onClick, last }) => {
@@ -89,11 +89,11 @@ export default function LeadStage({ leadStage, id }) {
     "Converted/Unqualified",
   ];
 
-  const [currentLeadStage,setCurrentLeadStage]=useState(leadStage)
+  const [currentLeadStage, setCurrentLeadStage] = useState(leadStage);
 
-  useEffect(()=>{
-    setCurrentLeadStage(leadStage)
-  },[leadStage])
+  useEffect(() => {
+    setCurrentLeadStage(leadStage);
+  }, [leadStage]);
 
   let index = leadStages.findIndex((stg) => stg === currentLeadStage);
   if (index === -1) index = 0;
@@ -108,13 +108,13 @@ export default function LeadStage({ leadStage, id }) {
         contact: {
           _id: id,
           leadStage: stg,
-          lastUpdateLeadStageAt: new Date().toString()
+          lastUpdateLeadStageAt: new Date().toString(),
         },
       },
-      // refetchQueries: ["getContact"],
-      // awaitRefetchQueries: true,
+      refetchQueries: ["getContact"],
+      awaitRefetchQueries: true,
     });
-    setCurrentLeadStage(stg)
+    setCurrentLeadStage(stg);
   };
 
   return (
