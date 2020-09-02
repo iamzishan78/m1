@@ -41,6 +41,7 @@ export const UPDATECONTACT = gql`
         facebook
         twitter
         leadStage
+        lastUpdateLeadStageAt
         leadSource
         companyName
         jobTitle
