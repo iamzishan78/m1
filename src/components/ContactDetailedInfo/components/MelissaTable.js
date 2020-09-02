@@ -120,7 +120,7 @@ export default ({ ...props }) => {
           ))}
         </Grid>
         {
-          props.melissaData && props.melissaData.melissaAddressRecords.length > 0 && props.melissaData.melissaAddressRecords.slice(-1).pop().CurrentAddress
+          props.melissaData && props.melissaData.melissaAddressRecord && props.melissaData.melissaAddressRecord.CurrentAddress
             ?
               <>
                 <h4 style={{ margin: "13px 0 13px 0" }}>
@@ -133,16 +133,17 @@ export default ({ ...props }) => {
                   className={props.wrapperClass}
                   spacing={0}
                 >
-                  {Object.entries(props.melissaData.melissaAddressRecords.slice(-1).pop().CurrentAddress).map(([key, value]) => (
+                  {Object.entries(props.melissaData.melissaAddressRecord.CurrentAddress).map(([key, value]) => (
                     <React.Fragment>
                       <Grid item xs={3} className="fieldName">
                         <p className="dataLabels">{ key }</p>
                       </Grid>
                       <Grid item xs={9}>
                         <FieldContent
-                          melissaAddressRecordId={ props.melissaData.melissaAddressRecords.slice(-1).pop()._id }
+                          melissaAddressRecordId={ props.melissaData.melissaAddressRecord._id }
                           content={{ [key]: value }}
                           fieldType={ FieldTypes.MelissaAddressRecord }
+                          isEdited={ props.melissaData.updatedMelissaRecords.find(item => item.fieldName === key && item.melissaRecordType === 'address') ? true : false }
                         />
                       </Grid>
                     </React.Fragment>
@@ -155,7 +156,7 @@ export default ({ ...props }) => {
               </h4>
         }
         {
-          props.melissaData && props.melissaData.melissaRecords.length > 0
+          props.melissaData && props.melissaData.melissaRecord
             ?
               <>
                 <h4 style={{ margin: "13px 0 13px 0"}}>
@@ -168,16 +169,17 @@ export default ({ ...props }) => {
                   className={props.wrapperClass}
                   spacing={0}
                 >
-                  {Object.entries(props.melissaData.melissaRecords.slice(-1).pop()).map(([key, value]) => (
+                  {Object.entries(props.melissaData.melissaRecord).map(([key, value]) => (
                     <React.Fragment>
                       <Grid item xs={3} className="fieldName">
                         <p className="dataLabels">{ key }</p>
                       </Grid>
                       <Grid item xs={9}>
                         <FieldContent
-                          melissaRecordId={ props.melissaData.melissaRecords.slice(-1).pop()._id }
+                          melissaRecordId={ props.melissaData.melissaRecord._id }
                           content={{ [key]: value }}
                           fieldType={ FieldTypes.MelissaRecord }
+                          isEdited={ props.melissaData.updatedMelissaRecords.find(item => item.fieldName === key && item.melissaRecordType === 'main') ? true : false }
                         />
                       </Grid>
                     </React.Fragment>
