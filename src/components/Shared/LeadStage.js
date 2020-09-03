@@ -91,9 +91,9 @@ export default function LeadStage({ leadStage, id }) {
 
   const [currentLeadStage, setCurrentLeadStage] = useState(leadStage);
 
-  // useEffect(() => {
-  //   setCurrentLeadStage(leadStage);
-  // }, [leadStage]);
+  useEffect(() => {
+    setCurrentLeadStage(leadStage);
+  }, [leadStage]);
 
   let index = leadStages.findIndex((stg) => stg === currentLeadStage);
   if (index === -1) index = 0;
