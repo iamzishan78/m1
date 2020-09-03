@@ -84,9 +84,9 @@ export default function LeadStage({ leadStage, id }) {
     "New",
     "Contacted",
     "Interested",
-    "Under Review",
-    "Demo",
-    "Converted/Unqualified",
+    "Follow-up",
+    "Offer Sent",
+    "Closed",
   ];
 
   const [currentLeadStage, setCurrentLeadStage] = useState(leadStage);
