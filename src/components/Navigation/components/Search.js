@@ -663,7 +663,7 @@ function Search() {
               selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
               wellSelectedCoordinates: [
                 dataOwnerWells.ownerLatsLonsArray[0].longitude,
-                dataOwnerWells.ownerLatsLonsArrayy[0].latitude,
+                dataOwnerWells.ownerLatsLonsArray[0].latitude,
               ],
               wellListFromSearch: dataOwnerWells.ownerLatsLonsArray,
             }
