@@ -30,7 +30,7 @@ import MomentUtils from "@date-io/moment";
 
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
 import { ApolloProvider } from "@apollo/client";
-import ApolloClient from "apollo-boost";
+import ApolloClient from "@apollo/client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { CircularProgress } from "@material-ui/core";
 import Profile from "./components/Profile/Profile";
