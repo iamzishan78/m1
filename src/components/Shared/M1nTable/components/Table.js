@@ -52,6 +52,8 @@ import {
 import AddParcelOwnerDialogContent from "./SubComponents/AddParcelOwnerDialogContent";
 import Convert_contact from "../../svgIcons/convert_contact";
 import Contact_card from "../../svgIcons/contact_card";
+import ParcelScreenIcon from "../../svgIcons/parcelScreen";
+import ParcelsDetailCard from "../../../ParcelsDetailCard/ParcelsDetailCard";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -227,6 +229,11 @@ function SubTable(props) {
   const setSubComponent = (newState) => {
     setStateIfDeepEqual(SubComponent, newState);
   };
+  const [targetLabelToExpand, TargetLabelToExpand] = useState(null);
+  const setTargetLabelToExpand = (newState) => {
+    setStateIfDeepEqual(TargetLabelToExpand, newState);
+  };
+
   const [title, Title] = useState("");
   const setTitle = (newState) => {
     setStateIfDeepEqual(Title, newState);
@@ -252,6 +259,16 @@ function SubTable(props) {
   const setM1nSelectedRowsTracks = (newState) => {
     setStateIfDeepEqual(M1nSelectedRowsTracks, newState);
   };
+
+  const [trueTargetLabel, TrueTargetLabel] = useState(null);
+  const setTrueTargetLabel = (newState) => {
+    setStateIfDeepEqual(TrueTargetLabel, newState);
+  };
+
+  useEffect(() => {
+    if (props.targetLabel === "Parcel Interest")
+      setTrueTargetLabel("Parcel Ownership");
+  }, [props.targetLabel]);
 
   useEffect(() => {
     if (props.rows) {
@@ -300,6 +317,50 @@ function SubTable(props) {
     if (props.columns) {
       props.columns.forEach((column) => {
         switch (column.name) {
+          case "parcelIcon": //// open parcel detail card
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <Tooltip
+                      title={"See Parcel Details"}
+                      placement="top"
+                      style={{ marginRight: "10px" }}
+                    >
+                      <IconButton
+                        size={props.dense ? "small" : "medium"}
+                        color="secondary"
+                        className={`${classes.icons}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+
+                          if (tableMeta.rowData[2]) {
+                            setStateApp((stateApp) => ({
+                              ...stateApp,
+                              selectedContact: value,
+                            }));
+                            setSelectedRow({ _id: tableMeta.rowData[2] });
+                            setTargetLabelToExpand("parcel");
+
+                            setSubComponent(
+                              <ParcelsDetailCard Id={tableMeta.rowData[2]} />
+                            );
+                            setTitle("PARCEL DETAILS");
+                            setSubTitle(" ");
+                            handleOpenExpandableCard();
+                          }
+                        }}
+                      >
+                        <ParcelScreenIcon style={{ margin: "4px" }} />
+                      </IconButton>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
+
           case "coordinates": //// fly to the map icon
             {
               column.options = {
@@ -363,12 +424,16 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  let id = props.targetLabel + tableMeta.columnIndex;
+                  let id =
+                    (trueTargetLabel ? trueTargetLabel : props.targetLabel) +
+                    tableMeta.columnIndex;
                   return (
                     <TrackToggleButton
                       id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                       target={{ isTracked: value }}
-                      targetLabel={props.targetLabel}
+                      targetLabel={
+                        trueTargetLabel ? trueTargetLabel : props.targetLabel
+                      }
                       targetSourceId={tableMeta.rowData[0]}
                       dark
                       multipleIds={
@@ -599,6 +664,7 @@ function SubTable(props) {
                           e.stopPropagation();
 
                           if (value && value !== "false") {
+                            setTargetLabelToExpand("contact");
                             setStateApp((stateApp) => ({
                               ...stateApp,
                               selectedContact: value,
@@ -855,12 +921,13 @@ function SubTable(props) {
                   ////// if non editable column
                   if (
                     !column.editable ||
-                    (props.targetLabel === "Parcel Owner" &&
+                    (props.targetLabel === "Parcel Ownershipship" &&
                       column.name === "name" &&
                       tableMeta.rowData[11] !== "false")
                   ) {
                     //// if no value
-                    if (value === "" || value === null || !value) return value;
+                    if (value === "" || value === null || !value)
+                      return <p style={{ color: "#B3B3B3" }}>N/A</p>;
 
                     //// if value
                     return (
@@ -902,7 +969,8 @@ function SubTable(props) {
                           column.dropDownOptions ? column.dropDownOptions : null
                         }
                         entityId={
-                          props.targetLabel === "Parcel Owner" ||
+                          props.targetLabel === "Parcel Interest" ||
+                          props.targetLabel === "Parcel Ownershipship" ||
                           props.targetLabel === "contact"
                             ? tableMeta.rowData[1]
                             : null
@@ -950,6 +1018,7 @@ function SubTable(props) {
   };
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
+    setTargetLabelToExpand(null);
     setStateApp((state) => ({
       ...state,
       popupOpen: false,
@@ -1115,15 +1184,43 @@ function SubTable(props) {
               );
             }
 
-            //// if Parcel Owner set the multi selection top bar: ////
-            if (props.targetLabel === "Parcel Owner") {
+            //// if Parcel Ownership set the multi selection top bar: ////
+            if (props.targetLabel === "Parcel Ownership") {
               return (
                 <Tooltip title={"Delete"}>
                   <IconButton
                     size="medium"
                     style={{ margin: "0 5px" }}
                     onClick={(e) => {
-                      handleExpandClick(null, null, null, "deleteParcelOwner");
+                      handleExpandClick(
+                        null,
+                        null,
+                        null,
+                        "deleteParcelOwnership"
+                      );
+                    }}
+                    aria-label="delete"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              );
+            }
+
+            //// if Parcel Interest set the multi selection top bar: ////
+            if (props.targetLabel === "Parcel Interest") {
+              return (
+                <Tooltip title={"Delete"}>
+                  <IconButton
+                    size="medium"
+                    style={{ margin: "0 5px" }}
+                    onClick={(e) => {
+                      handleExpandClick(
+                        null,
+                        null,
+                        null,
+                        "deleteParcelInterest"
+                      );
                     }}
                     aria-label="delete"
                   >
@@ -1296,7 +1393,9 @@ function SubTable(props) {
               <Comments
                 focus
                 targetSourceId={expandedObject}
-                targetLabel={props.targetLabel}
+                targetLabel={
+                  trueTargetLabel ? trueTargetLabel : props.targetLabel
+                }
                 multipleIds={
                   m1nSelectedRowsIndexesRef.current.indexOf(rowInd) !== -1 &&
                   m1nSelectedRowsIndexesRef.current.length > 1
@@ -1309,7 +1408,9 @@ function SubTable(props) {
               <div className={classes.tagsDiv}>
                 <Tags
                   targetSourceId={expandedObject}
-                  targetLabel={props.targetLabel}
+                  targetLabel={
+                    trueTargetLabel ? trueTargetLabel : props.targetLabel
+                  }
                   multipleIds={
                     m1nSelectedRowsIndexesRef.current.indexOf(rowInd) !== -1 &&
                     m1nSelectedRowsIndexesRef.current.length > 1
@@ -1333,6 +1434,7 @@ function SubTable(props) {
                 onClose={handleCloseDialog}
                 entity={expandedObject}
                 openContactDetailCard={(contactId) => {
+                  setTargetLabelToExpand("contact");
                   setSelectedRow({ _id: contactId });
                   setSubComponent(
                     <ContactDetailCard
@@ -1405,7 +1507,7 @@ function SubTable(props) {
                   }?`}
               </DeleteConfirmationDialogContent>
             )}
-            {openDialog === "deleteParcelOwner" && (
+            {openDialog === "deleteParcelOwnership" && (
               <DeleteConfirmationDialogContent
                 header={`Delete Owner${
                   m1nSelectedRowsIdsRef.current &&
@@ -1419,6 +1521,27 @@ function SubTable(props) {
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to delete the owner${
+                  m1nSelectedRowsIdsRef.current &&
+                  m1nSelectedRowsIdsRef.current.length > 1
+                    ? "s"
+                    : ""
+                }?`}
+              </DeleteConfirmationDialogContent>
+            )}
+            {openDialog === "deleteParcelInterest" && (
+              <DeleteConfirmationDialogContent
+                header={`Delete Parcel Interest${
+                  m1nSelectedRowsIdsRef.current &&
+                  m1nSelectedRowsIdsRef.current.length > 1
+                    ? "s"
+                    : ""
+                }`}
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {`Do you want to delete the Parcel Interest${
                   m1nSelectedRowsIdsRef.current &&
                   m1nSelectedRowsIdsRef.current.length > 1
                     ? "s"
@@ -1477,12 +1600,23 @@ function SubTable(props) {
               cardWidthExpanded="100%"
               cardHeightExpanded="100%"
               targetSourceId={
-                props.targetLabel === "owner" || props.targetLabel === "well"
+                targetLabelToExpand === "owner" ||
+                targetLabelToExpand === "well" ||
+                (!targetLabelToExpand &&
+                  (props.targetLabel === "owner" ||
+                    props.targetLabel === "well"))
                   ? selectedRow.id
                   : selectedRow._id
               }
-              targetLabel={props.targetLabel}
-              noTrackAvailable={props.targetLabel === "contact" ? true : false}
+              targetLabel={
+                targetLabelToExpand ? targetLabelToExpand : props.targetLabel
+              }
+              noTrackAvailable={
+                targetLabelToExpand === "contact" ||
+                (!targetLabelToExpand && props.targetLabel === "contact")
+                  ? true
+                  : false
+              }
             />
           </Dialog>
         )}
