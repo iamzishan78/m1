@@ -10,7 +10,7 @@ import FilterFromDrawing from "./FilterFromDrawing";
 import FilterBasin from "./FilterBasin";
 import FilterAOI from "./FilterAOI";
 import FilterParcel from "./FilterParcel";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 import { WELLSMINMAXLATLONG } from "../../../graphQL/useQueryWellsMinMaxLatLong";
 
 const useStyles = makeStyles((theme) => ({

@@ -6,7 +6,7 @@ import Button from "@material-ui/core/Button";
 import { Modals } from "../../../../../styles/Modal";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
-import { useMutation } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/client";
 import { AppContext } from "../../../../../AppContext";
 import { useDispatch } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "../../../../../actions";

@@ -16,7 +16,7 @@ import { CONTACT } from "../../graphQL/useQueryContact";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { LASTMELISSARECORD } from "../../graphQL/useQueryGetMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
 import Activities from "../Shared/Activities";

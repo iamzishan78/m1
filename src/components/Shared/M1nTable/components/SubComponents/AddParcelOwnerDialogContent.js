@@ -9,7 +9,7 @@ import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { Grid } from "@material-ui/core";
 import { AppContext } from "../../../../../AppContext";
 import { Modals } from "../../../../../styles/Modal";
-import { useMutation, useLazyQuery } from "@apollo/react-hooks";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import { ADDOWNERTOAPARCEL } from "../../../../../graphQL/useMutationAddOwnerToAParcel";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";

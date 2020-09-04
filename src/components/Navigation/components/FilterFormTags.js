@@ -5,7 +5,7 @@ import FilterTags from "./FilterTags";
 import FilterTrackedOwners from "./FilterTrackedOwners";
 import FilterTrackedWells from "./FilterTrackedWells";
 import Grid from "@material-ui/core/Grid";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../../AppContext";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 

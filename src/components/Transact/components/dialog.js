@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import uuid from "uuid";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 import NumberFormat from "react-number-format";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";

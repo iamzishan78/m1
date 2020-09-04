@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useLayoutEffect } from "react";
-import { useMutation, useLazyQuery } from "@apollo/react-hooks";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import loadCSS from "fg-loadcss";
 // STATE MANAGEMENT
 import { MapControlsContext } from "../../MapControlsContext";
