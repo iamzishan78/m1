@@ -17,7 +17,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import TextField from '@material-ui/core/TextField';
+import Checkbox from '@material-ui/core/Checkbox';
 import { Collapse } from "@material-ui/core";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -40,7 +40,10 @@ const useStyles = makeStyles((theme) => ({
     minWidth: "350px",
   },
   list: {
-    padding: 0,
+    border: "2px solid #ccc",
+    padding: "0px",
+    margin: "8px 0px",
+    borderRadius: "8px",
   },
   nested: {
     paddingLeft: theme.spacing(6),
@@ -51,28 +54,42 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const StyledListItem = withStyles((theme) => ({
+const StyledListItem2 = withStyles((theme) => ({
   root: {
     fontFamily: "Poppins",
+    backgroundColor: theme.palette.common.white,
+    color: "#263451",
+    border: "2px solid #17acdd",
+    borderRadius: "5px",
     "&:hover": {
       background: "#4B618F",
     },
-    backgroundColor: "#263451",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: theme.palette.common.white,
+      color: "#263451",
     },
   },
 }))(ListItem);
 
-const StyledListItem2 = withStyles((theme) => ({
+const StyledListItem = withStyles((theme) => ({
   root: {
     fontFamily: "Poppins",
     "&:hover": {
-      background: "#a3b2cf",
+      background: "#ccc",
     },
-    backgroundColor: "#4B618F",
+    backgroundColor: theme.palette.common.white,
+    borderBottom: "2px solid #ccc",
+    padding: "0px",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: theme.palette.common.white,
+      color: "#999",
+    },
+    "&:first-child": {
+      borderTopLeftRadius: "5px",
+      borderTopRightRadius: "5px"
+    },
+    "&:last-child": {
+      borderBottomLeftRadius: "5px",
+      borderBottomRightRadius: "5px",
+      borderBottom: "0px",
     },
   },
 }))(ListItem);
@@ -90,6 +107,7 @@ export default function AddLayer(props) {
   const [open, setOpen] = React.useState(false);
   const [openM1, setOpenM1] = React.useState(true);
   const [openUD, setOpenUD] = React.useState(true);
+  const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -109,8 +127,25 @@ export default function AddLayer(props) {
     setOpenUD(!openUD);
   }
 
-  const M1Layers = stateApp.layers.filter((layer) => layer.layerCategory == 'M1 Layer');
-  const UdLayers = stateApp.layers.filter((layer) => layer.layerCategory == 'UD layer');
+  const changeShowAble = (layer) => {
+    const layerIndex = currentLayers.findIndex((clayer) => clayer.layerName == layer.layerName);
+    const cpLayer = {...layer};
+    cpLayer.layerSettings.showable = !cpLayer.layerSettings.showable;
+    const existCurrentLayers = [...currentLayers];
+    existCurrentLayers[layerIndex] = layer;
+    setCurrentLayers(existCurrentLayers);
+  }
+
+  const handleApplyChange = () => {
+    setStateApp({
+      ...stateApp,
+      layers: currentLayers
+    });
+    handleClose();
+  }
+
+  const M1Layers = currentLayers.filter((layer) => layer.layerCategory == 'M1 Layer');
+  const UdLayers = currentLayers.filter((layer) => layer.layerCategory == 'UD layer');
   return (
     <ClickAwayListener onClickAway={handleClose}>
       <Dialog open={isOpen} onClose={windowClose}>
@@ -136,6 +171,12 @@ export default function AddLayer(props) {
                     <StyledListItem
                       ContainerComponent="li"
                     >
+                      <Checkbox
+                        checked={layer.layerSettings.showable}
+                        color="primary"
+                        onChange={() => changeShowAble(layer)}
+                        inputProps={{ 'aria-label': 'primary checkbox' }}
+                      />
                       <ListItemText id={labelId} primary={layer.layerName} />
                     </StyledListItem>
                 );
@@ -143,7 +184,7 @@ export default function AddLayer(props) {
             </List>
           </Collapse>
           <StyledListItem2 button onClick={handleClickUDList}>
-            <ListItemText primary="M1neral Layers" />
+            <ListItemText primary="User Defined Layers" />
             {openUD ? <ExpandLess /> : <ExpandMore />}
           </StyledListItem2>
           <Collapse in={openUD} timeout="auto" unmountOnExit>
@@ -154,6 +195,12 @@ export default function AddLayer(props) {
                     <StyledListItem
                       ContainerComponent="li"
                     >
+                      <Checkbox
+                        checked={layer.layerSettings.showable}
+                        color="primary"
+                        onChange={() => changeShowAble(layer)}
+                        inputProps={{ 'aria-label': 'primary checkbox' }}
+                      />
                       <ListItemText id={labelId} primary={layer.layerName} />
                     </StyledListItem>
                 );
@@ -162,7 +209,7 @@ export default function AddLayer(props) {
           </Collapse>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus color="primary">
+          <Button onClick={handleApplyChange} autoFocus color="primary">
             Apply
           </Button>
           <Button onClick={windowClose} color="primary">

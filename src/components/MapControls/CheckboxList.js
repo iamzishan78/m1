@@ -29,6 +29,7 @@ import LayersIcon from "@material-ui/icons/Layers";
 import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
 import PaletteIcon from '@material-ui/icons/Palette';
 import ClickIcon from "..//Shared/svgIcons/cursor-click.js";
+import AddIcon from '@material-ui/icons/Add';
 import { borders } from "@material-ui/system";
 import Box from "@material-ui/core/Box";
 import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
@@ -197,10 +198,21 @@ export default function CheckboxList(props) {
       },
       "& .MuiButton-textPrimary": {
         color: theme.palette.common.white,
-        background: "#17acdd"
+        background: "#17acdd",
+        padding: "3px 10px",
       }
     },
   }))(MenuItem);
+
+  const StyledListItemSecondaryAction = withStyles((theme) => ({
+    root: {
+      "& .MuiButton-textPrimary": {
+        color: theme.palette.common.white,
+        background: "#17acdd",
+        padding: "3px 10px",
+      }
+    }
+  }))(ListItemSecondaryAction);
 
   const StyledListItem = withStyles((theme) => ({
     root: {
@@ -397,6 +409,30 @@ export default function CheckboxList(props) {
     return true;
   };
 
+  const isShowAble = (layer) => {
+    const clayer = stateApp.layers.find((clayer) => clayer.layerName == layer.name);
+    if (clayer) {
+      return clayer.layerSettings.showable;
+    }
+    return false;
+  }
+
+  const isInteractionAble = (layer) => {
+    const clayer = stateApp.layers.find((clayer) => clayer.layerName == layer.name);
+    if (clayer) {
+      return clayer.layerSettings.interaction.interactionAble;
+    }
+    return false;
+  }
+
+  const isColorPickerAble = (layer) => {
+    const clayer = stateApp.layers.find((clayer) => clayer.layerName == layer.name);
+    if (clayer) {
+      return clayer.layerSettings.colorable;
+    }
+    return false;
+  }
+
   const handleColorPicker = (layer) => {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
@@ -434,11 +470,11 @@ export default function CheckboxList(props) {
           className={classes.subHeaderItem}
         >
           <ListItemText primary="Layer Visibility" />
-          <ListItemSecondaryAction>
-            <Button onClick={openAddLayer} color="primary">
+          <StyledListItemSecondaryAction>
+            <Button onClick={openAddLayer} color="primary" startIcon={<AddIcon />}>
               Add Layer
             </Button>
-          </ListItemSecondaryAction>
+          </StyledListItemSecondaryAction>
         </StyledMenuItem>
 
         <StyledListItem2 button onClick={handleClick}>
@@ -456,64 +492,66 @@ export default function CheckboxList(props) {
                   <List className={classes.list}>
                     {stateApp.styleLayers.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
-                      return (
-                        <Draggable
-                          key={labelId}
-                          draggableId={labelId}
-                          index={index}
-                        >
-                          {(provided, snapshot) => (
-                            <StyledListItem
-                              ContainerComponent="li"
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                            >
-                              <ListItemIcon {...provided.dragHandleProps}>
-                                <DragIndicator />
-                              </ListItemIcon>
-                              <ListItemText id={labelId} primary={layer.name} />
-                              {(layer.name === "Wells" ||
-                                layer.name === "Permits" ||
-                                layer.name === "Rig Activity") && (
-                                <div style={{ paddingRight: 20 }}>
-                                  <Checkbox
-                                    icon={
-                                      <CancelOutlinedIcon htmlColor="#12abe0" />
-                                    }
-                                    checkedIcon={<ClickIcon />}
-                                    edge="start"
-                                    checked={
-                                      stateApp.checkedLayersInteraction
-                                        ? stateApp.checkedLayersInteraction.indexOf(
-                                            index
-                                          ) !== -1
-                                        : false
-                                    }
-                                    tabIndex={-1}
-                                    disableRipple
-                                    inputProps={{ "aria-labelledby": labelId }}
-                                    onChange={handleToggleInteraction(index)}
-                                  />
-                                </div>
-                              )}
-                              <FormControlLabel
-                                control={
-                                  <Switch
-                                    checked={
-                                      stateApp.checkedLayers
-                                        ? stateApp.checkedLayers.indexOf(
-                                            index
-                                          ) !== -1
-                                        : false
-                                    }
-                                    onChange={handleToggle(index)}
-                                  />
-                                }
-                              />
-                            </StyledListItem>
-                          )}
-                        </Draggable>
-                      );
+                      if (isShowAble(layer)) {
+                        return (
+                          <Draggable
+                            key={labelId}
+                            draggableId={labelId}
+                            index={index}
+                          >
+                            {(provided, snapshot) => (
+                              <StyledListItem
+                                ContainerComponent="li"
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                              >
+                                <ListItemIcon {...provided.dragHandleProps}>
+                                  <DragIndicator />
+                                </ListItemIcon>
+                                <ListItemText id={labelId} primary={layer.name} />
+                                {(isInteractionAble(layer)) && (
+                                  <div style={{ paddingRight: 20 }}>
+                                    <Checkbox
+                                      icon={
+                                        <CancelOutlinedIcon htmlColor="#12abe0" />
+                                      }
+                                      checkedIcon={<ClickIcon />}
+                                      edge="start"
+                                      checked={
+                                        stateApp.checkedLayersInteraction
+                                          ? stateApp.checkedLayersInteraction.indexOf(
+                                              index
+                                            ) !== -1
+                                          : false
+                                      }
+                                      tabIndex={-1}
+                                      disableRipple
+                                      inputProps={{ "aria-labelledby": labelId }}
+                                      onChange={handleToggleInteraction(index)}
+                                    />
+                                  </div>
+                                )}
+                                <FormControlLabel
+                                  control={
+                                    <Switch
+                                      checked={
+                                        stateApp.checkedLayers
+                                          ? stateApp.checkedLayers.indexOf(
+                                              index
+                                            ) !== -1
+                                          : false
+                                      }
+                                      onChange={handleToggle(index)}
+                                    />
+                                  }
+                                />
+                              </StyledListItem>
+                            )}
+                          </Draggable>
+                        );
+                      } else {
+                        return null;
+                      }
                     })}
                   </List>
                 </RootRef>
@@ -578,48 +616,52 @@ export default function CheckboxList(props) {
                                   />
 
                                   {/* Color Picker for UD Layer */}
-                                  <ListItemIcon onClick={() => handleColorPickerUDLayer(layer)}>
-                                    <PaletteIcon />
-                                  </ListItemIcon>
+                                  {(isColorPickerAble(layer)) && (
+                                    <ListItemIcon onClick={() => handleColorPickerUDLayer(layer)}>
+                                      <PaletteIcon />
+                                    </ListItemIcon>
+                                  )}
 
                                   <div style={{ paddingRight: 20 }}>
-                                    <Checkbox
-                                      disabled={!ifLayerHaveData(layer)}
-                                      icon={
-                                        <CancelOutlinedIcon
-                                          htmlColor={
-                                            !ifLayerHaveData(layer)
-                                              ? "rgb(127, 149, 199)"
-                                              : "#12abe0"
-                                          }
-                                        />
-                                      }
-                                      checkedIcon={
-                                        <ClickIcon
-                                          color={
-                                            !ifLayerHaveData(layer)
-                                              ? "rgb(127, 149, 199)"
-                                              : "#12abe0"
-                                          }
-                                        />
-                                      }
-                                      edge="start"
-                                      checked={
-                                        stateApp.checkedUserDefinedLayersInteraction
-                                          ? stateApp.checkedUserDefinedLayersInteraction.indexOf(
-                                              index
-                                            ) !== -1
-                                          : false
-                                      }
-                                      tabIndex={-1}
-                                      disableRipple
-                                      inputProps={{
-                                        "aria-labelledby": labelId,
-                                      }}
-                                      onChange={handleToggleUserDefinedInteraction(
-                                        index
-                                      )}
-                                    />
+                                    {(isInteractionAble(layer)) && (
+                                      <Checkbox
+                                        disabled={!ifLayerHaveData(layer)}
+                                        icon={
+                                          <CancelOutlinedIcon
+                                            htmlColor={
+                                              !ifLayerHaveData(layer)
+                                                ? "rgb(127, 149, 199)"
+                                                : "#12abe0"
+                                            }
+                                          />
+                                        }
+                                        checkedIcon={
+                                          <ClickIcon
+                                            color={
+                                              !ifLayerHaveData(layer)
+                                                ? "rgb(127, 149, 199)"
+                                                : "#12abe0"
+                                            }
+                                          />
+                                        }
+                                        edge="start"
+                                        checked={
+                                          stateApp.checkedUserDefinedLayersInteraction
+                                            ? stateApp.checkedUserDefinedLayersInteraction.indexOf(
+                                                index
+                                              ) !== -1
+                                            : false
+                                        }
+                                        tabIndex={-1}
+                                        disableRipple
+                                        inputProps={{
+                                          "aria-labelledby": labelId,
+                                        }}
+                                        onChange={handleToggleUserDefinedInteraction(
+                                          index
+                                        )}
+                                      />
+                                    )}
                                   </div>
 
                                   <FormControlLabel

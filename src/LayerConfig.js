@@ -1155,7 +1155,7 @@ export const layers = [
     layerPaintProps: []
   },
   {
-    layerName: 'Area of Interests',
+    layerName: 'Area of Interest',
     layerType: 'data layer',
     layerCategory: 'UD layer',
     layerSettings: {

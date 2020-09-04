@@ -4256,12 +4256,7 @@ export default function Map() {
             source: 'abstract_geo_source',
             paint: {
               'fill-color': '#888',
-              'fill-opacity': [
-                'case',
-                ['boolean', ['feature-state', 'hover'], false], 0.5,
-                ['boolean', ['feature-state', 'click'], false], 0.5,
-                0
-              ]
+              'fill-opacity': 0
             }
           });
 
@@ -4274,7 +4269,12 @@ export default function Map() {
               'line-cap': 'round'
             },
             paint: {
-              'line-color': '#888',
+              'line-color': [
+                'case',
+                ['boolean', ['feature-state', 'hover'], false], '#e5eb34',
+                ['boolean', ['feature-state', 'click'], false], '#e5eb34',
+                '#888'
+              ],
               'line-width': 2
             }
           });
