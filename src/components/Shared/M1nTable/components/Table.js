@@ -853,7 +853,12 @@ function SubTable(props) {
                   };
 
                   ////// if non editable column
-                  if (!column.editable) {
+                  if (
+                    !column.editable ||
+                    (props.targetLabel === "Parcel Owner" &&
+                      column.name === "name" &&
+                      tableMeta.rowData[11] !== "false")
+                  ) {
                     //// if no value
                     if (value === "" || value === null || !value) return value;
 

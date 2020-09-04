@@ -40,8 +40,7 @@ const capitalizeFirstLetter = (string) => {
 
 const joinAddress = (row) => {
   let rowData = {
-    Address1: row.Address1,
-    Address2: row.Address2,
+    StreetAddress: row.StreetAddress,
     City: row.City,
     State: row.State,
     Zip: row.Zip,
@@ -112,7 +111,7 @@ function MapGridCardSearch(props) {
     () =>
       debounce((request, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName%2CAddress1&%24top=" +
+          "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName&%24top=" +
           searchTop +
           "&search=" +
           request.input;
@@ -127,7 +126,7 @@ function MapGridCardSearch(props) {
         };
 
         console.log(
-          "request made to lod2019-index search at: " + new Date().toString()
+          "request made to globalowner-index search at: " + new Date().toString()
         );
 
         fetch(endpoint, options)
@@ -290,6 +289,7 @@ function MapGridCardSearch(props) {
                   ...results.value.map((result) => {
                     return {
                       ...result,
+                      id: result.Id,
                       FullAddress: joinAddress(result),
                     };
                   }),

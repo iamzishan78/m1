@@ -142,7 +142,7 @@ export default function BuyContactsInfoDialogContent(props) {
 
     getPersonDataQuery({
       variables: { persons },
-      refetchQueries: ["getMelissaRecords"],
+      refetchQueries: ["getLastMelissaRecord"],
       awaitRefetchQueries: true,
     })
   }

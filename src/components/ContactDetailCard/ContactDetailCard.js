@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
+import moment from "moment";
 import Comments from "../Shared/Comments";
 import Tags from "../Shared/Tagger";
 import Avatar from "react-avatar";
@@ -13,7 +14,7 @@ import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
-import { MELISSARECORDS } from "../../graphQL/useQueryGetMelissaRecords";
+import { LASTMELISSARECORD } from "../../graphQL/useQueryGetMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery } from "@apollo/react-hooks";
 import ConfirmationDialog from "./components/ConfirmationDialog";
@@ -21,6 +22,7 @@ import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubCompo
 import Activities from "../Shared/Activities";
 import Deals from "../Shared/Deals";
 import LeadScore from "../Shared/LeadScore";
+import LeadStage from "../Shared/LeadStage";
 import { AppContext } from "../../AppContext";
 import RecentConversations from "../Shared/RecentConversations";
 import TextField from "@material-ui/core/TextField";
@@ -283,7 +285,7 @@ export default function ContactDetailCard(props) {
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
     TRANSACTIONDATA
   );
-  const [getMelissaRecords, { data: mData }] = useLazyQuery(MELISSARECORDS, {
+  const [getLastMelissaRecord, { data: mData }] = useLazyQuery(LASTMELISSARECORD, {
     fetchPolicy: "network-only",
   });
 
@@ -332,6 +334,7 @@ export default function ContactDetailCard(props) {
   }, [props.contactId]);
 
   useEffect(() => {
+    console.log("SET CONTACT:", data);
     if (data && data.contact) {
       setContactData(data.contact);
     }
@@ -339,7 +342,7 @@ export default function ContactDetailCard(props) {
 
   useEffect(() => {
     if (props.contactId) {
-      getMelissaRecords({
+      getLastMelissaRecord({
         variables: {
           contactId: props.contactId,
         },
@@ -348,8 +351,8 @@ export default function ContactDetailCard(props) {
   }, [props.contactId]);
 
   useEffect(() => {
-    if (mData && mData.getMelissaRecords.success === true) {
-      setMelissaData(mData.getMelissaRecords);
+    if (mData && mData.getLastMelissaRecord.success === true) {
+      setMelissaData(mData.getLastMelissaRecord);
     }
   }, [mData]);
 
@@ -401,9 +404,7 @@ export default function ContactDetailCard(props) {
               variant="contained"
               // size="small"
               onClick={() => {
-                handleExpandClick(
-                  "buyContactsInfo"
-                );
+                handleExpandClick("buyContactsInfo");
               }}
             >
               Buy Info
@@ -423,9 +424,7 @@ export default function ContactDetailCard(props) {
               variant="contained"
               // size="small"
               onClick={() => {
-                handleExpandClick(
-                  "deleteConfirmation"
-                );
+                handleExpandClick("deleteConfirmation");
                 //setOpenDialog(true);
               }}
             >
@@ -619,12 +618,16 @@ export default function ContactDetailCard(props) {
           <div className={classes.SectMargin}>
             <Grid item xs={12} style={{ minHeight: "33px" }}>
               <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
-                Lead Stage Changed:
-                <span style={{ fontWeight: "normal" }}> 4 months ago</span>
-              </h4>
-              <h4 style={{ margin: "0 0 13px 0", float: "right" }}>
-                Last Contacted:
-                <span style={{ fontWeight: "normal" }}> 2 hours ago</span>
+                Lead Stage Changed:{" "}
+                <span style={{ fontWeight: "normal" }}>
+                  {moment(
+                    Number(
+                      contactData.lastUpdateLeadStageAt
+                        ? contactData.lastUpdateLeadStageAt
+                        : contactData.lastUpdateAt
+                    )
+                  ).fromNow()}
+                </span>
               </h4>
             </Grid>
 
@@ -632,10 +635,16 @@ export default function ContactDetailCard(props) {
               item
               xs={12}
               style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}
-            ></Grid>
+            >
+              <LeadStage
+                leadStage={
+                  contactData.leadStage ? contactData.leadStage : "New"
+                }
+                id={contactData._id}
+              />
+            </Grid>
           </div>
         </Grid>
-
         {/*/////////// Recent Activities. //////////// */}
         <Grid item xs={12} className={`${classes.border}`}>
           <div className={classes.SectMargin}>
@@ -805,10 +814,10 @@ export default function ContactDetailCard(props) {
           {openDialog === "buyContactsInfo" && (
             <BuyContactsInfoDialogContent
               onClose={handleCloseDialog}
-              rows={ [contactData] }
-              setRows={() => { }}
+              rows={[contactData]}
+              setRows={() => {}}
               updateMelissaTable={() => {
-                getMelissaRecords({
+                getLastMelissaRecord({
                   variables: {
                     contactId: props.contactId,
                   },
