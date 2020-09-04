@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { FormLabel } from "@material-ui/core";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 import { Grid } from "@material-ui/core";
 import { Modals } from "../../../../../styles/Modal";
 import DialogActions from "@material-ui/core/DialogActions";

@@ -10,7 +10,7 @@ import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext"; ///////////
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";

@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Switch from "@material-ui/core/Switch";
 // import { NavigationContext } from "../NavigationContext";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 import { WELLSQUERY } from "../../graphQL/useQueryWells";
 import { TRACKSBYOBJECTTYPE } from "../../graphQL/useQuerytracksByObjectType";
 import { AppContext } from "../../AppContext";

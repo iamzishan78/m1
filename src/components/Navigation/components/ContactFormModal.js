@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useMutation, useLazyQuery } from "@apollo/react-hooks";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import styled from "styled-components";
 import * as EmailValidator from "email-validator";
 import { makeStyles } from "@material-ui/core/styles";

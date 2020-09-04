@@ -39,7 +39,7 @@ import WellCardDetails from "./WellCardDetails";
 import TrackToggleButton from "../Shared/TrackToggleButton";
 
 import useQueryWell from "../../graphQL/useQueryWell";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 // import { VERTEXEDGESQUERY } from "../../graphQL/useQueryVertexEdges";/////////////////
 import { WELLSUMMARYDETAILQUERY } from "../../graphQL/useQueryWellSummaryDetail";
 

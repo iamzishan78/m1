@@ -19,7 +19,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import { OWNERWELLSQUERY } from "../../../graphQL/useQueryOwnerWells ";
-import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { OWNERSLATSLONS } from "../../../graphQL/useQueryOwnerLatsLonsArray";
 import { OPERATORSLATSLONS } from "../../../graphQL/useQueryOperatorLatsLonsArray";

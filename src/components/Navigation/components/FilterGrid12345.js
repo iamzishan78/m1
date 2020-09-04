@@ -6,7 +6,7 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { NavigationContext } from "../NavigationContext";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 import { WELLGRID } from "../../../graphQL/useQueryWellGrId12345";
 
 const useStyles = makeStyles((theme) => ({
