@@ -315,18 +315,13 @@ export default function Map() {
         },
       });
 
-      getFileLayers({
-        variables: {
-          userId: stateApp.user.mongoId
-        }
-      });
-
       getLayerCongfigsByUser({
         variables: {
           userId: stateApp.user.mongoId
         }
       });
-
+      
+      getFileLayers();
       getCustomLayers();
 
     }

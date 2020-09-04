@@ -8,6 +8,7 @@ import { withStyles, makeStyles, responsiveFontSizes } from "@material-ui/core/s
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
+import AddUserData from "./addUserData";
 import * as turf from "@turf/turf";
 import MuiAlert from '@material-ui/lab/Alert';
 import Dialog from '@material-ui/core/Dialog';
@@ -144,6 +145,10 @@ export default function AddLayer(props) {
     handleClose();
   }
 
+  const handleAddLayer = () => {
+    return <AddUserData />;
+  }
+
   const M1Layers = currentLayers.filter((layer) => layer.layerCategory == 'M1 Layer');
   const UdLayers = currentLayers.filter((layer) => layer.layerCategory == 'UD layer');
   return (
@@ -156,7 +161,7 @@ export default function AddLayer(props) {
           <DialogContentText>
             Select one or more of the available layers below to add them to your current map view.
           </DialogContentText>
-          <Button color="primary">
+          <Button color="primary" onClick={handleAddLayer}>
             Add Layer
           </Button>
           <StyledListItem2 button onClick={handleClickM1List}>

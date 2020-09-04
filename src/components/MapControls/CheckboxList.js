@@ -387,51 +387,27 @@ export default function CheckboxList(props) {
 
   const ifLayerHaveData = (layer) => {
     //// temporary disabling the Title Layer
-    if (layer.name === "Title") return false;
+    if (layer.layerName === "Title") return false;
     ////
 
     if (
-      (layer.name === "Tagged Wells/Owners" &&
+      (layer.layerName === "Tagged Wells/Owners" &&
         !(
           stateApp.wellListFromTagsFilter &&
           stateApp.wellListFromTagsFilter.length > 0
         )) ||
-      (layer.name === "Search" &&
+      (layer.layerName === "Search" &&
         !(
           stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0
         )) ||
-      (layer.name === "Tracked Wells" &&
+      (layer.layerName === "Tracked Wells" &&
         !(stateApp.trackedwells && stateApp.trackedwells.length > 0)) ||
-      (layer.name === "Tracked Owners" &&
+      (layer.layerName === "Tracked Owners" &&
         !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))
     )
       return false;
     return true;
   };
-
-  const isShowAble = (layer) => {
-    const clayer = stateApp.layers.find((clayer) => clayer.layerName == layer.name);
-    if (clayer) {
-      return clayer.layerSettings.showable;
-    }
-    return false;
-  }
-
-  const isInteractionAble = (layer) => {
-    const clayer = stateApp.layers.find((clayer) => clayer.layerName == layer.name);
-    if (clayer) {
-      return clayer.layerSettings.interaction.interactionAble;
-    }
-    return false;
-  }
-
-  const isColorPickerAble = (layer) => {
-    const clayer = stateApp.layers.find((clayer) => clayer.layerName == layer.name);
-    if (clayer) {
-      return clayer.layerSettings.colorable;
-    }
-    return false;
-  }
 
   const handleColorPicker = (layer) => {
     setStateMapControls((stateMapControls) => ({
@@ -452,6 +428,9 @@ export default function CheckboxList(props) {
       setUserFileLayer(stateApp.userFileLayers)
     }
   }, [stateApp.userFileLayers]);
+
+  const M1Layers = currentLayers.filter((layer) => layer.layerCategory == 'M1 Layer');
+  const UdLayers = currentLayers.filter((layer) => layer.layerCategory == 'UD layer');
 
   return (
     <ClickAwayListener onClickAway={handleClose}>
@@ -490,9 +469,9 @@ export default function CheckboxList(props) {
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <List className={classes.list}>
-                    {stateApp.styleLayers.map((layer, index) => {
+                    {M1Layers.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
-                      if (isShowAble(layer)) {
+                      if (layer.layerSettings.isShowAble) {
                         return (
                           <Draggable
                             key={labelId}
@@ -508,8 +487,8 @@ export default function CheckboxList(props) {
                                 <ListItemIcon {...provided.dragHandleProps}>
                                   <DragIndicator />
                                 </ListItemIcon>
-                                <ListItemText id={labelId} primary={layer.name} />
-                                {(isInteractionAble(layer)) && (
+                                <ListItemText id={labelId} primary={layer.layerName} />
+                                {layer.layerSettings.interaction.interactionAble && (
                                   <div style={{ paddingRight: 20 }}>
                                     <Checkbox
                                       icon={
@@ -549,8 +528,6 @@ export default function CheckboxList(props) {
                             )}
                           </Draggable>
                         );
-                      } else {
-                        return null;
                       }
                     })}
                   </List>
@@ -573,121 +550,122 @@ export default function CheckboxList(props) {
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <List className={classes.list}>
-                    {stateApp.userDefinedLayers.map((layer, index) => {
+                    {UdLayers.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
-
-                      return (
-                        <Draggable
-                          key={labelId}
-                          draggableId={labelId}
-                          index={index}
-                        >
-                          {(provided, snapshot) => (
-                            <Box borderColor={layer.idColor} {...defaultProps}>
-                              <Tooltip
-                                placement="top"
-                                title={
-                                  !ifLayerHaveData(layer)
-                                    ? //// temporary disabling the Title Layer
-                                      layer.name === "Title"
-                                      ? "Temporary Disabled"
-                                      : ////
-                                        "Please choose the data first."
-                                    : ""
-                                }
-                              >
-                                <StyledListItem
-                                  ContainerComponent="li"
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                >
-                                  <ListItemIcon {...provided.dragHandleProps}>
-                                    <DragIndicator />
-                                  </ListItemIcon>
-
-                                  <ListItemText
-                                    id={labelId}
-                                    primary={layer.name}
-                                    className={
-                                      !ifLayerHaveData(layer)
-                                        ? classes.disabledLayerTitle
-                                        : ""
-                                    }
-                                  />
-
-                                  {/* Color Picker for UD Layer */}
-                                  {(isColorPickerAble(layer)) && (
-                                    <ListItemIcon onClick={() => handleColorPickerUDLayer(layer)}>
-                                      <PaletteIcon />
+                      if (layer.layerSettings.showable) {
+                        return (
+                          <Draggable
+                            key={labelId}
+                            draggableId={labelId}
+                            index={index}
+                          >
+                            {(provided, snapshot) => (
+                              // <Box borderColor={layer.idColor} {...defaultProps}>
+                              //   <Tooltip
+                              //     placement="top"
+                              //     title={
+                              //       !ifLayerHaveData(layer)
+                              //         ? //// temporary disabling the Title Layer
+                              //           layer.name === "Title"
+                              //           ? "Temporary Disabled"
+                              //           : ////
+                              //             "Please choose the data first."
+                              //         : ""
+                              //     }
+                              //   >
+                                  <StyledListItem
+                                    ContainerComponent="li"
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                  >
+                                    <ListItemIcon {...provided.dragHandleProps}>
+                                      <DragIndicator />
                                     </ListItemIcon>
-                                  )}
 
-                                  <div style={{ paddingRight: 20 }}>
-                                    {(isInteractionAble(layer)) && (
-                                      <Checkbox
-                                        disabled={!ifLayerHaveData(layer)}
-                                        icon={
-                                          <CancelOutlinedIcon
-                                            htmlColor={
-                                              !ifLayerHaveData(layer)
-                                                ? "rgb(127, 149, 199)"
-                                                : "#12abe0"
-                                            }
-                                          />
-                                        }
-                                        checkedIcon={
-                                          <ClickIcon
-                                            color={
-                                              !ifLayerHaveData(layer)
-                                                ? "rgb(127, 149, 199)"
-                                                : "#12abe0"
-                                            }
-                                          />
-                                        }
-                                        edge="start"
-                                        checked={
-                                          stateApp.checkedUserDefinedLayersInteraction
-                                            ? stateApp.checkedUserDefinedLayersInteraction.indexOf(
-                                                index
-                                              ) !== -1
-                                            : false
-                                        }
-                                        tabIndex={-1}
-                                        disableRipple
-                                        inputProps={{
-                                          "aria-labelledby": labelId,
-                                        }}
-                                        onChange={handleToggleUserDefinedInteraction(
-                                          index
-                                        )}
-                                      />
+                                    <ListItemText
+                                      id={labelId}
+                                      primary={layer.layerName}
+                                      className={
+                                        !ifLayerHaveData(layer)
+                                          ? classes.disabledLayerTitle
+                                          : ""
+                                      }
+                                    />
+
+                                    {/* Color Picker for UD Layer */}
+                                    {layer.layerSettings.colorable && (
+                                      <ListItemIcon onClick={() => handleColorPickerUDLayer(layer)}>
+                                        <PaletteIcon />
+                                      </ListItemIcon>
                                     )}
-                                  </div>
 
-                                  <FormControlLabel
-                                    control={
-                                      <Switch
-                                        checked={
-                                          stateApp.checkedUserDefinedLayers
-                                            ? stateApp.checkedUserDefinedLayers.indexOf(
-                                                index
-                                              ) !== -1
-                                            : false
-                                        }
-                                        onChange={handleToggleUserDefined(
-                                          index
-                                        )}
-                                      />
-                                    }
-                                  />
-                                </StyledListItem>
-                              </Tooltip>
-                            </Box>
-                          )}
-                        </Draggable>
-                      );
+                                    <div style={{ paddingRight: 20 }}>
+                                      {layer.layerSettings.interaction.interactionAble && (
+                                        <Checkbox
+                                          disabled={!ifLayerHaveData(layer)}
+                                          icon={
+                                            <CancelOutlinedIcon
+                                              htmlColor={
+                                                !ifLayerHaveData(layer)
+                                                  ? "rgb(127, 149, 199)"
+                                                  : "#12abe0"
+                                              }
+                                            />
+                                          }
+                                          checkedIcon={
+                                            <ClickIcon
+                                              color={
+                                                !ifLayerHaveData(layer)
+                                                  ? "rgb(127, 149, 199)"
+                                                  : "#12abe0"
+                                              }
+                                            />
+                                          }
+                                          edge="start"
+                                          checked={
+                                            stateApp.checkedUserDefinedLayersInteraction
+                                              ? stateApp.checkedUserDefinedLayersInteraction.indexOf(
+                                                  index
+                                                ) !== -1
+                                              : false
+                                          }
+                                          tabIndex={-1}
+                                          disableRipple
+                                          inputProps={{
+                                            "aria-labelledby": labelId,
+                                          }}
+                                          onChange={handleToggleUserDefinedInteraction(
+                                            index
+                                          )}
+                                        />
+                                      )}
+                                    </div>
+
+                                    <FormControlLabel
+                                      control={
+                                        <Switch
+                                          checked={
+                                            stateApp.checkedUserDefinedLayers
+                                              ? stateApp.checkedUserDefinedLayers.indexOf(
+                                                  index
+                                                ) !== -1
+                                              : false
+                                          }
+                                          onChange={handleToggleUserDefined(
+                                            index
+                                          )}
+                                        />
+                                      }
+                                    />
+                                  </StyledListItem>
+                              //   </Tooltip>
+                              // </Box>
+                            )}
+                          </Draggable>
+                        );
+                      }
                     })}
-                    {userFileLayers.map((layer, index) => {
+                    {/* {userFileLayers.map((layer, index) => {
                       const labelId = `file-list-label-${index}`;
 
                       return (
@@ -737,7 +715,7 @@ export default function CheckboxList(props) {
                           )}
                         </Draggable>
                       );
-                    })}
+                    })} */}
                   </List>
                 </RootRef>
               )}
