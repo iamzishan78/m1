@@ -72,6 +72,7 @@ export default function CheckboxList(props) {
   const [state, setState] = React.useState({
     checkedB: true,
   });
+  const [currentLayers] = useState(stateApp.layers);
   const handleChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
   };
