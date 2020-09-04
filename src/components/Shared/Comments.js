@@ -235,9 +235,34 @@ export default function Comments(props) {
     }
   }, [props.targetSourceId, props.multipleIds]);
 
+  const sortArrayBasedOnTs = (array) => {
+    const compare = (a, b) => {
+      if (a.ts > b.ts) return -1;
+      if (b.ts > a.ts) return 1;
+  
+      return 0;
+    };
+  
+    if (!props.multipleIds) array.sort(compare);
+    
+    return array
+  }
+
   useEffect(() => {
     if (dataComments && dataComments.commentsByObjectId) {
-      setCommentsArray(dataComments.commentsByObjectId);
+      setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
+      //setCommentsArray(dataComments.commentsByObjectId);
+      //let tmp = Object.assign({}, dataComments.commentsByObjectId)
+      /*let tmp = [...dataComments.commentsByObjectId]
+      const compare = (a, b) => {
+        if (a.ts > b.ts) return -1;
+        if (b.ts > a.ts) return 1;
+    
+        return 0;
+      };
+    
+      if (!props.multipleIds) tmp.sort(compare);
+      setCommentsArray(tmp);*/
     }
     setLoadingComments(false);
   }, [dataComments]);
@@ -273,7 +298,7 @@ export default function Comments(props) {
         }
       }
 
-      setCommentsArray(comments);
+      setCommentsArray(sortArrayBasedOnTs(comments));
     }
     setLoadingComments(false);
   }, [dataCommentsMultiIds, publicComment]);
@@ -405,15 +430,6 @@ export default function Comments(props) {
       setEmptyInput(false);
     }
   };
-
-  const compare = (a, b) => {
-    if (a.ts > b.ts) return -1;
-    if (b.ts > a.ts) return 1;
-
-    return 0;
-  };
-
-  if (!props.multipleIds) commentsArray.sort(compare);
 
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
