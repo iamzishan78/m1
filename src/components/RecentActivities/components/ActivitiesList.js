@@ -144,7 +144,7 @@ export default function ActivitiesList({
 
   let sortedActivityLog =
     activityLog && activityLog.length > 0
-      ? activityLog
+      ? Object.values(activityLog)
           // .filter((activity) => activity.user_id === user_id) // get only current user's activities
           .sort((a, b) => moment(b.dateTime).diff(moment(a.dateTime))) // sort activities according to date
       : [];
