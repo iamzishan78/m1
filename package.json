@@ -32,6 +32,7 @@
     "graphql-tag": "^2.10.3",
     "immutable": "^3.8.2",
     "jquery": "^3.5.1",
+    "lodash": "^4.17.20",
     "mapbox-gl": "^1.10.1",
     "mapbox-gl-draw-circle": "^1.1.1",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
