@@ -972,7 +972,7 @@ function M1nTable(props) {
     fetchPolicy: "cache-and-network",
   });
   //////////
-  const [getContacts, { data: dataContacts }] = useLazyQuery(CONTACTSQUERY, {
+  const [getContacts, { data: constDataContacts }] = useLazyQuery(CONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
   });
   //////////
@@ -998,6 +998,19 @@ function M1nTable(props) {
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
+
+  // workaround to make constDataContacts.contacts[i] editable
+  // TODO: set correct isTracked on backend, not frontend
+  const [dataContacts, setDataContacts] = useState(null);
+  useEffect(() => {
+    if (constDataContacts && constDataContacts.contacts) {
+      let tmpDataContacts = { contacts: [] }
+      constDataContacts.contacts.forEach((contact) => {
+        tmpDataContacts.contacts.push(Object.create(contact))
+      })
+      setDataContacts(tmpDataContacts)
+    }
+  }, [constDataContacts]);
 
   useEffect(() => {
     if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks) {
