@@ -21,6 +21,7 @@ import ConfirmationDialog from "./components/ConfirmationDialog";
 import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
 import Activities from "../Shared/Activities";
 import Deals from "../Shared/Deals";
+import Documents from "../Shared/Documents";
 import LeadScore from "../Shared/LeadScore";
 import LeadStage from "../Shared/LeadStage";
 import { AppContext } from "../../AppContext";
@@ -787,6 +788,16 @@ export default function ContactDetailCard(props) {
                 detailCard
                 top={2}
                 viewAll={handleClickRightDialogOpen}
+              />
+              <Divider />
+            </Grid>
+
+            <Grid item xs={12} className={classes.Comments}>
+              <Documents
+                // contact={contactData}
+                // transactData={transactData}
+                // transactId={transactId}
+                // selectRowOpenContact={props.selectRowOpenContact}
               />
               <Divider />
             </Grid>

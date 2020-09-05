@@ -176,7 +176,7 @@ export default function Deals({ contact, ...props }) {
           selectRowOpenContact={props.selectRowOpenContact}
           contact={contact}
         />
-        <CardActions>
+        <CardActions style={{ padding: "23px 23px 8px 23px" }}>
           <Grid container justify="space-between">
             <Grid item>
               <Typography variant="button" gutterBottom>
