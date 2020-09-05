@@ -798,6 +798,9 @@ export default function ContactDetailCard(props) {
                 // transactData={transactData}
                 // transactId={transactId}
                 // selectRowOpenContact={props.selectRowOpenContact}
+                handleOpenExpandableCard={handleOpenExpandableCard}
+                id={contactData._id}
+                user_id={stateApp.user.email}
               />
               <Divider />
             </Grid>
