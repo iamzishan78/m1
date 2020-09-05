@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useCallback} from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import Button from "@material-ui/core/Button";
@@ -9,8 +9,13 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import IconButton from '@material-ui/core/IconButton';
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+import DeleteIcon from '@material-ui/icons/Delete';
+import GetAppIcon from '@material-ui/icons/GetApp';
+
+import {useDropzone} from 'react-dropzone'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,28 +55,77 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       fontWeight: "bold",
       textDecoration: "underline",
-    },
-    uploadTitle: {
-      width: "fit-content",
-      margin: "0",
-      float: "left",
-      color: "#757575",
-      fontWeight: "normal",
-    },
-    uploadSubtext: {
-      color: "rgb(176, 176, 176)",
-      margin: "0",
-      fontWeight: "normal",
-    },
-    fileUploadSection: {
-      minHeight: "35px",
-      display: "flex",
-      justifyContent: "space-between",
-      flexDirection: "column",
-      width: "100%"
-    },
+    }
+
   },
+  fileUploadSection: {
+    minHeight: "35px",
+    display: "flex",
+    justifyContent: "space-between",
+    flexDirection: "column",
+    width: "100%"
+  },
+  fileUploadTopSection: {
+    minHeight: "35px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems:"center",
+    width: "100%",
+    marginBottom:"23px"
+  },
+  uploadTitle: {
+    margin: "0",
+    color: "#757575",
+    fontWeight: "normal",
+    marginBottom:"8px"
+  },
+  uploadSubtext: {
+    color: "rgb(176, 176, 176)",
+    margin: "0",
+    fontWeight: "normal",
+  },
+  IconSection:{
+    minHeight: "35px",
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    width:"fit-content"
+  },
+  fileDrop:{
+    minHeight:"35px",
+    padding:"10px 40px",
+    color: "#757575",
+    fontWeight: "normal",
+    backgroundColor:"#eee",
+    textAlign:"center",
+    display:"flex",
+    alignItems:"center",
+    justifyContent:"center",
+    border:"2px dashed rgb(176, 176, 176)",
+    marginBottom:"23px"
+  }
+  
 }));
+
+function UploadZone() {
+  const onDrop = useCallback(acceptedFiles => {
+    // Do something with the files
+  }, [])
+  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+  const classes = useStyles();
+
+
+  return (
+    <div {...getRootProps()} className={classes.fileDrop}>
+      <input {...getInputProps()}  />
+      {
+        isDragActive ?
+          <h5>Drop the files here ...</h5> :
+          <h5>Click to upload, or Drag a file here</h5>
+      }
+    </div>
+  )
+}
 
 export default function Documents() {
   const classes = useStyles();
@@ -92,18 +146,25 @@ export default function Documents() {
           </h4>
         </Grid>
       </CardActions>
-      <CardContent>
+      <CardContent style={{ padding: "0 23px" }}>
         <div className={classes.fileUploadSection}>
-          <div>
-            <h4 className={classes.uploadTitle}>Testupload.pdf</h4>
-            <h5 className={classes.uploadSubtext}>Kyle Chapman</h5>
-            <h5 className={classes.uploadSubtext}>a few seconds ago</h5>
-            <h5 className={classes.uploadSubtext}>application/pdf 5.64kb</h5>
+          <div className={classes.fileUploadTopSection}>
+            <div>
+              <h4 className={classes.uploadTitle}>Testupload.pdf</h4>
+              <h5 className={classes.uploadSubtext}>Kyle Chapman</h5>
+              <h5 className={classes.uploadSubtext}>a few seconds ago</h5>
+              <h5 className={classes.uploadSubtext}>application/pdf 5.64kb</h5>
+            </div>
+            <div className={classes.IconSection}>
+              <IconButton size="small" style={{marginBottom:"8px"}}>
+                <DeleteIcon/>
+              </IconButton>
+              <IconButton size="small">
+                <GetAppIcon/>
+              </IconButton>
+            </div>
           </div>
-          <div>
-            <h4>Icon</h4>
-            <h4>Icon2</h4>
-          </div>
+          <UploadZone/>
         </div>
       </CardContent>
     </div>
