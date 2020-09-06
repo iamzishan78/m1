@@ -35,13 +35,17 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { CircularProgress } from "@material-ui/core";
 import Profile from "./components/Profile/Profile";
 import ProfileDetails from "./components/Profile/ProfileDetails";
-
+import {ProfileContextProvider} from "./components/Profile/ProfileContext";
+import InitializeProfile from "./components/Profile/InitializeProfileContext";
+import UserManagementContainer from "./components/UserManagement/Container";
 import Notifications from "./components/Notifications/Notifications";
 
 //redux
 import { Provider as ReduxProvider } from "react-redux";
 import { ConnectedRouter } from "connected-react-router";
 import configureStore, { history } from "./store";
+
+// user management
 
 const store = configureStore(/ provide initial state if any /);
 
@@ -168,7 +172,12 @@ const PrivateRoute = ({ component, ...options }) => {
       : Login;
   //: LoginB2C;
 
-  return <Route {...options} component={finalComponent} />;
+  return (
+    <div>
+      <Route {...options} component={finalComponent} />
+      {stateApp.user !== null && <InitializeProfile/>}
+    </div>
+    );
 };
 
 const NotFoundRedirect = () => <Redirect to="/" />;
@@ -208,7 +217,7 @@ function App() {
       if (token) {
         apolloConfig.headers["X-ZUMO-AUTH"] = token;
         //uncomment to run against local
-        // apolloConfig.uri = "http://localhost:7071/api/m1graph"
+        //apolloConfig.uri = "http://localhost:7071/api/m1graph"
       }
 
       let apolloClient = new ApolloClient(apolloConfig);
@@ -235,8 +244,11 @@ function App() {
                   <Switch>
                     <NavigationProvider>
                       <PrivateRoute exact path="/" component={MapProvider} />
-                      <PrivateRoute exact path="/profile" component={Profile} />
-                      <PrivateRoute exact path="/myaccount" component={ProfileDetails} />
+                      <ProfileContextProvider>
+                        <PrivateRoute exact path="/profile" component={Profile} />
+                        <PrivateRoute exact path="/myaccount" component={ProfileDetails} />
+                        <PrivateRoute exact path="/usermanagement" component={UserManagementContainer} />
+                      </ProfileContextProvider>
                       <Route exact path="/signup" component={SignUpCard} />
                       <Route
                         exact

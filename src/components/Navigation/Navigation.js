@@ -935,6 +935,14 @@ export default function Navigation(props) {
         </Link>
       </MenuItem>
       <Divider/>
+      <MenuItem
+        className={classes.userMenuItem}
+      >
+        <Link to="/usermanagement" style={{ textDecoration: "none", width: '100%' }}>
+          <Typography style={{ textDecoration: "none", color: "#1daee1" }} variant="inherit">User Management</Typography>
+        </Link>
+      </MenuItem>
+      <Divider/>
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
         <Typography variant="inherit">Logout</Typography>
       </MenuItem>

@@ -835,6 +835,94 @@ const OwnersPerParcelHeadCells = [
   },
 ];
 
+const UserManagementHeadCells = [
+  {
+    name: "account_name",
+    label: "Name",
+    options: {
+      filter: false,
+      searchable: true,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+      editable: true,
+    },
+  },
+  {
+    name: "email",
+    label: "User Email",
+    options: {
+      filter: false,
+      searchable: true,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "user_type",
+    label: "User Type",
+    options: {
+      filter: true,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "role",
+    label: "Role",
+    options: {
+      filter: true,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "adminAccess",
+    label: "Admin Access",
+    options: {
+      filter: true,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "last_login",
+    label: "Last Login",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "actions",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+]
+
 ////////////HeadCells end///////////////////////////////////////////////
 
 const capitalizeFirstLetter = (string) => {
@@ -2614,7 +2702,44 @@ function M1nTable(props) {
 
   ////////////Owners Per Parcel end/////////////////////////////////////////////////
 
-  ////////////-----Add your code section here-----///////////////////////
+  ////////////-----User management-----///////////////////////
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "UserManagement"
+    ) {
+      const sampleData = [
+        {
+            account_name: "Jacob Avery",
+            email: "esteban@mineral.com",
+            user_type: "Member",
+            role:"user",
+            last_login: "8/18/2020",
+            adminAccess: true,
+            _id: 1
+        },
+        {
+          account_name: "John Geliberte",
+          email: "gelibertejohn@mineral.com",
+          user_type: "Member",
+          role:"user",
+          last_login: "8/20/2020",
+          adminAccess: false,
+          _id: 2,
+
+      }
+    ];
+      setHeader("Active Users");
+      setRows(sampleData);
+      setColumns(UserManagementHeadCells);
+      setLoading(false);
+      setAddAble({
+        type: "inviteUser"
+      })
+      }else{
+        setRows([]);
+      }
+  }, [props.parent]);
 
   return (
     <Container maxWidth={false} className={classes.container}>

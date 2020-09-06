@@ -7,8 +7,6 @@ import ImageModal from "./ImageModal";
 import ProfileActions from "./ProfileActions";
 import ProfileContent from "./ProfileContent";
 import ProfileTitle from "./ProfileTitle";
-import { AppContext } from "../../AppContext";
-import { ProfileContext } from "./ProfileContext";
 
 const useStyles = makeStyles(() => ({
   paper: {
