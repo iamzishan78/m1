@@ -126,6 +126,7 @@ const NavigationContextProvider = (props) => {
     isProfileOpen: true,
     selectedTags: [],
     wellsIdsFromTags: [],
+    isUserManagementOpen: true,
   });
   return (
     <NavigationContext.Provider value={[stateNav, setStateNav]}>
