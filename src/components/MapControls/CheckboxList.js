@@ -72,7 +72,7 @@ export default function CheckboxList(props) {
   const [state, setState] = React.useState({
     checkedB: true,
   });
-  const [currentLayers] = useState(stateApp.layers);
+  const [currentLayers, setCurrentLayers] = useState(stateApp.layers);
   const handleChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
   };
@@ -83,73 +83,28 @@ export default function CheckboxList(props) {
     setOpenUD(!openUD);
   };
 
-  const handleToggle = (idx) => () => {
-    const currentIndex = stateApp.checkedLayers.indexOf(idx);
-    const newChecked = [...stateApp.checkedLayers];
-    if (currentIndex === -1) {
-      newChecked.push(idx);
+  const handleToggle = (layer) => () => {
+    const currentIndex = stateApp.layers.findIndex((cLayer) => cLayer.layerName = layer.layerName);
+    const currentLayers = [...stateApp.layers];
+    if (currentLayers[currentIndex].layerSettings.visiable === false) {
+      currentLayers[currentIndex].layerSettings.visiable = true;
     } else {
-      newChecked.splice(currentIndex, 1);
+      currentLayers[currentIndex].layerSettings.visiable = false;
     }
-    setStateApp((stateApp) => ({ ...stateApp, checkedLayers: newChecked }));
+    setStateApp((stateApp) => ({ ...stateApp, layers: currentLayers }));
   };
 
-  const handleToggleInteraction = (idx) => () => {
-    const currentIndex = stateApp.checkedLayersInteraction.indexOf(idx);
-    const newChecked = [...stateApp.checkedLayersInteraction];
-    if (currentIndex === -1) {
-      newChecked.push(idx);
+  const handleToggleInteraction = (layer) => () => {
+    const currentIndex = stateApp.layers.findIndex((cLayer) => cLayer.layerName = layer.layerName);
+    const currentLayers = [...stateApp.layers];
+    if (currentLayers[currentIndex].layerSettings.interaction.interactionDetail.click === true) {
+      currentLayers[currentIndex].layerSettings.interaction.interactionDetail.click = false;
+      currentLayers[currentIndex].layerSettings.interaction.interactionDetail.hover = false;
     } else {
-      newChecked.splice(currentIndex, 1);
+      currentLayers[currentIndex].layerSettings.interaction.interactionDetail.click = true;
+      currentLayers[currentIndex].layerSettings.interaction.interactionDetail.hover = true;
     }
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      checkedLayersInteraction: newChecked,
-    }));
-  };
-
-  const handleToggleUserDefined = (idx) => () => {
-    const currentIndex = stateApp.checkedUserDefinedLayers.indexOf(idx);
-    const newChecked = [...stateApp.checkedUserDefinedLayers];
-    if (currentIndex === -1) {
-      newChecked.push(idx);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      checkedUserDefinedLayers: newChecked,
-    }));
-  };
-
-  const handleToggleUserDefinedInteraction = (idx) => () => {
-    const currentIndex = stateApp.checkedUserDefinedLayersInteraction.indexOf(
-      idx
-    );
-    const newChecked = [...stateApp.checkedUserDefinedLayersInteraction];
-    if (currentIndex === -1) {
-      newChecked.push(idx);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      checkedUserDefinedLayersInteraction: newChecked,
-    }));
-  };
-
-  const handleToggleFile = (idx) => () => {
-    const currentIndex = stateApp.checkedFileLayers.indexOf(idx);
-    const newChecked = [...stateApp.checkedFileLayers];
-    if (currentIndex === -1) {
-      newChecked.push(idx);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      checkedFileLayers: newChecked,
-    }));
+    setStateApp((stateApp) => ({ ...stateApp, layers: currentLayers }));
   };
 
   const StyledMenu = withStyles({
@@ -262,61 +217,16 @@ export default function CheckboxList(props) {
     }
 
     const items = reorder(
-      stateApp.styleLayers,
+      stateApp.layers,
       result.source.index,
       result.destination.index
     );
 
-    let checkedLayers = stateApp.checkedLayers.slice(0);
-    const sourceIndex = checkedLayers.indexOf(result.source.index);
-
-    let direction = 0;
-    let from,
-      to = 0;
-    if (result.destination.index > result.source.index) {
-      direction = -1;
-      from = result.source.index;
-      to = result.destination.index;
-    } else {
-      direction = 1;
-      to = result.source.index;
-      from = result.destination.index;
-    }
-
-    for (let i = 0; i < checkedLayers.length; i++) {
-      if (checkedLayers[i] <= to && checkedLayers[i] >= from) {
-        checkedLayers[i] += direction;
-      }
-    }
-
-    if (sourceIndex !== -1) {
-      checkedLayers[sourceIndex] = result.destination.index;
-    }
-
-    let checkedLayersInteraction = stateApp.checkedLayersInteraction.slice(0);
-    const sourceInteractionIndex = checkedLayersInteraction.indexOf(
-      result.source.index
-    );
-
-    for (let i = 0; i < checkedLayersInteraction.length; i++) {
-      if (
-        checkedLayersInteraction[i] <= to &&
-        checkedLayersInteraction[i] >= from
-      ) {
-        checkedLayersInteraction[i] += direction;
-      }
-    }
-
-    if (sourceInteractionIndex !== -1) {
-      checkedLayersInteraction[sourceInteractionIndex] =
-        result.destination.index;
-    }
+    setCurrentLayers(items);
 
     setStateApp({
       ...stateApp,
-      styleLayers: items,
-      checkedLayers: checkedLayers,
-      checkedLayersInteraction: checkedLayersInteraction,
+      layers: items,
     });
   };
 
@@ -472,12 +382,12 @@ export default function CheckboxList(props) {
                   <List className={classes.list}>
                     {M1Layers.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
-                      if (layer.layerSettings.isShowAble) {
+                      if (layer.layerSettings.showable) {
                         return (
                           <Draggable
                             key={labelId}
                             draggableId={labelId}
-                            index={index}
+                            index={currentLayers.findIndex((clayer) => clayer.layerName == layer.layerName)}
                           >
                             {(provided, snapshot) => (
                               <StyledListItem
@@ -521,7 +431,7 @@ export default function CheckboxList(props) {
                                             ) !== -1
                                           : false
                                       }
-                                      onChange={handleToggle(index)}
+                                      onChange={handleToggle(layer)}
                                     />
                                   }
                                 />
@@ -558,7 +468,7 @@ export default function CheckboxList(props) {
                           <Draggable
                             key={labelId}
                             draggableId={labelId}
-                            index={index}
+                            index={currentLayers.findIndex((clayer) => clayer.layerName == layer.layerName)}
                           >
                             {(provided, snapshot) => (
                               // <Box borderColor={layer.idColor} {...defaultProps}>
@@ -635,8 +545,8 @@ export default function CheckboxList(props) {
                                           inputProps={{
                                             "aria-labelledby": labelId,
                                           }}
-                                          onChange={handleToggleUserDefinedInteraction(
-                                            index
+                                          onChange={handleToggleInteraction(
+                                            layer
                                           )}
                                         />
                                       )}
@@ -652,8 +562,8 @@ export default function CheckboxList(props) {
                                                 ) !== -1
                                               : false
                                           }
-                                          onChange={handleToggleUserDefined(
-                                            index
+                                          onChange={handleToggle(
+                                            layer
                                           )}
                                         />
                                       }
