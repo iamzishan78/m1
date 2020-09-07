@@ -406,7 +406,6 @@ export default function Map() {
     if (layerConfigsById && layerConfigsById.layersConfigByUser && layerConfigsById.layersConfigByUser.length > 0 && !isLoadedLayerConfig) {
       const configs = layerConfigsById.layersConfigByUser;
       setIsLoadedLayerConfig(true);
-      console.log("layerconfig set once time", configs);
       setStateApp((stateApp) => ({
         ...stateApp,
         udLayerConfig: configs
@@ -415,38 +414,37 @@ export default function Map() {
   }, [layerConfigsById]);
 
   useEffect(() => {
-    console.log(stateApp.udLayerConfig);
-    const userDefinedLayers = stateApp.userDefinedLayers.slice(0);
+    const currentLayers = stateApp.layers.slice(0);
     if (stateApp.udLayerConfig && stateApp.udLayerConfig.length > 0) {
       for (let i = 0; i < stateApp.udLayerConfig.length; i ++) {
         const layerName = stateApp.udLayerConfig[i].layerName;
-        const index = userDefinedLayers.findIndex((layer) => layer.name == layerName);
-        userDefinedLayers[index].idColor = stateApp.udLayerConfig[i].config.fillColor;
-        const layerType = userDefinedLayers[index].layerProps[0].layerType;
+        const index = currentLayers.findIndex((layer) => layer.layerName == layerName);
+        
+        const layerType = currentLayers[index].layerPaintProps[0].paintType;
         if (layerType == 'circle') {
           if (stateApp.udLayerConfig[i].config.fillColor) {
-            userDefinedLayers[index].layerProps[0].paintProps['circle-color'] = stateApp.udLayerConfig[i].config.fillColor;
-            userDefinedLayers[index].layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[0][1] = stateApp.udLayerConfig[i].config.fillColor;
-            userDefinedLayers[index].layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[1][1] = stateApp.udLayerConfig[i].config.fillColor;
-            userDefinedLayers[index].layerProps[0].clusterProps.clusterPaintProps['circle-color'].stops[2][1] = stateApp.udLayerConfig[i].config.fillColor;
+            currentLayers[index].layerPaintProps[0].paintProps['circle-color'] = stateApp.udLayerConfig[i].config.fillColor;
+            currentLayers[index].layerPaintProps[0].clusterProps.clusterPaintProps['circle-color'].stops[0][1] = stateApp.udLayerConfig[i].config.fillColor;
+            currentLayers[index].layerPaintProps[0].clusterProps.clusterPaintProps['circle-color'].stops[1][1] = stateApp.udLayerConfig[i].config.fillColor;
+            currentLayers[index].layerPaintProps[0].clusterProps.clusterPaintProps['circle-color'].stops[2][1] = stateApp.udLayerConfig[i].config.fillColor;
           }
           if (stateApp.udLayerConfig[i].config.strokeColor) {
-            userDefinedLayers[index].layerProps[0].paintProps['circle-stroke-color'] = stateApp.udLayerConfig[i].config.strokeColor;
-            userDefinedLayers[index].layerProps[0].clusterProps.clusterPaintProps['circle-stroke-color'] = stateApp.udLayerConfig[i].config.strokeColor;
+            currentLayers[index].layerPaintProps[0].paintProps['circle-stroke-color'] = stateApp.udLayerConfig[i].config.strokeColor;
+            currentLayers[index].layerPaintProps[0].clusterProps.clusterPaintProps['circle-stroke-color'] = stateApp.udLayerConfig[i].config.strokeColor;
           }
         } else if (layerType == 'fill') {
           if (stateApp.udLayerConfig[i].config.fillColor) {
-            userDefinedLayers[index].layerProps[0].paintProps['fill-color'] = stateApp.udLayerConfig[i].config.fillColor;
+            currentLayers[index].layerPaintProps[0].paintProps['fill-color'] = stateApp.udLayerConfig[i].config.fillColor;
           }
           if (stateApp.udLayerConfig[i].config.strokeColor) {
-            userDefinedLayers[index].layerProps[0].paintProps['fill-outline-color'] = stateApp.udLayerConfig[i].config.strokeColor;
+            currentLayers[index].layerPaintProps[0].paintProps['fill-outline-color'] = stateApp.udLayerConfig[i].config.strokeColor;
           }
         }
       }
 
       setStateApp((stateApp) => ({
         ...stateApp,
-        userDefinedLayers
+        layers: currentLayers
       }));
 
     }
@@ -577,92 +575,109 @@ export default function Map() {
 
     const geoJson = makeGeoJSON(data);
 
-    const configIndex = stateApp.styleLayers.findIndex(
-      (value) => value.name === layerName
+    const configIndex = stateApp.layers.findIndex(
+      (value) => value.layerName === layerName
     );
     const config = stateApp.styleLayers[configIndex];
-    const checkedPosition = stateApp.checkedLayers.indexOf(configIndex);
-    const checkedInteraction = stateApp.checkedLayersInteraction.indexOf(
-      configIndex
-    );
+    // const checkedPosition = stateApp.checkedLayers.indexOf(configIndex);
+    // const checkedInteraction = stateApp.checkedLayersInteraction.indexOf(
+    //   configIndex
+    // );
     console.log(layerName, config);
+    const paintProps = config.layerPaintProps;
+    const layerSettings = config.layerSettings;
+    paintProps.forEach((prop) => {
+      const sourceId = prop.sourceProps;
+      const paintType = prop.paintType;
 
-    // -> add source
-    if (config) {
-      if (map.getSource(config.sourceProps[0])) {
-        map.getSource(config.sourceProps[0]).setData(geoJson);
+      // -> add source
+      if (map.getSource(sourceId)) {
+        map.getSource(sourceId).setData(geoJson);
       } else {
-        map.addSource(config.sourceProps[0], {
-          type: "geojson",
-          data: geoJson,
-          cluster: true,
-          clusterRadius: 50,
-          clusterMaxZoom: 6,
-        });
+        if (paintType == 'circle') {
+          map.addSource(sourceId, {
+            type: "geojson",
+            data: geoJson,
+            cluster: true,
+            clusterRadius: 50,
+            clusterMaxZoom: 6,
+          });
+
+          
+        } else {
+          map.addSource(sourceId, {
+            type: "geojson",
+            data: geoJson,
+            promoteId: "id",
+          });
+        }
       }
 
-      if (map.getSource(`${config.sourceProps[0]}_filter`)) {
-        map.getSource(`${config.sourceProps[0]}_filter`).setData(geoJson);
+      if (map.getSource(`${sourceId}_filter`)) {
+        map.getSource(`${sourceId}_filter`).setData(geoJson);
       } else {
-        map.addSource(`${config.sourceProps[0]}_filter`, {
+        map.addSource(`${sourceId}_filter`, {
           type: "geojson",
           data: geoJson,
+          promoteId: "id",
         });
       }
 
       // -> add layer
-      if (map.getLayer(config.layerProps.layerId[0])) {
+      const layerId = prop.id;
+      const visible = layerSettings.showable && layerSettings.visiable !== false;
+
+      if (map.getLayer(layerId)) {
         map.setLayoutProperty(
-          config.layerProps.layerId[0],
+          layerId,
           "visibility",
-          checkedPosition > -1 ? "visible" : "none"
+          visible ? "visible" : "none"
         );
       } else {
-        if (config.layerProps.layerType[0] !== "symbol") {
+        if (paintType == "symbol") {
           map.addLayer({
-            id: config.layerProps.layerId[0],
-            type: config.layerProps.layerType[0],
-            source: config.sourceProps[0],
-            paint: config.layerProps.paintProps,
+            id: layerId,
+            type: paintType,
+            source: sourceId,
+            paint: prop.paintProps,
             layout: {
-              visibility: checkedPosition > -1 ? "visible" : "none",
+              visibility: visible ? "visible" : "none",
             },
           });
         } else {
           map.addLayer({
-            id: config.layerProps.layerId[0],
-            type: config.layerProps.layerType[0],
-            source: config.sourceProps[0],
-            paint: config.layerProps.paintProps,
+            id: layerId,
+            type: paintType,
+            source: sourceId,
+            paint: prop.paintProps,
             layout: {
-              ...config.layerProps.layoutProps,
-              visibility: checkedPosition > -1 ? "visible" : "none",
+              ...prop.layoutProps,
+              visibility: visible ? "visible" : "none",
             },
           });
         }
       }
 
-      const clusterVar = config.layerProps.layerId[0] + "-clusters";
-      const clusterLabelBar = config.layerProps.layerId[0] + "-clusters-counts";
-
+      const clusterVar = layerId + "-clusters";
+      const clusterLabelBar = layerId + "-clusters-counts";
       if (map.getLayer(clusterLabelBar)) {
         map.setLayoutProperty(
           clusterLabelBar,
           "visibility",
-          checkedPosition > -1 ? "visible" : "none"
+          visible ? "visible" : "none"
         );
       } else {
         map.addLayer({
           id: clusterLabelBar,
           type: "symbol",
-          source: config.sourceProps[0],
+          source: sourceId,
           filter: ["has", "point_count"],
-          layout: config.layerProps.clusterProps.clusterSymbolProps,
+          layout: prop.clusterProps.clusterSymbolProps,
         });
         map.setLayoutProperty(
           clusterLabelBar,
           "visibility",
-          checkedPosition > -1 ? "visible" : "none"
+          visible ? "visible" : "none"
         );
       }
 
@@ -670,46 +685,54 @@ export default function Map() {
         map.setLayoutProperty(
           clusterVar,
           "visibility",
-          checkedPosition > -1 ? "visible" : "none"
+          visible ? "visible" : "none"
         );
       } else {
         map.addLayer({
           id: clusterVar,
           type: "circle",
-          source: config.sourceProps[0],
+          source: sourceId,
           filter: ["has", "point_count"],
-          paint: config.layerProps.clusterProps.clusterPaintProps,
+          paint: prop.clusterProps.clusterPaintProps,
         });
         map.setLayoutProperty(
           clusterVar,
           "visibility",
-          checkedPosition > -1 ? "visible" : "none"
+          visible ? "visible" : "none"
         );
       }
 
-      if (checkedInteraction > -1) {
-        const mouseMoveHandler = (e) => {
-          map.getCanvas().style.cursor = "pointer";
-        };
+    });
 
-        const mouseLeaveHandler = (e) => {
-          map.getCanvas().style.cursor = "";
-        };
-        map.on("mousemove", layerName, mouseMoveHandler);
-        map.on("mouseleave", layerName, mouseLeaveHandler);
-        map.on("mousemove", clusterVar, mouseMoveHandler);
-        map.on("mouseleave", clusterVar, mouseLeaveHandler);
-        map.on("mousemove", clusterLabelBar, mouseMoveHandler);
-        map.on("mouseleave", clusterLabelBar, mouseLeaveHandler);
-        config.mouseMoveHandler = mouseMoveHandler;
-        config.mouseLeaveHandler = mouseLeaveHandler;
-        const styleLayers = stateApp.styleLayers.slice(0);
-        styleLayers[configIndex] = config;
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          styleLayers,
-        }));
-      }
+    // -> add source
+    if (config) {
+
+      // -> add layer
+
+
+      // if (checkedInteraction > -1) {
+      //   const mouseMoveHandler = (e) => {
+      //     map.getCanvas().style.cursor = "pointer";
+      //   };
+
+      //   const mouseLeaveHandler = (e) => {
+      //     map.getCanvas().style.cursor = "";
+      //   };
+      //   map.on("mousemove", layerName, mouseMoveHandler);
+      //   map.on("mouseleave", layerName, mouseLeaveHandler);
+      //   map.on("mousemove", clusterVar, mouseMoveHandler);
+      //   map.on("mouseleave", clusterVar, mouseLeaveHandler);
+      //   map.on("mousemove", clusterLabelBar, mouseMoveHandler);
+      //   map.on("mouseleave", clusterLabelBar, mouseLeaveHandler);
+      //   config.mouseMoveHandler = mouseMoveHandler;
+      //   config.mouseLeaveHandler = mouseLeaveHandler;
+      //   const styleLayers = stateApp.styleLayers.slice(0);
+      //   styleLayers[configIndex] = config;
+      //   setStateApp((stateApp) => ({
+      //     ...stateApp,
+      //     styleLayers,
+      //   }));
+      // }
     }
   };
 

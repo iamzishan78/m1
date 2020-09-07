@@ -230,72 +230,6 @@ export default function CheckboxList(props) {
     });
   };
 
-  const onDragEndUserDefined = (result) => {
-    // dropped outside the list
-    if (!result.destination) {
-      return;
-    }
-
-    const items = reorder(
-      stateApp.userDefinedLayers,
-      result.source.index,
-      result.destination.index
-    );
-
-    let checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
-    const sourceIndex = checkedLayers.indexOf(result.source.index);
-
-    let direction = 0;
-    let from,
-      to = 0;
-    if (result.destination.index > result.source.index) {
-      direction = -1;
-      from = result.source.index;
-      to = result.destination.index;
-    } else {
-      direction = 1;
-      to = result.source.index;
-      from = result.destination.index;
-    }
-
-    for (let i = 0; i < checkedLayers.length; i++) {
-      if (checkedLayers[i] <= to && checkedLayers[i] >= from) {
-        checkedLayers[i] += direction;
-      }
-    }
-
-    if (sourceIndex !== -1) {
-      checkedLayers[sourceIndex] = result.destination.index;
-    }
-
-    let checkedInteractionLayers = stateApp.checkedUserDefinedLayersInteraction.slice(
-      0
-    );
-    const sourceInteractionIndex = checkedInteractionLayers.indexOf(
-      result.source.index
-    );
-    for (let i = 0; i < checkedInteractionLayers.length; i++) {
-      if (
-        checkedInteractionLayers[i] <= to &&
-        checkedInteractionLayers[i] >= from
-      ) {
-        checkedInteractionLayers[i] += direction;
-      }
-    }
-
-    if (sourceInteractionIndex !== -1) {
-      checkedInteractionLayers[sourceInteractionIndex] =
-        result.destination.index;
-    }
-
-    setStateApp({
-      ...stateApp,
-      userDefinedLayers: items,
-      checkedUserDefinedLayers: checkedLayers,
-      checkedUserDefinedLayersInteraction: checkedInteractionLayers,
-    });
-  };
-
   const ifLayerHaveData = (layer) => {
     //// temporary disabling the Title Layer
     if (layer.layerName === "Title") return false;
@@ -456,7 +390,7 @@ export default function CheckboxList(props) {
           {openUD ? <ExpandLess /> : <ExpandMore />}
         </StyledListItem2>
         <Collapse in={openUD} timeout="auto" unmountOnExit>
-          <DragDropContext onDragEnd={onDragEndUserDefined}>
+          <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="droppableUD">
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
