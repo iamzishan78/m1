@@ -578,7 +578,7 @@ export default function Map() {
     const configIndex = stateApp.layers.findIndex(
       (value) => value.layerName === layerName
     );
-    const config = stateApp.styleLayers[configIndex];
+    const config = stateApp.layers[configIndex];
     // const checkedPosition = stateApp.checkedLayers.indexOf(configIndex);
     // const checkedInteraction = stateApp.checkedLayersInteraction.indexOf(
     //   configIndex
