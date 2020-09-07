@@ -633,6 +633,9 @@ export default function Map() {
           "visibility",
           visible ? "visible" : "none"
         );
+        Object.keys(prop.paintProps).forEach((key) => {
+          map.setPaintProperty(layerId, key, prop.paintProps[key]);
+        });
       } else {
         if (paintType == "symbol") {
           map.addLayer({
@@ -687,6 +690,9 @@ export default function Map() {
           "visibility",
           visible ? "visible" : "none"
         );
+        Object.keys(prop.clusterProps.clusterPaintProps).forEach((key) => {
+          map.setPaintProperty(clusterVar, key, prop.clusterProps.clusterPaintProps[key])
+        });
       } else {
         map.addLayer({
           id: clusterVar,
