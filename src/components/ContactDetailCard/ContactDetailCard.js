@@ -805,6 +805,13 @@ export default function ContactDetailCard(props) {
               <Divider />
             </Grid>
 
+            <Grid item xs={12} className={classes.Comments}>
+              <Card raised style={{ minHeight: "35px", margin: "20px", paddingBottom: "20px" }}>
+                <LeadScore score={5} lastContacted={"Jun 24, 2020"} />
+              </Card>
+              <Divider />
+            </Grid>
+
             {/* <Grid item xs={12}>
                 <Activities
                   id={contactData._id}
