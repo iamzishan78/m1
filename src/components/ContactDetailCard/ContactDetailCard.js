@@ -45,6 +45,7 @@ import DescriptionRoundedIcon from "@material-ui/icons/DescriptionRounded";
 import Card from "@material-ui/core/Card";
 import HandShake from "../Shared/svgIcons/HandShake";
 import Parcels from "./components/Parcels";
+import DealsNew from "./components/DealsNew";
 import WellsCard from "./components/WellsCard";
 import RecentActivities from "../RecentActivities/RecentActivities";
 import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
@@ -607,7 +608,13 @@ export default function ContactDetailCard(props) {
               </Grid>
               <Grid item xs={4}>
                 <Card raised style={{ minHeight: "35px" }}>
-                  <LeadScore score={5} lastContacted={"Jun 24, 2020"} />
+                  <DealsNew
+                    handleOpenExpandableCard={handleOpenExpandableCard}
+                    contact={contactData}
+                    transactData={transactData}
+                    transactId={transactId}
+                    selectRowOpenContact={props.selectRowOpenContact}
+                  />
                 </Card>
               </Grid>
             </Grid>
