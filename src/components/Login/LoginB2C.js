@@ -9,6 +9,7 @@ import styled from "styled-components";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import RenderSignUpControls from "./RenderSignUpControls";
 import queryString from "query-string";
+import { useHistory } from "react-router-dom";
 
 import {
   B2CTenant,
@@ -110,6 +111,8 @@ const LoginB2C = (props) => {
   const [loadingSigInButton, setLoadingSigInButton] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loginErrorText, setLoginErrorText] = useState(null);
+
+  let history = useHistory();
 
   useEffect(() => {
     if (stateApp.myMSALB2CObj && !signingIn) {
@@ -359,6 +362,8 @@ const LoginB2C = (props) => {
 
     setLoadingSigInButton(false);
     setLoading(false);
+
+    history.push("/");
   }
 
   async function getMongoDBUser(user, accessToken) {

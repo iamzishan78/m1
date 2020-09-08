@@ -174,35 +174,42 @@ const AppProvider = (props) => {
 
   useEffect(() => {
     async function wait() {
-      /*
       let tenantName = window.sessionStorage.getItem("tenantName");
 
       if (tenantName) {
         let tenant = tenantsCredentials(tenantName);
         let myMSALObjInt = MSALObj(tenant.tenantId, tenant.clientId);
-        setStateApp({
-          ...stateApp,
-          myMSALObj: myMSALObjInt,
-          apolloClientEndpoint: tenant.apolloClientEndpoint,
+        setStateApp((state, props) => {
+          return {
+            ...state,
+            myMSALObj: myMSALObjInt,
+            apolloClientEndpoint: tenant.apolloClientEndpoint,
+          }
         });
       } else {
-        setStateApp({ ...stateApp, myMSALObj: false });
+        setStateApp((state, props) => {
+          return { ...state, myMSALObj: false }
+        });
       }
-      */
+
       let tenantB2CName = window.sessionStorage.getItem("tenantB2CName");
 
       if (tenantB2CName) {
         let tenant = B2CTenantToLogin(tenantB2CName);
         if (tenant) {
           let myMSALB2CObjInt = MSALB2CObj(tenant.tenantId, tenant.clientId);
-          setStateApp({
-            ...stateApp,
-            myMSALB2CObj: myMSALB2CObjInt,
-            apolloClientEndpoint: tenant.apolloClientEndpoint,
+          setStateApp((state, props) => {
+            return {
+              ...state,
+              myMSALB2CObj: myMSALB2CObjInt,
+              apolloClientEndpoint: tenant.apolloClientEndpoint,
+            }
           });
         }
       } else {
-        setStateApp({ ...stateApp, myMSALB2CObj: false });
+        setStateApp((state, props) => {
+          return { ...state, myMSALB2CObj: false }
+        });
       }
     }
     wait();
