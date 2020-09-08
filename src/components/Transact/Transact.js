@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import React, { useContext, useState, useEffect } from "react";
-import { useMutation, useLazyQuery } from "@apollo/react-hooks";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../AppContext";
 import Board from "react-trello";
 import { makeStyles } from "@material-ui/core/styles";
