@@ -84,7 +84,7 @@ export default function CheckboxList(props) {
   };
 
   const handleToggle = (layer) => () => {
-    const currentIndex = stateApp.layers.findIndex((cLayer) => cLayer.layerName = layer.layerName);
+    const currentIndex = stateApp.layers.findIndex((cLayer) => cLayer.layerName == layer.layerName);
     const currentLayers = [...stateApp.layers];
     if (currentLayers[currentIndex].layerSettings.visiable === false) {
       currentLayers[currentIndex].layerSettings.visiable = true;
@@ -95,7 +95,7 @@ export default function CheckboxList(props) {
   };
 
   const handleToggleInteraction = (layer) => () => {
-    const currentIndex = stateApp.layers.findIndex((cLayer) => cLayer.layerName = layer.layerName);
+    const currentIndex = stateApp.layers.findIndex((cLayer) => cLayer.layerName == layer.layerName);
     const currentLayers = [...stateApp.layers];
     if (currentLayers[currentIndex].layerSettings.interaction.interactionDetail.click === true) {
       currentLayers[currentIndex].layerSettings.interaction.interactionDetail.click = false;
@@ -342,11 +342,7 @@ export default function CheckboxList(props) {
                                       checkedIcon={<ClickIcon />}
                                       edge="start"
                                       checked={
-                                        stateApp.checkedLayersInteraction
-                                          ? stateApp.checkedLayersInteraction.indexOf(
-                                              index
-                                            ) !== -1
-                                          : false
+                                        layer.layerSettings.interaction.interactionDetail.click
                                       }
                                       tabIndex={-1}
                                       disableRipple
@@ -359,11 +355,7 @@ export default function CheckboxList(props) {
                                   control={
                                     <Switch
                                       checked={
-                                        stateApp.checkedLayers
-                                          ? stateApp.checkedLayers.indexOf(
-                                              index
-                                            ) !== -1
-                                          : false
+                                        layer.layerSettings.visiable !== false
                                       }
                                       onChange={handleToggle(layer)}
                                     />
@@ -468,11 +460,7 @@ export default function CheckboxList(props) {
                                           }
                                           edge="start"
                                           checked={
-                                            stateApp.checkedUserDefinedLayersInteraction
-                                              ? stateApp.checkedUserDefinedLayersInteraction.indexOf(
-                                                  index
-                                                ) !== -1
-                                              : false
+                                            layer.layerSettings.interaction.interactionDetail.click
                                           }
                                           tabIndex={-1}
                                           disableRipple
@@ -490,11 +478,7 @@ export default function CheckboxList(props) {
                                       control={
                                         <Switch
                                           checked={
-                                            stateApp.checkedUserDefinedLayers
-                                              ? stateApp.checkedUserDefinedLayers.indexOf(
-                                                  index
-                                                ) !== -1
-                                              : false
+                                            layer.layerSettings.visiable !== false
                                           }
                                           onChange={handleToggle(
                                             layer

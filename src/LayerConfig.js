@@ -873,6 +873,7 @@ export const layers = [
       },
       colorable: false,
       showable: true,
+      visiable: false,
     },
     layerPaintProps: [
       {
@@ -927,6 +928,7 @@ export const layers = [
       },
       colorable: false,
       showable: true,
+      visiable: false,
     },
     layerPaintProps: [
       {
@@ -981,7 +983,7 @@ export const layers = [
   },
   {
     layerName: 'Wells',
-    layerType: 'vetor layer',
+    layerType: 'vector layer',
     layerCategory: 'M1 Layer',
     layerSettings: {
       interaction: {
@@ -1000,7 +1002,7 @@ export const layers = [
   },
   {
     layerName: 'Basins',
-    layerType: 'vetor layer',
+    layerType: 'vector layer',
     layerCategory: 'M1 Layer',
     layerSettings: {
       interaction: {
@@ -1012,6 +1014,7 @@ export const layers = [
       },
       colorable: false,
       showable: true,
+      visiable: false,
     },
     layerPaintProps: {
       ids: ["basinLabels", "basinLayer"]
@@ -1019,7 +1022,7 @@ export const layers = [
   },
   {
     layerName: 'Pipelines',
-    layerType: 'vetor layer',
+    layerType: 'vector layer',
     layerCategory: 'M1 Layer',
     layerSettings: {
       interaction: {
@@ -1031,6 +1034,7 @@ export const layers = [
       },
       colorable: false,
       showable: true,
+      visiable: false,
     },
     layerPaintProps: {
       ids: [
@@ -1045,7 +1049,7 @@ export const layers = [
   },
   {
     layerName: 'TX GLO Units',
-    layerType: 'vetor layer',
+    layerType: 'vector layer',
     layerCategory: 'M1 Layer',
     layerSettings: {
       interaction: {
@@ -1064,7 +1068,7 @@ export const layers = [
   },
   {
     layerName: 'TX GLO Active Leases',
-    layerType: 'vetor layer',
+    layerType: 'vector layer',
     layerCategory: 'M1 Layer',
     layerSettings: {
       interaction: {
@@ -1076,6 +1080,7 @@ export const layers = [
       },
       colorable: false,
       showable: true,
+      visiable: false,
     },
     layerPaintProps: {
       ids: ["GLOLeases", "GLOLeaseLabels"]
@@ -1098,7 +1103,7 @@ export const layers = [
     },
     layerPaintProps: [
       {
-        id: 'parcels',
+        id: 'parcel',
         sourceProps: 'parcels_source',
         paintType: 'fill',
         paintProps: {
@@ -1151,6 +1156,7 @@ export const layers = [
       },
       colorable: true,
       showable: true,
+      visiable: false,
     },
     layerPaintProps: []
   },
@@ -1341,6 +1347,7 @@ export const layers = [
       },
       colorable: true,
       showable: true,
+      visiable: false,
     },
     layerPaintProps: [
       {
@@ -1406,6 +1413,7 @@ export const layers = [
       },
       colorable: true,
       showable: true,
+      visiable: false,
     },
     layerPaintProps: [
       {
