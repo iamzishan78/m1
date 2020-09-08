@@ -234,6 +234,7 @@ function App() {
                       <PrivateRoute exact path="/" component={MapProvider} />
                       <PrivateRoute exact path="/profile" component={Profile} />
                       <Route exact path="/signup" component={SignUpCard} />
+                      <Route exact path="/loginb2c" component={LoginB2C} />
                       <Route
                         exact
                         path="/forgotpassword"

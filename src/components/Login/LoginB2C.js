@@ -8,6 +8,7 @@ import Paper from "@material-ui/core/Paper";
 import styled from "styled-components";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import RenderSignUpControls from "./RenderSignUpControls";
+import queryString from "query-string";
 
 import {
   B2CTenant,
@@ -112,7 +113,7 @@ const LoginB2C = (props) => {
 
   useEffect(() => {
     if (stateApp.myMSALB2CObj && !signingIn) {
-      setLoading(false);
+      //setLoading(false);
       stateApp.myMSALB2CObj.handleRedirectCallback((error, loginResponse) => {
         // msal requires a redirect callback, even though can't use it to
         // get the result as it will redirect again after it has the result
@@ -155,6 +156,7 @@ const LoginB2C = (props) => {
 
     setSigningIn(true);
     setLoadingSigInButton(true);
+    setLoading(true);
 
     let myMSALB2CObj = stateApp.myMSALB2CObj;
 
@@ -513,12 +515,15 @@ const LoginB2C = (props) => {
         </Typography>
       </div>
 
-      <div className={localClass.cardContainer}>
-        <SignInCardB2C
-          ready={loadingSigInButton}
-          handleAADB2CSignIn={handledAADB2CSignIn}
-          errorText={loginErrorText}
-        />
+      <div className={localClass.cardContainer}> {
+        !loading
+        ? <SignInCardB2C
+            ready={loadingSigInButton}
+            handleAADB2CSignIn={handledAADB2CSignIn}
+            errorText={loginErrorText}
+            tenant={queryString.parse(props.location.search).tenant}/>
+        : <> </>
+        }
 
         <div>
           <Paper

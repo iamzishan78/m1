@@ -95,13 +95,19 @@ const SignInCardB2C = (props) => {
 
   const [, setStateApp] = useContext(AppContext);
   const classes = useStyles();
-  const [tenant, setTenant] = useState("");
+  const [tenant, setTenant] = useState(props.tenant ? props.tenant : "");
   const [error, setError] = useState(null);
   const [tenantFlags, setTenantFlags] = useState({
     error: false,
     placeholder: null,
     autoFocus: false,
   });
+
+  useEffect(() => {
+    if (tenant.trim() !== "") {
+      signInAADB2C()
+    }
+  }, []);
 
   useEffect(() => {
     setError(errorText);
