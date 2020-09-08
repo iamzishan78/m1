@@ -361,7 +361,7 @@ const LoginB2C = (props) => {
     setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
 
     setLoadingSigInButton(false);
-    setLoading(false);
+    // setLoading(false);
 
     history.push("/");
   }
