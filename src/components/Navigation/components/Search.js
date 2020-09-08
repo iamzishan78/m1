@@ -222,13 +222,7 @@ function Search() {
 
   useEffect(() => {
     if (searchHistoryData && searchHistoryData.getSearchHistory) {
-      const compare = (a, b) => {
-        if (a.ts < b.ts) return 1;
-        if (a.ts > b.ts) return -1;
-        return 0;
-      };
-      let list = searchHistoryData.getSearchHistory;
-      list.sort(compare);
+      let list = [...searchHistoryData.getSearchHistory].sort((a, b) => b.ts - a.ts);
 
       setSearchHistoryList(list);
     }

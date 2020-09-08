@@ -163,7 +163,7 @@ const PrivateRoute = ({ component, ...options }) => {
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
       ? component
       : Login;
-  //: LoginB2C;
+      // : LoginB2C;
 
   return <Route {...options} component={finalComponent} />;
 };
@@ -234,6 +234,7 @@ function App() {
                       <PrivateRoute exact path="/" component={MapProvider} />
                       <PrivateRoute exact path="/profile" component={Profile} />
                       <Route exact path="/signup" component={SignUpCard} />
+                      <Route exact path="/loginb2c" component={LoginB2C} />
                       <Route
                         exact
                         path="/forgotpassword"
