@@ -162,8 +162,16 @@ const PrivateRoute = ({ component, ...options }) => {
   const finalComponent =
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
       ? component
-      : Login;
-      // : LoginB2C;
+      : (() => {
+        return stateApp.myMSALB2CObj
+          ? (() => { 
+              if (window.location.pathname !== "/loginb2c") {
+                history.push("/loginb2c"); 
+              }
+              else return LoginB2C;
+            })()
+          : Login
+      })();
 
   return <Route {...options} component={finalComponent} />;
 };

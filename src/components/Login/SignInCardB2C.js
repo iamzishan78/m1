@@ -107,7 +107,7 @@ const SignInCardB2C = (props) => {
     if (tenant.trim() !== "") {
       signInAADB2C()
     }
-  }, []);
+  }, [props.tenant]);
 
   useEffect(() => {
     setError(errorText);
@@ -179,7 +179,7 @@ const SignInCardB2C = (props) => {
           {" "}
           <div
             style={{
-              marginTop: "35px",
+              marginTop: "55px",
               fontSize: "14px",
               fontWeight: "900",
               fontFamily: "Tahoma, Geneva, sans-serif",

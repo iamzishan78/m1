@@ -52,17 +52,17 @@ const B2CPolicies = {
 // Config object to be passed to Msal on creation
 export const msalB2CConfig = (tenantId, clientId) => {
   console.log(`tenantId: ${tenantId}, clientId: ${clientId}`);
-  const path = `${window.location.protocol}//${window.location.host}`;
+  const path = `${window.location.origin}/loginb2c`;
 
   return {
     auth: {
       clientId: clientId,
       authority: B2CPolicies.authorities.signIn.authority,
       validateAuthority: false,
-      redirectUri: `${path}/`,
+      redirectUri: path,
     },
     cache: {
-      cacheLocation: "localStorage", // This configures where your cache will be stored
+      cacheLocation: "sessionStorage", // This configures where your cache will be stored
       storeAuthStateInCookie: false, // Set this to "true" if you are having issues on IE11 or Edge
     },
   };

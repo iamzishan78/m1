@@ -9,7 +9,6 @@ import styled from "styled-components";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import RenderSignUpControls from "./RenderSignUpControls";
 import queryString from "query-string";
-import { useHistory } from "react-router-dom";
 
 import {
   B2CTenant,
@@ -68,6 +67,16 @@ const localStyles = makeStyles((theme) => ({
     flexDirection: "row",
     justifyContent: "center",
   },
+  termsAndPrivacy: {
+    color: "#fff",
+    "& a": {
+      color: "#fff",
+      textDecoration: "none",
+      "&:hover": {
+        color: theme.palette.secondary.main,
+      },
+    },
+  },
 }));
 
 const M1neralLogoNavNoAuth = (props) => (
@@ -112,7 +121,7 @@ const LoginB2C = (props) => {
   const [loading, setLoading] = useState(true);
   const [loginErrorText, setLoginErrorText] = useState(null);
 
-  let history = useHistory();
+  let history = props.history;
 
   useEffect(() => {
     if (stateApp.myMSALB2CObj && !signingIn) {
@@ -134,14 +143,19 @@ const LoginB2C = (props) => {
           setLoadingSigInButton(false);
           sessionStorage.clear();
           return;
-        } else {
-          console.log("id_token acquired at: " + new Date().toString());
-
-          const accountObj = loginResponse["account"];
-          console.log(accountObj);
-          finishAADAuth(accountObj["idToken"]);
         }
       });
+
+      if (stateApp.myMSALB2CObj.getAccount()) {
+        console.log('hellz yeah!');
+
+        console.log("id_token acquired at: " + new Date().toString());
+
+        const accountObj = stateApp.myMSALB2CObj.account;
+        console.log(accountObj);
+        finishAADAuth(accountObj["idToken"]);
+      }
+
     } else {
       if (stateApp.myMSALB2CObj === false) {
         setLoading(false);
@@ -314,10 +328,6 @@ const LoginB2C = (props) => {
             ? accountObj.emails[0]
             : accountObj.sub,
         name: accountObj.name,
-        // email: readProfileResponse.mail
-        //   ? readProfileResponse.mail
-        //   : readProfileResponse.userPrincipalName,
-        // name: readProfileResponse.displayName,
       },
       authGraphQLResponse.authenticationToken
     ).catch((error) => {
@@ -333,14 +343,9 @@ const LoginB2C = (props) => {
       ...state,
       user: {
         id: accountObj.sub,
-        //id: readProfileResponse.id,
         mongoId: mongoUser._id,
         email: mongoUser.email,
         name: mongoUser.name,
-        // email: readProfileResponse.mail
-        //   ? readProfileResponse.mail
-        //   : readProfileResponse.userPrincipalName,
-        // name: readProfileResponse.displayName,
         authToken: authGraphQLResponse.authenticationToken,
         authTokenExpires: new Date(
           authGraphQLLoginResponse.expiresOn.setDate(
@@ -403,12 +408,27 @@ const LoginB2C = (props) => {
       .catch((error) => console.log(error));
   }
 
+  async function signInPopup(request) {
+    console.log("request made to signIn at: " + new Date().toString());
+    console.log("scopes requested: " + request.scopes.toString());
+
+    const loginResponse = await stateApp.myMSALObj
+      .loginPopup(request)
+      .catch(function (error) {
+        console.log(error);
+      });
+    console.log(loginResponse);
+    if (stateApp.myMSALObj.getAllAccounts()) {
+      return loginResponse;
+    }
+  }
+  
   async function ssoSilent(request) {
     console.log("request made to ssoSilent at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes);
 
     stateApp.myMSALB2CObj.config.auth.redirectUri =
-      msalB2CConfig().auth.redirectUri + "auth.html";
+      msalB2CConfig().auth.redirectUri + "/auth.html";
 
     const loginResponse = await stateApp.myMSALB2CObj
       .ssoSilent(request)
@@ -521,13 +541,11 @@ const LoginB2C = (props) => {
       </div>
 
       <div className={localClass.cardContainer}> {
-        !loading
-        ? <SignInCardB2C
-            ready={loadingSigInButton}
-            handleAADB2CSignIn={handledAADB2CSignIn}
-            errorText={loginErrorText}
-            tenant={queryString.parse(props.location.search).tenant}/>
-        : <> </>
+        <SignInCardB2C
+          ready={loadingSigInButton}
+          handleAADB2CSignIn={handledAADB2CSignIn}
+          errorText={loginErrorText}
+          tenant={queryString.parse(props.location.search).tenant}/>
         }
 
         <div>
@@ -615,13 +633,15 @@ const LoginB2C = (props) => {
           © 2020 M1neral, LLC. All Rights Reserved.
         </div>
 
-        {/* <div
-          style={{
-            color: "#fff",
-          }}
-        >
-          Terms of Service | Privacy Policy
-        </div> */}
+        <div className={localClass.termsAndPrivacy}>
+          <a href="https://m1neral.com/TOS.pdf" target="_blank">
+            Terms of Service
+          </a>
+          {" | "}
+          <a href="https://m1neral.com/Privacy.pdf" target="_blank">
+            Privacy Policy
+          </a>
+        </div>
 
         <div
           style={{
