@@ -766,6 +766,15 @@ export default function Map() {
         }
         beforelayer = clusterLabelBar;
 
+        if (config.layerSettings.interactionAble) {
+          map.off("mousemove", clusterLabelBar, mouseMoveHandler);
+          map.off("mouseleave", clusterLabelBar, mouseLeaveHandler);
+          if (config.layerSettings.interactionDetail.hover) {
+            map.on("mousemove", clusterLabelBar, mouseMoveHandler);
+            map.on("mouseleave", clusterLabelBar, mouseLeaveHandler);
+          }
+        }
+
         if (map.getLayer(clusterVar)) {
           map.setLayoutProperty(
             clusterVar,
@@ -794,13 +803,32 @@ export default function Map() {
           map.moveLayer(clusterVar, beforelayer);
         }
         beforelayer = clusterVar;
+
+        if (config.layerSettings.interactionAble) {
+          map.off("mousemove", clusterVar, mouseMoveHandler);
+          map.off("mouseleave", clusterVar, mouseLeaveHandler);
+          if (config.layerSettings.interactionDetail.hover) {
+            map.on("mousemove", clusterVar, mouseMoveHandler);
+            map.on("mouseleave", clusterVar, mouseLeaveHandler);
+          }
+        }
       }
 
       if (beforelayer) {
         map.moveLayer(layerId, beforelayer);
       }
       beforelayer = layerId;
+
+      if (config.layerSettings.interactionAble) {
+        map.off("mousemove", layerId, mouseMoveHandler);
+        map.off("mouseleave", layerId, mouseLeaveHandler);
+        if (config.layerSettings.interactionDetail.hover) {
+          map.on("mousemove", layerId, mouseMoveHandler);
+          map.on("mouseleave", layerId, mouseLeaveHandler);
+        }
+      }
     }
+
 
     // -> add source
     // if (config) {
@@ -1361,8 +1389,15 @@ export default function Map() {
               }
               beforeLayer = id;
             }
-            
-          })
+            if (layer.layerSettings.interactionAble) {
+              map.off("mousemove", id, mouseMoveHandler);
+              map.off("mouseleave", id, mouseLeaveHandler);
+              if (layer.layerSettings.interactionDetail.hover) {
+                map.on("mousemove", id, mouseMoveHandler);
+                map.on("mouseleave", id, mouseLeaveHandler);
+              }
+            }
+          });
         } else if (layer.layerType == 'data layer') {
           let data = null;
           if (layer.layerPaintProps.length > 0) {
