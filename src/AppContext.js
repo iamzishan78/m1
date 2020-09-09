@@ -76,6 +76,7 @@ const AppProvider = (props) => {
     layers: layers,
     baseMapLayers: baseMapLayers,
     userDefinedLayers: userDefinedLayers,
+    fileGeoData: {},
     tempCheckedLayer: null,
     checkedLayers: [2, 5],
     checkedHeats: [],

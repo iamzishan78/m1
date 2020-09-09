@@ -430,14 +430,22 @@ export default function CheckboxList(props) {
                                     />
 
                                     {/* Color Picker for UD Layer */}
-                                    {layer.layerSettings.colorable && (
+                                    {layer.layerSettings.colorable && layer.layerSettings.interaction.interactionAble && (
                                       <ListItemIcon onClick={() => handleColorPickerUDLayer(layer)}>
                                         <PaletteIcon />
                                       </ListItemIcon>
                                     )}
 
-                                    <div style={{ paddingRight: 20 }}>
-                                      {layer.layerSettings.interaction.interactionAble && (
+                                    {layer.layerSettings.colorable && !layer.layerSettings.interaction.interactionAble && (
+                                      <div style={{ paddingRight: 40 }}>
+                                        <ListItemIcon onClick={() => handleColorPickerUDLayer(layer)}>
+                                          <PaletteIcon />
+                                        </ListItemIcon>
+                                      </div>
+                                    )}
+
+                                    {layer.layerSettings.interaction.interactionAble && (
+                                      <div style={{ paddingRight: 20 }}>
                                         <Checkbox
                                           disabled={!ifLayerHaveData(layer)}
                                           icon={
@@ -471,8 +479,8 @@ export default function CheckboxList(props) {
                                             layer
                                           )}
                                         />
-                                      )}
-                                    </div>
+                                      </div>
+                                    )}
 
                                     <FormControlLabel
                                       control={

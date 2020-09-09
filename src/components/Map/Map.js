@@ -104,6 +104,11 @@ const mouseLeaveHandler = (e) => {
   map.getCanvas().style.cursor = "";
 };
 
+const random_hex_color_code = () => {
+  let n = (Math.random() * 0xfffff * 1000000).toString(16);
+  return '#' + n.slice(0, 6);
+};
+
 export default function Map() {
   let classes = useStyles();
   const dispatch = useDispatch();
@@ -402,9 +407,9 @@ export default function Map() {
   useEffect(() => {
     console.log("useEffect fileLayers");
 
-    if (fileLayerData && fileLayerData.fileLayers && fileLayerData.fileLayers.length > 0) {
-      setFileLayerData(fileLayerData.fileLayers);
-      const fileId = fileLayerData.fileLayers[0].file._id;
+    if (fileLayerData && fileLayerData.allFileLayers && fileLayerData.allFileLayers.length > 0) {
+      setFileLayerData(fileLayerData.allFileLayers);
+      const fileId = fileLayerData.allFileLayers[0].file._id;
       viewFile({
         variables: {
           fileId: fileId
@@ -487,7 +492,7 @@ export default function Map() {
         });
       } else {
         let fileData = [];
-        let checkedFileLayers = [];
+        // let checkedFileLayers = [];
         for (let i = 0; i < fileLayerPreData.length; i ++) {
           const layerName = fileLayerPreData[i].layerName;
           let fileContent = {};
@@ -502,12 +507,12 @@ export default function Map() {
           const fileId = fileLayerPreData[i].file._id;
           const fileLayerId = fileLayerPreData[i]._id;
           fileData.push({fileLayerId, layerName, fileContent, idColor, layerType, paintProps, fileId});
-          checkedFileLayers.push(i);
+          // checkedFileLayers.push(i);
         }
         setStateApp((stateApp) => ({
           ...stateApp,
           userFileLayers: fileData,
-          checkedFileLayers: checkedFileLayers
+          // checkedFileLayers: checkedFileLayers
         }));
       }
     }
@@ -571,8 +576,6 @@ export default function Map() {
 
     let beforelayer = bLayer; 
     
-    console.log(data, layerName, map, bLayer);
-
     const configIndex = stateApp.layers.findIndex(
       (value) => value.layerName === layerName
     );
@@ -599,37 +602,42 @@ export default function Map() {
         layerData = data;
       }
 
-      const makeGeoJSON = (mdata) => {
-        return {
-          type: "FeatureCollection",
-          features: mdata.map((feature) => {
-            if (feature.latitude && feature.longitude) {
-              return {
-                type: "Feature",
-                properties: feature,
-                geometry: {
-                  type: 'Point',
-                  coordinates: [feature.longitude, feature.latitude],
-                },
-              };
-            } else if(feature.shape) {
-              return JSON.parse(feature.shape);
-            } else {
-              return {
-                type: "Feature",
-                properties: feature,
-                geometry: {
-                  type: "Point",
-                  coordinates: [feature.Longitude, feature.Latitude],
-                },
-              };
-            }
-          }),
-        };
-      };
+      let geoJson = null;
 
-      const geoJson = makeGeoJSON(layerData);
-      console.log(geoJson);
+      if (config.layerType == 'file layer') {
+        geoJson = layerData;
+      } else {
+        const makeGeoJSON = (mdata) => {
+          return {
+            type: "FeatureCollection",
+            features: mdata.map((feature) => {
+              if (feature.latitude && feature.longitude) {
+                return {
+                  type: "Feature",
+                  properties: feature,
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [feature.longitude, feature.latitude],
+                  },
+                };
+              } else if(feature.shape) {
+                return JSON.parse(feature.shape);
+              } else {
+                return {
+                  type: "Feature",
+                  properties: feature,
+                  geometry: {
+                    type: "Point",
+                    coordinates: [feature.Longitude, feature.Latitude],
+                  },
+                };
+              }
+            }),
+          };
+        };
+  
+        geoJson = makeGeoJSON(layerData);
+      }
 
       const sourceId = prop.sourceProps;
       const paintType = prop.paintType;
@@ -668,6 +676,14 @@ export default function Map() {
       // -> add layer
       const layerId = prop.id;
       const visible = layerSettings.showable && layerSettings.visiable !== false;
+      
+      if (prop.paintProps) {
+        Object.keys(prop.paintProps).forEach((key) => {
+          if (prop.paintProps[key] == '#undefined') {
+            prop.paintProps[key] = random_hex_color_code();
+          }
+        });
+      }
 
       if (map.getLayer(layerId)) {
         map.setLayoutProperty(
@@ -717,10 +733,11 @@ export default function Map() {
         }
       }
 
-      const mLayer = map.getLayer(layerId);
-      const clusterVisible = visible && !mLayer.source.includes('_filter');
-
+      
       if (prop.clusterProps) {
+        const mLayer = map.getLayer(layerId);
+        const clusterVisible = visible && mLayer && !mLayer.source.includes('_filter');
+
         const clusterVar = layerId + "-clusters";
         const clusterLabelBar = layerId + "-clusters-counts";
         if (map.getLayer(clusterLabelBar)) {
@@ -1013,21 +1030,21 @@ export default function Map() {
     }
   }, [rigData]);
 
-  useEffect(() => {
-    console.log("useEffect 8");
+  // useEffect(() => {
+  //   console.log("useEffect 8");
 
-    if (permits.length > 0 && map) {
-      setLayer(permits, "Permits", map);
-    }
-  }, [permits, map]);
+  //   if (permits.length > 0 && map) {
+  //     setLayer(permits, "Permits", map);
+  //   }
+  // }, [permits, map]);
 
-  useEffect(() => {
-    console.log("useEffect 9");
+  // useEffect(() => {
+  //   console.log("useEffect 9");
 
-    if (rigs.length > 0 && map) {
-      setLayer(rigs, "Rig Activity", map);
-    }
-  }, [rigs, map]);
+  //   if (rigs.length > 0 && map) {
+  //     setLayer(rigs, "Rig Activity", map);
+  //   }
+  // }, [rigs, map]);
 
   useEffect(() => {
     console.log("useEffect 10");
@@ -1051,26 +1068,26 @@ export default function Map() {
     }
   }, [dataWellsForOwnerWellTrackLayer]);
 
-  useEffect(() => {
-    console.log("useEffect 11");
+  // useEffect(() => {
+  //   console.log("useEffect 11");
 
-    if (
-      stateApp.trackedOwnerWells &&
-      stateApp.trackedwells &&
-      stateApp.customLayers &&
-      map
-    ) {
-      setLayer(stateApp.trackedwells, "Tracked Wells", map);
-      setLayer(stateApp.trackedOwnerWells, "Tracked Owners", map);
-      setLayer(stateApp.customLayers, "Area of Interest", map);
-      setLayer(stateApp.customLayers, "Parcels", map);
-    }
-  }, [
-    stateApp.trackedOwnerWells,
-    stateApp.trackedwells,
-    stateApp.customLayers,
-    map,
-  ]);
+  //   if (
+  //     stateApp.trackedOwnerWells &&
+  //     stateApp.trackedwells &&
+  //     stateApp.customLayers &&
+  //     map
+  //   ) {
+  //     setLayer(stateApp.trackedwells, "Tracked Wells", map, getBeforeLayer("Tracked Wells"));
+  //     setLayer(stateApp.trackedOwnerWells, "Tracked Owners", map, getBeforeLayer("Tracked Owners"));
+  //     setLayer(stateApp.customLayers, "Area of Interest", map, getBeforeLayer("Area of Interest"));
+  //     setLayer(stateApp.customLayers, "Parcels", map, getBeforeLayer("Parcels"));
+  //   }
+  // }, [
+  //   stateApp.trackedOwnerWells,
+  //   stateApp.trackedwells,
+  //   stateApp.customLayers,
+  //   map,
+  // ]);
 
   useEffect(() => {
     console.log("useEffect 12");
@@ -1346,7 +1363,7 @@ export default function Map() {
             }
             
           })
-        } else {
+        } else if (layer.layerType == 'data layer') {
           let data = null;
           if (layer.layerPaintProps.length > 0) {
             switch(layer.layerName) {
@@ -1372,9 +1389,13 @@ export default function Map() {
                 data = stateApp.customLayers
             }
             if (data) {
-              console.log(data, layer.layerName, beforeLayer);
               beforeLayer = setLayer(data, layer.layerName, map, beforeLayer);
             }
+          }
+        } else {
+          let data = stateApp.fileGeoData[layer.layerName];
+          if (data) {
+            beforeLayer = setLayer(data, layer.layerName, map, beforeLayer);
           }
         }
       }
@@ -1387,7 +1408,15 @@ export default function Map() {
         selectedUserDefinedLayer: undefined,
       }));
     }
-  }, [stateApp.layers, map])
+  }, [
+    stateApp.layers,
+    stateApp.trackedOwnerWells,
+    stateApp.trackedwells,
+    stateApp.customLayers,
+    permits,
+    rigs,
+    map
+  ])
 
   // useEffect(() => {
   //   console.log("useEffect 14");
@@ -2294,45 +2323,84 @@ export default function Map() {
   useEffect(() => {
     if (map && stateApp.userFileLayers && stateApp.userFileLayers.length > 0) {
       const fileLayers = stateApp.userFileLayers;
+      const currentLayers = stateApp.layers.slice(0);
+      const fileGeoData = {};
       fileLayers.forEach((fileLayer, index) => {
         const layerName = fileLayer.layerName;
         const geoJson = fileLayer.fileContent;
         const sourceName = layerName + ' Source';
         const type = fileLayer.layerType;
         const paintProps = fileLayer.paintProps;
-        if (map.getLayer(layerName)) {
-          map.getSource(sourceName).setData(geoJson);
-          Object.keys(paintProps).forEach((key) => {
-            map.setPaintProperty(layerName, key, paintProps[key])
-          })
-        } else {
-          if (map.getSource(sourceName)) {
-            map.getSource(sourceName).setData(geoJson);
-          } else {
-            map.addSource(sourceName, {
-              type: 'geojson',
-              data: geoJson,
-            });
-          }
+        if (currentLayers.findIndex((layer) => layer.layerName == layerName) == -1) {
+          const fileLayerConfig = {
+            layerName,
+            layerType: 'file layer',
+            layerCategory: 'UD layer',
+            layerSettings: {
+              interaction: {
+                interactionAble: false,
+                interactionDetail: {
+                  hover: false,
+                  click: false
+                }
+              },
+              colorable: true,
+              showable: true,
+              visiable: true,
+            },
+            layerPaintProps: [
+              {
+                id: layerName,
+                sourceProps: sourceName,
+                paintType: type,
+                paintProps: paintProps,
+              },
+            ]
+          };
+          currentLayers.push(fileLayerConfig);
+        }
+
+        fileGeoData[layerName] = geoJson;
         
-          map.addLayer({
-            id: layerName,
-            type: type,
-            source: sourceName,
-            paint: paintProps,
-          });
-        }
-        if (stateApp.checkedFileLayers.indexOf(index) === -1) {
-          map.setLayoutProperty(layerName, "visibility", "none");
-        } else {
-          map.setLayoutProperty(layerName, "visibility", "visible");
-        }
+        setStateApp({
+          ...stateApp,
+          layers: currentLayers,
+          fileGeoData: fileGeoData,
+        })
+        
+        // if (map.getLayer(layerName)) {
+        //   map.getSource(sourceName).setData(geoJson);
+        //   Object.keys(paintProps).forEach((key) => {
+        //     map.setPaintProperty(layerName, key, paintProps[key])
+        //   })
+        // } else {
+        //   if (map.getSource(sourceName)) {
+        //     map.getSource(sourceName).setData(geoJson);
+        //   } else {
+        //     map.addSource(sourceName, {
+        //       type: 'geojson',
+        //       data: geoJson,
+        //     });
+        //   }
+        
+        //   map.addLayer({
+        //     id: layerName,
+        //     type: type,
+        //     source: sourceName,
+        //     paint: paintProps,
+        //   });
+        // }
+        // if (stateApp.checkedFileLayers.indexOf(index) === -1) {
+        //   map.setLayoutProperty(layerName, "visibility", "none");
+        // } else {
+        //   map.setLayoutProperty(layerName, "visibility", "visible");
+        // }
       });
     }
   }, [
-    map,
+    // map,
     stateApp.userFileLayers,
-    stateApp.checkedFileLayers,
+    // stateApp.checkedFileLayers,
   ]);
 
   useEffect(() => {
