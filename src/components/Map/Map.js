@@ -94,6 +94,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const mouseMoveHandler = (e) => {
+  const map = e.target;
+  map.getCanvas().style.cursor = "pointer";
+};
+
+const mouseLeaveHandler = (e) => {
+  const map = e.target;
+  map.getCanvas().style.cursor = "";
+};
+
 export default function Map() {
   let classes = useStyles();
   const dispatch = useDispatch();
@@ -561,14 +571,12 @@ export default function Map() {
 
     let beforelayer = bLayer; 
     
+    console.log(data, layerName, map, bLayer);
+
     const configIndex = stateApp.layers.findIndex(
       (value) => value.layerName === layerName
     );
     const config = stateApp.layers[configIndex];
-    // const checkedPosition = stateApp.checkedLayers.indexOf(configIndex);
-    // const checkedInteraction = stateApp.checkedLayersInteraction.indexOf(
-    //   configIndex
-    // );
     const paintProps = config.layerPaintProps;
     const layerSettings = config.layerSettings;
     for (let i = paintProps.length - 1; i >= 0; i --) {
@@ -670,16 +678,28 @@ export default function Map() {
             },
           });
         } else {
-          map.addLayer({
-            id: layerId,
-            type: paintType,
-            source: sourceId,
-            paint: prop.paintProps,
-            layout: {
-              ...prop.layoutProps,
-              visibility: visible ? "visible" : "none",
-            },
-          });
+          if (prop.layoutProps) {
+            map.addLayer({
+              id: layerId,
+              type: paintType,
+              source: sourceId,
+              paint: prop.paintProps,
+              layout: {
+                ...prop.layoutProps,
+                visibility: visible ? "visible" : "none",
+              },
+            });
+          } else {
+            map.addLayer({
+              id: layerId,
+              type: paintType,
+              source: sourceId,
+              paint: prop.paintProps,
+              layout: {
+                visibility: visible ? "visible" : "none",
+              },
+            });
+          }
         }
       }
 
@@ -749,7 +769,7 @@ export default function Map() {
     }
 
     // -> add source
-    if (config) {
+    // if (config) {
 
       // -> add layer
 
@@ -777,7 +797,7 @@ export default function Map() {
       //     styleLayers,
       //   }));
       // }
-    }
+    // }
     return beforelayer
   };
 
@@ -1336,11 +1356,15 @@ export default function Map() {
                 data = stateApp.customLayers
             }
             if (data) {
+              console.log(data, layer.layerName, beforeLayer);
               beforeLayer = setLayer(data, layer.layerName, map, beforeLayer);
             }
           }
         }
       }
+
+      console.log('after set data', map);
+
       setStateApp((state) => ({
         ...state,
         popupOpen: false,
