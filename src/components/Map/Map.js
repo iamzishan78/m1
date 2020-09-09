@@ -603,19 +603,33 @@ export default function Map() {
         return {
           type: "FeatureCollection",
           features: mdata.map((feature) => {
-            return {
-              type: "Feature",
-              properties: feature,
-              geometry: {
-                type: "Point",
-                coordinates: [feature.Longitude, feature.Latitude],
-              },
-            };
+            if (feature.latitude && feature.longitude) {
+              return {
+                type: "Feature",
+                properties: feature,
+                geometry: {
+                  type: 'Point',
+                  coordinates: [feature.longitude, feature.latitude],
+                },
+              };
+            } else if(feature.shape) {
+              return JSON.parse(feature.shape);
+            } else {
+              return {
+                type: "Feature",
+                properties: feature,
+                geometry: {
+                  type: "Point",
+                  coordinates: [feature.Longitude, feature.Latitude],
+                },
+              };
+            }
           }),
         };
       };
 
       const geoJson = makeGeoJSON(layerData);
+      console.log(geoJson);
 
       const sourceId = prop.sourceProps;
       const paintType = prop.paintType;
@@ -703,6 +717,9 @@ export default function Map() {
         }
       }
 
+      const mLayer = map.getLayer(layerId);
+      const clusterVisible = visible && !mLayer.source.includes('_filter');
+
       if (prop.clusterProps) {
         const clusterVar = layerId + "-clusters";
         const clusterLabelBar = layerId + "-clusters-counts";
@@ -710,7 +727,7 @@ export default function Map() {
           map.setLayoutProperty(
             clusterLabelBar,
             "visibility",
-            visible ? "visible" : "none"
+            clusterVisible ? "visible" : "none"
           );
         } else {
           map.addLayer({
@@ -723,7 +740,7 @@ export default function Map() {
           map.setLayoutProperty(
             clusterLabelBar,
             "visibility",
-            visible ? "visible" : "none"
+            clusterVisible ? "visible" : "none"
           );
         }
 
@@ -736,7 +753,7 @@ export default function Map() {
           map.setLayoutProperty(
             clusterVar,
             "visibility",
-            visible ? "visible" : "none"
+            clusterVisible ? "visible" : "none"
           );
           Object.keys(prop.clusterProps.clusterPaintProps).forEach((key) => {
             map.setPaintProperty(clusterVar, key, prop.clusterProps.clusterPaintProps[key])
@@ -752,7 +769,7 @@ export default function Map() {
           map.setLayoutProperty(
             clusterVar,
             "visibility",
-            visible ? "visible" : "none"
+            clusterVisible ? "visible" : "none"
           );
         }
 
@@ -1043,18 +1060,10 @@ export default function Map() {
       stateApp.customLayers &&
       map
     ) {
-      if (!map.getLayer("Tracked Wells")) {
-        setLayer(stateApp.trackedwells, "Tracked Wells", map);
-      }
-      if (!map.getLayer("Tracked Owners")) {
-        setLayer(stateApp.trackedOwnerWells, "Tracked Owners", map);
-      }
-      if (!map.getLayer("interest")) {
-        setLayer(stateApp.customLayers, "Area of Interest", map);
-      }
-      if (!map.getLayer("parcel")) {
-        setLayer(stateApp.customLayers, "Parcels", map);
-      }
+      setLayer(stateApp.trackedwells, "Tracked Wells", map);
+      setLayer(stateApp.trackedOwnerWells, "Tracked Owners", map);
+      setLayer(stateApp.customLayers, "Area of Interest", map);
+      setLayer(stateApp.customLayers, "Parcels", map);
     }
   }, [
     stateApp.trackedOwnerWells,
@@ -1319,6 +1328,7 @@ export default function Map() {
 
   useEffect(() => {
     let beforeLayer = null;
+    console.log('stateApp check ', stateApp.layers);
     if (stateApp.layers.length > 0 && map) {
       for (let i = stateApp.layers.length - 1; i >= 0; i --) {
         const layer = stateApp.layers[i];
@@ -1351,6 +1361,12 @@ export default function Map() {
                 break;
               case 'Permits':
                 data = permits;
+                break;
+              case 'Search':
+                data = stateApp.wellListFromSearch;
+                break;
+              case 'Tagged Wells/Owners':
+                data = stateApp.wellListFromTagsFilter;
                 break;
               default:
                 data = stateApp.customLayers
