@@ -175,6 +175,9 @@ export const styleLayers = [
       "PLSSFirstDivisionLabels",
       "TexasLandSurvey",
       "TexasLandSurveyLabels",
+      "abstract_geo_fill_layer",
+      "abstract_geo_layer",
+      "abstract_geo_label_layer",
     ],
   },
   
