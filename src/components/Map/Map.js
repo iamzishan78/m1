@@ -2302,6 +2302,9 @@ export default function Map() {
             ]
           };
           currentLayers.push(fileLayerConfig);
+        } else {
+          let layerIndex = currentLayers.findIndex((layer) => layer.layerName == layerName)
+          currentLayers[layerIndex].layerPaintProps[0].paintProps = paintProps;
         }
 
         fileGeoData[layerName] = geoJson;

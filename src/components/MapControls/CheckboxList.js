@@ -29,6 +29,8 @@ import LayersIcon from "@material-ui/icons/Layers";
 import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
 import PaletteIcon from '@material-ui/icons/Palette';
 import ClickIcon from "..//Shared/svgIcons/cursor-click.js";
+import UserDefined from "..//Shared/svgIcons/user-defined.js";
+import ColorControl from "..//Shared/svgIcons/color-control.js";
 import AddIcon from '@material-ui/icons/Add';
 import { borders } from "@material-ui/system";
 import Box from "@material-ui/core/Box";
@@ -150,7 +152,6 @@ export default function CheckboxList(props) {
       backgroundColor: "#263451",
       "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
         color: theme.palette.common.white,
-        // },
       },
       "& .MuiButton-textPrimary": {
         color: theme.palette.common.white,
@@ -179,6 +180,10 @@ export default function CheckboxList(props) {
       backgroundColor: "#263451",
       "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
         color: theme.palette.common.white,
+      },
+      "& .MuiListItemText-primary svg": {
+        marginLeft: '5px',
+        verticalAlign: 'middle'
       },
     },
   }))(ListItem);
@@ -268,6 +273,19 @@ export default function CheckboxList(props) {
     }));
   }
 
+  const getLayerName = (layer) => {
+    if (layer.layerCategory == 'M1 Layer') {
+      return layer.layerName
+    } else {
+      return (
+        <>
+          <span>{layer.layerName}</span>
+          <UserDefined />
+        </>
+      );
+    }
+  }
+
   useEffect(() => {
     if (stateApp.userFileLayers && stateApp.userFileLayers.length > 0) {
       setUserFileLayer(stateApp.userFileLayers)
@@ -301,20 +319,20 @@ export default function CheckboxList(props) {
           </StyledListItemSecondaryAction>
         </StyledMenuItem>
 
-        <StyledListItem2 button onClick={handleClick}>
+        {/* <StyledListItem2 button onClick={handleClick}>
           <ListItemIcon>
             <LayersIcon />
           </ListItemIcon>
           <ListItemText primary="M1neral Layers" />
           {open ? <ExpandLess /> : <ExpandMore />}
         </StyledListItem2>
-        <Collapse in={open} timeout="auto" unmountOnExit>
+        <Collapse in={open} timeout="auto" unmountOnExit> */}
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="droppableM1">
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <List className={classes.list}>
-                    {M1Layers.map((layer, index) => {
+                    {stateApp.layers.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
                       if (layer.layerSettings.showable) {
                         return (
@@ -332,7 +350,22 @@ export default function CheckboxList(props) {
                                 <ListItemIcon {...provided.dragHandleProps}>
                                   <DragIndicator />
                                 </ListItemIcon>
-                                <ListItemText id={labelId} primary={layer.layerName} />
+                                <ListItemText id={labelId} primary={getLayerName(layer)} />
+
+                                {layer.layerSettings.colorable && layer.layerSettings.interaction.interactionAble && (
+                                  <ListItemIcon onClick={() => handleColorPickerUDLayer(layer)}>
+                                    <ColorControl />
+                                  </ListItemIcon>
+                                )}
+
+                                {layer.layerSettings.colorable && !layer.layerSettings.interaction.interactionAble && (
+                                  <div style={{ paddingRight: 40 }}>
+                                    <ListItemIcon onClick={() => handleColorPickerUDLayer(layer)}>
+                                      <ColorControl />
+                                    </ListItemIcon>
+                                  </div>
+                                )}
+                                
                                 {layer.layerSettings.interaction.interactionAble && (
                                   <div style={{ paddingRight: 20 }}>
                                     <Checkbox
@@ -372,193 +405,7 @@ export default function CheckboxList(props) {
               )}
             </Droppable>
           </DragDropContext>
-        </Collapse>
-
-        <StyledListItem2 button onClick={handleClickUD}>
-          <ListItemIcon>
-            <LayersIcon />
-          </ListItemIcon>
-          <ListItemText primary="User Defined" />
-          {openUD ? <ExpandLess /> : <ExpandMore />}
-        </StyledListItem2>
-        <Collapse in={openUD} timeout="auto" unmountOnExit>
-          <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="droppableUD">
-              {(provided, snapshot) => (
-                <RootRef rootRef={provided.innerRef}>
-                  <List className={classes.list}>
-                    {UdLayers.map((layer, index) => {
-                      const labelId = `checkbox-list-label-${index}`;
-                      if (layer.layerSettings.showable) {
-                        return (
-                          <Draggable
-                            key={labelId}
-                            draggableId={labelId}
-                            index={currentLayers.findIndex((clayer) => clayer.layerName == layer.layerName)}
-                          >
-                            {(provided, snapshot) => (
-                              // <Box borderColor={layer.idColor} {...defaultProps}>
-                              //   <Tooltip
-                              //     placement="top"
-                              //     title={
-                              //       !ifLayerHaveData(layer)
-                              //         ? //// temporary disabling the Title Layer
-                              //           layer.name === "Title"
-                              //           ? "Temporary Disabled"
-                              //           : ////
-                              //             "Please choose the data first."
-                              //         : ""
-                              //     }
-                              //   >
-                                  <StyledListItem
-                                    ContainerComponent="li"
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                  >
-                                    <ListItemIcon {...provided.dragHandleProps}>
-                                      <DragIndicator />
-                                    </ListItemIcon>
-
-                                    <ListItemText
-                                      id={labelId}
-                                      primary={layer.layerName}
-                                      className={
-                                        !ifLayerHaveData(layer)
-                                          ? classes.disabledLayerTitle
-                                          : ""
-                                      }
-                                    />
-
-                                    {/* Color Picker for UD Layer */}
-                                    {layer.layerSettings.colorable && layer.layerSettings.interaction.interactionAble && (
-                                      <ListItemIcon onClick={() => handleColorPickerUDLayer(layer)}>
-                                        <PaletteIcon />
-                                      </ListItemIcon>
-                                    )}
-
-                                    {layer.layerSettings.colorable && !layer.layerSettings.interaction.interactionAble && (
-                                      <div style={{ paddingRight: 40 }}>
-                                        <ListItemIcon onClick={() => handleColorPickerUDLayer(layer)}>
-                                          <PaletteIcon />
-                                        </ListItemIcon>
-                                      </div>
-                                    )}
-
-                                    {layer.layerSettings.interaction.interactionAble && (
-                                      <div style={{ paddingRight: 20 }}>
-                                        <Checkbox
-                                          disabled={!ifLayerHaveData(layer)}
-                                          icon={
-                                            <CancelOutlinedIcon
-                                              htmlColor={
-                                                !ifLayerHaveData(layer)
-                                                  ? "rgb(127, 149, 199)"
-                                                  : "#12abe0"
-                                              }
-                                            />
-                                          }
-                                          checkedIcon={
-                                            <ClickIcon
-                                              color={
-                                                !ifLayerHaveData(layer)
-                                                  ? "rgb(127, 149, 199)"
-                                                  : "#12abe0"
-                                              }
-                                            />
-                                          }
-                                          edge="start"
-                                          checked={
-                                            layer.layerSettings.interaction.interactionDetail.click
-                                          }
-                                          tabIndex={-1}
-                                          disableRipple
-                                          inputProps={{
-                                            "aria-labelledby": labelId,
-                                          }}
-                                          onChange={handleToggleInteraction(
-                                            layer
-                                          )}
-                                        />
-                                      </div>
-                                    )}
-
-                                    <FormControlLabel
-                                      control={
-                                        <Switch
-                                          checked={
-                                            layer.layerSettings.visiable !== false
-                                          }
-                                          onChange={handleToggle(
-                                            layer
-                                          )}
-                                        />
-                                      }
-                                    />
-                                  </StyledListItem>
-                              //   </Tooltip>
-                              // </Box>
-                            )}
-                          </Draggable>
-                        );
-                      }
-                    })}
-                    {/* {userFileLayers.map((layer, index) => {
-                      const labelId = `file-list-label-${index}`;
-
-                      return (
-                        <Draggable
-                          key={labelId}
-                          draggableId={labelId}
-                          index={index + stateApp.userDefinedLayers.length}
-                        >
-                          {(provided, snapshot) => (
-                            <Box borderColor={layer.idColor} {...defaultProps}>
-                              <StyledListItem
-                                ContainerComponent="li"
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                              >
-                                <ListItemIcon {...provided.dragHandleProps}>
-                                  <DragIndicator />
-                                </ListItemIcon>
-
-                                <ListItemText
-                                  id={labelId}
-                                  primary={layer.layerName}
-                                />
-
-                                <div style={{ paddingRight: 40 }}>
-                                  <ListItemIcon onClick={() => handleColorPicker(layer)}>
-                                    <PaletteIcon />
-                                  </ListItemIcon>
-                                </div>
-
-                                <FormControlLabel
-                                  control={
-                                    <Switch
-                                      checked={
-                                        stateApp.checkedFileLayers
-                                          ? stateApp.checkedFileLayers.indexOf(
-                                              index
-                                            ) !== -1
-                                          : false
-                                      }
-                                      onChange={handleToggleFile(index)}
-                                    />
-                                  }
-                                />
-                              </StyledListItem>
-                            </Box>
-                          )}
-                        </Draggable>
-                      );
-                    })} */}
-                  </List>
-                </RootRef>
-              )}
-            </Droppable>
-          </DragDropContext>
-        </Collapse>
+        {/* </Collapse> */}
       </StyledMenu>
     </ClickAwayListener>
   );
