@@ -860,233 +860,6 @@ export const baseMapLayers = [
 
 export const layers = [
   {
-    layerName: 'Permits',
-    layerType: 'data layer',
-    layerCategory: 'M1 Layer',
-    layerSettings: {
-      interaction: {
-        interactionAble: true,
-        interactionDetail: {
-          hover: true,
-          click: true
-        }
-      },
-      colorable: false,
-      showable: true,
-      visiable: false,
-    },
-    layerPaintProps: [
-      {
-        id: 'permits',
-        sourceProps: 'permits_source',
-        paintType: 'circle',
-        paintProps: {
-          "circle-radius": 5,
-          "circle-color": "#e362e3",
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "#fff",
-        },
-        clusterProps: {
-          clusterPaintProps: {
-            "circle-color": "#e362e3",
-  
-            "circle-radius": [
-              "step",
-              ["get", "point_count"],
-              20,
-              5,
-              25,
-              10,
-              30,
-              20,
-              35,
-            ],
-  
-            "circle-stroke-width": 5,
-            "circle-stroke-color": "#fff",
-          },
-          clusterSymbolProps: {
-            "text-field": "{point_count}",
-            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-            "text-size": 12,
-          },
-        }
-      }
-    ]
-  },
-  {
-    layerName: 'Rig Activity',
-    layerType: 'data layer',
-    layerCategory: 'M1 Layer',
-    layerSettings: {
-      interaction: {
-        interactionAble: true,
-        interactionDetail: {
-          hover: true,
-          click: true
-        }
-      },
-      colorable: false,
-      showable: true,
-      visiable: false,
-    },
-    layerPaintProps: [
-      {
-        id: 'rigs',
-        sourceProps: 'rigs_source',
-        paintType: 'symbol',
-        layoutProps: {
-          'icon-image': 'marker-icon',
-          'icon-allow-overlap': true,
-          'icon-size': 2,
-          'text-field': 'H',
-          'text-font': [
-              'Open Sans Bold',
-              'Arial Unicode MS Bold'
-          ],
-          'text-size': 11,
-          'text-transform': 'uppercase',
-          'text-letter-spacing': 0.05,
-          'text-offset': [0, -0.5]
-        },
-        paintProps: {
-          "icon-color": "#00ff00",
-          "icon-halo-color": "#fff",
-          "icon-halo-width": 2
-        },
-        clusterProps: {
-          clusterPaintProps: {
-            "circle-color": '#666',
-            "circle-radius": [
-              "step",
-              ["get", "point_count"],
-              20,
-              5,
-              25,
-              10,
-              30,
-              20,
-              35,
-            ],
-  
-            "circle-stroke-width": 5,
-            "circle-stroke-color": "#fff",
-          },
-          clusterSymbolProps: {
-            "text-field": "{point_count}",
-            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-            "text-size": 12,
-          },
-        }
-      }
-    ]
-  },
-  {
-    layerName: 'Wells',
-    layerType: 'vector layer',
-    layerCategory: 'M1 Layer',
-    layerSettings: {
-      interaction: {
-        interactionAble: true,
-        interactionDetail: {
-          hover: true,
-          click: true
-        }
-      },
-      colorable: false,
-      showable: true,
-    },
-    layerPaintProps: {
-      ids: ['wellpoints', 'welllines']
-    }
-  },
-  {
-    layerName: 'Basins',
-    layerType: 'vector layer',
-    layerCategory: 'M1 Layer',
-    layerSettings: {
-      interaction: {
-        interactionAble: false,
-        interactionDetail: {
-          hover: false,
-          click: false
-        }
-      },
-      colorable: false,
-      showable: true,
-      visiable: false,
-    },
-    layerPaintProps: {
-      ids: ["basinLabels", "basinLayer"]
-    }
-  },
-  {
-    layerName: 'Pipelines',
-    layerType: 'vector layer',
-    layerCategory: 'M1 Layer',
-    layerSettings: {
-      interaction: {
-        interactionAble: false,
-        interactionDetail: {
-          hover: false,
-          click: false
-        }
-      },
-      colorable: false,
-      showable: true,
-      visiable: false,
-    },
-    layerPaintProps: {
-      ids: [
-        "PLSSTownships",
-        "PLSSTownshipLabels",
-        "PLSSFirstDivision",
-        "PLSSFirstDivisionLabels",
-        "TexasLandSurvey",
-        "TexasLandSurveyLabels",
-      ]
-    }
-  },
-  {
-    layerName: 'TX GLO Units',
-    layerType: 'vector layer',
-    layerCategory: 'M1 Layer',
-    layerSettings: {
-      interaction: {
-        interactionAble: false,
-        interactionDetail: {
-          hover: false,
-          click: false
-        }
-      },
-      colorable: false,
-      showable: true,
-    },
-    layerPaintProps: {
-      ids: ["GLOUnits", "GLOUnitLabels"]
-    }
-  },
-  {
-    layerName: 'TX GLO Active Leases',
-    layerType: 'vector layer',
-    layerCategory: 'M1 Layer',
-    layerSettings: {
-      interaction: {
-        interactionAble: false,
-        interactionDetail: {
-          hover: false,
-          click: false
-        }
-      },
-      colorable: false,
-      showable: true,
-      visiable: false,
-    },
-    layerPaintProps: {
-      ids: ["GLOLeases", "GLOLeaseLabels"]
-    }
-  },
-  {
     layerName: 'Parcels',
     layerType: 'data layer',
     layerCategory: 'UD layer',
@@ -1459,5 +1232,232 @@ export const layers = [
         },
       },
     ]
+  },
+  {
+    layerName: 'Permits',
+    layerType: 'data layer',
+    layerCategory: 'M1 Layer',
+    layerSettings: {
+      interaction: {
+        interactionAble: true,
+        interactionDetail: {
+          hover: true,
+          click: true
+        }
+      },
+      colorable: false,
+      showable: true,
+      visiable: false,
+    },
+    layerPaintProps: [
+      {
+        id: 'permits',
+        sourceProps: 'permits_source',
+        paintType: 'circle',
+        paintProps: {
+          "circle-radius": 5,
+          "circle-color": "#e362e3",
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#fff",
+        },
+        clusterProps: {
+          clusterPaintProps: {
+            "circle-color": "#e362e3",
+  
+            "circle-radius": [
+              "step",
+              ["get", "point_count"],
+              20,
+              5,
+              25,
+              10,
+              30,
+              20,
+              35,
+            ],
+  
+            "circle-stroke-width": 5,
+            "circle-stroke-color": "#fff",
+          },
+          clusterSymbolProps: {
+            "text-field": "{point_count}",
+            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+            "text-size": 12,
+          },
+        }
+      }
+    ]
+  },
+  {
+    layerName: 'Rig Activity',
+    layerType: 'data layer',
+    layerCategory: 'M1 Layer',
+    layerSettings: {
+      interaction: {
+        interactionAble: true,
+        interactionDetail: {
+          hover: true,
+          click: true
+        }
+      },
+      colorable: false,
+      showable: true,
+      visiable: false,
+    },
+    layerPaintProps: [
+      {
+        id: 'rigs',
+        sourceProps: 'rigs_source',
+        paintType: 'symbol',
+        layoutProps: {
+          'icon-image': 'marker-icon',
+          'icon-allow-overlap': true,
+          'icon-size': 2,
+          'text-field': 'H',
+          'text-font': [
+              'Open Sans Bold',
+              'Arial Unicode MS Bold'
+          ],
+          'text-size': 11,
+          'text-transform': 'uppercase',
+          'text-letter-spacing': 0.05,
+          'text-offset': [0, -0.5]
+        },
+        paintProps: {
+          "icon-color": "#00ff00",
+          "icon-halo-color": "#fff",
+          "icon-halo-width": 2
+        },
+        clusterProps: {
+          clusterPaintProps: {
+            "circle-color": '#666',
+            "circle-radius": [
+              "step",
+              ["get", "point_count"],
+              20,
+              5,
+              25,
+              10,
+              30,
+              20,
+              35,
+            ],
+  
+            "circle-stroke-width": 5,
+            "circle-stroke-color": "#fff",
+          },
+          clusterSymbolProps: {
+            "text-field": "{point_count}",
+            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+            "text-size": 12,
+          },
+        }
+      }
+    ]
+  },
+  {
+    layerName: 'Wells',
+    layerType: 'vector layer',
+    layerCategory: 'M1 Layer',
+    layerSettings: {
+      interaction: {
+        interactionAble: true,
+        interactionDetail: {
+          hover: true,
+          click: true
+        }
+      },
+      colorable: false,
+      showable: true,
+    },
+    layerPaintProps: {
+      ids: ['wellpoints', 'welllines']
+    }
+  },
+  {
+    layerName: 'Basins',
+    layerType: 'vector layer',
+    layerCategory: 'M1 Layer',
+    layerSettings: {
+      interaction: {
+        interactionAble: false,
+        interactionDetail: {
+          hover: false,
+          click: false
+        }
+      },
+      colorable: false,
+      showable: true,
+      visiable: false,
+    },
+    layerPaintProps: {
+      ids: ["basinLabels", "basinLayer"]
+    }
+  },
+  {
+    layerName: 'Pipelines',
+    layerType: 'vector layer',
+    layerCategory: 'M1 Layer',
+    layerSettings: {
+      interaction: {
+        interactionAble: false,
+        interactionDetail: {
+          hover: false,
+          click: false
+        }
+      },
+      colorable: false,
+      showable: true,
+      visiable: false,
+    },
+    layerPaintProps: {
+      ids: [
+        "PLSSTownships",
+        "PLSSTownshipLabels",
+        "PLSSFirstDivision",
+        "PLSSFirstDivisionLabels",
+        "TexasLandSurvey",
+        "TexasLandSurveyLabels",
+      ]
+    }
+  },
+  {
+    layerName: 'TX GLO Units',
+    layerType: 'vector layer',
+    layerCategory: 'M1 Layer',
+    layerSettings: {
+      interaction: {
+        interactionAble: false,
+        interactionDetail: {
+          hover: false,
+          click: false
+        }
+      },
+      colorable: false,
+      showable: true,
+    },
+    layerPaintProps: {
+      ids: ["GLOUnits", "GLOUnitLabels"]
+    }
+  },
+  {
+    layerName: 'TX GLO Active Leases',
+    layerType: 'vector layer',
+    layerCategory: 'M1 Layer',
+    layerSettings: {
+      interaction: {
+        interactionAble: false,
+        interactionDetail: {
+          hover: false,
+          click: false
+        }
+      },
+      colorable: false,
+      showable: true,
+      visiable: false,
+    },
+    layerPaintProps: {
+      ids: ["GLOLeases", "GLOLeaseLabels"]
+    }
   },
 ];

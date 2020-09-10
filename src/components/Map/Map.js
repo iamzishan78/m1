@@ -766,10 +766,10 @@ export default function Map() {
         }
         beforelayer = clusterLabelBar;
 
-        if (config.layerSettings.interactionAble) {
+        if (config.layerSettings.interaction.interactionAble) {
           map.off("mousemove", clusterLabelBar, mouseMoveHandler);
           map.off("mouseleave", clusterLabelBar, mouseLeaveHandler);
-          if (config.layerSettings.interactionDetail.hover) {
+          if (config.layerSettings.interaction.interactionDetail.hover) {
             map.on("mousemove", clusterLabelBar, mouseMoveHandler);
             map.on("mouseleave", clusterLabelBar, mouseLeaveHandler);
           }
@@ -804,10 +804,10 @@ export default function Map() {
         }
         beforelayer = clusterVar;
 
-        if (config.layerSettings.interactionAble) {
+        if (config.layerSettings.interaction.interactionAble) {
           map.off("mousemove", clusterVar, mouseMoveHandler);
           map.off("mouseleave", clusterVar, mouseLeaveHandler);
-          if (config.layerSettings.interactionDetail.hover) {
+          if (config.layerSettings.interaction.interactionDetail.hover) {
             map.on("mousemove", clusterVar, mouseMoveHandler);
             map.on("mouseleave", clusterVar, mouseLeaveHandler);
           }
@@ -819,47 +819,15 @@ export default function Map() {
       }
       beforelayer = layerId;
 
-      if (config.layerSettings.interactionAble) {
+      if (config.layerSettings.interaction.interactionAble) {
         map.off("mousemove", layerId, mouseMoveHandler);
         map.off("mouseleave", layerId, mouseLeaveHandler);
-        if (config.layerSettings.interactionDetail.hover) {
+        if (config.layerSettings.interaction.interactionDetail.hover) {
           map.on("mousemove", layerId, mouseMoveHandler);
           map.on("mouseleave", layerId, mouseLeaveHandler);
         }
       }
     }
-
-
-    // -> add source
-    // if (config) {
-
-      // -> add layer
-
-
-      // if (checkedInteraction > -1) {
-      //   const mouseMoveHandler = (e) => {
-      //     map.getCanvas().style.cursor = "pointer";
-      //   };
-
-      //   const mouseLeaveHandler = (e) => {
-      //     map.getCanvas().style.cursor = "";
-      //   };
-      //   map.on("mousemove", layerName, mouseMoveHandler);
-      //   map.on("mouseleave", layerName, mouseLeaveHandler);
-      //   map.on("mousemove", clusterVar, mouseMoveHandler);
-      //   map.on("mouseleave", clusterVar, mouseLeaveHandler);
-      //   map.on("mousemove", clusterLabelBar, mouseMoveHandler);
-      //   map.on("mouseleave", clusterLabelBar, mouseLeaveHandler);
-      //   config.mouseMoveHandler = mouseMoveHandler;
-      //   config.mouseLeaveHandler = mouseLeaveHandler;
-      //   const styleLayers = stateApp.styleLayers.slice(0);
-      //   styleLayers[configIndex] = config;
-      //   setStateApp((stateApp) => ({
-      //     ...stateApp,
-      //     styleLayers,
-      //   }));
-      // }
-    // }
     return beforelayer
   };
 
@@ -1058,22 +1026,6 @@ export default function Map() {
     }
   }, [rigData]);
 
-  // useEffect(() => {
-  //   console.log("useEffect 8");
-
-  //   if (permits.length > 0 && map) {
-  //     setLayer(permits, "Permits", map);
-  //   }
-  // }, [permits, map]);
-
-  // useEffect(() => {
-  //   console.log("useEffect 9");
-
-  //   if (rigs.length > 0 && map) {
-  //     setLayer(rigs, "Rig Activity", map);
-  //   }
-  // }, [rigs, map]);
-
   useEffect(() => {
     console.log("useEffect 10");
 
@@ -1095,27 +1047,6 @@ export default function Map() {
       }
     }
   }, [dataWellsForOwnerWellTrackLayer]);
-
-  // useEffect(() => {
-  //   console.log("useEffect 11");
-
-  //   if (
-  //     stateApp.trackedOwnerWells &&
-  //     stateApp.trackedwells &&
-  //     stateApp.customLayers &&
-  //     map
-  //   ) {
-  //     setLayer(stateApp.trackedwells, "Tracked Wells", map, getBeforeLayer("Tracked Wells"));
-  //     setLayer(stateApp.trackedOwnerWells, "Tracked Owners", map, getBeforeLayer("Tracked Owners"));
-  //     setLayer(stateApp.customLayers, "Area of Interest", map, getBeforeLayer("Area of Interest"));
-  //     setLayer(stateApp.customLayers, "Parcels", map, getBeforeLayer("Parcels"));
-  //   }
-  // }, [
-  //   stateApp.trackedOwnerWells,
-  //   stateApp.trackedwells,
-  //   stateApp.customLayers,
-  //   map,
-  // ]);
 
   useEffect(() => {
     console.log("useEffect 12");
@@ -1235,67 +1166,54 @@ export default function Map() {
     const mapClickHandler = (e) => {
       const map = e.target;
       let layers = [];
-      const checkedUDLayersInteraction =
-        stateApp.checkedUserDefinedLayersInteraction;
-      const checkedUDLayers = stateApp.checkedUserDefinedLayers;
-      const definedLayers = stateApp.userDefinedLayers;
-      const clusterUDLayers = [];
-      const udLayers = [];
-      const clusterLayers = [];
+      let clusterUDLayers = [];
+      let udLayers = [];
+      let clusterLayers = [];
 
-      checkedUDLayers.forEach((l) => {
-        if (checkedUDLayersInteraction.indexOf(l) > -1) {
-          const definedLayer = definedLayers[l];
-          const layerProps = definedLayer.layerProps;
-          if (layerProps) {
-            for (let i = 0; i < layerProps.length; i++) {
-              const layerProp = layerProps[i];
-              if (
-                definedLayer.name === "Area of Interest" ||
-                definedLayer.name === "Parcels"
-              ) {
-                if (map.getLayer(layerProp.layerId)) {
-                  udLayers.push(layerProp.layerId);
+      stateApp.layers.forEach((layer) => {
+        const interaction = layer.layerSettings.interaction.interactionAble && layer.layerSettings.interaction.interactionDetail.click;
+        const visible = layer.layerSettings.showable && layer.layerSettings.visiable !== false;
+        if (interaction && visible) {
+          if (layer.layerCategory == 'UD layer') {
+            layer.layerPaintProps.forEach(paintProps => {
+              const layerId = paintProps.id;
+              if (paintProps.clusterProps) {
+                if (map.getLayer(`${layerId}-clusters`)) {
+                  clusterUDLayers.push(`${layerId}-clusters`);
+                  layers.push(`${layerId}-clusters`);
+                }
+                if (map.getLayer(`${layerId}-clusters-counts`)) {
+                  clusterUDLayers.push(`${layerId}-clusters-counts`);
+                  layers.push(`${layerId}-clusters-counts`);
                 }
               }
-              if (layerProp.clusterProps) {
-                const clusterLayerId = layerProp.layerId + "-clusters";
-                if (map.getLayer(clusterLayerId)) {
-                  layers.push(clusterLayerId);
-                  clusterUDLayers.push(clusterLayerId);
-                  clusterLayers.push(layerProp.layerId);
-                }
-              }
-              if (map.getLayer(layerProp.layerId)) {
-                layers.push(layerProp.layerId);
-              }
-            }
-          }
-        }
-      });
-      const checkedSLayersInteraction = stateApp.checkedLayersInteraction;
-      const checkedSLayers = stateApp.checkedLayers;
-      const styleLayers = stateApp.styleLayers;
-      // let sLayers = [];
-      checkedSLayers.forEach((l) => {
-        if (checkedSLayersInteraction.indexOf(l) > -1) {
-          const styleLayer = styleLayers[l];
-          if (!styleLayer.layerProps) {
-            styleLayer.id.forEach((styleId) => {
-              if (map.getLayer(styleId)) {
-                layers.push(styleId);
+              if (map.getLayer(layerId)) {
+                udLayers.push(layerId);
+                layers.push(layerId);  
               }
             });
-          }
-          // sLayers = [...sLayers, ...styleLayer.id];
-          if (styleLayer.layerProps && styleLayer.layerProps.clusterProps) {
-            if (map.getLayer(styleLayer.id[0])) {
-              const clusterLayerId = styleLayer.id[0] + "-clusters";
-              if (map.getLayer(clusterLayerId)) {
-                layers.push(clusterLayerId);
-                clusterUDLayers.push(clusterLayerId);
-              }
-              layers.push(styleLayer.id[0]);
+          } else {
+            if (layer.layerPaintProps.ids) {
+              layer.layerPaintProps.ids.forEach((id) => {
+                layers.push(id);
+              });
+            } else {
+              layer.layerPaintProps.forEach(paintProps => {
+                const layerId = paintProps.id;
+                if (paintProps.clusterProps) {
+                  if (map.getLayer(`${layerId}-clusters`)) {
+                    clusterLayers.push(`${layerId}-clusters`);
+                    layers.push(`${layerId}-clusters`);
+                  }
+                  if (map.getLayer(`${layerId}-clusters-counts`)) {
+                    clusterLayers.push(`${layerId}-clusters-counts`);
+                    layers.push(`${layerId}-clusters-counts`);
+                  }
+                }
+                if (map.getLayer(layerId)) {
+                  layers.push(layerId);
+                }
+              });
             }
           }
         }
@@ -1312,20 +1230,15 @@ export default function Map() {
         layers: layers,
       });
 
-      if (!window.event.ctrlKey && hoverUdIds.length > 0) {
-        for (let i = 0; i < hoverUdIds.length; i++) {
-          map.setFeatureState(
-            { source: 'parcel_source', id: hoverUdIds[i] },
-            { hover: false }
-          );
-          HoverUdIds([]);
-        }
-      }
 
       if (features && features.length > 0) {
         const feature = features[0];
         console.log("stacked layers click info", features);
         const layerId = feature.layer.id;
+        console.log(layerId);
+        console.log(clusterUDLayers);
+        console.log(clusterLayers);
+        console.log(udLayers);
         switch (true) {
           case clusterUDLayers.indexOf(layerId) > -1:
             clusterClickHandler(feature, map);
@@ -1334,12 +1247,7 @@ export default function Map() {
             layerClickHander(feature);
             break;
           case udLayers.indexOf(layerId) > -1:
-            if (window.event.ctrlKey && feature.source == 'parcel_source') {
-              udLayerHighlightHandler(feature);
-            } else {
-              udLayerClickHandler(feature);
-            }
-            console.log("userDefined:", window.event.ctrlKey);
+            udLayerClickHandler(feature);
             break;
           case layerId === "wellpoints":
             wellPointClick(feature);
@@ -1364,18 +1272,18 @@ export default function Map() {
     }
   }, [
     map,
-    stateApp.checkedLayersInteraction,
-    stateApp.checkedUserDefinedLayersInteraction,
-    stateApp.checkedLayers,
-    stateApp.checkedUserDefinedLayers,
-    hoverUdIds,
+    stateApp.layers,
+    // stateApp.checkedUserDefinedLayersInteraction,
+    // stateApp.checkedLayers,
+    // stateApp.checkedUserDefinedLayers,
+    // hoverUdIds,
   ]);
 
   useEffect(() => {
     let beforeLayer = null;
     console.log('stateApp check ', stateApp.layers);
     if (stateApp.layers.length > 0 && map) {
-      for (let i = stateApp.layers.length - 1; i >= 0; i --) {
+      for (let i = 0; i < stateApp.layers.length; i ++) {
         const layer = stateApp.layers[i];
         if (layer.layerType == 'vector layer') {
           const props = layer.layerPaintProps;
@@ -1389,12 +1297,13 @@ export default function Map() {
               }
               beforeLayer = id;
             }
-            if (layer.layerSettings.interactionAble) {
+            if (layer.layerSettings.interaction.interactionAble) {
               map.off("mousemove", id, mouseMoveHandler);
               map.off("mouseleave", id, mouseLeaveHandler);
-              if (layer.layerSettings.interactionDetail.hover) {
+              if (layer.layerSettings.interaction.interactionDetail.hover) {
                 map.on("mousemove", id, mouseMoveHandler);
                 map.on("mouseleave", id, mouseLeaveHandler);
+                console.log('set move hover and leave action');
               }
             }
           });
@@ -4569,93 +4478,93 @@ export default function Map() {
         // map.boxZoom.enable();
         // map.touchZoomRotate.enable();
 
-        const selectedLayerIntereactions = stateApp.checkedLayersInteraction.slice(
-          0
-        );
-        const styleLayers = stateApp.styleLayers.slice(0);
-        styleLayers.forEach((config, layerIndex) => {
-          // const config = stateApp.styleLayers[layerIndex];
-          if (config.mouseMoveHandler) {
-            if (config.layerProps) {
-              map.off("mousemove", config.id[0], config.mouseMoveHandler);
-              map.off(
-                "mousemove",
-                config.id[0] + "-clusters",
-                config.mouseMoveHandler
-              );
-              map.off(
-                "mousemove",
-                config.id[0] + "-clusters-counts",
-                config.mouseMoveHandler
-              );
-            } else {
-              map.off("mousemove", "wellpoints", config.mouseMoveHandler);
-              map.off("mousemove", "welllines", config.mouseMoveHandler);
-            }
-          }
-          if (config.mouseLeaveHandler) {
-            if (config.layerProps) {
-              map.off("mouseleave", config.id[0], config.mouseLeaveHandler);
-              map.off(
-                "mouseleave",
-                config.id[0] + "-clusters",
-                config.mouseLeaveHandler
-              );
-              map.off(
-                "mouseleave",
-                config.id[0] + "-clusters-counts",
-                config.mouseLeaveHandler
-              );
-            } else {
-              map.off("mouseleave", "wellpoints", config.mouseLeaveHandler);
-              map.off("mouseleave", "welllines", config.mouseLeaveHandler);
-            }
-          }
+        // const selectedLayerIntereactions = stateApp.checkedLayersInteraction.slice(
+        //   0
+        // );
+        // const styleLayers = stateApp.styleLayers.slice(0);
+        // styleLayers.forEach((config, layerIndex) => {
+        //   // const config = stateApp.styleLayers[layerIndex];
+        //   if (config.mouseMoveHandler) {
+        //     if (config.layerProps) {
+        //       map.off("mousemove", config.id[0], config.mouseMoveHandler);
+        //       map.off(
+        //         "mousemove",
+        //         config.id[0] + "-clusters",
+        //         config.mouseMoveHandler
+        //       );
+        //       map.off(
+        //         "mousemove",
+        //         config.id[0] + "-clusters-counts",
+        //         config.mouseMoveHandler
+        //       );
+        //     } else {
+        //       map.off("mousemove", "wellpoints", config.mouseMoveHandler);
+        //       map.off("mousemove", "welllines", config.mouseMoveHandler);
+        //     }
+        //   }
+        //   if (config.mouseLeaveHandler) {
+        //     if (config.layerProps) {
+        //       map.off("mouseleave", config.id[0], config.mouseLeaveHandler);
+        //       map.off(
+        //         "mouseleave",
+        //         config.id[0] + "-clusters",
+        //         config.mouseLeaveHandler
+        //       );
+        //       map.off(
+        //         "mouseleave",
+        //         config.id[0] + "-clusters-counts",
+        //         config.mouseLeaveHandler
+        //       );
+        //     } else {
+        //       map.off("mouseleave", "wellpoints", config.mouseLeaveHandler);
+        //       map.off("mouseleave", "welllines", config.mouseLeaveHandler);
+        //     }
+        //   }
 
-          if (
-            selectedLayerIntereactions.length > 0 &&
-            selectedLayerIntereactions.indexOf(layerIndex) > -1
-          ) {
-            if (config.layerProps) {
-              map.on("mousemove", config.id[0], mouseMoveHandler);
-              map.on("mousemove", config.id[0] + "-clusters", mouseMoveHandler);
-              map.on(
-                "mousemove",
-                config.id[0] + "-clusters-counts",
-                mouseMoveHandler
-              );
-              map.on("mouseleave", config.id[0], mouseLeaveHandler);
-              map.on(
-                "mouseleave",
-                config.id[0] + "-clusters",
-                mouseLeaveHandler
-              );
-              map.on(
-                "mouseleave",
-                config.id[0] + "-clusters-counts",
-                mouseLeaveHandler
-              );
-            } else {
-              map.on("mousemove", "wellpoints", mouseMoveHandler);
-              map.on("mouseleave", "wellpoints", mouseLeaveHandler);
-              map.on("mousemove", "welllines", mouseMoveHandler);
-              map.on("mouseleave", "welllines", mouseLeaveHandler);
-            }
+        //   if (
+        //     selectedLayerIntereactions.length > 0 &&
+        //     selectedLayerIntereactions.indexOf(layerIndex) > -1
+        //   ) {
+        //     if (config.layerProps) {
+        //       map.on("mousemove", config.id[0], mouseMoveHandler);
+        //       map.on("mousemove", config.id[0] + "-clusters", mouseMoveHandler);
+        //       map.on(
+        //         "mousemove",
+        //         config.id[0] + "-clusters-counts",
+        //         mouseMoveHandler
+        //       );
+        //       map.on("mouseleave", config.id[0], mouseLeaveHandler);
+        //       map.on(
+        //         "mouseleave",
+        //         config.id[0] + "-clusters",
+        //         mouseLeaveHandler
+        //       );
+        //       map.on(
+        //         "mouseleave",
+        //         config.id[0] + "-clusters-counts",
+        //         mouseLeaveHandler
+        //       );
+        //     } else {
+        //       map.on("mousemove", "wellpoints", mouseMoveHandler);
+        //       map.on("mouseleave", "wellpoints", mouseLeaveHandler);
+        //       map.on("mousemove", "welllines", mouseMoveHandler);
+        //       map.on("mouseleave", "welllines", mouseLeaveHandler);
+        //     }
 
-            const configcp = { ...config };
-            configcp.mouseMoveHandler = mouseMoveHandler;
-            configcp.mouseLeaveHandler = mouseLeaveHandler;
+        //     const configcp = { ...config };
+        //     configcp.mouseMoveHandler = mouseMoveHandler;
+        //     configcp.mouseLeaveHandler = mouseLeaveHandler;
 
-            styleLayers[layerIndex] = configcp;
-          }
-        });
+        //     styleLayers[layerIndex] = configcp;
+        //   }
+        // });
 
-        setStateApp({
-          ...stateApp,
-          styleLayers,
-        });
+        // setStateApp({
+        //   ...stateApp,
+        //   styleLayers,
+        // });
 
-        map.off("mousemove", mapMouseMove);
+        // map.off("mousemove", mapMouseMove);
 
         map.on("mousemove", mapMouseMove);
 
@@ -4667,7 +4576,7 @@ export default function Map() {
     setStateApp,
     setStateMapControls,
     mapStyles,
-    stateApp.checkedLayersInteraction,
+    // stateApp.checkedLayersInteraction,
   ]);
 
   // Use effect for removing shape filter
