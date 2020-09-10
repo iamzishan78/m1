@@ -19,7 +19,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import { OWNERWELLSQUERY } from "../../../graphQL/useQueryOwnerWells ";
-import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { OWNERSLATSLONS } from "../../../graphQL/useQueryOwnerLatsLonsArray";
 import { OPERATORSLATSLONS } from "../../../graphQL/useQueryOperatorLatsLonsArray";
@@ -222,13 +222,7 @@ function Search() {
 
   useEffect(() => {
     if (searchHistoryData && searchHistoryData.getSearchHistory) {
-      const compare = (a, b) => {
-        if (a.ts < b.ts) return 1;
-        if (a.ts > b.ts) return -1;
-        return 0;
-      };
-      let list = searchHistoryData.getSearchHistory;
-      list.sort(compare);
+      let list = [...searchHistoryData.getSearchHistory].sort((a, b) => b.ts - a.ts);
 
       setSearchHistoryList(list);
     }

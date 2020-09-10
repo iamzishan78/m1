@@ -3,7 +3,7 @@ import React, {
   useState,
   useEffect,
 } from "react";
-import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";

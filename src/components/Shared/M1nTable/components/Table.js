@@ -50,6 +50,7 @@ import {
   setStateIfDeepEqual,
 } from "../../functions";
 import AddParcelOwnerDialogContent from "./SubComponents/AddParcelOwnerDialogContent";
+import AddParcelToEntityDialogContent from "./SubComponents/AddParcelToEntityDialogContent/AddParcelToEntityDialogContent";
 import Convert_contact from "../../svgIcons/convert_contact";
 import Contact_card from "../../svgIcons/contact_card";
 import ParcelScreenIcon from "../../svgIcons/parcelScreen";
@@ -344,7 +345,7 @@ function SubTable(props) {
                             setTargetLabelToExpand("parcel");
 
                             setSubComponent(
-                              <ParcelsDetailCard Id={tableMeta.rowData[2]} />
+                              <ParcelsDetailCard id={tableMeta.rowData[2]} />
                             );
                             setTitle("PARCEL DETAILS");
                             setSubTitle(" ");
@@ -1287,6 +1288,17 @@ function SubTable(props) {
                       props.addAble.type === "ownerToParcel"
                     )
                       handleExpandClick(null, null, null, "addOwnerToParcel");
+
+                    if (
+                      props.addAble.type &&
+                      props.addAble.type === "parcelInterestsToEntity"
+                    )
+                      handleExpandClick(
+                        null,
+                        null,
+                        null,
+                        "addParcelInterestsToEntity"
+                      );
                   }}
                 >
                   <AddCircleOutlineRoundedIcon />
@@ -1374,12 +1386,15 @@ function SubTable(props) {
               openDialog === "wellsPerOwner" ||
               openDialog === "buyContactsInfo" ||
               openDialog === "sendMailers" ||
-              openDialog === "printLabels"
+              openDialog === "printLabels" ||
+              openDialog === "addParcelInterestsToEntity"
                 ? true
                 : false
             }
             maxWidth={
-              openDialog === "owner" || openDialog === "wellsPerOwner"
+              openDialog === "owner" ||
+              openDialog === "wellsPerOwner" ||
+              openDialog === "addParcelInterestsToEntity"
                 ? "lg"
                 : openDialog === "addContact" ||
                   openDialog === "addOwnerToParcel" ||
@@ -1464,6 +1479,12 @@ function SubTable(props) {
               <AddParcelOwnerDialogContent
                 onClose={handleCloseDialog}
                 customLayerId={props.addAble.customLayerId}
+              />
+            )}
+            {openDialog === "addParcelInterestsToEntity" && (
+              <AddParcelToEntityDialogContent
+                onClose={handleCloseDialog}
+                entityId={props.addAble.entityId}
               />
             )}
             {openDialog === "deleteOwnersFromContact" && (

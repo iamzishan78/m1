@@ -8,7 +8,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import parse from "autosuggest-highlight/parse";
 import throttle from "lodash/throttle";
 import debounce from "lodash/debounce";
-import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { USERSEARCHHISTORY } from "../../../graphQL/useQueryUserSearchHistory";
 import { ADDSEARCHHISTORY } from "../../../graphQL/useMutationAddSearchHistory";
 import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHistory";

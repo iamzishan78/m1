@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { AppContext } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -9,6 +9,8 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import QtrQtrSelector from "./components/QtrQtrSelector";
 import LeftTopSummary from "./components/LeftTopSummary";
+import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
+import { useLazyQuery } from "@apollo/client";
 
 const useStyles = makeStyles((theme) => ({
   gridWidthScroll: {
@@ -53,46 +55,67 @@ const useStyles = makeStyles((theme) => ({
 export default function ParcelsDetailCard(props) {
   const [stateApp] = useContext(AppContext);
   const classes = useStyles();
-  const [parcelData, setParcelData] = useState({
-    _id: "5f2d60a70b0a02002146edfc",
-    county: "Lea",
-    state: "TX",
-    Grid1: "00",
-    Grid2: "026S",
-    Grid3: "033E",
-    Grid4: "027",
-    Grid5: "123",
-    qtrQtr: {
-      nwnw: true,
-      nenw: true,
-      swnw: true,
-      senw: true,
-      nwne: true,
-      nene: true,
-      swne: true,
-      sene: true,
-      nwsw: false,
-      nesw: false,
-      swsw: false,
-      sesw: false,
-      nwse: false,
-      nese: false,
-      swse: false,
-      sese: false,
-    },
-    grossAcres: 640,
-    calcAcres: 640.3,
-    leaseStatus: "Active",
-    leaseRoyalty: "12.5%",
-    legalDescription: "",
-    owners: [],
-  });
+  const [parcelData, setParcelData] = useState();
+  //   {
+  //   _id: "5f2d60a70b0a02002146edfc",
+  //   county: "Lea",
+  //   state: "TX",
+  //   Grid1: "00",
+  //   Grid2: "026S",
+  //   Grid3: "033E",
+  //   Grid4: "027",
+  //   Grid5: "123",
+  //   qtrQtr: {
+  //     nwnw: true,
+  //     nenw: true,
+  //     swnw: true,
+  //     senw: true,
+  //     nwne: true,
+  //     nene: true,
+  //     swne: true,
+  //     sene: true,
+  //     nwsw: false,
+  //     nesw: false,
+  //     swsw: false,
+  //     sesw: false,
+  //     nwse: false,
+  //     nese: false,
+  //     swse: false,
+  //     sese: false,
+  //   },
+  //   grossAcres: 640,
+  //   calcAcres: 640.3,
+  //   legalDescription: "",
+  //   owners: [],
+  // }
+  const [getCustomLayer, { data: dataCustomLayer, loading }] = useLazyQuery(
+    CUSTOMLAYER,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
+
+  useEffect(() => {
+    if (props.id) {
+      getCustomLayer({
+        variables: {
+          id: props.id,
+        },
+      });
+    }
+  }, [props.id]);
+
+  useEffect(() => {
+    if (dataCustomLayer && dataCustomLayer.customLayer) {
+      setParcelData(dataCustomLayer.customLayer);
+    }
+  }, [dataCustomLayer]);
 
   const setQtrQtr = (qtrQtr) => {
     setParcelData((parcelData) => ({ ...parcelData, qtrQtr }));
   };
 
-  return (
+  return parcelData ? (
     <Grid container className={classes.gridWidthScroll} spacing={0}>
       <Grid item container sm={12}>
         <Grid item sm={2} className={classes.borderRight}>
@@ -154,7 +177,7 @@ export default function ParcelsDetailCard(props) {
           tabPanels={[
             <M1nTable
               parent="ownersPerParcel"
-              customLayerId={parcelData._id}
+              customLayer={parcelData}
               dense
             />,
             "Wells Table",
@@ -162,5 +185,17 @@ export default function ParcelsDetailCard(props) {
         />
       </Grid>
     </Grid>
+  ) : (
+    <div
+      style={{
+        padding: "20px",
+        position: "absolute",
+        height: "100%",
+        width: "100%",
+        zIndex: "50",
+      }}
+    >
+      <CircularProgress size={80} disableShrink color="secondary" />
+    </div>
   );
 }

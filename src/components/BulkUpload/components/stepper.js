@@ -15,7 +15,7 @@ import ReviewCSV from "./ReviewCSV";
 import UploadStepperComponent from "./UploadStepperComponent";
 import { AppContext } from "../../../AppContext";
 import { useHistory } from "react-router-dom";
-import { useMutation } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/client";
 import { ADDBULKCONTACT } from "../../../graphQL/useMutationAddBulkContacts";
 
 const QontoConnector = withStyles({

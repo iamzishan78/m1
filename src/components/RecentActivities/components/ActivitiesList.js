@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/client";
 import moment from "moment";
-import { useMutation } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Timeline from "@material-ui/lab/Timeline";
@@ -144,7 +144,7 @@ export default function ActivitiesList({
 
   let sortedActivityLog =
     activityLog && activityLog.length > 0
-      ? activityLog
+      ? Object.values(activityLog)
           // .filter((activity) => activity.user_id === user_id) // get only current user's activities
           .sort((a, b) => moment(b.dateTime).diff(moment(a.dateTime))) // sort activities according to date
       : [];

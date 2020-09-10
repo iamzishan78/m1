@@ -3,9 +3,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
+import ClearIcon from "@material-ui/icons/Clear";
+import { IconButton } from "@material-ui/core";
 
 // DOCUMENTATION FOR THIS COMPONENT IS ON FILTERDATEPICKERPERMIT
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     // display: "flex",
     // flexWrap: "wrap",
@@ -15,7 +17,7 @@ const useStyles = makeStyles(theme => ({
   },
   datesRow: {
     display: "flex",
-    flexDirection: "row"
+    flexDirection: "row",
     // flex: 1,
     // flexGrow: 1
   },
@@ -24,32 +26,38 @@ const useStyles = makeStyles(theme => ({
     // minWidth: 175,
     // maxWidth: 176,
     "&& span": {
-      pointerEvents: "none"
-    }
+      pointerEvents: "none",
+    },
   },
   chips: {
     display: "flex",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
   },
   chip: {
-    margin: 10
-  }
+    margin: 10,
+  },
+  blue: {
+    "& .MuiInputBase-input": { color: "#17AADD" },
+  },
+  blue: {
+    "& .MuiInputBase-input": { color: "#17AADD" },
+  },
 }));
 
 export default function FilterDatePickerCompletetion(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [selectedStartDate, handleStartDateChang] = useState(
-    moment().subtract(120, "Years")
+    new Date("1900-01-01T00:00:00")
   );
   const [selectedEndDate, handleEndDateChange] = useState(moment());
   const [completetionFromDate, setCompletetionFromDate] = useState({
     check: false,
-    date: moment()
+    date: moment(),
   });
   const [completetionToDate, setCompletetionToDate] = useState({
     check: false,
-    date: moment()
+    date: moment(),
   });
 
   const [dateTypeName, setDateTypeName] = useState(
@@ -62,36 +70,53 @@ export default function FilterDatePickerCompletetion(props) {
       completetionFromDate.date._isValid === true &&
       completetionToDate.date._isValid === true
     ) {
-      const checkDate = moment.parseZone(completetionToDate.date).utc(true).valueOf();
-      const fromDate = moment.parseZone(completetionFromDate.date.utc(true)).valueOf();
+      const checkDate = moment
+        .parseZone(completetionToDate.date)
+        .utc(true)
+        .valueOf();
+      const fromDate = moment
+        .parseZone(completetionFromDate.date.utc(true))
+        .valueOf();
       if (completetionFromDate.check && !completetionToDate.check) {
         filter = [
           "all",
           [">=", ["get", "completionDate"], fromDate],
-          ["<=", ["get", "completionDate"], checkDate]
+          ["<=", ["get", "completionDate"], checkDate],
         ];
       } else if (!completetionFromDate.check && completetionToDate.check) {
-        let checkDate = moment().subtract(120, 'Years')
-        let fromDate = moment.parseZone(checkDate).utc(true).valueOf()
-        const toDate =  moment.parseZone(completetionToDate.date).utc(true).valueOf()
-        filter = ["all", [">=",["get", "completionDate"] ,fromDate], ["<=",["get", "completionDate"] , toDate]];
-      }
-      else {
-        const fromDate = moment.parseZone(completetionFromDate.date).utc(true).valueOf();
-        const toDate = moment.parseZone(completetionToDate.date).utc(true).valueOf();
+        let checkDate = moment().subtract(120, "Years");
+        let fromDate = moment.parseZone(checkDate).utc(true).valueOf();
+        const toDate = moment
+          .parseZone(completetionToDate.date)
+          .utc(true)
+          .valueOf();
         filter = [
           "all",
           [">=", ["get", "completionDate"], fromDate],
-          ["<=", ["get", "completionDate"], toDate]
+          ["<=", ["get", "completionDate"], toDate],
+        ];
+      } else {
+        const fromDate = moment
+          .parseZone(completetionFromDate.date)
+          .utc(true)
+          .valueOf();
+        const toDate = moment
+          .parseZone(completetionToDate.date)
+          .utc(true)
+          .valueOf();
+        filter = [
+          "all",
+          [">=", ["get", "completionDate"], fromDate],
+          ["<=", ["get", "completionDate"], toDate],
         ];
       }
     } else {
       filter = null;
     }
     console.log("Completetion Range dates change filter", filter);
-    setStateNav(stateNav => ({
+    setStateNav((stateNav) => ({
       ...stateNav,
-      filterCompletetionDateRange: filter
+      filterCompletetionDateRange: filter,
     }));
   }, [completetionFromDate.date, completetionToDate.date, setStateNav]);
 
@@ -109,7 +134,10 @@ export default function FilterDatePickerCompletetion(props) {
       return;
     } else {
       handleStartDateChang(stateNav.completetionDateFrom);
-      setCompletetionFromDate({ check: true, date: stateNav.completetionDateFrom });
+      setCompletetionFromDate({
+        check: true,
+        date: stateNav.completetionDateFrom,
+      });
     }
   }, [stateNav.completetionDateFrom]);
 
@@ -129,13 +157,13 @@ export default function FilterDatePickerCompletetion(props) {
     }
   }, [setvaluesTo, dateTypeName, setvaluesFrom]);
 
-  const handleStartDate = date => {
+  const handleStartDate = (date) => {
     if (date === null) {
-      const formatDateReset = moment().subtract(120, "Years");
-      setStateNav(stateNav => ({
+      const formatDateReset = new Date("1900-01-01T00:00:00");
+      setStateNav((stateNav) => ({
         ...stateNav,
         completetionDateFrom: null,
-        filterCompletetionDateRange: null
+        filterCompletetionDateRange: null,
       }));
       handleStartDateChang(formatDateReset);
     } else {
@@ -145,21 +173,21 @@ export default function FilterDatePickerCompletetion(props) {
       handleStartDateChang(formatDateAfter);
       dateName.push("CompletetionDate");
       setDateTypeName(dateName);
-      setStateNav(stateNav => ({
+      setStateNav((stateNav) => ({
         ...stateNav,
         completetionDateFrom: formatDateAfter,
-        dateTypeName: dateName
+        dateTypeName: dateName,
       }));
     }
   };
 
-  const handleEndDate = date => {
+  const handleEndDate = (date) => {
     if (date === null) {
       const formatDateReset = moment();
-      setStateNav(stateNav => ({
+      setStateNav((stateNav) => ({
         ...stateNav,
         completetionDateTo: null,
-        filterCompletetionDateRange: null
+        filterCompletetionDateRange: null,
       }));
       handleEndDateChange(formatDateReset);
       return;
@@ -170,10 +198,10 @@ export default function FilterDatePickerCompletetion(props) {
       handleEndDateChange(newDateAfter);
       dateName.push("CompletetionDate");
       setDateTypeName(dateName);
-      setStateNav(stateNav => ({
+      setStateNav((stateNav) => ({
         ...stateNav,
         completetionDateTo: newDateAfter,
-        dateTypeName: dateName
+        dateTypeName: dateName,
       }));
     }
   };
@@ -183,11 +211,16 @@ export default function FilterDatePickerCompletetion(props) {
       <div className={classes.datesRow}>
         <KeyboardDatePicker
           label={props.labelDates + " " + "From"}
-          className={classes.datePicker}
+          className={`${classes.datePicker} ${
+            JSON.stringify(selectedStartDate) !==
+            JSON.stringify(new Date("1900-01-01T00:00:00"))
+              ? classes.blue
+              : ""
+          }`}
           maxDate={moment().subtract(1, "day")}
           variant="inline"
           value={selectedStartDate}
-          onChange={date => handleStartDate(date)}
+          onChange={(date) => handleStartDate(date)}
           //inputVariant="outlined"
           minDateMessage="Date should not be before minimal date"
           maxDateMessage="Date should not be after max date"
@@ -197,14 +230,29 @@ export default function FilterDatePickerCompletetion(props) {
           format="MM/DD/YYYY"
           PopoverProps={{ disablePortal: true }}
           fullWidth={true}
+          InputProps={{
+            endAdornment: (
+              <IconButton onClick={() => handleStartDate(null)}>
+                <ClearIcon />
+              </IconButton>
+            ),
+          }}
+          InputAdornmentProps={{
+            position: "start",
+          }}
         />
 
         <KeyboardDatePicker
           label={props.labelDates + " " + "To"}
-          className={classes.datePicker}
+          className={`${classes.datePicker} ${
+            JSON.stringify(selectedEndDate).slice(1, 11) !==
+            JSON.stringify(moment()).slice(1, 11)
+              ? classes.blue
+              : ""
+          }`}
           variant="inline"
           value={selectedEndDate}
-          onChange={date => handleEndDate(date)}
+          onChange={(date) => handleEndDate(date)}
           //inputVariant="outlined"
           minDateMessage="Date should not be before minimal date"
           maxDateMessage="Date should not be after max date"
@@ -214,6 +262,16 @@ export default function FilterDatePickerCompletetion(props) {
           format="MM/DD/YYYY"
           PopoverProps={{ disablePortal: true }}
           fullWidth={true}
+          InputProps={{
+            endAdornment: (
+              <IconButton onClick={() => handleEndDate(null)}>
+                <ClearIcon />
+              </IconButton>
+            ),
+          }}
+          InputAdornmentProps={{
+            position: "start",
+          }}
         />
       </div>
     </div>

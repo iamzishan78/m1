@@ -20,7 +20,7 @@ import { AppContext } from "../../../AppContext";
 import { Container } from "@material-ui/core";
 import Table from "./components/Table";
 
-import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
 import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
@@ -1067,7 +1067,11 @@ function M1nTable(props) {
     WELLOWNERSQUERY
   );
   //////////
-  const [getContacts, { data: dataContacts }] = useLazyQuery(CONTACTSQUERY, {
+  const [getContactInM1nTable, { data: dataContact }] = useLazyQuery(CONTACT, {
+    fetchPolicy: "cache-and-network",
+  });
+  //////////
+  const [getContacts, { data: constDataContacts }] = useLazyQuery(CONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
   });
   //////////
@@ -1100,6 +1104,19 @@ function M1nTable(props) {
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
+
+  // workaround to make constDataContacts.contacts[i] editable
+  // TODO: set correct isTracked on backend, not frontend
+  const [dataContacts, setDataContacts] = useState(null);
+  useEffect(() => {
+    if (constDataContacts && constDataContacts.contacts) {
+      let tmpDataContacts = { contacts: [] }
+      constDataContacts.contacts.forEach((contact) => {
+        tmpDataContacts.contacts.push(Object.create(contact))
+      })
+      setDataContacts(tmpDataContacts)
+    }
+  }, [constDataContacts]);
 
   useEffect(() => {
     if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks) {
@@ -2107,36 +2124,19 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "ownersPerParcel" &&
-      props.customLayerId
+      props.customLayer &&
+      stateApp.user
     ) {
       setTargetLabel("Parcel Ownership");
       setHeader("Parcel Ownerships");
       setAddAble({
         type: "ownerToParcel",
-        customLayerId: props.customLayerId,
+        customLayerId: props.customLayer._id,
       });
-      getCustomLayer({
-        variables: {
-          id: props.customLayerId,
-        },
-      });
-      setLoading(true);
-    }
-  }, [props.contactId, props.customLayerId]);
 
-  useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "ownersPerParcel" &&
-      dataCustomLayer &&
-      dataCustomLayer.customLayer &&
-      stateApp.user
-    ) {
-      if (
-        dataCustomLayer.customLayer.owners &&
-        dataCustomLayer.customLayer.owners.length > 0
-      ) {
-        const objectsIdsArray = dataCustomLayer.customLayer.owners.map(
+      if (props.customLayer.owners && props.customLayer.owners.length > 0) {
+        setLoading(true);
+        const objectsIdsArray = props.customLayer.owners.map(
           (owner) => owner._id
         );
 
@@ -2151,22 +2151,22 @@ function M1nTable(props) {
         setRows([]);
       }
     }
-  }, [props.parent, dataCustomLayer, stateApp.user]);
+  }, [props.parent, props.customLayer, stateApp.user]);
 
   useEffect(() => {
     if (
       props.parent &&
       props.parent === "ownersPerParcel" &&
-      dataCustomLayer &&
-      dataCustomLayer.customLayer &&
-      dataCustomLayer.customLayer.owners &&
-      dataCustomLayer.customLayer.owners.length > 0 &&
+      props &&
+      props.customLayer &&
+      props.customLayer.owners &&
+      props.customLayer.owners.length > 0 &&
       dataTracks &&
       dataTracks.tracksByObjectType &&
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter
     ) {
-      dataCustomLayer.customLayer.owners.forEach((parcelOwner) => {
+      props.customLayer.owners.forEach((parcelOwner) => {
         parcelOwner.commentsCounter = 0;
         parcelOwner.tags = [[], 0];
         parcelOwner.isTracked = false;
@@ -2188,10 +2188,10 @@ function M1nTable(props) {
       });
 
       setColumns(OwnersPerParcelHeadCells);
-      setRows([...dataCustomLayer.customLayer.owners]);
+      setRows([...props.customLayer.owners]);
       setLoading(false);
     }
-  }, [props.parent, dataCustomLayer, dataTracks, dataCommentsCounter]);
+  }, [props.parent, props.customLayer, dataTracks, dataCommentsCounter]);
   ////////////Owners Per Parcel begin//////////Delete//////////////////////////////
 
   useEffect(() => {

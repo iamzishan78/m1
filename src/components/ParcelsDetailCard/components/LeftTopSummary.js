@@ -41,7 +41,6 @@ export default function LeftTopSummary(props) {
         <Table
           aria-label="simple table"
           className={classes.table}
-          loading={!parcelData}
         >
           <TableBody>
             <TableRow className={classes.tableRow}>

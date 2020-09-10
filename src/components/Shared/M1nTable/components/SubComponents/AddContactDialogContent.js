@@ -11,7 +11,7 @@ import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { Grid } from "@material-ui/core";
 import { AppContext } from "../../../../../AppContext";
 import { Modals } from "../../../../../styles/Modal";
-import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { CONTACTSQUERY } from "../../../../../graphQL/useQueryContacts";
 import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
 import { makeStyles } from "@material-ui/core/styles";

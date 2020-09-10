@@ -3,7 +3,7 @@ import { AppContext } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import { TAGSAMPLES } from "../../graphQL/useQueryTagSamples";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";

@@ -3,10 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../../../AppContext";
 import PropTypes from "prop-types";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
-import MapGridCardSearch from "./components/MapGridCardSearch";
+import Search from "./components/Search";
 import M1nTable from "../../../Shared/M1nTable/M1nTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import Button from "@material-ui/core/Button";
@@ -50,11 +48,16 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
     "&:hover": { color: "#757575", boxShadow: "none !important" },
   },
+  parcelInterestsTableHigh: {
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": { minHeight: "calc(100vh - 370px) !important" },
+      },
+    },
+  },
 }));
 
 const TabLabels = ({ labels, value, setValue }) => {
-  console.log(`ue mapgridcard tablabels ${(labels, value, setValue)}`);
-
   const classes = useStyles();
   return (
     <>
@@ -110,7 +113,7 @@ function ContactsWellInterestsParcelInterests(props) {
 
   return (
     <div>
-      <MapGridCardSearch />
+      <Search />
       <div style={{ position: "relative" }}>
         <TabPanels
           value={tapValue}
@@ -132,19 +135,21 @@ function ContactsWellInterestsParcelInterests(props) {
               setValue={setTapValue}
             />,
 
-            <M1nTable
-              dense
-              parent="contactParcelInterests"
-              contactId={props.contactData ? props.contactData._id : null}
-              entityId={props.contactData ? props.contactData.entity : null}
-              header={
-                <TabLabels
-                  labels={["Well Interests", "Parcel Interests"]}
-                  value={tapValue}
-                  setValue={setTapValue}
-                />
-              }
-            />,
+            <div className={classes.parcelInterestsTableHigh}>
+              <M1nTable
+                dense
+                parent="contactParcelInterests"
+                contactId={props.contactData ? props.contactData._id : null}
+                entityId={props.contactData ? props.contactData.entity : null}
+                header={
+                  <TabLabels
+                    labels={["Well Interests", "Parcel Interests"]}
+                    value={tapValue}
+                    setValue={setTapValue}
+                  />
+                }
+              />
+            </div>,
           ]}
         />
       </div>

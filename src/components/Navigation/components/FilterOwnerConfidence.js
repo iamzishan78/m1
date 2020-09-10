@@ -5,11 +5,13 @@ import Typography from "@material-ui/core/Typography";
 import NumberFormat from "react-number-format";
 import { NavigationContext } from "../NavigationContext";
 import { FormLabel } from "@material-ui/core";
+import IconButton from "@material-ui/core/IconButton";
+import CancelIcon from "@material-ui/icons/Cancel";
 
 const useStyles = makeStyles({
   divBordersMinMax: {
     display: "flow-root",
-    padding: "3.5px 15px 5.5px 15px",
+    padding: "3.5px 5px 5.5px 15px",
     border: "1px solid #C4C4C4",
     borderRadius: "4px",
     "&:hover": {
@@ -17,9 +19,9 @@ const useStyles = makeStyles({
     },
   },
   input: {
-    marginLeft: "30px",
-    width: "160px",
-    //float: "right",
+    marginLeft: "25px",
+    width: "135px",
+    float: "right",
     "& input": { color: "#17AADD" },
   },
   inputLabel: {
@@ -28,6 +30,9 @@ const useStyles = makeStyles({
   },
   ownersToggle: {
     paddingLeft: "20px",
+  },
+  closeButton: {
+    float: "right",
   },
 });
 
@@ -167,26 +172,19 @@ export default function FilterOwnerConfidence() {
         <FormLabel className={classes.inputLabel}>
           Owner Confidence Score
         </FormLabel>
-
-        <NumberFormat
-          id="OwnerConfidenceMin"
-          value={valueMinDisplay}
-          onChange={handleChangeMin}
-          thousandSeparator={true}
-          customInput={TextField}
-          className={classes.input}
-          aria-labelledby="range-number"
-          type="text"
-          label="Min"
-          size="small"
-          onKeyPress={(e) => allowNumbersOnly(e)}
-          InputProps={{
-            inputProps: {
-              min: 0,
-              max: 1,
-            },
+        <IconButton
+          className={classes.closeButton}
+          onClick={() => {
+            handleChangeMax({
+              target: { id: "OwnerConfidenceMax", value: "" },
+            });
+            handleChangeMin({
+              target: { id: "OwnerConfidenceMin", value: "" },
+            });
           }}
-        />
+        >
+          <CancelIcon height={"30px"} />
+        </IconButton>
         <NumberFormat
           id="OwnerConfidenceMax"
           value={valueMaxDisplay}
@@ -201,6 +199,25 @@ export default function FilterOwnerConfidence() {
           onKeyPress={(e) => allowNumbersOnly(e)}
           error={error}
           helperText={errorText}
+          InputProps={{
+            inputProps: {
+              min: 0,
+              max: 1,
+            },
+          }}
+        />
+        <NumberFormat
+          id="OwnerConfidenceMin"
+          value={valueMinDisplay}
+          onChange={handleChangeMin}
+          thousandSeparator={true}
+          customInput={TextField}
+          className={classes.input}
+          aria-labelledby="range-number"
+          type="text"
+          label="Min"
+          size="small"
+          onKeyPress={(e) => allowNumbersOnly(e)}
           InputProps={{
             inputProps: {
               min: 0,

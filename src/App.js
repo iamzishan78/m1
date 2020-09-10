@@ -29,9 +29,7 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
-import { ApolloProvider } from "@apollo/react-hooks";
-import ApolloClient from "apollo-boost";
-import { InMemoryCache } from "apollo-cache-inmemory";
+import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
 import { CircularProgress } from "@material-ui/core";
 import Profile from "./components/Profile/Profile";
 
@@ -164,8 +162,16 @@ const PrivateRoute = ({ component, ...options }) => {
   const finalComponent =
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
       ? component
-      : Login;
-  //: LoginB2C;
+      : (() => {
+        return stateApp.myMSALB2CObj
+          ? (() => { 
+              if (window.location.pathname !== "/loginb2c") {
+                history.push("/loginb2c"); 
+              }
+              else return LoginB2C;
+            })()
+          : Login
+      })();
 
   return <Route {...options} component={finalComponent} />;
 };
@@ -236,6 +242,7 @@ function App() {
                       <PrivateRoute exact path="/" component={MapProvider} />
                       <PrivateRoute exact path="/profile" component={Profile} />
                       <Route exact path="/signup" component={SignUpCard} />
+                      <Route exact path="/loginb2c" component={LoginB2C} />
                       <Route
                         exact
                         path="/forgotpassword"

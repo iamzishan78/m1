@@ -15,9 +15,9 @@ export default (props) => (
       transform="translate(0.2998047 0.30004883)"
       id="Shape"
       fill="#737373"
-      fill-rule="evenodd"
+      fillRule="evenodd"
       stroke="#737373"
-      stroke-width="0.6"
+      strokeWidth="0.6"
     />
   </svg>
 );

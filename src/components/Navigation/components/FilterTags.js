@@ -4,7 +4,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
 import { USERAVAILABLEFILTERTAGSQUERY } from "../../../graphQL/useQueryUserAvailableFilterTags";
 import { OBJECTSFROMTAGSARRAY } from "../../../graphQL/useQueryObjectsFromTagsArray";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../../AppContext";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
