@@ -44,7 +44,7 @@ import MessageRoundedIcon from "@material-ui/icons/MessageRounded";
 import DescriptionRoundedIcon from "@material-ui/icons/DescriptionRounded";
 import Card from "@material-ui/core/Card";
 import HandShake from "../Shared/svgIcons/HandShake";
-import Parcels from "./components/Parcels";
+import ParcelsCard from "./components/ParcelsCard";
 import WellsCard from "./components/WellsCard";
 import RecentActivities from "../RecentActivities/RecentActivities";
 import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
@@ -286,9 +286,12 @@ export default function ContactDetailCard(props) {
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
     TRANSACTIONDATA
   );
-  const [getLastMelissaRecord, { data: mData }] = useLazyQuery(LASTMELISSARECORD, {
-    fetchPolicy: "network-only",
-  });
+  const [getLastMelissaRecord, { data: mData }] = useLazyQuery(
+    LASTMELISSARECORD,
+    {
+      fetchPolicy: "network-only",
+    }
+  );
 
   const handleClickRightDialogOpen = (childrenToOpen) => {
     setRightDialogOpen(childrenToOpen);
@@ -592,21 +595,23 @@ export default function ContactDetailCard(props) {
           <Grid item xs={12}>
             <Grid container spacing={2}>
               <Grid item xs={4}>
-                <Card raised style={{ minHeight: "35px" }}>
+                <Card raised style={{ minHeight: "35px", height: "100%" }}>
                   <WellsCard
                     handleOpenExpandableCard={handleOpenExpandableCard}
+                    contactData={contactData}
                   />
                 </Card>
               </Grid>
               <Grid item xs={4}>
-                <Card raised style={{ minHeight: "35px" }}>
-                  <Parcels
+                <Card raised style={{ minHeight: "35px", height: "100%" }}>
+                  <ParcelsCard
                     handleOpenExpandableCard={handleOpenExpandableCard}
+                    contactData={contactData}
                   />
                 </Card>
               </Grid>
               <Grid item xs={4}>
-                <Card raised style={{ minHeight: "35px" }}>
+                <Card raised style={{ minHeight: "35px", height: "100%" }}>
                   <LeadScore score={5} lastContacted={"Jun 24, 2020"} />
                 </Card>
               </Grid>

@@ -5,6 +5,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
+import CountyName from "./CountyName";
 
 const useStyles = makeStyles({
   table: {
@@ -23,6 +24,15 @@ const useStyles = makeStyles({
       border: "2px solid #e3e3e3",
     },
   },
+  aut: {
+    padding: "0",
+    "& fieldset": {
+      border: "none",
+    },
+    "& .MuiInputBase-root": {
+      borderRadius: "0px",
+    },
+  },
 });
 
 export default function LeftTopSummary(props) {
@@ -38,22 +48,22 @@ export default function LeftTopSummary(props) {
   return (
     <TableContainer className={classes.tableContainer}>
       {parcelData && (
-        <Table
-          aria-label="simple table"
-          className={classes.table}
-        >
+        <Table aria-label="simple table" className={classes.table}>
           <TableBody>
-            <TableRow className={classes.tableRow}>
-              <TableCell scope="row" className={classes.rowName}>
-                County
-              </TableCell>
-              <TableCell>{parcelData.county}</TableCell>
-            </TableRow>
             <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 State
               </TableCell>
               <TableCell>{parcelData.state}</TableCell>
+            </TableRow>
+            <TableRow className={classes.tableRow}>
+              <TableCell scope="row" className={classes.rowName}>
+                County
+              </TableCell>
+              {/* <TableCell>{parcelData.county}</TableCell> */}
+              <TableCell className={classes.aut}>
+                <CountyName />
+              </TableCell>
             </TableRow>
             <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>

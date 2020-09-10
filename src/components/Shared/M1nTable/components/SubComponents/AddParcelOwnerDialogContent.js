@@ -164,6 +164,7 @@ export default function AddParcelOwnerDialogContent(props) {
         refetchQueries: [
           "getCustomLayer",
           "getAllEntityNamesToAddAsParcelOwner",
+          "getContactParcelInterests",
         ],
         awaitRefetchQueries: true,
       });

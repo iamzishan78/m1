@@ -4,11 +4,13 @@ import TextField from "@material-ui/core/TextField";
 import NumberFormat from "react-number-format";
 import { NavigationContext } from "../NavigationContext";
 import { FormLabel } from "@material-ui/core";
+import CancelIcon from "@material-ui/icons/Cancel";
+import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles({
   divBordersMinMax: {
     display: "flow-root",
-    padding: "3.5px 15px 5.5px 15px",
+    padding: "3.5px 5px 5.5px 15px",
     border: "1px solid #C4C4C4",
     borderRadius: "4px",
     "&:hover": {
@@ -18,12 +20,15 @@ const useStyles = makeStyles({
   input: {
     marginLeft: "30px",
     width: "160px",
-   // float: "right",
+    float: "right",
     "& input": { color: "#17AADD" },
   },
   inputLabel: {
     position: "relative",
     top: "11.5px",
+  },
+  closeButton: {
+    float: "right",
   },
 });
 
@@ -168,26 +173,16 @@ export default function FilterWellAppraisal() {
   return (
     <div className={classes.divBordersMinMax}>
       <FormLabel className={classes.inputLabel}>Well Appraisal</FormLabel>
-
-      <NumberFormat
-        id="appraisalWellMin"
-        value={valueMinDisplay}
-        onChange={handleChangeMin}
-        thousandSeparator={true}
-        customInput={TextField}
-        className={classes.input}
-        aria-labelledby="range-number"
-        type="text"
-        label="Min"
-        size="small"
-        onKeyPress={(e) => allowNumbersOnly(e)}
-        InputProps={{
-          inputProps: {
-            min: 0,
-            max: Number.MAX_SAFE_INTEGER - 1,
-          },
+      <IconButton
+        className={classes.closeButton}
+        onClick={() => {
+          handleChangeMax({ target: { id: "appraisalWellMax", value: "" } });
+          handleChangeMin({ target: { id: "appraisalWellMin", value: "" } });
         }}
-      />
+      >
+        <CancelIcon height={"30px"} />
+      </IconButton>
+
       <NumberFormat
         id="appraisalWellMax"
         value={valueMaxDisplay}
@@ -206,6 +201,25 @@ export default function FilterWellAppraisal() {
           inputProps: {
             min: 0,
             max: Number.MAX_SAFE_INTEGER,
+          },
+        }}
+      />
+      <NumberFormat
+        id="appraisalWellMin"
+        value={valueMinDisplay}
+        onChange={handleChangeMin}
+        thousandSeparator={true}
+        customInput={TextField}
+        className={classes.input}
+        aria-labelledby="range-number"
+        type="text"
+        label="Min"
+        size="small"
+        onKeyPress={(e) => allowNumbersOnly(e)}
+        InputProps={{
+          inputProps: {
+            min: 0,
+            max: Number.MAX_SAFE_INTEGER - 1,
           },
         }}
       />

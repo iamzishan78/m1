@@ -3,9 +3,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
+import ClearIcon from "@material-ui/icons/Clear";
+import { IconButton } from "@material-ui/core";
 
 // Styles for the Material UI Components
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     // display: "flex",
     // flexWrap: "wrap",
@@ -24,16 +26,19 @@ const useStyles = makeStyles(theme => ({
     // minWidth: 175,
     // maxWidth: 176,
     "&& span": {
-      pointerEvents: "none"
-    }
+      pointerEvents: "none",
+    },
   },
   chips: {
     display: "flex",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
   },
   chip: {
-    margin: 10
-  }
+    margin: 10,
+  },
+  blue: {
+    "& .MuiInputBase-input": { color: "#17AADD" },
+  },
 }));
 // FILTERS ARE NOT WORKING, WAITING ON THE TILE SET TO UPDATE
 // We are passing in Props from The FilterFromWells as labelDates to pass the Name of the filter
@@ -43,21 +48,19 @@ export default function FilterDatePickerPermit(props) {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   //The 2 following states handle the dates for the start date and end date
   const [selectedStartDate, handleStartDateChang] = useState(
-    moment().subtract(120, 'Years')
+    new Date("1900-01-01T00:00:00")
   );
-  const [selectedEndDate, handleEndDateChange] = useState(
-    moment()
-  );
-  
+  const [selectedEndDate, handleEndDateChange] = useState(moment());
+
   // The 2 following states keep a object that has a date and a check boolean
   // Both states have a logic that is used to set off effect or compare them in a If statement
   const [permitFromDate, setPermitFromDate] = useState({
     check: false,
-    date: moment()
+    date: moment(),
   });
   const [permitToDate, setPermitToDate] = useState({
     check: false,
-    date: moment()
+    date: moment(),
   });
 
   const [dateTypeName, setDateTypeName] = useState(
@@ -69,7 +72,7 @@ export default function FilterDatePickerPermit(props) {
     if (stateNav.permitDateFrom == null) {
       return;
     } else {
-      // else recall date from statenav context so display again 
+      // else recall date from statenav context so display again
       handleStartDateChang(stateNav.permitDateFrom);
       setPermitFromDate({ check: true, date: stateNav.permitDateFrom });
     }
@@ -78,38 +81,64 @@ export default function FilterDatePickerPermit(props) {
   const setvaluesTo = useCallback(() => {
     // Check for the null date and if it is return
     if (stateNav.permitDateTo == null) {
-      // else recall date from statenav context so display again 
+      // else recall date from statenav context so display again
       return;
     } else {
       handleEndDateChange(stateNav.permitDateTo);
       setPermitToDate({ check: true, date: stateNav.permitDateTo });
     }
   }, [stateNav.permitDateTo]);
-  
+
   const setFilterName = useCallback(() => {
-      let filter;
-      if (permitFromDate.date._isValid === true  && permitToDate.date._isValid === true) {
-        const checkDate = moment.parseZone(permitToDate.date).utc(true).valueOf()
-        const fromDate = moment.parseZone(permitFromDate.date).utc(true).valueOf()
-        if(permitFromDate.check && !permitToDate.check){
-          filter = ["all", [">=",["get", "permitApprovedDate"] ,fromDate], ["<=",["get", "permitApprovedDate"] , checkDate]];
-        } else if (permitToDate.check &&  !permitFromDate.check ) {
-          let checkDate = moment().subtract(120, 'Years')
-          let fromDate = moment.parseZone(checkDate).utc(true).valueOf()
-          const toDate =  moment.parseZone(permitToDate.date).utc(true).valueOf()
-          filter = ["all", [">=",["get", "permitApprovedDate"] ,fromDate], ["<=",["get", "permitApprovedDate"] , toDate]];
-        }
-        else{
-          const fromDate = moment.parseZone(permitFromDate.date).utc(true).valueOf()
-          const toDate =  moment.parseZone(permitToDate.date).utc(true).valueOf()
-          filter = ["all", [">=", ["get", "permitApprovedDate"]  ,fromDate], ["<=", ["get", "permitApprovedDate"] ,toDate]];
-        }
+    let filter;
+    if (
+      permitFromDate.date._isValid === true &&
+      permitToDate.date._isValid === true
+    ) {
+      const checkDate = moment.parseZone(permitToDate.date).utc(true).valueOf();
+      const fromDate = moment
+        .parseZone(permitFromDate.date)
+        .utc(true)
+        .valueOf();
+      if (permitFromDate.check && !permitToDate.check) {
+        filter = [
+          "all",
+          [">=", ["get", "permitApprovedDate"], fromDate],
+          ["<=", ["get", "permitApprovedDate"], checkDate],
+        ];
+      } else if (permitToDate.check && !permitFromDate.check) {
+        let checkDate = moment().subtract(120, "Years");
+        let fromDate = moment.parseZone(checkDate).utc(true).valueOf();
+        const toDate = moment.parseZone(permitToDate.date).utc(true).valueOf();
+        filter = [
+          "all",
+          [">=", ["get", "permitApprovedDate"], fromDate],
+          ["<=", ["get", "permitApprovedDate"], toDate],
+        ];
       } else {
-        filter = null;
+        const fromDate = moment
+          .parseZone(permitFromDate.date)
+          .utc(true)
+          .valueOf();
+        const toDate = moment.parseZone(permitToDate.date).utc(true).valueOf();
+        filter = [
+          "all",
+          [">=", ["get", "permitApprovedDate"], fromDate],
+          ["<=", ["get", "permitApprovedDate"], toDate],
+        ];
       }
-      console.log("Permit Range dates change filter", filter);
-      setStateNav(stateNav => ({ ...stateNav, filterPermitDateRange: filter }));
-  }, [permitFromDate.check, permitFromDate.date, permitToDate.check, permitToDate.date, setStateNav]);
+    } else {
+      filter = null;
+    }
+    console.log("Permit Range dates change filter", filter);
+    setStateNav((stateNav) => ({ ...stateNav, filterPermitDateRange: filter }));
+  }, [
+    permitFromDate.check,
+    permitFromDate.date,
+    permitToDate.check,
+    permitToDate.date,
+    setStateNav,
+  ]);
 
   useEffect(() => {
     // check if value of the check are true to run the filter
@@ -128,116 +157,145 @@ export default function FilterDatePickerPermit(props) {
     }
   }, [setvaluesTo, dateTypeName, setvaluesFrom]);
   // function to handle the date changes
-  const handleStartDate = date => {
+  const handleStartDate = (date) => {
     // moments js and react quick rerenders make the input to become a null as soon as 1 number is delted
     // if is equal it resets the date from the input
     if (date == null) {
-      const formatDateReset = moment().subtract(120, 'Years');
-      setStateNav(stateNav => ({
+      const formatDateReset = new Date("1900-01-01T00:00:00");
+      setStateNav((stateNav) => ({
         ...stateNav,
         permitDateFrom: null,
-        filterPermitDateRange: null
+        filterPermitDateRange: null,
       }));
       handleStartDateChang(formatDateReset);
     } else {
-    // format the date to keep consistency
-    const formatDateAfter = moment(date)
-    let dateName = [];
-    // set the check and pass the date
-    setPermitFromDate({ check: true, date: formatDateAfter });
-    //handles the actual input value
-    handleStartDateChang(formatDateAfter);
-    // add the name to the array to be used in a check above
-    dateName.push("PermitDate");
-    //add to the  state the array
-    setDateTypeName(dateName);
-    // sets the state in context and date name
-    setStateNav(stateNav => ({
-      ...stateNav,
-      permitDateFrom: formatDateAfter,
-      dateTypeName: dateName
-    }));
-  }
+      // format the date to keep consistency
+      const formatDateAfter = moment(date);
+      let dateName = [];
+      // set the check and pass the date
+      setPermitFromDate({ check: true, date: formatDateAfter });
+      //handles the actual input value
+      handleStartDateChang(formatDateAfter);
+      // add the name to the array to be used in a check above
+      dateName.push("PermitDate");
+      //add to the  state the array
+      setDateTypeName(dateName);
+      // sets the state in context and date name
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        permitDateFrom: formatDateAfter,
+        dateTypeName: dateName,
+      }));
+    }
   };
 
-  const handleEndDate = date => {
+  const handleEndDate = (date) => {
     // moments js and react quick rerenders make the input to become a null as soon as 1 number is delted
     // if is equal it resets the date from the input
     if (date === null) {
       const formatDateReset = moment();
-      setStateNav(stateNav => ({ ...stateNav, permitDateTo: null , filterPermitDateRange: null}));
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        permitDateTo: null,
+        filterPermitDateRange: null,
+      }));
       handleEndDateChange(formatDateReset);
       return;
     } else {
-    // format the date to keep consistency
-    
-    const newDateAfter = moment(date)
-    let dateName = [];
-    // set the check and pass the date
-    setPermitToDate({ check: true, date: newDateAfter });
-    //handles the actual input value
-    handleEndDateChange(newDateAfter);
-    // add the name to the array to be used in a check above
-    dateName.push("PermitDate");
-    //add to the the  state array
-    setDateTypeName(dateName);
-    // sets the state in context and date name
-    setStateNav(stateNav => ({
-      ...stateNav,
-      permitDateTo: newDateAfter,
-      dateTypeName: dateName
-    }));
-  }
+      // format the date to keep consistency
+
+      const newDateAfter = moment(date);
+      let dateName = [];
+      // set the check and pass the date
+      setPermitToDate({ check: true, date: newDateAfter });
+      //handles the actual input value
+      handleEndDateChange(newDateAfter);
+      // add the name to the array to be used in a check above
+      dateName.push("PermitDate");
+      //add to the the  state array
+      setDateTypeName(dateName);
+      // sets the state in context and date name
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        permitDateTo: newDateAfter,
+        dateTypeName: dateName,
+      }));
+    }
   };
-  
+
   return (
     <div className={classes.root}>
       <div className={classes.datesRow}>
         <KeyboardDatePicker
           label={props.labelDates + " " + "From"}
-          className={classes.datePicker}
-          maxDate={moment().subtract(1, 'day')}
+          className={`${classes.datePicker} ${
+            JSON.stringify(selectedStartDate) !==
+            JSON.stringify(new Date("1900-01-01T00:00:00"))
+              ? classes.blue
+              : ""
+          }`}
+          maxDate={moment().subtract(1, "day")}
           variant="inline"
           value={selectedStartDate}
-          onChange={date => handleStartDate(date)}
-
+          onChange={(date) => handleStartDate(date)}
           //inputVariant="outlined"
-          minDateMessage = 'Date should not be before minimal date'
-          maxDateMessage = 'Date should not be after max date'
+          minDateMessage="Date should not be before minimal date"
+          maxDateMessage="Date should not be after max date"
           disableToolbar
-          KeyboardButtonProps={{'aria-label':'change date'}}
-          autoOk = 'true'
+          KeyboardButtonProps={{ "aria-label": "change date" }}
+          autoOk="true"
           format="MM/DD/YYYY"
           // orientation = 'landscape'
           // margin = 'normal'
           PopoverProps={{ disablePortal: true }}
           fullWidth={true}
+          InputProps={{
+            endAdornment: (
+              <IconButton onClick={() => handleStartDate(null)}>
+                <ClearIcon />
+              </IconButton>
+            ),
+          }}
+          InputAdornmentProps={{
+            position: "start",
+          }}
         />
 
         <KeyboardDatePicker
           label={props.labelDates + " " + "To"}
-          className={classes.datePicker}
+          className={`${classes.datePicker} ${
+            JSON.stringify(selectedEndDate).slice(1, 11) !==
+            JSON.stringify(moment()).slice(1, 11)
+              ? classes.blue
+              : ""
+          }`}
           variant="inline"
           maxDate={moment()}
           value={selectedEndDate}
-          onChange={date => handleEndDate(date)}
-
+          onChange={(date) => handleEndDate(date)}
           //inputVariant="outlined"
-          minDateMessage = 'Date should not be before minimal date'
-          maxDateMessage = 'Date should not be after max date'
+          minDateMessage="Date should not be before minimal date"
+          maxDateMessage="Date should not be after max date"
           disableToolbar
-          KeyboardButtonProps={{'aria-label':'change date'}}
-          autoOk = 'true'
+          KeyboardButtonProps={{ "aria-label": "change date" }}
+          autoOk="true"
           format="MM/DD/YYYY"
           // orientation = 'landscape'
           // margin = 'normal'
           PopoverProps={{ disablePortal: true }}
           fullWidth={true}
+          InputProps={{
+            endAdornment: (
+              <IconButton onClick={() => handleEndDate(null)}>
+                <ClearIcon />
+              </IconButton>
+            ),
+          }}
+          InputAdornmentProps={{
+            position: "start",
+          }}
         />
       </div>
     </div>
   );
 }
-
-
-

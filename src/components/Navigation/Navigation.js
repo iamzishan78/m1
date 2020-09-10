@@ -119,7 +119,7 @@ const theme = createMuiTheme({
           backgroundColor: "#fff",
         },
       },
-    }
+    },
   },
 });
 
@@ -484,13 +484,13 @@ const useStyles = makeStyles((theme) => ({
   },
   userMenu: {
     "& .MuiPaper-rounded": {
-      borderRadius: "0px"
-    }
+      borderRadius: "0px",
+    },
   },
   userMenuItem: {
-    padding : 10,
-    width: '250px',
-    color: "#1daee1"
+    padding: 10,
+    width: "250px",
+    color: "#1daee1",
   },
   actionWrapper: {
     flexGrow: 1,
@@ -929,11 +929,14 @@ export default function Navigation(props) {
         className={classes.userMenuItem}
         onClick={(e) => openProfile(e)}
       >
-        <Link to="/profile" style={{ textDecoration: "none", color: "#1daee1" }}>
+        <Link
+          to="/profile"
+          style={{ textDecoration: "none", color: "#1daee1" }}
+        >
           <Typography variant="inherit">My Account</Typography>
         </Link>
       </MenuItem>
-      <Divider/>
+      <Divider />
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
         <Typography variant="inherit">Logout</Typography>
       </MenuItem>
@@ -1300,7 +1303,7 @@ export default function Navigation(props) {
                     aria-label="ai"
                   />
 
-                  <Tab
+                  {/* <Tab
                     value={7}
                     classes={{ root: classes.tab }}
                     style={{ paddingTop: 10 }}
@@ -1313,7 +1316,7 @@ export default function Navigation(props) {
                       </Badge>
                     }
                     aria-label="filter settings"
-                  />
+                  /> */}
                 </Tabs>
               </div>
             ) : (
@@ -1588,8 +1591,8 @@ export default function Navigation(props) {
               </ListItemSecondaryAction>
             </div>
           </ListItem>
-
-          <ListItem
+          {/* temporary */}
+          {/* <ListItem
             classes={{
               root: classes.menuListItemDisabled,
               selected: classes.menuListItemSelected,
@@ -1618,7 +1621,7 @@ export default function Navigation(props) {
                 </Button>
               </ListItemSecondaryAction>
             </div>
-          </ListItem>
+          </ListItem> */}
         </List>
         {/* <Divider variant="middle" className={classes.menuListBottomDivider} /> */}
         <List className={classes.menuListBottom}>

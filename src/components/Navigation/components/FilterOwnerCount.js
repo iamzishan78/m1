@@ -8,11 +8,12 @@ import Grid from "@material-ui/core/Grid";
 import { FormLabel } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import OwnershipIcon from "../../Shared/svgIcons/ownership";
+import CancelIcon from "@material-ui/icons/Cancel";
 
 const useStyles = makeStyles({
   divBordersMinMax: {
     display: "flow-root",
-    padding: "3.5px 15px 5.5px 15px",
+    padding: "3.5px 5px 5.5px 15px",
     border: "1px solid #C4C4C4",
     borderRadius: "4px",
     "&:hover": {
@@ -48,6 +49,9 @@ const useStyles = makeStyles({
   ownersToggle: {
     // marginLeft: "20px",
     marginRight: "50px",
+  },
+  closeButton: {
+    float: "right",
   },
 });
 
@@ -239,6 +243,15 @@ export default function FilterOwnerCount() {
       <Grid item sm={12}>
         <div className={classes.divBordersMinMax}>
           <FormLabel className={classes.inputLabel}>Owner Count</FormLabel>
+          <IconButton
+            className={classes.closeButton}
+            onClick={() => {
+              handleChangeMax({ target: { id: "OwnerCountMax", value: "" } });
+              handleChangeMin({ target: { id: "OwnerCountMin", value: "" } });
+            }}
+          >
+            <CancelIcon height={"30px"} />
+          </IconButton>
           <NumberFormat
             id="OwnerCountMax"
             value={valueMaxDisplay}

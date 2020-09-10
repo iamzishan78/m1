@@ -1,16 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
-import { AppContext } from "../../AppContext";
+import { AppContext } from "../../../../../../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
-import Taps from "../Shared/Taps";
-import M1nTable from "../Shared/M1nTable/M1nTable";
 import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import QtrQtrSelector from "./components/QtrQtrSelector";
 import LeftTopSummary from "./components/LeftTopSummary";
-import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
-import { useLazyQuery } from "@apollo/client";
+// import { useLazyQuery } from "@apollo/client";
 
 const useStyles = makeStyles((theme) => ({
   gridWidthScroll: {
@@ -45,71 +41,63 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   borderRight: {
-    borderRight: "1px solid #eaeaea",
+    // borderRight: "1px solid #eaeaea",
     backgroundColor: "#fff",
-    padding: "15px",
+    paddingRight: "15px",
   },
   qtrAndInputs: { "& input": { fontSize: "0.875rem" } },
 }));
 
-export default function ParcelsDetailCard(props) {
+export default function ParcelStep(props) {
   const [stateApp] = useContext(AppContext);
   const classes = useStyles();
-  const [parcelData, setParcelData] = useState();
-  //   {
-  //   _id: "5f2d60a70b0a02002146edfc",
-  //   county: "Lea",
-  //   state: "TX",
-  //   Grid1: "00",
-  //   Grid2: "026S",
-  //   Grid3: "033E",
-  //   Grid4: "027",
-  //   Grid5: "123",
-  //   qtrQtr: {
-  //     nwnw: true,
-  //     nenw: true,
-  //     swnw: true,
-  //     senw: true,
-  //     nwne: true,
-  //     nene: true,
-  //     swne: true,
-  //     sene: true,
-  //     nwsw: false,
-  //     nesw: false,
-  //     swsw: false,
-  //     sesw: false,
-  //     nwse: false,
-  //     nese: false,
-  //     swse: false,
-  //     sese: false,
-  //   },
-  //   grossAcres: 640,
-  //   calcAcres: 640.3,
-  //   legalDescription: "",
-  //   owners: [],
-  // }
-  const [getCustomLayer, { data: dataCustomLayer, loading }] = useLazyQuery(
-    CUSTOMLAYER,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+  const [parcelData, setParcelData] = useState({
+    name: "test",
+    county: "Lea",
+    state: "TX",
+    Grid1: "00",
+    Grid2: "026S",
+    Grid3: "033E",
+    Grid4: "027",
+    Grid5: "123",
+    qtrQtr: {
+      nwnw: true,
+      nenw: true,
+      swnw: true,
+      senw: true,
+      nwne: true,
+      nene: true,
+      swne: true,
+      sene: true,
+      nwsw: false,
+      nesw: false,
+      swsw: false,
+      sesw: false,
+      nwse: false,
+      nese: false,
+      swse: false,
+      sese: false,
+    },
+    grossAcres: 640,
+    calcAcres: 640.3,
+    legalDescription: "",
+  });
 
-  useEffect(() => {
-    if (props.id) {
-      getCustomLayer({
-        variables: {
-          id: props.id,
-        },
-      });
-    }
-  }, [props.id]);
+  // useEffect(() => {
+  //   if (props.id) {
+  //     getCustomLayer({
+  //       variables: {
+  //         id: props.id,
+  //       },
+  //     });
+  //   }
+  // }, [props.id]);
 
-  useEffect(() => {
-    if (dataCustomLayer && dataCustomLayer.customLayer) {
-      setParcelData(dataCustomLayer.customLayer);
-    }
-  }, [dataCustomLayer]);
+  // useEffect(() => {
+  //   if (dataCustomLayer && dataCustomLayer.customLayer) {
+  //     setParcelData(dataCustomLayer.customLayer);
+  //   }
+  // }, [dataCustomLayer]);
 
   const setQtrQtr = (qtrQtr) => {
     setParcelData((parcelData) => ({ ...parcelData, qtrQtr }));
@@ -118,13 +106,13 @@ export default function ParcelsDetailCard(props) {
   return parcelData ? (
     <Grid container className={classes.gridWidthScroll} spacing={0}>
       <Grid item container sm={12}>
-        <Grid item sm={2} className={classes.borderRight}>
+        <Grid item sm={5} className={classes.borderRight}>
           <LeftTopSummary parcelData={parcelData} />
         </Grid>
 
         <Grid
           item
-          sm={6}
+          sm={7}
           className={`${classes.borderRight} ${classes.qtrAndInputs}`}
         >
           <Grid container spacing={2}>
@@ -132,8 +120,15 @@ export default function ParcelsDetailCard(props) {
               <QtrQtrSelector parcelData={parcelData} setQtrQtr={setQtrQtr} />
               <div style={{ width: "Calc( 100% - 273px)" }}>
                 <p className="formLabel" style={{ marginTop: "0" }}>
-                  Gross Acres
+                  Parcel Name
                 </p>
+                <TextField
+                  size="small"
+                  value={parcelData.name}
+                  variant="outlined"
+                  fullWidth
+                />
+                <p className="formLabel">Gross Acres</p>
                 <TextField
                   size="small"
                   value={parcelData.grossAcres}
@@ -156,7 +151,7 @@ export default function ParcelsDetailCard(props) {
                 <TextField
                   size="small"
                   multiline
-                  rows={12}
+                  rows={8}
                   value={parcelData.legalDescription}
                   variant="outlined"
                   fullWidth
@@ -166,23 +161,6 @@ export default function ParcelsDetailCard(props) {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item sm={4} style={{ backgroundColor: "#757575" }}>
-          <p>Map</p>
-        </Grid>
-      </Grid>
-
-      <Grid item sm={12}>
-        <Taps
-          tabLabels={["Owners", "Wells"]}
-          tabPanels={[
-            <M1nTable
-              parent="ownersPerParcel"
-              customLayer={parcelData}
-              dense
-            />,
-            "Wells Table",
-          ]}
-        />
       </Grid>
     </Grid>
   ) : (

@@ -1,10 +1,9 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import ParcelIcon from "../../Shared/svgIcons/ParcelIcon";
 import AddIcon from "@material-ui/icons/Add";
 import IconButton from "@material-ui/core/IconButton";
 import WellIcon from "../../Shared/svgIcons/well";
+import ContactsWellInterestsParcelInterests from "./ContactsWellInterestsParcelInterests/ContactsWellInterestsParcelInterests";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,8 +46,11 @@ export default function WellsCard(props) {
           className={classes.addIcon}
           onClick={() => {
             props.handleOpenExpandableCard(
-              "Pass your card content here",
-              "Wells/Parcels"
+              <ContactsWellInterestsParcelInterests
+                activeTap={0}
+                contactData={props.contactData}
+              />,
+              "Associated Interests"
             );
           }}
         >
