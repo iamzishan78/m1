@@ -366,9 +366,14 @@ const LoginB2C = (props) => {
     setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
 
     setLoadingSigInButton(false);
-    // setLoading(false);
 
-    history.push("/");
+    history.replace(
+      window.location.pathname === "/loginb2c"
+      ? "/"
+      : window.location.pathname
+    );
+
+    // setLoading(false);
   }
 
   async function getMongoDBUser(user, accessToken) {

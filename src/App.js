@@ -164,12 +164,7 @@ const PrivateRoute = ({ component, ...options }) => {
       ? component
       : (() => {
         return stateApp.myMSALB2CObj
-          ? (() => { 
-              if (window.location.pathname !== "/loginb2c") {
-                history.push("/loginb2c"); 
-              }
-              else return LoginB2C;
-            })()
+          ? LoginB2C
           : Login
       })();
 
