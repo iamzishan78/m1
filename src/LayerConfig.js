@@ -887,12 +887,7 @@ export const layers = [
             0.7,
             0.4
           ],
-          "fill-outline-color": [
-            'case',
-            ['boolean', ['feature-state', 'hover'], false],
-            "#fc5b49",
-            "#e07c71"
-          ],
+          "fill-outline-color": '#e07c71',
         },
       },
       {

@@ -262,14 +262,7 @@ export default function CheckboxList(props) {
   const handleColorPicker = (layer) => {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
-      selectedFileLayer: layer
-    }));
-  }
-
-  const handleColorPickerUDLayer = (layer) => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      selectedUDLayer: layer
+      selectedLayer: layer
     }));
   }
 
@@ -350,17 +343,25 @@ export default function CheckboxList(props) {
                                 <ListItemIcon {...provided.dragHandleProps}>
                                   <DragIndicator />
                                 </ListItemIcon>
-                                <ListItemText id={labelId} primary={getLayerName(layer)} />
+                                <ListItemText 
+                                  id={labelId}
+                                  primary={getLayerName(layer)}
+                                  className={
+                                    !ifLayerHaveData(layer)
+                                      ? classes.disabledLayerTitle
+                                      : ""
+                                  }
+                                />
 
                                 {layer.layerSettings.colorable && layer.layerSettings.interaction.interactionAble && (
-                                  <ListItemIcon onClick={() => handleColorPickerUDLayer(layer)}>
+                                  <ListItemIcon onClick={() => handleColorPicker(layer)}>
                                     <ColorControl />
                                   </ListItemIcon>
                                 )}
 
                                 {layer.layerSettings.colorable && !layer.layerSettings.interaction.interactionAble && (
                                   <div style={{ paddingRight: 40 }}>
-                                    <ListItemIcon onClick={() => handleColorPickerUDLayer(layer)}>
+                                    <ListItemIcon onClick={() => handleColorPicker(layer)}>
                                       <ColorControl />
                                     </ListItemIcon>
                                   </div>
@@ -370,9 +371,23 @@ export default function CheckboxList(props) {
                                   <div style={{ paddingRight: 20 }}>
                                     <Checkbox
                                       icon={
-                                        <CancelOutlinedIcon htmlColor="#12abe0" />
+                                        <CancelOutlinedIcon
+                                          htmlColor={
+                                            !ifLayerHaveData(layer)
+                                              ? "rgb(127, 149, 199)"
+                                              : "#12abe0"
+                                          }
+                                        />
                                       }
-                                      checkedIcon={<ClickIcon />}
+                                      checkedIcon={
+                                        <ClickIcon
+                                          color={
+                                            !ifLayerHaveData(layer)
+                                              ? "rgb(127, 149, 199)"
+                                              : "#12abe0"
+                                          }
+                                        />
+                                      }
                                       edge="start"
                                       checked={
                                         layer.layerSettings.interaction.interactionDetail.click

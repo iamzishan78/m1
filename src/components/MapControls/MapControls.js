@@ -18,7 +18,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import { makeStyles } from "@material-ui/core/styles";
 //components
 import ColorPickerDialog from './components/ColorPickerDialog';
-import ColorPickerUDLayerDialog from './components/ColorPickerUDLayerDialog';
+// import ColorPickerUDLayerDialog from './components/ColorPickerUDLayerDialog';
 import BaseMapStyles from "./BaseMapStyles";
 import CheckboxList from "./CheckboxList";
 import CheckboxListHeatmaps from "./CheckboxListHeatmaps";
@@ -223,16 +223,9 @@ export default function MapControls(props) {
   };
 
   const openColorPickerControl = () => {
-    const {selectedFileLayer} = stateMapControls;
-    if (selectedFileLayer) {
-      return <ColorPickerDialog layer={selectedFileLayer} />
-    }
-  }
-
-  const openColorPickerUDControl = () => {
-    const {selectedUDLayer} = stateMapControls;
-    if (selectedUDLayer) {
-      return <ColorPickerUDLayerDialog layer={selectedUDLayer} />
+    const {selectedLayer} = stateMapControls;
+    if (selectedLayer) {
+      return <ColorPickerDialog layer={selectedLayer} />
     }
   }
 
@@ -264,8 +257,8 @@ export default function MapControls(props) {
         {createSpeedDialActions()}
       </SpeedDial>
       {stateMapControls.selectedControl ? openSelectedControl() : null}
-      {stateMapControls.selectedFileLayer ? openColorPickerControl() : null}
-      {stateMapControls.selectedUDLayer ? openColorPickerUDControl() : null}
+      {stateMapControls.selectedLayer ? openColorPickerControl() : null}
+      {/* {stateMapControls.selectedUDLayer ? openColorPickerUDControl() : null} */}
       {stateMapControls.addLayer ? openAddLayerControl() : null}
     </div>
   );

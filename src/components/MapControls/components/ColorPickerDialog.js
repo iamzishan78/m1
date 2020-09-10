@@ -17,30 +17,43 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 
 import { UPDATEFILELAYER } from "../../../graphQL/useMutationUpdateFileLayer";
+import { UPDATELAYERCONFIG } from "../../../graphQL/useMutationUpdateLayerConfig";
+import { UPSERTLAYERCONFIG } from "../../../graphQL/useMutationUpsertLayerConfig";
 
 
 export default (props) => {
   const { layer } = props;
-  const existStrokeColor = layer.type == 'fill' ? layer.paintProps['fill-outline-color'] : layer.paintProps['circle-stroke-color'];
+  const layerType = layer.layerPaintProps[0].paintType;
+  const initialFillColor = layerType == 'fill' ? layer.layerPaintProps[0].paintProps['fill-color'] : layer.layerPaintProps[0].paintProps['circle-color']
+  const initialStrokeColor = layerType == 'fill' ? layer.layerPaintProps[0].paintProps['fill-outline-color'] : layer.layerPaintProps[0].paintProps['circle-stroke-color'];
   const [isOpen, setIsOpen] = useState(true);
-  const [fillColor, setFillColor] = useState(layer.idColor);
-  const [strokeColor, setStrokeColor] = useState(existStrokeColor);
+  const [fillColor, setFillColor] = useState(initialFillColor);
+  const [strokeColor, setStrokeColor] = useState(initialStrokeColor);
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
   const [stateApp, setStateApp] = useContext(AppContext);
 
   const [tmpPaintProps, setPaintProps] = useState(null);
+  const [tmplayerConfig, setLayerConfig] = useState(null);
 
   const [updateFileLayer, { data: fileLayer }] = useMutation(
     UPDATEFILELAYER
+  );
+
+  const [updateLayerConfig, { data: updatedLayerConfig }] = useMutation(
+    UPDATELAYERCONFIG
+  );
+
+  const [upsertLayerConfig, { data: upsertedLayerConfig }] = useMutation(
+    UPSERTLAYERCONFIG
   );
 
   const handleClose = () => {
     setIsOpen(false);
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
-      selectedFileLayer: null
+      selectedLayer: null
     }));
   }
 
@@ -54,14 +67,18 @@ export default (props) => {
     setStrokeColor(color);
   }
 
-  const handleApplyChanges = () => {
-    let cpLayer = {...layer};
+  const processFileLayer = () => {
     let config = {};
+    
+    const fileLayersData = stateApp.userFileLayers;
+    const layerIndex = fileLayersData.findIndex((fileLayer) => fileLayer.layerName == layer.layerName);
+    let cpLayer = {...fileLayersData[layerIndex]};
+
     console.log(fillColor, strokeColor);
     if (fillColor && fillColor.hex) {
       cpLayer.idColor = '#' + fillColor.hex;
       config.fillColor = '#' + fillColor.hex;
-      if (cpLayer.type == 'circle') {
+      if (cpLayer.layerType == 'circle') {
         cpLayer.paintProps['circle-color'] = '#' + fillColor.hex;
       } else {
         cpLayer.paintProps['fill-color'] = '#' + fillColor.hex;
@@ -69,7 +86,7 @@ export default (props) => {
     }
     if (strokeColor && strokeColor.hex) {
       config.strokeColor = '#' + strokeColor.hex;
-      if (cpLayer.type == 'circle') {
+      if (cpLayer.layerType == 'circle') {
         cpLayer.paintProps['circle-stroke-color'] = '#' + strokeColor.hex;
       } else {
         cpLayer.paintProps['fill-outline-color'] = '#' + strokeColor.hex;
@@ -93,6 +110,61 @@ export default (props) => {
         }
       }
     });
+  }
+
+  const processDataLayer = () => {
+    const layerName = layer.layerName;
+    const udLayerConfig = stateApp.udLayerConfig;
+    const layerIndex = udLayerConfig.findIndex((config) => config.layerName == layerName);
+
+    console.log("before apply cahnge", stateApp.udLayerConfig);
+
+    let config = {};
+    if (fillColor && fillColor.hex) {
+      config.fillColor = '#' + fillColor.hex;
+    }
+
+    if (strokeColor && strokeColor.hex) {
+      config.strokeColor = '#' + strokeColor.hex;
+    }
+
+    if (Object.keys(config).length == 0) {
+      alert("Please select the color");
+    } else {
+      const layerConfig = {
+        config,
+        layerName,
+        user: stateApp.user.mongoId
+      }
+  
+      console.log(layerConfig);
+  
+      setLayerConfig(layerConfig);
+  
+      if (layerIndex == -1) {
+        upsertLayerConfig({
+          variables: {
+            layerConfig
+          }
+        });
+      } else {
+        const id = udLayerConfig[layerIndex]._id;
+        updateLayerConfig({
+          variables: {
+            layerConfigId: id,
+            layerConfig
+          }
+        });
+      }
+    }
+  }
+
+  const handleApplyChanges = () => {
+    if (layer.layerType == 'data layer') {
+      processDataLayer();
+    } else {
+      processFileLayer();
+    }
   }
 
   useEffect(() => {
@@ -132,10 +204,45 @@ export default (props) => {
       }));
       setStateMapControls((stateMapControls) => ({
         ...stateMapControls,
-        selectedFileLayer: null
+        selectedLayer: null
       }))
     }
   }, [fileLayer])
+
+  useEffect(() => {
+    if (upsertedLayerConfig && upsertedLayerConfig.upsertLayerConfig && upsertedLayerConfig.upsertLayerConfig.success) {
+      const udLayerConfig = stateApp.udLayerConfig.slice(0);
+      const layerConfig = {...upsertedLayerConfig.upsertLayerConfig.layerConfig};
+      udLayerConfig.push(layerConfig);
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        udLayerConfig
+      }));
+      setStateMapControls((stateMapControls) => ({
+        ...stateMapControls,
+        selectedLayer: null
+      }));
+    }
+  }, [upsertedLayerConfig]);
+
+  useEffect(() => {
+    if (updatedLayerConfig && updatedLayerConfig.updateLayerConfig && updatedLayerConfig.updateLayerConfig.success) {
+      console.log(stateApp.udLayerConfig);
+      const udLayerConfig = stateApp.udLayerConfig.slice(0);
+      const layerConfig = {...updatedLayerConfig.updateLayerConfig.layerConfig};
+      const layerConfigIndex = udLayerConfig.findIndex((config) => config._id == layerConfig._id )
+      udLayerConfig[layerConfigIndex] = {...tmplayerConfig, _id: layerConfig._id};
+      console.log("before set state value", udLayerConfig);
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        udLayerConfig: udLayerConfig
+      }));
+      setStateMapControls((stateMapControls) => ({
+        ...stateMapControls,
+        selectedLayer: null
+      }));
+    }
+  }, [updatedLayerConfig]);
 
   return (
     <ClickAwayListener onClickAway={handleClose}>
