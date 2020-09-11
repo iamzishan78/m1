@@ -95,7 +95,7 @@ export default (props) => {
 
     setPaintProps(config);
 
-    const fileLayerId = layer.fileLayerId;
+    const fileLayerId = cpLayer.fileLayerId;
 
     updateFileLayer({
       variables: {
