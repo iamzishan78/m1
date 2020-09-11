@@ -395,7 +395,7 @@ export default function CheckboxList(props) {
                                       tabIndex={-1}
                                       disableRipple
                                       inputProps={{ "aria-labelledby": labelId }}
-                                      onChange={handleToggleInteraction(index)}
+                                      onChange={handleToggleInteraction(layer)}
                                     />
                                   </div>
                                 )}
