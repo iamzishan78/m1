@@ -53,6 +53,14 @@ const useStyles = makeStyles((theme) => ({
   disabledLayerTitle: {
     "& span": { color: "rgb(127, 149, 199) !important" },
   },
+  addLayerButton: {
+    padding: '20px',
+    marginBottom: '10px',
+    border: '2px dashed #999',
+    backgroundColor: '#f0f9ff',
+    width: '100%',
+    textTransform: 'initial'
+  },
 }));
 
 const StyledListItem2 = withStyles((theme) => ({
@@ -166,8 +174,8 @@ export default function AddLayer(props) {
           <DialogContentText>
             Select one or more of the available layers below to add them to your current map view.
           </DialogContentText>
-          <Button color="primary" onClick={handleAddLayer}>
-            Add Layer
+          <Button color="primary" className={classes.addLayerButton} onClick={handleAddLayer}>
+            To add a new user-defined layer click here
           </Button>
           <StyledListItem2 button onClick={handleClickM1List}>
             <ListItemText primary="M1neral Layers" />
