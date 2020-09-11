@@ -1220,8 +1220,10 @@ export default function Map() {
                 }
               }
               if (map.getLayer(layerId)) {
-                udLayers.push(layerId);
-                layers.push(layerId);  
+                if (layer.layerName == 'Parcels' || layer.layerName == 'Area of Interest') {
+                  udLayers.push(layerId);
+                  layers.push(layerId);  
+                }
               }
             });
           } else {
@@ -1312,8 +1314,6 @@ export default function Map() {
   ]);
 
   useEffect(() => {
-    let beforeLayer = null;
-    console.log('stateApp check ', stateApp.layers);
     if (isLoadedLayerState) {
       updateLayerState({
         variables: {
@@ -1326,6 +1326,12 @@ export default function Map() {
       });
       console.log("set layer state to database");
     }
+  }, [stateApp.layers]);
+
+  useEffect(() => {
+    let beforeLayer = null;
+    console.log('stateApp check ', stateApp.layers);
+    
     if (stateApp.layers.length > 0 && map) {
       for (let i = 0; i < stateApp.layers.length; i ++) {
         const layer = stateApp.layers[i];
