@@ -1314,18 +1314,18 @@ export default function Map() {
   useEffect(() => {
     let beforeLayer = null;
     console.log('stateApp check ', stateApp.layers);
-    // if (isLoadedLayerState) {
-    //   updateLayerState({
-    //     variables: {
-    //       userId: stateApp.user.mongoId,
-    //       layersState: {
-    //         layersConfig: stateApp.layers,
-    //         user: stateApp.user.mongoId
-    //       }
-    //     }
-    //   });
-    //   console.log("set layer state to database");
-    // }
+    if (isLoadedLayerState) {
+      updateLayerState({
+        variables: {
+          userId: stateApp.user.mongoId,
+          layersState: {
+            layersConfig: stateApp.layers,
+            user: stateApp.user.mongoId
+          }
+        }
+      });
+      console.log("set layer state to database");
+    }
     if (stateApp.layers.length > 0 && map) {
       for (let i = 0; i < stateApp.layers.length; i ++) {
         const layer = stateApp.layers[i];
