@@ -146,7 +146,12 @@ export default function AddLayer(props) {
   }
 
   const handleAddLayer = () => {
-    return <AddUserData />;
+    console.log('click add a layer');
+    // return <AddUserData />;
+    setStateMapControls({
+      ...stateMapControls,
+      selectedControl: 'add'
+    });
   }
 
   const M1Layers = currentLayers.filter((layer) => layer.layerCategory == 'M1 Layer');

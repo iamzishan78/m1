@@ -51,6 +51,8 @@ import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
 import { FILELAYERSQUERY } from "../../graphQL/useQueryFileLayers";
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 import { LAYERCONFIGSBYUSER } from "../../graphQL/useQueryLayerConfigByUser";
+import { LAYERSTATESBYUSER } from "../../graphQL/useQueryLayerStateByUser";
+import { UPDATELAYERSTATE } from "../../graphQL/useMutationUpdateLayerState";
 import { ABSTRACTGEOQUERYCONTAINS, ABSTRACTGEOCONTAINSQUERY } from "../../graphQL/useQueryAbstractGeoContains";
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
@@ -248,6 +250,7 @@ export default function Map() {
   const [mapMouseRClickHandler, setMapMouseRClickHandler] = useState(null);
 
   const [isLoadedLayerConfig, setIsLoadedLayerConfig] = useState(false);
+  const [isLoadedLayerState, setIsLoadedLayerState] = useState(false);
 
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
 
@@ -312,6 +315,9 @@ export default function Map() {
 
   const [getLayerCongfigsByUser, { data: layerConfigsById }] = useLazyQuery(LAYERCONFIGSBYUSER); 
 
+  const [getLayerStatesByUser, { data: layerStates }] = useLazyQuery(LAYERSTATESBYUSER);
+  const [updateLayerState] = useMutation(UPDATELAYERSTATE);
+
   /////end/////////temporary
 
   useEffect(() => {
@@ -332,6 +338,12 @@ export default function Map() {
       });
 
       getLayerCongfigsByUser({
+        variables: {
+          userId: stateApp.user.mongoId
+        }
+      });
+
+      getLayerStatesByUser({
         variables: {
           userId: stateApp.user.mongoId
         }
@@ -428,6 +440,23 @@ export default function Map() {
       }));
     }
   }, [layerConfigsById]);
+
+  useEffect(() => {
+    console.log("get layer state by id", layerStates);
+    if (layerStates) {
+      setIsLoadedLayerState(true);
+    }
+    if (layerStates && layerStates.layerStateByUser && !isLoadedLayerState) {
+      const layerState = layerStates.layerStateByUser.layersConfig;
+      console.log(layerState);
+      if (layerState) {
+        setStateApp({
+          ...stateApp,
+          layers: layerState
+        });
+      }
+    }
+  }, [layerStates]);
 
   useEffect(() => {
     const currentLayers = stateApp.layers.slice(0);
@@ -1285,6 +1314,18 @@ export default function Map() {
   useEffect(() => {
     let beforeLayer = null;
     console.log('stateApp check ', stateApp.layers);
+    // if (isLoadedLayerState) {
+    //   updateLayerState({
+    //     variables: {
+    //       userId: stateApp.user.mongoId,
+    //       layersState: {
+    //         layersConfig: stateApp.layers,
+    //         user: stateApp.user.mongoId
+    //       }
+    //     }
+    //   });
+    //   console.log("set layer state to database");
+    // }
     if (stateApp.layers.length > 0 && map) {
       for (let i = 0; i < stateApp.layers.length; i ++) {
         const layer = stateApp.layers[i];
