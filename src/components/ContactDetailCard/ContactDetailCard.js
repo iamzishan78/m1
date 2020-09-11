@@ -287,9 +287,12 @@ export default function ContactDetailCard(props) {
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
     TRANSACTIONDATA
   );
-  const [getLastMelissaRecord, { data: mData }] = useLazyQuery(LASTMELISSARECORD, {
-    fetchPolicy: "network-only",
-  });
+  const [getLastMelissaRecord, { data: mData }] = useLazyQuery(
+    LASTMELISSARECORD,
+    {
+      fetchPolicy: "network-only",
+    }
+  );
 
   const handleClickRightDialogOpen = (childrenToOpen) => {
     setRightDialogOpen(childrenToOpen);
@@ -778,7 +781,7 @@ export default function ContactDetailCard(props) {
             </Grid>
              */}
 
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <Deals
                 contact={contactData}
                 transactData={transactData}
@@ -786,7 +789,7 @@ export default function ContactDetailCard(props) {
                 selectRowOpenContact={props.selectRowOpenContact}
               />
               <Divider />
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={12} className={classes.Comments}>
               <Comments
@@ -813,7 +816,14 @@ export default function ContactDetailCard(props) {
             </Grid>
 
             <Grid item xs={12} className={classes.Comments}>
-              <Card raised style={{ minHeight: "35px", margin: "20px", paddingBottom: "20px" }}>
+              <Card
+                raised
+                style={{
+                  minHeight: "35px",
+                  margin: "20px",
+                  paddingBottom: "20px",
+                }}
+              >
                 <LeadScore score={5} lastContacted={"Jun 24, 2020"} />
               </Card>
               <Divider />

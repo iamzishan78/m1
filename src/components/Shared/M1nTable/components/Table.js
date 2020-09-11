@@ -52,6 +52,7 @@ import {
 import AddParcelOwnerDialogContent from "./SubComponents/AddParcelOwnerDialogContent";
 import Convert_contact from "../../svgIcons/convert_contact";
 import Contact_card from "../../svgIcons/contact_card";
+import TransactDialog from "../../../Transact/components/dialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -640,6 +641,7 @@ function SubTable(props) {
               };
             }
             break;
+
           case "ownerCount":
             {
               column.options = {
@@ -1190,6 +1192,12 @@ function SubTable(props) {
                       props.addAble.type === "ownerToParcel"
                     )
                       handleExpandClick(null, null, null, "addOwnerToParcel");
+
+                    if (props.addAble.type && props.addAble.type === "deals")
+                      setStateApp((stateApp) => ({
+                        ...stateApp,
+                        dealDialog: true,
+                      }));
                   }}
                 >
                   <AddCircleOutlineRoundedIcon />
@@ -1202,6 +1210,10 @@ function SubTable(props) {
     },
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
       setSelectedRow(rows[dataIndex]);
+
+      if (props.targetLabel === "deals") {
+        history.push("/transact");
+      }
 
       if (props.targetLabel === "owner") {
         setStateApp((state) => ({ ...state, selectedOwner: rows[dataIndex] }));
@@ -1245,6 +1257,8 @@ function SubTable(props) {
     },
   };
 
+  console.log("ROWSSS : ", rows);
+
   let history = useHistory();
 
   let routeChange = (route) => {
@@ -1266,7 +1280,9 @@ function SubTable(props) {
           options={options}
         />
 
-        {openDialog && (
+        <TransactDialog selectRowOpenContact={selectRowOpenContact} contactId />
+
+        {openDialog && openDialog !== "addDeals" && (
           <Dialog
             className={classes.dialog}
             open={openDialog ? true : false}

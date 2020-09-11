@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import uuid from "uuid";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import NumberFormat from "react-number-format";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
@@ -19,6 +19,10 @@ import { TransactContext } from "../TransactContext";
 import { AppContext } from "../../../AppContext";
 import AddContactDialogContent from "../../Shared/M1nTable/components/SubComponents/AddContactDialogContent";
 import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
+import { CONTACT } from "../../../graphQL/useQueryContact";
+
+import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
+import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 
 const useStyles = makeStyles((theme) => ({
   label: {
@@ -50,23 +54,79 @@ function NumberFormatCustom(props) {
 
 export default function TransactDialog(props) {
   const classes = useStyles();
-  const { transactData, handleDataChange } = props;
+  // const { transactData, handleDataChange } = props;
   const [stateApp, setStateApp] = useContext(AppContext);
   // const [title, setTitle] = useState(props.contact ? props.contact.name : ""); // title change from contact.name to dealName
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [label, setLabel] = useState("");
   const [stage, setStage] = useState("");
   const [description, setDescription] = useState("");
-  const [contact, setContact] = useState(
-    props.contact ? { name: props.contact.name, _id: props.contact._id } : {}
-  );
+
   const [openContactDialog, setOpenContactDialog] = useState(false);
   // const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
+
+  const [getTransactionData, { data: tdata }] = useLazyQuery(TRANSACTIONDATA);
+
+  const [getContact, { data: cData }] = useLazyQuery(CONTACT, {
+    fetchPolicy: "cache-and-network",
+  });
+
+  const [contact, setContact] = useState(
+    cData?.contact?.contact
+      ? { name: cData.contact.contact.name, _id: cData.contact.contact._id }
+      : {}
+  );
+
+  useEffect(() => {
+    setContact(
+      cData?.contact?.contact
+        ? { name: cData.contact.contact.name, _id: cData.contact.contact._id }
+        : {}
+    );
+  }, [cData]);
+
+  const transactData = tdata?.transactionData?.allData;
+
+  const [updateTransaction] = useMutation(UPDATETRANSACTION);
 
   const openContact = () => {
     handleClose();
     props.selectRowOpenContact(contact);
   };
+
+  const handleDataChange = (newData) => {
+    if (tdata?.transactionData?._id) {
+      updateTransaction({
+        variables: {
+          transactionId: tdata.transactionData._id,
+          transaction: { allData: newData, user: stateApp.user.mongoId },
+        },
+        refetchQueries: ["getTransactionData", "getContact", "getContacts"],
+        awaitRefetchQueries: true,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (stateApp.user && stateApp.user.mongoId) {
+      console.log(stateApp.user);
+      getTransactionData({
+        variables: {
+          userId: stateApp.user.mongoId,
+        },
+      });
+    }
+  }, [stateApp.user]);
+
+  useEffect(() => {
+    if (props.contactId) {
+      getContact({
+        variables: {
+          contactId: props.contactId,
+        },
+      });
+    }
+  }, [props.contactId]);
 
   useEffect(() => {
     const cardId = stateApp.activeDeal?.cardId;
@@ -132,7 +192,7 @@ export default function TransactDialog(props) {
         const lane = transactData.lanes[laneIndex];
         const cardIndex = lane.cards.findIndex((card) => card.id === cardId);
         const card = lane.cards[cardIndex];
-        
+
         const updatedCard = {
           // dealName: dealName.trim(),
           // title: contact?.name.trim(),
@@ -144,7 +204,6 @@ export default function TransactDialog(props) {
           contactId: contact?._id ? contact._id : uuid(),
           id: card.id,
         };
-
 
         if (card.laneId !== newStage) {
           if (cardIndex > -1) {

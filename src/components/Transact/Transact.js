@@ -205,6 +205,8 @@ export default function Transact() {
     }));
   };
 
+  console.log("TRANSACT DATA:", transactData);
+
   return !loading && data && transactData ? (
     <div className={classes.root}>
       <Dialog transactData={transactData} handleDataChange={handleDataChange} />

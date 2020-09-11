@@ -4,9 +4,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import IconButton from "@material-ui/core/IconButton";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
-import ParcelIcon from "../../Shared/svgIcons/ParcelIcon";
+import DealMoneyIcon from "../../Shared/svgIcons/DealMoneyIcon";
 import { AppContext } from "../../../AppContext";
-import ParcelsDetailCard from "../../ParcelsDetailCard/ParcelsDetailCard";
+import DealsDetailCard from "../../DealsDetailCard/DealsDetailCard";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     width: "80px",
     height: "80px",
-    backgroundColor: "#D4F4F9",
+    backgroundColor: "#34673433",
     borderRadius: "100%",
     margin: "0 auto",
     display: "flex",
@@ -128,8 +128,13 @@ export default function Deals({ contact, ...props }) {
           className={classes.addIcon}
           onClick={() => {
             props.handleOpenExpandableCard(
-              <ParcelsDetailCard />,
-              "Wells/Parcels"
+              <DealsDetailCard
+                activeDeals={activeDeals}
+                lostDeals={lostDeals}
+                closedDeals={wonDeals}
+                contactId={contact._id}
+              />,
+              "Deals"
             );
           }}
         >
@@ -139,7 +144,7 @@ export default function Deals({ contact, ...props }) {
       <div className={classes.cardContent}>
         <div className={classes.leftColumn}>
           <div className={classes.icon}>
-            <ParcelIcon />
+            <DealMoneyIcon />
           </div>
         </div>
 
