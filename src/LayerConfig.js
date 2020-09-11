@@ -1407,6 +1407,28 @@ export const layers = [
     },
     layerPaintProps: {
       ids: [
+        "pipelineLayer"
+      ]
+    }
+  },
+  {
+    layerName: 'Land Grid',
+    layerType: 'vector layer',
+    layerCategory: 'M1 Layer',
+    layerSettings: {
+      interaction: {
+        interactionAble: false,
+        interactionDetail: {
+          hover: false,
+          click: false
+        }
+      },
+      colorable: false,
+      showable: true,
+      visiable: false,
+    },
+    layerPaintProps: {
+      ids: [
         "PLSSTownships",
         "PLSSTownshipLabels",
         "PLSSFirstDivision",
