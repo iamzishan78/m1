@@ -678,7 +678,7 @@ export default function Map() {
       if (map.getSource(sourceId)) {
         map.getSource(sourceId).setData(geoJson);
       } else {
-        if (paintType == 'circle') {
+        if (paintType == 'circle' || paintType == 'symbol') {
           map.addSource(sourceId, {
             type: "geojson",
             data: geoJson,
@@ -734,6 +734,7 @@ export default function Map() {
             id: layerId,
             type: paintType,
             source: sourceId,
+            paintProps: prop.paintProps,
             layout: {
               ...prop.symbolProps,
               visibility: visible ? "visible" : "none",
