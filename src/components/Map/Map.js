@@ -4253,6 +4253,7 @@ export default function Map() {
           newMap.addLayer({
             id: 'abstract_geo_fill_layer',
             type: 'fill',
+            minzoom: 12,
             source: 'abstract_geo_source',
             paint: {
               'fill-color': '#888',
@@ -4268,6 +4269,7 @@ export default function Map() {
           newMap.addLayer({
             id: 'abstract_geo_layer',
             type: 'line',
+            minzoom: 12,
             source: 'abstract_geo_source',
             layout: {
               'line-join': 'round',
@@ -4282,6 +4284,7 @@ export default function Map() {
           newMap.addLayer({
             id: 'abstract_geo_label_layer',
             type: 'symbol',
+            minzoom: 12,
             source: 'abstract_geo_source',
             layout: {
               'text-field': '{abstract_l}',
