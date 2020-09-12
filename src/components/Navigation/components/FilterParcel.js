@@ -12,7 +12,7 @@ export default () => {
     stateNav.parcelName ? stateNav.parcelName : []
   );
   const [parcelNameList, setParcelNameList] = useState([]);
-
+  var a;///test
   useEffect(() => {
     const groupBy = (arr, property) => {
       return arr.reduce((memo, x) => {
