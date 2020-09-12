@@ -118,6 +118,8 @@ const Login = (props) => {
   const [loadingSigInButton, setLoadingSigInButton] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  let history = props.history;
+
   useEffect(() => {
     if (stateApp.myMSALObj && !signingIn) {
       stateApp.myMSALObj
@@ -366,7 +368,10 @@ const Login = (props) => {
     setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
 
     setLoadingSigInButton(false);
-    setLoading(false);
+
+    history.replace(window.location.pathname);
+
+    //setLoading(false);
   }
 
   async function getMongoDBUser(user, accessToken) {
@@ -426,7 +431,7 @@ const Login = (props) => {
     console.log("scopes requested: " + request.scopes.toString());
 
     stateApp.myMSALObj.config.auth.redirectUri =
-      msalConfig().auth.redirectUri + "auth.html";
+      msalConfig().auth.redirectUri + "/auth.html";
 
     const loginResponse = await stateApp.myMSALObj
       .ssoSilent(request)

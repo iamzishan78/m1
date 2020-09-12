@@ -1,49 +1,75 @@
-const tenants = JSON.parse(process.env.REACT_APP_TENANS_CREDENTIALS);
-export const tenantB2C = JSON.parse(
-  process.env.REACT_APP_TENANS_B2C_CREDENTIAL
-);
+import * as msal2 from "@azure/msal";
 
-export const tenantsCredentials = (tenantName) => {
-  let found;
-  for (let i = 0; i < tenants.length; i++) {
-    if (tenants[i].name.toUpperCase() === tenantName.toUpperCase())
-      found = tenants[i];
-  }
-  return found;
+const tenantsSupported = JSON.parse(process.env.REACT_APP_SUPPORTED_TENANTS);
+const credentialsB2CTenants = JSON.parse(
+  process.env.REACT_APP_TENANS_B2C_CREDENTIALS
+);
+export const B2CTenant = (tenant) => {
+  const tenantB2CName = tenantsSupported.reduce((_, e) => {
+    if (e.adTenant === tenant) return e.adB2CTenant;
+  }, null);
+
+  if (!tenantB2CName) return null;
+
+  return credentialsB2CTenants.reduce((_, e) => {
+    if (e.name === tenantB2CName) return e;
+  }, null);
 };
 
-const b2cPolicies = {
+export const B2CTenantToLogin = (tenantB2CName) => {
+  return credentialsB2CTenants.reduce((_, e) => {
+    if (e.name === tenantB2CName) return e;
+  }, null);
+};
+
+const B2CPolicies = {
   names: {
     signUpSignIn: "b2c_1_susi",
+    signIn: "b2c_1_si",
     forgotPassword: "b2c_1_reset",
+    signUpSignInCommon: "B2C_1A_SignUpOrSignInCommon",
   },
   authorities: {
     signUpSignIn: {
       authority:
         "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/B2C_1_susi",
     },
+    signIn: {
+      authority:
+        "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/b2c_1a_forcepasswordreset_signup_signin",
+    },
     forgotPassword: {
       authority:
         "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/b2c_1_reset",
     },
+    signUpSignInCommon: {
+      authority:
+        "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/B2C_1A_SignUpOrSignInCommon",
+    },
   },
 };
+
 // Config object to be passed to Msal on creation
-export const msalConfigB2C = (tenantId, clientId) => {
+export const msalB2CConfig = (tenantId, clientId) => {
   console.log(`tenantId: ${tenantId}, clientId: ${clientId}`);
-  const path = `${window.location.protocol}//${window.location.host}`;
+  const path = `${window.location.origin}/loginb2c`;
+
   return {
     auth: {
       clientId: clientId,
-      authority: b2cPolicies.authorities.signUpSignIn.authority,
+      authority: B2CPolicies.authorities.signIn.authority,
       validateAuthority: false,
+      redirectUri: path,
     },
     cache: {
-      cacheLocation: "localStorage", // This configures where your cache will be stored
+      cacheLocation: "sessionStorage", // This configures where your cache will be stored
       storeAuthStateInCookie: false, // Set this to "true" if you are having issues on IE11 or Edge
     },
   };
 };
+
+export const MSALB2CObj = (tenantId, clientId) =>
+  new msal2.UserAgentApplication(msalB2CConfig(tenantId, clientId));
 
 export const loginRequestB2C = {
   scopes: ["openid", "profile", "email", "offline_access"],
@@ -63,5 +89,5 @@ export const readProfileRequestB2C = {
 };
 
 export const authGraphQLRequestB2C = {
-  scopes: ["https://management.azure.com/user_impersonation"],
+  scopes: ["https://mineralb2c.onmicrosoft.com/api/user_impersonation"],
 };

@@ -10,7 +10,7 @@ import mapboxgl from "mapbox-gl";
 import { AppContext } from "../../../AppContext";
 import uid from "uid";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
 import Portal from "@material-ui/core/Portal";
 import PortalD from "../../Map/components/Portal";

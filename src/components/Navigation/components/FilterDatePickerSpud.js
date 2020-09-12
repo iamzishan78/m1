@@ -3,9 +3,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
+import ClearIcon from "@material-ui/icons/Clear";
+import { IconButton } from "@material-ui/core";
 
 // DOCUMENTATION FOR THIS COMPONENT IS ON FILTERDATEPICKERPERMIT
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     // display: "flex",
     // flexWrap: "wrap",
@@ -24,64 +26,88 @@ const useStyles = makeStyles(theme => ({
     // minWidth: 175,
     // maxWidth: 176,
     "&& span": {
-      pointerEvents: "none"
-    }
+      pointerEvents: "none",
+    },
   },
   chips: {
     display: "flex",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
   },
   chip: {
-    margin: 10
-  }
+    margin: 10,
+  },
+  blue: {
+    "& .MuiInputBase-input": { color: "#17AADD" },
+  },
 }));
 
 export default function FilterDatePickerSpud(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [selectedStartDate, handleStartDateChang] = useState(
-    moment().subtract(120, 'Years')
+    new Date("1900-01-01T00:00:00")
   );
-  const [selectedEndDate, handleEndDateChange] = useState(
-    moment()
-  );
+  const [selectedEndDate, handleEndDateChange] = useState(moment());
   const [spudFromDate, setSpudFromDate] = useState({
     check: false,
-    date: moment()
+    date: moment(),
   });
   const [spudToDate, setSpudToDate] = useState({
     check: false,
-    date: moment()
+    date: moment(),
   });
 
   const [dateTypeName, setDateTypeName] = useState(
     stateNav.dateTypeName ? stateNav.dateTypeName : []
   );
-  
+
   const setFilterName = useCallback(() => {
     let filter;
-    if (spudFromDate.date._isValid === true  && spudToDate.date._isValid === true) {
-      const checkDate = moment.parseZone(spudToDate.date).utc(true).valueOf()
-      const fromDate = moment.parseZone(spudFromDate.date).utc(true).valueOf()
-      if(spudFromDate.check && !spudToDate.check){
-        filter = ["all", [">=",["get", "spudDate"] ,fromDate], ["<=",["get", "spudDate"] , checkDate]];
+    if (
+      spudFromDate.date._isValid === true &&
+      spudToDate.date._isValid === true
+    ) {
+      const checkDate = moment.parseZone(spudToDate.date).utc(true).valueOf();
+      const fromDate = moment.parseZone(spudFromDate.date).utc(true).valueOf();
+      if (spudFromDate.check && !spudToDate.check) {
+        filter = [
+          "all",
+          [">=", ["get", "spudDate"], fromDate],
+          ["<=", ["get", "spudDate"], checkDate],
+        ];
       } else if (!spudFromDate.check && spudToDate.check) {
-        let checkDate = moment().subtract(120, 'Years')
-        let fromDate = moment.parseZone(checkDate).utc(true).valueOf()
-        const toDate =  moment.parseZone(spudToDate.date).utc(true).valueOf()
-        filter = ["all", [">=",["get", "spudDate"] ,fromDate], ["<=",["get", "spudDate"] , toDate]];
-      }
-      else{
-        const fromDate = moment.parseZone(spudFromDate.date).utc(true).valueOf()
-        const toDate =  moment.parseZone(spudToDate.date).utc(true).valueOf()
-        filter = ["all", [">=", ["get", "spudDate"]  ,fromDate], ["<=", ["get", "spudDate"] ,toDate]];
+        let checkDate = moment().subtract(120, "Years");
+        let fromDate = moment.parseZone(checkDate).utc(true).valueOf();
+        const toDate = moment.parseZone(spudToDate.date).utc(true).valueOf();
+        filter = [
+          "all",
+          [">=", ["get", "spudDate"], fromDate],
+          ["<=", ["get", "spudDate"], toDate],
+        ];
+      } else {
+        const fromDate = moment
+          .parseZone(spudFromDate.date)
+          .utc(true)
+          .valueOf();
+        const toDate = moment.parseZone(spudToDate.date).utc(true).valueOf();
+        filter = [
+          "all",
+          [">=", ["get", "spudDate"], fromDate],
+          ["<=", ["get", "spudDate"], toDate],
+        ];
       }
     } else {
       filter = null;
     }
     console.log("Spud Date dates change filter", filter);
-    setStateNav(stateNav => ({ ...stateNav, filterSpudDateRange: filter }));
-}, [setStateNav, spudFromDate.check, spudFromDate.date, spudToDate.check, spudToDate.date]);
+    setStateNav((stateNav) => ({ ...stateNav, filterSpudDateRange: filter }));
+  }, [
+    setStateNav,
+    spudFromDate.check,
+    spudFromDate.date,
+    spudToDate.check,
+    spudToDate.date,
+  ]);
 
   useEffect(() => {
     if (spudFromDate.check === true) {
@@ -117,100 +143,128 @@ export default function FilterDatePickerSpud(props) {
     }
   }, [setvaluesTo, dateTypeName, setvaluesFrom]);
 
-  const handleStartDate = date => {
-
+  const handleStartDate = (date) => {
     if (date === null) {
-      const formatDateReset = moment().subtract(120, 'Years');
-      setStateNav(stateNav => ({
+      const formatDateReset = new Date("1900-01-01T00:00:00");
+      setStateNav((stateNav) => ({
         ...stateNav,
         spudDateFrom: null,
-        filterSpudDateRange: null
+        filterSpudDateRange: null,
       }));
       handleStartDateChang(formatDateReset);
     } else {
-    const formatDateAfter = moment(date)
-    let dateName = [];
-    setSpudFromDate({ check: true, date: formatDateAfter });
-    handleStartDateChang(formatDateAfter);
-    dateName.push("Spud");
-    setDateTypeName(dateName);
-    setStateNav(stateNav => ({
-      ...stateNav,
-      spudDateFrom: formatDateAfter,
-      dateTypeName: dateName
-    }));
-  }
+      const formatDateAfter = moment(date);
+      let dateName = [];
+      setSpudFromDate({ check: true, date: formatDateAfter });
+      handleStartDateChang(formatDateAfter);
+      dateName.push("Spud");
+      setDateTypeName(dateName);
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        spudDateFrom: formatDateAfter,
+        dateTypeName: dateName,
+      }));
+    }
   };
- 
-  const handleEndDate = date => {
+
+  const handleEndDate = (date) => {
     if (date === null) {
       const formatDateReset = moment();
-      setStateNav(stateNav => ({ ...stateNav, spudDateTo: null, filterSpudDateRange: null }));
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        spudDateTo: null,
+        filterSpudDateRange: null,
+      }));
       handleEndDateChange(formatDateReset);
       return;
     } else {
-    const newDateAfter = moment(date)
-    let dateName = [];
-    setSpudToDate({ check: true, date: newDateAfter });
-    handleEndDateChange(newDateAfter);
-    dateName.push("Spud");
-    setDateTypeName(dateName);
-    setStateNav(stateNav => ({
-      ...stateNav,
-      spudDateTo: newDateAfter,
-      dateTypeName: dateName
-    }));
-  }
+      const newDateAfter = moment(date);
+      let dateName = [];
+      setSpudToDate({ check: true, date: newDateAfter });
+      handleEndDateChange(newDateAfter);
+      dateName.push("Spud");
+      setDateTypeName(dateName);
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        spudDateTo: newDateAfter,
+        dateTypeName: dateName,
+      }));
+    }
   };
-  
+
   return (
     <div className={classes.root}>
       <div className={classes.datesRow}>
         <KeyboardDatePicker
           label={props.labelDates + " " + "From"}
-          className={classes.datePicker}
-          maxDate={moment().subtract(1, 'day')}
+          className={`${classes.datePicker} ${
+            JSON.stringify(selectedStartDate) !==
+            JSON.stringify(new Date("1900-01-01T00:00:00"))
+              ? classes.blue
+              : ""
+          }`}
+          maxDate={moment().subtract(1, "day")}
           variant="inline"
           value={selectedStartDate}
-          onChange={date => handleStartDate(date)}
-
+          onChange={(date) => handleStartDate(date)}
           //inputVariant="outlined"
-          minDateMessage = 'Date should not be before minimal date'
-          maxDateMessage = 'Date should not be after max date'
+          minDateMessage="Date should not be before minimal date"
+          maxDateMessage="Date should not be after max date"
           disableToolbar
-          KeyboardButtonProps={{'aria-label':'change date'}}
-          autoOk = 'true'
+          KeyboardButtonProps={{ "aria-label": "change date" }}
+          autoOk="true"
           format="MM/DD/YYYY"
           // orientation = 'landscape'
           // margin = 'normal'
           PopoverProps={{ disablePortal: true }}
           fullWidth={true}
+          InputProps={{
+            endAdornment: (
+              <IconButton onClick={() => handleStartDate(null)}>
+                <ClearIcon />
+              </IconButton>
+            ),
+          }}
+          InputAdornmentProps={{
+            position: "start",
+          }}
         />
 
         <KeyboardDatePicker
           label={props.labelDates + " " + "To"}
-          className={classes.datePicker}
+          className={`${classes.datePicker} ${
+            JSON.stringify(selectedEndDate).slice(1, 11) !==
+            JSON.stringify(moment()).slice(1, 11)
+              ? classes.blue
+              : ""
+          }`}
           variant="inline"
           maxDate={moment()}
           value={selectedEndDate}
-          onChange={date => handleEndDate(date)}
-
+          onChange={(date) => handleEndDate(date)}
           //inputVariant="outlined"
-          minDateMessage = 'Date should not be before minimal date'
-          maxDateMessage = 'Date should not be after max date'
+          minDateMessage="Date should not be before minimal date"
+          maxDateMessage="Date should not be after max date"
           disableToolbar
-          KeyboardButtonProps={{'aria-label':'change date'}}
-          autoOk = 'true'
+          KeyboardButtonProps={{ "aria-label": "change date" }}
+          autoOk="true"
           format="MM/DD/YYYY"
           // orientation = 'landscape'
           // margin = 'normal'
           PopoverProps={{ disablePortal: true }}
           fullWidth={true}
+          InputProps={{
+            endAdornment: (
+              <IconButton onClick={() => handleEndDate(null)}>
+                <ClearIcon />
+              </IconButton>
+            ),
+          }}
+          InputAdornmentProps={{
+            position: "start",
+          }}
         />
       </div>
     </div>
   );
 }
-
-
-

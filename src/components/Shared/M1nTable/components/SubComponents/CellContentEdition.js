@@ -9,7 +9,7 @@ import EditionPopover from "../../../../ContactDetailCard/components/EditionPopo
 import ClearSharpIcon from "@material-ui/icons/ClearSharp";
 import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 import Button from "@material-ui/core/Button";
-import { useMutation } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/client";
 import { UPDATEPARCELOWNER } from "../../../../../graphQL/useMutationUpdateParcelOwner";
 import { UPDATECONTACT } from "../../../../../graphQL/useMutationUpdateContact";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -319,17 +319,21 @@ export default function CellContentEdition({
           variables: {
             contact: trimmedEditContent,
           },
-          refetchQueries: ["getContacts", "getContactsByOwnerId", "getContact"],
+          refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
           awaitRefetchQueries: true,
         });
       }
-      if (targetLabel === "Parcel Owner") {
+      if (targetLabel === "Parcel Owner" || targetLabel === "Parcel Interest") {
         trimmedEditContent.ownerEntityId = entityId;
         updateParcelOwner({
           variables: {
             parcelOwner: trimmedEditContent,
           },
-          refetchQueries: ["getCustomLayer"],
+          refetchQueries: [
+            "getCustomLayer",
+            "getContactParcelInterests",
+            "getAllEntityNamesToAddAsParcelOwner",
+          ],
           awaitRefetchQueries: true,
         });
       }
@@ -499,7 +503,7 @@ export default function CellContentEdition({
               ? children
               : ""
             : textArray.join(", ")
-          : `${name ? name + " " : ""} Not Available`}
+          : `${name ? name + " " : ""} N/A`}
         <PencilEditIcon
           handleUpdating={handleUpdating}
           anchorEl={

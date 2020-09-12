@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import InputBase from "@material-ui/core/InputBase";
@@ -91,17 +91,27 @@ const BootstrapInput = withStyles((theme) => ({
 }))(InputBase);
 
 const SignInCardB2C = (props) => {
-  const { handleAADB2CSignIn } = props;
+  const { handleAADB2CSignIn, errorText } = props;
 
   const [, setStateApp] = useContext(AppContext);
   const classes = useStyles();
-  const [tenant, setTenant] = useState("");
+  const [tenant, setTenant] = useState(props.tenant ? props.tenant : "");
   const [error, setError] = useState(null);
   const [tenantFlags, setTenantFlags] = useState({
     error: false,
     placeholder: null,
     autoFocus: false,
   });
+
+  useEffect(() => {
+    if (tenant.trim() !== "") {
+      signInAADB2C()
+    }
+  }, [props.tenant]);
+
+  useEffect(() => {
+    setError(errorText);
+  }, [errorText]);
 
   const updateTenantFlags = (errorText) => {
     setTenantFlags({
@@ -120,14 +130,18 @@ const SignInCardB2C = (props) => {
       if (e.keyCode === 13) {
         e.preventDefault();
         setError(null);
-        handleAADB2CSignIn(updateTenantFlags);
+        handleAADB2CSignIn(tenant, updateTenantFlags);
       }
     }
   };
 
   const signInAADB2C = () => {
-    setError(null);
-    handleAADB2CSignIn(updateTenantFlags);
+    if (tenant.trim() === "") {
+      updateTenantFlags();
+    } else {
+      setError(null);
+      handleAADB2CSignIn(tenant, updateTenantFlags);
+    }
   };
 
   const renderAADButtonAndLoader = props.ready ? (
@@ -162,7 +176,8 @@ const SignInCardB2C = (props) => {
       </div>
       {!props.ready ? (
         <React.Fragment>
-          {/* <div
+          {" "}
+          <div
             style={{
               marginTop: "55px",
               fontSize: "14px",
@@ -194,7 +209,7 @@ const SignInCardB2C = (props) => {
               setError(null);
             }}
             value={tenant}
-          /> */}
+          />{" "}
           {renderAADButtonAndLoader}
           {/* <div className={classes.cardFooter}>
             Don't have an account?

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { FormLabel } from "@material-ui/core";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 import { Grid } from "@material-ui/core";
 import { Modals } from "../../../../../styles/Modal";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -38,7 +38,7 @@ const styles = (theme) => ({
 });
 
 const DialogTitle = withStyles(styles)((props) => {
-  const { children, classes, onClose, ...other } = props;
+  const { children, classes, onClose, updateMelissaTable, ...other } = props;
   return (
     <MuiDialogTitle disableTypography className={classes.root} {...other}>
       <Typography variant="h6">{children}</Typography>
@@ -104,9 +104,11 @@ export default function BuyContactsInfoDialogContent(props) {
 
   const [getPersonDataQuery, { data: personsData }] = useLazyQuery(GETPERSONDATA, {
     onCompleted: data => {
-      console.log(data)
       props.onClose()
       if (data.getPersonData.allSuccess) {
+        if (props.updateMelissaTable) {
+          props.updateMelissaTable()
+        }
         dispatch(showSuccessMessage("All records saved successfully"))
       } else {
         dispatch(showErrorMessage("Error occurred"))
@@ -140,7 +142,7 @@ export default function BuyContactsInfoDialogContent(props) {
 
     getPersonDataQuery({
       variables: { persons },
-      refetchQueries: ["getMelissaRecords"],
+      refetchQueries: ["getLastMelissaRecord"],
       awaitRefetchQueries: true,
     })
   }

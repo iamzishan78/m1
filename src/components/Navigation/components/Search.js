@@ -19,8 +19,9 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import { OWNERWELLSQUERY } from "../../../graphQL/useQueryOwnerWells ";
-import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
+import { OWNERSLATSLONS } from "../../../graphQL/useQueryOwnerLatsLonsArray";
 import { OPERATORSLATSLONS } from "../../../graphQL/useQueryOperatorLatsLonsArray";
 import { LEASELATSLONS } from "../../../graphQL/useQueryLeaseLatsLonsArray";
 import { USERSEARCHHISTORY } from "../../../graphQL/useQueryUserSearchHistory";
@@ -190,7 +191,7 @@ function Search() {
   const classes = useStyles({ mapGridCardActivated });
 
   const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(
-    OWNERWELLSQUERY
+    OWNERSLATSLONS
   );
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
 
@@ -221,13 +222,7 @@ function Search() {
 
   useEffect(() => {
     if (searchHistoryData && searchHistoryData.getSearchHistory) {
-      const compare = (a, b) => {
-        if (a.ts < b.ts) return 1;
-        if (a.ts > b.ts) return -1;
-        return 0;
-      };
-      let list = searchHistoryData.getSearchHistory;
-      list.sort(compare);
+      let list = [...searchHistoryData.getSearchHistory].sort((a, b) => b.ts - a.ts);
 
       setSearchHistoryList(list);
     }
@@ -299,7 +294,7 @@ function Search() {
     () =>
       debounce((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName%2CAddress1&%24top=" +
+          "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName&%24top=" +
           top +
           "&search=" +
           request.input;
@@ -314,7 +309,7 @@ function Search() {
         };
 
         console.log(
-          "request made to lod2019-index search at: " + new Date().toString()
+          "request made to globalowner-index search at: " + new Date().toString()
         );
 
         fetch(endpoint, options)
@@ -499,7 +494,7 @@ function Search() {
                           ...result,
                           Source: indexSource,
                           Primary: result.OwnerName,
-                          Secondary: `${result.Address1}\n${result.Address2}\n${result.City}\n${result.State}\n${result.Zip}`,
+                          Secondary: `${result.StreetAddress}\n${result.City}\n${result.State}\n${result.Zip}`,
                         };
                       }),
                       ...newOptions,
@@ -646,18 +641,33 @@ function Search() {
   //// getting wells data from owners ////
 
   useEffect(() => {
-    if (dataOwnerWells && dataOwnerWells.ownerWells) {
-      if (dataOwnerWells.ownerWells.length !== 0) {
-        let wellsIdsArray = dataOwnerWells.ownerWells.map(
-          (item) => item.WellId
+    if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray) {
+      if (dataOwnerWells.ownerLatsLonsArray.length !== 0) {
+        console.log(
+          "wells data from search",
+          dataOwnerWells.ownerLatsLonsArray
         );
 
-        getWells({
-          variables: {
-            wellIdArray: wellsIdsArray,
-            authToken: stateApp.user.authToken,
-          },
-        });
+        setStateApp((stateApp) =>
+          dataOwnerWells.ownerLatsLonsArray.length === 1
+            ? {
+              ...stateApp,
+              selectedWell: null,
+              fitBounds: null,
+              selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
+              wellSelectedCoordinates: [
+                dataOwnerWells.ownerLatsLonsArray[0].longitude,
+                dataOwnerWells.ownerLatsLonsArray[0].latitude,
+              ],
+              wellListFromSearch: dataOwnerWells.ownerLatsLonsArray,
+            }
+            : {
+              ...stateApp,
+              fitBounds: null,
+              wellListFromSearch: dataOwnerWells.ownerLatsLonsArray,
+            }
+        );
+        stateApp.activateUserDefinedLayers(6);
       } else {
         console.log("Not wells found for the owner");
         stateApp.deactivateUserDefinedLayers(6);
@@ -863,7 +873,7 @@ function Search() {
       }
 
       //// if owner
-      if (newValue && newValue.Source === "lod2019-index" && newValue.Id) {
+      if (newValue && newValue.Source === "globalowner-index" && newValue.Id) {
         getOwnerWells({
           variables: {
             ownerId: newValue.Id,
@@ -969,7 +979,7 @@ function Search() {
         filterOptions={(x) => x}
         options={optionsWithHeader}
         groupBy={(option) => {
-          if (option.Source === "lod2019-index") return "Owners";
+          if (option.Source === "globalowner-index") return "Owners";
           if (option.Source === "wellheader-index") return "Wells";
           if (option.Source === "operator-index") return "Operators";
           if (option.Source === "lease-index") return "Leases";
@@ -1277,7 +1287,7 @@ function Search() {
                               onClick={() => {
                                 setSearchTop(5);
                                 setSearchOption(
-                                  option.Source === "lod2019-index"
+                                  option.Source === "globalowner-index"
                                     ? "owners"
                                     : option.Source === "wellheader-index"
                                     ? "wells"
@@ -1312,7 +1322,7 @@ function Search() {
                               <Grid container spacing={0}>
                                 <Grid container item xs={9} alignItems="center">
                                   <Grid item>
-                                    {option.Source === "lod2019-index" && (
+                                    {option.Source === "globalowner-index" && (
                                       <PersonIcon className={classes.icon} />
                                     )}
                                     {option.Source === "operator-index" && (
@@ -1407,7 +1417,7 @@ function Search() {
             <Grid container spacing={0}>
               <Grid container item xs={11} alignItems="center">
                 <Grid item>
-                  {option.Source === "lod2019-index" && (
+                  {option.Source === "globalowner-index" && (
                     <PersonIcon className={classes.icon} />
                   )}
                   {option.Source === "operator-index" && (
@@ -1461,7 +1471,7 @@ function Search() {
                       backgroundImage:
                         "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
                       opacity: calcScoreOpacity(
-                        option.Source === "lod2019-index"
+                        option.Source === "globalowner-index"
                           ? maxMinOwnersScore
                           : option.Source === "wellheader-index"
                           ? maxMinWellsScore

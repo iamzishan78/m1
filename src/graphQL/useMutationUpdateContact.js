@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const UPDATECONTACT = gql`
-  mutation UpdateContact($contact: ContactInput) {
-    updateContact(contact: $contact) {
+  mutation UpdateContact($contact: ContactInput, $ignoreResponse: Boolean) {
+    updateContact(contact: $contact, ignoreResponse: $ignoreResponse) {
       success
       message
       error
@@ -40,6 +40,8 @@ export const UPDATECONTACT = gql`
         linkedln
         facebook
         twitter
+        leadStage
+        lastUpdateLeadStageAt
         leadSource
         companyName
         jobTitle

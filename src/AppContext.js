@@ -2,6 +2,10 @@ import React, { useState, createContext, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
 import {
+  MSALB2CObj,
+  B2CTenantToLogin,
+} from "./components/Login/AADB2CAuthConfig";
+import {
   styleLayers,
   userDefinedLayers,
   heatLayers,
@@ -15,6 +19,7 @@ const AppContext = createContext([{}, () => {}]);
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
     myMSALObj: null,
+    myMSALB2CObj: null,
     selectedRoute: "/",
     apolloClientEndpoint:
       "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
@@ -77,14 +82,17 @@ const AppProvider = (props) => {
     tempCheckedLayer: null,
     checkedLayers: [2, 5],
     checkedHeats: [],
+    udLayerConfig: [],
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
     checkedUserDefinedLayers: [0, 2, 3, 4],
+    checkedFileLayers: [],
     userFileLayers: [],
     userServiceLayers: [],
     tempCheckedUserDefinedLayer: null,
     tempCheckedAOILayer: null,
     tempCheckedParcleLayer: null,
     checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
+    checkedFileLayersInteraction: [],
     editingUserDefinedLayers: [],
     csvContactsList: [],
     csvContactsListToSend: [],
@@ -171,13 +179,37 @@ const AppProvider = (props) => {
       if (tenantName) {
         let tenant = tenantsCredentials(tenantName);
         let myMSALObjInt = MSALObj(tenant.tenantId, tenant.clientId);
-        setStateApp({
-          ...stateApp,
-          myMSALObj: myMSALObjInt,
-          apolloClientEndpoint: tenant.apolloClientEndpoint,
+        setStateApp((state, props) => {
+          return {
+            ...state,
+            myMSALObj: myMSALObjInt,
+            apolloClientEndpoint: tenant.apolloClientEndpoint,
+          }
         });
       } else {
-        setStateApp({ ...stateApp, myMSALObj: false });
+        setStateApp((state, props) => {
+          return { ...state, myMSALObj: false }
+        });
+      }
+
+      let tenantB2CName = window.sessionStorage.getItem("tenantB2CName");
+
+      if (tenantB2CName) {
+        let tenant = B2CTenantToLogin(tenantB2CName);
+        if (tenant) {
+          let myMSALB2CObjInt = MSALB2CObj(tenant.tenantId, tenant.clientId);
+          setStateApp((state, props) => {
+            return {
+              ...state,
+              myMSALB2CObj: myMSALB2CObjInt,
+              apolloClientEndpoint: tenant.apolloClientEndpoint,
+            }
+          });
+        }
+      } else {
+        setStateApp((state, props) => {
+          return { ...state, myMSALB2CObj: false }
+        });
       }
     }
     wait();

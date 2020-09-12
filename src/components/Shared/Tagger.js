@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { useMutation, useLazyQuery } from "@apollo/react-hooks";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../AppContext";
 import { CircularProgress } from "@material-ui/core";
 import Chip from "@material-ui/core/Chip";

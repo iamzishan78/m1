@@ -103,7 +103,7 @@ import Avatar from "react-avatar";
 import ContactFormModal from "./components/ContactFormModal";
 import { GETPROFILEIMAGE } from "../../graphQL/useQueryGetProfile";
 import { useDispatch, useSelector } from "react-redux";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 
 import {
   MuiThemeProvider,
@@ -119,7 +119,7 @@ const theme = createMuiTheme({
           backgroundColor: "#fff",
         },
       },
-    }
+    },
   },
 });
 
@@ -484,13 +484,13 @@ const useStyles = makeStyles((theme) => ({
   },
   userMenu: {
     "& .MuiPaper-rounded": {
-      borderRadius: "0px"
-    }
+      borderRadius: "0px",
+    },
   },
   userMenuItem: {
-    padding : 10,
-    width: '250px',
-    color: "#1daee1"
+    padding: 10,
+    width: "250px",
+    color: "#1daee1",
   },
   actionWrapper: {
     flexGrow: 1,
@@ -942,7 +942,7 @@ export default function Navigation(props) {
           <Typography style={{ textDecoration: "none", color: "#1daee1" }} variant="inherit">User Management</Typography>
         </Link>
       </MenuItem>
-      <Divider/>
+      <Divider />
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
         <Typography variant="inherit">Logout</Typography>
       </MenuItem>
@@ -1309,7 +1309,7 @@ export default function Navigation(props) {
                     aria-label="ai"
                   />
 
-                  <Tab
+                  {/* <Tab
                     value={7}
                     classes={{ root: classes.tab }}
                     style={{ paddingTop: 10 }}
@@ -1322,7 +1322,7 @@ export default function Navigation(props) {
                       </Badge>
                     }
                     aria-label="filter settings"
-                  />
+                  /> */}
                 </Tabs>
               </div>
             ) : (
@@ -1597,8 +1597,8 @@ export default function Navigation(props) {
               </ListItemSecondaryAction>
             </div>
           </ListItem>
-
-          <ListItem
+          {/* temporary */}
+          {/* <ListItem
             classes={{
               root: classes.menuListItemDisabled,
               selected: classes.menuListItemSelected,
@@ -1627,7 +1627,7 @@ export default function Navigation(props) {
                 </Button>
               </ListItemSecondaryAction>
             </div>
-          </ListItem>
+          </ListItem> */}
         </List>
         {/* <Divider variant="middle" className={classes.menuListBottomDivider} /> */}
         <List className={classes.menuListBottom}>

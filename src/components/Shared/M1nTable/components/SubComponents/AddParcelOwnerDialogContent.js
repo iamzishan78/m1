@@ -9,7 +9,7 @@ import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { Grid } from "@material-ui/core";
 import { AppContext } from "../../../../../AppContext";
 import { Modals } from "../../../../../styles/Modal";
-import { useMutation } from "@apollo/react-hooks";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import { ADDOWNERTOAPARCEL } from "../../../../../graphQL/useMutationAddOwnerToAParcel";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
@@ -17,6 +17,9 @@ import { showErrorMessage, showSuccessMessage } from "../../../../../actions";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import AutocompEntityNamesVirtualizeList from "./AutocompEntityNamesVirtualizeList";
+import { ALLENTITYNAMESFORPARCEL } from "../../../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const entities = [
   "Corporation",
@@ -57,7 +60,6 @@ export default function AddParcelOwnerDialogContent(props) {
   const dispatch = useDispatch();
   const [, setStateApp] = useContext(AppContext);
   const [newOwner, setNewOwner] = useState({
-    name: "",
     entity: "Unknown",
     type: "Unknown",
     depthFrom: "",
@@ -71,17 +73,42 @@ export default function AddParcelOwnerDialogContent(props) {
     "true"
   );
 
+  const [nameAutValue, setNameAutValue] = useState(null);
+  const [nameAutInputValue, setNameAutInputValue] = useState("");
+  const [mongoEntitiesArray, setMongoEntitiesArray] = useState();
+
+  const [
+    getAllEntityNamesToAddAsParcelOwner,
+    { data: dataEntityNames },
+  ] = useLazyQuery(ALLENTITYNAMESFORPARCEL, {
+    fetchPolicy: "cache-and-network",
+  });
+
   const [addOwnerToAParcel, { data: mutationData }] = useMutation(
     ADDOWNERTOAPARCEL
   );
+
+  useEffect(() => {
+    getAllEntityNamesToAddAsParcelOwner({
+      variables: {
+        parcelId: props.customLayerId,
+      },
+    });
+  }, []);
+
+  useEffect(() => {
+    if (dataEntityNames && dataEntityNames.allEntityNamesToAddAsParcelOwner) {
+      setMongoEntitiesArray(dataEntityNames.allEntityNamesToAddAsParcelOwner);
+    }
+  }, [dataEntityNames]);
 
   useEffect(() => {
     if (mutationData && mutationData.addOwnerToAParcel) {
       if (mutationData.addOwnerToAParcel.success) {
         dispatch(
           showSuccessMessage(
-            newOwner.name
-              ? `${newOwner.name} was successfully added`
+            nameAutValue && nameAutValue.name
+              ? `${nameAutValue.name} was successfully added`
               : "The owner was successfully added"
           )
         );
@@ -100,7 +127,6 @@ export default function AddParcelOwnerDialogContent(props) {
 
   const emptyStates = () => {
     setNewOwner({
-      name: "",
       entity: "Unknown",
       type: "Unknown",
       depthFrom: "",
@@ -111,6 +137,8 @@ export default function AddParcelOwnerDialogContent(props) {
       customLayer: props.customLayerId,
     });
     setParcelOwnersRadioBValue("true");
+    setNameAutValue(null);
+    setNameAutInputValue("");
   };
 
   const handleClickDialogClose = () => {
@@ -120,39 +148,45 @@ export default function AddParcelOwnerDialogContent(props) {
 
   const handleClickAdd = (e) => {
     e.preventDefault();
+    if (nameAutValue) {
+      const ownerToAdd = { ...newOwner };
+      if (parcelOwnersRadioBValue === "true") {
+        ownerToAdd.depthFrom = "All depths";
+        ownerToAdd.depthTo = "All depths";
+      }
+      if (nameAutValue._id === "newEntity") ownerToAdd.name = nameAutValue.name;
+      else ownerToAdd.ownerEntityId = nameAutValue._id;
 
-    addOwnerToAParcel({
-      variables: {
-        parcelOwner:
-          parcelOwnersRadioBValue === "true"
-            ? { ...newOwner, depthFrom: "All depths", depthTo: "All depths" }
-            : newOwner,
-      },
-      refetchQueries: ["getCustomLayer"],
-      awaitRefetchQueries: true,
-    });
+      addOwnerToAParcel({
+        variables: {
+          parcelOwner: ownerToAdd,
+        },
+        refetchQueries: [
+          "getCustomLayer",
+          "getAllEntityNamesToAddAsParcelOwner",
+          "getContactParcelInterests",
+        ],
+        awaitRefetchQueries: true,
+      });
 
-    setStateApp((state) => ({ ...state, universalCircularLoaderAct: true }));
+      setStateApp((state) => ({ ...state, universalCircularLoaderAct: true }));
+    }
   };
 
   const addNew = () => {
-    return (
+    return mongoEntitiesArray ? (
       <React.Fragment>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <h3>Name</h3>
-            <TextField
-              size="small"
-              placeholder="E.g. Jacob"
-              className={classes.maxWidth}
-              multiline
-              value={newOwner.name}
-              onChange={(e) => {
-                setNewOwner({
-                  ...newOwner,
-                  name: e.target.value,
-                });
-              }}
+
+            <AutocompEntityNamesVirtualizeList
+              mongoEntitiesArray={mongoEntitiesArray}
+              setMongoEntitiesArray={setMongoEntitiesArray}
+              nameAutValue={nameAutValue}
+              setNameAutValue={setNameAutValue}
+              nameAutInputValue={nameAutInputValue}
+              setNameAutInputValue={setNameAutInputValue}
             />
           </Grid>
 
@@ -304,6 +338,16 @@ export default function AddParcelOwnerDialogContent(props) {
           </Grid>
         </Grid>
       </React.Fragment>
+    ) : (
+      <div
+        style={{
+          margin: "20px",
+          width: "356px",
+          textAlign: "center",
+        }}
+      >
+        <CircularProgress size={80} disableShrink color="secondary" />
+      </div>
     );
   };
 
@@ -328,7 +372,11 @@ export default function AddParcelOwnerDialogContent(props) {
           Cancel
         </Button>
         <Button
-          disabled={!newOwner.name || newOwner.name === ""}
+          disabled={
+            !nameAutValue || !nameAutValue.name || nameAutValue.name === ""
+              ? true
+              : false
+          }
           onClick={handleClickAdd}
           color="secondary"
         >

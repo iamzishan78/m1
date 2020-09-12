@@ -7,17 +7,15 @@ import { makeStyles } from "@material-ui/core/styles";
 import parse from "autosuggest-highlight/parse";
 import throttle from "lodash/throttle";
 import debounce from "lodash/debounce";
-import { useMutation } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/client";
 import { CircularProgress } from "@material-ui/core";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { ADDREMOVEOWNERTOACONTACT } from "../../../../../graphQL/useMutationAddRemoveOwnerToAContact";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { AppContext } from "../../../../../AppContext";
 import { Modals } from "../../../../../styles/Modal";
-
 
 const useStyles = makeStyles((theme) => ({
   dialogContent: {
@@ -37,8 +35,6 @@ export default function AddOwnerToContactDialogContent(props) {
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState([]);
   const [loadingOwners, setLoadingOwners] = React.useState(false);
-
-  const [addRemoveOwnerToAContact] = useMutation(ADDREMOVEOWNERTOACONTACT);
 
   const callOwnerSearch = React.useMemo(
     () =>
@@ -111,20 +107,7 @@ export default function AddOwnerToContactDialogContent(props) {
 
   const handleClickAdd = () => {
     if (value && value.Id) {
-      addRemoveOwnerToAContact({
-        variables: {
-          contactId: props.parent,
-          ownerId: value.Id,
-        },
-        refetchQueries: [
-          "getContacts",
-          "getContactsByOwnerId",
-          "getContactsCounter",
-          "getContact",
-          "getContactInM1nTable",
-        ],
-        awaitRefetchQueries: true,
-      });
+      //////// add your mutation here /////////
       props.onClose();
       setStateApp((state) => ({ ...state, universalCircularLoaderAct: true }));
     }
@@ -219,13 +202,11 @@ export default function AddOwnerToContactDialogContent(props) {
       renderInput={(params) => (
         <div>
           <h3>Search by owner name or address</h3>
-          <TextField
-            {...params}/>
+          <TextField {...params} />
         </div>
       )}
       renderOption={(option) => {
         if (option.group === "loader") {
-          console.log("rrrrrrrrr", option); /////////////////////////////////////////
           return null;
         }
 
@@ -254,7 +235,7 @@ export default function AddOwnerToContactDialogContent(props) {
             </Grid>
           );
         }
-        return null; //////////////////////////////////
+        return null;
       }}
     />
   );
@@ -263,7 +244,11 @@ export default function AddOwnerToContactDialogContent(props) {
     <React.Fragment>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
         Add an Owner
-        <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={props.onClose}/>
+        <HighlightOffIcon
+          fontSize="large"
+          className={modalClass.titleClose}
+          onClick={props.onClose}
+        />
       </DialogTitle>
       <DialogContent dividers className={classes.dialogContent}>
         {searchAutocomplete}

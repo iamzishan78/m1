@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import ParcelIcon from "../../Shared/svgIcons/ParcelIcon";
 import AddIcon from "@material-ui/icons/Add";
 import IconButton from "@material-ui/core/IconButton";
-import ParcelsDetailCard from "../../ParcelsDetailCard/ParcelsDetailCard";
+import ContactsWellInterestsParcelInterests from "./ContactsWellInterestsParcelInterests/ContactsWellInterestsParcelInterests";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   h5: { color: "#757575", marginTop: "0" },
 }));
 
-export default function Parcels(props) {
+export default function ParcelsCard(props) {
   const classes = useStyles();
 
   return (
@@ -46,8 +46,11 @@ export default function Parcels(props) {
           className={classes.addIcon}
           onClick={() => {
             props.handleOpenExpandableCard(
-              <ParcelsDetailCard />,
-              "Wells/Parcels"
+              <ContactsWellInterestsParcelInterests
+                activeTap={1}
+                contactData={props.contactData}
+              />,
+              "Associated Interests"
             );
           }}
         >

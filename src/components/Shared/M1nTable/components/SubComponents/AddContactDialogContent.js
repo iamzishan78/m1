@@ -11,11 +11,9 @@ import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { Grid } from "@material-ui/core";
 import { AppContext } from "../../../../../AppContext";
 import { Modals } from "../../../../../styles/Modal";
-import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { CONTACTSQUERY } from "../../../../../graphQL/useQueryContacts";
-import { CONTACTSBYOWNERSID } from "../../../../../graphQL/useQueryContactsByOwnerId";
 import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
-import { ADDREMOVEOWNERTOACONTACT } from "../../../../../graphQL/useMutationAddRemoveOwnerToAContact";
 import { makeStyles } from "@material-ui/core/styles";
 
 const phonenumber = (inputtxt) => {
@@ -87,13 +85,6 @@ export default function AddContactDialogContent(props) {
   });
 
   const [
-    getContactsByOwnerId,
-    { loading: loadingContactsByOwnerId, data: dataContactsByOwnerId },
-  ] = useLazyQuery(CONTACTSBYOWNERSID, {
-    fetchPolicy: "cache-and-network",
-  });
-
-  const [
     addContact,
     {
       data: addContactData,
@@ -101,7 +92,6 @@ export default function AddContactDialogContent(props) {
       loading: addContactLoading,
     },
   ] = useMutation(ADDCONTACT);
-  const [addRemoveOwnerToAContact] = useMutation(ADDREMOVEOWNERTOACONTACT);
 
   useEffect(() => {
     if (props.parent || props.setDealsContact) {
@@ -109,39 +99,15 @@ export default function AddContactDialogContent(props) {
     }
   }, [props.parent, props.setDealsContact]);
 
-  // useEffect(() => {
-  //   if (props.parent) {
-  //     getContactsByOwnerId({
-  //       variables: { objectId: props.parent },
-  //     });
-  //   }
-  // }, [props.parent]);
-
   useEffect(() => {
     if (
       dataContacts &&
       dataContacts.contacts &&
       dataContacts.contacts.length > 0
     ) {
-      if (
-        dataContactsByOwnerId &&
-        dataContactsByOwnerId.contactsByOwnerId &&
-        dataContactsByOwnerId.contactsByOwnerId.length > 0
-      ) {
-        const tempIdArray = dataContactsByOwnerId.contactsByOwnerId.map(
-          (cont) => cont._id
-        );
-
-        setContacts([
-          ...dataContacts.contacts.filter(
-            (cont) => tempIdArray.indexOf(cont._id) === -1
-          ),
-        ]);
-      } else {
-        setContacts([...dataContacts.contacts]);
-      }
+      setContacts([...dataContacts.contacts]);
     }
-  }, [dataContacts, dataContactsByOwnerId]);
+  }, [dataContacts]);
 
   useEffect(() => {
     if (
@@ -207,12 +173,7 @@ export default function AddContactDialogContent(props) {
               lastUpdateBy: stateApp.user.mongoId,
             },
           },
-          refetchQueries: [
-            "getContacts",
-            // "getContactsByOwnerId",
-            "getContactsCounter",
-            "getContact",
-          ],
+          refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
           awaitRefetchQueries: true,
         });
         e.preventDefault();
@@ -226,19 +187,6 @@ export default function AddContactDialogContent(props) {
     // if (props.parent && activeTapIndex === 1) {
     //   //////update///// existingContact   //////////
 
-    //   addRemoveOwnerToAContact({
-    //     variables: {
-    //       contactId: existingContact._id,
-    //       ownerId: props.parent,
-    //     },
-    //     refetchQueries: [
-    //       "getContacts",
-    //       // "getContactsByOwnerId",
-    //       "getContactsCounter",
-    //       "getContact",
-    //     ],
-    //     awaitRefetchQueries: true,
-    //   });
     // }
 
     if (!props.parent || (props.parent && activeTapIndex === 0)) {
@@ -251,12 +199,7 @@ export default function AddContactDialogContent(props) {
             lastUpdateBy: stateApp.user.mongoId,
           },
         },
-        refetchQueries: [
-          "getContacts",
-          // "getContactsByOwnerId",
-          "getContactsCounter",
-          "getContact",
-        ],
+        refetchQueries: ["getContacts", "getContact"],
         awaitRefetchQueries: true,
       });
     }
@@ -268,7 +211,7 @@ export default function AddContactDialogContent(props) {
     return (
       <React.Fragment>
         <div style={{ paddingTop: "15%" }}>
-          {!loadingContacts && !loadingContactsByOwnerId ? (
+          {!loadingContacts ? (
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Autocomplete
@@ -466,7 +409,7 @@ export default function AddContactDialogContent(props) {
           <Grid item xs={12}>
             <h3>Country</h3>
             <TextField
-              size="Country"
+              size="small"
               className={classes.maxWidth}
               multiline
               value={newContact.country}
@@ -490,7 +433,7 @@ export default function AddContactDialogContent(props) {
   const classes = useStyles(contacts && contacts.length > 0 ? true : false);
   const modalClass = Modals();
 
-  return !loadingContacts && !loadingContactsByOwnerId ? (
+  return !loadingContacts ? (
     <React.Fragment>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
         Add a Contact
