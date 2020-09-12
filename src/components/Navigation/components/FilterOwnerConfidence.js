@@ -21,7 +21,6 @@ const useStyles = makeStyles({
   input: {
     marginLeft: "25px",
     width: "135px",
-    float: "right",
     "& input": { color: "#17AADD" },
   },
   inputLabel: {
@@ -31,7 +30,7 @@ const useStyles = makeStyles({
   ownersToggle: {
     paddingLeft: "20px",
   },
-  closeButton: {
+  floatRight: {
     float: "right",
   },
 });
@@ -172,59 +171,60 @@ export default function FilterOwnerConfidence() {
         <FormLabel className={classes.inputLabel}>
           Owner Confidence Score
         </FormLabel>
-        <IconButton
-          className={classes.closeButton}
-          onClick={() => {
-            handleChangeMax({
-              target: { id: "OwnerConfidenceMax", value: "" },
-            });
-            handleChangeMin({
-              target: { id: "OwnerConfidenceMin", value: "" },
-            });
-          }}
-        >
-          <CancelIcon height={"30px"} />
-        </IconButton>
-        <NumberFormat
-          id="OwnerConfidenceMax"
-          value={valueMaxDisplay}
-          onChange={handleChangeMax}
-          thousandSeparator={true}
-          customInput={TextField}
-          className={classes.input}
-          aria-labelledby="range-number"
-          type="text"
-          label="Max"
-          size="small"
-          onKeyPress={(e) => allowNumbersOnly(e)}
-          error={error}
-          helperText={errorText}
-          InputProps={{
-            inputProps: {
-              min: 0,
-              max: 1,
-            },
-          }}
-        />
-        <NumberFormat
-          id="OwnerConfidenceMin"
-          value={valueMinDisplay}
-          onChange={handleChangeMin}
-          thousandSeparator={true}
-          customInput={TextField}
-          className={classes.input}
-          aria-labelledby="range-number"
-          type="text"
-          label="Min"
-          size="small"
-          onKeyPress={(e) => allowNumbersOnly(e)}
-          InputProps={{
-            inputProps: {
-              min: 0,
-              max: 1,
-            },
-          }}
-        />
+        <div className={classes.floatRight}>
+          <NumberFormat
+            id="OwnerConfidenceMin"
+            value={valueMinDisplay}
+            onChange={handleChangeMin}
+            thousandSeparator={true}
+            customInput={TextField}
+            className={classes.input}
+            aria-labelledby="range-number"
+            type="text"
+            label="Min"
+            size="small"
+            onKeyPress={(e) => allowNumbersOnly(e)}
+            InputProps={{
+              inputProps: {
+                min: 0,
+                max: 1,
+              },
+            }}
+          />
+          <NumberFormat
+            id="OwnerConfidenceMax"
+            value={valueMaxDisplay}
+            onChange={handleChangeMax}
+            thousandSeparator={true}
+            customInput={TextField}
+            className={classes.input}
+            aria-labelledby="range-number"
+            type="text"
+            label="Max"
+            size="small"
+            onKeyPress={(e) => allowNumbersOnly(e)}
+            error={error}
+            helperText={errorText}
+            InputProps={{
+              inputProps: {
+                min: 0,
+                max: 1,
+              },
+            }}
+          />
+          <IconButton
+            onClick={() => {
+              handleChangeMax({
+                target: { id: "OwnerConfidenceMax", value: "" },
+              });
+              handleChangeMin({
+                target: { id: "OwnerConfidenceMin", value: "" },
+              });
+            }}
+          >
+            <CancelIcon height={"30px"} />
+          </IconButton>
+        </div>
       </div>
       <div style={{ textAlign: "center" }}>
         <Typography variant="caption">
