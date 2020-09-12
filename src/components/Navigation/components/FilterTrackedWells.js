@@ -39,7 +39,7 @@ export default function FilterTrackedWells() {
       if (stateNav.filterTrackedWells) stateApp.deactivateUserDefinedLayers(2);
       else {
         stateApp.activateUserDefinedLayers(2);
-        // stateApp.deactivateWellLayer();
+        stateApp.deactivateWellLayer();
       }
 
       return {
