@@ -24,18 +24,23 @@ export default () => {
       }, {});
     };
 
-    const layerData = groupBy(stateApp.customLayers, "layer")['interest'];
+    const layerData = groupBy(stateApp.customLayers, "layer")["interest"];
     if (layerData && layerData.length > 0) {
       setAOIData(layerData);
-      setAOINameList(layerData.filter(layer => layer.name).map(layer => layer.name));
-    }    
+      setAOINameList(
+        layerData
+          .filter((layer) => layer.name)
+          .map((layer) => layer.name)
+          .sort()
+      );
+    }
   }, [stateApp.customLayers]);
 
   const handleAOIChange = (value) => {
     let filter;
     if (value && value.length) {
-      const layers = aoiData.filter(aoi => value.indexOf(aoi.name) > -1);
-      filter = layers.map(basinShape => {
+      const layers = aoiData.filter((aoi) => value.indexOf(aoi.name) > -1);
+      filter = layers.map((basinShape) => {
         return JSON.parse(basinShape.shape);
       });
       console.log(layers, filter);
@@ -74,4 +79,4 @@ export default () => {
   }
 
   return null;
-}
+};

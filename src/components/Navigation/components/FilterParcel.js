@@ -24,19 +24,25 @@ export default () => {
       }, {});
     };
 
-    const layerData = groupBy(stateApp.customLayers, "layer")['parcel'];
+    const layerData = groupBy(stateApp.customLayers, "layer")["parcel"];
     if (layerData && layerData.length > 0) {
       setParcelData(layerData);
-      setParcelNameList(layerData.filter(layer => layer.name).map(layer => layer.name));
+      setParcelNameList(
+        layerData
+          .filter((layer) => layer.name)
+          .map((layer) => layer.name)
+          .sort()
+      );
     }
-    
   }, [stateApp.customLayers]);
 
   const handleParcelChange = (value) => {
     let filter;
     if (value && value.length) {
-      const layers = parcelData.filter(parcel => value.indexOf(parcel.name) > -1);
-      filter = layers.map(basinShape => {
+      const layers = parcelData.filter(
+        (parcel) => value.indexOf(parcel.name) > -1
+      );
+      filter = layers.map((basinShape) => {
         return JSON.parse(basinShape.shape);
       });
       console.log(layers, filter);
@@ -74,4 +80,4 @@ export default () => {
     );
   }
   return null;
-}
+};
