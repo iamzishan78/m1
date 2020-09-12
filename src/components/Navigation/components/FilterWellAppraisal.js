@@ -20,14 +20,13 @@ const useStyles = makeStyles({
   input: {
     marginLeft: "30px",
     width: "160px",
-    float: "right",
     "& input": { color: "#17AADD" },
   },
   inputLabel: {
     position: "relative",
     top: "11.5px",
   },
-  closeButton: {
+  floatRight: {
     float: "right",
   },
 });
@@ -173,56 +172,56 @@ export default function FilterWellAppraisal() {
   return (
     <div className={classes.divBordersMinMax}>
       <FormLabel className={classes.inputLabel}>Well Appraisal</FormLabel>
-      <IconButton
-        className={classes.closeButton}
-        onClick={() => {
-          handleChangeMax({ target: { id: "appraisalWellMax", value: "" } });
-          handleChangeMin({ target: { id: "appraisalWellMin", value: "" } });
-        }}
-      >
-        <CancelIcon height={"30px"} />
-      </IconButton>
-
-      <NumberFormat
-        id="appraisalWellMax"
-        value={valueMaxDisplay}
-        onChange={handleChangeMax}
-        thousandSeparator={true}
-        customInput={TextField}
-        className={classes.input}
-        aria-labelledby="range-number"
-        type="text"
-        label="Max"
-        size="small"
-        onKeyPress={(e) => allowNumbersOnly(e)}
-        error={error}
-        helperText={errorText}
-        InputProps={{
-          inputProps: {
-            min: 0,
-            max: Number.MAX_SAFE_INTEGER,
-          },
-        }}
-      />
-      <NumberFormat
-        id="appraisalWellMin"
-        value={valueMinDisplay}
-        onChange={handleChangeMin}
-        thousandSeparator={true}
-        customInput={TextField}
-        className={classes.input}
-        aria-labelledby="range-number"
-        type="text"
-        label="Min"
-        size="small"
-        onKeyPress={(e) => allowNumbersOnly(e)}
-        InputProps={{
-          inputProps: {
-            min: 0,
-            max: Number.MAX_SAFE_INTEGER - 1,
-          },
-        }}
-      />
+      <div className={classes.floatRight}>
+        <NumberFormat
+          id="appraisalWellMin"
+          value={valueMinDisplay}
+          onChange={handleChangeMin}
+          thousandSeparator={true}
+          customInput={TextField}
+          className={classes.input}
+          aria-labelledby="range-number"
+          type="text"
+          label="Min"
+          size="small"
+          onKeyPress={(e) => allowNumbersOnly(e)}
+          InputProps={{
+            inputProps: {
+              min: 0,
+              max: Number.MAX_SAFE_INTEGER - 1,
+            },
+          }}
+        />
+        <NumberFormat
+          id="appraisalWellMax"
+          value={valueMaxDisplay}
+          onChange={handleChangeMax}
+          thousandSeparator={true}
+          customInput={TextField}
+          className={classes.input}
+          aria-labelledby="range-number"
+          type="text"
+          label="Max"
+          size="small"
+          onKeyPress={(e) => allowNumbersOnly(e)}
+          error={error}
+          helperText={errorText}
+          InputProps={{
+            inputProps: {
+              min: 0,
+              max: Number.MAX_SAFE_INTEGER,
+            },
+          }}
+        />
+        <IconButton
+          onClick={() => {
+            handleChangeMax({ target: { id: "appraisalWellMax", value: "" } });
+            handleChangeMin({ target: { id: "appraisalWellMin", value: "" } });
+          }}
+        >
+          <CancelIcon height={"30px"} />
+        </IconButton>
+      </div>
     </div>
   );
 }
