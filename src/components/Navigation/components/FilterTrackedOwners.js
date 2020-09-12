@@ -35,24 +35,21 @@ export default function FilterTrackedOwners() {
 
   const [stateApp] = useContext(AppContext);
 
-  useEffect(() => {
-    if (stateApp.checkedUserDefinedLayers)
-      if (stateApp.checkedUserDefinedLayers.indexOf(4) === -1)
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          filterTrackedOwners: false,
-        }));
-      else
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          filterTrackedOwners: true,
-        }));
-  }, [stateApp.checkedUserDefinedLayers]);
-
   const toggleTracks = () => {
-    if (!stateApp.activateUserDefinedLayers(4))
-      stateApp.deactivateUserDefinedLayers(4);
-    else stateApp.deactivateWellLayer();
+    setStateNav((stateNav) => {
+      if (stateNav.filterTrackedOwners) stateApp.deactivateUserDefinedLayers(3);
+      else {
+        stateApp.activateUserDefinedLayers(3);
+        // stateApp.deactivateWellLayer();
+      }
+
+      return {
+        ...stateNav,
+        filterTrackedOwners: !stateNav.filterTrackedOwners,
+      };
+    });
+
+    //  stateApp.deactivateWellLayer();
   };
 
   return (

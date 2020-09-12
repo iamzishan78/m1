@@ -73,7 +73,7 @@ const AppProvider = (props) => {
     //Map State
     mapCircularLoaderAct: false,
     mapboxglAccessToken:
-      "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJjanYycGJxbG8yN3JsM3lsYTdnMXZoeHh1In0.tTNECYKDPtcrzivWTiZcIQ",
+      "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJja2V6MHd2bnQwYzRqMnlwaTV6ejU2cTMyIn0.ghyrh-G8uQtyg4N4VcfTOw",
     selectedWellApi: null,
     styleLayers: styleLayers,
     heatLayers: heatLayers,
@@ -84,7 +84,7 @@ const AppProvider = (props) => {
     checkedHeats: [],
     udLayerConfig: [],
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
-    checkedUserDefinedLayers: [0, 2, 3, 4],
+    checkedUserDefinedLayers: [],
     checkedFileLayers: [],
     userFileLayers: [],
     userServiceLayers: [],
@@ -166,7 +166,7 @@ const AppProvider = (props) => {
       return stateApp.activateLayers("checkedLayers", 2);
     },
     deactivateWellLayer: () => {
-      return stateApp.deactivateLayers("checkedLayers", 0);
+      return stateApp.deactivateLayers("checkedLayers", 2);
     },
   });
 
@@ -184,11 +184,11 @@ const AppProvider = (props) => {
             ...state,
             myMSALObj: myMSALObjInt,
             apolloClientEndpoint: tenant.apolloClientEndpoint,
-          }
+          };
         });
       } else {
         setStateApp((state, props) => {
-          return { ...state, myMSALObj: false }
+          return { ...state, myMSALObj: false };
         });
       }
 
@@ -203,28 +203,17 @@ const AppProvider = (props) => {
               ...state,
               myMSALB2CObj: myMSALB2CObjInt,
               apolloClientEndpoint: tenant.apolloClientEndpoint,
-            }
+            };
           });
         }
       } else {
         setStateApp((state, props) => {
-          return { ...state, myMSALB2CObj: false }
+          return { ...state, myMSALB2CObj: false };
         });
       }
     }
     wait();
   }, []);
-
-  useEffect(() => {
-    if (
-      stateApp.checkedUserDefinedLayers &&
-      stateApp.checkedUserDefinedLayers.indexOf(4) === -1 &&
-      stateApp.checkedUserDefinedLayers.indexOf(3) === -1 &&
-      stateApp.checkedLayers.indexOf(2) === -1
-    ) {
-      stateApp.activateWellLayer();
-    }
-  }, [stateApp.checkedUserDefinedLayers]);
 
   useEffect(() => {
     dispatch(
