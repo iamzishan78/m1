@@ -1,7 +1,6 @@
-import React, { useState, useContext, useEffect, useCallback } from "react";
+import React, {  useContext, useEffect,  } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
-  MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
 import moment from "moment";
@@ -9,37 +8,21 @@ import { NavigationContext } from "../NavigationContext";
 import ClearIcon from "@material-ui/icons/Clear";
 import { IconButton } from "@material-ui/core";
 
-// DOCUMENTATION FOR THIS COMPONENT IS ON FILTERDATEPICKERPERMIT
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    // display: "flex",
-    // flexWrap: "wrap",
-    // flexDirection: "column",
-    // justifyContent: "space-around",
-    // flexGrow: 1
   },
   datesRow: {
     display: "flex",
     flexDirection: "row",
-    // flex: 1,
-    // flexGrow: 1
   },
   datePicker: {
     margin: "15px",
-    // minWidth: 175,
-    // maxWidth: 176,
     "&& span": {
       pointerEvents: "none",
     },
   },
-  chips: {
-    display: "flex",
-    flexWrap: "wrap",
-  },
-  chip: {
-    margin: 10,
-  },
+ 
   blue: {
     "& .MuiInputBase-input": { color: "#17AADD" },
   },
@@ -48,176 +31,57 @@ const useStyles = makeStyles((theme) => ({
 export default function FilterDatePickerFirstProd(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [selectedStartDate, handleStartDateChang] = useState(
-    new Date("1900-01-01T00:00:00")
-  );
-  const [selectedEndDate, handleEndDateChange] = useState(moment());
-  const [firstProductionFromDate, setFirstProductionFromDate] = useState({
-    check: false,
-    date: moment(),
-  });
-  const [firstProductionToDate, setFirstProductionToDate] = useState({
-    check: false,
-    date: moment(),
-  });
 
-  const [dateTypeName, setDateTypeName] = useState(
-    stateNav.dateTypeName ? stateNav.dateTypeName : []
-  );
+  useEffect(() => {
+    let filter = null;
 
-  const setFilterName = useCallback(() => {
-    let filter;
+    if (stateNav.firstProdDateFrom || stateNav.firstProdDateTo) {
+      filter = ["all"];
+
+      //// firstProdDateFrom
+      filter.push([
+        ">=",
+        ["get", "firstProductionDate"],
+        stateNav.firstProdDateFrom
+          ? moment.parseZone(stateNav.firstProdDateFrom).utc(true).valueOf()
+          : moment
+              .parseZone(new Date("1900-01-01T00:00:00"))
+              .utc(true)
+              .valueOf(),
+      ]);
+
+      //// firstProdDateTo
+      filter.push([
+        "<=",
+        ["get", "firstProductionDate"],
+        stateNav.firstProdDateTo
+          ? moment.parseZone(stateNav.firstProdDateTo).utc(true).valueOf()
+          : moment.parseZone(moment()).utc(true).valueOf(),
+      ]);
+    }
+
     if (
-      firstProductionFromDate.date._isValid === true &&
-      firstProductionToDate.date._isValid === true
-    ) {
-      const checkDate = moment
-        .parseZone(firstProductionToDate.date)
-        .utc(true)
-        .valueOf();
-      const fromDate = moment
-        .parseZone(firstProductionFromDate.date)
-        .utc(true)
-        .valueOf();
-      if (firstProductionFromDate.check && !firstProductionToDate.check) {
-        filter = [
-          "all",
-          [">=", ["get", "firstProductionDate"], fromDate],
-          ["<=", ["get", "firstProductionDate"], checkDate],
-        ];
-      } else if (
-        !firstProductionFromDate.check &&
-        firstProductionToDate.check
-      ) {
-        let checkDate = moment().subtract(120, "Years");
-        let fromDate = moment.parseZone(checkDate).utc(true).valueOf();
-        const toDate = moment
-          .parseZone(firstProductionToDate.date)
-          .utc(true)
-          .valueOf();
-        filter = [
-          "all",
-          [">=", ["get", "firstProductionDate"], fromDate],
-          ["<=", ["get", "firstProductionDate"], toDate],
-        ];
-      } else {
-        const fromDate = moment
-          .parseZone(firstProductionFromDate.date)
-          .utc(true)
-          .valueOf();
-        const toDate = moment
-          .parseZone(firstProductionToDate.date)
-          .utc(true)
-          .valueOf();
-        filter = [
-          "all",
-          [">=", ["get", "firstProductionDate"], fromDate],
-          ["<=", ["get", "firstProductionDate"], toDate],
-        ];
-      }
-    } else {
-      filter = null;
-    }
-    console.log("FirstProduction Range dates change filter", filter);
-    setStateNav((stateNav) => ({
-      ...stateNav,
-      filterFirstProdDateRange: filter,
-    }));
-  }, [
-    firstProductionFromDate.check,
-    firstProductionFromDate.date,
-    firstProductionToDate.date,
-    setStateNav,
-  ]);
-
-  useEffect(() => {
-    if (firstProductionFromDate.check === true) {
-      setFilterName();
-    }
-    if (firstProductionToDate.check === true) {
-      setFilterName();
-    }
-  }, [
-    firstProductionFromDate.check,
-    firstProductionToDate.check,
-    setFilterName,
-  ]);
-
-  const setvaluesFrom = useCallback(() => {
-    if (stateNav.firstProdDateFrom === null) {
-      return;
-    } else {
-      handleStartDateChang(stateNav.firstProdDateFrom);
-      setFirstProductionFromDate({
-        check: true,
-        date: stateNav.firstProdDateFrom,
-      });
-    }
-  }, [stateNav.firstProdDateFrom]);
-
-  const setvaluesTo = useCallback(() => {
-    if (stateNav.firstProdDateTo === null) {
-      return;
-    } else {
-      handleEndDateChange(stateNav.firstProdDateTo);
-      setFirstProductionToDate({ check: true, date: stateNav.firstProdDateTo });
-    }
-  }, [stateNav.firstProdDateTo]);
-
-  useEffect(() => {
-    if (dateTypeName.length > 0) {
-      setvaluesFrom();
-      setvaluesTo();
-    }
-  }, [setvaluesTo, dateTypeName, setvaluesFrom]);
+      JSON.stringify(stateNav.filterFirstProdDateRange) !==
+      JSON.stringify(filter)
+    )
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        filterFirstProdDateRange: filter,
+      }));
+  }, [stateNav.firstProdDateFrom, stateNav.firstProdDateTo, setStateNav]);
 
   const handleStartDate = (date) => {
-    if (date === null) {
-      const formatDateReset = new Date("1900-01-01T00:00:00");
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        firstProdDateFrom: null,
-        filterFirstProdDateRange: null,
-      }));
-      handleStartDateChang(formatDateReset);
-    } else {
-      const formatDateAfter = moment(date);
-      let dateName = [];
-      setFirstProductionFromDate({ check: true, date: formatDateAfter });
-      handleStartDateChang(formatDateAfter);
-      dateName.push("firstProd");
-      setDateTypeName(dateName);
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        firstProdDateFrom: formatDateAfter,
-        dateTypeName: dateName,
-      }));
-    }
+    setStateNav((stateNav) => ({
+      ...stateNav,
+      firstProdDateFrom: !date ? null : moment(date),
+    }));
   };
 
   const handleEndDate = (date) => {
-    if (date === null) {
-      const formatDateReset = moment();
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        firstProdDateTo: null,
-        filterFirstProdDateRange: null,
-      }));
-      handleEndDateChange(formatDateReset);
-      return;
-    } else {
-      const newDateAfter = moment(date);
-      let dateName = [];
-      setFirstProductionToDate({ check: true, date: newDateAfter });
-      handleEndDateChange(newDateAfter);
-      dateName.push("firstProd");
-      setDateTypeName(dateName);
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        firstProdDateTo: newDateAfter,
-        dateTypeName: dateName,
-      }));
-    }
+    setStateNav((stateNav) => ({
+      ...stateNav,
+      firstProdDateTo: !date ? null : moment(date),
+    }));
   };
 
   return (
@@ -227,14 +91,15 @@ export default function FilterDatePickerFirstProd(props) {
           label={props.labelDates + " " + "From"}
           // label="From"
           className={`${classes.datePicker} ${
-            JSON.stringify(selectedStartDate) !==
-            JSON.stringify(new Date("1900-01-01T00:00:00"))
-              ? classes.blue
-              : ""
+            stateNav.firstProdDateFrom ? classes.blue : ""
           }`}
           maxDate={moment().subtract(1, "day")}
           variant="inline"
-          value={selectedStartDate}
+          value={
+            stateNav.firstProdDateFrom
+              ? stateNav.firstProdDateFrom
+              : new Date("1900-01-01T00:00:00")
+          }
           onChange={(date) => handleStartDate(date)}
           //inputVariant="outlined"
           minDateMessage="Date should not be before minimal date"
@@ -250,7 +115,7 @@ export default function FilterDatePickerFirstProd(props) {
           InputProps={{
             endAdornment: (
               <IconButton onClick={() => handleStartDate(null)}>
-                <ClearIcon />
+                <ClearIcon style={{ height: "22px", width: "22px" }} />
               </IconButton>
             ),
           }}
@@ -263,14 +128,11 @@ export default function FilterDatePickerFirstProd(props) {
           label={props.labelDates + " " + "To"}
           // label="To"
           className={`${classes.datePicker} ${
-            JSON.stringify(selectedEndDate).slice(1, 11) !==
-            JSON.stringify(moment()).slice(1, 11)
-              ? classes.blue
-              : ""
+            stateNav.firstProdDateTo ? classes.blue : ""
           }`}
           maxDate={moment()}
           variant="inline"
-          value={selectedEndDate}
+          value={stateNav.firstProdDateTo ? stateNav.firstProdDateTo : moment()}
           onChange={(date) => handleEndDate(date)}
           //inputVariant="outlined"
           minDateMessage="Date should not be before minimal date"
@@ -286,7 +148,7 @@ export default function FilterDatePickerFirstProd(props) {
           InputProps={{
             endAdornment: (
               <IconButton onClick={() => handleEndDate(null)}>
-                <ClearIcon />
+                <ClearIcon style={{ height: "22px", width: "22px" }} />
               </IconButton>
             ),
           }}
