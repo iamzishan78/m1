@@ -335,16 +335,6 @@ function SubTable(props) {
     setM1nSelectedRowsIds([]);
   }
 
-  const removeUser = () => {
-      const newRow = rows !== null ? rows : props.rows;
-      console.log(m1nSelectedRowsIdsRef);
-      m1nSelectedRowsIdsRef.current.forEach((index) => {
-        newRow.splice(selectedUserIndex, 1);
-      });
-      setExpandedObject(newRow);
-    closeMenu();
-  };
-
   const changeAdminAccess = () => {
     selectedUser.adminAccess = !selectedUser.adminAccess;
     rows !== null ?  setExpandedObject([rows, selectedUser]) : setExpandedObject([props.rows, selectedUser]);
@@ -1744,11 +1734,13 @@ function SubTable(props) {
                    : ""
                }`}
                onClose={handleCloseDialog}
-               deleteFunc={removeUser}
+               deleteFunc={()=> {
+                 props.deleteFunc(selectedUser.id);
+                 closeMenu();}}
                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
              >
-               { selectedUser !== null ? `Remove '${selectedUser.account_name}' from list?` : 
+               { selectedUser !== null ? `Remove '${selectedUser.displayName}' from list?` : 
                `Are you sure you want to delete selected user${
                  m1nSelectedRowsIdsRef.current &&
                  m1nSelectedRowsIdsRef.current.length > 1

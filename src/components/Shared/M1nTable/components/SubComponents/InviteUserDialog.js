@@ -102,7 +102,7 @@ export default function InviteUserDialog(props) {
                 onChange={e=> setUserRole(e.target.value)}
             >
                 <MenuItem value="Member">Member</MenuItem>
-                <MenuItem value="user">User</MenuItem>
+                <MenuItem value="User">User</MenuItem>
             </Select>
           </Grid>
         </FormControl>

@@ -33,6 +33,7 @@ import { CONTACT } from "../../../graphQL/useQueryContact";
 import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
+import { REMOVEUSER } from "../../../graphQL/useMutationRemoveUser";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import { UPDATEPARCELOWNER } from "../../../graphQL/useMutationUpdateParcelOwner";
 import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRecords";
@@ -861,6 +862,18 @@ const OwnersPerParcelHeadCells = [
 
 const UserManagementHeadCells = [
   {
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    }
+  },
+  {
     name: "displayName",
     label: "Name",
     options: {
@@ -1167,6 +1180,8 @@ function M1nTable(props) {
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
     fetchPolicy: "cache-and-network",
   });
+
+  const [removeUser] = useMutation(REMOVEUSER);
   //////////
   const [removeContact] = useMutation(REMOVECONTACT);
 
@@ -2458,6 +2473,28 @@ function M1nTable(props) {
       setRows([]);
     }
   }, [props.parent, userLists]);
+
+
+  ///////// Remove User ////////////////////////////////////////////////////////////////////////
+  useEffect(()=> {
+
+    if (
+      props.parent &&
+      props.parent === "UserManagement"
+    ) {
+      setDeleteFunc(() => (userId) => {
+        if (userId) {
+          removeUser({
+            variables: {
+              userId
+            },
+            refetchQueries: ["getAllUsers"],
+            awaitRefetchQueries: true,
+          });
+        }
+      });
+    }
+  },[props.parent])
   ////////////User management end //////////////////////////////////////////////////////////////
 
   ////////////-----Add your code section here-----///////////////////////
