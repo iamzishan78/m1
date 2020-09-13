@@ -79,8 +79,13 @@ const AppProvider = (props) => {
     heatLayers: heatLayers,
     baseMapLayers: baseMapLayers,
     userDefinedLayers: userDefinedLayers,
+    searchLayerIndex: null,
+    trackedOwnersLayerIndex: null,
+    trackedWellsLayerIndex: null,
+    tagsLayerIndex: null,
     tempCheckedLayer: null,
     checkedLayers: [2, 5],
+    wellsLayerIndex: null,
     checkedHeats: [],
     udLayerConfig: [],
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
@@ -214,6 +219,36 @@ const AppProvider = (props) => {
     }
     wait();
   }, []);
+
+  useEffect(() => {
+    if (stateApp.userDefinedLayers) {
+      const stateIndexes = {};
+      stateApp.userDefinedLayers.forEach((layer, index) => {
+        if (layer.name === "Search") stateIndexes.searchLayerIndex = index;
+        if (layer.name === "Tracked Owners")
+          stateIndexes.trackedOwnersLayerIndex = index;
+        if (layer.name === "Tracked Wells")
+          stateIndexes.trackedWellsLayerIndex = index;
+        if (layer.name === "Tagged Wells/Owners")
+          stateIndexes.tagsLayerIndex = index;
+      });
+
+      if (Object.keys(stateIndexes).length !== 0)
+        setStateApp((state) => ({ ...state, ...stateIndexes }));
+    }
+  }, [stateApp.userDefinedLayers]);
+
+  useEffect(() => {
+    if (stateApp.styleLayers) {
+      const stateIndexes = {};
+      stateApp.styleLayers.forEach((layer, index) => {
+        if (layer.name === "Wells") stateIndexes.wellsLayerIndex = index;
+      });
+
+      if (Object.keys(stateIndexes).length !== 0)
+        setStateApp((state) => ({ ...state, ...stateIndexes }));
+    }
+  }, [stateApp.styleLayers]);
 
   useEffect(() => {
     dispatch(
