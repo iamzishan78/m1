@@ -31,7 +31,6 @@ const Profile = (props) => {
 
     useEffect(() => {
         const fullname = `${state.firstname} ${state.middlename} ${state.lastname}`;
-        //console.log(state);
         setStateProfile({...stateProfile, fields : {...state, fullname}})
     }, [state]);
 

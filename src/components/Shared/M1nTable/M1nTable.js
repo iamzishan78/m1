@@ -30,6 +30,7 @@ import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { CONTACT } from "../../../graphQL/useQueryContact";
+import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
@@ -858,6 +859,94 @@ const OwnersPerParcelHeadCells = [
   },
 ];
 
+const UserManagementHeadCells = [
+  {
+    name: "displayName",
+    label: "Name",
+    options: {
+      filter: false,
+      searchable: true,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+      editable: true,
+    },
+  },
+  {
+    name: "emails",
+    label: "User Email",
+    options: {
+      filter: false,
+      searchable: true,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "userType",
+    label: "User Type",
+    options: {
+      filter: true,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "role",
+    label: "Role",
+    options: {
+      filter: true,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "adminAccess",
+    label: "Admin Access",
+    options: {
+      filter: true,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "lastLogin",
+    label: "Last Login",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "actions",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+]
+
 const ParcelInterestsPerContactHeadCells = [
   {
     name: "_id",
@@ -1072,6 +1161,10 @@ function M1nTable(props) {
   });
   //////////
   const [getContacts, { data: constDataContacts }] = useLazyQuery(CONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
+  /////////
+  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
     fetchPolicy: "cache-and-network",
   });
   //////////
@@ -2342,6 +2435,30 @@ function M1nTable(props) {
   }, [props.parent]);
 
   ////////////Parcel Interests Per Contact end/////////////////////////////////////////////////
+
+
+  ////////////User management//////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "UserManagement"
+    ) {
+      getAllUsers();
+      if (userLists?.allUsers) {
+        setHeader("Active Users");
+        setRows(userLists.allUsers);
+        setColumns(UserManagementHeadCells);
+        setLoading(false);
+        setAddAble({
+          type: "inviteUser"
+        })
+        setOrderByTracks(false);
+      }
+    } else{
+      setRows([]);
+    }
+  }, [props.parent, userLists]);
+  ////////////User management end //////////////////////////////////////////////////////////////
 
   ////////////-----Add your code section here-----///////////////////////
 

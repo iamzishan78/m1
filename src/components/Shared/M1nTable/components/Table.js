@@ -1415,17 +1415,17 @@ function SubTable(props) {
                       props.addAble.type === "parcelInterestsToEntity"
                     )
                       handleExpandClick(null, null, null, "addOwnerToParcel");
-                    if (
-                      props.addAble.type &&
-                      props.addAble.type === "inviteUser"
-                    )
-                      handleExpandClick(null, null, null, "inviteUser");
                       handleExpandClick(
                         null,
                         null,
                         null,
                         "addParcelInterestsToEntity"
                       );
+                    if (
+                      props.addAble.type &&
+                      props.addAble.type === "inviteUser"
+                    )
+                      handleExpandClick(null, null, null, "inviteUser");
                   }}
                 >
                   <AddCircleOutlineRoundedIcon />
