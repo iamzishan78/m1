@@ -62,7 +62,7 @@ export default function FilterFormProduction() {
         ...stateApp,
         wellListFromTagsFilter: dataWells.wells.results,
       }));
-      stateApp.activateUserDefinedLayers(4);
+      stateApp.activateUserDefinedLayers(stateApp.tagsLayerIndex);
       // stateApp.deactivateWellLayer();
     }
   }, [dataWells]);

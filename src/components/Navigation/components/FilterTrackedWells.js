@@ -36,9 +36,10 @@ export default function FilterTrackedWells() {
 
   const toggleTracks = () => {
     setStateNav((stateNav) => {
-      if (stateNav.filterTrackedWells) stateApp.deactivateUserDefinedLayers(2);
+      if (stateNav.filterTrackedWells)
+        stateApp.deactivateUserDefinedLayers(stateApp.trackedOwnersLayerIndex);
       else {
-        stateApp.activateUserDefinedLayers(2);
+        stateApp.activateUserDefinedLayers(stateApp.trackedOwnersLayerIndex);
         stateApp.deactivateWellLayer();
       }
 
