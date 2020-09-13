@@ -12,10 +12,17 @@ import {Select, InputLabel, FormControl, MenuItem, TextField, Grid} from "@mater
 export default function InviteUserDialog(props) {
 
   const modalClass = Modals();
-  const [account_name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [displayName, setName] = useState("");
+  const [emails, setEmails] = useState("");
   const [user_type, setUserType] = useState("Member");
   const [role, setUserRole] = useState("Member");
+
+  const submitInvite = () => {
+    const rowData = props.rows;
+    rowData.push({displayName, emails, user_type, role, adminAccess: false, last_login: "Invite sent" });
+    props.setRows(rowData);
+    props.onClose();
+  }
 
   return (
     <React.Fragment>
@@ -37,7 +44,7 @@ export default function InviteUserDialog(props) {
               size="small"
               placeholder="E.g. Jacob"
               fullWidth
-              value={account_name}
+              value={displayName}
               onChange={e=> setName(e.target.value)}
             />
           </Grid>
@@ -47,8 +54,8 @@ export default function InviteUserDialog(props) {
               size="small"
               placeholder="E.g. jacob@mineral.com"
               fullWidth
-              value={email}
-              onChange={e=> setEmail(e.target.value)}
+              value={emails}
+              onChange={e=> setEmails(e.target.value)}
             />
           </Grid>
           <Grid item xs={12}>
@@ -88,10 +95,7 @@ export default function InviteUserDialog(props) {
         </Button>
         <Button
           onClick={() => {
-            const rowData = props.rows;
-            rowData.push({email, account_name, user_type, role, adminAccess: false, last_login: "Invite sent" });
-            props.setRows(rowData);
-            props.onClose();
+            submitInvite();
           }}
           color="secondary"
         >

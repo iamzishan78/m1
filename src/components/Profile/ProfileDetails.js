@@ -24,7 +24,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import ImageModel from "./ImageModal";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import Skeleton from "@material-ui/lab/Skeleton";
-import { useMutation } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/client";
 import { UPSERTPROFILE } from "../../graphQL/useMutationUpsertProfile";
 const newStyles = makeStyles((theme) => ({
     dialogContent: {

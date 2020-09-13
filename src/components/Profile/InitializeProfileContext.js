@@ -1,11 +1,11 @@
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/client";
 import { GETPROFILE } from "../../graphQL/useQueryGetProfile";
 import { useContext, useEffect } from "react";
 import { AppContext } from "../../AppContext";
 import { ProfileContext } from "./ProfileContext";
 
 export default function InitializeProfile(){
-    const [ stateApp] = useContext(AppContext);
+    const [ stateApp ] = useContext(AppContext);
     const [stateProfile, setStateProfile] = useContext(ProfileContext);
     const { user : {email}} = stateApp;
     const { data } = useQuery(GETPROFILE, {

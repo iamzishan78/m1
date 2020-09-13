@@ -33,8 +33,10 @@ import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
 import { CircularProgress } from "@material-ui/core";
 import Profile from "./components/Profile/Profile";
 import ProfileDetails from "./components/Profile/ProfileDetails";
-import {ProfileContextProvider} from "./components/Profile/ProfileContext";
+import { ProfileContextProvider } from "./components/Profile/ProfileContext";
+import { UserManagementContextProvider } from "./components/UserManagement/UserManagementContext";
 import InitializeProfile from "./components/Profile/InitializeProfileContext";
+import InitializeUserManagement from './components/UserManagement/InitializeUserManagementContext';
 import UserManagementContainer from "./components/UserManagement/Container";
 import Notifications from "./components/Notifications/Notifications";
 
@@ -176,7 +178,9 @@ const PrivateRoute = ({ component, ...options }) => {
   return (
     <div>
       <Route {...options} component={finalComponent} />
+      
       {stateApp.user !== null && <InitializeProfile/>}
+      {/* {stateApp.user !== null && <InitializeUserManagement/>} */}
     </div>
     );
 };
@@ -218,7 +222,7 @@ function App() {
       if (token) {
         apolloConfig.headers["X-ZUMO-AUTH"] = token;
         //uncomment to run against local
-        //apolloConfig.uri = "http://localhost:7071/api/m1graph"
+        apolloConfig.uri = "http://localhost:7071/api/m1graph"
       }
 
       let apolloClient = new ApolloClient(apolloConfig);
@@ -248,8 +252,10 @@ function App() {
                       <ProfileContextProvider>
                         <PrivateRoute exact path="/profile" component={Profile} />
                         <PrivateRoute exact path="/myaccount" component={ProfileDetails} />
-                        <PrivateRoute exact path="/usermanagement" component={UserManagementContainer} />
                       </ProfileContextProvider>
+                      <UserManagementContextProvider>
+                        <PrivateRoute exact path="/usermanagement" component={UserManagementContainer} />
+                      </UserManagementContextProvider>
                       <Route exact path="/signup" component={SignUpCard} />
                       <Route exact path="/loginb2c" component={LoginB2C} />
                       <Route
