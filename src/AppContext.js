@@ -2,6 +2,10 @@ import React, { useState, createContext, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
 import {
+  MSALB2CObj,
+  B2CTenantToLogin,
+} from "./components/Login/AADB2CAuthConfig";
+import {
   styleLayers,
   userDefinedLayers,
   heatLayers,
@@ -15,6 +19,7 @@ const AppContext = createContext([{}, () => {}]);
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
     myMSALObj: null,
+    myMSALB2CObj: null,
     selectedRoute: "/",
     apolloClientEndpoint:
       "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
@@ -68,18 +73,23 @@ const AppProvider = (props) => {
     //Map State
     mapCircularLoaderAct: false,
     mapboxglAccessToken:
-      "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJjanYycGJxbG8yN3JsM3lsYTdnMXZoeHh1In0.tTNECYKDPtcrzivWTiZcIQ",
+      "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJja2V6MHd2bnQwYzRqMnlwaTV6ejU2cTMyIn0.ghyrh-G8uQtyg4N4VcfTOw",
     selectedWellApi: null,
     styleLayers: styleLayers,
     heatLayers: heatLayers,
     baseMapLayers: baseMapLayers,
     userDefinedLayers: userDefinedLayers,
+    searchLayerIndex: null,
+    trackedOwnersLayerIndex: null,
+    trackedWellsLayerIndex: null,
+    tagsLayerIndex: null,
     tempCheckedLayer: null,
     checkedLayers: [2, 5],
+    wellsLayerIndex: null,
     checkedHeats: [],
     udLayerConfig: [],
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
-    checkedUserDefinedLayers: [0, 2, 3, 4],
+    checkedUserDefinedLayers: [],
     checkedFileLayers: [],
     userFileLayers: [],
     userServiceLayers: [],
@@ -161,7 +171,7 @@ const AppProvider = (props) => {
       return stateApp.activateLayers("checkedLayers", 2);
     },
     deactivateWellLayer: () => {
-      return stateApp.deactivateLayers("checkedLayers", 0);
+      return stateApp.deactivateLayers("checkedLayers", 2);
     },
   });
 
@@ -174,28 +184,71 @@ const AppProvider = (props) => {
       if (tenantName) {
         let tenant = tenantsCredentials(tenantName);
         let myMSALObjInt = MSALObj(tenant.tenantId, tenant.clientId);
-        setStateApp({
-          ...stateApp,
-          myMSALObj: myMSALObjInt,
-          apolloClientEndpoint: tenant.apolloClientEndpoint,
+        setStateApp((state, props) => {
+          return {
+            ...state,
+            myMSALObj: myMSALObjInt,
+            apolloClientEndpoint: tenant.apolloClientEndpoint,
+          };
         });
       } else {
-        setStateApp({ ...stateApp, myMSALObj: false });
+        setStateApp((state, props) => {
+          return { ...state, myMSALObj: false };
+        });
+      }
+
+      let tenantB2CName = window.sessionStorage.getItem("tenantB2CName");
+
+      if (tenantB2CName) {
+        let tenant = B2CTenantToLogin(tenantB2CName);
+        if (tenant) {
+          let myMSALB2CObjInt = MSALB2CObj(tenant.tenantId, tenant.clientId);
+          setStateApp((state, props) => {
+            return {
+              ...state,
+              myMSALB2CObj: myMSALB2CObjInt,
+              apolloClientEndpoint: tenant.apolloClientEndpoint,
+            };
+          });
+        }
+      } else {
+        setStateApp((state, props) => {
+          return { ...state, myMSALB2CObj: false };
+        });
       }
     }
     wait();
   }, []);
 
   useEffect(() => {
-    if (
-      stateApp.checkedUserDefinedLayers &&
-      stateApp.checkedUserDefinedLayers.indexOf(4) === -1 &&
-      stateApp.checkedUserDefinedLayers.indexOf(3) === -1 &&
-      stateApp.checkedLayers.indexOf(2) === -1
-    ) {
-      stateApp.activateWellLayer();
+    if (stateApp.userDefinedLayers) {
+      const stateIndexes = {};
+      stateApp.userDefinedLayers.forEach((layer, index) => {
+        if (layer.name === "Search") stateIndexes.searchLayerIndex = index;
+        if (layer.name === "Tracked Owners")
+          stateIndexes.trackedOwnersLayerIndex = index;
+        if (layer.name === "Tracked Wells")
+          stateIndexes.trackedWellsLayerIndex = index;
+        if (layer.name === "Tagged Wells/Owners")
+          stateIndexes.tagsLayerIndex = index;
+      });
+
+      if (Object.keys(stateIndexes).length !== 0)
+        setStateApp((state) => ({ ...state, ...stateIndexes }));
     }
-  }, [stateApp.checkedUserDefinedLayers]);
+  }, [stateApp.userDefinedLayers]);
+
+  useEffect(() => {
+    if (stateApp.styleLayers) {
+      const stateIndexes = {};
+      stateApp.styleLayers.forEach((layer, index) => {
+        if (layer.name === "Wells") stateIndexes.wellsLayerIndex = index;
+      });
+
+      if (Object.keys(stateIndexes).length !== 0)
+        setStateApp((state) => ({ ...state, ...stateIndexes }));
+    }
+  }, [stateApp.styleLayers]);
 
   useEffect(() => {
     dispatch(

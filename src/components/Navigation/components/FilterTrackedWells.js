@@ -34,24 +34,20 @@ export default function FilterTrackedWells() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateApp] = useContext(AppContext);
 
-  useEffect(() => {
-    if (stateApp.checkedUserDefinedLayers)
-      if (stateApp.checkedUserDefinedLayers.indexOf(3) === -1)
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          filterTrackedWells: false,
-        }));
-      else
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          filterTrackedWells: true,
-        }));
-  }, [stateApp.checkedUserDefinedLayers]);
-
   const toggleTracks = () => {
-    if (!stateApp.activateUserDefinedLayers(3))
-      stateApp.deactivateUserDefinedLayers(3);
-    else stateApp.deactivateWellLayer();
+    setStateNav((stateNav) => {
+      if (stateNav.filterTrackedWells)
+        stateApp.deactivateUserDefinedLayers(stateApp.trackedOwnersLayerIndex);
+      else {
+        stateApp.activateUserDefinedLayers(stateApp.trackedOwnersLayerIndex);
+        stateApp.deactivateWellLayer();
+      }
+
+      return {
+        ...stateNav,
+        filterTrackedWells: !stateNav.filterTrackedWells,
+      };
+    });
   };
 
   return (

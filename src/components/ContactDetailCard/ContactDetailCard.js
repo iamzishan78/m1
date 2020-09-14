@@ -23,6 +23,7 @@ import Activities from "../Shared/Activities";
 import Deals from "../Shared/Deals";
 import Documents from "../Shared/Documents";
 import LeadScore from "../Shared/LeadScore";
+import ParcelsCard from "./components/ParcelsCard";
 import LeadStage from "../Shared/LeadStage";
 import { AppContext } from "../../AppContext";
 import RecentConversations from "../Shared/RecentConversations";
@@ -44,7 +45,7 @@ import MessageRoundedIcon from "@material-ui/icons/MessageRounded";
 import DescriptionRoundedIcon from "@material-ui/icons/DescriptionRounded";
 import Card from "@material-ui/core/Card";
 import HandShake from "../Shared/svgIcons/HandShake";
-import Parcels from "./components/Parcels";
+// import Parcels from "./components/Parcels";
 import DealsNew from "./components/DealsNew";
 import WellsCard from "./components/WellsCard";
 import RecentActivities from "../RecentActivities/RecentActivities";
@@ -596,16 +597,18 @@ export default function ContactDetailCard(props) {
           <Grid item xs={12}>
             <Grid container spacing={2}>
               <Grid item xs={4}>
-                <Card raised style={{ minHeight: "35px" }}>
+                <Card raised style={{ minHeight: "35px", height: "100%" }}>
                   <WellsCard
                     handleOpenExpandableCard={handleOpenExpandableCard}
+                    contactData={contactData}
                   />
                 </Card>
               </Grid>
               <Grid item xs={4}>
-                <Card raised style={{ minHeight: "35px" }}>
-                  <Parcels
+                <Card raised style={{ minHeight: "35px", height: "100%" }}>
+                  <ParcelsCard
                     handleOpenExpandableCard={handleOpenExpandableCard}
+                    contactData={contactData}
                   />
                 </Card>
               </Grid>

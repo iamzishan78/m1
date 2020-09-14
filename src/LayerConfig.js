@@ -44,8 +44,8 @@ export const styleLayers = [
           "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
           "text-size": 12,
         },
-      }
-    }
+      },
+    },
   },
   // {
   //   name: "Rig Activity",
@@ -102,23 +102,20 @@ export const styleLayers = [
       layerId: ["rigs"],
       layerType: ["symbol"],
       layoutProps: {
-        'icon-image': 'marker-icon',
-        'icon-allow-overlap': true,
-        'icon-size': 2,
-        'text-field': 'H',
-        'text-font': [
-            'Open Sans Bold',
-            'Arial Unicode MS Bold'
-        ],
-        'text-size': 11,
-        'text-transform': 'uppercase',
-        'text-letter-spacing': 0.05,
-        'text-offset': [0, -0.5]
+        "icon-image": "marker-icon",
+        "icon-allow-overlap": true,
+        "icon-size": 2,
+        "text-field": "H",
+        "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+        "text-size": 11,
+        "text-transform": "uppercase",
+        "text-letter-spacing": 0.05,
+        "text-offset": [0, -0.5],
       },
       paintProps: {
         "icon-color": "#00ff00",
         "icon-halo-color": "#fff",
-        "icon-halo-width": 2
+        "icon-halo-width": 2,
       },
       clusterProps: {
         clusterPaintProps: {
@@ -151,8 +148,8 @@ export const styleLayers = [
           "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
           "text-size": 12,
         },
-      }
-    }
+      },
+    },
   },
   {
     name: "Wells",
@@ -175,9 +172,12 @@ export const styleLayers = [
       "PLSSFirstDivisionLabels",
       "TexasLandSurvey",
       "TexasLandSurveyLabels",
+      "abstract_geo_fill_layer",
+      "abstract_geo_layer",
+      "abstract_geo_label_layer",
     ],
   },
-  
+
   {
     name: "TX GLO Units",
     id: ["GLOUnits", "GLOUnitLabels"],
@@ -219,16 +219,16 @@ export const userDefinedLayers = [
         paintProps: {
           "fill-color": "#e07c71",
           "fill-opacity": [
-            'case',
-            ['boolean', ['feature-state', 'hover'], false],
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
             0.7,
-            0.4
+            0.4,
           ],
           "fill-outline-color": [
-            'case',
-            ['boolean', ['feature-state', 'hover'], false],
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
             "#fc5b49",
-            "#e07c71"
+            "#e07c71",
           ],
         },
       },
@@ -243,10 +243,12 @@ export const userDefinedLayers = [
             "interpolate",
             ["exponential", 1],
             ["zoom"],
-            0,0,
+            0,
+            0,
             // 11,0,
-            22,30
-            ],
+            22,
+            30,
+          ],
         },
       },
     ],
@@ -261,12 +263,13 @@ export const userDefinedLayers = [
       },
     },
   },
-  {
-    name: "Title",
-    id: [],
-    idColor: "#b6a0d3",
-    type: "data layer",
-  },
+  //// temporary commented Title layer
+  // {
+  //   name: "Title",
+  //   id: [],
+  //   idColor: "#b6a0d3",
+  //   type: "data layer",
+  // },
   {
     name: "Area of Interest",
     id: ["interest", "interest_labels"],
@@ -311,10 +314,12 @@ export const userDefinedLayers = [
             "interpolate",
             ["exponential", 1],
             ["zoom"],
-            0,0,
+            0,
+            0,
             // 11,0,
-            22,30
-            ],
+            22,
+            30,
+          ],
         },
       },
     ],

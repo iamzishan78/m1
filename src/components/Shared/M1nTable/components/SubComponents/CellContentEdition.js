@@ -323,13 +323,17 @@ export default function CellContentEdition({
           awaitRefetchQueries: true,
         });
       }
-      if (targetLabel === "Parcel Owner") {
+      if (targetLabel === "Parcel Owner" || targetLabel === "Parcel Interest") {
         trimmedEditContent.ownerEntityId = entityId;
         updateParcelOwner({
           variables: {
             parcelOwner: trimmedEditContent,
           },
-          refetchQueries: ["getCustomLayer"],
+          refetchQueries: [
+            "getCustomLayer",
+            "getContactParcelInterests",
+            "getAllEntityNamesToAddAsParcelOwner",
+          ],
           awaitRefetchQueries: true,
         });
       }

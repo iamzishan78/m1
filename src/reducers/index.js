@@ -3,6 +3,7 @@ import { connectRouter } from "connected-react-router";
 import Notifications from "./Notifications";
 import ContactDetailCard from "./ContactDetailCard";
 import MapGridCard from "./MapGridCard";
+import AddParcelInterest from "./AddParcelInterest";
 
 const createRootReducer = (history) =>
   combineReducers({
@@ -10,6 +11,7 @@ const createRootReducer = (history) =>
     Notifications,
     ContactDetailCard,
     MapGridCard,
+    AddParcelInterest,
     //// .....
   });
 

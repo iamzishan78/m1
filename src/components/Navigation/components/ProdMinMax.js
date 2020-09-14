@@ -4,10 +4,12 @@ import TextField from "@material-ui/core/TextField";
 import NumberFormat from "react-number-format";
 import { NavigationContext } from "../NavigationContext";
 import { FormLabel } from "@material-ui/core";
+import IconButton from "@material-ui/core/IconButton";
+import CancelIcon from "@material-ui/icons/Cancel";
 
 const useStyles = makeStyles({
   divBordersMinMax: {
-    padding: "3.5px 15px 5.5px 9px",
+    padding: "3.5px 5px 5.5px 9px",
     border: "1px solid #C4C4C4",
     borderRadius: "4px",
     "&:hover": {
@@ -18,7 +20,7 @@ const useStyles = makeStyles({
   },
   input: {
     marginLeft: "30px",
-    width: "160px",
+    width: "145px",
     float: "right",
     "& input": { color: "#17AADD" },
   },
@@ -120,7 +122,7 @@ export default function FirstMonthWater(props) {
   }, [setFilter, stateNav.prodOptions]);
 
   const handleChangeMin = (event) => {
-    setValueMinDisplay(event.target.value.replace(/,/g, ""));
+    setValueMinDisplay(parseInt(event.target.value.replace(/,/g, "")));
     if (event.target.value === "") {
       setStateNav((stateNav) => ({
         ...stateNav,
@@ -130,7 +132,7 @@ export default function FirstMonthWater(props) {
   };
 
   const handleChangeMax = (event) => {
-    setValueMaxDisplay(event.target.value.replace(/,/g, ""));
+    setValueMaxDisplay(parseInt(event.target.value.replace(/,/g, "")));
     if (event.target.value === "") {
       setStateNav((stateNav) => ({
         ...stateNav,
@@ -143,7 +145,7 @@ export default function FirstMonthWater(props) {
     if (valueMinDisplay && valueMaxDisplay) {
       if (valueMinDisplay >= valueMaxDisplay) {
         setError(true);
-        setErrorText("Min value is greater than Max value");
+        setErrorText("Min value is greater or equal than Max value");
       } else {
         setError(false);
         setErrorText("");
@@ -163,7 +165,6 @@ export default function FirstMonthWater(props) {
       <FormLabel className={classes.inputLabel}>
         {name} {type}
       </FormLabel>
-
       <NumberFormat
         value={valueMinDisplay}
         onChange={handleChangeMin}
@@ -206,6 +207,16 @@ export default function FirstMonthWater(props) {
           },
         }}
       />
+      <IconButton
+        onClick={() => {
+          handleChangeMax({ target: { id, value: "" } });
+          handleChangeMin({ target: { id, value: "" } });
+          setError(false);
+          setErrorText("");
+        }}
+      >
+        <CancelIcon height={"30px"} />
+      </IconButton>
     </div>
   );
 }

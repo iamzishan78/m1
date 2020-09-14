@@ -13,7 +13,7 @@ export const tenantsCredentials = (tenantName) => {
 
 // Config object to be passed to Msal on creation
 export const msalConfig = (tenantId, clientId) => {
-  const path = `${window.location.protocol}//${window.location.host}`;
+  const path = window.location.origin;
   return {
     auth: {
       clientId: clientId,
@@ -23,8 +23,8 @@ export const msalConfig = (tenantId, clientId) => {
       authority: `https://login.microsoftonline.com/${
         tenantId ? tenantId : "common"
       }`,
-      redirectUri: `${path}/`,
-      postLogoutRedirectUri: `${path}/`,
+      redirectUri: path,
+      postLogoutRedirectUri: path,
     },
     cache: {
       cacheLocation: "sessionStorage", // This configures where your cache will be stored
