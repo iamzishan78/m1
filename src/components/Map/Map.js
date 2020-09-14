@@ -21,7 +21,6 @@ import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
 import DrawStatus from "./components/DrawStatus";
 import ZoomFault from "./components/ZoomFault";
-import TrackAbstract from "./components/TrackAbstract";
 import HugeRequest from "./components/HugeRequest";
 import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
@@ -3972,11 +3971,9 @@ export default function Map() {
               source: "abstract_geo_source",
               id: e.features[0].id,
             });
+            console.log('currentFeatureState', currentFeatureState);
             if (currentFeatureState && currentFeatureState.click) {
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                showAbstractPopup: true,
-              }));
+             console.log("Show popup");
             } else {
               for (let i = 0; i < featuresList.length; i++) {
                 const id = featuresList[i].properties.abstract_n;
@@ -3997,11 +3994,6 @@ export default function Map() {
                 { source: "abstract_geo_source", id: e.features[0].id },
                 { click: true }
               );
-
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                showAbstractPopup: true,
-              }));
             }
           }
         }
