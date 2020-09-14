@@ -63,6 +63,8 @@ export default function FilterOwnerCount() {
   const [ownerCountWell, setOwnerCountWell] = useState(
     stateNav.ownerCountWell ? stateNav.ownerCountWell : []
   );
+  const [error, setError] = useState(false);
+  const [errorText, setErrorText] = useState("");
 
   const setFilter = useCallback(() => {
     let filter;
@@ -131,7 +133,7 @@ export default function FilterOwnerCount() {
   }, [setFilter, stateNav.ownerCountWell]);
 
   const handleChangeMin = (event) => {
-    setValueMinDisplay(event.target.value.replace(/,/g, ""));
+    setValueMinDisplay(parseInt(event.target.value.replace(/,/g, "")));
     setOwnerCountWell(event.target.id);
     setStateNav((stateNav) => ({
       ...stateNav,
@@ -146,7 +148,7 @@ export default function FilterOwnerCount() {
   };
 
   const handleChangeMax = (event) => {
-    setValueMaxDisplay(event.target.value.replace(/,/g, ""));
+    setValueMaxDisplay(parseInt(event.target.value.replace(/,/g, "")));
     setOwnerCountWell(event.target.id);
     setStateNav((stateNav) => ({
       ...stateNav,
@@ -159,6 +161,18 @@ export default function FilterOwnerCount() {
       }));
     }
   };
+
+  useEffect(() => {
+    if (valueMinDisplay && valueMaxDisplay) {
+      if (valueMinDisplay > valueMaxDisplay) {
+        setError(true);
+        setErrorText("Min value is greater than Max value");
+      } else {
+        setError(false);
+        setErrorText("");
+      }
+    }
+  }, [valueMaxDisplay, valueMinDisplay]);
 
   const allowNumbersOnly = (e) => {
     let code = e.which ? e.which : e.keyCode;
@@ -273,6 +287,8 @@ export default function FilterOwnerCount() {
               label="Max"
               size="small"
               onKeyPress={(e) => allowNumbersOnly(e)}
+              error={error}
+              helperText={errorText}
               InputProps={{
                 inputProps: {
                   min: 0,
@@ -284,6 +300,8 @@ export default function FilterOwnerCount() {
               onClick={() => {
                 handleChangeMax({ target: { id: "OwnerCountMax", value: "" } });
                 handleChangeMin({ target: { id: "OwnerCountMin", value: "" } });
+                setError(false);
+                setErrorText("");
               }}
             >
               <CancelIcon height={"30px"} />

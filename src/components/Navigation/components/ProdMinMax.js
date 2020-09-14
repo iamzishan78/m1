@@ -122,7 +122,7 @@ export default function FirstMonthWater(props) {
   }, [setFilter, stateNav.prodOptions]);
 
   const handleChangeMin = (event) => {
-    setValueMinDisplay(event.target.value.replace(/,/g, ""));
+    setValueMinDisplay(parseInt(event.target.value.replace(/,/g, "")));
     if (event.target.value === "") {
       setStateNav((stateNav) => ({
         ...stateNav,
@@ -132,7 +132,7 @@ export default function FirstMonthWater(props) {
   };
 
   const handleChangeMax = (event) => {
-    setValueMaxDisplay(event.target.value.replace(/,/g, ""));
+    setValueMaxDisplay(parseInt(event.target.value.replace(/,/g, "")));
     if (event.target.value === "") {
       setStateNav((stateNav) => ({
         ...stateNav,
@@ -145,7 +145,7 @@ export default function FirstMonthWater(props) {
     if (valueMinDisplay && valueMaxDisplay) {
       if (valueMinDisplay >= valueMaxDisplay) {
         setError(true);
-        setErrorText("Min value is greater than Max value");
+        setErrorText("Min value is greater or equal than Max value");
       } else {
         setError(false);
         setErrorText("");
@@ -211,6 +211,8 @@ export default function FirstMonthWater(props) {
         onClick={() => {
           handleChangeMax({ target: { id, value: "" } });
           handleChangeMin({ target: { id, value: "" } });
+          setError(false);
+          setErrorText("");
         }}
       >
         <CancelIcon height={"30px"} />
