@@ -41,18 +41,24 @@ const useStyles = makeStyles((theme) => ({
   gridList: {
     width: "auto",
     height: "auto",
-    padding: "8px 18px",
+    padding: "8px 0px 0px 18px",
     "&>:nth-child(1)": {
-      padding: "0px 16px 16px 0px !important",
+      marginRight: "13px",
+      width: "46% !important",
+      padding: " 0 0 16px 0px !important",
     },
     "&>:nth-child(2)": {
       padding: "0px 0px 16px 0px !important",
+      width: "46% !important",
     },
     "&>:nth-child(3)": {
-      padding: "0px 16px 16px 0px !important",
+      marginRight: "13px",
+      width: "46% !important",
+      padding: " 0 0 16px 0px !important",
     },
     "&>:nth-child(4)": {
       padding: "0px 0px 16px 0px !important",
+      width: "46% !important",
     },
   },
   gridContainer: {
@@ -129,13 +135,14 @@ export default function QuadSummary(props) {
   const [stateApp] = useContext(AppContext);
   const [stateQuad, setStateQuad] = useContext(QuadContext);
   const classes = useStyles();
-  const [dropDownValue, setDropDownValue] = useState({ value: "CUM" });
+  const [dropDownValue, setDropDownValue] = useState({ value: "Cumulative" });
   const [value, setValue] = useState(0);
 
   const handleChangeRange = (range) => {
+    console.log(range, "rangevalue");
     const newRange = range.target.value;
     if (newRange === 0) {
-      setDropDownValue({ value: "CUM" });
+      setDropDownValue({ value: "Cumulative" });
     }
     if (newRange === 1) {
       setDropDownValue({ value: "1 Month" });
@@ -147,6 +154,14 @@ export default function QuadSummary(props) {
       setDropDownValue({ value: "12 Months" });
     }
     setStateQuad((state) => ({ ...state, selectedRange: newRange }));
+    console.log(stateQuad.quadChart, "stateQuad.quadChart");
+    if (!stateQuad.quadChart) {
+      if (data) {
+        // console.log('quadData',data)
+        let quadChart = data.quadChart;
+        setStateQuad((state) => ({ ...state, quadChart: quadChart }));
+      }
+    }
   };
 
   //graphQL
@@ -172,7 +187,7 @@ export default function QuadSummary(props) {
           defaultValue={dropDownValue.value}
           onChange={handleChangeRange}
         >
-          <option value={0}>CUM</option>
+          <option value={0}>Cumulative</option>
           <option value={1}>1 Month</option>
           <option value={6}>6 Months</option>
           <option value={12}>12 Months</option>
