@@ -117,11 +117,8 @@ export default function FilterWellAppraisal() {
   }, [setFilter, stateNav.appraisalWell]);
 
   const handleChangeMin = (event) => {
-    console.log("handle change min");
-    setValueMinDisplay(event.target.value.replace(/,/g, ""));
+    setValueMinDisplay(parseInt(event.target.value.replace(/,/g, "")));
     setAppraisalWell(event.target.id);
-    console.log(event.target.value.replace(/,/g, ""));
-    console.log(event.target.id);
 
     setStateNav((stateNav) => ({
       ...stateNav,
@@ -136,7 +133,7 @@ export default function FilterWellAppraisal() {
   };
 
   const handleChangeMax = (event) => {
-    setValueMaxDisplay(event.target.value.replace(/,/g, ""));
+    setValueMaxDisplay(parseInt(event.target.value.replace(/,/g, "")));
     setAppraisalWell(event.target.id);
     setStateNav((stateNav) => ({
       ...stateNav,
@@ -154,7 +151,7 @@ export default function FilterWellAppraisal() {
     if (valueMinDisplay && valueMaxDisplay) {
       if (valueMinDisplay >= valueMaxDisplay) {
         setError(true);
-        setErrorText("Min value is greater than Max value");
+        setErrorText("Min value is greater or equal than Max value");
       } else {
         setError(false);
         setErrorText("");
@@ -217,6 +214,8 @@ export default function FilterWellAppraisal() {
           onClick={() => {
             handleChangeMax({ target: { id: "appraisalWellMax", value: "" } });
             handleChangeMin({ target: { id: "appraisalWellMin", value: "" } });
+            setError(false);
+            setErrorText("");
           }}
         >
           <CancelIcon height={"30px"} />
