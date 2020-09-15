@@ -85,7 +85,18 @@ export default function TransactDialog(props) {
     );
   }, [cData]);
 
-  const transactData = tdata?.transactionData?.allData;
+  let [transactData, setTransactData] = useState({
+    lanes: [],
+  });
+
+  useEffect(() => {
+    console.log("TDATAAAAAAAAA : ", tdata?.transactionData?.allData);
+    if (tdata?.transactionData?.allData) {
+      setTransactData(
+        JSON.parse(JSON.stringify(tdata?.transactionData?.allData))
+      );
+    }
+  }, [tdata]);
 
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
 
@@ -208,43 +219,55 @@ export default function TransactDialog(props) {
         if (card.laneId !== newStage) {
           if (cardIndex > -1) {
             // remove card from current lane
-            transactData.lanes[laneIndex].cards.splice(cardIndex, 1);
+            let td = { ...transactData };
+            td.lanes[laneIndex].cards.splice(cardIndex, 1);
             // add card to updated lane
-            const stageIndex = transactData.lanes.findIndex(
+            const stageIndex = td.lanes.findIndex(
               (lane) => lane.id === newStage
             );
-            transactData.lanes[stageIndex].cards.push(updatedCard);
+            td.lanes[stageIndex].cards.push(updatedCard);
+            setTransactData(td);
           }
         } else {
-          transactData.lanes[laneIndex].cards[cardIndex] = updatedCard;
+          let td = { ...transactData };
+
+          td.lanes[laneIndex].cards[cardIndex] = updatedCard;
+          setTransactData(td);
         }
       } else if (!cardId && !laneId) {
         // add new
 
-        transactData.lanes.forEach((lane) => {
-          if (lane.id === newStage) {
-            let cards = [...lane.cards];
-            const newCard = {
-              // dealName: dealName.trim(),
-              // title: contact?.name,
-              contactName: contact?.name ? contact.name.trim() : "",
-              title: title ? title.trim() : "",
-              label: label ? label.trim() : "",
-              description: description ? description.trim() : "",
-              id: uuid(),
-              contactId: contact?._id ? contact._id : uuid(),
-              laneId: newStage,
-            };
-            cards.push(newCard);
-            lane.cards = cards;
-          }
-        });
+        setTransactData((t) =>
+          t.lanes.forEach((lane) => {
+            if (lane.id === newStage) {
+              let cards = [...lane.cards];
+              const newCard = {
+                // dealName: dealName.trim(),
+                // title: contact?.name,
+                contactName: contact?.name ? contact.name.trim() : "",
+                title: title ? title.trim() : "",
+                label: label ? label.trim() : "",
+                description: description ? description.trim() : "",
+                id: uuid(),
+                contactId: contact?._id ? contact._id : uuid(),
+                laneId: newStage,
+              };
+              cards.push(newCard);
+              lane.cards = cards;
+            }
+          })
+        );
       }
-      handleDataChange(transactData);
 
       handleClose();
     }
   };
+
+  useEffect(() => {
+    if (tdata?.transactionData?.allData) {
+      handleDataChange(transactData);
+    }
+  }, [transactData]);
 
   return (
     <Dialog
