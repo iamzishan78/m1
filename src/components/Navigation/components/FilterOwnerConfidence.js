@@ -117,7 +117,7 @@ export default function FilterOwnerConfidence() {
   }, [setFilter, stateNav.ownerConfidenceWell]);
 
   const handleChangeMin = (event) => {
-    setValueMinDisplay(event.target.value.replace(/,/g, ""));
+    setValueMinDisplay(parseInt(event.target.value.replace(/,/g, "")));
     setOwnerConfidenceWell(event.target.id);
     setStateNav((stateNav) => ({
       ...stateNav,
@@ -132,7 +132,7 @@ export default function FilterOwnerConfidence() {
   };
 
   const handleChangeMax = (event) => {
-    setValueMaxDisplay(event.target.value.replace(/,/g, ""));
+    setValueMaxDisplay(parseInt(event.target.value.replace(/,/g, "")));
     setOwnerConfidenceWell(event.target.id);
     setStateNav((stateNav) => ({
       ...stateNav,
@@ -150,7 +150,7 @@ export default function FilterOwnerConfidence() {
     if (valueMinDisplay && valueMaxDisplay) {
       if (valueMinDisplay >= valueMaxDisplay) {
         setError(true);
-        setErrorText("Min value is greater than Max value");
+        setErrorText("Min value is greater or equal than Max value");
       } else {
         setError(false);
         setErrorText("");
@@ -220,6 +220,8 @@ export default function FilterOwnerConfidence() {
               handleChangeMin({
                 target: { id: "OwnerConfidenceMin", value: "" },
               });
+              setError(false);
+              setErrorText("");
             }}
           >
             <CancelIcon height={"30px"} />

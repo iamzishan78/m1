@@ -26,7 +26,7 @@ export default function HugeRequest(props) {
     if (props.hugeRequestStatus) {
       return (
         <div className={classes.hugeRequestBox}>
-          You've select too many wells to track.
+          You have selected too many wells to track at once. Please adjust the shape boundary to select fewer wells.
         </div>
       )
     } else {

@@ -222,7 +222,9 @@ function Search() {
 
   useEffect(() => {
     if (searchHistoryData && searchHistoryData.getSearchHistory) {
-      let list = [...searchHistoryData.getSearchHistory].sort((a, b) => b.ts - a.ts);
+      let list = [...searchHistoryData.getSearchHistory].sort(
+        (a, b) => b.ts - a.ts
+      );
 
       setSearchHistoryList(list);
     }
@@ -309,7 +311,8 @@ function Search() {
         };
 
         console.log(
-          "request made to globalowner-index search at: " + new Date().toString()
+          "request made to globalowner-index search at: " +
+            new Date().toString()
         );
 
         fetch(endpoint, options)
@@ -434,6 +437,8 @@ function Search() {
     if (!mapGridCardActivated) {
       if (searchInputValue === "") {
         setOptions(value ? [value] : []);
+        setValue(null);
+        setStateApp((state) => ({ ...state, wellListFromSearch: null }));
         return undefined;
       }
 
@@ -651,26 +656,26 @@ function Search() {
         setStateApp((stateApp) =>
           dataOwnerWells.ownerLatsLonsArray.length === 1
             ? {
-              ...stateApp,
-              selectedWell: null,
-              fitBounds: null,
-              selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
-              wellSelectedCoordinates: [
-                dataOwnerWells.ownerLatsLonsArray[0].longitude,
-                dataOwnerWells.ownerLatsLonsArray[0].latitude,
-              ],
-              wellListFromSearch: dataOwnerWells.ownerLatsLonsArray,
-            }
+                ...stateApp,
+                selectedWell: null,
+                fitBounds: null,
+                selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
+                wellSelectedCoordinates: [
+                  dataOwnerWells.ownerLatsLonsArray[0].longitude,
+                  dataOwnerWells.ownerLatsLonsArray[0].latitude,
+                ],
+                wellListFromSearch: dataOwnerWells.ownerLatsLonsArray,
+              }
             : {
-              ...stateApp,
-              fitBounds: null,
-              wellListFromSearch: dataOwnerWells.ownerLatsLonsArray,
-            }
+                ...stateApp,
+                fitBounds: null,
+                wellListFromSearch: dataOwnerWells.ownerLatsLonsArray,
+              }
         );
-        stateApp.activateUserDefinedLayers(6);
+        stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
       } else {
         console.log("Not wells found for the owner");
-        stateApp.deactivateUserDefinedLayers(6);
+        stateApp.deactivateUserDefinedLayers(stateApp.searchLayerIndex);
         setStateApp((stateApp) => ({
           ...stateApp,
           wellListFromSearch: null,
@@ -707,7 +712,7 @@ function Search() {
               wellListFromSearch: dataWells.wells.results,
             }
       );
-      stateApp.activateUserDefinedLayers(6);
+      stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
     }
   }, [dataWells]);
 
@@ -739,10 +744,10 @@ function Search() {
                 wellListFromSearch: dataOperatorWells.operatorLatsLonsArray,
               }
         );
-        stateApp.activateUserDefinedLayers(6);
+        stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
       } else {
         console.log("Not wells found for the operator");
-        stateApp.deactivateUserDefinedLayers(6);
+        stateApp.deactivateUserDefinedLayers(stateApp.searchLayerIndex);
         setStateApp((stateApp) => ({
           ...stateApp,
           wellListFromSearch: null,
@@ -779,10 +784,10 @@ function Search() {
                 wellListFromSearch: dataLeaseWells.leaseLatsLonsArray,
               }
         );
-        stateApp.activateUserDefinedLayers(6);
+        stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
       } else {
         console.log("Not wells found for the lease");
-        stateApp.deactivateUserDefinedLayers(6);
+        stateApp.deactivateUserDefinedLayers(stateApp.searchLayerIndex);
         setStateApp((stateApp) => ({
           ...stateApp,
           wellListFromSearch: null,
@@ -869,7 +874,7 @@ function Search() {
             },
           ],
         }));
-        stateApp.activateUserDefinedLayers(6);
+        stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
       }
 
       //// if owner
@@ -939,7 +944,7 @@ function Search() {
             ? { maxLat, minLat, maxLong, minLong }
             : null,
         }));
-        stateApp.activateUserDefinedLayers(6);
+        stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
       }
     }
   };
