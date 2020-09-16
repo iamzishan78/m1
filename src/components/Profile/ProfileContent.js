@@ -69,14 +69,34 @@ const useStyles = makeStyles((theme) => ({
 const ProfileContent = () => {
   const classes = useStyles();
   const [stateProfile, setStateProfile] = useContext(ProfileContext);
+  const [app, setApp] = useContext(AppContext);
   const {
     fields: { fullname, displayname, jobTitle, phone, profileImage}
   } = stateProfile;
 
   const onChange = ({ name, value }) => {
+    let disectFullname = {};
+    
+    if (name === "fullname") {
+      let temp = value.split(" ");
+      if (temp.length === 1) {
+        disectFullname['firstname'] = temp[0];
+      } else if (temp.length === 2) {
+        disectFullname['firstname'] = temp[0];
+        disectFullname['lastname'] = temp[1];
+      } else if (temp.length >= 3){
+        disectFullname['firstname'] = temp[0];
+        disectFullname['middlename'] = temp[1];
+        disectFullname['firstname'] = temp[2];
+      }
+    }
+
     setStateProfile({
       ...stateProfile,
-      fields: { ...stateProfile.fields, [name]: value },
+      fields: { ...stateProfile.fields,
+        [name]: value,
+        ...disectFullname
+      },
     });
   };
 
@@ -162,7 +182,7 @@ const ProfileContent = () => {
             label={"What you do"}
             placeholder={"Your Role or Title"}
             helperText={"Let people know what you do"}
-            name="activity"
+            name="jobTitle"
             value={jobTitle}
             onChange={({ target }) => onChange(target)}
           />

@@ -188,56 +188,56 @@ const ProfileDetails = () => {
             >
                 <Grid container className={newStyle.root}>
                     <Grid item sm={2}>
-                    <Grid container className={newStyle.navSubroot}>
-                        <Grid item sm={12} style={{alignSelf: 'center', flex: 0.3, paddingTop:"10%"}}>
-                        <input
-                          accept="image/*"
-                          style={{ display: "none" }}
-                          id="profile-image"
-                          type="file"
-                          name="profileimage"
-                          onChange={(e) => handleImage(e)}
-                        />
-                        <Badge
-                          overlap="circle"
-                          anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'right',
-                          }}
-                          badgeContent={
-                            <label htmlFor="profile-image">
-                              <Tooltip title={`Upload a photo`} arrow placement="bottom-end">
-                                <AddAPhotoIcon
-                                  className={newStyle.editIcon}
-                                  />
-                              </Tooltip>
-                            </label>
-                            }
-                        >
-                          {
-                            profileImage !== null ? (
-                            <img 
-                              src={profileImage !== "" ? profileImage : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"}
-                              alt="Profile picture"
-                              className={newStyle.profile_picture} 
+                      <Grid container className={newStyle.navSubroot}>
+                          <Grid item sm={12} style={{alignSelf: 'center', flex: 0.3, paddingTop:"10%"}}>
+                            <input
+                              accept="image/*"
+                              style={{ display: "none" }}
+                              id="profile-image"
+                              type="file"
+                              name="profileimage"
+                              onChange={(e) => handleImage(e)}
                             />
-                            ) : (
-                              <Skeleton variant="circle" width={150} height={150}/>
-                            )
-                          }
-                        </Badge>
-                          <h2 style={{color: '#fff'}}>{fullname}</h2>
-                        </Grid>
-                        <Grid item sm={12} style={{flex: 1}}>
-                        <MenuList className={newStyle.menuList}>
-                            {
-                            list.map((item, index) => {
-                                return <MenuItem key={index} onClick={()=> {changeDisplayContent(index)}}>{item}</MenuItem>
-                            })
-                            }
-                        </MenuList>
-                        </Grid>
-                    </Grid>
+                            <Badge
+                              overlap="circle"
+                              anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                              }}
+                              badgeContent={
+                                <label htmlFor="profile-image">
+                                  <Tooltip title={`Upload a photo`} arrow placement="bottom-end">
+                                    <AddAPhotoIcon
+                                      className={newStyle.editIcon}
+                                      />
+                                  </Tooltip>
+                                </label>
+                                }
+                            >
+                              {
+                                profileImage !== null ? (
+                                <img 
+                                  src={profileImage !== "" ? profileImage : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"}
+                                  alt="Profile picture"
+                                  className={newStyle.profile_picture} 
+                                />
+                                ) : (
+                                  <Skeleton variant="circle" width={150} height={150}/>
+                                )
+                              }
+                            </Badge>
+                            <h2 style={{color: '#fff', maxWidth: '100%'}}>{fullname}</h2>
+                          </Grid>
+                          <Grid item sm={12} style={{flex: 1}}>
+                          <MenuList className={newStyle.menuList}>
+                              {
+                              list.map((item, index) => {
+                                  return <MenuItem key={index} onClick={()=> {changeDisplayContent(index)}}>{item}</MenuItem>
+                              })
+                              }
+                          </MenuList>
+                          </Grid>
+                      </Grid>
                     </Grid>
                     <Grid item sm={10}>
                     <Grid container className={newStyle.contentSubroot}>

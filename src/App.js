@@ -178,9 +178,7 @@ const PrivateRoute = ({ component, ...options }) => {
   return (
     <div>
       <Route {...options} component={finalComponent} />
-      
       {stateApp.user !== null && <InitializeProfile/>}
-      {/* {stateApp.user !== null && <InitializeUserManagement/>} */}
     </div>
     );
 };

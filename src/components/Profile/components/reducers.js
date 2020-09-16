@@ -44,11 +44,13 @@ export const ProfileTabReducer = (state, action) => {
             return {...state, isSameFromAbove: false, employerAddress: action.value};
 
         case 'investingExperience':
-            const temp = state.investingExperience === null ? [] : state.investingExperience;
+            const temp = state.investingExperience === null ? [] : Object.assign([], state.investingExperience);
+            console.log("TEMP", temp);
             if(temp.includes(action.value)){
                 const index = temp.indexOf(action.value);
                 temp.splice(index, 1);
             }else{
+                console.log("VALUE:", action.value);
                 temp.push(action.value);
             }
             return {...state, investingExperience: temp};
