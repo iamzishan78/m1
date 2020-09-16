@@ -32,6 +32,7 @@ const AppProvider = (props) => {
     trackedOwnerWells: null,
     selectedWell: null,
     selectedWellId: null,
+    selectedAbstracts: [],
     customLayers: [],
     editDraw: false,
     editLayer: true,
