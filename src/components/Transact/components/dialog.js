@@ -85,9 +85,7 @@ export default function TransactDialog(props) {
     );
   }, [cData]);
 
-  let [transactData, setTransactData] = useState({
-    lanes: [],
-  });
+  let [transactData, setTransactData] = useState();
 
   useEffect(() => {
     console.log("TDATAAAAAAAAA : ", tdata?.transactionData?.allData);
@@ -237,26 +235,29 @@ export default function TransactDialog(props) {
       } else if (!cardId && !laneId) {
         // add new
 
-        setTransactData((t) =>
-          t.lanes.forEach((lane) => {
-            if (lane.id === newStage) {
-              let cards = [...lane.cards];
-              const newCard = {
-                // dealName: dealName.trim(),
-                // title: contact?.name,
-                contactName: contact?.name ? contact.name.trim() : "",
-                title: title ? title.trim() : "",
-                label: label ? label.trim() : "",
-                description: description ? description.trim() : "",
-                id: uuid(),
-                contactId: contact?._id ? contact._id : uuid(),
-                laneId: newStage,
-              };
-              cards.push(newCard);
-              lane.cards = cards;
-            }
-          })
-        );
+        let td = { ...transactData };
+        console.log(td, transactData, stateApp.user.mongoId);
+
+        td.lanes.forEach((lane) => {
+          if (lane.id === newStage) {
+            let cards = [...lane.cards];
+            const newCard = {
+              // dealName: dealName.trim(),
+              // title: contact?.name,
+              contactName: contact?.name ? contact.name.trim() : "",
+              title: title ? title.trim() : "",
+              label: label ? label.trim() : "",
+              description: description ? description.trim() : "",
+              id: uuid(),
+              contactId: contact?._id ? contact._id : uuid(),
+              laneId: newStage,
+            };
+            cards.push(newCard);
+            lane.cards = cards;
+          }
+        });
+
+        setTransactData(td);
       }
 
       handleClose();

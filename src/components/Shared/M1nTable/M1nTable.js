@@ -1091,9 +1091,9 @@ function M1nTable(props) {
     WELLOWNERSQUERY
   );
   //////////
-  const [getContactInM1nTable, { data: dataContact }] = useLazyQuery(CONTACT, {
-    fetchPolicy: "cache-and-network",
-  });
+  // const [getContactInM1nTable, { data: dataContact }] = useLazyQuery(CONTACT, {
+  //   fetchPolicy: "cache-and-network",
+  // });
   //////////
   const [getContacts, { data: constDataContacts }] = useLazyQuery(
     CONTACTSQUERY,
@@ -1103,10 +1103,7 @@ function M1nTable(props) {
   );
   //////////
   const [getTransactionData, { data: dataDeals }] = useLazyQuery(
-    TRANSACTIONDATA,
-    {
-      fetchPolicy: "cache-and-network",
-    }
+    TRANSACTIONDATA
   );
 
   //////////
@@ -2033,6 +2030,14 @@ function M1nTable(props) {
   ]);
 
   useEffect(() => {
+    console.log(
+      "%cCONTACT ID : ",
+      "font-size:20px; color:tomato;",
+      props.contactId
+    );
+  });
+
+  useEffect(() => {
     if (
       props.parent &&
       props.parent === "search" &&
@@ -2409,12 +2414,14 @@ function M1nTable(props) {
       const lanes = dataDeals?.transactionData?.allData?.lanes;
 
       const all = [];
-      lanes.forEach((deal) => {
-        deal.cards.forEach((card) => {
-          if (props.contactId === card.contactId) all.push(card);
-        });
-      });
       console.log("ALL : ", all, lanes);
+      if (lanes) {
+        lanes.forEach((deal) => {
+          deal.cards.forEach((card) => {
+            if (props.contactId === card.contactId) all.push(card);
+          });
+        });
+      }
 
       const dealsRowsData = [];
       all.forEach((deal) => {
@@ -2433,6 +2440,12 @@ function M1nTable(props) {
       setColumns([...DealsHeadCells]);
       setLoading(false);
     }
+
+    console.log(
+      "%cCONTACT ID : ",
+      "font-size:20px; color:green;",
+      props.contactId
+    );
   }, [props.parent, dataDeals, props.contactId]);
 
   ////////////Deals end////////////////////////////////////////////////
