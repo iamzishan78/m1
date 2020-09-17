@@ -6,7 +6,6 @@ import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import { AppContext } from "../../../../AppContext";
 
-
 const useStyles = makeStyles((theme) => ({
   popUp: {
     minWidth: "250px",
@@ -26,14 +25,28 @@ const useStyles = makeStyles((theme) => ({
 export default (props) => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
+
   const parcelLabel = props.abstracts.length > 1 ? "parcels" : "parcel";
 
   const openParcelDetail = function() {
+    const parcel = {
+      "id": "c1987e53e07767ae483efb9604e244b1",
+      "projectName": "",
+      "sdGrossAcres": "",
+      "sdNotes": "",
+      "sdType": "parcel",
+      "shapeArea": "665.8 acres",
+      "shapeCenter": "[-104.07070687336221,31.846868571312044]",
+      "shapeLabel": "A-19",
+      "shapeLabelLayer": ""
+    }
     // e03a6a5cf828010ca3f4c159803ca802
-    // setStateApp((state) => ({
-    //   ...state,
-    //   selectedParcelId: "5f5d27dfe7dc0c00261e13b0"
-    // }));
+    setStateApp((state) => ({
+      ...state,
+      selectedParcel: parcel,
+      expandedCard: true
+    }));
+    props.onClickExpand();
   }
 
   const handleClose = function() {

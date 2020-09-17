@@ -1,11 +1,10 @@
 import React, { useState, createContext } from 'react'
 
-
 const ParcelCardContext = createContext([{}, () => {}])
 
 const ParcelCardContextProvider = props => {
   const [stateCard, setStateCard] = useState({
-    selectedParcel: { Name: '' },
+    selectedParcel: { shapeLabel: '' },
   })
   return (
     <ParcelCardContext.Provider value={[stateCard, setStateCard]}>

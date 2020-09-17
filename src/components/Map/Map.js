@@ -5318,7 +5318,7 @@ export default function Map() {
             )}
             {stateApp.selectedAbstracts.length > 0 && (
               <PortalD id="popupContainer">
-                <AbstractSelectionPopup abstracts={stateApp.selectedAbstracts} map={map} />
+                <AbstractSelectionPopup abstracts={stateApp.selectedAbstracts} map={map} onClickExpand={handleOpenExpandableCard}/>
               </PortalD>
             )}
           </div>
