@@ -39,7 +39,9 @@ export default function ParcelCard(props) {
       <div style={{ height: "100%", padding: "9px" }}>
         <Card>
           <CardActions classes={{root: classes.cardAction}}></CardActions>
-          <CardContent className={classes.content}></CardContent>
+          <CardContent className={classes.content}>
+            Coming soon
+          </CardContent>
         </Card>
       </div>
     ) : (
