@@ -33,6 +33,7 @@ const AppProvider = (props) => {
     selectedWell: null,
     selectedWellId: null,
     selectedAbstracts: [],
+    selectedParcel: null,
     customLayers: [],
     editDraw: false,
     editLayer: true,

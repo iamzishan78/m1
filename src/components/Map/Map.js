@@ -61,7 +61,7 @@ import { useDispatch, useSelector } from "react-redux";
 import MarkerIcon from "./sprites/marker-icon.png";
 import { usePickerState } from "@material-ui/pickers";
 import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
-import ParcelsDetailCard from "../ParcelsDetailCard/ParcelsDetailCard";
+import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -1105,14 +1105,15 @@ export default function Map() {
     };
 
     const udLayerClickHandler = (feature) => {
-
+      console.log("Current Parcel Layer", feature);
       setStateApp((state) => ({
         ...state,
         popupOpen: false,
       }));
       setStateApp((state) => ({
         ...state,
-        selectedUserDefinedLayer: feature,
+        selectedUserDefinedLayer: undefined,
+        selectedParcel: feature.properties
       }));
 
       // setStateApp({...stateApp, currentFeature: feature});
@@ -3663,6 +3664,8 @@ export default function Map() {
         .addTo(map);
 
       setStateApp((state) => ({ ...state, popupOpen: true }));
+
+      handleOpenExpandableCard();
     },
     [map, setStateApp]
   );
@@ -5154,8 +5157,6 @@ export default function Map() {
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <HugeRequest hugeRequestStatus={stateApp.hugeRequest} />
       <Coordinates long={lng} lat={lat} />
-      {stateApp.selectedParcelId && 
-      <ParcelsDetailCard id={stateApp.selectedParcelId} />}
       {stateApp.selectedUserDefinedLayer &&
         !stateApp.popupOpen &&
         stateApp.editLayer && (
@@ -5234,6 +5235,69 @@ export default function Map() {
                     ></ExpandableCardProvider>
                   </Popover>
                 )}
+              </PortalD>
+            )}
+            {stateApp.selectedParcel && (
+              <PortalD id="popupContainer">
+                {showExpandableCard && !stateApp.expandedCard ? (
+                  <ExpandableCardProvider
+                    expanded={false}
+                    handleCloseExpandableCard={handleCloseExpandableCard}
+                    component={<ParcelCardProvider></ParcelCardProvider>}
+                    title={stateApp.selectedParcel.shapeLabel}
+                    subTitle={stateApp.selectedParcel.sdType}
+                    parent="map"
+                    mouseX={0}
+                    mouseY={0}
+                    position="relative"
+                    cardLeft={20}
+                    cardTop={70}
+                    zIndex={99}
+                    cardWidth="350px"
+                    // cardHeight="350px"
+                    cardWidthExpanded="95vw"
+                    cardHeightExpanded="90vh"
+                    targetSourceId={stateApp.selectedParcel.id}
+                    targetLabel="parcel"
+                  ></ExpandableCardProvider>
+                ) : (
+                    <Popover
+                      open={stateApp.expandedCard}
+                      anchorEl={anchorElPoPOver}
+                      anchorReference="anchorEl"
+                      style={{ width: "100%" }} //right:30, left: "-30px"}}
+                      BackdropProps={{ invisible: false }}
+                      anchorOrigin={{
+                        vertical: "center",
+                        horizontal: "center",
+                      }}
+                      transformOrigin={{
+                        vertical: "center",
+                        horizontal: "center",
+                      }}
+                    >
+                      <ExpandableCardProvider
+                        expanded={true}
+                        handleCloseExpandableCard={handleCloseExpandableCard}
+                        component={<ParcelCardProvider></ParcelCardProvider>}
+                        title={stateApp.selectedParcel.shapeLabel}
+                        subTitle={stateApp.selectedParcel.sdType}
+                        parent="map"
+                        mouseX={0}
+                        mouseY={0}
+                        position="relative"
+                        // cardLeft={"0px"}
+                        // cardTop={"0px"}
+                        zIndex={99}
+                        // cardWidth="380px"
+                        // cardHeight="380px"
+                        cardWidthExpanded="95vw"
+                        cardHeightExpanded="95vh"
+                        targetSourceId={stateApp.selectedParcel.id}
+                        targetLabel="parcel"
+                      ></ExpandableCardProvider>
+                    </Popover>
+                  )}
               </PortalD>
             )}
             {stateApp.selectedUserDefinedLayer && (
