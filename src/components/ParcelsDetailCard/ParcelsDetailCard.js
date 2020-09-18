@@ -13,14 +13,18 @@ import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 import { useLazyQuery } from "@apollo/client";
 
 const useStyles = makeStyles((theme) => ({
+  grid: {
+    width: "auto",
+  },
+  gridItem: {
+    flexGrow: 1,
+    display: "flex",
+    justifyContent: "space-around",
+    height: "100%",
+  },
   gridWidthScroll: {
-    backgroundColor: "#efefef",
-    "& .formLabel": {
-      color: "#757575",
-      fontWeight: "bold",
-      width: "100%",
-      marginBottom: "0",
-    },
+    maxHeight: "calc(100% - 88px)",
+    overflow: "auto",
   },
   dataSect: {
     height: "100%",
@@ -116,17 +120,13 @@ export default function ParcelsDetailCard(props) {
   };
 
   return parcelData ? (
-    <Grid container className={classes.gridWidthScroll} spacing={0}>
-      <Grid item container sm={12}>
-        <Grid item sm={2} className={classes.borderRight}>
+    <Grid item sm={12} container className={classes.gridWidthScroll}>
+      <Grid item sm={12} container style={{ height: "482px" }}>
+        <Grid item sm={3} className={classes.gridItem}>
           <LeftTopSummary parcelData={parcelData} />
         </Grid>
 
-        <Grid
-          item
-          sm={6}
-          className={`${classes.borderRight} ${classes.qtrAndInputs}`}
-        >
+        <Grid item sm={5} className={classes.gridItem}>
           <Grid container spacing={2}>
             <Grid item xs={12} style={{ display: "flex" }}>
               <QtrQtrSelector parcelData={parcelData} setQtrQtr={setQtrQtr} />
@@ -166,7 +166,7 @@ export default function ParcelsDetailCard(props) {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item sm={4} style={{ backgroundColor: "#757575" }}>
+        <Grid item sm={4} className={classes.gridItem} style={{ backgroundColor: "#757575" }}>
           <p>Map</p>
         </Grid>
       </Grid>
