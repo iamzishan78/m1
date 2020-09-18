@@ -50,10 +50,22 @@ export default (props) => {
     if (customLayerInsertedData.upsertCustomLayer && customLayerInsertedData.upsertCustomLayer.customLayer) {
       setStateApp((state) => ({
         ...state,
-        selectedParcel: customLayerInsertedData.upsertCustomLayer.customLayer,
+        popupOpen: false,
+      }));
+      let popUps = document.getElementsByClassName("mapboxgl-popup");
+      if (popUps[0]) popUps[0].remove();
+
+      const customLayer = customLayerInsertedData.upsertCustomLayer.customLayer;
+      const feature = JSON.parse(customLayer.shape);
+      feature.id = customLayer._id;
+      feature.properties.id = customLayer._id;
+      setStateApp((state) => ({
+        ...state,
+        selectedParcel: feature.properties
       }));
       setStateApp((state) => ({
         ...state,
+        popupOpen: true,
         expandedCard: true
       }));
       props.onClickExpand();

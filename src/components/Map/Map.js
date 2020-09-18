@@ -4858,6 +4858,10 @@ export default function Map() {
     setShowExpandableCard(true);
   };
 
+  const handleAnchorElPopOver = () => {
+    setAnchorElPoPOver(container.current);
+  }
+
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
     setAnchorElPoPOver(null);
@@ -5332,7 +5336,7 @@ export default function Map() {
             )}
             {stateApp.selectedAbstracts.length > 0 && (
               <PortalD id="popupContainer">
-                <AbstractSelectionPopup abstracts={stateApp.selectedAbstracts} map={map} onClickExpand={handleOpenExpandableCard}/>
+                <AbstractSelectionPopup abstracts={stateApp.selectedAbstracts} map={map} onClickExpand={handleAnchorElPopOver}/>
               </PortalD>
             )}
           </div>
