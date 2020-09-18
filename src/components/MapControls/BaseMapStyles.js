@@ -280,6 +280,9 @@ export default function BaseMapStyles(props) {
     };
   }, []);
 
+  const layersFilters = stateApp.baseMapLayers.filter(
+    (item) => item.name !== "Water" && item.name !== "Land"
+  );
   return (
     <ClickAwayListener onClickAway={handleClose}>
       <StyledMenu
@@ -378,7 +381,7 @@ export default function BaseMapStyles(props) {
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <List style={{ padding: 0 }}>
-                    {stateApp.baseMapLayers.map((layer, index) => {
+                    {layersFilters.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
                       return (
                         <Draggable

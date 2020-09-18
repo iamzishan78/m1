@@ -168,7 +168,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   drawerOpenLogo: {
-    paddingLeft: "10px",
+    paddingLeft: "20px",
     paddingTop: "10px",
   },
 
@@ -183,7 +183,6 @@ const useStyles = makeStyles((theme) => ({
       background: "rgba(1, 17, 51, 1.0)",
     },
   },
-
   drawerOpen: {
     // background: "rgba(255, 255, 255, 1.0)",
     background: "rgba(250, 250, 250, 1.0)",
