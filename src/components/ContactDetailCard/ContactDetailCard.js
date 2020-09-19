@@ -48,6 +48,7 @@ import ParcelsCard from "./components/ParcelsCard";
 import WellsCard from "./components/WellsCard";
 import RecentActivities from "../RecentActivities/RecentActivities";
 import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
+import ViewDocuments from "../ViewDocuments/ViewDocuments";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -280,6 +281,7 @@ export default function ContactDetailCard(props) {
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(
     null
   );
+
   const [getContact, { loading, data }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
   });
@@ -676,7 +678,7 @@ export default function ContactDetailCard(props) {
 
         {/*/////////// new section //////////// */}
         <Grid item xs={12} className={`${classes.border}`}>
-          <div className={classes.SectMargin}>
+          {/* <div className={classes.SectMargin}>
             <Grid item xs={12}>
               <h4 style={{ marginBottom: "8px" }}>
                 Add Wells and Parcels to this contact
@@ -704,7 +706,7 @@ export default function ContactDetailCard(props) {
                 )}
               />
             </Grid>
-          </div>
+          </div> */}
         </Grid>
 
         {/*/////////// table section //////////// */}
@@ -742,19 +744,27 @@ export default function ContactDetailCard(props) {
         </IconButton>
         {shrinkRightColumn || showShrinkColumnContent ? (
           <div style={{ width: "68px" }}>
-            <IconButton
-              className={classes.shrinkRightColumnIcons}
-              style={{ padding: "8px" }}
-            >
-              <HandShake />
+            <IconButton className={classes.shrinkRightColumnIcons}>
+              <MessageRoundedIcon
+                onClick={() => {
+                  dispatch(toggleRightColumn());
+                }}
+              />
             </IconButton>
 
             <IconButton className={classes.shrinkRightColumnIcons}>
-              <MessageRoundedIcon />
-            </IconButton>
-
-            <IconButton className={classes.shrinkRightColumnIcons}>
-              <DescriptionRoundedIcon />
+              <DescriptionRoundedIcon
+                onClick={() =>
+                  handleOpenExpandableCard(
+                    <ViewDocuments
+                      id={contactData._id}
+                      user_id={stateApp.user.email}
+                      activityLog={contactData.activityLog}
+                    />,
+                    "Documents"
+                  )
+                }
+              />
             </IconButton>
           </div>
         ) : (
