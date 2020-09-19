@@ -927,6 +927,7 @@ export default function ContactDetailCard(props) {
                 style={{
                   width: "100%",
                   backgroundColor: "#fff",
+                  minHeight: "100%",
                 }}
               >
                 {/* //// ViewAll card top bar //// */}
