@@ -23,6 +23,7 @@ import Activities from "../Shared/Activities";
 import Deals from "../Shared/Deals";
 import Documents from "../Shared/Documents";
 import LeadScore from "../Shared/LeadScore";
+import ParcelsCard from "./components/ParcelsCard";
 import LeadStage from "../Shared/LeadStage";
 import { AppContext } from "../../AppContext";
 import RecentConversations from "../Shared/RecentConversations";
@@ -44,7 +45,8 @@ import MessageRoundedIcon from "@material-ui/icons/MessageRounded";
 import DescriptionRoundedIcon from "@material-ui/icons/DescriptionRounded";
 import Card from "@material-ui/core/Card";
 import HandShake from "../Shared/svgIcons/HandShake";
-import ParcelsCard from "./components/ParcelsCard";
+// import Parcels from "./components/Parcels";
+import DealsNew from "./components/DealsNew";
 import WellsCard from "./components/WellsCard";
 import RecentActivities from "../RecentActivities/RecentActivities";
 import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
@@ -613,8 +615,14 @@ export default function ContactDetailCard(props) {
                 </Card>
               </Grid>
               <Grid item xs={4}>
-                <Card raised style={{ minHeight: "35px", height: "100%" }}>
-                  <LeadScore score={5} lastContacted={"Jun 24, 2020"} />
+                <Card raised style={{ minHeight: "35px" }}>
+                  <DealsNew
+                    handleOpenExpandableCard={handleOpenExpandableCard}
+                    contact={contactData}
+                    transactData={transactData}
+                    transactId={transactId}
+                    selectRowOpenContact={props.selectRowOpenContact}
+                  />
                 </Card>
               </Grid>
             </Grid>
@@ -786,7 +794,7 @@ export default function ContactDetailCard(props) {
             </Grid>
              */}
 
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <Deals
                 contact={contactData}
                 transactData={transactData}
@@ -794,7 +802,7 @@ export default function ContactDetailCard(props) {
                 selectRowOpenContact={props.selectRowOpenContact}
               />
               <Divider />
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={12} className={classes.Comments}>
               <Comments
@@ -817,6 +825,20 @@ export default function ContactDetailCard(props) {
                 id={contactData._id}
                 user_id={stateApp.user.email}
               />
+              <Divider />
+            </Grid>
+
+            <Grid item xs={12} className={classes.Comments}>
+              <Card
+                raised
+                style={{
+                  minHeight: "35px",
+                  margin: "20px",
+                  paddingBottom: "20px",
+                }}
+              >
+                <LeadScore score={5} lastContacted={"Jun 24, 2020"} />
+              </Card>
               <Divider />
             </Grid>
 
@@ -915,6 +937,7 @@ export default function ContactDetailCard(props) {
                 style={{
                   width: "100%",
                   backgroundColor: "#fff",
+                  minHeight: "100%",
                 }}
               >
                 {/* //// ViewAll card top bar //// */}

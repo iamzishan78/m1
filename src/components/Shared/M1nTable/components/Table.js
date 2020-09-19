@@ -53,6 +53,7 @@ import AddParcelOwnerDialogContent from "./SubComponents/AddParcelOwnerDialogCon
 import AddParcelToEntityDialogContent from "./SubComponents/AddParcelToEntityDialogContent/AddParcelToEntityDialogContent";
 import Convert_contact from "../../svgIcons/convert_contact";
 import Contact_card from "../../svgIcons/contact_card";
+import TransactDialog from "../../../Transact/components/dialog";
 import ParcelScreenIcon from "../../svgIcons/parcelScreen";
 import ParcelsDetailCard from "../../../ParcelsDetailCard/ParcelsDetailCard";
 
@@ -707,6 +708,7 @@ function SubTable(props) {
               };
             }
             break;
+
           case "ownerCount":
             {
               column.options = {
@@ -1289,6 +1291,11 @@ function SubTable(props) {
                     )
                       handleExpandClick(null, null, null, "addOwnerToParcel");
 
+                    if (props.addAble.type && props.addAble.type === "deals")
+                      setStateApp((stateApp) => ({
+                        ...stateApp,
+                        dealDialog: true,
+                      }));
                     if (
                       props.addAble.type &&
                       props.addAble.type === "parcelInterestsToEntity"
@@ -1311,6 +1318,10 @@ function SubTable(props) {
     },
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
       setSelectedRow(rows[dataIndex]);
+
+      if (props.targetLabel === "deals") {
+        history.push("/transact");
+      }
 
       if (props.targetLabel === "owner") {
         setStateApp((state) => ({ ...state, selectedOwner: rows[dataIndex] }));
@@ -1354,6 +1365,8 @@ function SubTable(props) {
     },
   };
 
+  console.log("ROWSSS : ", rows);
+
   let history = useHistory();
 
   let routeChange = (route) => {
@@ -1375,7 +1388,12 @@ function SubTable(props) {
           options={options}
         />
 
-        {openDialog && (
+        <TransactDialog
+          selectRowOpenContact={selectRowOpenContact}
+          contactId={props.contactId}
+        />
+
+        {openDialog && openDialog !== "addDeals" && (
           <Dialog
             className={classes.dialog}
             open={openDialog ? true : false}
