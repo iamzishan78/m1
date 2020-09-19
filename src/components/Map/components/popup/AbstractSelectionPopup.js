@@ -5,6 +5,7 @@ import IconButton from "@material-ui/core/IconButton";
 import LayerIcon from "@material-ui/icons/Layers";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { area, convertArea, length } from "@turf/turf";
 import polylabel from "polylabel";
 import hat from 'hat';
@@ -26,7 +27,11 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center"
   },
   actions: {
-    marginTop: "5px"
+    display: "flex",
+    alignItems: "center"
+  },
+  label : {
+    margin: "0 10px"
   },
   footer: {
     margin: "5px 0"
@@ -36,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 export default (props) => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [upsertCustomLayer, { data: customLayerInsertedData, loading }] = useMutation(UPSERTCUSTOMLAYER);
+  const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel}] = useMutation(UPSERTCUSTOMLAYER);
   const [error, setError] = useState(false);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [user, setUser] = useState({ _id: "" });
@@ -52,8 +57,6 @@ export default (props) => {
         ...state,
         popupOpen: false,
       }));
-      let popUps = document.getElementsByClassName("mapboxgl-popup");
-      if (popUps[0]) popUps[0].remove();
 
       const customLayer = customLayerInsertedData.upsertCustomLayer.customLayer;
       const feature = JSON.parse(customLayer.shape);
@@ -69,6 +72,10 @@ export default (props) => {
         expandedCard: true
       }));
       props.onClickExpand();
+      setStateApp((state) => ({
+        ...state,
+        selectedAbstracts: []
+      }));
     }
     if (customLayerInsertedData.upsertCustomLayer  && customLayerInsertedData.upsertCustomLayer.customLayer && !customLayerInsertedData.success) {
       setError(true);
@@ -113,6 +120,7 @@ export default (props) => {
       return;
     }
     const abstractShape = stateApp.selectedAbstracts[0];
+    console.log("abstractShape", abstractShape);
     const parcelName = abstractShape.properties.level1_sur + '_' + abstractShape.properties.abstract_l;
     const featureId = hat();
     const newShapeFeature = {
@@ -120,6 +128,7 @@ export default (props) => {
       type: "Feature",
       geometry: abstractShape.geometry,
       properties: {
+        "originalAbstracts": [abstractShape.properties],
         "sdType": "parcel",
         "shapeLabel": parcelName,
         "projectName": "",
@@ -199,10 +208,14 @@ export default (props) => {
         <div className={classes.content}>
           <strong>{props.abstracts.length} {parcelLabel} selected.</strong>
           <div className={classes.actions}>
+            {isSavingParcel ? (
+              <CircularProgress size={20} color="secondary" />
+            ): (
             <IconButton size="small" onClick={saveAndOpenParcelDetail} aria-label="Parcel">
               <LayerIcon color="secondary" />
             </IconButton>
-            <strong>Parcel/Tract</strong>
+            )}
+            <strong className={classes.label}>Parcel/Tract</strong>
             <IconButton size="small" onClick={handleClose} aria-label="Close">
               <CloseIcon color="secondary" fontSize="small" />
             </IconButton>
