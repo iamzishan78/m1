@@ -348,9 +348,11 @@ export default function FieldContent({
             id={"fieldContentInput" + fieldName}
             className={classes.editTextField}
             variant="outlined"
-            autoComplete
             size="small"
             autoComplete="off"
+            inputProps={{
+              autoComplete: "off",
+            }}
             fullWidth
             label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
             multiline

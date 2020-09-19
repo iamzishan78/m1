@@ -53,9 +53,6 @@ const StyledMenu = withStyles({
   paper: {
     border: "1px solid #011133",
     background: "#263451",
-    "& .MuiMenu-list": {
-      background: "#011133 !important",
-    },
   },
 })((props) => (
   <Menu
@@ -139,6 +136,7 @@ const useStyles = makeStyles((theme) => ({
     },
     "& :nth-child(5)": {
       display: "grid",
+      float: "left",
     },
   },
 }));

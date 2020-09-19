@@ -282,15 +282,6 @@ export default function ContactDetailCard(props) {
     null
   );
 
-  console.log(
-    openDialog,
-    rightDialogOpen,
-    showExpandableCard,
-    expCardSubComponent,
-    showShrinkColumnContent,
-    "woekkekekekk"
-  );
-
   const [getContact, { loading, data }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
   });
