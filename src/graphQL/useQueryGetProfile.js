@@ -33,8 +33,28 @@ export const GETPROFILE = gql`
                 emailNotifications,
                 employer,
                 isSameFromAbove,
-                job_title,
                 employerAddress,
+                investingEntities {
+                    entityInformation
+                    accountType
+                    accredited
+                    taxIDSSN
+                    entityMembers {
+                        firstName
+                        lastName
+                        Role
+                        Signatory
+                        Email
+                    }
+                    mailingInformation {
+                        address
+                        city
+                        state
+                        postalCode
+                        country
+                    }
+                    distributionBankingInformation
+                }
             }
         }
     }

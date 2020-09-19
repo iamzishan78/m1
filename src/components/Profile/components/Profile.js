@@ -31,7 +31,7 @@ const Profile = (props) => {
 
     useEffect(() => {
         const fullname = `${state.firstname} ${state.middlename} ${state.lastname}`;
-        setStateProfile({...stateProfile, fields : {...state, fullname}})
+        setStateProfile({...stateProfile, fields : {...state, fullname}});
     }, [state]);
 
     const formatPhone = (number) => {

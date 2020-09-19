@@ -32,7 +32,7 @@ const ProfileContextProvider = (props) => {
       employer: null,
       employerAddress: null,
       isSameFromAbove: false,
-      job_title: null,
+      investingEntities: []
     },
     isImageModalOpen: false,
     isSaving:false,

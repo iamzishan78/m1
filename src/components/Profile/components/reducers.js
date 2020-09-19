@@ -42,10 +42,8 @@ export const ProfileTabReducer = (state, action) => {
             return {...state, employer: action.value};
         case 'employerAddress':
             return {...state, isSameFromAbove: false, employerAddress: action.value};
-
         case 'investingExperience':
             const temp = state.investingExperience === null ? [] : Object.assign([], state.investingExperience);
-            console.log("TEMP", temp);
             if(temp.includes(action.value)){
                 const index = temp.indexOf(action.value);
                 temp.splice(index, 1);
@@ -68,7 +66,10 @@ export const ProfileTabReducer = (state, action) => {
         case 'isSameFromAbove':
             const employerAddress = !state.isSameFromAbove ? `${state.address}, ${state.city}, ${state.state}`: state.employerAddress;
             return {...state, isSameFromAbove: !state.isSameFromAbove, employerAddress};
-            
+        case 'investingEntities':
+            let InvestingEntitiesTemp = state.investingEntities === null ? [] : Object.assign([], state.investingEntities)
+            InvestingEntitiesTemp.push(action.value)
+            return {...state, investingEntities: InvestingEntitiesTemp}
         default:
         throw new Error();
     }
