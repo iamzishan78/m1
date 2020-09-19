@@ -3,6 +3,7 @@ import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../NavigationContext";
 import { makeStyles, fade } from "@material-ui/core/styles";
 import Search from "./Search";
+import Tooltip from "@material-ui/core/Tooltip";
 import GridOnIcon from "@material-ui/icons/GridOn";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
@@ -32,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gridOnIcon: {
     color: "#fff",
-    "&:hover": {
+    "&:hover ": {
       backgroundColor: fade(theme.palette.common.white, 0.25),
     },
   },
@@ -52,14 +53,16 @@ export default function SearchBarWithToggleButton() {
         aria-label="text primary button group"
       >
         <Search />
-        <Button
-          className={classes.gridOnIcon}
-          onClick={() => {
-            dispatch(toggleMapGridCardAtived());
-          }}
-        >
-          <GridOnIcon />
-        </Button>
+        <Tooltip title="Search Grid">
+          <Button
+            className={classes.gridOnIcon}
+            onClick={() => {
+              dispatch(toggleMapGridCardAtived());
+            }}
+          >
+            <GridOnIcon />
+          </Button>
+        </Tooltip>
       </ButtonGroup>
     </div>
   );

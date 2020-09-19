@@ -168,22 +168,26 @@ const useStyles = makeStyles((theme) => ({
   },
 
   drawerOpenLogo: {
-    paddingLeft: "10px",
+    paddingLeft: "20px",
     paddingTop: "10px",
   },
 
   iconArrow: {
-    background: "rgba(23, 170, 221, 1)",
-    color: "#fff",
+    // background: "rgba(23, 170, 221, 1)",
+    color: "gray",
     textAlign: "right",
-    padding: 0,
+    padding: "4px 0",
     transition: "all 0.3s ease-in-out",
     margin: "5px 15px 0px auto",
     "&:hover": {
       background: "rgba(1, 17, 51, 1.0)",
     },
   },
-
+  menuIcon: {
+    position: "relative",
+    left: "-8px",
+    fontSize: "30px",
+  },
   drawerOpen: {
     // background: "rgba(255, 255, 255, 1.0)",
     background: "rgba(250, 250, 250, 1.0)",
@@ -1414,7 +1418,10 @@ export default function Navigation(props) {
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
-              <ChevronLeftIcon />
+              <>
+                <ChevronLeftIcon />
+                <MenuIcon className={classes.menuIcon} />
+              </>
             )}
           </IconButton>
         </div>

@@ -53,9 +53,6 @@ const StyledMenu = withStyles({
   paper: {
     border: "1px solid #011133",
     background: "#263451",
-    "& .MuiMenu-list": {
-      background: "#011133 !important",
-    },
   },
 })((props) => (
   <Menu
@@ -139,6 +136,7 @@ const useStyles = makeStyles((theme) => ({
     },
     "& :nth-child(5)": {
       display: "grid",
+      float: "left",
     },
   },
 }));
@@ -280,6 +278,9 @@ export default function BaseMapStyles(props) {
     };
   }, []);
 
+  const layersFilters = stateApp.baseMapLayers.filter(
+    (item) => item.name !== "Water" && item.name !== "Land"
+  );
   return (
     <ClickAwayListener onClickAway={handleClose}>
       <StyledMenu
@@ -378,7 +379,7 @@ export default function BaseMapStyles(props) {
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <List style={{ padding: 0 }}>
-                    {stateApp.baseMapLayers.map((layer, index) => {
+                    {layersFilters.map((layer, index) => {
                       const labelId = `checkbox-list-label-${index}`;
                       return (
                         <Draggable
