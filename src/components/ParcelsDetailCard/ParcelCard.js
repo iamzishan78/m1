@@ -19,6 +19,7 @@ import OwnershipIcon from "../WellCard/components/svgIcons/OwnershipIcon";
 
 import { ParcelCardContext } from "./ParcelCardContext";
 import ParcelsDetailCard from "./ParcelsDetailCard";
+import  { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -97,26 +98,7 @@ export default function ParcelCard(props) {
   const [parcelContext, setParcelContext] = useContext(ParcelCardContext);
   const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
   const classes = useStyles();
-  const originalProperty = {
-    county: '',
-    state: '',
-    survey: '',
-    block: '',
-    section: '',
-    abstract: '',
-    altSurvey: ''
-  };
-
-  let originalProperties = stateApp.selectedParcel && stateApp.selectedParcel.originalProperties;
-  if(originalProperties && (typeof originalProperties === 'string' || originalProperties instanceof String)) {
-    originalProperties = JSON.parse(originalProperties);
-  }
-  if (originalProperties && originalProperties.length > 0) {
-    originalProperty.survey = originalProperties[0].level1_sur;
-    originalProperty.block = originalProperties[0].level2_blo;
-    originalProperty.section = originalProperties[0].level3_sur;
-    originalProperty.abstract = originalProperties[0].abstract_l;
-  }
+  const originalProperty = getParcelOriginalProperties(stateApp.selectedParcel);
 
   return stateApp.selectedParcel ? (
     !stateExpandableCard.expanded ? (

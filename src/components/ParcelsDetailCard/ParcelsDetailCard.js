@@ -26,6 +26,10 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "calc(100% - 88px)",
     overflow: "auto",
   },
+  content: {
+    backgroundColor: "#fff",
+    padding: "16px",
+  },
   dataSect: {
     height: "100%",
     borderTop: "2px solid #C9C9C9",
@@ -57,9 +61,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ParcelsDetailCard(props) {
-  const [stateApp] = useContext(AppContext);
   const classes = useStyles();
-  const [parcelData, setParcelData] = useState();
+  const [parcelObj, setParcelObj] = useState();
   //   {
   //   _id: "5f2d60a70b0a02002146edfc",
   //   county: "Lea",
@@ -111,32 +114,39 @@ export default function ParcelsDetailCard(props) {
 
   useEffect(() => {
     if (dataCustomLayer && dataCustomLayer.customLayer) {
-      setParcelData(dataCustomLayer.customLayer);
+      let shape = dataCustomLayer.customLayer.shape;
+      if(typeof shape === "string") {
+        shape = JSON.parse(shape);
+      }
+      setParcelObj({
+        ...dataCustomLayer.customLayer,
+        shape: shape
+      });
     }
   }, [dataCustomLayer]);
 
   const setQtrQtr = (qtrQtr) => {
-    setParcelData((parcelData) => ({ ...parcelData, qtrQtr }));
+    setParcelObj((parcelData) => ({ ...parcelData, qtrQtr }));
   };
 
-  return parcelData ? (
+  return parcelObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
       <Grid item sm={12} container style={{ height: "482px" }}>
-        <Grid item sm={3} className={classes.gridItem}>
-          <LeftTopSummary parcelData={parcelData} />
+        <Grid item sm={2} className={classes.gridItem}>
+          <LeftTopSummary parcelData={parcelObj} />
         </Grid>
 
-        <Grid item sm={5} className={classes.gridItem}>
+        <Grid item sm={6} className={classes.gridItem}>
           <Grid container spacing={2}>
             <Grid item xs={12} style={{ display: "flex" }}>
-              <QtrQtrSelector parcelData={parcelData} setQtrQtr={setQtrQtr} />
+              <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
               <div style={{ width: "Calc( 100% - 273px)" }}>
                 <p className="formLabel" style={{ marginTop: "0" }}>
                   Gross Acres
                 </p>
                 <TextField
                   size="small"
-                  value={parcelData.grossAcres}
+                  value={parcelObj.grossAcres}
                   variant="outlined"
                   fullWidth
                 />
@@ -144,7 +154,7 @@ export default function ParcelsDetailCard(props) {
                 <TextField
                   disabled
                   size="small"
-                  value={parcelData.calcAcres}
+                  value={parcelObj.calcAcres}
                   variant="outlined"
                   fullWidth
                   InputProps={{
@@ -157,7 +167,7 @@ export default function ParcelsDetailCard(props) {
                   size="small"
                   multiline
                   rows={12}
-                  value={parcelData.legalDescription}
+                  value={parcelObj.legalDescription}
                   variant="outlined"
                   fullWidth
                   placeholder="Enter legal description here"
@@ -177,10 +187,10 @@ export default function ParcelsDetailCard(props) {
           tabPanels={[
             <M1nTable
               parent="ownersPerParcel"
-              customLayer={parcelData}
+              customLayer={parcelObj}
               dense
             />,
-            "Wells Table",
+            "Wells Table Coming Soon!",
           ]}
         />
       </Grid>
