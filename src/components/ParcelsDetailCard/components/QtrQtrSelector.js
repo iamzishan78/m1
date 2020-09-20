@@ -4,6 +4,9 @@ import Grid from "@material-ui/core/Grid";
 import SmallTXQtr from "./SmallTXQtr";
 
 const useStyles = makeStyles((theme) => ({
+  QtrContainer: {
+    margin: "8px 10px"
+  },
   mainDiv: {
     position: "relative",
     cursor: ({ parcelData }) =>
@@ -20,10 +23,9 @@ const useStyles = makeStyles((theme) => ({
   },
   root: {
     backgroundColor: ({ parcelData }) =>
-      parcelData.state !== "TX" ? "#F3F3F3" : "#fff",
+    parcelData.state !== "TX" ? "#F3F3F3" : "#fff",
     height: "387px",
     width: "387px",
-    marginRight: "15px",
     border: "2px solid #C9C9C9",
     "& p": {
       textAlign: "center",
@@ -91,7 +93,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
   const classes = useStyles({ parcelData });
 
   return (
-    <div>
+    <div className={classes.QtrContainer}>
       <p className="formLabel" style={{ marginTop: "0" }}>
         Use the grid to select portions of parcel to be included
       </p>

@@ -10,7 +10,7 @@ import { getParcelOriginalProperties } from "../utils/GetParcelOriginalProps";
 
 const useStyles = makeStyles({
   table: {
-    minHeight: "407px !important",
+    minHeight: "454px !important",
   },
   tableContainer: {
     overflowX: "unset",

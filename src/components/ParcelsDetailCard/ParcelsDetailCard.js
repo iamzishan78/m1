@@ -26,6 +26,15 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "calc(100% - 88px)",
     overflow: "auto",
   },
+  calcSummary: {
+    margin: "8px"
+  },
+  parcelMap: {
+    margin: "8px",
+    backgroundColor: "rgb(117, 117, 117)",
+    width: "100%",
+    textAlign: "center",
+  },
   content: {
     backgroundColor: "#fff",
     padding: "16px",
@@ -63,6 +72,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ParcelsDetailCard(props) {
   const classes = useStyles();
   const [parcelObj, setParcelObj] = useState();
+  const [parcelProperties, setProperties] = useState();
   //   {
   //   _id: "5f2d60a70b0a02002146edfc",
   //   county: "Lea",
@@ -122,31 +132,33 @@ export default function ParcelsDetailCard(props) {
         ...dataCustomLayer.customLayer,
         shape: shape
       });
+      setProperties(shape.properties);
     }
   }, [dataCustomLayer]);
 
   const setQtrQtr = (qtrQtr) => {
     setParcelObj((parcelData) => ({ ...parcelData, qtrQtr }));
   };
-
   return parcelObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
-      <Grid item sm={12} container style={{ height: "482px" }}>
+      <Grid item sm={12} container>
         <Grid item sm={2} className={classes.gridItem}>
           <LeftTopSummary parcelData={parcelObj} />
         </Grid>
 
         <Grid item sm={6} className={classes.gridItem}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} style={{ display: "flex" }}>
+          <Grid item sm={12} container>
+            <Grid item sm={7} className={classes.gridItem}>
               <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
-              <div style={{ width: "Calc( 100% - 273px)" }}>
-                <p className="formLabel" style={{ marginTop: "0" }}>
+            </Grid>
+            <Grid item sm={5} className={classes.gridItem}>
+              <div className={classes.calcSummary}>
+                <p className="formLabel">
                   Gross Acres
                 </p>
                 <TextField
                   size="small"
-                  value={parcelObj.grossAcres}
+                  value={parcelProperties.sdGrossAcres}
                   variant="outlined"
                   fullWidth
                 />
@@ -154,7 +166,7 @@ export default function ParcelsDetailCard(props) {
                 <TextField
                   disabled
                   size="small"
-                  value={parcelObj.calcAcres}
+                  value={parcelProperties.shapeArea}
                   variant="outlined"
                   fullWidth
                   InputProps={{
@@ -166,7 +178,7 @@ export default function ParcelsDetailCard(props) {
                 <TextField
                   size="small"
                   multiline
-                  rows={12}
+                  rows={7}
                   value={parcelObj.legalDescription}
                   variant="outlined"
                   fullWidth
@@ -176,8 +188,8 @@ export default function ParcelsDetailCard(props) {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item sm={4} className={classes.gridItem} style={{ backgroundColor: "#757575" }}>
-          <p>Map</p>
+        <Grid item sm={4} className={classes.gridItem}>
+          <div className={classes.parcelMap} id="parcelMap" style={{ backgroundColor: "#757575" }}>Coming Soon!</div>
         </Grid>
       </Grid>
 
