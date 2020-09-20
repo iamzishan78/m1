@@ -103,11 +103,7 @@ export default (props) => {
       if (feature.geometry.type === "Polygon") {
         const areaInSqMeters = area(feature);
         const areaInAcres = convertArea(areaInSqMeters, "meters", "acres");
-        return `${Math.round(areaInAcres * 100) / 100} acres`;
-      }
-      if (feature.geometry.type === "LineString") {
-        const distanceInMiles = length(feature, { units: "miles" });
-        return `${Math.round(distanceInMiles * 100) / 100} miles`;
+        return `${Math.round(areaInAcres * 100) / 100}`;
       }
     }
   };
@@ -128,7 +124,7 @@ export default (props) => {
       type: "Feature",
       geometry: abstractShape.geometry,
       properties: {
-        "originalAbstracts": [abstractShape.properties],
+        "originalProperties": [abstractShape.properties],
         "sdType": "parcel",
         "shapeLabel": parcelName,
         "projectName": "",

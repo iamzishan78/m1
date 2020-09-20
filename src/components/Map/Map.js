@@ -4007,6 +4007,7 @@ export default function Map() {
       }));
     }
     createSelectedAbstractPopup(feature);
+    map.resize();
   }
 
   useEffect(() => {
