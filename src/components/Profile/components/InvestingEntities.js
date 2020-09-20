@@ -29,7 +29,7 @@ const InvestingEntities = () => {
         "accountType": "",
         "accredited": "",
         "taxIDSSN": "",
-        "entityMembers": [],
+        "entityMembers": [defaultEntityMembersValue],
         "mailingInformation": {
             "address": "",
             "city": "",
@@ -38,6 +38,14 @@ const InvestingEntities = () => {
             "country": ""
         },
         "distributionBankingInformation": ""
+    }
+
+    const defaultEntityMembersValue = {
+        "firstname": "",
+        "lastname": "",
+        "role": "",
+        "signatory": "",
+        "email": ""
     }
 
     const classes = PanelGeneralStyle();
@@ -49,8 +57,8 @@ const InvestingEntities = () => {
     const [entities, setEntities] = useState([]);
     const [entityContainer, setEntityContainer] = useState([]);
     const [entityMemberContainer, setEntityMemberContainer] = useState([]);
-
-    let tempForm = useRef(entity);
+    
+    let tempForm = useRef();
 
     useEffect(()=> {
         setStateProfile({...stateProfile, fields : state});
@@ -60,7 +68,10 @@ const InvestingEntities = () => {
 
         if (investingEntities.length != 0) {
             displayInvestingEntities(investingEntities);
+            setEntity(investingEntities[0]); // Set 0 for now testing
+            tempForm.current = investingEntities[0]; // Set 0 for now testing
         }
+        console.log(entity);
     },[state]);
 
     const saveEntity = () => {
@@ -80,6 +91,16 @@ const InvestingEntities = () => {
                     ...tempForm.current.mailingInformation, [name]: value
                 }}
                 break;
+            case 'firstname':
+            case 'lastname':
+            case 'role':
+            case 'signatory':
+            case 'email':
+                // Refactor this section
+                tempForm.current = {...tempForm.current,
+                    entityMembers: [{...tempForm.current.entityMembers, [name]: value}]
+                }
+                break;
             default:
                 tempForm.current = { ...tempForm.current, [name]: value };
                 break;
@@ -88,90 +109,14 @@ const InvestingEntities = () => {
 
     const constructEntityMembers = (data) => {
         let temp_entity_member = [...entityMemberContainer];
-        temp_entity_member.push(
-            <Grid item sm={4}>
-                <Card>
-                    <CardContent>
-                        <Grid container spacing={2}>
-                            <Grid item sm={6}>
-                                <FormControl style={{width: '100%', padding: 10}}>
-                                    <FormLabel>First Name *</FormLabel>
-                                    <TextField
-                                        style={{paddingTop: 10, paddingBottom: 10}}
-                                        inputProps={{
-                                            style: {
-                                                height: 40,
-                                                padding: '0 14px',
-                                            },
-                                        }}
-                                        variant="outlined"/>
-                                </FormControl>
-                            </Grid>
-                            <Grid item sm={6}>
-                                <FormControl style={{width: '100%', padding: 10}}>
-                                    <FormLabel>Last Name *</FormLabel>
-                                    <TextField 
-
-                                        style={{paddingTop: 10, paddingBottom: 10}}
-                                        inputProps={{
-                                            style: {
-                                                height: 40,
-                                                padding: '0 14px',
-                                            },
-                                        }}
-                                        variant="outlined"/>
-                                </FormControl>
-                            </Grid>
-                            <Grid item sm={12}>
-                                <FormControl style={{width: '100%', padding: 10}}>
-                                    <FormLabel>Role *</FormLabel>
-                                    <TextField 
-
-                                        style={{paddingTop: 10, paddingBottom: 10}}
-                                        inputProps={{
-                                            style: {
-                                                height: 40,
-                                                padding: '0 14px',
-                                            },
-                                        }}
-                                        variant="outlined"/>
-                                </FormControl>
-                            </Grid>
-                            <Grid item sm={12}>
-                                <FormControl style={{width: '100%', padding: 10}}>
-                                    <FormLabel>Signatory *</FormLabel>
-                                    <TextField 
-
-                                        style={{paddingTop: 10, paddingBottom: 10}}
-                                        inputProps={{
-                                            style: {
-                                                height: 40,
-                                                padding: '0 14px',
-                                            },
-                                        }}
-                                        variant="outlined"/>
-                                </FormControl>
-                            </Grid>
-                            <Grid item sm={12}>
-                                <FormControl style={{width: '100%', padding: 10}}>
-                                    <FormLabel>Email *</FormLabel>
-                                    <TextField 
-                                        style={{paddingTop: 10, paddingBottom: 10}}
-                                        inputProps={{
-                                            style: {
-                                                height: 40,
-                                                padding: '0 14px',
-                                            },
-                                        }}
-                                        variant="outlined"/>
-                                </FormControl>
-                            </Grid>
-                        </Grid>
-                    </CardContent>
-                </Card>
-            </Grid>
-        )
+        // temp_entity_member.push(
+            
+        // );
         setEntityMemberContainer(temp_entity_member);
+    }
+
+    const addNewEntity = () => {
+        displayInvestingEntities([defaultValues]);
     }
     
     const displayInvestingEntities = (data) => {
@@ -290,9 +235,97 @@ const InvestingEntities = () => {
                     </Grid>
                     <Grid item sm={12}>
                         <Grid container spacing={2}>
-                            {
-                                entityMemberContainer
-                            }
+                        <Grid item sm={4}>
+                            <Card>
+                                <CardContent>
+                                    <Grid container spacing={2}>
+                                        <Grid item sm={6}>
+                                            <FormControl style={{width: '100%', padding: 10}}>
+                                                <FormLabel>First Name *</FormLabel>
+                                                <TextField
+                                                    style={{paddingTop: 10, paddingBottom: 10}}
+                                                    inputProps={{
+                                                        style: {
+                                                            height: 40,
+                                                            padding: '0 14px',
+                                                        },
+                                                    }}
+                                                    name="firstname"
+                                                    onChange={handleInputChange}
+                                                    variant="outlined"/>
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid item sm={6}>
+                                            <FormControl style={{width: '100%', padding: 10}}>
+                                                <FormLabel>Last Name *</FormLabel>
+                                                <TextField 
+
+                                                    style={{paddingTop: 10, paddingBottom: 10}}
+                                                    inputProps={{
+                                                        style: {
+                                                            height: 40,
+                                                            padding: '0 14px',
+                                                        },
+                                                    }}
+                                                    name="lastname"
+                                                    onChange={handleInputChange}
+                                                    variant="outlined"/>
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid item sm={12}>
+                                            <FormControl style={{width: '100%', padding: 10}}>
+                                                <FormLabel>Role *</FormLabel>
+                                                <TextField 
+
+                                                    style={{paddingTop: 10, paddingBottom: 10}}
+                                                    inputProps={{
+                                                        style: {
+                                                            height: 40,
+                                                            padding: '0 14px',
+                                                        },
+                                                    }}
+                                                    name="role"
+                                                    onChange={handleInputChange}
+                                                    variant="outlined"/>
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid item sm={12}>
+                                            <FormControl style={{width: '100%', padding: 10}}>
+                                                <FormLabel>Signatory *</FormLabel>
+                                                <TextField 
+
+                                                    style={{paddingTop: 10, paddingBottom: 10}}
+                                                    inputProps={{
+                                                        style: {
+                                                            height: 40,
+                                                            padding: '0 14px',
+                                                        },
+                                                    }}
+                                                    name="signatory"
+                                                    onChange={handleInputChange}
+                                                    variant="outlined"/>
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid item sm={12}>
+                                            <FormControl style={{width: '100%', padding: 10}}>
+                                                <FormLabel>Email *</FormLabel>
+                                                <TextField 
+                                                    style={{paddingTop: 10, paddingBottom: 10}}
+                                                    inputProps={{
+                                                        style: {
+                                                            height: 40,
+                                                            padding: '0 14px',
+                                                        },
+                                                    }}
+                                                    name="email"
+                                                    onChange={handleInputChange}
+                                                    variant="outlined"/>
+                                            </FormControl>
+                                        </Grid>
+                                    </Grid>
+                                </CardContent>
+                            </Card>
+                        </Grid>
                             <Grid item sm={4}>
                                 <Card style={{flex: 1, display: 'flex', 
                                                 justifyContent: 'center', 
@@ -459,10 +492,6 @@ const InvestingEntities = () => {
             )
         });
         setEntityContainer(temp);
-    }
-
-    const addNewEntity = () => {
-        displayInvestingEntities([defaultValues]);
     }
 
     return(

@@ -44,7 +44,6 @@ export default function InitializeProfile(){
                 emailNotifications,
                 employer,
                 isSameFromAbove,
-                job_title,
                 employerAddress,
                 investingEntities
               },
@@ -80,7 +79,6 @@ export default function InitializeProfile(){
               emailNotifications,
               employer,
               isSameFromAbove,
-              job_title,
               employerAddress,
               investingEntities
             },
