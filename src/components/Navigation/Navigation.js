@@ -180,7 +180,8 @@ const useStyles = makeStyles((theme) => ({
     transition: "all 0.3s ease-in-out",
     margin: "5px 15px 0px auto",
     "&:hover": {
-      background: "rgba(1, 17, 51, 1.0)",
+      background: "unset",
+      color: "rgba(23, 170, 221, 1)",
     },
   },
   menuIcon: {
