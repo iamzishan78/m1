@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import MUIDataTable from "mui-datatables";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -9,11 +9,17 @@ import {
   Grid,
   Button,
   FormControl,
+  Icon,
   Typography,
   OutlinedInput,
+  TextField,
   InputAdornment,
+  IconButton,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
+import DeleteIcon from "@material-ui/icons/Delete";
+import GetAppIcon from "@material-ui/icons/GetApp";
+import DeleteDocumentConfirmation from "../Shared/DeleteDocumentConfirmation";
 
 const useStyles = makeStyles((theme) => ({
   viewAllCard: {
@@ -58,15 +64,16 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
   },
   documentRight: {
-    textAlign: "right",
     alignSelf: "center",
-    color: "rgb(176, 176, 176)",
-    margin: "0",
-    fontWeight: "normal",
   },
   greySquare: {
+    cursor: "pointer",
     borderRadius: "12px",
-    display: "block",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    color: "#999",
+    fontSize: "30px",
     height: "80px",
     width: "80px",
     backgroundColor: "#cecece",
@@ -88,51 +95,83 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ViewDocuments() {
+const docs = [
+  { title: "Test Upload1.pdf" },
+  { title: "Test Upload2.pdf" },
+  { title: "Test Upload3.pdf" },
+  { title: "Test Upload4.pdf" },
+  { title: "Test Upload5.pdf" },
+];
+
+export default function ViewDocuments(props) {
   const classes = useStyles();
   const [documentSearch, setDocumentSearch] = useState("");
+  const [allDocuments, setAllDocuments] = useState(docs);
+  const [filteredDocuments, setFilteredDocuments] = useState([]);
+
+  useEffect(() => {
+    // Search logic (Search on change in search field text)
+    let filtered = allDocuments.filter((doc) =>
+      doc.title.toLowerCase().includes(documentSearch.toLowerCase())
+    );
+    setFilteredDocuments(filtered);
+  }, [documentSearch, allDocuments]);
 
   return (
     <div className={classes.viewAllCard}>
       <div className={classes.header}>
         <div className={classes.headerLeft}>
-          <FormControl fullWidth className={classes.margin} variant="outlined">
-            <InputLabel htmlFor="outlined-adornment-amount">
-              Search Documents
-            </InputLabel>
-            <OutlinedInput
-              id="outlined-adornment-amount"
-              value={documentSearch}
-              onChange={(e) => setDocumentSearch(e.target.value)}
-              label={"Search Documents"}
-              startAdornment={
+          <TextField
+            fullWidth
+            value={documentSearch}
+            onChange={(e) => setDocumentSearch(e.target.value)}
+            variant="outlined"
+            label={"Search Documents"}
+            InputProps={{
+              startAdornment: (
                 <InputAdornment position="start">
                   <SearchIcon />
                 </InputAdornment>
-              }
-              labelWidth={70}
-            />
-          </FormControl>
+              ),
+            }}
+            labelWidth={70}
+          />
         </div>
-
-        <h3 className={classes.headerRight}>Date</h3>
       </div>
       <div className={classes.divider} />
 
       <ul className={classes.documentsList}>
-        {[1, 2, 3, 4, 5].map((doc) => (
-          <li className={classes.document} key={doc}>
+        {filteredDocuments.map((doc) => (
+          <li className={classes.document} key={doc.title}>
             <div className={classes.documentLeft}>
-              <div className={classes.greySquare} />
+              <div
+                className={classes.greySquare}
+                onClick={props.downloadDocument}
+              >
+                <GetAppIcon fontSize="large" />
+              </div>
               <div className={classes.fileText}>
-                <h4 className={classes.uploadTitle}>Testupload.pdf</h4>
+                <h4 className={classes.uploadTitle}>{doc.title}</h4>
                 <h5 className={classes.uploadSubtext}>Kyle Chapman</h5>
+                <h5 className={classes.uploadSubtext}>July 04, 2020</h5>
               </div>
             </div>
-            <h5 className={classes.documentRight}>July 04, 2020</h5>
+            <div className={classes.documentRight}>
+              <IconButton
+                style={{ marginBottom: "8px" }}
+                onClick={props.handleOpen}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </div>
           </li>
         ))}
       </ul>
+      {/* <DeleteDocumentConfirmation
+        open={props.open}
+        handleClose={props.handleClose}
+        handleAccept={props.handleAccept}
+      /> */}
     </div>
   );
 }

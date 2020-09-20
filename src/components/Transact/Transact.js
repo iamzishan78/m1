@@ -164,7 +164,13 @@ export default function Transact() {
   const getLanesWithFixedTitles = (lanes) => {
     return lanes.map((lane) => {
       let title = getTitle(lane.id);
-      return { ...lane, title };
+      const cards = lane.cards.map((card) => ({
+        description: card.description,
+        id: card.id,
+        label: card.label,
+        title: card.title,
+      }));
+      return { ...lane, title, cards };
     });
   };
 
@@ -204,6 +210,8 @@ export default function Transact() {
       },
     }));
   };
+
+  console.log("TRANSACT DATA:", transactData);
 
   return !loading && data && transactData ? (
     <div className={classes.root}>
