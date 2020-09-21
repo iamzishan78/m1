@@ -73,38 +73,7 @@ export default function ParcelsDetailCard(props) {
   const classes = useStyles();
   const [parcelObj, setParcelObj] = useState();
   const [parcelProperties, setProperties] = useState();
-  //   {
-  //   _id: "5f2d60a70b0a02002146edfc",
-  //   county: "Lea",
-  //   state: "TX",
-  //   Grid1: "00",
-  //   Grid2: "026S",
-  //   Grid3: "033E",
-  //   Grid4: "027",
-  //   Grid5: "123",
-  //   qtrQtr: {
-  //     nwnw: true,
-  //     nenw: true,
-  //     swnw: true,
-  //     senw: true,
-  //     nwne: true,
-  //     nene: true,
-  //     swne: true,
-  //     sene: true,
-  //     nwsw: false,
-  //     nesw: false,
-  //     swsw: false,
-  //     sesw: false,
-  //     nwse: false,
-  //     nese: false,
-  //     swse: false,
-  //     sese: false,
-  //   },
-  //   grossAcres: 640,
-  //   calcAcres: 640.3,
-  //   legalDescription: "",
-  //   owners: [],
-  // }
+
   const [getCustomLayer, { data: dataCustomLayer, loading }] = useLazyQuery(
     CUSTOMLAYER,
     {
@@ -130,7 +99,8 @@ export default function ParcelsDetailCard(props) {
       }
       setParcelObj({
         ...dataCustomLayer.customLayer,
-        shape: shape
+        shape: shape,
+        state: "TX"
       });
       setProperties(shape.properties);
     }
