@@ -117,7 +117,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
             left:
               parcelData.state !== "TX"
                 ? "calc(50% - 28px)"
-                : "calc(50% - 19px)",
+                : "calc(50% - 11px)",
           }}
           onClick={() => {
             if (
@@ -193,7 +193,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
             left:
               parcelData.state !== "TX"
                 ? "calc(25% - 24px)"
-                : "calc(25% - 14px)",
+                : "calc(25% - 11px)",
           }}
           onClick={() => {
             if (parcelData.state !== "TXtemporaryRemoved" && parcelData.qtrQtr)
@@ -244,7 +244,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
                 ? "calc(25% - 20px)"
                 : "calc(25% - 10px)",
             right:
-              parcelData.state !== "TX" ? "calc(25% - 7px)" : "calc(25% + 2px)",
+              parcelData.state !== "TX" ? "calc(25% - 7px)" : "calc(25% - 8px)",
           }}
           onClick={() => {
             if (parcelData.state !== "TXtemporaryRemoved" && parcelData.qtrQtr)
@@ -297,7 +297,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
             left:
               parcelData.state !== "TX"
                 ? "calc(25% - 24px)"
-                : "calc(25% - 14px)",
+                : "calc(25% - 11px)",
           }}
           onClick={() => {
             if (parcelData.state !== "TXtemporaryRemoved" && parcelData.qtrQtr)
@@ -348,7 +348,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
                 ? "calc(25% - 20px)"
                 : "calc(25% - 10px)",
             right:
-              parcelData.state !== "TX" ? "calc(25% - 7px)" : "calc(25% + 2px)",
+              parcelData.state !== "TX" ? "calc(25% - 7px)" : "calc(25% - 8px)",
           }}
           onClick={() => {
             if (parcelData.state !== "TXtemporaryRemoved" && parcelData.qtrQtr)
