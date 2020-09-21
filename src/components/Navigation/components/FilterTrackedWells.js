@@ -6,6 +6,8 @@ import { AppContext } from "../../../AppContext";
 import { FormLabel } from "@material-ui/core";
 import WellIcon from "../../Shared/svgIcons/well";
 import IconButton from "@material-ui/core/IconButton";
+// import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
+// import { useMutation } from "@apollo/client";
 
 const useStyles = makeStyles({
   mainDiv: {
@@ -34,24 +36,22 @@ export default function FilterTrackedWells() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateApp] = useContext(AppContext);
 
-  useEffect(() => {
-    if (stateApp.checkedUserDefinedLayers)
-      if (stateApp.checkedUserDefinedLayers.indexOf(3) === -1)
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          filterTrackedWells: false,
-        }));
-      else
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          filterTrackedWells: true,
-        }));
-  }, [stateApp.checkedUserDefinedLayers]);
+  // const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
   const toggleTracks = () => {
-    if (!stateApp.activateUserDefinedLayers(3))
-      stateApp.deactivateUserDefinedLayers(3);
-    else stateApp.deactivateWellLayer();
+    setStateNav((stateNav) => {
+      if (stateNav.filterTrackedWells)
+        stateApp.toggleLayersActivity("Tracked Wells", false);
+      else {
+        stateApp.toggleLayersActivity("Tracked Wells", true);
+        stateApp.toggleLayersActivity("Wells", false);
+      }
+
+      return {
+        ...stateNav,
+        filterTrackedWells: !stateNav.filterTrackedWells,
+      };
+    });
   };
 
   return (

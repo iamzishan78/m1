@@ -8,7 +8,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import ExpandIcon from "./components/svgIcons/ExpandIcon";
 import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
 import Tooltip from "@material-ui/core/Tooltip";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 import $ from "jquery";
 import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "./ExpandableCardContext";

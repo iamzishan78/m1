@@ -4,7 +4,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
 import { USERAVAILABLEFILTERTAGSQUERY } from "../../../graphQL/useQueryUserAvailableFilterTags";
 import { OBJECTSFROMTAGSARRAY } from "../../../graphQL/useQueryObjectsFromTagsArray";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../../AppContext";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
@@ -35,7 +35,10 @@ export default function FilterTags() {
   );
 
   const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(
-    OWNERSWELLSQUERY
+    OWNERSWELLSQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
 
   ////All User Available Tags For The DropDown
@@ -50,28 +53,28 @@ export default function FilterTags() {
   }, [stateApp.user]);
 
   ////Fetching wells ids and owners ids
-  useEffect(() => {
-    if (
-      stateNav.selectedTags &&
-      stateNav.selectedTags.length > 0 &&
-      stateApp.user
-    ) {
-      getWellsIdsFromTagsArray({
-        variables: {
-          objectType: "well",
-          tagsArray: stateNav.selectedTags,
-          userId: stateApp.user.mongoId,
-        },
-      });
-      getOwnersIdsFromTagsArray({
-        variables: {
-          objectType: "owner",
-          tagsArray: stateNav.selectedTags,
-          userId: stateApp.user.mongoId,
-        },
-      });
-    }
-  }, [stateNav.selectedTags, stateApp.user]);
+  // useEffect(() => {
+  //   if (
+  //     stateNav.selectedTags &&
+  //     stateNav.selectedTags.length > 0 &&
+  //     stateApp.user
+  //   ) {
+  //     getWellsIdsFromTagsArray({
+  //       variables: {
+  //         objectType: "well",
+  //         tagsArray: stateNav.selectedTags,
+  //         userId: stateApp.user.mongoId,
+  //       },
+  //     });
+  //     getOwnersIdsFromTagsArray({
+  //       variables: {
+  //         objectType: "owner",
+  //         tagsArray: stateNav.selectedTags,
+  //         userId: stateApp.user.mongoId,
+  //       },
+  //     });
+  //   }
+  // }, [stateNav.selectedTags, stateApp.user]);
 
   useEffect(() => {
     if (dataOwnersIds && dataOwnersIds.objectsFromTagsArray) {
@@ -130,6 +133,20 @@ export default function FilterTags() {
     setOwnersWells(null);
     if (value && value.length) {
       setStateNav((stateNav) => ({ ...stateNav, selectedTags: value }));
+      getWellsIdsFromTagsArray({
+        variables: {
+          objectType: "well",
+          tagsArray: value,
+          userId: stateApp.user.mongoId,
+        },
+      });
+      getOwnersIdsFromTagsArray({
+        variables: {
+          objectType: "owner",
+          tagsArray: value,
+          userId: stateApp.user.mongoId,
+        },
+      });
     } else {
       setStateNav((stateNav) => ({
         ...stateNav,
@@ -140,7 +157,6 @@ export default function FilterTags() {
         ...stateApp,
         wellListFromTagsFilter: null,
       }));
-      stateApp.deactivateUserDefinedLayers(5);
     }
   };
 

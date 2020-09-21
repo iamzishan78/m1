@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
+import moment from "moment";
 import Comments from "../Shared/Comments";
 import Tags from "../Shared/Tagger";
 import Avatar from "react-avatar";
@@ -13,13 +14,16 @@ import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
-import { MELISSARECORDS } from "../../graphQL/useQueryGetMelissaRecords";
+import { LASTMELISSARECORD } from "../../graphQL/useQueryGetMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/client";
 import ConfirmationDialog from "./components/ConfirmationDialog";
+import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
 import Activities from "../Shared/Activities";
 import Deals from "../Shared/Deals";
+import Documents from "../Shared/Documents";
 import LeadScore from "../Shared/LeadScore";
+import LeadStage from "../Shared/LeadStage";
 import { AppContext } from "../../AppContext";
 import RecentConversations from "../Shared/RecentConversations";
 import TextField from "@material-ui/core/TextField";
@@ -40,7 +44,7 @@ import MessageRoundedIcon from "@material-ui/icons/MessageRounded";
 import DescriptionRoundedIcon from "@material-ui/icons/DescriptionRounded";
 import Card from "@material-ui/core/Card";
 import HandShake from "../Shared/svgIcons/HandShake";
-import Parcels from "./components/Parcels";
+import ParcelsCard from "./components/ParcelsCard";
 import WellsCard from "./components/WellsCard";
 import RecentActivities from "../RecentActivities/RecentActivities";
 import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
@@ -282,9 +286,12 @@ export default function ContactDetailCard(props) {
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
     TRANSACTIONDATA
   );
-  const [getMelissaRecords, { data: mData }] = useLazyQuery(MELISSARECORDS, {
-    fetchPolicy: "network-only",
-  });
+  const [getLastMelissaRecord, { data: mData }] = useLazyQuery(
+    LASTMELISSARECORD,
+    {
+      fetchPolicy: "network-only",
+    }
+  );
 
   const handleClickRightDialogOpen = (childrenToOpen) => {
     setRightDialogOpen(childrenToOpen);
@@ -307,6 +314,12 @@ export default function ContactDetailCard(props) {
     setExpCardSubComponentTitle(subComponentTitle);
     setShowExpandableCard(true);
   };
+  const handleExpandClick = async (type) => {
+    setOpenDialog(type);
+  };
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
 
   useEffect(() => {
     setTimeout(() => {
@@ -325,6 +338,7 @@ export default function ContactDetailCard(props) {
   }, [props.contactId]);
 
   useEffect(() => {
+    console.log("SET CONTACT:", data);
     if (data && data.contact) {
       setContactData(data.contact);
     }
@@ -332,7 +346,7 @@ export default function ContactDetailCard(props) {
 
   useEffect(() => {
     if (props.contactId) {
-      getMelissaRecords({
+      getLastMelissaRecord({
         variables: {
           contactId: props.contactId,
         },
@@ -341,8 +355,8 @@ export default function ContactDetailCard(props) {
   }, [props.contactId]);
 
   useEffect(() => {
-    if (mData && mData.getMelissaRecords.success === true) {
-      setMelissaData(mData.getMelissaRecords);
+    if (mData && mData.getLastMelissaRecord.success === true) {
+      setMelissaData(mData.getLastMelissaRecord);
     }
   }, [mData]);
 
@@ -375,312 +389,326 @@ export default function ContactDetailCard(props) {
     }
   }, [tData, tLoading]);
 
-  return (
-    contactData && (
-      <div className={classes.mainGridContainer}>
-        {/*/////////// left column //////////// */}
-        <Grid container className={classes.leftColumn}>
-          {/*/////////// section 1 //////////// */}
+  return contactData ? (
+    <div className={classes.mainGridContainer}>
+      {/*/////////// left column //////////// */}
+      <Grid container className={classes.leftColumn}>
+        {/*/////////// section 1 //////////// */}
 
-          <Grid
-            item
-            xs={12}
-            style={{
-              padding: "20px 25px",
-            }}
-            className={classes.border}
-          >
-            <div className={classes.leftColumnTopRigthCorner}>
-              <Button
-                variant="contained"
-                // size="small"
-                onClick={() => {}}
-              >
-                Buy Info
-              </Button>
-              {contactData.primaryEmail && (
-                <a href={"mailto:" + contactData.primaryEmail}>
-                  <Button
-                    variant="contained"
-                    //  size="small"
-                  >
-                    Email
-                  </Button>
-                </a>
-              )}
-
-              <Button
-                variant="contained"
-                // size="small"
-                onClick={() => {
-                  setOpenDialog(true);
-                }}
-              >
-                Delete
-              </Button>
-            </div>
-            <div>
-              <div className={classes.userIcon}>
-                <StyleBadge
-                  badgeContent={5}
-                  //color={"#f6c16b"}
+        <Grid
+          item
+          xs={12}
+          style={{
+            padding: "20px 25px",
+          }}
+          className={classes.border}
+        >
+          <div className={classes.leftColumnTopRigthCorner}>
+            <Button
+              variant="contained"
+              // size="small"
+              onClick={() => {
+                handleExpandClick("buyContactsInfo");
+              }}
+            >
+              Buy Info
+            </Button>
+            {contactData.primaryEmail && (
+              <a href={"mailto:" + contactData.primaryEmail}>
+                <Button
+                  variant="contained"
+                  //  size="small"
                 >
-                  <Avatar
-                    className={classes.grey}
-                    name={contactData.name}
-                    size="93"
-                    round
-                  />
-                </StyleBadge>
-              </div>
-              <div className={classes.userName}>
-                <h2 style={{ width: "max-content" }}>
-                  {/* {contactData.name} */}
+                  Email
+                </Button>
+              </a>
+            )}
 
-                  <FieldContent
-                    noInputFooter
-                    noMargin
-                    id={contactData._id}
-                    entity={contactData.entity}
-                    content={{ name: contactData.name }}
-                  >
-                    {(contactData.facebook ||
-                      contactData.twitte ||
-                      contactData.linkedln) && (
-                      <span className={classes.socialMediaSection}>
-                        {contactData.facebook && (
-                          <a
-                            href={`${
-                              !contactData.facebook.startsWith("http") &&
-                              !contactData.facebook.startsWith("//")
-                                ? "//"
-                                : ""
-                            }${contactData.facebook}`}
-                            target="_blank"
-                          >
-                            <FacebookIcon />
-                          </a>
-                        )}
-                        {contactData.twitter && (
-                          <a
-                            href={`${
-                              !contactData.twitter.startsWith("http") &&
-                              !contactData.twitter.startsWith("//")
-                                ? "//"
-                                : ""
-                            }${contactData.twitter}`}
-                            target="_blank"
-                          >
-                            <TwitterIcon className={classes.twitterIcon} />
-                          </a>
-                        )}
-                        {contactData.linkedln && (
-                          <a
-                            href={`${
-                              !contactData.linkedln.startsWith("http") &&
-                              !contactData.linkedln.startsWith("//")
-                                ? "//"
-                                : ""
-                            }${contactData.linkedln}`}
-                            target="_blank"
-                          >
-                            <LinkedInIcon />
-                          </a>
-                        )}
-                      </span>
-                    )}
-                  </FieldContent>
-                </h2>
-                <h4>
-                  <FieldContent
-                    childrenLeft
-                    noMargin
-                    name="Address"
-                    id={contactData._id}
-                    entity={contactData.entity}
-                    content={{
-                      address1: contactData.address1,
-                      address2: contactData.address2,
-                      city: contactData.city,
-                      state: contactData.state,
-                      zip: contactData.zip,
-                      country: contactData.country,
-                    }}
-                  />
-                </h4>
-                <h4>
-                  <FieldContent
-                    childrenLeft
-                    noMargin
-                    name={"Company Name Or Job Title"}
-                    id={contactData._id}
-                    entity={contactData.entity}
-                    content={{
-                      companyName: contactData.companyName,
-                      jobTitle: contactData.jobTitle,
-                    }}
-                  />
-                </h4>
-              </div>
+            <Button
+              variant="contained"
+              // size="small"
+              onClick={() => {
+                handleExpandClick("deleteConfirmation");
+                //setOpenDialog(true);
+              }}
+            >
+              Delete
+            </Button>
+          </div>
+          <div>
+            <div className={classes.userIcon}>
+              <StyleBadge
+                badgeContent={5}
+                //color={"#f6c16b"}
+              >
+                <Avatar
+                  className={classes.grey}
+                  name={contactData.name}
+                  size="93"
+                  round
+                />
+              </StyleBadge>
             </div>
-          </Grid>
-          {/*/////////// section 2 //////////// */}
-          <Grid
-            item
-            xs={12}
-            style={{
-              padding: "20px 15px 10px 15px",
-            }}
-            className={classes.border}
-          >
-            <div className={classes.tags}>
-              <Tags
-                width="100%"
-                targetSourceId={contactData._id}
-                targetLabel="contact"
-                publicLeftBottom
-              />
-            </div>
-          </Grid>
+            <div className={classes.userName}>
+              <h2 style={{ width: "max-content" }}>
+                {/* {contactData.name} */}
 
-          {/*/////////// section 3 //////////// */}
-          <Grid
-            item
-            xs={12}
-            container
-            className={classes.border}
-            spacing={0}
-            style={{ padding: "23px 28px" }}
-          >
-            <ContactDetailedInfo
-              header={"Detailed Information"}
-              contactData={contactData}
-              handleOpenExpandableCard={handleOpenExpandableCard}
-              melissaData={melissaData}
-              id={contactData._id}
+                <FieldContent
+                  noInputFooter
+                  noMargin
+                  id={contactData._id}
+                  entity={contactData.entity}
+                  content={{ name: contactData.name }}
+                >
+                  {(contactData.facebook ||
+                    contactData.twitte ||
+                    contactData.linkedln) && (
+                    <span className={classes.socialMediaSection}>
+                      {contactData.facebook && (
+                        <a
+                          href={`${
+                            !contactData.facebook.startsWith("http") &&
+                            !contactData.facebook.startsWith("//")
+                              ? "//"
+                              : ""
+                          }${contactData.facebook}`}
+                          target="_blank"
+                        >
+                          <FacebookIcon />
+                        </a>
+                      )}
+                      {contactData.twitter && (
+                        <a
+                          href={`${
+                            !contactData.twitter.startsWith("http") &&
+                            !contactData.twitter.startsWith("//")
+                              ? "//"
+                              : ""
+                          }${contactData.twitter}`}
+                          target="_blank"
+                        >
+                          <TwitterIcon className={classes.twitterIcon} />
+                        </a>
+                      )}
+                      {contactData.linkedln && (
+                        <a
+                          href={`${
+                            !contactData.linkedln.startsWith("http") &&
+                            !contactData.linkedln.startsWith("//")
+                              ? "//"
+                              : ""
+                          }${contactData.linkedln}`}
+                          target="_blank"
+                        >
+                          <LinkedInIcon />
+                        </a>
+                      )}
+                    </span>
+                  )}
+                </FieldContent>
+              </h2>
+              <h4>
+                <FieldContent
+                  childrenLeft
+                  noMargin
+                  name="Address"
+                  id={contactData._id}
+                  entity={contactData.entity}
+                  content={{
+                    address1: contactData.address1,
+                    address2: contactData.address2,
+                    city: contactData.city,
+                    state: contactData.state,
+                    zip: contactData.zip,
+                    country: contactData.country,
+                  }}
+                />
+              </h4>
+              <h4>
+                <FieldContent
+                  childrenLeft
+                  noMargin
+                  name={"Company Name Or Job Title"}
+                  id={contactData._id}
+                  entity={contactData.entity}
+                  content={{
+                    companyName: contactData.companyName,
+                    jobTitle: contactData.jobTitle,
+                  }}
+                />
+              </h4>
+            </div>
+          </div>
+        </Grid>
+        {/*/////////// section 2 //////////// */}
+        <Grid
+          item
+          xs={12}
+          style={{
+            padding: "20px 15px 10px 15px",
+          }}
+          className={classes.border}
+        >
+          <div className={classes.tags}>
+            <Tags
+              width="100%"
+              targetSourceId={contactData._id}
+              targetLabel="contact"
+              publicLeftBottom
             />
+          </div>
+        </Grid>
+
+        {/*/////////// section 3 //////////// */}
+        <Grid
+          item
+          xs={12}
+          container
+          className={classes.border}
+          spacing={0}
+          style={{ padding: "23px 28px" }}
+        >
+          <ContactDetailedInfo
+            header={"Detailed Information"}
+            contactData={contactData}
+            handleOpenExpandableCard={handleOpenExpandableCard}
+            melissaData={melissaData}
+            id={contactData._id}
+          />
+        </Grid>
+
+        {/*/////////// new section //////////// */}
+        <Grid
+          container
+          item
+          xs={12}
+          className={`${classes.border}`}
+          style={{ padding: "23px 28px" }}
+          spacing={0}
+        >
+          <Grid item xs={12}>
+            <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
+              Associated Interest
+            </h4>
           </Grid>
 
-          {/*/////////// new section //////////// */}
-          <Grid
-            container
-            item
-            xs={12}
-            className={`${classes.border}`}
-            style={{ padding: "23px 28px" }}
-            spacing={0}
-          >
-            <Grid item xs={12}>
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <Card raised style={{ minHeight: "35px", height: "100%" }}>
+                  <WellsCard
+                    handleOpenExpandableCard={handleOpenExpandableCard}
+                    contactData={contactData}
+                  />
+                </Card>
+              </Grid>
+              <Grid item xs={4}>
+                <Card raised style={{ minHeight: "35px", height: "100%" }}>
+                  <ParcelsCard
+                    handleOpenExpandableCard={handleOpenExpandableCard}
+                    contactData={contactData}
+                  />
+                </Card>
+              </Grid>
+              <Grid item xs={4}>
+                <Card raised style={{ minHeight: "35px", height: "100%" }}>
+                  <LeadScore score={5} lastContacted={"Jun 24, 2020"} />
+                </Card>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+
+        {/*/////////// new section //////////// */}
+        <Grid item xs={12} className={`${classes.border}`}>
+          <div className={classes.SectMargin}>
+            <Grid item xs={12} style={{ minHeight: "33px" }}>
               <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
-                Associated Interest
+                Lead Stage Changed:{" "}
+                <span style={{ fontWeight: "normal" }}>
+                  {moment(
+                    Number(
+                      contactData.lastUpdateLeadStageAt
+                        ? contactData.lastUpdateLeadStageAt
+                        : contactData.lastUpdateAt
+                    )
+                  ).fromNow()}
+                </span>
               </h4>
             </Grid>
 
-            <Grid item xs={12}>
-              <Grid container spacing={2}>
-                <Grid item xs={4}>
-                  <Card raised style={{ minHeight: "35px" }}>
-                    <WellsCard
-                      handleOpenExpandableCard={handleOpenExpandableCard}
-                    />
-                  </Card>
-                </Grid>
-                <Grid item xs={4}>
-                  <Card raised style={{ minHeight: "35px" }}>
-                    <Parcels
-                      handleOpenExpandableCard={handleOpenExpandableCard}
-                    />
-                  </Card>
-                </Grid>
-                <Grid item xs={4}>
-                  <Card raised style={{ minHeight: "35px" }}>
-                    <LeadScore score={5} lastContacted={"Jun 24, 2020"} />
-                  </Card>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-
-          {/*/////////// new section //////////// */}
-          <Grid item xs={12} className={`${classes.border}`}>
-            <div className={classes.SectMargin}>
-              <Grid item xs={12} style={{ minHeight: "33px" }}>
-                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
-                  Lead Stage Changed:
-                  <span style={{ fontWeight: "normal" }}> 4 months ago</span>
-                </h4>
-                <h4 style={{ margin: "0 0 13px 0", float: "right" }}>
-                  Last Contacted:
-                  <span style={{ fontWeight: "normal" }}> 2 hours ago</span>
-                </h4>
-              </Grid>
-
-              <Grid
-                item
-                xs={12}
-                style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}
-              ></Grid>
-            </div>
-          </Grid>
-
-          {/*/////////// Recent Activities. //////////// */}
-          <Grid item xs={12} className={`${classes.border}`}>
-            <div className={classes.SectMargin}>
-              <RecentActivities
-                header={"Recent Activities"}
-                handleOpenExpandableCard={handleOpenExpandableCard}
+            <Grid
+              item
+              xs={12}
+              style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}
+            >
+              <LeadStage
+                leadStage={
+                  contactData.leadStage ? contactData.leadStage : "New"
+                }
                 id={contactData._id}
-                user_id={stateApp.user.email}
-                activityLog={contactData.activityLog}
               />
-            </div>
-          </Grid>
+            </Grid>
+          </div>
+        </Grid>
+        {/*/////////// Recent Activities. //////////// */}
+        <Grid item xs={12} className={`${classes.border}`}>
+          <div className={classes.SectMargin}>
+            <RecentActivities
+              header={"Recent Activities"}
+              handleOpenExpandableCard={handleOpenExpandableCard}
+              id={contactData._id}
+              user_id={stateApp.user.email}
+              activityLog={contactData.activityLog}
+            />
+          </div>
+        </Grid>
 
-          {/*/////////// Recent Converstaion. //////////// */}
-          <Grid item xs={12} className={`${classes.border}`}>
-            <div className={classes.SectMargin}>
-              <RecentConversations
-                header={"Recent Conversations"}
-                handleOpenExpandableCard={handleOpenExpandableCard}
+        {/*/////////// Recent Converstaion. //////////// */}
+        <Grid item xs={12} className={`${classes.border}`}>
+          <div className={classes.SectMargin}>
+            <RecentConversations
+              header={"Recent Conversations"}
+              handleOpenExpandableCard={handleOpenExpandableCard}
+            />
+          </div>
+        </Grid>
+
+        {/*/////////// new section //////////// */}
+        <Grid item xs={12} className={`${classes.border}`}>
+          <div className={classes.SectMargin}>
+            <Grid item xs={12}>
+              <h4 style={{ marginBottom: "8px" }}>
+                Add Wells and Parcels to this contact
+              </h4>
+            </Grid>
+            <Grid item xs={12}>
+              <Autocomplete
+                options={[]}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    size="small"
+                    placeholder="Search Wells, Parcels"
+                    variant="outlined"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment>
+                          <SearchIcon htmlColor="#929292" />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                )}
               />
-            </div>
-          </Grid>
+            </Grid>
+          </div>
+        </Grid>
 
-          {/*/////////// new section //////////// */}
-          <Grid item xs={12} className={`${classes.border}`}>
-            <div className={classes.SectMargin}>
-              <Grid item xs={12}>
-                <h4 style={{ marginBottom: "8px" }}>
-                  Add Wells and Parcels to this contact
-                </h4>
-              </Grid>
-              <Grid item xs={12}>
-                <Autocomplete
-                  options={[]}
-                  getOptionLabel={(option) => option}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      size="small"
-                      placeholder="Search Wells, Parcels"
-                      variant="outlined"
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <InputAdornment>
-                            <SearchIcon htmlColor="#929292" />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-              </Grid>
-            </div>
-          </Grid>
-
-          {/*/////////// table section //////////// */}
-          {/* {contactData && contactData.owners && contactData.owners.length > 0 && (
+        {/*/////////// table section //////////// */}
+        {/* {contactData && contactData.owners && contactData.owners.length > 0 && (
             <Grid
               item
               xs={12}
@@ -695,46 +723,46 @@ export default function ContactDetailCard(props) {
               </div>
             </Grid>
           )} */}
-        </Grid>
+      </Grid>
 
-        {/*/////////// rigth column //////////// */}
-        <div className={classes.rightColumnGrid}>
-          <IconButton
-            size="small"
-            className={classes.shrinkRightColumn}
-            onClick={() => {
-              dispatch(toggleRightColumn());
-            }}
-          >
-            {shrinkRightColumn ? (
-              <ArrowBackIosRoundedIcon />
-            ) : (
-              <ArrowForwardIosRoundedIcon />
-            )}
-          </IconButton>
-          {shrinkRightColumn || showShrinkColumnContent ? (
-            <div style={{ width: "68px" }}>
-              <IconButton
-                className={classes.shrinkRightColumnIcons}
-                style={{ padding: "8px" }}
-              >
-                <HandShake />
-              </IconButton>
-
-              <IconButton className={classes.shrinkRightColumnIcons}>
-                <MessageRoundedIcon />
-              </IconButton>
-
-              <IconButton className={classes.shrinkRightColumnIcons}>
-                <DescriptionRoundedIcon />
-              </IconButton>
-            </div>
+      {/*/////////// rigth column //////////// */}
+      <div className={classes.rightColumnGrid}>
+        <IconButton
+          size="small"
+          className={classes.shrinkRightColumn}
+          onClick={() => {
+            dispatch(toggleRightColumn());
+          }}
+        >
+          {shrinkRightColumn ? (
+            <ArrowBackIosRoundedIcon />
           ) : (
-            <Grid container spacing={0} id="expandedRCContent">
-              {/* //////////// Deal Card ////////////// */}
+            <ArrowForwardIosRoundedIcon />
+          )}
+        </IconButton>
+        {shrinkRightColumn || showShrinkColumnContent ? (
+          <div style={{ width: "68px" }}>
+            <IconButton
+              className={classes.shrinkRightColumnIcons}
+              style={{ padding: "8px" }}
+            >
+              <HandShake />
+            </IconButton>
 
-              {/* TEMPORARY COMMENT OUT. DO NOT DELETE. */}
-              {/* <Grid item xs={12}>
+            <IconButton className={classes.shrinkRightColumnIcons}>
+              <MessageRoundedIcon />
+            </IconButton>
+
+            <IconButton className={classes.shrinkRightColumnIcons}>
+              <DescriptionRoundedIcon />
+            </IconButton>
+          </div>
+        ) : (
+          <Grid container spacing={0} id="expandedRCContent">
+            {/* //////////// Deal Card ////////////// */}
+
+            {/* TEMPORARY COMMENT OUT. DO NOT DELETE. */}
+            {/* <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <div className={classes.divDealCard}>
                   <p className={classes.pDealCard}>
@@ -748,28 +776,41 @@ export default function ContactDetailCard(props) {
             </Grid>
              */}
 
-              <Grid item xs={12}>
-                <Deals
-                  contact={contactData}
-                  transactData={transactData}
-                  transactId={transactId}
-                  selectRowOpenContact={props.selectRowOpenContact}
-                />
-                <Divider />
-              </Grid>
+            <Grid item xs={12}>
+              <Deals
+                contact={contactData}
+                transactData={transactData}
+                transactId={transactId}
+                selectRowOpenContact={props.selectRowOpenContact}
+              />
+              <Divider />
+            </Grid>
 
-              <Grid item xs={12} className={classes.Comments}>
-                <Comments
-                  targetSourceId={contactData._id}
-                  targetLabel="contact"
-                  detailCard
-                  top={2}
-                  viewAll={handleClickRightDialogOpen}
-                />
-                <Divider />
-              </Grid>
+            <Grid item xs={12} className={classes.Comments}>
+              <Comments
+                targetSourceId={contactData._id}
+                targetLabel="contact"
+                detailCard
+                top={2}
+                viewAll={handleClickRightDialogOpen}
+              />
+              <Divider />
+            </Grid>
 
-              {/* <Grid item xs={12}>
+            <Grid item xs={12} className={classes.Comments}>
+              <Documents
+                // contact={contactData}
+                // transactData={transactData}
+                // transactId={transactId}
+                // selectRowOpenContact={props.selectRowOpenContact}
+                handleOpenExpandableCard={handleOpenExpandableCard}
+                id={contactData._id}
+                user_id={stateApp.user.email}
+              />
+              <Divider />
+            </Grid>
+
+            {/* <Grid item xs={12}>
                 <Activities
                   id={contactData._id}
                   user_id={stateApp.user.email}
@@ -777,107 +818,128 @@ export default function ContactDetailCard(props) {
                 />
                 <Divider />
               </Grid> */}
-            </Grid>
-          )}
-        </div>
-
-        <ConfirmationDialog
-          openDialog={openDialog}
-          handleDialogClose={setOpenDialog}
-          handleCloseExpandableCard={props.handleCloseExpandableCard}
-          id={contactData._id}
-        />
-
-        {/* //// ViewAll in a right dialog //// */}
-
-        <RightDialog
-          open={rightDialogOpen ? true : false}
-          handleClickDialogClose={handleClickRightDialogClose}
-          width="450px"
-        >
-          {rightDialogOpen === "comments" && (
-            <Grid item xs={12} className={classes.Comments}>
-              <Comments
-                className={classes.gridStyling}
-                targetSourceId={contactData._id}
-                targetLabel="contact"
-                handleRightDialogClose={handleClickRightDialogClose}
-              />
-            </Grid>
-          )}
-        </RightDialog>
-
-        {/* //// ViewAll in a full screen dialog //// */}
-        {showExpandableCard && (
-          <Dialog
-            className={classes.dialogExpCard}
-            fullWidth
-            maxWidth="xl"
-            open={showExpandableCard}
-            onClose={handleCloseExpandableCard}
-          >
-            <ExpandableCardProvider
-              expanded={true}
-              handleCloseExpandableCard={handleCloseExpandableCard}
-              title={"CONTACT DETAILS"}
-              subTitle={" "}
-              parent="table"
-              mouseX={0}
-              mouseY={0}
-              position="relative"
-              cardLeft={"0"}
-              cardTop={"0"}
-              zIndex={1201}
-              cardWidthExpanded="100%"
-              cardHeightExpanded="100%"
-              targetSourceId={props.contactId}
-              targetLabel={"contact"}
-              noTrackAvailable={true}
-              component={
-                <div
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  {/* //// ViewAll card top bar //// */}
-                  <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-                    <h3 className={classes.expTardTopBarNav}>
-                      <span>Leads</span>
-                      {" > "}
-                      <span
-                        className={classes.expTardTopBarNavContName}
-                        onClick={handleCloseExpandableCard}
-                      >
-                        {contactData && contactData.name
-                          ? contactData.name
-                          : ""}
-                      </span>
-                      {" > "}
-                      {expCardSubComponentTitle}
-                    </h3>
-                  </Toolbar>
-                  {expCardSubComponent}
-                </div>
-              }
-            />
-          </Dialog>
-        )}
-
-        {loading && (
-          <div
-            style={{
-              padding: "20px",
-              position: "absolute",
-              height: "100%",
-              width: "100%",
-              zIndex: "50",
-            }}
-          >
-            <CircularProgress size={80} disableShrink color="secondary" />
-          </div>
+          </Grid>
         )}
       </div>
-    )
+
+      {openDialog && (
+        <Dialog
+          className={classes.dialog}
+          open={openDialog ? true : false}
+          onClose={handleCloseDialog}
+          fullWidth={true}
+          maxWidth={"sm"}
+        >
+          {openDialog === "buyContactsInfo" && (
+            <BuyContactsInfoDialogContent
+              onClose={handleCloseDialog}
+              rows={[contactData]}
+              setRows={() => {}}
+              updateMelissaTable={() => {
+                getLastMelissaRecord({
+                  variables: {
+                    contactId: props.contactId,
+                  },
+                });
+              }}
+            />
+          )}
+          {openDialog === "deleteConfirmation" && (
+            <ConfirmationDialog
+              openDialog={openDialog}
+              handleDialogClose={setOpenDialog}
+              handleCloseExpandableCard={props.handleCloseExpandableCard}
+              id={contactData._id}
+            />
+          )}
+        </Dialog>
+      )}
+
+      {/* //// ViewAll in a right dialog //// */}
+
+      <RightDialog
+        open={rightDialogOpen ? true : false}
+        handleClickDialogClose={handleClickRightDialogClose}
+        width="450px"
+      >
+        {rightDialogOpen === "comments" && (
+          <Grid item xs={12} className={classes.Comments}>
+            <Comments
+              className={classes.gridStyling}
+              targetSourceId={contactData._id}
+              targetLabel="contact"
+              handleRightDialogClose={handleClickRightDialogClose}
+            />
+          </Grid>
+        )}
+      </RightDialog>
+
+      {/* //// ViewAll in a full screen dialog //// */}
+      {showExpandableCard && (
+        <Dialog
+          className={classes.dialogExpCard}
+          fullWidth
+          maxWidth="xl"
+          open={showExpandableCard}
+          onClose={handleCloseExpandableCard}
+        >
+          <ExpandableCardProvider
+            expanded={true}
+            handleCloseExpandableCard={handleCloseExpandableCard}
+            title={"CONTACT DETAILS"}
+            subTitle={" "}
+            parent="table"
+            mouseX={0}
+            mouseY={0}
+            position="relative"
+            cardLeft={"0"}
+            cardTop={"0"}
+            zIndex={1201}
+            cardWidthExpanded="100%"
+            cardHeightExpanded="100%"
+            targetSourceId={props.contactId}
+            targetLabel={"contact"}
+            noTrackAvailable={true}
+            component={
+              <div
+                style={{
+                  width: "100%",
+                  backgroundColor: "#fff",
+                }}
+              >
+                {/* //// ViewAll card top bar //// */}
+                <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
+                  <h3 className={classes.expTardTopBarNav}>
+                    <span>Leads</span>
+                    {" > "}
+                    <span
+                      className={classes.expTardTopBarNavContName}
+                      onClick={handleCloseExpandableCard}
+                    >
+                      {contactData && contactData.name ? contactData.name : ""}
+                    </span>
+                    {" > "}
+                    {expCardSubComponentTitle}
+                  </h3>
+                </Toolbar>
+                {expCardSubComponent}
+              </div>
+            }
+          />
+        </Dialog>
+      )}
+    </div>
+  ) : (
+    <div
+      style={{
+        padding: "20px",
+        position: "absolute",
+        height: "100%",
+        width: "100%",
+        zIndex: "50",
+      }}
+    >
+      <CircularProgress size={80} disableShrink color="secondary" />
+    </div>
   );
 }

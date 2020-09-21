@@ -5,9 +5,10 @@ import FilterTags from "./FilterTags";
 import FilterTrackedOwners from "./FilterTrackedOwners";
 import FilterTrackedWells from "./FilterTrackedWells";
 import Grid from "@material-ui/core/Grid";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { AppContext } from "../../../AppContext";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
+// import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
 
 const useStyles = makeStyles((theme) => ({
   gridItem: {
@@ -21,19 +22,20 @@ export default function FilterFormProduction() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
+  // const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
+  const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
 
   useEffect(() => {
-    let filter;
+    let filter = null;
 
-    if (stateNav.wellsIdsFromTags && stateNav.wellsIdsFromTags.length > 0) {
+    if (stateNav.wellsIdsFromTags) {
       let IdsArray = [];
       for (let i = 0; i < stateNav.wellsIdsFromTags.length; i++) {
         if (IdsArray.indexOf(stateNav.wellsIdsFromTags[i]) === -1)
           IdsArray.push(stateNav.wellsIdsFromTags[i]);
       }
-
-      filter = ["match", ["get", "id"], IdsArray, true, false];
 
       getWells({
         variables: {
@@ -41,8 +43,9 @@ export default function FilterFormProduction() {
           authToken: stateApp.user.authToken,
         },
       });
-    } else {
-      filter = null;
+
+      if (stateNav.wellsIdsFromTags.length > 0)
+        filter = ["match", ["get", "id"], IdsArray, true, false];
     }
 
     setStateNav((stateNav) => ({ ...stateNav, filterTags: filter }));
@@ -61,10 +64,15 @@ export default function FilterFormProduction() {
         ...stateApp,
         wellListFromTagsFilter: dataWells.wells.results,
       }));
-      stateApp.activateUserDefinedLayers(5);
-      // stateApp.deactivateWellLayer();
+      stateApp.toggleLayersActivity("Tagged Wells/Owners", true);
     }
   }, [dataWells]);
+
+  useEffect(() => {
+    if (!stateNav.filterTrackedWells && !stateNav.filterTrackedOwners) {
+      stateApp.toggleLayersActivity("Wells", true);
+    }
+  }, [stateNav.filterTrackedWells, stateNav.filterTrackedOwners]);
 
   return (
     <Grid

@@ -550,7 +550,7 @@ export default function OperatorFilterJ() {
 // import Autocomplete from "@material-ui/lab/Autocomplete";
 // import { NavigationContext } from "../NavigationContext";
 // import { OPERATORSQUERY } from "../../../graphQL/useQueryOperators";
-// import { useLazyQuery } from "@apollo/react-hooks";
+// import { useLazyQuery } from "@apollo/client";
 // import CircularProgress from "@material-ui/core/CircularProgress";
 
 // export default function OperatorFilterJ() {

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useMutation, useLazyQuery } from "@apollo/react-hooks";
+import { useMutation, useLazyQuery } from "@apollo/client";
 
 import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
@@ -406,15 +406,15 @@ export default (props) => {
         </Collapse>
         <StyledListItem2 button onClick={handleSelectAllAbstract}>
           <ListItemIcon>
-            <SelectAllIcon fontSize="small" color={stateApp.filterSelectAllAbstract ? "secondary" : "primary"} />
+            <SelectAllIcon fontSize="small" color={stateApp.filterSelectAllAbstract ? "secondary" : "white"} />
           </ListItemIcon>
-          <ListItemText primary="HighLight" />
+          <ListItemText primary="Highlight" />
         </StyledListItem2>
         <StyledListItem2 button onClick={handleRemoveFilter}>
           <ListItemIcon>
             <DeleteIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText primary="Delete" />
+          <ListItemText primary="Clear Filter" />
         </StyledListItem2>
       </StyledMenu>
     </React.Fragment>

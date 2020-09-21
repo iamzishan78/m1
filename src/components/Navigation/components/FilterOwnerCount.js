@@ -8,11 +8,12 @@ import Grid from "@material-ui/core/Grid";
 import { FormLabel } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import OwnershipIcon from "../../Shared/svgIcons/ownership";
+import CancelIcon from "@material-ui/icons/Cancel";
 
 const useStyles = makeStyles({
   divBordersMinMax: {
     display: "flow-root",
-    padding: "3.5px 15px 5.5px 15px",
+    padding: "3.5px 5px 5.5px 15px",
     border: "1px solid #C4C4C4",
     borderRadius: "4px",
     "&:hover": {
@@ -31,7 +32,6 @@ const useStyles = makeStyles({
   input: {
     marginLeft: "30px",
     width: "160px",
-    float: "right",
     "& input": { color: "#17AADD" },
   },
   inputLabel: {
@@ -46,8 +46,10 @@ const useStyles = makeStyles({
     },
   },
   ownersToggle: {
-    // marginLeft: "20px",
     marginRight: "50px",
+  },
+  floatRight: {
+    float: "right",
   },
 });
 
@@ -61,6 +63,8 @@ export default function FilterOwnerCount() {
   const [ownerCountWell, setOwnerCountWell] = useState(
     stateNav.ownerCountWell ? stateNav.ownerCountWell : []
   );
+  const [error, setError] = useState(false);
+  const [errorText, setErrorText] = useState("");
 
   const setFilter = useCallback(() => {
     let filter;
@@ -129,7 +133,7 @@ export default function FilterOwnerCount() {
   }, [setFilter, stateNav.ownerCountWell]);
 
   const handleChangeMin = (event) => {
-    setValueMinDisplay(event.target.value.replace(/,/g, ""));
+    setValueMinDisplay(parseInt(event.target.value.replace(/,/g, "")));
     setOwnerCountWell(event.target.id);
     setStateNav((stateNav) => ({
       ...stateNav,
@@ -144,7 +148,7 @@ export default function FilterOwnerCount() {
   };
 
   const handleChangeMax = (event) => {
-    setValueMaxDisplay(event.target.value.replace(/,/g, ""));
+    setValueMaxDisplay(parseInt(event.target.value.replace(/,/g, "")));
     setOwnerCountWell(event.target.id);
     setStateNav((stateNav) => ({
       ...stateNav,
@@ -157,6 +161,18 @@ export default function FilterOwnerCount() {
       }));
     }
   };
+
+  useEffect(() => {
+    if (valueMinDisplay && valueMaxDisplay) {
+      if (valueMinDisplay > valueMaxDisplay) {
+        setError(true);
+        setErrorText("Min value is greater than Max value");
+      } else {
+        setError(false);
+        setErrorText("");
+      }
+    }
+  }, [valueMaxDisplay, valueMinDisplay]);
 
   const allowNumbersOnly = (e) => {
     let code = e.which ? e.which : e.keyCode;
@@ -239,44 +255,58 @@ export default function FilterOwnerCount() {
       <Grid item sm={12}>
         <div className={classes.divBordersMinMax}>
           <FormLabel className={classes.inputLabel}>Owner Count</FormLabel>
-          <NumberFormat
-            id="OwnerCountMax"
-            value={valueMaxDisplay}
-            onChange={handleChangeMax}
-            thousandSeparator={true}
-            customInput={TextField}
-            className={classes.input}
-            aria-labelledby="range-number"
-            type="text"
-            label="Max"
-            size="small"
-            onKeyPress={(e) => allowNumbersOnly(e)}
-            InputProps={{
-              inputProps: {
-                min: 0,
-                max: Number.MAX_SAFE_INTEGER,
-              },
-            }}
-          />
-          <NumberFormat
-            id="OwnerCountMin"
-            value={valueMinDisplay}
-            onChange={handleChangeMin}
-            thousandSeparator={true}
-            customInput={TextField}
-            className={classes.input}
-            aria-labelledby="range-number"
-            type="text"
-            label="Min"
-            size="small"
-            onKeyPress={(e) => allowNumbersOnly(e)}
-            InputProps={{
-              inputProps: {
-                min: 0,
-                max: Number.MAX_SAFE_INTEGER - 1,
-              },
-            }}
-          />
+          <div className={classes.floatRight}>
+            <NumberFormat
+              id="OwnerCountMin"
+              value={valueMinDisplay}
+              onChange={handleChangeMin}
+              thousandSeparator={true}
+              customInput={TextField}
+              className={classes.input}
+              aria-labelledby="range-number"
+              type="text"
+              label="Min"
+              size="small"
+              onKeyPress={(e) => allowNumbersOnly(e)}
+              InputProps={{
+                inputProps: {
+                  min: 0,
+                  max: Number.MAX_SAFE_INTEGER - 1,
+                },
+              }}
+            />
+            <NumberFormat
+              id="OwnerCountMax"
+              value={valueMaxDisplay}
+              onChange={handleChangeMax}
+              thousandSeparator={true}
+              customInput={TextField}
+              className={classes.input}
+              aria-labelledby="range-number"
+              type="text"
+              label="Max"
+              size="small"
+              onKeyPress={(e) => allowNumbersOnly(e)}
+              error={error}
+              helperText={errorText}
+              InputProps={{
+                inputProps: {
+                  min: 0,
+                  max: Number.MAX_SAFE_INTEGER,
+                },
+              }}
+            />
+            <IconButton
+              onClick={() => {
+                handleChangeMax({ target: { id: "OwnerCountMax", value: "" } });
+                handleChangeMin({ target: { id: "OwnerCountMin", value: "" } });
+                setError(false);
+                setErrorText("");
+              }}
+            >
+              <CancelIcon height={"30px"} />
+            </IconButton>
+          </div>
         </div>
       </Grid>
       <Grid item sm={12}>

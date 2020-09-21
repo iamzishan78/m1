@@ -6,6 +6,8 @@ import { AppContext } from "../../../AppContext";
 import { FormLabel } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import OwnershipIcon from "../../Shared/svgIcons/ownership";
+// import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
+// import { useMutation } from "@apollo/client";
 
 const useStyles = makeStyles({
   mainDiv: {
@@ -32,27 +34,24 @@ const useStyles = makeStyles({
 export default function FilterTrackedOwners() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-
   const [stateApp] = useContext(AppContext);
 
-  useEffect(() => {
-    if (stateApp.checkedUserDefinedLayers)
-      if (stateApp.checkedUserDefinedLayers.indexOf(4) === -1)
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          filterTrackedOwners: false,
-        }));
-      else
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          filterTrackedOwners: true,
-        }));
-  }, [stateApp.checkedUserDefinedLayers]);
+  // const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
   const toggleTracks = () => {
-    if (!stateApp.activateUserDefinedLayers(4))
-      stateApp.deactivateUserDefinedLayers(4);
-    else stateApp.deactivateWellLayer();
+    setStateNav((stateNav) => {
+      if (stateNav.filterTrackedOwners)
+        stateApp.toggleLayersActivity("Tracked Owners", false);
+      else {
+        stateApp.toggleLayersActivity("Tracked Owners", true);
+        stateApp.toggleLayersActivity("Wells", false);
+      }
+
+      return {
+        ...stateNav,
+        filterTrackedOwners: !stateNav.filterTrackedOwners,
+      };
+    });
   };
 
   return (
