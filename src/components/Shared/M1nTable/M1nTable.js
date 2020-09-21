@@ -1025,7 +1025,7 @@ function M1nTable(props) {
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
-  const [loading, Loading] = useState(true);
+  const [loading, Loading] = useState(false);
   const setLoading = (newState) => {
     setStateIfDeepEqual(Loading, newState);
   };
@@ -1152,7 +1152,6 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks) {
-      setLoading(true);
 
       tracksByObjectType({
         variables: {
@@ -2175,7 +2174,6 @@ function M1nTable(props) {
       });
 
       if (props.customLayer.owners && props.customLayer.owners.length > 0) {
-        setLoading(true);
         const objectsIdsArray = props.customLayer.owners.map(
           (owner) => owner._id
         );
@@ -2206,29 +2204,32 @@ function M1nTable(props) {
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter
     ) {
+      let owners = [];
       props.customLayer.owners.forEach((parcelOwner) => {
-        parcelOwner.commentsCounter = 0;
-        parcelOwner.tags = [[], 0];
-        parcelOwner.isTracked = false;
+        let owner = Object.assign({}, parcelOwner);
+        owner.commentsCounter = 0;
+        owner.tags = [[], 0];
+        owner.isTracked = false;
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-          if (parcelOwner._id === dataCommentsCounter.commentsCounter[i]._id) {
-            parcelOwner.commentsCounter =
+          if (owner._id === dataCommentsCounter.commentsCounter[i]._id) {
+            owner.commentsCounter =
               dataCommentsCounter.commentsCounter[i].total;
             break;
           }
         }
 
         for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-          if (parcelOwner._id === dataTracks.tracksByObjectType[i].trackOn) {
-            parcelOwner.isTracked = true;
+          if (owner._id === dataTracks.tracksByObjectType[i].trackOn) {
+            owner.isTracked = true;
             break;
           }
         }
+        owners.push(owner);
       });
 
       setColumns(OwnersPerParcelHeadCells);
-      setRows([...props.customLayer.owners]);
+      setRows(owners);
       setLoading(false);
     }
   }, [props.parent, props.customLayer, dataTracks, dataCommentsCounter]);
@@ -2451,7 +2452,6 @@ function M1nTable(props) {
   ////////////Deals end////////////////////////////////////////////////
 
   ////////////-----Add your code section here-----///////////////////////
-
   return (
     <Container maxWidth={false} className={classes.container}>
       <Table
