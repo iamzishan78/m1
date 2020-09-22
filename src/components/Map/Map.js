@@ -4321,14 +4321,11 @@ export default function Map() {
         const mapFilterPolyOnRight = (e) => {
           console.log("right click on the map");
           let id = "draw_polygon" + Date.now();
-          setStateNav((stateNav) => ({
-            ...stateNav,
-            drawingMode: "draw_polygon",
-            filterFeatureId: id,
-          }));
-        };
-
-        newMap.on("contextmenu", mapFilterPolyOnRight);
+          setStateNav(stateNav => ({ ...stateNav, drawingMode: "draw_polygon", filterFeatureId: id }));
+        }
+        
+        // Buggy Code, temporarily disabling it
+        // newMap.on("contextmenu", mapFilterPolyOnRight);
 
         setStateApp({ ...stateApp, map: newMap, draw: Draw });
 
