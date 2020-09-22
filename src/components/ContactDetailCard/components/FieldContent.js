@@ -200,7 +200,7 @@ export default function FieldContent({
   noInputFooter,
   linkType,
   fieldType = FieldTypes.Contact,
-  isEdited = false
+  isEdited = false,
 }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
   //////////// entity - brings the entity id tide to the contact //////////////////////////////////////////////////
@@ -226,7 +226,9 @@ export default function FieldContent({
 
   const [updateContact, { loading }] = useMutation(UPDATECONTACT);
   const [updateMelissa, { melissaLoading }] = useMutation(UPDATEMELISSA);
-  const [updateMelissaAddress, { melissaAddressLoading }] = useMutation(UPDATEMELISSAADDRESS);
+  const [updateMelissaAddress, { melissaAddressLoading }] = useMutation(
+    UPDATEMELISSAADDRESS
+  );
   const classes = useStyles({ noMargin, loading, fieldsCount });
 
   useEffect(() => {
@@ -280,10 +282,10 @@ export default function FieldContent({
         updateContact({
           variables: {
             contact: trimmedEditContent,
-            ignoreResponse: true
+            ignoreResponse: true,
           },
           refetchQueries: ["getContacts"],
-          awaitRefetchQueries: false
+          awaitRefetchQueries: false,
         }).then((res) => {
           let entries = Object.entries(editContent)[0];
           let key = entries[0];
@@ -347,6 +349,10 @@ export default function FieldContent({
             className={classes.editTextField}
             variant="outlined"
             size="small"
+            autoComplete="off"
+            inputProps={{
+              autoComplete: "off",
+            }}
             fullWidth
             label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
             multiline
@@ -446,7 +452,7 @@ export default function FieldContent({
         onClick={handleEditClick}
       />
       {!childrenLeft && !onlyChildren && children ? children : ""}
-      { isCurEdited ? " (edited)" : "" }
+      {isCurEdited ? " (edited)" : ""}
     </span>
   );
 
