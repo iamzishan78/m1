@@ -215,7 +215,9 @@ const LoginB2C = (props) => {
         setLoadingSigInButton(false);
       }
     } else if (signInType === "loginRedirect") {
-      loginRequestB2C.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint }
+      if( queryString.parse(props.location.search).id_token_hint ) {
+        loginRequestB2C.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint }
+      }
       myMSALB2CObj.loginRedirect(loginRequestB2C);
     }
   };
