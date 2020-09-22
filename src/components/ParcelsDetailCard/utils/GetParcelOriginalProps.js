@@ -14,10 +14,13 @@ export function getParcelOriginalProperties(parcel) {
     originalProperties = JSON.parse(originalProperties);
   }
   if (originalProperties && originalProperties.length > 0) {
-    originalProperty.survey = originalProperties[0].level1_sur;
-    originalProperty.block = originalProperties[0].level2_blo;
-    originalProperty.section = originalProperties[0].level3_sur;
-    originalProperty.abstract = originalProperties[0].abstract_l;
+    originalProperty.county = originalProperties[0].County;
+    originalProperty.state = originalProperties[0].State;
+    originalProperty.survey = originalProperties[0].Survey;
+    originalProperty.block = originalProperties[0].Block;
+    originalProperty.section = originalProperties[0].Section;
+    originalProperty.abstract = originalProperties[0].AbstractName;
+    originalProperty.altSurvey = originalProperties[0].Grantee;
   }
   return originalProperty;
 }

@@ -4042,7 +4042,7 @@ export default function Map() {
         } else {
           // Clear all selected features
           for (let i = 0; i < featuresList.length; i++) {
-            const id = featuresList[i].properties.abstract_n;
+            const id = featuresList[i].properties.Id;
             map.setFeatureState(
               { source: 'abstract_geo_source', id: id },
               { click: false }
@@ -4342,7 +4342,7 @@ export default function Map() {
               type: "FeatureCollection",
               features: [],
             },
-            promoteId: "abstract_n",
+            promoteId: "Id",
           });
 
           newMap.addLayer({
@@ -4384,7 +4384,7 @@ export default function Map() {
             minzoom: 12,
             source: "abstract_geo_source",
             layout: {
-              "text-field": "{abstract_l}",
+              "text-field": "{AbstractName}",
               "text-anchor": "center",
             },
             paint: {

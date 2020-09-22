@@ -99,8 +99,7 @@ export default function ParcelsDetailCard(props) {
       }
       setParcelObj({
         ...dataCustomLayer.customLayer,
-        shape: shape,
-        state: "TX"
+        shape: shape
       });
       setProperties(shape.properties);
     }

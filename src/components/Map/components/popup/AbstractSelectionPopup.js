@@ -116,15 +116,21 @@ export default (props) => {
       return;
     }
     const abstractShape = stateApp.selectedAbstracts[0];
-    console.log("abstractShape", abstractShape);
-    const parcelName = abstractShape.properties.level1_sur + '_' + abstractShape.properties.abstract_l;
+    let parcelName, originalProperties;
+    if(abstractShape.properties.State === "TX") {
+      parcelName = abstractShape.properties.County + " " + abstractShape.properties.Survey + " " + abstractShape.properties.AbstractName;
+      originalProperties = [abstractShape.properties];
+    } else {
+      parcelName = "PLSS Default Name";
+      originalProperties = [];
+    }
     const featureId = hat();
     const newShapeFeature = {
       id: featureId,
       type: "Feature",
       geometry: abstractShape.geometry,
       properties: {
-        "originalProperties": [abstractShape.properties],
+        "originalProperties": originalProperties,
         "sdType": "parcel",
         "shapeLabel": parcelName,
         "projectName": "",
@@ -140,7 +146,8 @@ export default (props) => {
       shape: JSON.stringify(newShapeFeature),
       layer: 'parcel',
       name: parcelName,
-      user: user._id
+      user: user._id,
+      state: abstractShape.properties.State
     };
 
     let position = null;
@@ -168,7 +175,8 @@ export default (props) => {
       shape: JSON.stringify(symbolFeature),
       layer: `parcel_labels`,
       name: parcelName,
-      user: user._id
+      user: user._id,
+      state: abstractShape.properties.State
     };
 
     upsertCustomLayer({
