@@ -99,12 +99,15 @@ export default function CheckboxList(props) {
     MapControlsContext
   );
   const [stateApp, setStateApp] = useContext(AppContext);
+
   const classes = useStyles();
 
   const [currentLayers, setCurrentLayers] = useState(stateApp.layers);
 
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
+
+  if (!stateApp.layers) return;
 
   const handleToggle = (layer, index) => () => {
     const currentLayers = [...stateApp.layers];

@@ -50,8 +50,6 @@ import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
 import { FILELAYERSQUERY } from "../../graphQL/useQueryFileLayers";
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
-// import { LAYERCONFIGSBYUSER } from "../../graphQL/useQueryLayerConfigByUser";
-// import { LAYERSTATESBYUSER } from "../../graphQL/useQueryLayerStateByUser";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
 import { UPDATELAYERSTATE } from "../../graphQL/useMutationUpdateLayerState";
 import {
@@ -219,7 +217,7 @@ export default function Map() {
       PermitData(state);
     }
   };
-  const [fileLayerPreData, setFileLayerData] = useState([]);
+  const [layersData, setLayersData] = useState([]);
 
   const [drawingFilterFeatureId, DrawingFilterFeatureId] = useState(null);
   const setDrawingFilterFeatureId = (state) => {
@@ -291,11 +289,6 @@ export default function Map() {
     { data: customLayerData },
   ] = useLazyQuery(CUSTOMLAYERSQUERY, { fetchPolicy: "network-only" });
 
-  const [getFileLayers, { data: fileLayerData }] = useLazyQuery(
-    FILELAYERSQUERY,
-    { fetchPolicy: "network-only" }
-  );
-
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "network-only",
   });
@@ -320,13 +313,6 @@ export default function Map() {
     ABSTRACTGEOCONTAINSQUERY
   );
 
-  // const [getLayerCongfigsByUser, { data: layerConfigsById }] = useLazyQuery(
-  //   LAYERCONFIGSBYUSER
-  // );
-
-  // const [getLayerStatesByUser, { data: layerStates }] = useLazyQuery(
-  //   LAYERSTATESBYUSER
-  // );
   const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(
     ALLLAYERSETTINGSBYUSER
   );
@@ -358,7 +344,6 @@ export default function Map() {
         },
       });
 
-      getFileLayers();
       getCustomLayers();
     }
   }, [stateApp.user, stateApp.defaultLayers]);
@@ -425,283 +410,28 @@ export default function Map() {
   }, [customLayerData]);
 
   useEffect(() => {
-    console.log("useEffect fileLayers");
-
-    if (
-      fileLayerData &&
-      fileLayerData.allFileLayers &&
-      fileLayerData.allFileLayers.length > 0
-    ) {
-      setFileLayerData(fileLayerData.allFileLayers);
-      const fileId = fileLayerData.allFileLayers[0].file._id;
-      viewFile({
-        variables: {
-          fileId: fileId,
-        },
-      });
-    }
-  }, [fileLayerData]);
-
-  // useEffect(() => {
-  //   if (
-  //     layerConfigsById &&
-  //     layerConfigsById.layersConfigByUser &&
-  //     layerStates &&
-  //     layerStates.layerStateByUser
-  //   )
-  //     if (
-  //       layerConfigsById.layersConfigByUser.length <= 0 &&
-  //       layerStates.layerStateByUser.layersConfig
-  //     )
-  //       setStateApp({
-  //         ...stateApp,
-  //         layers: layerStates.layerStateByUser.layersConfig,
-  //         udLayerConfig: [],
-  //       });
-  //     else {
-  //       //// blending layersConfigByUser into layersConfig(layers from mongo)
-  //       const configs = layerConfigsById.layersConfigByUser;
-  //       const currentLayers = [...layerStates.layerStateByUser.layersConfig];
-
-  //       for (let i = 0; i < configs.length; i++) {
-  //         const layerName = configs[i].layerName;
-  //         const index = currentLayers.findIndex(
-  //           (layer) => layer.layerName == layerName
-  //         );
-  //         const layer = currentLayers[index];
-
-  //         if (
-  //           index > -1 &&
-  //           layer &&
-  //           layer.layerPaintProps &&
-  //           layer.layerPaintProps[0] &&
-  //           layer.layerPaintProps[0].paintType &&
-  //           configs[i] &&
-  //           configs[i].config
-  //         ) {
-  //           const layerPaintProps = [...layer.layerPaintProps];
-  //           const layerType = layerPaintProps[0].paintType;
-
-  //           if (
-  //             layerType == "circle" &&
-  //             layerPaintProps[0].paintProps &&
-  //             layerPaintProps[0].clusterProps &&
-  //             layerPaintProps[0].clusterProps.clusterPaintProps
-  //           ) {
-  //             if (
-  //               configs[i].config.fillColor &&
-  //               layerPaintProps[0].clusterProps.clusterPaintProps[
-  //                 "circle-color"
-  //               ] &&
-  //               layerPaintProps[0].clusterProps.clusterPaintProps[
-  //                 "circle-color"
-  //               ].stops &&
-  //               layerPaintProps[0].clusterProps.clusterPaintProps[
-  //                 "circle-color"
-  //               ].stops[0] &&
-  //               layerPaintProps[0].clusterProps.clusterPaintProps[
-  //                 "circle-color"
-  //               ].stops[1] &&
-  //               layerPaintProps[0].clusterProps.clusterPaintProps[
-  //                 "circle-color"
-  //               ].stops[2]
-  //             ) {
-  //               layerPaintProps[0] = {
-  //                 ...layerPaintProps[0],
-  //                 paintProps: {
-  //                   ...layerPaintProps[0].paintProps,
-  //                   "circle-color": configs[i].config.fillColor,
-  //                 },
-  //                 clusterProps: {
-  //                   ...layerPaintProps[0].clusterProps,
-  //                   clusterPaintProps: {
-  //                     ...layerPaintProps[0].clusterProps.clusterPaintProps,
-
-  //                     "circle-color": {
-  //                       ...layerPaintProps[0].clusterProps.clusterPaintProps[
-  //                         "circle-color"
-  //                       ],
-  //                       stops: [
-  //                         [
-  //                           layerPaintProps[0].clusterProps.clusterPaintProps[
-  //                             "circle-color"
-  //                           ].stops[0][0],
-  //                           configs[i].config.fillColor,
-  //                         ],
-  //                         [
-  //                           layerPaintProps[0].clusterProps.clusterPaintProps[
-  //                             "circle-color"
-  //                           ].stops[1][0],
-  //                           configs[i].config.fillColor,
-  //                         ],
-  //                         [
-  //                           layerPaintProps[0].clusterProps.clusterPaintProps[
-  //                             "circle-color"
-  //                           ].stops[2][0],
-  //                           configs[i].config.fillColor,
-  //                         ],
-  //                       ],
-  //                     },
-  //                   },
-  //                 },
-  //               };
-  //             }
-  //             if (configs[i].config.strokeColor) {
-  //               layerPaintProps[0] = {
-  //                 ...layerPaintProps[0],
-  //                 paintProps: {
-  //                   ...layerPaintProps[0].paintProps,
-  //                   "circle-stroke-color": configs[i].config.strokeColor,
-  //                 },
-  //                 clusterProps: {
-  //                   ...layerPaintProps[0].clusterProps,
-  //                   clusterPaintProps: {
-  //                     ...layerPaintProps[0].clusterProps.clusterPaintProps,
-  //                     "circle-stroke-color": configs[i].config.strokeColor,
-  //                   },
-  //                 },
-  //               };
-  //             }
-  //           } else if (layerType == "fill" && layerPaintProps[0].paintProps) {
-  //             if (configs[i].config.fillColor) {
-  //               layerPaintProps[0] = {
-  //                 ...layerPaintProps[0],
-  //                 paintProps: {
-  //                   ...layerPaintProps[0].paintProps,
-  //                   "fill-color": configs[i].config.fillColor,
-  //                 },
-  //               };
-  //             }
-  //             if (configs[i].config.strokeColor) {
-  //               layerPaintProps[0] = {
-  //                 ...layerPaintProps[0],
-  //                 paintProps: {
-  //                   ...layerPaintProps[0].paintProps,
-  //                   "fill-outline-color": configs[i].config.strokeColor,
-  //                 },
-  //               };
-  //             }
-  //           }
-
-  //           currentLayers[index] = {
-  //             ...layer,
-  //             layerPaintProps,
-  //           };
-  //         }
-  //       }
-
-  //       setStateApp({
-  //         ...stateApp,
-  //         layers: currentLayers,
-  //         udLayerConfig: configs,
-  //       });
-  //     }
-  // }, [layerStates, layerConfigsById]);
-
-  useEffect(() => {
     if (layerStates && layerStates.allLayerSettingsByUser) {
       setStateApp({
         ...stateApp,
         layers: layerStates.allLayerSettingsByUser,
       });
+
+      if (layerStates.allLayerSettingsByUser.length > 0) {
+        setLayersData(layerStates.allLayerSettingsByUser);
+        for (let i = 0; i < layerStates.allLayerSettingsByUser.length; i++) {
+          const layer = layerStates.allLayerSettingsByUser[i];
+          if (layer.layerType == "file layer") {
+            viewFile({
+              variables: {
+                fileId: layer.file,
+              },
+            });
+            break;
+          }
+        }
+      }
     }
   }, [layerStates]);
-
-  // useEffect(() => {
-  //   if (
-  //     layerConfigsById &&
-  //     layerConfigsById.layersConfigByUser &&
-  //     layerConfigsById.layersConfigByUser.length > 0 &&
-  //     !isLoadedLayerConfig
-  //   ) {
-  //     const configs = layerConfigsById.layersConfigByUser;
-  //     setIsLoadedLayerConfig(true);
-  //     setStateApp((stateApp) => ({
-  //       ...stateApp,
-  //       udLayerConfig: configs,
-  //     }));
-  //   }
-  // }, [layerConfigsById]);
-
-  // useEffect(() => {
-  //   console.log("get layer state by id", layerStates);
-  //   if (layerStates) {
-  //     setIsLoadedLayerState(true);
-  //   }
-  //   if (layerStates && layerStates.layerStateByUser && !isLoadedLayerState) {
-  //     const layerState = layerStates.layerStateByUser.layersConfig;
-  //     console.log(layerState);
-  //     if (layerState) {
-  //       setStateApp({
-  //         ...stateApp,
-  //         layers: layerState,
-  //       });
-  //     }
-  //   }
-  // }, [layerStates]);
-
-  // useEffect(() => {
-  //   const currentLayers = stateApp.layers.slice(0);
-  //   if (stateApp.udLayerConfig && stateApp.udLayerConfig.length > 0) {
-  //     for (let i = 0; i < stateApp.udLayerConfig.length; i++) {
-  //       const layerName = stateApp.udLayerConfig[i].layerName;
-  //       const index = currentLayers.findIndex(
-  //         (layer) => layer.layerName == layerName
-  //       );
-
-  //       if (index > -1) {
-  //         const layerType = currentLayers[index].layerPaintProps[0].paintType;
-  //         if (layerType == "circle") {
-  //           if (stateApp.udLayerConfig[i].config.fillColor) {
-  //             currentLayers[index].layerPaintProps[0].paintProps[
-  //               "circle-color"
-  //             ] = stateApp.udLayerConfig[i].config.fillColor;
-  //             currentLayers[
-  //               index
-  //             ].layerPaintProps[0].clusterProps.clusterPaintProps[
-  //               "circle-color"
-  //             ].stops[0][1] = stateApp.udLayerConfig[i].config.fillColor;
-  //             currentLayers[
-  //               index
-  //             ].layerPaintProps[0].clusterProps.clusterPaintProps[
-  //               "circle-color"
-  //             ].stops[1][1] = stateApp.udLayerConfig[i].config.fillColor;
-  //             currentLayers[
-  //               index
-  //             ].layerPaintProps[0].clusterProps.clusterPaintProps[
-  //               "circle-color"
-  //             ].stops[2][1] = stateApp.udLayerConfig[i].config.fillColor;
-  //           }
-  //           if (stateApp.udLayerConfig[i].config.strokeColor) {
-  //             currentLayers[index].layerPaintProps[0].paintProps[
-  //               "circle-stroke-color"
-  //             ] = stateApp.udLayerConfig[i].config.strokeColor;
-  //             currentLayers[
-  //               index
-  //             ].layerPaintProps[0].clusterProps.clusterPaintProps[
-  //               "circle-stroke-color"
-  //             ] = stateApp.udLayerConfig[i].config.strokeColor;
-  //           }
-  //         } else if (layerType == "fill") {
-  //           if (stateApp.udLayerConfig[i].config.fillColor) {
-  //             currentLayers[index].layerPaintProps[0].paintProps["fill-color"] =
-  //               stateApp.udLayerConfig[i].config.fillColor;
-  //           }
-  //           if (stateApp.udLayerConfig[i].config.strokeColor) {
-  //             currentLayers[index].layerPaintProps[0].paintProps[
-  //               "fill-outline-color"
-  //             ] = stateApp.udLayerConfig[i].config.strokeColor;
-  //           }
-  //         }
-  //       }
-  //     }
-
-  //     setStateApp((stateApp) => ({
-  //       ...stateApp,
-  //       layers: currentLayers,
-  //     }));
-  //   }
-  // }, [stateApp.udLayerConfig]);
 
   const handleFileAsync = async (uri, internalKey, layerIndex) => {
     if (uri && internalKey && layerIndex >= 0) {
@@ -715,61 +445,43 @@ export default function Map() {
         method: "GET",
       });
       response = await response.json();
-      console.log(uri, internalKey, layerIndex, response);
-      let exsitingFileLayerPreData = fileLayerPreData.slice(0);
-      let currentFileLayerData = { ...exsitingFileLayerPreData[layerIndex] };
-      currentFileLayerData.fileContent = response;
-      exsitingFileLayerPreData[layerIndex] = currentFileLayerData;
-      setFileLayerData(exsitingFileLayerPreData);
-      if (layerIndex != fileLayerPreData.length - 1) {
-        viewFile({
-          variables: {
-            fileId: fileLayerPreData[layerIndex + 1].file._id,
-          },
-        });
-      } else {
-        let fileData = [];
-        // let checkedFileLayers = [];
-        for (let i = 0; i < fileLayerPreData.length; i++) {
-          const layerName = fileLayerPreData[i].layerName;
-          let fileContent = {};
-          if (i == fileLayerPreData.length - 1) {
-            fileContent = response;
-          } else {
-            fileContent = fileLayerPreData[i].fileContent;
+
+      let layers = layersData.slice(0);
+      let currentLayer = { ...layers[layerIndex] };
+      currentLayer.fileContent = response;
+      layers[layerIndex] = currentLayer;
+      setLayersData(layers);
+
+      let nextLayerIndex;
+
+      if (layerIndex < layersData.length - 1)
+        for (let i = layerIndex + 1; i < layers.length; i++) {
+          if (layers[i].layerType == "file layer") {
+            viewFile({
+              variables: {
+                fileId: layers[i].file,
+              },
+            });
+            nextLayerIndex = i;
+            break;
           }
-          const idColor = fileLayerPreData[i].idColor;
-          const layerType = fileLayerPreData[i].layerType;
-          const paintProps = fileLayerPreData[i].paintProps;
-          const fileId = fileLayerPreData[i].file._id;
-          const fileLayerId = fileLayerPreData[i]._id;
-          fileData.push({
-            fileLayerId,
-            layerName,
-            fileContent,
-            idColor,
-            layerType,
-            paintProps,
-            fileId,
-          });
-          // checkedFileLayers.push(i);
         }
+      //// no more file layers to looks for
+      if (!nextLayerIndex) {
         setStateApp((stateApp) => ({
           ...stateApp,
-          userFileLayers: fileData,
-          // checkedFileLayers: checkedFileLayers
+          layers,
         }));
       }
     }
   };
 
   useEffect(() => {
-    if (viewFileResult && viewFileResult.viewFile) {
+    if (viewFileResult && viewFileResult.viewFile && stateApp.layers) {
       const result = viewFileResult.viewFile;
-      console.log(result);
       const fileId = result.id;
-      const layerIndex = fileLayerPreData.findIndex(
-        (fileLayerData) => fileLayerData.file._id == fileId
+      const layerIndex = stateApp.layers.findIndex(
+        (layer) => layer.file == fileId
       );
       handleFileAsync(result.uri, result.internalKey, layerIndex);
     }
@@ -1084,179 +796,177 @@ export default function Map() {
     return beforelayer;
   };
 
-  const setUserDefinedLayer = (data, layerName, map) => {
-    const configIndex = stateApp.userDefinedLayers.findIndex(
-      (value) => value.name === layerName
-    );
-    const config = stateApp.userDefinedLayers[configIndex];
-    let beforelayer = null;
-    for (let i = 0; i < config.id.length; i++) {
-      // -> fetch data
-      let layerData = [];
-      if (config.dataProps[i].dataId == "trackedWellsWells") {
-        layerData = data;
-      } else if (config.dataProps[i].dataId == "trackedOwnersWells") {
-        layerData = data;
-      } else if (config.dataProps[i].dataId == "wellsFromSearch") {
-        layerData = data;
-      } else if (config.dataProps[i].dataId == "wellsFromTagsFilter") {
-        layerData = data;
-      } else {
-        const dataId = config.dataProps[i].dataId;
+  // const setUserDefinedLayer = (data, layerName, map) => {
+  //   const configIndex = stateApp.userDefinedLayers.findIndex(
+  //     (value) => value.name === layerName
+  //   );
+  //   const config = stateApp.userDefinedLayers[configIndex];
+  //   let beforelayer = null;
+  //   for (let i = 0; i < config.id.length; i++) {
+  //     // -> fetch data
+  //     let layerData = [];
+  //     if (config.dataProps[i].dataId == "trackedWellsWells") {
+  //       layerData = data;
+  //     } else if (config.dataProps[i].dataId == "trackedOwnersWells") {
+  //       layerData = data;
+  //     } else if (config.dataProps[i].dataId == "wellsFromSearch") {
+  //       layerData = data;
+  //     } else if (config.dataProps[i].dataId == "wellsFromTagsFilter") {
+  //       layerData = data;
+  //     } else {
+  //       const dataId = config.dataProps[i].dataId;
 
-        const groupBy = (arr, property) => {
-          return arr.reduce((memo, x) => {
-            if (!memo[x[property]]) {
-              memo[x[property]] = [];
-            }
-            memo[x[property]].push(x);
-            return memo;
-          }, {});
-        };
+  //       const groupBy = (arr, property) => {
+  //         return arr.reduce((memo, x) => {
+  //           if (!memo[x[property]]) {
+  //             memo[x[property]] = [];
+  //           }
+  //           memo[x[property]].push(x);
+  //           return memo;
+  //         }, {});
+  //       };
 
-        layerData = groupBy(data, "layer")[dataId];
-      }
+  //       layerData = groupBy(data, "layer")[dataId];
+  //     }
 
-      if (layerData && layerData.length !== 0) {
-        const layerId = config.layerProps[i].layerId;
+  //     if (layerData && layerData.length !== 0) {
+  //       const layerId = config.layerProps[i].layerId;
 
-        if (!map.getLayer(layerId)) {
-          // -> make GEOJSON
+  //       if (!map.getLayer(layerId)) {
+  //         // -> make GEOJSON
 
-          const makeGeoJSON = (data) => {
-            return {
-              type: "FeatureCollection",
-              features: data.map((feature) => {
-                if (config.dataProps[i].dataTypeId == "Point") {
-                  return {
-                    type: "Feature",
-                    properties: feature,
-                    geometry: {
-                      type: config.dataProps[i].dataTypeId,
-                      coordinates: [feature.longitude, feature.latitude],
-                    },
-                  };
-                } else {
-                  return JSON.parse(feature.shape);
-                }
-              }),
-            };
-          };
+  //         const makeGeoJSON = (data) => {
+  //           return {
+  //             type: "FeatureCollection",
+  //             features: data.map((feature) => {
+  //               if (config.dataProps[i].dataTypeId == "Point") {
+  //                 return {
+  //                   type: "Feature",
+  //                   properties: feature,
+  //                   geometry: {
+  //                     type: config.dataProps[i].dataTypeId,
+  //                     coordinates: [feature.longitude, feature.latitude],
+  //                   },
+  //                 };
+  //               } else {
+  //                 return JSON.parse(feature.shape);
+  //               }
+  //             }),
+  //           };
+  //         };
 
-          const myGeoJSONData = makeGeoJSON(layerData);
+  //         const myGeoJSONData = makeGeoJSON(layerData);
 
-          // -> add source
-          if (config.dataProps[i].dataTypeId == "Point") {
-            if (map.getSource(config.sourceProps[i].sourceId)) {
-              map
-                .getSource(config.sourceProps[i].sourceId)
-                .setData(myGeoJSONData);
-            } else {
-              map.addSource(config.sourceProps[i].sourceId, {
-                type: config.sourceProps[i].sourceType,
-                data: myGeoJSONData,
-                cluster: true,
-                clusterRadius: 50,
-                clusterMaxZoom: 6,
-              });
-            }
-            const filterLayerId = config.sourceProps[i].sourceId + "_filter";
-            if (map.getSource(filterLayerId)) {
-              map.getSource(filterLayerId).setData(myGeoJSONData);
-            } else {
-              map.addSource(filterLayerId, {
-                type: config.sourceProps[i].sourceType,
-                data: myGeoJSONData,
-              });
-            }
-          } else {
-            if (map.getSource(config.sourceProps[i].sourceId)) {
-              map
-                .getSource(config.sourceProps[i].sourceId)
-                .setData(myGeoJSONData);
-            } else {
-              map.addSource(config.sourceProps[i].sourceId, {
-                type: config.sourceProps[i].sourceType,
-                data: myGeoJSONData,
-                promoteId: "id",
-              });
-            }
-          }
+  //         // -> add source
+  //         if (config.dataProps[i].dataTypeId == "Point") {
+  //           if (map.getSource(config.sourceProps[i].sourceId)) {
+  //             map
+  //               .getSource(config.sourceProps[i].sourceId)
+  //               .setData(myGeoJSONData);
+  //           } else {
+  //             map.addSource(config.sourceProps[i].sourceId, {
+  //               type: config.sourceProps[i].sourceType,
+  //               data: myGeoJSONData,
+  //               cluster: true,
+  //               clusterRadius: 50,
+  //               clusterMaxZoom: 6,
+  //             });
+  //           }
+  //           const filterLayerId = config.sourceProps[i].sourceId + "_filter";
+  //           if (map.getSource(filterLayerId)) {
+  //             map.getSource(filterLayerId).setData(myGeoJSONData);
+  //           } else {
+  //             map.addSource(filterLayerId, {
+  //               type: config.sourceProps[i].sourceType,
+  //               data: myGeoJSONData,
+  //             });
+  //           }
+  //         } else {
+  //           if (map.getSource(config.sourceProps[i].sourceId)) {
+  //             map
+  //               .getSource(config.sourceProps[i].sourceId)
+  //               .setData(myGeoJSONData);
+  //           } else {
+  //             map.addSource(config.sourceProps[i].sourceId, {
+  //               type: config.sourceProps[i].sourceType,
+  //               data: myGeoJSONData,
+  //               promoteId: "id",
+  //             });
+  //           }
+  //         }
 
-          // -> add layer
-          // eslint-disable-next-line eqeqeq
-          if (config.layerProps[i].layerType == "symbol") {
-            map.addLayer({
-              id: config.layerProps[i].layerId,
-              type: config.layerProps[i].layerType,
-              source: config.sourceProps[i].sourceId,
-              layout: config.layerProps[i].symbolProps,
-            });
-          } else {
-            map.addLayer({
-              id: config.layerProps[i].layerId,
-              type: config.layerProps[i].layerType,
-              source: config.sourceProps[i].sourceId,
-              paint: config.layerProps[i].paintProps,
-            });
-          }
+  //         // -> add layer
+  //         // eslint-disable-next-line eqeqeq
+  //         if (config.layerProps[i].layerType == "symbol") {
+  //           map.addLayer({
+  //             id: config.layerProps[i].layerId,
+  //             type: config.layerProps[i].layerType,
+  //             source: config.sourceProps[i].sourceId,
+  //             layout: config.layerProps[i].symbolProps,
+  //           });
+  //         } else {
+  //           map.addLayer({
+  //             id: config.layerProps[i].layerId,
+  //             type: config.layerProps[i].layerType,
+  //             source: config.sourceProps[i].sourceId,
+  //             paint: config.layerProps[i].paintProps,
+  //           });
+  //         }
 
-          map.setLayoutProperty(
-            config.layerProps[i].layerId,
-            "visibility",
-            "none"
-          );
+  //         map.setLayoutProperty(
+  //           config.layerProps[i].layerId,
+  //           "visibility",
+  //           "none"
+  //         );
 
-          // -> add cluster layer
+  //         // -> add cluster layer
 
-          if (
-            config &&
-            config.layerProps &&
-            config.layerProps[i].clusterProps
-          ) {
-            var clusterVar = config.layerProps[i].layerId + "-clusters";
-            var clusterLabelBar =
-              config.layerProps[i].layerId + "-clusters-counts";
+  //         if (
+  //           config &&
+  //           config.layerProps &&
+  //           config.layerProps[i].clusterProps
+  //         ) {
+  //           var clusterVar = config.layerProps[i].layerId + "-clusters";
+  //           var clusterLabelBar =
+  //             config.layerProps[i].layerId + "-clusters-counts";
 
-            map.addLayer({
-              id: clusterLabelBar,
-              type: "symbol",
-              source: config.sourceProps[i].sourceId,
-              filter: ["has", "point_count"],
-              layout: config.layerProps[i].clusterProps.clusterSymbolProps,
-            });
-            map.setLayoutProperty(clusterLabelBar, "visibility", "none");
-            if (beforelayer) {
-              map.moveLayer(clusterLabelBar, beforelayer);
-            }
-            beforelayer = clusterLabelBar;
+  //           map.addLayer({
+  //             id: clusterLabelBar,
+  //             type: "symbol",
+  //             source: config.sourceProps[i].sourceId,
+  //             filter: ["has", "point_count"],
+  //             layout: config.layerProps[i].clusterProps.clusterSymbolProps,
+  //           });
+  //           map.setLayoutProperty(clusterLabelBar, "visibility", "none");
+  //           if (beforelayer) {
+  //             map.moveLayer(clusterLabelBar, beforelayer);
+  //           }
+  //           beforelayer = clusterLabelBar;
 
-            map.addLayer({
-              id: clusterVar,
-              type: config.layerProps[i].layerType,
-              source: config.sourceProps[i].sourceId,
-              filter: ["has", "point_count"],
-              paint: config.layerProps[i].clusterProps.clusterPaintProps,
-            });
-            map.setLayoutProperty(clusterVar, "visibility", "none");
-            if (beforelayer) {
-              map.moveLayer(clusterVar, beforelayer);
-            }
-            beforelayer = clusterVar;
-          }
+  //           map.addLayer({
+  //             id: clusterVar,
+  //             type: config.layerProps[i].layerType,
+  //             source: config.sourceProps[i].sourceId,
+  //             filter: ["has", "point_count"],
+  //             paint: config.layerProps[i].clusterProps.clusterPaintProps,
+  //           });
+  //           map.setLayoutProperty(clusterVar, "visibility", "none");
+  //           if (beforelayer) {
+  //             map.moveLayer(clusterVar, beforelayer);
+  //           }
+  //           beforelayer = clusterVar;
+  //         }
 
-          if (beforelayer) {
-            map.moveLayer(config.layerProps[i].layerId, beforelayer);
-          }
-          beforelayer = config.layerProps[i].layerId;
-        }
-      }
-    }
-  };
+  //         if (beforelayer) {
+  //           map.moveLayer(config.layerProps[i].layerId, beforelayer);
+  //         }
+  //         beforelayer = config.layerProps[i].layerId;
+  //       }
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
-    console.log("useEffect 6");
-
     if (permitData && permitData.permits && permitData.permits.length > 0) {
       const nextOffset = permits.length + permitData.permits.length;
       setPermitData([...permits, ...permitData.permits]);
@@ -1271,8 +981,6 @@ export default function Map() {
   }, [permitData]);
 
   useEffect(() => {
-    console.log("useEffect 7");
-
     if (rigData && rigData.rigs && rigData.rigs.length > 0) {
       const nextOffset = rigs.length + rigData.rigs.length;
       setRigData([...rigs, ...rigData.rigs]);
@@ -1546,21 +1254,6 @@ export default function Map() {
     // hoverUdIds,
   ]);
 
-  // useEffect(() => {
-  //   if (stateApp.layers) {
-  //     updateLayerState({
-  //       variables: {
-  //         userId: stateApp.user.mongoId,
-  //         layersState: {
-  //           layersConfig: stateApp.layers,
-  //           user: stateApp.user.mongoId,
-  //         },
-  //       },
-  //     });
-  //     console.log("set layer state to database");
-  //   }
-  // }, [stateApp.layers]);
-
   useEffect(() => {
     let beforeLayer = null;
     console.log("stateApp check ", stateApp.layers);
@@ -1625,8 +1318,8 @@ export default function Map() {
               beforeLayer = setLayer(data, layer.layerName, map, beforeLayer);
             }
           }
-        } else {
-          let data = stateApp.fileGeoData[layer.layerName];
+        } else if (layer.layerType == "file layer" && layer.fileContent) {
+          let data = layer.fileContent;
           if (data) {
             beforeLayer = setLayer(data, layer.layerName, map, beforeLayer);
           }
@@ -1831,111 +1524,6 @@ export default function Map() {
       }
     }
   }, [map, stateApp.checkedHeats, stateApp.heatLayers]);
-
-  // useEffect(() => {
-  //   // USE EFFECT FOR USER FILE LAYERS
-  //   console.log('USE EFFECT FILE LAYER ADDED::', stateApp.userFileLayers)
-  //   let userFileLayers = stateApp.userFileLayers;
-
-  //   /// parse array of user input file data
-  //   userFileLayers.map((fileLayer, idx) => {
-  //     let mapSource = map.getSource(`${idx}`);
-
-  //     if (mapSource == undefined) {
-  //       map.addSource(`${idx}`, {
-  //         'type': 'geojson',
-  //         'data': fileLayer
-  //       });
-  //       map.addLayer({
-  //         'id': `polygon${idx}`,
-  //         'type': 'fill',
-  //         'source': `${idx}`,
-  //         'layout': {},
-  //         'paint': {
-  //           'fill-color': '#088',
-  //           'fill-opacity': 0.8,
-  //           'fill-outline-color': 'rgba(20, 100, 25, 1)'
-  //         },
-  //         'filter': ['==', '$type', 'Polygon']
-  //       });
-  //       map.addLayer({
-  //         'id': `point${idx}`,
-  //         'type': 'circle',
-  //         'source': `${idx}`,
-  //         'paint': {
-  //           'circle-radius': 6,
-  //           'circle-color': '#B42222'
-  //         },
-  //         'filter': ['==', '$type', 'Point']
-  //       });
-  //       map.addLayer({
-  //         'id': `line${idx}`,
-  //         'type': 'line',
-  //         'source': `${idx}`,
-  //         'layout': {
-  //           'line-join': 'round',
-  //           'line-cap': 'round'
-  //         },
-  //         'paint': {
-  //           'line-width': 8,
-  //           'line-color': '#088'
-  //         },
-  //         'filter': ['==', '$type', 'LineString']
-  //       });
-  //     }
-  //   });
-  // }, [stateApp.userFileLayers])
-
-  // useEffect(() => {
-  //   // USE EFFECT FOR USER SERVICE LAYERS
-  //   console.log("USE EFFECT SERVICE LAYER ADDED::", stateApp.userServiceLayers);
-  //   // let userFileLayers = stateApp.userFileLayers;
-
-  //   // /// parse array of user input file data
-  //   // userFileLayers.map((fileLayer, idx) => {
-  //   //   var mapSource = map.getSource(`${idx}`);
-
-  //   //   if (mapSource == undefined) {
-  //   //     //assign file data to data source
-  //   //     map.addSource(`${idx}`, {
-  //   //       'type': 'geojson',
-  //   //       'data': fileLayer
-  //   //     });
-  //   //     map.addLayer({
-  //   //       'id': `polygon${idx}`,
-  //   //       'type': 'fill',
-  //   //       'source': `${idx}`,
-  //   //       'layout': {},
-  //   //       'paint': {
-  //   //         'fill-color': '#088',
-  //   //         'fill-opacity': 0.8,
-  //   //         'fill-outline-color': 'rgba(20, 100, 25, 1)'
-  //   //       },
-  //   //       'filter': ['==', '$type', 'Polygon']
-  //   //     });
-  //   //     map.addLayer({
-  //   //       'id': `point${idx}`,
-  //   //       'type': 'circle',
-  //   //       'source': `${idx}`,
-  //   //       'paint': {
-  //   //         'circle-radius': 6,
-  //   //         'circle-color': '#B42222'
-  //   //       },
-  //   //       'filter': ['==', '$type', 'Point']
-  //   //     });
-  //   //      map.addLayer({
-  //   //       'id': `line${idx}`,
-  //   //       'type': 'circle',
-  //   //       'source': `${idx}`,
-  //   //       'paint': {
-  //   //         'circle-radius': 6,
-  //   //         'circle-color': '#B42222'
-  //   //       },
-  //   //       'filter': ['==', '$type', 'LineString']
-  //   //     });
-  //   //   }
-  //   // });
-  // }, [stateApp.userServiceLayers]);
 
   useEffect(() => {
     console.log("useEffect 17");
@@ -2551,96 +2139,6 @@ export default function Map() {
   //   stateApp.wellListFromSearch,
   //   stateApp.wellListFromTagsFilter,
   // ]);
-
-  useEffect(() => {
-    if (map && stateApp.userFileLayers && stateApp.userFileLayers.length > 0) {
-      const fileLayers = stateApp.userFileLayers;
-      const currentLayers = stateApp.layers.slice(0);
-      const fileGeoData = {};
-      fileLayers.forEach((fileLayer, index) => {
-        const layerName = fileLayer.layerName;
-        const geoJson = fileLayer.fileContent;
-        const sourceName = layerName + " Source";
-        const type = fileLayer.layerType;
-        const paintProps = fileLayer.paintProps;
-        if (
-          currentLayers.findIndex((layer) => layer.layerName == layerName) == -1
-        ) {
-          const fileLayerConfig = {
-            layerName,
-            layerType: "file layer",
-            layerCategory: "UD layer",
-            layerSettings: {
-              interaction: {
-                interactionAble: false,
-                interactionDetail: {
-                  hover: false,
-                  click: false,
-                },
-              },
-              colorable: true,
-              showable: true,
-              visiable: true,
-            },
-            layerPaintProps: [
-              {
-                id: layerName,
-                sourceProps: sourceName,
-                paintType: type,
-                paintProps: paintProps,
-              },
-            ],
-          };
-          currentLayers.push(fileLayerConfig);
-        } else {
-          let layerIndex = currentLayers.findIndex(
-            (layer) => layer.layerName == layerName
-          );
-          currentLayers[layerIndex].layerPaintProps[0].paintProps = paintProps;
-        }
-
-        fileGeoData[layerName] = geoJson;
-
-        setStateApp({
-          ...stateApp,
-          layers: currentLayers,
-          fileGeoData: fileGeoData,
-        });
-
-        // if (map.getLayer(layerName)) {
-        //   map.getSource(sourceName).setData(geoJson);
-        //   Object.keys(paintProps).forEach((key) => {
-        //     map.setPaintProperty(layerName, key, paintProps[key])
-        //   })
-        // } else {
-        //   if (map.getSource(sourceName)) {
-        //     map.getSource(sourceName).setData(geoJson);
-        //   } else {
-        //     map.addSource(sourceName, {
-        //       type: 'geojson',
-        //       data: geoJson,
-        //     });
-        //   }
-
-        //   map.addLayer({
-        //     id: layerName,
-        //     type: type,
-        //     source: sourceName,
-        //     paint: paintProps,
-        //   });
-        // }
-        // if (stateApp.checkedFileLayers.indexOf(index) === -1) {
-        //   map.setLayoutProperty(layerName, "visibility", "none");
-        // } else {
-        //   map.setLayoutProperty(layerName, "visibility", "visible");
-        // }
-      });
-    }
-  }, [
-    // map,
-    stateApp.userFileLayers,
-    // stateApp.checkedFileLayers,
-  ]);
 
   useEffect(() => {
     console.log("useEffect 19");

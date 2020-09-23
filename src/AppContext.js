@@ -83,21 +83,13 @@ const AppProvider = (props) => {
     defaultLayers: defaultLayers,
     baseMapLayers: baseMapLayers,
     userDefinedLayers: userDefinedLayers,
-    fileGeoData: {},
-    searchLayerIndex: null,
-    trackedOwnersLayerIndex: null,
-    trackedWellsLayerIndex: null,
-    tagsLayerIndex: null,
     tempCheckedLayer: null,
     checkedLayers: [2, 5],
     wellsLayerIndex: null,
     checkedHeats: [],
-    udLayerConfig: [],
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
     checkedUserDefinedLayers: [],
     checkedFileLayers: [],
-    userFileLayers: [],
-    userServiceLayers: [],
     tempCheckedUserDefinedLayer: null,
     tempCheckedAOILayer: null,
     tempCheckedParcleLayer: null,
@@ -155,7 +147,7 @@ const AppProvider = (props) => {
 
           //// saving to stateApp
           currentLayers[index] = updatedLayer;
-          setStateApp((stateApp) => ({ ...stateApp, layers: currentLayers }));
+
           return {
             ...stateApp,
             layers: currentLayers,
@@ -213,25 +205,6 @@ const AppProvider = (props) => {
     }
     wait();
   }, []);
-
-  useEffect(() => {
-    if (stateApp.layer) {
-      const stateIndexes = {};
-      stateApp.layer.forEach((layer, index) => {
-        if (layer.name === "Search") stateIndexes.searchLayerIndex = index;
-        if (layer.name === "Tracked Owners")
-          stateIndexes.trackedOwnersLayerIndex = index;
-        if (layer.name === "Tracked Wells")
-          stateIndexes.trackedWellsLayerIndex = index;
-        if (layer.name === "Tagged Wells/Owners")
-          stateIndexes.tagsLayerIndex = index;
-        if (layer.name === "Wells") stateIndexes.wellsLayerIndex = index;
-      });
-
-      if (Object.keys(stateIndexes).length !== 0)
-        setStateApp((state) => ({ ...state, ...stateIndexes }));
-    }
-  }, [stateApp.layer]);
 
   useEffect(() => {
     dispatch(

@@ -1,20 +1,12 @@
-import React, { useContext, useState, useEffect } from "react";
-import {
-  withStyles,
-  makeStyles,
-  responsiveFontSizes,
-} from "@material-ui/core/styles";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import React, { useContext, useState } from "react";
+import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
-import AddUserData from "./addUserData";
-import * as turf from "@turf/turf";
 import MuiAlert from "@material-ui/lab/Alert";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
-import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -27,6 +19,8 @@ import ExpandMore from "@material-ui/icons/ExpandMore";
 import { deepEqual, deepEqualObjects } from "../../Shared/functions";
 import { UPDATEMANYLAYERSETTINGS } from "../../../graphQL/useMutationUpdateManyLayerSettings";
 import { useMutation } from "@apollo/client";
+import { DropzoneAreaBase } from "material-ui-dropzone";
+import shp from "shpjs";
 
 const random_rgb = () => {
   var o = Math.round,
@@ -65,6 +59,23 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     textTransform: "initial",
   },
+  dropzoneClass: {
+    "&:hover": { backgroundColor: "aliceblue" },
+    "& .MuiDropzoneArea-text": {
+      margin: "10px",
+    },
+    "& .MuiDropzoneArea-icon": { display: "none" },
+    minHeight: "0",
+    marginBottom: "15px",
+    backgroundColor: "#e8edefe8",
+  },
+  url: {
+    textDecoration: "underline",
+    "&:hover": {
+      color: "darkblue",
+    },
+  },
+  uploaderText: { color: "#828282", fontSize: "1rem" },
 }));
 
 const StyledListItem2 = withStyles((theme) => ({
@@ -115,7 +126,6 @@ export default function AddLayer(props) {
     MapControlsContext
   );
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [open, setOpen] = React.useState(false);
   const [openM1, setOpenM1] = React.useState(true);
   const [openUD, setOpenUD] = React.useState(true);
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
@@ -131,7 +141,7 @@ export default function AddLayer(props) {
   };
 
   const windowClose = () => {
-    setIsOpen(!isOpen);
+    setIsOpen(false);
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       addLayer: false,
@@ -191,13 +201,67 @@ export default function AddLayer(props) {
   };
 
   const handleAddLayer = () => {
-    console.log("click add a layer");
-    // return <AddUserData />;
     setStateMapControls({
       ...stateMapControls,
       selectedControl: "add",
     });
   };
+
+  async function handleFileAsync(file) {
+    let inputFile = null;
+    let fileName = null;
+    if (Array.isArray(file)) {
+      inputFile = file[0].data;
+      fileName = file[0].file.name;
+    } else {
+      inputFile = file;
+      fileName = file.split("?")[0].split("/");
+      fileName = fileName[fileName.length - 1];
+    }
+
+    if (fileName.endsWith(".geojson")) {
+      console.log("GEOJSON Feature Service Path");
+      return await new Promise((resolve, reject) => {
+        fetch(inputFile)
+          .then((response) => response.json())
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => reject(error));
+      });
+    } else if (fileName.endsWith(".zip")) {
+      return await new Promise((resolve, reject) => {
+        fetch(inputFile).then((response) => {
+          response.arrayBuffer().then((buffer) => {
+            shp(buffer).then((geojson) => {
+              console.log(geojson);
+              resolve(geojson);
+            });
+          });
+        });
+      });
+    }
+  }
+
+  async function handleFileInput(fileObj) {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      universalCircularLoaderAct: true,
+    }));
+    console.log("ADDED FILES:", fileObj);
+    let fileContent = await handleFileAsync(fileObj);
+    console.log("FILE CONTENT: ", fileContent);
+
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      universalCircularLoaderAct: false,
+    }));
+    setStateMapControls({
+      ...stateMapControls,
+      selectedControl: "add",
+      fileUploadedContent: fileContent,
+    });
+  }
 
   const M1Layers = currentLayers.filter(
     (layer) => layer.layerCategory == "M1 Layer"
@@ -206,80 +270,100 @@ export default function AddLayer(props) {
     (layer) => layer.layerCategory == "UD layer"
   );
   return (
-    <ClickAwayListener onClickAway={handleClose}>
-      <Dialog open={isOpen} onClose={windowClose}>
-        <DialogTitle>Add a Layer</DialogTitle>
-        <DialogContent dividers>
-          <DialogContentText>
-            Select one or more of the available layers below to add them to your
-            current map view.
-          </DialogContentText>
-          <Button
-            color="primary"
-            className={classes.addLayerButton}
-            onClick={handleAddLayer}
-          >
-            To add a new user-defined layer click here
-          </Button>
-          <StyledListItem2 button onClick={handleClickM1List}>
-            <ListItemText primary="M1neral Layers" />
-            {openM1 ? <ExpandLess /> : <ExpandMore />}
-          </StyledListItem2>
-          <Collapse in={openM1} timeout="auto" unmountOnExit>
-            <List className={classes.list}>
-              {M1Layers.map((layer, index) => {
-                const labelId = `m1layer-list-label-${index}`;
-                return (
-                  <StyledListItem key={index} ContainerComponent="li">
-                    <Checkbox
-                      checked={layer.layerSettings.showable}
-                      color="primary"
-                      onChange={() => changeShowAble(layer)}
-                      inputProps={{ "aria-label": "primary checkbox" }}
-                    />
-                    <ListItemText id={labelId} primary={layer.layerName} />
-                  </StyledListItem>
-                );
-              })}
-            </List>
-          </Collapse>
-          <StyledListItem2 button onClick={handleClickUDList}>
-            <ListItemText primary="User Defined Layers" />
-            {openUD ? <ExpandLess /> : <ExpandMore />}
-          </StyledListItem2>
-          <Collapse in={openUD} timeout="auto" unmountOnExit>
-            <List className={classes.list}>
-              {UdLayers.map((layer, index) => {
-                const labelId = `udlayer-list-label-${index}`;
-                return (
-                  <StyledListItem key={index} ContainerComponent="li">
-                    <Checkbox
-                      checked={layer.layerSettings.showable}
-                      color="primary"
-                      onChange={() => changeShowAble(layer)}
-                      inputProps={{ "aria-label": "primary checkbox" }}
-                    />
-                    <ListItemText id={labelId} primary={layer.layerName} />
-                  </StyledListItem>
-                );
-              })}
-            </List>
-          </Collapse>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            disabled={deepEqual(currentLayers, stateApp.layers)}
-            onClick={handleApplyChange}
-            autoFocus
-            color="primary"
-          >
-            Apply
-          </Button>
-          <Button onClick={windowClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </ClickAwayListener>
+    <Dialog open={isOpen} onClose={windowClose}>
+      <DialogTitle>Add a Layer</DialogTitle>
+      <DialogContent dividers>
+        <DialogContentText>
+          Select one or more of the available layers below to add them to your
+          current map view.
+        </DialogContentText>
+
+        <DropzoneAreaBase
+          onAdd={handleFileInput}
+          onDelete={(fileObj) => console.log("Removed File:", fileObj)}
+          onAlert={(message, variant) => {
+            console.log(`${variant}: ${message}`);
+          }}
+          filesLimit={1}
+          dropzoneText={
+            <span className={classes.uploaderText}>
+              To add a new user-defined layer drag and drop a GeoJSON or
+              Shapefile or click{" "}
+              <span
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleAddLayer();
+                }}
+                className={classes.url}
+              >
+                here
+              </span>{" "}
+              to browse for a file.
+            </span>
+          }
+          acceptedFiles={[".geojson", ".zip"]}
+          maxFileSize={600000000}
+          dropzoneClass={classes.dropzoneClass}
+        ></DropzoneAreaBase>
+        <StyledListItem2 button onClick={handleClickM1List}>
+          <ListItemText primary="M1neral Layers" />
+          {openM1 ? <ExpandLess /> : <ExpandMore />}
+        </StyledListItem2>
+        <Collapse in={openM1} timeout="auto" unmountOnExit>
+          <List className={classes.list}>
+            {M1Layers.map((layer, index) => {
+              const labelId = `m1layer-list-label-${index}`;
+              return (
+                <StyledListItem key={index} ContainerComponent="li">
+                  <Checkbox
+                    checked={layer.layerSettings.showable}
+                    color="primary"
+                    onChange={() => changeShowAble(layer)}
+                    inputProps={{ "aria-label": "primary checkbox" }}
+                  />
+                  <ListItemText id={labelId} primary={layer.layerName} />
+                </StyledListItem>
+              );
+            })}
+          </List>
+        </Collapse>
+        <StyledListItem2 button onClick={handleClickUDList}>
+          <ListItemText primary="User Defined Layers" />
+          {openUD ? <ExpandLess /> : <ExpandMore />}
+        </StyledListItem2>
+        <Collapse in={openUD} timeout="auto" unmountOnExit>
+          <List className={classes.list}>
+            {UdLayers.map((layer, index) => {
+              const labelId = `udlayer-list-label-${index}`;
+              return (
+                <StyledListItem key={index} ContainerComponent="li">
+                  <Checkbox
+                    checked={layer.layerSettings.showable}
+                    color="primary"
+                    onChange={() => changeShowAble(layer)}
+                    inputProps={{ "aria-label": "primary checkbox" }}
+                  />
+                  <ListItemText id={labelId} primary={layer.layerName} />
+                </StyledListItem>
+              );
+            })}
+          </List>
+        </Collapse>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          disabled={deepEqual(currentLayers, stateApp.layers)}
+          onClick={handleApplyChange}
+          autoFocus
+          color="primary"
+        >
+          Apply
+        </Button>
+        <Button onClick={windowClose} color="primary">
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
