@@ -93,6 +93,25 @@ export default function ParcelDetailsMap(props) {
           zoom: 5,
         });
 
+        /// optimized interactions w/ map
+        newMap.scrollZoom.enable();
+        newMap.dragPan.enable();
+        newMap.dragRotate.enable();
+        newMap.keyboard.enable();
+        newMap.doubleClickZoom.disable();
+        newMap.boxZoom.enable();
+        newMap.touchZoomRotate.enable();
+
+        newMap.addControl(
+          new mapboxgl.ScaleControl({
+            maxWidth: 80,
+            unit: "imperial",
+          }),
+          "bottom-right"
+        );
+
+        newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
+
         newMap.on("load", function (e) {
           newMap.addSource("parcel_detail", {
             "type": "geojson",
