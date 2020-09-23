@@ -1,16 +1,16 @@
-import React, { useContext, useState, useEffect } from "react";
-import { AppContext } from "../../AppContext";
+import React, { useState, useEffect } from "react";
+import { useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
+
 import Taps from "../Shared/Taps";
 import M1nTable from "../Shared/M1nTable/M1nTable";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 import QtrQtrSelector from "./components/QtrQtrSelector";
 import LeftTopSummary from "./components/LeftTopSummary";
-import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
-import { useLazyQuery } from "@apollo/client";
+import ParcelDetailsMap from "./components/ParcelDetailsMap";
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -31,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
   },
   parcelMap: {
     margin: "8px",
-    backgroundColor: "rgb(117, 117, 117)",
     width: "100%",
     textAlign: "center",
   },
@@ -158,7 +157,9 @@ export default function ParcelsDetailCard(props) {
           </Grid>
         </Grid>
         <Grid item sm={4} className={classes.gridItem}>
-          <div className={classes.parcelMap} id="parcelMap" style={{ backgroundColor: "#757575" }}>Coming Soon!</div>
+          <div className={classes.parcelMap} id="parcelMap">
+            <ParcelDetailsMap parcelData={parcelObj} />
+          </div>
         </Grid>
       </Grid>
 
