@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState, Fragment } from "react";
+import React, { Fragment } from "react";
 import Grid from "@material-ui/core/Grid";
-import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import { CircularProgress } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -24,8 +24,10 @@ const useStyles = makeStyles((theme) => ({
     }
   }));
 
-const ProfileHeader = () => {
+const ProfileHeader = (props) => {
+    const {handleSubmit, isSaving, handleClose} = props;
     const classes = useStyles();
+
     return(
     <Fragment>
         <Grid container className={classes.root}>
@@ -37,10 +39,24 @@ const ProfileHeader = () => {
             <Grid item sm={2}>
                 <Grid container spacing={2} justify="center">
                     <Grid item sm={6}>
-                        <Button variant="contained" className={classes.cancelButton} disableElevation>CANCEL</Button>
+                        <Button 
+                            variant="contained" 
+                            className={classes.cancelButton} 
+                            onClick={handleClose} 
+                            disableElevation>CANCEL</Button>
                     </Grid>
                     <Grid item sm={6}>
-                        <Button variant="contained" className={classes.saveButton} disableElevation>SAVE</Button>
+                        <Button 
+                            variant="contained" 
+                            className={classes.saveButton} 
+                            disableElevation onClick={handleSubmit}
+                            endIcon={isSaving && 
+                                        <CircularProgress 
+                                            style={{width:12, height: 12, marginRight: 5}}
+                                        />}
+                        >
+                            {isSaving ? "SAVING..." : "SAVE"}
+                        </Button>
                     </Grid>
                 </Grid>
             </Grid>

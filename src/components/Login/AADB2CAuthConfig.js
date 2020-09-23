@@ -36,7 +36,7 @@ const B2CPolicies = {
     },
     signIn: {
       authority:
-        "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/b2c_1a_forcepasswordreset_signup_signin",
+        "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/B2C_1A_SignIn",
     },
     forgotPassword: {
       authority:
@@ -72,7 +72,7 @@ export const MSALB2CObj = (tenantId, clientId) =>
   new msal2.UserAgentApplication(msalB2CConfig(tenantId, clientId));
 
 export const loginRequestB2C = {
-  scopes: ["openid", "profile", "email", "offline_access"],
+  scopes: ["openid", "profile", "email", "offline_access"]
 };
 
 const apiConfig = {

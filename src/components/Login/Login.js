@@ -611,7 +611,9 @@ const Login = (props) => {
   );
 
   return loading ? (
-    <CircularProgress size={80} disableShrink color="secondary" />
+    <div style={{marginTop: "20%", marginLeft:"47%"}}>
+      <CircularProgress size={80} disableShrink color="secondary" />
+    </div>
   ) : (
     <div className={localClass.myRoot}>
       <div className={localClass.rootNewUser}>{renderBody}</div>
