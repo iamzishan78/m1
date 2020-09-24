@@ -160,7 +160,7 @@ export default function ParcelsDetailCard(props) {
 
         <Grid item sm={6} className={classes.gridItem}>
           <Grid item sm={12} container>
-            <Grid item sm={7}>
+            <Grid item sm={7} className={classes.gridItem}>
               <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
             </Grid>
             <Grid item sm={5}>

@@ -1256,34 +1256,30 @@ export default function Map() {
         }
       }
 
-      if (features && features.length > 0) {
+      const isNormalClick = !isCtrlKeyPressed();
+
+      if (isNormalClick && features && features.length > 0) {
         const feature = features[0];
-        console.log("stacked layers click info", features);
         const layerId = feature.layer.id;
-        const isNormalClick = !isCtrlKeyPressed();
-        if(!isNormalClick && feature.source == 'parcel_source') {
-          udLayerHighlightHandler(feature);
-        }
-        if(isNormalClick) {
-          switch (true) {
-            case clusterUDLayers.indexOf(layerId) > -1:
-              clusterClickHandler(feature, map);
-              break;
-            case clusterLayers.indexOf(layerId) > -1:
-              layerClickHander(feature);
-              break;
-            case udLayers.indexOf(layerId) > -1:
-              udLayerClickHandler(feature);
-              break;
-            case layerId === "wellpoints":
-              wellPointClick(feature);
-              break;
-            case layerId === "welllines":
-              wellLineClick(feature);
-              break;
-            default:
-              break;
-          }
+
+        switch (true) {
+          case clusterUDLayers.indexOf(layerId) > -1:
+            clusterClickHandler(feature, map);
+            break;
+          case clusterLayers.indexOf(layerId) > -1:
+            layerClickHander(feature);
+            break;
+          case udLayers.indexOf(layerId) > -1:
+            udLayerClickHandler(feature);
+            break;
+          case layerId === "wellpoints":
+            wellPointClick(feature);
+            break;
+          case layerId === "welllines":
+            wellLineClick(feature);
+            break;
+          default:
+            break;
         }
       }
     };

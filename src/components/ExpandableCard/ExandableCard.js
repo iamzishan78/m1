@@ -179,6 +179,8 @@ export default function ExpandableCard(props) {
       setStateApp((state) => ({
         ...state,
         popupOpen: false,
+        selectedWell: null,
+        selectedParcel: null
       }));
     }
 
