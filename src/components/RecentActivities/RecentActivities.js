@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     backgroundColor: "#ffffff",
+    height: "100%",
   },
   inputField: {
     marginBottom: "30px",
@@ -62,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "20px 30px",
     borderLeft: "1px solid #9A9A9A",
     minWidth: "250px",
+    height: "100%",
   },
   checkBox: {
     minHeight: "35px",
@@ -279,7 +281,7 @@ function ViewActivities({
         >
           Add New
         </h4>
-        <ActivityStats />
+        {/* <ActivityStats /> */}
         <ActivitiesFilter
           activitiesFilter={activitiesFilter}
           setActivitiesFilter={setActivitiesFilter}

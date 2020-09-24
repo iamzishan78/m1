@@ -30,11 +30,14 @@ import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { CONTACT } from "../../../graphQL/useQueryContact";
+import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
+import { REMOVEUSER } from "../../../graphQL/useMutationRemoveUser";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import { UPDATEPARCELOWNER } from "../../../graphQL/useMutationUpdateParcelOwner";
 import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRecords";
+import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelInterests";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -858,6 +861,226 @@ const OwnersPerParcelHeadCells = [
   },
 ];
 
+// const ParcelInterestsPerContactHeadCells = [
+//   {
+//     name: "_id",
+//     options: {
+//       display: false,
+//       filter: false,
+//       searchable: false,
+//       sort: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   {
+//     name: "ownerEntityId",
+//     options: {
+//       display: false,
+//       filter: false,
+//       searchable: false,
+//       sort: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   {
+//     name: "customLayerId",
+//     options: {
+//       display: false,
+//       filter: false,
+//       searchable: false,
+//       sort: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   //// from parcel
+//   { name: "customLayerName", label: "Name" },
+//   { name: "customLayerState", label: "State" },
+//   { name: "customLayerCounty", label: "County" },
+//   { name: "Grid1", label: "Survey/ Meridian" },
+//   { name: "Grid2", label: "Block/ Township" },
+//   { name: "Grid3", label: "Section/ Range" },
+//   { name: "Grid4", label: "Abstract/ Section" },
+//   { name: "Grid5", label: "Alternate Survey" },
+//   //// from parcelOwnership
+//   { name: "depthFrom", label: "Depth From", editable: true },
+//   { name: "depthTo", label: "Depth To", editable: true },
+//   { name: "interest", label: "Interest", editable: true },
+//   { name: "nma", label: "NMA", editable: true },
+//   { name: "nra", label: "NRA", editable: true },
+
+//   {
+//     name: "parcelIcon",
+//     label: " ",
+//     options: {
+//       filter: false,
+//       searchable: false,
+//       sort: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   {
+//     name: "commentsCounter",
+//     label: " ",
+//     options: {
+//       filter: false,
+//       searchable: false,
+//       sort: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   {
+//     name: "isTracked",
+//     label: "Track",
+//     options: {
+//       searchable: false,
+//       download: false,
+//       print: false,
+//       filterOptions: {
+//         names: ["Tracked", "Untracked"],
+//         logic(tracked, filterVal) {
+//           return !(
+//             (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+//             (filterVal.indexOf("Untracked") >= 0 && !tracked)
+//           );
+//         },
+//       },
+//       filterType: "dropdown",
+//     },
+//   },
+// ];
+
+const UserManagementHeadCells = [
+  {
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "displayName",
+    label: "Name",
+    options: {
+      filter: false,
+      searchable: true,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+      editable: true,
+    },
+  },
+  {
+    name: "emails",
+    label: "User Email",
+    options: {
+      filter: false,
+      searchable: true,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "userType",
+    label: "User Type",
+    options: {
+      filter: true,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "role",
+    label: "Role",
+    options: {
+      filter: true,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "adminAccess",
+    label: "Admin Access",
+    options: {
+      filter: true,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "lastLogin",
+    label: "Last Login",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "actions",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+];
+const DealsHeadCells = [
+  {
+    name: "name",
+    label: "Name",
+  },
+  {
+    name: "contact",
+    label: "Contact",
+  },
+  {
+    name: "dealStage",
+    label: "Deal Stage",
+  },
+  {
+    name: "dealAmount",
+    label: "Deal Amount",
+  },
+  {
+    name: "dealDetails",
+    label: "Deal Details",
+  },
+];
+
 const ParcelInterestsPerContactHeadCells = [
   {
     name: "_id",
@@ -1067,13 +1290,26 @@ function M1nTable(props) {
     WELLOWNERSQUERY
   );
   //////////
-  const [getContactInM1nTable, { data: dataContact }] = useLazyQuery(CONTACT, {
+  // const [getContactInM1nTable, { data: dataContact }] = useLazyQuery(CONTACT, {
+  //   fetchPolicy: "cache-and-network",
+  // });
+
+  /////////
+  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
     fetchPolicy: "cache-and-network",
   });
+  const [removeUser] = useMutation(REMOVEUSER);
   //////////
-  const [getContacts, { data: constDataContacts }] = useLazyQuery(CONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-  });
+  const [getContacts, { data: constDataContacts }] = useLazyQuery(
+    CONTACTSQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
+  //////////
+  const [getTransactionData, { data: dataDeals }] = useLazyQuery(
+    TRANSACTIONDATA
+  );
   //////////
   const [removeContact] = useMutation(REMOVECONTACT);
 
@@ -1110,11 +1346,11 @@ function M1nTable(props) {
   const [dataContacts, setDataContacts] = useState(null);
   useEffect(() => {
     if (constDataContacts && constDataContacts.contacts) {
-      let tmpDataContacts = { contacts: [] }
+      let tmpDataContacts = { contacts: [] };
       constDataContacts.contacts.forEach((contact) => {
-        tmpDataContacts.contacts.push(Object.create(contact))
-      })
-      setDataContacts(tmpDataContacts)
+        tmpDataContacts.contacts.push(Object.create(contact));
+      });
+      setDataContacts(tmpDataContacts);
     }
   }, [constDataContacts]);
 
@@ -1998,6 +2234,14 @@ function M1nTable(props) {
   ]);
 
   useEffect(() => {
+    console.log(
+      "%cCONTACT ID : ",
+      "font-size:20px; color:tomato;",
+      props.contactId
+    );
+  });
+
+  useEffect(() => {
     if (
       props.parent &&
       props.parent === "search" &&
@@ -2343,6 +2587,109 @@ function M1nTable(props) {
 
   ////////////Parcel Interests Per Contact end/////////////////////////////////////////////////
 
+  ////////////User management//////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    if (props.parent && props.parent === "UserManagement") {
+      getAllUsers();
+      if (userLists?.allUsers) {
+        setHeader("Active Users");
+        setRows(userLists.allUsers);
+        setColumns(UserManagementHeadCells);
+        setLoading(false);
+        setAddAble({
+          type: "inviteUser",
+        });
+        setOrderByTracks(false);
+      }
+    } else {
+      setRows([]);
+    }
+  }, [props.parent, userLists]);
+
+  ///////// Remove User ////////////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    if (props.parent && props.parent === "UserManagement") {
+      setDeleteFunc(() => (userId) => {
+        if (userId) {
+          removeUser({
+            variables: {
+              userId,
+            },
+            refetchQueries: ["getAllUsers"],
+            awaitRefetchQueries: true,
+          });
+        }
+      });
+    }
+  }, [props.parent]);
+  ////////////User management end //////////////////////////////////////////////////////////////
+  ////////////Deals start////////////////////////////////////////////////
+
+  useEffect(() => {
+    console.log("DEALS CHECK : ", props.parent, props.contactId, stateApp.user);
+    if (props.parent && props.parent === "Deals" && stateApp.user) {
+      console.log("ue mintable 22");
+      setTargetLabel("deals");
+      setHeader("Deals");
+      getTransactionData({
+        variables: {
+          userId: stateApp.user.mongoId,
+        },
+      });
+      setAddAble({ type: "deals" });
+      setUploadIcon(true);
+      setStartPaginationAt(25);
+    }
+  }, [props.parent, stateApp.user]);
+
+  useEffect(() => {
+    console.log("DEALS m1n : ", props.parent, dataDeals);
+    if (
+      props.parent &&
+      props.parent === "Deals" &&
+      dataDeals &&
+      props.contactId
+    ) {
+      console.log("DATA DEALS : ", dataDeals);
+      const lanes = dataDeals?.transactionData?.allData?.lanes;
+
+      const all = [];
+      console.log("ALL : ", all, lanes);
+      if (lanes) {
+        lanes.forEach((deal) => {
+          deal.cards.forEach((card) => {
+            if (props.contactId === card.contactId) all.push(card);
+          });
+        });
+      }
+
+      const dealsRowsData = [];
+      all.forEach((deal) => {
+        let dealData = {
+          name: deal.title,
+          contact: deal.contactName,
+          dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
+          dealAmount: deal.label,
+          dealDetails: deal.description,
+        };
+
+        dealsRowsData.push(dealData);
+      });
+      setTargetLabel("deals");
+      setRows(dealsRowsData);
+      setColumns([...DealsHeadCells]);
+      setLoading(false);
+    }
+
+    console.log(
+      "%cCONTACT ID : ",
+      "font-size:20px; color:green;",
+      props.contactId
+    );
+  }, [props.parent, dataDeals, props.contactId]);
+
+  ////////////Deals end////////////////////////////////////////////////
+
   ////////////-----Add your code section here-----///////////////////////
 
   return (
@@ -2360,6 +2707,7 @@ function M1nTable(props) {
         dense={props.dense ? props.dense : undefined}
         orderByTracks={orderByTracks}
         startPaginationAt={startPaginationAt}
+        contactId={props.contactId}
       />
     </Container>
   );

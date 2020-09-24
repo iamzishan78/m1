@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import uuid from "uuid";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import NumberFormat from "react-number-format";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
@@ -19,6 +19,10 @@ import { TransactContext } from "../TransactContext";
 import { AppContext } from "../../../AppContext";
 import AddContactDialogContent from "../../Shared/M1nTable/components/SubComponents/AddContactDialogContent";
 import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
+import { CONTACT } from "../../../graphQL/useQueryContact";
+
+import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
+import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 
 const useStyles = makeStyles((theme) => ({
   label: {
@@ -50,23 +54,88 @@ function NumberFormatCustom(props) {
 
 export default function TransactDialog(props) {
   const classes = useStyles();
-  const { transactData, handleDataChange } = props;
+  // const { transactData, handleDataChange } = props;
   const [stateApp, setStateApp] = useContext(AppContext);
   // const [title, setTitle] = useState(props.contact ? props.contact.name : ""); // title change from contact.name to dealName
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [label, setLabel] = useState("");
   const [stage, setStage] = useState("");
   const [description, setDescription] = useState("");
-  const [contact, setContact] = useState(
-    props.contact ? { name: props.contact.name, _id: props.contact._id } : {}
-  );
+
   const [openContactDialog, setOpenContactDialog] = useState(false);
   // const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
+
+  const [getTransactionData, { data: tdata }] = useLazyQuery(TRANSACTIONDATA);
+
+  const [getContact, { data: cData }] = useLazyQuery(CONTACT, {
+    fetchPolicy: "cache-and-network",
+  });
+
+  const [contact, setContact] = useState(
+    cData?.contact?.contact
+      ? { name: cData.contact.contact.name, _id: cData.contact.contact._id }
+      : {}
+  );
+
+  useEffect(() => {
+    setContact(
+      cData?.contact?.contact
+        ? { name: cData.contact.contact.name, _id: cData.contact.contact._id }
+        : {}
+    );
+  }, [cData]);
+
+  let [transactData, setTransactData] = useState();
+
+  useEffect(() => {
+    console.log("TDATAAAAAAAAA : ", tdata?.transactionData?.allData);
+    if (tdata?.transactionData?.allData) {
+      setTransactData(
+        JSON.parse(JSON.stringify(tdata?.transactionData?.allData))
+      );
+    }
+  }, [tdata]);
+
+  const [updateTransaction] = useMutation(UPDATETRANSACTION);
 
   const openContact = () => {
     handleClose();
     props.selectRowOpenContact(contact);
   };
+
+  const handleDataChange = (newData) => {
+    if (tdata?.transactionData?._id) {
+      updateTransaction({
+        variables: {
+          transactionId: tdata.transactionData._id,
+          transaction: { allData: newData, user: stateApp.user.mongoId },
+        },
+        refetchQueries: ["getTransactionData", "getContact", "getContacts"],
+        awaitRefetchQueries: true,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (stateApp.user && stateApp.user.mongoId) {
+      console.log(stateApp.user);
+      getTransactionData({
+        variables: {
+          userId: stateApp.user.mongoId,
+        },
+      });
+    }
+  }, [stateApp.user]);
+
+  useEffect(() => {
+    if (props.contactId) {
+      getContact({
+        variables: {
+          contactId: props.contactId,
+        },
+      });
+    }
+  }, [props.contactId]);
 
   useEffect(() => {
     const cardId = stateApp.activeDeal?.cardId;
@@ -132,7 +201,7 @@ export default function TransactDialog(props) {
         const lane = transactData.lanes[laneIndex];
         const cardIndex = lane.cards.findIndex((card) => card.id === cardId);
         const card = lane.cards[cardIndex];
-        
+
         const updatedCard = {
           // dealName: dealName.trim(),
           // title: contact?.name.trim(),
@@ -145,24 +214,31 @@ export default function TransactDialog(props) {
           id: card.id,
         };
 
-
         if (card.laneId !== newStage) {
           if (cardIndex > -1) {
             // remove card from current lane
-            transactData.lanes[laneIndex].cards.splice(cardIndex, 1);
+            let td = { ...transactData };
+            td.lanes[laneIndex].cards.splice(cardIndex, 1);
             // add card to updated lane
-            const stageIndex = transactData.lanes.findIndex(
+            const stageIndex = td.lanes.findIndex(
               (lane) => lane.id === newStage
             );
-            transactData.lanes[stageIndex].cards.push(updatedCard);
+            td.lanes[stageIndex].cards.push(updatedCard);
+            setTransactData(td);
           }
         } else {
-          transactData.lanes[laneIndex].cards[cardIndex] = updatedCard;
+          let td = { ...transactData };
+
+          td.lanes[laneIndex].cards[cardIndex] = updatedCard;
+          setTransactData(td);
         }
       } else if (!cardId && !laneId) {
         // add new
 
-        transactData.lanes.forEach((lane) => {
+        let td = { ...transactData };
+        console.log(td, transactData, stateApp.user.mongoId);
+
+        td.lanes.forEach((lane) => {
           if (lane.id === newStage) {
             let cards = [...lane.cards];
             const newCard = {
@@ -180,12 +256,19 @@ export default function TransactDialog(props) {
             lane.cards = cards;
           }
         });
+
+        setTransactData(td);
       }
-      handleDataChange(transactData);
 
       handleClose();
     }
   };
+
+  useEffect(() => {
+    if (tdata?.transactionData?.allData) {
+      handleDataChange(transactData);
+    }
+  }, [transactData]);
 
   return (
     <Dialog

@@ -219,7 +219,7 @@ export default function ExpandableCard(props) {
               />
             )}
 
-            {stateExpandableCard.expanded && (
+            {/* {stateExpandableCard.expanded && (
               <Tooltip title={"Report Bug"} placement="top">
                 <IconButton
                   size="medium"
@@ -230,7 +230,7 @@ export default function ExpandableCard(props) {
                   <BugsIcon viewBox="0 0 64 64" color="white" />
                 </IconButton>
               </Tooltip>
-            )}
+            )} */}
 
             {stateExpandableCard.expanded
               ? parent !== "table" && (

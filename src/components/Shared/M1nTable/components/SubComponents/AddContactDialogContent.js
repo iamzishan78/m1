@@ -444,18 +444,16 @@ export default function AddContactDialogContent(props) {
         />
       </DialogTitle>
       <DialogContent dividers className={classes.dialogContent}>
-        {
-          // contacts && contacts.length > 0 ? (
-          //   <Taps
-          //     tabLabels={["Add New", "Select Existing"]}
-          //     tabPanels={[addNew(), selectExisting()]}
-          //     whichTapIsActive={whichTapIsActive}
-          //     backgroundColor="#fff"
-          //   />
-          // ) : (
+        {contacts && contacts.length > 0 ? (
+          <Taps
+            tabLabels={["Add New", "Select Existing"]}
+            tabPanels={[addNew(), selectExisting()]}
+            whichTapIsActive={whichTapIsActive}
+            backgroundColor="#fff"
+          />
+        ) : (
           addNew()
-          // )
-        }
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClickDialogClose} color="primary">

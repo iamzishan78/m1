@@ -168,22 +168,27 @@ const useStyles = makeStyles((theme) => ({
   },
 
   drawerOpenLogo: {
-    paddingLeft: "10px",
+    paddingLeft: "20px",
     paddingTop: "10px",
   },
 
   iconArrow: {
-    background: "rgba(23, 170, 221, 1)",
-    color: "#fff",
+    // background: "rgba(23, 170, 221, 1)",
+    color: "gray",
     textAlign: "right",
-    padding: 0,
+    padding: "4px 0",
     transition: "all 0.3s ease-in-out",
     margin: "5px 15px 0px auto",
     "&:hover": {
-      background: "rgba(1, 17, 51, 1.0)",
+      background: "unset",
+      color: "rgba(23, 170, 221, 1)",
     },
   },
-
+  menuIcon: {
+    position: "relative",
+    left: "-8px",
+    fontSize: "30px",
+  },
   drawerOpen: {
     // background: "rgba(255, 255, 255, 1.0)",
     background: "rgba(250, 250, 250, 1.0)",
@@ -928,12 +933,18 @@ export default function Navigation(props) {
       <MenuItem
         className={classes.userMenuItem}
         onClick={(e) => openProfile(e)}
+        containerElement={<Link to="/profile" />}
       >
-        <Link
-          to="/profile"
-          style={{ textDecoration: "none", color: "#1daee1" }}
-        >
-          <Typography variant="inherit">My Account</Typography>
+        <Link to="/profile" style={{ textDecoration: "none", width: '100%' }}>
+          <Typography style={{ textDecoration: "none", color: "#1daee1" }} variant="inherit">My Account</Typography>
+        </Link>
+      </MenuItem>
+      <Divider/>
+      <MenuItem
+        className={classes.userMenuItem}
+      >
+        <Link to="/usermanagement" style={{ textDecoration: "none", width: '100%' }}>
+          <Typography style={{ textDecoration: "none", color: "#1daee1" }} variant="inherit">User Management</Typography>
         </Link>
       </MenuItem>
       <Divider />
@@ -1414,7 +1425,10 @@ export default function Navigation(props) {
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
-              <ChevronLeftIcon />
+              <>
+                <ChevronLeftIcon />
+                <MenuIcon className={classes.menuIcon} />
+              </>
             )}
           </IconButton>
         </div>

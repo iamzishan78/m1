@@ -32,13 +32,20 @@ import MomentUtils from "@date-io/moment";
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
 import { CircularProgress } from "@material-ui/core";
 import Profile from "./components/Profile/Profile";
-
+import ProfileDetails from "./components/Profile/ProfileDetails";
+import { ProfileContextProvider } from "./components/Profile/ProfileContext";
+import { UserManagementContextProvider } from "./components/UserManagement/UserManagementContext";
+import InitializeProfile from "./components/Profile/InitializeProfileContext";
+import InitializeUserManagement from './components/UserManagement/InitializeUserManagementContext';
+import UserManagementContainer from "./components/UserManagement/Container";
 import Notifications from "./components/Notifications/Notifications";
 
 //redux
 import { Provider as ReduxProvider } from "react-redux";
 import { ConnectedRouter } from "connected-react-router";
 import configureStore, { history } from "./store";
+
+// user management
 
 const store = configureStore(/ provide initial state if any /);
 
@@ -168,7 +175,12 @@ const PrivateRoute = ({ component, ...options }) => {
           : Login
       })();
 
-  return <Route {...options} component={finalComponent} />;
+  return (
+    <div>
+      <Route {...options} component={finalComponent} />
+      {stateApp.user !== null && <InitializeProfile/>}
+    </div>
+    );
 };
 
 const NotFoundRedirect = () => <Redirect to="/" />;
@@ -235,7 +247,13 @@ function App() {
                   <Switch>
                     <NavigationProvider>
                       <PrivateRoute exact path="/" component={MapProvider} />
-                      <PrivateRoute exact path="/profile" component={Profile} />
+                      <ProfileContextProvider>
+                        <PrivateRoute exact path="/profile" component={Profile} />
+                        <PrivateRoute exact path="/myaccount" component={ProfileDetails} />
+                      </ProfileContextProvider>
+                      <UserManagementContextProvider>
+                        <PrivateRoute exact path="/usermanagement" component={UserManagementContainer} />
+                      </UserManagementContextProvider>
                       <Route exact path="/signup" component={SignUpCard} />
                       <Route exact path="/loginb2c" component={LoginB2C} />
                       <Route

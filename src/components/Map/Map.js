@@ -1206,6 +1206,16 @@ export default function Map() {
         layers: [...layers],
       });
 
+      if (!window.event.ctrlKey && hoverUdIds.length > 0) {
+        for (let i = 0; i < hoverUdIds.length; i++) {
+          map.setFeatureState(
+            { source: "parcel_source", id: hoverUdIds[i] },
+            { hover: false }
+          );
+          HoverUdIds([]);
+        }
+      }
+
       if (features && features.length > 0) {
         const feature = features[0];
         console.log("stacked layers click info", features);
@@ -1222,7 +1232,12 @@ export default function Map() {
             layerClickHander(feature);
             break;
           case udLayers.indexOf(layerId) > -1:
-            udLayerClickHandler(feature);
+            if (window.event.ctrlKey && feature.source == "parcel_source") {
+              udLayerHighlightHandler(feature);
+            } else {
+              udLayerClickHandler(feature);
+            }
+            console.log("userDefined:", window.event.ctrlKey);
             break;
           case layerId === "wellpoints":
             wellPointClick(feature);
@@ -4242,7 +4257,14 @@ export default function Map() {
             source: "abstract_geo_source",
             paint: {
               "fill-color": "#888",
-              "fill-opacity": 0,
+              "fill-opacity": [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                0.5,
+                ["boolean", ["feature-state", "click"], false],
+                0.5,
+                0,
+              ],
             },
           });
 
@@ -4256,14 +4278,7 @@ export default function Map() {
               "line-cap": "round",
             },
             paint: {
-              "line-color": [
-                "case",
-                ["boolean", ["feature-state", "hover"], false],
-                "#e5eb34",
-                ["boolean", ["feature-state", "click"], false],
-                "#e5eb34",
-                "#888",
-              ],
+              "line-color": "#888",
               "line-width": 2,
             },
           });

@@ -6,7 +6,6 @@ import { NavigationContext } from "../Navigation/NavigationContext";
 import ImageModal from "./ImageModal";
 import ProfileActions from "./ProfileActions";
 import ProfileContent from "./ProfileContent";
-import { ProfileContextProvider } from "./ProfileContext";
 import ProfileTitle from "./ProfileTitle";
 
 const useStyles = makeStyles(() => ({
@@ -15,7 +14,6 @@ const useStyles = makeStyles(() => ({
     marginLeft: "auto",
     marginBottom: "auto",
     maxHeight: "calc(100% - 72px)",
-    minHeight: "85%",
     overflow: 'hidden'
   },
 }));
@@ -25,28 +23,26 @@ const Profile = () => {
   const { isProfileOpen } = stateNav;
   const classes = useStyles();
   const history = useHistory();
-
   const handleClose = () => {
     setStateNav({ ...stateNav, isProfileOpen: false });
     history.goBack();
   };
 
   return (
-    <ProfileContextProvider>
+    <div>
       <Dialog
         onClose={handleClose}
         aria-labelledby="profile-dialog"
         open={isProfileOpen}
-        fullWidth={true}
         maxWidth={"xl"}
         classes={{ paper: classes.paper }}
       >
-        {/* <ImageModal/> */}
-        {/* <ProfileTitle /> */}
+        {isProfileOpen && <ImageModal/>}
+        <ProfileTitle />
         <ProfileContent />
-        {/* <ProfileActions /> */}
+        <ProfileActions />
       </Dialog>
-    </ProfileContextProvider>
+    </div>
   );
 };
 
