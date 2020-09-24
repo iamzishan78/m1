@@ -216,6 +216,7 @@ export const userDefinedLayers = [
       {
         layerType: "fill",
         layerId: "parcel",
+        minZoom: 8.5,
         paintProps: {
           "fill-color": "#e07c71",
           "fill-opacity": [
@@ -235,6 +236,7 @@ export const userDefinedLayers = [
       {
         layerType: "symbol",
         layerId: "parcel_labels",
+        minZoom: 12,
         symbolProps: {
           "text-allow-overlap": true,
           "text-anchor": "center",

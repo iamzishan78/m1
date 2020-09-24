@@ -885,6 +885,7 @@ export default function Map() {
               type: config.layerProps[i].layerType,
               source: config.sourceProps[i].sourceId,
               layout: config.layerProps[i].symbolProps,
+              minzoom: config.layerProps[i].minZoom,
             });
           } else {
             map.addLayer({
@@ -892,6 +893,7 @@ export default function Map() {
               type: config.layerProps[i].layerType,
               source: config.sourceProps[i].sourceId,
               paint: config.layerProps[i].paintProps,
+              minzoom: config.layerProps[i].minZoom,
             });
           }
 
