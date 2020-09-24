@@ -107,7 +107,7 @@ export default function CheckboxList(props) {
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 
-  if (!stateApp.layers) return;
+  if (!stateApp.layers) return null;
 
   const handleToggle = (layer, index) => () => {
     const currentLayers = [...stateApp.layers];
@@ -121,7 +121,7 @@ export default function CheckboxList(props) {
 
     //// saving to stateApp
     currentLayers[index] = updatedLayer;
-    setStateApp((stateApp) => ({ ...stateApp, layers: currentLayers }));
+    setStateApp((stateApp) => ({ ...stateApp, layers: [...currentLayers] }));
 
     //// saving to mongo
     updateLayerSettings({
@@ -152,7 +152,7 @@ export default function CheckboxList(props) {
 
     //// saving to stateApp
     currentLayers[index] = updatedLayer;
-    setStateApp((stateApp) => ({ ...stateApp, layers: currentLayers }));
+    setStateApp((stateApp) => ({ ...stateApp, layers: [...currentLayers] }));
 
     //// saving to mongo
     updateLayerSettings({
@@ -284,7 +284,7 @@ export default function CheckboxList(props) {
       //// saving to stateApp
       setStateApp({
         ...stateApp,
-        layers: reorderedLayers,
+        layers: [...reorderedLayers],
       });
 
       //// saving to mongo

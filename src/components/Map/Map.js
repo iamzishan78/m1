@@ -413,7 +413,7 @@ export default function Map() {
     if (layerStates && layerStates.allLayerSettingsByUser) {
       setStateApp({
         ...stateApp,
-        layers: layerStates.allLayerSettingsByUser,
+        layers: [...layerStates.allLayerSettingsByUser],
       });
 
       if (layerStates.allLayerSettingsByUser.length > 0) {
@@ -470,7 +470,7 @@ export default function Map() {
       if (!nextLayerIndex) {
         setStateApp((stateApp) => ({
           ...stateApp,
-          layers,
+          layers: [...layers],
         }));
       }
     }
@@ -1203,7 +1203,7 @@ export default function Map() {
       console.log("checking layers", layers);
 
       let features = map.queryRenderedFeatures(bbox, {
-        layers: layers,
+        layers: [...layers],
       });
 
       if (features && features.length > 0) {
@@ -1278,6 +1278,14 @@ export default function Map() {
                 map.moveLayer(id, beforeLayer);
               }
               beforeLayer = id;
+
+              ////////////////////////////////
+              // if (layer.layerName == "Pipelines")
+              //   console.log(
+              //     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+              //     map.getLayer(id)
+              //   );
+              ////////////////////////////////////
             }
             if (layer.layerSettings.interaction.interactionAble) {
               map.off("mousemove", id, mouseMoveHandler);

@@ -16,7 +16,8 @@ import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSett
 
 export default (props) => {
   const { layer } = props;
-  if (!layer || !layer.layerPaintProps || !layer.layerPaintProps[0]) return;
+  if (!layer || !layer.layerPaintProps || !layer.layerPaintProps[0])
+    return null;
 
   const layerType = layer.layerPaintProps[0].paintType;
   const initialFillColor =

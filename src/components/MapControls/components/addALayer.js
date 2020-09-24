@@ -186,7 +186,7 @@ export default function AddLayer(props) {
     //// saving to stateApp
     setStateApp({
       ...stateApp,
-      layers: currentLayers,
+      layers: [...currentLayers],
     });
 
     //// saving to mongo
@@ -303,7 +303,7 @@ export default function AddLayer(props) {
             </span>
           }
           acceptedFiles={[".geojson", ".zip"]}
-          maxFileSize={600000000}
+          maxFileSize={10000000}
           dropzoneClass={classes.dropzoneClass}
         ></DropzoneAreaBase>
         <StyledListItem2 button onClick={handleClickM1List}>

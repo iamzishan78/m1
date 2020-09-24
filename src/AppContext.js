@@ -150,7 +150,7 @@ const AppProvider = (props) => {
 
           return {
             ...stateApp,
-            layers: currentLayers,
+            layers: [...currentLayers],
             popupOpen: false,
             selectedWell: null,
             mapCircularLoaderAct: false,

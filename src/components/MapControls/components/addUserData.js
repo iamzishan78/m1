@@ -17,6 +17,7 @@ import TextField from "@material-ui/core/TextField";
 import shp from "shpjs";
 import { ADDFILE } from "../../../graphQL/useMutationAddFile";
 import { ADDLAYER } from "../../../graphQL/useMutationAddLayer";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
 const random_rgb = () => {
   var o = Math.round,
@@ -29,7 +30,16 @@ const Alert = (props) => {
   return <MuiAlert elevation={5} variant="filled" {...props} />;
 };
 
-const useStyles = makeStyles((theme) => ({}));
+const useStyles = makeStyles((theme) => ({
+  loadButton: {
+    marginBottom: "5px",
+    padding: 0,
+    backgroundColor: "#d9d7d7",
+    color: "rgba(1, 17, 51, 1)",
+    minWidth: "50px",
+    "&:hover": { backgroundColor: "#b3d3dc" },
+  },
+}));
 
 export default function AddUserData(props) {
   const classes = useStyles();
@@ -42,7 +52,9 @@ export default function AddUserData(props) {
   );
   const [layerName, setLayerName] = useState("");
   const [error, setErrorr] = useState(false);
+  const [notReturn, setNotReturn] = useState(false);
   const [uploadFailed, setUploadFailed] = useState("");
+  const [url, setUrl] = useState("");
 
   const [stateApp, setStateApp] = useContext(AppContext);
 
@@ -63,6 +75,7 @@ export default function AddUserData(props) {
       selectedControl: null,
       fileUploadedContent: null,
     }));
+    setNotReturn(false);
   };
 
   async function handleFileAsync(file) {
@@ -217,17 +230,43 @@ export default function AddUserData(props) {
 
   useEffect(() => {
     if (newLayer) {
-      handleClose();
+      // handleClose();
       setStateMapControls((stateMapControls) => ({
         ...stateMapControls,
         addLayer: false,
       }));
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        universalCircularLoaderAct: false,
-      }));
+      setNotReturn(true);
+      // setStateApp((stateApp) => ({
+      //   ...stateApp,
+      //   universalCircularLoaderAct: false,
+      // }));
     }
   }, [newLayer]);
+
+  useEffect(() => {
+    if (stateApp.layers) {
+      const layerIndex = stateApp.layers.findIndex(
+        (layer) => layer.layerName == layerName
+      );
+      if (
+        layerIndex !== -1 &&
+        layerName &&
+        layerName !== "" &&
+        stateApp.layers[layerIndex] &&
+        stateApp.layers[layerIndex].fileContent
+      ) {
+        handleClose();
+        // setStateMapControls((stateMapControls) => ({
+        //   ...stateMapControls,
+        //   addLayer: false,
+        // }));
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          universalCircularLoaderAct: false,
+        }));
+      }
+    }
+  }, [stateApp.layers]);
 
   const handleApplyChanges = async () => {
     console.log("Apply Changes");
@@ -259,14 +298,13 @@ export default function AddUserData(props) {
     }
   };
 
-  const handleURLinput = async (e) => {
+  const handleURLinput = async () => {
     setStateApp((stateApp) => ({
       ...stateApp,
       universalCircularLoaderAct: true,
     }));
-    let inputURL = e.target.value;
-    console.log(inputURL);
-    let fileContent = await handleFileAsync(inputURL);
+
+    let fileContent = await handleFileAsync(url);
     console.log("FILE CONTENT: ", fileContent);
     setInputFiles(fileContent);
     setStateApp((stateApp) => ({
@@ -279,11 +317,13 @@ export default function AddUserData(props) {
     setUploadFailed("");
   };
 
+  if (notReturn) return null;
   return (
     <Dialog open={isOpen} onClose={handleClose}>
-      <DialogTitle>Add Data</DialogTitle>
+      <DialogTitle>Create a new Layer</DialogTitle>
       <DialogContent dividers>
         <TextField
+          focused
           required
           margin="dense"
           id="layerName"
@@ -291,17 +331,50 @@ export default function AddUserData(props) {
           fullWidth
           error={error}
           onChange={handleLayerNameChanges}
+          onKeyPress={(event) => {
+            if (event.key === "Enter" && layerName !== "" && inputFiles) {
+              event.preventDefault();
+              handleApplyChanges();
+            }
+          }}
         />
 
         {!stateMapControls.fileUploadedContent && (
           <TextField
+            required
             autoFocus
             margin="dense"
             id="name"
             label="Esri Feature Service URL"
             type="url"
             fullWidth
-            onKeyPress={handleURLinput}
+            value={url}
+            onChange={(e) => {
+              if (e.target.value) setUrl(e.target.value);
+              else setUrl("");
+            }}
+            onKeyPress={(event) => {
+              if (event.key === "Enter" && url !== "") {
+                event.preventDefault();
+                handleURLinput();
+              }
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Button
+                    disabled={!url || url == "" ? true : false}
+                    variant="contained"
+                    size="small"
+                    color="secondary"
+                    className={classes.loadButton}
+                    onClick={handleURLinput}
+                  >
+                    Load
+                  </Button>
+                </InputAdornment>
+              ),
+            }}
           />
         )}
         <Typography gutterBottom></Typography>
@@ -329,7 +402,7 @@ export default function AddUserData(props) {
           Create Layer
         </Button>
         <Button autoFocus onClick={handleClose} color="primary">
-          Close
+          Cancel
         </Button>
       </DialogActions>
     </Dialog>
