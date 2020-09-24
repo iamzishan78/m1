@@ -5,9 +5,10 @@ import FilterTags from "./FilterTags";
 import FilterTrackedOwners from "./FilterTrackedOwners";
 import FilterTrackedWells from "./FilterTrackedWells";
 import Grid from "@material-ui/core/Grid";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { AppContext } from "../../../AppContext";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
+// import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
 
 const useStyles = makeStyles((theme) => ({
   gridItem: {
@@ -21,6 +22,7 @@ export default function FilterFormProduction() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateApp, setStateApp] = useContext(AppContext);
 
+  // const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY, {
     fetchPolicy: "cache-and-network",
   });
@@ -62,14 +64,13 @@ export default function FilterFormProduction() {
         ...stateApp,
         wellListFromTagsFilter: dataWells.wells.results,
       }));
-      stateApp.activateUserDefinedLayers(stateApp.tagsLayerIndex);
-      // stateApp.deactivateWellLayer();
+      stateApp.toggleLayersActivity("Tagged Wells/Owners", true);
     }
   }, [dataWells]);
 
   useEffect(() => {
     if (!stateNav.filterTrackedWells && !stateNav.filterTrackedOwners) {
-      stateApp.activateWellLayer();
+      stateApp.toggleLayersActivity("Wells", true);
     }
   }, [stateNav.filterTrackedWells, stateNav.filterTrackedOwners]);
 

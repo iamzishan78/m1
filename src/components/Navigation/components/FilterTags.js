@@ -157,7 +157,6 @@ export default function FilterTags() {
         ...stateApp,
         wellListFromTagsFilter: null,
       }));
-      // stateApp.deactivateUserDefinedLayers(4);
     }
   };
 

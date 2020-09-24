@@ -220,7 +220,7 @@ function App() {
       if (token) {
         apolloConfig.headers["X-ZUMO-AUTH"] = token;
         //uncomment to run against local
-        // apolloConfig.uri = "http://localhost:7071/api/m1graph"
+        apolloConfig.uri = "http://localhost:7071/api/m1graph"
       }
 
       let apolloClient = new ApolloClient(apolloConfig);

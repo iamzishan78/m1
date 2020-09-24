@@ -72,7 +72,7 @@ export const MSALB2CObj = (tenantId, clientId) =>
   new msal2.UserAgentApplication(msalB2CConfig(tenantId, clientId));
 
 export const loginRequestB2C = {
-  scopes: ["openid", "profile", "email", "offline_access"]
+  scopes: ["openid", "profile", "email", "offline_access"],
 };
 
 const apiConfig = {

@@ -672,10 +672,10 @@ function Search() {
                 wellListFromSearch: dataOwnerWells.ownerLatsLonsArray,
               }
         );
-        stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", true);
       } else {
         console.log("Not wells found for the owner");
-        stateApp.deactivateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
           wellListFromSearch: null,
@@ -712,7 +712,7 @@ function Search() {
               wellListFromSearch: dataWells.wells.results,
             }
       );
-      stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
+      stateApp.toggleLayersActivity("Search", true);
     }
   }, [dataWells]);
 
@@ -744,10 +744,10 @@ function Search() {
                 wellListFromSearch: dataOperatorWells.operatorLatsLonsArray,
               }
         );
-        stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", true);
       } else {
         console.log("Not wells found for the operator");
-        stateApp.deactivateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
           wellListFromSearch: null,
@@ -784,10 +784,10 @@ function Search() {
                 wellListFromSearch: dataLeaseWells.leaseLatsLonsArray,
               }
         );
-        stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", true);
       } else {
         console.log("Not wells found for the lease");
-        stateApp.deactivateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
           wellListFromSearch: null,
@@ -874,7 +874,7 @@ function Search() {
             },
           ],
         }));
-        stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", true);
       }
 
       //// if owner
@@ -944,7 +944,7 @@ function Search() {
             ? { maxLat, minLat, maxLong, minLong }
             : null,
         }));
-        stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", true);
       }
     }
   };
