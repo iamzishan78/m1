@@ -122,7 +122,7 @@ export default function Deals({ contact, ...props }) {
   return (
     <div className={classes.root}>
       <div>
-        <h4 style={{ marginTop: "0", float: "left" }}>Deals (3)</h4>
+        <h4 style={{ marginTop: "0", float: "left" }}>Deals ({allDeals.length})</h4>
         <IconButton
           size="small"
           className={classes.addIcon}
