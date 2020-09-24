@@ -1264,25 +1264,26 @@ export default function Map() {
         if(!isNormalClick && feature.source == 'parcel_source') {
           udLayerHighlightHandler(feature);
         }
-
-        switch (isNormalClick) {
-          case clusterUDLayers.indexOf(layerId) > -1:
-            clusterClickHandler(feature, map);
-            break;
-          case clusterLayers.indexOf(layerId) > -1:
-            layerClickHander(feature);
-            break;
-          case udLayers.indexOf(layerId) > -1:
-            udLayerClickHandler(feature);
-            break;
-          case layerId === "wellpoints":
-            wellPointClick(feature);
-            break;
-          case layerId === "welllines":
-            wellLineClick(feature);
-            break;
-          default:
-            break;
+        if(isNormalClick) {
+          switch (true) {
+            case clusterUDLayers.indexOf(layerId) > -1:
+              clusterClickHandler(feature, map);
+              break;
+            case clusterLayers.indexOf(layerId) > -1:
+              layerClickHander(feature);
+              break;
+            case udLayers.indexOf(layerId) > -1:
+              udLayerClickHandler(feature);
+              break;
+            case layerId === "wellpoints":
+              wellPointClick(feature);
+              break;
+            case layerId === "welllines":
+              wellLineClick(feature);
+              break;
+            default:
+              break;
+          }
         }
       }
     };
@@ -3943,7 +3944,7 @@ export default function Map() {
     if (map) {
       const featuresList = map.getSource("abstract_geo_source")._data.features;
       for (let i = 0; i < featuresList.length; i++) {
-        const id = featuresList[i].properties.abstract_n;
+        const id = featuresList[i].properties.Id;
         map.setFeatureState(
           { source: "abstract_geo_source", id: id },
           { click: stateApp.filterSelectAllAbstract }

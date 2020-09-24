@@ -195,7 +195,7 @@ export default (props) => {
     if (popUps[0]) popUps[0].remove();
 
     for (let i = 0; i < stateApp.selectedAbstracts.length; i++) {
-      const id = stateApp.selectedAbstracts[i].properties.abstract_n;
+      const id = stateApp.selectedAbstracts[i].properties.Id;
       props.map.setFeatureState(
         { source: 'abstract_geo_source', id: id },
         { click: false }
