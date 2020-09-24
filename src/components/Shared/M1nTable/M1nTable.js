@@ -1356,7 +1356,6 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks) {
-
       tracksByObjectType({
         variables: {
           objectType:
@@ -1441,7 +1440,9 @@ function M1nTable(props) {
         dataTagSamples.tagSamples &&
         dataOwnersWells
       ) {
-        dataOwners.owners.results.forEach((owner) => {
+        let owners = [...dataOwners.owners.results];
+        owners = owners.map((o) => {
+          let owner = { ...o };
           owner.isTracked = true;
           owner.commentsCounter = 0;
           owner.tags = [[], 0];
@@ -1476,6 +1477,7 @@ function M1nTable(props) {
               break;
             }
           }
+          return owner;
         });
 
         let availableTags = [];
@@ -1484,7 +1486,7 @@ function M1nTable(props) {
         });
         const cleanAvailableTags = [...new Set(availableTags)];
 
-        setRows(dataOwners.owners.results);
+        setRows(owners);
 
         setColumns(
           cleanAvailableTags.length > 0
@@ -1519,7 +1521,7 @@ function M1nTable(props) {
 
         setStateApp((state) => ({
           ...state,
-          owners: dataOwners.owners.results,
+          owners: owners,
         }));
         setLoading(false);
       } else {
@@ -1601,7 +1603,9 @@ function M1nTable(props) {
         dataTagSamples &&
         dataTagSamples.tagSamples
       ) {
-        dataWells.wells.results.forEach((well) => {
+        let wells = [...dataWells.wells.results];
+        wells = wells.map((w) => {
+          let well = { ...w };
           well.isTracked = true;
           well.commentsCounter = 0;
           well.tags = [[], 0];
@@ -1634,6 +1638,7 @@ function M1nTable(props) {
               break;
             }
           }
+          return well;
         });
 
         let availableTags = [];
@@ -1642,7 +1647,7 @@ function M1nTable(props) {
         });
         const cleanAvailableTags = [...new Set(availableTags)];
 
-        setRows(dataWells.wells.results);
+        setRows(wells);
 
         const flyToColumn = {
           name: "coordinates",
@@ -1691,7 +1696,7 @@ function M1nTable(props) {
 
         setStateApp((state) => ({
           ...state,
-          trackedwells: dataWells.wells.results,
+          trackedwells: wells,
         }));
         setLoading(false);
       } else {
@@ -2410,7 +2415,7 @@ function M1nTable(props) {
     ) {
       let owners = [];
       props.customLayer.owners.forEach((parcelOwner) => {
-        let owner = Object.assign({}, parcelOwner);
+        let owner = { ...parcelOwner };
         owner.commentsCounter = 0;
         owner.tags = [[], 0];
         owner.isTracked = false;
@@ -2526,8 +2531,9 @@ function M1nTable(props) {
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter
     ) {
-      dataContactParcelInterests.contactParcelInterests.forEach(
-        (parcelInterest) => {
+      let arcelInterests = dataContactParcelInterests.contactParcelInterests.map(
+        (p) => {
+          let parcelInterest = { ...p };
           parcelInterest.commentsCounter = 0;
           parcelInterest.isTracked = false;
 
@@ -2549,6 +2555,7 @@ function M1nTable(props) {
               break;
             }
           }
+          return parcelInterest;
         }
       );
 
