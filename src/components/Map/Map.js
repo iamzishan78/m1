@@ -1160,6 +1160,12 @@ export default function Map() {
         });
     };
 
+    const isCtrlKeyPressed = () => {
+      if(window.event.ctrlKey) return true;
+      if(window.event.metaKey) return true;
+      return false;
+    };
+
     const mapClickHandler = (e) => {
       const map = e.target;
       let layers = [];
@@ -1254,7 +1260,12 @@ export default function Map() {
         const feature = features[0];
         console.log("stacked layers click info", features);
         const layerId = feature.layer.id;
-        switch (true) {
+        const isNormalClick = !isCtrlKeyPressed();
+        if(!isNormalClick && feature.source == 'parcel_source') {
+          udLayerHighlightHandler(feature);
+        }
+
+        switch (isNormalClick) {
           case clusterUDLayers.indexOf(layerId) > -1:
             clusterClickHandler(feature, map);
             break;
@@ -1262,11 +1273,7 @@ export default function Map() {
             layerClickHander(feature);
             break;
           case udLayers.indexOf(layerId) > -1:
-            if ((window.event.ctrlKey || window.event.metaKey) && feature.source == 'parcel_source') {
-              udLayerHighlightHandler(feature);
-            } else {
-              udLayerClickHandler(feature);
-            }
+            udLayerClickHandler(feature);
             break;
           case layerId === "wellpoints":
             wellPointClick(feature);
