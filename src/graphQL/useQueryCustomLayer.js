@@ -7,6 +7,7 @@ export const CUSTOMLAYER = gql`
       shape
       name
       layer
+      state
       user {
         _id
       }
