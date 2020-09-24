@@ -42,6 +42,8 @@ export default (props) => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel}] = useMutation(UPSERTCUSTOMLAYER);
+  const [upsertCustomLayerSymbol] = useMutation(UPSERTCUSTOMLAYER);
+
   const [error, setError] = useState(false);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [user, setUser] = useState({ _id: "" });
@@ -183,7 +185,7 @@ export default (props) => {
       variables: { customLayer: customLayerData }
     });
 
-    upsertCustomLayer({
+    upsertCustomLayerSymbol({
       variables: { customLayer: customLayerSymbolData }
     });
   }
