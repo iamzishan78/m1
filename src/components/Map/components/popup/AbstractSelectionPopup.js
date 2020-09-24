@@ -118,7 +118,7 @@ export default (props) => {
     const abstractShape = stateApp.selectedAbstracts[0];
     let parcelName, originalProperties;
     if(abstractShape.properties.State === "TX") {
-      parcelName = abstractShape.properties.County + " " + abstractShape.properties.Survey + " " + abstractShape.properties.AbstractName;
+      parcelName = abstractShape.properties.Survey + " " + abstractShape.properties.AbstractName;
       originalProperties = [abstractShape.properties];
     } else {
       parcelName = "PLSS Default Name";

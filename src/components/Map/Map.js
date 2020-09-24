@@ -5261,7 +5261,7 @@ export default function Map() {
                     handleCloseExpandableCard={handleCloseExpandableCard}
                     component={<ParcelCardProvider></ParcelCardProvider>}
                     title={stateApp.selectedParcel.shapeLabel}
-                    subTitle={stateApp.selectedParcel.sdType}
+                    subTitle=""
                     parent="map"
                     mouseX={0}
                     mouseY={0}
@@ -5297,7 +5297,7 @@ export default function Map() {
                         handleCloseExpandableCard={handleCloseExpandableCard}
                         component={<ParcelCardProvider></ParcelCardProvider>}
                         title={stateApp.selectedParcel.shapeLabel}
-                        subTitle={stateApp.selectedParcel.sdType}
+                        subTitle=""
                         parent="map"
                         mouseX={0}
                         mouseY={0}

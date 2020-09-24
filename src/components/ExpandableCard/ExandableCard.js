@@ -187,6 +187,13 @@ export default function ExpandableCard(props) {
     //if EC is inside map popup you need to close it
   };
 
+  const getTitle = () => {
+    if(!title) {
+      return "--";
+    }
+    return title.length > 30 ? `${title.substr(0, 35)}...` : title;
+  };
+
   return (
     <Card className={classes.card}>
       <ReportBugModal
@@ -290,19 +297,13 @@ export default function ExpandableCard(props) {
         //     : "--"
         // }
 
-        title={
-          title
-            ? title.length > 30
-              ? `${title.substr(0, 35)}...`
-              : title
-            : "--"
-        }
+        title={getTitle()}
         subheader={
           subTitle
             ? subTitle.length > 35
               ? `${subTitle.substr(0, 35)}...`
               : subTitle
-            : "--"
+            : ""
         }
       />
       <CardContent className={classes.content}>{props.component}</CardContent>
