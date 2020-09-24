@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
+import { useDispatch } from "react-redux";
 
 import Taps from "../Shared/Taps";
 import M1nTable from "../Shared/M1nTable/M1nTable";
@@ -11,6 +12,10 @@ import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 import QtrQtrSelector from "./components/QtrQtrSelector";
 import LeftTopSummary from "./components/LeftTopSummary";
 import ParcelDetailsMap from "./components/ParcelDetailsMap";
+import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
+import { showSuccessMessage, showErrorMessage } from "../../actions";
+
+const ENTER_KEY = 13;
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -70,8 +75,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ParcelsDetailCard(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [parcelObj, setParcelObj] = useState();
   const [parcelProperties, setProperties] = useState();
+  const [parcelName, setParcelName] = useState();
+  const [grossAcres, setGrossAcres] = useState();
+  const [legalDescription, setLegalDesc] = useState();
+
+  const [updateCustomLayer, { data: updatedParcel }] = useMutation(UPDATECUSTOMLAYER);
 
   const [getCustomLayer, { data: dataCustomLayer, loading }] = useLazyQuery(
     CUSTOMLAYER,
@@ -101,12 +112,45 @@ export default function ParcelsDetailCard(props) {
         shape: shape
       });
       setProperties(shape.properties);
+      setParcelName(shape.properties.shapeLabel);
+      setGrossAcres(shape.properties.sdGrossAcres);
+      setLegalDesc(shape.properties.legalDescription || "");
     }
   }, [dataCustomLayer]);
+
+  useEffect(() => {
+    if(updatedParcel) {
+      if(updatedParcel.updateCustomLayer.success) {
+        dispatch(
+          showSuccessMessage("Successfully updated the parcel.")
+        );
+      } else {
+        dispatch(showErrorMessage("Failed to update parcel"));
+      }
+    }
+  }, [updatedParcel]);
 
   const setQtrQtr = (qtrQtr) => {
     setParcelObj((parcelData) => ({ ...parcelData, qtrQtr }));
   };
+
+  const updateParcel = (e, field, value) => {
+    if (e.keyCode === ENTER_KEY) {
+      e.preventDefault();
+      e.stopPropagation();
+      const shape = parcelObj.shape;
+      shape.properties[field] = value;
+      updateCustomLayer({
+        variables: {
+          customLayerId: parcelObj._id,
+          customLayer: {
+            shape: JSON.stringify(shape)
+          },
+        },
+      });
+    }
+  }
+
   return parcelObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
       <Grid item sm={12} container>
@@ -116,18 +160,39 @@ export default function ParcelsDetailCard(props) {
 
         <Grid item sm={6} className={classes.gridItem}>
           <Grid item sm={12} container>
-            <Grid item sm={7} className={classes.gridItem}>
+            <Grid item sm={7}>
               <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
             </Grid>
-            <Grid item sm={5} className={classes.gridItem}>
+            <Grid item sm={5}>
               <div className={classes.calcSummary}>
+                <p className="formLabel">
+                  Parcel Name
+                </p>
+                <TextField
+                  size="small"
+                  value={parcelName}
+                  variant="outlined"
+                  onChange={(e) => {
+                    setParcelName(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    updateParcel(e, 'shapeLabel', parcelName);
+                  }}
+                  fullWidth
+                />
                 <p className="formLabel">
                   Gross Acres
                 </p>
                 <TextField
                   size="small"
-                  value={parcelProperties.sdGrossAcres}
+                  value={grossAcres}
                   variant="outlined"
+                  onChange={(e) => {
+                    setGrossAcres(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    updateParcel(e, 'sdGrossAcres', grossAcres);
+                  }}
                   fullWidth
                 />
                 <p className="formLabel">Calc. Acres</p>
@@ -147,10 +212,16 @@ export default function ParcelsDetailCard(props) {
                   size="small"
                   multiline
                   rows={7}
-                  value={parcelObj.legalDescription}
+                  value={legalDescription}
                   variant="outlined"
                   fullWidth
                   placeholder="Enter legal description here"
+                  onChange={(e) => {
+                    setLegalDesc(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    updateParcel(e, 'legalDescription', legalDescription);
+                  }}
                 />
               </div>
             </Grid>
