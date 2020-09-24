@@ -21,7 +21,6 @@ import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
 import DrawStatus from "./components/DrawStatus";
 import ZoomFault from "./components/ZoomFault";
-import TrackAbstract from "./components/TrackAbstract";
 import HugeRequest from "./components/HugeRequest";
 import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
@@ -63,6 +62,8 @@ import { useDispatch, useSelector } from "react-redux";
 import MarkerIcon from "./sprites/marker-icon.png";
 import { usePickerState } from "@material-ui/pickers";
 import { layers } from "../../LayerConfig";
+import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
+import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -112,6 +113,7 @@ const random_hex_color_code = () => {
   let n = (Math.random() * 0xfffff * 1000000).toString(16);
   return "#" + n.slice(0, 6);
 };
+let hoveredAbstractId = null;
 
 export default function Map() {
   let classes = useStyles();
@@ -1081,15 +1083,15 @@ export default function Map() {
     };
 
     const udLayerClickHandler = (feature) => {
-      console.log("current feature", feature);
-
+      console.log("Current Parcel Layer", feature);
       setStateApp((state) => ({
         ...state,
         popupOpen: false,
       }));
       setStateApp((state) => ({
         ...state,
-        selectedUserDefinedLayer: feature,
+        selectedUserDefinedLayer: undefined,
+        selectedParcel: feature.properties,
       }));
 
       // setStateApp({...stateApp, currentFeature: feature});
@@ -1099,7 +1101,6 @@ export default function Map() {
 
     const udLayerHighlightHandler = (feature) => {
       const id = feature.id;
-      console.log(hoverUdIds, id);
       if (hoverUdIds.indexOf(id) > -1) {
         console.log("remove Hover");
         map.setFeatureState(
@@ -1128,6 +1129,12 @@ export default function Map() {
             zoom: zoom,
           });
         });
+    };
+
+    const isCtrlKeyPressed = () => {
+      if (window.event.ctrlKey) return true;
+      if (window.event.metaKey) return true;
+      return false;
     };
 
     const mapClickHandler = (e) => {
@@ -1206,7 +1213,10 @@ export default function Map() {
         layers: [...layers],
       });
 
-      if (!window.event.ctrlKey && hoverUdIds.length > 0) {
+      if (
+        !(window.event.ctrlKey && window.event.metaKey) &&
+        hoverUdIds.length > 0
+      ) {
         for (let i = 0; i < hoverUdIds.length; i++) {
           map.setFeatureState(
             { source: "parcel_source", id: hoverUdIds[i] },
@@ -1216,14 +1226,11 @@ export default function Map() {
         }
       }
 
-      if (features && features.length > 0) {
+      const isNormalClick = !isCtrlKeyPressed();
+
+      if (isNormalClick && features && features.length > 0) {
         const feature = features[0];
-        console.log("stacked layers click info", features);
         const layerId = feature.layer.id;
-        console.log(layerId);
-        console.log(clusterUDLayers);
-        console.log(clusterLayers);
-        console.log(udLayers);
         switch (true) {
           case clusterUDLayers.indexOf(layerId) > -1:
             clusterClickHandler(feature, map);
@@ -1232,12 +1239,7 @@ export default function Map() {
             layerClickHander(feature);
             break;
           case udLayers.indexOf(layerId) > -1:
-            if (window.event.ctrlKey && feature.source == "parcel_source") {
-              udLayerHighlightHandler(feature);
-            } else {
-              udLayerClickHandler(feature);
-            }
-            console.log("userDefined:", window.event.ctrlKey);
+            udLayerClickHandler(feature);
             break;
           case layerId === "wellpoints":
             wellPointClick(feature);
@@ -1636,30 +1638,6 @@ export default function Map() {
       // });
     }
   }, [stateApp.trackFilterOn]);
-
-  // useEffect(() => {
-  //   console.log("layerConfig Update");
-  //   if (stateApp.userDefinedLayers.length > 0 && map) {
-  //     stateApp.userDefinedLayers.forEach((l) => {
-  //       const k = l.id[0];
-  //       if (map.getLayer(k)) {
-  //         console.log(l.layerProps[0].paintProps);
-  //         const paintProps = l.layerProps[0].paintProps;
-  //         Object.keys(paintProps).forEach((key) => {
-  //           map.setPaintProperty(k, key, paintProps[key])
-  //         })
-  //         if (l.layerProps[0].clusterProps) {
-  //           const clusterProps = l.layerProps[0].clusterProps;
-  //           console.log(clusterProps);
-  //           const clusterLayerId = k + "-clusters";
-  //           Object.keys(clusterProps.clusterPaintProps).forEach((key) => {
-  //             map.setPaintProperty(clusterLayerId, key, clusterProps.clusterPaintProps[key])
-  //           })
-  //         }
-  //       }
-  //     });
-  //   }
-  // }, [stateApp.userDefinedLayers, map]);
 
   // useEffect(() => {
   //   console.log("useEffect 18");
@@ -3550,6 +3528,32 @@ export default function Map() {
     [map, setStateApp]
   );
 
+  const createSelectedAbstractPopup = useCallback(
+    (currentFeature) => {
+      let popUps = document.getElementsByClassName("mapboxgl-popup");
+      if (popUps[0]) popUps[0].remove();
+
+      if (!currentFeature) return;
+
+      new mapboxgl.Popup({
+        offset: 10,
+        closeOnClick: false,
+        closeButton: false,
+        className: "abstractPopup",
+      })
+        .setLngLat(map.getCenter())
+        .setMaxWidth("none")
+        .setHTML(`<div id="popupContainer"></div>`)
+        .addTo(map);
+
+      setStateApp((state) => ({
+        ...state,
+        popupOpen: true,
+      }));
+    },
+    [map, setStateApp]
+  );
+
   const createUDPopUp = useCallback(
     (currentFeature) => {
       console.log(currentFeature.shapeCenter);
@@ -3567,6 +3571,8 @@ export default function Map() {
         .addTo(map);
 
       setStateApp((state) => ({ ...state, popupOpen: true }));
+
+      handleOpenExpandableCard();
     },
     [map, setStateApp]
   );
@@ -3823,7 +3829,7 @@ export default function Map() {
     if (map) {
       const featuresList = map.getSource("abstract_geo_source")._data.features;
       for (let i = 0; i < featuresList.length; i++) {
-        const id = featuresList[i].properties.abstract_n;
+        const id = featuresList[i].properties.Id;
         map.setFeatureState(
           { source: "abstract_geo_source", id: id },
           { click: stateApp.filterSelectAllAbstract }
@@ -3869,115 +3875,103 @@ export default function Map() {
     setLat(coordinates.lat);
   };
 
+  const onAbstactLayerClick = function (feature, action) {
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+    }));
+    if (!feature) {
+      setStateApp((state) => ({
+        ...state,
+        selectedAbstracts: [],
+      }));
+      return;
+    }
+    if (action === "add") {
+      setStateApp((state) => ({
+        ...state,
+        selectedAbstracts: [...state.selectedAbstracts, feature],
+      }));
+    }
+    if (action === "remove") {
+      setStateApp((state) => ({
+        ...state,
+        selectedAbstracts: state.selectedAbstracts.filter(
+          (abstract) => abstract.id !== feature.id
+        ),
+      }));
+    }
+    createSelectedAbstractPopup(feature);
+    map.resize();
+  };
+
   useEffect(() => {
     if (map) {
       map.on("click", "abstract_geo_fill_layer", function (e) {
-        const map = e.target;
-        if (e.features.length > 0) {
-          if (window.event.ctrlKey) {
-            const featureState = map.getFeatureState({
-              source: "abstract_geo_source",
-              id: e.features[0].id,
-            });
-            if (featureState && featureState.click) {
-              map.setFeatureState(
-                { source: "abstract_geo_source", id: e.features[0].id },
-                { click: false }
-              );
-            } else {
-              map.setFeatureState(
-                { source: "abstract_geo_source", id: e.features[0].id },
-                { click: true }
-              );
-            }
+        if (!e.features.length) {
+          return;
+        }
+        const currentFeature = e.features[0];
+        const featureState = map.getFeatureState({
+          source: "abstract_geo_source",
+          id: currentFeature.id,
+        });
+        const featuresList = map.getSource("abstract_geo_source")._data
+          .features;
+
+        if (window.event.ctrlKey || window.event.metaKey) {
+          if (featureState && featureState.click) {
+            // Unselect feature
+            map.setFeatureState(
+              { source: "abstract_geo_source", id: currentFeature.id },
+              { click: false }
+            );
+            onAbstactLayerClick(currentFeature, "remove");
           } else {
-            const featuresList = map.getSource("abstract_geo_source")._data
-              .features;
-            const currentFeatureState = map.getFeatureState({
-              source: "abstract_geo_source",
-              id: e.features[0].id,
-            });
-            if (currentFeatureState && currentFeatureState.click) {
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                showAbstractPopup: true,
-              }));
-            } else {
-              for (let i = 0; i < featuresList.length; i++) {
-                const id = featuresList[i].properties.abstract_n;
-                const featureState = map.getFeatureState({
-                  source: "abstract_geo_source",
-                  id: id,
-                });
-
-                if (featureState && featureState.click) {
-                  map.setFeatureState(
-                    { source: "abstract_geo_source", id: id },
-                    { click: false }
-                  );
-                }
-              }
-
-              map.setFeatureState(
-                { source: "abstract_geo_source", id: e.features[0].id },
-                { click: true }
-              );
-
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                showAbstractPopup: true,
-              }));
-            }
+            // Select feature
+            map.setFeatureState(
+              { source: "abstract_geo_source", id: e.features[0].id },
+              { click: true }
+            );
+            onAbstactLayerClick(currentFeature, "add");
           }
+        } else {
+          // Clear all selected features
+          for (let i = 0; i < featuresList.length; i++) {
+            const id = featuresList[i].properties.Id;
+            map.setFeatureState(
+              { source: "abstract_geo_source", id: id },
+              { click: false }
+            );
+          }
+          onAbstactLayerClick(null, "remove");
         }
       });
 
       map.on("mousemove", "abstract_geo_fill_layer", function (e) {
-        const map = e.target;
         if (e.features.length > 0) {
-          const featuresList = map.getSource("abstract_geo_source")._data
-            .features;
-          for (let i = 0; i < featuresList.length; i++) {
-            const id = featuresList[i].properties.abstract_n;
-            const featureState = map.getFeatureState({
-              source: "abstract_geo_source",
-              id: id,
-            });
-
-            if (featureState && featureState.hover) {
-              map.setFeatureState(
-                { source: "abstract_geo_source", id: id },
-                { hover: false }
-              );
-            }
+          if (hoveredAbstractId) {
+            map.setFeatureState(
+              { source: "abstract_geo_source", id: hoveredAbstractId },
+              { hover: false }
+            );
           }
-
+          hoveredAbstractId = e.features[0].id;
           map.setFeatureState(
-            { source: "abstract_geo_source", id: e.features[0].id },
+            { source: "abstract_geo_source", id: hoveredAbstractId },
             { hover: true }
           );
         }
       });
 
       map.on("mouseleave", "abstract_geo_fill_layer", function (e) {
-        const map = e.target;
-
-        const featuresList = map.getSource("abstract_geo_source")._data
-          .features;
-        for (let i = 0; i < featuresList.length; i++) {
-          const id = featuresList[i].properties.abstract_n;
-          const featureState = map.getFeatureState({
-            source: "abstract_geo_source",
-            id: id,
-          });
-
-          if (featureState && featureState.hover) {
-            map.setFeatureState(
-              { source: "abstract_geo_source", id: id },
-              { hover: false }
-            );
-          }
+        if (hoveredAbstractId) {
+          map.setFeatureState(
+            { source: "abstract_geo_source", id: hoveredAbstractId },
+            { hover: false }
+          );
         }
+        hoveredAbstractId = null;
       });
     }
   }, [map]);
@@ -4230,7 +4224,8 @@ export default function Map() {
           }));
         };
 
-        newMap.on("contextmenu", mapFilterPolyOnRight);
+        // Buggy Code, temporarily disabling it
+        // newMap.on("contextmenu", mapFilterPolyOnRight);
 
         setStateApp({ ...stateApp, map: newMap, draw: Draw });
 
@@ -4247,7 +4242,7 @@ export default function Map() {
               type: "FeatureCollection",
               features: [],
             },
-            promoteId: "abstract_n",
+            promoteId: "Id",
           });
 
           newMap.addLayer({
@@ -4289,7 +4284,7 @@ export default function Map() {
             minzoom: 12,
             source: "abstract_geo_source",
             layout: {
-              "text-field": "{abstract_l}",
+              "text-field": "{AbstractName}",
               "text-anchor": "center",
             },
             paint: {
@@ -4761,6 +4756,10 @@ export default function Map() {
     setShowExpandableCard(true);
   };
 
+  const handleAnchorElPopOver = () => {
+    setAnchorElPoPOver(container.current);
+  };
+
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
     setAnchorElPoPOver(null);
@@ -5154,6 +5153,69 @@ export default function Map() {
                 )}
               </PortalD>
             )}
+            {stateApp.selectedParcel && (
+              <PortalD id="popupContainer">
+                {showExpandableCard && !stateApp.expandedCard ? (
+                  <ExpandableCardProvider
+                    expanded={false}
+                    handleCloseExpandableCard={handleCloseExpandableCard}
+                    component={<ParcelCardProvider></ParcelCardProvider>}
+                    title={stateApp.selectedParcel.shapeLabel}
+                    subTitle=""
+                    parent="map"
+                    mouseX={0}
+                    mouseY={0}
+                    position="relative"
+                    cardLeft={20}
+                    cardTop={70}
+                    zIndex={99}
+                    cardWidth="350px"
+                    // cardHeight="350px"
+                    cardWidthExpanded="95vw"
+                    cardHeightExpanded="90vh"
+                    targetSourceId={stateApp.selectedParcel.id}
+                    targetLabel="parcel"
+                  ></ExpandableCardProvider>
+                ) : (
+                  <Popover
+                    open={stateApp.expandedCard}
+                    anchorEl={anchorElPoPOver}
+                    anchorReference="anchorEl"
+                    style={{ width: "100%" }} //right:30, left: "-30px"}}
+                    BackdropProps={{ invisible: false }}
+                    anchorOrigin={{
+                      vertical: "center",
+                      horizontal: "center",
+                    }}
+                    transformOrigin={{
+                      vertical: "center",
+                      horizontal: "center",
+                    }}
+                  >
+                    <ExpandableCardProvider
+                      expanded={true}
+                      handleCloseExpandableCard={handleCloseExpandableCard}
+                      component={<ParcelCardProvider></ParcelCardProvider>}
+                      title={stateApp.selectedParcel.shapeLabel}
+                      subTitle=""
+                      parent="map"
+                      mouseX={0}
+                      mouseY={0}
+                      position="relative"
+                      // cardLeft={"0px"}
+                      // cardTop={"0px"}
+                      zIndex={99}
+                      // cardWidth="380px"
+                      // cardHeight="380px"
+                      cardWidthExpanded="95vw"
+                      cardHeightExpanded="95vh"
+                      targetSourceId={stateApp.selectedParcel.id}
+                      targetLabel="parcel"
+                    ></ExpandableCardProvider>
+                  </Popover>
+                )}
+              </PortalD>
+            )}
             {stateApp.selectedUserDefinedLayer && (
               <PortalD id="popupContainer">
                 <SpatialDataCardEdit
@@ -5168,6 +5230,15 @@ export default function Map() {
             {stateApp.filterFeature && (
               <PortalD id="filterPopupContainer">
                 <FilterControl filterFeature={stateApp.filterFeature} />
+              </PortalD>
+            )}
+            {stateApp.selectedAbstracts.length > 0 && (
+              <PortalD id="popupContainer">
+                <AbstractSelectionPopup
+                  abstracts={stateApp.selectedAbstracts}
+                  map={map}
+                  onClickExpand={handleAnchorElPopOver}
+                />
               </PortalD>
             )}
           </div>
