@@ -1483,19 +1483,50 @@ function SubTable(props) {
     onTableChange: (action, tableState) => {
       console.log('onTableChange');
       console.log(action, tableState);
-      switch (action) {
-        case 'changePage':
-          //this.changePage(tableState.page, tableState.sortOrder);
-          break;
-        case 'sort':
-          //this.sort(tableState.page, tableState.sortOrder);
-          break;
-        default:
-          console.log('action not handled.');
+      if (props.header === "Contacts") {
+        switch (action) {
+          case 'changeRowsPerPage':
+            props.contactsPageProps.setLoading(true);
+            console.log('options.page')
+            tableState.page = 0
+            props.contactsPageProps.getContacts({
+              variables: {
+                perPage: tableState.rowsPerPage,
+                after: null
+              },
+            });
+            break;
+          case 'changePage':
+            props.contactsPageProps.setLoading(true);
+            props.contactsPageProps.getContacts({
+              variables: {
+                perPage: tableState.rowsPerPage,
+                after: props.rows.pop()._id
+              },
+            });
+            break;
+          case 'sort':
+            //this.sort(tableState.page, tableState.sortOrder);
+            break;
+          default:
+            console.log('action not handled.');
+        }
       }
     }
   };
 
+  if (props.header === "Contacts") {
+    console.log('props.header === "Contacts"')
+    options.rowsPerPageOptions =
+      props.contactsPageProps.contactsCount > 25
+        ? [10, 25, 50, 100]
+        : props.contactsPageProps.contactsCount > 10
+        ? [10, 25]
+        : [];
+    options.count = props.contactsPageProps.contactsCount;
+    options.serverSide = true;
+  }
+  
   console.log("ROWSSS : ", rows);
 
   let history = useHistory();

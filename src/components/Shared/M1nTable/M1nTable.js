@@ -1202,6 +1202,11 @@ function M1nTable(props) {
   });
   const [removeUser] = useMutation(REMOVEUSER);
   //////////
+  const [contactsCount, ContactsCount] = useState(0);
+  const setContactsCount = (newState) => {
+    setStateIfDeepEqual(ContactsCount, newState);
+  };
+
   const [getContacts, { data: constDataContacts, fetchMore }] = useLazyQuery(
     PAGINATEDCONTACTSQUERY,
     {
@@ -1248,11 +1253,13 @@ function M1nTable(props) {
   const [dataContacts, setDataContacts] = useState(null);
   useEffect(() => {
     if (constDataContacts && constDataContacts.paginatedContacts.edges) {
+      setLoading(false);
       let tmpDataContacts = { contacts: [] };
       constDataContacts.paginatedContacts.edges.forEach((edge) => {
         tmpDataContacts.contacts.push({ ...edge.node.entityObj, ...edge.node });
       });
       setDataContacts(tmpDataContacts);
+      setContactsCount(constDataContacts.paginatedContacts.totalCount);
     }
   }, [constDataContacts]);
 
@@ -2624,6 +2631,11 @@ function M1nTable(props) {
         orderByTracks={orderByTracks}
         startPaginationAt={startPaginationAt}
         contactId={props.contactId}
+        contactsPageProps={{
+          getContacts,
+          contactsCount,
+          setLoading
+        }}
       />
     </Container>
   );
