@@ -83,7 +83,7 @@ export default function TransactDialog(props) {
     }
   }, [cData]);
 
-  let [transactData, setTransactData] = useState();
+  let [transactData, setTransactData] = useState(props.transactData ? {...props.transactData} : null);
 
   useEffect(() => {
     console.log("TDATAAAAAAAAA : ", tdata?.transactionData?.allData);
@@ -141,11 +141,9 @@ export default function TransactDialog(props) {
 
     if (transactData && cardId && laneId && stateApp.dealDialog) {
       // best for transact page, auto-fills card with contact details
-      const lane = transactData.lanes.find((lane) => lane.id === laneId);
-      console.log("LANE SETTING: ", lane);
+      const lane = transactData.lanes.find((lane) => lane.id === laneId); // selecting lane
       if (!lane || !lane.cards) return;
-      const card = lane.cards.find((card) => card.id === cardId);
-      console.log("CARD SETTING: ", card);
+      const card = lane.cards.find((card) => card.id === cardId); // selecting card
       if (!card) return;
 
       setTitle(card.title ? card.title : "");
@@ -153,8 +151,7 @@ export default function TransactDialog(props) {
       setDescription(card.description ? card.description : "");
       setStage(card.laneId ? card.laneId : "lane1");
       if (card.contactId) {
-        console.log("SETTING CONTACT: ", card.title);
-        setContact({ name: card.contactName, _id: card.contactId });
+        setContact({ name: card.contactName, _id: card.contactId }); // setting contact
       }
     } else if (props.contact) {
       setContact({ name: props.contact.name, _id: props.contact._id });
@@ -187,7 +184,6 @@ export default function TransactDialog(props) {
   };
 
   const handleCloseContactDialog = () => {
-    console.log("Handle close dialog");
     setOpenContactDialog(false);
   };
 
