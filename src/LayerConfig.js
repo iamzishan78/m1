@@ -1486,59 +1486,6 @@ export const layers = [
 
 export const defaultLayers = [
   {
-    layerName: "Parcels",
-    layerType: "data layer",
-    layerCategory: "UD layer",
-    layerSettings: {
-      interaction: {
-        interactionAble: true,
-        interactionDetail: {
-          hover: true,
-          click: true,
-        },
-      },
-      colorable: true,
-      showable: true,
-      visiable: false,
-    },
-    layerPaintProps: [
-      {
-        id: "parcel",
-        sourceProps: "parcels_source",
-        paintType: "fill",
-        paintProps: {
-          "fill-color": "#E07C71",
-          "fill-opacity": [
-            "case",
-            ["boolean", ["feature-state", "hover"], false],
-            0.7,
-            0.4,
-          ],
-          "fill-outline-color": "#000000",
-        },
-      },
-      {
-        id: "parcel_labels",
-        sourceProps: "parcel_labels_source",
-        paintType: "symbol",
-        symbolProps: {
-          "text-allow-overlap": true,
-          "text-anchor": "center",
-          "text-field": "{label}",
-          "text-size": [
-            "interpolate",
-            ["exponential", 1],
-            ["zoom"],
-            0,
-            0,
-            22,
-            30,
-          ],
-        },
-      },
-    ],
-  },
-  {
     layerName: "Tracked Owners",
     layerType: "data layer",
     layerCategory: "UD layer",
@@ -1566,9 +1513,6 @@ export const defaultLayers = [
           "circle-stroke-color": "#FCF9F9",
         },
         clusterProps: {
-          cluster: true,
-          clusterBaseId: "Tracked Owners Clusters",
-          clusterCountId: "Tracked Owners Clusters Counts",
           clusterPaintProps: {
             "circle-color": {
               property: "point_count",
@@ -1730,7 +1674,7 @@ export const defaultLayers = [
     layerPaintProps: [
       {
         id: "Tags Filter",
-        sourceProps: "tracked_owners_user_defined_source",
+        sourceProps: "wells_from_tags_user_defined_source",
         paintType: "circle",
         paintProps: {
           "circle-radius": 5,
@@ -1739,9 +1683,6 @@ export const defaultLayers = [
           "circle-stroke-color": "#fff",
         },
         clusterProps: {
-          cluster: true,
-          clusterBaseId: "Tracked Owners Clusters",
-          clusterCountId: "Tracked Owners Clusters Counts",
           clusterPaintProps: {
             "circle-color": {
               property: "point_count",
@@ -1832,6 +1773,60 @@ export const defaultLayers = [
             "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
             "text-size": 12,
           },
+        },
+      },
+    ],
+  },
+
+  {
+    layerName: "Parcels",
+    layerType: "data layer",
+    layerCategory: "UD layer",
+    layerSettings: {
+      interaction: {
+        interactionAble: true,
+        interactionDetail: {
+          hover: true,
+          click: true,
+        },
+      },
+      colorable: true,
+      showable: true,
+      visiable: false,
+    },
+    layerPaintProps: [
+      {
+        id: "parcel",
+        sourceProps: "parcels_source",
+        paintType: "fill",
+        paintProps: {
+          "fill-color": "#E07C71",
+          "fill-opacity": [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            0.7,
+            0.4,
+          ],
+          "fill-outline-color": "#000000",
+        },
+      },
+      {
+        id: "parcel_labels",
+        sourceProps: "parcel_labels_source",
+        paintType: "symbol",
+        symbolProps: {
+          "text-allow-overlap": true,
+          "text-anchor": "center",
+          "text-field": "{label}",
+          "text-size": [
+            "interpolate",
+            ["exponential", 1],
+            ["zoom"],
+            0,
+            0,
+            22,
+            30,
+          ],
         },
       },
     ],
