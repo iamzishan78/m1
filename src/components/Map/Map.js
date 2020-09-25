@@ -64,6 +64,7 @@ import { usePickerState } from "@material-ui/pickers";
 import { layers } from "../../LayerConfig";
 import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
 import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
+import { deepEqualObjects } from "../Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -560,7 +561,7 @@ export default function Map() {
         };
         layerData = groupBy(data, "layer")[dataId];
         if (!layerData) {
-          layerData = []
+          layerData = [];
         }
       } else {
         layerData = data;
@@ -608,7 +609,9 @@ export default function Map() {
 
       // -> add source
       if (map.getSource(sourceId)) {
-        map.getSource(sourceId).setData(geoJson);
+        let mapSourceData = map.getSource(sourceId)._data;
+        if (mapSourceData && !deepEqualObjects(geoJson, mapSourceData))
+          map.getSource(sourceId).setData(geoJson);
       } else {
         if (paintType == "circle" || paintType == "symbol") {
           map.addSource(sourceId, {
@@ -628,7 +631,12 @@ export default function Map() {
       }
 
       if (map.getSource(`${sourceId}_filter`)) {
-        map.getSource(`${sourceId}_filter`).setData(geoJson);
+        let mapSourceFilterData = map.getSource(`${sourceId}_filter`)._data;
+        if (
+          mapSourceFilterData &&
+          !deepEqualObjects(geoJson, mapSourceFilterData)
+        )
+          map.getSource(`${sourceId}_filter`).setData(geoJson);
       } else {
         map.addSource(`${sourceId}_filter`, {
           type: "geojson",
@@ -1342,12 +1350,7 @@ export default function Map() {
               default:
                 data = stateApp.customLayers;
             }
-           ///////////////////////////////
-              // console.log(
-              //   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-              //   layer.layerName,
-              //   data
-              // );
+
             if (data) {
               beforeLayer = setLayer(data, layer.layerName, map, beforeLayer);
             }
