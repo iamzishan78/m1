@@ -40,17 +40,17 @@ export default function FilterTrackedOwners() {
 
   const toggleTracks = () => {
     setStateNav((stateNav) => {
-      if (stateNav.filterTrackedOwners)
+      if (stateNav.filterTrackedOwners) {
         stateApp.toggleLayersActivity("Tracked Owners", false);
-      if (
-        !stateNav.filterTrackedWells &&
-        stateNav.selectedTags &&
-        stateNav.selectedTags.length == 0
-      )
-        stateApp.toggleLayersActivity("Wells", true);
-      else {
+        if (
+          !stateNav.filterTrackedWells &&
+          stateNav.selectedTags &&
+          stateNav.selectedTags.length == 0
+        )
+          stateApp.toggleLayersActivity("Wells", true);
+      } else {
         stateApp.toggleLayersActivity("Tracked Owners", true);
-        // stateApp.toggleLayersActivity("Wells", false);
+        stateApp.toggleLayersActivity("Wells", false);
       }
 
       return {

@@ -40,17 +40,21 @@ export default function FilterTrackedWells() {
 
   const toggleTracks = () => {
     setStateNav((stateNav) => {
-      if (stateNav.filterTrackedWells)
+      console.log(
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        stateNav.filterTrackedWells
+      );
+      if (stateNav.filterTrackedWells) {
         stateApp.toggleLayersActivity("Tracked Wells", false);
-      if (
-        !stateNav.filterTrackedOwners &&
-        stateNav.selectedTags &&
-        stateNav.selectedTags.length == 0
-      )
-        stateApp.toggleLayersActivity("Wells", true);
-      else {
+        if (
+          !stateNav.filterTrackedOwners &&
+          stateNav.selectedTags &&
+          stateNav.selectedTags.length == 0
+        )
+          stateApp.toggleLayersActivity("Wells", true);
+      } else {
         stateApp.toggleLayersActivity("Tracked Wells", true);
-        // stateApp.toggleLayersActivity("Wells", false);
+        stateApp.toggleLayersActivity("Wells", false);
       }
 
       return {
