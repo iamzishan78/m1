@@ -1860,27 +1860,12 @@ function M1nTable(props) {
   }, [props.selectedWell]);
 
   useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "OwnersPerWell" &&
-      dataWellOwners &&
-      dataTracks &&
-      dataTracks.tracksByObjectType
-    ) {
+    if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
       console.log("ue mintable 11");
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
-        const objectsIdsArray = [];
-        dataWellOwners.wellOwners.forEach((wellOwner) => {
-          wellOwner.isTracked = false;
-          objectsIdsArray.push(wellOwner.id);
-
-          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-            if (wellOwner.id === dataTracks.tracksByObjectType[i].trackOn) {
-              wellOwner.isTracked = true;
-              break;
-            }
-          }
-        });
+        const objectsIdsArray = dataWellOwners.wellOwners.map(
+          (wellOwner) => wellOwner.id
+        );
 
         getOwnersWells({
           variables: {
@@ -1898,7 +1883,7 @@ function M1nTable(props) {
         setRows([]);
       }
     }
-  }, [dataWellOwners, dataTracks]);
+  }, [dataWellOwners]);
 
   useEffect(() => {
     if (
@@ -1911,13 +1896,16 @@ function M1nTable(props) {
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples &&
-      dataOwnersWells
+      dataOwnersWells &&
+      dataTracks &&
+      dataTracks.tracksByObjectType
     ) {
-      console.log("ue mintable 12");
-      dataWellOwners.wellOwners.forEach((wellOwner) => {
+      const wellOwners = dataWellOwners.wellOwners.map((o) => {
+        let wellOwner = { ...o };
         wellOwner.commentsCounter = 0;
         wellOwner.tags = [[], 0];
         wellOwner.wellsCounter = [];
+        wellOwner.isTracked = false;
 
         if (dataOwnersWells.ownersWells) {
           for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
@@ -1948,6 +1936,15 @@ function M1nTable(props) {
             break;
           }
         }
+
+        for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+          if (wellOwner.id === dataTracks.tracksByObjectType[i].trackOn) {
+            wellOwner.isTracked = true;
+            break;
+          }
+        }
+
+        return wellOwner;
       });
 
       let availableTags = [];
@@ -1987,7 +1984,7 @@ function M1nTable(props) {
             })
       );
 
-      setRows(dataWellOwners.wellOwners);
+      setRows(wellOwners);
       setLoading(false);
     }
   }, [
@@ -1996,6 +1993,7 @@ function M1nTable(props) {
     dataTagSamples,
     dataCommentsCounter,
     dataOwnersWells,
+    dataTracks,
   ]);
 
   ////////////Owners Per Well end///////////////////////////////////////////////
