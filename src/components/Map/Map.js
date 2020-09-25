@@ -559,6 +559,9 @@ export default function Map() {
           }, {});
         };
         layerData = groupBy(data, "layer")[dataId];
+        if (!layerData) {
+          layerData = []
+        }
       } else {
         layerData = data;
       }
