@@ -1250,7 +1250,7 @@ function M1nTable(props) {
     if (constDataContacts && constDataContacts.paginatedContacts.edges) {
       let tmpDataContacts = { contacts: [] };
       constDataContacts.paginatedContacts.edges.forEach((edge) => {
-        tmpDataContacts.contacts.push({ ...edge.node, ...edge.node.entity });
+        tmpDataContacts.contacts.push({ ...edge.node.entityObj, ...edge.node });
       });
       setDataContacts(tmpDataContacts);
     }

@@ -2,12 +2,12 @@ import gql from "graphql-tag";
 
 export const PAGINATEDCONTACTSQUERY = gql`
   query getPaginatedContacts($perPage: Int, $after: Cursor) {
-    paginatedContacts(pagination: {first: $perPage, after: $after}) {
+    paginatedContacts(pagination: {first: $perPage, after: $after}, sort: {order: 1}) {
       totalCount,
       edges {
         node {
           _id
-          entity {
+          entityObj {
             _id
             name
             address1
