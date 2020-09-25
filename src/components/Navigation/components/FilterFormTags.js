@@ -62,7 +62,7 @@ export default function FilterFormProduction() {
 
       setStateApp((stateApp) => ({
         ...stateApp,
-        wellListFromTagsFilter: dataWells.wells.results,
+        wellListFromTagsFilter: [...dataWells.wells.results],
       }));
       stateApp.toggleLayersActivity("Tagged Wells/Owners", true);
     }

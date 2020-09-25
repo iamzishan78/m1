@@ -159,7 +159,7 @@ export default function FilterTags() {
       }));
       setStateApp((stateApp) => ({
         ...stateApp,
-        wellListFromTagsFilter: null,
+        wellListFromTagsFilter: [],
       }));
     }
   };
