@@ -1062,7 +1062,7 @@ function Search() {
                   size="small"
                   color={searchOption === "wells" ? "secondary" : "primary"}
                   onClick={() => {
-                    setSearchTop(5);
+                    // setSearchTop(5);
                     setSearchOption("wells");
                   }}
                 >
@@ -1074,7 +1074,7 @@ function Search() {
                   size="small"
                   color={searchOption === "owners" ? "secondary" : "primary"}
                   onClick={() => {
-                    setSearchTop(5);
+                    // setSearchTop(5);
                     setSearchOption("owners");
                   }}
                 >
@@ -1088,7 +1088,7 @@ function Search() {
                   size="small"
                   color={searchOption === "operators" ? "secondary" : "primary"}
                   onClick={() => {
-                    setSearchTop(5);
+                    // setSearchTop(5);
                     setSearchOption("operators");
                   }}
                 >
@@ -1100,7 +1100,7 @@ function Search() {
                   size="small"
                   color={searchOption === "leases" ? "secondary" : "primary"}
                   onClick={() => {
-                    setSearchTop(5);
+                    // setSearchTop(5);
                     setSearchOption("leases");
                   }}
                 >
@@ -1114,7 +1114,7 @@ function Search() {
                   size="small"
                   color={searchOption === "locations" ? "secondary" : "primary"}
                   onClick={() => {
-                    setSearchTop(5);
+                    // setSearchTop(5);
                     setSearchOption("locations");
                   }}
                 >
@@ -1162,7 +1162,7 @@ function Search() {
                         className={classes.groupsButton}
                         onClick={() => {
                           setSearchTop(5);
-                          setSearchOption("all");
+                          // setSearchOption("all");
                         }}
                       >
                         See Less
