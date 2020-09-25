@@ -1506,6 +1506,17 @@ function SubTable(props) {
             });
             break;
           case 'sort':
+            let column = tableState.columns[tableState.activeColumn]
+            console.log('column', column)
+            props.contactsPageProps.setLoading(true);
+            props.contactsPageProps.getContacts({
+              variables: {
+                perPage: tableState.rowsPerPage,
+                after: null,
+                sortField: column.name.split('.')[0],
+                sortOrder: column.sortDirection == 'desc' ? 1 : -1 
+              },
+            });
             //this.sort(tableState.page, tableState.sortOrder);
             break;
           default:

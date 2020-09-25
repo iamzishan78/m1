@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const PAGINATEDCONTACTSQUERY = gql`
-  query getPaginatedContacts($perPage: Int, $after: Cursor) {
-    paginatedContacts(pagination: {first: $perPage, after: $after}, sort: {order: 1}) {
+  query getPaginatedContacts($perPage: Int, $after: Cursor = null, $sortField: ContactSortField = _id, $sortOrder: Int = 1) {
+    paginatedContacts(pagination: {first: $perPage, after: $after}, sort: {field: $sortField, order: $sortOrder}) {
       totalCount,
       edges {
         node {
