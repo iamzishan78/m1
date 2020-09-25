@@ -879,23 +879,20 @@ export default function Map() {
 
           // -> add layer
           // eslint-disable-next-line eqeqeq
-          if (config.layerProps[i].layerType == "symbol") {
-            map.addLayer({
-              id: config.layerProps[i].layerId,
-              type: config.layerProps[i].layerType,
-              source: config.sourceProps[i].sourceId,
-              layout: config.layerProps[i].symbolProps,
-              minzoom: config.layerProps[i].minZoom,
-            });
-          } else {
-            map.addLayer({
-              id: config.layerProps[i].layerId,
-              type: config.layerProps[i].layerType,
-              source: config.sourceProps[i].sourceId,
-              paint: config.layerProps[i].paintProps,
-              minzoom: config.layerProps[i].minZoom,
-            });
+          const layerConfig = {
+            id: config.layerProps[i].layerId,
+            type: config.layerProps[i].layerType,
+            source: config.sourceProps[i].sourceId,
+          };
+          if(config.layerProps[i].minZoom) {
+            layerConfig.minzoom = config.layerProps[i].minZoom;
           }
+          if (config.layerProps[i].layerType === "symbol") {
+            layerConfig.layout = config.layerProps[i].symbolProps;
+          } else {
+            layerConfig.paint = config.layerProps[i].paintProps;
+          }
+          map.addLayer(layerConfig);
 
           map.setLayoutProperty(
             config.layerProps[i].layerId,
