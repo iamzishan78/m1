@@ -123,43 +123,45 @@ const AppProvider = (props) => {
       if (layerName) {
         let res;
         setStateApp((stateApp) => {
-          const currentLayers = [...stateApp.layers];
-          const index = currentLayers.findIndex(
-            (l) => l.layerName == layerName
-          );
+          if (stateApp.layers && Array.isArray(stateApp.layers)) {
+            const currentLayers = [...stateApp.layers];
+            const index = currentLayers.findIndex(
+              (l) => l.layerName == layerName
+            );
 
-          const updatedLayer = {
-            ...currentLayers[index],
-            layerSettings: {
-              ...currentLayers[index].layerSettings,
-              visiable:
-                activityValue !== undefined
-                  ? activityValue
-                  : !currentLayers[index].layerSettings.visiable,
-            },
-          };
-          res = updatedLayer.layerSettings.visiable;
+            const updatedLayer = {
+              ...currentLayers[index],
+              layerSettings: {
+                ...currentLayers[index].layerSettings,
+                visiable:
+                  activityValue !== undefined
+                    ? activityValue
+                    : !currentLayers[index].layerSettings.visiable,
+              },
+            };
+            res = updatedLayer.layerSettings.visiable;
 
-          //// saving to mongo
-          // updateLayerSettings({
-          //   variables: {
-          //     settings: {
-          //       _id: updatedLayer._id,
-          //       layerSettings: updatedLayer.layerSettings,
-          //     },
-          //   },
-          // });
+            //// saving to mongo
+            // updateLayerSettings({
+            //   variables: {
+            //     settings: {
+            //       _id: updatedLayer._id,
+            //       layerSettings: updatedLayer.layerSettings,
+            //     },
+            //   },
+            // });
 
-          //// saving to stateApp
-          currentLayers[index] = updatedLayer;
+            //// saving to stateApp
+            currentLayers[index] = updatedLayer;
 
-          return {
-            ...stateApp,
-            layers: [...currentLayers],
-            popupOpen: false,
-            selectedWell: null,
-            mapCircularLoaderAct: false,
-          };
+            return {
+              ...stateApp,
+              layers: [...currentLayers],
+              popupOpen: false,
+              selectedWell: null,
+              mapCircularLoaderAct: false,
+            };
+          }
         });
         return res;
       }

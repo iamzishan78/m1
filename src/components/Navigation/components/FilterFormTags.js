@@ -68,12 +68,6 @@ export default function FilterFormProduction() {
     }
   }, [dataWells]);
 
-  useEffect(() => {
-    if (!stateNav.filterTrackedWells && !stateNav.filterTrackedOwners) {
-      stateApp.toggleLayersActivity("Wells", true);
-    }
-  }, [stateNav.filterTrackedWells, stateNav.filterTrackedOwners]);
-
   return (
     <Grid
       container

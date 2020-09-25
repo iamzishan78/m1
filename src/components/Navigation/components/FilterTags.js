@@ -148,6 +148,10 @@ export default function FilterTags() {
         },
       });
     } else {
+      if (!stateNav.filterTrackedWells && !stateNav.filterTrackedOwners)
+        stateApp.toggleLayersActivity("Wells", true);
+
+      stateApp.toggleLayersActivity("Tagged Wells/Owners", false);
       setStateNav((stateNav) => ({
         ...stateNav,
         selectedTags: [],

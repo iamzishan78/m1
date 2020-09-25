@@ -42,9 +42,15 @@ export default function FilterTrackedOwners() {
     setStateNav((stateNav) => {
       if (stateNav.filterTrackedOwners)
         stateApp.toggleLayersActivity("Tracked Owners", false);
+      if (
+        !stateNav.filterTrackedWells &&
+        stateNav.selectedTags &&
+        stateNav.selectedTags.length == 0
+      )
+        stateApp.toggleLayersActivity("Wells", true);
       else {
         stateApp.toggleLayersActivity("Tracked Owners", true);
-        stateApp.toggleLayersActivity("Wells", false);
+        // stateApp.toggleLayersActivity("Wells", false);
       }
 
       return {
@@ -66,7 +72,9 @@ export default function FilterTrackedOwners() {
         }
         className={classes.noOwnersToggle}
         checked={stateNav.filterTrackedOwners}
-        onChange={toggleTracks}
+        onChange={() => {
+          toggleTracks();
+        }}
         color="secondary"
         name="checked"
         inputProps={{ "aria-label": "primary checkbox" }}

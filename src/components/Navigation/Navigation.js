@@ -935,16 +935,27 @@ export default function Navigation(props) {
         onClick={(e) => openProfile(e)}
         containerElement={<Link to="/profile" />}
       >
-        <Link to="/profile" style={{ textDecoration: "none", width: '100%' }}>
-          <Typography style={{ textDecoration: "none", color: "#1daee1" }} variant="inherit">My Account</Typography>
+        <Link to="/profile" style={{ textDecoration: "none", width: "100%" }}>
+          <Typography
+            style={{ textDecoration: "none", color: "#1daee1" }}
+            variant="inherit"
+          >
+            My Account
+          </Typography>
         </Link>
       </MenuItem>
-      <Divider/>
-      <MenuItem
-        className={classes.userMenuItem}
-      >
-        <Link to="/usermanagement" style={{ textDecoration: "none", width: '100%' }}>
-          <Typography style={{ textDecoration: "none", color: "#1daee1" }} variant="inherit">User Management</Typography>
+      <Divider />
+      <MenuItem className={classes.userMenuItem}>
+        <Link
+          to="/usermanagement"
+          style={{ textDecoration: "none", width: "100%" }}
+        >
+          <Typography
+            style={{ textDecoration: "none", color: "#1daee1" }}
+            variant="inherit"
+          >
+            User Management
+          </Typography>
         </Link>
       </MenuItem>
       <Divider />
