@@ -2035,7 +2035,7 @@ function M1nTable(props) {
       "font-size:20px; color:tomato;",
       props.contactId
     );
-  });
+  }, [props.contactId]);
 
   useEffect(() => {
     if (
@@ -2397,7 +2397,7 @@ function M1nTable(props) {
         },
       });
       setAddAble({ type: "deals" });
-      setUploadIcon(true);
+      setUploadIcon(false);
       setStartPaginationAt(25);
     }
   }, [props.parent, stateApp.user]);

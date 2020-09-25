@@ -71,18 +71,16 @@ export default function TransactDialog(props) {
     fetchPolicy: "cache-and-network",
   });
 
-  const [contact, setContact] = useState(
-    cData?.contact?.contact
-      ? { name: cData.contact.contact.name, _id: cData.contact.contact._id }
-      : {}
-  );
+  const [contact, setContact] = useState({});
 
   useEffect(() => {
-    setContact(
-      cData?.contact?.contact
-        ? { name: cData.contact.contact.name, _id: cData.contact.contact._id }
-        : {}
-    );
+    if (cData?.contact) {
+      setContact(
+        cData?.contact
+          ? { name: cData.contact.name, _id: cData.contact._id }
+          : {}
+      );
+    }
   }, [cData]);
 
   let [transactData, setTransactData] = useState();
@@ -142,6 +140,7 @@ export default function TransactDialog(props) {
     const laneId = stateApp.activeDeal?.laneId;
 
     if (transactData && cardId && laneId && stateApp.dealDialog) {
+      // best for transact page, auto-fills card with contact details
       const lane = transactData.lanes.find((lane) => lane.id === laneId);
       console.log("LANE SETTING: ", lane);
       if (!lane || !lane.cards) return;
@@ -159,6 +158,12 @@ export default function TransactDialog(props) {
       }
     } else if (props.contact) {
       setContact({ name: props.contact.name, _id: props.contact._id });
+    } else if (props.contactId) {
+      getContact({
+        variables: {
+          contactId: props.contactId,
+        },
+      });
     }
   }, [transactData, stateApp.activeDeal, props.contact, stateApp.dealDialog]);
 
