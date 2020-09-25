@@ -128,6 +128,7 @@ const NavigationContextProvider = (props) => {
     wellsIdsFromTags: [],
     isUserManagementOpen: true,
   });
+
   return (
     <NavigationContext.Provider value={[stateNav, setStateNav]}>
       {props.children}
