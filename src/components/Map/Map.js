@@ -1342,6 +1342,12 @@ export default function Map() {
               default:
                 data = stateApp.customLayers;
             }
+           ///////////////////////////////
+              // console.log(
+              //   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+              //   layer.layerName,
+              //   data
+              // );
             if (data) {
               beforeLayer = setLayer(data, layer.layerName, map, beforeLayer);
             }

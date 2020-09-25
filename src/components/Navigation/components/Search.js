@@ -438,7 +438,7 @@ function Search() {
       if (searchInputValue === "") {
         setOptions(value ? [value] : []);
         setValue(null);
-        setStateApp((state) => ({ ...state, wellListFromSearch: null }));
+        setStateApp((state) => ({ ...state, wellListFromSearch: [] }));
         return undefined;
       }
 
@@ -664,12 +664,12 @@ function Search() {
                   dataOwnerWells.ownerLatsLonsArray[0].longitude,
                   dataOwnerWells.ownerLatsLonsArray[0].latitude,
                 ],
-                wellListFromSearch: dataOwnerWells.ownerLatsLonsArray,
+                wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
               }
             : {
                 ...stateApp,
                 fitBounds: null,
-                wellListFromSearch: dataOwnerWells.ownerLatsLonsArray,
+                wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
               }
         );
         stateApp.toggleLayersActivity("Search", true);
@@ -678,7 +678,7 @@ function Search() {
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
-          wellListFromSearch: null,
+          wellListFromSearch: [],
         }));
       }
     }
@@ -704,12 +704,12 @@ function Search() {
                 dataWells.wells.results[0].longitude,
                 dataWells.wells.results[0].latitude,
               ],
-              wellListFromSearch: dataWells.wells.results,
+              wellListFromSearch: [...dataWells.wells.results],
             }
           : {
               ...stateApp,
               fitBounds: null,
-              wellListFromSearch: dataWells.wells.results,
+              wellListFromSearch: [...dataWells.wells.results],
             }
       );
       stateApp.toggleLayersActivity("Search", true);
@@ -736,12 +736,16 @@ function Search() {
                   dataOperatorWells.operatorLatsLonsArray[0].longitude,
                   dataOperatorWells.operatorLatsLonsArray[0].latitude,
                 ],
-                wellListFromSearch: dataOperatorWells.operatorLatsLonsArray,
+                wellListFromSearch: [
+                  ...dataOperatorWells.operatorLatsLonsArray,
+                ],
               }
             : {
                 ...stateApp,
                 fitBounds: null,
-                wellListFromSearch: dataOperatorWells.operatorLatsLonsArray,
+                wellListFromSearch: [
+                  ...dataOperatorWells.operatorLatsLonsArray,
+                ],
               }
         );
         stateApp.toggleLayersActivity("Search", true);
@@ -750,7 +754,7 @@ function Search() {
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
-          wellListFromSearch: null,
+          wellListFromSearch: [],
         }));
       }
     }
@@ -776,12 +780,12 @@ function Search() {
                   dataLeaseWells.leaseLatsLonsArray[0].longitude,
                   dataLeaseWells.leaseLatsLonsArray[0].latitude,
                 ],
-                wellListFromSearch: dataLeaseWells.leaseLatsLonsArray,
+                wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
               }
             : {
                 ...stateApp,
                 fitBounds: null,
-                wellListFromSearch: dataLeaseWells.leaseLatsLonsArray,
+                wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
               }
         );
         stateApp.toggleLayersActivity("Search", true);
@@ -790,7 +794,7 @@ function Search() {
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
-          wellListFromSearch: null,
+          wellListFromSearch: [],
         }));
       }
     }

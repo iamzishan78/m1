@@ -115,8 +115,8 @@ const AppProvider = (props) => {
     zoomFault: null,
     hugeRequest: null,
     currentFeature: undefined,
-    wellListFromSearch: null,
-    wellListFromTagsFilter: null,
+    wellListFromSearch: [],
+    wellListFromTagsFilter: [],
     m1neralHeaders: [],
     mappedHeadersFromCSV: [],
     toggleLayersActivity: (layerName, activityValue) => {
