@@ -24,7 +24,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
 import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
-import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
+import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType";
 import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
@@ -1202,8 +1202,8 @@ function M1nTable(props) {
   });
   const [removeUser] = useMutation(REMOVEUSER);
   //////////
-  const [getContacts, { data: constDataContacts }] = useLazyQuery(
-    CONTACTSQUERY,
+  const [getContacts, { data: constDataContacts, fetchMore }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
     {
       fetchPolicy: "cache-and-network",
     }
@@ -1247,10 +1247,10 @@ function M1nTable(props) {
   // TODO: set correct isTracked on backend, not frontend
   const [dataContacts, setDataContacts] = useState(null);
   useEffect(() => {
-    if (constDataContacts && constDataContacts.contacts) {
+    if (constDataContacts && constDataContacts.paginatedContacts.edges) {
       let tmpDataContacts = { contacts: [] };
-      constDataContacts.contacts.forEach((contact) => {
-        tmpDataContacts.contacts.push(Object.create(contact));
+      constDataContacts.paginatedContacts.edges.forEach((edge) => {
+        tmpDataContacts.contacts.push({ ...edge.node, ...edge.node.entity });
       });
       setDataContacts(tmpDataContacts);
     }
@@ -1906,7 +1906,12 @@ function M1nTable(props) {
       setTargetLabel("contact");
       setHeader("Contacts");
       setAddAble({ parent: false, type: "contact" });
-      getContacts();
+      getContacts({
+        variables: {
+          perPage: 25,
+          after: null
+        },
+      });
       setUploadIcon(true);
       setStartPaginationAt(25);
     }

@@ -1480,6 +1480,20 @@ function SubTable(props) {
         handleOpenExpandableCard();
       }
     },
+    onTableChange: (action, tableState) => {
+      console.log('onTableChange');
+      console.log(action, tableState);
+      switch (action) {
+        case 'changePage':
+          //this.changePage(tableState.page, tableState.sortOrder);
+          break;
+        case 'sort':
+          //this.sort(tableState.page, tableState.sortOrder);
+          break;
+        default:
+          console.log('action not handled.');
+      }
+    }
   };
 
   console.log("ROWSSS : ", rows);
