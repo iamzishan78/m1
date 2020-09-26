@@ -143,7 +143,7 @@ export default function CheckboxList(props) {
         interaction: {
           ...layer.layerSettings.interaction,
           interactionDetail: {
-            hover: !layer.layerSettings.interaction.interactionDetail.click,
+            hover: !layer.layerSettings.interaction.interactionDetail.hover,
             click: !layer.layerSettings.interaction.interactionDetail.click,
           },
         },
