@@ -65,6 +65,7 @@ import { layers } from "../../LayerConfig";
 import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
 import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
 import { deepEqualObjects } from "../Shared/functions";
+import gjv from "geojson-validation";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -2653,19 +2654,23 @@ export default function Map() {
         }
         if (shapes && shapes.length > 0) {
           shapes.forEach((shape) => {
-            const bbox = turf.bbox(shape);
-            if (bound) {
-              bound.minLong = bound.minLong > bbox[0] ? bbox[0] : bound.minLong;
-              bound.minLat = bound.minLat > bbox[1] ? bbox[1] : bound.minLat;
-              bound.maxLong = bound.maxLong < bbox[2] ? bbox[2] : bound.maxLong;
-              bound.maxLat = bound.maxLat < bbox[3] ? bbox[3] : bound.maxLat;
-            } else {
-              bound = {
-                minLong: bbox[0],
-                minLat: bbox[1],
-                maxLong: bbox[2],
-                maxLat: bbox[3],
-              };
+            if (gjv.valid(shape)) {
+              const bbox = turf.bbox(shape);
+              if (bound) {
+                bound.minLong =
+                  bound.minLong > bbox[0] ? bbox[0] : bound.minLong;
+                bound.minLat = bound.minLat > bbox[1] ? bbox[1] : bound.minLat;
+                bound.maxLong =
+                  bound.maxLong < bbox[2] ? bbox[2] : bound.maxLong;
+                bound.maxLat = bound.maxLat < bbox[3] ? bbox[3] : bound.maxLat;
+              } else {
+                bound = {
+                  minLong: bbox[0],
+                  minLat: bbox[1],
+                  maxLong: bbox[2],
+                  maxLat: bbox[3],
+                };
+              }
             }
           });
         }
@@ -2736,7 +2741,11 @@ export default function Map() {
             }
             if (featuresList && featuresList.length > 0) {
               const result = featuresList.filter((feature) => {
-                if (feature.geometry.type === "MultiPolygon") {
+                if (
+                  feature &&
+                  feature.geometry &&
+                  feature.geometry.type === "MultiPolygon"
+                ) {
                   for (
                     let i = 0;
                     i < feature.geometry.coordinates.length;
@@ -2757,7 +2766,10 @@ export default function Map() {
                           j++
                         ) {
                           let filterCoordinates = shapeList[k].coordinates[j];
-                          if (filterCoordinates[0].length > 2) {
+                          if (
+                            filterCoordinates[0] &&
+                            filterCoordinates[0].length > 2
+                          ) {
                             filterCoordinates = filterCoordinates[0];
                           }
                           const filterGeometry = {
@@ -2784,14 +2796,17 @@ export default function Map() {
                   return true;
                 } else {
                   for (let i = 0; i < shapeList.length; i++) {
-                    if (shapeList[i].type === "MultiPolygon") {
+                    if (shapeList[i] && shapeList[i].type === "MultiPolygon") {
                       for (
                         let j = 0;
                         j < shapeList[i].coordinates.length;
                         j++
                       ) {
                         let filterCoordinates = shapeList[i].coordinates[j];
-                        if (filterCoordinates[0].length > 2) {
+                        if (
+                          filterCoordinates[0] &&
+                          filterCoordinates[0].length > 2
+                        ) {
                           filterCoordinates = filterCoordinates[0];
                         }
                         const filterGeometry = {
@@ -2799,6 +2814,7 @@ export default function Map() {
                           coordinates: filterCoordinates,
                         };
                         if (
+                          feature.geometry &&
                           feature.geometry.coordinates[0] &&
                           turf.booleanContains(filterGeometry, feature)
                         ) {
@@ -2807,6 +2823,7 @@ export default function Map() {
                       }
                     } else {
                       if (
+                        feature.geometry &&
                         feature.geometry.coordinates[0] &&
                         turf.booleanContains(shapeList[i], feature)
                       ) {
@@ -2860,27 +2877,27 @@ export default function Map() {
       if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
         // let total = stateNav.filterBasin[2].length;
         // filterArray.push(stateNav.filterBasin);
-        const { styleLayers, checkedLayers } = stateApp;
-        const basinIndex = styleLayers.findIndex(
-          (styleLayer) => styleLayer.name === "Basins"
-        );
+        // const { styleLayers, checkedLayers } = stateApp;
+        // const basinIndex = styleLayers.findIndex(
+        //   (styleLayer) => styleLayer.name === "Basins"
+        // );
 
-        if (checkedLayers.indexOf(basinIndex) === -1) {
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            tempCheckedLayer: basinIndex,
-          }));
-        }
-        let basinNames = stateNav.basinName;
-        if (basinNames) {
-          filterCustomArray["basin"] = [
-            "match",
-            ["get", "NAME"],
-            basinNames,
-            true,
-            false,
-          ];
-        }
+        // if (checkedLayers.indexOf(basinIndex) === -1) {
+        //   setStateApp((stateApp) => ({
+        //     ...stateApp,
+        //     tempCheckedLayer: basinIndex,
+        //   }));
+        // }
+        // let basinNames = stateNav.basinName;
+        // if (basinNames) {
+        //   filterCustomArray["basin"] = [
+        //     "match",
+        //     ["get", "NAME"],
+        //     basinNames,
+        //     true,
+        //     false,
+        //   ];
+        // }
         const filterLayers = [
           "GLOLeases",
           "GLOLeaseLabels",
@@ -2896,14 +2913,26 @@ export default function Map() {
           "interest",
           "parcel",
         ];
-        if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
-          const basinShapes = stateNav.filterBasin;
-          fitBounds = findBounds(basinShapes);
-          filterShapeAction(basinShapes, filterLayers);
-        }
+        // if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
+        const basinShapes = stateNav.filterBasin;
+        fitBounds = findBounds(basinShapes);
+        filterShapeAction(basinShapes, filterLayers);
+        // }
         isFilterSet = true;
-        geographyFilterCount += stateNav.basinName.length;
-        totalCount += stateNav.basinName.length;
+        if (stateNav.basinName) {
+          filterCustomArray["basin"] = [
+            "match",
+            ["get", "NAME"],
+            stateNav.basinName,
+            true,
+            false,
+          ];
+
+          if (stateNav.basinName.length) {
+            geographyFilterCount += stateNav.basinName.length;
+            totalCount += stateNav.basinName.length;
+          }
+        }
       } else {
         setStateApp((stateApp) => ({
           ...stateApp,
