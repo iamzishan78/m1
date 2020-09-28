@@ -45,7 +45,8 @@ export default function InitializeProfile(){
                 employer,
                 isSameFromAbove,
                 employerAddress,
-                investingEntities
+                investingEntities,
+                investingPreferences,
               },
             },
           } = data;
@@ -80,10 +81,11 @@ export default function InitializeProfile(){
               employer,
               isSameFromAbove,
               employerAddress,
-              investingEntities
+              investingEntities,
+              investingPreferences,
             },
           });
-        }
+        };
       }, [data]);
       return null;
 };

@@ -74,3 +74,141 @@ export const ProfileTabReducer = (state, action) => {
         throw new Error();
     }
   };
+
+export const InvestingPreFerencesReducers = (state, action) => {
+    switch (action.type){
+
+        // INVESTMENT INTERESTS PANEL
+
+        case 'assetType':
+            const InvestingInterestsTemp = state.investingPreferences.length > 0 ? 
+                    state.investingPreferences.InvestingInterests :  Object.assign([], state.investingPreferences.InvestingInterests);
+            const assetTemp = typeof InvestingInterestsTemp.assetType === "undefined" 
+                        ? [] 
+                        : InvestingInterestsTemp.assetType;
+            if(assetTemp.includes(action.value)){
+                const index = assetTemp.indexOf(action.value);
+                assetTemp.splice(index, 1);
+            }else{
+                assetTemp.push(action.value);
+            }
+            return {
+                ...state, 
+                investingPreferences: {
+                    InvestingInterests: {
+                        ...state.investingPreferences.InvestingInterests, 
+                        assetType:assetTemp
+                    }
+                }};
+
+        case 'basin':
+            return {
+                ...state, 
+                investingPreferences: {
+                    ...state.investingPreferences, 
+                    InvestingInterests: {
+                        ...state.investingPreferences.InvestingInterests,
+                         basin: action.value
+                        } 
+                    }};  
+
+        case 'vehicles':
+            const InvestingInterestsVehiclesTemp = state.investingPreferences.length > 0 ? 
+                    state.investingPreferences.InvestingInterests :  Object.assign([], state.investingPreferences.InvestingInterests);
+            const vehiclesTemp = typeof InvestingInterestsVehiclesTemp.vehicles === "undefined" 
+                        ? [] 
+                        : InvestingInterestsVehiclesTemp.vehicles;
+            if(vehiclesTemp.includes(action.value)){
+                const index = vehiclesTemp.indexOf(action.value);
+                vehiclesTemp.splice(index, 1);
+            }else{
+                vehiclesTemp.push(action.value);
+            }
+            return {
+                ...state, 
+                investingPreferences: {
+                    InvestingInterests: {
+                        ...state.investingPreferences.InvestingInterests, 
+                        vehicles:vehiclesTemp
+                    }
+                }};
+            case 'hold_period':
+                // const InvestingInterestsHoldPeriodTemp = state.investingPreferences.length > 0 ? 
+                //         state.investingPreferences.InvestingInterests :  Object.assign([], state.investingPreferences.InvestingInterests);
+                // const holdPeriodTemp = typeof InvestingInterestsHoldPeriodTemp.holdPeriod === "undefined" 
+                //             ? [] 
+                //             : InvestingInterestsHoldPeriodTemp.holdPeriod;
+                // if(holdPeriodTemp.includes(action.value)){
+                //     const index = holdPeriodTemp.indexOf(action.value);
+                //     holdPeriodTemp.splice(index, 1);
+                // }else{
+                //     holdPeriodTemp.push(action.value);
+                // }
+                const holdPeriodTemp = [action.value];
+                return {
+                    ...state, 
+                    investingPreferences: {
+                        InvestingInterests: {
+                            ...state.investingPreferences.InvestingInterests, 
+                            holdPeriod:holdPeriodTemp
+                        }
+                    }};
+
+            case 'objectives':
+                const InvestingInterestsObjectivesTemp = state.investingPreferences.length > 0 ? 
+                        state.investingPreferences.InvestingInterests :  Object.assign([], state.investingPreferences.InvestingInterests);
+                const objectivesTemp = typeof InvestingInterestsObjectivesTemp.objectives === "undefined" 
+                            ? [] 
+                            : InvestingInterestsObjectivesTemp.objectives;
+                if(objectivesTemp.includes(action.value)){
+                    const index = objectivesTemp.indexOf(action.value);
+                    objectivesTemp.splice(index, 1);
+                }else{
+                    objectivesTemp.push(action.value);
+                }
+                return {
+                    ...state, 
+                    investingPreferences: {
+                        InvestingInterests: {
+                            ...state.investingPreferences.InvestingInterests, 
+                            objectives:objectivesTemp
+                        }
+                    }};
+            
+                    // INVESTMENT OBJECTIVES PANEL
+            case 'expected_in_12_months':
+                return {
+                    ...state, 
+                    investingPreferences: {
+                        ...state.investingPreferences, 
+                        InvestingObjectives: {
+                            ...state.investingPreferences.InvestingObjectives,
+                                expected_total_in_12_months: action.value
+                            } 
+                        }};  
+
+            case 'expected_per_project':
+                return {
+                    ...state, 
+                    investingPreferences: {
+                        ...state.investingPreferences, 
+                        InvestingObjectives: {
+                            ...state.investingPreferences.InvestingObjectives,
+                            expected_per_project: action.value
+                            } 
+                        }};   
+
+            case 'risk_tolerance':
+                return {
+                    ...state, 
+                    investingPreferences: {
+                        ...state.investingPreferences, 
+                        InvestingObjectives: {
+                            ...state.investingPreferences.InvestingObjectives,
+                            risk_tolerance: action.value
+                            } 
+                        }};  
+        default:
+        throw new Error();
+            }
+}
