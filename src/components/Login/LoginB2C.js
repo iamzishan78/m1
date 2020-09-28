@@ -147,7 +147,7 @@ const LoginB2C = (props) => {
       });
 
       if (stateApp.myMSALB2CObj.getAccount()) {
-        console.log('hellz yeah!');
+       console.log('hellz yeah!');
 
         console.log("id_token acquired at: " + new Date().toString());
 
@@ -215,6 +215,9 @@ const LoginB2C = (props) => {
         setLoadingSigInButton(false);
       }
     } else if (signInType === "loginRedirect") {
+      if( queryString.parse(props.location.search).id_token_hint ) {
+        loginRequestB2C.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint }
+      }
       myMSALB2CObj.loginRedirect(loginRequestB2C);
     }
   };
@@ -257,7 +260,7 @@ const LoginB2C = (props) => {
     // }
 
     request.scopes = authGraphQLRequestB2C.scopes;
-    request.loginHint = request.account.name;
+    request.loginHint = request.account.displayName;
     const authGraphQLLoginResponse = await ssoSilent(request).catch((error) => {
       //do some error stuff
       console.log(error);
@@ -327,7 +330,7 @@ const LoginB2C = (props) => {
           accountObj.emails && accountObj.emails.length > 0
             ? accountObj.emails[0]
             : accountObj.sub,
-        name: accountObj.name,
+        name: accountObj.displayName,
       },
       authGraphQLResponse.authenticationToken
     ).catch((error) => {

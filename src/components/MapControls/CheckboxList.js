@@ -27,7 +27,7 @@ import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import LayersIcon from "@material-ui/icons/Layers";
 import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
-import PaletteIcon from '@material-ui/icons/Palette';
+import PaletteIcon from "@material-ui/icons/Palette";
 import ClickIcon from "..//Shared/svgIcons/cursor-click.js";
 import { borders } from "@material-ui/system";
 import Box from "@material-ui/core/Box";
@@ -389,20 +389,20 @@ export default function CheckboxList(props) {
   const handleColorPicker = (layer) => {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
-      selectedFileLayer: layer
+      selectedFileLayer: layer,
     }));
-  }
+  };
 
   const handleColorPickerUDLayer = (layer) => {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
-      selectedUDLayer: layer
+      selectedUDLayer: layer,
     }));
-  }
+  };
 
   useEffect(() => {
     if (stateApp.userFileLayers && stateApp.userFileLayers.length > 0) {
-      setUserFileLayer(stateApp.userFileLayers)
+      setUserFileLayer(stateApp.userFileLayers);
     }
   }, [stateApp.userFileLayers]);
 
@@ -562,7 +562,11 @@ export default function CheckboxList(props) {
                                   />
 
                                   {/* Color Picker for UD Layer */}
-                                  <ListItemIcon onClick={() => handleColorPickerUDLayer(layer)}>
+                                  <ListItemIcon
+                                    onClick={() =>
+                                      handleColorPickerUDLayer(layer)
+                                    }
+                                  >
                                     <PaletteIcon />
                                   </ListItemIcon>
 
@@ -655,7 +659,9 @@ export default function CheckboxList(props) {
                                 />
 
                                 <div style={{ paddingRight: 40 }}>
-                                  <ListItemIcon onClick={() => handleColorPicker(layer)}>
+                                  <ListItemIcon
+                                    onClick={() => handleColorPicker(layer)}
+                                  >
                                     <PaletteIcon />
                                   </ListItemIcon>
                                 </div>

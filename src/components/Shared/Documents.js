@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import Button from "@material-ui/core/Button";
@@ -9,9 +9,10 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import ViewDocuments from "../ViewDocuments/ViewDocuments"
+import ViewDocuments from "../ViewDocuments/ViewDocuments";
 
 import { useDropzone } from "react-dropzone";
+import DeleteDocumentConfirmation from "./DeleteDocumentConfirmation";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -122,6 +123,21 @@ function UploadZone() {
 
 export default function Documents(props) {
   const classes = useStyles();
+  const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
+
+  const handleDeleteCancel = () => {
+    setOpenDeleteConfirmDialog(false);
+  };
+
+  const handleDeleteAccept = () => {
+    // Delete Document Logic goes here
+    setOpenDeleteConfirmDialog(false);
+  };
+
+  const downloadDocument = () => {
+    // Download Document logic goes here
+    console.log("Download Document");
+  };
 
   return (
     <div className={classes.root} variant="outlined">
@@ -141,6 +157,11 @@ export default function Documents(props) {
                   id={props.id}
                   user_id={props.user_id}
                   activityLog={props.activityLog}
+                  open={openDeleteConfirmDialog}
+                  handleClose={handleDeleteCancel}
+                  handleAccept={handleDeleteAccept}
+                  handleOpen={() => setOpenDeleteConfirmDialog(true)}
+                  downloadDocument={downloadDocument}
                 />,
                 "Documents"
               );
@@ -152,22 +173,35 @@ export default function Documents(props) {
       </CardActions>
       <CardContent style={{ padding: "0 23px" }}>
         <div className={classes.fileUploadSection}>
-          <div className={classes.fileUploadTopSection}>
-            <div>
-              <h4 className={classes.uploadTitle}>Testupload.pdf</h4>
-              <h5 className={classes.uploadSubtext}>Kyle Chapman</h5>
-              <h5 className={classes.uploadSubtext}>a few seconds ago</h5>
-              <h5 className={classes.uploadSubtext}>application/pdf 5.64kb</h5>
-            </div>
-            <div className={classes.IconSection}>
-              <IconButton size="small" style={{ marginBottom: "8px" }}>
-                <DeleteIcon />
-              </IconButton>
-              <IconButton size="small">
-                <GetAppIcon />
-              </IconButton>
-            </div>
-          </div>
+          {/* Show two recent docs */}
+          {[1, 2].map((upload) => (
+            <>
+              <div className={classes.fileUploadTopSection}>
+                <div>
+                  <h4 className={classes.uploadTitle}>Testupload.pdf</h4>
+                  <h5 className={classes.uploadSubtext}>Kyle Chapman</h5>
+                  <h5 className={classes.uploadSubtext}>a few seconds ago</h5>
+                </div>
+                <div className={classes.IconSection}>
+                  <IconButton
+                    size="small"
+                    style={{ marginBottom: "8px" }}
+                    onClick={() => setOpenDeleteConfirmDialog(true)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                  <DeleteDocumentConfirmation
+                    open={openDeleteConfirmDialog}
+                    handleClose={handleDeleteCancel}
+                    handleAccept={handleDeleteAccept}
+                  />
+                  <IconButton size="small" onClick={downloadDocument}>
+                    <GetAppIcon />
+                  </IconButton>
+                </div>
+              </div>
+            </>
+          ))}
           <UploadZone />
         </div>
       </CardContent>
