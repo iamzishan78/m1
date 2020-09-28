@@ -584,7 +584,12 @@ const LoginB2C = (props) => {
           ready={loadingSigInButton}
           handleAADB2CSignIn={handledAADB2CSignIn}
           errorText={loginErrorText}
-          tenant={queryString.parse(props.location.search).tenant}/>
+          tenant={() => {
+            return !stateApp.myMSALB2CObj 
+            ? queryString.parse(props.location.search).tenant 
+            : null
+            }
+          }/>
         }
 
         <div>
