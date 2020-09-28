@@ -1,10 +1,7 @@
 import React, { useState, createContext, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
-import {
-  MSALB2CObj,
-  B2CTenantToLogin,
-} from "./components/Login/AADB2CAuthConfig";
+import { MSALB2CObj, B2CTenantCredentials } from "./components/Login/AADB2CAuthConfig";
 import {
   styleLayers,
   userDefinedLayers,
@@ -190,10 +187,10 @@ const AppProvider = (props) => {
         });
       }
 
-      let tenantB2CName = window.sessionStorage.getItem("tenantB2CName");
+      let B2CTenantName = window.sessionStorage.getItem("B2CTenantName");
 
-      if (tenantB2CName) {
-        let tenant = B2CTenantToLogin(tenantB2CName);
+      if (B2CTenantName) {
+        let tenant = B2CTenantCredentials(B2CTenantName);
         if (tenant) {
           let myMSALB2CObjInt = MSALB2CObj(tenant.tenantId, tenant.clientId);
           setStateApp((state, props) => {
