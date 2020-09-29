@@ -132,22 +132,26 @@ export default function FilterTags() {
   const handleChange = (value) => {
     setOwnersWells(null);
     if (value && value.length) {
-      setStateNav((stateNav) => ({ ...stateNav, selectedTags: value }));
+      setStateNav((stateNav) => ({ ...stateNav, selectedTags: [...value] }));
       getWellsIdsFromTagsArray({
         variables: {
           objectType: "well",
-          tagsArray: value,
+          tagsArray: [...value],
           userId: stateApp.user.mongoId,
         },
       });
       getOwnersIdsFromTagsArray({
         variables: {
           objectType: "owner",
-          tagsArray: value,
+          tagsArray: [...value],
           userId: stateApp.user.mongoId,
         },
       });
     } else {
+      if (!stateNav.filterTrackedWells && !stateNav.filterTrackedOwners)
+        stateApp.toggleLayersActivity("Wells", true);
+
+      stateApp.toggleLayersActivity("Tagged Wells/Owners", false);
       setStateNav((stateNav) => ({
         ...stateNav,
         selectedTags: [],
@@ -155,9 +159,8 @@ export default function FilterTags() {
       }));
       setStateApp((stateApp) => ({
         ...stateApp,
-        wellListFromTagsFilter: null,
+        wellListFromTagsFilter: [],
       }));
-      // stateApp.deactivateUserDefinedLayers(4);
     }
   };
 

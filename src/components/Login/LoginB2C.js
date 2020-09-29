@@ -11,7 +11,8 @@ import RenderSignUpControls from "./RenderSignUpControls";
 import queryString from "query-string";
 
 import {
-  B2CTenant,
+  B2CPolicies,
+  B2CTenantCredentials,
   MSALB2CObj,
   msalB2CConfig,
   loginRequestB2C,
@@ -133,21 +134,47 @@ const LoginB2C = (props) => {
         // redirect.
         if (error) {
           console.log(error);
-          setLoginErrorText(error);
-          setLoadingSigInButton(false);
-          sessionStorage.clear();
+
+          if (error.errorMessage.includes("AADB2C90118")) {
+            stateApp.myMSALB2CObj.loginRedirect(B2CPolicies.authorities.forgotPassword);
+            
+            return;
+          }
+          else {
+            setLoginErrorText(error.errorMessage);
+            sessionStorage.clear();
+            history.replace(window.location.pathname);
+            setLoading(false);
+          }
         }
         if (!loginResponse) {
           //do some error stuff
           setLoginErrorText("Log in Failed");
-          setLoadingSigInButton(false);
           sessionStorage.clear();
-          return;
+          history.replace(window.location.pathname);
+          setLoading(false);
         }
       });
 
       if (stateApp.myMSALB2CObj.getAccount()) {
-       console.log('hellz yeah!');
+        console.log('hellz yeah!');
+
+        // We need to reject id tokens that were not issued with the default sign-in policy.
+        // "acr" claim in the token tells us what policy is used (NOTE: for new policies (v2.0), use "tfp" instead of "acr")
+        // To learn more about b2c tokens, visit https://docs.microsoft.com/en-us/azure/active-directory-b2c/tokens-overview
+        if (stateApp.myMSALB2CObj.account.idTokenClaims && stateApp.myMSALB2CObj.account.idTokenClaims.acr === B2CPolicies.names.forgotPassword) {
+          
+          stateApp.myMSALB2CObj.clearCache();
+          stateApp.myMSALB2CObj.account = null;
+          // // window.alert("Password has been reset successfully. \nPlease sign-in with your new password.");
+
+          setSigningIn(true);
+          setLoadingSigInButton(true);
+          setLoading(true);
+          stateApp.myMSALB2CObj.loginRedirect(loginRequestB2C);
+
+          return;
+        }
 
         console.log("id_token acquired at: " + new Date().toString());
 
@@ -155,17 +182,21 @@ const LoginB2C = (props) => {
         console.log(accountObj);
         finishAADAuth(accountObj["idToken"]);
       }
+      else {
+        console.log("what am i doing here???");
+        setLoading(false);
+      }
 
     } else {
-      if (stateApp.myMSALB2CObj === false) {
+      if (!stateApp.myMSALB2CObj) {
         setLoading(false);
       }
     }
   }, [stateApp.myMSALB2CObj, signingIn]);
 
   const handledAADB2CSignIn = async (tenant, updateTenantFlags) => {
-    let tenantB2C = B2CTenant(tenant);
-    if (!tenantB2C) {
+    let B2CTenant = B2CTenantCredentials(tenant);
+    if (!B2CTenant) {
       updateTenantFlags("The company is not supported yet.");
       setLoadingSigInButton(false);
       return;
@@ -178,7 +209,7 @@ const LoginB2C = (props) => {
     let myMSALB2CObj = stateApp.myMSALB2CObj;
 
     if (!myMSALB2CObj) {
-      myMSALB2CObj = MSALB2CObj(tenantB2C.tenantId, tenantB2C.clientId);
+      myMSALB2CObj = MSALB2CObj(B2CTenant.tenantId, B2CTenant.clientId);
 
       setStateApp({
         ...stateApp,
@@ -186,7 +217,7 @@ const LoginB2C = (props) => {
       });
     }
 
-    window.sessionStorage.setItem("tenantB2CName", tenantB2C.name);
+    window.sessionStorage.setItem("B2CTenantName", B2CTenant.name);
 
     const signInType = "loginRedirect";
 
@@ -540,6 +571,16 @@ const LoginB2C = (props) => {
       .catch((error) => console.log(error));
   }
 
+  function SignInCardB2CProps(props) {
+    console.log(props.tenant);
+    return <SignInCardB2C
+      ready={loadingSigInButton}
+      handleAADB2CSignIn={handledAADB2CSignIn}
+      errorText={loginErrorText}
+      tenant={queryString.parse(props.location.search).tenant}
+    />
+  }
+
   const renderBody = (
     <>
       <div>
@@ -553,8 +594,12 @@ const LoginB2C = (props) => {
           ready={loadingSigInButton}
           handleAADB2CSignIn={handledAADB2CSignIn}
           errorText={loginErrorText}
-          tenant={queryString.parse(props.location.search).tenant}/>
-        }
+          tenant={
+            !stateApp.myMSALB2CObj 
+            ? queryString.parse(props.location.search).tenant 
+            : undefined}
+        />
+      }
 
         <div>
           <Paper
