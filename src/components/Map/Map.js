@@ -3666,7 +3666,6 @@ export default function Map() {
 
   const createUDPopUp = useCallback(
     (currentFeature) => {
-      console.log(currentFeature.shapeCenter);
       let coordinates = currentFeature.shapeCenter;
       if (typeof currentFeature.shapeCenter === "string") {
         coordinates = JSON.parse(currentFeature.shapeCenter);
@@ -3677,7 +3676,7 @@ export default function Map() {
       let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
         .setMaxWidth("none")
-        .setHTML(`<div id="popupContainer"></div>`)
+        .setHTML(`<div id="udPopupContainer"></div>`)
         .addTo(map);
 
       setStateApp((state) => ({ ...state, popupOpen: true }));
@@ -5257,7 +5256,7 @@ export default function Map() {
               </PortalD>
             )}
             {stateApp.selectedParcel && (
-              <PortalD id="popupContainer">
+              <PortalD id="udPopupContainer">
                 {showExpandableCard && !stateApp.expandedCard ? (
                   <ExpandableCardProvider
                     expanded={false}
