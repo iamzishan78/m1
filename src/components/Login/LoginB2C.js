@@ -188,7 +188,7 @@ const LoginB2C = (props) => {
       }
 
     } else {
-      if (!signingIn) {
+      if (!stateApp.myMSALB2CObj) {
         setLoading(false);
       }
     }
@@ -571,6 +571,16 @@ const LoginB2C = (props) => {
       .catch((error) => console.log(error));
   }
 
+  function SignInCardB2CProps(props) {
+    console.log(props.tenant);
+    return <SignInCardB2C
+      ready={loadingSigInButton}
+      handleAADB2CSignIn={handledAADB2CSignIn}
+      errorText={loginErrorText}
+      tenant={queryString.parse(props.location.search).tenant}
+    />
+  }
+
   const renderBody = (
     <>
       <div>
@@ -584,13 +594,12 @@ const LoginB2C = (props) => {
           ready={loadingSigInButton}
           handleAADB2CSignIn={handledAADB2CSignIn}
           errorText={loginErrorText}
-          tenant={() => {
-            return !stateApp.myMSALB2CObj 
+          tenant={
+            !stateApp.myMSALB2CObj 
             ? queryString.parse(props.location.search).tenant 
-            : null
-            }
-          }/>
-        }
+            : undefined}
+        />
+      }
 
         <div>
           <Paper
