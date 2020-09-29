@@ -5,11 +5,14 @@ import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
+import DeleteIcon from "@material-ui/icons/Delete";
 import ExpandIcon from "./components/svgIcons/ExpandIcon";
 import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
 import Tooltip from "@material-ui/core/Tooltip";
-import { useLazyQuery } from "@apollo/client";
+import Dialog from "@material-ui/core/Dialog";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import $ from "jquery";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "./ExpandableCardContext";
 import ReportBugModal from "./components/ReportBugModal";
@@ -18,6 +21,8 @@ import TaggerWithIcon from "../Shared/TaggerWithIcon";
 import CommentsWithIcon from "../Shared/CommentsWithIcon";
 import TrackToggleButton from "../Shared/TrackToggleButton";
 import BugsIcon from "../Shared/svgIcons/bug.js";
+import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 
 export default function ExpandableCard(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -44,6 +49,8 @@ export default function ExpandableCard(props) {
   const [targetSourceId] = useState(props.targetSourceId);
   const [targetLabel] = useState(props.targetLabel);
   const theme = useTheme();
+  const [openDialog, setOpenDialog] = useState(false);
+  const [updateCustomLayer, {loading: isDeletingCustomLayer}] = useMutation(UPDATECUSTOMLAYER);
 
   const useStyles = makeStyles((theme) => ({
     card: {
@@ -196,7 +203,54 @@ export default function ExpandableCard(props) {
     return title.length > 30 ? `${title.substr(0, 35)}...` : title;
   };
 
+  const openConfirmationDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const deleteFunc = () => {
+    if(targetLabel === "parcel") {
+      deleteParcel();
+    }
+  }
+
+  const deleteParcel = () => {
+    console.log("Deleting Parcel ...", targetSourceId);
+    updateCustomLayer({
+      variables: {
+        customLayerId: targetSourceId,
+        customLayer: {
+          IsDeleted: true,
+        }
+      },
+      refetchQueries: ["getCustomLayers"],
+      awaitRefetchQueries: true,
+    });
+  }
+
   return (
+    <React.Fragment>
+    {openDialog && (
+      <Dialog
+      className={classes.dialog}
+      open={openDialog ? true : false}
+      onClose={handleCloseDialog}
+      fullWidth={false}
+      maxWidth="sm">
+        <DeleteConfirmationDialogContent
+          header="Delete Parcel"
+          onClose={handleCloseDialog}
+          deleteFunc={deleteFunc}
+          m1nSelectedRowsIds={null}
+          setM1nSelectedRowsIndexes={()=>{}}
+        >
+          Do you want to delete {targetLabel}?
+        </DeleteConfirmationDialogContent>
+      </Dialog>
+    )}
     <Card className={classes.card}>
       <ReportBugModal
         open={openBugModal}
@@ -267,6 +321,22 @@ export default function ExpandableCard(props) {
                   </Tooltip>
                 )}
 
+            {stateExpandableCard.expanded && targetLabel === "parcel" && (
+            <Tooltip title={"Delete"} placement="top">
+              {isDeletingCustomLayer ? (
+                <CircularProgress size={20} color="secondary" />
+              ) : (
+                <IconButton
+                  onClick={openConfirmationDialog}
+                  aria-label="Delete"
+                  className={classes.icons}
+                >
+                  <DeleteIcon color="secondary" />
+                </IconButton>
+              )}
+            </Tooltip>
+            )}
+  
             <Tooltip title={"Close"} placement="top">
               <IconButton
                 size={stateExpandableCard.expanded ? "medium" : "small"}
@@ -310,5 +380,6 @@ export default function ExpandableCard(props) {
       />
       <CardContent className={classes.content}>{props.component}</CardContent>
     </Card>
+    </React.Fragment>
   );
 }
