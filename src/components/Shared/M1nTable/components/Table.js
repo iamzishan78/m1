@@ -1411,10 +1411,10 @@ function SubTable(props) {
           options={options}
         />
 
-        <TransactDialog
+        {/* <TransactDialog
           selectRowOpenContact={selectRowOpenContact}
           contactId={props.contactId}
-        />
+        /> */}
 
         {openDialog && openDialog !== "addDeals" && (
           <Dialog

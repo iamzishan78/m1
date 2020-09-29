@@ -40,6 +40,8 @@ import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelIn
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqualObjects, setStateIfDeepEqual } from "../functions";
+import RightDialog from "../../ContactDetailCard/components/RightDialog";
+import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
@@ -1014,6 +1016,8 @@ function M1nTable(props) {
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, Rows] = useState([]);
+  const [addDealOpen, setAddDealOpen] = useState(false);
+  const [selectedDeal, setSelectedDeal] = useState();
   const setRows = (newState) => {
     setStateIfDeepEqual(Rows, newState);
   };
@@ -2450,15 +2454,11 @@ function M1nTable(props) {
 
   // deals delete
   useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "Deals"
-    ) {
+    if (props.parent && props.parent === "Deals") {
       setDeleteFunc(() => (idsToDelete) => {
         console.log("IDSTODELETE: ", idsToDelete);
         if (idsToDelete && idsToDelete.length > 0) {
           for (let i = 0; i < idsToDelete.length; i++) {
-
             // updateParcelOwner({
             //   variables: {
             //     parcelOwner: { _id: idsToDelete[i], IsDeleted: true },
@@ -2483,6 +2483,27 @@ function M1nTable(props) {
 
   return (
     <Container maxWidth={false} className={classes.container}>
+      {props.parent && props.parent === "Deals" && (
+        <RightDialog
+          open={stateApp.dealDialog ? true : false}
+          handleClickDialogClose={() =>
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              dealDialog: false,
+            }))
+          }
+          width="450px"
+        >
+          <AddDealDialog
+            onClose={() =>
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                dealDialog: false,
+              }))
+            }
+          />
+        </RightDialog>
+      )}
       <Table
         style={{ backgroundColor: "#fff" }}
         header={header}
