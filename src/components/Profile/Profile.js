@@ -34,7 +34,6 @@ const Profile = () => {
         onClose={handleClose}
         aria-labelledby="profile-dialog"
         open={isProfileOpen}
-        maxWidth={"xl"}
         classes={{ paper: classes.paper }}
       >
         {isProfileOpen && <ImageModal/>}

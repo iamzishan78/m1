@@ -1,4 +1,5 @@
 import React, { createContext, useState } from "react";
+import Profile from './Profile';
 
 const ProfileContext = createContext([{}, () => {}]);
 const ProfileContextProvider = (props) => {

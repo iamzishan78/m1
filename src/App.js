@@ -31,12 +31,9 @@ import MomentUtils from "@date-io/moment";
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
 import { CircularProgress } from "@material-ui/core";
-import Profile from "./components/Profile/Profile";
-import ProfileDetails from "./components/Profile/ProfileDetails";
-import { ProfileContextProvider } from "./components/Profile/ProfileContext";
+import ProfileProvider from "./components/Profile/ProfileProvider";
+import ProfileDetailsProvider from "./components/Profile/ProfileDetailsProvider";
 import { UserManagementContextProvider } from "./components/UserManagement/UserManagementContext";
-import InitializeProfile from "./components/Profile/InitializeProfileContext";
-import InitializeUserManagement from './components/UserManagement/InitializeUserManagementContext';
 import UserManagementContainer from "./components/UserManagement/Container";
 import Notifications from "./components/Notifications/Notifications";
 
@@ -178,7 +175,6 @@ const PrivateRoute = ({ component, ...options }) => {
   return (
     <div>
       <Route {...options} component={finalComponent} />
-      {stateApp.user !== null && <InitializeProfile/>}
     </div>
     );
 };
@@ -220,7 +216,7 @@ function App() {
       if (token) {
         apolloConfig.headers["X-ZUMO-AUTH"] = token;
         //uncomment to run against local
-        // apolloConfig.uri = "http://localhost:7071/api/m1graph"
+        apolloConfig.uri = "http://localhost:7071/api/m1graph"
       }
 
       let apolloClient = new ApolloClient(apolloConfig);
@@ -246,11 +242,9 @@ function App() {
                   {/* <Router> */}
                   <Switch>
                     <NavigationProvider>
-                      <PrivateRoute exact path="/" component={MapProvider} />
-                      <ProfileContextProvider>
-                        <PrivateRoute exact path="/profile" component={Profile} />
-                        <PrivateRoute exact path="/myaccount" component={ProfileDetails} />
-                      </ProfileContextProvider>
+                      <PrivateRoute path="/" component={MapProvider} />
+                      <PrivateRoute exact path="/profile" component={ProfileProvider} />
+                      <PrivateRoute exact path="/myaccount" component={ProfileDetailsProvider} />
                       <UserManagementContextProvider>
                         <PrivateRoute exact path="/usermanagement" component={UserManagementContainer} />
                       </UserManagementContextProvider>

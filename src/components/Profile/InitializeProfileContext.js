@@ -50,7 +50,7 @@ export default function InitializeProfile(){
               },
             },
           } = data;
-    
+          
           setStateProfile({
             ...stateProfile,
             fields: {
