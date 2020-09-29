@@ -26,14 +26,15 @@ import { event } from "jquery";
 
 const InvestingEntities = () => {
 
-    const defaultEntityMembersValue = [{
+
+    const defaultEntityMembersValue = {
         "firstname": "",
         "lastname": "",
         "role": "",
         "signatory": "",
         "email": ""
-    }];
-    
+    }
+
     const defaultValues = {
         "entityInformation": "",
         "accountType": "",
