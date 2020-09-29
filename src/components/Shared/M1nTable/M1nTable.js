@@ -2448,6 +2448,35 @@ function M1nTable(props) {
     );
   }, [props.parent, dataDeals, props.contactId]);
 
+  // deals delete
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "Deals"
+    ) {
+      setDeleteFunc(() => (idsToDelete) => {
+        console.log("IDSTODELETE: ", idsToDelete);
+        if (idsToDelete && idsToDelete.length > 0) {
+          for (let i = 0; i < idsToDelete.length; i++) {
+
+            // updateParcelOwner({
+            //   variables: {
+            //     parcelOwner: { _id: idsToDelete[i], IsDeleted: true },
+            //   },
+            //   refetchQueries: [
+            //     "getCustomLayer",
+            //     "getContactParcelInterests",
+            //     "getAllEntityNamesToAddAsParcelOwner",
+            //   ],
+            //   awaitRefetchQueries: true,
+            // });
+            console.log("DELETING: ", idsToDelete[i]);
+          }
+        }
+      });
+    }
+  }, [props.parent, dataDeals, props.contactId, updateParcelOwner]);
+
   ////////////Deals end////////////////////////////////////////////////
 
   ////////////-----Add your code section here-----///////////////////////

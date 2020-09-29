@@ -1233,6 +1233,29 @@ function SubTable(props) {
               );
             }
 
+            //// if Parcel Ownership set the multi selection top bar: ////
+            if (props.targetLabel === "deals") {
+              return (
+                <Tooltip title={"Delete"}>
+                  <IconButton
+                    size="medium"
+                    style={{ margin: "0 5px" }}
+                    onClick={(e) => {
+                      handleExpandClick(
+                        null,
+                        null,
+                        null,
+                        "deleteDeal"
+                      );
+                    }}
+                    aria-label="delete"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              );
+            }
+
             //// default empty top bar ////
             return (
               <div
@@ -1581,6 +1604,28 @@ function SubTable(props) {
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to delete the Parcel Interest${
+                  m1nSelectedRowsIdsRef.current &&
+                  m1nSelectedRowsIdsRef.current.length > 1
+                    ? "s"
+                    : ""
+                }?`}
+              </DeleteConfirmationDialogContent>
+            )}
+            
+            {openDialog === "deleteDeal" && (
+              <DeleteConfirmationDialogContent
+                header={`Delete Deal${
+                  m1nSelectedRowsIdsRef.current &&
+                  m1nSelectedRowsIdsRef.current.length > 1
+                    ? "s"
+                    : ""
+                }`}
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {`Do you want to delete the selected deal${
                   m1nSelectedRowsIdsRef.current &&
                   m1nSelectedRowsIdsRef.current.length > 1
                     ? "s"
