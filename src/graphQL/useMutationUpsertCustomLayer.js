@@ -10,6 +10,7 @@ export const UPSERTCUSTOMLAYER = gql`
         shape
         name
         layer
+        IsDeleted
         user {
           name
           email

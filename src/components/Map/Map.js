@@ -1076,7 +1076,8 @@ export default function Map() {
       setStateApp((state) => ({
         ...state,
         popupOpen: false,
-        selectedUserDefinedLayer: undefined,
+        selectedUserDefinedLayer: null,
+        selectedParcel: null,
       }));
       setStateApp((state) => ({
         ...state,
@@ -3593,7 +3594,6 @@ export default function Map() {
       let coordinates = [currentFeature.longitude, currentFeature.latitude];
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
-      //console.log(popUps);
 
       let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
@@ -3676,7 +3676,7 @@ export default function Map() {
       let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
         .setMaxWidth("none")
-        .setHTML(`<div id="udPopupContainer"></div>`)
+        .setHTML(`<div id="popupContainer"></div>`)
         .addTo(map);
 
       setStateApp((state) => ({ ...state, popupOpen: true }));
@@ -5256,7 +5256,7 @@ export default function Map() {
               </PortalD>
             )}
             {stateApp.selectedParcel && (
-              <PortalD id="udPopupContainer">
+              <PortalD id="popupContainer">
                 {showExpandableCard && !stateApp.expandedCard ? (
                   <ExpandableCardProvider
                     expanded={false}

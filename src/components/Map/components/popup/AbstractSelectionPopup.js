@@ -210,8 +210,6 @@ export default (props) => {
     }));
   }
 
-  const deleteParcel = () => {};
-
   return (
     <Fragment>
       <div className={classes.popUp}>
@@ -225,9 +223,6 @@ export default (props) => {
               <LayerIcon color="secondary" fontSize="small" />
             </IconButton>
             )}
-            <IconButton size="small" onClick={deleteParcel} aria-label="Delete">
-              <DeleteIcon color="error" fontSize="small" />
-            </IconButton>
             <IconButton size="small" onClick={handleClose} aria-label="Close">
               <CloseIcon color="secondary" fontSize="small" />
             </IconButton>
