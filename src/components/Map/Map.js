@@ -1307,14 +1307,6 @@ export default function Map() {
                 map.moveLayer(id, beforeLayer);
               }
               beforeLayer = id;
-
-              ////////////////////////////////
-              // if (layer.layerName == "Pipelines")
-              //   console.log(
-              //     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-              //     map.getLayer(id)
-              //   );
-              ////////////////////////////////////
             }
             if (layer.layerSettings.interaction.interactionAble) {
               map.off("mousemove", id, mouseMoveHandler);
@@ -1351,7 +1343,6 @@ export default function Map() {
               default:
                 data = stateApp.customLayers;
             }
-
             if (data) {
               beforeLayer = setLayer(data, layer.layerName, map, beforeLayer);
             }
