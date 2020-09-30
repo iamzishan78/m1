@@ -2409,7 +2409,7 @@ function M1nTable(props) {
       setHeader("Deals");
       getTransactionData({
         variables: {
-          userId: "5f5f78cae7dc0c00261e20b5",
+          userId: stateApp.user.mongoId,
         },
       });
       setAddAble({ type: "deals" });
