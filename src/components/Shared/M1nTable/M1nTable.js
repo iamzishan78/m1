@@ -863,6 +863,18 @@ const OwnersPerParcelHeadCells = [
 
 const DealsHeadCells = [
   {
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
     name: "name",
     label: "Name",
   },
@@ -2397,7 +2409,7 @@ function M1nTable(props) {
       setHeader("Deals");
       getTransactionData({
         variables: {
-          userId: stateApp.user.mongoId,
+          userId: "5f5f78cae7dc0c00261e20b5",
         },
       });
       setAddAble({ type: "deals" });
@@ -2430,6 +2442,7 @@ function M1nTable(props) {
       const dealsRowsData = [];
       all.forEach((deal) => {
         let dealData = {
+          id: deal.id, //// "deal.laneId" check if this is the rigth id to delete the data
           name: deal.title,
           contact: deal.contactName,
           dealStage: lanes.find((lane) => lane.id === deal.laneId).title,

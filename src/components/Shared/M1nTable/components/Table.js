@@ -1241,12 +1241,7 @@ function SubTable(props) {
                     size="medium"
                     style={{ margin: "0 5px" }}
                     onClick={(e) => {
-                      handleExpandClick(
-                        null,
-                        null,
-                        null,
-                        "deleteDeal"
-                      );
+                      handleExpandClick(null, null, null, "deleteDeal");
                     }}
                     aria-label="delete"
                   >
@@ -1611,7 +1606,7 @@ function SubTable(props) {
                 }?`}
               </DeleteConfirmationDialogContent>
             )}
-            
+
             {openDialog === "deleteDeal" && (
               <DeleteConfirmationDialogContent
                 header={`Delete Deal${
