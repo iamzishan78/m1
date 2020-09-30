@@ -218,10 +218,10 @@ export default function AddLayer(props) {
       fileName = file.split("?")[0].split("/");
       fileName = fileName[fileName.length - 1];
     }
-
+    let res;
     if (fileName.endsWith(".geojson")) {
       console.log("GEOJSON Feature Service Path");
-      return await new Promise((resolve, reject) => {
+      res = await new Promise((resolve, reject) => {
         fetch(inputFile)
           .then((response) => response.json())
           .then((response) => {
@@ -230,7 +230,7 @@ export default function AddLayer(props) {
           .catch((error) => reject(error));
       });
     } else if (fileName.endsWith(".zip")) {
-      return await new Promise((resolve, reject) => {
+      res = await new Promise((resolve, reject) => {
         fetch(inputFile).then((response) => {
           response.arrayBuffer().then((buffer) => {
             shp(buffer).then((geojson) => {
@@ -241,6 +241,11 @@ export default function AddLayer(props) {
         });
       });
     }
+
+    // if (Array.isArray(res))
+    //   res = geojsonMerge.mergeFeatureCollectionStream(res);
+
+    return res;
   }
 
   async function handleFileInput(fileObj) {
@@ -352,6 +357,9 @@ export default function AddLayer(props) {
         </Collapse>
       </DialogContent>
       <DialogActions>
+        <Button onClick={windowClose} color="primary">
+          Close
+        </Button>
         <Button
           disabled={deepEqual(currentLayers, stateApp.layers)}
           onClick={handleApplyChange}
@@ -359,9 +367,6 @@ export default function AddLayer(props) {
           color="primary"
         >
           Apply
-        </Button>
-        <Button onClick={windowClose} color="primary">
-          Close
         </Button>
       </DialogActions>
     </Dialog>
