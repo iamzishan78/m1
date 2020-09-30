@@ -353,8 +353,8 @@ export default (props) => {
       });
 
       ////
-      handleClose();
     }
+    handleClose();
   };
 
   const WidthPicker = () => {
@@ -373,8 +373,10 @@ export default (props) => {
           style={{ width: "70px" }}
           value={width}
           onChange={(e) => {
-            if (e.target.value) setWidth(e.target.value);
-            else setWidth(0);
+            if (e.target.value) {
+              if (e.target.value >= 0 && e.target.value <= 50)
+                setWidth(e.target.value);
+            } else setWidth(null);
           }}
           endAdornment={<InputAdornment position="end">Px</InputAdornment>}
           type="number"
