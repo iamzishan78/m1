@@ -1112,16 +1112,25 @@ export default function Map() {
     };
 
     const udLayerClickHandler = (feature) => {
-      console.log("Current Parcel Layer", feature);
       setStateApp((state) => ({
         ...state,
         popupOpen: false,
       }));
-      setStateApp((state) => ({
-        ...state,
-        selectedUserDefinedLayer: undefined,
-        selectedParcel: feature.properties
-      }));
+
+      if(feature.source === "parcel_source") {
+        setStateApp((state) => ({
+          ...state,
+          selectedUserDefinedLayer: null,
+          selectedParcel: feature.properties
+        }));
+      }
+      if(feature.source === "interest_source") {
+        setStateApp((state) => ({
+          ...state,
+          selectedUserDefinedLayer: feature,
+          selectedParcel: null
+        }));
+      }
 
       // setStateApp({...stateApp, currentFeature: feature});
       createUDPopUp(feature.properties);
