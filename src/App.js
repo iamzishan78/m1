@@ -211,7 +211,9 @@ function App() {
         //   mode: 'no-cors',
         // },
         headers: {},
-        cache: new InMemoryCache(),
+        cache: new InMemoryCache({
+          addTypename: false
+        }),
       };
       if (token) {
         apolloConfig.headers["X-ZUMO-AUTH"] = token;
@@ -242,9 +244,8 @@ function App() {
                   {/* <Router> */}
                   <Switch>
                     <NavigationProvider>
-                      <PrivateRoute path="/" component={MapProvider} />
-                      <PrivateRoute exact path="/profile" component={ProfileProvider} />
-                      <PrivateRoute exact path="/myaccount" component={ProfileDetailsProvider} />
+                      <PrivateRoute exact path="/" component={MapProvider} />
+                      {/* <PrivateRoute exact path="/myaccount" component={ProfileDetailsProvider} /> */}
                       <UserManagementContextProvider>
                         <PrivateRoute exact path="/usermanagement" component={UserManagementContainer} />
                       </UserManagementContextProvider>
