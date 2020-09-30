@@ -18,6 +18,8 @@ import shp from "shpjs";
 import { ADDFILE } from "../../../graphQL/useMutationAddFile";
 import { ADDLAYER } from "../../../graphQL/useMutationAddLayer";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import { useDispatch } from "react-redux";
+import { showErrorMessage } from "../../../actions";
 
 const random_rgb = () => {
   var o = Math.round,
@@ -42,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function AddUserData(props) {
+  const dispatch = useDispatch();
   const classes = useStyles();
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
@@ -147,11 +150,25 @@ export default function AddUserData(props) {
               let type = turf.getType(fileContent);
               let paintProps = {};
 
-              if (type == "Point" || type == "MultiPoint") {
-                type = "circle";
-              } else {
-                type = "fill";
-              }
+              if (type == "Point" || type == "MultiPoint") type = "circle";
+              else if (
+                fileContent.features &&
+                fileContent.features.length > 0
+              ) {
+                let count = 0;
+                fileContent.features.map((feature) => {
+                  if (
+                    turf.getType(feature) == "LineString" ||
+                    turf.getType(feature) == "MultiLineString" ||
+                    turf.getType(feature) == "Feature"
+                  )
+                    count++;
+                });
+
+                //// only lines feature
+                if (count == fileContent.features.length) type = "line";
+                else type = "fill";
+              } else type = "fill";
 
               if (type == "circle") {
                 paintProps = {
@@ -159,6 +176,12 @@ export default function AddUserData(props) {
                   "circle-color": idColor,
                   "circle-stroke-width": 2,
                   "circle-stroke-color": "#fff",
+                };
+              } else if (type == "line") {
+                paintProps = {
+                  "line-color": idColor,
+                  "line-opacity": 1,
+                  "line-width": 1,
                 };
               } else {
                 paintProps = {
@@ -208,7 +231,17 @@ export default function AddUserData(props) {
                 awaitRefetchQueries: true,
               });
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+              console.log(error);
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                universalCircularLoaderAct: false,
+              }));
+              dispatch(showErrorMessage("Geojson is invalid"));
+              handleClose();
+
+              //// remove mongo file
+            });
         }
       } else if (fileData.addFile.message) {
         setStateApp((stateApp) => ({
@@ -230,16 +263,12 @@ export default function AddUserData(props) {
 
   useEffect(() => {
     if (newLayer) {
-      // handleClose();
       setStateMapControls((stateMapControls) => ({
         ...stateMapControls,
         addLayer: false,
       }));
       setNotReturn(true);
-      // setStateApp((stateApp) => ({
-      //   ...stateApp,
-      //   universalCircularLoaderAct: false,
-      // }));
+      //// dont remove the universal loader or close till stateApp.layers[layerIndex].fileContent
     }
   }, [newLayer]);
 
@@ -255,15 +284,11 @@ export default function AddUserData(props) {
         stateApp.layers[layerIndex] &&
         stateApp.layers[layerIndex].fileContent
       ) {
-        handleClose();
-        // setStateMapControls((stateMapControls) => ({
-        //   ...stateMapControls,
-        //   addLayer: false,
-        // }));
         setStateApp((stateApp) => ({
           ...stateApp,
           universalCircularLoaderAct: false,
         }));
+        handleClose();
       }
     }
   }, [stateApp.layers]);
@@ -393,6 +418,9 @@ export default function AddUserData(props) {
         </Snackbar>
       </DialogContent>
       <DialogActions>
+        <Button autoFocus onClick={handleClose} color="primary">
+          Cancel
+        </Button>
         <Button
           disabled={layerName === "" || !inputFiles}
           autoFocus
@@ -400,9 +428,6 @@ export default function AddUserData(props) {
           color="primary"
         >
           Create Layer
-        </Button>
-        <Button autoFocus onClick={handleClose} color="primary">
-          Cancel
         </Button>
       </DialogActions>
     </Dialog>
