@@ -314,8 +314,8 @@ export default function FilterOwnerCount() {
           <IconButton className={classes.IconButton}>
             <OwnershipIcon color="#808080" opacity="1.0" />
           </IconButton>
-          <FormLabel style={{ verticalAlign: "middle", paddingRight: "60px" }}>
-            Wells With Owners
+          <FormLabel style={{ verticalAlign: "middle", paddingRight: "25px" }}>
+            Only show wells with interest owners
           </FormLabel>
           <Switch
             className={classes.ownersToggle}
