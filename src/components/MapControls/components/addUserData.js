@@ -263,10 +263,6 @@ export default function AddUserData(props) {
 
   useEffect(() => {
     if (newLayer) {
-      setStateMapControls((stateMapControls) => ({
-        ...stateMapControls,
-        addLayer: false,
-      }));
       setNotReturn(true);
       //// dont remove the universal loader or close till stateApp.layers[layerIndex].fileContent
     }
@@ -287,6 +283,10 @@ export default function AddUserData(props) {
         setStateApp((stateApp) => ({
           ...stateApp,
           universalCircularLoaderAct: false,
+        }));
+        setStateMapControls((stateMapControls) => ({
+          ...stateMapControls,
+          addLayer: false,
         }));
         handleClose();
       }

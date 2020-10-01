@@ -438,7 +438,7 @@ export default function Map() {
   }, [layerStates]);
 
   const handleFileAsync = async (uri, internalKey, layerIndex) => {
-    if (uri && internalKey && layerIndex >= 0) {
+    if (uri && internalKey && layerIndex != -1) {
       let response = await fetch(uri, {
         headers: {
           "Content-Type": "text/plain; charset=UTF-8",
@@ -484,10 +484,17 @@ export default function Map() {
     if (viewFileResult && viewFileResult.viewFile && stateApp.layers) {
       const result = viewFileResult.viewFile;
       const fileId = result.id;
-      const layerIndex = stateApp.layers.findIndex(
-        (layer) => layer.file == fileId
-      );
-      handleFileAsync(result.uri, result.internalKey, layerIndex);
+      if (result.uri && result.internalKey) {
+        const layerIndex = stateApp.layers.findIndex(
+          (layer) => layer.file == fileId
+        );
+        handleFileAsync(result.uri, result.internalKey, layerIndex);
+      } else if (fileId)
+        viewFile({
+          variables: {
+            fileId,
+          },
+        });
     }
   }, [viewFileResult]);
 

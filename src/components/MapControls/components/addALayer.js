@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
@@ -21,6 +21,11 @@ import { UPDATEMANYLAYERSETTINGS } from "../../../graphQL/useMutationUpdateManyL
 import { useMutation } from "@apollo/client";
 import { DropzoneAreaBase } from "material-ui-dropzone";
 import shp from "shpjs";
+import { IconButton } from "@material-ui/core";
+import Tooltip from "@material-ui/core/Tooltip";
+import DeleteIcon from "@material-ui/icons/Delete";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 
 const random_rgb = () => {
   var o = Math.round,
@@ -129,8 +134,15 @@ export default function AddLayer(props) {
   const [openM1, setOpenM1] = React.useState(true);
   const [openUD, setOpenUD] = React.useState(true);
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
+
+  useEffect(() => {
+    if (stateApp.layers) {
+      setCurrentLayers(stateApp.layers);
+    }
+  }, [stateApp.layers]);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -275,100 +287,136 @@ export default function AddLayer(props) {
     (layer) => layer.layerCategory == "UD layer"
   );
   return (
-    <Dialog open={isOpen} onClose={windowClose}>
-      <DialogTitle>Add a Layer</DialogTitle>
-      <DialogContent dividers>
-        <DialogContentText>
-          Select one or more of the available layers below to add them to your
-          current map view.
-        </DialogContentText>
+    <>
+      <Dialog open={isOpen} onClose={windowClose}>
+        <DialogTitle>Add a Layer</DialogTitle>
+        <DialogContent dividers>
+          <DialogContentText>
+            Select one or more of the available layers below to add them to your
+            current map view.
+          </DialogContentText>
 
-        <DropzoneAreaBase
-          onAdd={handleFileInput}
-          onDelete={(fileObj) => console.log("Removed File:", fileObj)}
-          onAlert={(message, variant) => {
-            console.log(`${variant}: ${message}`);
+          <DropzoneAreaBase
+            onAdd={handleFileInput}
+            onDelete={(fileObj) => console.log("Removed File:", fileObj)}
+            onAlert={(message, variant) => {
+              console.log(`${variant}: ${message}`);
+            }}
+            filesLimit={1}
+            dropzoneText={
+              <span className={classes.uploaderText}>
+                To add a new user-defined layer, drag and drop a GeoJSON or
+                Shapefile or click{" "}
+                <span
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAddLayer();
+                  }}
+                  className={classes.url}
+                >
+                  here
+                </span>{" "}
+                to enter an URL.
+              </span>
+            }
+            acceptedFiles={[".geojson", ".zip"]}
+            maxFileSize={10000000}
+            dropzoneClass={classes.dropzoneClass}
+          ></DropzoneAreaBase>
+          <StyledListItem2 button onClick={handleClickM1List}>
+            <ListItemText primary="M1neral Layers" />
+            {openM1 ? <ExpandLess /> : <ExpandMore />}
+          </StyledListItem2>
+          <Collapse in={openM1} timeout="auto" unmountOnExit>
+            <List className={classes.list}>
+              {M1Layers.map((layer, index) => {
+                const labelId = `m1layer-list-label-${index}`;
+                return (
+                  <StyledListItem key={index} ContainerComponent="li">
+                    <Checkbox
+                      checked={layer.layerSettings.showable}
+                      color="primary"
+                      onChange={() => changeShowAble(layer)}
+                      inputProps={{ "aria-label": "primary checkbox" }}
+                    />
+                    <ListItemText id={labelId} primary={layer.layerName} />
+                  </StyledListItem>
+                );
+              })}
+            </List>
+          </Collapse>
+          <StyledListItem2 button onClick={handleClickUDList}>
+            <ListItemText primary="User Defined Layers" />
+            {openUD ? <ExpandLess /> : <ExpandMore />}
+          </StyledListItem2>
+          <Collapse in={openUD} timeout="auto" unmountOnExit>
+            <List className={classes.list}>
+              {UdLayers.map((layer, index) => {
+                const labelId = `udlayer-list-label-${index}`;
+                return (
+                  <StyledListItem key={index} ContainerComponent="li">
+                    <Checkbox
+                      checked={layer.layerSettings.showable}
+                      color="primary"
+                      onChange={() => changeShowAble(layer)}
+                      inputProps={{ "aria-label": "primary checkbox" }}
+                    />
+                    <ListItemText id={labelId} primary={layer.layerName} />
+
+                    {layer.layerType == "file layer" && (
+                      <ListItemSecondaryAction>
+                        <Tooltip title="Delete" placement="top">
+                          <IconButton
+                            edge="end"
+                            size="small"
+                            onClick={() => {
+                              setOpenDeleteDialog(layer.layerId);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </ListItemSecondaryAction>
+                    )}
+                  </StyledListItem>
+                );
+              })}
+            </List>
+          </Collapse>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={windowClose} color="primary">
+            Close
+          </Button>
+          <Button
+            disabled={deepEqual(currentLayers, stateApp.layers)}
+            onClick={handleApplyChange}
+            autoFocus
+            color="primary"
+          >
+            Apply
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* //// delete confirmation dialog */}
+      {openDeleteDialog && (
+        <Dialog
+          className={classes.dialog}
+          open={openDeleteDialog ? true : false}
+          onClose={() => {
+            setOpenDeleteDialog(false);
           }}
-          filesLimit={1}
-          dropzoneText={
-            <span className={classes.uploaderText}>
-              To add a new user-defined layer, drag and drop a GeoJSON or
-              Shapefile or click{" "}
-              <span
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleAddLayer();
-                }}
-                className={classes.url}
-              >
-                here
-              </span>{" "}
-              to enter an URL.
-            </span>
-          }
-          acceptedFiles={[".geojson", ".zip"]}
-          maxFileSize={10000000}
-          dropzoneClass={classes.dropzoneClass}
-        ></DropzoneAreaBase>
-        <StyledListItem2 button onClick={handleClickM1List}>
-          <ListItemText primary="M1neral Layers" />
-          {openM1 ? <ExpandLess /> : <ExpandMore />}
-        </StyledListItem2>
-        <Collapse in={openM1} timeout="auto" unmountOnExit>
-          <List className={classes.list}>
-            {M1Layers.map((layer, index) => {
-              const labelId = `m1layer-list-label-${index}`;
-              return (
-                <StyledListItem key={index} ContainerComponent="li">
-                  <Checkbox
-                    checked={layer.layerSettings.showable}
-                    color="primary"
-                    onChange={() => changeShowAble(layer)}
-                    inputProps={{ "aria-label": "primary checkbox" }}
-                  />
-                  <ListItemText id={labelId} primary={layer.layerName} />
-                </StyledListItem>
-              );
-            })}
-          </List>
-        </Collapse>
-        <StyledListItem2 button onClick={handleClickUDList}>
-          <ListItemText primary="User Defined Layers" />
-          {openUD ? <ExpandLess /> : <ExpandMore />}
-        </StyledListItem2>
-        <Collapse in={openUD} timeout="auto" unmountOnExit>
-          <List className={classes.list}>
-            {UdLayers.map((layer, index) => {
-              const labelId = `udlayer-list-label-${index}`;
-              return (
-                <StyledListItem key={index} ContainerComponent="li">
-                  <Checkbox
-                    checked={layer.layerSettings.showable}
-                    color="primary"
-                    onChange={() => changeShowAble(layer)}
-                    inputProps={{ "aria-label": "primary checkbox" }}
-                  />
-                  <ListItemText id={labelId} primary={layer.layerName} />
-                </StyledListItem>
-              );
-            })}
-          </List>
-        </Collapse>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={windowClose} color="primary">
-          Close
-        </Button>
-        <Button
-          disabled={deepEqual(currentLayers, stateApp.layers)}
-          onClick={handleApplyChange}
-          autoFocus
-          color="primary"
+          fullWidth={true}
+          maxWidth={"sm"}
         >
-          Apply
-        </Button>
-      </DialogActions>
-    </Dialog>
+          <DeleteConfirmationDialog
+            openDialog={openDeleteDialog ? true : false}
+            handleDialogClose={setOpenDeleteDialog}
+            id={openDeleteDialog}
+          />
+        </Dialog>
+      )}
+    </>
   );
 }
