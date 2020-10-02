@@ -246,9 +246,6 @@ function App() {
                     <NavigationProvider>
                       <PrivateRoute exact path="/" component={MapProvider} />
                       {/* <PrivateRoute exact path="/myaccount" component={ProfileDetailsProvider} /> */}
-                      <UserManagementContextProvider>
-                        <PrivateRoute exact path="/usermanagement" component={UserManagementContainer} />
-                      </UserManagementContextProvider>
                       <Route exact path="/signup" component={SignUpCard} />
                       <Route exact path="/loginb2c" component={LoginB2C} />
                       <Route
