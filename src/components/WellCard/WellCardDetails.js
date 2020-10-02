@@ -321,7 +321,7 @@ export default function WellCardDetails(props) {
           <Taps
             tabLabels={[
               "Well",
-              "Owners",
+              "Interest Owners",
               // "Property History",
               // "Title",
               // "Documents",
