@@ -242,14 +242,19 @@ export const userDefinedLayers = [
           "text-anchor": "center",
           "text-field": "{label}",
           "text-size": [
-            "interpolate",
-            ["exponential", 1],
+            "step",
             ["zoom"],
             0,
+            10.4,
             0,
-            // 11,0,
+            10.5,
+            14,
+            12,
+            16,
+            15,
+            20,
             22,
-            30,
+            24,
           ],
         },
       },
@@ -1626,7 +1631,7 @@ export const defaultLayers = [
     layerPaintProps: [
       {
         id: "interest",
-        sourceProps: "interest_source",
+        sourceProps: "interests_source",
         paintType: "fill",
         paintProps: {
           "fill-color": "#62a27f",
@@ -1798,6 +1803,7 @@ export const defaultLayers = [
       {
         id: "parcel",
         sourceProps: "parcels_source",
+        minZoom: 8.5,
         paintType: "fill",
         paintProps: {
           "fill-color": "#E07C71",
@@ -1813,6 +1819,7 @@ export const defaultLayers = [
       {
         id: "parcel_labels",
         sourceProps: "parcel_labels_source",
+        minZoom: 12,
         paintType: "symbol",
         symbolProps: {
           "text-allow-overlap": true,

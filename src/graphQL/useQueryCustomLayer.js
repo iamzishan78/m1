@@ -8,6 +8,7 @@ export const CUSTOMLAYER = gql`
       name
       layer
       state
+      IsDeleted
       user {
         _id
       }

@@ -47,10 +47,8 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
 import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
-import { FILELAYERSQUERY } from "../../graphQL/useQueryFileLayers";
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
-import { UPDATELAYERSTATE } from "../../graphQL/useMutationUpdateLayerState";
 import {
   ABSTRACTGEOQUERYCONTAINS,
   ABSTRACTGEOCONTAINSQUERY,
@@ -60,8 +58,6 @@ import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/d
 import MapGridCard from "../MapGridCard/MapGridCard";
 import { useDispatch, useSelector } from "react-redux";
 import MarkerIcon from "./sprites/marker-icon.png";
-import { usePickerState } from "@material-ui/pickers";
-import { layers } from "../../LayerConfig";
 import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
 import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
 import { deepEqualObjects } from "../Shared/functions";
@@ -100,16 +96,6 @@ const useStyles = makeStyles((theme) => ({
     transform: "translate(-50%, -50%)",
   },
 }));
-
-const mouseMoveHandler = (e) => {
-  const map = e.target;
-  map.getCanvas().style.cursor = "pointer";
-};
-
-const mouseLeaveHandler = (e) => {
-  const map = e.target;
-  map.getCanvas().style.cursor = "";
-};
 
 const random_hex_color_code = () => {
   let n = (Math.random() * 0xfffff * 1000000).toString(16);
@@ -320,7 +306,6 @@ export default function Map() {
   const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(
     ALLLAYERSETTINGSBYUSER
   );
-  const [updateLayerState] = useMutation(UPDATELAYERSTATE);
 
   /////end/////////temporary
 
@@ -678,41 +663,27 @@ export default function Map() {
           });
         }
       } else {
-        if (paintType == "symbol") {
-          map.addLayer({
-            id: layerId,
-            type: paintType,
-            source: sourceId,
-            paintProps: prop.paintProps,
-            layout: {
-              ...prop.symbolProps,
-              visibility: visible ? "visible" : "none",
-            },
-          });
-        } else {
-          if (prop.layoutProps) {
-            map.addLayer({
-              id: layerId,
-              type: paintType,
-              source: sourceId,
-              paint: prop.paintProps,
-              layout: {
-                ...prop.layoutProps,
-                visibility: visible ? "visible" : "none",
-              },
-            });
-          } else {
-            map.addLayer({
-              id: layerId,
-              type: paintType,
-              source: sourceId,
-              paint: prop.paintProps,
-              layout: {
-                visibility: visible ? "visible" : "none",
-              },
-            });
-          }
+        //// joining all properties before to set the new layer ////
+        let layout = { visibility: visible ? "visible" : "none" };
+        if (prop.layoutProps) layout = { ...layout, ...prop.layoutProps };
+        // symbols
+        if (prop.symbolProps) layout = { ...layout, ...prop.symbolProps };
+
+        const layerConfig = {
+          id: layerId,
+          type: paintType,
+          source: sourceId,
+          layout,
+        };
+
+        if (prop.paintProps) layerConfig.paint = prop.paintProps;
+
+        if (prop.minZoom) {
+          layerConfig.minzoom = prop.minZoom;
         }
+
+        map.addLayer(layerConfig);
+        ////////////////////////////////////////////////////////////
       }
 
       if (prop.clusterProps) {
@@ -1067,7 +1038,8 @@ export default function Map() {
       setStateApp((state) => ({
         ...state,
         popupOpen: false,
-        selectedUserDefinedLayer: undefined,
+        selectedUserDefinedLayer: null,
+        selectedParcel: null,
       }));
       setStateApp((state) => ({
         ...state,
@@ -1107,11 +1079,21 @@ export default function Map() {
         ...state,
         popupOpen: false,
       }));
-      setStateApp((state) => ({
-        ...state,
-        selectedUserDefinedLayer: undefined,
-        selectedParcel: feature.properties,
-      }));
+
+      if (feature.source === "parcels_source") {
+        setStateApp((state) => ({
+          ...state,
+          selectedUserDefinedLayer: null,
+          selectedParcel: feature.properties,
+        }));
+      }
+      if (feature.source === "interests_source") {
+        setStateApp((state) => ({
+          ...state,
+          selectedUserDefinedLayer: feature,
+          selectedParcel: null,
+        }));
+      }
 
       // setStateApp({...stateApp, currentFeature: feature});
       createUDPopUp(feature.properties);
@@ -1238,7 +1220,7 @@ export default function Map() {
       ) {
         for (let i = 0; i < hoverUdIds.length; i++) {
           map.setFeatureState(
-            { source: "parcel_source", id: hoverUdIds[i] },
+            { source: "parcels_source", id: hoverUdIds[i] },
             { hover: false }
           );
           HoverUdIds([]);
@@ -1250,6 +1232,7 @@ export default function Map() {
       if (isNormalClick && features && features.length > 0) {
         const feature = features[0];
         const layerId = feature.layer.id;
+
         switch (true) {
           case clusterUDLayers.indexOf(layerId) > -1:
             clusterClickHandler(feature, map);
@@ -3517,7 +3500,6 @@ export default function Map() {
       let coordinates = [currentFeature.longitude, currentFeature.latitude];
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
-      //console.log(popUps);
 
       let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
@@ -3595,7 +3577,6 @@ export default function Map() {
 
   const createUDPopUp = useCallback(
     (currentFeature) => {
-      console.log(currentFeature.shapeCenter);
       let coordinates = currentFeature.shapeCenter;
       if (typeof currentFeature.shapeCenter === "string") {
         coordinates = JSON.parse(currentFeature.shapeCenter);
