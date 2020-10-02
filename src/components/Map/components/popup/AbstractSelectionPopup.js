@@ -3,7 +3,6 @@ import { useMutation, useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import LayerIcon from "@material-ui/icons/Layers";
-import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -27,9 +26,8 @@ const useStyles = makeStyles((theme) => ({
     placeContent: "center space-between",
     alignItems: "center"
   },
-  actionWrapper: {
+  actions: {
     display: "flex",
-    placeContent: "center flex-end",
     alignItems: "center"
   },
   label : {
@@ -215,14 +213,15 @@ export default (props) => {
       <div className={classes.popUp}>
         <div className={classes.content}>
           <strong>{props.abstracts.length} {parcelLabel} selected.</strong>
-          <div className={classes.actionWrapper}>
+          <div className={classes.actions}>
             {isSavingParcel ? (
               <CircularProgress size={20} color="secondary" />
             ): (
             <IconButton size="small" onClick={saveAndOpenParcelDetail} aria-label="Parcel">
-              <LayerIcon color="secondary" fontSize="small" />
+              <LayerIcon color="secondary" />
             </IconButton>
             )}
+            <strong className={classes.label}>Parcel/Tract</strong>
             <IconButton size="small" onClick={handleClose} aria-label="Close">
               <CloseIcon color="secondary" fontSize="small" />
             </IconButton>

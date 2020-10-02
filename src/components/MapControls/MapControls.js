@@ -17,12 +17,13 @@ import QueueIcon from "@material-ui/icons/Queue";
 import CancelIcon from "@material-ui/icons/Cancel";
 import { makeStyles } from "@material-ui/core/styles";
 //components
-import ColorPickerDialog from './components/ColorPickerDialog';
-import ColorPickerUDLayerDialog from './components/ColorPickerUDLayerDialog';
+import ColorPickerDialog from "./components/ColorPickerDialog";
+// import ColorPickerUDLayerDialog from './components/ColorPickerUDLayerDialog';
 import BaseMapStyles from "./BaseMapStyles";
 import CheckboxList from "./CheckboxList";
 import CheckboxListHeatmaps from "./CheckboxListHeatmaps";
 import AddUserData from "./components/addUserData";
+import AddALayer from "./components/addALayer";
 import DrawShapes from "./components/DrawShapes/DrawShapes";
 import TrackedWellsMapCard from "./components/TrackedWellsMapCard";
 import GpsFixedIcon from "@material-ui/icons/GpsFixed";
@@ -221,19 +222,18 @@ export default function MapControls(props) {
     }
   };
 
-  const openColorPickerControl = () => {
-    const {selectedFileLayer} = stateMapControls;
-    if (selectedFileLayer) {
-      return <ColorPickerDialog layer={selectedFileLayer} />
+  const openColorPickerControl = (selectedLayer) => {
+    if (selectedLayer) {
+      return <ColorPickerDialog layer={selectedLayer} />;
     }
-  }
+  };
 
-  const openColorPickerUDControl = () => {
-    const {selectedUDLayer} = stateMapControls;
-    if (selectedUDLayer) {
-      return <ColorPickerUDLayerDialog layer={selectedUDLayer} />
+  const openAddLayerControl = () => {
+    const { addLayer } = stateMapControls;
+    if (addLayer) {
+      return <AddALayer />;
     }
-  }
+  };
 
   return (
     <div>
@@ -256,8 +256,11 @@ export default function MapControls(props) {
         {createSpeedDialActions()}
       </SpeedDial>
       {stateMapControls.selectedControl ? openSelectedControl() : null}
-      {stateMapControls.selectedFileLayer ? openColorPickerControl() : null}
-      {stateMapControls.selectedUDLayer ? openColorPickerUDControl() : null}
+      {stateMapControls.selectedLayer
+        ? openColorPickerControl(stateMapControls.selectedLayer)
+        : null}
+      {/* {stateMapControls.selectedUDLayer ? openColorPickerUDControl() : null} */}
+      {stateMapControls.addLayer ? openAddLayerControl() : null}
     </div>
   );
 }

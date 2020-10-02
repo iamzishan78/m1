@@ -48,7 +48,7 @@ const PrivacyAndSharing = () => {
                                         <Divider/>
                                     </Grid>
                                     <Grid item sm={12} style={{backgroundColor: '#f9f9f9'}}>
-                                        <div style={{textAlign: 'center'}}>
+                                        <div style={{textAlign: 'center', padding: 20}}>
                                             <Typography variant="subtitle1" className={text.paragraph}>
                                                 Once you make an investment with an sponsor, their name will appear here as an option.
                                             </Typography>

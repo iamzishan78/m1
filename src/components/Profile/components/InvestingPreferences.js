@@ -98,7 +98,7 @@ const InvestingPreferences = () => {
                                                 {
                                                     asset_type.map((item, index) => {
                                                         return(
-                                                            <FormControlLabel
+                                                            <FormControlLabel key={`asset_${index}`}
                                                                 control={<Checkbox key={`asset_${index}`} name={`asset_${index}`} />}
                                                                 label={item}
                                                             />
@@ -139,7 +139,7 @@ const InvestingPreferences = () => {
                                                 {
                                                     vehicles.map((item, index) => {
                                                         return(
-                                                            <FormControlLabel
+                                                            <FormControlLabel key={`vehicles_${index}`}
                                                                 control={<Checkbox key={`vehicles_${index}`} name={`vehicles_${index}`} />}
                                                                 label={item}
                                                             />
@@ -156,7 +156,7 @@ const InvestingPreferences = () => {
                                                 {
                                                     hold_period.map((item, index) => {
                                                         return(
-                                                            <FormControlLabel
+                                                            <FormControlLabel key={`hold_period_${index}`}
                                                                 control={<Checkbox key={`hold_period_${index}`} name={`hold_period_${index}`} />}
                                                                 label={item}
                                                             />
@@ -171,7 +171,7 @@ const InvestingPreferences = () => {
                                                 {
                                                     objectives.map((item, index) => {
                                                         return(
-                                                            <FormControlLabel
+                                                            <FormControlLabel key={`objectives_${index}`}
                                                                 control={<Checkbox key={`objectives_${index}`} name={`objectives_${index}`} />}
                                                                 label={item}
                                                             />
@@ -204,6 +204,7 @@ const InvestingPreferences = () => {
                                                     <div style={{display:"inline-flex"}}>
                                                         <Select
                                                             native
+                                                            variant="outlined"
                                                             inputProps={{
                                                                 name: 'total-investment',
                                                                 id: 'total-investment',
@@ -214,7 +215,7 @@ const InvestingPreferences = () => {
                                                         { 
                                                             expected_total_investment.map((item, index) => {
                                                                 return(
-                                                                    <option value={index}>{item}</option>
+                                                                    <option key={index} value={index}>{item}</option>
                                                                 )
                                                               })
                                                         }
@@ -263,7 +264,7 @@ const InvestingPreferences = () => {
                                                         { 
                                                             expected_investment_amount.map((item, index) => {
                                                                 return(
-                                                                    <option value={index}>{item}</option>
+                                                                    <option key={index} value={index}>{item}</option>
                                                                 )
                                                               })
                                                         }
