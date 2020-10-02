@@ -132,7 +132,7 @@ export default function Deals({ contact, ...props }) {
                 activeDeals={activeDeals}
                 lostDeals={lostDeals}
                 closedDeals={wonDeals}
-                contactId={contact._id}
+                contact={contact}
               />,
               "Deals"
             );

@@ -157,7 +157,8 @@ function AddActivityDialog(props) {
   }, [props.contactId]);
 
   useEffect(() => {
-    const cardId = stateApp.activeDeal?.cardId;
+    console.log("ACTIVE DEAL: ", stateApp.activeDeal)
+    const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
     const laneId = stateApp.activeDeal?.laneId;
 
     if (transactData && cardId && laneId && stateApp.dealDialog) {
@@ -197,7 +198,7 @@ function AddActivityDialog(props) {
     setLabel("");
     setDescription("");
     setStage("");
-    setContact({});
+    // setContact({});
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: false,
@@ -213,7 +214,7 @@ function AddActivityDialog(props) {
 
     let newStage = stage ? stage : "lane1";
     if (transactData) {
-      const cardId = stateApp.activeDeal?.cardId;
+      const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
       const laneId = stateApp.activeDeal?.laneId;
       if (cardId && laneId) {
         // update existing

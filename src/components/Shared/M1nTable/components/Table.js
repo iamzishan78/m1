@@ -1241,12 +1241,7 @@ function SubTable(props) {
                     size="medium"
                     style={{ margin: "0 5px" }}
                     onClick={(e) => {
-                      handleExpandClick(
-                        null,
-                        null,
-                        null,
-                        "deleteDeal"
-                      );
+                      handleExpandClick(null, null, null, "deleteDeal");
                     }}
                     aria-label="delete"
                   >
@@ -1318,6 +1313,7 @@ function SubTable(props) {
                       setStateApp((stateApp) => ({
                         ...stateApp,
                         dealDialog: true,
+                        activeDeal: {}
                       }));
                     if (
                       props.addAble.type &&
@@ -1343,7 +1339,15 @@ function SubTable(props) {
       setSelectedRow(rows[dataIndex]);
 
       if (props.targetLabel === "deals") {
-        history.push("/transact");
+        console.log("ROW DATA: ", rows[dataIndex]);
+        console.log("ROW DATA 0 INDEX: ", rowData[0]);
+        let card = {...rows[dataIndex]};
+        delete card["dealStage"];
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          dealDialog: true,
+          activeDeal: card
+        }));
       }
 
       if (props.targetLabel === "owner") {
@@ -1611,7 +1615,7 @@ function SubTable(props) {
                 }?`}
               </DeleteConfirmationDialogContent>
             )}
-            
+
             {openDialog === "deleteDeal" && (
               <DeleteConfirmationDialogContent
                 header={`Delete Deal${

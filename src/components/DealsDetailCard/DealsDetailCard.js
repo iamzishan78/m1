@@ -69,7 +69,7 @@ export default function DealsDetailCard(props) {
           color="#3366ff"
         />
       </div>
-      <M1nTable dense parent="Deals" contactId={props.contactId} />
+      <M1nTable dense parent="Deals" contact={props.contact} />
     </Grid>
   );
 }

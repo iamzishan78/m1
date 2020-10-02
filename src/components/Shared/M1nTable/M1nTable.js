@@ -863,11 +863,11 @@ const OwnersPerParcelHeadCells = [
 
 const DealsHeadCells = [
   {
-    name: "name",
+    name: "title",
     label: "Name",
   },
   {
-    name: "contact",
+    name: "contactName",
     label: "Contact",
   },
   {
@@ -875,11 +875,11 @@ const DealsHeadCells = [
     label: "Deal Stage",
   },
   {
-    name: "dealAmount",
+    name: "label",
     label: "Deal Amount",
   },
   {
-    name: "dealDetails",
+    name: "description",
     label: "Deal Details",
   },
 ];
@@ -2037,9 +2037,9 @@ function M1nTable(props) {
     console.log(
       "%cCONTACT ID : ",
       "font-size:20px; color:tomato;",
-      props.contactId
+      props.contact
     );
-  }, [props.contactId]);
+  }, [props.contact]);
 
   useEffect(() => {
     if (
@@ -2268,7 +2268,7 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "contactParcelInterests" &&
-      props.contactId &&
+      props.contact &&
       props.header &&
       props.entityId
     ) {
@@ -2280,12 +2280,12 @@ function M1nTable(props) {
       });
       getContactParcelInterests({
         variables: {
-          contactId: props.contactId,
+          contactId: props.contact._id,
         },
       });
       setLoading(true);
     }
-  }, [props.contactId, props.entityId, props.header]);
+  }, [props.contact, props.entityId, props.header]);
 
   useEffect(() => {
     if (
@@ -2390,7 +2390,7 @@ function M1nTable(props) {
   ////////////Deals start////////////////////////////////////////////////
 
   useEffect(() => {
-    console.log("DEALS CHECK : ", props.parent, props.contactId, stateApp.user);
+    console.log("DEALS CHECK : ", props.parent, props.contact, stateApp.user);
     if (props.parent && props.parent === "Deals" && stateApp.user) {
       console.log("ue mintable 22");
       setTargetLabel("deals");
@@ -2412,7 +2412,7 @@ function M1nTable(props) {
       props.parent &&
       props.parent === "Deals" &&
       dataDeals &&
-      props.contactId
+      props.contact
     ) {
       console.log("DATA DEALS : ", dataDeals);
       const lanes = dataDeals?.transactionData?.allData?.lanes;
@@ -2422,23 +2422,25 @@ function M1nTable(props) {
       if (lanes) {
         lanes.forEach((deal) => {
           deal.cards.forEach((card) => {
-            if (props.contactId === card.contactId) all.push(card);
+            if (props.contact?._id === card.contactId) all.push(card);
           });
         });
       }
 
-      const dealsRowsData = [];
-      all.forEach((deal) => {
-        let dealData = {
-          name: deal.title,
-          contact: deal.contactName,
-          dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
-          dealAmount: deal.label,
-          dealDetails: deal.description,
-        };
+      const dealsRowsData = all.map(deal => ({...deal, dealStage: lanes.find((lane) => lane.id === deal.laneId).title}));
+      // all.forEach((deal) => {
+      //   console.log("DEAL: ", deal)
+      //   let dealData = {
+      //     name: deal.title,
+      //     contact: deal.contactName,
+      //     dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
+      //     dealAmount: deal.label,
+      //     dealDetails: deal.description,
+      //     dealId: deal.id,
+      //   };
 
-        dealsRowsData.push(dealData);
-      });
+      //   dealsRowsData.push(dealData);
+      // });
       setTargetLabel("deals");
       setRows(dealsRowsData);
       setColumns([...DealsHeadCells]);
@@ -2448,9 +2450,9 @@ function M1nTable(props) {
     console.log(
       "%cCONTACT ID : ",
       "font-size:20px; color:green;",
-      props.contactId
+      props.contact
     );
-  }, [props.parent, dataDeals, props.contactId]);
+  }, [props.parent, dataDeals, props.contact]);
 
   // deals delete
   useEffect(() => {
@@ -2475,7 +2477,7 @@ function M1nTable(props) {
         }
       });
     }
-  }, [props.parent, dataDeals, props.contactId, updateParcelOwner]);
+  }, [props.parent, dataDeals, props.contact, updateParcelOwner]);
 
   ////////////Deals end////////////////////////////////////////////////
 
@@ -2501,6 +2503,7 @@ function M1nTable(props) {
                 dealDialog: false,
               }))
             }
+            contactId={props.contact?._id}
           />
         </RightDialog>
       )}
@@ -2517,7 +2520,7 @@ function M1nTable(props) {
         dense={props.dense ? props.dense : undefined}
         orderByTracks={orderByTracks}
         startPaginationAt={startPaginationAt}
-        contactId={props.contactId}
+        contactId={props.contact?._id}
       />
     </Container>
   );
