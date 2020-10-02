@@ -244,6 +244,31 @@ export default function WellProdChart(props) {
       dateAxis.keepSelection = true;
 
       chart.exporting.menu = new am4core.ExportMenu();
+
+      chart.exporting.menu.items = [
+        {
+          "label": "...",
+          "menu": [
+            {
+              "label": "Image",
+              "menu": [
+                { "type": "png", "label": "PNG" },
+                { "type": "jpg", "label": "JPG" },
+                { "type": "pdf", "label": "PDF" }
+              ]
+            }, {
+              "label": "Data",
+              "menu": [
+                { "type": "csv", "label": "CSV" },
+                { "type": "xlsx", "label": "XLSX" },
+              ]
+            }, {
+              "label": "Print", "type": "print"
+            }
+          ]
+        }
+      ]
+
       chart.exporting.menu.align = "right";
       chart.exporting.menu.verticalAlign = "top";
       var annotation = chart.plugins.push(
