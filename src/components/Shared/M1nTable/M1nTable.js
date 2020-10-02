@@ -863,6 +863,18 @@ const OwnersPerParcelHeadCells = [
 
 const DealsHeadCells = [
   {
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
     name: "title",
     label: "Name",
   },
@@ -2427,7 +2439,7 @@ function M1nTable(props) {
         });
       }
 
-      const dealsRowsData = all.map(deal => ({...deal, dealStage: lanes.find((lane) => lane.id === deal.laneId).title}));
+      const dealsRowsData = all.map(deal => ({...deal, id: deal.id, dealStage: lanes.find((lane) => lane.id === deal.laneId).title}));
       // all.forEach((deal) => {
       //   console.log("DEAL: ", deal)
       //   let dealData = {
@@ -2436,7 +2448,7 @@ function M1nTable(props) {
       //     dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
       //     dealAmount: deal.label,
       //     dealDetails: deal.description,
-      //     dealId: deal.id,
+      //     id: deal.id, //// "deal.laneId" check if this is the rigth id to delete the data
       //   };
 
       //   dealsRowsData.push(dealData);
