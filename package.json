@@ -28,8 +28,10 @@
     "email-validator": "^2.0.4",
     "fg-loadcss": "^2.1.0",
     "framer": "^1.2.3",
+    "geojson-validation": "^1.0.2",
     "graphql": "^14.6.0",
     "graphql-tag": "^2.10.3",
+    "hat": "0.0.3",
     "immutable": "^3.8.2",
     "jquery": "^3.5.1",
     "mapbox-gl": "^1.10.1",
@@ -51,6 +53,7 @@
     "react-dom": "^16.13.1",
     "react-draggable": "^4.4.3",
     "react-dropzone": "^11.0.3",
+    "react-google-recaptcha": "^2.1.0",
     "react-iframe": "^1.8.0",
     "react-image-crop": "^8.6.4",
     "react-json-view": "^1.19.1",
@@ -74,6 +77,7 @@
     "styled-components": "^4.4.1",
     "typescript": "^3.9.5",
     "uid": "^1.0.0",
+    "validate-date": "^2.0.0",
     "viewport-mercator-project": "^7.0.1"
   },
   "scripts": {

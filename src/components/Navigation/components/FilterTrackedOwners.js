@@ -6,6 +6,8 @@ import { AppContext } from "../../../AppContext";
 import { FormLabel } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import OwnershipIcon from "../../Shared/svgIcons/ownership";
+// import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
+// import { useMutation } from "@apollo/client";
 
 const useStyles = makeStyles({
   mainDiv: {
@@ -32,16 +34,23 @@ const useStyles = makeStyles({
 export default function FilterTrackedOwners() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-
   const [stateApp] = useContext(AppContext);
+
+  // const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
   const toggleTracks = () => {
     setStateNav((stateNav) => {
-      if (stateNav.filterTrackedOwners)
-        stateApp.deactivateUserDefinedLayers(stateApp.trackedWellsLayerIndex);
-      else {
-        stateApp.activateUserDefinedLayers(stateApp.trackedWellsLayerIndex);
-        stateApp.deactivateWellLayer();
+      if (stateNav.filterTrackedOwners) {
+        stateApp.toggleLayersActivity("Tracked Owners", false);
+        if (
+          !stateNav.filterTrackedWells &&
+          stateNav.selectedTags &&
+          stateNav.selectedTags.length == 0
+        )
+          stateApp.toggleLayersActivity("Wells", true);
+      } else {
+        stateApp.toggleLayersActivity("Tracked Owners", true);
+        stateApp.toggleLayersActivity("Wells", false);
       }
 
       return {
@@ -63,7 +72,9 @@ export default function FilterTrackedOwners() {
         }
         className={classes.noOwnersToggle}
         checked={stateNav.filterTrackedOwners}
-        onChange={toggleTracks}
+        onChange={() => {
+          toggleTracks();
+        }}
         color="secondary"
         name="checked"
         inputProps={{ "aria-label": "primary checkbox" }}

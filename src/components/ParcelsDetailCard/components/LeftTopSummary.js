@@ -6,32 +6,39 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 
+import { getParcelOriginalProperties } from "../utils/GetParcelOriginalProps";
+
 const useStyles = makeStyles({
   table: {
-    minHeight: "407px !important",
+    minHeight: "454px !important",
   },
   tableContainer: {
     overflowX: "unset",
+    margin: "8px",
   },
   rowName: {
     fontWeight: "bold",
     background: "#ebebeb",
   },
-
   tableRow: {
     "& > td": {
+      padding: "4px 10px !important",
       border: "2px solid #e3e3e3",
+      width: "50%",
     },
   },
 });
 
 export default function LeftTopSummary(props) {
-  const [parcelData, setParcelData] = useState(null);
+  const [parcelData, setParcelData] = useState({"state": "TX"});
   const classes = useStyles({ parcelData });
+  const [originalProperties, setProperties] = useState({});
 
   useEffect(() => {
     if (props.parcelData) {
       setParcelData(props.parcelData);
+      const properties = getParcelOriginalProperties(props.parcelData.shape.properties);
+      setProperties(properties);
     }
   }, [props.parcelData, setParcelData]);
 
@@ -47,44 +54,44 @@ export default function LeftTopSummary(props) {
               <TableCell scope="row" className={classes.rowName}>
                 County
               </TableCell>
-              <TableCell>{parcelData.county}</TableCell>
+              <TableCell>{originalProperties.county}</TableCell>
             </TableRow>
             <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 State
               </TableCell>
-              <TableCell>{parcelData.state}</TableCell>
+              <TableCell>{originalProperties.state}</TableCell>
             </TableRow>
             <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 {parcelData.state === "TX" ? "Survey" : "Meridian"}
               </TableCell>
-              <TableCell>{parcelData.Grid1}</TableCell>
+              <TableCell>{originalProperties.survey}</TableCell>
             </TableRow>
             <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 {parcelData.state === "TX" ? "Block" : "Township"}
               </TableCell>
-              <TableCell>{parcelData.Grid2}</TableCell>
+              <TableCell>{originalProperties.block}</TableCell>
             </TableRow>
             <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 {parcelData.state === "TX" ? "Section" : "Range"}
               </TableCell>
-              <TableCell>{parcelData.Grid3}</TableCell>
+              <TableCell>{originalProperties.section}</TableCell>
             </TableRow>
             <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 {parcelData.state === "TX" ? "Abstract" : "Section"}
               </TableCell>
-              <TableCell>{parcelData.Grid4}</TableCell>
+              <TableCell>{originalProperties.abstract}</TableCell>
             </TableRow>
             {parcelData.state === "TX" && (
               <TableRow className={classes.tableRow}>
                 <TableCell scope="row" className={classes.rowName}>
                   {parcelData.state === "TX" ? "Alt Survey" : ""}
                 </TableCell>
-                <TableCell>{parcelData.Grid5 || ""}</TableCell>
+                <TableCell>{originalProperties.altSurvey}</TableCell>
               </TableRow>
             )}
           </TableBody>

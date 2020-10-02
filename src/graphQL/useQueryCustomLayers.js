@@ -7,6 +7,7 @@ export const CUSTOMLAYERSQUERY = gql`
       shape
       name
       layer
+      IsDeleted
       user {
         name
         email

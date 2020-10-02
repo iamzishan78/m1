@@ -30,8 +30,10 @@ import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { CONTACT } from "../../../graphQL/useQueryContact";
+import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
+import { REMOVEUSER } from "../../../graphQL/useMutationRemoveUser";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import { UPDATEPARCELOWNER } from "../../../graphQL/useMutationUpdateParcelOwner";
 import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRecords";
@@ -861,6 +863,203 @@ const OwnersPerParcelHeadCells = [
   },
 ];
 
+// const ParcelInterestsPerContactHeadCells = [
+//   {
+//     name: "_id",
+//     options: {
+//       display: false,
+//       filter: false,
+//       searchable: false,
+//       sort: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   {
+//     name: "ownerEntityId",
+//     options: {
+//       display: false,
+//       filter: false,
+//       searchable: false,
+//       sort: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   {
+//     name: "customLayerId",
+//     options: {
+//       display: false,
+//       filter: false,
+//       searchable: false,
+//       sort: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   //// from parcel
+//   { name: "customLayerName", label: "Name" },
+//   { name: "customLayerState", label: "State" },
+//   { name: "customLayerCounty", label: "County" },
+//   { name: "Grid1", label: "Survey/ Meridian" },
+//   { name: "Grid2", label: "Block/ Township" },
+//   { name: "Grid3", label: "Section/ Range" },
+//   { name: "Grid4", label: "Abstract/ Section" },
+//   { name: "Grid5", label: "Alternate Survey" },
+//   //// from parcelOwnership
+//   { name: "depthFrom", label: "Depth From", editable: true },
+//   { name: "depthTo", label: "Depth To", editable: true },
+//   { name: "interest", label: "Interest", editable: true },
+//   { name: "nma", label: "NMA", editable: true },
+//   { name: "nra", label: "NRA", editable: true },
+
+//   {
+//     name: "parcelIcon",
+//     label: " ",
+//     options: {
+//       filter: false,
+//       searchable: false,
+//       sort: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   {
+//     name: "commentsCounter",
+//     label: " ",
+//     options: {
+//       filter: false,
+//       searchable: false,
+//       sort: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   {
+//     name: "isTracked",
+//     label: "Track",
+//     options: {
+//       searchable: false,
+//       download: false,
+//       print: false,
+//       filterOptions: {
+//         names: ["Tracked", "Untracked"],
+//         logic(tracked, filterVal) {
+//           return !(
+//             (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+//             (filterVal.indexOf("Untracked") >= 0 && !tracked)
+//           );
+//         },
+//       },
+//       filterType: "dropdown",
+//     },
+//   },
+// ];
+
+const UserManagementHeadCells = [
+  {
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "displayName",
+    label: "Name",
+    options: {
+      filter: false,
+      searchable: true,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+      editable: true,
+    },
+  },
+  {
+    name: "emails",
+    label: "User Email",
+    options: {
+      filter: false,
+      searchable: true,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "userType",
+    label: "User Type",
+    options: {
+      filter: true,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "role",
+    label: "Role",
+    options: {
+      filter: true,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "adminAccess",
+    label: "Admin Access",
+    options: {
+      filter: true,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "lastLogin",
+    label: "Last Login",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "actions",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+];
 const DealsHeadCells = [
   {
     name: "id",
@@ -1041,7 +1240,7 @@ function M1nTable(props) {
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
-  const [loading, Loading] = useState(true);
+  const [loading, Loading] = useState(false);
   const setLoading = (newState) => {
     setStateIfDeepEqual(Loading, newState);
   };
@@ -1110,6 +1309,12 @@ function M1nTable(props) {
   // const [getContactInM1nTable, { data: dataContact }] = useLazyQuery(CONTACT, {
   //   fetchPolicy: "cache-and-network",
   // });
+
+  /////////
+  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
+    fetchPolicy: "cache-and-network",
+  });
+  const [removeUser] = useMutation(REMOVEUSER);
   //////////
   const [getContacts, { data: constDataContacts }] = useLazyQuery(
     CONTACTSQUERY,
@@ -1121,7 +1326,6 @@ function M1nTable(props) {
   const [getTransactionData, { data: dataDeals }] = useLazyQuery(
     TRANSACTIONDATA
   );
-
   //////////
   const [removeContact] = useMutation(REMOVECONTACT);
 
@@ -1168,8 +1372,6 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks) {
-      setLoading(true);
-
       tracksByObjectType({
         variables: {
           objectType:
@@ -1254,7 +1456,9 @@ function M1nTable(props) {
         dataTagSamples.tagSamples &&
         dataOwnersWells
       ) {
-        dataOwners.owners.results.forEach((owner) => {
+        let owners = [...dataOwners.owners.results];
+        owners = owners.map((o) => {
+          let owner = { ...o };
           owner.isTracked = true;
           owner.commentsCounter = 0;
           owner.tags = [[], 0];
@@ -1289,6 +1493,7 @@ function M1nTable(props) {
               break;
             }
           }
+          return owner;
         });
 
         let availableTags = [];
@@ -1297,7 +1502,7 @@ function M1nTable(props) {
         });
         const cleanAvailableTags = [...new Set(availableTags)];
 
-        setRows(dataOwners.owners.results);
+        setRows(owners);
 
         setColumns(
           cleanAvailableTags.length > 0
@@ -1332,7 +1537,7 @@ function M1nTable(props) {
 
         setStateApp((state) => ({
           ...state,
-          owners: dataOwners.owners.results,
+          owners: owners,
         }));
         setLoading(false);
       } else {
@@ -1414,7 +1619,9 @@ function M1nTable(props) {
         dataTagSamples &&
         dataTagSamples.tagSamples
       ) {
-        dataWells.wells.results.forEach((well) => {
+        let wells = [...dataWells.wells.results];
+        wells = wells.map((w) => {
+          let well = { ...w };
           well.isTracked = true;
           well.commentsCounter = 0;
           well.tags = [[], 0];
@@ -1447,6 +1654,7 @@ function M1nTable(props) {
               break;
             }
           }
+          return well;
         });
 
         let availableTags = [];
@@ -1455,7 +1663,7 @@ function M1nTable(props) {
         });
         const cleanAvailableTags = [...new Set(availableTags)];
 
-        setRows(dataWells.wells.results);
+        setRows(wells);
 
         const flyToColumn = {
           name: "coordinates",
@@ -1504,7 +1712,7 @@ function M1nTable(props) {
 
         setStateApp((state) => ({
           ...state,
-          trackedwells: dataWells.wells.results,
+          trackedwells: wells,
         }));
         setLoading(false);
       } else {
@@ -1659,7 +1867,7 @@ function M1nTable(props) {
     if (props.parent && props.parent === "OwnersPerWell") {
       console.log("ue mintable 10");
       setTargetLabel("owner");
-      setHeader("Owners Per Well");
+      setHeader("Tax Roll Ownership");
       setAddAble(false);
       getWellOwners({
         variables: { id: props.selectedWell.id },
@@ -1668,27 +1876,12 @@ function M1nTable(props) {
   }, [props.selectedWell]);
 
   useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "OwnersPerWell" &&
-      dataWellOwners &&
-      dataTracks &&
-      dataTracks.tracksByObjectType
-    ) {
+    if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
       console.log("ue mintable 11");
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
-        const objectsIdsArray = [];
-        dataWellOwners.wellOwners.forEach((wellOwner) => {
-          wellOwner.isTracked = false;
-          objectsIdsArray.push(wellOwner.id);
-
-          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-            if (wellOwner.id === dataTracks.tracksByObjectType[i].trackOn) {
-              wellOwner.isTracked = true;
-              break;
-            }
-          }
-        });
+        const objectsIdsArray = dataWellOwners.wellOwners.map(
+          (wellOwner) => wellOwner.id
+        );
 
         getOwnersWells({
           variables: {
@@ -1706,7 +1899,7 @@ function M1nTable(props) {
         setRows([]);
       }
     }
-  }, [dataWellOwners, dataTracks]);
+  }, [dataWellOwners]);
 
   useEffect(() => {
     if (
@@ -1719,13 +1912,16 @@ function M1nTable(props) {
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples &&
-      dataOwnersWells
+      dataOwnersWells &&
+      dataTracks &&
+      dataTracks.tracksByObjectType
     ) {
-      console.log("ue mintable 12");
-      dataWellOwners.wellOwners.forEach((wellOwner) => {
+      const wellOwners = dataWellOwners.wellOwners.map((o) => {
+        let wellOwner = { ...o };
         wellOwner.commentsCounter = 0;
         wellOwner.tags = [[], 0];
         wellOwner.wellsCounter = [];
+        wellOwner.isTracked = false;
 
         if (dataOwnersWells.ownersWells) {
           for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
@@ -1756,6 +1952,15 @@ function M1nTable(props) {
             break;
           }
         }
+
+        for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+          if (wellOwner.id === dataTracks.tracksByObjectType[i].trackOn) {
+            wellOwner.isTracked = true;
+            break;
+          }
+        }
+
+        return wellOwner;
       });
 
       let availableTags = [];
@@ -1795,7 +2000,7 @@ function M1nTable(props) {
             })
       );
 
-      setRows(dataWellOwners.wellOwners);
+      setRows(wellOwners);
       setLoading(false);
     }
   }, [
@@ -1804,6 +2009,7 @@ function M1nTable(props) {
     dataTagSamples,
     dataCommentsCounter,
     dataOwnersWells,
+    dataTracks,
   ]);
 
   ////////////Owners Per Well end///////////////////////////////////////////////
@@ -2191,7 +2397,6 @@ function M1nTable(props) {
       });
 
       if (props.customLayer.owners && props.customLayer.owners.length > 0) {
-        setLoading(true);
         const objectsIdsArray = props.customLayer.owners.map(
           (owner) => owner._id
         );
@@ -2222,29 +2427,32 @@ function M1nTable(props) {
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter
     ) {
+      let owners = [];
       props.customLayer.owners.forEach((parcelOwner) => {
-        parcelOwner.commentsCounter = 0;
-        parcelOwner.tags = [[], 0];
-        parcelOwner.isTracked = false;
+        let owner = { ...parcelOwner };
+        owner.commentsCounter = 0;
+        owner.tags = [[], 0];
+        owner.isTracked = false;
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-          if (parcelOwner._id === dataCommentsCounter.commentsCounter[i]._id) {
-            parcelOwner.commentsCounter =
+          if (owner._id === dataCommentsCounter.commentsCounter[i]._id) {
+            owner.commentsCounter =
               dataCommentsCounter.commentsCounter[i].total;
             break;
           }
         }
 
         for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-          if (parcelOwner._id === dataTracks.tracksByObjectType[i].trackOn) {
-            parcelOwner.isTracked = true;
+          if (owner._id === dataTracks.tracksByObjectType[i].trackOn) {
+            owner.isTracked = true;
             break;
           }
         }
+        owners.push(owner);
       });
 
       setColumns(OwnersPerParcelHeadCells);
-      setRows([...props.customLayer.owners]);
+      setRows(owners);
       setLoading(false);
     }
   }, [props.parent, props.customLayer, dataTracks, dataCommentsCounter]);
@@ -2337,8 +2545,9 @@ function M1nTable(props) {
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter
     ) {
-      dataContactParcelInterests.contactParcelInterests.forEach(
-        (parcelInterest) => {
+      let arcelInterests = dataContactParcelInterests.contactParcelInterests.map(
+        (p) => {
+          let parcelInterest = { ...p };
           parcelInterest.commentsCounter = 0;
           parcelInterest.isTracked = false;
 
@@ -2360,6 +2569,7 @@ function M1nTable(props) {
               break;
             }
           }
+          return parcelInterest;
         }
       );
 
@@ -2399,6 +2609,42 @@ function M1nTable(props) {
 
   ////////////Parcel Interests Per Contact end/////////////////////////////////////////////////
 
+  ////////////User management//////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    if (props.parent && props.parent === "UserManagement") {
+      getAllUsers();
+      if (userLists?.allUsers) {
+        setHeader("Active Users");
+        setRows(userLists.allUsers);
+        setColumns(UserManagementHeadCells);
+        setLoading(false);
+        setAddAble({
+          type: "inviteUser",
+        });
+        setOrderByTracks(false);
+      }
+    } else {
+      setRows([]);
+    }
+  }, [props.parent, userLists]);
+
+  ///////// Remove User ////////////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    if (props.parent && props.parent === "UserManagement") {
+      setDeleteFunc(() => (userId) => {
+        if (userId) {
+          removeUser({
+            variables: {
+              userId,
+            },
+            refetchQueries: ["getAllUsers"],
+            awaitRefetchQueries: true,
+          });
+        }
+      });
+    }
+  }, [props.parent]);
+  ////////////User management end //////////////////////////////////////////////////////////////
   ////////////Deals start////////////////////////////////////////////////
 
   useEffect(() => {
@@ -2494,7 +2740,6 @@ function M1nTable(props) {
   ////////////Deals end////////////////////////////////////////////////
 
   ////////////-----Add your code section here-----///////////////////////
-
   return (
     <Container maxWidth={false} className={classes.container}>
       {props.parent && props.parent === "Deals" && (

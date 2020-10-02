@@ -1,26 +1,47 @@
-import React, { useContext, useState, useEffect } from "react";
-import { AppContext } from "../../AppContext";
+import React, { useState, useEffect } from "react";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
+import { useDispatch } from "react-redux";
+
 import Taps from "../Shared/Taps";
 import M1nTable from "../Shared/M1nTable/M1nTable";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 import QtrQtrSelector from "./components/QtrQtrSelector";
 import LeftTopSummary from "./components/LeftTopSummary";
-import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
-import { useLazyQuery } from "@apollo/client";
+import ParcelDetailsMap from "./components/ParcelDetailsMap";
+import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
+import { showSuccessMessage, showErrorMessage } from "../../actions";
+
+const ENTER_KEY = 13;
 
 const useStyles = makeStyles((theme) => ({
+  grid: {
+    width: "auto",
+  },
+  gridItem: {
+    flexGrow: 1,
+    display: "flex",
+    justifyContent: "space-around",
+    height: "100%",
+  },
   gridWidthScroll: {
-    backgroundColor: "#efefef",
-    "& .formLabel": {
-      color: "#757575",
-      fontWeight: "bold",
-      width: "100%",
-      marginBottom: "0",
-    },
+    maxHeight: "calc(100% - 88px)",
+    overflow: "auto",
+  },
+  calcSummary: {
+    margin: "8px",
+  },
+  parcelMap: {
+    margin: "8px",
+    width: "100%",
+    textAlign: "center",
+  },
+  content: {
+    backgroundColor: "#fff",
+    padding: "16px",
   },
   dataSect: {
     height: "100%",
@@ -53,41 +74,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ParcelsDetailCard(props) {
-  const [stateApp] = useContext(AppContext);
   const classes = useStyles();
-  const [parcelData, setParcelData] = useState();
-  //   {
-  //   _id: "5f2d60a70b0a02002146edfc",
-  //   county: "Lea",
-  //   state: "TX",
-  //   Grid1: "00",
-  //   Grid2: "026S",
-  //   Grid3: "033E",
-  //   Grid4: "027",
-  //   Grid5: "123",
-  //   qtrQtr: {
-  //     nwnw: true,
-  //     nenw: true,
-  //     swnw: true,
-  //     senw: true,
-  //     nwne: true,
-  //     nene: true,
-  //     swne: true,
-  //     sene: true,
-  //     nwsw: false,
-  //     nesw: false,
-  //     swsw: false,
-  //     sesw: false,
-  //     nwse: false,
-  //     nese: false,
-  //     swse: false,
-  //     sese: false,
-  //   },
-  //   grossAcres: 640,
-  //   calcAcres: 640.3,
-  //   legalDescription: "",
-  //   owners: [],
-  // }
+  const dispatch = useDispatch();
+  const [parcelObj, setParcelObj] = useState();
+  const [parcelProperties, setProperties] = useState();
+  const [parcelName, setParcelName] = useState();
+  const [grossAcres, setGrossAcres] = useState();
+  const [legalDescription, setLegalDesc] = useState();
+
+  const [updateCustomLayer, { data: updatedParcel }] = useMutation(
+    UPDATECUSTOMLAYER
+  );
+
   const [getCustomLayer, { data: dataCustomLayer, loading }] = useLazyQuery(
     CUSTOMLAYER,
     {
@@ -107,44 +105,97 @@ export default function ParcelsDetailCard(props) {
 
   useEffect(() => {
     if (dataCustomLayer && dataCustomLayer.customLayer) {
-      setParcelData(dataCustomLayer.customLayer);
+      let shape = dataCustomLayer.customLayer.shape;
+      if (typeof shape === "string") {
+        shape = JSON.parse(shape);
+      }
+      setParcelObj({
+        ...dataCustomLayer.customLayer,
+        shape: shape,
+      });
+      setProperties(shape.properties);
+      setParcelName(shape.properties.shapeLabel);
+      setGrossAcres(shape.properties.sdGrossAcres);
+      setLegalDesc(shape.properties.legalDescription || "");
     }
   }, [dataCustomLayer]);
 
+  useEffect(() => {
+    if (updatedParcel) {
+      if (updatedParcel.updateCustomLayer.success) {
+        dispatch(showSuccessMessage("Successfully updated the parcel."));
+      } else {
+        dispatch(showErrorMessage("Failed to update parcel"));
+      }
+    }
+  }, [updatedParcel]);
+
   const setQtrQtr = (qtrQtr) => {
-    setParcelData((parcelData) => ({ ...parcelData, qtrQtr }));
+    setParcelObj((parcelData) => ({ ...parcelData, qtrQtr }));
   };
 
-  return parcelData ? (
-    <Grid container className={classes.gridWidthScroll} spacing={0}>
-      <Grid item container sm={12}>
-        <Grid item sm={2} className={classes.borderRight}>
-          <LeftTopSummary parcelData={parcelData} />
+  const updateParcel = (e, field, value) => {
+    if (e.keyCode === ENTER_KEY) {
+      e.preventDefault();
+      e.stopPropagation();
+      const shape = parcelObj.shape;
+      shape.properties[field] = value;
+      updateCustomLayer({
+        variables: {
+          customLayerId: parcelObj._id,
+          customLayer: {
+            shape: JSON.stringify(shape),
+          },
+        },
+      });
+    }
+  };
+
+  return parcelObj ? (
+    <Grid item sm={12} container className={classes.gridWidthScroll}>
+      <Grid item sm={12} container>
+        <Grid item sm={2} className={classes.gridItem}>
+          <LeftTopSummary parcelData={parcelObj} />
         </Grid>
 
-        <Grid
-          item
-          sm={6}
-          className={`${classes.borderRight} ${classes.qtrAndInputs}`}
-        >
-          <Grid container spacing={2}>
-            <Grid item xs={12} style={{ display: "flex" }}>
-              <QtrQtrSelector parcelData={parcelData} setQtrQtr={setQtrQtr} />
-              <div style={{ width: "Calc( 100% - 273px)" }}>
-                <p className="formLabel" style={{ marginTop: "0" }}>
-                  Gross Acres
-                </p>
+        <Grid item sm={6} className={classes.gridItem}>
+          <Grid item sm={12} container>
+            <Grid item sm={7} className={classes.gridItem}>
+              <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
+            </Grid>
+            <Grid item sm={5}>
+              <div className={classes.calcSummary}>
+                <p className="formLabel">Parcel Name</p>
                 <TextField
                   size="small"
-                  value={parcelData.grossAcres}
+                  value={parcelName}
                   variant="outlined"
+                  onChange={(e) => {
+                    setParcelName(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    updateParcel(e, "shapeLabel", parcelName);
+                  }}
+                  fullWidth
+                />
+                <p className="formLabel">Gross Acres</p>
+                <TextField
+                  size="small"
+                  value={grossAcres}
+                  variant="outlined"
+                  onChange={(e) => {
+                    setGrossAcres(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    updateParcel(e, "sdGrossAcres", grossAcres);
+                  }}
                   fullWidth
                 />
                 <p className="formLabel">Calc. Acres</p>
                 <TextField
                   disabled
                   size="small"
-                  value={parcelData.calcAcres}
+                  value={parcelProperties.shapeArea}
                   variant="outlined"
                   fullWidth
                   InputProps={{
@@ -156,18 +207,26 @@ export default function ParcelsDetailCard(props) {
                 <TextField
                   size="small"
                   multiline
-                  rows={12}
-                  value={parcelData.legalDescription}
+                  rows={7}
+                  value={legalDescription}
                   variant="outlined"
                   fullWidth
                   placeholder="Enter legal description here"
+                  onChange={(e) => {
+                    setLegalDesc(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    updateParcel(e, "legalDescription", legalDescription);
+                  }}
                 />
               </div>
             </Grid>
           </Grid>
         </Grid>
-        <Grid item sm={4} style={{ backgroundColor: "#757575" }}>
-          <p>Map</p>
+        <Grid item sm={4} className={classes.gridItem}>
+          <div className={classes.parcelMap} id="parcelMap">
+            <ParcelDetailsMap parcelData={parcelObj} />
+          </div>
         </Grid>
       </Grid>
 
@@ -175,12 +234,8 @@ export default function ParcelsDetailCard(props) {
         <Taps
           tabLabels={["Owners", "Wells"]}
           tabPanels={[
-            <M1nTable
-              parent="ownersPerParcel"
-              customLayer={parcelData}
-              dense
-            />,
-            "Wells Table",
+            <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense />,
+            "Wells Table Coming Soon!",
           ]}
         />
       </Grid>

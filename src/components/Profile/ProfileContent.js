@@ -8,25 +8,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/lab/Skeleton";
-import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { AppContext } from "../../AppContext";
-import { GETPROFILE } from "../../graphQL/useQueryGetProfile";
 import { ProfileContext } from "./ProfileContext";
-
-import Profile from "./components/Profile";
-import ChangePassword from "./components/ChangePassword";
-import ElectronicConsent from "./components/ElectronicConsent";
-import EmailPreferences from "./components/EmailPreferences";
-import FinancialQualification from "./components/FinancialQualification";
-import InvestingEntities from "./components/InvestingEntities";
-import InvestingPreferences from "./components/InvestingPreferences";
-import InvestorDocuments from "./components/InvestorDocuments";
-import PrivacyAndSharing from "./components/PrivacyAndSharing";
-import Security from "./components/Security";
-import Verification from "./components/Verification";
-import ProfileHeader from "./components/ProfileHeader";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -74,122 +59,44 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   image: {
-    width: "100%",
-    height: "180px",
-    borderRadius: "4px",
+    width: 220,
+    height: 220,
+    borderRadius: "50%",
+    objectFit: "contain",
   },
 }));
-
-const newStyles = makeStyles((theme) => ({
-  dialogContent: {
-    padding: 0,
-    margin: 0
-  },
-  root: {
-    flex: 1,
-    flexDirection: 'row',
-    padding: 0,
-    margin: 0
-  },
-  navSubroot: {
-    flex: 1,
-    height: '100%',
-    flexDirection: 'column',
-    background: '#42517b'
-  },
-  contentSubroot: {
-    flex: 1,
-    flexDirection: 'column'
-  },
-  menuList: {
-    color: '#b3b9ca',
-    "& .MuiButtonBase-root": {
-      paddingRight: '10%',
-      paddingLeft: '10%',
-    }
-  },
-  profile_picture: {
-    height: 150,
-    width: 150,
-    border: 1,
-    borderRadius: 150
-  }
-}));
-
 
 const ProfileContent = () => {
   const classes = useStyles();
-  const newStyle = newStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
   const [stateProfile, setStateProfile] = useContext(ProfileContext);
-  const [selectedMenu, setSelectedMenu] = useState(0);
-  const [displayContent, setDisplayContent] = useState([]);
-
+  const [app, setApp] = useContext(AppContext);
   const {
-    user: { email },
-  } = stateApp;
-
-  const { data, error, loading } = useQuery(GETPROFILE, {
-    variables: { email },
-    fetchPolicy: "network-only",
-  });
-
-  const {
-    fields: { fullname, displayname, activity, phone, timezone, profileImage },
-    isImageModalOpen,
+    fields: { fullname, displayname, jobTitle, phone, profileImage}
   } = stateProfile;
 
-  const list = [
-    'Profile',
-    'Investing Entities',
-    'Investing Preferences',
-    'Financial Qualification',
-    'Email Preferences',
-    'Privacy & Sharing',
-    'Electronic Consent',
-    'Investor Documents',
-    'Security',
-    'Change Password',
-    'Verification'
-  ]
-
-  useEffect(() => {
-    if (data?.profileByEmail?.profile) {
-      const {
-        profileByEmail: {
-          profile: {
-            fullname,
-            displayname,
-            activity,
-            phone,
-            timezone,
-            profileImage,
-          },
-        },
-      } = data;
-
-      setStateProfile({
-        ...stateProfile,
-        fields: {
-          fullname,
-          displayname,
-          activity,
-          phone,
-          timezone,
-          profileImage,
-        },
-      });
-    }
-  }, [data]);
-
-  useEffect(()=> {
-    changeDisplayContent(0);
-  }, []);
-
   const onChange = ({ name, value }) => {
+    let disectFullname = {};
+    
+    if (name === "fullname") {
+      let temp = value.split(" ");
+      if (temp.length === 1) {
+        disectFullname['firstname'] = temp[0];
+      } else if (temp.length === 2) {
+        disectFullname['firstname'] = temp[0];
+        disectFullname['lastname'] = temp[1];
+      } else if (temp.length >= 3){
+        disectFullname['firstname'] = temp[0];
+        disectFullname['middlename'] = temp[1];
+        disectFullname['firstname'] = temp[2];
+      }
+    }
+
     setStateProfile({
       ...stateProfile,
-      fields: { ...stateProfile.fields, [name]: value },
+      fields: { ...stateProfile.fields,
+        [name]: value,
+        ...disectFullname
+      },
     });
   };
 
@@ -216,57 +123,131 @@ const ProfileContent = () => {
     return number;
   };
 
-  const changeDisplayContent = (index) => {
-    let return_display = [
-      <Profile/>,
-      <InvestingEntities/>,
-      <InvestingPreferences/>,
-      <FinancialQualification/>,
-      <EmailPreferences/>,
-      <PrivacyAndSharing/>,
-      <ElectronicConsent/>,
-      <InvestorDocuments/>,
-      <Security/>,
-      <ChangePassword/>,
-      <Verification/>
-    ]
-    setDisplayContent(return_display[index]);
-  }
-
   return (
-    <Grid container className={newStyle.root}>
-      <Grid item sm={2}>
-        <Grid container className={newStyle.navSubroot}>
-          <Grid item sm={12} style={{alignSelf: 'center', flex: 0.3, padding: '10%'}}>
-            <img src={"https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"}
-                 alt="Profile picture"
-                 className={newStyle.profile_picture} />
-            <h2 style={{color: '#fff'}}> John Geliberte </h2>
-          </Grid>
-          <Grid item sm={12} style={{flex: 1}}>
-            <MenuList className={newStyle.menuList}>
-              {
-                list.map((item, index) => {
-                  return <MenuItem key={index} onClick={()=> {changeDisplayContent(index)}}>{item}</MenuItem>
-                })
-              }
-            </MenuList>
-          </Grid>
+    <MuiDialogContent>
+      <Grid container>
+        <Grid item sm={8}>
+          <TextField
+            InputLabelProps={{
+              classes: { root: classes.label, focused: classes.focused },
+              shrink: true,
+            }}
+            InputProps={{
+              disableUnderline: true,
+              classes: { input: classes.input },
+            }}
+            FormHelperTextProps={{
+              classes: { root: classes.helperText },
+            }}
+            label={"Full Name"}
+            placeholder={"Your Full Name"}
+            name="fullname"
+            value={fullname}
+            onChange={({ target }) => onChange(target)}
+          />
+          <Box pb={2.5} />
+          <TextField
+            InputLabelProps={{
+              classes: { root: classes.label, focused: classes.focused },
+              shrink: true,
+            }}
+            InputProps={{
+              disableUnderline: true,
+              classes: { input: classes.input },
+            }}
+            FormHelperTextProps={{
+              classes: { root: classes.helperText },
+            }}
+            label={"Display Name"}
+            placeholder={"Display Name"}
+            helperText={"This could be your nickname or first name"}
+            name="displayname"
+            value={displayname}
+            onChange={({ target }) => onChange(target)}
+          />
+          <Box pb={2.5} />
+          <TextField
+            InputLabelProps={{
+              classes: { root: classes.label, focused: classes.focused },
+              shrink: true,
+            }}
+            InputProps={{
+              disableUnderline: true,
+              error: true,
+              classes: { input: classes.input },
+            }}
+            FormHelperTextProps={{
+              classes: { root: classes.helperText },
+            }}
+            label={"What you do"}
+            placeholder={"Your Role or Title"}
+            helperText={"Let people know what you do"}
+            name="jobTitle"
+            value={jobTitle}
+            onChange={({ target }) => onChange(target)}
+          />
+          <Box pb={2.5} />
+          <TextField
+            InputLabelProps={{
+              classes: { root: classes.label, focused: classes.focused },
+              shrink: true,
+            }}
+            InputProps={{
+              disableUnderline: true,
+              error: true,
+              classes: { input: classes.input },
+            }}
+            FormHelperTextProps={{
+              classes: { root: classes.helperText },
+            }}
+            label={"Phone number"}
+            placeholder={formatPhone("555-555-5555")}
+            helperText={"Enter your phone number"}
+            name="phone"
+            value={formatPhone(phone)}
+            onChange={({ target }) => onChange(target)}
+          />
+        </Grid>
+        <Grid item sm={4}>
+          <Typography variant="body1">Profile Photo</Typography>
+          {profileImage?.length > 0 ? (
+            <CardMedia
+              className={classes.image}
+              component={"img"}
+              image={profileImage}
+              title="Profile Image"
+            />
+          ) : (
+            <Skeleton variant="rect" className={classes.image} />
+          )}
+          <Box pb={2.5} />
+          <input
+            accept="image/*"
+            style={{ display: "none" }}
+            id="profile-image"
+            type="file"
+            name="profileimage"
+            onChange={(e) => handleImage(e)}
+          />
+          <label htmlFor="profile-image">
+            <Button
+              variant="outlined"
+              component="span"
+              className={classes.button}
+            >
+              Upload an image
+            </Button>
+          </label>
+        </Grid>
+        <Grid item sm={12} style={{paddingTop: 10, color: '#1daee1'}}>
+          <Link to="/myaccount">
+            <Typography variant="subtitle2">
+              View more profile settings
+            </Typography>
+          </Link>
         </Grid>
       </Grid>
-      <Grid item sm={10}>
-        <Grid container className={newStyle.contentSubroot}>
-          <Grid item sm={12}>
-            <ProfileHeader />
-          </Grid>
-          <Grid item sm={12} style={{
-            maxHeight: '735px', overflowY: "auto", overflowX: 'hidden'
-          }}>
-            { displayContent }
-          </Grid>
-        </Grid>
-      </Grid>
-    </Grid>
+    </MuiDialogContent>
   );
 };
 

@@ -180,7 +180,8 @@ const useStyles = makeStyles((theme) => ({
     transition: "all 0.3s ease-in-out",
     margin: "5px 15px 0px auto",
     "&:hover": {
-      background: "rgba(1, 17, 51, 1.0)",
+      background: "unset",
+      color: "rgba(23, 170, 221, 1)",
     },
   },
   menuIcon: {
@@ -932,12 +933,29 @@ export default function Navigation(props) {
       <MenuItem
         className={classes.userMenuItem}
         onClick={(e) => openProfile(e)}
+        containerElement={<Link to="/profile" />}
       >
+        <Link to="/profile" style={{ textDecoration: "none", width: "100%" }}>
+          <Typography
+            style={{ textDecoration: "none", color: "#1daee1" }}
+            variant="inherit"
+          >
+            My Account
+          </Typography>
+        </Link>
+      </MenuItem>
+      <Divider />
+      <MenuItem className={classes.userMenuItem}>
         <Link
-          to="/profile"
-          style={{ textDecoration: "none", color: "#1daee1" }}
+          to="/usermanagement"
+          style={{ textDecoration: "none", width: "100%" }}
         >
-          <Typography variant="inherit">My Account</Typography>
+          <Typography
+            style={{ textDecoration: "none", color: "#1daee1" }}
+            variant="inherit"
+          >
+            User Management
+          </Typography>
         </Link>
       </MenuItem>
       <Divider />

@@ -18,7 +18,6 @@ const ImageModal = () => {
 
   const { isImageModalOpen } = stateProfile;
   const classes = useStyles();
-
   const handleClose = () => {
     setStateProfile({ ...stateProfile, isImageModalOpen: false });
   };
@@ -32,7 +31,7 @@ const ImageModal = () => {
       classes={{ paper: classes.paper }}
     >
       <ImageModalTitle />
-      <ImageModalContent />
+      <ImageModalContent/>
     </Dialog>
   );
 };
