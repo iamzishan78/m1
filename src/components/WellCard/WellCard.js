@@ -296,7 +296,6 @@ export default function WellCard() {
       return date;
     }
   };
-  console.log(stateApp.selectedWell);
   if (stateApp.selectedWell.wellStatus !== "Permit") {
     return stateApp.selectedWell ? (
       !stateExpandableCard.expanded ? (

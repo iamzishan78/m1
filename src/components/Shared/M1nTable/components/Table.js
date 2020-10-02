@@ -1435,7 +1435,7 @@ function SubTable(props) {
                       props.addAble.type &&
                       props.addAble.type === "parcelInterestsToEntity"
                     )
-                      handleExpandClick(null, null, null, "addOwnerToParcel");
+                      // handleExpandClick(null, null, null, "addOwnerToParcel");
                     handleExpandClick(
                       null,
                       null,
