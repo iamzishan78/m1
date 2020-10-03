@@ -3647,13 +3647,16 @@ export default function Map() {
 
       if (!currentFeature) return;
 
+      const latLng = map.getCenter();
+      latLng.lat = latLng.lat - 0.01;
+
       new mapboxgl.Popup({
         offset: 10,
         closeOnClick: false,
         closeButton: false,
         className: "abstractPopup",
       })
-        .setLngLat(map.getCenter())
+        .setLngLat(latLng)
         .setMaxWidth("none")
         .setHTML(`<div id="popupContainer"></div>`)
         .addTo(map);
