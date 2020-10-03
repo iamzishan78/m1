@@ -634,7 +634,7 @@ const Login = (props) => {
   ) : (
     <div
       className={
-        width >= 1794
+        width > 2050
           ? `${localClass.height_100} ${localClass.myRoot}`
           : localClass.myRoot
       }
