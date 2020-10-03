@@ -1631,6 +1631,7 @@ export const defaultLayers = [
         id: "interest",
         sourceProps: "interests_source",
         paintType: "fill",
+        minZoom: 9,
         paintProps: {
           "fill-color": "#62a27f",
           "fill-opacity": 0.4,
@@ -1641,6 +1642,7 @@ export const defaultLayers = [
         id: "interest_labels",
         sourceProps: "interest_labels_source",
         paintType: "symbol",
+        minZoom: 12,
         symbolProps: {
           "text-allow-overlap": true,
           "text-anchor": "center",
