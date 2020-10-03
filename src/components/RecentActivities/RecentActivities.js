@@ -35,11 +35,24 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": { color: "#757575" },
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
+
+  addNew: {
+    margin: 0,
+    color: theme.palette.secondary.main,
+    cursor: "pointer",
+    fontWeight: "normal",
+    "&:hover": { color: "#757575" },
+    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+  },
+  groupContent: {
+    display: "flex",
+  },
+
   viewAllCard: {
     display: "flex",
     justifyContent: "space-between",
     backgroundColor: "#ffffff",
-    height: "100%",
+    height: "79vh",
   },
   inputField: {
     marginBottom: "30px",
@@ -61,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
   },
   activitiesFilter: {
     padding: "20px 30px",
-    borderLeft: "1px solid #9A9A9A",
+    backgroundColor: "rgb(240, 246, 248)",
     minWidth: "250px",
     height: "100%",
   },
@@ -264,7 +277,12 @@ function ViewActivities({
   return (
     <div className={classes.viewAllCard}>
       <div className={classes.activitiesList}>
-        <h4 style={{ margin: "0 0 8px 0" }}>Recent Activities</h4>
+        <div className={classes.groupContent}>
+          <h4 style={{ margin: "0px 12px 8px 0px" }}>Recent Activities</h4>
+          <h4 className={classes.addNew} onClick={addActivity}>
+            Add New
+          </h4>
+        </div>
         <ActivitiesList
           id={id}
           user_id={user_id}
@@ -274,13 +292,6 @@ function ViewActivities({
         />
       </div>
       <div className={classes.activityCardRight}>
-        <h4
-          className={classes.viewAll}
-          style={{ margin: "20px 10px 0 0" }}
-          onClick={addActivity}
-        >
-          Add New
-        </h4>
         {/* <ActivityStats /> */}
         <ActivitiesFilter
           activitiesFilter={activitiesFilter}

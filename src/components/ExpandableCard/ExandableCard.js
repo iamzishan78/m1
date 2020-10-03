@@ -180,7 +180,7 @@ export default function ExpandableCard(props) {
         ...state,
         popupOpen: false,
         selectedWell: null,
-        selectedParcel: null
+        selectedParcel: null,
       }));
     }
 
@@ -190,7 +190,7 @@ export default function ExpandableCard(props) {
   };
 
   const getTitle = () => {
-    if(!title) {
+    if (!title) {
       return "--";
     }
     return title.length > 30 ? `${title.substr(0, 35)}...` : title;

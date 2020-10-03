@@ -1515,7 +1515,7 @@ function SubTable(props) {
           title={props.header}
           data={rows ? rows : []}
           columns={columns ? columns : []}
-          options={options}
+          options={{ print: false, download: false, ...options }}
         />
 
         <TransactDialog
