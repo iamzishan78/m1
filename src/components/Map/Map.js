@@ -47,10 +47,8 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
 import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
-import { FILELAYERSQUERY } from "../../graphQL/useQueryFileLayers";
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
-import { UPDATELAYERSTATE } from "../../graphQL/useMutationUpdateLayerState";
 import {
   ABSTRACTGEOQUERYCONTAINS,
   ABSTRACTGEOCONTAINSQUERY,
@@ -60,12 +58,11 @@ import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/d
 import MapGridCard from "../MapGridCard/MapGridCard";
 import { useDispatch, useSelector } from "react-redux";
 import MarkerIcon from "./sprites/marker-icon.png";
-import { usePickerState } from "@material-ui/pickers";
-import { layers } from "../../LayerConfig";
 import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
 import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
 import { deepEqualObjects } from "../Shared/functions";
 import gjv from "geojson-validation";
+import { setMainMapState, showErrorMessage } from "../../actions";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -101,16 +98,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const mouseMoveHandler = (e) => {
-  const map = e.target;
-  map.getCanvas().style.cursor = "pointer";
-};
-
-const mouseLeaveHandler = (e) => {
-  const map = e.target;
-  map.getCanvas().style.cursor = "";
-};
-
 const random_hex_color_code = () => {
   let n = (Math.random() * 0xfffff * 1000000).toString(16);
   return "#" + n.slice(0, 6);
@@ -122,6 +109,9 @@ export default function Map() {
   const dispatch = useDispatch();
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
+  );
+  const removeLayerFromMap = useSelector(
+    ({ MainMap }) => MainMap.removeLayerFromMap
   );
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -250,6 +240,13 @@ export default function Map() {
     }
   };
 
+  const [fileRequestCounter, FileRequestCounter] = useState(1);
+  const setFileRequestCounter = (state) => {
+    if (fileRequestCounter != state) {
+      FileRequestCounter(state);
+    }
+  };
+
   const [filterAbstract, setFilterAbstract] = useState(false);
 
   const [mapMouseMoveHandler, setMapMouseMoveHandler] = useState(null);
@@ -320,7 +317,6 @@ export default function Map() {
   const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(
     ALLLAYERSETTINGSBYUSER
   );
-  const [updateLayerState] = useMutation(UPDATELAYERSTATE);
 
   /////end/////////temporary
 
@@ -425,6 +421,7 @@ export default function Map() {
         for (let i = 0; i < layerStates.allLayerSettingsByUser.length; i++) {
           const layer = layerStates.allLayerSettingsByUser[i];
           if (layer.layerType == "file layer") {
+            setFileRequestCounter(1);
             viewFile({
               variables: {
                 fileId: layer.file,
@@ -438,7 +435,7 @@ export default function Map() {
   }, [layerStates]);
 
   const handleFileAsync = async (uri, internalKey, layerIndex) => {
-    if (uri && internalKey && layerIndex >= 0) {
+    if (uri && internalKey && layerIndex != -1) {
       let response = await fetch(uri, {
         headers: {
           "Content-Type": "text/plain; charset=UTF-8",
@@ -461,6 +458,7 @@ export default function Map() {
       if (layerIndex < layersData.length - 1)
         for (let i = layerIndex + 1; i < layers.length; i++) {
           if (layers[i].layerType == "file layer") {
+            setFileRequestCounter(1);
             viewFile({
               variables: {
                 fileId: layers[i].file,
@@ -480,14 +478,55 @@ export default function Map() {
     }
   };
 
+  // useEffect(() => {
+  //   if (viewFileResult && viewFileResult.viewFile && stateApp.layers) {
+  //     const result = viewFileResult.viewFile;
+  //     const fileId = result.id;
+  //     if (result.uri && result.internalKey) {
+  //       const layerIndex = stateApp.layers.findIndex(
+  //         (layer) => layer.file == fileId
+  //       );
+  //       handleFileAsync(result.uri, result.internalKey, layerIndex);
+  //     } else if (fileId)
+  //       viewFile({
+  //         variables: {
+  //           fileId,
+  //         },
+  //       });
+  //   }
+  // }, [viewFileResult]);
+
   useEffect(() => {
     if (viewFileResult && viewFileResult.viewFile && stateApp.layers) {
       const result = viewFileResult.viewFile;
       const fileId = result.id;
-      const layerIndex = stateApp.layers.findIndex(
-        (layer) => layer.file == fileId
-      );
-      handleFileAsync(result.uri, result.internalKey, layerIndex);
+      if (result.uri && result.internalKey) {
+        const layerIndex = stateApp.layers.findIndex(
+          (layer) => layer.file == fileId
+        );
+        handleFileAsync(result.uri, result.internalKey, layerIndex);
+      } else if (fileId && fileRequestCounter < 30) {
+        let waitBeforeRequestAgain = setTimeout(() => {
+          setFileRequestCounter(fileRequestCounter + 1);
+          viewFile({
+            variables: {
+              fileId,
+            },
+          });
+          clearTimeout(waitBeforeRequestAgain);
+        }, 1000);
+      } else {
+        ////fail all request
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          universalCircularLoaderAct: false,
+        }));
+        dispatch(
+          showErrorMessage(
+            "The file is not ready yet, please wait a few minutes and then reload the application."
+          )
+        );
+      }
     }
   }, [viewFileResult]);
 
@@ -587,6 +626,16 @@ export default function Map() {
                   },
                 };
               } else if (feature.shape) {
+                // This is temporary solution to replace Mapbox.Draw library's autogenerated `id`
+                // with mongondb id.
+                if (feature._id) {
+                  let shape = JSON.parse(feature.shape);
+                  shape.id = feature._id;
+                  shape.properties.id = feature._id;
+                  return shape;
+                }
+                ///////////
+
                 return JSON.parse(feature.shape);
               } else {
                 return {
@@ -671,41 +720,27 @@ export default function Map() {
           });
         }
       } else {
-        if (paintType == "symbol") {
-          map.addLayer({
-            id: layerId,
-            type: paintType,
-            source: sourceId,
-            paintProps: prop.paintProps,
-            layout: {
-              ...prop.symbolProps,
-              visibility: visible ? "visible" : "none",
-            },
-          });
-        } else {
-          if (prop.layoutProps) {
-            map.addLayer({
-              id: layerId,
-              type: paintType,
-              source: sourceId,
-              paint: prop.paintProps,
-              layout: {
-                ...prop.layoutProps,
-                visibility: visible ? "visible" : "none",
-              },
-            });
-          } else {
-            map.addLayer({
-              id: layerId,
-              type: paintType,
-              source: sourceId,
-              paint: prop.paintProps,
-              layout: {
-                visibility: visible ? "visible" : "none",
-              },
-            });
-          }
+        //// joining all properties before to set the new layer ////
+        let layout = { visibility: visible ? "visible" : "none" };
+        if (prop.layoutProps) layout = { ...layout, ...prop.layoutProps };
+        // symbols
+        if (prop.symbolProps) layout = { ...layout, ...prop.symbolProps };
+
+        const layerConfig = {
+          id: layerId,
+          type: paintType,
+          source: sourceId,
+          layout,
+        };
+
+        if (prop.paintProps) layerConfig.paint = prop.paintProps;
+
+        if (prop.minZoom) {
+          layerConfig.minzoom = prop.minZoom;
         }
+
+        map.addLayer(layerConfig);
+        ////////////////////////////////////////////////////////////
       }
 
       if (prop.clusterProps) {
@@ -1060,7 +1095,8 @@ export default function Map() {
       setStateApp((state) => ({
         ...state,
         popupOpen: false,
-        selectedUserDefinedLayer: undefined,
+        selectedUserDefinedLayer: null,
+        selectedParcel: null,
       }));
       setStateApp((state) => ({
         ...state,
@@ -1100,11 +1136,21 @@ export default function Map() {
         ...state,
         popupOpen: false,
       }));
-      setStateApp((state) => ({
-        ...state,
-        selectedUserDefinedLayer: undefined,
-        selectedParcel: feature.properties,
-      }));
+
+      if (feature.source === "parcels_source") {
+        setStateApp((state) => ({
+          ...state,
+          selectedUserDefinedLayer: null,
+          selectedParcel: feature.properties,
+        }));
+      }
+      if (feature.source === "interests_source") {
+        setStateApp((state) => ({
+          ...state,
+          selectedUserDefinedLayer: feature,
+          selectedParcel: null,
+        }));
+      }
 
       // setStateApp({...stateApp, currentFeature: feature});
       createUDPopUp(feature.properties);
@@ -1231,7 +1277,7 @@ export default function Map() {
       ) {
         for (let i = 0; i < hoverUdIds.length; i++) {
           map.setFeatureState(
-            { source: "parcel_source", id: hoverUdIds[i] },
+            { source: "parcels_source", id: hoverUdIds[i] },
             { hover: false }
           );
           HoverUdIds([]);
@@ -1243,6 +1289,7 @@ export default function Map() {
       if (isNormalClick && features && features.length > 0) {
         const feature = features[0];
         const layerId = feature.layer.id;
+
         switch (true) {
           case clusterUDLayers.indexOf(layerId) > -1:
             clusterClickHandler(feature, map);
@@ -1374,6 +1421,40 @@ export default function Map() {
     rigs,
     map,
   ]);
+
+  //// remove the layer and it's source from the map after it's deleted
+  const removeLayer = (layer) => {
+    const paintProps = layer.layerPaintProps;
+    for (let i = paintProps.length - 1; i >= 0; i--) {
+      const prop = paintProps[i];
+
+      // -> remove layer
+      const layerId = prop.id;
+      if (map.getLayer(layerId)) map.removeLayer(layerId);
+
+      if (prop.clusterProps) {
+        if (map.getLayer(layerId + "-clusters-counts"))
+          map.removeLayer(layerId + "-clusters-counts");
+
+        if (map.getLayer(layerId + "-clusters"))
+          map.removeLayer(layerId + "-clusters");
+      }
+
+      // -> remove source
+      const sourceId = prop.sourceProps;
+      if (map.getSource(sourceId)) map.removeSource(sourceId);
+
+      if (map.getSource(`${sourceId}_filter`))
+        map.removeSource(`${sourceId}_filter`);
+    }
+  };
+
+  useEffect(() => {
+    if (removeLayerFromMap && map) {
+      removeLayer(removeLayerFromMap);
+      dispatch(setMainMapState({ removeLayerFromMap: null }));
+    }
+  }, [removeLayerFromMap]);
 
   // useEffect(() => {
   //   console.log("useEffect 14");
@@ -3510,7 +3591,6 @@ export default function Map() {
       let coordinates = [currentFeature.longitude, currentFeature.latitude];
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
-      //console.log(popUps);
 
       let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
@@ -3588,7 +3668,6 @@ export default function Map() {
 
   const createUDPopUp = useCallback(
     (currentFeature) => {
-      console.log(currentFeature.shapeCenter);
       let coordinates = currentFeature.shapeCenter;
       if (typeof currentFeature.shapeCenter === "string") {
         coordinates = JSON.parse(currentFeature.shapeCenter);

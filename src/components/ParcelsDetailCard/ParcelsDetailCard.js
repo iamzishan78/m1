@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
   },
   calcSummary: {
-    margin: "8px"
+    margin: "8px",
   },
   parcelMap: {
     margin: "8px",
@@ -82,7 +82,9 @@ export default function ParcelsDetailCard(props) {
   const [grossAcres, setGrossAcres] = useState();
   const [legalDescription, setLegalDesc] = useState();
 
-  const [updateCustomLayer, { data: updatedParcel }] = useMutation(UPDATECUSTOMLAYER);
+  const [updateCustomLayer, { data: updatedParcel }] = useMutation(
+    UPDATECUSTOMLAYER
+  );
 
   const [getCustomLayer, { data: dataCustomLayer, loading }] = useLazyQuery(
     CUSTOMLAYER,
@@ -104,12 +106,12 @@ export default function ParcelsDetailCard(props) {
   useEffect(() => {
     if (dataCustomLayer && dataCustomLayer.customLayer) {
       let shape = dataCustomLayer.customLayer.shape;
-      if(typeof shape === "string") {
+      if (typeof shape === "string") {
         shape = JSON.parse(shape);
       }
       setParcelObj({
         ...dataCustomLayer.customLayer,
-        shape: shape
+        shape: shape,
       });
       setProperties(shape.properties);
       setParcelName(shape.properties.shapeLabel);
@@ -119,11 +121,9 @@ export default function ParcelsDetailCard(props) {
   }, [dataCustomLayer]);
 
   useEffect(() => {
-    if(updatedParcel) {
-      if(updatedParcel.updateCustomLayer.success) {
-        dispatch(
-          showSuccessMessage("Successfully updated the parcel.")
-        );
+    if (updatedParcel) {
+      if (updatedParcel.updateCustomLayer.success) {
+        dispatch(showSuccessMessage("Successfully updated the parcel."));
       } else {
         dispatch(showErrorMessage("Failed to update parcel"));
       }
@@ -144,12 +144,12 @@ export default function ParcelsDetailCard(props) {
         variables: {
           customLayerId: parcelObj._id,
           customLayer: {
-            shape: JSON.stringify(shape)
+            shape: JSON.stringify(shape),
           },
         },
       });
     }
-  }
+  };
 
   return parcelObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
@@ -165,9 +165,7 @@ export default function ParcelsDetailCard(props) {
             </Grid>
             <Grid item sm={5}>
               <div className={classes.calcSummary}>
-                <p className="formLabel">
-                  Parcel Name
-                </p>
+                <p className="formLabel">Parcel Name</p>
                 <TextField
                   size="small"
                   value={parcelName}
@@ -176,13 +174,11 @@ export default function ParcelsDetailCard(props) {
                     setParcelName(e.target.value);
                   }}
                   onKeyDown={(e) => {
-                    updateParcel(e, 'shapeLabel', parcelName);
+                    updateParcel(e, "shapeLabel", parcelName);
                   }}
                   fullWidth
                 />
-                <p className="formLabel">
-                  Gross Acres
-                </p>
+                <p className="formLabel">Gross Acres</p>
                 <TextField
                   size="small"
                   value={grossAcres}
@@ -191,7 +187,7 @@ export default function ParcelsDetailCard(props) {
                     setGrossAcres(e.target.value);
                   }}
                   onKeyDown={(e) => {
-                    updateParcel(e, 'sdGrossAcres', grossAcres);
+                    updateParcel(e, "sdGrossAcres", grossAcres);
                   }}
                   fullWidth
                 />
@@ -220,7 +216,7 @@ export default function ParcelsDetailCard(props) {
                     setLegalDesc(e.target.value);
                   }}
                   onKeyDown={(e) => {
-                    updateParcel(e, 'legalDescription', legalDescription);
+                    updateParcel(e, "legalDescription", legalDescription);
                   }}
                 />
               </div>
@@ -238,11 +234,7 @@ export default function ParcelsDetailCard(props) {
         <Taps
           tabLabels={["Owners", "Wells"]}
           tabPanels={[
-            <M1nTable
-              parent="ownersPerParcel"
-              customLayer={parcelObj}
-              dense
-            />,
+            <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense />,
             "Wells Table Coming Soon!",
           ]}
         />

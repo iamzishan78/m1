@@ -1851,7 +1851,7 @@ function M1nTable(props) {
     if (props.parent && props.parent === "OwnersPerWell") {
       console.log("ue mintable 10");
       setTargetLabel("owner");
-      setHeader("Owners Per Well");
+      setHeader("Tax Roll Ownership");
       setAddAble(false);
       getWellOwners({
         variables: { id: props.selectedWell.id },

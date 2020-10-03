@@ -265,6 +265,7 @@ export default function CheckboxList(props) {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       addLayer: true,
+      selectedControl: null
     }));
   };
 
