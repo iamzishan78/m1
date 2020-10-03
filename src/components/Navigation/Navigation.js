@@ -927,7 +927,7 @@ export default function Navigation(props) {
   const openUserManagement = (event) => {
     event.preventDefault();
     handleMenuClose();
-    setStateNav({ ...stateNav, isProfileOpen: true });
+    setStateNav({ ...stateNav, isUserManagementOpen: true });
     setOpenUserManagementModal(true);
   }
 
