@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
   },
   image: {
     maxHeight: "72px",
-    maxWwidth: "72px",
+    maxWidth: "65px !important",
     borderRadius: "4px",
   },
 }));
@@ -140,12 +140,10 @@ const RssFeed = () => {
       const sorted = newArticles.sort((a, b) =>
         a.article.pubDate > b.article.pubDate ? -1 : 1
       );
-      console.log(sorted, "sfsdfs");
       setNews([...news, ...sorted]);
     });
   }, []);
 
-  console.log(news, "listednews");
   const truncate = (str, num) => {
     if (str.length <= num) {
       return str;
@@ -173,7 +171,7 @@ const RssFeed = () => {
     <Fragment>
       <CardHeader
         action={<DragHandle />}
-        title={`Latest Newssss`}
+        title={`Latest News`}
         className={classes.header}
       />
 

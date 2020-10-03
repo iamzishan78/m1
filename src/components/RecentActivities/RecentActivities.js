@@ -47,12 +47,16 @@ const useStyles = makeStyles((theme) => ({
   groupContent: {
     display: "flex",
   },
+  grouptext: {
+    display: "flex",
+    float: "left",
+  },
 
   viewAllCard: {
     display: "flex",
     justifyContent: "space-between",
     backgroundColor: "#ffffff",
-    height: "79vh",
+    height: "84.5vh",
   },
   inputField: {
     marginBottom: "30px",
@@ -343,9 +347,12 @@ export default ({
         />
       </RightDialog>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
-        <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
-          Recent Activities
-        </h4>
+        <div className={classes.grouptext}>
+          <h4 style={{ margin: "0px 12px 8px 0px" }}>Recent Activities</h4>
+          <h4 className={classes.addNew} onClick={addActivity}>
+            Add New
+          </h4>
+        </div>
         <h4
           className={classes.viewAll}
           onClick={() => {
@@ -363,14 +370,6 @@ export default ({
         >
           View All
         </h4>
-
-        <h4
-          className={classes.viewAll}
-          style={{ marginRight: "10px" }}
-          onClick={addActivity}
-        >
-          Add New
-        </h4>
       </Grid>
 
       <Grid item xs={12}>
@@ -383,7 +382,7 @@ export default ({
               updateActivity={updateActivity}
             />
           </Grid>
-          <Grid item xs={4} style={{ minWidth: "fit-content" }}>
+          <Grid item xs={6} style={{ minWidth: "fit-content" }}>
             <ActivitySummary activityLog={props.activityLog} />
           </Grid>
         </Grid>
