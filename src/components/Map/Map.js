@@ -1354,6 +1354,13 @@ export default function Map() {
                 map.moveLayer(id, beforeLayer);
               }
               beforeLayer = id;
+
+              if (id == "basinLayer" || id == "GLOUnits" || id == "GLOLeases")
+                dispatch(
+                  setMainMapState({
+                    [`${id}Color`]: map.getPaintProperty(id, "fill-color"),
+                  })
+                );
             }
             if (layer.layerSettings.interaction.interactionAble) {
               map.off("mousemove", id, mouseMoveHandler);

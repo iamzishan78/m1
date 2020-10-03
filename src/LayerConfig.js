@@ -1744,7 +1744,7 @@ export const defaultLayers = [
         paintType: "circle",
         paintProps: {
           "circle-radius": 5,
-          "circle-color": "#00FF00",
+          "circle-color": "#E8F742",
           "circle-stroke-width": 2,
           "circle-stroke-color": "#fff",
         },
@@ -1754,9 +1754,9 @@ export const defaultLayers = [
               property: "point_count",
               type: "interval",
               stops: [
-                [0, "#00FF00"],
-                [100, "#00FF00"],
-                [750, "#00FF00"],
+                [0, "#E8F742"],
+                [100, "#E8F742"],
+                [750, "#E8F742"],
               ],
             },
             "circle-radius": [
@@ -1936,7 +1936,7 @@ export const defaultLayers = [
         },
         clusterProps: {
           clusterPaintProps: {
-            "circle-color": "#666",
+            "circle-color": "#55E555",
             "circle-radius": [
               "step",
               ["get", "point_count"],
@@ -1997,7 +1997,7 @@ export const defaultLayers = [
       visiable: false,
     },
     layerPaintProps: {
-      ids: ["basinLabels", "basinLayer"],
+      ids: ["basinLayer", "basinLabels"],
     },
   },
   {
