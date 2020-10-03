@@ -245,7 +245,6 @@ function App() {
                   <Switch>
                     <NavigationProvider>
                       <PrivateRoute exact path="/" component={MapProvider} />
-                      {/* <PrivateRoute exact path="/myaccount" component={ProfileDetailsProvider} /> */}
                       <Route exact path="/signup" component={SignUpCard} />
                       <Route exact path="/loginb2c" component={LoginB2C} />
                       <Route

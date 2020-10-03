@@ -61,6 +61,7 @@ export default function UserManagementContainer() {
       <Dialog
         fullWidth
         maxWidth="xl"
+        fullScreen={true}
         open={isUserManagementOpen}
         onClose={handleClose}
       >

@@ -997,18 +997,18 @@ const UserManagementHeadCells = [
       viewColumns: false,
     },
   },
-  {
-    name: "userType",
-    label: "User Type",
-    options: {
-      filter: true,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  // {
+  //   name: "userType",
+  //   label: "User Type",
+  //   options: {
+  //     filter: true,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
   {
     name: "role",
     label: "Role",
@@ -1021,18 +1021,18 @@ const UserManagementHeadCells = [
       viewColumns: false,
     },
   },
-  {
-    name: "adminAccess",
-    label: "Admin Access",
-    options: {
-      filter: true,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  // {
+  //   name: "adminAccess",
+  //   label: "Admin Access",
+  //   options: {
+  //     filter: true,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
   {
     name: "lastLogin",
     label: "Last Login",

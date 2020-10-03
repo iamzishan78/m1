@@ -1065,7 +1065,7 @@ function SubTable(props) {
                   ) {
                     //// if no value
                     if (value === "" || value === null || !value)
-                      return <p style={{ color: "#B3B3B3" }}>N/A</p>;
+                      return <p style={{ color: "#B3B3B3", padding: "10px" }}>N/A</p>;
 
                     //// if value
                     return (
