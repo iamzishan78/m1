@@ -62,6 +62,7 @@ import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
 import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
 import { deepEqualObjects } from "../Shared/functions";
 import gjv from "geojson-validation";
+import { setMainMapState, showErrorMessage } from "../../actions";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -108,6 +109,9 @@ export default function Map() {
   const dispatch = useDispatch();
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
+  );
+  const removeLayerFromMap = useSelector(
+    ({ MainMap }) => MainMap.removeLayerFromMap
   );
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -233,6 +237,13 @@ export default function Map() {
     } else {
       ids.push(id);
       HoverUdIds(ids);
+    }
+  };
+
+  const [fileRequestCounter, FileRequestCounter] = useState(1);
+  const setFileRequestCounter = (state) => {
+    if (fileRequestCounter != state) {
+      FileRequestCounter(state);
     }
   };
 
@@ -410,6 +421,7 @@ export default function Map() {
         for (let i = 0; i < layerStates.allLayerSettingsByUser.length; i++) {
           const layer = layerStates.allLayerSettingsByUser[i];
           if (layer.layerType == "file layer") {
+            setFileRequestCounter(1);
             viewFile({
               variables: {
                 fileId: layer.file,
@@ -446,6 +458,7 @@ export default function Map() {
       if (layerIndex < layersData.length - 1)
         for (let i = layerIndex + 1; i < layers.length; i++) {
           if (layers[i].layerType == "file layer") {
+            setFileRequestCounter(1);
             viewFile({
               variables: {
                 fileId: layers[i].file,
@@ -465,6 +478,24 @@ export default function Map() {
     }
   };
 
+  // useEffect(() => {
+  //   if (viewFileResult && viewFileResult.viewFile && stateApp.layers) {
+  //     const result = viewFileResult.viewFile;
+  //     const fileId = result.id;
+  //     if (result.uri && result.internalKey) {
+  //       const layerIndex = stateApp.layers.findIndex(
+  //         (layer) => layer.file == fileId
+  //       );
+  //       handleFileAsync(result.uri, result.internalKey, layerIndex);
+  //     } else if (fileId)
+  //       viewFile({
+  //         variables: {
+  //           fileId,
+  //         },
+  //       });
+  //   }
+  // }, [viewFileResult]);
+
   useEffect(() => {
     if (viewFileResult && viewFileResult.viewFile && stateApp.layers) {
       const result = viewFileResult.viewFile;
@@ -474,12 +505,28 @@ export default function Map() {
           (layer) => layer.file == fileId
         );
         handleFileAsync(result.uri, result.internalKey, layerIndex);
-      } else if (fileId)
-        viewFile({
-          variables: {
-            fileId,
-          },
-        });
+      } else if (fileId && fileRequestCounter < 30) {
+        let waitBeforeRequestAgain = setTimeout(() => {
+          setFileRequestCounter(fileRequestCounter + 1);
+          viewFile({
+            variables: {
+              fileId,
+            },
+          });
+          clearTimeout(waitBeforeRequestAgain);
+        }, 1000);
+      } else {
+        ////fail all request
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          universalCircularLoaderAct: false,
+        }));
+        dispatch(
+          showErrorMessage(
+            "The file is not ready yet, please wait a few minutes and then reload the application."
+          )
+        );
+      }
     }
   }, [viewFileResult]);
 
@@ -1374,6 +1421,40 @@ export default function Map() {
     rigs,
     map,
   ]);
+
+  //// remove the layer and it's source from the map after it's deleted
+  const removeLayer = (layer) => {
+    const paintProps = layer.layerPaintProps;
+    for (let i = paintProps.length - 1; i >= 0; i--) {
+      const prop = paintProps[i];
+
+      // -> remove layer
+      const layerId = prop.id;
+      if (map.getLayer(layerId)) map.removeLayer(layerId);
+
+      if (prop.clusterProps) {
+        if (map.getLayer(layerId + "-clusters-counts"))
+          map.removeLayer(layerId + "-clusters-counts");
+
+        if (map.getLayer(layerId + "-clusters"))
+          map.removeLayer(layerId + "-clusters");
+      }
+
+      // -> remove source
+      const sourceId = prop.sourceProps;
+      if (map.getSource(sourceId)) map.removeSource(sourceId);
+
+      if (map.getSource(`${sourceId}_filter`))
+        map.removeSource(`${sourceId}_filter`);
+    }
+  };
+
+  useEffect(() => {
+    if (removeLayerFromMap && map) {
+      removeLayer(removeLayerFromMap);
+      dispatch(setMainMapState({ removeLayerFromMap: null }));
+    }
+  }, [removeLayerFromMap]);
 
   // useEffect(() => {
   //   console.log("useEffect 14");

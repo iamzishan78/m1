@@ -371,7 +371,7 @@ export default function AddLayer(props) {
                             edge="end"
                             size="small"
                             onClick={() => {
-                              setOpenDeleteDialog(layer.layerId);
+                              setOpenDeleteDialog(layer);
                             }}
                           >
                             <DeleteIcon />
@@ -413,7 +413,7 @@ export default function AddLayer(props) {
           <DeleteConfirmationDialog
             openDialog={openDeleteDialog ? true : false}
             handleDialogClose={setOpenDeleteDialog}
-            id={openDeleteDialog}
+            layer={openDeleteDialog}
           />
         </Dialog>
       )}
