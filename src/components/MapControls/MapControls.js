@@ -168,7 +168,7 @@ export default function MapControls(props) {
         name: "Heatmaps",
         action: "heatMaps",
       },
-      { icon: <QueueIcon id="add" />, name: "Add Data", action: "add" },
+      // { icon: <QueueIcon id="add" />, name: "Add Data", action: "add" },
       {
         icon: !stateApp.editDraw ? <EditIcon /> : <CancelIcon />,
         name: "Draw",
