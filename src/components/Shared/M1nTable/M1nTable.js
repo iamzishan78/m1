@@ -1914,10 +1914,7 @@ function M1nTable(props) {
       setHeader("Contacts");
       setAddAble({ parent: false, type: "contact" });
       getContacts({
-        variables: {
-          perPage: 25,
-          after: null
-        },
+        variables: { },
       });
       setUploadIcon(true);
       setStartPaginationAt(25);

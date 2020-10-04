@@ -1491,8 +1491,10 @@ function SubTable(props) {
             tableState.page = 0
             props.contactsPageProps.getContacts({
               variables: {
-                perPage: tableState.rowsPerPage,
-                after: null
+                pagination: {
+                  first: tableState.rowsPerPage,
+                  after: null
+                }
               },
             });
             break;
@@ -1500,8 +1502,10 @@ function SubTable(props) {
             props.contactsPageProps.setLoading(true);
             props.contactsPageProps.getContacts({
               variables: {
-                perPage: tableState.rowsPerPage,
-                after: props.rows.pop()._id
+                pagination: {
+                  first: tableState.rowsPerPage,
+                  after: props.rows.pop()._id
+                }
               },
             });
             break;
@@ -1511,13 +1515,35 @@ function SubTable(props) {
             props.contactsPageProps.setLoading(true);
             props.contactsPageProps.getContacts({
               variables: {
-                perPage: tableState.rowsPerPage,
-                after: null,
-                sortField: column.name.split('.')[0],
-                sortOrder: column.sortDirection == 'desc' ? 1 : -1 
+                pagination: {
+                  first: tableState.rowsPerPage,
+                  after: null
+                },
+                sort: {
+                  field: column.name.split('.')[0],
+                  order: column.sortDirection == 'desc' ? 1 : -1 
+                }
               },
             });
-            //this.sort(tableState.page, tableState.sortOrder);
+            break;
+          case 'search':
+            let column1 = tableState.columns[tableState.activeColumn]
+            console.log('column1', column1)
+            console.log('tableState.searchText', tableState.searchText)
+            props.contactsPageProps.setLoading(true);
+            props.contactsPageProps.getContacts({
+              variables: {
+                pagination: {
+                  first: tableState.rowsPerPage,
+                  after: null
+                },
+                /*sort: column1 ? {
+                  field: column1.name.split('.')[0],
+                  order: column1.sortDirection == 'desc' ? 1 : -1 
+                } : null,*/
+                search: tableState.searchText
+              },
+            });
             break;
           default:
             console.log('action not handled.');
