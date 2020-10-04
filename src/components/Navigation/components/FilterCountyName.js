@@ -61,12 +61,13 @@ export default function FilterCountyName() {
           return false;
         };
 
-        if (stateNav.countyName === false && !countyBelongState()) {
-          setStateNav((stateNav) => ({
-            ...stateNav,
-            countyName: data.counties[0].county,
-          }));
-        }
+        // if (stateNav.countyName === false && !countyBelongState()) {
+        //   setStateNav((stateNav) => ({
+        //     ...stateNav,
+        //     countyName: data.counties[0].county,
+        //   }));
+        // }
+        
       } else {
         setCountyList([]);
         setStateNav((stateNav) => ({
@@ -124,7 +125,7 @@ export default function FilterCountyName() {
           autoSelect
           disableListWrap
           includeInputInList
-          value={countyList.length === 0 ? "" : stateNav.countyName}
+          //value={countyList.length === 0 ? "" : ""}
           onChange={(event, newValue) => {
             handleCountyNameChange(event, newValue);
           }}
