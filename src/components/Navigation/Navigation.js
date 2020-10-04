@@ -988,6 +988,7 @@ export default function Navigation(props) {
     setStateApp((stateApp) => ({ ...stateApp, toggleZoomOut: true }));
   };
 
+  
   const handleDrawerClose = () => {
     setOpenDrawer(false);
   };
@@ -1066,12 +1067,17 @@ export default function Navigation(props) {
         {stateApp.user ? (
           <Toolbar>
             {!openDrawer ? (
+
+
               <div className={classes.toolbar}>
-                <IconButton color="secondary" onClick={handleDrawerOpen}>
-                  {theme.direction === "rtl" ? <MenuIcon /> : <MenuIcon />}
-                </IconButton>
+  
+              <IconButton color="secondary" onClick={handleDrawerOpen}>
+                {theme.direction === "rtl" ? <MenuIcon /> : <MenuIcon />}
+              </IconButton>
 
                 <div style={{ marginRight: "35px" }}>
+
+                {matchFind ? (
                   <Button
                     color="secondary"
                     size="large"
@@ -1080,6 +1086,19 @@ export default function Navigation(props) {
                   >
                     <M1neralLogoWhiteLetters />
                   </Button>
+                              ) : 
+                              
+                  <Button
+                    color="secondary"
+                    size="large"
+                    onClick={(event) => handleListItemClick(event, 0, "/")}
+                    className={classes.margin}
+                  >
+                    <M1neralLogoWhiteLetters />
+                  </Button>
+                  
+                  }
+
                 </div>
               </div>
             ) : null}
