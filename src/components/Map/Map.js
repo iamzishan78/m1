@@ -4780,10 +4780,10 @@ export default function Map() {
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
         map.flyTo({
-          center: { lng: -98.8, lat: 31.6 },
-          zoom: 5.88,
-          pitch: 0,
-          bearing: 0,
+          center: stateApp.mapVars.center,
+          zoom: stateApp.mapVars.zoom,
+          pitch: stateApp.mapVars.pitch,
+          bearing: stateApp.mapVars.bearing,
           speed: 0.5,
         });
 
