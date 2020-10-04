@@ -17,7 +17,7 @@ export default function InviteUserDialog(props) {
 
   const modalClass = Modals();
   const [displayName, setName] = useState("");
-  const [emails, setEmails] = useState("");
+  const [emailAddress, setEmailAddress] = useState("");
   const [userType, setUserType] = useState("Member");
   const [role, setUserRole] = useState("Member");
   const [adminAccess, setAdminAccess] = useState(false);
@@ -28,20 +28,21 @@ export default function InviteUserDialog(props) {
     const rowData = props.rows;
     let temp_last_ts = new Date();
     setLastLogin(temp_last_ts.toString());
-    rowData.push({displayName, emails, userType, role, adminAccess, lastLogin: "Invite sent" });
+    rowData.push({displayName, emailAddress, userType, role, adminAccess, lastLogin: "Invite sent" });
     addUser({variables: {user: {
       displayName,
-      identities: [{
-          signInType: "emailAddress",
-          issuer: "mineralb2c.onmicrosoft.com",
-          issuerAssignedId: emails
-        },],
-      passwordProfile : {
-        forceChangePasswordNextSignIn: false,
-        password: "1"
-      },
-      passwordPolicies: "DisablePasswordExpiration,DisableStrongPassword",
-      extension_ecdc741a6b2c415893d3b5bccc2d7e76_mustResetPassword: true
+      emailAddress,
+      // identities: [{
+      //     signInType: "emailAddress",
+      //     issuer: "mineralb2c.onmicrosoft.com",
+      //     issuerAssignedId: emails
+      //   },],
+      // passwordProfile : {
+      //   forceChangePasswordNextSignIn: false,
+      //   password: "1"
+      // },
+      // passwordPolicies: "DisablePasswordExpiration,DisableStrongPassword",
+      // extension_ecdc741a6b2c415893d3b5bccc2d7e76_mustResetPassword: true
     }}
     });
 
@@ -79,8 +80,8 @@ export default function InviteUserDialog(props) {
               size="small"
               placeholder="E.g. jacob@mineral.com"
               fullWidth
-              value={emails}
-              onChange={e=> setEmails(e.target.value)}
+              value={emailAddress}
+              onChange={e=> setEmailAddress(e.target.value)}
             />
           </Grid>
           <Grid item xs={12}>
