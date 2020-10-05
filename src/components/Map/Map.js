@@ -63,6 +63,7 @@ import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
 import { deepEqualObjects } from "../Shared/functions";
 import gjv from "geojson-validation";
 import { setMainMapState, showErrorMessage } from "../../actions";
+import { ZoomOutMapSharp } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -138,6 +139,14 @@ export default function Map() {
       Lat(state);
     }
   };
+  const [zoom, Zoom] = useState(stateApp.mapVars.zoom);
+  const setZoom = (state) => {
+    if (zoom != state) {
+      Zoom(state);
+    }
+  };
+
+
   const [transform, Transform] = useState("transform: inherit");
   const setTransform = (state) => {
     if (transform != state) {
@@ -3991,6 +4000,14 @@ export default function Map() {
     let coordinates = e.lngLat.wrap();
     setLng(coordinates.lng);
     setLat(coordinates.lat);
+
+  };
+
+  const mapZoom = (e) => {
+    let zooms = map.getZoom();
+    console.log('zoomz', zooms)
+    setZoom(zooms);
+
   };
 
   const onAbstactLayerClick = function (feature, action) {
@@ -4517,6 +4534,7 @@ export default function Map() {
         // map.off("mousemove", mapMouseMove);
 
         map.on("mousemove", mapMouseMove);
+        map.on("zoom", mapZoom);
 
         console.log("map extra components complete");
       }
@@ -4780,10 +4798,10 @@ export default function Map() {
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
         map.flyTo({
-          center: { lng: -98.8, lat: 31.6 },
-          zoom: 5.88,
-          pitch: 0,
-          bearing: 0,
+          center: stateApp.mapVars.center,
+          zoom: stateApp.mapVars.zoom,
+          pitch: stateApp.mapVars.pitch,
+          bearing: stateApp.mapVars.bearing,
           speed: 0.5,
         });
 
@@ -5190,7 +5208,7 @@ export default function Map() {
       {/* <TrackAbstract showAbstractPopup={stateApp.showAbstractPopup} /> */}
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <HugeRequest hugeRequestStatus={stateApp.hugeRequest} />
-      <Coordinates long={lng} lat={lat} />
+      <Coordinates long={lng} lat={lat} zoom={zoom}/>
       {stateApp.selectedUserDefinedLayer &&
         !stateApp.popupOpen &&
         stateApp.editLayer && (
