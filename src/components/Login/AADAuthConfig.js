@@ -6,23 +6,29 @@ export const tenantsCredentials = (tenantName) => {
   let found;
   for (let i = 0; i < tenants.length; i++) {
     if (tenants[i].name.toUpperCase() === tenantName.toUpperCase())
-      found = tenants[i];
+    found = tenants[i];
   }
   return found;
 };
 
+export const b2cPolicies = {
+  signIn: "B2C_1A_SignIn_DEV",
+  forgotPassword: "B2C_1A_PasswordReset_DEV",
+}
+
 // Config object to be passed to Msal on creation
-export const msalConfig = (tenantId, clientId) => {
+export const msalConfig = (tenant) => {
   const path = window.location.origin;
   return {
     auth: {
-      clientId: clientId,
-      // authority: 'https://m1neralb2ctenant1.b2clogin.com/m1neralb2ctenant1.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in_v2_preview',
-      // knownAuthorities: ['m1neralb2ctenant1.b2clogin.com'],
-      // validateAuthority: false,
-      authority: `https://login.microsoftonline.com/${
-        tenantId ? tenantId : "common"
-      }`,
+      clientId: tenant ? tenant.clientId : undefined,
+      authority: tenant ? tenant.authority : undefined,
+      knownAuthorities: [tenant ? new URL(tenant.authority).host : undefined],
+      // authority: 'https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/b2c_1a_signin_dev',
+      // knownAuthorities: ['mineralb2c.b2clogin.com'],
+      // authority: `https://login.microsoftonline.com/${
+      //   tenantId ? tenantId : "common"
+      // }`,
       redirectUri: path,
       postLogoutRedirectUri: path,
     },
@@ -33,19 +39,23 @@ export const msalConfig = (tenantId, clientId) => {
   };
 };
 
-export const MSALObj = (tenantId, clientId) =>
-  new msal.PublicClientApplication(msalConfig(tenantId, clientId));
+export const MSALObj = (tenant) =>
+  new msal.PublicClientApplication(msalConfig(tenant));
 
 export const loginRequest = {
-  scopes: [],
+  scopes: ["openid", "offline_access"],
 };
 
 export const readProfileRequest = {
   scopes: ["https://graph.microsoft.com/User.Read"],
 };
 
-export const authGraphQLRequest = {
-  scopes: ["https://management.azure.com/user_impersonation"],
+export const authGraphQLRequest = (graphqlScope) => {
+  return {
+    scopes: [graphqlScope, "openid", "offline_access"],
+  // scopes: ["https://mineralb2c.onmicrosoft.com/api/user_impersonation", "openid", "offline_access"],
+  // scopes: ["https://management.azure.com/user_impersonation", "openid", "offline_access"],
+  }
 };
 
 // Add here the endpoints for MS Graph API services you would like to use.

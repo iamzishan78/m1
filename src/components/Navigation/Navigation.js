@@ -898,9 +898,23 @@ export default function Navigation(props) {
     setAnchorEl(null);
   };
   const handleLogout = async () => {
+    const currentAccounts = stateApp.myMSALObj.getAllAccounts();
+    const currentAccount = currentAccounts && currentAccounts.length === 1
+      ? currentAccounts[0]
+      : (() => {
+          // Add choose account code here
+          return;
+        })();
+
+    const logoutRequest = {
+      account: currentAccount
+    };
+
     setAnchorEl(null);
     sessionStorage.clear();
     localStorage.clear();
+
+    stateApp.myMSALObj.logout(logoutRequest);
 
     window.location.replace(window.location.origin);
 
