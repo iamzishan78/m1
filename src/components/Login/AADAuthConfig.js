@@ -12,8 +12,8 @@ export const tenantsCredentials = (tenantName) => {
 };
 
 export const b2cPolicies = {
-  signIn: "B2C_1A_SignIn_DEV",
-  forgotPassword: "B2C_1A_PasswordReset_DEV",
+  signIn: "B2C_1A_SignIn",
+  forgotPassword: "B2C_1A_PasswordReset",
 }
 
 // Config object to be passed to Msal on creation
@@ -24,7 +24,7 @@ export const msalConfig = (tenant) => {
       clientId: tenant ? tenant.clientId : undefined,
       authority: tenant ? tenant.authority : undefined,
       knownAuthorities: [tenant ? new URL(tenant.authority).host : undefined],
-      // authority: 'https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/b2c_1a_signin_dev',
+      // authority: 'https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/b2c_1a_signin',
       // knownAuthorities: ['mineralb2c.b2clogin.com'],
       // authority: `https://login.microsoftonline.com/${
       //   tenantId ? tenantId : "common"
