@@ -1523,8 +1523,8 @@ function SubTable(props) {
             });
             break;
           case 'sort':
-            let column = tableState.columns[tableState.activeColumn]
-            console.log('column', column)
+            const column = tableState.columns[tableState.activeColumn];
+            const backendColumnName = column.name === 'fullContactAddress' ? 'address1' : column.name;
             props.contactsPageProps.setLoading(true);
             props.contactsPageProps.getContacts({
               variables: {
@@ -1533,7 +1533,7 @@ function SubTable(props) {
                   after: null
                 },
                 sort: {
-                  field: column.name.split('.')[0],
+                  field: backendColumnName,
                   order: column.sortDirection == 'desc' ? 1 : -1 
                 }
               },
