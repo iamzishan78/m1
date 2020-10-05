@@ -187,9 +187,13 @@ export default function FilterFromGeo() {
       <Grid item sm={12} className={classes.gridItem}>
         <FilterStateName style={{ margin: 0 }} />
       </Grid>
+
+      
       <Grid item sm={12} className={classes.gridItem}>
         <FilterCountyName />
       </Grid>
+
+
       {stateNav.stateName === "TX" && (
         <Grid item sm={12} className={classes.gridItem}>
           <FilterGrid gridNumber={1} label="Survey" />
@@ -218,6 +222,9 @@ export default function FilterFromGeo() {
           <FilterGrid gridNumber={5} label="Alternate Survey" />
         </Grid>
       )}
+      
     </Grid>
+
+    
   );
 }

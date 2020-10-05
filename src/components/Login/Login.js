@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
 import { AppContext } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../Navigation/NavigationContext";
@@ -8,9 +8,11 @@ import Paper from "@material-ui/core/Paper";
 import styled from "styled-components";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import RenderSignUpControls from "./RenderSignUpControls";
+import queryString from "query-string";
 
 import {
   tenantsCredentials,
+  b2cPolicies,
   msalConfig,
   loginRequest,
   readProfileRequest,
@@ -23,6 +25,9 @@ const localStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
+  },
+  height_100: {
+    height: "100vh",
   },
   footer: {
     backgroundSize: "cover",
@@ -109,7 +114,21 @@ const M1neralLogo2 = styled(M1neralLogoNavNoAuth)`
   padding-bottom: 20px;
 `;
 
+function useWindowSize() {
+  const [size, setSize] = useState([0]);
+  useLayoutEffect(() => {
+    function updateSize() {
+      setSize([window.innerWidth]);
+    }
+    window.addEventListener("resize", updateSize);
+    updateSize();
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+  return size;
+}
+
 const Login = (props) => {
+  const [width] = useWindowSize();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [, setStateNav] = useContext(NavigationContext);
 
@@ -131,13 +150,44 @@ const Login = (props) => {
                 const currentAccounts = stateApp.myMSALObj.getAllAccounts();
                 return currentAccounts && currentAccounts.length === 1
                   ? currentAccounts[0]
-                  : () => {
+                  : (() => {
                       // Add choose account code here
                       return;
-                    };
+                    })();
               })();
 
           if (accountObj) {
+            console.log('hellz yeah!');
+
+            // We need to reject id tokens that were not issued with the default sign-in policy.
+            // "acr" claim in the token tells us what policy is used (NOTE: for new policies (v2.0), use "tfp" instead of "acr")
+            // To learn more about b2c tokens, visit https://docs.microsoft.com/en-us/azure/active-directory-b2c/tokens-overview
+            if (tokenResponse && tokenResponse.idTokenClaims && tokenResponse.idTokenClaims.tfp === b2cPolicies.forgotPassword) {
+              
+              // stateApp.myMSALObj.clearCache();
+              // stateApp.myMSALObj.account = null;
+              const logoutRequest = {
+                account: accountObj
+              };
+
+              let request = {}
+              request.scopes = loginRequest.scopes.concat([stateApp.graphqlScope]);
+
+              if (queryString.parse(props.location.search).id_token_hint) {
+                request.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint }
+              }
+
+              stateApp.myMSALObj.logout(logoutRequest);
+              // // window.alert("Password has been reset successfully. \nPlease sign-in with your new password.");
+
+              setSigningIn(true);
+              setLoadingSigInButton(true);
+
+              stateApp.myMSALObj.loginRedirect(request);
+
+              return;
+            }
+
             // Account object was retrieved, continue with app progress
             console.log("id_token acquired at: " + new Date().toString());
             // Account object is now an array! what do we do if multiple users are signed in on the same browser?
@@ -164,6 +214,20 @@ const Login = (props) => {
         })
         .catch((error) => {
           console.log(error);
+
+          if (error.errorMessage.includes("AADB2C90118")) {
+            console.log(stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword))
+
+            stateApp.myMSALObj.loginRedirect({ authority: stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword) });
+            
+            return;
+          }
+          else {
+            sessionStorage.clear();
+            window.location.replace(window.location.origin);
+            setLoading(false);
+          }
+
           sessionStorage.clear();
           window.location.replace(window.location.origin);
         });
@@ -182,13 +246,14 @@ const Login = (props) => {
 
       if (!stateApp.myMSALObj) {
         myMSALObj = new msal.PublicClientApplication(
-          msalConfig(tenant.tenantId, tenant.clientId)
+          msalConfig(tenant)
         );
 
         setStateApp({
           ...stateApp,
           myMSALObj,
           apolloClientEndpoint: tenant.apolloClientEndpoint,
+          graphqlScope: tenant.graphqlScope,
         });
       }
 
@@ -214,7 +279,15 @@ const Login = (props) => {
 
         await finishAADAuth(loginResponse);
       } else if (signInType === "loginRedirect") {
-        myMSALObj.loginRedirect(loginRequest);
+        let request = {}
+        request.scopes = loginRequest.scopes.concat([tenant.graphqlScope]);
+
+        if (queryString.parse(props.location.search).id_token_hint) {
+          request.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint }
+        }
+
+        history.replace(window.location.pathname);
+        myMSALObj.loginRedirect(request);
       }
     } else {
       updateTenantFlags("Wrong Tenant Name");
@@ -225,51 +298,51 @@ const Login = (props) => {
     const request = {};
     request.account = accountObj;
 
-    request.scopes = readProfileRequest.scopes;
-    request.loginHint = request.account.username;
-    const readProfileLoginResponse = await ssoSilent(request).catch((error) => {
-      //do some error stuff
-      console.log(error);
-    });
-    if (!readProfileLoginResponse) {
-      //do some error stuff
-      return;
-    }
+    // request.scopes = readProfileRequest.scopes;
+    // request.loginHint = request.account.username;
+    // const readProfileLoginResponse = await ssoSilent(request).catch((error) => {
+    //   //do some error stuff
+    //   console.log(error);
+    // });
+    // if (!readProfileLoginResponse) {
+    //   //do some error stuff
+    //   return;
+    // }
 
-    const readProfileToken = await getTokenPopup(request).catch((error) => {
-      //do some error stuff
-      console.log(error);
-    });
-    if (!readProfileToken) {
-      //do some error stuff
-      return;
-    }
+    // const readProfileToken = await getTokenRedirect(request).catch((error) => {
+    //   //do some error stuff
+    //   console.log(error);
+    // });
+    // if (!readProfileToken) {
+    //   //do some error stuff
+    //   return;
+    // }
 
-    const readProfileResponse = await callMSGraph(
-      "https://graph.microsoft.com/v1.0/me",
-      readProfileToken.accessToken
-    ).catch((error) => {
-      //do some error stuff
-      console.log(error);
-    });
-    if (!readProfileResponse) {
-      //do some error stuff
-      return;
-    }
+    // const readProfileResponse = await callMSGraph(
+    //   "https://graph.microsoft.com/v1.0/me",
+    //   readProfileToken.accessToken
+    // ).catch((error) => {
+    //   //do some error stuff
+    //   console.log(error);
+    // });
+    // if (!readProfileResponse) {
+    //   //do some error stuff
+    //   return;
+    // }
 
-    request.scopes = authGraphQLRequest.scopes;
-    request.loginHint = request.account.username;
-    const authGraphQLLoginResponse = await ssoSilent(request).catch((error) => {
-      //do some error stuff
-      console.log(error);
-    });
-    if (!authGraphQLLoginResponse) {
-      //do some error stuff
-      return;
-    }
+    request.scopes = authGraphQLRequest(stateApp.graphqlScope).scopes;
+    request.loginHint = request.account.homeAccountId;
+    // const authGraphQLLoginResponse = await ssoSilent(request).catch((error) => {
+    //   //do some error stuff
+    //   console.log(error);
+    // });
+    // if (!authGraphQLLoginResponse) {
+    //   //do some error stuff
+    //   return;
+    // }
 
     authGraphQLRequest.account = request.account;
-    const authGraphQLToken = await getTokenPopup(authGraphQLRequest).catch(
+    const authGraphQLToken = await getTokenRedirect(request).catch(
       (error) => {
         //do some error stuff
         console.log(error);
@@ -282,6 +355,7 @@ const Login = (props) => {
 
     const authGraphQLResponse = await callAuthGraphQL(
       `${new URL(stateApp.apolloClientEndpoint).origin}/.auth/login/aad`,
+      authGraphQLToken.idToken,
       authGraphQLToken.accessToken
     ).catch((error) => {
       //do some error stuff
@@ -322,12 +396,19 @@ const Login = (props) => {
     //   return;
     // }
 
+    const authUser = {}
+    authUser.b2cEmail = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'emails'});
+    if (authUser.b2cEmail) { authUser.b2cEmail = authUser.b2cEmail.val }
+    authUser.b2bEmail = graphQLProfileResponse.user_id;
+    authUser.b2cName = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'displayName'});
+    if (authUser.b2cName) { authUser.b2cName = authUser.b2cName.val }
+    authUser.b2bName = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'name'})
+    if (authUser.b2bName) { authUser.b2bName = authUser.b2bName.val }
+
     const mongoUser = await getMongoDBUser(
       {
-        email: readProfileResponse.mail
-          ? readProfileResponse.mail
-          : readProfileResponse.userPrincipalName,
-        name: readProfileResponse.displayName,
+        email: authUser.b2cEmail ?? authUser.b2bEmail,
+        name: authUser.b2cName ?? authUser.b2bName
       },
       authGraphQLResponse.authenticationToken
     ).catch((error) => {
@@ -342,12 +423,10 @@ const Login = (props) => {
     setStateApp((state) => ({
       ...state,
       user: {
-        id: readProfileResponse.id,
+        id: accountObj.sub,
         mongoId: mongoUser._id,
-        email: readProfileResponse.mail
-          ? readProfileResponse.mail
-          : readProfileResponse.userPrincipalName,
-        name: readProfileResponse.displayName,
+        email: mongoUser.email,
+        name: mongoUser.name,
         authToken: authGraphQLResponse.authenticationToken,
         authTokenExpires: new Date(
           authGraphQLToken.expiresOn.setDate(
@@ -430,16 +509,19 @@ const Login = (props) => {
     console.log("request made to ssoSilent at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes.toString());
 
-    stateApp.myMSALObj.config.auth.redirectUri =
-      msalConfig().auth.redirectUri + "/auth.html";
+    stateApp.myMSALObj.config.auth.redirectUri = window.location.origin + "/auth.html";
 
     const loginResponse = await stateApp.myMSALObj
       .ssoSilent(request)
       .catch(function (error) {
-        console.log(error);
+        console.error("Silent Error: " + error);
+        if (error instanceof msal.InteractionRequiredAuthError) {
+          stateApp.myMSALObj.config.auth.redirectUri = window.location.origin;
+          stateApp.myMSALObj.loginRedirect(request)
+        }
       });
 
-    stateApp.myMSALObj.config.auth.redirectUri = msalConfig().auth.redirectUri;
+    stateApp.myMSALObj.config.auth.redirectUri = window.location.origin;
 
     console.log(loginResponse);
     if (stateApp.myMSALObj.getAllAccounts()) {
@@ -447,8 +529,8 @@ const Login = (props) => {
     }
   }
 
-  async function getTokenPopup(request) {
-    console.log("request made to getTokenPopup at: " + new Date().toString());
+  async function getTokenRedirect(request) {
+    console.log("request made to getTokenRedirect at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes.toString());
 
     return await stateApp.myMSALObj
@@ -456,14 +538,19 @@ const Login = (props) => {
       .catch(async (error) => {
         console.log("silent token acquisition fails.");
         if (error instanceof msal.InteractionRequiredAuthError) {
-          console.log("acquiring token using popup");
+          console.log("acquiring token using redirect");
           return stateApp.myMSALObj
-            .acquireTokenPopup(request)
+            .acquireTokenRedirect(request)
             .catch((error) => {
               console.error(error);
             });
         } else {
           console.error(error);
+          return stateApp.myMSALObj
+            .acquireTokenRedirect(request)
+            .catch((error) => {
+              console.error(error);
+            });
         }
       });
   }
@@ -490,25 +577,32 @@ const Login = (props) => {
       .catch((error) => console.log(error));
   }
 
-  async function callAuthGraphQL(endpoint, accessToken) {
+  async function callAuthGraphQL(endpoint, idToken, accessToken) {
     const headers = new Headers();
 
     const options = {
       method: "POST",
       headers: headers,
-      body: JSON.stringify({ access_token: accessToken }),
+      body: JSON.stringify({ id_token: idToken, access_token: accessToken }),
     };
 
     console.log("request made to GraphQL login at: " + new Date().toString());
 
     return await fetch(endpoint, options)
-      .then((response) => response.json())
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(response.headers.toString())
+        }
+
+        return response.json();
+      })
       .then((response) => {
         console.log(response);
         return response;
       })
       .catch((error) => {
         console.log(error);
+        throw new Error(error);
       });
   }
 
@@ -546,6 +640,10 @@ const Login = (props) => {
         <SignInCard
           ready={loadingSigInButton}
           handleAADSignIn={handledAADSignIn}
+          tenant={
+            !stateApp.myMSALObj 
+            ? queryString.parse(props.location.search).tenant 
+            : undefined}
         />
 
         <div>
@@ -611,11 +709,17 @@ const Login = (props) => {
   );
 
   return loading ? (
-    <div style={{marginTop: "20%", marginLeft:"47%"}}>
+    <div style={{ marginTop: "20%", marginLeft: "47%" }}>
       <CircularProgress size={80} disableShrink color="secondary" />
     </div>
   ) : (
-    <div className={localClass.myRoot}>
+    <div
+      className={
+        width > 2050
+          ? `${localClass.height_100} ${localClass.myRoot}`
+          : localClass.myRoot
+      }
+    >
       <div className={localClass.rootNewUser}>{renderBody}</div>
 
       <div className={localClass.rootNewUser}>

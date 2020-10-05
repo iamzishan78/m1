@@ -7,7 +7,11 @@ import { useMutation } from "@apollo/client";
 import { UPDATELAYER } from "../../../graphQL/useMutationUpdateLayer";
 import { AppContext } from "../../../AppContext";
 import { useDispatch } from "react-redux";
-import { showErrorMessage, showSuccessMessage } from "../../../actions";
+import {
+  setMainMapState,
+  showErrorMessage,
+  showSuccessMessage,
+} from "../../../actions";
 import { MapControlsContext } from "../MapControlsContext";
 
 export default function DeleteConfirmationDialog(props) {
@@ -20,7 +24,7 @@ export default function DeleteConfirmationDialog(props) {
     if (layerDeleted && layerDeleted.updateLayer) {
       if (layerDeleted.updateLayer.success) {
         dispatch(showSuccessMessage("The layer was successfully removed"));
-
+        dispatch(setMainMapState({ removeLayerFromMap: props.layer }));
         setStateApp((state) => ({
           ...state,
           universalCircularLoaderAct: false,
@@ -41,7 +45,7 @@ export default function DeleteConfirmationDialog(props) {
     updateLayer({
       variables: {
         layer: {
-          _id: props.id,
+          _id: props.layer.layerId,
           IsDeleted: true,
         },
       },

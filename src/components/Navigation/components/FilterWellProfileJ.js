@@ -6,7 +6,6 @@ import { NavigationContext } from "../NavigationContext";
 const profileList = [
   "DIRECTIONAL",
   "HORIZONTAL",
-  "SIDETRACKED",
   "UNKNOWN",
   "VERTICAL",
 ];

@@ -5,16 +5,18 @@ import Typography from "@material-ui/core/Typography";
 import WbSunnyOutlinedIcon from "@material-ui/icons/WbSunnyOutlined";
 import moment from "moment";
 import React, { Fragment, useEffect, useState } from "react";
-import Iframe from 'react-iframe';
-
+import Iframe from "react-iframe";
 
 const useStyles = makeStyles(() => ({
-  root:  {
-    flexgrow: 1
+  root: {
+    flexgrow: 1,
   },
   weather: {
     justifyContent: "space-between",
     textAlign: "center",
+    "&>:nth-child(8)": {
+      display: "none",
+    },
   },
   dateCard: {
     alignSelf: "center",
@@ -40,14 +42,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const toFahr = (temp) =>
-  parseInt(((parseFloat(temp) - 273.15) * 9) / 5 + 32);
+const toFahr = (temp) => parseInt(((parseFloat(temp) - 273.15) * 9) / 5 + 32);
 
 const getIconUrl = (wicon) =>
   wicon && `http://openweathermap.org/img/wn/${wicon}@2x.png`;
 
 const WeatherCard = () => {
-  const [weatherkey,] = useState(process.env.REACT_APP_OPENWEATHER_KEY);
+  const [weatherkey] = useState(process.env.REACT_APP_OPENWEATHER_KEY);
   const classes = useStyles();
   const [date, setDate] = useState("");
   const [location, setLocation] = useState({ long: -95.3698, lat: 29.7604 });
@@ -99,7 +100,7 @@ const WeatherCard = () => {
       }
     };
     getWeather();
-  }, [location,weatherkey]);
+  }, [location, weatherkey]);
 
   useEffect(() => {
     const getForecast = async () => {
@@ -119,13 +120,21 @@ const WeatherCard = () => {
       }
     };
     getForecast();
-    console.log('forecast',forecast)
-  }, [location,weatherkey]);
+    console.log("forecast", forecast);
+  }, [location, weatherkey]);
 
   return (
-    <Fragment styles={{width: "100%"}}>
+    <Fragment styles={{ width: "100%" }}>
       <Grid item container spacing={2}>
-        <Grid item xs={6} sm={8} md={8} lg={9} xl={9} className={classes.dateCard}>
+        <Grid
+          item
+          xs={6}
+          sm={8}
+          md={8}
+          lg={9}
+          xl={9}
+          className={classes.dateCard}
+        >
           <Box>
             <Typography variant="h6" align="left">
               {date?.split(";")[0]}
@@ -150,7 +159,15 @@ const WeatherCard = () => {
           </Box>
         </Grid> */}
 
-        <Grid styles={{width: "100%"}} item xs={6} sm={4} md={4} lg={3} xl={3}>
+        <Grid
+          styles={{ width: "100%" }}
+          item
+          xs={6}
+          sm={4}
+          md={4}
+          lg={3}
+          xl={3}
+        >
           <Paper elevation={1} className={classes.wpaper}>
             <Grid item container direction="column">
               <Grid item container direction="row">

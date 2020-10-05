@@ -4,6 +4,7 @@ import Notifications from "./Notifications";
 import ContactDetailCard from "./ContactDetailCard";
 import MapGridCard from "./MapGridCard";
 import AddParcelInterest from "./AddParcelInterest";
+import MainMap from "./MainMap";
 
 const createRootReducer = (history) =>
   combineReducers({
@@ -12,6 +13,7 @@ const createRootReducer = (history) =>
     ContactDetailCard,
     MapGridCard,
     AddParcelInterest,
+    MainMap,
     //// .....
   });
 
