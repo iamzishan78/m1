@@ -14,7 +14,7 @@ const ProfileContextProvider = (props) => {
       timezone: "",
       profileImage: "",
       email: "",
-      outlook_integrated: "",
+      outlook_integrated: false,
       sss_tax_id: "",
       dateOfBirth: "",
       address: "",

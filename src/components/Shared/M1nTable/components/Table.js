@@ -359,7 +359,7 @@ function SubTable(props) {
       open={isMenuOpen}
       onClose={closeMenu}
     >
-      <MenuItem
+      {/* <MenuItem
         className={classes.userMenuItem}
         onClick={selectedUser !== null && changeAdminAccess}
       >
@@ -368,7 +368,7 @@ function SubTable(props) {
         selectedUser.adminAccess
           ? "Remove Admin Access"
           : "Grant Admin Access"}
-      </MenuItem>
+      </MenuItem> */}
       <MenuItem
         className={classes.userMenuItem}
         onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}
@@ -1065,7 +1065,7 @@ function SubTable(props) {
                   ) {
                     //// if no value
                     if (value === "" || value === null || !value)
-                      return <p style={{ color: "#B3B3B3" }}>N/A</p>;
+                      return <p style={{ color: "#B3B3B3", padding: "10px" }}>N/A</p>;
 
                     //// if value
                     return (
