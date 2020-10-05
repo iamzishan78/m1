@@ -187,7 +187,7 @@ export default function AddUserData(props) {
                 paintProps = {
                   "fill-color": idColor,
                   "fill-opacity": 0.4,
-                  "fill-outline-color": idColor,
+                  "fill-outline-color": "#1C1C1C",
                 };
               }
 

@@ -2,6 +2,7 @@ import React, { useContext, useState, useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import mapboxgl from "mapbox-gl";
 import { TitleOpinionContext } from "../TitleOpinionContext";
+import { AppContext } from "../../../AppContext";
 
 const useStyles = makeStyles(theme => ({
   MSWrapper: {
@@ -42,6 +43,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function MapShape() {
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [stateTitleOpinion] = useContext(TitleOpinionContext);
   const [map, setMap] = useState(null);
 
@@ -49,7 +51,7 @@ export default function MapShape() {
   const [mapStyles, setMapStyles] = useState([]);
 
   mapboxgl.accessToken =
-  "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJjanYycGJxbG8yN3JsM3lsYTdnMXZoeHh1In0.tTNECYKDPtcrzivWTiZcIQ";
+ stateApp.mapboxglAccessToken;
 
 
   useEffect(() => {
