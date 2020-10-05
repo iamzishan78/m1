@@ -29,7 +29,6 @@ export default function FilterFormProduction() {
 
   useEffect(() => {
     let filter = null;
-
     if (stateNav.wellsIdsFromTags) {
       let IdsArray = [];
       for (let i = 0; i < stateNav.wellsIdsFromTags.length; i++) {
