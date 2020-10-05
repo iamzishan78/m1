@@ -165,7 +165,7 @@ export default function AddUserData(props) {
                     count++;
                 });
 
-                //// only lines feature
+                ////  only lines feature
                 if (count == fileContent.features.length) type = "line";
                 else type = "fill";
               } else type = "fill";
