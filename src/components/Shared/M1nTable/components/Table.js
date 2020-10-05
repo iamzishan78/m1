@@ -57,6 +57,7 @@ import Contact_card from "../../svgIcons/contact_card";
 import TransactDialog from "../../../Transact/components/dialog";
 import ParcelScreenIcon from "../../svgIcons/parcelScreen";
 import ParcelsDetailCard from "../../../ParcelsDetailCard/ParcelsDetailCard";
+import { debounce } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -383,6 +384,17 @@ function SubTable(props) {
     setSelectedUserIndex(rowIndex);
     setM1nSelectedRowsIds([user._id]);
   };
+
+  const searchRequest = (e) => {
+    e.setLoading(true);
+    e.getContacts({
+      variables: {
+        pagination: e.pagination,
+        search: e.searchText
+      },
+    });
+  };
+  const delayedSearchRequest = debounce(e => searchRequest(e), 2000);
 
   useEffect(() => {
     if (props.columns) {
@@ -1540,22 +1552,14 @@ function SubTable(props) {
             });
             break;
           case 'search':
-            let column1 = tableState.columns[tableState.activeColumn]
-            console.log('column1', column1)
-            console.log('tableState.searchText', tableState.searchText)
-            props.contactsPageProps.setLoading(true);
-            props.contactsPageProps.getContacts({
-              variables: {
-                pagination: {
-                  first: tableState.rowsPerPage,
-                  after: null
-                },
-                /*sort: column1 ? {
-                  field: column1.name.split('.')[0],
-                  order: column1.sortDirection == 'desc' ? 1 : -1 
-                } : null,*/
-                search: tableState.searchText
+            delayedSearchRequest({
+              setLoading: props.contactsPageProps.setLoading,
+              getContacts: props.contactsPageProps.getContacts,
+              pagination: {
+                first: tableState.rowsPerPage,
+                after: null
               },
+              searchText: tableState.searchText
             });
             break;
           default:
