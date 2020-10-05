@@ -288,7 +288,7 @@ export default function Map() {
   const [
     getCustomLayers,
     { data: customLayerData },
-  ] = useLazyQuery(CUSTOMLAYERSQUERY, { fetchPolicy: "network-only" });
+  ] = useLazyQuery(CUSTOMLAYERSQUERY, { fetchPolicy: "cache-first" });
 
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "network-only",

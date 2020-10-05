@@ -99,9 +99,7 @@ export default function DrawShapes(props) {
     const [upsertCustomLayer, {data: customLayerInsertedData}] = useMutation(UPSERTCUSTOMLAYER);
 
     const [getCustomLayers, { data: customLayerData }] = useLazyQuery(
-        CUSTOMLAYERSQUERY,
-        { fetchPolicy: "network-only" }
-    );
+        CUSTOMLAYERSQUERY, { fetchPolicy: "cache-first" });
 
     const DEBUGGER = (source, value) => {
         console.log(`%c[DrawShapes.js] ${source}`, DEBUG_GREEN, value);

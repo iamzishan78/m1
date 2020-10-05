@@ -1316,11 +1316,7 @@ function M1nTable(props) {
   const [updateContact] = useMutation(UPDATECONTACT);
   //////////
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
-    CUSTOMLAYER,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+    CUSTOMLAYER, { fetchPolicy: "cache-first" });
   //////////
   const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
   //////////

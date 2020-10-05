@@ -131,10 +131,10 @@ const Login = (props) => {
                 const currentAccounts = stateApp.myMSALObj.getAllAccounts();
                 return currentAccounts && currentAccounts.length === 1
                   ? currentAccounts[0]
-                  : () => {
+                  : (() => {
                       // Add choose account code here
                       return;
-                    };
+                    })();
               })();
 
           if (accountObj) {
@@ -225,37 +225,37 @@ const Login = (props) => {
     const request = {};
     request.account = accountObj;
 
-    request.scopes = readProfileRequest.scopes;
-    request.loginHint = request.account.username;
-    const readProfileLoginResponse = await ssoSilent(request).catch((error) => {
-      //do some error stuff
-      console.log(error);
-    });
-    if (!readProfileLoginResponse) {
-      //do some error stuff
-      return;
-    }
+    // request.scopes = readProfileRequest.scopes;
+    // request.loginHint = request.account.username;
+    // const readProfileLoginResponse = await ssoSilent(request).catch((error) => {
+    //   //do some error stuff
+    //   console.log(error);
+    // });
+    // if (!readProfileLoginResponse) {
+    //   //do some error stuff
+    //   return;
+    // }
 
-    const readProfileToken = await getTokenPopup(request).catch((error) => {
-      //do some error stuff
-      console.log(error);
-    });
-    if (!readProfileToken) {
-      //do some error stuff
-      return;
-    }
+    // const readProfileToken = await getTokenRedirect(request).catch((error) => {
+    //   //do some error stuff
+    //   console.log(error);
+    // });
+    // if (!readProfileToken) {
+    //   //do some error stuff
+    //   return;
+    // }
 
-    const readProfileResponse = await callMSGraph(
-      "https://graph.microsoft.com/v1.0/me",
-      readProfileToken.accessToken
-    ).catch((error) => {
-      //do some error stuff
-      console.log(error);
-    });
-    if (!readProfileResponse) {
-      //do some error stuff
-      return;
-    }
+    // const readProfileResponse = await callMSGraph(
+    //   "https://graph.microsoft.com/v1.0/me",
+    //   readProfileToken.accessToken
+    // ).catch((error) => {
+    //   //do some error stuff
+    //   console.log(error);
+    // });
+    // if (!readProfileResponse) {
+    //   //do some error stuff
+    //   return;
+    // }
 
     request.scopes = authGraphQLRequest.scopes;
     request.loginHint = request.account.username;
@@ -269,7 +269,7 @@ const Login = (props) => {
     }
 
     authGraphQLRequest.account = request.account;
-    const authGraphQLToken = await getTokenPopup(authGraphQLRequest).catch(
+    const authGraphQLToken = await getTokenRedirect(authGraphQLRequest).catch(
       (error) => {
         //do some error stuff
         console.log(error);
@@ -282,6 +282,7 @@ const Login = (props) => {
 
     const authGraphQLResponse = await callAuthGraphQL(
       `${new URL(stateApp.apolloClientEndpoint).origin}/.auth/login/aad`,
+      authGraphQLToken.idToken,
       authGraphQLToken.accessToken
     ).catch((error) => {
       //do some error stuff
@@ -322,12 +323,19 @@ const Login = (props) => {
     //   return;
     // }
 
+    const authUser = {}
+    authUser.b2cEmail = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'emails'});
+    if (authUser.b2cEmail) { authUser.b2cEmail = authUser.b2cEmail.val }
+    authUser.b2bEmail = graphQLProfileResponse.user_id;
+    authUser.b2cName = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'displayName'});
+    if (authUser.b2cName) { authUser.b2cName = authUser.b2cName.val }
+    authUser.b2bName = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'name'})
+    if (authUser.b2bName) { authUser.b2bName = authUser.b2bName.val }
+
     const mongoUser = await getMongoDBUser(
       {
-        email: readProfileResponse.mail
-          ? readProfileResponse.mail
-          : readProfileResponse.userPrincipalName,
-        name: readProfileResponse.displayName,
+        email: authUser.b2cEmail ?? authUser.b2bEmail,
+        name: authUser.b2cName ?? authUser.b2bName
       },
       authGraphQLResponse.authenticationToken
     ).catch((error) => {
@@ -342,16 +350,14 @@ const Login = (props) => {
     setStateApp((state) => ({
       ...state,
       user: {
-        id: readProfileResponse.id,
+        id: accountObj.sub,
         mongoId: mongoUser._id,
-        email: readProfileResponse.mail
-          ? readProfileResponse.mail
-          : readProfileResponse.userPrincipalName,
-        name: readProfileResponse.displayName,
+        email: mongoUser.email,
+        name: mongoUser.name,
         authToken: authGraphQLResponse.authenticationToken,
         authTokenExpires: new Date(
-          authGraphQLToken.expiresOn.setDate(
-            authGraphQLToken.expiresOn.getDate() + 14
+          authGraphQLLoginResponse.expiresOn.setDate(
+            authGraphQLLoginResponse.expiresOn.getDate() + 14
           )
         ),
         tenant: {
@@ -436,7 +442,11 @@ const Login = (props) => {
     const loginResponse = await stateApp.myMSALObj
       .ssoSilent(request)
       .catch(function (error) {
-        console.log(error);
+        console.error("Silent Error: " + error);
+        if (error instanceof msal.InteractionRequiredAuthError) {
+          stateApp.myMSALObj.config.auth.redirectUri = msalConfig().auth.redirectUri;
+          stateApp.myMSALObj.loginRedirect(request)
+        }
       });
 
     stateApp.myMSALObj.config.auth.redirectUri = msalConfig().auth.redirectUri;
@@ -447,8 +457,8 @@ const Login = (props) => {
     }
   }
 
-  async function getTokenPopup(request) {
-    console.log("request made to getTokenPopup at: " + new Date().toString());
+  async function getTokenRedirect(request) {
+    console.log("request made to getTokenRedirect at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes.toString());
 
     return await stateApp.myMSALObj
@@ -456,9 +466,9 @@ const Login = (props) => {
       .catch(async (error) => {
         console.log("silent token acquisition fails.");
         if (error instanceof msal.InteractionRequiredAuthError) {
-          console.log("acquiring token using popup");
+          console.log("acquiring token using redirect");
           return stateApp.myMSALObj
-            .acquireTokenPopup(request)
+            .acquireTokenRedirect(request)
             .catch((error) => {
               console.error(error);
             });
@@ -490,25 +500,32 @@ const Login = (props) => {
       .catch((error) => console.log(error));
   }
 
-  async function callAuthGraphQL(endpoint, accessToken) {
+  async function callAuthGraphQL(endpoint, idToken, accessToken) {
     const headers = new Headers();
 
     const options = {
       method: "POST",
       headers: headers,
-      body: JSON.stringify({ access_token: accessToken }),
+      body: JSON.stringify({ id_token: idToken, access_token: accessToken }),
     };
 
     console.log("request made to GraphQL login at: " + new Date().toString());
 
     return await fetch(endpoint, options)
-      .then((response) => response.json())
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(response.headers.toString())
+        }
+
+        return response.json();
+      })
       .then((response) => {
         console.log(response);
         return response;
       })
       .catch((error) => {
         console.log(error);
+        throw new Error(error);
       });
   }
 

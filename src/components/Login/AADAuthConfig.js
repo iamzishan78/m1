@@ -17,9 +17,8 @@ export const msalConfig = (tenantId, clientId) => {
   return {
     auth: {
       clientId: clientId,
-      // authority: 'https://m1neralb2ctenant1.b2clogin.com/m1neralb2ctenant1.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in_v2_preview',
-      // knownAuthorities: ['m1neralb2ctenant1.b2clogin.com'],
-      // validateAuthority: false,
+      // authority: 'https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/b2c_1a_signin_dev',
+      // knownAuthorities: ['mineralb2c.b2clogin.com'],
       authority: `https://login.microsoftonline.com/${
         tenantId ? tenantId : "common"
       }`,
@@ -37,15 +36,16 @@ export const MSALObj = (tenantId, clientId) =>
   new msal.PublicClientApplication(msalConfig(tenantId, clientId));
 
 export const loginRequest = {
-  scopes: [],
+  scopes: ["openid", "offline_access"],
 };
 
 export const readProfileRequest = {
-  scopes: ["https://graph.microsoft.com/User.Read"],
+  scopes: ["https://graph.microsoft.com/User.Read", "openid", "offline_access"],
 };
 
 export const authGraphQLRequest = {
-  scopes: ["https://management.azure.com/user_impersonation"],
+  // scopes: ["https://mineralb2c.onmicrosoft.com/api/user_impersonation", "openid", "offline_access"],
+  scopes: ["https://management.azure.com/user_impersonation", "openid", "offline_access"],
 };
 
 // Add here the endpoints for MS Graph API services you would like to use.

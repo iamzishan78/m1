@@ -15,6 +15,8 @@ import ParcelDetailsMap from "./components/ParcelDetailsMap";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { showSuccessMessage, showErrorMessage } from "../../actions";
 
+import { gql } from "@apollo/client";
+
 const ENTER_KEY = 13;
 
 const useStyles = makeStyles((theme) => ({
@@ -83,15 +85,56 @@ export default function ParcelsDetailCard(props) {
   const [legalDescription, setLegalDesc] = useState();
 
   const [updateCustomLayer, { data: updatedParcel }] = useMutation(
-    UPDATECUSTOMLAYER
+    UPDATECUSTOMLAYER, {
+      update(cache, { data: { updateCustomLayer: {customLayer } } }) {
+        console.log(`newCustomLayer: ${JSON.stringify(customLayer)}`);
+        console.log(`oldCustomLayer: ${JSON.stringify(cache.readFragment({
+          id: `CustomLayer:${customLayer._id}`, // The value of the to-do item's unique identifier
+          fragment: gql`
+            fragment myCustomLayer on CustomLayer {
+              _id
+              shape
+              name
+              layer
+              state
+              IsDeleted
+              user {
+                name
+                email
+              }
+              owners {
+                _id
+                ownerEntityId
+                name
+                address1
+                address2
+                city
+                state
+                zip
+                country
+                globalOwner
+                entity
+                type
+                depthFrom
+                depthTo
+                interest
+                nma
+                nra
+                customLayer
+                IsDeleted
+                isContact
+              }
+            }
+          `,
+        }))}`);
+
+        
+      }
+    }
   );
 
   const [getCustomLayer, { data: dataCustomLayer, loading }] = useLazyQuery(
-    CUSTOMLAYER,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+    CUSTOMLAYER, { fetchPolicy: "cache-first" });
 
   useEffect(() => {
     if (props.id) {
