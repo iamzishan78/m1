@@ -54,19 +54,19 @@ export default function DealsDetailCard(props) {
           dealSum={activeSum}
           dealType="ACTIVE"
           dealLength={props.activeDeals.length}
-          color="#34fff7"
+          color="rgb(143,229,210)"
         />
         <DealDisplay
           dealSum={closedSum}
           dealType="CLOSED"
           dealLength={props.closedDeals.length}
-          color="#f5AA45"
+          color="rgb(223,168,89)"
         />
         <DealDisplay
           dealSum={lostSum}
           dealType="LOST"
           dealLength={props.lostDeals.length}
-          color="#3366ff"
+          color="rgb(130,189,200)"
         />
       </div>
       <M1nTable dense parent="Deals" contact={props.contact} />

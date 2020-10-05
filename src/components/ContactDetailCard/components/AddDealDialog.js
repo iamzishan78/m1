@@ -55,7 +55,16 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "30px",
     verticalAlign: "middle",
   },
-  dialogFooter: { marginTop: "20px", display: "flex", justifyContent: "flex-start" },
+  dialogFooter: {
+    display: "flex",
+    justifyContent: "flex-start",
+  },
+  footerButton: {
+    letterSpacing: "1px",
+    textTransform: "capitalize",
+    fontWeight: "bold",
+    padding: "8px 35px"
+  },
 
   label: {
     backgroundColor: "white",
@@ -64,15 +73,13 @@ const useStyles = makeStyles((theme) => ({
   closeIcon: {
     color: theme.palette.secondary.main,
   },
+  inputField: {
+    marginBottom: "30px",
+  },
 }));
 
-const initialErrors = {
-  notes: false,
-  activityType: false,
-  dateTime: false,
-};
 
-function AddActivityDialog(props) {
+function AddDealDialog(props) {
   const classes = useStyles();
   // const { transactData, handleDataChange } = props;
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -158,7 +165,7 @@ function AddActivityDialog(props) {
   }, [props.contactId]);
 
   useEffect(() => {
-    console.log("ACTIVE DEAL: ", stateApp.activeDeal)
+    console.log("ACTIVE DEAL: ", stateApp.activeDeal);
     const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
     const laneId = stateApp.activeDeal?.laneId;
 
@@ -263,8 +270,12 @@ function AddActivityDialog(props) {
         let td = { ...transactData };
         console.log(td, transactData, stateApp.user.mongoId);
 
-        if(td?.lanes?.length === 0){
-          td.lanes.push({ id: newStage, title: getLaneTitle(newStage), cards: [] });
+        if (td?.lanes?.length === 0) {
+          td.lanes.push({
+            id: newStage,
+            title: getLaneTitle(newStage),
+            cards: [],
+          });
         }
 
         td.lanes.forEach((lane) => {
@@ -305,9 +316,7 @@ function AddActivityDialog(props) {
         Recent Activities
       </h4> */}
       <Grid item xs={12} style={{ minHeight: "35px" }}>
-        <h4 style={{ margin: "0 0 30px 0", float: "left" }}>
-          Add Deal
-        </h4>
+        <h4 style={{ margin: "0 0 15px 0", float: "left", fontSize: "1.1rem" }}>Add Deals</h4>
 
         <IconButton
           onClick={props.onClose}
@@ -322,73 +331,44 @@ function AddActivityDialog(props) {
           margin="dense"
           value={title}
           label="Deal Name"
+          variant="outlined"
           fullWidth
           //   required
           onChange={(e) => {
             setTitle(e.target.value);
           }}
+          className={classes.inputField}
         />
-        <Dialog
-          className={classes.dialog}
-          open={openContactDialog ? true : false}
-          onClose={handleCloseContactDialog}
-          maxWidth={"xs"}
-        >
-          <AddContactDialogContent
-            onClose={handleCloseContactDialog}
-            dealsPage={true}
-            setDealsContact={setContact}
-          />
-        </Dialog>
 
-        <FormControl margin="dense" fullWidth size="small">
-          {/* <InputLabel
+        {/* <InputLabel
             id="demo-simple-select-outlined-label"
             className={classes.label}
           >
             Contact Name
           </InputLabel> */}
 
-          {!(
-            (Object.keys(contact).length === 0 &&
-              contact.constructor === Object) ||
-            contact === null
-          ) && (
-            <TextField
-              margin="dense"
-              value={contact?.name}
-              label=""
-              fullWidth
-              disabled
-            />
-          )}
-
-          <ButtonGroup
+        {!(
+          (Object.keys(contact).length === 0 &&
+            contact.constructor === Object) ||
+          contact === null
+        ) && (
+          <TextField
+            variant="outlined"
+            margin="dense"
+            value={contact?.name}
+            label="Contact Name"
             fullWidth
-            variant="contained"
-            color="primary"
-            aria-label="contained primary button group"
-          >
-            <Button onClick={() => setOpenContactDialog(true)}>
-              Add / Select Contact
-            </Button>
+            disabled
+            className={classes.inputField}
+          />
+        )}
 
-            {contact && (
-              <Button
-                disabled={
-                  (Object.keys(contact).length === 0 &&
-                    contact.constructor === Object) ||
-                  contact === null
-                }
-                onClick={() => openContact()}
-              >
-                View Contact
-              </Button>
-            )}
-          </ButtonGroup>
-        </FormControl>
-
-        <FormControl margin="dense" fullWidth size="small">
+        <FormControl
+          variant="outlined"
+          fullWidth
+          className={classes.inputField}
+          size="small"
+        >
           <InputLabel
             id="demo-simple-select-outlined-label"
             className={classes.label}
@@ -396,6 +376,7 @@ function AddActivityDialog(props) {
             Deal Stage
           </InputLabel>
           <Select
+            native
             labelId="demo-simple-select-outlined-label"
             id="demo-simple-select-outlined"
             value={stage}
@@ -406,28 +387,30 @@ function AddActivityDialog(props) {
             fullWidth
             label="Deal Stage"
           >
-            <MenuItem value={"lane1"}>Offer Preparation</MenuItem>
-            <MenuItem value={"lane2"}>Offer Extended</MenuItem>
-            <MenuItem value={"lane3"}>Accepted - Due Diligence</MenuItem>
-            <MenuItem value={"lane4"}>Deal Closed</MenuItem>
-            <MenuItem value={"lane5"}>Offer Rejected</MenuItem>
+            <option value={"lane1"}>Offer Preparation</option>
+            <option value={"lane2"}>Offer Extended</option>
+            <option value={"lane3"}>Accepted - Due Diligence</option>
+            <option value={"lane4"}>Deal Closed</option>
+            <option value={"lane5"}>Offer Rejected</option>
           </Select>
         </FormControl>
         <TextField
           margin="dense"
+          variant="outlined"
           value={label}
           label="Offer Price"
           fullWidth
           onChange={(e) => {
             setLabel(e.target.value);
           }}
-          // InputProps={{
-          //   inputComponent: NumberFormatCustom,
-          // }}
+          className={classes.inputField}
         />
         <TextField
           //   autoFocus
           margin="dense"
+          variant="outlined"
+          multiline
+          rows={4}
           value={description}
           label="Offer Details"
           fullWidth
@@ -436,6 +419,7 @@ function AddActivityDialog(props) {
           onChange={(e) => {
             setDescription(e.target.value);
           }}
+          className={classes.inputField}
         />
 
         <div className={classes.dialogFooter}>
@@ -445,6 +429,7 @@ function AddActivityDialog(props) {
             size="medium"
             disableElevation
             onClick={handleUpdate}
+            className={classes.footerButton}
             style={{ margin: "0px 20px 0px 0px" }}
           >
             Save
@@ -455,6 +440,8 @@ function AddActivityDialog(props) {
             size="medium"
             disableElevation
             onClick={handleClose}
+            className={classes.footerButton}
+            style={{ padding: "8px 35px", background: "rgb(215,244,254)", color: "rgb(23, 170, 221)" }}
           >
             Cancel
           </Button>
@@ -464,4 +451,4 @@ function AddActivityDialog(props) {
   );
 }
 
-export default AddActivityDialog;
+export default AddDealDialog;
