@@ -1512,14 +1512,14 @@ function SubTable(props) {
         switch (action) {
           case 'changeRowsPerPage':
             props.contactsPageProps.setLoading(true);
-            console.log('options.page')
             tableState.page = 0
             props.contactsPageProps.getContacts({
               variables: {
                 pagination: {
                   first: tableState.rowsPerPage,
                   after: null
-                }
+                },
+                search: tableState.searchText
               },
             });
             break;
@@ -1530,7 +1530,8 @@ function SubTable(props) {
                 pagination: {
                   first: tableState.rowsPerPage,
                   after: props.rows.pop()._id
-                }
+                },
+                search: tableState.searchText
               },
             });
             break;
