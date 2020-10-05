@@ -62,6 +62,8 @@ import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
 import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
 import { deepEqualObjects } from "../Shared/functions";
 import gjv from "geojson-validation";
+import { setMainMapState, showErrorMessage } from "../../actions";
+import { ZoomOutMapSharp } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -109,6 +111,9 @@ export default function Map() {
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
   );
+  const removeLayerFromMap = useSelector(
+    ({ MainMap }) => MainMap.removeLayerFromMap
+  );
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateMapControls, setStateMapControls] = useContext(
@@ -134,6 +139,14 @@ export default function Map() {
       Lat(state);
     }
   };
+  const [zoom, Zoom] = useState(stateApp.mapVars.zoom);
+  const setZoom = (state) => {
+    if (zoom != state) {
+      Zoom(state);
+    }
+  };
+
+
   const [transform, Transform] = useState("transform: inherit");
   const setTransform = (state) => {
     if (transform != state) {
@@ -233,6 +246,13 @@ export default function Map() {
     } else {
       ids.push(id);
       HoverUdIds(ids);
+    }
+  };
+
+  const [fileRequestCounter, FileRequestCounter] = useState(1);
+  const setFileRequestCounter = (state) => {
+    if (fileRequestCounter != state) {
+      FileRequestCounter(state);
     }
   };
 
@@ -410,6 +430,7 @@ export default function Map() {
         for (let i = 0; i < layerStates.allLayerSettingsByUser.length; i++) {
           const layer = layerStates.allLayerSettingsByUser[i];
           if (layer.layerType == "file layer") {
+            setFileRequestCounter(1);
             viewFile({
               variables: {
                 fileId: layer.file,
@@ -446,6 +467,7 @@ export default function Map() {
       if (layerIndex < layersData.length - 1)
         for (let i = layerIndex + 1; i < layers.length; i++) {
           if (layers[i].layerType == "file layer") {
+            setFileRequestCounter(1);
             viewFile({
               variables: {
                 fileId: layers[i].file,
@@ -465,6 +487,24 @@ export default function Map() {
     }
   };
 
+  // useEffect(() => {
+  //   if (viewFileResult && viewFileResult.viewFile && stateApp.layers) {
+  //     const result = viewFileResult.viewFile;
+  //     const fileId = result.id;
+  //     if (result.uri && result.internalKey) {
+  //       const layerIndex = stateApp.layers.findIndex(
+  //         (layer) => layer.file == fileId
+  //       );
+  //       handleFileAsync(result.uri, result.internalKey, layerIndex);
+  //     } else if (fileId)
+  //       viewFile({
+  //         variables: {
+  //           fileId,
+  //         },
+  //       });
+  //   }
+  // }, [viewFileResult]);
+
   useEffect(() => {
     if (viewFileResult && viewFileResult.viewFile && stateApp.layers) {
       const result = viewFileResult.viewFile;
@@ -474,12 +514,28 @@ export default function Map() {
           (layer) => layer.file == fileId
         );
         handleFileAsync(result.uri, result.internalKey, layerIndex);
-      } else if (fileId)
-        viewFile({
-          variables: {
-            fileId,
-          },
-        });
+      } else if (fileId && fileRequestCounter < 30) {
+        let waitBeforeRequestAgain = setTimeout(() => {
+          setFileRequestCounter(fileRequestCounter + 1);
+          viewFile({
+            variables: {
+              fileId,
+            },
+          });
+          clearTimeout(waitBeforeRequestAgain);
+        }, 1000);
+      } else {
+        ////fail all request
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          universalCircularLoaderAct: false,
+        }));
+        dispatch(
+          showErrorMessage(
+            "The file is not ready yet, please wait a few minutes and then reload the application."
+          )
+        );
+      }
     }
   }, [viewFileResult]);
 
@@ -1307,6 +1363,13 @@ export default function Map() {
                 map.moveLayer(id, beforeLayer);
               }
               beforeLayer = id;
+
+              if (id == "basinLayer" || id == "GLOUnits" || id == "GLOLeases")
+                dispatch(
+                  setMainMapState({
+                    [`${id}Color`]: map.getPaintProperty(id, "fill-color"),
+                  })
+                );
             }
             if (layer.layerSettings.interaction.interactionAble) {
               map.off("mousemove", id, mouseMoveHandler);
@@ -1374,6 +1437,40 @@ export default function Map() {
     rigs,
     map,
   ]);
+
+  //// remove the layer and it's source from the map after it's deleted
+  const removeLayer = (layer) => {
+    const paintProps = layer.layerPaintProps;
+    for (let i = paintProps.length - 1; i >= 0; i--) {
+      const prop = paintProps[i];
+
+      // -> remove layer
+      const layerId = prop.id;
+      if (map.getLayer(layerId)) map.removeLayer(layerId);
+
+      if (prop.clusterProps) {
+        if (map.getLayer(layerId + "-clusters-counts"))
+          map.removeLayer(layerId + "-clusters-counts");
+
+        if (map.getLayer(layerId + "-clusters"))
+          map.removeLayer(layerId + "-clusters");
+      }
+
+      // -> remove source
+      const sourceId = prop.sourceProps;
+      if (map.getSource(sourceId)) map.removeSource(sourceId);
+
+      if (map.getSource(`${sourceId}_filter`))
+        map.removeSource(`${sourceId}_filter`);
+    }
+  };
+
+  useEffect(() => {
+    if (removeLayerFromMap && map) {
+      removeLayer(removeLayerFromMap);
+      dispatch(setMainMapState({ removeLayerFromMap: null }));
+    }
+  }, [removeLayerFromMap]);
 
   // useEffect(() => {
   //   console.log("useEffect 14");
@@ -3903,6 +4000,14 @@ export default function Map() {
     let coordinates = e.lngLat.wrap();
     setLng(coordinates.lng);
     setLat(coordinates.lat);
+
+  };
+
+  const mapZoom = (e) => {
+    let zooms = map.getZoom();
+    console.log('zoomz', zooms)
+    setZoom(zooms);
+
   };
 
   const onAbstactLayerClick = function (feature, action) {
@@ -4429,6 +4534,7 @@ export default function Map() {
         // map.off("mousemove", mapMouseMove);
 
         map.on("mousemove", mapMouseMove);
+        map.on("zoom", mapZoom);
 
         console.log("map extra components complete");
       }
@@ -4692,10 +4798,10 @@ export default function Map() {
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
         map.flyTo({
-          center: { lng: -98.8, lat: 31.6 },
-          zoom: 5.88,
-          pitch: 0,
-          bearing: 0,
+          center: stateApp.mapVars.center,
+          zoom: stateApp.mapVars.zoom,
+          pitch: stateApp.mapVars.pitch,
+          bearing: stateApp.mapVars.bearing,
           speed: 0.5,
         });
 
@@ -5102,7 +5208,7 @@ export default function Map() {
       {/* <TrackAbstract showAbstractPopup={stateApp.showAbstractPopup} /> */}
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <HugeRequest hugeRequestStatus={stateApp.hugeRequest} />
-      <Coordinates long={lng} lat={lat} />
+      <Coordinates long={lng} lat={lat} zoom={zoom}/>
       {stateApp.selectedUserDefinedLayer &&
         !stateApp.popupOpen &&
         stateApp.editLayer && (

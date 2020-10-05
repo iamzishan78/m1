@@ -19,3 +19,6 @@ export const SET_MAP_GRID_CARD_STATE = "SET_MAP_GRID_CARD_STATE";
 
 // AddParcelInterest
 export const SET_ADD_PARCEL_INTEREST_STATE = "SET_ADD_PARCEL_INTEREST_STATE";
+
+// MainMap
+export const SET_MAIN_MAP_STATE = "SET_MAIN_MAP_STATE";

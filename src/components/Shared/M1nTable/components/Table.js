@@ -1385,7 +1385,7 @@ function SubTable(props) {
             //////Upload Icon/////////////////////////
             <span className={classes.addIcon}>
               <Tooltip
-                title={`Upload ${
+                title={`Import ${
                   props.targetLabel.charAt(0).toUpperCase() +
                   props.targetLabel.slice(1)
                 }s`}
@@ -1436,12 +1436,12 @@ function SubTable(props) {
                       props.addAble.type === "parcelInterestsToEntity"
                     )
                       // handleExpandClick(null, null, null, "addOwnerToParcel");
-                    handleExpandClick(
-                      null,
-                      null,
-                      null,
-                      "addParcelInterestsToEntity"
-                    );
+                      handleExpandClick(
+                        null,
+                        null,
+                        null,
+                        "addParcelInterestsToEntity"
+                      );
                     if (
                       props.addAble.type &&
                       props.addAble.type === "inviteUser"
@@ -1525,7 +1525,7 @@ function SubTable(props) {
           title={props.header}
           data={rows ? rows : []}
           columns={columns ? columns : []}
-          options={options}
+          options={{ print: false, download: false, ...options }}
         />
 
         <TransactDialog

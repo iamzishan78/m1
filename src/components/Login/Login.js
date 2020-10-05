@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
 import { AppContext } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../Navigation/NavigationContext";
@@ -23,6 +23,9 @@ const localStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
+  },
+  height_100: {
+    height: "100vh",
   },
   footer: {
     backgroundSize: "cover",
@@ -109,7 +112,21 @@ const M1neralLogo2 = styled(M1neralLogoNavNoAuth)`
   padding-bottom: 20px;
 `;
 
+function useWindowSize() {
+  const [size, setSize] = useState([0]);
+  useLayoutEffect(() => {
+    function updateSize() {
+      setSize([window.innerWidth]);
+    }
+    window.addEventListener("resize", updateSize);
+    updateSize();
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+  return size;
+}
+
 const Login = (props) => {
+  const [width] = useWindowSize();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [, setStateNav] = useContext(NavigationContext);
 
@@ -611,11 +628,17 @@ const Login = (props) => {
   );
 
   return loading ? (
-    <div style={{marginTop: "20%", marginLeft:"47%"}}>
+    <div style={{ marginTop: "20%", marginLeft: "47%" }}>
       <CircularProgress size={80} disableShrink color="secondary" />
     </div>
   ) : (
-    <div className={localClass.myRoot}>
+    <div
+      className={
+        width > 2050
+          ? `${localClass.height_100} ${localClass.myRoot}`
+          : localClass.myRoot
+      }
+    >
       <div className={localClass.rootNewUser}>{renderBody}</div>
 
       <div className={localClass.rootNewUser}>
