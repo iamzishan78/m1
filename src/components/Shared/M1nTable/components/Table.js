@@ -1063,6 +1063,7 @@ function SubTable(props) {
         ? [10, 25]
         : [],
     selectableRows: "multiple",
+    print: props.targetLabel !== "deals",
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
       // console.log("currentRowsSelected", JSON.stringify(currentRowsSelected));
