@@ -169,14 +169,21 @@ const Login = (props) => {
               const logoutRequest = {
                 account: accountObj
               };
-          
+
+              let request = {}
+              request.scopes = loginRequest.scopes.concat([stateApp.graphqlScope]);
+
+              if (queryString.parse(props.location.search).id_token_hint) {
+                request.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint }
+              }
+
               stateApp.myMSALObj.logout(logoutRequest);
               // // window.alert("Password has been reset successfully. \nPlease sign-in with your new password.");
 
               setSigningIn(true);
               setLoadingSigInButton(true);
 
-              stateApp.myMSALObj.loginRedirect();
+              stateApp.myMSALObj.loginRedirect(request);
 
               return;
             }
@@ -324,7 +331,7 @@ const Login = (props) => {
     // }
 
     request.scopes = authGraphQLRequest(stateApp.graphqlScope).scopes;
-    request.loginHint = request.account.username;
+    request.loginHint = request.account.homeAccountId;
     // const authGraphQLLoginResponse = await ssoSilent(request).catch((error) => {
     //   //do some error stuff
     //   console.log(error);
@@ -539,6 +546,11 @@ const Login = (props) => {
             });
         } else {
           console.error(error);
+          return stateApp.myMSALObj
+            .acquireTokenRedirect(request)
+            .catch((error) => {
+              console.error(error);
+            });
         }
       });
   }
