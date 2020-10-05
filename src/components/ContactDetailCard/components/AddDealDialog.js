@@ -21,6 +21,7 @@ import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACT } from "../../../graphQL/useQueryContact";
+import getLaneTitle from "../../Transact/getLaneTitle";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -216,6 +217,7 @@ function AddActivityDialog(props) {
     if (transactData) {
       const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
       const laneId = stateApp.activeDeal?.laneId;
+      console.log("CARD AND LANE: ", cardId, laneId);
       if (cardId && laneId) {
         // update existing
         const laneIndex = transactData.lanes.findIndex(
@@ -255,11 +257,15 @@ function AddActivityDialog(props) {
           td.lanes[laneIndex].cards[cardIndex] = updatedCard;
           setTransactData(td);
         }
-      } else if (!cardId && !laneId) {
+      } else if (!cardId || !laneId) {
         // add new
 
         let td = { ...transactData };
         console.log(td, transactData, stateApp.user.mongoId);
+
+        if(td?.lanes?.length === 0){
+          td.lanes.push({ id: newStage, title: getLaneTitle(newStage), cards: [] });
+        }
 
         td.lanes.forEach((lane) => {
           if (lane.id === newStage) {

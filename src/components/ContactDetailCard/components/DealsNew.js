@@ -76,7 +76,8 @@ export default function Deals({ contact, ...props }) {
       const all = [];
       lanes.forEach((deal) => {
         deal.cards.forEach((card) => {
-          if (contact?._id === card.contactId) all.push(card);
+          if (contact?._id === card.contactId && !card.isDeleted)
+            all.push(card);
         });
       });
       console.log("all: ", all);
@@ -89,9 +90,9 @@ export default function Deals({ contact, ...props }) {
     let won = [];
     let others = [];
     allDeals.forEach((card) => {
-      if (card.laneId === "lane5") lost.push(card);
-      else if (card.laneId === "lane4") won.push(card);
-      else others.push(card);
+        if (card.laneId === "lane5") lost.push(card);
+        else if (card.laneId === "lane4") won.push(card);
+        else others.push(card);
     });
 
     setWonDeals(won);
@@ -122,7 +123,9 @@ export default function Deals({ contact, ...props }) {
   return (
     <div className={classes.root}>
       <div>
-        <h4 style={{ marginTop: "0", float: "left" }}>Deals ({allDeals.length})</h4>
+        <h4 style={{ marginTop: "0", float: "left" }}>
+          Deals ({allDeals.length})
+        </h4>
         <IconButton
           size="small"
           className={classes.addIcon}

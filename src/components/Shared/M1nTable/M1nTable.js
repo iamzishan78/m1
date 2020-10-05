@@ -33,6 +33,7 @@ import { CONTACT } from "../../../graphQL/useQueryContact";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
+import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
 import { UPDATEPARCELOWNER } from "../../../graphQL/useMutationUpdateParcelOwner";
 import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRecords";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
@@ -1126,6 +1127,8 @@ function M1nTable(props) {
   const [removeContact] = useMutation(REMOVECONTACT);
 
   const [updateContact] = useMutation(UPDATECONTACT);
+  //////////
+  const [updateTransaction] = useMutation(UPDATETRANSACTION);
   //////////
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
     CUSTOMLAYER,
@@ -2434,7 +2437,7 @@ function M1nTable(props) {
       if (lanes) {
         lanes.forEach((deal) => {
           deal.cards.forEach((card) => {
-            if (props.contact?._id === card.contactId) all.push(card);
+            if (props.contact?._id === card.contactId && !card.isDeleted) all.push(card);
           });
         });
       }
@@ -2470,26 +2473,40 @@ function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "Deals") {
       setDeleteFunc(() => (idsToDelete) => {
-        console.log("IDSTODELETE: ", idsToDelete);
         if (idsToDelete && idsToDelete.length > 0) {
-          for (let i = 0; i < idsToDelete.length; i++) {
-            // updateParcelOwner({
-            //   variables: {
-            //     parcelOwner: { _id: idsToDelete[i], IsDeleted: true },
-            //   },
-            //   refetchQueries: [
-            //     "getCustomLayer",
-            //     "getContactParcelInterests",
-            //     "getAllEntityNamesToAddAsParcelOwner",
-            //   ],
-            //   awaitRefetchQueries: true,
-            // });
-            console.log("DELETING: ", idsToDelete[i]);
-          }
+
+          let lanes = new Array(dataDeals?.transactionData?.allData?.lanes)[0];
+          lanes = lanes.map(lane => {
+            let cardsNew = [];
+            if(lane.cards && lane.cards.length > 0) cardsNew = [ ...lane.cards ];
+            cardsNew = cardsNew.map(card => {
+              const foundIndex = idsToDelete.findIndex(id => id === card.id)
+              if(foundIndex > -1){
+                return { ...card, isDeleted: true }
+              } else return card
+            })
+            return { ...lane, cards: cardsNew }
+          })
+
+          const newData = { ...dataDeals.transactionData.allData, lanes };
+
+          console.log({
+            transactionId: dataDeals.transactionData._id,
+            transaction: { allData: newData, user: stateApp.user.mongoId },
+          })
+
+          updateTransaction({
+            variables: {
+              transactionId: dataDeals.transactionData._id,
+              transaction: { allData: newData, user: stateApp.user.mongoId },
+            },
+            refetchQueries: ["getTransactionData", "getContact", "getContacts"],
+            awaitRefetchQueries: true,
+          });
         }
       });
     }
-  }, [props.parent, dataDeals, props.contact, updateParcelOwner]);
+  }, [props.parent, dataDeals, props.contact, updateTransaction, stateApp.user.mongoId]);
 
   ////////////Deals end////////////////////////////////////////////////
 

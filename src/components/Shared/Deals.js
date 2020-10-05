@@ -91,7 +91,7 @@ export default function Deals({ contact, ...props }) {
       const all = [];
       lanes.forEach((deal) => {
         deal.cards.forEach((card) => {
-          if (contact?._id === card.contactId) all.push(card);
+          if (contact?._id === card.contactId && !card.isDeleted) all.push(card);
         });
       });
       console.log("all: ", all);
