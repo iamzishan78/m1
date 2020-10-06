@@ -148,7 +148,8 @@ export default function Transact() {
   const getLanesWithFixedTitles = (lanes) => {
     return lanes.map((lane) => {
       let title = getLaneTitle(lane.id);
-      const cards = lane.cards.map((card) => ({ ...card }));
+      let cards = [];
+      lane.cards.forEach((card) => !card.isDeleted && cards.push({ ...card })); // remove deleted cards
       return { ...lane, title, cards };
     });
   };
