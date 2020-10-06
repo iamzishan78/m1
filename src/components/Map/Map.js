@@ -3663,7 +3663,7 @@ export default function Map() {
       if (!currentFeature) return;
 
       const latLng = map.getCenter();
-      latLng.lat = latLng.lat - 0.01;
+      latLng.lat = latLng.lat;
 
       new mapboxgl.Popup({
         offset: 10,
