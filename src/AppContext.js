@@ -23,6 +23,7 @@ const AppProvider = (props) => {
     apolloClientEndpoint:
       "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
     // "http://localhost:7071/api/m1graph",
+    graphqlScope: null,
     user: null,
     signUpUserType: null,
     wellCount: 500,
@@ -52,7 +53,7 @@ const AppProvider = (props) => {
     filtersDefaultOnoff: null,
     filterSelectAllAbstract: false,
     selectedContact: null,
-    trackFilterOn: null,
+    // trackFilterOn: null,
     trackedWellArray: [],
     userSnap: false,
     mapVars: {
@@ -85,7 +86,7 @@ const AppProvider = (props) => {
     trackedOwnersLayerIndex: null,
     trackedWellsLayerIndex: null,
     tagsLayerIndex: null,
-    tempCheckedLayer: null,
+    // tempCheckedLayer: null,
     checkedLayers: [2, 5],
     wellsLayerIndex: null,
     checkedHeats: [],
@@ -93,8 +94,8 @@ const AppProvider = (props) => {
     checkedUserDefinedLayers: [],
     checkedFileLayers: [],
     tempCheckedUserDefinedLayer: null,
-    tempCheckedAOILayer: null,
-    tempCheckedParcleLayer: null,
+    // tempCheckedAOILayer: null,
+    // tempCheckedParcleLayer: null,
     checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
     checkedFileLayersInteraction: [],
     editingUserDefinedLayers: [],
@@ -173,12 +174,13 @@ const AppProvider = (props) => {
 
       if (tenantName) {
         let tenant = tenantsCredentials(tenantName);
-        let myMSALObjInt = MSALObj(tenant.tenantId, tenant.clientId);
+        let myMSALObjInt = MSALObj(tenant);
         setStateApp((state, props) => {
           return {
             ...state,
             myMSALObj: myMSALObjInt,
             apolloClientEndpoint: tenant.apolloClientEndpoint,
+            graphqlScope: tenant.graphqlScope,
           };
         });
       } else {
