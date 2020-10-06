@@ -11,13 +11,21 @@ import moment from "moment";
 import React, { Fragment, useEffect, useState } from "react";
 import { sortableHandle } from "react-sortable-hoc";
 import M1neralIconSvg from "../../Shared/m1neralIconSvg";
-import cnbc from "./RSSFeedIcons/cnbc1.svg";
-import feedimage from "./RSSFeedIcons/feedburner.png";
-import ngi from "./RSSFeedIcons/ngi.png";
-import oilngas from "./RSSFeedIcons/oilngas.png";
-import pbgas from "./RSSFeedIcons/pbgas.png";
-import rigzone from "./RSSFeedIcons/rigzone.svg";
-import smag from "./RSSFeedIcons/smag.webp";
+// import cnbc from "./RSSFeedIcons/cnbc1.svg";
+// import feedimage from "./RSSFeedIcons/feedburner.png";
+// import ngi from "./RSSFeedIcons/ngi.png";
+// import oilngas from "./RSSFeedIcons/oilngas.png";
+// import pbgas from "./RSSFeedIcons/pbgas.png";
+// import rigzone from "./RSSFeedIcons/rigzone.svg";
+// import smag from "./RSSFeedIcons/smag.webp";
+// News logos
+import OG360_3 from "./RSSFeedIcons/Medialogos/OG360.png";
+import pboil_gas from "./RSSFeedIcons/Medialogos/pb_oilandgas.jpg";
+import rigzonepng from "./RSSFeedIcons/Medialogos/Rigzone.png";
+import NGI from "./RSSFeedIcons/Medialogos/NGI.png";
+import shale_magazine from "./RSSFeedIcons/Medialogos/shale_magazine.png";
+import CNBC_logo_horizontal from "./RSSFeedIcons/Medialogos/CNBC_logo_horizontal.png";
+import oil_gasjournal from "./RSSFeedIcons/Medialogos/o_gjournal.png";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -56,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
   },
   image: {
     maxHeight: "72px",
-    maxWwidth: "72px",
+    maxWidth: "65px !important",
     borderRadius: "4px",
   },
 }));
@@ -71,33 +79,37 @@ const rsslist = [
   {
     title: "FeedBurner",
     url: "https://feeds.feedburner.com/OilGasJournal-GeneralInterest",
-    image: feedimage,
+    image: oil_gasjournal,
   },
   {
     title: "Rigzone",
     url: "https://www.rigzone.com/news/rss/rigzone_latest.aspx",
-    image: rigzone,
+    image: rigzonepng,
   },
   {
     title: "Oil and Gas 360",
     url: "http://www.oilandgas360.com/feed/",
-    image: oilngas,
+    image: OG360_3,
   },
   {
     title: "CNBC",
     url: "http://www.cnbc.com/id/10000030/device/rss",
-    image: cnbc,
+    image: CNBC_logo_horizontal,
   },
   {
     title: "NGI Shale Daily",
     url: "https://www.naturalgasintel.com/rss/1",
-    image: ngi,
+    image: NGI,
   },
-  { title: "Shalemag", url: "https://shalemag.com/feed/", image: smag },
+  {
+    title: "Shalemag",
+    url: "https://shalemag.com/feed/",
+    image: shale_magazine,
+  },
   {
     title: "PB Oil and Gas Magazine",
     url: "http://pboilandgasmagazine.com/feed/",
-    image: pbgas,
+    image: pboil_gas,
   },
 ];
 
@@ -166,7 +178,7 @@ const RssFeed = () => {
       <List style={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
         {news.map(({ feed, article, source, image }, i) => {
           const thumbImage = image || feed.image || article.enclosure.link;
-          const mainImage = article.enclosure.link || feed.image || image;
+          const mainImage = image || article.enclosure.link || feed.image;
           const time = moment.utc(article.pubDate).local().fromNow();
           return (
             <Paper key={i} className={classes.paper}>

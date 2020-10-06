@@ -5,13 +5,11 @@ import { NavigationContext } from "../NavigationContext";
 
 const statusList = [
   "ACTIVE",
-  "ACTIVE - DRILLING",
   "CANCELLED PERMIT",
   "COMPLETED - NOT ACTIVE",
   "DRILLED UNCOMPLETED (DUC)",
   "DRY HOLE",
   "EXPIRED PERMIT",
-  "INACTIVE",
   "P&A",
   "PERMIT",
   "PERMIT - EXISTING WELL",

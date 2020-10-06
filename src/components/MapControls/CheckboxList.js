@@ -24,6 +24,8 @@ import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
 import { UPDATELAYERSETTINGS } from "../../graphQL/useMutationUpdateLayerSettings";
 import { UPDATEMANYLAYERSETTINGS } from "../../graphQL/useMutationUpdateManyLayerSettings";
 import { useMutation } from "@apollo/client";
+import Box from "@material-ui/core/Box";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
@@ -95,6 +97,9 @@ const reorder = (list, startPosition, endPosition) => {
 };
 
 export default function CheckboxList(props) {
+  const { basinLayerColor, GLOUnitsColor, GLOLeasesColor } = useSelector(
+    ({ MainMap }) => MainMap
+  );
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
@@ -265,7 +270,7 @@ export default function CheckboxList(props) {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       addLayer: true,
-      selectedControl: null
+      selectedControl: null,
     }));
   };
 
@@ -341,6 +346,38 @@ export default function CheckboxList(props) {
     }
   };
 
+  const getLayerColor = (layer) => {
+    // layerName: "Rig Activity"
+    if (layer) {
+      if (layer.layerName == "Rig Activity") return "#263451";
+
+      if (
+        layer.layerPaintProps &&
+        layer.layerPaintProps[0] &&
+        layer.layerPaintProps[0].paintProps
+      ) {
+        if (layer.layerPaintProps[0].paintProps["circle-color"])
+          return layer.layerPaintProps[0].paintProps["circle-color"];
+        if (layer.layerPaintProps[0].paintProps["fill-color"])
+          return layer.layerPaintProps[0].paintProps["fill-color"];
+        if (layer.layerPaintProps[0].paintProps["icon-color"])
+          return layer.layerPaintProps[0].paintProps["icon-color"];
+      }
+
+      if (
+        layer.layerPaintProps &&
+        layer.layerPaintProps.ids &&
+        layer.layerPaintProps.ids[0]
+      ) {
+        if (layer.layerPaintProps.ids[0] == "basinLayer")
+          return basinLayerColor;
+        if (layer.layerPaintProps.ids[0] == "GLOUnits") return GLOUnitsColor;
+        if (layer.layerPaintProps.ids[0] == "GLOLeases") return GLOLeasesColor;
+      }
+    }
+    return "#263451";
+  };
+
   return (
     <ClickAwayListener onClickAway={handleClose}>
       <StyledMenu
@@ -384,94 +421,101 @@ export default function CheckboxList(props) {
                           index={layer.position}
                         >
                           {(provided, snapshot) => (
-                            <StyledListItem
-                              ContainerComponent="li"
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
+                            <Box
+                              borderColor={getLayerColor(layer)}
+                              {...defaultProps}
                             >
-                              <ListItemIcon {...provided.dragHandleProps}>
-                                <DragIndicator />
-                              </ListItemIcon>
-                              <ListItemText
-                                id={labelId}
-                                primary={getLayerName(layer)}
-                                className={
-                                  !ifLayerHaveData(layer)
-                                    ? classes.disabledLayerTitle
-                                    : ""
-                                }
-                              />
-                              {layer.layerSettings.colorable && (
-                                <div
-                                  style={{
-                                    paddingRight: !layer.layerSettings
-                                      .interaction.interactionAble
-                                      ? "40"
-                                      : "",
-                                  }}
-                                >
-                                  <ListItemIcon
-                                    onClick={() => handleColorPicker(layer)}
+                              <StyledListItem
+                                ContainerComponent="li"
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                              >
+                                <ListItemIcon {...provided.dragHandleProps}>
+                                  <DragIndicator />
+                                </ListItemIcon>
+                                <ListItemText
+                                  id={labelId}
+                                  primary={getLayerName(layer)}
+                                  className={
+                                    !ifLayerHaveData(layer)
+                                      ? classes.disabledLayerTitle
+                                      : ""
+                                  }
+                                />
+                                {layer.layerSettings.colorable && (
+                                  <div
+                                    style={{
+                                      paddingRight: !layer.layerSettings
+                                        .interaction.interactionAble
+                                        ? "40"
+                                        : "",
+                                    }}
                                   >
-                                    <ColorControl />
-                                  </ListItemIcon>
-                                </div>
-                              )}
-                              {layer.layerSettings.interaction
-                                .interactionAble && (
-                                <div
-                                  style={{
-                                    paddingRight: 20,
-                                    height: "42px",
-                                    width: "42px",
-                                  }}
-                                >
-                                  <Checkbox
-                                    icon={
-                                      <CancelOutlinedIcon
-                                        htmlColor={
-                                          !ifLayerHaveData(layer)
-                                            ? "rgb(127, 149, 199)"
-                                            : "#12abe0"
-                                        }
-                                      />
-                                    }
-                                    checkedIcon={
-                                      <ClickIcon
-                                        color={
-                                          !ifLayerHaveData(layer)
-                                            ? "rgb(127, 149, 199)"
-                                            : "#12abe0"
-                                        }
-                                      />
-                                    }
-                                    edge="start"
-                                    checked={
-                                      layer.layerSettings.interaction
-                                        .interactionDetail.click
-                                    }
-                                    tabIndex={-1}
-                                    disableRipple
-                                    inputProps={{ "aria-labelledby": labelId }}
-                                    onChange={handleToggleInteraction(
-                                      layer,
-                                      index
-                                    )}
-                                  />
-                                </div>
-                              )}
-                              <FormControlLabel
-                                control={
-                                  <Switch
-                                    disabled={!ifLayerHaveData(layer)}
-                                    checked={
-                                      layer.layerSettings.visiable !== false
-                                    }
-                                    onChange={handleToggle(layer, index)}
-                                  />
-                                }
-                              />
-                            </StyledListItem>
+                                    <ListItemIcon
+                                      onClick={() => handleColorPicker(layer)}
+                                    >
+                                      <ColorControl />
+                                    </ListItemIcon>
+                                  </div>
+                                )}
+                                {layer.layerSettings.interaction
+                                  .interactionAble && (
+                                  <div
+                                    style={{
+                                      paddingRight: 20,
+                                      height: "42px",
+                                      width: "42px",
+                                    }}
+                                  >
+                                    <Checkbox
+                                      icon={
+                                        <CancelOutlinedIcon
+                                          htmlColor={
+                                            !ifLayerHaveData(layer)
+                                              ? "rgb(127, 149, 199)"
+                                              : "#12abe0"
+                                          }
+                                        />
+                                      }
+                                      checkedIcon={
+                                        <ClickIcon
+                                          color={
+                                            !ifLayerHaveData(layer)
+                                              ? "rgb(127, 149, 199)"
+                                              : "#12abe0"
+                                          }
+                                        />
+                                      }
+                                      edge="start"
+                                      checked={
+                                        layer.layerSettings.interaction
+                                          .interactionDetail.click
+                                      }
+                                      tabIndex={-1}
+                                      disableRipple
+                                      inputProps={{
+                                        "aria-labelledby": labelId,
+                                      }}
+                                      onChange={handleToggleInteraction(
+                                        layer,
+                                        index
+                                      )}
+                                    />
+                                  </div>
+                                )}
+                                <FormControlLabel
+                                  control={
+                                    <Switch
+                                      disabled={!ifLayerHaveData(layer)}
+                                      checked={
+                                        layer.layerSettings.visiable !== false
+                                      }
+                                      onChange={handleToggle(layer, index)}
+                                    />
+                                  }
+                                />
+                              </StyledListItem>
+                            </Box>
                           )}
                         </Draggable>
                       );
