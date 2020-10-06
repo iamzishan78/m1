@@ -323,7 +323,7 @@ export default function CellContentEdition({
           awaitRefetchQueries: true,
         });
       }
-      if (targetLabel === "Parcel Owner" || targetLabel === "Parcel Interest") {
+      if (targetLabel === "Parcel Ownership" || targetLabel === "Parcel Interest") {
         trimmedEditContent.ownerEntityId = entityId;
         updateParcelOwner({
           variables: {

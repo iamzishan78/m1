@@ -165,7 +165,7 @@ export default function AddUserData(props) {
                     count++;
                 });
 
-                //// only lines feature
+                ////  only lines feature
                 if (count == fileContent.features.length) type = "line";
                 else type = "fill";
               } else type = "fill";
@@ -187,7 +187,7 @@ export default function AddUserData(props) {
                 paintProps = {
                   "fill-color": idColor,
                   "fill-opacity": 0.4,
-                  "fill-outline-color": idColor,
+                  "fill-outline-color": "#1C1C1C",
                 };
               }
 

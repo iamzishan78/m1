@@ -211,9 +211,7 @@ function App() {
         //   mode: 'no-cors',
         // },
         headers: {},
-        cache: new InMemoryCache({
-          addTypename: false
-        }),
+        cache: new InMemoryCache()
       };
       if (token) {
         apolloConfig.headers["X-ZUMO-AUTH"] = token;
