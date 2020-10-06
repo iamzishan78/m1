@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Card from "@material-ui/core/Card";
@@ -10,6 +10,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import LayerIcon from "@material-ui/icons/Layers";
+import { useLazyQuery } from "@apollo/client";
 
 import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "../ExpandableCard/ExpandableCardContext";
@@ -20,6 +21,7 @@ import OwnershipIcon from "../WellCard/components/svgIcons/OwnershipIcon";
 import { ParcelCardContext } from "./ParcelCardContext";
 import ParcelsDetailCard from "./ParcelsDetailCard";
 import  { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
+import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -97,10 +99,42 @@ export default function ParcelCard(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [parcelContext, setParcelContext] = useContext(ParcelCardContext);
   const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
+  const [parcelObj, setParcelObj] = useState();
+  const [parcelProperties, setProperties] = useState();
   const classes = useStyles();
-  const originalProperty = getParcelOriginalProperties(stateApp.selectedParcel);
+  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
+    CUSTOMLAYER,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
 
-  return stateApp.selectedParcel ? (
+  useEffect(() => {
+    if (stateApp.selectedParcel) {
+      getCustomLayer({
+        variables: {
+          id: stateApp.selectedParcel.id,
+        },
+      });
+    }
+  }, [stateApp.selectedParcel]);
+
+  useEffect(() => {
+    if (dataCustomLayer && dataCustomLayer.customLayer) {
+      let shape = dataCustomLayer.customLayer.shape;
+      if (typeof shape === "string") {
+        shape = JSON.parse(shape);
+      }
+      setParcelObj({
+        ...dataCustomLayer.customLayer,
+        shape: shape,
+      });
+      const properties = getParcelOriginalProperties(shape.properties);
+      setProperties(properties);
+    }
+  }, [dataCustomLayer]);
+
+  return parcelObj ? (
     !stateExpandableCard.expanded ? (
       <div style={{ height: "100%", padding: "9px" }}>
         <Card>
@@ -123,6 +157,7 @@ export default function ParcelCard(props) {
                 className={classes.text2}
                 variant="caption"
               >
+                --
               </Typography>
             </div>
 
@@ -144,6 +179,7 @@ export default function ParcelCard(props) {
                   className={classes.text2}
                   variant="caption"
                 >
+                  --
                 </Typography>
             </div>
 
@@ -165,6 +201,7 @@ export default function ParcelCard(props) {
                 className={classes.text2}
                 variant="caption"
               >
+                {parcelObj ? parcelObj.owners.length : "--"}
               </Typography>
             </div>
 
@@ -203,7 +240,7 @@ export default function ParcelCard(props) {
                     County
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {originalProperty.county}
+                    {parcelProperties.county}
                   </TableCell>
                 </TableRow>
                 <TableRow className={classes.rowWhite}>
@@ -211,49 +248,51 @@ export default function ParcelCard(props) {
                     State
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {originalProperty.state}
+                    {parcelProperties.state}
                   </TableCell>
                 </TableRow>
                 <TableRow className={classes.rowGrey}>
                   <TableCell className={classes.cell1} align="left">
-                    Survey
+                    {parcelObj.state === "TX" ? "Survey" : "Meridian"}
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {originalProperty.survey}
+                    {parcelProperties.survey}
                   </TableCell>
                 </TableRow>
                 <TableRow className={classes.rowWhite}>
                   <TableCell className={classes.cell1} align="left">
-                    Block
+                    {parcelObj.state === "TX" ? "Block" : "Township"}
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {originalProperty.block}
+                    {parcelProperties.block}
                   </TableCell>
                 </TableRow>
                 <TableRow className={classes.rowGrey}>
                   <TableCell className={classes.cell1} align="left">
-                    Section
+                    {parcelObj.state === "TX" ? "Section" : "Range"}
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {originalProperty.section}
+                    {parcelProperties.section}
                   </TableCell>
                 </TableRow>
                 <TableRow className={classes.rowWhite}>
                   <TableCell className={classes.cell1} align="left">
-                    Abstract
+                    {parcelObj.state === "TX" ? "Abstract" : "Section"}
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {originalProperty.abstract}
+                    {parcelProperties.abstract}
                   </TableCell>
                 </TableRow>
+                {parcelObj.state === "TX" && (
                 <TableRow className={classes.rowGrey}>
                   <TableCell className={classes.cell1} align="left">
                     Alt Survey
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {originalProperty.altSurvey}
+                    {parcelProperties.altSurvey}
                   </TableCell>
                 </TableRow>
+                )}
               </TableBody>
             </Table>
           </CardContent>
