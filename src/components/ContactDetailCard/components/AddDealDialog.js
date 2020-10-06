@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     letterSpacing: "1px",
     textTransform: "capitalize",
     fontWeight: "bold",
-    padding: "8px 35px"
+    padding: "8px 35px",
   },
 
   label: {
@@ -77,7 +77,6 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "30px",
   },
 }));
-
 
 function AddDealDialog(props) {
   const classes = useStyles();
@@ -255,7 +254,16 @@ function AddDealDialog(props) {
             const stageIndex = td.lanes.findIndex(
               (lane) => lane.id === newStage
             );
-            td.lanes[stageIndex].cards.push(updatedCard);
+            if (stageIndex === -1) {
+              td.lanes.push({
+                // create lane if doesn't exist
+                id: newStage,
+                title: getLaneTitle(newStage),
+                cards: [updatedCard],
+              });
+            } else {
+              td.lanes[stageIndex].cards.push(updatedCard);
+            }
             setTransactData(td);
           }
         } else {
@@ -270,7 +278,8 @@ function AddDealDialog(props) {
         let td = { ...transactData };
         console.log(td, transactData, stateApp.user.mongoId);
 
-        if (td?.lanes?.length === 0) {
+        // create lane if doesn't exist
+        if (td?.lanes.findIndex((lane) => lane.id === newStage) === -1) {
           td.lanes.push({
             id: newStage,
             title: getLaneTitle(newStage),
@@ -316,7 +325,9 @@ function AddDealDialog(props) {
         Recent Activities
       </h4> */}
       <Grid item xs={12} style={{ minHeight: "35px" }}>
-        <h4 style={{ margin: "0 0 15px 0", float: "left", fontSize: "1.1rem" }}>Add Deals</h4>
+        <h4 style={{ margin: "0 0 15px 0", float: "left", fontSize: "1.1rem" }}>
+          Add Deals
+        </h4>
 
         <IconButton
           onClick={props.onClose}
@@ -441,7 +452,11 @@ function AddDealDialog(props) {
             disableElevation
             onClick={handleClose}
             className={classes.footerButton}
-            style={{ padding: "8px 35px", background: "rgb(215,244,254)", color: "rgb(23, 170, 221)" }}
+            style={{
+              padding: "8px 35px",
+              background: "rgb(215,244,254)",
+              color: "rgb(23, 170, 221)",
+            }}
           >
             Cancel
           </Button>
