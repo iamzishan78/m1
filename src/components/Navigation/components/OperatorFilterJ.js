@@ -568,14 +568,12 @@ export default function OperatorFilterJ() {
 //   // }, []);
 
 //   useEffect(() => {
-//     console.log("datttttttttttttt", data);
 //     if (data) {
 //       setOperatorsList(data.operators);
 //     }
 //   }, [data]);
 
 //   // useEffect(() => {
-//   //   console.log("navvvvvvv",stateNav.operators)
 //   //   if (!stateNav.operators) {
 //   //     getOperatorsList();
 //   //   } else {
@@ -584,7 +582,6 @@ export default function OperatorFilterJ() {
 //   // }, [stateNav.operators]);
 
 //   // useEffect(() => {
-//   //   console.log("datttttttttttttt",data)
 
 //   //   if (data) {
 //   //     setStateNav((state) => ({ ...state, operators: data.operators }));
@@ -592,7 +589,6 @@ export default function OperatorFilterJ() {
 //   // }, [data]);
 
 //   const handleOperatorChange = (value) => {
-//     console.log("///////////////");
 //     if (value.trim().length > 1) {
 //       getOperatorsList({
 //         variables: {

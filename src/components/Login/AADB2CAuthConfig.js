@@ -1,50 +1,31 @@
 import * as msal2 from "@azure/msal";
 
-const tenantsSupported = JSON.parse(process.env.REACT_APP_SUPPORTED_TENANTS);
-const credentialsB2CTenants = JSON.parse(
+const B2CTenants = JSON.parse(
   process.env.REACT_APP_TENANS_B2C_CREDENTIALS
 );
-export const B2CTenant = (tenant) => {
-  const tenantB2CName = tenantsSupported.reduce((_, e) => {
-    if (e.adTenant === tenant) return e.adB2CTenant;
-  }, null);
 
-  if (!tenantB2CName) return null;
-
-  return credentialsB2CTenants.reduce((_, e) => {
-    if (e.name === tenantB2CName) return e;
-  }, null);
+export const B2CTenantCredentials = (B2CTenantName) => {
+  let found;
+  for (let i = 0; i < B2CTenants.length; i++) {
+    if (B2CTenants[i].name.toUpperCase() === B2CTenantName.toUpperCase())
+      found = B2CTenants[i];
+  }
+  return found;
 };
 
-export const B2CTenantToLogin = (tenantB2CName) => {
-  return credentialsB2CTenants.reduce((_, e) => {
-    if (e.name === tenantB2CName) return e;
-  }, null);
-};
-
-const B2CPolicies = {
+export const B2CPolicies = {
   names: {
-    signUpSignIn: "b2c_1_susi",
-    signIn: "b2c_1_si",
-    forgotPassword: "b2c_1_reset",
-    signUpSignInCommon: "B2C_1A_SignUpOrSignInCommon",
+    signIn: "b2c_1a_signin",
+    forgotPassword: "b2c_1a_passwordreset",
   },
   authorities: {
-    signUpSignIn: {
-      authority:
-        "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/B2C_1_susi",
-    },
     signIn: {
       authority:
-        "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/b2c_1a_forcepasswordreset_signup_signin",
+        "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/b2c_1a_signin",
     },
     forgotPassword: {
       authority:
-        "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/b2c_1_reset",
-    },
-    signUpSignInCommon: {
-      authority:
-        "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/B2C_1A_SignUpOrSignInCommon",
+        "https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/b2c_1a_passwordreset",
     },
   },
 };
@@ -57,9 +38,9 @@ export const msalB2CConfig = (tenantId, clientId) => {
   return {
     auth: {
       clientId: clientId,
-      authority: B2CPolicies.authorities.signIn.authority,
       validateAuthority: false,
       redirectUri: path,
+      postLogoutRedirectUri: path,
     },
     cache: {
       cacheLocation: "sessionStorage", // This configures where your cache will be stored
@@ -72,6 +53,7 @@ export const MSALB2CObj = (tenantId, clientId) =>
   new msal2.UserAgentApplication(msalB2CConfig(tenantId, clientId));
 
 export const loginRequestB2C = {
+  authority: B2CPolicies.authorities.signIn.authority,
   scopes: ["openid", "profile", "email", "offline_access"],
 };
 

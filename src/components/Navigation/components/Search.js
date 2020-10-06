@@ -438,7 +438,7 @@ function Search() {
       if (searchInputValue === "") {
         setOptions(value ? [value] : []);
         setValue(null);
-        setStateApp((state) => ({ ...state, wellListFromSearch: null }));
+        setStateApp((state) => ({ ...state, wellListFromSearch: [] }));
         return undefined;
       }
 
@@ -664,21 +664,21 @@ function Search() {
                   dataOwnerWells.ownerLatsLonsArray[0].longitude,
                   dataOwnerWells.ownerLatsLonsArray[0].latitude,
                 ],
-                wellListFromSearch: dataOwnerWells.ownerLatsLonsArray,
+                wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
               }
             : {
                 ...stateApp,
                 fitBounds: null,
-                wellListFromSearch: dataOwnerWells.ownerLatsLonsArray,
+                wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
               }
         );
-        stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", true);
       } else {
         console.log("Not wells found for the owner");
-        stateApp.deactivateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
-          wellListFromSearch: null,
+          wellListFromSearch: [],
         }));
       }
     }
@@ -704,15 +704,15 @@ function Search() {
                 dataWells.wells.results[0].longitude,
                 dataWells.wells.results[0].latitude,
               ],
-              wellListFromSearch: dataWells.wells.results,
+              wellListFromSearch: [...dataWells.wells.results],
             }
           : {
               ...stateApp,
               fitBounds: null,
-              wellListFromSearch: dataWells.wells.results,
+              wellListFromSearch: [...dataWells.wells.results],
             }
       );
-      stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
+      stateApp.toggleLayersActivity("Search", true);
     }
   }, [dataWells]);
 
@@ -736,21 +736,25 @@ function Search() {
                   dataOperatorWells.operatorLatsLonsArray[0].longitude,
                   dataOperatorWells.operatorLatsLonsArray[0].latitude,
                 ],
-                wellListFromSearch: dataOperatorWells.operatorLatsLonsArray,
+                wellListFromSearch: [
+                  ...dataOperatorWells.operatorLatsLonsArray,
+                ],
               }
             : {
                 ...stateApp,
                 fitBounds: null,
-                wellListFromSearch: dataOperatorWells.operatorLatsLonsArray,
+                wellListFromSearch: [
+                  ...dataOperatorWells.operatorLatsLonsArray,
+                ],
               }
         );
-        stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", true);
       } else {
         console.log("Not wells found for the operator");
-        stateApp.deactivateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
-          wellListFromSearch: null,
+          wellListFromSearch: [],
         }));
       }
     }
@@ -776,21 +780,21 @@ function Search() {
                   dataLeaseWells.leaseLatsLonsArray[0].longitude,
                   dataLeaseWells.leaseLatsLonsArray[0].latitude,
                 ],
-                wellListFromSearch: dataLeaseWells.leaseLatsLonsArray,
+                wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
               }
             : {
                 ...stateApp,
                 fitBounds: null,
-                wellListFromSearch: dataLeaseWells.leaseLatsLonsArray,
+                wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
               }
         );
-        stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", true);
       } else {
         console.log("Not wells found for the lease");
-        stateApp.deactivateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
-          wellListFromSearch: null,
+          wellListFromSearch: [],
         }));
       }
     }
@@ -874,7 +878,7 @@ function Search() {
             },
           ],
         }));
-        stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", true);
       }
 
       //// if owner
@@ -944,7 +948,7 @@ function Search() {
             ? { maxLat, minLat, maxLong, minLong }
             : null,
         }));
-        stateApp.activateUserDefinedLayers(stateApp.searchLayerIndex);
+        stateApp.toggleLayersActivity("Search", true);
       }
     }
   };
@@ -1058,7 +1062,7 @@ function Search() {
                   size="small"
                   color={searchOption === "wells" ? "secondary" : "primary"}
                   onClick={() => {
-                    setSearchTop(5);
+                    // setSearchTop(5);
                     setSearchOption("wells");
                   }}
                 >
@@ -1070,7 +1074,7 @@ function Search() {
                   size="small"
                   color={searchOption === "owners" ? "secondary" : "primary"}
                   onClick={() => {
-                    setSearchTop(5);
+                    // setSearchTop(5);
                     setSearchOption("owners");
                   }}
                 >
@@ -1084,7 +1088,7 @@ function Search() {
                   size="small"
                   color={searchOption === "operators" ? "secondary" : "primary"}
                   onClick={() => {
-                    setSearchTop(5);
+                    // setSearchTop(5);
                     setSearchOption("operators");
                   }}
                 >
@@ -1096,7 +1100,7 @@ function Search() {
                   size="small"
                   color={searchOption === "leases" ? "secondary" : "primary"}
                   onClick={() => {
-                    setSearchTop(5);
+                    // setSearchTop(5);
                     setSearchOption("leases");
                   }}
                 >
@@ -1110,7 +1114,7 @@ function Search() {
                   size="small"
                   color={searchOption === "locations" ? "secondary" : "primary"}
                   onClick={() => {
-                    setSearchTop(5);
+                    // setSearchTop(5);
                     setSearchOption("locations");
                   }}
                 >
@@ -1158,7 +1162,7 @@ function Search() {
                         className={classes.groupsButton}
                         onClick={() => {
                           setSearchTop(5);
-                          setSearchOption("all");
+                          // setSearchOption("all");
                         }}
                       >
                         See Less

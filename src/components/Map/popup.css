@@ -2,10 +2,13 @@
     margin:0px;
     padding:0px;
     background:rgba(0,0,0,0);
-   
-    }
+}
 .mapboxgl-popup-content {
     margin:0px;
     padding:0px;
     background:rgba(0,0,0,0)
+}
+
+.abstractPopup .mapboxgl-popup-tip {
+    display: none;
 }

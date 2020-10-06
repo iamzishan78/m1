@@ -19,11 +19,12 @@ const useStyles = makeStyles({
     },
   },
   input: {
-    marginLeft: "25px",
+    marginLeft: "10px",
     width: "135px",
     "& input": { color: "#17AADD" },
   },
   inputLabel: {
+    fontSize: "15px",
     position: "relative",
     top: "11.5px",
   },
@@ -169,7 +170,7 @@ export default function FilterOwnerConfidence() {
     <React.Fragment>
       <div className={classes.divBordersMinMax}>
         <FormLabel className={classes.inputLabel}>
-          Owner Confidence Score
+          Owner Confidence Score (0-100)
         </FormLabel>
         <div className={classes.floatRight}>
           <NumberFormat

@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Grid, Dialog } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import MuiDialogActions from "@material-ui/core/DialogActions";
@@ -18,6 +18,7 @@ import React, {
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { ProfileContext } from "./ProfileContext";
+import ProfileActions from "./ProfileActions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -91,7 +92,6 @@ const ImageModalContent = () => {
   const [stateProfile, setStateProfile] = useContext(ProfileContext);
   const [crop, setCrop] = useState({ unit: "%", width: 70, aspect: 1 });
   const [completedCrop, setCompletedCrop] = useState(null);
-
   const {
     selectedImage,
     fields: { fullname, displayname },

@@ -1,15 +1,14 @@
 import React, { useState, createContext, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
-import {
-  MSALB2CObj,
-  B2CTenantToLogin,
-} from "./components/Login/AADB2CAuthConfig";
+import { MSALB2CObj, B2CTenantCredentials } from "./components/Login/AADB2CAuthConfig";
 import {
   styleLayers,
   userDefinedLayers,
   heatLayers,
   baseMapLayers,
+  layers,
+  defaultLayers,
 } from "./LayerConfig";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
@@ -24,6 +23,7 @@ const AppProvider = (props) => {
     apolloClientEndpoint:
       "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
     // "http://localhost:7071/api/m1graph",
+    graphqlScope: null,
     user: null,
     signUpUserType: null,
     wellCount: 500,
@@ -32,6 +32,8 @@ const AppProvider = (props) => {
     trackedOwnerWells: null,
     selectedWell: null,
     selectedWellId: null,
+    selectedAbstracts: [],
+    selectedParcel: null,
     customLayers: [],
     editDraw: false,
     editLayer: true,
@@ -39,7 +41,6 @@ const AppProvider = (props) => {
     owners: null,
     popupOpen: false, //map used in flyto
     expandedCard: false,
-    showAbstractPopup: false,
     flyTo: null, //map used in flyto
     fitBounds: null, //map used in fitBounds
     selectedTitleOpinionId: null,
@@ -52,7 +53,7 @@ const AppProvider = (props) => {
     filtersDefaultOnoff: null,
     filterSelectAllAbstract: false,
     selectedContact: null,
-    trackFilterOn: null,
+    // trackFilterOn: null,
     trackedWellArray: [],
     userSnap: false,
     mapVars: {
@@ -77,25 +78,24 @@ const AppProvider = (props) => {
     selectedWellApi: null,
     styleLayers: styleLayers,
     heatLayers: heatLayers,
+    layers: null,
+    defaultLayers: defaultLayers,
     baseMapLayers: baseMapLayers,
     userDefinedLayers: userDefinedLayers,
     searchLayerIndex: null,
     trackedOwnersLayerIndex: null,
     trackedWellsLayerIndex: null,
     tagsLayerIndex: null,
-    tempCheckedLayer: null,
+    // tempCheckedLayer: null,
     checkedLayers: [2, 5],
     wellsLayerIndex: null,
     checkedHeats: [],
-    udLayerConfig: [],
     checkedBaseLayers: [0, 1, 2, 3, 4, 5],
     checkedUserDefinedLayers: [],
     checkedFileLayers: [],
-    userFileLayers: [],
-    userServiceLayers: [],
     tempCheckedUserDefinedLayer: null,
-    tempCheckedAOILayer: null,
-    tempCheckedParcleLayer: null,
+    // tempCheckedAOILayer: null,
+    // tempCheckedParcleLayer: null,
     checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
     checkedFileLayersInteraction: [],
     editingUserDefinedLayers: [],
@@ -113,65 +113,56 @@ const AppProvider = (props) => {
     zoomFault: null,
     hugeRequest: null,
     currentFeature: undefined,
-    wellListFromSearch: null,
-    wellListFromTagsFilter: null,
+    wellListFromSearch: [],
+    wellListFromTagsFilter: [],
     m1neralHeaders: [],
     mappedHeadersFromCSV: [],
+    toggleLayersActivity: (layerName, activityValue) => {
+      if (layerName) {
+        let res;
+        setStateApp((stateApp) => {
+          if (stateApp.layers && Array.isArray(stateApp.layers)) {
+            const currentLayers = [...stateApp.layers];
+            const index = currentLayers.findIndex(
+              (l) => l.layerName == layerName
+            );
 
-    activateLayers: (layerContainerVarName, layerNumber) => {
-      let added = false;
-      setStateApp((stateApp) => {
-        const currentIndex = stateApp[layerContainerVarName].indexOf(
-          layerNumber
-        );
-        const newChecked = [...stateApp[layerContainerVarName]];
-        if (currentIndex === -1) {
-          newChecked.push(layerNumber);
-          added = true;
-        }
-        return {
-          ...stateApp,
-          [layerContainerVarName]: newChecked,
-          popupOpen: false,
-          selectedWell: null,
-          mapCircularLoaderAct: false,
-        };
-      });
-      return added;
-    },
-    deactivateLayers: (layerContainerVarName, layerNumber) => {
-      let deleted = false;
-      setStateApp((stateApp) => {
-        const currentIndex = stateApp[layerContainerVarName].indexOf(
-          layerNumber
-        );
-        const newChecked = [...stateApp[layerContainerVarName]];
-        if (currentIndex !== -1) {
-          newChecked.splice(currentIndex, 1);
-          deleted = true;
-        }
+            const updatedLayer = {
+              ...currentLayers[index],
+              layerSettings: {
+                ...currentLayers[index].layerSettings,
+                visiable:
+                  activityValue !== undefined
+                    ? activityValue
+                    : !currentLayers[index].layerSettings.visiable,
+              },
+            };
+            res = updatedLayer.layerSettings.visiable;
 
-        return {
-          ...stateApp,
-          [layerContainerVarName]: newChecked,
-          popupOpen: false,
-          selectedWell: null,
-          mapCircularLoaderAct: false,
-        };
-      });
-      return deleted;
-    },
-    activateUserDefinedLayers: (layerNumber) => {
-      return stateApp.activateLayers("checkedUserDefinedLayers", layerNumber);
-    },
-    deactivateUserDefinedLayers: (layerNumber) => {
-      return stateApp.deactivateLayers("checkedUserDefinedLayers", layerNumber);
-    },
-    activateWellLayer: () => {
-      return stateApp.activateLayers("checkedLayers", 2);
-    },
-    deactivateWellLayer: () => {
-      return stateApp.deactivateLayers("checkedLayers", 2);
+            //// saving to mongo
+            // updateLayerSettings({
+            //   variables: {
+            //     settings: {
+            //       _id: updatedLayer._id,
+            //       layerSettings: updatedLayer.layerSettings,
+            //     },
+            //   },
+            // });
+
+            //// saving to stateApp
+            currentLayers[index] = updatedLayer;
+
+            return {
+              ...stateApp,
+              layers: [...currentLayers],
+              popupOpen: false,
+              selectedWell: null,
+              mapCircularLoaderAct: false,
+            };
+          }
+        });
+        return res;
+      }
     },
   });
 
@@ -183,12 +174,13 @@ const AppProvider = (props) => {
 
       if (tenantName) {
         let tenant = tenantsCredentials(tenantName);
-        let myMSALObjInt = MSALObj(tenant.tenantId, tenant.clientId);
+        let myMSALObjInt = MSALObj(tenant);
         setStateApp((state, props) => {
           return {
             ...state,
             myMSALObj: myMSALObjInt,
             apolloClientEndpoint: tenant.apolloClientEndpoint,
+            graphqlScope: tenant.graphqlScope,
           };
         });
       } else {
@@ -197,10 +189,10 @@ const AppProvider = (props) => {
         });
       }
 
-      let tenantB2CName = window.sessionStorage.getItem("tenantB2CName");
+      let B2CTenantName = window.sessionStorage.getItem("B2CTenantName");
 
-      if (tenantB2CName) {
-        let tenant = B2CTenantToLogin(tenantB2CName);
+      if (B2CTenantName) {
+        let tenant = B2CTenantCredentials(B2CTenantName);
         if (tenant) {
           let myMSALB2CObjInt = MSALB2CObj(tenant.tenantId, tenant.clientId);
           setStateApp((state, props) => {
@@ -219,36 +211,6 @@ const AppProvider = (props) => {
     }
     wait();
   }, []);
-
-  useEffect(() => {
-    if (stateApp.userDefinedLayers) {
-      const stateIndexes = {};
-      stateApp.userDefinedLayers.forEach((layer, index) => {
-        if (layer.name === "Search") stateIndexes.searchLayerIndex = index;
-        if (layer.name === "Tracked Owners")
-          stateIndexes.trackedOwnersLayerIndex = index;
-        if (layer.name === "Tracked Wells")
-          stateIndexes.trackedWellsLayerIndex = index;
-        if (layer.name === "Tagged Wells/Owners")
-          stateIndexes.tagsLayerIndex = index;
-      });
-
-      if (Object.keys(stateIndexes).length !== 0)
-        setStateApp((state) => ({ ...state, ...stateIndexes }));
-    }
-  }, [stateApp.userDefinedLayers]);
-
-  useEffect(() => {
-    if (stateApp.styleLayers) {
-      const stateIndexes = {};
-      stateApp.styleLayers.forEach((layer, index) => {
-        if (layer.name === "Wells") stateIndexes.wellsLayerIndex = index;
-      });
-
-      if (Object.keys(stateIndexes).length !== 0)
-        setStateApp((state) => ({ ...state, ...stateIndexes }));
-    }
-  }, [stateApp.styleLayers]);
 
   useEffect(() => {
     dispatch(

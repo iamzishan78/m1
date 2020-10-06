@@ -9,10 +9,9 @@ import { AppContext } from "../../../../AppContext";
 import Tags from "../../Tagger";
 import Comments from "../../Comments";
 import Dialog from "@material-ui/core/Dialog";
-import Skeleton from "@material-ui/lab/Skeleton";
 import { makeStyles } from "@material-ui/core/styles";
 import MUIDataTable from "mui-datatables";
-import { IconButton, Typography } from "@material-ui/core";
+import { IconButton, Menu, MenuItem } from "@material-ui/core";
 import TrackToggleButton from "../../TrackToggleButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
@@ -49,7 +48,9 @@ import {
   deepEqual,
   setStateIfDeepEqual,
 } from "../../functions";
+import InviteUserDialog from "./SubComponents/InviteUserDialog";
 import AddParcelOwnerDialogContent from "./SubComponents/AddParcelOwnerDialogContent";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import AddParcelToEntityDialogContent from "./SubComponents/AddParcelToEntityDialogContent/AddParcelToEntityDialogContent";
 import Convert_contact from "../../svgIcons/convert_contact";
 import Contact_card from "../../svgIcons/contact_card";
@@ -314,11 +315,135 @@ function SubTable(props) {
     }
   };
 
+  const handleExpandClick = async (cIndex, rIndex, idOrValues, type) => {
+    setColInd(cIndex);
+    setRowInd(rIndex);
+    setExpandedObject(idOrValues);
+    setOpenDialog(type);
+  };
+
   ////setting all icons columns/////
+  const [isMenuOpen, setMenuOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuID, setMenuID] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUserIndex, setSelectedUserIndex] = useState(null);
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+    setSelectedUser(null);
+    setSelectedUserIndex(null);
+    setM1nSelectedRowsIds([]);
+  };
+
+  const changeAdminAccess = () => {
+    selectedUser.adminAccess = !selectedUser.adminAccess;
+    rows !== null
+      ? setExpandedObject([rows, selectedUser])
+      : setExpandedObject([props.rows, selectedUser]);
+    closeMenu();
+  };
+
+  const optionMenu = (
+    <Menu
+      anchorEl={anchorEl}
+      getContentAnchorEl={null}
+      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      transformOrigin={{ vertical: "top", horizontal: "center" }}
+      keepMounted
+      id={menuID}
+      open={isMenuOpen}
+      onClose={closeMenu}
+    >
+      <MenuItem
+        className={classes.userMenuItem}
+        onClick={selectedUser !== null && changeAdminAccess}
+      >
+        {selectedUser !== null &&
+        typeof selectedUser.adminAccess !== "undefined" &&
+        selectedUser.adminAccess
+          ? "Remove Admin Access"
+          : "Grant Admin Access"}
+      </MenuItem>
+      <Divider />
+      <MenuItem
+        className={classes.userMenuItem}
+        onClick={(e) => handleExpandClick(null, null, null, "deleteUser")}
+      >
+        Delete User
+      </MenuItem>
+    </Menu>
+  );
+
+  const openMenu = (event, rowIndex, user) => {
+    setAnchorEl(event.currentTarget);
+    setMenuOpen(true);
+    setMenuID(rowIndex);
+    setSelectedUser(user);
+    setSelectedUserIndex(rowIndex);
+    setM1nSelectedRowsIds([user._id]);
+  };
+
   useEffect(() => {
     if (props.columns) {
       props.columns.forEach((column) => {
         switch (column.name) {
+          case "actions":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
+
+                  return (
+                    <>
+                      <Tooltip
+                        title="settings"
+                        placement="top"
+                        style={{ marginRight: "10px" }}
+                      >
+                        <IconButton
+                          id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                          size={props.dense ? "small" : "medium"}
+                          onClick={(e) => {
+                            openMenu(
+                              e,
+                              tableMeta.rowIndex,
+                              typeof rows[tableMeta.rowIndex] !== "undefined"
+                                ? rows[tableMeta.rowIndex]
+                                : props.rows[tableMeta.rowIndex]
+                            );
+                          }}
+                        >
+                          <MoreHorizIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </>
+                  );
+                },
+              };
+            }
+
+            break;
+
+          case "adminAccess":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <div style={{ textAlign: "center" }}>
+                      {value ? "Yes" : "No"}
+                    </div>
+                  );
+                },
+                setCellHeaderProps: () => ({
+                  style: { display: "flex", justifyContent: "center" },
+                }),
+              };
+            }
+
+            break;
           case "parcelIcon": //// open parcel detail card
             {
               column.options = {
@@ -1000,20 +1125,14 @@ function SubTable(props) {
       });
       setColumns([...props.columns]);
     }
-  }, [props.columns, props.rows, colInd, rowInd, m1nSelectedRowsTracks]);
-
-  const handleExpandClick = async (cIndex, rIndex, idOrValues, type) => {
-    setColInd(cIndex);
-    setRowInd(rIndex);
-    setExpandedObject(idOrValues);
-    setOpenDialog(type);
-  };
+  }, [props.columns, props.rows, rows, colInd, rowInd, m1nSelectedRowsTracks]);
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setColInd(null);
     setRowInd(null);
     setExpandedObject(null);
+    setStateApp({ ...stateApp, isEditSelectedProfileName: null });
   };
 
   const handleOpenExpandableCard = () => {
@@ -1105,7 +1224,8 @@ function SubTable(props) {
             //// if contacts set the multi selection top bar: ////
             if (
               props.header === "Owner's Contacts" ||
-              props.header === "Contacts"
+              props.header === "Contacts" ||
+              props.header === "Active Users"
             ) {
               const getSelectedRows = () => {
                 const selectedRows = [];
@@ -1126,58 +1246,64 @@ function SubTable(props) {
                     display: "flex",
                   }}
                 >
-                  <Button
-                    color="secondary"
-                    startIcon={<ContactPhoneRoundedIcon />}
-                    className={classes.multiSelectionTopBarButtons}
-                    onClick={() => {
-                      handleExpandClick(
-                        null,
-                        null,
-                        getSelectedRows(),
-                        "buyContactsInfo"
-                      );
-                    }}
-                  >
-                    Buy Info
-                  </Button>
-                  <Button
-                    color="secondary"
-                    startIcon={<EmailRoundedIcon />}
-                    className={classes.multiSelectionTopBarButtons}
-                    onClick={() => {
-                      handleExpandClick(
-                        null,
-                        null,
-                        getSelectedRows(),
-                        "sendMailers"
-                      );
-                    }}
-                  >
-                    Mailers
-                  </Button>
-                  <Button
-                    color="secondary"
-                    startIcon={<LocalPrintshopRoundedIcon />}
-                    className={classes.multiSelectionTopBarButtons}
-                    onClick={() => {
-                      handleExpandClick(
-                        null,
-                        null,
-                        getSelectedRows(),
-                        "printLabels"
-                      );
-                    }}
-                  >
-                    Labels
-                  </Button>
-                  <Divider orientation="vertical" flexItem />
+                  {props.header !== "Active Users" && (
+                    <>
+                      <Button
+                        color="secondary"
+                        startIcon={<ContactPhoneRoundedIcon />}
+                        className={classes.multiSelectionTopBarButtons}
+                        onClick={() => {
+                          handleExpandClick(
+                            null,
+                            null,
+                            getSelectedRows(),
+                            "buyContactsInfo"
+                          );
+                        }}
+                      >
+                        Buy Info
+                      </Button>
+                      <Button
+                        color="secondary"
+                        startIcon={<EmailRoundedIcon />}
+                        className={classes.multiSelectionTopBarButtons}
+                        onClick={() => {
+                          handleExpandClick(
+                            null,
+                            null,
+                            getSelectedRows(),
+                            "sendMailers"
+                          );
+                        }}
+                      >
+                        Mailers
+                      </Button>
+                      <Button
+                        color="secondary"
+                        startIcon={<LocalPrintshopRoundedIcon />}
+                        className={classes.multiSelectionTopBarButtons}
+                        onClick={() => {
+                          handleExpandClick(
+                            null,
+                            null,
+                            getSelectedRows(),
+                            "printLabels"
+                          );
+                        }}
+                      >
+                        Labels
+                      </Button>
+                      <Divider orientation="vertical" flexItem />
+                    </>
+                  )}
                   <Tooltip title={"Delete"}>
                     <IconButton
                       size="medium"
                       style={{ margin: "0 5px" }}
                       onClick={(e) => {
-                        handleExpandClick(null, null, null, "deleteContact");
+                        props.header !== "Active Users"
+                          ? handleExpandClick(null, null, null, "deleteContact")
+                          : handleExpandClick(null, null, null, "deleteUser");
                       }}
                       aria-label="delete"
                     >
@@ -1261,7 +1387,6 @@ function SubTable(props) {
               />
             );
           },
-
     customToolbar: () => {
       return (
         <>
@@ -1269,7 +1394,7 @@ function SubTable(props) {
             //////Upload Icon/////////////////////////
             <span className={classes.addIcon}>
               <Tooltip
-                title={`Upload ${
+                title={`Import ${
                   props.targetLabel.charAt(0).toUpperCase() +
                   props.targetLabel.slice(1)
                 }s`}
@@ -1320,12 +1445,18 @@ function SubTable(props) {
                       props.addAble.type &&
                       props.addAble.type === "parcelInterestsToEntity"
                     )
+                      // handleExpandClick(null, null, null, "addOwnerToParcel");
                       handleExpandClick(
                         null,
                         null,
                         null,
                         "addParcelInterestsToEntity"
                       );
+                    if (
+                      props.addAble.type &&
+                      props.addAble.type === "inviteUser"
+                    )
+                      handleExpandClick(null, null, null, "inviteUser");
                   }}
                 >
                   <AddCircleOutlineRoundedIcon />
@@ -1339,6 +1470,18 @@ function SubTable(props) {
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
       setSelectedRow(rows[dataIndex]);
 
+      // if (props.targetLabel === "owner") {
+      //   setStateApp((state) => ({ ...state, selectedOwner: rows[dataIndex] }));
+      //   setSubComponent(
+      //     <OwnersDetailCard
+      //       ownerId={rows[dataIndex].id}
+      //       wellsIdsArray={rows[dataIndex].wellsCounter}
+      //     />
+      //   );
+      //   setTitle(rows[dataIndex].name);
+      //   setSubTitle(rows[dataIndex].interestType);
+      //   handleOpenExpandableCard();
+      // }
       if (props.targetLabel === "deals") {
         console.log("ROW DATA: ", rows[dataIndex]);
         console.log("ROW DATA 0 INDEX: ", rowData[0]);
@@ -1349,19 +1492,6 @@ function SubTable(props) {
           dealDialog: true,
           activeDeal: card
         }));
-      }
-
-      if (props.targetLabel === "owner") {
-        setStateApp((state) => ({ ...state, selectedOwner: rows[dataIndex] }));
-        setSubComponent(
-          <OwnersDetailCard
-            ownerId={rows[dataIndex].id}
-            wellsIdsArray={rows[dataIndex].wellsCounter}
-          />
-        );
-        setTitle(rows[dataIndex].name);
-        setSubTitle(rows[dataIndex].interestType);
-        handleOpenExpandableCard();
       }
 
       if (props.targetLabel === "well") {
@@ -1413,7 +1543,7 @@ function SubTable(props) {
           title={props.header}
           data={rows ? rows : []}
           columns={columns ? columns : []}
-          options={options}
+          options={{ print: false, download: false, ...options }}
         />
 
         {/* <TransactDialog
@@ -1433,6 +1563,7 @@ function SubTable(props) {
               openDialog === "buyContactsInfo" ||
               openDialog === "sendMailers" ||
               openDialog === "printLabels" ||
+              openDialog === "deleteUser" ||
               openDialog === "addParcelInterestsToEntity"
                 ? true
                 : false
@@ -1440,12 +1571,20 @@ function SubTable(props) {
             maxWidth={
               openDialog === "owner" ||
               openDialog === "wellsPerOwner" ||
-              openDialog === "addParcelInterestsToEntity"
+              openDialog === "ownerContacts"
+                ? "xl"
+                : openDialog === "owner" ||
+                  openDialog === "ownersPerContacts" ||
+                  openDialog === "wellsPerOwner" ||
+                  openDialog === "owner" ||
+                  openDialog === "wellsPerOwner" ||
+                  openDialog === "addParcelInterestsToEntity"
                 ? "lg"
                 : openDialog === "addContact" ||
                   openDialog === "addOwnerToParcel" ||
                   openDialog === "deleteOwnersFromContact" ||
-                  openDialog === "deleteContact"
+                  openDialog === "deleteContact" ||
+                  openDialog === "deleteUser"
                 ? "xs"
                 : "sm"
             }
@@ -1662,6 +1801,39 @@ function SubTable(props) {
                 setSelectedRow={setSelectedRow}
               />
             )}
+            {openDialog === "inviteUser" && (
+              <InviteUserDialog
+                rows={rows}
+                setRows={setExpandedObject}
+                onClose={handleCloseDialog}
+              />
+            )}
+            {openDialog === "deleteUser" && (
+              <DeleteConfirmationDialogContent
+                header={`Delete User${
+                  m1nSelectedRowsIdsRef.current &&
+                  m1nSelectedRowsIdsRef.current.length > 1
+                    ? "s"
+                    : ""
+                }`}
+                onClose={handleCloseDialog}
+                deleteFunc={() => {
+                  props.deleteFunc(selectedUser.id);
+                  closeMenu();
+                }}
+                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {selectedUser !== null
+                  ? `Remove '${selectedUser.displayName}' from list?`
+                  : `Are you sure you want to delete selected user${
+                      m1nSelectedRowsIdsRef.current &&
+                      m1nSelectedRowsIdsRef.current.length > 1
+                        ? "s"
+                        : ""
+                    }?`}
+              </DeleteConfirmationDialogContent>
+            )}
           </Dialog>
         )}
 
@@ -1724,6 +1896,7 @@ function SubTable(props) {
           <CircularProgress size={80} disableShrink color="secondary" />
         </div>
       )}
+      {optionMenu}
     </div>
   );
 }
