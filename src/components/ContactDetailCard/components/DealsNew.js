@@ -80,7 +80,6 @@ export default function Deals({ contact, ...props }) {
             all.push(card);
         });
       });
-      console.log("all: ", all);
       setAllDeals(all);
     }
   }, [contact, stringData, data, loading]);
