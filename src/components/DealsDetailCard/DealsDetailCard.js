@@ -1,13 +1,9 @@
 import React, { useContext, useState, useEffect } from "react";
-import { useMutation, useLazyQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
-import Taps from "../Shared/Taps";
 import M1nTable from "../Shared/M1nTable/M1nTable";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import DealDisplay from "./components/DealDisplay";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 
