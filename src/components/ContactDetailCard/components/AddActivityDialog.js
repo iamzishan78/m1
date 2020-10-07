@@ -202,7 +202,7 @@ function AddActivityDialog(props) {
         Recent Activities
       </h4> */}
       <Grid item xs={12} style={{ minHeight: "35px" }}>
-        <h4 style={{ margin: "0 0 30px 0", float: "left" }}>
+        <h4 style={{ margin: "0 0 30px 0", float: "left" , fontSize: "1.1rem" }}>
           Recent Activities
         </h4>
 
@@ -283,7 +283,7 @@ function AddActivityDialog(props) {
         <TextField
           variant="outlined"
           multiline
-          rows={4}
+          rows={8}
           id="notes"
           label="Notes"
           type="text"
@@ -299,6 +299,18 @@ function AddActivityDialog(props) {
         />
 
         <div className={classes.dialogFooter}>
+        <Button
+            variant="contained"
+            color="default"
+            size="medium"
+            disableElevation
+            onClick={onClose}
+            disabled={loading}
+            style={{ margin: "0px 15px 0px 0px" }}
+          >
+            Cancel
+          </Button>
+         
           <Button
             variant="contained"
             color="secondary"
@@ -311,17 +323,7 @@ function AddActivityDialog(props) {
           >
             {addNew ? "Save" : "Update"}
           </Button>
-          <Button
-            variant="contained"
-            color="default"
-            size="medium"
-            disableElevation
-            onClick={onClose}
-            disabled={loading}
-            style={{ margin: "0px 20px 0px 20px" }}
-          >
-            Cancel
-          </Button>
+       
           {loading ? (
             <CircularProgress color="secondary" className={classes.progress} />
           ) : called && !loading ? (

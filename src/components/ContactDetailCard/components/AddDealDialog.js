@@ -1,58 +1,77 @@
-import React, { useState, useContext, useEffect } from "react";
-import uuid from "uuid";
+import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import NumberFormat from "react-number-format";
+import uuid from "uuid";
+import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
 import TextField from "@material-ui/core/TextField";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import DialogContent from "@material-ui/core/DialogContent";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
 import Select from "@material-ui/core/Select";
-import { makeStyles } from "@material-ui/core/styles";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import { TransactContext } from "../TransactContext";
+import Grid from "@material-ui/core/Grid";
 import { AppContext } from "../../../AppContext";
-import AddContactDialogContent from "../../Shared/M1nTable/components/SubComponents/AddContactDialogContent";
-import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
-import { CONTACT } from "../../../graphQL/useQueryContact";
-
 import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
+import { CONTACT } from "../../../graphQL/useQueryContact";
+import getLaneTitle from "../../Transact/getLaneTitle";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    "&  .MuiPaper-root": {
+      maxWidth: "400px",
+      padding: "25px",
+    },
+  },
+  dialogTitle: {
+    textAlign: "center",
+  },
+  dialogContentText: {
+    textAlign: "center",
+  },
+  inputField: {
+    marginBottom: "30px",
+  },
+  inputFieldDateRoot: {
+    "& .MuiDialog-root": {
+      zIndex: 99999,
+    },
+  },
+  inputFieldDate: {
+    marginBottom: "30px",
+    "& .MuiInputBase-input": {
+      paddingTop: "10.5px",
+      paddingBottom: "10.5px",
+    },
+  },
+  progress: {
+    marginLeft: "30px",
+    verticalAlign: "middle",
+  },
+  dialogFooter: {
+    display: "flex",
+    justifyContent: "flex-start",
+  },
+  footerButton: {
+    letterSpacing: "1px",
+    textTransform: "capitalize",
+    fontWeight: "bold",
+    padding: "8px 35px",
+  },
+
   label: {
     backgroundColor: "white",
   },
+
+  closeIcon: {
+    color: theme.palette.secondary.main,
+  },
+  inputField: {
+    marginBottom: "30px",
+  },
 }));
 
-function NumberFormatCustom(props) {
-  const { inputRef, onChange, ...other } = props;
-
-  return (
-    <NumberFormat
-      {...other}
-      getInputRef={inputRef}
-      onValueChange={(values) => {
-        onChange({
-          target: {
-            name: props.name,
-            value: values.value,
-          },
-        });
-      }}
-      thousandSeparator
-      isNumericString
-      prefix="$"
-    />
-  );
-}
-
-export default function TransactDialog(props) {
+function AddDealDialog(props) {
   const classes = useStyles();
   // const { transactData, handleDataChange } = props;
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -83,7 +102,9 @@ export default function TransactDialog(props) {
     }
   }, [cData]);
 
-  let [transactData, setTransactData] = useState(props.transactData ? {...props.transactData} : null);
+  let [transactData, setTransactData] = useState(
+    props.transactData ? { ...props.transactData } : null
+  );
 
   useEffect(() => {
     console.log("TDATAAAAAAAAA : ", tdata?.transactionData?.allData);
@@ -136,7 +157,8 @@ export default function TransactDialog(props) {
   }, [props.contactId]);
 
   useEffect(() => {
-    const cardId = stateApp.activeDeal?.cardId;
+    console.log("ACTIVE DEAL: ", stateApp.activeDeal);
+    const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
     const laneId = stateApp.activeDeal?.laneId;
 
     if (transactData && cardId && laneId && stateApp.dealDialog) {
@@ -176,7 +198,7 @@ export default function TransactDialog(props) {
     setLabel("");
     setDescription("");
     setStage("");
-    setContact({});
+    // setContact({});
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: false,
@@ -192,8 +214,9 @@ export default function TransactDialog(props) {
 
     let newStage = stage ? stage : "lane1";
     if (transactData) {
-      const cardId = stateApp.activeDeal?.cardId;
+      const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
       const laneId = stateApp.activeDeal?.laneId;
+      console.log("CARD AND LANE: ", cardId, laneId);
       if (cardId && laneId) {
         // update existing
         const laneIndex = transactData.lanes.findIndex(
@@ -224,7 +247,16 @@ export default function TransactDialog(props) {
             const stageIndex = td.lanes.findIndex(
               (lane) => lane.id === newStage
             );
-            td.lanes[stageIndex].cards.push(updatedCard);
+            if (stageIndex === -1) {
+              td.lanes.push({
+                // create lane if doesn't exist
+                id: newStage,
+                title: getLaneTitle(newStage),
+                cards: [updatedCard],
+              });
+            } else {
+              td.lanes[stageIndex].cards.push(updatedCard);
+            }
             setTransactData(td);
           }
         } else {
@@ -233,11 +265,20 @@ export default function TransactDialog(props) {
           td.lanes[laneIndex].cards[cardIndex] = updatedCard;
           setTransactData(td);
         }
-      } else if (!cardId && !laneId) {
+      } else if (!cardId || !laneId) {
         // add new
 
         let td = { ...transactData };
         console.log(td, transactData, stateApp.user.mongoId);
+
+        // create lane if doesn't exist
+        if (td?.lanes.findIndex((lane) => lane.id === newStage) === -1) {
+          td.lanes.push({
+            id: newStage,
+            title: getLaneTitle(newStage),
+            cards: [],
+          });
+        }
 
         td.lanes.forEach((lane) => {
           if (lane.id === newStage) {
@@ -272,86 +313,66 @@ export default function TransactDialog(props) {
   }, [transactData]);
 
   return (
-    <Dialog
-      open={stateApp.dealDialog ? stateApp.dealDialog : false}
-      onClose={handleClose}
-      aria-labelledby="form-dialog-title"
-      fullWidth
-      maxWidth="xs"
-    >
-      <DialogTitle id="form-dialog-title">Deal Information</DialogTitle>
-      <DialogContent>
+    <div style={{ padding: "30px" }}>
+      {/* <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
+        Recent Activities
+      </h4> */}
+      <Grid item xs={12} style={{ minHeight: "35px" }}>
+        <h4 style={{ margin: "0 0 15px 0", float: "left", fontSize: "1.1rem" }}>
+          Add Deals
+        </h4>
+
+        <IconButton
+          onClick={props.onClose}
+          size="small"
+          style={{ float: "right", top: "-5px", right: "-5px" }}
+        >
+          <CloseIcon className={classes.closeIcon} fontSize="small" />
+        </IconButton>
+      </Grid>
+      <div className={classes.inputFieldDateRoot}>
         <TextField
           margin="dense"
           value={title}
           label="Deal Name"
+          variant="outlined"
           fullWidth
           //   required
           onChange={(e) => {
             setTitle(e.target.value);
           }}
+          className={classes.inputField}
         />
-        <Dialog
-          className={classes.dialog}
-          open={openContactDialog ? true : false}
-          onClose={handleCloseContactDialog}
-          maxWidth={"xs"}
-        >
-          <AddContactDialogContent
-            onClose={handleCloseContactDialog}
-            dealsPage={true}
-            setDealsContact={setContact}
-          />
-        </Dialog>
 
-        <FormControl margin="dense" fullWidth size="small">
-          {/* <InputLabel
+        {/* <InputLabel
             id="demo-simple-select-outlined-label"
             className={classes.label}
           >
             Contact Name
           </InputLabel> */}
 
-          {!(
-            (Object.keys(contact).length === 0 &&
-              contact.constructor === Object) ||
-            contact === null
-          ) && (
-            <TextField
-              margin="dense"
-              value={contact?.name}
-              label=""
-              fullWidth
-              disabled
-            />
-          )}
-
-          <ButtonGroup
+        {!(
+          (Object.keys(contact).length === 0 &&
+            contact.constructor === Object) ||
+          contact === null
+        ) && (
+          <TextField
+            variant="outlined"
+            margin="dense"
+            value={contact?.name}
+            label="Contact Name"
             fullWidth
-            variant="contained"
-            color="primary"
-            aria-label="contained primary button group"
-          >
-            <Button onClick={() => setOpenContactDialog(true)}>
-              Add / Select Contact
-            </Button>
+            disabled
+            className={classes.inputField}
+          />
+        )}
 
-            {contact && (
-              <Button
-                disabled={
-                  (Object.keys(contact).length === 0 &&
-                    contact.constructor === Object) ||
-                  contact === null
-                }
-                onClick={() => openContact()}
-              >
-                View Contact
-              </Button>
-            )}
-          </ButtonGroup>
-        </FormControl>
-
-        <FormControl margin="dense" fullWidth size="small">
+        <FormControl
+          variant="outlined"
+          fullWidth
+          className={classes.inputField}
+          size="small"
+        >
           <InputLabel
             id="demo-simple-select-outlined-label"
             className={classes.label}
@@ -359,6 +380,7 @@ export default function TransactDialog(props) {
             Deal Stage
           </InputLabel>
           <Select
+            native
             labelId="demo-simple-select-outlined-label"
             id="demo-simple-select-outlined"
             value={stage}
@@ -369,28 +391,30 @@ export default function TransactDialog(props) {
             fullWidth
             label="Deal Stage"
           >
-            <MenuItem value={"lane1"}>Offer Preparation</MenuItem>
-            <MenuItem value={"lane2"}>Offer Extended</MenuItem>
-            <MenuItem value={"lane3"}>Accepted - Due Diligence</MenuItem>
-            <MenuItem value={"lane4"}>Deal Closed</MenuItem>
-            <MenuItem value={"lane5"}>Offer Rejected</MenuItem>
+            <option value={"lane1"}>Offer Preparation</option>
+            <option value={"lane2"}>Offer Extended</option>
+            <option value={"lane3"}>Accepted - Due Diligence</option>
+            <option value={"lane4"}>Deal Closed</option>
+            <option value={"lane5"}>Offer Rejected</option>
           </Select>
         </FormControl>
         <TextField
           margin="dense"
+          variant="outlined"
           value={label}
           label="Offer Price"
           fullWidth
           onChange={(e) => {
             setLabel(e.target.value);
           }}
-          // InputProps={{
-          //   inputComponent: NumberFormatCustom,
-          // }}
+          className={classes.inputField}
         />
         <TextField
           //   autoFocus
           margin="dense"
+          variant="outlined"
+          multiline
+          rows={8}
           value={description}
           label="Offer Details"
           fullWidth
@@ -399,16 +423,43 @@ export default function TransactDialog(props) {
           onChange={(e) => {
             setDescription(e.target.value);
           }}
+          className={classes.inputField}
         />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleUpdate} color="primary">
-          Save
-        </Button>
-      </DialogActions>
-    </Dialog>
+
+        <div className={classes.dialogFooter}>
+        <Button
+            variant="contained"
+            color="default"
+            size="medium"
+            disableElevation
+            onClick={handleClose}
+            className={classes.footerButton}
+            style={{
+              margin: "0px 15px 0px 0px"
+              // padding: "8px 35px",
+              // background: "rgb(215,244,254)",
+              // color: "rgb(23, 170, 221)",
+            }}
+          >
+            Cancel
+          </Button>
+         
+          <Button
+            variant="contained"
+            color="secondary"
+            size="medium"
+            disableElevation
+            onClick={handleUpdate}
+            className={classes.footerButton}
+           // style={{ margin: "0px 20px 0px 0px" }}
+          >
+            Save
+          </Button>
+       
+        </div>
+      </div>
+    </div>
   );
 }
+
+export default AddDealDialog;

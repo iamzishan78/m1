@@ -1192,6 +1192,7 @@ function SubTable(props) {
         ? [10, 25]
         : [],
     selectableRows: "multiple",
+    print: props.targetLabel !== "deals",
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
       // console.log("currentRowsSelected", JSON.stringify(currentRowsSelected));
@@ -1369,6 +1370,24 @@ function SubTable(props) {
               );
             }
 
+            //// if Parcel Ownership set the multi selection top bar: ////
+            if (props.targetLabel === "deals") {
+              return (
+                <Tooltip title={"Delete"}>
+                  <IconButton
+                    size="medium"
+                    style={{ margin: "0 5px" }}
+                    onClick={(e) => {
+                      handleExpandClick(null, null, null, "deleteDeal");
+                    }}
+                    aria-label="delete"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              );
+            }
+
             //// default empty top bar ////
             return (
               <div
@@ -1430,6 +1449,7 @@ function SubTable(props) {
                       setStateApp((stateApp) => ({
                         ...stateApp,
                         dealDialog: true,
+                        activeDeal: {}
                       }));
                     if (
                       props.addAble.type &&
@@ -1473,7 +1493,15 @@ function SubTable(props) {
       //   handleOpenExpandableCard();
       // }
       if (props.targetLabel === "deals") {
-        history.push("/transact");
+        console.log("ROW DATA: ", rows[dataIndex]);
+        console.log("ROW DATA 0 INDEX: ", rowData[0]);
+        let card = {...rows[dataIndex]};
+        delete card["dealStage"];
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          dealDialog: true,
+          activeDeal: card
+        }));
       }
 
       if (props.targetLabel === "well") {
@@ -1528,10 +1556,10 @@ function SubTable(props) {
           options={{ print: false, download: false, ...options }}
         />
 
-        <TransactDialog
+        {/* <TransactDialog
           selectRowOpenContact={selectRowOpenContact}
           contactId={props.contactId}
-        />
+        /> */}
 
         {openDialog && openDialog !== "addDeals" && (
           <Dialog
@@ -1730,6 +1758,28 @@ function SubTable(props) {
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to delete the Parcel Interest${
+                  m1nSelectedRowsIdsRef.current &&
+                  m1nSelectedRowsIdsRef.current.length > 1
+                    ? "s"
+                    : ""
+                }?`}
+              </DeleteConfirmationDialogContent>
+            )}
+
+            {openDialog === "deleteDeal" && (
+              <DeleteConfirmationDialogContent
+                header={`Delete Deal${
+                  m1nSelectedRowsIdsRef.current &&
+                  m1nSelectedRowsIdsRef.current.length > 1
+                    ? "s"
+                    : ""
+                }`}
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {`Do you want to delete the selected deal${
                   m1nSelectedRowsIdsRef.current &&
                   m1nSelectedRowsIdsRef.current.length > 1
                     ? "s"
