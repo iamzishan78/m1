@@ -1,7 +1,7 @@
 const getLaneTitle = (laneID) => {
   switch (laneID) {
     case "lane1":
-      return "Offer Preperation";
+      return "Offer Preparation";
     case "lane2":
       return "Offer Extended";
     case "lane3":
@@ -11,7 +11,7 @@ const getLaneTitle = (laneID) => {
     case "lane5":
       return "Offer Rejected";
     default:
-      return "Offer Preperation";
+      return "Offer Preparation";
   }
 };
 

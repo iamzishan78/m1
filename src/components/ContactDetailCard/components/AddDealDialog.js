@@ -414,7 +414,7 @@ function AddDealDialog(props) {
           margin="dense"
           variant="outlined"
           multiline
-          rows={4}
+          rows={8}
           value={description}
           label="Offer Details"
           fullWidth
@@ -427,18 +427,7 @@ function AddDealDialog(props) {
         />
 
         <div className={classes.dialogFooter}>
-          <Button
-            variant="contained"
-            color="secondary"
-            size="medium"
-            disableElevation
-            onClick={handleUpdate}
-            className={classes.footerButton}
-            style={{ margin: "0px 20px 0px 0px" }}
-          >
-            Save
-          </Button>
-          <Button
+        <Button
             variant="contained"
             color="default"
             size="medium"
@@ -446,13 +435,27 @@ function AddDealDialog(props) {
             onClick={handleClose}
             className={classes.footerButton}
             style={{
-              padding: "8px 35px",
-              background: "rgb(215,244,254)",
-              color: "rgb(23, 170, 221)",
+              margin: "0px 15px 0px 0px"
+              // padding: "8px 35px",
+              // background: "rgb(215,244,254)",
+              // color: "rgb(23, 170, 221)",
             }}
           >
             Cancel
           </Button>
+         
+          <Button
+            variant="contained"
+            color="secondary"
+            size="medium"
+            disableElevation
+            onClick={handleUpdate}
+            className={classes.footerButton}
+           // style={{ margin: "0px 20px 0px 0px" }}
+          >
+            Save
+          </Button>
+       
         </div>
       </div>
     </div>
