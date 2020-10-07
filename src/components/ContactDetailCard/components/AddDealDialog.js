@@ -15,6 +15,36 @@ import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import getLaneTitle from "../../Transact/getLaneTitle";
+import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
+import { ALLENTITYNAMESFORPARCEL } from "../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner";
+import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { Typography } from "@material-ui/core";
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+const joinAddress = (row) => {
+  let rowData = {
+    address1: row.address1,
+    address2: row.address2,
+    city: row.city,
+    state: row.state,
+    zip: row.zip,
+    country: row.country,
+  };
+  let textArray = [];
+  for (const key in rowData) {
+    if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
+      if (key === "zip" || key === "country") {
+        textArray = [
+          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
+        ];
+      } else textArray.push(capitalizeFirstLetter(rowData[key]));
+    }
+  }
+
+  return textArray.join(", ");
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,6 +111,10 @@ function AddDealDialog(props) {
   const [stage, setStage] = useState("");
   const [description, setDescription] = useState("");
 
+  const [nameAutValue, setNameAutValue] = useState(null);
+
+  const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
+  const [nameAutInputValue, setNameAutInputValue] = useState("");
   const [openContactDialog, setOpenContactDialog] = useState(false);
   // const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
 
@@ -90,7 +124,18 @@ function AddDealDialog(props) {
     fetchPolicy: "cache-and-network",
   });
 
+  const [getContacts, { data: allContacts }] = useLazyQuery(CONTACTSQUERY);
+
   const [contact, setContact] = useState({});
+
+  useEffect(() => {
+    getContacts();
+  }, []);
+
+  useEffect(() => {
+    console.log("ALL CONTACTS: ", allContacts);
+    setMongoEntitiesArray(allContacts?.contacts || []);
+  }, [allContacts]);
 
   useEffect(() => {
     if (cData?.contact) {
@@ -307,10 +352,31 @@ function AddDealDialog(props) {
   };
 
   useEffect(() => {
+    getAllEntityNamesToAddAsParcelOwner({
+      variables: {
+        parcelId: props.customLayerId,
+      },
+    });
+  }, []);
+
+  useEffect(() => {
     if (tdata?.transactionData?.allData) {
       handleDataChange(transactData);
     }
   }, [transactData]);
+
+  const [
+    getAllEntityNamesToAddAsParcelOwner,
+    { data: dataEntityNames },
+  ] = useLazyQuery(ALLENTITYNAMESFORPARCEL, {
+    fetchPolicy: "cache-and-network",
+  });
+
+  // useEffect(() => {
+  //   if (dataEntityNames && dataEntityNames.allEntityNamesToAddAsParcelOwner) {
+  //     setMongoEntitiesArray(dataEntityNames.allEntityNamesToAddAsParcelOwner);
+  //   }
+  // }, [dataEntityNames]);
 
   return (
     <div style={{ padding: "30px" }}>
@@ -355,7 +421,7 @@ function AddDealDialog(props) {
           (Object.keys(contact).length === 0 &&
             contact.constructor === Object) ||
           contact === null
-        ) && (
+        ) ? (
           <TextField
             variant="outlined"
             margin="dense"
@@ -364,6 +430,34 @@ function AddDealDialog(props) {
             fullWidth
             disabled
             className={classes.inputField}
+          />
+        ) : (
+          <Autocomplete
+            getOptionLabel={(option) => option?.name}
+            getOptionSelected={(option) => option?.name}
+            value={nameAutValue}
+            options={mongoEntitiesArray}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                value={nameAutInputValue}
+                onChange={(e) => {
+                  setNameAutInputValue(e.target.value.trim());
+                }}
+                size="small"
+                multiline
+                placeholder="E.g. Jacob"
+              />
+            )}
+            renderOption={(option) => {
+              // if (option._id === "newEntity")
+              //   return (
+              //     <Typography style={{ color: "blue" }}>{option.name}</Typography>
+              //   );
+              console.log("OPTION :", option);
+
+              return <span style={{ fontWeight: 400 }}>{option.name}</span>;
+            }}
           />
         )}
 
@@ -427,7 +521,7 @@ function AddDealDialog(props) {
         />
 
         <div className={classes.dialogFooter}>
-        <Button
+          <Button
             variant="contained"
             color="default"
             size="medium"
@@ -435,7 +529,7 @@ function AddDealDialog(props) {
             onClick={handleClose}
             className={classes.footerButton}
             style={{
-              margin: "0px 15px 0px 0px"
+              margin: "0px 15px 0px 0px",
               // padding: "8px 35px",
               // background: "rgb(215,244,254)",
               // color: "rgb(23, 170, 221)",
@@ -443,7 +537,7 @@ function AddDealDialog(props) {
           >
             Cancel
           </Button>
-         
+
           <Button
             variant="contained"
             color="secondary"
@@ -451,11 +545,10 @@ function AddDealDialog(props) {
             disableElevation
             onClick={handleUpdate}
             className={classes.footerButton}
-           // style={{ margin: "0px 20px 0px 0px" }}
+            // style={{ margin: "0px 20px 0px 0px" }}
           >
             Save
           </Button>
-       
         </div>
       </div>
     </div>

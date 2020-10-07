@@ -135,6 +135,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   //   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
 
   useEffect(() => {
+    console.log("ENTITIES : ", mongoEntitiesArray);
     if (nameAutInputValue && nameAutInputValue !== "") {
       setMongoEntitiesArray((eArray) => [
         {

@@ -14,6 +14,8 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Button from "@material-ui/core/Button";
 import Dialog from "./components/dialog";
 import getLaneTitle from "./getLaneTitle";
+import AddDealDialog from "../ContactDetailCard/components/AddDealDialog";
+import RightDialog from "../ContactDetailCard/components/RightDialog";
 
 // const data_file = {
 //   lanes: [
@@ -196,6 +198,34 @@ export default function Transact() {
   return !loading && data && transactData ? (
     <div className={classes.root}>
       <Dialog transactData={transactData} handleDataChange={handleDataChange} />
+      {/* <AddDealDialog
+            onClose={() =>
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                dealDialog: false,
+              }))
+            }
+            contactId={props.contact?._id}
+          /> */}
+      <RightDialog
+        open={stateApp.dealDialog ? true : false}
+        handleClickDialogClose={() =>
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            dealDialog: false,
+          }))
+        }
+        width="450px"
+      >
+        <AddDealDialog
+          onClose={() =>
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              dealDialog: false,
+            }))
+          }
+        />
+      </RightDialog>
       <Board
         className={classes.list}
         style={{ backgroundColor: "#efefef" }}
