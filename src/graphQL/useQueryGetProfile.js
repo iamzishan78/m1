@@ -54,6 +54,10 @@ export const GETPROFILE = gql`
                         country
                     }
                     distributionBankingInformation
+                },
+                investingPreferences {
+                    assetType
+                    basin
                 }
             }
         }

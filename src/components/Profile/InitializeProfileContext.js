@@ -29,6 +29,7 @@ export default function InitializeProfile(){
                 middlename,
                 lastname,
                 sss_tax_id,
+                outlook_integrated,
                 dateOfBirth,
                 address,
                 city,
@@ -45,11 +46,12 @@ export default function InitializeProfile(){
                 employer,
                 isSameFromAbove,
                 employerAddress,
-                investingEntities
+                investingEntities,
+                investingPreferences,
               },
             },
           } = data;
-    
+
           setStateProfile({
             ...stateProfile,
             fields: {
@@ -64,6 +66,7 @@ export default function InitializeProfile(){
               middlename,
               lastname,
               sss_tax_id,
+              outlook_integrated,
               dateOfBirth,
               address,
               city,
@@ -80,10 +83,11 @@ export default function InitializeProfile(){
               employer,
               isSameFromAbove,
               employerAddress,
-              investingEntities
+              investingEntities,
+              investingPreferences,
             },
           });
-        }
+        };
       }, [data]);
       return null;
 };

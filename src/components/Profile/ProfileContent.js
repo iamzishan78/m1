@@ -59,8 +59,8 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   image: {
-    width: 220,
-    height: 220,
+    width: '200px',
+    height: '200px',
     borderRadius: "50%",
     objectFit: "contain",
   },
@@ -126,7 +126,7 @@ const ProfileContent = () => {
   return (
     <MuiDialogContent>
       <Grid container>
-        <Grid item sm={8}>
+        <Grid item sm={7}>
           <TextField
             InputLabelProps={{
               classes: { root: classes.label, focused: classes.focused },
@@ -208,8 +208,7 @@ const ProfileContent = () => {
             onChange={({ target }) => onChange(target)}
           />
         </Grid>
-        <Grid item sm={4}>
-          <Typography variant="body1">Profile Photo</Typography>
+        <Grid item sm={5}>
           {profileImage?.length > 0 ? (
             <CardMedia
               className={classes.image}
@@ -239,13 +238,13 @@ const ProfileContent = () => {
             </Button>
           </label>
         </Grid>
-        <Grid item sm={12} style={{paddingTop: 10, color: '#1daee1'}}>
+        {/* <Grid item sm={12} style={{paddingTop: 10, color: '#1daee1'}}>
           <Link to="/myaccount">
             <Typography variant="subtitle2">
               View more profile settings
             </Typography>
           </Link>
-        </Grid>
+        </Grid> */}
       </Grid>
     </MuiDialogContent>
   );

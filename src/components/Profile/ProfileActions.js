@@ -29,7 +29,6 @@ const ProfileActions = () => {
 
   const handleClose = () => {
     setStateNav({ ...stateNav, isProfileOpen: false });
-    history.goBack();
   };
 
   const handleSubmit = async (e) => {
