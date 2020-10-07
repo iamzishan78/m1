@@ -1,14 +1,10 @@
-import React, { Fragment, useState, useEffect, useContext } from 'react';
+import React, { Fragment, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import M1nTable from "../Shared/M1nTable/M1nTable";
-import { Typography, IconButton, Grid } from "@material-ui/core";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { useHistory } from "react-router-dom";
 import { Modals } from "../../styles/Modal";
@@ -46,15 +42,12 @@ export default function UserManagementContainer() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateUsers, setStateUsers] = useContext(UserManagementContext);
   const { isUserManagementOpen } = stateNav;
+  const windowsHeight = window.innerHeight;
   
   const history = useHistory();
   const handleClose = () => {
-    history.goBack();
+    setStateNav({...stateNav, isUserManagementOpen: false})
   };
-
-  useEffect(()=>{
-    console.log("USER MANAGEMENT STATE: ", stateUsers);
-  },[stateUsers]);
 
   return (
     <Fragment>
@@ -72,7 +65,7 @@ export default function UserManagementContainer() {
           onClick={handleClose}
         />
         </DialogTitle>
-        <DialogContent>
+        <DialogContent style={{height: windowsHeight}}>
             <M1nTable 
                 dense
                 parent="UserManagement"

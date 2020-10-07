@@ -12,6 +12,7 @@ import hat from 'hat';
 import { AppContext } from "../../../../AppContext";
 import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
 import { USERBYEMAIL } from "../../../../graphQL/useQueryUserByEmail";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles((theme) => ({
   popUp: {
@@ -48,7 +49,7 @@ export default (props) => {
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [user, setUser] = useState({ _id: "" });
 
-  const parcelLabel = props.abstracts.length > 1 ? "parcels" : "parcel";
+  const parcelLabel = props.abstracts.length > 1 ? "tracts" : "tract";
 
   useEffect(() => {
     if(!customLayerInsertedData) {
@@ -212,16 +213,19 @@ export default (props) => {
     <Fragment>
       <div className={classes.popUp}>
         <div className={classes.content}>
-          <strong>{props.abstracts.length} {parcelLabel} selected.</strong>
+          <strong>{props.abstracts.length} {parcelLabel} selected</strong>
           <div className={classes.actions}>
             {isSavingParcel ? (
               <CircularProgress size={20} color="secondary" />
             ): (
-            <IconButton size="small" onClick={saveAndOpenParcelDetail} aria-label="Parcel">
+            <Tooltip title="Create Parcel">
+            <IconButton size="small" onClick={saveAndOpenParcelDetail} aria-label="Parcel" >
               <LayerIcon color="secondary" />
+            
             </IconButton>
+            </Tooltip>
             )}
-            <strong className={classes.label}>Parcel/Tract</strong>
+            {/* <strong className={classes.label}>Parcel/Tract</strong> */}
             <IconButton size="small" onClick={handleClose} aria-label="Close">
               <CloseIcon color="secondary" fontSize="small" />
             </IconButton>

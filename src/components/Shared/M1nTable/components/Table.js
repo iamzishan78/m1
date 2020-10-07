@@ -49,6 +49,7 @@ import {
   setStateIfDeepEqual,
 } from "../../functions";
 import InviteUserDialog from "./SubComponents/InviteUserDialog";
+import ReinviteUserDialog from "./SubComponents/ReinviteUserDialog";
 import AddParcelOwnerDialogContent from "./SubComponents/AddParcelOwnerDialogContent";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import AddParcelToEntityDialogContent from "./SubComponents/AddParcelToEntityDialogContent/AddParcelToEntityDialogContent";
@@ -330,6 +331,9 @@ function SubTable(props) {
   const [selectedUserIndex, setSelectedUserIndex] = useState(null);
 
   const closeMenu = () => {
+    console.log("--------------");
+    console.log("CLOSE MENU");
+    console.log("--------------");
     setMenuOpen(false);
     setSelectedUser(null);
     setSelectedUserIndex(null);
@@ -355,7 +359,7 @@ function SubTable(props) {
       open={isMenuOpen}
       onClose={closeMenu}
     >
-      <MenuItem
+      {/* <MenuItem
         className={classes.userMenuItem}
         onClick={selectedUser !== null && changeAdminAccess}
       >
@@ -364,6 +368,12 @@ function SubTable(props) {
         selectedUser.adminAccess
           ? "Remove Admin Access"
           : "Grant Admin Access"}
+      </MenuItem> */}
+      <MenuItem
+        className={classes.userMenuItem}
+        onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}
+      >
+        Resend Invite
       </MenuItem>
       <Divider />
       <MenuItem
@@ -1055,7 +1065,7 @@ function SubTable(props) {
                   ) {
                     //// if no value
                     if (value === "" || value === null || !value)
-                      return <p style={{ color: "#B3B3B3" }}>N/A</p>;
+                      return <p style={{ color: "#B3B3B3", padding: "10px" }}>N/A</p>;
 
                     //// if value
                     return (
@@ -1806,6 +1816,14 @@ function SubTable(props) {
                 rows={rows}
                 setRows={setExpandedObject}
                 onClose={handleCloseDialog}
+              />
+            )}
+            {openDialog === "reinviteUser" && (
+              <ReinviteUserDialog
+                selectedUser={selectedUser}
+                setRows={setExpandedObject}
+                onClose={handleCloseDialog}
+                onCloseMenu={closeMenu}
               />
             )}
             {openDialog === "deleteUser" && (

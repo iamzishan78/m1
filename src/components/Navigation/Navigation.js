@@ -85,6 +85,8 @@ import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import DescriptionIcon from "@material-ui/icons/Description";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 
+import ProfileProvider from "../Profile/ProfileProvider";
+import UserManagementProvider from "../UserManagement/UserManagementProvider";
 import FilterFormWell from "./components/FilterFormWell";
 import FilterFromGeo from "./components/FilterFromGeo";
 import FilterFormOwner from "./components/FilterFormOwner";
@@ -706,6 +708,9 @@ export default function Navigation(props) {
   const [profileImage, setProfileImage] = useState(null);
   const classes = useStyles({ mapGridCardActivated });
   const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE);
+  const [openProfileModal, setOpenProfileModal] = useState(false);
+  const [openUserManagementModal, setOpenUserManagementModal] = useState(false);
+
   useEffect(() => {
     if (stateApp?.user?.email) {
       getProfileImage({
@@ -930,8 +935,18 @@ export default function Navigation(props) {
     event.preventDefault();
     handleMenuClose();
     setStateNav({ ...stateNav, isProfileOpen: true });
+    setOpenProfileModal(true);
   };
+  
+  const openUserManagement = (event) => {
+    event.preventDefault();
+    handleMenuClose();
+    setStateNav({ ...stateNav, isUserManagementOpen: true });
+    setOpenUserManagementModal(true);
+  }
+
   const menuId = "primary-search-account-menu";
+
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -947,30 +962,24 @@ export default function Navigation(props) {
       <MenuItem
         className={classes.userMenuItem}
         onClick={(e) => openProfile(e)}
-        containerElement={<Link to="/profile" />}
       >
-        <Link to="/profile" style={{ textDecoration: "none", width: "100%" }}>
-          <Typography
-            style={{ textDecoration: "none", color: "#1daee1" }}
-            variant="inherit"
-          >
-            My Account
-          </Typography>
-        </Link>
+        <Typography
+          style={{ textDecoration: "none", color: "#1daee1" }}
+          variant="inherit"
+        >
+          My Account
+        </Typography>
       </MenuItem>
       <Divider />
-      <MenuItem className={classes.userMenuItem}>
-        <Link
-          to="/usermanagement"
-          style={{ textDecoration: "none", width: "100%" }}
-        >
+      <MenuItem 
+        className={classes.userMenuItem}
+        onClick={(e) => openUserManagement(e)}>
           <Typography
             style={{ textDecoration: "none", color: "#1daee1" }}
             variant="inherit"
           >
             User Management
           </Typography>
-        </Link>
       </MenuItem>
       <Divider />
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
@@ -2054,6 +2063,8 @@ export default function Navigation(props) {
         {props.children}
       </main>
       {renderMenu}
+      {openProfileModal && <ProfileProvider/>}
+      {openUserManagementModal && <UserManagementProvider/>}
     </div>
   );
 }

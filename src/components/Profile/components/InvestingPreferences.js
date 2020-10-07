@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, Fragment } from "react";
+import React, { useContext, useEffect, useState, Fragment, useReducer } from "react";
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -16,7 +16,8 @@ import HelpIcon from '@material-ui/icons/Help';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { ThemeProvider, makeStyles  } from '@material-ui/core/styles';
 import { PanelTheme, PanelGeneralStyle} from '../../../styles/Panel';
-
+import { InvestingPreFerencesReducers } from "./reducers";
+import { ProfileContext } from "../ProfileContext";
 const InvestingPreferences = () => {
     const classes = PanelGeneralStyle();
     const asset_type = [
@@ -76,6 +77,13 @@ const InvestingPreferences = () => {
         '$1,000,000+'
     ];
 
+    const [stateProfile, setStateProfile] = useContext(ProfileContext);
+    const [state, dispatch] = useReducer(InvestingPreFerencesReducers, stateProfile.fields);
+
+    useEffect(() => {
+        setStateProfile({...stateProfile, fields: {...state} });
+    }, [state]);
+
     return(
         <Fragment>
             <ThemeProvider theme={PanelTheme}>
@@ -99,7 +107,14 @@ const InvestingPreferences = () => {
                                                     asset_type.map((item, index) => {
                                                         return(
                                                             <FormControlLabel key={`asset_${index}`}
-                                                                control={<Checkbox key={`asset_${index}`} name={`asset_${index}`} />}
+                                                                control={
+                                                                    <Checkbox 
+                                                                        key={`asset_${index}`} name={`asset_${index}`} 
+                                                                        onChange={e=> dispatch({type:'assetType', value: item})} 
+                                                                        checked={typeof state.investingPreferences.InvestingInterests !== "undefined" && 
+                                                                            typeof state.investingPreferences.InvestingInterests.assetType !== "undefined" &&
+                                                                            state.investingPreferences.InvestingInterests.assetType.includes(item)}
+                                                                    />}
                                                                 label={item}
                                                             />
                                                         )
@@ -120,15 +135,16 @@ const InvestingPreferences = () => {
                                                 }}
                                                 autoHighlight
                                                 getOptionLabel={(option) => option}
+                                                onChange={e=> dispatch({type:'basin', value: e.target.innerHTML})}
                                                 renderInput={(params) => (
                                                     <TextField
                                                     {...params}
                                                     variant="outlined"
                                                     inputProps={{
                                                         ...params.inputProps,
-                                                    }}
-                                                    />
-                                                )}
+                                                    }}                                                
+                                                    />                                                  
+                                                )} 
                                                 />
                                         </FormControl>
                                     </Grid>
@@ -140,7 +156,15 @@ const InvestingPreferences = () => {
                                                     vehicles.map((item, index) => {
                                                         return(
                                                             <FormControlLabel key={`vehicles_${index}`}
-                                                                control={<Checkbox key={`vehicles_${index}`} name={`vehicles_${index}`} />}
+                                                                control={
+                                                                    <Checkbox 
+                                                                        key={`vehicles_${index}`} 
+                                                                        name={`vehicles_${index}`}
+                                                                        onChange={e=> dispatch({type:'vehicles', value: item})} 
+                                                                        checked={typeof state.investingPreferences.InvestingInterests !== "undefined" && 
+                                                                            typeof state.investingPreferences.InvestingInterests.vehicles !== "undefined" &&
+                                                                            state.investingPreferences.InvestingInterests.vehicles.includes(item)}
+                                                                         />}
                                                                 label={item}
                                                             />
                                                         )
@@ -151,13 +175,20 @@ const InvestingPreferences = () => {
                                     </Grid>
                                     <Grid item sm={3}>
                                         <FormControl style={{width: '100%', padding: 10}}>
-                                            <FormLabel component="legend">Vehicles</FormLabel>
+                                            <FormLabel component="legend">Hold Period</FormLabel>
                                             <FormGroup>
-                                                {
-                                                    hold_period.map((item, index) => {
+                                                { hold_period.map((item, index) => {
                                                         return(
                                                             <FormControlLabel key={`hold_period_${index}`}
-                                                                control={<Checkbox key={`hold_period_${index}`} name={`hold_period_${index}`} />}
+                                                                control={
+                                                                    <Checkbox 
+                                                                        key={`hold_period_${index}`} 
+                                                                        name={`hold_period_${index}`}
+                                                                        onChange={e=> dispatch({type:'hold_period', value: item})} 
+                                                                        checked={typeof state.investingPreferences.InvestingInterests !== "undefined" && 
+                                                                            typeof state.investingPreferences.InvestingInterests.holdPeriod !== "undefined" &&
+                                                                            state.investingPreferences.InvestingInterests.holdPeriod.includes(item)}
+                                                                         />}
                                                                 label={item}
                                                             />
                                                         )
@@ -166,13 +197,20 @@ const InvestingPreferences = () => {
                                             </FormGroup>
                                         </FormControl>
                                         <FormControl style={{width: '100%', padding: 10}}>
-                                            <FormLabel component="legend">Vehicles</FormLabel>
+                                            <FormLabel component="legend">Objectives</FormLabel>
                                             <FormGroup>
                                                 {
                                                     objectives.map((item, index) => {
                                                         return(
                                                             <FormControlLabel key={`objectives_${index}`}
-                                                                control={<Checkbox key={`objectives_${index}`} name={`objectives_${index}`} />}
+                                                                    control={<Checkbox 
+                                                                    key={`objectives_${index}`} 
+                                                                    name={`objectives_${index}`}
+                                                                    onChange={e=> dispatch({type:'objectives', value: item})} 
+                                                                    checked={typeof state.investingPreferences.InvestingInterests !== "undefined" && 
+                                                                        typeof state.investingPreferences.InvestingInterests.objectives !== "undefined" &&
+                                                                        state.investingPreferences.InvestingInterests.objectives.includes(item)}
+                                                                     />}
                                                                 label={item}
                                                             />
                                                         )
@@ -210,12 +248,18 @@ const InvestingPreferences = () => {
                                                                 id: 'total-investment',
                                                             }}
                                                             style={{width: '100%'}}
+                                                            value={typeof stateProfile.investingPreferences !== "undefined" &&
+                                                                typeof stateProfile.investingPreferences.InvestingObjectives !== "undefined" &&
+                                                                typeof stateProfile.investingPreferences.InvestingObjectives.expected_total_in_12_months !== "undefined" ?
+                                                                stateProfile.investingPreferences.InvestingObjectives.expected_total_in_12_months : "undecided"
+                                                            }
+                                                            onChange={e=> dispatch({type:'expected_in_12_months', value: e.target.value})}
                                                         >
                                                         <option value={null}>Undecided</option>
                                                         { 
                                                             expected_total_investment.map((item, index) => {
                                                                 return(
-                                                                    <option key={index} value={index}>{item}</option>
+                                                                    <option key={index} value={item}>{item}</option>
                                                                 )
                                                               })
                                                         }
@@ -235,6 +279,12 @@ const InvestingPreferences = () => {
                                                                 id: 'total-investment',
                                                             }}
                                                             style={{width: '100%'}}
+                                                            value={ typeof stateProfile.investingPreferences !== "undefined" &&
+                                                                typeof stateProfile.investingPreferences.InvestingObjectives !== "undefined" &&
+                                                                typeof stateProfile.investingPreferences.InvestingObjectives.risk_tolerance !== "undefined" ?
+                                                                stateProfile.investingPreferences.InvestingObjectives.risk_tolerance : "undecided"
+                                                            }
+                                                            onChange={e=> dispatch({type:'risk_tolerance', value: e.target.value})}
                                                         >
                                                         <option value={null}>Undecided</option>
                                                         <option value={'risk_averse'}>Risk Averse</option>
@@ -259,12 +309,18 @@ const InvestingPreferences = () => {
                                                                 id: 'total-investment',
                                                             }}
                                                             style={{width: '100%'}}
+                                                            value={ typeof stateProfile.investingPreferences !== "undefined" &&
+                                                                typeof stateProfile.investingPreferences.InvestingObjectives !== "undefined" &&
+                                                                typeof stateProfile.investingPreferences.InvestingObjectives.expected_per_project !== "undefined" ?
+                                                                stateProfile.investingPreferences.InvestingObjectives.expected_per_project : "undecided"
+                                                            }
+                                                            onChange={e=> dispatch({type:'expected_per_project', value: e.target.value})}
                                                         >
                                                         <option value={null}>Undecided</option>
                                                         { 
                                                             expected_investment_amount.map((item, index) => {
                                                                 return(
-                                                                    <option key={index} value={index}>{item}</option>
+                                                                    <option key={index} value={item}>{item}</option>
                                                                 )
                                                               })
                                                         }

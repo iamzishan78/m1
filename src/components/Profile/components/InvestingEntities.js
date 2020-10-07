@@ -20,16 +20,27 @@ import LockIcon from '@material-ui/icons/Lock';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { ProfileContext } from "../ProfileContext";
 import { ProfileTabReducer } from "./reducers";
+import DeleteIcon from '@material-ui/icons/Delete';
+import { IconButton, Tooltip } from "@material-ui/core";
 import { event } from "jquery";
 
 const InvestingEntities = () => {
+
+
+    const defaultEntityMembersValue = {
+        "firstname": "",
+        "lastname": "",
+        "role": "",
+        "signatory": "",
+        "email": ""
+    }
 
     const defaultValues = {
         "entityInformation": "",
         "accountType": "",
         "accredited": "",
         "taxIDSSN": "",
-        "entityMembers": [defaultEntityMembersValue],
+        "entityMembers": [],
         "mailingInformation": {
             "address": "",
             "city": "",
@@ -40,45 +51,16 @@ const InvestingEntities = () => {
         "distributionBankingInformation": ""
     }
 
-    const defaultEntityMembersValue = {
-        "firstname": "",
-        "lastname": "",
-        "role": "",
-        "signatory": "",
-        "email": ""
-    }
-
     const classes = PanelGeneralStyle();
     const [stateProfile, setStateProfile] = useContext(ProfileContext);
     const [state, dispatch] = useReducer(ProfileTabReducer, stateProfile.fields);
-    
-    const [entity, setEntity] = useState(defaultValues);
-    const [entityMembers, setEntityMembers] = useState([]);
+    const [disabledButton, setDisabledButton] = useState(true);
     const [entities, setEntities] = useState([]);
     const [entityContainer, setEntityContainer] = useState([]);
-    const [entityMemberContainer, setEntityMemberContainer] = useState([]);
-    
+
     let tempForm = useRef();
-
-    useEffect(()=> {
-        setStateProfile({...stateProfile, fields : state});
-        const { fields: {
-            investingEntities
-        }} = stateProfile;
-
-        if (investingEntities.length != 0) {
-            displayInvestingEntities(investingEntities);
-            setEntity(investingEntities[0]); // Set 0 for now testing
-            tempForm.current = investingEntities[0]; // Set 0 for now testing
-        }
-        console.log(entity);
-    },[state]);
-
-    const saveEntity = () => {
-        dispatch({type:'investingEntities', value: tempForm.current})
-    }
-
-    const handleInputChange = event => {
+    let membersTemp = defaultEntityMembersValue[0];
+    const handleInputChange = (event, index) => {
         const { name, value } = event.target;
         switch(name) {
             case 'address':
@@ -86,9 +68,10 @@ const InvestingEntities = () => {
             case 'state':
             case 'postalCode':
             case 'country':
-                tempForm.current = {...tempForm.current,
+         
+                tempForm.current[index] = {...tempForm.current[index],
                 mailingInformation: {
-                    ...tempForm.current.mailingInformation, [name]: value
+                    ...tempForm.current[index].mailingInformation, [name]: value
                 }}
                 break;
             case 'firstname':
@@ -96,49 +79,108 @@ const InvestingEntities = () => {
             case 'role':
             case 'signatory':
             case 'email':
-                // Refactor this section
-                tempForm.current = {...tempForm.current,
-                    entityMembers: [{...tempForm.current.entityMembers, [name]: value}]
-                }
+                // tempForm.current[index] = {...tempForm.current[index],
+                //     entityMembers: [...tempForm.current[index].entityMembers, {
+                //         ...tempForm.current[index].entityMembers[selectedEntityMembers], [name]: value
+                //     }]}
+                membersTemp = {...membersTemp, [name]: value};
+                if(membersTemp.firstname === "" && membersTemp.lastname === "" && membersTemp.email === ""){
+                    setDisabledButton(true);
+                }else{
+                     setDisabledButton(false);
+                    }
                 break;
             default:
-                tempForm.current = { ...tempForm.current, [name]: value };
+                tempForm.current[index] = { ...tempForm.current[index], [name]: value };
                 break;
         }
       };
 
-    const constructEntityMembers = (data) => {
-        let temp_entity_member = [...entityMemberContainer];
-        // temp_entity_member.push(
-            
-        // );
-        setEntityMemberContainer(temp_entity_member);
+    const constructEntityMembers = (data, key) => {
+        const temp = [...entities[key].entityMembers];
+        temp.push(membersTemp);
+        const entTemp = [...entities];
+        entTemp[key].entityMembers = temp;
+        setEntities(entTemp);
     }
 
+
     const addNewEntity = () => {
-        displayInvestingEntities([defaultValues]);
+        const entitiesTemp = [...entities];
+        entitiesTemp.push(defaultValues);
+        setEntities(entitiesTemp);
+    }
+
+
+    const discardEntity = (index) => {
+        if(entities.length > 1){
+            entities.splice(index, 1);
+            setEntities([...entities]);
+        }else{
+            setEntities([]); 
+        }
+    }
+
+
+    const saveEntity = (index) => {
+        const entitiesTemp = tempForm.current;
+        setEntities([...entitiesTemp]);
+        dispatch({type:'investingEntities', value: [...entitiesTemp]});
     }
     
+
+    useEffect(()=> {
+        setStateProfile({...stateProfile, fields : state});
+    },[state]);
+
+
+    useEffect(() => {
+        if (entities.length !== 0) {
+            //console.log("Entities rendered: ",entities);
+            tempForm.current = [...entities];
+        }
+        displayInvestingEntities([...entities]);
+    }, [entities]);
+
+    useEffect( () => {
+        const { fields: {
+            investingEntities
+        }} = stateProfile;
+
+        const temp = [];
+        if(investingEntities.length > 0){
+            investingEntities.forEach((entity, index) => {
+                const members = entity.entityMembers !== null ? entity.entityMembers : [];
+                temp.push({...entity, entityMembers: members})
+            })
+        }
+        setEntities(temp);
+    },[]);
+
     const displayInvestingEntities = (data) => {
-        let temp = [...entityContainer];
-        data.forEach(element => {
+        const temp = [];
+        data.forEach((element, index) => {
             temp.push(
-                <Fragment key={entities.length}>
-                    <Grid item sm={12}>
-                        <div style={{float: 'right', width: '25%'}}>
-                            <Grid container spacing={2}>
-                                <Grid item sm={6}>
-                                    <Button variant="contained" style={{width: '100%'}} onClick={()=> { }}disableElevation>Discard Entity</Button>
-                                </Grid>
-                                <Grid item sm={6}>
-                                    <Button variant="contained" style={{width: '100%'}} onClick={saveEntity} disableElevation>Save Entity</Button>
-                                </Grid>
-                            </Grid>
-                        </div>
-                    </Grid>
+                <Fragment key={`entity_${index}`}>
+                    
                     <Grid item sm={12}>
                         <FormControl style={{width: '100%', padding: 10}}>
-                            <FormLabel>Entity Information</FormLabel>
+                        <Grid container spacing={2}>
+                            <Grid item md={12}>
+                                <FormLabel><strong>Entity Information ({index+1}) </strong></FormLabel>
+                                <Tooltip
+                                    placement="top"
+                                    title="Discard Entity"
+                                >
+                                    <IconButton 
+                                        variant="contained"
+                                        onClick={()=>  discardEntity(index) }
+                                    >
+                                        <DeleteIcon color="primary"/>
+                                    </IconButton>
+                                </Tooltip>
+                            </Grid>
+                        </Grid>
                             <TextField
                                 style={{paddingTop: 10, paddingBottom: 10}}
                                 inputProps={{
@@ -149,7 +191,7 @@ const InvestingEntities = () => {
                                 }}
                                 name="entityInformation"
                                 defaultValue={element.entityInformation}
-                                onChange={handleInputChange}
+                                onChange={e => handleInputChange(e, index)}
                                 variant="outlined"/>
                         </FormControl>
                     </Grid>
@@ -168,7 +210,7 @@ const InvestingEntities = () => {
                                         }}
                                         name="accountType"
                                         defaultValue={element.accountType}
-                                        onChange={handleInputChange}
+                                        onChange={e => handleInputChange(e, index)}
                                         variant="outlined"/>
                                 </FormControl>
                             </Grid>
@@ -185,7 +227,7 @@ const InvestingEntities = () => {
                                         }}
                                         name="accredited"
                                         defaultValue={element.accredited}
-                                        onChange={handleInputChange}
+                                        onChange={e => handleInputChange(e, index)}
                                         variant="outlined"/>
                                 </FormControl>
                             </Grid>
@@ -205,7 +247,7 @@ const InvestingEntities = () => {
                                             }
                                         }}
                                         name="taxIDSSN"
-                                        onChange={handleInputChange}
+                                        onChange={e => handleInputChange(e, index)}
                                         InputProps={{
                                             endAdornment: (
                                                 <InputAdornment position="end">
@@ -251,7 +293,7 @@ const InvestingEntities = () => {
                                                         },
                                                     }}
                                                     name="firstname"
-                                                    onChange={handleInputChange}
+                                                    onChange={e => handleInputChange(e, index)}
                                                     variant="outlined"/>
                                             </FormControl>
                                         </Grid>
@@ -268,7 +310,7 @@ const InvestingEntities = () => {
                                                         },
                                                     }}
                                                     name="lastname"
-                                                    onChange={handleInputChange}
+                                                    onChange={e => handleInputChange(e, index)}
                                                     variant="outlined"/>
                                             </FormControl>
                                         </Grid>
@@ -285,7 +327,7 @@ const InvestingEntities = () => {
                                                         },
                                                     }}
                                                     name="role"
-                                                    onChange={handleInputChange}
+                                                    onChange={e => handleInputChange(e, index)}
                                                     variant="outlined"/>
                                             </FormControl>
                                         </Grid>
@@ -302,7 +344,7 @@ const InvestingEntities = () => {
                                                         },
                                                     }}
                                                     name="signatory"
-                                                    onChange={handleInputChange}
+                                                    onChange={e => handleInputChange(e, index)}
                                                     variant="outlined"/>
                                             </FormControl>
                                         </Grid>
@@ -318,30 +360,48 @@ const InvestingEntities = () => {
                                                         },
                                                     }}
                                                     name="email"
-                                                    onChange={handleInputChange}
+                                                    onChange={e => handleInputChange(e, index)}
                                                     variant="outlined"/>
+                                            </FormControl>
+                                            <FormControl style={{width: '100%', padding: 10}}>
+                                                <Tooltip placement="top" title={disabledButton ? "Don't leave empty fields" : ""}>
+                                                    <Button
+                                                        startIcon={<AddIcon style={{margin: '2px'}}/>}
+                                                        onClick={()=> {
+                                                            constructEntityMembers(element.entityMembers, index);
+                                                        }}
+                                                        disabled={disabledButton}
+                                                    > 
+                                                        Add Member
+                                                    </Button>
+                                                </Tooltip>
                                             </FormControl>
                                         </Grid>
                                     </Grid>
                                 </CardContent>
                             </Card>
                         </Grid>
-                            <Grid item sm={4}>
-                                <Card style={{flex: 1, display: 'flex', 
-                                                justifyContent: 'center', 
+                            <Grid item sm={8}>
+                                <Card 
+                                style={{flex: 1, display: 'flex', 
+                                                // justifyContent: 'center', 
                                                 backgroundColor: '#f3f2f3', 
                                                 minHeight: '100%', 
                                                 textAlign:"center"}}
-                                        onClick={()=> {
-                                            constructEntityMembers(element.entityMembers);
-                                        }}>
-                                    <CardContent style={{color: '#969696', display: 'inline-flex', alignItems: 'center'}}>
-                                        <AddIcon style={{margin: '2px'}}/>
-                                        <Typography component="div" >
-                                        <Box fontStyle="bold" fontSize={20}>
-                                            Add Member
-                                        </Box>
-                                        </Typography>
+                                >
+                                    {/* <CardContent style={{color: '#969696', display: 'inline-flex', alignItems: 'center', cursor:"pointer"}}> */}
+                                    <CardContent>
+                                        <Grid container spacing={1} >
+                                        {element.entityMembers.length > 0 ?
+                                            element.entityMembers.map((entity, key) => {
+                                            return (
+                                                    <Grid item md={12} key={key}>
+                                                        <Typography>({key+1}) {entity.firstname} {entity.lastname}, {entity.email}</Typography>
+                                                    </Grid>
+                                            )})
+                                        : <Typography variant="caption"> No entity members listed. Fill up the following fields (left) to add a member. </Typography>
+                                    }
+                                        </Grid>
                                     </CardContent>
                                 </Card>
                             </Grid>
@@ -372,7 +432,7 @@ const InvestingEntities = () => {
                                         }}
                                         name="address"
                                         defaultValue={element.mailingInformation.address}
-                                        onChange={handleInputChange}
+                                        onChange={e => handleInputChange(e, index)}
                                         variant="outlined"/>
                                 </FormControl>
                             </Grid>
@@ -389,7 +449,7 @@ const InvestingEntities = () => {
                                         }}
                                         name="city"
                                         defaultValue={element.mailingInformation.city}
-                                        onChange={handleInputChange}
+                                        onChange={e => handleInputChange(e, index)}
                                         variant="outlined"/>
                                 </FormControl>
                             </Grid>
@@ -410,7 +470,7 @@ const InvestingEntities = () => {
                                         }}
                                         name="state"
                                         defaultValue={element.mailingInformation.state}
-                                        onChange={handleInputChange}
+                                        onChange={e => handleInputChange(e, index)}
                                         variant="outlined"/>
                                 </FormControl>
                             </Grid>
@@ -427,7 +487,7 @@ const InvestingEntities = () => {
                                         }}
                                         name="postalCode"
                                         defaultValue={element.mailingInformation.postalCode}
-                                        onChange={handleInputChange}
+                                        onChange={e => handleInputChange(e, index)}
                                         variant="outlined"/>
                                 </FormControl>
                             </Grid>
@@ -448,7 +508,7 @@ const InvestingEntities = () => {
                                         }}
                                         name="country"
                                         defaultValue={element.mailingInformation.country}
-                                        onChange={handleInputChange}
+                                        onChange={e => handleInputChange(e, index)}
                                         variant="outlined"/>
                                 </FormControl>
                             </Grid>
@@ -482,12 +542,13 @@ const InvestingEntities = () => {
                                         }}
                                         name="distributionBankingInformation"
                                         defaultValue={element.distributionBankingInformation}
-                                        onChange={handleInputChange}
+                                        onChange={e => handleInputChange(e, index)}
                                         variant="outlined"/>
                                 </FormControl>
                             </Grid>
                         </Grid>
                     </Grid>
+                    <Divider/>
                 </Fragment>
             )
         });
@@ -508,14 +569,30 @@ const InvestingEntities = () => {
                                 <Typography className={classes.heading}>Investing Entities</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
-                                <Grid container>
+                                <Grid container spacing={2}>
                                     { 
                                         entityContainer
                                     }
-                                    <Grid item sm={12}>
-                                        <Button variant="contained" style={{width: '100%'}} onClick={addNewEntity} disableElevation>
+                                    <Grid item sm={6}>
+                                        <Button 
+                                            variant="contained" 
+                                            fullWidth 
+                                            onClick={addNewEntity}
+                                            disableElevation
+                                        >
                                             <AddIcon style={{margin: '2px'}}/>
-                                            Add Entity</Button>
+                                            Add Entity
+                                        </Button>
+                                    </Grid>
+                                    <Grid item sm={6}>
+                                        <Button 
+                                            variant="contained" 
+                                            fullWidth 
+                                            onClick={saveEntity}
+                                            disableElevation
+                                        >
+                                            Save Entities
+                                        </Button>
                                     </Grid>
                                 </Grid>
                             </AccordionDetails>
