@@ -25,6 +25,15 @@ export default function DeleteConfirmationDialogContent(props) {
         <h3 className={modalClass.inputLabel}>{props.children}</h3>
       </DialogContent>
       <DialogActions>
+
+        <Button
+          onClick={() => {
+            props.onClose();
+          }}
+          color="primary"
+        >
+          Cancel
+        </Button>
         <Button
           onClick={() => {
             props.completelyDelete
@@ -36,17 +45,9 @@ export default function DeleteConfirmationDialogContent(props) {
             props.onClose();
             props.setM1nSelectedRowsIndexes([]);
           }}
-          color="primary"
+          color="secondary"
         >
           Delete
-        </Button>
-        <Button
-          onClick={() => {
-            props.onClose();
-          }}
-          color="primary"
-        >
-          Cancel
         </Button>
       </DialogActions>
     </React.Fragment>

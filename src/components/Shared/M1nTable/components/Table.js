@@ -1715,7 +1715,7 @@ function SubTable(props) {
                   } from this owner?`}
 
                 {props.header === "Contacts" &&
-                  `Do you want to delete the contact${
+                  `Do you want to delete the selected contact${
                     m1nSelectedRowsIdsRef.current &&
                     m1nSelectedRowsIdsRef.current.length > 1
                       ? "s"
