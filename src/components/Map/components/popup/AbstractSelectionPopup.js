@@ -43,8 +43,6 @@ export default (props) => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel}] = useMutation(UPSERTCUSTOMLAYER);
-  const [upsertCustomLayerSymbol] = useMutation(UPSERTCUSTOMLAYER);
-
   const [error, setError] = useState(false);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [user, setUser] = useState({ _id: "" });
@@ -153,41 +151,8 @@ export default (props) => {
       state: abstractShape.properties.State
     };
 
-    let position = null;
-
-    if (typeof newShapeFeature.properties.shapeCenter == 'string') {
-      position = JSON.parse(newShapeFeature.properties.shapeCenter);
-    } else {
-      position = newShapeFeature.properties.shapeCenter
-    }
-
-    const symbolFeature = {
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: position
-      },
-      properties: {
-        ...newShapeFeature.properties,
-        id: `${newShapeFeature.id}_label`,
-        label: parcelName,
-      }
-    }
-
-    const customLayerSymbolData = {
-      shape: JSON.stringify(symbolFeature),
-      layer: `parcel_labels`,
-      name: parcelName,
-      user: user._id,
-      state: abstractShape.properties.State
-    };
-
     upsertCustomLayer({
       variables: { customLayer: customLayerData }
-    });
-
-    upsertCustomLayerSymbol({
-      variables: { customLayer: customLayerSymbolData }
     });
   }
 
