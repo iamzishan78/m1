@@ -36,6 +36,7 @@ import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
 import { REMOVEUSER } from "../../../graphQL/useMutationRemoveUser";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
+import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
 import { UPDATEPARCELOWNER } from "../../../graphQL/useMutationUpdateParcelOwner";
 import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRecords";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
@@ -43,6 +44,8 @@ import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelIn
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqualObjects, setStateIfDeepEqual } from "../functions";
+import RightDialog from "../../ContactDetailCard/components/RightDialog";
+import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
@@ -998,18 +1001,18 @@ const UserManagementHeadCells = [
       viewColumns: false,
     },
   },
-  {
-    name: "userType",
-    label: "User Type",
-    options: {
-      filter: true,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  // {
+  //   name: "userType",
+  //   label: "User Type",
+  //   options: {
+  //     filter: true,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
   {
     name: "role",
     label: "Role",
@@ -1022,18 +1025,18 @@ const UserManagementHeadCells = [
       viewColumns: false,
     },
   },
-  {
-    name: "adminAccess",
-    label: "Admin Access",
-    options: {
-      filter: true,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  // {
+  //   name: "adminAccess",
+  //   label: "Admin Access",
+  //   options: {
+  //     filter: true,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
   {
     name: "lastLogin",
     label: "Last Login",
@@ -1061,11 +1064,23 @@ const UserManagementHeadCells = [
 ];
 const DealsHeadCells = [
   {
-    name: "name",
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "title",
     label: "Name",
   },
   {
-    name: "contact",
+    name: "contactName",
     label: "Contact",
   },
   {
@@ -1073,11 +1088,11 @@ const DealsHeadCells = [
     label: "Deal Stage",
   },
   {
-    name: "dealAmount",
+    name: "label",
     label: "Deal Amount",
   },
   {
-    name: "dealDetails",
+    name: "description",
     label: "Deal Details",
   },
 ];
@@ -1214,6 +1229,8 @@ function M1nTable(props) {
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, Rows] = useState([]);
+  const [addDealOpen, setAddDealOpen] = useState(false);
+  const [selectedDeal, setSelectedDeal] = useState();
   const setRows = (newState) => {
     setStateIfDeepEqual(Rows, newState);
   };
@@ -1320,6 +1337,8 @@ function M1nTable(props) {
   const [removeContact] = useMutation(REMOVECONTACT);
 
   const [updateContact] = useMutation(UPDATECONTACT);
+  //////////
+  const [updateTransaction] = useMutation(UPDATETRANSACTION);
   //////////
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
     CUSTOMLAYER,
@@ -2263,9 +2282,9 @@ function M1nTable(props) {
     console.log(
       "%cCONTACT ID : ",
       "font-size:20px; color:tomato;",
-      props.contactId
+      props.contact
     );
-  });
+  }, [props.contact]);
 
   useEffect(() => {
     if (
@@ -2496,7 +2515,7 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "contactParcelInterests" &&
-      props.contactId &&
+      props.contact &&
       props.header &&
       props.entityId
     ) {
@@ -2508,12 +2527,12 @@ function M1nTable(props) {
       });
       getContactParcelInterests({
         variables: {
-          contactId: props.contactId,
+          contactId: props.contact._id,
         },
       });
       setLoading(true);
     }
-  }, [props.contactId, props.entityId, props.header]);
+  }, [props.contact, props.entityId, props.header]);
 
   useEffect(() => {
     if (
@@ -2656,7 +2675,7 @@ function M1nTable(props) {
   ////////////Deals start////////////////////////////////////////////////
 
   useEffect(() => {
-    console.log("DEALS CHECK : ", props.parent, props.contactId, stateApp.user);
+    console.log("DEALS CHECK : ", props.parent, props.contact, stateApp.user);
     if (props.parent && props.parent === "Deals" && stateApp.user) {
       console.log("ue mintable 22");
       setTargetLabel("deals");
@@ -2667,7 +2686,7 @@ function M1nTable(props) {
         },
       });
       setAddAble({ type: "deals" });
-      setUploadIcon(true);
+      setUploadIcon(false);
       setStartPaginationAt(25);
     }
   }, [props.parent, stateApp.user]);
@@ -2678,7 +2697,7 @@ function M1nTable(props) {
       props.parent &&
       props.parent === "Deals" &&
       dataDeals &&
-      props.contactId
+      props.contact
     ) {
       console.log("DATA DEALS : ", dataDeals);
       const lanes = dataDeals?.transactionData?.allData?.lanes;
@@ -2688,23 +2707,25 @@ function M1nTable(props) {
       if (lanes) {
         lanes.forEach((deal) => {
           deal.cards.forEach((card) => {
-            if (props.contactId === card.contactId) all.push(card);
+            if (props.contact?._id === card.contactId && !card.isDeleted) all.push(card);
           });
         });
       }
 
-      const dealsRowsData = [];
-      all.forEach((deal) => {
-        let dealData = {
-          name: deal.title,
-          contact: deal.contactName,
-          dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
-          dealAmount: deal.label,
-          dealDetails: deal.description,
-        };
+      const dealsRowsData = all.map(deal => ({...deal, id: deal.id, dealStage: lanes.find((lane) => lane.id === deal.laneId).title}));
+      // all.forEach((deal) => {
+      //   console.log("DEAL: ", deal)
+      //   let dealData = {
+      //     name: deal.title,
+      //     contact: deal.contactName,
+      //     dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
+      //     dealAmount: deal.label,
+      //     dealDetails: deal.description,
+      //     id: deal.id, //// "deal.laneId" check if this is the rigth id to delete the data
+      //   };
 
-        dealsRowsData.push(dealData);
-      });
+      //   dealsRowsData.push(dealData);
+      // });
       setTargetLabel("deals");
       setRows(dealsRowsData);
       setColumns([...DealsHeadCells]);
@@ -2714,15 +2735,76 @@ function M1nTable(props) {
     console.log(
       "%cCONTACT ID : ",
       "font-size:20px; color:green;",
-      props.contactId
+      props.contact
     );
-  }, [props.parent, dataDeals, props.contactId]);
+  }, [props.parent, dataDeals, props.contact]);
+
+  // deals delete
+  useEffect(() => {
+    if (props.parent && props.parent === "Deals") {
+      setDeleteFunc(() => (idsToDelete) => {
+        if (idsToDelete && idsToDelete.length > 0) {
+
+          let lanes = new Array(dataDeals?.transactionData?.allData?.lanes)[0];
+          lanes = lanes.map(lane => {
+            let cardsNew = [];
+            if(lane.cards && lane.cards.length > 0) cardsNew = [ ...lane.cards ];
+            cardsNew = cardsNew.map(card => {
+              const foundIndex = idsToDelete.findIndex(id => id === card.id)
+              if(foundIndex > -1){
+                return { ...card, isDeleted: true }
+              } else return card
+            })
+            return { ...lane, cards: cardsNew }
+          })
+
+          const newData = { ...dataDeals.transactionData.allData, lanes };
+
+          console.log({
+            transactionId: dataDeals.transactionData._id,
+            transaction: { allData: newData, user: stateApp.user.mongoId },
+          })
+
+          updateTransaction({
+            variables: {
+              transactionId: dataDeals.transactionData._id,
+              transaction: { allData: newData, user: stateApp.user.mongoId },
+            },
+            refetchQueries: ["getTransactionData", "getContact", "getContacts"],
+            awaitRefetchQueries: true,
+          });
+        }
+      });
+    }
+  }, [props.parent, dataDeals, props.contact, updateTransaction, stateApp.user.mongoId]);
 
   ////////////Deals end////////////////////////////////////////////////
 
   ////////////-----Add your code section here-----///////////////////////
   return (
     <Container maxWidth={false} className={classes.container}>
+      {props.parent && props.parent === "Deals" && (
+        <RightDialog
+          open={stateApp.dealDialog ? true : false}
+          handleClickDialogClose={() =>
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              dealDialog: false,
+            }))
+          }
+          width="450px"
+        >
+          <AddDealDialog
+            onClose={() =>
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                dealDialog: false,
+              }))
+            }
+            contactId={props.contact?._id}
+          />
+        </RightDialog>
+      )}
       <Table
         style={{ backgroundColor: "#fff" }}
         header={header}
@@ -2736,7 +2818,7 @@ function M1nTable(props) {
         dense={props.dense ? props.dense : undefined}
         orderByTracks={orderByTracks}
         startPaginationAt={startPaginationAt}
-        contactId={props.contactId}
+        contactId={props.contact?._id}
         contactsPageProps={{
           getContacts,
           contactsCount,

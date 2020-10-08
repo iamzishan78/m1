@@ -97,7 +97,7 @@ const Profile = (props) => {
                                                 },
                                             }}
                                             onChange={e=>dispatch({type:'firstname', value: e.target.value})}
-                                            value={state.firstname}
+                                            value={state.firstname !== null ? state.firstname : ""}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>
@@ -113,7 +113,7 @@ const Profile = (props) => {
                                                 },
                                             }}
                                             onChange={e=>dispatch({type:'middlename', value: e.target.value})}
-                                            value={state.middlename}
+                                            value={state.middlename !== null ? state.middlename : ""}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid> 
@@ -129,7 +129,7 @@ const Profile = (props) => {
                                                 },
                                             }}
                                             onChange={e=>dispatch({type:'lastname', value: e.target.value})}
-                                            value={state.lastname}
+                                            value={state.lastname !== null ? state.lastname : ""}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>
@@ -146,7 +146,7 @@ const Profile = (props) => {
                                                 },
                                             }}
                                             onChange={e=>dispatch({type:'displayname', value: e.target.value})}
-                                            value={state.displayname}
+                                            value={state.displayName !== null ? state.displayName : ""}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>
@@ -169,7 +169,7 @@ const Profile = (props) => {
                                                 )
                                             }}
                                             onChange={e=>dispatch({type:'sss_tax_id', value: e.target.value})}
-                                            value={state.sss_tax_id}
+                                            value={state.sss_tax_id !== null ? state.sss_tax_id : ""}
                                             variant="outlined"
                                             />
                                     </FormControl>
@@ -335,7 +335,7 @@ const Profile = (props) => {
                                                 },
                                             }}
                                             onChange={e=>dispatch({type:'workphone', value: e.target.value})}
-                                            value={formatPhone(state.workphone)}
+                                            value={formatPhone(state.workphone !== null ? state.workphone : "")}
                                             variant="outlined"/>
                                     </FormControl>
                                 </Grid>
@@ -401,7 +401,7 @@ const Profile = (props) => {
                                                     }
                                                 }}
                                                 onChange={e=>dispatch({type:'industry', value: e.target.value})}
-                                                value={state.industry}
+                                                value={state.industry !== null ? state.industry : ""}
                                                 style={{width: '100%'}}
                                             >
                                                 { 
@@ -663,7 +663,7 @@ const Profile = (props) => {
                                                     padding: '0 14px'
                                                 },
                                             }}
-                                            value={state.job_title}
+                                            value={state.job_title !== null ? state.job_title : ""}
                                             onChange={e=>dispatch({type:'job_title', value: e.target.value})}
                                             variant="outlined"/>
                                     </Grid>

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import InputBase from "@material-ui/core/InputBase";
@@ -95,13 +95,19 @@ const SignInCard = (props) => {
 
   const [, setStateApp] = useContext(AppContext);
   const classes = useStyles();
-  const [tenant, setTenant] = useState("");
+  const [tenant, setTenant] = useState(props.tenant ? props.tenant : "");
   const [error, setError] = useState(null);
   const [tenantFlags, setTenantFlags] = useState({
     error: false,
     placeholder: null,
     autoFocus: false,
   });
+
+  useEffect(() => {
+    if (tenant.trim() !== "" && tenant === props.tenant) {
+      signInAAD()
+    }
+  }, [props.tenant]);
 
   const updateTenantFlags = (errorText) => {
     setTenantFlags({
@@ -233,4 +239,10 @@ const SignInCard = (props) => {
     </Card>
   );
 };
-export default SignInCard;
+
+function areEqual(prevProps, nextProps) {
+  console.log(`${prevProps.tenant} ... ${nextProps.tenant}`)
+  return Object.is(prevProps.tenant, nextProps.tenant);
+}
+
+export default React.memo(SignInCard, areEqual);

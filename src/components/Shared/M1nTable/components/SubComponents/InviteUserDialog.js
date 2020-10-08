@@ -11,13 +11,11 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormLabel from "@material-ui/core/FormLabel";
 import {Select, InputLabel, FormControl, MenuItem, TextField, Grid} from "@material-ui/core";
 
-import gql from "graphql-tag";
-
 export default function InviteUserDialog(props) {
 
   const modalClass = Modals();
   const [displayName, setName] = useState("");
-  const [emailAddress, setEmailAddress] = useState("");
+  const [emails, setEmailAddress] = useState("");
   const [userType, setUserType] = useState("Member");
   const [role, setUserRole] = useState("Member");
   const [adminAccess, setAdminAccess] = useState(false);
@@ -28,10 +26,10 @@ export default function InviteUserDialog(props) {
     const rowData = props.rows;
     let temp_last_ts = new Date();
     setLastLogin(temp_last_ts.toString());
-    rowData.push({displayName, emailAddress, userType, role, adminAccess, lastLogin: "Invite sent" });
+    rowData.push({displayName, emails, userType, role, adminAccess, lastLogin: "Invite sent" });
     addUser({variables: {user: {
       displayName,
-      emailAddress,
+      emailAddress: emails,
       // identities: [{
       //     signInType: "emailAddress",
       //     issuer: "mineralb2c.onmicrosoft.com",
@@ -68,7 +66,6 @@ export default function InviteUserDialog(props) {
             <h3>Name</h3>
             <TextField
               size="small"
-              placeholder="E.g. Jacob"
               fullWidth
               value={displayName}
               onChange={e=> setName(e.target.value)}
@@ -78,13 +75,12 @@ export default function InviteUserDialog(props) {
             <h3>Email</h3>
             <TextField
               size="small"
-              placeholder="E.g. jacob@mineral.com"
               fullWidth
-              value={emailAddress}
+              value={emails}
               onChange={e=> setEmailAddress(e.target.value)}
             />
           </Grid>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <h3>User Type</h3>
             <Select
                 fullWidth
@@ -94,7 +90,7 @@ export default function InviteUserDialog(props) {
                 <MenuItem value="Member">Member</MenuItem>
                 <MenuItem value="Guest">Guest</MenuItem>
             </Select>
-          </Grid>
+          </Grid> */}
           <Grid item xs={12}>
             <h3>User Role</h3>
             <Select
@@ -103,7 +99,7 @@ export default function InviteUserDialog(props) {
                 onChange={e=> setUserRole(e.target.value)}
             >
                 <MenuItem value="Member">Member</MenuItem>
-                <MenuItem value="User">User</MenuItem>
+                <MenuItem value="Admin">Admin</MenuItem>
             </Select>
           </Grid>
         </FormControl>

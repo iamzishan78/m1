@@ -49,6 +49,7 @@ import {
   setStateIfDeepEqual,
 } from "../../functions";
 import InviteUserDialog from "./SubComponents/InviteUserDialog";
+import ReinviteUserDialog from "./SubComponents/ReinviteUserDialog";
 import AddParcelOwnerDialogContent from "./SubComponents/AddParcelOwnerDialogContent";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import AddParcelToEntityDialogContent from "./SubComponents/AddParcelToEntityDialogContent/AddParcelToEntityDialogContent";
@@ -331,6 +332,9 @@ function SubTable(props) {
   const [selectedUserIndex, setSelectedUserIndex] = useState(null);
 
   const closeMenu = () => {
+    console.log("--------------");
+    console.log("CLOSE MENU");
+    console.log("--------------");
     setMenuOpen(false);
     setSelectedUser(null);
     setSelectedUserIndex(null);
@@ -356,7 +360,7 @@ function SubTable(props) {
       open={isMenuOpen}
       onClose={closeMenu}
     >
-      <MenuItem
+      {/* <MenuItem
         className={classes.userMenuItem}
         onClick={selectedUser !== null && changeAdminAccess}
       >
@@ -365,6 +369,12 @@ function SubTable(props) {
         selectedUser.adminAccess
           ? "Remove Admin Access"
           : "Grant Admin Access"}
+      </MenuItem> */}
+      <MenuItem
+        className={classes.userMenuItem}
+        onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}
+      >
+        Resend Invite
       </MenuItem>
       <Divider />
       <MenuItem
@@ -1067,7 +1077,7 @@ function SubTable(props) {
                   ) {
                     //// if no value
                     if (value === "" || value === null || !value)
-                      return <p style={{ color: "#B3B3B3" }}>N/A</p>;
+                      return <p style={{ color: "#B3B3B3", padding: "10px" }}>N/A</p>;
 
                     //// if value
                     return (
@@ -1194,6 +1204,7 @@ function SubTable(props) {
         ? [10, 25]
         : [],
     selectableRows: "multiple",
+    print: props.targetLabel !== "deals",
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
       // console.log("currentRowsSelected", JSON.stringify(currentRowsSelected));
@@ -1371,6 +1382,24 @@ function SubTable(props) {
               );
             }
 
+            //// if Parcel Ownership set the multi selection top bar: ////
+            if (props.targetLabel === "deals") {
+              return (
+                <Tooltip title={"Delete"}>
+                  <IconButton
+                    size="medium"
+                    style={{ margin: "0 5px" }}
+                    onClick={(e) => {
+                      handleExpandClick(null, null, null, "deleteDeal");
+                    }}
+                    aria-label="delete"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              );
+            }
+
             //// default empty top bar ////
             return (
               <div
@@ -1432,6 +1461,7 @@ function SubTable(props) {
                       setStateApp((stateApp) => ({
                         ...stateApp,
                         dealDialog: true,
+                        activeDeal: {}
                       }));
                     if (
                       props.addAble.type &&
@@ -1475,7 +1505,15 @@ function SubTable(props) {
       //   handleOpenExpandableCard();
       // }
       if (props.targetLabel === "deals") {
-        history.push("/transact");
+        console.log("ROW DATA: ", rows[dataIndex]);
+        console.log("ROW DATA 0 INDEX: ", rowData[0]);
+        let card = {...rows[dataIndex]};
+        delete card["dealStage"];
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          dealDialog: true,
+          activeDeal: card
+        }));
       }
 
       if (props.targetLabel === "well") {
@@ -1645,10 +1683,10 @@ function SubTable(props) {
           options={{ print: false, download: false, ...options }}
         />
 
-        <TransactDialog
+        {/* <TransactDialog
           selectRowOpenContact={selectRowOpenContact}
           contactId={props.contactId}
-        />
+        /> */}
 
         {openDialog && openDialog !== "addDeals" && (
           <Dialog
@@ -1804,7 +1842,7 @@ function SubTable(props) {
                   } from this owner?`}
 
                 {props.header === "Contacts" &&
-                  `Do you want to delete the contact${
+                  `Do you want to delete the selected contact${
                     m1nSelectedRowsIdsRef.current &&
                     m1nSelectedRowsIdsRef.current.length > 1
                       ? "s"
@@ -1854,6 +1892,28 @@ function SubTable(props) {
                 }?`}
               </DeleteConfirmationDialogContent>
             )}
+
+            {openDialog === "deleteDeal" && (
+              <DeleteConfirmationDialogContent
+                header={`Delete Deal${
+                  m1nSelectedRowsIdsRef.current &&
+                  m1nSelectedRowsIdsRef.current.length > 1
+                    ? "s"
+                    : ""
+                }`}
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {`Do you want to delete the selected deal${
+                  m1nSelectedRowsIdsRef.current &&
+                  m1nSelectedRowsIdsRef.current.length > 1
+                    ? "s"
+                    : ""
+                }?`}
+              </DeleteConfirmationDialogContent>
+            )}
             {openDialog === "buyContactsInfo" && (
               <BuyContactsInfoDialogContent
                 onClose={handleCloseDialog}
@@ -1883,6 +1943,14 @@ function SubTable(props) {
                 rows={rows}
                 setRows={setExpandedObject}
                 onClose={handleCloseDialog}
+              />
+            )}
+            {openDialog === "reinviteUser" && (
+              <ReinviteUserDialog
+                selectedUser={selectedUser}
+                setRows={setExpandedObject}
+                onClose={handleCloseDialog}
+                onCloseMenu={closeMenu}
               />
             )}
             {openDialog === "deleteUser" && (

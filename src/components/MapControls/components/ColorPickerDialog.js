@@ -119,7 +119,7 @@ export default (props) => {
       let fColorOp;
       let sColor;
       let sColorOp;
-      // if (fillColor && fillColor.hex) fColor = "#" + fillColor.hex.slice(0, 6);
+
       if (fillColor && fillColor.rgb)
         fColor =
           fillColor.rgb.length === 3
@@ -128,8 +128,7 @@ export default (props) => {
 
       if (fillColor && fillColor.alpha) fColorOp = fillColor.alpha;
       if (strokeColor && strokeColor.alpha) sColorOp = strokeColor.alpha;
-      // if (strokeColor && strokeColor.hex)
-      //   sColor = "#" + strokeColor.hex.slice(0, 6);
+
       if (strokeColor && strokeColor.rgb)
         sColor =
           strokeColor.rgb.length === 3
@@ -145,77 +144,23 @@ export default (props) => {
         const layerPaintProps = [...currentLayer.layerPaintProps];
         const layerType = layerPaintProps[0].paintType;
 
-        if (
-          layerType == "circle" &&
-          layerPaintProps[0].paintProps &&
-          layerPaintProps[0].clusterProps &&
-          layerPaintProps[0].clusterProps.clusterPaintProps
-        ) {
-          if (
-            fColor &&
-            layerPaintProps[0].clusterProps.clusterPaintProps["circle-color"] &&
-            layerPaintProps[0].clusterProps.clusterPaintProps["circle-color"]
-              .stops &&
-            layerPaintProps[0].clusterProps.clusterPaintProps["circle-color"]
-              .stops[0] &&
-            layerPaintProps[0].clusterProps.clusterPaintProps["circle-color"]
-              .stops[1] &&
-            layerPaintProps[0].clusterProps.clusterPaintProps["circle-color"]
-              .stops[2]
-          ) {
+        if (layerType == "circle" && layerPaintProps[0].paintProps) {
+          if (fColor) {
             layerPaintProps[0] = {
               ...layerPaintProps[0],
               paintProps: {
                 ...layerPaintProps[0].paintProps,
                 "circle-color": fColor,
               },
-              clusterProps: {
-                ...layerPaintProps[0].clusterProps,
-                clusterPaintProps: {
-                  ...layerPaintProps[0].clusterProps.clusterPaintProps,
-
-                  "circle-color": {
-                    ...layerPaintProps[0].clusterProps.clusterPaintProps[
-                      "circle-color"
-                    ],
-                    stops: [
-                      [
-                        layerPaintProps[0].clusterProps.clusterPaintProps[
-                          "circle-color"
-                        ].stops[0][0],
-                        fColor,
-                      ],
-                      [
-                        layerPaintProps[0].clusterProps.clusterPaintProps[
-                          "circle-color"
-                        ].stops[1][0],
-                        fColor,
-                      ],
-                      [
-                        layerPaintProps[0].clusterProps.clusterPaintProps[
-                          "circle-color"
-                        ].stops[2][0],
-                        fColor,
-                      ],
-                    ],
-                  },
-                },
-              },
             };
           }
+
           if (sColor) {
             layerPaintProps[0] = {
               ...layerPaintProps[0],
               paintProps: {
                 ...layerPaintProps[0].paintProps,
                 "circle-stroke-color": sColor,
-              },
-              clusterProps: {
-                ...layerPaintProps[0].clusterProps,
-                clusterPaintProps: {
-                  ...layerPaintProps[0].clusterProps.clusterPaintProps,
-                  "circle-stroke-color": sColor,
-                },
               },
             };
           }
@@ -226,13 +171,6 @@ export default (props) => {
                 ...layerPaintProps[0].paintProps,
                 "circle-opacity": fColorOp,
               },
-              clusterProps: {
-                ...layerPaintProps[0].clusterProps,
-                clusterPaintProps: {
-                  ...layerPaintProps[0].clusterProps.clusterPaintProps,
-                  "circle-opacity": fColorOp,
-                },
-              },
             };
           }
           if (sColorOp) {
@@ -241,13 +179,6 @@ export default (props) => {
               paintProps: {
                 ...layerPaintProps[0].paintProps,
                 "circle-stroke-opacity": sColorOp,
-              },
-              clusterProps: {
-                ...layerPaintProps[0].clusterProps,
-                clusterPaintProps: {
-                  ...layerPaintProps[0].clusterProps.clusterPaintProps,
-                  "circle-stroke-opacity": sColorOp,
-                },
               },
             };
           }
@@ -259,14 +190,118 @@ export default (props) => {
                 ...layerPaintProps[0].paintProps,
                 "circle-stroke-width": parseFloat(width),
               },
-              clusterProps: {
-                ...layerPaintProps[0].clusterProps,
-                clusterPaintProps: {
-                  ...layerPaintProps[0].clusterProps.clusterPaintProps,
-                  "circle-stroke-width": parseFloat(width),
-                },
-              },
             };
+          }
+
+          //// cluster updates
+          if (
+            layerPaintProps[0].clusterProps &&
+            layerPaintProps[0].clusterProps.clusterPaintProps
+          ) {
+            if (
+              fColor &&
+              layerPaintProps[0].clusterProps.clusterPaintProps[
+                "circle-color"
+              ] &&
+              layerPaintProps[0].clusterProps.clusterPaintProps["circle-color"]
+                .stops &&
+              layerPaintProps[0].clusterProps.clusterPaintProps["circle-color"]
+                .stops[0] &&
+              layerPaintProps[0].clusterProps.clusterPaintProps["circle-color"]
+                .stops[1] &&
+              layerPaintProps[0].clusterProps.clusterPaintProps["circle-color"]
+                .stops[2]
+            ) {
+              layerPaintProps[0] = {
+                ...layerPaintProps[0],
+                paintProps: {
+                  ...layerPaintProps[0].paintProps,
+                  "circle-color": fColor,
+                },
+                clusterProps: {
+                  ...layerPaintProps[0].clusterProps,
+                  clusterPaintProps: {
+                    ...layerPaintProps[0].clusterProps.clusterPaintProps,
+
+                    "circle-color": {
+                      ...layerPaintProps[0].clusterProps.clusterPaintProps[
+                        "circle-color"
+                      ],
+                      stops: [
+                        [
+                          layerPaintProps[0].clusterProps.clusterPaintProps[
+                            "circle-color"
+                          ].stops[0][0],
+                          fColor,
+                        ],
+                        [
+                          layerPaintProps[0].clusterProps.clusterPaintProps[
+                            "circle-color"
+                          ].stops[1][0],
+                          fColor,
+                        ],
+                        [
+                          layerPaintProps[0].clusterProps.clusterPaintProps[
+                            "circle-color"
+                          ].stops[2][0],
+                          fColor,
+                        ],
+                      ],
+                    },
+                  },
+                },
+              };
+            }
+            if (sColor) {
+              layerPaintProps[0] = {
+                ...layerPaintProps[0],
+                clusterProps: {
+                  ...layerPaintProps[0].clusterProps,
+                  clusterPaintProps: {
+                    ...layerPaintProps[0].clusterProps.clusterPaintProps,
+                    "circle-stroke-color": sColor,
+                  },
+                },
+              };
+            }
+            if (fColorOp) {
+              layerPaintProps[0] = {
+                ...layerPaintProps[0],
+                clusterProps: {
+                  ...layerPaintProps[0].clusterProps,
+                  clusterPaintProps: {
+                    ...layerPaintProps[0].clusterProps.clusterPaintProps,
+                    "circle-opacity": fColorOp,
+                  },
+                },
+              };
+            }
+            if (sColorOp) {
+              layerPaintProps[0] = {
+                ...layerPaintProps[0],
+
+                clusterProps: {
+                  ...layerPaintProps[0].clusterProps,
+                  clusterPaintProps: {
+                    ...layerPaintProps[0].clusterProps.clusterPaintProps,
+                    "circle-stroke-opacity": sColorOp,
+                  },
+                },
+              };
+            }
+
+            if (width) {
+              layerPaintProps[0] = {
+                ...layerPaintProps[0],
+                clusterProps: {
+                  ...layerPaintProps[0].clusterProps,
+                  clusterPaintProps: {
+                    ...layerPaintProps[0].clusterProps.clusterPaintProps,
+                    "circle-stroke-width": parseFloat(width),
+                  },
+                },
+              };
+            }
           }
         } else if (layerType == "fill" && layerPaintProps[0].paintProps) {
           if (fColor) {

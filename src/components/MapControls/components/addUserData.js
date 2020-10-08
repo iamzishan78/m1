@@ -156,18 +156,39 @@ export default function AddUserData(props) {
                 fileContent.features.length > 0
               ) {
                 let count = 0;
-                fileContent.features.map((feature) => {
-                  if (
-                    turf.getType(feature) == "LineString" ||
-                    turf.getType(feature) == "MultiLineString" ||
-                    turf.getType(feature) == "Feature"
-                  )
-                    count++;
-                });
 
-                //// only lines feature
-                if (count == fileContent.features.length) type = "line";
-                else type = "fill";
+                if (
+                  fileContent.features[0] &&
+                  (turf.getType(fileContent.features[0]) == "Point" ||
+                    turf.getType(fileContent.features[0]) == "MultiPoint")
+                ) {
+                  fileContent.features.map((feature) => {
+                    if (
+                      turf.getType(feature) == "Point" ||
+                      turf.getType(feature) == "MultiPoint"
+                    )
+                      count++;
+                  });
+
+                  if (count == fileContent.features.length) type = "circle";
+                } else if (
+                  fileContent.features[0] &&
+                  (turf.getType(fileContent.features[0]) == "LineString" ||
+                    turf.getType(fileContent.features[0]) == "Feature" ||
+                    turf.getType(fileContent.features[0]) == "MultiLineString")
+                ) {
+                  fileContent.features.map((feature) => {
+                    if (
+                      turf.getType(feature) == "LineString" ||
+                      turf.getType(feature) == "MultiLineString" ||
+                      turf.getType(feature) == "Feature"
+                    )
+                      count++;
+                  });
+
+                  ////  only lines feature
+                  if (count == fileContent.features.length) type = "line";
+                } else type = "fill";
               } else type = "fill";
 
               if (type == "circle") {
@@ -187,7 +208,7 @@ export default function AddUserData(props) {
                 paintProps = {
                   "fill-color": idColor,
                   "fill-opacity": 0.4,
-                  "fill-outline-color": idColor,
+                  "fill-outline-color": "#1C1C1C",
                 };
               }
 

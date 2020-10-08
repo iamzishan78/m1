@@ -72,20 +72,12 @@ export default function ConfirmationDialog(props) {
         <DialogTitle
           style={{ textAlign: "center", padding: "24px 24px 0 24px" }}
         >
-          Do you want delete the contact?
+          Are you sure you want to delete selected contact?
         </DialogTitle>
         {/* <DialogContent>
         </DialogContent> */}
         <DialogActions>
-          <Button
-            onClick={() => {
-              handleAccept();
-            }}
-            color="primary"
-          >
-            Delete
-          </Button>
-          <Button
+        <Button
             onClick={() => {
               props.handleDialogClose(false);
             }}
@@ -93,6 +85,15 @@ export default function ConfirmationDialog(props) {
           >
             Cancel
           </Button>
+          <Button
+            onClick={() => {
+              handleAccept();
+            }}
+            color="secondary"
+          >
+            Delete
+          </Button>
+        
         </DialogActions>
       </Dialog>
     </div>

@@ -126,14 +126,24 @@ export default function ActivitiesList({
         (activity) =>
           activity.dateTime === act.dateTime && activity.user_id === act.user_id
       );
-    if (index > -1) {
+    if (index > -1 && newActLog[index]) {
       newActLog.splice(index, 1);
-      newActLog.forEach((v) => delete v.__typename);
+      const newLog = newActLog.map(v => {
+        //  if(v.__typename) delete v._?_typename
+         return {
+           dateTime: v.dateTime,
+           fullname: v.fullname,
+           notes: v.notes,
+           type: v.type,
+           user_id: v.user_id
+         }
+      });
+      // newActLog.forEach((v) => { if(v.__typename) delete v.__typename });
       updateContact({
         variables: {
           contact: {
             _id: props.id,
-            activityLog: [...newActLog],
+            activityLog: [...newLog],
           },
         },
         refetchQueries: ["getContact"],

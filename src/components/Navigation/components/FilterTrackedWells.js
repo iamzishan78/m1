@@ -40,10 +40,6 @@ export default function FilterTrackedWells() {
 
   const toggleTracks = () => {
     setStateNav((stateNav) => {
-      console.log(
-        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-        stateNav.filterTrackedWells
-      );
       if (stateNav.filterTrackedWells) {
         stateApp.toggleLayersActivity("Tracked Wells", false);
         if (
