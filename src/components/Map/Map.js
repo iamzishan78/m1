@@ -1029,12 +1029,12 @@ export default function Map() {
       const nextOffset = permits.length + permitData.permits.length;
       setPermitData([...permits, ...permitData.permits]);
 
-      getPermits({
-        variables: {
-          offset: nextOffset,
-          amount: 500,
-        },
-      });
+     // getPermits({
+        // variables: {
+        //   offset: nextOffset,
+        //   amount: 500,
+        // },
+     // });
     }
   }, [permitData]);
 
