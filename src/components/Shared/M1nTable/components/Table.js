@@ -1185,7 +1185,7 @@ function SubTable(props) {
   };
 
   const options = {
-    filterType: "multiselect",
+    filterType: "dropdown",
     rowsPerPage: props.startPaginationAt ? props.startPaginationAt : 25,
     rowsPerPageOptions:
       props.rows && props.rows.length > 25
@@ -1547,7 +1547,7 @@ function SubTable(props) {
                 },
                 sort: {
                   field: backendColumnName,
-                  order: column.sortDirection == 'desc' ? 1 : -1 
+                  order: column.sortDirection === 'desc' ? 1 : -1
                 }
               },
             });
@@ -1561,6 +1561,46 @@ function SubTable(props) {
                 after: null
               },
               searchText: tableState.searchText
+            });
+            break;
+          case 'propsUpdate':
+            console.log('work propsUpdate')
+            break;
+          case 'filterChange':
+            props.contactsPageProps.setLoading(true);
+            tableState.page = 0
+            let filters = []
+            const leadSourceIndex = tableState.columns.findIndex(i => i.name === "leadSource");
+            const lastUpdateByIndex = tableState.columns.findIndex(i => i.name === "lastUpdateBy");
+            const tagsIndex = tableState.columns.findIndex(i => i.name === "tags");
+
+            if (tableState.filterList[leadSourceIndex].length !== 0) {
+              filters.push({
+                field: 'leadSource',
+                value: tableState.filterList[leadSourceIndex][0]
+              })
+            }
+            if (tableState.filterList[lastUpdateByIndex].length !== 0) {
+              filters.push({
+                field: 'lastUpdateBy.name',
+                value: tableState.filterList[lastUpdateByIndex][0]
+              })
+            }
+            /*if (tableState.filterList[tagsIndex].length !== 0) {
+              filters.push({
+                field: leadSource,
+                value: tableState.filterList[tagsIndex][0]
+              })
+            }*/
+
+            props.contactsPageProps.getContacts({
+              variables: {
+                pagination: {
+                  first: tableState.rowsPerPage,
+                  after: null
+                },
+                filters: filters
+              },
             });
             break;
           default:

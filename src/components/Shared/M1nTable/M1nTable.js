@@ -25,6 +25,7 @@ import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
 import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
+import { CONTACTSFILTEROPTIONS } from "../../../graphQL/useQueryContactsFilterOptions";
 import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType";
 import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
@@ -559,11 +560,11 @@ const ContactsHeadCells = [
     },
   },
 
-  { name: "name", label: "Name", editable: true },
-  { name: "fullContactAddress", label: "Primary Address", editable: true },
+  { name: "name", label: "Name", editable: true, options: { filter: false } },
+  { name: "fullContactAddress", label: "Primary Address", editable: true, options: { filter: false } },
   { name: "leadSource", label: "Lead Source", editable: true },
-  { name: "lastUpdateBy.name", label: "Updated By" },
-  { name: "lastUpdateAt", label: "Last Updated" },
+  { name: "lastUpdateBy", label: "Updated By" },
+  { name: "lastUpdateAt", label: "Last Updated", options: { filter: false } },
   // { name: "primaryEmail", label: "Primary Email" },
   // {
   //   name: "mobilePhone",
@@ -1305,12 +1306,12 @@ function M1nTable(props) {
     setStateIfDeepEqual(ContactsCount, newState);
   };
 
-  const [getContacts, { data: constDataContacts, fetchMore }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+  const [getContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
+  const [getContactsFilterOptions, { data: dataContactsFilterOptions }] = useLazyQuery(CONTACTSFILTEROPTIONS, {
+    fetchPolicy: "cache-and-network",
+  });
   //////////
   const [getTransactionData, { data: dataDeals }] = useLazyQuery(
     TRANSACTIONDATA
@@ -1351,6 +1352,7 @@ function M1nTable(props) {
   const [dataContacts, setDataContacts] = useState(null);
   useEffect(() => {
     if (constDataContacts && constDataContacts.paginatedContacts.edges) {
+      getContactsFilterOptions();
       setLoading(false);
       let tmpDataContacts = { contacts: [] };
       constDataContacts.paginatedContacts.edges.forEach((edge) => {
@@ -2078,6 +2080,7 @@ function M1nTable(props) {
       dataContacts.contacts.forEach((contact) => {
         contact.commentsCounter = 0;
         contact.tags = [[], 0];
+        contact.lastUpdateBy = contact.lastUpdateBy.name
         // contact.fullContactAddress = joinAddress(contact);
         // contact.contactName = contact.name;
 
@@ -2155,6 +2158,18 @@ function M1nTable(props) {
     dataTagSamples,
     dataCommentsCounter,
     dataMelissaRowsCount,
+  ]);
+
+  useEffect(() => {
+    let contactsHeadCells = ContactsHeadCells.slice();
+      if (dataContactsFilterOptions && dataContactsFilterOptions.contactsFilterOptions) {
+        contactsHeadCells.find((column) => column.name === 'leadSource').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.leadSources } };
+        contactsHeadCells.find((column) => column.name === 'lastUpdateBy').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.lastUpdateBys } };
+        contactsHeadCells.find((column) => column.name === 'tags').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.tags } };
+        setColumns(contactsHeadCells)
+      }
+  }, [
+    dataContactsFilterOptions
   ]);
 
   ////////////Contact Delete begin////////////////////////////////////////
