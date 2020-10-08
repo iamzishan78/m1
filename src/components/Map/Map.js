@@ -1043,12 +1043,12 @@ export default function Map() {
       const nextOffset = rigs.length + rigData.rigs.length;
       setRigData([...rigs, ...rigData.rigs]);
 
-      getRigs({
-        variables: {
-          offset: nextOffset,
-          amount: 500,
-        },
-      });
+      // getRigs({
+      //   variables: {
+      //     offset: nextOffset,
+      //     amount: 500,
+      //   },
+      // });
     }
   }, [rigData]);
 
@@ -3894,16 +3894,16 @@ export default function Map() {
     const signal = abortController.signal;
 
     getPermits({
-      variables: {
-        offset: 0,
-        amount: 500,
-      },
+      // variables: {
+      //   offset: 0,
+      //   amount: 500,
+      // },
     });
     getRigs({
-      variables: {
-        offset: 0,
-        amount: 500,
-      },
+      // variables: {
+      //   offset: 0,
+      //   amount: 500,
+      // },
     });
 
     fetch(req, { signal: signal })
