@@ -1372,7 +1372,6 @@ function M1nTable(props) {
   useEffect(() => {
     if (constDataContacts && constDataContacts.paginatedContacts.edges) {
       getContactsFilterOptions();
-      setLoading(false);
       let tmpDataContacts = { contacts: [] };
       constDataContacts.paginatedContacts.edges.forEach((edge) => {
         tmpDataContacts.contacts.push({ ...edge.node.entityObj, ...edge.node });
@@ -2030,6 +2029,7 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "Contacts") {
+      setLoading(true);
       console.log("ue mintable 22");
       setTargetLabel("contact");
       setHeader("Contacts");
