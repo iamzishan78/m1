@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   errorSection: {
-    margin: "120px 65px 14px 65px",
+    margin: "95px 65px 14px 65px",
     padding: "10px",
     color: "#E4A773",
     background: "#e4a77347",
@@ -112,7 +112,7 @@ const SignInCard = (props) => {
   const updateTenantFlags = (errorText) => {
     setTenantFlags({
       error: true,
-      placeholder: "Please enter a valid name",
+      placeholder: "i.e. M1neral",
       autoFocus: true,
     });
     setTenant("");
@@ -183,7 +183,7 @@ const SignInCard = (props) => {
               marginLeft: "65px",
             }}
           >
-            Please enter your company domain name
+            Please enter your workspace name
           </div>
           <BootstrapInput
             error={tenantFlags.error}
