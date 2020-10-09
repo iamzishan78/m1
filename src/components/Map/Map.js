@@ -750,6 +750,19 @@ export default function Map() {
         }
 
         map.addLayer(layerConfig);
+
+        if(prop.labelProps) {
+          let labelLayout = { visibility: visible ? "visible" : "none" };
+          labelLayout = { ...labelLayout, ...prop.labelProps.symbolProps }
+          map.addLayer({
+            "id": `${prop.id}_label`,
+            "type": prop.labelProps.paintType,
+            "source": sourceId,
+            "minzoom": prop.labelProps.minZoom,
+            "layout": labelLayout
+          });
+        }
+        ////////////////////////////////////////////////////////////
       }
 
       if (prop.clusterProps) {
@@ -3509,9 +3522,7 @@ export default function Map() {
         map.setFilter("basinLayer", null);
         map.setFilter("basinLabels", null);
         map.setFilter("interest", null);
-        map.setFilter("interest_labels", null);
         map.setFilter("parcel", null);
-        map.setFilter("parcel_labels", null);
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
         map.setFilter("wellsHeatmapLast12", [
           ">",
@@ -5074,27 +5085,6 @@ export default function Map() {
       update_layer = current_feature;
     }
 
-    let position = null;
-
-    if (typeof update_layer.properties.shapeCenter == "string") {
-      position = JSON.parse(update_layer.properties.shapeCenter);
-    } else {
-      position = update_layer.properties.shapeCenter;
-    }
-
-    const symbolFeature = {
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: position,
-      },
-      properties: {
-        ...update_layer.properties,
-        id: `${update_layer.properties.id}_label`,
-        label: spatialData.shapeLabel,
-      },
-    };
-
     // //////cleaning the selected title opinion and redirecting to title opinion page//
     if (stateApp.user.mongoId !== "") {
       const id = update_layer.properties.id;
@@ -5124,17 +5114,10 @@ export default function Map() {
         handleCloseSpatialDataCardEdit();
       }
       const customLayerId = update_layers[0]._id;
-      const customLayerLabelId = update_layers[1]._id;
 
       const customLayerData = {
         shape: JSON.stringify(update_layer),
         layer: dataType,
-        name: spatialData.shapeLabel,
-        user: stateApp.user.mongoId,
-      };
-      const customLayerSymbolData = {
-        shape: JSON.stringify(symbolFeature),
-        layer: `${dataType}_labels`,
         name: spatialData.shapeLabel,
         user: stateApp.user.mongoId,
       };
@@ -5145,12 +5128,7 @@ export default function Map() {
           customLayer: customLayerData,
         },
       });
-      updateCustomLayer({
-        variables: {
-          customLayerId: customLayerLabelId,
-          customLayer: customLayerSymbolData,
-        },
-      });
+
       getCustomLayers({
         variables: {
           userId: stateApp.user.mongoId,
