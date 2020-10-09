@@ -1420,6 +1420,7 @@ function M1nTable(props) {
     ) {
       console.log("ue mintable 3");
       if (dataTracks.tracksByObjectType.length !== 0) {
+        setLoading(true);
         const tracksIdArray = dataTracks.tracksByObjectType.map(
           (track) => track.trackOn
         );
@@ -1589,6 +1590,7 @@ function M1nTable(props) {
     ) {
       console.log("ue mintable 6");
       if (dataTracks.tracksByObjectType.length !== 0) {
+        setLoading(true);
         const tracksIdArray = dataTracks.tracksByObjectType.map(
           (track) => track.trackOn
         );
@@ -1876,6 +1878,7 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell") {
+      setLoading(true);
       console.log("ue mintable 10");
       setTargetLabel("owner");
       setHeader("Tax Roll Ownership");
@@ -1890,6 +1893,7 @@ function M1nTable(props) {
     if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
       console.log("ue mintable 11");
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
+        setLoading(true);
         const objectsIdsArray = dataWellOwners.wellOwners.map(
           (wellOwner) => wellOwner.id
         );
@@ -2639,6 +2643,7 @@ function M1nTable(props) {
   ////////////User management//////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "UserManagement") {
+      setLoading(true);
       getAllUsers();
       if (userLists?.allUsers) {
         setHeader("Active Users");
@@ -2677,6 +2682,7 @@ function M1nTable(props) {
   useEffect(() => {
     console.log("DEALS CHECK : ", props.parent, props.contact, stateApp.user);
     if (props.parent && props.parent === "Deals" && stateApp.user) {
+      setLoading(true);
       console.log("ue mintable 22");
       setTargetLabel("deals");
       setHeader("Deals");
