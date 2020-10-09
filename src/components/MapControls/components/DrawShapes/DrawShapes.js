@@ -315,15 +315,6 @@ export default function DrawShapes(props) {
                         userId: user._id,
                     },
                 });
-                
-                // setStateApp({
-                //     ...stateApp,
-                //     customLayers: [
-                //         ...stateApp.customLayers,
-                //         customLayerData,
-                //         customLayerSymbolData
-                //     ]
-                // });
             }
         }
     };
