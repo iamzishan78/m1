@@ -128,6 +128,8 @@ export default function AutocompEntityNamesVirtualizeList(props) {
     setNameAutValue,
     nameAutInputValue,
     setNameAutInputValue,
+    variant = "standard",
+    label = "",
   } = props;
   const classes = useStyles();
   //   const [nameAutValue, setNameAutValue] = useState(null);
@@ -157,6 +159,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       getOptionLabel={(option) => option.name}
       getOptionSelected={(option) => option.name}
       value={nameAutValue}
+      defaultValue={nameAutValue}
       onChange={(event, newValue) => {
         setNameAutInputValue("");
 
@@ -172,6 +175,8 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       options={mongoEntitiesArray}
       renderInput={(params) => (
         <TextField
+          label={label}
+          variant={variant}
           {...params}
           value={nameAutInputValue}
           onChange={(e) => {

@@ -207,25 +207,19 @@ export default function Transact() {
             }
             contactId={props.contact?._id}
           /> */}
-      <RightDialog
+
+      <AddDealDialog
         open={stateApp.dealDialog ? true : false}
-        handleClickDialogClose={() =>
+        width="450px"
+        isTransactPage
+        onClose={() =>
           setStateApp((stateApp) => ({
             ...stateApp,
             dealDialog: false,
+            activeDeal: { cardId: null, laneId: null },
           }))
         }
-        width="450px"
-      >
-        <AddDealDialog
-          onClose={() =>
-            setStateApp((stateApp) => ({
-              ...stateApp,
-              dealDialog: false,
-            }))
-          }
-        />
-      </RightDialog>
+      />
       <Board
         className={classes.list}
         style={{ backgroundColor: "#efefef" }}
