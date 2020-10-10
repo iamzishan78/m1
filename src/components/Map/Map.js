@@ -4916,10 +4916,10 @@ export default function Map() {
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
         map.flyTo({
-          center: stateApp.mapVars.center,
-          zoom: stateApp.mapVars.zoom,
-          pitch: stateApp.mapVars.pitch,
-          bearing: stateApp.mapVars.bearing,
+          center: stateApp.defaultMapVars.center,
+          zoom: stateApp.defaultMapVars.zoom,
+          pitch: stateApp.defaultMapVars.pitch,
+          bearing: stateApp.defaultMapVars.bearing,
           speed: 0.5,
         });
 
