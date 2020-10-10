@@ -118,7 +118,7 @@ import RightDialog from "../ContactDetailCard/components/RightDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "100%",
+    height: "100vh",
     backgroundColor: "#efefef",
   },
   list: {

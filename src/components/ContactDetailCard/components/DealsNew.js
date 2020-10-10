@@ -119,11 +119,23 @@ export default function Deals({ contact, ...props }) {
     return formatted.slice(0, formatted.length - 3);
   };
 
+
+  const sumLostDeals = () => {
+    let sum = 0;
+    lostDeals.forEach(
+      (card) =>
+        (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+    );
+    const formatted = formatter.format(sum);
+    return formatted.slice(0, formatted.length - 3);
+  };
+
   return (
     <div className={classes.root}>
       <div>
         <h4 style={{ marginTop: "0", float: "left" }}>
           Deals ({allDeals.length})
+
         </h4>
         <IconButton
           size="small"
@@ -152,15 +164,22 @@ export default function Deals({ contact, ...props }) {
 
         <div>
           <h5 className={classes.h5}>
-            Active Deals ({activeDeals.length})
+            Active Deals
+            {/* Active Deals ({activeDeals.length}) */}
             <br />
             <span className={classes.lastContactedSpan}>{sumOpenDeals()}</span>
           </h5>
           <h5 className={classes.h5}>
-            Closed Deals ({wonDeals.length})
+            Closed Deals
+            {/* Closed Deals ({wonDeals.length}) */}
             <br />
             <span className={classes.lastContactedSpan}>{sumWonDeals()}</span>
           </h5>
+          {/* <h5 className={classes.h5}>
+            Lost Deals ({lostDeals.length})
+            <br />
+            <span className={classes.lastContactedSpan}>{sumLostDeals()}</span>
+          </h5> */}
         </div>
       </div>
     </div>

@@ -184,7 +184,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
           }}
           size="small"
           multiline
-          placeholder="E.g. Jacob"
+         // placeholder="E.g. Jacob"
         />
       )}
       disableListWrap
@@ -193,7 +193,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       renderOption={(option) => {
         if (option._id === "newEntity")
           return (
-            <Typography style={{ color: "blue" }}>{option.name}</Typography>
+            <Typography style={{ color: "midnightblue" }}>{option.name}</Typography>
           );
 
         return (
