@@ -265,27 +265,6 @@ export default function DrawShapes(props) {
         });
         stateApp.currentFeature.properties.id = stateApp.currentFeature.id
 
-        let position = null;
-
-        if (typeof stateApp.currentFeature.properties.shapeCenter == 'string') {
-            position = JSON.parse(stateApp.currentFeature.properties.shapeCenter);
-        } else {
-            position = stateApp.currentFeature.properties.shapeCenter
-        }
-
-        const symbolFeature = {
-            type: "Feature",
-            geometry: {
-                type: "Point",
-                coordinates: position
-            },
-            properties: {
-                ...stateApp.currentFeature.properties,
-                id: `${stateApp.currentFeature.properties.id}_label`,
-                label: spatialData.shapeLabel,
-            }
-        }
-
         toggleSpatialDataCard(false);
         const {currentFeature} = stateApp;
         stateApp.draw.delete(currentFeature.id);
@@ -319,16 +298,10 @@ export default function DrawShapes(props) {
 
             history.push("/titleopinion");
         } else {
-            if (user._id != "" ) {
+            if (user._id !== "" ) {
                 const customLayerData = {
                     shape: JSON.stringify(stateApp.currentFeature),
                     layer: dataType,
-                    name: spatialData.shapeLabel,
-                    user: user._id
-                };
-                const customLayerSymbolData = {
-                    shape: JSON.stringify(symbolFeature),
-                    layer: `${dataType}_labels`,
                     name: spatialData.shapeLabel,
                     user: user._id
                 };
@@ -336,24 +309,12 @@ export default function DrawShapes(props) {
                 upsertCustomLayer({
                     variables: { customLayer: customLayerData }
                 });
-                upsertCustomLayer({
-                    variables: { customLayer: customLayerSymbolData }
-                });
 
                 getCustomLayers({
                     variables: {
                         userId: user._id,
                     },
                 });
-                
-                // setStateApp({
-                //     ...stateApp,
-                //     customLayers: [
-                //         ...stateApp.customLayers,
-                //         customLayerData,
-                //         customLayerSymbolData
-                //     ]
-                // });
             }
         }
     };

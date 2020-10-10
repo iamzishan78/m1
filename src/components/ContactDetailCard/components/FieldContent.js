@@ -349,10 +349,7 @@ export default function FieldContent({
             className={classes.editTextField}
             variant="outlined"
             size="small"
-            autoComplete="off"
-            inputProps={{
-              autoComplete: "off",
-            }}
+            autoComplete="nope"
             fullWidth
             label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
             multiline

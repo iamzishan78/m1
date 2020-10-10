@@ -40,8 +40,8 @@ export default function Coordinates(props) {
     
   return (
     <div className={classes.coordinates}>
-        <div className={classes.insideCoor}>Lng: {lng}</div>
         <div className={classes.insideCoor}>Lat: {lat}</div>
+        <div className={classes.insideCoor}>Long: {lng}</div>
         <div className={classes.insideCoor}>Zoom: {zoom}</div>
     </div>
   )
