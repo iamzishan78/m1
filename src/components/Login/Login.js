@@ -290,7 +290,7 @@ const Login = (props) => {
         myMSALObj.loginRedirect(request);
       }
     } else {
-      updateTenantFlags("Wrong Tenant Name");
+      updateTenantFlags("Not a valid workspace");
     }
   };
 

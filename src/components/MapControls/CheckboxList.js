@@ -360,6 +360,8 @@ export default function CheckboxList(props) {
           return layer.layerPaintProps[0].paintProps["circle-color"];
         if (layer.layerPaintProps[0].paintProps["fill-color"])
           return layer.layerPaintProps[0].paintProps["fill-color"];
+        if (layer.layerPaintProps[0].paintProps["line-color"])
+          return layer.layerPaintProps[0].paintProps["line-color"];
         if (layer.layerPaintProps[0].paintProps["icon-color"])
           return layer.layerPaintProps[0].paintProps["icon-color"];
       }

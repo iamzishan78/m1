@@ -63,6 +63,14 @@ const AppProvider = (props) => {
       bearing: 0,
       styleId: "Outdoors",
     },
+    defaultMapVars: {
+      zoom: 4.88,
+      center: { lng: -98.8, lat: 38 },
+      pitch: 0,
+      bearing: 0,
+      styleId: "Outdoors",
+    },
+
     // layerData: {
     //   trackedWellsWells: null,
     //   trackedOwnerWells: null,

@@ -116,7 +116,7 @@ const SignInCardB2C = (props) => {
   const updateTenantFlags = (errorText) => {
     setTenantFlags({
       error: true,
-      placeholder: "Please enter a valid name",
+      placeholder: "i.e. M1neral",
       autoFocus: true,
     });
     setTenant("");
@@ -188,7 +188,7 @@ const SignInCardB2C = (props) => {
               marginLeft: "65px",
             }}
           >
-            Please enter your company domain name
+            Please enter your workspace name
           </div>
           <BootstrapInput
             error={tenantFlags.error}

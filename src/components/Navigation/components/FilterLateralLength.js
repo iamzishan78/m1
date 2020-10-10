@@ -53,16 +53,16 @@ const useStyles = makeStyles({
   },
 });
 
-export default function FilterOwnerCount() {
+export default function FilterLateralLength() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [valueMinDisplay, setValueMinDisplay] = useState("");
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
-  const [noOwners, setNoOwners] = useState(false);
-  const [owners, setOwners] = useState(false);
-  const [ownerCountWell, setOwnerCountWell] = useState(
-    stateNav.ownerCountWell ? stateNav.ownerCountWell : []
+
+  const [lateralLengthWell, setLateralLengthWell] = useState(
+    stateNav.lateralLengthWell ? stateNav.lateralLengthWell : []
   );
+
   const [error, setError] = useState(false);
   const [errorText, setErrorText] = useState("");
 
@@ -74,16 +74,16 @@ export default function FilterOwnerCount() {
       filter = null;
     }
     if (!min && max) {
-      filter = ["all", ["<=", ["get", "ownerCount"], max]];
+      filter = ["all", ["<=", ["get", "lateralLength"], max]];
       console.log("add filter", filter);
     } else if (min && !max) {
-      filter = ["all", [">=", ["get", "ownerCount"], min]];
+      filter = ["all", [">=", ["get", "lateralLength"], min]];
       console.log("add filter", filter);
     } else if (min && max) {
       filter = [
         "all",
-        [">=", ["get", "ownerCount"], min],
-        ["<=", ["get", "ownerCount"], max],
+        [">=", ["get", "lateralLength"], min],
+        ["<=", ["get", "lateralLength"], max],
       ];
       console.log("add filter", filter);
     } else {
@@ -92,13 +92,14 @@ export default function FilterOwnerCount() {
 
     setStateNav((stateNav) => ({
       ...stateNav,
-      filterOwnerCount: filter,
+      filterLateralLength: filter,
     }));
   }, [setStateNav, valueMaxDisplay, valueMinDisplay]);
 
+
   useEffect(() => {
     const recall = () => {
-      let checkStateNav = stateNav.filterOwnerCount;
+      let checkStateNav = stateNav.filterLateralLength;
       if (!valueMinDisplay && !valueMaxDisplay) {
         if (checkStateNav && checkStateNav.length === 3) {
           const recallMin = checkStateNav[1][2];
@@ -127,37 +128,37 @@ export default function FilterOwnerCount() {
   }, [stateNav, valueMaxDisplay, valueMinDisplay]);
 
   useEffect(() => {
-    if (stateNav.ownerCountWell) {
+    if (stateNav.lateralLengthWell) {
       setFilter();
     }
-  }, [setFilter, stateNav.ownerCountWell]);
+  }, [setFilter, stateNav.lateralLengthWell]);
 
   const handleChangeMin = (event) => {
     setValueMinDisplay(parseInt(event.target.value.replace(/,/g, "")));
-    setOwnerCountWell(event.target.id);
+    setLateralLengthWell(event.target.id);
     setStateNav((stateNav) => ({
       ...stateNav,
-      ownerCountWell: event.target.id,
+      lateralLengthWell: event.target.id,
     }));
     if (event.target.value === "") {
       setStateNav((stateNav) => ({
         ...stateNav,
-        filterOwnerCount: null,
+        filterLateralLength: null,
       }));
     }
   };
 
   const handleChangeMax = (event) => {
     setValueMaxDisplay(parseInt(event.target.value.replace(/,/g, "")));
-    setOwnerCountWell(event.target.id);
+    setLateralLengthWell(event.target.id);
     setStateNav((stateNav) => ({
       ...stateNav,
-      ownerCountWell: event.target.id,
+      tvdWell: event.target.id,
     }));
     if (event.target.value === "") {
       setStateNav((stateNav) => ({
         ...stateNav,
-        filterOwnerCount: null,
+        filterLateralLength: null,
       }));
     }
   };
@@ -181,28 +182,28 @@ export default function FilterOwnerCount() {
     }
   };
 
-  const toggleOwners = () => {
-    if (stateNav.filterHasOwnerCount)
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        filterHasOwnerCount: null,
-      }));
-    else
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        filterHasOwnerCount: ["any", ["==", ["get", "hasOwner"], true]],
-      }));
-  };
+  // const toggleOwners = () => {
+  //   if (stateNav.filterHasOwnerCount)
+  //     setStateNav((stateNav) => ({
+  //       ...stateNav,
+  //       filterHasOwnerCount: null,
+  //     }));
+  //   else
+  //     setStateNav((stateNav) => ({
+  //       ...stateNav,
+  //       filterHasOwnerCount: ["any", ["==", ["get", "hasOwner"], true]],
+  //     }));
+  // };
 
   return (
     <React.Fragment>
 
       <Grid item sm={12}>
         <div className={classes.divBordersMinMax}>
-          <FormLabel className={classes.inputLabel}>Owner Count</FormLabel>
+          <FormLabel className={classes.inputLabel}>Lateral Length</FormLabel>
           <div className={classes.floatRight}>
             <NumberFormat
-              id="OwnerCountMin"
+              id="LLMin"
               value={valueMinDisplay}
               onChange={handleChangeMin}
               thousandSeparator={true}
@@ -221,7 +222,7 @@ export default function FilterOwnerCount() {
               }}
             />
             <NumberFormat
-              id="OwnerCountMax"
+              id="LLMax"
               value={valueMaxDisplay}
               onChange={handleChangeMax}
               thousandSeparator={true}
@@ -243,8 +244,8 @@ export default function FilterOwnerCount() {
             />
             <IconButton
               onClick={() => {
-                handleChangeMax({ target: { id: "OwnerCountMax", value: "" } });
-                handleChangeMin({ target: { id: "OwnerCountMin", value: "" } });
+                handleChangeMax({ target: { id: "LLMax", value: "" } });
+                handleChangeMin({ target: { id: "LLMin", value: "" } });
                 setError(false);
                 setErrorText("");
               }}
@@ -252,24 +253,6 @@ export default function FilterOwnerCount() {
               <CancelIcon height={"30px"} />
             </IconButton>
           </div>
-        </div>
-      </Grid>
-      <Grid item sm={12}>
-        <div className={classes.divBordersSwitch}>
-          <IconButton className={classes.IconButton}>
-            <OwnershipIcon color="#808080" opacity="1.0" />
-          </IconButton>
-          <FormLabel style={{ verticalAlign: "middle", paddingRight: "25px" }}>
-            Only show wells with interest owners
-          </FormLabel>
-          <Switch
-            className={classes.ownersToggle}
-            checked={stateNav.filterHasOwnerCount ? true : false}
-            onChange={toggleOwners}
-            color="secondary"
-            name="checked"
-            inputProps={{ "aria-label": "primary checkbox" }}
-          />
         </div>
       </Grid>
     </React.Fragment>

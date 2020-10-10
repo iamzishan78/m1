@@ -146,7 +146,6 @@ export default function Map() {
     }
   };
 
-
   const [transform, Transform] = useState("transform: inherit");
   const setTransform = (state) => {
     if (transform != state) {
@@ -751,6 +750,18 @@ export default function Map() {
         }
 
         map.addLayer(layerConfig);
+
+        if(prop.labelProps) {
+          let labelLayout = { visibility: visible ? "visible" : "none" };
+          labelLayout = { ...labelLayout, ...prop.labelProps.symbolProps }
+          map.addLayer({
+            "id": `${prop.id}_label`,
+            "type": prop.labelProps.paintType,
+            "source": sourceId,
+            "minzoom": prop.labelProps.minZoom,
+            "layout": labelLayout
+          });
+        }
         ////////////////////////////////////////////////////////////
       }
 
@@ -1031,12 +1042,12 @@ export default function Map() {
       const nextOffset = permits.length + permitData.permits.length;
       setPermitData([...permits, ...permitData.permits]);
 
-      getPermits({
-        variables: {
-          offset: nextOffset,
-          amount: 500,
-        },
-      });
+     // getPermits({
+        // variables: {
+        //   offset: nextOffset,
+        //   amount: 500,
+        // },
+     // });
     }
   }, [permitData]);
 
@@ -1045,12 +1056,12 @@ export default function Map() {
       const nextOffset = rigs.length + rigData.rigs.length;
       setRigData([...rigs, ...rigData.rigs]);
 
-      getRigs({
-        variables: {
-          offset: nextOffset,
-          amount: 500,
-        },
-      });
+      // getRigs({
+      //   variables: {
+      //     offset: nextOffset,
+      //     amount: 500,
+      //   },
+      // });
     }
   }, [rigData]);
 
@@ -1100,27 +1111,40 @@ export default function Map() {
       createPopUp(currentFeature.properties);
     };
 
-    const wellPointClick = (currentFeature) => {
-      console.log("current feature", currentFeature);
+    const wellPointClick = (feature) => {
+      console.log("feature", feature);
 
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
-        selectedUserDefinedLayer: null,
-        selectedParcel: null,
-      }));
-      setStateApp((state) => ({
-        ...state,
-        selectedWell: currentFeature.properties,
-        selectedWellId: currentFeature.properties.id,
-        wellSelectedCoordinates: [
-          currentFeature.properties.longitude,
-          currentFeature.properties.latitude,
-        ],
-      }));
+      if (feature && feature.properties) {
+        const objFiledsToLowerCase = (feature) => {
+          let newObj = {};
+          for (let key in feature)
+            newObj[key.charAt(0).toLowerCase() + key.slice(1)] = feature[key];
 
-      createPopUp(currentFeature.properties);
-      map.resize();
+          return newObj;
+        };
+        let properties = objFiledsToLowerCase(feature.properties);
+
+        console.log("properties", JSON.stringify(properties));
+
+        setStateApp((state) => ({
+          ...state,
+          popupOpen: false,
+          selectedUserDefinedLayer: null,
+          selectedParcel: null,
+        }));
+        setStateApp((state) => ({
+          ...state,
+          selectedWell:
+            properties.wellName && properties.operator ? properties : null,
+          selectedWellId: properties.id ? properties.id.toLowerCase() : null,
+          wellSelectedCoordinates: [properties.longitude, properties.latitude],
+        }));
+
+        if (properties.wellName && properties.operator) {
+          createPopUp(properties);
+          map.resize();
+        }
+      }
     };
 
     const layerClickHander = (feature) => {
@@ -1187,17 +1211,19 @@ export default function Map() {
     };
 
     const clusterClickHandler = (feature, map) => {
-      var clusterId = feature.properties.cluster_id;
-      map
-        .getSource(feature.source)
-        .getClusterExpansionZoom(clusterId, function (err, zoom) {
-          if (err) return;
+      if (feature && feature.properties && feature.properties.cluster_id) {
+        var clusterId = feature.properties.cluster_id;
+        map
+          .getSource(feature.source)
+          .getClusterExpansionZoom(clusterId, function (err, zoom) {
+            if (err) return;
 
-          map.easeTo({
-            center: feature.geometry.coordinates,
-            zoom: zoom,
+            map.easeTo({
+              center: feature.geometry.coordinates,
+              zoom: zoom,
+            });
           });
-        });
+      }
     };
 
     const isCtrlKeyPressed = () => {
@@ -1237,11 +1263,19 @@ export default function Map() {
               if (map.getLayer(layerId)) {
                 if (
                   layer.layerName == "Parcels" ||
-                  layer.layerName == "Area of Interest"
-                ) {
-                  udLayers.push(layerId);
+                  layer.layerName == "Area of Interest" ||
+                  layer.layerName == "Tracked Wells" ||
+                  layer.layerName == "Tracked Owners" ||
+                  layer.layerName == "Tagged Wells/Owners" ||
+                  layer.layerName == "Search"
+                )
                   layers.push(layerId);
-                }
+
+                if (
+                  layer.layerName == "Parcels" ||
+                  layer.layerName == "Area of Interest"
+                )
+                  udLayers.push(layerId);
               }
             });
           } else {
@@ -1306,12 +1340,19 @@ export default function Map() {
             clusterClickHandler(feature, map);
             break;
           case clusterLayers.indexOf(layerId) > -1:
-            layerClickHander(feature);
+            clusterClickHandler(feature, map);
             break;
           case udLayers.indexOf(layerId) > -1:
             udLayerClickHandler(feature);
             break;
-          case layerId === "wellpoints":
+          case layerId === "wellpoints" ||
+            layerId === "Parcels" ||
+            layerId === "Area of Interest" ||
+            layerId === "Tracked Wells" ||
+            layerId === "Tracked Owners" ||
+            layerId === "Tags Filter" ||
+            layerId === "Search" ||
+            layerId === "permits":
             wellPointClick(feature);
             break;
           case layerId === "welllines":
@@ -2371,6 +2412,24 @@ export default function Map() {
         ownershipFilterCount += 1;
         totalCount += 1;
       }
+      if (stateNav.filterTVD && stateNav.filterTVD.length > 0) {
+        filterArray.push(stateNav.filterTVD);
+        isFilterSet = true;
+        wellFilterCount += 1;
+        totalCount += 1;
+      }
+      if (stateNav.filterLateralLength && stateNav.filterLateralLength.length > 0) {
+        filterArray.push(stateNav.filterLateralLength);
+        isFilterSet = true;
+        wellFilterCount += 1;
+        totalCount += 1;
+      }
+      if (stateNav.filterMeasuredDistance && stateNav.filterMeasuredDistance.length > 0) {
+        filterArray.push(stateNav.filterMeasuredDistance);
+        isFilterSet = true;
+        wellFilterCount += 1;
+        totalCount += 1;
+      }
       if (
         stateNav.filterOwnerConfidence &&
         stateNav.filterOwnerConfidence.length > 0
@@ -2412,6 +2471,31 @@ export default function Map() {
         wellFilterCount += total;
         totalCount += total;
       }
+
+      if (stateNav.filterPlay && stateNav.filterPlay.length > 0) {
+        let total = stateNav.filterPlay[2].length;
+        filterArray.push(stateNav.filterPlay);
+        isFilterSet = true;
+        geographyFilterCount += total;
+        totalCount += total;
+      }
+
+      if (stateNav.filterField && stateNav.filterField.length > 0) {
+        let total = stateNav.filterField[2].length;
+        filterArray.push(stateNav.filterField);
+        isFilterSet = true;
+        geographyFilterCount += total;
+        totalCount += total;
+      }
+
+      if (stateNav.filterPrimaryFormation && stateNav.filterPrimaryFormation.length > 0) {
+        let total = stateNav.filterPrimaryFormation[2].length;
+        filterArray.push(stateNav.filterPrimaryFormation);
+        isFilterSet = true;
+        geographyFilterCount += total;
+        totalCount += total;
+      }
+
       if (stateNav.filterOperator && stateNav.filterOperator.length > 0) {
         let total = stateNav.filterOperator[2].length;
         filterArray.push(stateNav.filterOperator);
@@ -3481,9 +3565,7 @@ export default function Map() {
         map.setFilter("basinLayer", null);
         map.setFilter("basinLabels", null);
         map.setFilter("interest", null);
-        map.setFilter("interest_labels", null);
         map.setFilter("parcel", null);
-        map.setFilter("parcel_labels", null);
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
         map.setFilter("wellsHeatmapLast12", [
           ">",
@@ -3566,11 +3648,16 @@ export default function Map() {
     stateNav.filterLastTwelveMonthWater,
     stateNav.filterOperator,
     stateNav.filterOwnerCount,
+    stateNav.filterLateralLength,
+    stateNav.filterMeasuredDistance,
     stateNav.filterPermitDateRange,
     stateNav.filterPlay,
     stateNav.filterSpudDateRange,
     stateNav.filterWellProfile,
     stateNav.filterWellStatus,
+    stateNav.filterPlay,
+    stateNav.filterPrimaryFormation,
+    stateNav.filterField,
     stateNav.filterWellType,
     stateNav.filterNoOwnerCount,
     stateNav.filterHasOwners,
@@ -3583,6 +3670,7 @@ export default function Map() {
     stateNav.filterOwnerAppraisals,
     stateNav.filterDrawing,
     stateNav.filterTags,
+    stateNav.filterTVD,
     stateNav.selectedTags,
     stateApp.trackedOwnerWells,
     stateApp.trackedwells,
@@ -3758,6 +3846,10 @@ export default function Map() {
   useEffect(() => {
     (async () => {
       console.log("useEffect 24");
+
+      console.log("selectedWell", stateApp.selectedWell);
+      console.log("selectedWellId", stateApp.selectedWellId);
+      console.log("wellSelectedCoordinates", stateApp.wellSelectedCoordinates);
       if (
         map &&
         stateApp.selectedWellId &&
@@ -3862,16 +3954,16 @@ export default function Map() {
     const signal = abortController.signal;
 
     getPermits({
-      variables: {
-        offset: 0,
-        amount: 500,
-      },
+      // variables: {
+      //   offset: 0,
+      //   amount: 500,
+      // },
     });
     getRigs({
-      variables: {
-        offset: 0,
-        amount: 500,
-      },
+      // variables: {
+      //   offset: 0,
+      //   amount: 500,
+      // },
     });
 
     fetch(req, { signal: signal })
@@ -4004,14 +4096,12 @@ export default function Map() {
     let coordinates = e.lngLat.wrap();
     setLng(coordinates.lng);
     setLat(coordinates.lat);
-
   };
 
   const mapZoom = (e) => {
     let zooms = map.getZoom();
-    console.log('zoomz', zooms)
+    console.log("zoomz", zooms);
     setZoom(zooms);
-
   };
 
   const onAbstactLayerClick = function (feature, action) {
@@ -4394,9 +4484,9 @@ export default function Map() {
               "fill-opacity": [
                 "case",
                 ["boolean", ["feature-state", "hover"], false],
-                0.5,
+                0.3,
                 ["boolean", ["feature-state", "click"], false],
-                0.5,
+                0.3,
                 0,
               ],
             },
@@ -4412,8 +4502,9 @@ export default function Map() {
               "line-cap": "round",
             },
             paint: {
-              "line-color": "#888",
-              "line-width": 2,
+              "line-color": "#292424",
+              "line-opacity": ".5",
+              "line-width": 3,
             },
           });
 
@@ -4875,10 +4966,10 @@ export default function Map() {
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
         map.flyTo({
-          center: stateApp.mapVars.center,
-          zoom: stateApp.mapVars.zoom,
-          pitch: stateApp.mapVars.pitch,
-          bearing: stateApp.mapVars.bearing,
+          center: stateApp.defaultMapVars.center,
+          zoom: stateApp.defaultMapVars.zoom,
+          pitch: stateApp.defaultMapVars.pitch,
+          bearing: stateApp.defaultMapVars.bearing,
           speed: 0.5,
         });
 
@@ -5044,27 +5135,6 @@ export default function Map() {
       update_layer = current_feature;
     }
 
-    let position = null;
-
-    if (typeof update_layer.properties.shapeCenter == "string") {
-      position = JSON.parse(update_layer.properties.shapeCenter);
-    } else {
-      position = update_layer.properties.shapeCenter;
-    }
-
-    const symbolFeature = {
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: position,
-      },
-      properties: {
-        ...update_layer.properties,
-        id: `${update_layer.properties.id}_label`,
-        label: spatialData.shapeLabel,
-      },
-    };
-
     // //////cleaning the selected title opinion and redirecting to title opinion page//
     if (stateApp.user.mongoId !== "") {
       const id = update_layer.properties.id;
@@ -5094,17 +5164,10 @@ export default function Map() {
         handleCloseSpatialDataCardEdit();
       }
       const customLayerId = update_layers[0]._id;
-      const customLayerLabelId = update_layers[1]._id;
 
       const customLayerData = {
         shape: JSON.stringify(update_layer),
         layer: dataType,
-        name: spatialData.shapeLabel,
-        user: stateApp.user.mongoId,
-      };
-      const customLayerSymbolData = {
-        shape: JSON.stringify(symbolFeature),
-        layer: `${dataType}_labels`,
         name: spatialData.shapeLabel,
         user: stateApp.user.mongoId,
       };
@@ -5115,12 +5178,7 @@ export default function Map() {
           customLayer: customLayerData,
         },
       });
-      updateCustomLayer({
-        variables: {
-          customLayerId: customLayerLabelId,
-          customLayer: customLayerSymbolData,
-        },
-      });
+
       getCustomLayers({
         variables: {
           userId: stateApp.user.mongoId,
@@ -5285,7 +5343,7 @@ export default function Map() {
       {/* <TrackAbstract showAbstractPopup={stateApp.showAbstractPopup} /> */}
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <HugeRequest hugeRequestStatus={stateApp.hugeRequest} />
-      <Coordinates long={lng} lat={lat} zoom={zoom}/>
+      <Coordinates long={lng} lat={lat} zoom={zoom} />
       {stateApp.selectedUserDefinedLayer &&
         !stateApp.popupOpen &&
         stateApp.editLayer && (
