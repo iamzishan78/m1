@@ -757,6 +757,11 @@ export const heatLayers = [
     id: ["wellsHeatmapRecentlyCompleted"],
     idx: 10,
   },
+  {
+    name: "True Vertical Depth",
+    id: ["wellsHeatmapTVD"],
+    idx: 11,
+  },
 ];
 
 export const baseMapLayers = [
