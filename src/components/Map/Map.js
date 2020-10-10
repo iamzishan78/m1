@@ -2418,8 +2418,18 @@ export default function Map() {
         wellFilterCount += 1;
         totalCount += 1;
       }
-
-
+      if (stateNav.filterLateralLength && stateNav.filterLateralLength.length > 0) {
+        filterArray.push(stateNav.filterLateralLength);
+        isFilterSet = true;
+        wellFilterCount += 1;
+        totalCount += 1;
+      }
+      if (stateNav.filterMeasuredDistance && stateNav.filterMeasuredDistance.length > 0) {
+        filterArray.push(stateNav.filterMeasuredDistance);
+        isFilterSet = true;
+        wellFilterCount += 1;
+        totalCount += 1;
+      }
       if (
         stateNav.filterOwnerConfidence &&
         stateNav.filterOwnerConfidence.length > 0
@@ -3613,6 +3623,8 @@ export default function Map() {
     stateNav.filterLastTwelveMonthWater,
     stateNav.filterOperator,
     stateNav.filterOwnerCount,
+    stateNav.filterLateralLength,
+    stateNav.filterMeasuredDistance,
     stateNav.filterPermitDateRange,
     stateNav.filterPlay,
     stateNav.filterSpudDateRange,

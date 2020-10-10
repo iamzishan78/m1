@@ -5,6 +5,7 @@ import FilterDatePickerSpud from "./FilterDatePickerSpud";
 import FilterDatePickerFirstProd from "./FilterDatePickerFirstProd";
 import FilterWellTypeJ from "./FilterWellTypeJ";
 import FilterTVD from "./FilterTVD";
+import FilterLateralLength from "./FilterLateralLength";
 import FilterWellProfileJ from "./FilterWellProfileJ";
 import FilterWellStatusJ from "./FilterWellStatusJ";
 import Grid from "@material-ui/core/Grid";
@@ -28,6 +29,9 @@ export default function FilterFormWell() {
       </Grid>
       <Grid item sm={12}>
         <FilterTVD />
+      </Grid>
+      <Grid item sm={12}>
+        <FilterLateralLength />
       </Grid>
       <Grid item sm={12}>
         <FilterDatePickerPermit labelDates={"Permit"} />
