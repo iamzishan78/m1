@@ -769,6 +769,7 @@ export const baseMapLayers = [
     name: "Map Labels",
     id: [
       "country-label",
+      "countyLabels",
       "state-label",
       "settlement-major-label",
       "settlement-minor-label",
