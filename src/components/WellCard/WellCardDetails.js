@@ -154,8 +154,6 @@ export default function WellCardDetails(props) {
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
   const [tabValue, setTabValue] = React.useState(0);
   const [target, setTarget] = useState(null);
-
-  console.log("selected well :::===> ",stateApp.selectedWell)
   useEffect(() => {
     if (props.target) {
       setTarget(props.target);
