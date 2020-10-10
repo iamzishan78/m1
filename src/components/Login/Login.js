@@ -137,6 +137,10 @@ const Login = (props) => {
   const [loadingSigInButton, setLoadingSigInButton] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    setStateApp({...stateApp, loading});
+  },[loading])
+  
   let history = props.history;
 
   useEffect(() => {

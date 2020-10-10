@@ -107,6 +107,9 @@ import { GETPROFILEIMAGE } from "../../graphQL/useQueryGetProfile";
 import { useDispatch, useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 
+import CheckIcon from '@material-ui/icons/Check';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+
 import {
   MuiThemeProvider,
   createMuiTheme,
@@ -753,6 +756,7 @@ export default function Navigation(props) {
     }));
   };
 
+
   useEffect(() => {
     if (location.pathname === "/") {
       setStateNav((state) => ({
@@ -959,6 +963,11 @@ export default function Navigation(props) {
       onClose={handleMenuClose}
       className={classes.userMenu}
     >
+      <MenuItem disabled  className={classes.userMenuItem}>
+        {/* <CheckIcon fontSize="small" /> */}
+        <Typography variant="inherit" color="textPrimary"> {stateApp.user !== null && stateApp.user.tenant.tenant} </Typography>
+        <FiberManualRecordIcon style={{color: "#34F125"}} fontSize="small"/>
+      </MenuItem>
       <MenuItem
         className={classes.userMenuItem}
         onClick={(e) => openProfile(e)}
@@ -1148,7 +1157,7 @@ export default function Navigation(props) {
 
             {matchFind ? (
               <div className={classes.search} id="searchBarDivParent">
-                <SearchBarWithToggleButton />
+                <SearchBarWithToggleButton/>
               </div>
             ) : null}
 

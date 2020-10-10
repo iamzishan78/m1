@@ -5,7 +5,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect,
+  Redirect, useHistory
 } from "react-router-dom";
 
 //components
@@ -30,18 +30,19 @@ import MomentUtils from "@date-io/moment";
 
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
-import { CircularProgress } from "@material-ui/core";
+import { Button, CircularProgress } from "@material-ui/core";
 import ProfileProvider from "./components/Profile/ProfileProvider";
 import ProfileDetailsProvider from "./components/Profile/ProfileDetailsProvider";
 import { UserManagementContextProvider } from "./components/UserManagement/UserManagementContext";
 import UserManagementContainer from "./components/UserManagement/Container";
 import Notifications from "./components/Notifications/Notifications";
+import ErrorIcon from '@material-ui/icons/Error';
 
 //redux
 import { Provider as ReduxProvider } from "react-redux";
 import { ConnectedRouter } from "connected-react-router";
 import configureStore, { history } from "./store";
-
+import { Typography } from "@material-ui/core";
 // user management
 
 const store = configureStore(/ provide initial state if any /);
@@ -179,7 +180,29 @@ const PrivateRoute = ({ component, ...options }) => {
     );
 };
 
-const NotFoundRedirect = () => <Redirect to="/" />;
+const NotFoundRedirect = () =>{
+  const [stateApp] = useContext(AppContext);
+  const location = window.location;
+  setTimeout(() =>{
+    if (!stateApp.registeredRoutes.includes(location.pathname)){
+      location.replace("/");
+    };
+  }, 3000);
+
+  return (
+    stateApp.loading === false &&
+    <div style={{margin: "auto", marginTop:"20%"}}>
+      <Typography  
+        variant="h6" 
+        align="center"
+        gutterBottom
+        color="textSecondary"
+      >
+          404 | Page not found. Redirecting...
+      </Typography>
+    </div>
+  );
+};
 
 function App() {
   const [apolloClient, setApolloClient] = useState(null);
@@ -216,7 +239,7 @@ function App() {
       if (token) {
         apolloConfig.headers["X-ZUMO-AUTH"] = token;
         //uncomment to run against local
-        //apolloConfig.uri = "http://localhost:7071/api/m1graph"
+        apolloConfig.uri = "http://localhost:7071/api/m1graph"
       }
 
       let apolloClient = new ApolloClient(apolloConfig);
@@ -239,7 +262,6 @@ function App() {
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
                 <ConnectedRouter history={history}>
-                  {/* <Router> */}
                   <Switch>
                     <NavigationProvider>
                       <PrivateRoute exact path="/" component={MapProvider} />
@@ -295,10 +317,9 @@ function App() {
                         path="/bulkupload"
                         component={BulkUpload}
                       />
-                      {/* <Route component={NotFoundRedirect} /> */}
+                      <Route component={NotFoundRedirect} />
                     </NavigationProvider>
                   </Switch>
-                  {/* </Router> */}
                 </ConnectedRouter>
               </MuiPickersUtilsProvider>
             </MuiThemeProvider>
