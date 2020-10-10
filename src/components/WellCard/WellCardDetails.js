@@ -36,6 +36,9 @@ import WellApiCard from "../Shared/WellApiCard";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 
+import CompletionsContainer from "./components/Completions";
+import SimulationContainer from "./components/Stimulation";
+
 const useStyles = makeStyles((theme) => ({
   grid: {
     // height: "100%",
@@ -152,6 +155,7 @@ export default function WellCardDetails(props) {
   const [tabValue, setTabValue] = React.useState(0);
   const [target, setTarget] = useState(null);
 
+  console.log("selected well :::===> ",stateApp.selectedWell)
   useEffect(() => {
     if (props.target) {
       setTarget(props.target);
@@ -337,6 +341,18 @@ export default function WellCardDetails(props) {
               // <h3>Coming Soon-</h3>,
               // <h3>Coming Soon--</h3>,
               // <h3>Coming Soon---</h3>,
+            ]}
+          />
+        </Grid>
+        <Grid item sm={12}>
+          <Taps
+            tabLabels={[
+              "Completions",
+              "Stimulations",
+            ]}
+            tabPanels={[
+              <CompletionsContainer/>,
+              <SimulationContainer/>,
             ]}
           />
         </Grid>
