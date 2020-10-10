@@ -4435,9 +4435,9 @@ export default function Map() {
               "fill-opacity": [
                 "case",
                 ["boolean", ["feature-state", "hover"], false],
-                0.5,
+                0.3,
                 ["boolean", ["feature-state", "click"], false],
-                0.5,
+                0.3,
                 0,
               ],
             },
@@ -4453,8 +4453,9 @@ export default function Map() {
               "line-cap": "round",
             },
             paint: {
-              "line-color": "#888",
-              "line-width": 2,
+              "line-color": "#292424",
+              "line-opacity": ".5",
+              "line-width": 3,
             },
           });
 
