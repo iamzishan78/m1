@@ -53,14 +53,14 @@ const useStyles = makeStyles({
   },
 });
 
-export default function FilterTVD() {
+export default function FilterMeasuredDistance() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [valueMinDisplay, setValueMinDisplay] = useState("");
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
 
-  const [tvdWell, setTVDWell] = useState(
-    stateNav.tvdWell ? stateNav.tvdWell : []
+  const [measuredDistanceWell, setMeasuredDistanceWell] = useState(
+    stateNav.measuredDistanceWell ? stateNav.measuredDistanceWell : []
   );
 
   const [error, setError] = useState(false);
@@ -74,16 +74,16 @@ export default function FilterTVD() {
       filter = null;
     }
     if (!min && max) {
-      filter = ["all", ["<=", ["get", "trueVerticalDepth"], max]];
+      filter = ["all", ["<=", ["get", "measuredDepth"], max]];
       console.log("add filter", filter);
     } else if (min && !max) {
-      filter = ["all", [">=", ["get", "trueVerticalDepth"], min]];
+      filter = ["all", [">=", ["get", "measuredDepth"], min]];
       console.log("add filter", filter);
     } else if (min && max) {
       filter = [
         "all",
-        [">=", ["get", "trueVerticalDepth"], min],
-        ["<=", ["get", "trueVerticalDepth"], max],
+        [">=", ["get", "measuredDepth"], min],
+        ["<=", ["get", "measuredDepth"], max],
       ];
       console.log("add filter", filter);
     } else {
@@ -92,14 +92,14 @@ export default function FilterTVD() {
 
     setStateNav((stateNav) => ({
       ...stateNav,
-      filterTVD: filter,
+      filterMeasuredDistance: filter,
     }));
   }, [setStateNav, valueMaxDisplay, valueMinDisplay]);
 
 
   useEffect(() => {
     const recall = () => {
-      let checkStateNav = stateNav.filterTVD;
+      let checkStateNav = stateNav.filterMeasuredDistance;
       if (!valueMinDisplay && !valueMaxDisplay) {
         if (checkStateNav && checkStateNav.length === 3) {
           const recallMin = checkStateNav[1][2];
@@ -128,37 +128,37 @@ export default function FilterTVD() {
   }, [stateNav, valueMaxDisplay, valueMinDisplay]);
 
   useEffect(() => {
-    if (stateNav.tvdWell) {
+    if (stateNav.measuredDistanceWell) {
       setFilter();
     }
-  }, [setFilter, stateNav.tvdWell]);
+  }, [setFilter, stateNav.measuredDistanceWell]);
 
   const handleChangeMin = (event) => {
     setValueMinDisplay(parseInt(event.target.value.replace(/,/g, "")));
-    setTVDWell(event.target.id);
+    setMeasuredDistanceWell(event.target.id);
     setStateNav((stateNav) => ({
       ...stateNav,
-      tvdWell: event.target.id,
+      measuredDistanceWell: event.target.id,
     }));
     if (event.target.value === "") {
       setStateNav((stateNav) => ({
         ...stateNav,
-        filterTVD: null,
+        filterMeasuredDistance: null,
       }));
     }
   };
 
   const handleChangeMax = (event) => {
     setValueMaxDisplay(parseInt(event.target.value.replace(/,/g, "")));
-    setTVDWell(event.target.id);
+    setMeasuredDistanceWell(event.target.id);
     setStateNav((stateNav) => ({
       ...stateNav,
-      tvdWell: event.target.id,
+      measuredDistanceWell: event.target.id,
     }));
     if (event.target.value === "") {
       setStateNav((stateNav) => ({
         ...stateNav,
-        filterTVD: null,
+        filterMeasuredDistance: null,
       }));
     }
   };
@@ -200,10 +200,10 @@ export default function FilterTVD() {
 
       <Grid item sm={12}>
         <div className={classes.divBordersMinMax}>
-          <FormLabel className={classes.inputLabel}>TVD [ft.]</FormLabel>
+          <FormLabel className={classes.inputLabel}>MD [ft.]</FormLabel>
           <div className={classes.floatRight}>
             <NumberFormat
-              id="TVDMin"
+              id="MDMin"
               value={valueMinDisplay}
               onChange={handleChangeMin}
               thousandSeparator={true}
@@ -222,7 +222,7 @@ export default function FilterTVD() {
               }}
             />
             <NumberFormat
-              id="TVDMax"
+              id="MDMax"
               value={valueMaxDisplay}
               onChange={handleChangeMax}
               thousandSeparator={true}
@@ -244,8 +244,8 @@ export default function FilterTVD() {
             />
             <IconButton
               onClick={() => {
-                handleChangeMax({ target: { id: "TVDMax", value: "" } });
-                handleChangeMin({ target: { id: "TVDMin", value: "" } });
+                handleChangeMax({ target: { id: "MDMax", value: "" } });
+                handleChangeMin({ target: { id: "MDMin", value: "" } });
                 setError(false);
                 setErrorText("");
               }}
