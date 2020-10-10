@@ -2471,6 +2471,31 @@ export default function Map() {
         wellFilterCount += total;
         totalCount += total;
       }
+
+      if (stateNav.filterPlay && stateNav.filterPlay.length > 0) {
+        let total = stateNav.filterPlay[2].length;
+        filterArray.push(stateNav.filterPlay);
+        isFilterSet = true;
+        geographyFilterCount += total;
+        totalCount += total;
+      }
+
+      if (stateNav.filterField && stateNav.filterField.length > 0) {
+        let total = stateNav.filterField[2].length;
+        filterArray.push(stateNav.filterField);
+        isFilterSet = true;
+        geographyFilterCount += total;
+        totalCount += total;
+      }
+
+      if (stateNav.filterPrimaryFormation && stateNav.filterPrimaryFormation.length > 0) {
+        let total = stateNav.filterPrimaryFormation[2].length;
+        filterArray.push(stateNav.filterPrimaryFormation);
+        isFilterSet = true;
+        geographyFilterCount += total;
+        totalCount += total;
+      }
+
       if (stateNav.filterOperator && stateNav.filterOperator.length > 0) {
         let total = stateNav.filterOperator[2].length;
         filterArray.push(stateNav.filterOperator);
@@ -3630,6 +3655,9 @@ export default function Map() {
     stateNav.filterSpudDateRange,
     stateNav.filterWellProfile,
     stateNav.filterWellStatus,
+    stateNav.filterPlay,
+    stateNav.filterPrimaryFormation,
+    stateNav.filterField,
     stateNav.filterWellType,
     stateNav.filterNoOwnerCount,
     stateNav.filterHasOwners,
