@@ -2412,6 +2412,14 @@ export default function Map() {
         ownershipFilterCount += 1;
         totalCount += 1;
       }
+      if (stateNav.filterTVD && stateNav.filterTVD.length > 0) {
+        filterArray.push(stateNav.filterTVD);
+        isFilterSet = true;
+        wellFilterCount += 1;
+        totalCount += 1;
+      }
+
+
       if (
         stateNav.filterOwnerConfidence &&
         stateNav.filterOwnerConfidence.length > 0
@@ -3622,6 +3630,7 @@ export default function Map() {
     stateNav.filterOwnerAppraisals,
     stateNav.filterDrawing,
     stateNav.filterTags,
+    stateNav.filterTVD,
     stateNav.selectedTags,
     stateApp.trackedOwnerWells,
     stateApp.trackedwells,
