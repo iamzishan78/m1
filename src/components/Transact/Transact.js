@@ -14,6 +14,8 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Button from "@material-ui/core/Button";
 import Dialog from "./components/dialog";
 import getLaneTitle from "./getLaneTitle";
+import AddDealDialog from "../ContactDetailCard/components/AddDealDialog";
+import RightDialog from "../ContactDetailCard/components/RightDialog";
 
 // const data_file = {
 //   lanes: [
@@ -116,7 +118,7 @@ import getLaneTitle from "./getLaneTitle";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "100%",
+    height: "100vh",
     backgroundColor: "#efefef",
   },
   list: {
@@ -196,6 +198,28 @@ export default function Transact() {
   return !loading && data && transactData ? (
     <div className={classes.root}>
       <Dialog transactData={transactData} handleDataChange={handleDataChange} />
+      {/* <AddDealDialog
+            onClose={() =>
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                dealDialog: false,
+              }))
+            }
+            contactId={props.contact?._id}
+          /> */}
+
+      <AddDealDialog
+        open={stateApp.dealDialog ? true : false}
+        width="450px"
+        isTransactPage
+        onClose={() =>
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            dealDialog: false,
+            activeDeal: { cardId: null, laneId: null },
+          }))
+        }
+      />
       <Board
         className={classes.list}
         style={{ backgroundColor: "#efefef" }}

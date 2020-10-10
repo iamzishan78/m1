@@ -1449,7 +1449,8 @@ function SubTable(props) {
                       setStateApp((stateApp) => ({
                         ...stateApp,
                         dealDialog: true,
-                        activeDeal: {}
+                        activeDeal: { cardId: null, laneId: null },
+
                       }));
                     if (
                       props.addAble.type &&

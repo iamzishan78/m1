@@ -2683,12 +2683,17 @@ function M1nTable(props) {
       if (lanes) {
         lanes.forEach((deal) => {
           deal.cards.forEach((card) => {
-            if (props.contact?._id === card.contactId && !card.isDeleted) all.push(card);
+            if (props.contact?._id === card.contactId && !card.isDeleted)
+              all.push(card);
           });
         });
       }
 
-      const dealsRowsData = all.map(deal => ({...deal, id: deal.id, dealStage: lanes.find((lane) => lane.id === deal.laneId).title}));
+      const dealsRowsData = all.map((deal) => ({
+        ...deal,
+        id: deal.id,
+        dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
+      }));
       // all.forEach((deal) => {
       //   console.log("DEAL: ", deal)
       //   let dealData = {
@@ -2720,26 +2725,25 @@ function M1nTable(props) {
     if (props.parent && props.parent === "Deals") {
       setDeleteFunc(() => (idsToDelete) => {
         if (idsToDelete && idsToDelete.length > 0) {
-
           let lanes = new Array(dataDeals?.transactionData?.allData?.lanes)[0];
-          lanes = lanes.map(lane => {
+          lanes = lanes.map((lane) => {
             let cardsNew = [];
-            if(lane.cards && lane.cards.length > 0) cardsNew = [ ...lane.cards ];
-            cardsNew = cardsNew.map(card => {
-              const foundIndex = idsToDelete.findIndex(id => id === card.id)
-              if(foundIndex > -1){
-                return { ...card, isDeleted: true }
-              } else return card
-            })
-            return { ...lane, cards: cardsNew }
-          })
+            if (lane.cards && lane.cards.length > 0) cardsNew = [...lane.cards];
+            cardsNew = cardsNew.map((card) => {
+              const foundIndex = idsToDelete.findIndex((id) => id === card.id);
+              if (foundIndex > -1) {
+                return { ...card, isDeleted: true };
+              } else return card;
+            });
+            return { ...lane, cards: cardsNew };
+          });
 
           const newData = { ...dataDeals.transactionData.allData, lanes };
 
           console.log({
             transactionId: dataDeals.transactionData._id,
             transaction: { allData: newData, user: stateApp.user.mongoId },
-          })
+          });
 
           updateTransaction({
             variables: {
@@ -2752,7 +2756,13 @@ function M1nTable(props) {
         }
       });
     }
-  }, [props.parent, dataDeals, props.contact, updateTransaction, stateApp.user.mongoId]);
+  }, [
+    props.parent,
+    dataDeals,
+    props.contact,
+    updateTransaction,
+    stateApp.user.mongoId,
+  ]);
 
   ////////////Deals end////////////////////////////////////////////////
 
@@ -2760,26 +2770,18 @@ function M1nTable(props) {
   return (
     <Container maxWidth={false} className={classes.container}>
       {props.parent && props.parent === "Deals" && (
-        <RightDialog
+        <AddDealDialog
           open={stateApp.dealDialog ? true : false}
-          handleClickDialogClose={() =>
+          width="450px"
+          onClose={() =>
             setStateApp((stateApp) => ({
               ...stateApp,
               dealDialog: false,
+              activeDeal: { cardId: null, laneId: null },
             }))
           }
-          width="450px"
-        >
-          <AddDealDialog
-            onClose={() =>
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                dealDialog: false,
-              }))
-            }
-            contactId={props.contact?._id}
-          />
-        </RightDialog>
+          contactId={props.contact?._id}
+        />
       )}
       <Table
         style={{ backgroundColor: "#fff" }}
