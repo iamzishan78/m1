@@ -6,19 +6,18 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 // import TableHead from '@material-ui/core/TableHead';
 import TableRow from "@material-ui/core/TableRow";
-
 import { AppContext } from "../../../AppContext";
+import { Typography } from "@material-ui/core";
+import { useQueryWellCompletions } from "../../../graphQL/useQueryWellCompletionsAndStimulation";
 
 const useStyles = makeStyles({
   table: {
-    //minWidth: 650,
-    // paddingRight: "20px",
     minHeight: "100px !important",
   },
   tableContainer: {
     overflowX: "unset",
     margin: "8px",
-    //paddingRight: '20px'
+    marginBottom: 20,
   },
   rowName: {
     fontWeight: "bold",
@@ -32,16 +31,6 @@ const useStyles = makeStyles({
     },
   },
 });
-
-
-
-
-
-function formatFT(ft) {
-  let ftNum = ft ? ft : 0;
-  ftNum = Math.round(ftNum);
-  return ftNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
 
 const headers = [
     "DATE",
@@ -59,20 +48,24 @@ const headers = [
 export default function Completions(props) {
   const classes = useStyles();
   const [summary, setSummary] = useState(null);
+  const [stateApp] = useContext(AppContext);
+  const { data } = useQueryWellCompletions(stateApp.selectedWell.id);
+
+  const [completionsData, setCompletionsData] = useState(null);
 
   useEffect(() => {
-    if (props.summary) {
-      setSummary(props.summary);
+    if (typeof data !== "undefined" && typeof data.wellCompletions !== "undefined" ) {
+      setCompletionsData(data.wellCompletions);
     }
-  }, [props.summary, setSummary]);
+  }, [data]);
+
 
   return (
     <TableContainer className={classes.tableContainer}>
-      {true && (
+      {completionsData !== null ? (
         <Table
           aria-label="simple table"
           className={classes.table}
-          loading={!summary}
         >
           <TableBody>
             <TableRow className={classes.tableRow}>
@@ -85,46 +78,51 @@ export default function Completions(props) {
                 })
             }     
             </TableRow>
-            {[1,2].map((head) => {
+            { completionsData !== null && completionsData.length > 0 ? 
+            completionsData.map((row) => {
                     return (
                         <TableRow>
                           <TableCell>
-                              a
+                            {row.CompletionDate}
                           </TableCell>
                           <TableCell>
-                              a
+                            {row.LeaseId}
                           </TableCell>
                           <TableCell>
-                              a
+                            {row.LeaseName}
                           </TableCell>
                           <TableCell>
-                              a
+                            {row.LeaseAcreage}
                           </TableCell>
                           <TableCell>
-                              a
+                            {row.Formation}
                           </TableCell>
                           <TableCell>
-                              a
+                            {row.CompletionType}
                           </TableCell>
                           <TableCell>
-                              a
+                            {row.UpperPerf}
                           </TableCell>
                           <TableCell>
-                              a
+                            {row.LowerPerf}
                           </TableCell>
                           <TableCell>
-                              a
+                            {row.PlugBackMD}
                           </TableCell>
                           <TableCell>
-                              a
+                            {row.PlugBackTVD}
                           </TableCell>
                         </TableRow>
                     );
                 })
+                : <TableRow>
+                    <Typography align="center" color="textSecondary"> No records </Typography>
+                  </TableRow>
             }     
           </TableBody>
         </Table>
-      )}
+      ) : <Typography align="center">Loading...</Typography>
+    }
     </TableContainer>
   );
 }

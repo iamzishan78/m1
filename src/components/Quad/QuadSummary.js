@@ -234,7 +234,7 @@ export default function QuadSummary(props) {
     </div>
   ) : // </div>
   loading ? (
-    <CircularProgress size={80} disableShrink color="secondary" />
+    <Skeleton variant="rect" height={325}/>
   ) : (
     <Skeleton variant="rect" height={325}>
       <Typography variant="button">Not Available</Typography>
