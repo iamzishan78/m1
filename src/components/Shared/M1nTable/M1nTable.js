@@ -563,10 +563,10 @@ const ContactsHeadCells = [
   },
 
   { name: "name", label: "Name", editable: true },
-  { name: "fullContactAddress", label: "Primary Address", editable: true },
+  { name: "fullContactAddress", label: "Primary Address", editable: true, options: { filter: false } },
   { name: "leadSource", label: "Lead Source", editable: true },
   { name: "lastUpdateBy.name", label: "Updated By" },
-  { name: "lastUpdateAt", label: "Last Updated" },
+  { name: "lastUpdateAt", label: "Last Updated", options: { filter: false } },
   // { name: "primaryEmail", label: "Primary Email" },
   // {
   //   name: "mobilePhone",
