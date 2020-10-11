@@ -498,12 +498,14 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   userMenuItem: {
-    padding: 6,
+    padding:5,
+    paddingLeft:35,
     width: "260px",
     color: "#1daee1",
   },
   userTenantTitle: {
     padding: 10,
+    paddingBottom: 15,
     width: "260px",
     color: "#1daee1",
   },
@@ -969,6 +971,7 @@ export default function Navigation(props) {
       className={classes.userMenu}
     >
       <MenuItem disabled  className={classes.userTenantTitle}>
+        <CheckIcon/>
         <Typography variant="inherit" color="textPrimary"> {stateApp.user !== null && stateApp.user.tenant.tenant} </Typography>
         <FiberManualRecordIcon style={{color: "#34F125"}} fontSize="small"/>
       </MenuItem>
@@ -976,9 +979,10 @@ export default function Navigation(props) {
       <MenuItem
         className={classes.userMenuItem}
         onClick={(e) => openProfile(e)}
+        style={{marginTop: 10}}
       >
         <Typography
-          style={{ textDecoration: "none", color: "#1daee1" }}
+          style={{ textDecoration: "none", color: "#1daee1"}}
           variant="inherit"
         >
           My Account

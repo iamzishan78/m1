@@ -159,6 +159,7 @@ const finalComponent =
 const NotFoundRedirect = () =>{
   const [stateApp] = useContext(AppContext);
   const location = window.location;
+  //redirects after 3 seconds
   setTimeout(() =>{
     if (!stateApp.registeredRoutes.includes(location.pathname)){
       location.replace("/");
