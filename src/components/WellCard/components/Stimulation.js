@@ -17,6 +17,7 @@ const useStyles = makeStyles({
     overflowX: "auto",
     margin: "8px",
     marginBottom: 20,
+    background: "white",
   },
   rowName: {
     fontWeight: "bold",
@@ -31,24 +32,25 @@ const useStyles = makeStyles({
 });
 
 const headers = [
-    "SERVICE COMPANY",
+    "STIMULATION DATE" , 
     "START DATE",
     "END DATE",
-    "TVD",
+    "SERVICE COMPANY",
+    "STAGES",
     "TOTAL BASE H2O(GAL)",
-    "TOTAL BASE NONE-H2O(GAL)",
+    "TOTAL BASE NON H2O(GAL)",
+    "TOTAL FRAC FLUID VOLUME",
     "TOTAL BASE H2O MASS(LBS)",
     "TOTAL PROPPANT MASS(LBS)",
-    "TOTAL FRAC FLUID VOLUME",
-    "TOTAL FRAC FLUID MASS(LBS)",
+    "TOTAL FRAC FLUID MASS",
     "FLUID TYPE",
     "PRIMARY PROPPANT",
     "CROSSLINK FLUID",
-    "SURFACTANT PRESENT?",
-    "CLAY CONTROL AGENT PRESENT?",
+    "SURFACTANT",
+    "CLAY CONTROL AGENT",
     "ACID TYPE",
     "ACID VOLUME",
-    "BREAKER PRESENT"
+    "COMMENTS"
 ];
 
 export default function Simulation(props) {
@@ -88,7 +90,7 @@ export default function Simulation(props) {
                   return (
                       <TableRow>
                         <TableCell>
-                          {row.ServiceCompany}
+                          {row.StimDate}
                         </TableCell>
                         <TableCell>
                           {row.StartDate}
@@ -97,19 +99,25 @@ export default function Simulation(props) {
                           {row.EndDate}
                         </TableCell>
                         <TableCell>
-                          {row.TopTVD}
+                          {row.ServiceCompany}
+                        </TableCell>
+                        <TableCell>
+                          {row.NumberOfStages}
                         </TableCell>
                         <TableCell>
                           {row.TotalBaseWaterVolumeGallons}
                         </TableCell>
                         <TableCell>
-                          {row.TotalBaseNoneWaterVolumeGallons}
+                          {row.TotalBaseNonWaterVolumeGallons}
+                        </TableCell>
+                        <TableCell>
+                          {row.TotalFracFluidVolume}
                         </TableCell>
                         <TableCell>
                           {row.TotalBaseWaterMass}
                         </TableCell>
                         <TableCell>
-                          {row.TotalFracFluidVolume}
+                          {row.TotalProppantMass}
                         </TableCell>
                         <TableCell>
                           {row.TotalFracFluidMass}
@@ -124,13 +132,10 @@ export default function Simulation(props) {
                           {row.CrosslinkFluid}
                         </TableCell>
                         <TableCell>
-                          {row.SurfactantPresent}
+                          {row.Surfactant}
                         </TableCell>
                         <TableCell>
-                          {row.ClayControlPresent}
-                        </TableCell>
-                        <TableCell>
-                          {row.AcidTreatmentPresent}
+                          {row.ClayControlAgent}
                         </TableCell>
                         <TableCell>
                           {row.AcidType}
@@ -139,13 +144,14 @@ export default function Simulation(props) {
                           {row.AcidVolume}
                         </TableCell>
                         <TableCell>
-                          {row.BreakerPresent}
+                          {row.Comments}
                         </TableCell>
                       </TableRow>
                   );
               })
               : <TableRow>
-                  <Typography align="center" color="textSecondary"> No records </Typography>
+                 
+                  <Typography align="left" color="textSecondary"> No stimulation records available</Typography>
                 </TableRow>
           }     
         </TableBody>

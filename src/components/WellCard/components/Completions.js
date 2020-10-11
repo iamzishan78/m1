@@ -18,6 +18,7 @@ const useStyles = makeStyles({
     overflowX: "unset",
     margin: "8px",
     marginBottom: 20,
+    background: "white",
   },
   rowName: {
     fontWeight: "bold",
@@ -33,14 +34,16 @@ const useStyles = makeStyles({
 });
 
 const headers = [
-    "DATE",
+    "COMPLETION DATE",
     "LEASE ID",
     "LEASE NAME",
     "LEASE ACREAGE",
     "FORMATION",
     "TYPE",
-    "UPPER PERF",
-    "LOWER PERF",
+    "UPPER PERF MD",
+    "UPPER PERF TVD",
+    "LOWER PERF MD",
+    "LOWER PERF TVD",
     "PLUG BACK MD",
     "PLUG BACK TVD"
 ];
@@ -104,7 +107,13 @@ export default function Completions(props) {
                             {row.UpperPerf}
                           </TableCell>
                           <TableCell>
+                            {row.UpperPerfTVD}
+                          </TableCell>
+                          <TableCell>
                             {row.LowerPerf}
+                          </TableCell>
+                          <TableCell>
+                            {row.LowerPerfTVD}
                           </TableCell>
                           <TableCell>
                             {row.PlugBackMD}
@@ -116,7 +125,7 @@ export default function Completions(props) {
                     );
                 })
                 : <TableRow>
-                    <Typography align="center" color="textSecondary"> No records </Typography>
+                    <Typography align="left" color="textSecondary"> No completion records available</Typography>
                   </TableRow>
             }     
           </TableBody>
