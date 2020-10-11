@@ -293,7 +293,7 @@ export default ({ header, ...props }) => {
   return (
     <div className={classes.root}>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
-        <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
+        <h4 style={{ margin: "0 0 10px 0", float: "left" }}>
           Basic Information
         </h4>
         <h4
