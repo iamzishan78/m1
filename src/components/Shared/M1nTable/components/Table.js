@@ -270,6 +270,11 @@ function SubTable(props) {
     setStateIfDeepEqual(TrueTargetLabel, newState);
   };
 
+  const [rowsPerPage, RowsPerPage] = useState(props.startPaginationAt);
+  const setRowsPerPage = (newState) => {
+    setStateIfDeepEqual(RowsPerPage, newState);
+  };
+
   useEffect(() => {
     if (props.targetLabel === "Parcel Interest")
       setTrueTargetLabel("Parcel Ownership");
@@ -1196,7 +1201,7 @@ function SubTable(props) {
 
   const options = {
     filterType: "dropdown",
-    rowsPerPage: props.startPaginationAt ? props.startPaginationAt : 25,
+    rowsPerPage: rowsPerPage ? rowsPerPage : 25,
     rowsPerPageOptions:
       props.rows && props.rows.length > 25
         ? [10, 25, 50, 100]
@@ -1551,6 +1556,7 @@ function SubTable(props) {
           case 'changeRowsPerPage':
             props.contactsPageProps.setLoading(true);
             tableState.page = 0
+            setRowsPerPage(tableState.rowsPerPage)
             props.contactsPageProps.getContacts({
               variables: {
                 pagination: {
@@ -1574,8 +1580,7 @@ function SubTable(props) {
             });
             break;
           case 'sort':
-            const column = tableState.columns[tableState.activeColumn];
-            const backendColumnName = column.name === 'fullContactAddress' ? 'address1' : column.name;
+            const backendColumnName = tableState.sortOrder.name === 'fullContactAddress' ? 'address1' : tableState.sortOrder.name;
             props.contactsPageProps.setLoading(true);
             props.contactsPageProps.getContacts({
               variables: {
@@ -1585,7 +1590,7 @@ function SubTable(props) {
                 },
                 sort: {
                   field: backendColumnName,
-                  order: column.sortDirection === 'desc' ? 1 : -1
+                  order: tableState.sortOrder.direction === 'desc' ? 1 : -1
                 }
               },
             });
@@ -1624,12 +1629,12 @@ function SubTable(props) {
                 value: tableState.filterList[lastUpdateByIndex][0]
               })
             }
-            /*if (tableState.filterList[tagsIndex].length !== 0) {
+            if (tableState.filterList[tagsIndex].length !== 0) {
               filters.push({
-                field: leadSource,
+                field: 'tag',
                 value: tableState.filterList[tagsIndex][0]
               })
-            }*/
+            }
 
             props.contactsPageProps.getContacts({
               variables: {

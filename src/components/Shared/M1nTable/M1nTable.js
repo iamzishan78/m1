@@ -2103,7 +2103,9 @@ function M1nTable(props) {
       dataContacts.contacts.forEach((contact) => {
         contact.commentsCounter = 0;
         contact.tags = [[], 0];
-        contact.lastUpdateBy = contact.lastUpdateBy.name
+        if (contact.lastUpdateBy) {
+          contact.lastUpdateBy = contact.lastUpdateBy.name
+        }
         // contact.fullContactAddress = joinAddress(contact);
         // contact.contactName = contact.name;
 
