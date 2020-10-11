@@ -1044,7 +1044,7 @@ const UserManagementHeadCells = [
       searchable: false,
       sort: false,
       download: false,
-      print: true,
+      print: false,
       viewColumns: false,
     },
   },

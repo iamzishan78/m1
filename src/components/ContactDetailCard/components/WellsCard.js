@@ -40,7 +40,7 @@ export default function WellsCard(props) {
   return (
     <div className={classes.root}>
       <div>
-        <h4 style={{ marginTop: "0", float: "left" }}>Wells (40)</h4>
+        <h4 style={{ marginTop: "0", float: "left" }}>Wells (0)</h4>
         <IconButton
           size="small"
           className={classes.addIcon}
@@ -68,12 +68,12 @@ export default function WellsCard(props) {
           <h5 className={classes.h5}>
             Cum. Prod (BOE)
             <br />
-            <span className={classes.lastContactedSpan}>10,200</span>
+            <span className={classes.lastContactedSpan}>-</span>
           </h5>
           <h5 className={classes.h5}>
             Avg Mo. Prod (BOE)
             <br />
-            <span className={classes.lastContactedSpan}>10,200</span>
+            <span className={classes.lastContactedSpan}>-</span>
           </h5>
         </div>
       </div>
