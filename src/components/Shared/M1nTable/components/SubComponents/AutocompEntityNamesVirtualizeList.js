@@ -128,6 +128,8 @@ export default function AutocompEntityNamesVirtualizeList(props) {
     setNameAutValue,
     nameAutInputValue,
     setNameAutInputValue,
+    variant = "standard",
+    label = "",
   } = props;
   const classes = useStyles();
   //   const [nameAutValue, setNameAutValue] = useState(null);
@@ -135,6 +137,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   //   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
 
   useEffect(() => {
+    console.log("ENTITIES : ", mongoEntitiesArray);
     if (nameAutInputValue && nameAutInputValue !== "") {
       setMongoEntitiesArray((eArray) => [
         {
@@ -156,6 +159,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       getOptionLabel={(option) => option.name}
       getOptionSelected={(option) => option.name}
       value={nameAutValue}
+      defaultValue={nameAutValue}
       onChange={(event, newValue) => {
         setNameAutInputValue("");
 
@@ -171,6 +175,8 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       options={mongoEntitiesArray}
       renderInput={(params) => (
         <TextField
+          label={label}
+          variant={variant}
           {...params}
           value={nameAutInputValue}
           onChange={(e) => {
@@ -178,7 +184,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
           }}
           size="small"
           multiline
-          placeholder="E.g. Jacob"
+         // placeholder="E.g. Jacob"
         />
       )}
       disableListWrap
@@ -187,7 +193,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       renderOption={(option) => {
         if (option._id === "newEntity")
           return (
-            <Typography style={{ color: "blue" }}>{option.name}</Typography>
+            <Typography style={{ color: "midnightblue" }}>{option.name}</Typography>
           );
 
         return (

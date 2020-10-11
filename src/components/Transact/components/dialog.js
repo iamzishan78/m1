@@ -83,7 +83,9 @@ export default function TransactDialog(props) {
     }
   }, [cData]);
 
-  let [transactData, setTransactData] = useState(props.transactData ? {...props.transactData} : null);
+  let [transactData, setTransactData] = useState(
+    props.transactData ? { ...props.transactData } : null
+  );
 
   useEffect(() => {
     console.log("TDATAAAAAAAAA : ", tdata?.transactionData?.allData);
@@ -273,7 +275,7 @@ export default function TransactDialog(props) {
 
   return (
     <Dialog
-      open={stateApp.dealDialog ? stateApp.dealDialog : false}
+      open={false}
       onClose={handleClose}
       aria-labelledby="form-dialog-title"
       fullWidth

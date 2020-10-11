@@ -2412,6 +2412,24 @@ export default function Map() {
         ownershipFilterCount += 1;
         totalCount += 1;
       }
+      if (stateNav.filterTVD && stateNav.filterTVD.length > 0) {
+        filterArray.push(stateNav.filterTVD);
+        isFilterSet = true;
+        wellFilterCount += 1;
+        totalCount += 1;
+      }
+      if (stateNav.filterLateralLength && stateNav.filterLateralLength.length > 0) {
+        filterArray.push(stateNav.filterLateralLength);
+        isFilterSet = true;
+        wellFilterCount += 1;
+        totalCount += 1;
+      }
+      if (stateNav.filterMeasuredDistance && stateNav.filterMeasuredDistance.length > 0) {
+        filterArray.push(stateNav.filterMeasuredDistance);
+        isFilterSet = true;
+        wellFilterCount += 1;
+        totalCount += 1;
+      }
       if (
         stateNav.filterOwnerConfidence &&
         stateNav.filterOwnerConfidence.length > 0
@@ -2453,6 +2471,31 @@ export default function Map() {
         wellFilterCount += total;
         totalCount += total;
       }
+
+      if (stateNav.filterPlay && stateNav.filterPlay.length > 0) {
+        let total = stateNav.filterPlay[2].length;
+        filterArray.push(stateNav.filterPlay);
+        isFilterSet = true;
+        geographyFilterCount += total;
+        totalCount += total;
+      }
+
+      if (stateNav.filterField && stateNav.filterField.length > 0) {
+        let total = stateNav.filterField[2].length;
+        filterArray.push(stateNav.filterField);
+        isFilterSet = true;
+        geographyFilterCount += total;
+        totalCount += total;
+      }
+
+      if (stateNav.filterPrimaryFormation && stateNav.filterPrimaryFormation.length > 0) {
+        let total = stateNav.filterPrimaryFormation[2].length;
+        filterArray.push(stateNav.filterPrimaryFormation);
+        isFilterSet = true;
+        geographyFilterCount += total;
+        totalCount += total;
+      }
+
       if (stateNav.filterOperator && stateNav.filterOperator.length > 0) {
         let total = stateNav.filterOperator[2].length;
         filterArray.push(stateNav.filterOperator);
@@ -3605,11 +3648,16 @@ export default function Map() {
     stateNav.filterLastTwelveMonthWater,
     stateNav.filterOperator,
     stateNav.filterOwnerCount,
+    stateNav.filterLateralLength,
+    stateNav.filterMeasuredDistance,
     stateNav.filterPermitDateRange,
     stateNav.filterPlay,
     stateNav.filterSpudDateRange,
     stateNav.filterWellProfile,
     stateNav.filterWellStatus,
+    stateNav.filterPlay,
+    stateNav.filterPrimaryFormation,
+    stateNav.filterField,
     stateNav.filterWellType,
     stateNav.filterNoOwnerCount,
     stateNav.filterHasOwners,
@@ -3622,6 +3670,7 @@ export default function Map() {
     stateNav.filterOwnerAppraisals,
     stateNav.filterDrawing,
     stateNav.filterTags,
+    stateNav.filterTVD,
     stateNav.selectedTags,
     stateApp.trackedOwnerWells,
     stateApp.trackedwells,
@@ -4435,9 +4484,9 @@ export default function Map() {
               "fill-opacity": [
                 "case",
                 ["boolean", ["feature-state", "hover"], false],
-                0.5,
+                0.3,
                 ["boolean", ["feature-state", "click"], false],
-                0.5,
+                0.3,
                 0,
               ],
             },
@@ -4453,8 +4502,9 @@ export default function Map() {
               "line-cap": "round",
             },
             paint: {
-              "line-color": "#888",
-              "line-width": 2,
+              "line-color": "#292424",
+              "line-opacity": ".5",
+              "line-width": 3,
             },
           });
 
@@ -4916,10 +4966,10 @@ export default function Map() {
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
         map.flyTo({
-          center: stateApp.mapVars.center,
-          zoom: stateApp.mapVars.zoom,
-          pitch: stateApp.mapVars.pitch,
-          bearing: stateApp.mapVars.bearing,
+          center: stateApp.defaultMapVars.center,
+          zoom: stateApp.defaultMapVars.zoom,
+          pitch: stateApp.defaultMapVars.pitch,
+          bearing: stateApp.defaultMapVars.bearing,
           speed: 0.5,
         });
 

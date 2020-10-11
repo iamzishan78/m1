@@ -1082,7 +1082,7 @@ function SubTable(props) {
                   }
 
                   return (
-                    <div style={{ display: "flex" }}>
+                    <div style={{ display: "flex", padding: "7px 0px 0px 0px" }}>
                       {props.targetLabel === "contact" &&
                         column.name === "name" && (
                           <Avatar
@@ -1449,7 +1449,8 @@ function SubTable(props) {
                       setStateApp((stateApp) => ({
                         ...stateApp,
                         dealDialog: true,
-                        activeDeal: {}
+                        activeDeal: { cardId: null, laneId: null },
+
                       }));
                     if (
                       props.addAble.type &&

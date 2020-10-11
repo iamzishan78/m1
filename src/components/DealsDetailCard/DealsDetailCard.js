@@ -45,7 +45,7 @@ export default function DealsDetailCard(props) {
   const [allDeals, setAllDeals] = useState([]); // all other deals
   const [stateApp, setStateApp] = useContext(AppContext);
   const [getTransactionData, { data, loading }] = useLazyQuery(TRANSACTIONDATA);
-  
+
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
       console.log(stateApp.user);
@@ -56,7 +56,7 @@ export default function DealsDetailCard(props) {
       });
     }
   }, [getTransactionData, stateApp.user]);
-  
+
   useEffect(() => {
     if (
       !loading &&
@@ -83,19 +83,17 @@ export default function DealsDetailCard(props) {
     let won = [];
     let others = [];
     allDeals.forEach((card) => {
-        if (card.laneId === "lane5") lost.push(card);
-        else if (card.laneId === "lane4") won.push(card);
-        else others.push(card);
+      if (card.laneId === "lane5") lost.push(card);
+      else if (card.laneId === "lane4") won.push(card);
+      else others.push(card);
     });
 
     setWonDeals(won);
     setLostDeals(lost);
     setActiveDeals(others);
-    console.log("ALL DEALS UPDATED: ", allDeals)
+    console.log("ALL DEALS UPDATED: ", allDeals);
   }, [allDeals]);
 
-
-  
   const activeSum = sumDeals(activeDeals);
   const wonSum = sumDeals(wonDeals);
   const lostSum = sumDeals(lostDeals);
@@ -114,7 +112,7 @@ export default function DealsDetailCard(props) {
         <DealDisplay
           dealSum={wonSum}
           dealType="CLOSED"
-          dealLength={wonSum.length}
+          dealLength={wonDeals.length}
           color="rgb(223,168,89)"
         />
         <DealDisplay

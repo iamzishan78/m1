@@ -15,6 +15,12 @@ import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import getLaneTitle from "../../Transact/getLaneTitle";
+import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
+import { ALLENTITYNAMESFORPARCEL } from "../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner";
+import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { Typography } from "@material-ui/core";
+import RightDialog from "./RightDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputFieldDateRoot: {
     "& .MuiDialog-root": {
-      zIndex: 99999,
+      // zIndex: 99999,
     },
   },
   inputFieldDate: {
@@ -74,12 +80,17 @@ const useStyles = makeStyles((theme) => ({
 function AddDealDialog(props) {
   const classes = useStyles();
   // const { transactData, handleDataChange } = props;
+
   const [stateApp, setStateApp] = useContext(AppContext);
   // const [title, setTitle] = useState(props.contact ? props.contact.name : ""); // title change from contact.name to dealName
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [label, setLabel] = useState("");
   const [stage, setStage] = useState("");
   const [description, setDescription] = useState("");
+
+  const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
+  const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
+  const [nameAutInputValue, setNameAutInputValue] = useState("");
 
   const [openContactDialog, setOpenContactDialog] = useState(false);
   // const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
@@ -90,7 +101,22 @@ function AddDealDialog(props) {
     fetchPolicy: "cache-and-network",
   });
 
+  const [getContacts, { data: allContacts }] = useLazyQuery(CONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
+
   const [contact, setContact] = useState({});
+
+  useEffect(() => {
+    getContacts();
+  }, []);
+
+  useEffect(() => {
+    console.log("ALL CONTACTS: ", allContacts);
+    if (allContacts?.contacts) {
+      setMongoEntitiesArray(allContacts.contacts);
+    }
+  }, [allContacts]);
 
   useEffect(() => {
     if (cData?.contact) {
@@ -101,6 +127,12 @@ function AddDealDialog(props) {
       );
     }
   }, [cData]);
+
+  useEffect(() => {
+    if (contact?.name) {
+      setNameAutValue(contact);
+    }
+  }, [contact]);
 
   let [transactData, setTransactData] = useState(
     props.transactData ? { ...props.transactData } : null
@@ -198,10 +230,13 @@ function AddDealDialog(props) {
     setLabel("");
     setDescription("");
     setStage("");
+    setNameAutValue(null);
+    setNameAutInputValue("");
     // setContact({});
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: false,
+      activeDeal: { cardId: null, laneId: null },
     }));
   };
 
@@ -229,12 +264,12 @@ function AddDealDialog(props) {
         const updatedCard = {
           // dealName: dealName.trim(),
           // title: contact?.name.trim(),
-          contactName: contact?.name ? contact.name.trim() : "",
+          contactName: nameAutValue?.name ? nameAutValue.name : "",
           title: title ? title.trim() : "",
           label: label ? label.trim() : "",
           description: description ? description.trim() : "",
           laneId: newStage,
-          contactId: contact?._id ? contact._id : uuid(),
+          contactId: nameAutValue?._id ? nameAutValue?._id : uuid(),
           id: card.id,
         };
 
@@ -286,12 +321,12 @@ function AddDealDialog(props) {
             const newCard = {
               // dealName: dealName.trim(),
               // title: contact?.name,
-              contactName: contact?.name ? contact.name.trim() : "",
+              contactName: nameAutValue?.name ? nameAutValue.name : "",
               title: title ? title.trim() : "",
               label: label ? label.trim() : "",
               description: description ? description.trim() : "",
               id: uuid(),
-              contactId: contact?._id ? contact._id : uuid(),
+              contactId: nameAutValue?._id ? nameAutValue?._id : uuid(),
               laneId: newStage,
             };
             cards.push(newCard);
@@ -313,152 +348,185 @@ function AddDealDialog(props) {
   }, [transactData]);
 
   return (
-    <div style={{ padding: "30px" }}>
-      {/* <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
+    <RightDialog
+      open={props.open}
+      handleClickDialogClose={() => {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          dealDialog: false,
+          activeDeal: { cardId: null, laneId: null },
+        }));
+        handleClose();
+      }}
+      width={props.width}
+    >
+      <div style={{ padding: "30px" }}>
+        {/* <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
         Recent Activities
       </h4> */}
-      <Grid item xs={12} style={{ minHeight: "35px" }}>
-        <h4 style={{ margin: "0 0 15px 0", float: "left", fontSize: "1.1rem" }}>
-          Add Deals
-        </h4>
+        <Grid item xs={12} style={{ minHeight: "35px" }}>
+          <h4
+            style={{ margin: "0 0 15px 0", float: "left", fontSize: "1.1rem" }}
+          >
+            Add Deals
+          </h4>
 
-        <IconButton
-          onClick={props.onClose}
-          size="small"
-          style={{ float: "right", top: "-5px", right: "-5px" }}
-        >
-          <CloseIcon className={classes.closeIcon} fontSize="small" />
-        </IconButton>
-      </Grid>
-      <div className={classes.inputFieldDateRoot}>
-        <TextField
-          margin="dense"
-          value={title}
-          label="Deal Name"
-          variant="outlined"
-          fullWidth
-          //   required
-          onChange={(e) => {
-            setTitle(e.target.value);
-          }}
-          className={classes.inputField}
-        />
+          <IconButton
+            onClick={props.onClose}
+            size="small"
+            style={{ float: "right", top: "-5px", right: "-5px" }}
+          >
+            <CloseIcon className={classes.closeIcon} fontSize="small" />
+          </IconButton>
+        </Grid>
+        <div className={classes.inputFieldDateRoot}>
+          <TextField
+            margin="dense"
+            value={title}
+            label="Deal Name"
+            variant="outlined"
+            fullWidth
+            //   required
+            onChange={(e) => {
+              setTitle(e.target.value);
+            }}
+            className={classes.inputField}
+          />
 
-        {/* <InputLabel
+          {/* <InputLabel
             id="demo-simple-select-outlined-label"
             className={classes.label}
           >
             Contact Name
           </InputLabel> */}
 
-        {!(
-          (Object.keys(contact).length === 0 &&
-            contact.constructor === Object) ||
-          contact === null
-        ) && (
-          <TextField
+          {!(
+            (Object.keys(contact).length === 0 &&
+              contact.constructor === Object) ||
+            contact === null
+          ) && !props.isTransactPage ? (
+            <div className={classes.inputFieldDateRoot}>
+              <TextField
+                variant="outlined"
+                margin="dense"
+                value={contact?.name}
+                label="Contact Name"
+                fullWidth
+                disabled
+                className={classes.inputField}
+              />
+            </div>
+          ) : (
+            <div className={classes.inputField}>
+              <Grid container>
+                <Grid item xs={12}>
+                  <AutocompEntityNamesVirtualizeList
+                    mongoEntitiesArray={mongoEntitiesArray}
+                    setMongoEntitiesArray={setMongoEntitiesArray}
+                    nameAutValue={nameAutValue}
+                    setNameAutValue={setNameAutValue}
+                    nameAutInputValue={nameAutInputValue}
+                    setNameAutInputValue={setNameAutInputValue}
+                    variant="outlined"
+                    label="Contact Name"
+                  />
+                </Grid>
+              </Grid>
+            </div>
+          )}
+
+          <FormControl
             variant="outlined"
-            margin="dense"
-            value={contact?.name}
-            label="Contact Name"
             fullWidth
-            disabled
+            className={classes.inputField}
+            size="small"
+          >
+            <InputLabel
+              id="demo-simple-select-outlined-label"
+              className={classes.label}
+            >
+              Deal Stage
+            </InputLabel>
+            <Select
+              native
+              labelId="demo-simple-select-outlined-label"
+              id="demo-simple-select-outlined"
+              value={stage}
+              onChange={(e) => {
+                console.log("Stage: ", e.target.value);
+                setStage(e.target.value);
+              }}
+              fullWidth
+              label="Deal Stage"
+            >
+              <option value={"lane1"}>Offer Preparation</option>
+              <option value={"lane2"}>Offer Extended</option>
+              <option value={"lane3"}>Accepted - Due Diligence</option>
+              <option value={"lane4"}>Deal Closed</option>
+              <option value={"lane5"}>Offer Rejected</option>
+            </Select>
+          </FormControl>
+          <TextField
+            margin="dense"
+            variant="outlined"
+            value={label}
+            label="Offer Price"
+            fullWidth
+            onChange={(e) => {
+              setLabel(e.target.value);
+            }}
             className={classes.inputField}
           />
-        )}
-
-        <FormControl
-          variant="outlined"
-          fullWidth
-          className={classes.inputField}
-          size="small"
-        >
-          <InputLabel
-            id="demo-simple-select-outlined-label"
-            className={classes.label}
-          >
-            Deal Stage
-          </InputLabel>
-          <Select
-            native
-            labelId="demo-simple-select-outlined-label"
-            id="demo-simple-select-outlined"
-            value={stage}
-            onChange={(e) => {
-              console.log("Stage: ", e.target.value);
-              setStage(e.target.value);
-            }}
+          <TextField
+            //   autoFocus
+            margin="dense"
+            variant="outlined"
+            multiline
+            rows={8}
+            value={description}
+            label="Offer Details"
             fullWidth
-            label="Deal Stage"
-          >
-            <option value={"lane1"}>Offer Preparation</option>
-            <option value={"lane2"}>Offer Extended</option>
-            <option value={"lane3"}>Accepted - Due Diligence</option>
-            <option value={"lane4"}>Deal Closed</option>
-            <option value={"lane5"}>Offer Rejected</option>
-          </Select>
-        </FormControl>
-        <TextField
-          margin="dense"
-          variant="outlined"
-          value={label}
-          label="Offer Price"
-          fullWidth
-          onChange={(e) => {
-            setLabel(e.target.value);
-          }}
-          className={classes.inputField}
-        />
-        <TextField
-          //   autoFocus
-          margin="dense"
-          variant="outlined"
-          multiline
-          rows={8}
-          value={description}
-          label="Offer Details"
-          fullWidth
-          multiline
-          //   required
-          onChange={(e) => {
-            setDescription(e.target.value);
-          }}
-          className={classes.inputField}
-        />
-
-        <div className={classes.dialogFooter}>
-        <Button
-            variant="contained"
-            color="default"
-            size="medium"
-            disableElevation
-            onClick={handleClose}
-            className={classes.footerButton}
-            style={{
-              margin: "0px 15px 0px 0px"
-              // padding: "8px 35px",
-              // background: "rgb(215,244,254)",
-              // color: "rgb(23, 170, 221)",
+            multiline
+            //   required
+            onChange={(e) => {
+              setDescription(e.target.value);
             }}
-          >
-            Cancel
-          </Button>
-         
-          <Button
-            variant="contained"
-            color="secondary"
-            size="medium"
-            disableElevation
-            onClick={handleUpdate}
-            className={classes.footerButton}
-           // style={{ margin: "0px 20px 0px 0px" }}
-          >
-            Save
-          </Button>
-       
+            className={classes.inputField}
+          />
+
+          <div className={classes.dialogFooter}>
+            <Button
+              variant="contained"
+              color="default"
+              size="medium"
+              disableElevation
+              onClick={handleClose}
+              className={classes.footerButton}
+              style={{
+                margin: "0px 15px 0px 0px",
+                // padding: "8px 35px",
+                // background: "rgb(215,244,254)",
+                // color: "rgb(23, 170, 221)",
+              }}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              variant="contained"
+              color="secondary"
+              size="medium"
+              disableElevation
+              onClick={handleUpdate}
+              className={classes.footerButton}
+              // style={{ margin: "0px 20px 0px 0px" }}
+            >
+              Save
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </RightDialog>
   );
 }
 

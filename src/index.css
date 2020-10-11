@@ -39,5 +39,8 @@ body {
   text-transform: capitalize !important;
   background-color: rgba(23, 170, 221, 1) !important;
   color: #fff !important;
+}
 
+.MuiAutocomplete-popper {
+  z-index: 999999 !important;
 }

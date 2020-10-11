@@ -757,6 +757,11 @@ export const heatLayers = [
     id: ["wellsHeatmapRecentlyCompleted"],
     idx: 10,
   },
+  {
+    name: "True Vertical Depth",
+    id: ["wellsHeatmapTVD"],
+    idx: 11,
+  },
 ];
 
 export const baseMapLayers = [
@@ -764,6 +769,7 @@ export const baseMapLayers = [
     name: "Map Labels",
     id: [
       "country-label",
+      "countyLabels",
       "state-label",
       "settlement-major-label",
       "settlement-minor-label",
@@ -777,10 +783,14 @@ export const baseMapLayers = [
   {
     name: "Roads",
     id: [
+      "road-label",
+      "road-label-simple",
+      "road-exit-shield",
+      "road-number-shield",
+      "road-label-outdoors",
       "ferry-aerialway-label",
       "road-exit-shield",
       "road-number-shield",
-      "road-label",
       "aerialway",
       "bridge-oneway-arrow-white",
       "bridge-motorway-trunk-2",
@@ -790,6 +800,8 @@ export const baseMapLayers = [
       "bridge-pedestrian",
       "bridge-steps",
       "bridge-path",
+      "bridge-simple",
+      "road-simple",
       "road-pedestrian",
       "road-steps",
       "road-path",
@@ -813,14 +825,17 @@ export const baseMapLayers = [
       "road-secondary-tertiary",
       "road-street",
       "road-minor",
+      "road-polygon",
       "road-major-link",
       "road-motorway-trunk-case",
       "road-major-link-case",
       "road-primary-case",
       "road-secondary-tertiary-case",
       "road-street-case",
+      "road-street-low",
       "road-minor-case",
       "road-minor-low",
+      "turning-feature-outline",
       "tunney-oneway-arrow-white",
       "tunnel-motorway-trunk",
       "tunnel-oneway-arrow-blue",
@@ -832,6 +847,7 @@ export const baseMapLayers = [
       "tunnel-primary-secondary-tertiary-case",
       "tunnel-street-minor-case",
       "tunnel-street-minor-low",
+
     ],
   },
 
