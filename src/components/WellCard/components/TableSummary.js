@@ -69,7 +69,23 @@ export default function TableSummary(props) {
           className={classes.table}
           loading={!summary}
         >
+
+          
           <TableBody>
+
+          <TableRow className={classes.tableRow}>
+              <TableCell scope="row" className={classes.rowName}>
+                Play
+              </TableCell>
+              <TableCell>
+                {summary.Play}
+              </TableCell>
+              <TableCell scope="row" className={classes.rowName}>
+                Basin
+              </TableCell>
+              <TableCell>{summary.Basin}</TableCell>
+            </TableRow>
+
             <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 Lease
@@ -84,6 +100,33 @@ export default function TableSummary(props) {
               </TableCell>
               <TableCell>{summary.Field}</TableCell>
             </TableRow>
+
+            <TableRow className={classes.tableRow}>
+              <TableCell scope="row" className={classes.rowName}>
+                Current Operator
+              </TableCell>
+              <TableCell>
+                {summary.CurrentOperator}
+              </TableCell>
+              <TableCell scope="row" className={classes.rowName}>
+                Formation
+              </TableCell>
+              <TableCell>{summary.PrimaryFormation}</TableCell>
+            </TableRow>
+
+            <TableRow className={classes.tableRow}>
+              <TableCell scope="row" className={classes.rowName}>
+                Original Operator
+              </TableCell>
+              <TableCell>
+                {summary.OriginalOperator}
+              </TableCell>
+              <TableCell scope="row" className={classes.rowName}>
+                Permit Number
+              </TableCell>
+              <TableCell>{summary.PermitNumber}</TableCell>
+            </TableRow>
+
             <TableRow className={classes.tableRow}>
               <TableCell scope="row" className={classes.rowName}>
                 County
