@@ -11,13 +11,15 @@ export const PAGINATEDCONTACTSQUERY = gql`
       order: 1
     },
     $filters: [FilterInput] = [],
-    $search: String
+    $search: String,
+    $userId: ID
   ) {
     paginatedContacts(
       pagination: $pagination,
       sort: $sort,
       filters: $filters,
-      search: $search
+      search: $search,
+      userId: $userId
     ) {
       totalCount,
       edges {
@@ -29,9 +31,7 @@ export const PAGINATEDCONTACTSQUERY = gql`
           primaryEmail
           leadSource
           lastUpdateAt
-          lastUpdateBy {
-            name
-          }
+          lastUpdateBy
           name
           address1
           address2
@@ -39,6 +39,9 @@ export const PAGINATEDCONTACTSQUERY = gql`
           country
           state
           zip
+          commentsCounter
+          tags
+          melissaRowsCount
         },
         cursor
       },

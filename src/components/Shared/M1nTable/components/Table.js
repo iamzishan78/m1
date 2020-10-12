@@ -1137,7 +1137,7 @@ function SubTable(props) {
                           props.columns.findIndex(
                             (val) => val.name === "melissaRowsCount"
                           )
-                        ] !== undefined && (
+                        ] !== 0 && (
                           <MonetizationOnIcon
                             className={classes.monetizationIcon}
                           />
@@ -1554,6 +1554,7 @@ function SubTable(props) {
       if (props.header === "Contacts") {
         switch (action) {
           case 'changeRowsPerPage':
+            console.log('changeRowsPerPage')
             props.contactsPageProps.setLoading(true);
             tableState.page = 0
             setRowsPerPage(tableState.rowsPerPage)

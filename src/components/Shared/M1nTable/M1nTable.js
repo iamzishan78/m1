@@ -1318,12 +1318,8 @@ function M1nTable(props) {
   });
   const [removeUser] = useMutation(REMOVEUSER);
   //////////
-  const [contactsCount, ContactsCount] = useState(0);
-  const setContactsCount = (newState) => {
-    setStateIfDeepEqual(ContactsCount, newState);
-  };
 
-  const [getContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+  const [getContacts, { data: dataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
   });
   const [getContactsFilterOptions, { data: dataContactsFilterOptions }] = useLazyQuery(CONTACTSFILTEROPTIONS, {
@@ -1366,23 +1362,8 @@ function M1nTable(props) {
 
   ////////////General begin///////////////////////////////////////////////
 
-  // workaround to make constDataContacts.contacts[i] editable
-  // TODO: set correct isTracked on backend, not frontend
-  const [dataContacts, setDataContacts] = useState(null);
   useEffect(() => {
-    if (constDataContacts && constDataContacts.paginatedContacts.edges) {
-      getContactsFilterOptions();
-      let tmpDataContacts = { contacts: [] };
-      constDataContacts.paginatedContacts.edges.forEach((edge) => {
-        tmpDataContacts.contacts.push({ ...edge.node.entityObj, ...edge.node });
-      });
-      setDataContacts(tmpDataContacts);
-      setContactsCount(constDataContacts.paginatedContacts.totalCount);
-    }
-  }, [constDataContacts]);
-
-  useEffect(() => {
-    if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks) {
+    if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks && targetLabel !== "contact") {
       tracksByObjectType({
         variables: {
           objectType:
@@ -2039,7 +2020,9 @@ function M1nTable(props) {
       setHeader("Contacts");
       setAddAble({ parent: false, type: "contact" });
       getContacts({
-        variables: { },
+        variables: {
+          userId: stateApp.user.mongoId
+        },
       });
       setUploadIcon(true);
       setStartPaginationAt(25);
@@ -2050,140 +2033,20 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "Contacts" &&
-      dataContacts &&
-      dataTracks &&
-      dataTracks.tracksByObjectType
+      dataContacts
     ) {
       console.log("ue mintable 23");
-      if (dataContacts.contacts && dataContacts.contacts.length > 0) {
-        const objectsIdsArray = [];
-        dataContacts.contacts.forEach((contact) => {
-          contact.isTracked = false;
-          objectsIdsArray.push(contact._id);
-
-          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-            if (contact.id === dataTracks.tracksByObjectType[i].trackOn) {
-              contact.isTracked = true;
-              break;
-            }
-          }
-        });
-
-        getCommentsCounter({
-          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
-        });
-        getTagSamples({
-          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
-        });
-        getMelissaRowsCount({
-          variables: { objectsIdsArray },
-        });
-      } else {
+      if (dataContacts.paginatedContacts.edges && dataContacts.paginatedContacts.edges.length > 0) {
+        console.log("ue mintable 23 >");
+        setColumns(ContactsHeadCells);
+        setRows([...dataContacts.paginatedContacts.edges.map(el => el.node)]);
         setLoading(false);
+      } else {
         setRows([]);
+        setLoading(false);
       }
     }
-  }, [dataContacts, dataTracks]);
-
-  useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "Contacts" &&
-      dataContacts &&
-      dataContacts.contacts &&
-      dataContacts.contacts.length > 0 &&
-      dataCommentsCounter &&
-      dataCommentsCounter.commentsCounter &&
-      dataTagSamples &&
-      dataTagSamples.tagSamples &&
-      dataMelissaRowsCount &&
-      dataMelissaRowsCount.getMelissaRecordsCountForContactIds
-    ) {
-      console.log("ue mintable 24");
-      dataContacts.contacts.forEach((contact) => {
-        contact.commentsCounter = 0;
-        contact.tags = [[], 0];
-        if (contact.lastUpdateBy) {
-          contact.lastUpdateBy = contact.lastUpdateBy.name
-        }
-        // contact.fullContactAddress = joinAddress(contact);
-        // contact.contactName = contact.name;
-
-        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-          if (contact._id === dataCommentsCounter.commentsCounter[i]._id) {
-            contact.commentsCounter =
-              dataCommentsCounter.commentsCounter[i].total;
-            break;
-          }
-        }
-
-        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-          if (contact._id === dataTagSamples.tagSamples[i]._id) {
-            contact.tags = [
-              dataTagSamples.tagSamples[i].tags,
-              dataTagSamples.tagSamples[i].total,
-            ];
-
-            break;
-          }
-        }
-
-        let foundMelissaRowsCount = dataMelissaRowsCount.getMelissaRecordsCountForContactIds.find(
-          (value) => {
-            return contact._id === value._id;
-          }
-        );
-        if (foundMelissaRowsCount) {
-          contact.melissaRowsCount = foundMelissaRowsCount.total;
-        }
-      });
-
-      let availableTags = [];
-      dataTagSamples.tagSamples.map((sample) => {
-        availableTags = [...availableTags, ...sample.tags];
-      });
-      const cleanAvailableTags = [...new Set(availableTags)];
-
-      setColumns(
-        cleanAvailableTags.length > 0
-          ? ContactsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
-                    },
-                  },
-                };
-              }
-              return column;
-            })
-          : ContactsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })
-      );
-      setRows([...dataContacts.contacts]);
-      setLoading(false);
-    }
-  }, [
-    dataContacts,
-    dataTracks,
-    dataTagSamples,
-    dataCommentsCounter,
-    dataMelissaRowsCount,
-  ]);
+  }, [dataContacts]);
 
   useEffect(() => {
     let contactsHeadCells = ContactsHeadCells.slice();
@@ -2829,7 +2692,7 @@ function M1nTable(props) {
         contactId={props.contact?._id}
         contactsPageProps={{
           getContacts,
-          contactsCount,
+          contactsCount: dataContacts ? dataContacts.paginatedContacts.totalCount : 0,
           setLoading
         }}
       />
