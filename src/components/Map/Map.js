@@ -2476,7 +2476,7 @@ export default function Map() {
         let total = stateNav.filterPlay[2].length;
         filterArray.push(stateNav.filterPlay);
         isFilterSet = true;
-        geographyFilterCount += total;
+        wellFilterCount += total;
         totalCount += total;
       }
 
@@ -2484,7 +2484,7 @@ export default function Map() {
         let total = stateNav.filterField[2].length;
         filterArray.push(stateNav.filterField);
         isFilterSet = true;
-        geographyFilterCount += total;
+        wellFilterCount += total;
         totalCount += total;
       }
 
@@ -2492,7 +2492,7 @@ export default function Map() {
         let total = stateNav.filterPrimaryFormation[2].length;
         filterArray.push(stateNav.filterPrimaryFormation);
         isFilterSet = true;
-        geographyFilterCount += total;
+        wellFilterCount += total;
         totalCount += total;
       }
 
