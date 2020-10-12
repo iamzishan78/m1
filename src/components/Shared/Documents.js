@@ -1,5 +1,7 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { useMutation } from "@apollo/client";
+
 import Card from "@material-ui/core/Card";
 import Button from "@material-ui/core/Button";
 import CardActions from "@material-ui/core/CardActions";
@@ -13,6 +15,8 @@ import ViewDocuments from "../ViewDocuments/ViewDocuments";
 
 import { useDropzone } from "react-dropzone";
 import DeleteDocumentConfirmation from "./DeleteDocumentConfirmation";
+import { ADDFILE } from "../../graphQL/useMutationAddFile";
+import { AppContext } from "../../AppContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -100,24 +104,69 @@ const useStyles = makeStyles((theme) => ({
     border: "2px dashed rgb(176, 176, 176)",
     marginBottom: "23px",
   },
+  fileDropError:{
+    color: "red"
+
+  }
 }));
 
 function UploadZone() {
+  const [inputFile, setInputFile] = useState(null);
+  const [addFile, { data: addFileData }] = useMutation(ADDFILE)
+  const [stateApp] = React.useContext(AppContext);
+  const userId = stateApp.user.mongoId;
+
+  useEffect(() => {
+    if(addFileData && addFileData?.addFile?.success) {
+      console.log("HALLO ADD FILE DATA HERE", addFileData);
+      const uri = addFileData.addFile.file.uri;
+      const interal_key = addFileData.addFile.file.internalKey;
+      const file_id = addFileData.addFile.file.id;
+
+      if(file_id){
+        fetch(uri, {
+          headers: {
+            "Content-Type": "text/plain; charset=UTF-8",
+            "X-Ms-Blob-Type": "BlockBlob",
+            "X-Ms-Meta-Internalkey": interal_key,
+            "X-Ms-Version": "2015-02-21",
+          },
+          method: "PUT",
+          body: JSON.stringify(inputFile),
+        }).then(res=>console.log(res)).catch(err=>console.log(err))
+      }
+    }
+  }, [addFileData])
+
   const onDrop = useCallback((acceptedFiles) => {
     // Do something with the files
+
+    const [file] = acceptedFiles
+    const fileName = file.name
+
+    setInputFile(file)
+
+    addFile({variables: {
+      fileName,
+      userId
+    }})
   }, []);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   const classes = useStyles();
 
   return (
-    <div {...getRootProps()} className={classes.fileDrop}>
-      <input {...getInputProps()} />
-      {isDragActive ? (
-        <h5>Drop the files here ...</h5>
-      ) : (
-        <h5>Click to upload, or Drag a file here</h5>
-      )}
-    </div>
+    <>
+      <div {...getRootProps()} className={classes.fileDrop}>
+        <input {...getInputProps()} />
+        {isDragActive ? (
+          <h5>Drop the files here ...</h5>
+        ) : (
+          <h5>Drag a file here or click to select a file to upload</h5>
+        )}
+      </div>
+      {addFileData && !addFileData.addFile.success && <p  className={classes.fileDropError}>File could not be uploaded</p>}
+    </>
   );
 }
 
