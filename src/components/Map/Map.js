@@ -4345,7 +4345,7 @@ export default function Map() {
         // function forwardGeocoder(query) {
         //   return new Promise ((resolve, reject) => {
 
-        //       const endpoint = 'https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2019-05-06&$count=true&searchFields=WellName,ApiNumber&$top=5&search=' + query;
+        //       const endpoint = 'https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=5&search=' + encodeURIComponent(query.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
 
         //       const headers = new Headers();
         //       headers.append('Content-Type', 'application/json')

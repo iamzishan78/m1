@@ -78,10 +78,10 @@ function Search(props) {
     () =>
       debounce((request, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2019-05-06&$count=true&searchFields=WellName,ApiNumber&$top=" +
+          "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=" +
           searchTop +
           "&search=" +
-          request.input;
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -113,10 +113,10 @@ function Search(props) {
     () =>
       debounce((request, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName&%24top=" +
+          "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName&top=" +
           searchTop +
           "&search=" +
-          request.input;
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
