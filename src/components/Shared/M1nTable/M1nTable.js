@@ -2024,6 +2024,7 @@ function M1nTable(props) {
           userId: stateApp.user.mongoId
         },
       });
+      getContactsFilterOptions();
       setUploadIcon(true);
       setStartPaginationAt(25);
     }
@@ -2033,32 +2034,28 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "Contacts" &&
-      dataContacts
+      dataContacts &&
+      dataContactsFilterOptions
     ) {
       console.log("ue mintable 23");
-      if (dataContacts.paginatedContacts.edges && dataContacts.paginatedContacts.edges.length > 0) {
-        console.log("ue mintable 23 >");
-        setColumns(ContactsHeadCells);
-        setRows([...dataContacts.paginatedContacts.edges.map(el => el.node)]);
+      if (dataContacts.paginatedContacts.edges && dataContacts.paginatedContacts.edges.length > 0
+        && dataContactsFilterOptions && dataContactsFilterOptions.contactsFilterOptions) {
+        
+          setRows([...dataContacts.paginatedContacts.edges.map(el => el.node)]);
+
+        let contactsHeadCells = ContactsHeadCells.slice();
+        contactsHeadCells.find((column) => column.name === 'leadSource').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.leadSources } };
+        contactsHeadCells.find((column) => column.name === 'lastUpdateBy').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.lastUpdateBys } };
+        contactsHeadCells.find((column) => column.name === 'tags').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.tags } };
+        setColumns(contactsHeadCells)
+
         setLoading(false);
       } else {
         setRows([]);
         setLoading(false);
       }
     }
-  }, [dataContacts]);
-
-  useEffect(() => {
-    let contactsHeadCells = ContactsHeadCells.slice();
-      if (dataContactsFilterOptions && dataContactsFilterOptions.contactsFilterOptions) {
-        contactsHeadCells.find((column) => column.name === 'leadSource').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.leadSources } };
-        contactsHeadCells.find((column) => column.name === 'lastUpdateBy').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.lastUpdateBys } };
-        contactsHeadCells.find((column) => column.name === 'tags').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.tags } };
-        setColumns(contactsHeadCells)
-      }
-  }, [
-    dataContactsFilterOptions
-  ]);
+  }, [dataContacts, dataContactsFilterOptions]);
 
   ////////////Contact Delete begin////////////////////////////////////////
 
