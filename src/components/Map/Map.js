@@ -2951,10 +2951,6 @@ export default function Map() {
         filterLayers.forEach((filterLayer) => {
           if (
             [
-              "GLOLeases",
-              "GLOLeaseLabels",
-              "GLOUnits",
-              "GLOUnitLabels",
               "wellpoints",
               "welllines",
               "Tracked Wells",
@@ -3426,16 +3422,20 @@ export default function Map() {
                 "within",
                 mergeIntoMultiPolygon(filterCustomArray[filterLayer]),
               ]);
-              //// filter the cluster count layer
+              // filter the cluster count layer
               // map.setFilter(filterClusterLayerLabel, [
               //   "within",
               //   mergeIntoMultiPolygon(filterCustomArray[filterLayer]),
               // ]);
-              //// filter the cluster layer
+              // // filter the cluster layer
               // map.setFilter(filterClusterLayer, [
               //   "within",
               //   mergeIntoMultiPolygon(filterCustomArray[filterLayer]),
               // ]);
+              map.setFilter(filterLayer, [
+                "within",
+                mergeIntoMultiPolygon(filterCustomArray[filterLayer]),
+              ]);
             } else if (["interest", "parcel"].indexOf(filterLayer) > -1) {
               map.setFilter(filterLayer, [
                 "match",
@@ -3455,21 +3455,33 @@ export default function Map() {
               const baseLayer = filterLayer.replace("Labels", "s");
               if (filterCustomArray[baseLayer]) {
                 map.setFilter(filterLayer, [
-                  "within",
-                  mergeIntoMultiPolygon(filterCustomArray[baseLayer]),
+                  "match",
+                  ["get", "VIEWID"],
+                  mergeArrays(filterCustomArray[baseLayer]),
+                  true,
+                  false,
                 ]);
                 map.setFilter(baseLayer, [
-                  "within",
-                  mergeIntoMultiPolygon(filterCustomArray[baseLayer]),
+                  "match",
+                  ["get", "VIEWID"],
+                  mergeArrays(filterCustomArray[baseLayer]),
+                  true,
+                  false,
                 ]);
               } else {
                 map.setFilter(filterLayer, [
-                  "within",
-                  mergeIntoMultiPolygon(filterCustomArray[filterLayer]),
+                  "match",
+                  ["get", "VIEWID"],
+                  mergeArrays(filterCustomArray[filterLayer]),
+                  true,
+                  false,
                 ]);
                 map.setFilter(baseLayer, [
-                  "within",
-                  mergeIntoMultiPolygon(filterCustomArray[filterLayer]),
+                  "match",
+                  ["get", "VIEWID"],
+                  mergeArrays(filterCustomArray[filterLayer]),
+                  true,
+                  false,
                 ]);
               }
             }
