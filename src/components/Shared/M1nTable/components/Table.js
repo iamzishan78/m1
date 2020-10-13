@@ -1621,19 +1621,19 @@ function SubTable(props) {
             if (tableState.filterList[leadSourceIndex].length !== 0) {
               filters.push({
                 field: 'leadSource',
-                value: tableState.filterList[leadSourceIndex][0]
+                value: tableState.filterList[leadSourceIndex]
               })
             }
             if (tableState.filterList[lastUpdateByIndex].length !== 0) {
               filters.push({
-                field: 'lastUpdateBy.name',
-                value: tableState.filterList[lastUpdateByIndex][0]
+                field: 'lastUpdateBy',
+                value: tableState.filterList[lastUpdateByIndex]
               })
             }
             if (tableState.filterList[tagsIndex].length !== 0) {
               filters.push({
                 field: 'tag',
-                value: tableState.filterList[tagsIndex][0]
+                value: tableState.filterList[tagsIndex]
               })
             }
 
