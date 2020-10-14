@@ -31,7 +31,9 @@ export const PAGINATEDCONTACTSQUERY = gql`
           primaryEmail
           leadSource
           lastUpdateAt
-          lastUpdateBy
+          lastUpdateBy {
+            name
+          }
           name
           address1
           address2

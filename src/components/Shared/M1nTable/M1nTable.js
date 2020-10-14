@@ -566,7 +566,7 @@ const ContactsHeadCells = [
   { name: "name", label: "Name", editable: true, options: { filter: false } },
   { name: "fullContactAddress", label: "Primary Address", editable: true, options: { filter: false } },
   { name: "leadSource", label: "Lead Source", editable: true },
-  { name: "lastUpdateBy", label: "Updated By" },
+  { name: "lastUpdateBy.name", label: "Updated By" },
   { name: "lastUpdateAt", label: "Last Updated", options: { filter: false } },
   // { name: "primaryEmail", label: "Primary Email" },
   // {
@@ -2045,7 +2045,7 @@ function M1nTable(props) {
 
         let contactsHeadCells = ContactsHeadCells.slice();
         contactsHeadCells.find((column) => column.name === 'leadSource').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.leadSources } };
-        contactsHeadCells.find((column) => column.name === 'lastUpdateBy').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.lastUpdateBys } };
+        contactsHeadCells.find((column) => column.name === 'lastUpdateBy.name').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.lastUpdateBys.map(el => el.name) } };
         contactsHeadCells.find((column) => column.name === 'tags').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.tags } };
         setColumns(contactsHeadCells)
 

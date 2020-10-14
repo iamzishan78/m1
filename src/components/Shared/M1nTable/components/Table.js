@@ -1073,6 +1073,12 @@ function SubTable(props) {
                     return v;
                   };
 
+                  if (column.name === "lastUpdateBy.name") {
+                    if (props.rows[tableMeta.rowIndex]) {
+                      value = props.rows[tableMeta.rowIndex].lastUpdateBy.name;
+                    }
+                  }
+
                   ////// if non editable column
                   if (
                     !column.editable ||
@@ -1615,7 +1621,7 @@ function SubTable(props) {
             tableState.page = 0
             let filters = []
             const leadSourceIndex = tableState.columns.findIndex(i => i.name === "leadSource");
-            const lastUpdateByIndex = tableState.columns.findIndex(i => i.name === "lastUpdateBy");
+            const lastUpdateByIndex = tableState.columns.findIndex(i => i.name === "lastUpdateBy.name");
             const tagsIndex = tableState.columns.findIndex(i => i.name === "tags");
 
             if (tableState.filterList[leadSourceIndex].length !== 0) {
@@ -1626,7 +1632,7 @@ function SubTable(props) {
             }
             if (tableState.filterList[lastUpdateByIndex].length !== 0) {
               filters.push({
-                field: 'lastUpdateBy',
+                field: 'lastUpdateBy.name',
                 value: tableState.filterList[lastUpdateByIndex]
               })
             }
