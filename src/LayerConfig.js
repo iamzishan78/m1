@@ -1,6 +1,6 @@
 export const styleLayers = [
   {
-    name: "Permits",
+    name: "Recent Permits",
     id: ["permits"],
     sourceProps: ["permits_source"],
     layerProps: {
