@@ -3230,13 +3230,13 @@ export default function Map() {
         }));
       }
 
-      if (stateNav.filterPlay && stateNav.filterPlay.length > 0) {
-        let total = stateNav.filterPlay[2].length;
-        filterArray.push(stateNav.filterPlay);
-        isFilterSet = true;
-        geographyFilterCount += total;
-        totalCount += total;
-      }
+      // if (stateNav.filterPlay && stateNav.filterPlay.length > 0) {
+      //   let total = stateNav.filterPlay[2].length;
+      //   filterArray.push(stateNav.filterPlay);
+      //   isFilterSet = true;
+      //   geographyFilterCount += total;
+      //   totalCount += total;
+      // }
 
       if (
         stateNav.filterPermitDateRange &&
