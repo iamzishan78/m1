@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useMutation } from "@apollo/client";
+import gql from "graphql-tag";
 
 import Card from "@material-ui/core/Card";
 import Button from "@material-ui/core/Button";
@@ -17,6 +18,7 @@ import { useDropzone } from "react-dropzone";
 import DeleteDocumentConfirmation from "./DeleteDocumentConfirmation";
 import { ADDFILE } from "../../graphQL/useMutationAddFile";
 import { AppContext } from "../../AppContext";
+import { ADDCONTACTFILE } from "../../graphQL/useMutationAddContactFile";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -104,26 +106,25 @@ const useStyles = makeStyles((theme) => ({
     border: "2px dashed rgb(176, 176, 176)",
     marginBottom: "23px",
   },
-  fileDropError:{
-    color: "red"
-
-  }
+  fileDropError: {
+    color: "red",
+  },
 }));
 
-function UploadZone() {
+function UploadZone(props) {
   const [inputFile, setInputFile] = useState(null);
-  const [addFile, { data: addFileData }] = useMutation(ADDFILE)
+  const [addFile, { data: addFileData }] = useMutation(ADDCONTACTFILE);
   const [stateApp] = React.useContext(AppContext);
   const userId = stateApp.user.mongoId;
 
   useEffect(() => {
-    if(addFileData && addFileData?.addFile?.success) {
+    if (addFileData && addFileData?.addContactFile?.success) {
       console.log("HALLO ADD FILE DATA HERE", addFileData);
-      const uri = addFileData.addFile.file.uri;
-      const interal_key = addFileData.addFile.file.internalKey;
-      const file_id = addFileData.addFile.file.id;
+      const uri = addFileData.addContactFile.file.uri;
+      const interal_key = addFileData.addContactFile.file.internalKey;
+      const file_id = addFileData.addContactFile.file.id;
 
-      if(file_id){
+      if (file_id) {
         fetch(uri, {
           headers: {
             "Content-Type": "text/plain; charset=UTF-8",
@@ -133,23 +134,28 @@ function UploadZone() {
           },
           method: "PUT",
           body: JSON.stringify(inputFile),
-        }).then(res=>console.log(res)).catch(err=>console.log(err))
+        })
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err));
       }
     }
-  }, [addFileData])
+  }, [addFileData]);
 
   const onDrop = useCallback((acceptedFiles) => {
     // Do something with the files
 
-    const [file] = acceptedFiles
-    const fileName = file.name
+    const [file] = acceptedFiles;
+    const fileName = file.name;
 
-    setInputFile(file)
+    setInputFile(file);
 
-    addFile({variables: {
-      fileName,
-      userId
-    }})
+    addFile({
+      variables: {
+        fileName,
+        userId,
+        contactId: props.contactId,
+      },
+    });
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
@@ -165,7 +171,9 @@ function UploadZone() {
           <h5>Drag a file here or click to select a file to upload</h5>
         )}
       </div>
-      {addFileData && !addFileData.addFile.success && <p  className={classes.fileDropError}>File could not be uploaded</p>}
+      {addFileData && !addFileData.addContactFile.success && (
+        <p className={classes.fileDropError}>File could not be uploaded</p>
+      )}
     </>
   );
 }
@@ -251,7 +259,7 @@ export default function Documents(props) {
               </div>
             </>
           ))}
-          <UploadZone />
+          <UploadZone contactId={props.id} />
         </div>
       </CardContent>
     </div>

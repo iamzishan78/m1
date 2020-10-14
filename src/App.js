@@ -167,16 +167,14 @@ const PrivateRoute = ({ component, ...options }) => {
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
       ? component
       : (() => {
-        return stateApp.myMSALB2CObj
-          ? LoginB2C
-          : Login
-      })();
+          return stateApp.myMSALB2CObj ? LoginB2C : Login;
+        })();
 
   return (
     <div>
       <Route {...options} component={finalComponent} />
     </div>
-    );
+  );
 };
 
 const NotFoundRedirect = () => <Redirect to="/" />;
@@ -211,12 +209,12 @@ function App() {
         //   mode: 'no-cors',
         // },
         headers: {},
-        cache: new InMemoryCache()
+        cache: new InMemoryCache(),
       };
       if (token) {
         apolloConfig.headers["X-ZUMO-AUTH"] = token;
         //uncomment to run against local
-        //apolloConfig.uri = "http://localhost:7071/api/m1graph"
+        // apolloConfig.uri = "http://localhost:7071/api/m1graph";
       }
 
       let apolloClient = new ApolloClient(apolloConfig);
