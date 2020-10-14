@@ -8,7 +8,7 @@ export const styleLayers = [
       layerType: ["circle"],
       paintProps: {
         "circle-radius": 5,
-        "circle-color": "#e362e3",
+        "circle-color": "#fb9828",
         "circle-stroke-width": 2,
         "circle-stroke-color": "#fff",
       },
