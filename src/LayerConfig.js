@@ -1,3 +1,5 @@
+
+
 export const styleLayers = [
   {
     name: "Recent Permits",
@@ -777,6 +779,7 @@ export const baseMapLayers = [
       "airport-label",
       "transit-label",
       "poi-label",
+      "countyLabels",
     ],
   },
 
@@ -859,6 +862,7 @@ export const baseMapLayers = [
       "admin-1-boundary",
       "admin-0-boundary-bg",
       "admin-1-boundary-bg",
+      "countyBoundaries",
     ],
   },
 
@@ -1258,7 +1262,7 @@ export const layers = [
     ],
   },
   {
-    layerName: "Permits",
+    layerName: "Recent Permits",
     layerType: "data layer",
     layerCategory: "M1 Layer",
     layerSettings: {
@@ -1280,13 +1284,13 @@ export const layers = [
         paintType: "circle",
         paintProps: {
           "circle-radius": 5,
-          "circle-color": "#e362e3",
+          "circle-color": "#fb9828",
           "circle-stroke-width": 2,
           "circle-stroke-color": "#fff",
         },
         clusterProps: {
           clusterPaintProps: {
-            "circle-color": "#e362e3",
+            "circle-color": "#fb9828",
 
             "circle-radius": [
               "step",
@@ -1675,7 +1679,7 @@ export const defaultLayers = [
     ],
   },
   {
-    layerName: "Tagged Wells/Owners",
+    layerName: "User Tags",
     layerType: "data layer",
     layerCategory: "UD layer",
     layerSettings: {
@@ -1879,13 +1883,13 @@ export const defaultLayers = [
         paintType: "circle",
         paintProps: {
           "circle-radius": 5,
-          "circle-color": "#e362e3",
+          "circle-color": "#fb9828",
           "circle-stroke-width": 2,
           "circle-stroke-color": "#fff",
         },
         clusterProps: {
           clusterPaintProps: {
-            "circle-color": "#e362e3",
+            "circle-color": "#fb9828",
             "circle-radius": [
               "step",
               ["get", "point_count"],
