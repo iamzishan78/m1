@@ -27,7 +27,6 @@ const NavigationContextProvider = (props) => {
     filterBasin: null,
     filterAOI: null,
     filterParcel: null,
-    filterPlay: null,
     filterOwnerType: null,
     filterCumulativeOil: null,
     filterCumulativeGas: null,
