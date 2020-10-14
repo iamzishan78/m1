@@ -2009,7 +2009,7 @@ export const defaultLayers = [
       visiable: false,
     },
     layerPaintProps: {
-      ids: ["basinLayer", "basinLabels"],
+      ids: ["basinLabels", "basinLayer", ],
     },
   },
   {
