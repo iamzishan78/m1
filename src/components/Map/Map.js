@@ -4048,10 +4048,12 @@ export default function Map() {
           type: "FeatureCollection",
           features: data.map((feature) => {
             const geoJSON = JSON.parse(feature.geo_json);
-            const polygon = turf.polygon(geoJSON.geometry.coordinates);
-            const centroid = turf.centroid(polygon);
-            centroid.properties.AbstractName = geoJSON.properties.AbstractName;
-            return centroid;
+            if(geoJSON.geometry.coordinates[0].length >= 4) {
+              const polygon = turf.polygon(geoJSON.geometry.coordinates);
+              const centroid = turf.centroid(polygon);
+              centroid.properties.AbstractName = geoJSON.properties.AbstractName;
+              return centroid;
+            }
           })
         }
       };
