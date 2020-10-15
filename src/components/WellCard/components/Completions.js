@@ -9,13 +9,14 @@ import TableRow from "@material-ui/core/TableRow";
 import { AppContext } from "../../../AppContext";
 import { Typography } from "@material-ui/core";
 import { useQueryWellCompletions } from "../../../graphQL/useQueryWellCompletionsAndStimulation";
+import moment from 'moment';
 
 const useStyles = makeStyles({
   table: {
     minHeight: "100px !important",
   },
   tableContainer: {
-    overflowX: "unset",
+    overflowX: "auto",
     marginBottom: 20,
     background: "white",
   },
@@ -62,6 +63,12 @@ export default function Completions(props) {
     }
   }, [data]);
 
+  const formatValue = (data) => {
+    if (data != null) {
+      data = data.toLocaleString();
+    }
+    return data
+  }
 
   return (
     <TableContainer className={classes.tableContainer}>
@@ -83,49 +90,49 @@ export default function Completions(props) {
             </TableRow>
             { completionsData !== null && completionsData.length > 0 ? 
             completionsData.map((row) => {
-                    return (
-                        <TableRow>
-                          <TableCell>
-                            {row.CompletionDate}
-                          </TableCell>
-                          <TableCell>
-                            {row.LeaseId}
-                          </TableCell>
-                          <TableCell>
-                            {row.LeaseName}
-                          </TableCell>
-                          <TableCell>
-                            {row.LeaseAcreage}
-                          </TableCell>
-                          <TableCell>
-                            {row.Formation}
-                          </TableCell>
-                          <TableCell>
-                            {row.CompletionType}
-                          </TableCell>
-                          <TableCell>
-                            {row.UpperPerf}
-                          </TableCell>
-                          <TableCell>
-                            {row.UpperPerfTVD}
-                          </TableCell>
-                          <TableCell>
-                            {row.LowerPerf}
-                          </TableCell>
-                          <TableCell>
-                            {row.LowerPerfTVD}
-                          </TableCell>
-                          <TableCell>
-                            {row.PlugBackMD}
-                          </TableCell>
-                          <TableCell>
-                            {row.PlugBackTVD}
-                          </TableCell>
-                        </TableRow>
-                    );
+                  return (
+                    <TableRow>
+                      <TableCell>
+                        {moment(row.CompletionDate).format("DD-MM-YYYY")}
+                      </TableCell>
+                      <TableCell>
+                        {row.LeaseId}
+                      </TableCell>
+                      <TableCell>
+                        {row.LeaseName}
+                      </TableCell>
+                      <TableCell>
+                        {formatValue(row.LeaseAcreage)}
+                      </TableCell>
+                      <TableCell>
+                        {row.Formation}
+                      </TableCell>
+                      <TableCell>
+                        {row.CompletionType}
+                      </TableCell>
+                      <TableCell>
+                        {formatValue(row.UpperPerf)}
+                      </TableCell>
+                      <TableCell>
+                        {formatValue(row.UpperPerfTVD)}
+                      </TableCell>
+                      <TableCell>
+                        {formatValue(row.LowerPerf)}
+                      </TableCell>
+                      <TableCell>
+                        {formatValue(row.LowerPerfTVD)}
+                      </TableCell>
+                      <TableCell>
+                        {formatValue(row.PlugBackMD)}
+                      </TableCell>
+                      <TableCell>
+                        {formatValue(row.PlugBackTVD)}
+                      </TableCell>
+                    </TableRow>
+                  );
                 })
                 : <TableRow>
-                    <Typography align="left" color="textSecondary"> No completion records available</Typography>
+                    <Typography color="textSecondary"> No completion records available</Typography>
                   </TableRow>
             }     
           </TableBody>

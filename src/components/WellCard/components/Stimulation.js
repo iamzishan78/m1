@@ -69,6 +69,13 @@ export default function Simulation(props) {
     }
   }, [data]);
 
+  const formatValue = (data) => {
+    if (data != null) {
+      data = data.toLocaleString();
+    }
+    return data
+  }
+
   return (
     <TableContainer className={classes.tableContainer}>
     {stimulationData !== null ? (
@@ -107,22 +114,22 @@ export default function Simulation(props) {
                           {row.NumberOfStages}
                         </TableCell>
                         <TableCell>
-                          {row.TotalBaseWaterVolumeGallons.toLocaleString()}
+                          {formatValue(row.TotalBaseWaterVolumeGallons)}
                         </TableCell>
                         <TableCell>
-                          {row.TotalBaseNonWaterVolumeGallons.toLocaleString()}
+                          {formatValue(row.TotalBaseNonWaterVolumeGallons)}
                         </TableCell>
                         <TableCell>
-                          {row.TotalFracFluidVolume.toLocaleString()}
+                          {formatValue(row.TotalFracFluidVolume)}
                         </TableCell>
                         <TableCell>
-                          {row.TotalBaseWaterMass.toLocaleString()}
+                          {formatValue(row.TotalBaseWaterMass)}
                         </TableCell>
                         <TableCell>
-                          {row.TotalProppantMass.toLocaleString()}
+                          {formatValue(row.TotalProppantMass)}
                         </TableCell>
                         <TableCell>
-                          {row.TotalFracFluidMass.toLocaleString()}
+                          {formatValue(row.TotalFracFluidMass)}
                         </TableCell>
                         <TableCell>
                           {row.FluidType}
@@ -143,7 +150,7 @@ export default function Simulation(props) {
                           {row.AcidType}
                         </TableCell>
                         <TableCell>
-                          {row.AcidVolume.toLocaleString()}
+                          {formatValue(row.AcidVolume)}
                         </TableCell>
                         <TableCell>
                           {row.Comments}
@@ -152,8 +159,7 @@ export default function Simulation(props) {
                   );
               })
               : <TableRow>
-                 
-                  <Typography align="left" color="textSecondary"> No stimulation records available</Typography>
+                  <Typography color="textSecondary"> No stimulation records available</Typography>
                 </TableRow>
           }     
         </TableBody>
