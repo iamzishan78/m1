@@ -17,6 +17,22 @@ const AppContext = createContext([{}, () => {}]);
 
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
+    loading: false,
+    registeredRoutes: [
+      "/",
+      "/signup", 
+      "/loginb2c", 
+      "/forgotpassword",
+      "/track",
+      "/transact",
+      "/title",
+      "/titleopinion",
+      "/alerts",
+      "/contacts",
+      "/dashboard",
+      "/studio",
+      "/bulkupload",
+    ],
     myMSALObj: null,
     myMSALB2CObj: null,
     selectedRoute: "/",

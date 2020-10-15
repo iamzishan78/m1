@@ -3,18 +3,18 @@ import { AppContext } from "../../AppContext";
 import { WellCardContext } from "./WellCardContext";
 import { makeStyles } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core/styles";
-import { purple } from "@material-ui/core/colors";
+// import { purple } from "@material-ui/core/colors";
 
 //material-ui components
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 
 //custom components
-import WellIcon from "./components/svgIcons/WellIcon";
-import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
-import TrackIcon from "./components/svgIcons/TrackIcon";
-import ProductionIcon from "./components/svgIcons/ProductionIcon";
-import OwnershipIcon from "./components/svgIcons/OwnershipIcon";
+// import WellIcon from "./components/svgIcons/WellIcon";
+// import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
+// import TrackIcon from "./components/svgIcons/TrackIcon";
+// import ProductionIcon from "./components/svgIcons/ProductionIcon";
+// import OwnershipIcon from "./components/svgIcons/OwnershipIcon";
 import Taps from "../Shared/Taps";
 import CardDetailsMap from "./components/CardDetailsMap";
 import TableSummary from "./components/TableSummary";
@@ -22,7 +22,7 @@ import TableSummary from "./components/TableSummary";
 import QuadProvider from "../Quad/QuadProvider";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import WellProdChartProvider from "../WellProdChart/WellProdChartProvider";
-import TrackToggleButton from "../Shared/TrackToggleButton";
+// import TrackToggleButton from "../Shared/TrackToggleButton";
 import WellStatusCard from "../Shared/WellStatusCard";
 import CompletionDateCard from "../Shared/CompletionDateCard";
 import FirstProdDateCard from "../Shared/FirstProdDateCard";
@@ -35,6 +35,9 @@ import SpudDateCard from "../Shared/SpudDateCard";
 import WellApiCard from "../Shared/WellApiCard";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
+
+import CompletionsContainer from "./components/Completions";
+import SimulationContainer from "./components/Stimulation";
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -54,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     display: "flex",
     justifyContent: "space-around",
-    background: "#f6f6f6",
+    // background: "#f6f6f6",
     position: "relative",
     top: "0",
     left: "0",
@@ -147,11 +150,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function WellCardDetails(props) {
   const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
   const [tabValue, setTabValue] = React.useState(0);
   const [target, setTarget] = useState(null);
-
   useEffect(() => {
     if (props.target) {
       setTarget(props.target);
@@ -168,6 +170,7 @@ export default function WellCardDetails(props) {
   const handleTabValueChange = (event, newValue) => {
     setTabValue(newValue);
   };
+
   const handleChangeGas = (event) => {
     setStateWellCard({
       ...stateWellCard,
@@ -231,7 +234,7 @@ export default function WellCardDetails(props) {
     track: {},
   })(Switch);
 
-  const wellInfo = () => (
+  const WellInfo = () => (
     <Grid container spacing={2}>
       <Grid item xs={12} sm={2}>
         <QuadProvider />
@@ -271,18 +274,15 @@ export default function WellCardDetails(props) {
               }
               label="Water"
             />
-
             <FormControlLabel
               control={
                 <Switch
                   checked={stateWellCard.chartToggleMultiAxis}
                   onChange={handleChangeMultiAxis}
                   color="primary"
-                />
-              }
+                />}
               label="Multi-Axes"
             />
-
             <FormControlLabel disabled control={<Switch />} label="Log Scale" />
           </div>
         </Grid>
@@ -290,6 +290,18 @@ export default function WellCardDetails(props) {
           <WellProdChartProvider />
         </Grid>
       </Grid>
+      <Grid item sm={12}>
+          <Taps
+            tabLabels={[
+              "Completions",
+              "Stimulations",
+            ]}
+            tabPanels={[
+              <CompletionsContainer/>,
+              <SimulationContainer/>,
+            ]}
+          />
+        </Grid>
     </Grid>
   );
 
@@ -328,8 +340,9 @@ export default function WellCardDetails(props) {
             ]}
             tabPanels={[
               <Paper elevation={3} style={{ padding: "10px" }}>
-                {wellInfo()}
-              </Paper>,
+                <WellInfo/>     
+              </Paper>
+              ,
               <M1nTable
                 parent="OwnersPerWell"
                 selectedWell={stateApp.selectedWell}
