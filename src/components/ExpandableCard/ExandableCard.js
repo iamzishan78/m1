@@ -24,6 +24,8 @@ import BugsIcon from "../Shared/svgIcons/bug.js";
 import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 
+import { gql } from "@apollo/client";
+
 export default function ExpandableCard(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateExpandableCard, setStateExpandableCard] = useContext(
@@ -51,7 +53,23 @@ export default function ExpandableCard(props) {
   const theme = useTheme();
   const [openDialog, setOpenDialog] = useState(false);
   const [updateCustomLayer, { loading: isDeletingCustomLayer }] = useMutation(
-    UPDATECUSTOMLAYER
+    UPDATECUSTOMLAYER,
+    {
+      update(cache, { data: { updateCustomLayer: { customLayer } } }) {
+        console.log(`newCustomLayer: ${JSON.stringify(customLayer)}`);
+
+        cache.modify({
+          _id: cache.identify(customLayer),
+          fields: {
+            allCustomLayers(existingCustomLayerRefs, { readField }) {
+              return existingCustomLayerRefs.filter(
+                customLayerRef => customLayer._id !== readField('_id', customLayerRef)
+              );
+            },
+          },
+        });
+      }
+    }
   );
 
   const useStyles = makeStyles((theme) => ({
@@ -228,9 +246,11 @@ export default function ExpandableCard(props) {
           IsDeleted: true,
         },
       },
-      refetchQueries: ["getCustomLayers"],
-      awaitRefetchQueries: true,
+      // refetchQueries: ["getCustomLayers"],
+      // awaitRefetchQueries: true,
     });
+
+    handleClose();
   };
 
   return (

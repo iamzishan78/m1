@@ -8,7 +8,6 @@ export const CUSTOMLAYER = gql`
       name
       layer
       state
-      IsDeleted
       user {
         _id
       }
@@ -31,7 +30,6 @@ export const CUSTOMLAYER = gql`
         nma
         nra
         customLayer
-        IsDeleted
         isContact
       }
     }

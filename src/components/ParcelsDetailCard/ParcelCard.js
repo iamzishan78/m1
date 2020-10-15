@@ -104,9 +104,6 @@ export default function ParcelCard(props) {
   const classes = useStyles();
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
     CUSTOMLAYER,
-    {
-      fetchPolicy: "cache-and-network",
-    }
   );
 
   useEffect(() => {
