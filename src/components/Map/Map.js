@@ -293,10 +293,9 @@ export default function Map() {
     OWNERSWELLSQUERY
   );
 
-  const [
-    getCustomLayers,
-    { data: customLayerData },
-  ] = useLazyQuery(CUSTOMLAYERSQUERY, { fetchPolicy: "network-only" });
+  const [getCustomLayers, { data: customLayerData }] = useLazyQuery(
+    CUSTOMLAYERSQUERY
+  );
 
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "network-only",
@@ -413,7 +412,7 @@ export default function Map() {
         customLayers: customLayerData.allCustomLayers,
         selectedUserDefinedLayer: null,
         editLayer: false,
-        popupOpen: false, //// temporary comented
+        // popupOpen: false, //// temporary comented
       }));
     }
   }, [customLayerData]);
