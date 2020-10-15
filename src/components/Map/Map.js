@@ -762,7 +762,6 @@ export default function Map() {
             layout: labelLayout,
           });
         }
-        ////////////////////////////////////////////////////////////
       }
 
       if (prop.clusterProps) {
@@ -3102,6 +3101,12 @@ export default function Map() {
                 }
                 filterCustomArray[filterLayer].push(ids);
               }
+              if (result.length > 0) {
+                if (!filterCustomArray[filterLayer + "_Source"]) {
+                  filterCustomArray[filterLayer + "_Source"] = [];
+                }
+                filterCustomArray[filterLayer + "_Source"].push(result);
+              }
             }
           }
         });
@@ -3223,14 +3228,6 @@ export default function Map() {
           ...stateApp,
           fitBounds: { ...fitBounds },
         }));
-      }
-
-      if (stateNav.filterPlay && stateNav.filterPlay.length > 0) {
-        let total = stateNav.filterPlay[2].length;
-        filterArray.push(stateNav.filterPlay);
-        isFilterSet = true;
-        geographyFilterCount += total;
-        totalCount += total;
       }
 
       if (
@@ -3397,17 +3394,15 @@ export default function Map() {
         const filterLayers = [
           "GLOLeaseLabels",
           "GLOUnitLabels",
-          "Tracked Wells",
-          "Tracked Owners",
-          "Tags Filter",
+          // "Tracked Wells",
+          // "Tracked Owners",
+          // "Tags Filter",
           "interest",
           "parcel",
-          "permits",
-          "rigs",
+          // "permits",
+          // "rigs",
         ];
         filterLayers.forEach((filterLayer) => {
-          const filterClusterLayer = filterLayer + "-clusters";
-          const filterClusterLayerLabel = filterLayer + "-clusters-counts";
           if (filterCustomArray[filterLayer]) {
             if (
               [
@@ -3418,20 +3413,25 @@ export default function Map() {
                 "rigs",
               ].indexOf(filterLayer) > -1
             ) {
-              map.setFilter(filterLayer, [
-                "within",
-                mergeIntoMultiPolygon(filterCustomArray[filterLayer]),
-              ]);
-              // filter the cluster count layer
-              // map.setFilter(filterClusterLayerLabel, [
-              //   "within",
-              //   mergeIntoMultiPolygon(filterCustomArray[filterLayer]),
-              // ]);
+              // const filterClusterLayer = filterLayer + "-clusters";
+              // const filterClusterLayerLabel = filterLayer + "-clusters-counts";
+              // // filter the cluster count layer
+              // if (map.getLayer(filterClusterLayerLabel)) {
+              //   map.setLayoutProperty(
+              //     map.getLayer(filterClusterLayerLabel).id,
+              //     "visibility",
+              //     "none"
+              //   );
+              // }
               // // filter the cluster layer
-              // map.setFilter(filterClusterLayer, [
-              //   "within",
-              //   mergeIntoMultiPolygon(filterCustomArray[filterLayer]),
-              // ]);
+              // if (map.getLayer(filterClusterLayer)) {
+              //   map.setLayoutProperty(
+              //     map.getLayer(filterClusterLayer).id,
+              //     "visibility",
+              //     "none"
+              //   );
+              // }
+
               map.setFilter(filterLayer, [
                 "within",
                 mergeIntoMultiPolygon(filterCustomArray[filterLayer]),
