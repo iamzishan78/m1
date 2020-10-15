@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { useMutation } from "@apollo/client";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import gql from "graphql-tag";
 
 import Card from "@material-ui/core/Card";
@@ -18,7 +18,8 @@ import { useDropzone } from "react-dropzone";
 import DeleteDocumentConfirmation from "./DeleteDocumentConfirmation";
 import { ADDFILE } from "../../graphQL/useMutationAddFile";
 import { AppContext } from "../../AppContext";
-import { ADDCONTACTFILE } from "../../graphQL/useMutationAddContactFile";
+import { ADDDISCRIPTORFILE } from "../../graphQL/useMutationAddDiscriptorFile";
+import { GETCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -113,16 +114,14 @@ const useStyles = makeStyles((theme) => ({
 
 function UploadZone(props) {
   const [inputFile, setInputFile] = useState(null);
-  const [addFile, { data: addFileData }] = useMutation(ADDCONTACTFILE);
-  const [stateApp] = React.useContext(AppContext);
-  const userId = stateApp.user.mongoId;
+  const [addFile, { data: addFileData }] = useMutation(ADDDISCRIPTORFILE);
 
   useEffect(() => {
-    if (addFileData && addFileData?.addContactFile?.success) {
+    if (addFileData && addFileData?.addDiscriptorFile?.success) {
       console.log("HALLO ADD FILE DATA HERE", addFileData);
-      const uri = addFileData.addContactFile.file.uri;
-      const interal_key = addFileData.addContactFile.file.internalKey;
-      const file_id = addFileData.addContactFile.file.id;
+      const uri = addFileData.addDiscriptorFile.file.uri;
+      const interal_key = addFileData.addDiscriptorFile.file.internalKey;
+      const file_id = addFileData.addDiscriptorFile.file.id;
 
       if (file_id) {
         fetch(uri, {
@@ -152,7 +151,7 @@ function UploadZone(props) {
     addFile({
       variables: {
         fileName,
-        userId,
+        userId: props.userId,
         contactId: props.contactId,
       },
     });
@@ -171,7 +170,7 @@ function UploadZone(props) {
           <h5>Drag a file here or click to select a file to upload</h5>
         )}
       </div>
-      {addFileData && !addFileData.addContactFile.success && (
+      {addFileData && !addFileData.addDiscriptorFile.success && (
         <p className={classes.fileDropError}>File could not be uploaded</p>
       )}
     </>
@@ -181,6 +180,18 @@ function UploadZone(props) {
 export default function Documents(props) {
   const classes = useStyles();
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
+  const [stateApp] = React.useContext(AppContext);
+  const userId = stateApp.user.mongoId;
+  const [getRecentFiles, { data: files }] = useLazyQuery(GETCONTACTFILES);
+
+  useEffect(() => {
+    getRecentFiles({
+      variables: {
+        userId,
+        contactId: props.id,
+      },
+    });
+  }, []);
 
   const handleDeleteCancel = () => {
     setOpenDeleteConfirmDialog(false);
@@ -231,35 +242,36 @@ export default function Documents(props) {
       <CardContent style={{ padding: "0 23px" }}>
         <div className={classes.fileUploadSection}>
           {/* Show two recent docs */}
-          {[1, 2].map((upload) => (
-            <>
-              <div className={classes.fileUploadTopSection}>
-                <div>
-                  <h4 className={classes.uploadTitle}>Testupload.pdf</h4>
-                  <h5 className={classes.uploadSubtext}>Kyle Chapman</h5>
-                  <h5 className={classes.uploadSubtext}>a few seconds ago</h5>
+          {files &&
+            files.discriptorFiles.map((file) => (
+              <>
+                <div className={classes.fileUploadTopSection}>
+                  <div>
+                    <h4 className={classes.uploadTitle}>{file.name}</h4>
+                    <h5 className={classes.uploadSubtext}>Kyle Chapman</h5>
+                    <h5 className={classes.uploadSubtext}>a few seconds ago</h5>
+                  </div>
+                  <div className={classes.IconSection}>
+                    <IconButton
+                      size="small"
+                      style={{ marginBottom: "8px" }}
+                      onClick={() => setOpenDeleteConfirmDialog(true)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                    <DeleteDocumentConfirmation
+                      open={openDeleteConfirmDialog}
+                      handleClose={handleDeleteCancel}
+                      handleAccept={handleDeleteAccept}
+                    />
+                    <IconButton size="small" onClick={downloadDocument}>
+                      <GetAppIcon />
+                    </IconButton>
+                  </div>
                 </div>
-                <div className={classes.IconSection}>
-                  <IconButton
-                    size="small"
-                    style={{ marginBottom: "8px" }}
-                    onClick={() => setOpenDeleteConfirmDialog(true)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                  <DeleteDocumentConfirmation
-                    open={openDeleteConfirmDialog}
-                    handleClose={handleDeleteCancel}
-                    handleAccept={handleDeleteAccept}
-                  />
-                  <IconButton size="small" onClick={downloadDocument}>
-                    <GetAppIcon />
-                  </IconButton>
-                </div>
-              </div>
-            </>
-          ))}
-          <UploadZone contactId={props.id} />
+              </>
+            ))}
+          <UploadZone contactId={props.id} userId={userId} />
         </div>
       </CardContent>
     </div>
