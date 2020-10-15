@@ -22,13 +22,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ProfileTitle = (props) => {
-  const history = useHistory();
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
   const handleClose = () => {
     setStateNav({ ...stateNav, isProfileOpen: false });
-    history.goBack()
   };
 
   return (

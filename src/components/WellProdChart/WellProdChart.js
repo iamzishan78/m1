@@ -304,7 +304,7 @@ export default function WellProdChart(props) {
   return data && stateWellProdChart.wellProdHistory ? (
     <div id="chartDiv" className={classes.root}></div>
   ) : loading ? (
-    <CircularProgress size={80} disableShrink color="secondary" />
+    <Skeleton variant="rect" height={282}/>
   ) : (
     <Skeleton variant="rect" height={300}>
       <Typography variant="button">Not Available</Typography>

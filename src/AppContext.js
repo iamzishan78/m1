@@ -17,12 +17,26 @@ const AppContext = createContext([{}, () => {}]);
 
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
+    loading: false,
+    registeredRoutes: [
+      "/",
+      "/signup", 
+      "/loginb2c", 
+      "/forgotpassword",
+      "/track",
+      "/transact",
+      "/title",
+      "/titleopinion",
+      "/alerts",
+      "/contacts",
+      "/dashboard",
+      "/studio",
+      "/bulkupload",
+    ],
     myMSALObj: null,
     myMSALB2CObj: null,
     selectedRoute: "/",
-    apolloClientEndpoint:
-      "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
-    // "http://localhost:7071/api/m1graph",
+    apolloClientEndpoint: "",
     graphqlScope: null,
     user: null,
     signUpUserType: null,
