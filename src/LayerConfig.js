@@ -1942,11 +1942,11 @@ export const defaultLayers = [
           "text-offset": [0, -0.5],
         },
         paintProps: {
-          "icon-color" : [ 
+          "icon-color": [ 
             "match", 
             [ 
-                "get", 
-                "WellType"
+              "get", 
+              "WellType"
             ], 
             "OIL", 
             "#00ff00", 
@@ -1954,11 +1954,11 @@ export const defaultLayers = [
             "#ff0000", 
             "#919191"
           ],
-          "text-color" : [ 
+          "text-color": [ 
             "match", 
             [ 
-                "get", 
-                "WellType"
+              "get", 
+              "WellType"
             ], 
             "UNKNOWN", 
             "#ffffff", 
