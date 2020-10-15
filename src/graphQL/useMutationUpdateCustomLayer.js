@@ -18,6 +18,7 @@ export const UPDATECUSTOMLAYER = gql`
         name
         layer
         user {
+          _id
           name
           email
         }

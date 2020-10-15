@@ -1336,9 +1336,6 @@ function M1nTable(props) {
   //////////
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
     CUSTOMLAYER,
-    {
-      fetchPolicy: "cache-and-network",
-    }
   );
   //////////
   const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);

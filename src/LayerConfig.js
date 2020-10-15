@@ -1938,7 +1938,7 @@ export const defaultLayers = [
           "icon-image": "marker-icon",
           "icon-allow-overlap": true,
           "icon-size": 2,
-          "text-field": "H",
+          "text-field": ["slice", [ "get", "WellBoreProfile"], 0, 1],
           "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
           "text-size": 11,
           "text-transform": "uppercase",
@@ -1946,7 +1946,28 @@ export const defaultLayers = [
           "text-offset": [0, -0.5],
         },
         paintProps: {
-          "icon-color": "#00ff00",
+          "icon-color": [ 
+            "match", 
+            [ 
+              "get", 
+              "WellType"
+            ], 
+            "OIL", 
+            "#00ff00", 
+            "GAS", 
+            "#ff0000", 
+            "#919191"
+          ],
+          "text-color": [ 
+            "match", 
+            [ 
+              "get", 
+              "WellType"
+            ], 
+            "UNKNOWN", 
+            "#ffffff", 
+            "#000000"
+          ],
           "icon-halo-color": "#fff",
           "icon-halo-width": 2,
         },
