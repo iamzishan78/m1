@@ -9,23 +9,25 @@ import TableRow from "@material-ui/core/TableRow";
 import { AppContext } from "../../../AppContext";
 import { Typography } from "@material-ui/core";
 import { useQueryWellStimulation } from "../../../graphQL/useQueryWellCompletionsAndStimulation";
+import moment from 'moment';
+
 const useStyles = makeStyles({
   table: {
     minHeight: "100px !important",
   },
   tableContainer: {
     overflowX: "auto",
-    margin: "8px",
     marginBottom: 20,
     background: "white",
   },
   rowName: {
     fontWeight: "bold",
     background: "#ebebeb",
+    minWidth: 150
   },
   tableRow: {
     "& > td": {
-      padding: "4px 10px !important",
+      padding: "4px 15px !important",
       border: "2px solid #e3e3e3",
     },
   },
@@ -90,13 +92,13 @@ export default function Simulation(props) {
                   return (
                       <TableRow>
                         <TableCell>
-                          {row.StimDate}
+                          {moment(row.StimDate).format("DD-MM-YYYY")}
                         </TableCell>
                         <TableCell>
-                          {row.StartDate}
+                          {moment(row.StartDate).format("DD-MM-YYYY")}
                         </TableCell>
                         <TableCell>
-                          {row.EndDate}
+                          {moment(row.EndDate).format("DD-MM-YYYY")}
                         </TableCell>
                         <TableCell>
                           {row.ServiceCompany}
@@ -105,22 +107,22 @@ export default function Simulation(props) {
                           {row.NumberOfStages}
                         </TableCell>
                         <TableCell>
-                          {row.TotalBaseWaterVolumeGallons}
+                          {row.TotalBaseWaterVolumeGallons.toLocaleString()}
                         </TableCell>
                         <TableCell>
-                          {row.TotalBaseNonWaterVolumeGallons}
+                          {row.TotalBaseNonWaterVolumeGallons.toLocaleString()}
                         </TableCell>
                         <TableCell>
-                          {row.TotalFracFluidVolume}
+                          {row.TotalFracFluidVolume.toLocaleString()}
                         </TableCell>
                         <TableCell>
-                          {row.TotalBaseWaterMass}
+                          {row.TotalBaseWaterMass.toLocaleString()}
                         </TableCell>
                         <TableCell>
-                          {row.TotalProppantMass}
+                          {row.TotalProppantMass.toLocaleString()}
                         </TableCell>
                         <TableCell>
-                          {row.TotalFracFluidMass}
+                          {row.TotalFracFluidMass.toLocaleString()}
                         </TableCell>
                         <TableCell>
                           {row.FluidType}
@@ -141,7 +143,7 @@ export default function Simulation(props) {
                           {row.AcidType}
                         </TableCell>
                         <TableCell>
-                          {row.AcidVolume}
+                          {row.AcidVolume.toLocaleString()}
                         </TableCell>
                         <TableCell>
                           {row.Comments}

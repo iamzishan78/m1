@@ -16,18 +16,18 @@ const useStyles = makeStyles({
   },
   tableContainer: {
     overflowX: "unset",
-    margin: "8px",
     marginBottom: 20,
     background: "white",
   },
   rowName: {
     fontWeight: "bold",
     background: "#ebebeb",
+    minWidth: 150
   },
 
   tableRow: {
     "& > td": {
-      padding: "4px 10px !important",
+      padding: "4px 15px !important",
       border: "2px solid #e3e3e3",
     },
   },
