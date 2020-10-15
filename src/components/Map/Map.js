@@ -4552,7 +4552,7 @@ export default function Map() {
             },
             paint: {
               "line-color": "#292424",
-              "line-opacity": 0.5,
+              "line-opacity": "0.5",
               "line-width": 3,
             },
           });
