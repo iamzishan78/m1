@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { AppContext } from "../../../AppContext";
+import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
 
 const main_div = {
   textAlign: "center",
@@ -38,7 +39,11 @@ const image_style = {
 export default function BulkUpload(props) {
   const [stateApp, setStateApp] = React.useContext(AppContext);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const { csvContactsListToSend } = stateApp;
+    console.log("UPLOAD:", csvContactsListToSend)
+
+  }, []);
 
   return (
     <div style={main_div}>

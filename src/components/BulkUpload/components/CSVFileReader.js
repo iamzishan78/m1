@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../../AppContext";
 import { Button, Grid } from "@material-ui/core";
-
+import { Link } from "react-router-dom";
 import { CSVReader } from "react-papaparse";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -258,16 +258,9 @@ export default function CSVFileReader(props) {
           <div style={big_grey_text}>
             A CSV with these columns will yield good results
           </div>
-          <a
-            href="#"
-            style={linkContent}
-            onClick={() => {
-              return false;
-            }}
-          >
-            Download sample CSV template and then upload with your information
-          </a>
+          <Link to="/downloadables/Sample_Contacts_Upload.csv" target="_blank" download style={linkContent}>Download sample CSV template and then upload with your information</Link>
         </div>
+        
         <div style={{ ...padding_div_top, ...padding_div_bottom }}>
           <TableContainer component={Paper} style={style_papaer}>
             <Table className={classes.table} aria-label="simple table">
