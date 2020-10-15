@@ -6,6 +6,7 @@ const INIT_STATE = {
   basinLayerColor: null,
   GLOUnitsColor: null,
   GLOLeasesColor: null,
+  clustersOff: false,
 };
 
 export default (state = INIT_STATE, action) => {

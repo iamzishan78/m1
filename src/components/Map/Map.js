@@ -79,6 +79,9 @@ const useStyles = makeStyles((theme) => ({
     "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib": {
       display: "none",
     },
+    "& .mapboxgl-canvas-container > canvas": {
+      cursor: ({ drawingCircle }) => (drawingCircle ? "crosshair" : "inherit"),
+    },
   },
   filterPopup: {
     "& .mapboxgl-popup-tip": {
@@ -106,7 +109,12 @@ const random_hex_color_code = () => {
 let hoveredAbstractId = null;
 
 export default function Map() {
-  let classes = useStyles();
+  const [stateApp, setStateApp] = useContext(AppContext);
+  let classes = useStyles({
+    drawingCircle:
+      stateApp.draw && stateApp.draw.getMode() == "drag_circle" ? true : false,
+  });
+ 
   const dispatch = useDispatch();
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
@@ -114,7 +122,7 @@ export default function Map() {
   const removeLayerFromMap = useSelector(
     ({ MainMap }) => MainMap.removeLayerFromMap
   );
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const clustersOff = useSelector(({ MainMap }) => MainMap.clustersOff);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
@@ -767,7 +775,10 @@ export default function Map() {
       if (prop.clusterProps) {
         const mLayer = map.getLayer(layerId);
         const clusterVisible =
-          visible && mLayer && !mLayer.source.includes("_filter");
+          visible &&
+          mLayer &&
+          !mLayer.source.includes("_filter") &&
+          !clustersOff;
 
         const clusterVar = layerId + "-clusters";
         const clusterLabelBar = layerId + "-clusters-counts";
@@ -1230,6 +1241,8 @@ export default function Map() {
     };
 
     const mapClickHandler = (e) => {
+      console.log("mapClickHandlerrrrrrrrrrrrrr");
+
       const map = e.target;
       let layers = [];
       let clusterUDLayers = [];
@@ -1327,6 +1340,7 @@ export default function Map() {
       }
 
       const isNormalClick = !isCtrlKeyPressed();
+      console.log("mapClickHandle222222222222222222", isNormalClick, features);
 
       if (isNormalClick && features && features.length > 0) {
         const feature = features[0];
@@ -1477,6 +1491,7 @@ export default function Map() {
     permits,
     rigs,
     map,
+    clustersOff,
   ]);
 
   //// remove the layer and it's source from the map after it's deleted
@@ -2322,7 +2337,6 @@ export default function Map() {
       let tagFilterCount = 0;
       let filterArray = [];
       let filterCustomArray = {};
-      let filterShapeActionArray = [];
 
       let defaultOverride = true;
 
@@ -3319,7 +3333,23 @@ export default function Map() {
         aiFilterCount: aiFilterCount,
       }));
 
+      //// turn on clusters if no shape filter && it was off
+      if (Object.keys(filterCustomArray).length == 0 && clustersOff)
+        dispatch(
+          setMainMapState({
+            clustersOff: false,
+          })
+        );
+
       if (isFilterSet) {
+        //// turn off clusters if shape filter on
+        if (Object.keys(filterCustomArray).length > 0 && !clustersOff)
+          dispatch(
+            setMainMapState({
+              clustersOff: true,
+            })
+          );
+
         const mergeArrays = (arrays) => {
           let jointArray = [];
 
@@ -3335,8 +3365,10 @@ export default function Map() {
           });
           return turf.combine(turf.featureCollection(data));
         };
+
         filterArray.unshift("all");
 
+        //// start filtering
         if (filterCustomArray["wellpoints"]) {
           map.setFilter("wellpoints", [
             ...filterArray,
@@ -3394,13 +3426,13 @@ export default function Map() {
         const filterLayers = [
           "GLOLeaseLabels",
           "GLOUnitLabels",
-          // "Tracked Wells",
-          // "Tracked Owners",
-          // "Tags Filter",
+          "Tracked Wells",
+          "Tracked Owners",
+          "Tags Filter",
           "interest",
           "parcel",
-          // "permits",
-          // "rigs",
+          "permits",
+          "rigs",
         ];
         filterLayers.forEach((filterLayer) => {
           if (filterCustomArray[filterLayer]) {
@@ -3415,22 +3447,6 @@ export default function Map() {
             ) {
               // const filterClusterLayer = filterLayer + "-clusters";
               // const filterClusterLayerLabel = filterLayer + "-clusters-counts";
-              // // filter the cluster count layer
-              // if (map.getLayer(filterClusterLayerLabel)) {
-              //   map.setLayoutProperty(
-              //     map.getLayer(filterClusterLayerLabel).id,
-              //     "visibility",
-              //     "none"
-              //   );
-              // }
-              // // filter the cluster layer
-              // if (map.getLayer(filterClusterLayer)) {
-              //   map.setLayoutProperty(
-              //     map.getLayer(filterClusterLayer).id,
-              //     "visibility",
-              //     "none"
-              //   );
-              // }
 
               map.setFilter(filterLayer, [
                 "within",
@@ -4304,110 +4320,27 @@ export default function Map() {
           });
         });
 
-        // var customData = {
-        //     features: [
-        //         {
-        //             type: "Feature",
-        //             properties: {
-        //                 title: 'Well: Hancock "A"7',
-        //             },
-        //             geometry: {
-        //                 coordinates: [-98.453338, 33.71002],
-        //                 type: "Point",
-        //             },
-        //         },
-        //         {
-        //             type: "Feature",
-        //             properties: {
-        //                 title: "M1NERAL",
-        //                 description: "A lakefront park on Chicago's south side",
-        //             },
-        //             geometry: {
-        //                 coordinates: [-95.363557, 29.759138],
-        //                 type: "Point",
-        //             },
-        //         },
-        //         {
-        //             type: "Feature",
-        //             properties: {
-        //                 title: "Jacob Avery",
-        //                 description: "A large park in Chicago's Austin neighborhood",
-        //             },
-        //             geometry: {
-        //                 coordinates: [-95.096123, 29.537716],
-        //                 type: "Point",
-        //             },
-        //         },
-        //     ],
-        //     type: "FeatureCollection",
-        // };
-
-        // function forwardGeocoder(query) {
-        //   return new Promise ((resolve, reject) => {
-
-        //       const endpoint = 'https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=5&search=' + encodeURIComponent(query.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
-
-        //       const headers = new Headers();
-        //       headers.append('Content-Type', 'application/json')
-        //       headers.append('api-key', '1AE3C6346B38CEB007191D51CFDDFF65');
-
-        //       const options = {
-        //         method: 'GET',
-        //         headers: headers
-        //       };
-
-        //       console.log("request made to cognitive search at: " + new Date().toString());
-
-        //       fetch(endpoint, options)
-        //           .then((response) => response.json())
-        //           .then((response) => {
-        //             console.log(response);
-        //             resolve(response.value);
-        //           })
-        //           .catch((error) => {
-        //             console.log(error)
-        //             resolve();
-        //           })
-
-        //       // for (var i = 0; i < customData.features.length; i++) {
-        //       //   var feature = customData.features[i];
-        //       //   // handle queries with different capitalization than the source data by calling toLowerCase()
-        //       //   if (
-        //       //     feature.properties.title
-        //       //       .toLowerCase()
-        //       //       .search(query.toLowerCase()) !== -1
-        //       //   ) {
-        //       //     // add a tree emoji as a prefix for custom data results
-        //       //     // using carmen geojson format: https://github.com/mapbox/carmen/blob/master/carmen-geojson.md
-        //       //     feature["place_name"] = "🌲 " + feature.properties.title;
-        //       //     feature["center"] = feature.geometry.coordinates;
-        //       //     feature["place_type"] = ["park"];
-        //       //     matchingFeatures.push(feature);
-        //       //   }
-        //       // }
-        //       // return matchingFeatures;
-
-        //   })
-        // }
-
-        // var geocoder = new MapboxGeocoder({
-        //   accessToken: mapboxgl.accessToken,
-        //   mapboxgl: mapboxgl,
-        //   localGeocoder: forwardGeocoder,
-        //   //types: 'poi',
-        //   //placeholder: 'Enter Search'
-        //   zoom: 18,
-        // });
-
-        // if (
-        //     document.getElementById("searchBar") &&
-        //     document.getElementById("searchBar").childNodes.length === 0
-        // ) {
-        //     document
-        //         .getElementById("searchBar")
-        //         .appendChild(Search);
-        //     setSearch(Search);
-        // }
+        //// selecting the rect after draw
+        let CostumDrawRectangle = { ...DrawRectangle };
+        CostumDrawRectangle.onClick = function onClick(state, e) {
+          // if state.startPoint exist, means its second click
+          //change to  simple_select mode
+          if (
+            state.startPoint &&
+            state.startPoint[0] !== e.lngLat.lng &&
+            state.startPoint[1] !== e.lngLat.lat
+          ) {
+            this.updateUIClasses({ mouse: "pointer" });
+            state.endPoint = [e.lngLat.lng, e.lngLat.lat];
+            this.changeMode("simple_select", {
+              featuresId: state.rectangle.id,
+            });
+            this.setSelected(state.rectangle.id); //// selecting the rect after draw
+          }
+          // on first click, save clicked point coords as starting for  rectangle
+          var startPoint = [e.lngLat.lng, e.lngLat.lat];
+          state.startPoint = startPoint;
+        };
 
         let Draw = new MapboxDraw({
           displayControlsDefault: false,
@@ -4418,7 +4351,7 @@ export default function Map() {
             drag_circle: DragCircleMode,
             direct_select: DirectMode,
             simple_select: SimpleSelectMode,
-            draw_rectangle: DrawRectangle,
+            draw_rectangle: CostumDrawRectangle,
           },
         });
         newMap.addControl(Draw);
