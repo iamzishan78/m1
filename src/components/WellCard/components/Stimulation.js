@@ -25,6 +25,11 @@ const useStyles = makeStyles({
     background: "#ebebeb",
     minWidth: 150
   },
+  columnComments: {
+    fontWeight: "bold",
+    background: "#ebebeb",
+    minWidth: 450
+  },
   tableRow: {
     "& > td": {
       padding: "4px 15px !important",
@@ -87,8 +92,12 @@ export default function Simulation(props) {
           <TableRow className={classes.tableRow}>
               {headers.map((head) => {
                   return (
+                      head!="COMMENTS" ?
                       <TableCell scope="row" className={classes.rowName}>
-                          {head}
+                        {head}
+                      </TableCell> :
+                      <TableCell scope="row" className={classes.columnComments}>
+                        {head}
                       </TableCell>
                   );
               })
