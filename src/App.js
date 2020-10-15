@@ -198,10 +198,12 @@ function App() {
     updateApolloClient(apolloClientEndpoint, token);
   };
   const updateApolloClient = (endpoint, token) => {
+    //uncomment to run against local
+    endpoint = "http://localhost:7071/api/m1graph"
+
     if (!apolloClient) {
       let client = new ApolloClient({
-        uri: "http://localhost:7071/api/m1graph",
-        headers: {},
+        uri: endpoint,
         cache: new InMemoryCache(),
       });
 
@@ -210,17 +212,17 @@ function App() {
       });
     }
 
-    if (endpoint && apolloClient) {
+    if (apolloClient && endpoint) {
       console.log("endpoint", endpoint);
-      apolloClient.link.options.uri = endpoint;
-    }
-    
-    if (token && apolloClient) {
-      console.log("token added to graphQL");
-      apolloClient.link.options.headers["X-ZUMO-AUTH"] = token;
 
-      //uncomment to run against local
-      apolloClient.link.options.uri = "http://localhost:7071/api/m1graph"
+      setApolloClient((state, props) => {
+        return new ApolloClient({ ...state.link.options, uri: endpoint, cache: state.cache});
+      });
+    }
+
+    if (apolloClient && token) {
+      console.log("token added to graphQL");
+      apolloClient.link.options.headers = { ["X-ZUMO-AUTH"]: token };
     }
   };
 
