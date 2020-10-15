@@ -114,10 +114,7 @@ export default function Map() {
     drawingCircle:
       stateApp.draw && stateApp.draw.getMode() == "drag_circle" ? true : false,
   });
-  console.log(
-    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    stateApp.draw && stateApp.draw.getMode() == "drag_circle" ? true : false
-  );
+ 
   const dispatch = useDispatch();
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
