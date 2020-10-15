@@ -4043,9 +4043,24 @@ export default function Map() {
         };
       };
 
+      const makeLabelGeoJson = (data) => {
+        return {
+          type: "FeatureCollection",
+          features: data.map((feature) => {
+            const geoJSON = JSON.parse(feature.geo_json);
+            const polygon = turf.polygon(geoJSON.geometry.coordinates);
+            const centroid = turf.centroid(polygon);
+            centroid.properties.AbstractName = geoJSON.properties.AbstractName;
+            return centroid;
+          })
+        }
+      };
+
       const geoJson = makeGeoJSON(data);
+      const labelGeoJson = makeLabelGeoJson(data);
 
       map.getSource("abstract_geo_source").setData(geoJson);
+      map.getSource("abstract_label_geo_source").setData(labelGeoJson);
     }
   }, [abstractData]);
 
@@ -4497,6 +4512,15 @@ export default function Map() {
             promoteId: "Id",
           });
 
+          newMap.addSource("abstract_label_geo_source", {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: [],
+            },
+            promoteId: "Id",
+          });
+
           newMap.addLayer({
             id: "abstract_geo_fill_layer",
             type: "fill",
@@ -4526,7 +4550,7 @@ export default function Map() {
             },
             paint: {
               "line-color": "#292424",
-              "line-opacity": ".5",
+              "line-opacity": 0.5,
               "line-width": 3,
             },
           });
@@ -4535,7 +4559,7 @@ export default function Map() {
             id: "abstract_geo_label_layer",
             type: "symbol",
             minzoom: 12,
-            source: "abstract_geo_source",
+            source: "abstract_label_geo_source",
             layout: {
               "text-field": "{AbstractName}",
               "text-anchor": "center",
