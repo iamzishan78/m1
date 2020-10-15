@@ -3,11 +3,11 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
 import { MSALB2CObj, B2CTenantCredentials } from "./components/Login/AADB2CAuthConfig";
 import {
-  styleLayers,
-  userDefinedLayers,
+  //styleLayers,
+  //userDefinedLayers,
   heatLayers,
   baseMapLayers,
-  layers,
+  //layers,
   defaultLayers,
 } from "./LayerConfig";
 import { useDispatch } from "react-redux";
@@ -20,9 +20,7 @@ const AppProvider = (props) => {
     myMSALObj: null,
     myMSALB2CObj: null,
     selectedRoute: "/",
-    apolloClientEndpoint:
-      "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
-    // "http://localhost:7071/api/m1graph",
+    apolloClientEndpoint: "",
     graphqlScope: null,
     user: null,
     signUpUserType: null,
@@ -84,12 +82,12 @@ const AppProvider = (props) => {
     mapboxglAccessToken:
       "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJja2V6MHd2bnQwYzRqMnlwaTV6ejU2cTMyIn0.ghyrh-G8uQtyg4N4VcfTOw",
     selectedWellApi: null,
-    styleLayers: styleLayers,
+    //styleLayers: styleLayers,
     heatLayers: heatLayers,
     layers: null,
     defaultLayers: defaultLayers,
     baseMapLayers: baseMapLayers,
-    userDefinedLayers: userDefinedLayers,
+    //userDefinedLayers: userDefinedLayers,
     searchLayerIndex: null,
     trackedOwnersLayerIndex: null,
     trackedWellsLayerIndex: null,
