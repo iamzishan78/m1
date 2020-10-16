@@ -1,4 +1,3 @@
-import { useQuery } from "@apollo/client";
 import { Grid } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
@@ -6,12 +5,10 @@ import CardMedia from "@material-ui/core/CardMedia";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/lab/Skeleton";
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { AppContext } from "../../AppContext";
 import { ProfileContext } from "./ProfileContext";
-import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,11 +66,10 @@ const useStyles = makeStyles((theme) => ({
 const ProfileContent = () => {
   const classes = useStyles();
   const [stateProfile, setStateProfile] = useContext(ProfileContext);
-  const [app, setApp] = useContext(AppContext);
+  const [app] = useContext(AppContext);
   const {
     fields: { fullname, displayname, jobTitle, phone, profileImage}
   } = stateProfile;
-
   const onChange = ({ name, value }) => {
     let disectFullname = {};
     

@@ -22,10 +22,8 @@ const Profile = () => {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const { isProfileOpen } = stateNav;
   const classes = useStyles();
-  const history = useHistory();
   const handleClose = () => {
     setStateNav({ ...stateNav, isProfileOpen: false });
-    history.goBack();
   };
 
   return (

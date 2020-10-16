@@ -1,13 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { AppProvider, AppContext } from "./AppContext";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from "react-router-dom";
-
+import { Switch, Route } from "react-router-dom";
 //components
 import Login from "./components/Login/Login";
 import LoginB2C from "./components/Login/LoginB2C";
@@ -17,7 +11,6 @@ import NavigationProvider from "./components/Navigation/NavigationProvider";
 import MapProvider from "./components/Map/MapProvider";
 import TrackProvider from "./components/Track/TrackProvider";
 import TransactProvider from "./components/Transact/TransactProvider";
-import TitleProvider from "./components/Title/TitleProvider";
 import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider";
 import ContactsProvider from "./components/Contacts/ContactsProvider";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
@@ -27,25 +20,20 @@ import BulkUpload from "./components/BulkUpload/BulkUpload";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
-
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
-import { CircularProgress } from "@material-ui/core";
-import ProfileProvider from "./components/Profile/ProfileProvider";
-import ProfileDetailsProvider from "./components/Profile/ProfileDetailsProvider";
-import { UserManagementContextProvider } from "./components/UserManagement/UserManagementContext";
-import UserManagementContainer from "./components/UserManagement/Container";
+import { CircularProgress, Typography } from "@material-ui/core";
+// import ProfileProvider from "./components/Profile/ProfileProvider";
+// import ProfileDetailsProvider from "./components/Profile/ProfileDetailsProvider";
+// import { UserManagementContextProvider } from "./components/UserManagement/UserManagementContext";
+// import UserManagementContainer from "./components/UserManagement/Container";
 import Notifications from "./components/Notifications/Notifications";
-
 //redux
 import { Provider as ReduxProvider } from "react-redux";
 import { ConnectedRouter } from "connected-react-router";
 import configureStore, { history } from "./store";
-
 // user management
-
 const store = configureStore(/ provide initial state if any /);
-
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
 const theme = createMuiTheme({
   palette: {
@@ -91,7 +79,7 @@ const theme = createMuiTheme({
 });
 
 const SetApolloClient = (props) => {
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
   //console.log('ep',stateApp.apolloClientEndpoint)
 
   useEffect(() => {
@@ -101,7 +89,6 @@ const SetApolloClient = (props) => {
   useEffect(() => {
     if (stateApp.apolloClientEndpoint) {
       // console.log('ue endpoint',stateApp.apolloClientEndpoint)
-
       props.setApolloClientEndpoint(stateApp.apolloClientEndpoint);
     }
   }, [stateApp.apolloClientEndpoint]);
@@ -120,12 +107,9 @@ const SetApolloClient = (props) => {
         "//api.usersnap.com/load/64ab8ea7-9417-41a0-b565-eb7ad69da871.js";
       script.async = true;
       script.setAttribute("id", "feedback-script");
-
       var x = document.getElementsByTagName("script")[0];
       x.parentNode.insertBefore(script, x);
-
       document.body.appendChild(script);
-
       return () => {
         document.body.removeChild(script);
       };
@@ -136,41 +120,34 @@ const SetApolloClient = (props) => {
       element && element[0] && element[0].remove();
     }
   }, [stateApp.userSnap]);
-
   /*  useEffect( () => {
       if(stateApp.user && stateApp.apolloClientEndpoint){
-      
-         
         props.setApolloClient(stateApp.user.authToken,stateApp.apolloClientEndpoint)
-      
       }
     },[stateApp.user,stateApp.apolloClientEndpoint]) */
-
   return null;
 };
 
 const PrivateRoute = ({ component, ...options }) => {
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
 
-  if (
-    stateApp.user &&
+  if ( stateApp.user &&
     Date.parse(stateApp.user.authTokenExpires) < Date.now()
   ) {
     sessionStorage.clear();
     window.location.replace(window.location.origin);
-
     // setStateApp((stateApp) => ({ ...stateApp, user: null }));
     // setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
   }
 
-  const finalComponent =
-    stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
-      ? component
-      : (() => {
-        return stateApp.myMSALB2CObj
-          ? LoginB2C
-          : Login
-      })();
+const finalComponent =
+  stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
+    ? component
+    : (() => {
+      return stateApp.myMSALB2CObj
+        ? LoginB2C
+        : Login
+    })();
 
   return (
     <div>
@@ -179,7 +156,29 @@ const PrivateRoute = ({ component, ...options }) => {
     );
 };
 
-const NotFoundRedirect = () => <Redirect to="/" />;
+const NotFoundRedirect = () =>{
+  const [stateApp] = useContext(AppContext);
+  const location = window.location;
+  //redirects after 3 seconds
+  setTimeout(() =>{
+    if (!stateApp.registeredRoutes.includes(location.pathname)){
+      location.replace("/");
+    };
+  }, 3000);
+
+  return ( stateApp.loading === false &&
+    <div style={{margin: "auto", marginTop:"20%"}}>
+      <Typography  
+        variant="h6" 
+        align="center"
+        gutterBottom
+        color="textSecondary"
+      >
+        404 | Page not found. Redirecting...
+      </Typography>
+    </div>
+  );
+};
 
 function App() {
   const [apolloClient, setApolloClient] = useState(null);
@@ -193,10 +192,12 @@ function App() {
     setApolloClientEndpoint(endpoint);
     updateApolloClient(endpoint, apolloClientToken);
   };
+
   const updateApolloClientToken = (token) => {
     setApolloClientToken(token);
     updateApolloClient(apolloClientEndpoint, token);
   };
+
   const updateApolloClient = (endpoint, token) => {
     //uncomment to run against local
     // endpoint = "http://localhost:7071/api/m1graph"
@@ -240,7 +241,6 @@ function App() {
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
                 <ConnectedRouter history={history}>
-                  {/* <Router> */}
                   <Switch>
                     <NavigationProvider>
                       <PrivateRoute exact path="/" component={MapProvider} />
@@ -296,10 +296,9 @@ function App() {
                         path="/bulkupload"
                         component={BulkUpload}
                       />
-                      {/* <Route component={NotFoundRedirect} /> */}
+                      <Route component={NotFoundRedirect} />
                     </NavigationProvider>
                   </Switch>
-                  {/* </Router> */}
                 </ConnectedRouter>
               </MuiPickersUtilsProvider>
             </MuiThemeProvider>
