@@ -1946,27 +1946,17 @@ export const defaultLayers = [
           "text-offset": [0, -0.5],
         },
         paintProps: {
-          "icon-color": [ 
-            "match", 
-            [ 
-              "get", 
+          "icon-color": [
+            "match",
+            [
+              "get",
               "WellType"
-            ], 
-            "OIL", 
-            "#00ff00", 
-            "GAS", 
-            "#ff0000", 
+            ],
+            "OIL",
+            "#00ff00",
+            "GAS",
+            "#ff0000",
             "#919191"
-          ],
-          "text-color": [ 
-            "match", 
-            [ 
-              "get", 
-              "WellType"
-            ], 
-            "UNKNOWN", 
-            "#ffffff", 
-            "#000000"
           ],
           "icon-halo-color": "#fff",
           "icon-halo-width": 2,
