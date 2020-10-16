@@ -83,14 +83,11 @@ export default function ParcelsDetailCard(props) {
   const [legalDescription, setLegalDesc] = useState();
 
   const [updateCustomLayer, { data: updatedParcel }] = useMutation(
-    UPDATECUSTOMLAYER
+    UPDATECUSTOMLAYER, 
   );
 
   const [getCustomLayer, { data: dataCustomLayer, loading }] = useLazyQuery(
     CUSTOMLAYER,
-    {
-      fetchPolicy: "cache-and-network",
-    }
   );
 
   useEffect(() => {
