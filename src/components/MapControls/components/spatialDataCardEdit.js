@@ -6,7 +6,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
-import Modal from '@material-ui/core/Modal';
+import Modal from "@material-ui/core/Modal";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
@@ -23,8 +23,8 @@ import IconButton from "@material-ui/core/IconButton";
 // import DialogActions from '@material-ui/core/DialogActions'
 // import DialogContent from '@material-ui/core/DialogContent'
 import CloseIcon from "@material-ui/icons/Close";
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import { AppContext } from "../../../AppContext";
@@ -32,10 +32,10 @@ import { AppContext } from "../../../AppContext";
 // Helpers for area calcs
 import { area, convertArea, length } from "@turf/turf";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
-    padding: "0px"
+    padding: "0px",
   },
 
   card: {
@@ -50,7 +50,7 @@ const useStyles = makeStyles(theme => ({
     height: "auto",
     position: "relative",
     top: "10vh",
-    left: "10vw"
+    left: "10vw",
   },
 
   cardPopup: {
@@ -68,7 +68,7 @@ const useStyles = makeStyles(theme => ({
 
   cardHeader: {
     padding: "2%",
-    height: "15%"
+    height: "15%",
   },
 
   cardTitle: {
@@ -81,7 +81,7 @@ const useStyles = makeStyles(theme => ({
     height: "1rem",
     left: "7.46%",
     right: "39.32%",
-    top: "calc(50% - 23px/2 - 140px)"
+    top: "calc(50% - 23px/2 - 140px)",
   },
 
   subheader: {
@@ -92,7 +92,7 @@ const useStyles = makeStyles(theme => ({
     height: "17px",
     left: "7.46%",
     right: "58.31%",
-    top: "calc(50% - 17px/2 - 120px)"
+    top: "calc(50% - 17px/2 - 120px)",
   },
 
   cardAction: {
@@ -104,23 +104,23 @@ const useStyles = makeStyles(theme => ({
     flexDirection: "column",
     justifyContent: "space-evenly",
     //alignItems: "flex-start",
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
   },
   cardContent: {
     height: "10%",
     backgroundColor: "#fff",
     padding: "0px",
-    paddingBottom: "0px"
+    paddingBottom: "0px",
   },
   actionWrapper: {
     flexGrow: 1,
     display: "flex",
-    justifyContent: "space-evenly"
+    justifyContent: "space-evenly",
   },
   input: {
     display: "flex",
     marginLeft: "0px",
-    marginBottom: "15px"
+    marginBottom: "15px",
   },
 
   buttonContainer: {
@@ -131,12 +131,12 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#fff",
     //paddingBottom: "3%",
     //"&:last-child": { padding: "0px" }
-    justifyContent: "space-evenly"
+    justifyContent: "space-evenly",
   },
   button: {
     width: "40%",
     //margin: "3%",
-    justifyContent: "space-evenly"
+    justifyContent: "space-evenly",
   },
 
   formControl: {
@@ -147,13 +147,13 @@ const useStyles = makeStyles(theme => ({
   },
   label: {
     background: "white",
-    padding: "0px 4px"
+    padding: "0px 4px",
   },
   TextField: {
     display: "flex",
     margin: theme.spacing(1),
     minWidth: 265,
-    color: "black"
+    color: "black",
   },
   modalContainer: {
     background: "white",
@@ -164,7 +164,7 @@ const useStyles = makeStyles(theme => ({
     left: "50%",
     top: "50%",
     transform: "translate(-50%, -50%)",
-  }
+  },
 }));
 
 export default function SpatialDataCardEdit(props) {
@@ -182,14 +182,13 @@ export default function SpatialDataCardEdit(props) {
   const [dataProject, setDataProject] = useState(projectName);
   const [grossAcres, setGrossAcres] = useState(sdGrossAcres);
   const [dataNotes, setDataNotes] = useState(sdNotes);
-  
+
   const [stateApp, setStateApp] = useContext(AppContext);
   const [drawFeatureId, setDrawFeatureId] = useState("");
   const [custLayers, setCustLayers] = useState([]);
 
   const [openDeleteModal, setDeleteModal] = useState(false);
   const [showError, setShowError] = useState(false);
-
 
   const inputLabel = useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);
@@ -202,7 +201,7 @@ export default function SpatialDataCardEdit(props) {
   }, [props.selectedFeature]);
 
   useEffect(() => {
-    let udName = ""
+    let udName = "";
     switch (dataType) {
       case "interest":
         udName = "Area of Interest";
@@ -214,21 +213,21 @@ export default function SpatialDataCardEdit(props) {
         udName = "";
         break;
     }
-    if (udName) {
-      const layerIndex = stateApp.userDefinedLayers.findIndex(layer => layer.name == udName);
-      setStateApp({
-        ...stateApp,
-        tempCheckedUserDefinedLayers: layerIndex
-      });
-    } else {
-      setStateApp({
-        ...stateApp,
-        tempCheckedUserDefinedLayers: null
-      });
-    }
+    // if (udName) {
+    //   const layerIndex = stateApp.userDefinedLayers.findIndex(layer => layer.name == udName);
+    //   setStateApp({
+    //     ...stateApp,
+    //     tempCheckedUserDefinedLayers: layerIndex
+    //   });
+    // } else {
+    //   setStateApp({
+    //     ...stateApp,
+    //     tempCheckedUserDefinedLayers: null
+    //   });
+    // }
   }, [dataType]);
 
-  const updateDataNotes = evt => {
+  const updateDataNotes = (evt) => {
     let updatedNotes = evt.target.value;
     setDataNotes(updatedNotes);
   };
@@ -242,17 +241,17 @@ export default function SpatialDataCardEdit(props) {
         // sdNotes: dataNotes
       };
       props.saveSpatialData(spatialData, dataType);
-  
-      const tmpChecked = stateApp.tempCheckedUserDefinedLayers;
-      const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
-      if (tmpChecked != null && stateApp.checkedUserDefinedLayers.indexOf(tmpChecked) === -1) {
-        checkedLayers.push(tmpChecked)
-      }
-      setStateApp({
-        ...stateApp,
-        checkedUserDefinedLayers: checkedLayers,
-        tempCheckedUserDefinedLayers: null
-      })
+
+      // const tmpChecked = stateApp.tempCheckedUserDefinedLayers;
+      // const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
+      // if (tmpChecked != null && stateApp.checkedUserDefinedLayers.indexOf(tmpChecked) === -1) {
+      //   checkedLayers.push(tmpChecked)
+      // }
+      // setStateApp({
+      //   ...stateApp,
+      //   checkedUserDefinedLayers: checkedLayers,
+      //   tempCheckedUserDefinedLayers: null
+      // })
     } else {
       setShowError(true);
     }
@@ -263,25 +262,25 @@ export default function SpatialDataCardEdit(props) {
       stateApp.draw.delete(drawFeatureId);
       setDrawFeatureId("");
     }
-    setStateApp({
-      ...stateApp,
-      tempCheckedUserDefinedLayers: null,
-    });
-    if (custLayers.length > 0) {
-      setStateApp({
-        ...stateApp,
-        customLayers: custLayers
-      });
-    }
-    
+    // setStateApp({
+    //   ...stateApp,
+    //   tempCheckedUserDefinedLayers: null,
+    // });
+    // if (custLayers.length > 0) {
+    //   setStateApp({
+    //     ...stateApp,
+    //     customLayers: custLayers
+    //   });
+    // }
+
     props.closeSpatialDataCard(false);
-  }
+  };
 
   const deleteSpatialData = () => {
-    setStateApp({
-      ...stateApp,
-      tempCheckedUserDefinedLayers: null
-    });
+    // setStateApp({
+    //   ...stateApp,
+    //   tempCheckedUserDefinedLayers: null
+    // });
     props.deleteSpatialDataAndShape();
   };
   const calculateLandArea = () => {
@@ -301,25 +300,35 @@ export default function SpatialDataCardEdit(props) {
 
   const handleClose = () => {
     setDeleteModal(false);
-  }
+  };
 
   const showDeleteModal = () => {
     setDeleteModal(true);
-  }
+  };
 
   const editShape = () => {
     const { selectedFeature } = props;
     const featureId = selectedFeature.properties.id;
-    const featureLabelId = featureId + '_label';
+    const featureLabelId = featureId + "_label";
     if (stateApp.draw) {
       selectedFeature.id = `edit_polygon_${selectedFeature.properties.id}`;
       stateApp.draw.add(selectedFeature);
-      stateApp.draw.changeMode("direct_select", { featureId: selectedFeature.id });
+      stateApp.draw.changeMode("direct_select", {
+        featureId: selectedFeature.id,
+      });
       const { customLayers } = stateApp;
       if (customLayers && customLayers.length > 0) {
         // const index = customLayers.findIndex(layer => JSON.parse(layer.shape).properties.id === selectedFeature.properties.id);
-        const filteredLayers = customLayers.filter(layer => JSON.parse(layer.shape).properties.id !== featureId && JSON.parse(layer.shape).properties.id !== featureLabelId);
-        const editingLayers = customLayers.filter(layer => JSON.parse(layer.shape).properties.id === featureId || JSON.parse(layer.shape).properties.id === featureLabelId);
+        const filteredLayers = customLayers.filter(
+          (layer) =>
+            JSON.parse(layer.shape).properties.id !== featureId &&
+            JSON.parse(layer.shape).properties.id !== featureLabelId
+        );
+        const editingLayers = customLayers.filter(
+          (layer) =>
+            JSON.parse(layer.shape).properties.id === featureId ||
+            JSON.parse(layer.shape).properties.id === featureLabelId
+        );
         setCustLayers(customLayers);
         setStateApp({
           ...stateApp,
@@ -331,7 +340,7 @@ export default function SpatialDataCardEdit(props) {
       }
       props.closeSpatialDataCard();
     }
-  }
+  };
 
   return (
     <Card className={classes[cardClass]}>
@@ -339,7 +348,7 @@ export default function SpatialDataCardEdit(props) {
         className={classes.cardHeader}
         classes={{
           title: classes.cardTitle,
-          subheader: classes.subheader
+          subheader: classes.subheader,
         }}
         title="Spatial Data"
         action={
@@ -365,10 +374,13 @@ export default function SpatialDataCardEdit(props) {
             variant="outlined"
             className={classes.formControl}
           >
-            <InputLabel ref={inputLabel} className={classes.label}> Boundary Type </InputLabel>
+            <InputLabel ref={inputLabel} className={classes.label}>
+              {" "}
+              Boundary Type{" "}
+            </InputLabel>
             <Select
               value={dataType}
-              onChange={evt => setDataType(evt.target.value)}
+              onChange={(evt) => setDataType(evt.target.value)}
               labelWidth={labelWidth}
             >
               <MenuItem value="interest">Area of Interest</MenuItem>
@@ -394,8 +406,8 @@ export default function SpatialDataCardEdit(props) {
                 //placeholder= "Enter Name"
                 value={dataName}
                 autoComplete="disabled"
-                onChange={evt => setDataName(evt.target.value)}
-                helperText={showError ? 'Name is required!' : ''}
+                onChange={(evt) => setDataName(evt.target.value)}
+                helperText={showError ? "Name is required!" : ""}
                 required
               ></TextField>
             </div>
@@ -408,7 +420,7 @@ export default function SpatialDataCardEdit(props) {
                 //placeholder= "Enter Name"
                 value={grossAcres}
                 autoComplete="disabled"
-                onChange={evt => setGrossAcres(evt.target.value)}
+                onChange={(evt) => setGrossAcres(evt.target.value)}
               ></TextField>
             </div>
 
@@ -479,15 +491,17 @@ export default function SpatialDataCardEdit(props) {
           Delete
         </Button> */}
         <Modal
-          open = {openDeleteModal}
-          onClose = {handleClose}
+          open={openDeleteModal}
+          onClose={handleClose}
           aria-labelledby="delete-modal-title"
           aria-describedby="delete-modal-description"
         >
           <div className={classes.modalContainer}>
             <h2 id="delete-modal-title">Are you sure?</h2>
-            <p id="delete-modal-description">Are you sure want to remove this shape?</p>
-            <div className={classes.buttonContainer} >
+            <p id="delete-modal-description">
+              Are you sure want to remove this shape?
+            </p>
+            <div className={classes.buttonContainer}>
               <Button
                 variant="contained"
                 className={classes.button}
