@@ -82,6 +82,7 @@ const useStyles = makeStyles((theme) => ({
     "& .mapboxgl-canvas-container > canvas": {
       cursor: ({ drawingCircle }) => (drawingCircle ? "crosshair" : "inherit"),
     },
+    "& .mapboxgl-popup-close-button": { display: "none" },
   },
   filterPopup: {
     "& .mapboxgl-popup-tip": {
@@ -114,7 +115,7 @@ export default function Map() {
     drawingCircle:
       stateApp.draw && stateApp.draw.getMode() == "drag_circle" ? true : false,
   });
- 
+
   const dispatch = useDispatch();
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
@@ -1240,8 +1241,6 @@ export default function Map() {
     };
 
     const mapClickHandler = (e) => {
-      console.log("mapClickHandlerrrrrrrrrrrrrr");
-
       const map = e.target;
       let layers = [];
       let clusterUDLayers = [];
@@ -1339,7 +1338,6 @@ export default function Map() {
       }
 
       const isNormalClick = !isCtrlKeyPressed();
-      console.log("mapClickHandle222222222222222222", isNormalClick, features);
 
       if (isNormalClick && features && features.length > 0) {
         const feature = features[0];
@@ -5112,19 +5110,26 @@ export default function Map() {
     if (stateApp.user.mongoId !== "") {
       const id = update_layer.properties.id;
       let update_layers = stateApp.editingUserDefinedLayers.filter((layer) => {
+        console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx111", layer);
+
         const shape_properties = JSON.parse(layer.shape).properties;
         return shape_properties.id && shape_properties.id.includes(id);
       });
       if (update_layers.length === 0) {
         update_layers = stateApp.customLayers.filter((layer) => {
+          // if (layer.shape) {
+          console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx222", layer);
+
           const shape_properties = JSON.parse(layer.shape).properties;
           return shape_properties.id && shape_properties.id.includes(id);
+          // }
         });
         handleCloseSpatialDataCard();
       } else {
         stateApp.draw.delete(`edit_polygon_${id}`);
         const updated_layers = stateApp.editingUserDefinedLayers.filter(
           (layer) => {
+            console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx333", layer);
             const shape_properties = JSON.parse(layer.shape).properties;
             return !shape_properties.id || !shape_properties.id.includes(id);
           }
@@ -5315,7 +5320,7 @@ export default function Map() {
       {/* <DrawStatus drawingStatus={drawStatus} /> */}
       {/* <TrackAbstract showAbstractPopup={stateApp.showAbstractPopup} /> */}
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
-      <HugeRequest hugeRequestStatus={stateApp.hugeRequest} />
+      <HugeRequest />
       <Coordinates long={lng} lat={lat} zoom={zoom} />
       {stateApp.selectedUserDefinedLayer &&
         !stateApp.popupOpen &&
