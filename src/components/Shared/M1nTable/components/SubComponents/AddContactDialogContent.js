@@ -336,6 +336,7 @@ export default function AddContactDialogContent(props) {
               size="small"
               className={classes.maxWidth}
               multiline
+              autoComplete="nope"
               value={newContact.address1}
               onChange={(e) => {
                 setNewContact({
@@ -351,6 +352,7 @@ export default function AddContactDialogContent(props) {
               size="small"
               className={classes.maxWidth}
               multiline
+              autoComplete="nope"
               value={newContact.address2}
               onChange={(e) => {
                 setNewContact({
