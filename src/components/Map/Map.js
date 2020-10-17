@@ -603,7 +603,7 @@ export default function Map() {
     const config = stateApp.layers[configIndex];
     const paintProps = config.layerPaintProps;
     const layerSettings = config.layerSettings;
-    for (let i = paintProps.length - 1; i >= 0; i--) {
+    for (let i = (paintProps ? paintProps.length : 0) - 1; i >= 0; i--) {
       const prop = paintProps[i];
       let layerData = null;
       if (layerName == "Parcels" || layerName == "Area of Interest") {
@@ -1400,9 +1400,10 @@ export default function Map() {
         if (layer.layerType == "vector layer") {
           const props = layer.layerPaintProps;
           const visible =
+            layer.layerSettings &&
             layer.layerSettings.showable &&
             layer.layerSettings.visiable !== false;
-          const ids = props.ids;
+          const ids = props && props.ids ? props.ids : [];
           ids.forEach((id) => {
             if (map.getLayer(id)) {
               map.setLayoutProperty(
@@ -1434,7 +1435,7 @@ export default function Map() {
           });
         } else if (layer.layerType == "data layer") {
           let data = null;
-          if (layer.layerPaintProps.length > 0) {
+          if (layer.layerPaintProps && layer.layerPaintProps.length > 0) {
             switch (layer.layerName) {
               case "Tracked Wells":
                 data = stateApp.trackedwells;
