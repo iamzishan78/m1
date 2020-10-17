@@ -751,15 +751,15 @@ export default function Map() {
 
         map.addLayer(layerConfig);
 
-        if(prop.labelProps) {
+        if (prop.labelProps) {
           let labelLayout = { visibility: visible ? "visible" : "none" };
-          labelLayout = { ...labelLayout, ...prop.labelProps.symbolProps }
+          labelLayout = { ...labelLayout, ...prop.labelProps.symbolProps };
           map.addLayer({
-            "id": `${prop.id}_label`,
-            "type": prop.labelProps.paintType,
-            "source": sourceId,
-            "minzoom": prop.labelProps.minZoom,
-            "layout": labelLayout
+            id: `${prop.id}_label`,
+            type: prop.labelProps.paintType,
+            source: sourceId,
+            minzoom: prop.labelProps.minZoom,
+            layout: labelLayout,
           });
         }
         ////////////////////////////////////////////////////////////
@@ -1042,12 +1042,12 @@ export default function Map() {
       const nextOffset = permits.length + permitData.permits.length;
       setPermitData([...permits, ...permitData.permits]);
 
-     // getPermits({
-        // variables: {
-        //   offset: nextOffset,
-        //   amount: 500,
-        // },
-     // });
+      // getPermits({
+      // variables: {
+      //   offset: nextOffset,
+      //   amount: 500,
+      // },
+      // });
     }
   }, [permitData]);
 
@@ -2418,13 +2418,19 @@ export default function Map() {
         wellFilterCount += 1;
         totalCount += 1;
       }
-      if (stateNav.filterLateralLength && stateNav.filterLateralLength.length > 0) {
+      if (
+        stateNav.filterLateralLength &&
+        stateNav.filterLateralLength.length > 0
+      ) {
         filterArray.push(stateNav.filterLateralLength);
         isFilterSet = true;
         wellFilterCount += 1;
         totalCount += 1;
       }
-      if (stateNav.filterMeasuredDistance && stateNav.filterMeasuredDistance.length > 0) {
+      if (
+        stateNav.filterMeasuredDistance &&
+        stateNav.filterMeasuredDistance.length > 0
+      ) {
         filterArray.push(stateNav.filterMeasuredDistance);
         isFilterSet = true;
         wellFilterCount += 1;
@@ -2488,7 +2494,10 @@ export default function Map() {
         totalCount += total;
       }
 
-      if (stateNav.filterPrimaryFormation && stateNav.filterPrimaryFormation.length > 0) {
+      if (
+        stateNav.filterPrimaryFormation &&
+        stateNav.filterPrimaryFormation.length > 0
+      ) {
         let total = stateNav.filterPrimaryFormation[2].length;
         filterArray.push(stateNav.filterPrimaryFormation);
         isFilterSet = true;
@@ -5294,7 +5303,7 @@ export default function Map() {
       document.body.appendChild(script);
 
       return () => {
-        document.body.removeChild(script);
+        // document.body.removeChild(script);
       };
     } else if (stateApp.userSnap === false) {
       const feedbackScript = document.querySelector("#feedback-script");
