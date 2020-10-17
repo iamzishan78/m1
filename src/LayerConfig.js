@@ -1,5 +1,3 @@
-
-
 // export const styleLayers = [
 //   {
 //     name: "Recent Permits",
@@ -850,7 +848,6 @@ export const baseMapLayers = [
       "tunnel-primary-secondary-tertiary-case",
       "tunnel-street-minor-case",
       "tunnel-street-minor-low",
-
     ],
   },
 
@@ -1510,6 +1507,7 @@ export const baseMapLayers = [
 export const defaultLayers = [
   {
     layerName: "Tracked Owners",
+    identifier: "Tracked Owners",
     layerType: "data layer",
     layerCategory: "UD layer",
     layerSettings: {
@@ -1571,6 +1569,7 @@ export const defaultLayers = [
   },
   {
     layerName: "Tracked Wells",
+    identifier: "Tracked Wells",
     layerType: "data layer",
     layerCategory: "UD layer",
     layerSettings: {
@@ -1632,6 +1631,7 @@ export const defaultLayers = [
   },
   {
     layerName: "Area of Interest",
+    identifier: "Area of Interest",
     layerType: "data layer",
     layerCategory: "UD layer",
     layerSettings: {
@@ -1674,12 +1674,13 @@ export const defaultLayers = [
               30,
             ],
           },
-        }
+        },
       },
     ],
   },
   {
     layerName: "User Tags",
+    identifier: "User Tags",
     layerType: "data layer",
     layerCategory: "UD layer",
     layerSettings: {
@@ -1741,6 +1742,7 @@ export const defaultLayers = [
   },
   {
     layerName: "Search",
+    identifier: "Search",
     layerType: "data layer",
     layerCategory: "UD layer",
     layerSettings: {
@@ -1803,6 +1805,7 @@ export const defaultLayers = [
 
   {
     layerName: "Parcels",
+    identifier: "Parcels",
     layerType: "data layer",
     layerCategory: "UD layer",
     layerSettings: {
@@ -1856,12 +1859,13 @@ export const defaultLayers = [
               24,
             ],
           },
-        }
+        },
       },
     ],
   },
   {
     layerName: "Recent Permits",
+    identifier: "Recent Permits",
     layerType: "data layer",
     layerCategory: "M1 Layer",
     layerSettings: {
@@ -1915,6 +1919,7 @@ export const defaultLayers = [
   },
   {
     layerName: "Rig Activity",
+    identifier: "Rig Activity",
     layerType: "data layer",
     layerCategory: "M1 Layer",
     layerSettings: {
@@ -1938,7 +1943,7 @@ export const defaultLayers = [
           "icon-image": "marker-icon",
           "icon-allow-overlap": true,
           "icon-size": 2,
-          "text-field": ["slice", [ "get", "WellBoreProfile"], 0, 1],
+          "text-field": ["slice", ["get", "WellBoreProfile"], 0, 1],
           "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
           "text-size": 11,
           "text-transform": "uppercase",
@@ -1948,18 +1953,15 @@ export const defaultLayers = [
         paintProps: {
           "icon-color": [
             "match",
-            [
-              "get",
-              "WellType"
-            ],
+            ["get", "WellType"],
             "OIL",
             "#00ff00",
             "GAS",
             "#00ff00",
-            "#00ff00"
-            
+            "#00ff00",
+
             //"#ff0000",
-           // "#919191"
+            // "#919191"
           ],
           "icon-halo-color": "#fff",
           "icon-halo-width": 2,
@@ -1992,6 +1994,7 @@ export const defaultLayers = [
   },
   {
     layerName: "Wells",
+    identifier: "Wells",
     layerType: "vector layer",
     layerCategory: "M1 Layer",
     layerSettings: {
@@ -2012,6 +2015,7 @@ export const defaultLayers = [
   },
   {
     layerName: "Basins",
+    identifier: "Basins",
     layerType: "vector layer",
     layerCategory: "M1 Layer",
     layerSettings: {
@@ -2027,11 +2031,12 @@ export const defaultLayers = [
       visiable: false,
     },
     layerPaintProps: {
-      ids: ["basinLabels", "basinLayer", ],
+      ids: ["basinLabels", "basinLayer"],
     },
   },
   {
     layerName: "Pipelines",
+    identifier: "Pipelines",
     layerType: "vector layer",
     layerCategory: "M1 Layer",
     layerSettings: {
@@ -2052,6 +2057,7 @@ export const defaultLayers = [
   },
   {
     layerName: "Land Grid",
+    identifier: "Land Grid",
     layerType: "vector layer",
     layerCategory: "M1 Layer",
     layerSettings: {
@@ -2082,6 +2088,7 @@ export const defaultLayers = [
   },
   {
     layerName: "TX GLO Units",
+    identifier: "TX GLO Units",
     layerType: "vector layer",
     layerCategory: "M1 Layer",
     layerSettings: {
@@ -2101,6 +2108,7 @@ export const defaultLayers = [
   },
   {
     layerName: "TX GLO Active Leases",
+    identifier: "TX GLO Active Leases",
     layerType: "vector layer",
     layerCategory: "M1 Layer",
     layerSettings: {

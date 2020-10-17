@@ -170,7 +170,7 @@ export default function AddLayer(props) {
 
   const changeShowAble = (layer) => {
     const layerIndex = currentLayers.findIndex(
-      (clayer) => clayer.layerName == layer.layerName
+      (clayer) => clayer.identifier == layer.identifier
     );
     const cpLayer = {
       ...layer,
@@ -291,8 +291,8 @@ export default function AddLayer(props) {
       <Dialog open={isOpen} onClose={windowClose}>
         <DialogTitle>Layer Management</DialogTitle>
         <DialogContent dividers>
-          <DialogContentText  color="dark gray" >
-          Select one or more of the available layers below to add them to your
+          <DialogContentText color="dark gray">
+            Select one or more of the available layers below to add them to your
             current map view.
           </DialogContentText>
 

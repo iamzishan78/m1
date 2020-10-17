@@ -304,22 +304,22 @@ export default function CheckboxList(props) {
 
   const ifLayerHaveData = (layer) => {
     //// temporary disabling the Title Layer
-    if (layer.layerName === "Title") return false;
+    if (layer.identifier === "Title") return false;
     ////
 
     if (
-      (layer.layerName === "Tagged Wells/Owners" &&
+      (layer.identifier === "User Tags" &&
         !(
           stateApp.wellListFromTagsFilter &&
           stateApp.wellListFromTagsFilter.length > 0
         )) ||
-      (layer.layerName === "Search" &&
+      (layer.identifier === "Search" &&
         !(
           stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0
         )) ||
-      (layer.layerName === "Tracked Wells" &&
+      (layer.identifier === "Tracked Wells" &&
         !(stateApp.trackedwells && stateApp.trackedwells.length > 0)) ||
-      (layer.layerName === "Tracked Owners" &&
+      (layer.identifier === "Tracked Owners" &&
         !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))
     )
       return false;
@@ -349,7 +349,7 @@ export default function CheckboxList(props) {
   const getLayerColor = (layer) => {
     // layerName: "Rig Activity"
     if (layer) {
-      if (layer.layerName == "Rig Activity") return "#263451";
+      if (layer.identifier == "Rig Activity") return "#263451";
 
       if (
         layer.layerPaintProps &&
@@ -455,13 +455,10 @@ export default function CheckboxList(props) {
                                   >
                                     <ListItemIcon
                                       onClick={() => handleColorPicker(layer)}
-                                     
                                     >
-
                                       <Tooltip title="Layer Styling">
-                                      <ColorControl />
+                                        <ColorControl />
                                       </Tooltip>
-
                                     </ListItemIcon>
                                   </div>
                                 )}
