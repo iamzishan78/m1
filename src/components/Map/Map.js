@@ -3778,8 +3778,24 @@ export default function Map() {
 
       if (!currentFeature) return;
 
+
       const latLng = map.getCenter();
-      latLng.lat = latLng.lat;
+
+      if(map.getZoom() < 12.5) {
+        latLng.lat = latLng.lat - 0.0375;
+      } else 
+      if(map.getZoom() > 12.5 && map.getZoom() < 13  ) {
+        latLng.lat = latLng.lat - 0.025;
+      } else       
+      if(map.getZoom() > 13 && map.getZoom() < 13.5  ) {
+        latLng.lat = latLng.lat - 0.0175;
+      } else       
+      { if (map.getZoom() > 13.5 && map.getZoom() < 14   ) {
+        latLng.lat = latLng.lat - 0.0125;
+      } else 
+        latLng.lat = latLng.lat - 0.005;
+      }
+
 
       new mapboxgl.Popup({
         offset: 10,
@@ -3787,6 +3803,7 @@ export default function Map() {
         closeButton: false,
         className: "abstractPopup",
       })
+    
         .setLngLat(latLng)
         .setMaxWidth("none")
         .setHTML(`<div id="popupContainer"></div>`)
