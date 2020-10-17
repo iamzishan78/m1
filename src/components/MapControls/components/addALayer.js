@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: "350px",
   },
   list: {
-    border: "2px solid #ccc",
+    border: "2px solid #A9A9A9",
     padding: "0px",
     margin: "8px 0px",
     borderRadius: "8px",
@@ -88,11 +88,11 @@ const StyledListItem2 = withStyles((theme) => ({
     fontFamily: "Poppins",
     backgroundColor: theme.palette.common.white,
     color: "#263451",
-    border: "2px solid #17acdd",
+    border: "2px solid #263451",
     borderRadius: "5px",
-    "&:hover": {
-      background: "#4B618F",
-    },
+    // "&:hover": {
+    //   background: "#4B618F",
+    // },
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: "#263451",
     },
@@ -102,14 +102,14 @@ const StyledListItem2 = withStyles((theme) => ({
 const StyledListItem = withStyles((theme) => ({
   root: {
     fontFamily: "Poppins",
-    "&:hover": {
-      background: "#ccc",
-    },
+    // "&:hover": {
+    //   background: "#ccc",
+    // },
     backgroundColor: theme.palette.common.white,
     borderBottom: "2px solid #ccc",
     padding: "0px",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: "#999",
+      color: "dark gray",
     },
     "&:first-child": {
       borderTopLeftRadius: "5px",
@@ -289,10 +289,10 @@ export default function AddLayer(props) {
   return (
     <>
       <Dialog open={isOpen} onClose={windowClose}>
-        <DialogTitle>Add a Layer</DialogTitle>
+        <DialogTitle>Layer Management</DialogTitle>
         <DialogContent dividers>
-          <DialogContentText>
-            Select one or more of the available layers below to add them to your
+          <DialogContentText  color="dark gray" >
+          Select one or more of the available layers below to add them to your
             current map view.
           </DialogContentText>
 
@@ -320,7 +320,7 @@ export default function AddLayer(props) {
                 to enter an URL.
               </span>
             }
-            acceptedFiles={[".geojson", ".zip"]}
+            //acceptedFiles={[".geojson", ".zip"]}
             maxFileSize={10000000}
             dropzoneClass={classes.dropzoneClass}
           ></DropzoneAreaBase>
@@ -336,7 +336,7 @@ export default function AddLayer(props) {
                   <StyledListItem key={index} ContainerComponent="li">
                     <Checkbox
                       checked={layer.layerSettings.showable}
-                      color="primary"
+                      color="dark gray"
                       onChange={() => changeShowAble(layer)}
                       inputProps={{ "aria-label": "primary checkbox" }}
                     />
@@ -358,7 +358,7 @@ export default function AddLayer(props) {
                   <StyledListItem key={index} ContainerComponent="li">
                     <Checkbox
                       checked={layer.layerSettings.showable}
-                      color="primary"
+                      color="dark gray"
                       onChange={() => changeShowAble(layer)}
                       inputProps={{ "aria-label": "primary checkbox" }}
                     />
