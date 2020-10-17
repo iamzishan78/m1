@@ -124,7 +124,9 @@ export default function ExpandableCard(props) {
     icons: {
       "&:hover": {
         backgroundColor: "#031d40",
+       
       },
+      color: "white"
     },
   }));
   const classes = useStyles();
@@ -317,6 +319,23 @@ export default function ExpandableCard(props) {
                 </IconButton>
               </Tooltip>
             )} */}
+      {stateExpandableCard.expanded && targetLabel === "parcel" && (
+                <Tooltip title={"Delete Parcel"} placement="top">
+                  {isDeletingCustomLayer ? (
+                    <CircularProgress size={20} color="secondary" />
+                  ) : (
+                    <IconButton
+                      onClick={openConfirmationDialog}
+                      aria-label="Delete"
+                      className={classes.icons}
+                     
+                    >
+                      <DeleteIcon  />
+                    </IconButton>
+                  )}
+                </Tooltip>
+              )}
+
 
               {stateExpandableCard.expanded
                 ? parent !== "table" && (
@@ -327,7 +346,7 @@ export default function ExpandableCard(props) {
                         aria-label="shrink"
                         className={classes.icons}
                       >
-                        <ShrinkIcon viewBox="0 0 64 64" />
+                        <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
                       </IconButton>
                     </Tooltip>
                   )
@@ -344,22 +363,8 @@ export default function ExpandableCard(props) {
                     </Tooltip>
                   )}
 
-              {stateExpandableCard.expanded && targetLabel === "parcel" && (
-                <Tooltip title={"Delete"} placement="top">
-                  {isDeletingCustomLayer ? (
-                    <CircularProgress size={20} color="secondary" />
-                  ) : (
-                    <IconButton
-                      onClick={openConfirmationDialog}
-                      aria-label="Delete"
-                      className={classes.icons}
-                    >
-                      <DeleteIcon color="secondary" />
-                    </IconButton>
-                  )}
-                </Tooltip>
-              )}
-
+        
+            
               <Tooltip title={"Close"} placement="top">
                 <IconButton
                   size={stateExpandableCard.expanded ? "medium" : "small"}
