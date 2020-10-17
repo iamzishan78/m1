@@ -455,8 +455,13 @@ export default function CheckboxList(props) {
                                   >
                                     <ListItemIcon
                                       onClick={() => handleColorPicker(layer)}
+                                     
                                     >
+
+                                      <Tooltip title="Layer Styling">
                                       <ColorControl />
+                                      </Tooltip>
+
                                     </ListItemIcon>
                                   </div>
                                 )}

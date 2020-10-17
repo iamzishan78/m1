@@ -1955,8 +1955,11 @@ export const defaultLayers = [
             "OIL",
             "#00ff00",
             "GAS",
-            "#ff0000",
-            "#919191"
+            "#00ff00",
+            "#00ff00"
+            
+            //"#ff0000",
+           // "#919191"
           ],
           "icon-halo-color": "#fff",
           "icon-halo-width": 2,
