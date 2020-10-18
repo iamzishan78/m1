@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { forwardRef } from "react";
 import MaterialTable from "material-table";
 import { AppContext } from "../../../AppContext";
@@ -63,6 +63,7 @@ const table = {
 export default function MaterialTableDemo() {
   const [stateApp, setStateApp] = React.useContext(AppContext);
   let actual_columns = stateApp.m1neralHeaders;
+  
   let columns = () => {
     actual_columns.forEach((element) => {
       element.title = element.label;
@@ -70,6 +71,32 @@ export default function MaterialTableDemo() {
     });
     return actual_columns;
   };
+  
+  const checkProperties = (obj) => {
+    for (var key in obj) {
+      if (obj[key] !== null && obj[key] != "") {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  useEffect(()=> {
+    let temp_state = [];
+    stateApp.csvContactsListToSend.forEach(element => {
+      let temp = {...element};
+      temp.leadSource = null;
+      temp.tableData = null;
+      if (checkProperties(temp) == false) {
+        temp_state.push(element);
+      }
+    });
+    setStateApp({
+      ...stateApp,
+      csvContactsListToSend: temp_state
+    })
+  },[])
+
   return (
     <div style={main_div}>
       <div style={{ ...big_text, ...padding_div_top }}>
