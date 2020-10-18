@@ -8,7 +8,6 @@ const statusList = [
   "CANCELLED PERMIT",
   "COMPLETED - NOT ACTIVE",
   "DRILLED UNCOMPLETED (DUC)",
-  "DRY HOLE",
   "EXPIRED PERMIT",
   "P&A",
   "PERMIT",
