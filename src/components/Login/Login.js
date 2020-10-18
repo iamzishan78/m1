@@ -22,7 +22,7 @@ import * as msal from "@azure/msal-browser";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
-    display: "flex",
+    display: "inline",
     flexDirection: "column",
     justifyContent: "center",
   },
