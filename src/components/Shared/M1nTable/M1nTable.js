@@ -1061,6 +1061,7 @@ const UserManagementHeadCells = [
     },
   },
 ];
+
 const DealsHeadCells = [
   {
     name: "id",

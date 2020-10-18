@@ -324,17 +324,14 @@ function SubTable(props) {
   };
 
   ////setting all icons columns/////
-  const [isMenuOpen, setMenuOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuID, setMenuID] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserIndex, setSelectedUserIndex] = useState(null);
+  const [isUMSettings, setUsermanagementSettings] = useState([]);
 
   const closeMenu = () => {
-    console.log("--------------");
-    console.log("CLOSE MENU");
-    console.log("--------------");
-    setMenuOpen(false);
+    setUsermanagementSettings([]);
     setSelectedUser(null);
     setSelectedUserIndex(null);
     setM1nSelectedRowsIds([]);
@@ -348,50 +345,52 @@ function SubTable(props) {
     closeMenu();
   };
 
-  const optionMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      getContentAnchorEl={null}
-      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      transformOrigin={{ vertical: "top", horizontal: "center" }}
-      keepMounted
-      id={menuID}
-      open={isMenuOpen}
-      onClose={closeMenu}
-    >
-      {/* <MenuItem
-        className={classes.userMenuItem}
-        onClick={selectedUser !== null && changeAdminAccess}
-      >
-        {selectedUser !== null &&
-        typeof selectedUser.adminAccess !== "undefined" &&
-        selectedUser.adminAccess
-          ? "Remove Admin Access"
-          : "Grant Admin Access"}
-      </MenuItem> */}
-      <MenuItem
-        className={classes.userMenuItem}
-        onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}
-      >
-        Resend Invite
-      </MenuItem>
-      <Divider />
-      <MenuItem
-        className={classes.userMenuItem}
-        onClick={(e) => handleExpandClick(null, null, null, "deleteUser")}
-      >
-        Delete User
-      </MenuItem>
-    </Menu>
-  );
-
   const openMenu = (event, rowIndex, user) => {
-    setAnchorEl(event.currentTarget);
-    setMenuOpen(true);
-    setMenuID(rowIndex);
     setSelectedUser(user);
     setSelectedUserIndex(rowIndex);
     setM1nSelectedRowsIds([user._id]);
+    setUsermanagementSettings(
+      <Menu
+        anchorEl={event.currentTarget}
+        getContentAnchorEl={null}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+        keepMounted
+        id={rowIndex}
+        open={true}
+        onClose={closeMenu}
+      >
+        {/* <MenuItem
+          className={classes.userMenuItem}
+          onClick={selectedUser !== null && changeAdminAccess}
+        >
+          {selectedUser !== null &&
+          typeof selectedUser.adminAccess !== "undefined" &&
+          selectedUser.adminAccess
+            ? "Remove Admin Access"
+            : "Grant Admin Access"}
+        </MenuItem> */}
+         {
+           user.lastLogin == null || user.lastLogin == undefined ?
+           <div>
+              <MenuItem
+                className={classes.userMenuItem}
+                onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}
+              >
+                Resend Invite
+              </MenuItem>
+              <Divider />
+           </div> :
+          <div></div>
+         }
+        <MenuItem
+          className={classes.userMenuItem}
+          onClick={(e) => handleExpandClick(null, null, null, "deleteUser")}
+        >
+          Delete User
+        </MenuItem>
+      </Menu>
+    )
   };
 
   useEffect(() => {
@@ -404,7 +403,6 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
-
                   return (
                     <>
                       <Tooltip
@@ -1534,8 +1532,6 @@ function SubTable(props) {
     },
   };
 
-  console.log("ROWSSS : ", rows);
-
   let history = useHistory();
 
   let routeChange = (route) => {
@@ -1915,7 +1911,7 @@ function SubTable(props) {
           <CircularProgress size={80} disableShrink color="secondary" />
         </div>
       )}
-      {optionMenu}
+      {isUMSettings}
     </div>
   );
 }
