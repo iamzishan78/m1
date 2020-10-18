@@ -197,9 +197,15 @@ function SubTable(props) {
   const setRows = (newState) => {
     setStateIfDeepEqual(Rows, newState);
   };
+
   const [columns, Columns] = useState([]);
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
+  };
+
+  const [viewColumns, ViewColumns] = useState([]);
+  const setViewColumns = (newState) => {
+    setStateIfDeepEqual(ViewColumns, newState);
   };
 
   const [colInd, ColInd] = useState();
@@ -1132,6 +1138,7 @@ function SubTable(props) {
         }
       });
       setColumns([...props.columns]);
+      setViewColumns(props.addColumnFilter);
     }
   }, [props.columns, props.rows, rows, colInd, rowInd, m1nSelectedRowsTracks]);
 
@@ -1190,7 +1197,8 @@ function SubTable(props) {
         ? [10, 25]
         : [],
     selectableRows: "multiple",
-    print: props.targetLabel !== "deals",
+    print: props.targetLabel !== "deals" && props.targetLabel !== "usermanagement",
+    viewColumns: props.targetLabel !== "usermanagement",
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
       // console.log("currentRowsSelected", JSON.stringify(currentRowsSelected));

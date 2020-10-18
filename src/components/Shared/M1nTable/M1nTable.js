@@ -2615,6 +2615,7 @@ function M1nTable(props) {
     if (props.parent && props.parent === "UserManagement") {
       getAllUsers();
       if (userLists?.allUsers) {
+        setTargetLabel("usermanagement");
         setHeader("Active Users");
         setRows(userLists.allUsers);
         setColumns(UserManagementHeadCells);
