@@ -7,6 +7,7 @@ import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import Check from "@material-ui/icons/Check";
+import { useDispatch } from "react-redux";
 import StepConnector from "@material-ui/core/StepConnector";
 import Button from "@material-ui/core/Button";
 import CSVFileReader from "./CSVFileReader";
@@ -17,6 +18,7 @@ import { AppContext } from "../../../AppContext";
 import { useHistory } from "react-router-dom";
 import { useMutation } from "@apollo/client";
 import { ADDBULKCONTACT } from "../../../graphQL/useMutationAddBulkContacts";
+import { showSuccessMessage } from "../../../actions";
 
 const QontoConnector = withStyles({
   alternativeLabel: {
@@ -164,6 +166,7 @@ export default function CustomizedSteppers(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const steps = getSteps();
+  const dispatch = useDispatch();
   const [createBulkContacts] = useMutation(ADDBULKCONTACT);
   const userID = stateApp.user.mongoId;
   let data_to_send = stateApp.csvContactsListToSend;
@@ -176,7 +179,7 @@ export default function CustomizedSteppers(props) {
         delete element.last_name;
         delete element.tableData;
       });
-      createBulkContacts({
+      let ret_val = createBulkContacts({
         variables: {
           contactList: data_to_send,
         },
@@ -186,6 +189,15 @@ export default function CustomizedSteppers(props) {
         ],
         awaitRefetchQueries: true,
       });
+
+      ret_val.then((result)=>{
+        const { data: { createBulkContacts: { success } } }  = result; 
+       
+        if (success === true) {
+          dispatch(showSuccessMessage("All records have been uploaded successfully"));
+        }
+      });
+
       setStateApp((state) => ({
         ...state,
         activeStepNumber: stateApp.activeStepNumber + 1,

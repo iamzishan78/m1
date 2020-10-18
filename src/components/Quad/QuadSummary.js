@@ -145,13 +145,13 @@ export default function QuadSummary(props) {
       setDropDownValue({ value: "Cumulative" });
     }
     if (newRange === 1) {
-      setDropDownValue({ value: "1 Month" });
+      setDropDownValue({ value: "Last Month" });
     }
     if (newRange === 6) {
-      setDropDownValue({ value: "6 Months" });
+      setDropDownValue({ value: "Last 6 Months" });
     }
     if (newRange === 12) {
-      setDropDownValue({ value: "12 Months" });
+      setDropDownValue({ value: "Last 12 Months" });
     }
     setStateQuad((state) => ({ ...state, selectedRange: newRange }));
     console.log(stateQuad.quadChart, "stateQuad.quadChart");
@@ -188,9 +188,9 @@ export default function QuadSummary(props) {
           onChange={handleChangeRange}
         >
           <option value={0}>Cumulative</option>
-          <option value={1}>1 Month</option>
-          <option value={6}>6 Months</option>
-          <option value={12}>12 Months</option>
+          <option value={1}>Last Month</option>
+          <option value={6}>Last 6 Months</option>
+          <option value={12}>Last 12 Months</option>
         </Select>
       </FormControl>
       <GridList

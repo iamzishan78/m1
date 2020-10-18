@@ -127,7 +127,7 @@ export default function FilterTags() {
       if (!stateNav.filterTrackedWells && !stateNav.filterTrackedOwners)
         stateApp.toggleLayersActivity("Wells", true);
 
-      stateApp.toggleLayersActivity("Tagged Wells/Owners", false);
+      stateApp.toggleLayersActivity("User Tags", false);
       setStateNav((stateNav) => ({
         ...stateNav,
         selectedTags: [],
