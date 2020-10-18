@@ -1,7 +1,10 @@
 import React, { useState, createContext, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
-import { MSALB2CObj, B2CTenantCredentials } from "./components/Login/AADB2CAuthConfig";
+import {
+  MSALB2CObj,
+  B2CTenantCredentials,
+} from "./components/Login/AADB2CAuthConfig";
 import {
   //styleLayers,
   //userDefinedLayers,
@@ -20,8 +23,8 @@ const AppProvider = (props) => {
     loading: false,
     registeredRoutes: [
       "/",
-      "/signup", 
-      "/loginb2c", 
+      "/signup",
+      "/loginb2c",
       "/forgotpassword",
       "/track",
       "/transact",
@@ -139,14 +142,14 @@ const AppProvider = (props) => {
     wellListFromTagsFilter: [],
     m1neralHeaders: [],
     mappedHeadersFromCSV: [],
-    toggleLayersActivity: (layerName, activityValue) => {
-      if (layerName) {
+    toggleLayersActivity: (identifier, activityValue) => {
+      if (identifier) {
         let res;
         setStateApp((stateApp) => {
           if (stateApp.layers && Array.isArray(stateApp.layers)) {
             const currentLayers = [...stateApp.layers];
             const index = currentLayers.findIndex(
-              (l) => l.layerName == layerName
+              (l) => l.identifier == identifier
             );
 
             const updatedLayer = {

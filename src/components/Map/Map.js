@@ -592,12 +592,12 @@ export default function Map() {
     }
   }, [dataWells]);
 
-  const setLayer = (data, layerName, map, bLayer = null) => {
+  const setLayer = (data, identifier, map, bLayer = null) => {
     let beforelayer = bLayer;
 
     //// configIndex = actual layer index
     const configIndex = stateApp.layers.findIndex(
-      (value) => value.layerName === layerName
+      (value) => value.identifier === identifier
     );
     //// config = actual layer
     const config = stateApp.layers[configIndex];
@@ -606,7 +606,7 @@ export default function Map() {
     for (let i = (paintProps ? paintProps.length : 0) - 1; i >= 0; i--) {
       const prop = paintProps[i];
       let layerData = null;
-      if (layerName == "Parcels" || layerName == "Area of Interest") {
+      if (identifier == "Parcels" || identifier == "Area of Interest") {
         const dataId = prop.id;
         const groupBy = (arr, property) => {
           return arr.reduce((memo, x) => {
@@ -1270,18 +1270,18 @@ export default function Map() {
               }
               if (map.getLayer(layerId)) {
                 if (
-                  layer.layerName == "Parcels" ||
-                  layer.layerName == "Area of Interest" ||
-                  layer.layerName == "Tracked Wells" ||
-                  layer.layerName == "Tracked Owners" ||
-                  layer.layerName == "Tagged Wells/Owners" ||
-                  layer.layerName == "Search"
+                  layer.identifier == "Parcels" ||
+                  layer.identifier == "Area of Interest" ||
+                  layer.identifier == "Tracked Wells" ||
+                  layer.identifier == "Tracked Owners" ||
+                  layer.identifier == "User Tags" ||
+                  layer.identifier == "Search"
                 )
                   layers.push(layerId);
 
                 if (
-                  layer.layerName == "Parcels" ||
-                  layer.layerName == "Area of Interest"
+                  layer.identifier == "Parcels" ||
+                  layer.identifier == "Area of Interest"
                 )
                   udLayers.push(layerId);
               }
@@ -1436,7 +1436,7 @@ export default function Map() {
         } else if (layer.layerType == "data layer") {
           let data = null;
           if (layer.layerPaintProps && layer.layerPaintProps.length > 0) {
-            switch (layer.layerName) {
+            switch (layer.identifier) {
               case "Tracked Wells":
                 data = stateApp.trackedwells;
                 break;
@@ -1446,26 +1446,26 @@ export default function Map() {
               case "Rig Activity":
                 data = rigs;
                 break;
-              case "Permits":
+              case "Recent Permits":
                 data = permits;
                 break;
               case "Search":
                 data = stateApp.wellListFromSearch;
                 break;
-              case "Tagged Wells/Owners":
+              case "User Tags":
                 data = stateApp.wellListFromTagsFilter;
                 break;
               default:
                 data = stateApp.customLayers;
             }
             if (data) {
-              beforeLayer = setLayer(data, layer.layerName, map, beforeLayer);
+              beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
             }
           }
         } else if (layer.layerType == "file layer" && layer.fileContent) {
           let data = layer.fileContent;
           if (data) {
-            beforeLayer = setLayer(data, layer.layerName, map, beforeLayer);
+            beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
           }
         }
       }
