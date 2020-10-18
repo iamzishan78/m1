@@ -11,7 +11,7 @@ import {
   heatLayers,
   baseMapLayers,
   //layers,
-  defaultLayers,
+  // defaultLayers,
 } from "./LayerConfig";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
@@ -104,7 +104,7 @@ const AppProvider = (props) => {
     //styleLayers: styleLayers,
     heatLayers: heatLayers,
     layers: null,
-    defaultLayers: defaultLayers,
+    // defaultLayers: defaultLayers,
     baseMapLayers: baseMapLayers,
     //userDefinedLayers: userDefinedLayers,
     searchLayerIndex: null,
