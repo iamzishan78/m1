@@ -338,7 +338,7 @@ export default function Map() {
 
   useEffect(() => {
     console.log("useEffect line310");
-    if (stateApp.user && stateApp.user.mongoId && stateApp.defaultLayers) {
+    if (stateApp.user && stateApp.user.mongoId) {
       console.log("useEffect 1");
       setLoading(true);
 
@@ -357,13 +357,12 @@ export default function Map() {
       getAllLayerSettingsByUser({
         variables: {
           userId: stateApp.user.mongoId,
-          defaultLayers: stateApp.defaultLayers,
         },
       });
 
       getCustomLayers();
     }
-  }, [stateApp.user, stateApp.defaultLayers]);
+  }, [stateApp.user]);
 
   useEffect(() => {
     if (dataTracks && dataTracks.tracksByObjectType) {
