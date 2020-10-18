@@ -201,13 +201,15 @@ const TabPanels = React.memo(({ panels, value }) => {
 
 const wellsColumnHeaders = [
   {
-    name: "WellName",
-    label: "Name",
-  },
-  {
     name: "ApiNumber",
-    label: "Api",
+    label: "API",
   },
+  
+  {
+    name: "WellName",
+    label: "Well Name",
+  },
+ 
   {
     name: "Latitude",
     label: "Latitude",
@@ -235,22 +237,24 @@ const operatorsColumnHeaders = [
 ];
 const leasesColumnHeaders = [
   {
+    name: "LeaseId",
+    label: "Lease ID",
+  },
+  {
     name: "Lease",
     label: "Lease",
   },
-  {
-    name: "LeaseId",
-    label: "Lease Id",
-  },
+
 ];
+
 const locationsColumnHeaders = [
   {
     name: "Primary",
-    label: " ",
+    label: "Location Name",
   },
   {
     name: "Secondary",
-    label: " ",
+    label: "Location Address",
   },
 ];
 
@@ -334,8 +338,8 @@ function MapGridCard(props) {
         "Owners",
         "Operators",
         "Leases",
-        "Interests",
-        "Parcels",
+       // "Interests",
+       // "Parcels",
         "Locations",
       ]}
       value={searchTapValue}
@@ -462,6 +466,7 @@ function MapGridCard(props) {
                     showTags
                     showComments
                     showTracks
+                    //print
                   />,
                   <M1nTable
                     dense

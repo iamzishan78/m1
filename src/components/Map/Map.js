@@ -592,21 +592,21 @@ export default function Map() {
     }
   }, [dataWells]);
 
-  const setLayer = (data, layerName, map, bLayer = null) => {
+  const setLayer = (data, identifier, map, bLayer = null) => {
     let beforelayer = bLayer;
 
     //// configIndex = actual layer index
     const configIndex = stateApp.layers.findIndex(
-      (value) => value.layerName === layerName
+      (value) => value.identifier === identifier
     );
     //// config = actual layer
     const config = stateApp.layers[configIndex];
     const paintProps = config.layerPaintProps;
     const layerSettings = config.layerSettings;
-    for (let i = paintProps.length - 1; i >= 0; i--) {
+    for (let i = (paintProps ? paintProps.length : 0) - 1; i >= 0; i--) {
       const prop = paintProps[i];
       let layerData = null;
-      if (layerName == "Parcels" || layerName == "Area of Interest") {
+      if (identifier == "Parcels" || identifier == "Area of Interest") {
         const dataId = prop.id;
         const groupBy = (arr, property) => {
           return arr.reduce((memo, x) => {
@@ -1270,18 +1270,18 @@ export default function Map() {
               }
               if (map.getLayer(layerId)) {
                 if (
-                  layer.layerName == "Parcels" ||
-                  layer.layerName == "Area of Interest" ||
-                  layer.layerName == "Tracked Wells" ||
-                  layer.layerName == "Tracked Owners" ||
-                  layer.layerName == "Tagged Wells/Owners" ||
-                  layer.layerName == "Search"
+                  layer.identifier == "Parcels" ||
+                  layer.identifier == "Area of Interest" ||
+                  layer.identifier == "Tracked Wells" ||
+                  layer.identifier == "Tracked Owners" ||
+                  layer.identifier == "User Tags" ||
+                  layer.identifier == "Search"
                 )
                   layers.push(layerId);
 
                 if (
-                  layer.layerName == "Parcels" ||
-                  layer.layerName == "Area of Interest"
+                  layer.identifier == "Parcels" ||
+                  layer.identifier == "Area of Interest"
                 )
                   udLayers.push(layerId);
               }
@@ -1400,9 +1400,10 @@ export default function Map() {
         if (layer.layerType == "vector layer") {
           const props = layer.layerPaintProps;
           const visible =
+            layer.layerSettings &&
             layer.layerSettings.showable &&
             layer.layerSettings.visiable !== false;
-          const ids = props.ids;
+          const ids = props && props.ids ? props.ids : [];
           ids.forEach((id) => {
             if (map.getLayer(id)) {
               map.setLayoutProperty(
@@ -1434,8 +1435,8 @@ export default function Map() {
           });
         } else if (layer.layerType == "data layer") {
           let data = null;
-          if (layer.layerPaintProps.length > 0) {
-            switch (layer.layerName) {
+          if (layer.layerPaintProps && layer.layerPaintProps.length > 0) {
+            switch (layer.identifier) {
               case "Tracked Wells":
                 data = stateApp.trackedwells;
                 break;
@@ -1445,26 +1446,26 @@ export default function Map() {
               case "Rig Activity":
                 data = rigs;
                 break;
-              case "Permits":
+              case "Recent Permits":
                 data = permits;
                 break;
               case "Search":
                 data = stateApp.wellListFromSearch;
                 break;
-              case "Tagged Wells/Owners":
+              case "User Tags":
                 data = stateApp.wellListFromTagsFilter;
                 break;
               default:
                 data = stateApp.customLayers;
             }
             if (data) {
-              beforeLayer = setLayer(data, layer.layerName, map, beforeLayer);
+              beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
             }
           }
         } else if (layer.layerType == "file layer" && layer.fileContent) {
           let data = layer.fileContent;
           if (data) {
-            beforeLayer = setLayer(data, layer.layerName, map, beforeLayer);
+            beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
           }
         }
       }
@@ -3778,24 +3779,19 @@ export default function Map() {
 
       if (!currentFeature) return;
 
-
       const latLng = map.getCenter();
 
-      if(map.getZoom() < 12.5) {
+      if (map.getZoom() < 12.5) {
         latLng.lat = latLng.lat - 0.0375;
-      } else 
-      if(map.getZoom() > 12.5 && map.getZoom() < 13  ) {
+      } else if (map.getZoom() > 12.5 && map.getZoom() < 13) {
         latLng.lat = latLng.lat - 0.025;
-      } else       
-      if(map.getZoom() > 13 && map.getZoom() < 13.5  ) {
+      } else if (map.getZoom() > 13 && map.getZoom() < 13.5) {
         latLng.lat = latLng.lat - 0.0175;
-      } else       
-      { if (map.getZoom() > 13.5 && map.getZoom() < 14   ) {
-        latLng.lat = latLng.lat - 0.0125;
-      } else 
-        latLng.lat = latLng.lat - 0.005;
+      } else {
+        if (map.getZoom() > 13.5 && map.getZoom() < 14) {
+          latLng.lat = latLng.lat - 0.0125;
+        } else latLng.lat = latLng.lat - 0.005;
       }
-
 
       new mapboxgl.Popup({
         offset: 10,
@@ -3803,7 +3799,7 @@ export default function Map() {
         closeButton: false,
         className: "abstractPopup",
       })
-    
+
         .setLngLat(latLng)
         .setMaxWidth("none")
         .setHTML(`<div id="popupContainer"></div>`)
@@ -4070,14 +4066,15 @@ export default function Map() {
           type: "FeatureCollection",
           features: data.map((feature) => {
             const geoJSON = JSON.parse(feature.geo_json);
-            if(geoJSON.geometry.coordinates[0].length >= 4) {
+            if (geoJSON.geometry.coordinates[0].length >= 4) {
               const polygon = turf.polygon(geoJSON.geometry.coordinates);
               const centroid = turf.centroid(polygon);
-              centroid.properties.AbstractName = geoJSON.properties.AbstractName;
+              centroid.properties.AbstractName =
+                geoJSON.properties.AbstractName;
               return centroid;
             }
-          })
-        }
+          }),
+        };
       };
 
       const geoJson = makeGeoJSON(data);
@@ -5127,26 +5124,18 @@ export default function Map() {
     if (stateApp.user.mongoId !== "") {
       const id = update_layer.properties.id;
       let update_layers = stateApp.editingUserDefinedLayers.filter((layer) => {
-        console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx111", layer);
-
         const shape_properties = JSON.parse(layer.shape).properties;
         return shape_properties.id && shape_properties.id.includes(id);
       });
       if (update_layers.length === 0) {
         update_layers = stateApp.customLayers.filter((layer) => {
-          // if (layer.shape) {
-          console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx222", layer);
-
-          const shape_properties = JSON.parse(layer.shape).properties;
-          return shape_properties.id && shape_properties.id.includes(id);
-          // }
+          return layer._id && layer._id.includes(id);
         });
         handleCloseSpatialDataCard();
       } else {
         stateApp.draw.delete(`edit_polygon_${id}`);
         const updated_layers = stateApp.editingUserDefinedLayers.filter(
           (layer) => {
-            console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx333", layer);
             const shape_properties = JSON.parse(layer.shape).properties;
             return !shape_properties.id || !shape_properties.id.includes(id);
           }

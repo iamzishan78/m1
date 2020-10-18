@@ -20,7 +20,7 @@ import ExpandMore from "@material-ui/icons/ExpandMore";
 import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../../Navigation/NavigationContext";
-import { TOGGLETRACKS } from "../../../graphQL/useMutationToggleCreateRemoveTracks";
+import { BULKTRACKALLUNTRACKALL } from "../../../graphQL/useMutationBulkTrackAllUntrackAll";
 import { WELLSOWNERSQUERY } from "../../../graphQL/useQueryWellsOwners";
 import MenuIcon from "@material-ui/icons/Menu";
 import ShrinkIcon from "../../Shared/components/svgIcons/ShrinkIcon";
@@ -68,6 +68,19 @@ const StyledListItem = withStyles((theme) => ({
 }))(ListItem);
 
 const StyledListItem2 = withStyles((theme) => ({
+  root: {
+    fontFamily: "Poppins",
+    "&:hover": {
+      background: "#a3b2cf",
+    },
+    backgroundColor: "#4B618F",
+    "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+      color: theme.palette.common.white,
+    },
+  },
+}))(ListItem);
+
+const StyledListItem3 = withStyles((theme) => ({
   root: {
     fontFamily: "Poppins",
     "&:hover": {
@@ -149,11 +162,11 @@ function FilterControl() {
   const [isTrackOwners, setTrackOwners] = useState(false);
   const [trackingOwners, setTrackingOwners] = useState(false);
   const [trackingWells, setTrackingWells] = useState(false);
-  const [toggleCreateRemoveTracksWells, { data: dataWells }] = useMutation(
-    TOGGLETRACKS
+  const [bulkTrackAllUntrackAllWells, { data: dataWells }] = useMutation(
+    BULKTRACKALLUNTRACKALL
   );
-  const [toggleCreateRemoveTracksOwners, { data: dataOwners }] = useMutation(
-    TOGGLETRACKS
+  const [bulkTrackAllUntrackAllOwners, { data: dataOwners }] = useMutation(
+    BULKTRACKALLUNTRACKALL
   );
 
   const [getWellsOwners, { data: dataWellsOwners }] = useLazyQuery(
@@ -164,8 +177,8 @@ function FilterControl() {
   useEffect(() => {
     if (dataWells) {
       if (
-        dataWells.toggleCreateRemoveTracks &&
-        dataWells.toggleCreateRemoveTracks.success
+        dataWells.bulkTrackAllUntrackAll &&
+        dataWells.bulkTrackAllUntrackAll.success
       ) {
         dispatch(showSuccessMessage("Wells are successfully tracked"));
         stateApp.toggleLayersActivity("Tracked Wells", true);
@@ -179,8 +192,8 @@ function FilterControl() {
   useEffect(() => {
     if (dataOwners) {
       if (
-        dataOwners.toggleCreateRemoveTracks &&
-        dataOwners.toggleCreateRemoveTracks.success
+        dataOwners.bulkTrackAllUntrackAll &&
+        dataOwners.bulkTrackAllUntrackAll.success
       ) {
         dispatch(
           showSuccessMessage("The wells owners are successfully tracked")
@@ -263,8 +276,6 @@ function FilterControl() {
         } else {
           setTrackWells(!isTrackWells);
           setTrackingWells(true);
-          /// activate the wells track layer
-          // stateApp.toggleLayersActivity("Tracked Wells", true);
 
           const tracks = [];
           points.forEach((point) => {
@@ -276,9 +287,10 @@ function FilterControl() {
             };
             tracks.push(track);
           });
-          toggleCreateRemoveTracksWells({
+          bulkTrackAllUntrackAllWells({
             variables: {
               tracks: tracks,
+              trackAll: !isTrackWells,
             },
             refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
             awaitRefetchQueries: true,
@@ -288,8 +300,7 @@ function FilterControl() {
     } else {
       setStateApp((stateApp) => ({
         ...stateApp,
-        zoomFault: true,
-        hugeRequest: null,
+        hugeRequest: `We can't find any wells in your selection. Please select another area.`,
       }));
     }
   };
@@ -323,12 +334,11 @@ function FilterControl() {
     } else {
       setTrackOwners(!isTrackOwners);
       setTrackingOwners(true);
-      /// activate the owners track layer
-      // stateApp.toggleLayersActivity("Tracked Owners", true);
 
-      toggleCreateRemoveTracksOwners({
+      bulkTrackAllUntrackAllOwners({
         variables: {
           tracks: tracks,
+          trackAll: !isTrackOwners,
         },
         refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
         awaitRefetchQueries: true,
@@ -337,13 +347,13 @@ function FilterControl() {
   };
 
   useEffect(() => {
-    if (
-      dataWellsOwners &&
-      dataWellsOwners.wellsOwners &&
-      dataWellsOwners.wellsOwners.length > 0
-    ) {
-      trackOwners(dataWellsOwners.wellsOwners);
-    }
+    if (dataWellsOwners)
+      if (dataWellsOwners.wellsOwners) trackOwners(dataWellsOwners.wellsOwners);
+      else
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          hugeRequest: `We can't find any owners in your selection. Please select another area.`,
+        }));
   }, [dataWellsOwners]);
 
   const handleTrackOwners = () => {
@@ -442,20 +452,26 @@ function FilterControl() {
             <ShrinkIcon viewBox="0 0 64 64" htmlColor="#fff" />
           </IconButton>
         </StyledMenuItem>
-        <Tooltip title={!showTrack ? "Please zoom in" : ""} placement="top">
-          <StyledListItem2
-            button
-            onClick={handleOpenTrack}
-            disabled={!showTrack}
-          >
-            <ListItemIcon>
-              <MyLocationIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary="Track" />
-            {openTrack ? <ExpandLess /> : <ExpandMore />}
-          </StyledListItem2>
+        <Tooltip
+          title={!showTrack ? "Please zoom in" : ""}
+          placement="top-start"
+        >
+          <span>
+            <StyledListItem2
+              button
+              onClick={handleOpenTrack}
+              disabled={!showTrack}
+            >
+              <ListItemIcon>
+                <MyLocationIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Track" />
+              {openTrack && showTrack ? <ExpandLess /> : <ExpandMore />}
+            </StyledListItem2>
+          </span>
         </Tooltip>
-        <Collapse in={openTrack} timeout="auto" unmountOnExit>
+
+        <Collapse in={openTrack && showTrack} timeout="auto" unmountOnExit>
           <List disablePadding>
             <Tooltip title={!showTrack ? "Please zoom in" : ""} placement="top">
               <StyledListItem
