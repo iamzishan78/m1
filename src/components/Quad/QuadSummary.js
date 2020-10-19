@@ -9,6 +9,7 @@ import {
   emphasize,
   withStyles,
 } from "@material-ui/core/styles";
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import CardContent from "@material-ui/core/CardContent";
@@ -19,7 +20,8 @@ import GridListTile from "@material-ui/core/GridListTile";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Chip from "@material-ui/core/Chip";
-
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
@@ -115,6 +117,17 @@ const useStyles = makeStyles((theme) => ({
   },
   gridListTile: {},
 }));
+
+const toggleTheme = createMuiTheme({
+  overrides: {
+    MuiToggleButton: {
+      selected: {
+        backgroundColor: '#1fabda'
+      }
+    }
+  }
+});
+
 const StyledBreadcrumb = withStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.grey[100],
@@ -136,22 +149,28 @@ export default function QuadSummary(props) {
   const [stateQuad, setStateQuad] = useContext(QuadContext);
   const classes = useStyles();
   const [dropDownValue, setDropDownValue] = useState({ value: "Cumulative" });
+  const [toggleAlignment, setToggleAlignment] = useState('daily');
   const [value, setValue] = useState(0);
 
   const handleChangeRange = (range) => {
     console.log(range, "rangevalue");
     const newRange = parseInt(range.target.value);
-    if (newRange === 0) {
-      setDropDownValue({ value: "Cumulative" });
-    }
-    if (newRange === 1) {
-      setDropDownValue({ value: "Last Month" });
-    }
-    if (newRange === 6) {
-      setDropDownValue({ value: "Last 6 Months" });
-    }
-    if (newRange === 12) {
-      setDropDownValue({ value: "Last 12 Months" });
+    switch(newRange) {
+      case 0:
+        setDropDownValue({ value: "Cumulative" });
+        break;
+      case 1:
+        setDropDownValue({ value: "Last Month" });
+        break;
+      case 6:
+        setDropDownValue({ value: "Last 6 Months" });
+        break;
+      case 12:
+        setDropDownValue({ value: "Last 12 Months" });
+        break;
+      default:
+        setDropDownValue({ value: "Cumulative" });
+        break;
     }
     setStateQuad((state) => ({ ...state, selectedRange: newRange }));
     console.log(stateQuad.quadChart, "stateQuad.quadChart");
@@ -163,6 +182,11 @@ export default function QuadSummary(props) {
       }
     }
   };
+
+  const handleToggleChange = (event, value) => {
+    console.log(value)
+    setToggleAlignment(value);
+  }
 
   //graphQL
   const { data, loading, error } = useQueryQuadChart(stateApp.selectedWell.id);
@@ -230,6 +254,22 @@ export default function QuadSummary(props) {
             </Card>
           </GridListTile>
         ))}
+        <MuiThemeProvider theme={toggleTheme}>
+          <ToggleButtonGroup
+            value={toggleAlignment}
+            exclusive
+            onChange={handleToggleChange}
+            aria-label="text alignment"
+            style={{width: '100%'}}
+          >
+            <ToggleButton value="cumulative" aria-label="left aligned" style={{width: '100%'}}>
+              Cumulative
+            </ToggleButton>
+            <ToggleButton value="daily" aria-label="right aligned" style={{width: '100%'}}>
+              Daily
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </MuiThemeProvider>
       </GridList>
     </div>
   ) : // </div>
