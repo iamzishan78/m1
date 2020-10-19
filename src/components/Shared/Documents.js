@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import gql from "graphql-tag";
-
+import moment from "moment";
 import Card from "@material-ui/core/Card";
 import Button from "@material-ui/core/Button";
 import CardActions from "@material-ui/core/CardActions";
@@ -18,7 +18,7 @@ import { useDropzone } from "react-dropzone";
 import DeleteDocumentConfirmation from "./DeleteDocumentConfirmation";
 import { ADDFILE } from "../../graphQL/useMutationAddFile";
 import { AppContext } from "../../AppContext";
-import { ADDDISCRIPTORFILE } from "../../graphQL/useMutationAddDiscriptorFile";
+import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
 import { GETCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 
 const useStyles = makeStyles((theme) => ({
@@ -114,14 +114,14 @@ const useStyles = makeStyles((theme) => ({
 
 function UploadZone(props) {
   const [inputFile, setInputFile] = useState(null);
-  const [addFile, { data: addFileData }] = useMutation(ADDDISCRIPTORFILE);
+  const [addFile, { data: addFileData }] = useMutation(ADDDESCRIPTORFILE);
 
   useEffect(() => {
-    if (addFileData && addFileData?.addDiscriptorFile?.success) {
+    if (addFileData && addFileData?.addFileDescriptor?.success) {
       console.log("HALLO ADD FILE DATA HERE", addFileData);
-      const uri = addFileData.addDiscriptorFile.file.uri;
-      const interal_key = addFileData.addDiscriptorFile.file.internalKey;
-      const file_id = addFileData.addDiscriptorFile.file.id;
+      const uri = addFileData.addFileDescriptor.file.uri;
+      const interal_key = addFileData.addFileDescriptor.file.internalKey;
+      const file_id = addFileData.addFileDescriptor.file.id;
 
       if (file_id) {
         fetch(uri, {
@@ -154,6 +154,8 @@ function UploadZone(props) {
         userId: props.userId,
         contactId: props.contactId,
       },
+      refetchQueries: ["getContactFiles"],
+      awaitRefetchQueries: true,
     });
   }, []);
 
@@ -170,7 +172,7 @@ function UploadZone(props) {
           <h5>Drag a file here or click to select a file to upload</h5>
         )}
       </div>
-      {addFileData && !addFileData.addDiscriptorFile.success && (
+      {addFileData && !addFileData.addFileDescriptor.success && (
         <p className={classes.fileDropError}>File could not be uploaded</p>
       )}
     </>
@@ -189,6 +191,7 @@ export default function Documents(props) {
       variables: {
         userId,
         contactId: props.id,
+        limit: 2,
       },
     });
   }, []);
@@ -242,35 +245,39 @@ export default function Documents(props) {
       <CardContent style={{ padding: "0 23px" }}>
         <div className={classes.fileUploadSection}>
           {/* Show two recent docs */}
-          {files &&
-            files.discriptorFiles.map((file) => (
-              <>
-                <div className={classes.fileUploadTopSection}>
-                  <div>
-                    <h4 className={classes.uploadTitle}>{file.name}</h4>
-                    <h5 className={classes.uploadSubtext}>Kyle Chapman</h5>
-                    <h5 className={classes.uploadSubtext}>a few seconds ago</h5>
-                  </div>
-                  <div className={classes.IconSection}>
-                    <IconButton
-                      size="small"
-                      style={{ marginBottom: "8px" }}
-                      onClick={() => setOpenDeleteConfirmDialog(true)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                    <DeleteDocumentConfirmation
-                      open={openDeleteConfirmDialog}
-                      handleClose={handleDeleteCancel}
-                      handleAccept={handleDeleteAccept}
-                    />
-                    <IconButton size="small" onClick={downloadDocument}>
-                      <GetAppIcon />
-                    </IconButton>
-                  </div>
+          {files?.getFileDescriptors?.map((file) => (
+            <>
+              <div className={classes.fileUploadTopSection}>
+                <div>
+                  <h4 className={classes.uploadTitle}>{file.fileName}</h4>
+                  <h5 className={classes.uploadSubtext}>{file.userName}</h5>
+                  <h5 className={classes.uploadSubtext}>
+                    {moment(file.dateTime).fromNow()}
+                  </h5>
                 </div>
-              </>
-            ))}
+                <div className={classes.IconSection}>
+                  <IconButton
+                    size="small"
+                    style={{ marginBottom: "8px" }}
+                    onClick={() => setOpenDeleteConfirmDialog(true)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                  <DeleteDocumentConfirmation
+                    open={openDeleteConfirmDialog}
+                    handleClose={handleDeleteCancel}
+                    handleAccept={handleDeleteAccept}
+                  />
+                  <IconButton
+                    size="small"
+                    onClick={() => window.open(file.fileUrl)}
+                  >
+                    <GetAppIcon />
+                  </IconButton>
+                </div>
+              </div>
+            </>
+          ))}
           <UploadZone contactId={props.id} userId={userId} />
         </div>
       </CardContent>
