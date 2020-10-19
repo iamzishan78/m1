@@ -160,24 +160,27 @@ const NotFoundRedirect = () =>{
   const [stateApp] = useContext(AppContext);
   const location = window.location;
   //redirects after 3 seconds
-  setTimeout(() =>{
-    if (!stateApp.registeredRoutes.includes(location.pathname)){
-      location.replace("/");
-    };
-  }, 3000);
-
-  return ( stateApp.loading === false &&
-    <div style={{margin: "auto", marginTop:"20%"}}>
-      <Typography  
-        variant="h6" 
-        align="center"
-        gutterBottom
-        color="textSecondary"
-      >
-        404 | Page not found. Redirecting...
-      </Typography>
-    </div>
-  );
+  if (location.pathname !== "/") {
+    setTimeout(() =>{
+      if (!stateApp.registeredRoutes.includes(location.pathname)){
+        location.replace("/");
+      };
+    }, 3000);
+    return ( stateApp.loading === false &&
+      <div style={{margin: "auto", marginTop:"20%"}}>
+        <Typography  
+          variant="h6" 
+          align="center"
+          gutterBottom
+          color="textSecondary"
+        >
+          404 | Page not found. Redirecting...
+        </Typography>
+      </div>
+    );
+  } else {
+    return null;
+  }
 };
 
 function App() {
@@ -200,7 +203,7 @@ function App() {
 
   const updateApolloClient = (endpoint, token) => {
     //uncomment to run against local
-    // endpoint = "http://localhost:7071/api/m1graph"
+    //endpoint = "http://localhost:7071/api/m1graph"
 
     if (!apolloClient) {
       let client = new ApolloClient({
