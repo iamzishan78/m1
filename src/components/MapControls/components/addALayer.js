@@ -320,7 +320,7 @@ export default function AddLayer(props) {
                 to enter an URL.
               </span>
             }
-            //acceptedFiles={[".geojson", ".zip"]}
+            acceptedFiles={[".geojson", ".zip"]}
             maxFileSize={10000000}
             dropzoneClass={classes.dropzoneClass}
           ></DropzoneAreaBase>
