@@ -4065,7 +4065,7 @@ export default function Map() {
           type: "FeatureCollection",
           features: data.map((feature) => {
             const geoJSON = JSON.parse(feature.geo_json);
-            if (geoJSON.geometry.coordinates[0].length >= 4) {
+            if (geoJSON.geometry && geoJSON.geometry.coordinates[0].length >= 4) {
               const polygon = turf.polygon(geoJSON.geometry.coordinates);
               const centroid = turf.centroid(polygon);
               centroid.properties.AbstractName =

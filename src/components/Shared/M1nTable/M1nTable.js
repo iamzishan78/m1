@@ -2360,7 +2360,9 @@ function M1nTable(props) {
         }
         if (props.showComments) buildingColumns.push(SearchsHeadCells[2]);
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
-        if (props.targetLabel && props.targetLabel == "well")
+        if (props.targetLabel 
+          //&& props.targetLabel == "well"  //would only set flyto for wells 
+          )
           buildingColumns.push(SearchsHeadCells[4]);
 
         setColumns([...buildingColumns]);
