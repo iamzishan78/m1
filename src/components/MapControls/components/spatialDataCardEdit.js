@@ -28,7 +28,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import { AppContext } from "../../../AppContext";
-
+import { UPDATECUSTOMLAYER } from "../../../graphQL/useMutationUpdateCustomLayer";
+import { useMutation } from "@apollo/client";
 // Helpers for area calcs
 import { area, convertArea, length } from "@turf/turf";
 
@@ -193,6 +194,34 @@ export default function SpatialDataCardEdit(props) {
   const inputLabel = useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);
 
+  const [updateCustomLayer, { loading: isDeletingCustomLayer }] = useMutation(
+    UPDATECUSTOMLAYER,
+    {
+      update(
+        cache,
+        {
+          data: {
+            updateCustomLayer: { customLayer },
+          },
+        }
+      ) {
+        console.log(`newCustomLayer: ${JSON.stringify(customLayer)}`);
+
+        cache.modify({
+          _id: cache.identify(customLayer),
+          fields: {
+            allCustomLayers(existingCustomLayerRefs, { readField }) {
+              return existingCustomLayerRefs.filter(
+                (customLayerRef) =>
+                  customLayer._id !== readField("_id", customLayerRef)
+              );
+            },
+          },
+        });
+      },
+    }
+  );
+
   useEffect(() => {
     setDataType(sdType);
     setDataName(shapeLabel);
@@ -277,11 +306,26 @@ export default function SpatialDataCardEdit(props) {
   };
 
   const deleteSpatialData = () => {
-    // setStateApp({
-    //   ...stateApp,
-    //   tempCheckedUserDefinedLayers: null
-    // });
-    props.deleteSpatialDataAndShape();
+    if (
+      props.selectedFeature &&
+      props.selectedFeature.properties &&
+      props.selectedFeature.properties.id
+    ) {
+      console.log("Deleting AOI ...", props.selectedFeature.properties.id);
+      updateCustomLayer({
+        variables: {
+          customLayerId: props.selectedFeature.properties.id,
+          customLayer: {
+            IsDeleted: true,
+          },
+        },
+        // refetchQueries: ["getCustomLayers"],
+        // awaitRefetchQueries: true,
+      });
+      props.closeSpatialDataCard();
+    }
+
+    // props.deleteSpatialDataAndShape();
   };
   const calculateLandArea = () => {
     const { selectedFeature } = props;
@@ -321,19 +365,21 @@ export default function SpatialDataCardEdit(props) {
         // const index = customLayers.findIndex(layer => JSON.parse(layer.shape).properties.id === selectedFeature.properties.id);
         const filteredLayers = customLayers.filter(
           (layer) =>
+            layer.shape &&
+            JSON.parse(layer.shape) &&
             JSON.parse(layer.shape).properties.id !== featureId &&
             JSON.parse(layer.shape).properties.id !== featureLabelId
         );
-        const editingLayers = customLayers.filter(
-          (layer) =>
-            JSON.parse(layer.shape).properties.id === featureId ||
-            JSON.parse(layer.shape).properties.id === featureLabelId
-        );
+        // const editingLayers = customLayers.filter(
+        //   (layer) =>
+        //     JSON.parse(layer.shape).properties.id === featureId ||
+        //     JSON.parse(layer.shape).properties.id === featureLabelId
+        // );
         setCustLayers(customLayers);
         setStateApp({
           ...stateApp,
           customLayers: filteredLayers,
-          editingUserDefinedLayers: editingLayers,
+          editingUserDefinedLayers: filteredLayers,
           // selectedUserDefinedLayer: selectedFeature,
           editLayer: true,
         });
@@ -356,9 +402,9 @@ export default function SpatialDataCardEdit(props) {
             <IconButton color="secondary" onClick={showDeleteModal}>
               <DeleteIcon />
             </IconButton>
-            <IconButton color="secondary" onClick={editShape}>
+            {/* <IconButton color="secondary" onClick={editShape}>
               <EditIcon />
-            </IconButton>
+            </IconButton> */}
 
             <IconButton color="secondary" onClick={closeSpatialDataCard}>
               <CloseIcon />
@@ -384,7 +430,7 @@ export default function SpatialDataCardEdit(props) {
               labelWidth={labelWidth}
             >
               <MenuItem value="interest">Area of Interest</MenuItem>
-              <MenuItem value="parcel">Parcel/Tract</MenuItem>
+              <MenuItem value="parcel">Parcel</MenuItem>
               {/* {stateApp.currentFeature &&
                 stateApp.currentFeature.geometry.type === "Polygon" &&
                 !stateApp.currentFeature.properties.isCircle && (

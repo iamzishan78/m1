@@ -4065,7 +4065,10 @@ export default function Map() {
           type: "FeatureCollection",
           features: data.map((feature) => {
             const geoJSON = JSON.parse(feature.geo_json);
-            if (geoJSON.geometry && geoJSON.geometry.coordinates[0].length >= 4) {
+            if (
+              geoJSON.geometry &&
+              geoJSON.geometry.coordinates[0].length >= 4
+            ) {
               const polygon = turf.polygon(geoJSON.geometry.coordinates);
               const centroid = turf.centroid(polygon);
               centroid.properties.AbstractName =
@@ -5016,6 +5019,46 @@ export default function Map() {
     }
   }, [stateApp.toggle3d]);
 
+  const handleToggleInteraction = (layerIdentifier, value) => {
+    let layer;
+    let index;
+    stateApp.layers.forEach((l, i) => {
+      if (l.identifier == layerIdentifier) {
+        layer = l;
+        index = i;
+      }
+    });
+    if (
+      index &&
+      layer &&
+      layer.layerSettings &&
+      layer.layerSettings.interaction &&
+      layer.layerSettings.interaction.interactionDetail &&
+      layer.layerSettings.interaction.interactionDetail.click !== value
+    ) {
+      const currentLayers = [...stateApp.layers];
+      const updatedLayer = {
+        ...layer,
+        layerSettings: {
+          ...layer.layerSettings,
+          interaction: {
+            ...layer.layerSettings.interaction,
+            // interactionAble: value,
+            interactionDetail: {
+              hover: value,
+              click: value,
+            },
+          },
+        },
+      };
+
+      //// saving to stateApp
+      currentLayers[index] = updatedLayer;
+
+      setStateApp((stateApp) => ({ ...stateApp, layers: [...currentLayers] }));
+    }
+  };
+
   useEffect(() => {
     console.log("useEffect 38");
 
@@ -5027,13 +5070,13 @@ export default function Map() {
     if (stateApp.editDraw === true || stateNav.drawingMode) {
       setDrawStatus(true);
       if (mapClick && mapClick.mapClickHandler != null) {
-        map.off("click", mapClick.mapClickHandler);
+        handleToggleInteraction("Wells", false);
       }
     } else {
       setDrawStatus(false);
       if (mapClick && mapClick.mapClickHandler != null) {
         setTimeout(() => {
-          map.on("click", mapClick.mapClickHandler);
+          handleToggleInteraction("Wells", true);
         }, 500);
       }
     }
@@ -5300,6 +5343,7 @@ export default function Map() {
             ...stateApp,
             selectedUserDefinedLayer: feature,
             editLayer: true,
+            editDraw: true,
           });
         } else {
           setStateApp({
@@ -5307,6 +5351,7 @@ export default function Map() {
             popupOpen: false,
             selectedUserDefinedLayer: undefined,
             editLayer: false,
+            editDraw: false,
           });
         }
       });
