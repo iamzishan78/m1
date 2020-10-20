@@ -19,7 +19,8 @@ import DeleteDocumentConfirmation from "./DeleteDocumentConfirmation";
 import { ADDFILE } from "../../graphQL/useMutationAddFile";
 import { AppContext } from "../../AppContext";
 import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
-import { GETCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
+import { GETRECENTCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
+import { DELETEDESCRIPTORFILE } from "../../graphQL/useMutationDeleteDescriptorFile";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -154,7 +155,7 @@ function UploadZone(props) {
         userId: props.userId,
         contactId: props.contactId,
       },
-      refetchQueries: ["getContactFiles"],
+      refetchQueries: ["getRecentContactFiles", "getContactFiles"],
       awaitRefetchQueries: true,
     });
   }, []);
@@ -184,14 +185,17 @@ export default function Documents(props) {
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [stateApp] = React.useContext(AppContext);
   const userId = stateApp.user.mongoId;
-  const [getRecentFiles, { data: files }] = useLazyQuery(GETCONTACTFILES);
+  const [getRecentFiles, { data: files }] = useLazyQuery(
+    GETRECENTCONTACTFILES,
+    { fetchPolicy: "cache-and-network" }
+  );
+  const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
 
   useEffect(() => {
     getRecentFiles({
       variables: {
         userId,
         contactId: props.id,
-        limit: 2,
       },
     });
   }, []);
@@ -200,14 +204,16 @@ export default function Documents(props) {
     setOpenDeleteConfirmDialog(false);
   };
 
-  const handleDeleteAccept = () => {
+  const handleDeleteAccept = (id) => {
     // Delete Document Logic goes here
     setOpenDeleteConfirmDialog(false);
-  };
-
-  const downloadDocument = () => {
-    // Download Document logic goes here
-    console.log("Download Document");
+    deleteFile({
+      variables: {
+        id: id,
+      },
+      refetchQueries: ["getRecentContactFiles", "getContactFiles"],
+      awaitRefetchQueries: true,
+    });
   };
 
   return (
@@ -225,14 +231,13 @@ export default function Documents(props) {
             onClick={() => {
               props.handleOpenExpandableCard(
                 <ViewDocuments
-                  id={props.id}
+                  contactId={props.id}
                   user_id={props.user_id}
                   activityLog={props.activityLog}
                   open={openDeleteConfirmDialog}
                   handleClose={handleDeleteCancel}
                   handleAccept={handleDeleteAccept}
                   handleOpen={() => setOpenDeleteConfirmDialog(true)}
-                  downloadDocument={downloadDocument}
                 />,
                 "Documents"
               );
@@ -252,7 +257,7 @@ export default function Documents(props) {
                   <h4 className={classes.uploadTitle}>{file.fileName}</h4>
                   <h5 className={classes.uploadSubtext}>{file.userName}</h5>
                   <h5 className={classes.uploadSubtext}>
-                    {moment(file.dateTime).fromNow()}
+                    {moment.unix(file.dateTime).toNow()}
                   </h5>
                 </div>
                 <div className={classes.IconSection}>
@@ -266,7 +271,7 @@ export default function Documents(props) {
                   <DeleteDocumentConfirmation
                     open={openDeleteConfirmDialog}
                     handleClose={handleDeleteCancel}
-                    handleAccept={handleDeleteAccept}
+                    handleAccept={() => handleDeleteAccept(file.descriptorId)}
                   />
                   <IconButton
                     size="small"

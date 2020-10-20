@@ -752,7 +752,7 @@ export default function ContactDetailCard(props) {
               />
             </IconButton>
 
-            <IconButton className={classes.shrinkRightColumnIcons}>
+            {/* <IconButton className={classes.shrinkRightColumnIcons}>
               <DescriptionRoundedIcon
                 onClick={() =>
                   handleOpenExpandableCard(
@@ -765,7 +765,7 @@ export default function ContactDetailCard(props) {
                   )
                 }
               />
-            </IconButton>
+            </IconButton> */}
           </div>
         ) : (
           <Grid container spacing={0} id="expandedRCContent">
