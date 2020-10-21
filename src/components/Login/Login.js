@@ -137,9 +137,10 @@ const Login = (props) => {
   const [loadingSigInButton, setLoadingSigInButton] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setStateApp({...stateApp, loading});
-  },[loading])
+  ///this is not a safe operation!
+  // useEffect(() => {
+  //   setStateApp({...stateApp, loading});
+  // },[loading])
   
   let history = props.history;
 
@@ -227,6 +228,15 @@ const Login = (props) => {
             return;
           }
           else {
+
+            let currentAccounts = stateApp.myMSALObj.getAllAccounts();
+            const logoutRequest = {
+              account: currentAccounts && currentAccounts.length === 1
+                ? currentAccounts[0]
+                : undefined
+            };
+            stateApp.myMSALObj.logout(logoutRequest);
+
             sessionStorage.clear();
             window.location.replace(window.location.origin);
             setLoading(false);
