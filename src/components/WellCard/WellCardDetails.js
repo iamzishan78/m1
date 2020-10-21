@@ -38,6 +38,7 @@ import Switch from "@material-ui/core/Switch";
 
 import CompletionsContainer from "./components/Completions";
 import SimulationContainer from "./components/Stimulation";
+import FormationContainer from "./components/Formation";
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -295,10 +296,12 @@ export default function WellCardDetails(props) {
             tabLabels={[
               "Completions",
               "Stimulations",
+              "Formation"
             ]}
             tabPanels={[
               <CompletionsContainer/>,
               <SimulationContainer/>,
+              <FormationContainer/>
             ]}
           />
         </Grid>

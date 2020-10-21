@@ -298,7 +298,7 @@ export default function WellProdChart(props) {
     stateWellCard.chartToggleOil,
     stateWellCard.chartToggleGas,
     stateWellCard.chartToggleWater,
-    stateWellCard.chartToggleMultiAxis,
+    stateWellCard.chartToggleMultiAxis
   ]);
 
   return data && stateWellProdChart.wellProdHistory ? (
