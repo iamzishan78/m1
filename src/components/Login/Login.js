@@ -220,7 +220,7 @@ const Login = (props) => {
         .catch((error) => {
           console.log(error);
 
-          if (error.errorMessage.includes("AADB2C90118")) {
+          if (error.errorMessage && error.errorMessage.includes("AADB2C90118")) {
             console.log(stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword))
 
             stateApp.myMSALObj.loginRedirect({ authority: stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword) });
@@ -229,16 +229,26 @@ const Login = (props) => {
           }
           else {
 
-            let currentAccounts = stateApp.myMSALObj.getAllAccounts();
+            const currentAccounts = stateApp.myMSALObj.getAllAccounts();
+            const currentAccount = currentAccounts && currentAccounts.length === 1
+              ? currentAccounts[0]
+              : (() => {
+                  // Add choose account code here
+                  return;
+                })();
+        
             const logoutRequest = {
-              account: currentAccounts && currentAccounts.length === 1
-                ? currentAccounts[0]
-                : undefined
+              account: currentAccount
             };
-            stateApp.myMSALObj.logout(logoutRequest);
-
+        
             sessionStorage.clear();
-            window.location.replace(window.location.origin);
+            localStorage.clear();
+        
+            if(currentAccount) {
+              stateApp.myMSALObj.logout(logoutRequest);
+            }
+        
+            history.replace(window.location.origin);
             setLoading(false);
           }
 
