@@ -14,6 +14,7 @@ import { AppContext } from "../../../AppContext";
 import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACT } from "../../../graphQL/useQueryContact";
+import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
 import getLaneTitle from "../../Transact/getLaneTitle";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { ALLENTITYNAMESFORPARCEL } from "../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner";
@@ -77,6 +78,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const newContact = {
+  name: "",
+  mobilePhone: "",
+  homePhone: "",
+  primaryEmail: "",
+  address1: "",
+  address2: "",
+  city: "",
+  country: "",
+  state: "",
+  zip: "",
+};
+
 function AddDealDialog(props) {
   const classes = useStyles();
   // const { transactData, handleDataChange } = props;
@@ -94,6 +108,15 @@ function AddDealDialog(props) {
 
   const [openContactDialog, setOpenContactDialog] = useState(false);
   // const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
+
+  const [
+    addContact,
+    {
+      data: addContactData,
+      called: addContactCalled,
+      loading: addContactLoading,
+    },
+  ] = useMutation(ADDCONTACT);
 
   const [getTransactionData, { data: tdata }] = useLazyQuery(TRANSACTIONDATA);
 
@@ -246,6 +269,21 @@ function AddDealDialog(props) {
 
   const handleUpdate = () => {
     // if (title.trim() !== "" && description.trim() !== "") {
+
+    if (nameAutValue) {
+      addContact({
+        variables: {
+          contact: {
+            ...newContact,
+            name: nameAutValue.name,
+            createBy: stateApp.user.mongoId,
+            lastUpdateBy: stateApp.user.mongoId,
+          },
+        },
+        refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
+        awaitRefetchQueries: true,
+      });
+    }
 
     let newStage = stage ? stage : "lane1";
     if (transactData) {
