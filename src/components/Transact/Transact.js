@@ -17,11 +17,12 @@ import getLaneTitle from "./getLaneTitle";
 import AddDealDialog from "../ContactDetailCard/components/AddDealDialog";
 import RightDialog from "../ContactDetailCard/components/RightDialog";
 
+import "./index.css";
 // const data_file = {
 //   lanes: [
 //     {
 //       id: "lane1",
-//       title: "Offers in Progress",
+//       title: "Offer Preparation",
 //       cards: [
 //         {
 //           id: "Card1",
@@ -34,7 +35,8 @@ import RightDialog from "../ContactDetailCard/components/RightDialog";
 //     },
 //     {
 //       id: "lane2",
-//       title: "Offer Sent to Owner",
+//       title: "Offer Extended",
+//       cardStyle: { borderColor: "#EBC253" },
 //       cards: [
 //         // {
 //         //   id: "Card3",
@@ -55,6 +57,7 @@ import RightDialog from "../ContactDetailCard/components/RightDialog";
 //     {
 //       id: "lane3",
 //       title: "Accepted - Due Diligence",
+//       cardStyle: { borderColor: "#EBC253" },
 //       cards: [
 //         {
 //           id: "Card4",
@@ -67,7 +70,8 @@ import RightDialog from "../ContactDetailCard/components/RightDialog";
 //     },
 //     {
 //       id: "lane4",
-//       title: "Deal Closed",
+//       title: "Deal - Closed",
+//       cardStyle: { borderColor: "#35DA97" },
 //       cards: [
 //         {
 //           id: "Card5",
@@ -87,7 +91,7 @@ import RightDialog from "../ContactDetailCard/components/RightDialog";
 //     },
 //     {
 //       id: "lane5",
-//       title: "Offer Rejected",
+//       title: "Offer - Rejected",
 
 //       cards: [
 //         {
@@ -222,7 +226,7 @@ export default function Transact() {
       />
       <Board
         className={classes.list}
-        style={{ backgroundColor: "#efefef" }}
+        style={{ backgroundColor: "#fff" }}
         data={transactData}
         draggable={true}
         laneDraggable={false}
@@ -234,6 +238,15 @@ export default function Transact() {
         hideCardDeleteIcon={false}
         onDataChange={handleDataChange}
         onCardClick={handleCardClick}
+        laneStyle={{
+          backgroundColor: "#fff",
+          color: "#011133",
+          fontWeight: "bold",
+        }}
+        cardStyle={{
+          boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+          backgroundColor: "#F2F2F2",
+        }}
 
         //onCardAdd = {handleCardAdd}
         //onCardDelete = {handleCardDelete}
