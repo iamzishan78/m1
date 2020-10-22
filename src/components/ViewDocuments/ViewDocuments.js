@@ -24,6 +24,7 @@ import { GETCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 import { AppContext } from "../../AppContext";
 import moment from "moment";
 import { useLazyQuery } from "@apollo/client";
+import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 
 const useStyles = makeStyles((theme) => ({
   viewAllCard: {
@@ -119,6 +120,36 @@ export default function ViewDocuments(props) {
     fetchPolicy: "cache-and-network",
   });
 
+  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
+    fetchPolicy: "network-only",
+  });
+
+  useEffect(() => {
+    console.log("VIEW FILE RESULT", viewFileResult);
+    if (viewFileResult) {
+      fetch(viewFileResult.viewFile.uri, {
+        headers: {
+          "Content-Type": "text/plain; charset=UTF-8",
+          "X-Ms-Blob-Type": "BlockBlob",
+          "X-Ms-Meta-Internalkey": viewFileResult.viewFile.internalKey,
+          "X-Ms-Version": "2015-02-21",
+        },
+        method: "GET",
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log("FILE RESPONSE: ", res);
+        })
+        .catch((e) => {
+          console.log("Could not view file", e);
+        });
+    }
+  }, [viewFileResult]);
+
+  const handleViewFile = async (id) => {
+    viewFile({ variables: { fileId: id } });
+  };
+
   useEffect(() => {
     getAllFiles({
       variables: {
@@ -173,7 +204,7 @@ export default function ViewDocuments(props) {
             <div className={classes.documentLeft}>
               <div
                 className={classes.greySquare}
-                onClick={() => window.open(doc.fileUrl)}
+                onClick={() => handleViewFile(doc.fileId)}
               >
                 <GetAppIcon fontSize="large" />
               </div>

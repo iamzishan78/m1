@@ -5,6 +5,7 @@ export const GETRECENTCONTACTFILES = gql`
     getFileDescriptors(userId: $userId, contactId: $contactId, limit: 2) {
       fileName
       fileUrl
+      fileId
       userName
       dateTime
       descriptorId
@@ -17,6 +18,7 @@ export const GETCONTACTFILES = gql`
     getFileDescriptors(userId: $userId, contactId: $contactId) {
       fileName
       fileUrl
+      fileId
       userName
       dateTime
       descriptorId

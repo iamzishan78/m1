@@ -21,6 +21,7 @@ import { AppContext } from "../../AppContext";
 import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
 import { GETRECENTCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 import { DELETEDESCRIPTORFILE } from "../../graphQL/useMutationDeleteDescriptorFile";
+import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -115,14 +116,13 @@ const useStyles = makeStyles((theme) => ({
 
 function UploadZone(props) {
   const [inputFile, setInputFile] = useState(null);
-  const [addFile, { data: addFileData }] = useMutation(ADDDESCRIPTORFILE);
 
   useEffect(() => {
-    if (addFileData && addFileData?.addFileDescriptor?.success) {
-      console.log("HALLO ADD FILE DATA HERE", addFileData);
-      const uri = addFileData.addFileDescriptor.file.uri;
-      const interal_key = addFileData.addFileDescriptor.file.internalKey;
-      const file_id = addFileData.addFileDescriptor.file.id;
+    if (props.addFileData && props.addFileData?.addFileDescriptor?.success) {
+      console.log("HALLO ADD FILE DATA HERE", props.addFileData);
+      const uri = props.addFileData.addFileDescriptor.file.uri;
+      const interal_key = props.addFileData.addFileDescriptor.file.internalKey;
+      const file_id = props.addFileData.addFileDescriptor.file.id;
 
       if (file_id) {
         fetch(uri, {
@@ -139,7 +139,7 @@ function UploadZone(props) {
           .catch((err) => console.log(err));
       }
     }
-  }, [addFileData]);
+  }, [props.addFileData]);
 
   const onDrop = useCallback((acceptedFiles) => {
     // Do something with the files
@@ -149,14 +149,12 @@ function UploadZone(props) {
 
     setInputFile(file);
 
-    addFile({
+    props.addFile({
       variables: {
         fileName,
         userId: props.userId,
         contactId: props.contactId,
       },
-      refetchQueries: ["getRecentContactFiles", "getContactFiles"],
-      awaitRefetchQueries: true,
     });
   }, []);
 
@@ -173,7 +171,7 @@ function UploadZone(props) {
           <h5>Drag a file here or click to select a file to upload</h5>
         )}
       </div>
-      {addFileData && !addFileData.addFileDescriptor.success && (
+      {props.addFileData && !props.addFileData.addFileDescriptor.success && (
         <p className={classes.fileDropError}>File could not be uploaded</p>
       )}
     </>
@@ -190,6 +188,21 @@ export default function Documents(props) {
     { fetchPolicy: "cache-and-network" }
   );
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
+  const [addFile, { data: addFileData }] = useMutation(ADDDESCRIPTORFILE, {
+    onCompleted: () => {
+      setTimeout(() => {
+        getRecentFiles({
+          variables: {
+            userId,
+            contactId: props.id,
+          },
+        });
+      }, 3000);
+    },
+  });
+  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
+    fetchPolicy: "network-only",
+  });
 
   useEffect(() => {
     getRecentFiles({
@@ -199,6 +212,28 @@ export default function Documents(props) {
       },
     });
   }, []);
+
+  useEffect(() => {
+    console.log("VIEW FILE RESULT", viewFileResult);
+    if (viewFileResult) {
+      fetch(viewFileResult.viewFile.uri, {
+        headers: {
+          "Content-Type": "text/plain; charset=UTF-8",
+          "X-Ms-Blob-Type": "BlockBlob",
+          "X-Ms-Meta-Internalkey": viewFileResult.viewFile.internalKey,
+          "X-Ms-Version": "2015-02-21",
+        },
+        method: "GET",
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log("FILE RESPONSE: ", res);
+        })
+        .catch((e) => {
+          console.log("Could not view file", e);
+        });
+    }
+  }, [viewFileResult]);
 
   const handleDeleteCancel = () => {
     setOpenDeleteConfirmDialog(false);
@@ -211,9 +246,13 @@ export default function Documents(props) {
       variables: {
         id: id,
       },
-      refetchQueries: ["getRecentContactFiles", "getContactFiles"],
+      refetchQueries: ["getRecentContactFiles"],
       awaitRefetchQueries: true,
     });
+  };
+
+  const handleViewFile = async (id) => {
+    viewFile({ variables: { fileId: id } });
   };
 
   return (
@@ -257,7 +296,7 @@ export default function Documents(props) {
                   <h4 className={classes.uploadTitle}>{file.fileName}</h4>
                   <h5 className={classes.uploadSubtext}>{file.userName}</h5>
                   <h5 className={classes.uploadSubtext}>
-                    {moment.unix(file.dateTime).toNow()}
+                    {moment.unix(file.dateTime).fromNow()}
                   </h5>
                 </div>
                 <div className={classes.IconSection}>
@@ -275,7 +314,7 @@ export default function Documents(props) {
                   />
                   <IconButton
                     size="small"
-                    onClick={() => window.open(file.fileUrl)}
+                    onClick={() => handleViewFile(file.fileId)}
                   >
                     <GetAppIcon />
                   </IconButton>
@@ -283,7 +322,12 @@ export default function Documents(props) {
               </div>
             </>
           ))}
-          <UploadZone contactId={props.id} userId={userId} />
+          <UploadZone
+            contactId={props.id}
+            userId={userId}
+            addFile={addFile}
+            addFileData={addFileData}
+          />
         </div>
       </CardContent>
     </div>
