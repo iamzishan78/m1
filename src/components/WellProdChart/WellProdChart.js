@@ -6,7 +6,6 @@ import { AppContext } from "../../AppContext";
 import useQueryWellProdHistory from "../../graphQL/useQueryProdHistory";
 //material-ui components
 import { makeStyles } from "@material-ui/core/styles";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import Skeleton from "@material-ui/lab/Skeleton";
 
 import * as am4core from "@amcharts/amcharts4/core";
@@ -46,16 +45,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function WellProdChart(props) {
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
   const [stateWellProdChart, setStateWellProdChart] = useContext(
     WellProdChartContext
   );
   const [chart, setChart] = useState(null);
-  const [chartData, setChartData] = useState(null);
-  const [dataLoading, setDataLoading] = useState(false);
-  const [dataError, setDataError] = useState(false);
   const classes = useStyles();
-  const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
+  const [stateWellCard] = useContext(WellCardContext);
 
   //graphQL
   const { data, loading, error } = useQueryWellProdHistory(
@@ -92,7 +88,7 @@ export default function WellProdChart(props) {
       if (stateWellCard.chartToggleGas) {
         if (stateWellCard.chartToggleMultiAxis) {
           var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-          if (chart.yAxes.indexOf(valueAxis) != 0) {
+          if (chart.yAxes.indexOf(valueAxis) !== 0) {
             valueAxis.syncWithAxis = chart.yAxes.getIndex(0);
           }
         }

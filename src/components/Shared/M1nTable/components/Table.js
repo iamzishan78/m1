@@ -404,7 +404,6 @@ function SubTable(props) {
       props.columns.forEach((column) => {
         switch (column.name) {
           case "actions":
-            {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
@@ -436,12 +435,11 @@ function SubTable(props) {
                   );
                 },
               };
-            }
+            
 
             break;
 
           case "adminAccess":
-            {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
@@ -455,11 +453,11 @@ function SubTable(props) {
                   style: { display: "flex", justifyContent: "center" },
                 }),
               };
-            }
+            
 
             break;
           case "parcelIcon": //// open parcel detail card
-            {
+            
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
@@ -499,11 +497,11 @@ function SubTable(props) {
                   );
                 },
               };
-            }
+            
             break;
 
           case "coordinates": //// fly to the map icon
-            {
+            
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
@@ -557,11 +555,11 @@ function SubTable(props) {
                   );
                 },
               };
-            }
+            
             break;
 
           case "isTracked":
-            {
+            
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
@@ -604,11 +602,11 @@ function SubTable(props) {
                   );
                 },
               };
-            }
+            
 
             break;
           case "commentsCounter":
-            {
+            
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
@@ -674,10 +672,10 @@ function SubTable(props) {
                   );
                 },
               };
-            }
+            
             break;
           case "wellsCounter":
-            {
+            
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
@@ -730,7 +728,7 @@ function SubTable(props) {
                   );
                 },
               };
-            }
+            
             break;
           // case "contactsCounter":
           //   {
@@ -779,7 +777,7 @@ function SubTable(props) {
           //   }
           //   break;
           case "isContact":
-            {
+            
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
@@ -845,11 +843,11 @@ function SubTable(props) {
                   );
                 },
               };
-            }
+            
             break;
 
           case "ownerCount":
-            {
+            
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
@@ -894,11 +892,11 @@ function SubTable(props) {
                   );
                 },
               };
-            }
+            
             break;
 
           case "owners": //ownerPerContactCount
-            {
+            
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
@@ -945,11 +943,11 @@ function SubTable(props) {
                   );
                 },
               };
-            }
+            
             break;
 
           case "tags":
-            {
+            
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
@@ -1013,11 +1011,11 @@ function SubTable(props) {
                   );
                 },
               };
-            }
+            
             break;
 
           case "fullContactAddress":
-            {
+            
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
@@ -1038,11 +1036,11 @@ function SubTable(props) {
                   );
                 },
               };
-            }
+            
             break;
 
           default:
-            {
+            
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
@@ -1133,7 +1131,6 @@ function SubTable(props) {
                   );
                 },
               };
-            }
             break;
         }
       });

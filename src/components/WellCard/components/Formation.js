@@ -9,7 +9,6 @@ import TableRow from "@material-ui/core/TableRow";
 import { AppContext } from "../../../AppContext";
 import { Typography } from "@material-ui/core";
 import { useQueryWellFormation } from "../../../graphQL/useQueryWellCompletionsAndStimulation";
-import moment from 'moment';
 
 const useStyles = makeStyles({
   table: {
@@ -49,16 +48,14 @@ export default function Formation(props) {
 
   useEffect(() => {
     if (typeof data !== "undefined" && typeof data.wellFormation !== "undefined" ) {
-      setFormationData(data.wellFormation);
+      const group1 = [];
+      const group2 = [];
+      data.wellFormation.forEach(o => {
+        o.TopDepth !== null ? group1.push(o) : group2.push(o);
+      });
+      setFormationData([...group1, ...group2]);
     }
   }, [data]);
-
-  const formatValue = (data) => {
-    if (data != null) {
-      data = data.toLocaleString();
-    }
-    return data
-  }
 
   return (
     <TableContainer className={classes.tableContainer}>

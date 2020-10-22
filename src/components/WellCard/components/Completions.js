@@ -93,7 +93,7 @@ export default function Completions(props) {
                   return (
                     <TableRow key={index}>
                       <TableCell>
-                        {moment(row.CompletionDate).format("DD-MM-YYYY")}
+                        {moment(row.CompletionDate).format("MM-DD-YYYY")}
                       </TableCell>
                       <TableCell>
                         {row.LeaseId}

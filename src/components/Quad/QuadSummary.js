@@ -8,7 +8,7 @@ import {
   emphasize,
   withStyles,
 } from "@material-ui/core/styles";
-import {ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import {MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Skeleton from "@material-ui/lab/Skeleton";
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gridContainer: {
     width: "auto",
-    height: "auto",
+    height: "100%",
     paddingBottom: "4px",
     display: "flex",
     flexWrap: "wrap",
@@ -80,16 +80,13 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
     alignContent: "center",
     justifyContent: "center",
-    padding: "8px",
+    height : 100,
+    width: 100,
   },
   content: {
-    "&> h5": {
-      fontSize: "30px",
-    },
-    "&> h6": {
-      fontSize: "24px",
-    },
+
   },
+
   bread: {
     display: "flex",
     justifyContent: "center",
@@ -100,24 +97,30 @@ const useStyles = makeStyles((theme) => ({
     minWidth: "100%",
     padding: "0px 16px",
   },
+  
   divider: {
     backgroundColor: "#d4d4d4",
     padding: "2px 0",
     borderRadius: "2px",
-    margin: "4px 0",
   },
-  gridListTile: {},
-  selectedToggle: {
-    backgroundColor: '#1fabda',
-    color: "#fff"
+
+  gridListTile: {
+
   },
 }));
 
 const toggleTheme = createMuiTheme({
   overrides: {
     MuiToggleButton:{
-      selected: {
-        backgroundColor: '#1fabda',
+      root: {
+        "&.Mui-selected": {
+          backgroundColor: '#1fabda',
+          color: "#fff",
+          fontWeight: "bold",
+        },
+        "&.Mui-disabled": {
+          backgroundColor: '#f2f2f2',
+        },
       },
     },
   },
@@ -139,13 +142,22 @@ const StyledBreadcrumb = withStyles((theme) => ({
   },
 }))(Chip);
 
+function formatDecimal(number) {
+  let hasDecimal = false;
+  const mod = number % 1 !== 0;
+  if (mod !== 0) hasDecimal = true;
+  const formatted = new Intl.NumberFormat("en-US").format(
+    hasDecimal ? number.toFixed(1) : number);
+  return formatted ;
+};
+
 export default function QuadSummary(props) {
   const [stateApp] = useContext(AppContext);
   const [stateQuad, setStateQuad] = useContext(QuadContext);
   const classes = useStyles();
   const [dropDownValue, setDropDownValue] = useState({ value: "Cumulative" });
-  const [toggleAlignment, setToggleAlignment] = useState('daily');
-  const [daily, setDaily] = useState(true);
+  const [toggleAlignment, setToggleAlignment] = useState('cumulative');
+  const [daily, setDaily] = useState(false);
   
   const handleChangeRange = (range) => {
     const newRange = parseInt(range.target.value);
@@ -224,19 +236,21 @@ export default function QuadSummary(props) {
           >
             <Card className={classes.card}>
               <CardContent className={classes.content}>
-                <Typography align="center" variant="h5">
+                <Typography align="center" variant="h6">
                   {tile.metric.toUpperCase()}
                 </Typography>
                 <Divider className={classes.divider} />
-                <Typography align="center" variant="h6">
+                <Typography 
+                  align="center" variant="inherit" component="h6"
+                  style={{fontWeight:"bold", fontSize:18}}>
                   {stateQuad.selectedRange === 12
-                    ? new Intl.NumberFormat("en-US").format( daily ? tile.value12 / (30 * 12) : tile.value12)
+                    ? formatDecimal( daily ? tile.value12 / (30 * 12) : tile.value12)
                     : stateQuad.selectedRange === 6
-                    ? new Intl.NumberFormat("en-US").format(daily ? tile.value6 / (30 * 6) : tile.value6)
+                    ? formatDecimal(daily ? tile.value6 / (30 * 6) : tile.value6)
                     : stateQuad.selectedRange === 1
-                    ? new Intl.NumberFormat("en-US").format(daily ? tile.value1 / (30) : tile.value1)
+                    ? formatDecimal(daily ? tile.value1 / (30) : tile.value1)
                     : stateQuad.selectedRange === 0
-                    ? new Intl.NumberFormat("en-US").format(tile.cumulative)
+                    ? formatDecimal(tile.cumulative)
                     : "--"}
                 </Typography>
                 <Typography align="center" variant="h6">
@@ -247,27 +261,26 @@ export default function QuadSummary(props) {
           </GridListTile>
         ))}
 
-        <ThemeProvider theme={toggleTheme}>
-          <ToggleButtonGroup
-            exclusive
-            value={toggleAlignment}
-          >
+        <ToggleButtonGroup exclusive style={{width: "94%"}} value={toggleAlignment}>
+          <MuiThemeProvider theme={toggleTheme} >
             <ToggleButton
+              selected={!daily}
               disabled={stateQuad.selectedRange === 0} 
-              value="cumulative" aria-label="left aligned"
               onClick={() => handleToggleChange("cumulative")}
+              style={{width: "100%"}}
             >
               Cumulative
             </ToggleButton>
             <ToggleButton 
+              selected={daily}
               disabled={stateQuad.selectedRange === 0} 
-              value="daily" aria-label="right aligned"
               onClick={() => handleToggleChange("daily")}
+              style={{width: "100%"}}
             >
               Daily
             </ToggleButton>
-          </ToggleButtonGroup>
-        </ThemeProvider>
+          </MuiThemeProvider>
+        </ToggleButtonGroup>
       </GridList>
     </div>
   ) : // </div>

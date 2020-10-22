@@ -108,13 +108,13 @@ export default function Simulation(props) {
                   return (
                       <TableRow key={index}>
                         <TableCell>
-                          {moment(row.StimDate).format("DD-MM-YYYY")}
+                          {moment(row.StimDate).format("MM-DD-YYYY")}
                         </TableCell>
                         <TableCell>
-                          {moment(row.StartDate).format("DD-MM-YYYY")}
+                          {moment(row.StartDate).format("MM-DD-YYYY")}
                         </TableCell>
                         <TableCell>
-                          {moment(row.EndDate).format("DD-MM-YYYY")}
+                          {moment(row.EndDate).format("MM-DD-YYYY")}
                         </TableCell>
                         <TableCell>
                           {row.ServiceCompany}
