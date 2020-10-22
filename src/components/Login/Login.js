@@ -248,7 +248,7 @@ const Login = (props) => {
               stateApp.myMSALObj.logout(logoutRequest);
             }
         
-            history.location.replace(window.location.origin);
+            history.replace(window.location.origin);
             setLoading(false);
           }
 
