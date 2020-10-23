@@ -20,6 +20,7 @@ import RightDialog from "../ContactDetailCard/components/RightDialog";
 import "./index.css";
 import { AppBar } from "@material-ui/core";
 import TransactAppBar from "./components/TransactAppBar";
+import TransactTable from "./components/TransactTable";
 // const data_file = {
 //   lanes: [
 //     {
@@ -161,6 +162,8 @@ export default function Transact() {
   const [getTransactionData, { loading, data }] = useLazyQuery(TRANSACTIONDATA);
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
 
+  const [dealDisplayType, setDealDisplayType] = useState("board");
+
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
       getTransactionData({
@@ -283,48 +286,53 @@ export default function Transact() {
         closedSum={closedSum}
         activeLength={activeDeals.length}
         activeSum={activeSum}
+        dealDisplayType={dealDisplayType}
+        setDealDisplayType={setDealDisplayType}
       />
-      <Board
-        className={classes.list}
-        style={{ backgroundColor: "#fff" }}
-        data={transactData}
-        draggable={true}
-        laneDraggable={false}
-        cardDraggable={true}
-        collapsibleLanes={true}
-        editable={false}
-        canAddLanes={false}
-        editLaneTitle={false}
-        hideCardDeleteIcon={false}
-        onDataChange={handleDataChange}
-        onCardClick={handleCardClick}
-        laneStyle={{
-          backgroundColor: "#fff",
-          color: "#011133",
-          fontWeight: "bold",
-        }}
-        cardStyle={{
-          boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
-          backgroundColor: "#F2F2F2",
-        }}
+      {dealDisplayType === "board" && (
+        <Board
+          className={classes.list}
+          style={{ backgroundColor: "#fff" }}
+          data={transactData}
+          draggable={true}
+          laneDraggable={false}
+          cardDraggable={true}
+          collapsibleLanes={true}
+          editable={false}
+          canAddLanes={false}
+          editLaneTitle={false}
+          hideCardDeleteIcon={false}
+          onDataChange={handleDataChange}
+          onCardClick={handleCardClick}
+          laneStyle={{
+            backgroundColor: "#fff",
+            color: "#011133",
+            fontWeight: "bold",
+          }}
+          cardStyle={{
+            boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+            backgroundColor: "#F2F2F2",
+          }}
 
-        //onCardAdd = {handleCardAdd}
-        //onCardDelete = {handleCardDelete}
-        // handleDragStart = {}
-        // handleDragEnd={}
-        // handleLaneDragStart
-        // onDataChange
-        // onCardAdd
-        // onBeforeCardDelete
-        // onCardDelete
-        // onCardMoveAcrossLanes
-        // onLaneAdd
-        // onLaneDelete
-        // onLaneUpdate
-        // onLaneClick
-        // onLaneScroll
-        //onCardMoveAcrossLanes
-      />
+          //onCardAdd = {handleCardAdd}
+          //onCardDelete = {handleCardDelete}
+          // handleDragStart = {}
+          // handleDragEnd={}
+          // handleLaneDragStart
+          // onDataChange
+          // onCardAdd
+          // onBeforeCardDelete
+          // onCardDelete
+          // onCardMoveAcrossLanes
+          // onLaneAdd
+          // onLaneDelete
+          // onLaneUpdate
+          // onLaneClick
+          // onLaneScroll
+          //onCardMoveAcrossLanes
+        />
+      )}
+      {dealDisplayType === "table" && <TransactTable deals={allDeals} />}
     </div>
   ) : (
     <CircularProgress size={80} disableShrink color="secondary" />
