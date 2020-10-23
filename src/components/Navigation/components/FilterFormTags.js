@@ -77,12 +77,12 @@ export default function FilterFormProduction() {
       <Grid item sm={12} className={classes.gridItem}>
         <FilterTags />
       </Grid>
-      <Grid item sm={6} className={classes.gridItem}>
+      <Grid item sm={12} className={classes.gridItem}>
         <FilterTrackedWells />
       </Grid>
-      <Grid item sm={6} className={classes.gridItem}>
+      {/* <Grid item sm={6} className={classes.gridItem}>
         <FilterTrackedOwners />
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 }
