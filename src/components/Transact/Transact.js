@@ -18,6 +18,8 @@ import AddDealDialog from "../ContactDetailCard/components/AddDealDialog";
 import RightDialog from "../ContactDetailCard/components/RightDialog";
 
 import "./index.css";
+import { AppBar } from "@material-ui/core";
+import TransactAppBar from "./components/TransactAppBar";
 // const data_file = {
 //   lanes: [
 //     {
@@ -131,12 +133,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+let formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
+const sumDeals = (deals) => {
+  let sum = 0;
+  deals.forEach(
+    (card) =>
+      (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+  );
+  const formatted = formatter.format(sum);
+  return formatted.slice(0, formatted.length - 3);
+};
+
 export default function Transact() {
   const classes = useStyles();
   // const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [transactData, setTransactData] = useState();
   const [id, setId] = useState();
+  const [allDeals, setAllDeals] = useState([]);
+  const [activeDeals, setActiveDeals] = useState([]);
+  const [closedDeals, setClosedDeals] = useState([]);
 
   const [getTransactionData, { loading, data }] = useLazyQuery(TRANSACTIONDATA);
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
@@ -150,6 +170,39 @@ export default function Transact() {
       });
     }
   }, [stateApp.user]);
+
+  useEffect(() => {
+    if (
+      !loading &&
+      data?.transactionData?.allData?.lanes &&
+      data.transactionData.allData.lanes.length > 0
+    ) {
+      const lanes = data?.transactionData?.allData?.lanes;
+
+      // get all deals
+      const all = [];
+      lanes.forEach((deal) => {
+        deal.cards.forEach((card) => {
+          all.push(card);
+        });
+      });
+      setAllDeals(all);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    let active = [];
+    let closed = [];
+    let others = [];
+    allDeals.forEach((card) => {
+      if (card.laneId === "lane2" || card.laneId === "lane3") active.push(card);
+      else if (card.laneId === "lane4") closed.push(card);
+      else others.push(card);
+    });
+
+    setActiveDeals(active);
+    setClosedDeals(closed);
+  }, [allDeals]);
 
   const getLanesWithFixedTitles = (lanes) => {
     return lanes.map((lane) => {
@@ -197,7 +250,8 @@ export default function Transact() {
     }));
   };
 
-  console.log("TRANSACT DATA:", transactData);
+  const closedSum = sumDeals(closedDeals);
+  const activeSum = sumDeals(activeDeals);
 
   return !loading && data && transactData ? (
     <div className={classes.root}>
@@ -223,6 +277,12 @@ export default function Transact() {
             activeDeal: { cardId: null, laneId: null },
           }))
         }
+      />
+      <TransactAppBar
+        closedLength={closedDeals.length}
+        closedSum={closedSum}
+        activeLength={activeDeals.length}
+        activeSum={activeSum}
       />
       <Board
         className={classes.list}
