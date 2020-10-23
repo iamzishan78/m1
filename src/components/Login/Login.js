@@ -347,7 +347,7 @@ const Login = (props) => {
     //   return;
     // }
 
-    request.loginHint = request.account.homeAccountId;
+    request.loginHint = request.account.username;
     // const authGraphQLLoginResponse = await ssoSilent(request).catch((error) => {
     //   //do some error stuff
     //   console.log(error);
