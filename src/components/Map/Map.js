@@ -389,6 +389,7 @@ export default function Map() {
     }
   }, [dataTracks]);
 
+  
   useEffect(() => {
     console.log("useEffect 2");
     if (dataTracksOwner && dataTracksOwner.tracksByObjectType) {
@@ -402,11 +403,12 @@ export default function Map() {
           owners: objectsIdsArray,
         }));
 
-        getOwnersWells({
-          variables: {
-            ownersIds: objectsIdsArray,
-          },
-        });
+        //// temporary 
+        // getOwnersWells({
+        //   variables: {
+        //     ownersIds: objectsIdsArray,
+        //   },
+        // });
       }
     }
   }, [dataTracksOwner]);
