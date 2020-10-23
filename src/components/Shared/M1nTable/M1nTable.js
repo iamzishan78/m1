@@ -1271,7 +1271,7 @@ function M1nTable(props) {
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
-  const [loading, Loading] = useState(false);
+  const [loading, Loading] = useState(true);
   const setLoading = (newState) => {
     setStateIfDeepEqual(Loading, newState);
   };

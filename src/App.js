@@ -166,7 +166,8 @@ const NotFoundRedirect = () =>{
         location.replace("/");
       };
     }, 3000);
-    return ( stateApp.loading === false &&
+    
+    return ( stateApp.loading === false && !stateApp.registeredRoutes.includes(location.pathname) &&
       <div style={{margin: "auto", marginTop:"20%"}}>
         <Typography  
           variant="h6" 
@@ -203,7 +204,7 @@ function App() {
 
   const updateApolloClient = (endpoint, token) => {
     //uncomment to run against local
-    endpoint = "http://localhost:7071/api/m1graph"
+    // endpoint = "http://localhost:7071/api/m1graph"
 
     if (!apolloClient) {
       let client = new ApolloClient({

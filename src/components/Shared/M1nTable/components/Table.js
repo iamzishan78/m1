@@ -11,7 +11,7 @@ import Comments from "../../Comments";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import MUIDataTable from "mui-datatables";
-import { IconButton, Menu, MenuItem } from "@material-ui/core";
+import { IconButton, Menu, MenuItem, Typography, LinearProgress } from "@material-ui/core";
 import TrackToggleButton from "../../TrackToggleButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
@@ -59,6 +59,7 @@ import TransactDialog from "../../../Transact/components/dialog";
 import ParcelScreenIcon from "../../svgIcons/parcelScreen";
 import ParcelsDetailCard from "../../../ParcelsDetailCard/ParcelsDetailCard";
 import AssessmentIcon from "@material-ui/icons/Assessment";
+import Skeleton from "@material-ui/lab/Skeleton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -195,6 +196,8 @@ function SubTable(props) {
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, Rows] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const setRows = (newState) => {
     setStateIfDeepEqual(Rows, newState);
   };
@@ -275,6 +278,10 @@ function SubTable(props) {
   const setTrueTargetLabel = (newState) => {
     setStateIfDeepEqual(TrueTargetLabel, newState);
   };
+
+  useEffect(() => {
+    setIsLoading(props.loading);
+  },[props.loading]);
 
   useEffect(() => {
     if (props.targetLabel === "Parcel Interest")
@@ -407,7 +414,6 @@ function SubTable(props) {
       props.columns.forEach((column) => {
         switch (column.name) {
           case "detailCard":
-            {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
@@ -468,7 +474,6 @@ function SubTable(props) {
                   );
                 },
               };
-            }
             break;
           case "actions":
               column.options = {
@@ -1241,6 +1246,7 @@ function SubTable(props) {
   const handleOpenExpandableCard = () => {
     setShowExpandableCard(true);
   };
+  
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
     setTargetLabelToExpand(null);
@@ -1292,6 +1298,7 @@ function SubTable(props) {
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
       // console.log("currentRowsSelected", JSON.stringify(currentRowsSelected));
       // console.log("rowsSelected", JSON.stringify(rowsSelected));
+      
       if (rowsSelected && rowsSelected.length > 0) {
         let indexArray = rowsSelected
           .map((d) => d.dataIndex)
@@ -1311,9 +1318,11 @@ function SubTable(props) {
           } else setM1nSelectedRowsIds([]);
         }
         setM1nSelectedRowsIndexes(indexArray);
+        
       } else {
         setM1nSelectedRowsIndexes([]);
         setM1nSelectedRowsIds([]);
+        
       }
     },
     onRowsDelete: (rowsDeleted) => {
@@ -1574,7 +1583,6 @@ function SubTable(props) {
     },
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
       setSelectedRow(rows[dataIndex]);
-
       // if (props.targetLabel === "owner") {
       //   setStateApp((state) => ({ ...state, selectedOwner: rows[dataIndex] }));
       //   setSubComponent(
@@ -1613,7 +1621,6 @@ function SubTable(props) {
           ...stateApp,
           selectedContact: rows[dataIndex].id,
         }));
-
         setSubComponent(
           <ContactDetailCard
             selectRowOpenContact={selectRowOpenContact}
@@ -1643,7 +1650,19 @@ function SubTable(props) {
       >
         <MUIDataTable
           className={classes.table}
-          title={props.header}
+          title={
+            <div>
+                <Typography variant="h5" component="div">
+                    {props.header}
+                    {isLoading &&
+                      <CircularProgress
+                        size={20}
+                        style={{marginLeft: 10, position: "relative", top: 3}}
+                        color="secondary"
+                      />}
+                </Typography>
+            </div>
+        }
           data={rows ? rows : []}
           columns={columns ? columns : []}
           options={{ print: false, download: false, ...options }}
@@ -1994,17 +2013,26 @@ function SubTable(props) {
         )}
       </div>
 
-      {props.loading && (
+      {props.loading &&  (
         <div
           style={{
-            padding: "15px",
+            padding: "20px",
             position: "absolute",
-            top: "95px",
-            left: "30px",
+            top: "50px",
             zIndex: "150",
+            width:"100%",
           }}
         >
-          <CircularProgress size={80} disableShrink color="secondary" />
+          <Skeleton height={120} animation="wave" />
+          <Skeleton height={60}/>
+          <Skeleton height={5} animation="wave"/>
+          <Skeleton height={60}/>
+          <Skeleton height={5} animation="pulse"/>
+          <Skeleton height={60} animation="wave"/>
+          <Skeleton height={5} animation="wave"/>
+          <Skeleton height={60} animation="pulse"/>
+          <Skeleton height={10} animation="wave"/>
+          <Skeleton height={10} animation="wave"/>
         </div>
       )}
       {isUMSettings}

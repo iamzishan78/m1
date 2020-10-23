@@ -268,6 +268,7 @@ export default function QuadSummary(props) {
               disabled={stateQuad.selectedRange === 0} 
               onClick={() => handleToggleChange("cumulative")}
               style={{width: "100%"}}
+              size="small"
             >
               Cumulative
             </ToggleButton>
@@ -276,6 +277,7 @@ export default function QuadSummary(props) {
               disabled={stateQuad.selectedRange === 0} 
               onClick={() => handleToggleChange("daily")}
               style={{width: "100%"}}
+              size="small"
             >
               Daily
             </ToggleButton>
