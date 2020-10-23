@@ -175,8 +175,8 @@ const Login = (props) => {
                 account: accountObj
               };
 
-              let request = {}
-              request.scopes = loginRequest.scopes.concat([stateApp.graphqlScope]);
+              let request = loginRequest
+              request.scopes.push(stateApp.graphqlScope);
 
               if (queryString.parse(props.location.search).id_token_hint) {
                 request.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint }
@@ -227,33 +227,26 @@ const Login = (props) => {
             
             return;
           }
-          else {
 
-            const currentAccounts = stateApp.myMSALObj.getAllAccounts();
-            const currentAccount = currentAccounts && currentAccounts.length === 1
-              ? currentAccounts[0]
-              : (() => {
-                  // Add choose account code here
-                  return;
-                })();
-        
-            const logoutRequest = {
-              account: currentAccount
-            };
-        
-            sessionStorage.clear();
-            localStorage.clear();
-        
-            if(currentAccount) {
-              stateApp.myMSALObj.logout(logoutRequest);
-            }
-        
-            history.replace(window.location.origin);
-            setLoading(false);
-          }
-
+          const currentAccounts = stateApp.myMSALObj.getAllAccounts();
+          const currentAccount = currentAccounts && currentAccounts.length === 1
+            ? currentAccounts[0]
+            : undefined
+      
+          const logoutRequest = {
+            account: currentAccount
+          };
+      
           sessionStorage.clear();
+          localStorage.clear();
+      
+          if(currentAccount) {
+            stateApp.myMSALObj.logout(logoutRequest);
+          }
+      
           window.location.replace(window.location.origin);
+          setLoading(false);
+
         });
     } else {
       if (stateApp.myMSALObj === false) setLoading(false);
@@ -303,8 +296,8 @@ const Login = (props) => {
 
         await finishAADAuth(loginResponse);
       } else if (signInType === "loginRedirect") {
-        let request = {}
-        request.scopes = loginRequest.scopes.concat([tenant.graphqlScope]);
+        let request = loginRequest
+        request.scopes.push(tenant.graphqlScope);
 
         if (queryString.parse(props.location.search).id_token_hint) {
           request.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint }
@@ -319,7 +312,7 @@ const Login = (props) => {
   };
 
   async function finishAADAuth(accountObj) {
-    const request = {};
+    const request = authGraphQLRequest(stateApp.graphqlScope);
     request.account = accountObj;
 
     // request.scopes = readProfileRequest.scopes;
@@ -354,7 +347,6 @@ const Login = (props) => {
     //   return;
     // }
 
-    request.scopes = authGraphQLRequest(stateApp.graphqlScope).scopes;
     request.loginHint = request.account.homeAccountId;
     // const authGraphQLLoginResponse = await ssoSilent(request).catch((error) => {
     //   //do some error stuff
