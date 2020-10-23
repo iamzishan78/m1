@@ -200,7 +200,7 @@ export default function FilterLateralLength() {
 
       <Grid item sm={12}>
         <div className={classes.divBordersMinMax}>
-          <FormLabel className={classes.inputLabel}>Lateral Length</FormLabel>
+          <FormLabel className={classes.inputLabel}>Lateral [ft.]</FormLabel>
           <div className={classes.floatRight}>
             <NumberFormat
               id="LLMin"
