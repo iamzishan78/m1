@@ -58,6 +58,7 @@ import Contact_card from "../../svgIcons/contact_card";
 import TransactDialog from "../../../Transact/components/dialog";
 import ParcelScreenIcon from "../../svgIcons/parcelScreen";
 import ParcelsDetailCard from "../../../ParcelsDetailCard/ParcelsDetailCard";
+import AssessmentIcon from "@material-ui/icons/Assessment";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -376,19 +377,21 @@ function SubTable(props) {
             ? "Remove Admin Access"
             : "Grant Admin Access"}
         </MenuItem> */}
-         {
-           user.lastLogin == null || user.lastLogin == undefined ?
-           <div>
-              <MenuItem
-                className={classes.userMenuItem}
-                onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}
-              >
-                Resend Invite
-              </MenuItem>
-              <Divider />
-           </div> :
+        {user.lastLogin == null || user.lastLogin == undefined ? (
+          <div>
+            <MenuItem
+              className={classes.userMenuItem}
+              onClick={(e) =>
+                handleExpandClick(null, null, null, "reinviteUser")
+              }
+            >
+              Resend Invite
+            </MenuItem>
+            <Divider />
+          </div>
+        ) : (
           <div></div>
-         }
+        )}
         <MenuItem
           className={classes.userMenuItem}
           onClick={(e) => handleExpandClick(null, null, null, "deleteUser")}
@@ -396,13 +399,77 @@ function SubTable(props) {
           Delete User
         </MenuItem>
       </Menu>
-    )
+    );
   };
 
   useEffect(() => {
     if (props.columns) {
       props.columns.forEach((column) => {
         switch (column.name) {
+          case "detailCard":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
+
+                  return (
+                    <Tooltip
+                      title={"Detail Card"}
+                      placement="top"
+                      style={{ marginRight: "10px" }}
+                    >
+                      <IconButton
+                        id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                        size={props.dense ? "small" : "medium"}
+                        color="secondary"
+                        className={`${classes.icons} ${
+                          colInd === tableMeta.columnIndex &&
+                          rowInd === tableMeta.rowIndex
+                            ? classes.iconSelected
+                            : ""
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+
+                          if (props.targetLabel === "well") {
+                            let selectedWell = props.rows.find((row) => {
+                              if (row.id) return row.id == tableMeta.rowData[0];
+                              return row.Id == tableMeta.rowData[0];
+                            });
+
+                            if (selectedWell) {
+                              setSelectedRow(selectedWell);
+                              setStateApp((state) => ({
+                                ...state,
+                                selectedWellId: tableMeta.rowData[0],
+                                selectedWell,
+                              }));
+                              setSubComponent(<WellCardProvider />);
+                              setTitle(
+                                selectedWell.wellName
+                                  ? selectedWell.wellName
+                                  : selectedWell.WellName
+                              );
+                              setSubTitle(
+                                selectedWell.operator
+                                  ? selectedWell.operator
+                                  : selectedWell.Operator
+                              );
+                              handleOpenExpandableCard();
+                            }
+                          }
+                        }}
+                        aria-label="Detail Card"
+                      >
+                        <AssessmentIcon />
+                      </IconButton>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
           case "actions":
               column.options = {
                 ...column.options,
@@ -510,9 +577,9 @@ function SubTable(props) {
                   return (
                     <Tooltip
                       title={
-                        !value || value.length < 2
-                          ? "Not Available"
-                          : "Fly To Map"
+                        value && (value.bbox || value.center)
+                          ? "Fly To Map"
+                          : "Not Available"
                       }
                       placement="top"
                       style={{ marginRight: "10px" }}
@@ -522,23 +589,43 @@ function SubTable(props) {
                         size={props.dense ? "small" : "medium"}
                         color="secondary"
                         className={`${classes.icons} ${
-                          !value || value.length < 2
-                            ? classes.noCommentsIcon
-                            : ""
+                          value && (value.bbox || value.center)
+                            ? ""
+                            : classes.noCommentsIcon
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (value && value.length === 2) {
-                            setStateApp((state) => ({
-                              ...state,
-                              popupOpen: false,
-                              selectedWell: null,
-                              selectedWellId: tableMeta.rowData[0],
-                              flyTo: {
-                                longitude: value[0],
-                                latitude: value[1],
-                              },
-                            }));
+                          if (value && (value.bbox || value.center)) {
+                            setStateApp((state) => {
+                              if (value.bbox)
+                                return {
+                                  ...state,
+                                  popupOpen: false,
+                                  selectedWell: null,
+                                  selectedWellId: null,
+                                  fitBounds: {
+                                    maxLat: value.bbox[3],
+                                    minLat: value.bbox[1],
+                                    maxLong: value.bbox[2],
+                                    minLong: value.bbox[0],
+                                  },
+                                };
+
+                              //// value.center
+                              return {
+                                ...state,
+                                popupOpen: false,
+                                selectedWell: null,
+                                selectedWellId:
+                                  props.targetLabel == "well"
+                                    ? tableMeta.rowData[0]
+                                    : null,
+                                flyTo: {
+                                  longitude: value.center[0],
+                                  latitude: value.center[1],
+                                },
+                              };
+                            });
 
                             dispatch(
                               setMapGridCardState({
@@ -1067,7 +1154,9 @@ function SubTable(props) {
                   ) {
                     //// if no value
                     if (value === "" || value === null || !value)
-                      return <p style={{ color: "#B3B3B3", padding: "10px" }}>N/A</p>;
+                      return (
+                        <p style={{ color: "#B3B3B3", padding: "10px" }}>N/A</p>
+                      );
 
                     //// if value
                     return (
@@ -1084,7 +1173,9 @@ function SubTable(props) {
                   }
 
                   return (
-                    <div style={{ display: "flex", padding: "7px 0px 0px 0px" }}>
+                    <div
+                      style={{ display: "flex", padding: "7px 0px 0px 0px" }}
+                    >
                       {props.targetLabel === "contact" &&
                         column.name === "name" && (
                           <Avatar
@@ -1194,7 +1285,8 @@ function SubTable(props) {
         ? [10, 25]
         : [],
     selectableRows: "multiple",
-    print: props.targetLabel !== "deals" && props.targetLabel !== "usermanagement",
+    print:
+      props.targetLabel !== "deals" && props.targetLabel !== "usermanagement",
     viewColumns: props.targetLabel !== "usermanagement",
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
@@ -1453,7 +1545,6 @@ function SubTable(props) {
                         ...stateApp,
                         dealDialog: true,
                         activeDeal: { cardId: null, laneId: null },
-
                       }));
                     if (
                       props.addAble.type &&
@@ -1499,23 +1590,23 @@ function SubTable(props) {
       if (props.targetLabel === "deals") {
         console.log("ROW DATA: ", rows[dataIndex]);
         console.log("ROW DATA 0 INDEX: ", rowData[0]);
-        let card = {...rows[dataIndex]};
+        let card = { ...rows[dataIndex] };
         delete card["dealStage"];
         setStateApp((stateApp) => ({
           ...stateApp,
           dealDialog: true,
-          activeDeal: card
+          activeDeal: card,
         }));
       }
 
-      if (props.targetLabel === "well") {
-        setStateApp((state) => ({ ...state, selectedWellId: rowData[0] }));
-        setStateApp((state) => ({ ...state, selectedWell: rows[dataIndex] }));
-        setSubComponent(<WellCardProvider />);
-        setTitle(rows[dataIndex].wellName);
-        setSubTitle(rows[dataIndex].operator);
-        handleOpenExpandableCard();
-      }
+      // if (props.targetLabel === "well") {
+      //   setStateApp((state) => ({ ...state, selectedWellId: rowData[0] }));
+      //   setStateApp((state) => ({ ...state, selectedWell: rows[dataIndex] }));
+      //   setSubComponent(<WellCardProvider />);
+      //   setTitle(rows[dataIndex].wellName);
+      //   setSubTitle(rows[dataIndex].operator);
+      //   handleOpenExpandableCard();
+      // }
 
       if (props.targetLabel === "contact") {
         setStateApp((stateApp) => ({

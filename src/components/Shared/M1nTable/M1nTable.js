@@ -241,6 +241,18 @@ const WellsHeadCells = [
       viewColumns: false,
     },
   },
+  {
+    name: "detailCard",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 ];
 
 const OwnersPerWellHeadCells = [
@@ -563,7 +575,12 @@ const ContactsHeadCells = [
   },
 
   { name: "name", label: "Name", editable: true },
-  { name: "fullContactAddress", label: "Primary Address", editable: true, options: { filter: false } },
+  {
+    name: "fullContactAddress",
+    label: "Primary Address",
+    editable: true,
+    options: { filter: false },
+  },
   { name: "leadSource", label: "Lead Source", editable: true },
   { name: "lastUpdateBy.name", label: "Updated By" },
   { name: "lastUpdateAt", label: "Last Updated", options: { filter: false } },
@@ -724,6 +741,18 @@ const SearchsHeadCells = [
   },
   {
     name: "coordinates",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "detailCard",
     label: " ",
     options: {
       filter: false,
@@ -1335,9 +1364,7 @@ function M1nTable(props) {
   //////////
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
   //////////
-  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
-    CUSTOMLAYER,
-  );
+  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
   //////////
   const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
   //////////
@@ -1417,7 +1444,6 @@ function M1nTable(props) {
         getOwners({
           variables: {
             ownerIdArray: tracksIdArray,
-            authToken: stateApp.user.authToken,
           },
         });
         getOwnersWells({
@@ -1446,18 +1472,16 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners" && dataOwners) {
-      console.log("ue mintable 4");
       if (
         dataOwners.owners &&
-        dataOwners.owners.results &&
-        dataOwners.owners.results.length > 0 &&
+        dataOwners.owners.length > 0 &&
         dataCommentsCounter &&
         dataCommentsCounter.commentsCounter &&
         dataTagSamples &&
         dataTagSamples.tagSamples &&
         dataOwnersWells
       ) {
-        let owners = [...dataOwners.owners.results];
+        let owners = [...dataOwners.owners];
         owners = owners.map((o) => {
           let owner = { ...o };
           owner.isTracked = true;
@@ -1542,11 +1566,7 @@ function M1nTable(props) {
         }));
         setLoading(false);
       } else {
-        if (
-          dataOwners.owners &&
-          dataOwners.owners.results &&
-          dataOwners.owners.results.length === 0
-        ) {
+        if (dataOwners.owners && dataOwners.owners.length === 0) {
           setRows([]);
           setLoading(false);
         }
@@ -1626,17 +1646,12 @@ function M1nTable(props) {
           well.isTracked = true;
           well.commentsCounter = 0;
           well.tags = [[], 0];
-          well.coordinates = [];
-          if (well.longitude || well.Longitude) {
-            well.coordinates.push(
-              well.longitude ? well.longitude : well.Longitude
-            );
-          }
-          if (well.latitude || well.Latitude) {
-            well.coordinates.push(
-              well.latitude ? well.latitude : well.Latitude
-            );
-          }
+
+          well.coordinates = {};
+          if (well.Longitude && well.Latitude)
+            well.coordinates.center = [well.Longitude, well.Latitude];
+          if (well.longitude && well.latitude)
+            well.coordinates.center = [well.longitude, well.latitude];
 
           for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
             if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -2253,14 +2268,6 @@ function M1nTable(props) {
   ]);
 
   useEffect(() => {
-    console.log(
-      "%cCONTACT ID : ",
-      "font-size:20px; color:tomato;",
-      props.contact
-    );
-  }, [props.contact]);
-
-  useEffect(() => {
     if (
       props.parent &&
       props.parent === "search" &&
@@ -2277,15 +2284,18 @@ function M1nTable(props) {
           result.id = result.Id;
 
           if (props.targetLabel && props.targetLabel == "well") {
-            result.coordinates = [];
-            if (result.Longitude) {
-              result.coordinates.push(result.Longitude);
-              result.longitude = result.Longitude;
-            }
-            if (result.Latitude) {
-              result.coordinates.push(result.Latitude);
-              result.latitude = result.Latitude;
-            }
+            if (result.Longitude) result.longitude = result.Longitude;
+            if (result.Latitude) result.latitude = result.Latitude;
+
+            result.coordinates = {};
+            if (result.Longitude && result.Latitude)
+              result.coordinates.center = [result.Longitude, result.Latitude];
+          }
+
+          if (props.targetLabel && props.targetLabel == "location") {
+            result.coordinates = {};
+            if (result.bbox) result.coordinates.bbox = result.bbox;
+            if (result.center) result.coordinates.center = result.center;
           }
 
           if (props.showComments) {
@@ -2359,10 +2369,16 @@ function M1nTable(props) {
           );
         }
         if (props.showComments) buildingColumns.push(SearchsHeadCells[2]);
+
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
-        if (props.targetLabel 
-          //&& props.targetLabel == "well"  //would only set flyto for wells 
-          )
+        if (props.targetLabel && props.targetLabel == "well")
+          //would only set the detail card icon for wells
+          buildingColumns.push(SearchsHeadCells[5]);
+        if (
+          props.targetLabel &&
+          (props.targetLabel == "well" || props.targetLabel == "location")
+        )
+          //would only set flyto for wells & locations
           buildingColumns.push(SearchsHeadCells[4]);
 
         setColumns([...buildingColumns]);
@@ -2766,6 +2782,13 @@ function M1nTable(props) {
   ]);
 
   ////////////Deals end////////////////////////////////////////////////
+  useEffect(() => {
+    console.log(
+      "%cCONTACT ID : ",
+      "font-size:20px; color:tomato;",
+      props.contact
+    );
+  }, [props.contact]);
 
   ////////////-----Add your code section here-----///////////////////////
   return (
