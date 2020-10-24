@@ -930,7 +930,9 @@ export default function Navigation(props) {
     sessionStorage.clear();
     localStorage.clear();
 
-    stateApp.myMSALObj.logout(logoutRequest);
+    if(currentAccount) {
+      stateApp.myMSALObj.logout(logoutRequest);
+    }      
 
     window.location.replace(window.location.origin);
 

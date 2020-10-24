@@ -175,8 +175,7 @@ const Login = (props) => {
                 account: accountObj
               };
 
-              let request = loginRequest
-              request.scopes.push(stateApp.graphqlScope);
+              let request = loginRequest(stateApp.graphqlScope)
 
               if (queryString.parse(props.location.search).id_token_hint) {
                 request.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint }
@@ -244,7 +243,7 @@ const Login = (props) => {
             stateApp.myMSALObj.logout(logoutRequest);
           }
       
-          window.location.replace(window.location.origin);
+          // window.location.replace(window.location.origin);
           setLoading(false);
 
         });
@@ -280,7 +279,7 @@ const Login = (props) => {
 
       if (signInType === "loginPopup") {
         stateApp.myMSALObj = myMSALObj; /////
-        const loginResponse = await signInPopup(loginRequest).catch((error) => {
+        const loginResponse = await signInPopup(loginRequest(tenant.graphqlScope)).catch((error) => {
           //do some error stuff
           console.log(error);
           updateTenantFlags(error);
@@ -296,8 +295,7 @@ const Login = (props) => {
 
         await finishAADAuth(loginResponse);
       } else if (signInType === "loginRedirect") {
-        let request = loginRequest
-        request.scopes.push(tenant.graphqlScope);
+        let request = loginRequest(tenant.graphqlScope)
 
         if (queryString.parse(props.location.search).id_token_hint) {
           request.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint }
@@ -553,21 +551,15 @@ const Login = (props) => {
       .acquireTokenSilent(request)
       .catch(async (error) => {
         console.log("silent token acquisition fails.");
-        if (error instanceof msal.InteractionRequiredAuthError) {
-          console.log("acquiring token using redirect");
-          return stateApp.myMSALObj
-            .acquireTokenRedirect(request)
-            .catch((error) => {
-              console.error(error);
-            });
-        } else {
-          console.error(error);
-          return stateApp.myMSALObj
-            .acquireTokenRedirect(request)
-            .catch((error) => {
-              console.error(error);
-            });
-        }
+        console.error(error);
+
+        request.forceRefresh = true;
+
+        return stateApp.myMSALObj
+          .acquireTokenRedirect(request)
+          .catch((error) => {
+            console.error(error);
+          });
       });
   }
 

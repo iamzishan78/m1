@@ -42,9 +42,12 @@ export const msalConfig = (tenant) => {
 export const MSALObj = (tenant) =>
   new msal.PublicClientApplication(msalConfig(tenant));
 
-export const loginRequest = {
-  scopes: ["openid"],
-  extraScopesToConsent: ["offline_access"]
+export const loginRequest = (graphqlScope) => {
+  return {
+    scopes: ["openid", "profile", graphqlScope],
+    extraScopesToConsent: ["offline_access"],
+    forceRefresh: true
+  }
 };
 
 export const readProfileRequest = {
@@ -53,10 +56,10 @@ export const readProfileRequest = {
 
 export const authGraphQLRequest = (graphqlScope) => {
   return {
-    scopes: ["openid", graphqlScope],
-    extraScopesToConsent: ["offline_access"]
-  // scopes: ["https://mineralb2c.onmicrosoft.com/api/user_impersonation", "openid", "offline_access"],
-  // scopes: ["https://management.azure.com/user_impersonation", "openid", "offline_access"],
+    scopes: ["openid", "profile", graphqlScope],
+    extraScopesToConsent: ["offline_access"],
+    // scopes: ["https://mineralb2c.onmicrosoft.com/api/user_impersonation", "openid", "offline_access"],
+    // scopes: ["https://management.azure.com/user_impersonation", "openid", "offline_access"],
   }
 };
 
