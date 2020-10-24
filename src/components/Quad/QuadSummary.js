@@ -5,27 +5,20 @@ import useQueryQuadChart from "../../graphQL/useQueryQuadChart";
 //material-ui components
 import {
   makeStyles,
-  useTheme,
   emphasize,
   withStyles,
 } from "@material-ui/core/styles";
+import {MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import CardContent from "@material-ui/core/CardContent";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Typography from "@material-ui/core/Typography";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Chip from "@material-ui/core/Chip";
-
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Box from "@material-ui/core/Box";
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { Select, FormControl, Divider } from "@material-ui/core";
-import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     //flexDirection:'column',
     overflow: "hidden",
-    paddingBottom: "4px",
+    paddingBottom: "2px",
   },
   gridList: {
     width: "auto",
@@ -64,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   gridContainer: {
     width: "auto",
     height: "auto",
-    paddingBottom: "4px",
+    paddingBottom: "2px",
     display: "flex",
     flexWrap: "wrap",
     alignContent: "center",
@@ -88,15 +81,13 @@ const useStyles = makeStyles((theme) => ({
     alignContent: "center",
     justifyContent: "center",
     padding: "8px",
+    // height : 100,
+    // width: 100,
   },
   content: {
-    "&> h5": {
-      fontSize: "30px",
-    },
-    "&> h6": {
-      fontSize: "24px",
-    },
+
   },
+
   bread: {
     display: "flex",
     justifyContent: "center",
@@ -107,14 +98,36 @@ const useStyles = makeStyles((theme) => ({
     minWidth: "100%",
     padding: "0px 16px",
   },
+  
   divider: {
     backgroundColor: "#d4d4d4",
     padding: "2px 0",
     borderRadius: "2px",
     margin: "4px 0",
   },
-  gridListTile: {},
+
+  gridListTile: {
+
+  },
 }));
+
+const toggleTheme = createMuiTheme({
+  overrides: {
+    MuiToggleButton:{
+      root: {
+        "&.Mui-selected": {
+          backgroundColor: '#1fabda',
+          color: "#fff",
+          fontWeight: "bold",
+        },
+        "&.Mui-disabled": {
+          backgroundColor: '#f2f2f2',
+        },
+      },
+    },
+  },
+});
+
 const StyledBreadcrumb = withStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.grey[100],
@@ -131,27 +144,41 @@ const StyledBreadcrumb = withStyles((theme) => ({
   },
 }))(Chip);
 
+function formatDecimal(number) {
+  let hasDecimal = false;
+  const mod = number % 1 !== 0;
+  if (mod !== 0) hasDecimal = true;
+  const formatted = new Intl.NumberFormat("en-US").format(
+    hasDecimal ? number.toFixed(1) : number);
+  return formatted ;
+};
+
 export default function QuadSummary(props) {
   const [stateApp] = useContext(AppContext);
   const [stateQuad, setStateQuad] = useContext(QuadContext);
   const classes = useStyles();
   const [dropDownValue, setDropDownValue] = useState({ value: "Cumulative" });
-  const [value, setValue] = useState(0);
-
+  const [toggleAlignment, setToggleAlignment] = useState('cumulative');
+  const [daily, setDaily] = useState(false);
+  
   const handleChangeRange = (range) => {
-    console.log(range, "rangevalue");
     const newRange = parseInt(range.target.value);
-    if (newRange === 0) {
-      setDropDownValue({ value: "Cumulative" });
-    }
-    if (newRange === 1) {
-      setDropDownValue({ value: "Last Month" });
-    }
-    if (newRange === 6) {
-      setDropDownValue({ value: "Last 6 Months" });
-    }
-    if (newRange === 12) {
-      setDropDownValue({ value: "Last 12 Months" });
+    switch(newRange) {
+      case 0:
+        setDropDownValue({ value: "Cumulative" });
+        break;
+      case 1:
+        setDropDownValue({ value: "Last Month" });
+        break;
+      case 6:
+        setDropDownValue({ value: "Last 6 Months" });
+        break;
+      case 12:
+        setDropDownValue({ value: "Last 12 Months" });
+        break;
+      default:
+        setDropDownValue({ value: "Cumulative" });
+        break;
     }
     setStateQuad((state) => ({ ...state, selectedRange: newRange }));
     console.log(stateQuad.quadChart, "stateQuad.quadChart");
@@ -164,13 +191,17 @@ export default function QuadSummary(props) {
     }
   };
 
+  const handleToggleChange = (value) => {
+    value === "daily" ? setDaily(true) : setDaily(false);
+    setToggleAlignment(value);
+  }
+
   //graphQL
-  const { data, loading, error } = useQueryQuadChart(stateApp.selectedWell.id);
+  const { data, loading } = useQueryQuadChart(stateApp.selectedWell.id);
 
   useEffect(() => {
     if (!stateQuad.quadChart) {
       if (data) {
-        // console.log('quadData',data)
         let quadChart = data.quadChart;
         setStateQuad((state) => ({ ...state, quadChart: quadChart }));
       }
@@ -179,7 +210,6 @@ export default function QuadSummary(props) {
   //graphQL
 
   return data && stateQuad.quadChart ? (
-    // <div style={{ padding: "0px 5px 0px 5px" }}>
     <div className={classes.gridContainer}>
       <FormControl variant="outlined" className={classes.formControl}>
         <Select
@@ -193,9 +223,9 @@ export default function QuadSummary(props) {
           <option value={12}>Last 12 Months</option>
         </Select>
       </FormControl>
+
       <GridList
         cellHeight="auto"
-        // cellHeight = "300"//invalid prop
         cols={2}
         className={classes.gridList}
       >
@@ -208,19 +238,22 @@ export default function QuadSummary(props) {
           >
             <Card className={classes.card}>
               <CardContent className={classes.content}>
-                <Typography align="center" variant="h5">
+                <Typography align="center" variant="h5"  style={{fontWeight:"bold"}}       >
                   {tile.metric.toUpperCase()}
                 </Typography>
                 <Divider className={classes.divider} />
-                <Typography align="center" variant="h6">
+                <Typography 
+                  align="center" variant="inherit" component="h5"
+                  style={{fontSize:20}}
+                  >
                   {stateQuad.selectedRange === 12
-                    ? new Intl.NumberFormat("en-US").format(tile.value12)
+                    ? formatDecimal( daily ? tile.value12 / (30 * 12) : tile.value12)
                     : stateQuad.selectedRange === 6
-                    ? new Intl.NumberFormat("en-US").format(tile.value6)
+                    ? formatDecimal(daily ? tile.value6 / (30 * 6) : tile.value6)
                     : stateQuad.selectedRange === 1
-                    ? new Intl.NumberFormat("en-US").format(tile.value1)
+                    ? formatDecimal(daily ? tile.value1 / (30) : tile.value1)
                     : stateQuad.selectedRange === 0
-                    ? new Intl.NumberFormat("en-US").format(tile.cumulative)
+                    ? formatDecimal(tile.cumulative)
                     : "--"}
                 </Typography>
                 <Typography align="center" variant="h6">
@@ -230,6 +263,33 @@ export default function QuadSummary(props) {
             </Card>
           </GridListTile>
         ))}
+
+        <ToggleButtonGroup exclusive style={{width: "97%"}} value={toggleAlignment} >
+          <MuiThemeProvider theme={toggleTheme} >
+            <ToggleButton
+              selected={!daily}
+              hover= "disabled"
+              //disabled={stateQuad.selectedRange === 0} 
+              onClick={() => handleToggleChange("cumulative")}
+              style={{width: "100%"}}
+              size="medium"
+              
+            >
+              Cumulative
+            </ToggleButton>
+            <ToggleButton 
+              selected={daily}
+              disabled={stateQuad.selectedRange === 0} 
+              onClick={() => handleToggleChange("daily")}
+              style={{width: "100%"}}
+              size="medium"
+            >
+              Daily
+            </ToggleButton>
+          </MuiThemeProvider>
+        </ToggleButtonGroup>
+
+
       </GridList>
     </div>
   ) : // </div>
