@@ -420,11 +420,7 @@ function SubTable(props) {
                   let id = props.targetLabel + tableMeta.columnIndex;
 
                   return (
-                    <Tooltip
-                      title={"Detail Card"}
-                      placement="top"
-                      style={{ marginRight: "10px" }}
-                    >
+                    <Tooltip title={"Detail Card"} placement="top">
                       <IconButton
                         id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                         size={props.dense ? "small" : "medium"}
@@ -582,7 +578,10 @@ function SubTable(props) {
                   return (
                     <Tooltip
                       title={
-                        value && (value.bbox || value.center)
+                        value &&
+                        (value.bbox ||
+                          value.center ||
+                          value.objToPopulateSearchLayer)
                           ? "Fly To Map"
                           : "Not Available"
                       }
@@ -594,49 +593,62 @@ function SubTable(props) {
                         size={props.dense ? "small" : "medium"}
                         color="secondary"
                         className={`${classes.icons} ${
-                          value && (value.bbox || value.center)
+                          value &&
+                          (value.bbox ||
+                            value.center ||
+                            value.objToPopulateSearchLayer)
                             ? ""
                             : classes.noCommentsIcon
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (value && (value.bbox || value.center)) {
-                            setStateApp((state) => {
-                              if (value.bbox)
+                          if (value) {
+                            if (value.bbox || value.center) {
+                              setStateApp((state) => {
+                                if (value.bbox)
+                                  return {
+                                    ...state,
+                                    popupOpen: false,
+                                    selectedWell: null,
+                                    selectedWellId: null,
+                                    fitBounds: {
+                                      maxLat: value.bbox[3],
+                                      minLat: value.bbox[1],
+                                      maxLong: value.bbox[2],
+                                      minLong: value.bbox[0],
+                                    },
+                                  };
+
+                                //// value.center
                                 return {
                                   ...state,
                                   popupOpen: false,
                                   selectedWell: null,
-                                  selectedWellId: null,
-                                  fitBounds: {
-                                    maxLat: value.bbox[3],
-                                    minLat: value.bbox[1],
-                                    maxLong: value.bbox[2],
-                                    minLong: value.bbox[0],
+                                  selectedWellId:
+                                    props.targetLabel == "well"
+                                      ? tableMeta.rowData[0]
+                                      : null,
+                                  flyTo: {
+                                    longitude: value.center[0],
+                                    latitude: value.center[1],
                                   },
                                 };
+                              });
 
-                              //// value.center
-                              return {
-                                ...state,
-                                popupOpen: false,
-                                selectedWell: null,
-                                selectedWellId:
-                                  props.targetLabel == "well"
-                                    ? tableMeta.rowData[0]
-                                    : null,
-                                flyTo: {
-                                  longitude: value.center[0],
-                                  latitude: value.center[1],
-                                },
-                              };
-                            });
-
-                            dispatch(
-                              setMapGridCardState({
-                                mapGridCardActivated: "min",
-                              })
-                            );
+                              dispatch(
+                                setMapGridCardState({
+                                  mapGridCardActivated: "min",
+                                })
+                              );
+                            } else if (value.objToPopulateSearchLayer) {
+                              dispatch(
+                                setMapGridCardState({
+                                  objToPopulateSearchLayer:
+                                    value.objToPopulateSearchLayer,
+                                  mapGridCardActivated: "min",
+                                })
+                              );
+                            }
                           }
                         }}
                         aria-label="fly"
@@ -1160,7 +1172,15 @@ function SubTable(props) {
                     //// if no value
                     if (value === "" || value === null || !value)
                       return (
-                        <p style={{ color: "#B3B3B3", padding: "10px" }}>N/A</p>
+                        <p
+                          style={{
+                            color: "#B3B3B3",
+                            padding: "10px",
+                            margin: "0",
+                          }}
+                        >
+                          N/A
+                        </p>
                       );
 
                     //// if value
@@ -1178,9 +1198,7 @@ function SubTable(props) {
                   }
 
                   return (
-                    <div
-                      style={{ display: "flex", padding: "7px 0px 0px 0px" }}
-                    >
+                    <div style={{ display: "flex" }}>
                       {props.targetLabel === "contact" &&
                         column.name === "name" && (
                           <Avatar

@@ -65,10 +65,10 @@ const TrackedOwnersHeadCells = [
     },
   },
   { name: "name", label: "Name" },
-  {
-    name: "ownershipType",
-    label: "Entity",
-  },
+  // {
+  //   name: "ownershipType",
+  //   label: "Entity",
+  // },
   // { name: "interestType", label: "Type" },
   // {
   //   name: "ownershipPercentage",
@@ -151,6 +151,18 @@ const TrackedOwnersHeadCells = [
   },
   {
     name: "isTracked",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "coordinates",
     label: " ",
     options: {
       filter: false,
@@ -1446,11 +1458,11 @@ function M1nTable(props) {
             ownerIdArray: tracksIdArray,
           },
         });
-        getOwnersWells({
-          variables: {
-            ownersIds: tracksIdArray,
-          },
-        });
+        // getOwnersWells({
+        //   variables: {
+        //     ownersIds: tracksIdArray,
+        //   },
+        // });
         getCommentsCounter({
           variables: {
             objectsIdsArray: tracksIdArray,
@@ -1478,8 +1490,8 @@ function M1nTable(props) {
         dataCommentsCounter &&
         dataCommentsCounter.commentsCounter &&
         dataTagSamples &&
-        dataTagSamples.tagSamples &&
-        dataOwnersWells
+        dataTagSamples.tagSamples
+        //  && dataOwnersWells
       ) {
         let owners = [...dataOwners.owners];
         owners = owners.map((o) => {
@@ -1488,17 +1500,23 @@ function M1nTable(props) {
           owner.commentsCounter = 0;
           owner.tags = [[], 0];
           owner.wellsCounter = [];
+          owner.coordinates = {
+            objToPopulateSearchLayer: {
+              objectType: "owner",
+              objectId: owner.id,
+            },
+          };
 
-          if (dataOwnersWells.ownersWells) {
-            for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
-              if (owner.id === dataOwnersWells.ownersWells[i].ownerId) {
-                owner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
-                  (well) => well.wellId
-                );
-                break;
-              }
-            }
-          }
+          // if (dataOwnersWells.ownersWells) {
+          //   for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
+          //     if (owner.id === dataOwnersWells.ownersWells[i].ownerId) {
+          //       owner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
+          //         (well) => well.wellId
+          //       );
+          //       break;
+          //     }
+          //   }
+          // }
 
           for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
             if (owner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -1572,7 +1590,12 @@ function M1nTable(props) {
         }
       }
     }
-  }, [dataOwners, dataTagSamples, dataCommentsCounter, dataOwnersWells]);
+  }, [
+    dataOwners,
+    dataTagSamples,
+    dataCommentsCounter,
+    //  dataOwnersWells
+  ]);
   ////////////Tracked Owners end///////////////////////////////////////////////
 
   ////////////Tracked Wells begin///////////////////////////////////////////////
@@ -1899,11 +1922,11 @@ function M1nTable(props) {
           (wellOwner) => wellOwner.id
         );
 
-        getOwnersWells({
-          variables: {
-            ownersIds: objectsIdsArray,
-          },
-        });
+        // getOwnersWells({
+        //   variables: {
+        //     ownersIds: objectsIdsArray,
+        //   },
+        // });
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
@@ -1928,7 +1951,7 @@ function M1nTable(props) {
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples &&
-      dataOwnersWells &&
+      // dataOwnersWells &&
       dataTracks &&
       dataTracks.tracksByObjectType
     ) {
@@ -1939,16 +1962,16 @@ function M1nTable(props) {
         wellOwner.wellsCounter = [];
         wellOwner.isTracked = false;
 
-        if (dataOwnersWells.ownersWells) {
-          for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
-            if (wellOwner.id === dataOwnersWells.ownersWells[i].ownerId) {
-              wellOwner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
-                (well) => well.wellId
-              );
-              break;
-            }
-          }
-        }
+        // if (dataOwnersWells.ownersWells) {
+        //   for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
+        //     if (wellOwner.id === dataOwnersWells.ownersWells[i].ownerId) {
+        //       wellOwner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
+        //         (well) => well.wellId
+        //       );
+        //       break;
+        //     }
+        //   }
+        // }
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (wellOwner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -2024,7 +2047,7 @@ function M1nTable(props) {
     dataTracks,
     dataTagSamples,
     dataCommentsCounter,
-    dataOwnersWells,
+    // dataOwnersWells,
     dataTracks,
   ]);
 
@@ -2290,12 +2313,17 @@ function M1nTable(props) {
             result.coordinates = {};
             if (result.Longitude && result.Latitude)
               result.coordinates.center = [result.Longitude, result.Latitude];
-          }
-
-          if (props.targetLabel && props.targetLabel == "location") {
+          } else if (props.targetLabel && props.targetLabel == "location") {
             result.coordinates = {};
             if (result.bbox) result.coordinates.bbox = result.bbox;
             if (result.center) result.coordinates.center = result.center;
+          } else if (props.targetLabel && props.targetLabel == "owner") {
+            result.coordinates = {
+              objToPopulateSearchLayer: {
+                objectType: "owner",
+                objectId: result.Id,
+              },
+            };
           }
 
           if (props.showComments) {
@@ -2376,9 +2404,11 @@ function M1nTable(props) {
           buildingColumns.push(SearchsHeadCells[5]);
         if (
           props.targetLabel &&
-          (props.targetLabel == "well" || props.targetLabel == "location")
+          (props.targetLabel == "well" ||
+            props.targetLabel == "location" ||
+            props.targetLabel == "owner")
         )
-          //would only set flyto for wells & locations
+          //would only set flyto for wells, locations & owners
           buildingColumns.push(SearchsHeadCells[4]);
 
         setColumns([...buildingColumns]);
