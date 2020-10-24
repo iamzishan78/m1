@@ -294,8 +294,8 @@ export default function WellCardDetails(props) {
       <Grid item sm={12}>
           <Taps
             tabLabels={[
-              "Completions",
-              "Stimulations",
+              "Completion",
+              "Stimulation",
               "Formation"
             ]}
             tabPanels={[

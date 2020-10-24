@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     //flexDirection:'column',
     overflow: "hidden",
-    paddingBottom: "4px",
+    paddingBottom: "2px",
   },
   gridList: {
     width: "auto",
@@ -56,8 +56,8 @@ const useStyles = makeStyles((theme) => ({
   },
   gridContainer: {
     width: "auto",
-    height: "100%",
-    paddingBottom: "4px",
+    height: "auto",
+    paddingBottom: "2px",
     display: "flex",
     flexWrap: "wrap",
     alignContent: "center",
@@ -80,8 +80,9 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
     alignContent: "center",
     justifyContent: "center",
-    height : 100,
-    width: 100,
+    padding: "8px",
+    // height : 100,
+    // width: 100,
   },
   content: {
 
@@ -102,6 +103,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#d4d4d4",
     padding: "2px 0",
     borderRadius: "2px",
+    margin: "4px 0",
   },
 
   gridListTile: {
@@ -236,13 +238,14 @@ export default function QuadSummary(props) {
           >
             <Card className={classes.card}>
               <CardContent className={classes.content}>
-                <Typography align="center" variant="h6">
+                <Typography align="center" variant="h5"  style={{fontWeight:"bold"}}       >
                   {tile.metric.toUpperCase()}
                 </Typography>
                 <Divider className={classes.divider} />
                 <Typography 
-                  align="center" variant="inherit" component="h6"
-                  style={{fontWeight:"bold", fontSize:18}}>
+                  align="center" variant="inherit" component="h5"
+                  style={{fontSize:20}}
+                  >
                   {stateQuad.selectedRange === 12
                     ? formatDecimal( daily ? tile.value12 / (30 * 12) : tile.value12)
                     : stateQuad.selectedRange === 6
@@ -261,14 +264,16 @@ export default function QuadSummary(props) {
           </GridListTile>
         ))}
 
-        <ToggleButtonGroup exclusive style={{width: "94%"}} value={toggleAlignment}>
+        <ToggleButtonGroup exclusive style={{width: "97%"}} value={toggleAlignment} >
           <MuiThemeProvider theme={toggleTheme} >
             <ToggleButton
               selected={!daily}
-              disabled={stateQuad.selectedRange === 0} 
+              hover= "disabled"
+              //disabled={stateQuad.selectedRange === 0} 
               onClick={() => handleToggleChange("cumulative")}
               style={{width: "100%"}}
-              size="small"
+              size="medium"
+              
             >
               Cumulative
             </ToggleButton>
@@ -277,12 +282,14 @@ export default function QuadSummary(props) {
               disabled={stateQuad.selectedRange === 0} 
               onClick={() => handleToggleChange("daily")}
               style={{width: "100%"}}
-              size="small"
+              size="medium"
             >
               Daily
             </ToggleButton>
           </MuiThemeProvider>
         </ToggleButtonGroup>
+
+
       </GridList>
     </div>
   ) : // </div>

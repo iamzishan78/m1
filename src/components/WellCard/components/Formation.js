@@ -35,7 +35,7 @@ const useStyles = makeStyles({
 
 const headers = [
     {name: "Formation Name", width:"20%"},
-    {name: "Top Depth", width:"20%"},
+    {name: "Top Depth (ft)", width:"20%"},
     {name: "Comments", width:"60%"},
 ];
 
@@ -56,6 +56,13 @@ export default function Formation(props) {
       setFormationData([...group1, ...group2]);
     }
   }, [data]);
+
+  const formatValue = (data) => {
+    if (data != null) {
+      data = data.toLocaleString();
+    }
+    return data
+  }
 
   return (
     <TableContainer className={classes.tableContainer}>
@@ -83,7 +90,7 @@ export default function Formation(props) {
                         {row.ReportedFormationName}
                       </TableCell>
                       <TableCell>
-                        {row.TopDepth}
+                      {formatValue(row.TopDepth)}
                       </TableCell>
                       <TableCell>
                         {row.Comments}
