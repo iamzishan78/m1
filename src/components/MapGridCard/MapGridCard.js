@@ -258,6 +258,7 @@ const locationsColumnHeaders = [
 ];
 
 function MapGridCard(props) {
+  const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch();
   const {
     mapGridCardActivated,
@@ -556,7 +557,16 @@ function MapGridCard(props) {
                     parent="trackWells"
                     header={
                       <TabLabels
-                        labels={["Wells", "Owners"]}
+                        labels={[
+                          `Wells (${
+                            stateApp.trackedwells
+                              ? stateApp.trackedwells.length
+                              : 0
+                          })`,
+                          `Owners (${
+                            stateApp.owners ? stateApp.owners.length : 0
+                          })`,
+                        ]}
                         value={trackedTapValue}
                         setValue={setTrackedTapValue}
                       />
@@ -567,7 +577,16 @@ function MapGridCard(props) {
                     parent="trackOwners"
                     header={
                       <TabLabels
-                        labels={["Wells", "Owners"]}
+                        labels={[
+                          `Wells (${
+                            stateApp.trackedwells
+                              ? stateApp.trackedwells.length
+                              : 0
+                          })`,
+                          `Owners (${
+                            stateApp.owners ? stateApp.owners.length : 0
+                          })`,
+                        ]}
                         value={trackedTapValue}
                         setValue={setTrackedTapValue}
                       />

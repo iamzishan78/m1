@@ -11,7 +11,10 @@ import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles({
   mainDiv: {
-    padding: "0px 15px",
+    //// tracked owners commented, replaced for the padding line
+    // padding: "0px 15px",
+    padding: "0px 160px",
+
     border: "1px solid #C4C4C4",
     borderRadius: "4px",
     "&:hover": {
