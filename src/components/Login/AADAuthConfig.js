@@ -44,7 +44,7 @@ export const MSALObj = (tenant) =>
 
 export const loginRequest = (graphqlScope) => {
   return {
-    scopes: ["openid", "profile", graphqlScope],
+    scopes: ["openid"].concat(graphqlScope),
     extraScopesToConsent: ["offline_access"],
     forceRefresh: true
   }
@@ -56,7 +56,7 @@ export const readProfileRequest = {
 
 export const authGraphQLRequest = (graphqlScope) => {
   return {
-    scopes: ["openid", "profile", graphqlScope],
+    scopes: ["openid", graphqlScope],
     extraScopesToConsent: ["offline_access"],
     // scopes: ["https://mineralb2c.onmicrosoft.com/api/user_impersonation", "openid", "offline_access"],
     // scopes: ["https://management.azure.com/user_impersonation", "openid", "offline_access"],

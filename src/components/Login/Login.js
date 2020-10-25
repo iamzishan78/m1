@@ -227,6 +227,16 @@ const Login = (props) => {
             return;
           }
 
+          if (error.errorMessage && error.errorMessage.includes("AADB2C90085")) {
+            console.log("retrying with forced login bypassing session cookies")
+            
+            let request = loginRequest()
+            request.extraQueryParameters = { prompt: "login" }
+            stateApp.myMSALObj.loginRedirect(request);
+
+            return;
+          }
+
           const currentAccounts = stateApp.myMSALObj.getAllAccounts();
           const currentAccount = currentAccounts && currentAccounts.length === 1
             ? currentAccounts[0]
@@ -245,7 +255,7 @@ const Login = (props) => {
       
           // window.location.replace(window.location.origin);
           setLoading(false);
-
+          
         });
     } else {
       if (stateApp.myMSALObj === false) setLoading(false);
