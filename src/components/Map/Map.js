@@ -162,6 +162,7 @@ export default function Map() {
     }
   };
   const container = useRef(null);
+  const modalContainer = useRef(null);
   const [showExpandableCard, ShowExpandableCard] = useState(false);
   const setShowExpandableCard = (state) => {
     if (showExpandableCard != state) {
@@ -4168,9 +4169,11 @@ export default function Map() {
   };
 
   const onAbstactLayerClick = function (feature, action) {
+    console.log("feature, action", feature, action);
     setStateApp((state) => ({
       ...state,
       popupOpen: false,
+      abstractPopupOpen: false,
     }));
     if (!feature) {
       setStateApp((state) => ({
@@ -4193,8 +4196,10 @@ export default function Map() {
         ),
       }));
     }
-    createSelectedAbstractPopup(feature);
-    map.resize();
+    setStateApp((state) => ({
+      ...state,
+      abstractPopupOpen: true,
+    }));
   };
 
   useEffect(() => {
@@ -5360,6 +5365,8 @@ export default function Map() {
     }
   }, [stateApp.editingUserDefinedLayers]);
 
+  console.log("stateApp.selectedAbstracts", stateApp.popupOpen, stateApp.abstractPopupOpen, stateApp.selectedAbstracts);
+
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
@@ -5388,6 +5395,16 @@ export default function Map() {
         <MapGridCard mapGridCardActivated={mapGridCardActivated} />
       )}
       <div id="tempPopupHolder" className={classes.portal} ref={container} />
+      <div id="modalHolder" ref={modalContainer} />
+      <Portal container={modalContainer.current}>
+        {stateApp.selectedAbstracts.length > 0 && (
+          <AbstractSelectionPopup
+            abstracts={stateApp.selectedAbstracts}
+            map={map}
+            onClickExpand={handleAnchorElPopOver}
+          />
+        )}
+      </Portal>
       <Portal container={container.current}>
         {stateApp.popupOpen ? (
           <div>
@@ -5531,15 +5548,6 @@ export default function Map() {
             {stateApp.filterFeature && (
               <PortalD id="filterPopupContainer">
                 <FilterControl filterFeature={stateApp.filterFeature} />
-              </PortalD>
-            )}
-            {stateApp.selectedAbstracts.length > 0 && (
-              <PortalD id="popupContainer">
-                <AbstractSelectionPopup
-                  abstracts={stateApp.selectedAbstracts}
-                  map={map}
-                  onClickExpand={handleAnchorElPopOver}
-                />
               </PortalD>
             )}
           </div>
