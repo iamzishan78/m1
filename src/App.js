@@ -156,33 +156,33 @@ const finalComponent =
     );
 };
 
-const NotFoundRedirect = () =>{
-  const [stateApp] = useContext(AppContext);
-  const location = window.location;
-  //redirects after 3 seconds
-  if (location.pathname !== "/") {
-    setTimeout(() =>{
-      if (!stateApp.registeredRoutes.includes(location.pathname)){
-        location.replace("/");
-      };
-    }, 3000);
-    
-    return ( stateApp.loading === false && !stateApp.registeredRoutes.includes(location.pathname) &&
-      <div style={{margin: "auto", marginTop:"20%"}}>
-        <Typography  
-          variant="h6" 
-          align="center"
-          gutterBottom
-          color="textSecondary"
-        >
-          404 | Page not found. Redirecting...
-        </Typography>
-      </div>
-    );
-  } else {
-    return null;
-  }
-};
+// seems like this might have broken b2c auth
+// const NotFoundRedirect = () =>{
+//   const [stateApp] = useContext(AppContext);
+//   const location = window.location;
+//   //redirects after 3 seconds
+//   if (location.pathname !== "/") {
+//     setTimeout(() =>{
+//       if (!stateApp.registeredRoutes.includes(location.pathname)){
+//         location.replace("/");
+//       };
+//     }, 3000);
+//     return ( stateApp.loading === false &&
+//       <div style={{margin: "auto", marginTop:"20%"}}>
+//         <Typography  
+//           variant="h6" 
+//           align="center"
+//           gutterBottom
+//           color="textSecondary"
+//         >
+//           404 | Page not found. Redirecting...
+//         </Typography>
+//       </div>
+//     );
+//   } else {
+//     return null;
+//   }
+// };
 
 function App() {
   const [apolloClient, setApolloClient] = useState(null);
@@ -300,7 +300,7 @@ function App() {
                         path="/bulkupload"
                         component={BulkUpload}
                       />
-                      <Route component={NotFoundRedirect} />
+                      {/* <Route component={NotFoundRedirect} /> */}
                     </NavigationProvider>
                   </Switch>
                 </ConnectedRouter>

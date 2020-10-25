@@ -81,7 +81,7 @@ export default function Completions(props) {
             <TableRow className={classes.tableRow}>
                 {headers.map((head) => {
                     return (
-                        <TableCell key={head} scope="row" className={classes.rowName}>
+                        <TableCell scope="row" className={classes.rowName}>
                             {head}
                         </TableCell>
                     );
@@ -89,11 +89,11 @@ export default function Completions(props) {
             }     
             </TableRow>
             { completionsData !== null && completionsData.length > 0 ? 
-            completionsData.map((row, index) => {
+            completionsData.map((row) => {
                   return (
-                    <TableRow key={index}>
+                    <TableRow>
                       <TableCell>
-                        {moment(row.CompletionDate).format("MM-DD-YYYY")}
+                        {moment(row.CompletionDate).format("DD-MM-YYYY")}
                       </TableCell>
                       <TableCell>
                         {row.LeaseId}

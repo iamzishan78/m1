@@ -14,6 +14,7 @@ import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { LASTMELISSARECORD } from "../../graphQL/useQueryGetMelissaRecords";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery } from "@apollo/client";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
@@ -42,7 +43,6 @@ import WellsCard from "./components/WellsCard";
 import RecentActivities from "../RecentActivities/RecentActivities";
 import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
 import ViewDocuments from "../ViewDocuments/ViewDocuments";
-import Skeleton from "@material-ui/lab/Skeleton";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -276,7 +276,7 @@ export default function ContactDetailCard(props) {
     null
   );
 
-  const [getContact, { data }] = useLazyQuery(CONTACT, {
+  const [getContact, { loading, data }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
   });
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
@@ -390,6 +390,7 @@ export default function ContactDetailCard(props) {
       {/*/////////// left column //////////// */}
       <Grid container className={classes.leftColumn}>
         {/*/////////// section 1 //////////// */}
+
         <Grid
           item
           xs={12}
@@ -762,7 +763,8 @@ export default function ContactDetailCard(props) {
                       activityLog={contactData.activityLog}
                     />,
                     "Documents"
-                  )}
+                  )
+                }
               />
             </IconButton>
           </div>
@@ -958,16 +960,12 @@ export default function ContactDetailCard(props) {
       style={{
         padding: "20px",
         position: "absolute",
+        height: "100%",
         width: "100%",
         zIndex: "50",
       }}
     >
-      <Skeleton animation="wave" variant="circle" width={100} height={100} />
-      <Skeleton animation="wave" height={40} width="40%" style={{ marginBottom: 2 }} />
-      <Skeleton animation="wave" height={10} width="40%" style={{ marginBottom: 6 }} />
-      <Skeleton animation="wave" variant="rect" height={400}/>
-      <Skeleton animation="wave" height={10} style={{ marginBottom: 6 }} />
-      <Skeleton animation="wave" height={20} width="80%" />
+      <CircularProgress size={80} disableShrink color="secondary" />
     </div>
   );
 }
