@@ -58,6 +58,7 @@ export default function TableSummary(props) {
   useEffect(() => {
     if (props.summary) {
       setSummary(props.summary);
+      ;
     }
   }, [props.summary, setSummary]);
 
@@ -92,7 +93,7 @@ export default function TableSummary(props) {
               </TableCell>
               <TableCell>
                 {summary.Lease
-                  ? `${summary.LeaseId} - ${summary.Lease}`
+                  ? `${summary.LeaseId !== null && summary.LeaseId.length !== 0 ? summary.LeaseId.toString() + " -" : ""} ${summary.Lease}`
                   : summary.LeaseId}
               </TableCell>
               <TableCell scope="row" className={classes.rowName}>
