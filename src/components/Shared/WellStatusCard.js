@@ -23,12 +23,15 @@ export default function WellStatusCard() {
   let classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const WellStatusIcon = () => {
-    console.log(stateApp.selectedWell.wellStatus);
-    console.log("*");
-
-    if (stateApp.selectedWell.wellStatus == "ACTIVE") {
+    if (
+      stateApp.selectedWell.wellStatus &&
+      stateApp.selectedWell.wellStatus.toUpperCase() == "ACTIVE"
+    ) {
       return <CheckCircleIcon fontSize="large" />;
-    } else if (stateApp.selectedWell.wellStatus == "UNKNOWN") {
+    } else if (
+      stateApp.selectedWell.wellStatus &&
+      stateApp.selectedWell.wellStatus.toUpperCase() == "UNKNOWN"
+    ) {
       return <QuestionIcon fontSize="large" />;
     } else {
       return <XIcon fontSize="large" />;
