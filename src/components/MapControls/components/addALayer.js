@@ -320,7 +320,7 @@ export default function AddLayer(props) {
                 to enter an URL.
               </span>
             }
-            //acceptedFiles={[".geojson", ".zip"]}
+            acceptedFiles={[".geojson", ".zip"]}
             maxFileSize={10000000}
             dropzoneClass={classes.dropzoneClass}
           ></DropzoneAreaBase>
@@ -354,33 +354,37 @@ export default function AddLayer(props) {
             <List className={classes.list}>
               {UdLayers.map((layer, index) => {
                 const labelId = `udlayer-list-label-${index}`;
-                return (
-                  <StyledListItem key={index} ContainerComponent="li">
-                    <Checkbox
-                      checked={layer.layerSettings.showable}
-                      color="dark gray"
-                      onChange={() => changeShowAble(layer)}
-                      inputProps={{ "aria-label": "primary checkbox" }}
-                    />
-                    <ListItemText id={labelId} primary={layer.layerName} />
 
-                    {layer.layerType == "file layer" && (
-                      <ListItemSecondaryAction>
-                        <Tooltip title="Delete" placement="top">
-                          <IconButton
-                            edge="end"
-                            size="small"
-                            onClick={() => {
-                              setOpenDeleteDialog(layer);
-                            }}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </ListItemSecondaryAction>
-                    )}
-                  </StyledListItem>
-                );
+                //// remove the (layer.identifier!="Tracked Owners") if statement to show the tracked owers layer
+                if (layer.identifier != "Tracked Owners") {
+                  return (
+                    <StyledListItem key={index} ContainerComponent="li">
+                      <Checkbox
+                        checked={layer.layerSettings.showable}
+                        color="dark gray"
+                        onChange={() => changeShowAble(layer)}
+                        inputProps={{ "aria-label": "primary checkbox" }}
+                      />
+                      <ListItemText id={labelId} primary={layer.layerName} />
+
+                      {layer.layerType == "file layer" && (
+                        <ListItemSecondaryAction>
+                          <Tooltip title="Delete" placement="top">
+                            <IconButton
+                              edge="end"
+                              size="small"
+                              onClick={() => {
+                                setOpenDeleteDialog(layer);
+                              }}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </ListItemSecondaryAction>
+                      )}
+                    </StyledListItem>
+                  );
+                }
               })}
             </List>
           </Collapse>

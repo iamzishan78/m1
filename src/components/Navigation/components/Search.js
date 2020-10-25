@@ -164,6 +164,7 @@ function Search() {
     mapGridCardActivated,
     mapGridCardActiveTap,
     searchInputValue,
+    objToPopulateSearchLayer,
   } = useSelector(({ MapGridCard }) => MapGridCard);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [stateApp, setStateApp] = React.useContext(AppContext);
@@ -799,6 +800,31 @@ function Search() {
       }
     }
   }, [dataLeaseWells]);
+
+  //////////////////////////////////// populating the search layer from external resource ////
+  useEffect(() => {
+    if (objToPopulateSearchLayer) {
+      //// if owner
+      if (
+        objToPopulateSearchLayer.objectType === "owner" &&
+        objToPopulateSearchLayer.objectId
+      ) {
+        getOwnerWells({
+          variables: {
+            ownerId: objToPopulateSearchLayer.objectId,
+          },
+        });
+      }
+
+      //// add others types here
+      /////////////////////////////////
+      dispatch(
+        setMapGridCardState({
+          objToPopulateSearchLayer: null,
+        })
+      );
+    }
+  }, [objToPopulateSearchLayer]);
 
   ///////////////////////////////////////
 

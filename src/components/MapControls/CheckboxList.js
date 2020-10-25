@@ -415,7 +415,13 @@ export default function CheckboxList(props) {
                 <List className={classes.list}>
                   {stateApp.layers.map((layer, index) => {
                     const labelId = `checkbox-list-label-${index}`;
-                    if (layer.layerSettings && layer.layerSettings.showable) {
+
+                    //// remove the (layer.identifier!="Tracked Owners") condition from the if statement to show the tracked owers layer
+                    if (
+                      layer.layerSettings &&
+                      layer.layerSettings.showable &&
+                      layer.identifier != "Tracked Owners"
+                    ) {
                       return (
                         <Draggable
                           key={labelId}

@@ -10,8 +10,8 @@ import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext"; ///////////
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { useLazyQuery } from "@apollo/client";
-import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
+// import { useLazyQuery } from "@apollo/client";
+// import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -105,18 +105,18 @@ export default function ContactsTableAndAddDialog() {
     emptyStates();
   }, [ifNewContact]);
 
-  const [
-    getWellOwners,
-    { loading: loadingWellOwners, data: dataWellOwners },
-  ] = useLazyQuery(WELLOWNERSQUERY);
+  // const [
+  //   getWellOwners,
+  //   { loading: loadingWellOwners, data: dataWellOwners },
+  // ] = useLazyQuery(WELLOWNERSQUERY);
 
-  useEffect(() => {
-    if (wellId !== "") {
-      getWellOwners({
-        variables: { id: wellId },
-      });
-    }
-  }, [wellId]);
+  // useEffect(() => {
+  //   if (wellId !== "") {
+  //     getWellOwners({
+  //       variables: { id: wellId },
+  //     });
+  //   }
+  // }, [wellId]);
 
   // const ifNewContactFromOwner = () => {
   //   return (

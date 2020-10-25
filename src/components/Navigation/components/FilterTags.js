@@ -150,13 +150,6 @@ export default function FilterTags() {
     </div>
   ) : (
     <Autocomplete
-      disabled={
-        !(
-          dataUserAvailableTags &&
-          dataUserAvailableTags.userAvailableFilterTags &&
-          dataUserAvailableTags.userAvailableFilterTags.length > 0
-        )
-      }
       ChipProps={{ color: "secondary" }}
       defaultValue={stateNav.selectedTags}
       onChange={(event, newValue) => {

@@ -930,7 +930,9 @@ export default function Navigation(props) {
     sessionStorage.clear();
     localStorage.clear();
 
-    stateApp.myMSALObj.logout(logoutRequest);
+    if(currentAccount) {
+      stateApp.myMSALObj.logout(logoutRequest);
+    }      
 
     window.location.replace(window.location.origin);
 
@@ -972,7 +974,7 @@ export default function Navigation(props) {
     >
       <MenuItem disabled  className={classes.userTenantTitle}>
         <CheckIcon/>
-        <Typography variant="inherit" color="textPrimary"> {stateApp.user !== null && stateApp.user.tenant.tenant} </Typography>
+        <Typography variant="inherit" color="textPrimary"> {sessionStorage.getItem("tenantName")} </Typography>
         <FiberManualRecordIcon style={{color: "#34F125"}} fontSize="small"/>
       </MenuItem>
       <Divider/>

@@ -313,7 +313,7 @@ export default function SpatialDataCard(props) {
               labelWidth={labelWidth}
             >
               <MenuItem value="interest">Area of Interest</MenuItem>
-              <MenuItem value="parcel">Parcel/Tract</MenuItem>
+              <MenuItem value="parcel">Parcel</MenuItem>
               {/* {stateApp.currentFeature &&
                 stateApp.currentFeature.geometry.type === "Polygon" &&
                 !stateApp.currentFeature.properties.isCircle && (
