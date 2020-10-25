@@ -44,9 +44,9 @@ export const MSALObj = (tenant) =>
 
 export const loginRequest = (graphqlScope) => {
   return {
-    scopes: ["openid"].concat(graphqlScope),
-    extraScopesToConsent: ["offline_access"],
-    forceRefresh: true
+    scopes: ["openid"].concat(graphqlScope ? [graphqlScope] : []),
+    // extraScopesToConsent: ["offline_access"],
+    // forceRefresh: true
   }
 };
 
