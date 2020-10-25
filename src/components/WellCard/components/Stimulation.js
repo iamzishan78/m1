@@ -92,11 +92,11 @@ export default function Simulation(props) {
           <TableRow className={classes.tableRow}>
               {headers.map((head) => {
                   return (
-                      head !== "COMMENTS" ?
-                      <TableCell key={head} scope="row" className={classes.rowName}>
+                      head!="COMMENTS" ?
+                      <TableCell scope="row" className={classes.rowName}>
                         {head}
                       </TableCell> :
-                      <TableCell key={head} scope="row" className={classes.columnComments}>
+                      <TableCell scope="row" className={classes.columnComments}>
                         {head}
                       </TableCell>
                   );
@@ -104,17 +104,17 @@ export default function Simulation(props) {
           }     
           </TableRow>
           { stimulationData !== null && stimulationData.length > 0 ? 
-          stimulationData.map((row, index) => {
+          stimulationData.map((row) => {
                   return (
-                      <TableRow key={index}>
+                      <TableRow>
                         <TableCell>
-                          {moment(row.StimDate).format("MM-DD-YYYY")}
+                          {moment(row.StimDate).format("DD-MM-YYYY")}
                         </TableCell>
                         <TableCell>
-                          {moment(row.StartDate).format("MM-DD-YYYY")}
+                          {moment(row.StartDate).format("DD-MM-YYYY")}
                         </TableCell>
                         <TableCell>
-                          {moment(row.EndDate).format("MM-DD-YYYY")}
+                          {moment(row.EndDate).format("DD-MM-YYYY")}
                         </TableCell>
                         <TableCell>
                           {row.ServiceCompany}
