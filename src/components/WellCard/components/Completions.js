@@ -73,70 +73,75 @@ export default function Completions(props) {
   return (
     <TableContainer className={classes.tableContainer}>
       {completionsData !== null ? (
-        <Table
-          aria-label="simple table"
-          className={classes.table}
-        >
-          <TableBody>
-            <TableRow className={classes.tableRow}>
-                {headers.map((head) => {
-                    return (
-                        <TableCell scope="row" className={classes.rowName}>
-                            {head}
+        <div>
+          <Table
+            aria-label="simple table"
+            className={classes.table}
+          >
+            
+            <TableBody>
+              <TableRow className={classes.tableRow}>
+                  {headers.map((head) => {
+                      return (
+                          <TableCell key={head} scope="row" className={classes.rowName}>
+                              {head}
+                          </TableCell>
+                      );
+                  })
+              }     
+              </TableRow>
+              { completionsData !== null && completionsData.length > 0 && (
+                completionsData.map((row, index) =>  (
+                      <TableRow key={index}>
+                        <TableCell>
+                          {moment(row.CompletionDate).format("MM-DD-YYYY")}
                         </TableCell>
-                    );
-                })
-            }     
-            </TableRow>
-            { completionsData !== null && completionsData.length > 0 ? 
-            completionsData.map((row) => {
-                  return (
-                    <TableRow>
-                      <TableCell>
-                        {moment(row.CompletionDate).format("DD-MM-YYYY")}
-                      </TableCell>
-                      <TableCell>
-                        {row.LeaseId}
-                      </TableCell>
-                      <TableCell>
-                        {row.LeaseName}
-                      </TableCell>
-                      <TableCell>
-                        {formatValue(row.LeaseAcreage)}
-                      </TableCell>
-                      <TableCell>
-                        {row.Formation}
-                      </TableCell>
-                      <TableCell>
-                        {row.CompletionType}
-                      </TableCell>
-                      <TableCell>
-                        {formatValue(row.UpperPerf)}
-                      </TableCell>
-                      <TableCell>
-                        {formatValue(row.UpperPerfTVD)}
-                      </TableCell>
-                      <TableCell>
-                        {formatValue(row.LowerPerf)}
-                      </TableCell>
-                      <TableCell>
-                        {formatValue(row.LowerPerfTVD)}
-                      </TableCell>
-                      <TableCell>
-                        {formatValue(row.PlugBackMD)}
-                      </TableCell>
-                      <TableCell>
-                        {formatValue(row.PlugBackTVD)}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-                : <TableRow>
-                    <Typography color="textSecondary"> No completion records available</Typography>
-                  </TableRow>
-            }     
-          </TableBody>
-        </Table>
+                        <TableCell>
+                          {row.LeaseId}
+                        </TableCell>
+                        <TableCell>
+                          {row.LeaseName}
+                        </TableCell>
+                        <TableCell>
+                          {formatValue(row.LeaseAcreage)}
+                        </TableCell>
+                        <TableCell>
+                          {row.Formation}
+                        </TableCell>
+                        <TableCell>
+                          {row.CompletionType}
+                        </TableCell>
+                        <TableCell>
+                          {formatValue(row.UpperPerf)}
+                        </TableCell>
+                        <TableCell>
+                          {formatValue(row.UpperPerfTVD)}
+                        </TableCell>
+                        <TableCell>
+                          {formatValue(row.LowerPerf)}
+                        </TableCell>
+                        <TableCell>
+                          {formatValue(row.LowerPerfTVD)}
+                        </TableCell>
+                        <TableCell>
+                          {formatValue(row.PlugBackMD)}
+                        </TableCell>
+                        <TableCell>
+                          {formatValue(row.PlugBackTVD)}
+                        </TableCell>
+                      </TableRow>
+                  ))
+                  )
+                }    
+            </TableBody>
+          </Table>
+          <Typography color="textSecondary" align="center"> 
+          {completionsData !== null && completionsData.length === 0 ?
+            "No completion records available" : ""
+          }
+          </Typography>
+        </div>
+
       ) : <Typography align="center">Loading...</Typography>
     }
     </TableContainer>
