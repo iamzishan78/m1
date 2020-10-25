@@ -262,16 +262,17 @@ function FilterControl() {
         hugeRequest: null,
       }));
 
+   
       if (points && points.length > 0) {
         if (points.length > 100) {
           setStateApp((stateApp) => ({
             ...stateApp,
-            hugeRequest: `You have selected too many wells to track at once. Max 100 wells, trying to track ${points.length}. Please draw an small shape to select fewer wells.`,
+            hugeRequest: `You have selected too many wells to track at once - ${points.length} selected (max of 100 wells). Zoom in further and draw a smaller shape to select fewer wells.`,
           }));
         } else if (points.length <= 0) {
           setStateApp((stateApp) => ({
             ...stateApp,
-            hugeRequest: `We can't find any wells in your selection. Please select another area.`,
+            hugeRequest: `We can't find any wells in your current selection`,
           }));
         } else {
           setTrackWells(!isTrackWells);
@@ -300,7 +301,7 @@ function FilterControl() {
     } else {
       setStateApp((stateApp) => ({
         ...stateApp,
-        hugeRequest: `We can't find any wells in your selection. Please select another area.`,
+        hugeRequest: `We can't find any wells in your selection`,
       }));
     }
   };
@@ -324,12 +325,12 @@ function FilterControl() {
     if (tracks.length > 100) {
       setStateApp((stateApp) => ({
         ...stateApp,
-        hugeRequest: `The wells you have selected have too many owners to track at once. Max 100 owners, trying to track ${tracks.length}. Please reduce your selection.`,
+        hugeRequest: `The wells you have selected have too many owners to track at once - ${tracks.length} selected (max of 100 wells). Zoom in further and draw a smaller shape to select fewer wells.`,
       }));
     } else if (tracks.length <= 0) {
       setStateApp((stateApp) => ({
         ...stateApp,
-        hugeRequest: `We can't find any owners in your selection. Please select another area.`,
+        hugeRequest: `We can't find any owners in your selection`,
       }));
     } else {
       setTrackOwners(!isTrackOwners);
@@ -352,7 +353,7 @@ function FilterControl() {
       else
         setStateApp((stateApp) => ({
           ...stateApp,
-          hugeRequest: `We can't find any owners in your selection. Please select another area.`,
+          hugeRequest: `We can't find any owners in your selection`,
         }));
   }, [dataWellsOwners]);
 
@@ -373,7 +374,7 @@ function FilterControl() {
         if (points.length > 100) {
           setStateApp((stateApp) => ({
             ...stateApp,
-            hugeRequest: `You have selected too many wells at once. Max 100 wells, trying to track ${points.length}. Please draw an small shape to select fewer wells.`,
+            hugeRequest: `You have selected too many wells to track at once - ${points.length} selected (max of 100 wells). Zoom in further and draw a smaller shape to select fewer wells.`,
           }));
         } else {
           setStateApp((stateApp) => ({
@@ -395,14 +396,14 @@ function FilterControl() {
           else {
             setStateApp((stateApp) => ({
               ...stateApp,
-              hugeRequest: `We can't find any wells in your selection. Please select another area.`,
+              hugeRequest: `We can't find any wells in your selection`,
             }));
           }
         }
       } else {
         setStateApp((stateApp) => ({
           ...stateApp,
-          hugeRequest: `We can't find any wells in your selection. Please select another area.`,
+          hugeRequest: `We can't find any wells in your selection`,
         }));
       }
     } else {
