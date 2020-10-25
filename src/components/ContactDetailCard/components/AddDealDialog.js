@@ -364,7 +364,7 @@ function AddDealDialog(props) {
               label: label ? label.trim() : "",
               description: description ? description.trim() : "",
               id: uuid(),
-              contactId: nameAutValue?._id ? nameAutValue?._id : uuid(),
+              contactId: nameAutValue?._id !== "newEntity" ? nameAutValue?._id : uuid(),
               laneId: newStage,
             };
             cards.push(newCard);
