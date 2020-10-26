@@ -1,14 +1,17 @@
 import React, { useState, createContext, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
-import { MSALB2CObj, B2CTenantCredentials } from "./components/Login/AADB2CAuthConfig";
 import {
-  styleLayers,
-  userDefinedLayers,
+  MSALB2CObj,
+  B2CTenantCredentials,
+} from "./components/Login/AADB2CAuthConfig";
+import {
+  //styleLayers,
+  //userDefinedLayers,
   heatLayers,
   baseMapLayers,
-  layers,
-  defaultLayers,
+  //layers,
+  // defaultLayers,
 } from "./LayerConfig";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
@@ -17,12 +20,26 @@ const AppContext = createContext([{}, () => {}]);
 
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
+    loading: false,
+    registeredRoutes: [
+      "/",
+      "/signup",
+      "/loginb2c",
+      "/forgotpassword",
+      "/track",
+      "/transact",
+      "/title",
+      "/titleopinion",
+      "/alerts",
+      "/contacts",
+      "/dashboard",
+      "/studio",
+      "/bulkupload",
+    ],
     myMSALObj: null,
     myMSALB2CObj: null,
     selectedRoute: "/",
-    apolloClientEndpoint:
-      "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
-    // "http://localhost:7071/api/m1graph",
+    apolloClientEndpoint: "",
     graphqlScope: null,
     user: null,
     signUpUserType: null,
@@ -84,12 +101,12 @@ const AppProvider = (props) => {
     mapboxglAccessToken:
       "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJja2V6MHd2bnQwYzRqMnlwaTV6ejU2cTMyIn0.ghyrh-G8uQtyg4N4VcfTOw",
     selectedWellApi: null,
-    styleLayers: styleLayers,
+    //styleLayers: styleLayers,
     heatLayers: heatLayers,
     layers: null,
-    defaultLayers: defaultLayers,
+    // defaultLayers: defaultLayers,
     baseMapLayers: baseMapLayers,
-    userDefinedLayers: userDefinedLayers,
+    //userDefinedLayers: userDefinedLayers,
     searchLayerIndex: null,
     trackedOwnersLayerIndex: null,
     trackedWellsLayerIndex: null,
@@ -125,14 +142,14 @@ const AppProvider = (props) => {
     wellListFromTagsFilter: [],
     m1neralHeaders: [],
     mappedHeadersFromCSV: [],
-    toggleLayersActivity: (layerName, activityValue) => {
-      if (layerName) {
+    toggleLayersActivity: (identifier, activityValue) => {
+      if (identifier) {
         let res;
         setStateApp((stateApp) => {
           if (stateApp.layers && Array.isArray(stateApp.layers)) {
             const currentLayers = [...stateApp.layers];
             const index = currentLayers.findIndex(
-              (l) => l.layerName == layerName
+              (l) => l.identifier == identifier
             );
 
             const updatedLayer = {

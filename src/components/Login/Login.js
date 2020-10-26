@@ -22,7 +22,7 @@ import * as msal from "@azure/msal-browser";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
-    display: "flex",
+    display: "inline",
     flexDirection: "column",
     justifyContent: "center",
   },
@@ -137,6 +137,11 @@ const Login = (props) => {
   const [loadingSigInButton, setLoadingSigInButton] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  ///this is not a safe operation!
+  // useEffect(() => {
+  //   setStateApp({...stateApp, loading});
+  // },[loading])
+  
   let history = props.history;
 
   useEffect(() => {
@@ -170,8 +175,7 @@ const Login = (props) => {
                 account: accountObj
               };
 
-              let request = {}
-              request.scopes = loginRequest.scopes.concat([stateApp.graphqlScope]);
+              let request = loginRequest(stateApp.graphqlScope)
 
               if (queryString.parse(props.location.search).id_token_hint) {
                 request.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint }
@@ -215,21 +219,43 @@ const Login = (props) => {
         .catch((error) => {
           console.log(error);
 
-          if (error.errorMessage.includes("AADB2C90118")) {
+          if (error.errorMessage && error.errorMessage.includes("AADB2C90118")) {
             console.log(stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword))
 
             stateApp.myMSALObj.loginRedirect({ authority: stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword) });
             
             return;
           }
-          else {
-            sessionStorage.clear();
-            window.location.replace(window.location.origin);
-            setLoading(false);
+
+          if (error.errorMessage && error.errorMessage.includes("AADB2C90085")) {
+            console.log("retrying with forced login bypassing session cookies")
+            
+            let request = loginRequest()
+            request.extraQueryParameters = { prompt: "login" }
+            stateApp.myMSALObj.loginRedirect(request);
+
+            return;
           }
 
+          const currentAccounts = stateApp.myMSALObj.getAllAccounts();
+          const currentAccount = currentAccounts && currentAccounts.length === 1
+            ? currentAccounts[0]
+            : undefined
+      
+          const logoutRequest = {
+            account: currentAccount
+          };
+      
           sessionStorage.clear();
-          window.location.replace(window.location.origin);
+          localStorage.clear();
+      
+          if(currentAccount) {
+            stateApp.myMSALObj.logout(logoutRequest);
+          }
+      
+          // window.location.replace(window.location.origin);
+          setLoading(false);
+          
         });
     } else {
       if (stateApp.myMSALObj === false) setLoading(false);
@@ -263,7 +289,7 @@ const Login = (props) => {
 
       if (signInType === "loginPopup") {
         stateApp.myMSALObj = myMSALObj; /////
-        const loginResponse = await signInPopup(loginRequest).catch((error) => {
+        const loginResponse = await signInPopup(loginRequest(tenant.graphqlScope)).catch((error) => {
           //do some error stuff
           console.log(error);
           updateTenantFlags(error);
@@ -279,8 +305,7 @@ const Login = (props) => {
 
         await finishAADAuth(loginResponse);
       } else if (signInType === "loginRedirect") {
-        let request = {}
-        request.scopes = loginRequest.scopes.concat([tenant.graphqlScope]);
+        let request = loginRequest(tenant.graphqlScope)
 
         if (queryString.parse(props.location.search).id_token_hint) {
           request.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint }
@@ -295,7 +320,7 @@ const Login = (props) => {
   };
 
   async function finishAADAuth(accountObj) {
-    const request = {};
+    const request = authGraphQLRequest(stateApp.graphqlScope);
     request.account = accountObj;
 
     // request.scopes = readProfileRequest.scopes;
@@ -330,8 +355,7 @@ const Login = (props) => {
     //   return;
     // }
 
-    request.scopes = authGraphQLRequest(stateApp.graphqlScope).scopes;
-    request.loginHint = request.account.homeAccountId;
+    request.loginHint = request.account.username;
     // const authGraphQLLoginResponse = await ssoSilent(request).catch((error) => {
     //   //do some error stuff
     //   console.log(error);
@@ -537,21 +561,15 @@ const Login = (props) => {
       .acquireTokenSilent(request)
       .catch(async (error) => {
         console.log("silent token acquisition fails.");
-        if (error instanceof msal.InteractionRequiredAuthError) {
-          console.log("acquiring token using redirect");
-          return stateApp.myMSALObj
-            .acquireTokenRedirect(request)
-            .catch((error) => {
-              console.error(error);
-            });
-        } else {
-          console.error(error);
-          return stateApp.myMSALObj
-            .acquireTokenRedirect(request)
-            .catch((error) => {
-              console.error(error);
-            });
-        }
+        console.error(error);
+
+        request.forceRefresh = true;
+
+        return stateApp.myMSALObj
+          .acquireTokenRedirect(request)
+          .catch((error) => {
+            console.error(error);
+          });
       });
   }
 

@@ -30,10 +30,10 @@ import { AppContext } from "../../../AppContext";
 // Helpers for area calcs
 import { area, convertArea, length } from "@turf/turf";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
-    padding: "0px"
+    padding: "0px",
   },
 
   card: {
@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
     height: "auto",
     position: "relative",
     top: "10vh",
-    left: "10vw"
+    left: "10vw",
   },
 
   cardPopup: {
@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme => ({
 
   cardHeader: {
     padding: "2%",
-    height: "15%"
+    height: "15%",
   },
 
   cardTitle: {
@@ -79,7 +79,7 @@ const useStyles = makeStyles(theme => ({
     height: "1rem",
     left: "7.46%",
     right: "39.32%",
-    top: "calc(50% - 23px/2 - 140px)"
+    top: "calc(50% - 23px/2 - 140px)",
   },
 
   subheader: {
@@ -90,7 +90,7 @@ const useStyles = makeStyles(theme => ({
     height: "17px",
     left: "7.46%",
     right: "58.31%",
-    top: "calc(50% - 17px/2 - 120px)"
+    top: "calc(50% - 17px/2 - 120px)",
   },
 
   cardAction: {
@@ -102,23 +102,23 @@ const useStyles = makeStyles(theme => ({
     flexDirection: "column",
     justifyContent: "space-evenly",
     //alignItems: "flex-start",
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
   },
   cardContent: {
     height: "10%",
     backgroundColor: "#fff",
     padding: "0px",
-    paddingBottom: "0px"
+    paddingBottom: "0px",
   },
   actionWrapper: {
     flexGrow: 1,
     display: "flex",
-    justifyContent: "space-evenly"
+    justifyContent: "space-evenly",
   },
   input: {
     display: "flex",
     marginLeft: "0px",
-    marginBottom: "15px"
+    marginBottom: "15px",
   },
 
   buttonContainer: {
@@ -129,12 +129,12 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#fff",
     //paddingBottom: "3%",
     //"&:last-child": { padding: "0px" }
-    justifyContent: "space-evenly"
+    justifyContent: "space-evenly",
   },
   button: {
     width: "40%",
     //margin: "3%",
-    justifyContent: "space-evenly"
+    justifyContent: "space-evenly",
   },
 
   formControl: {
@@ -145,14 +145,14 @@ const useStyles = makeStyles(theme => ({
   },
   label: {
     background: "white",
-    padding: "0px 4px"
+    padding: "0px 4px",
   },
   TextField: {
     display: "flex",
     margin: theme.spacing(1),
     minWidth: 265,
-    color: "black"
-  }
+    color: "black",
+  },
 }));
 
 export default function SpatialDataCard(props) {
@@ -172,7 +172,6 @@ export default function SpatialDataCard(props) {
   const [dataNotes, setDataNotes] = useState(sdNotes);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [showError, setShowError] = useState(false);
-  
 
   const inputLabel = useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);
@@ -185,7 +184,7 @@ export default function SpatialDataCard(props) {
   }, [props.selectedFeature]);
 
   useEffect(() => {
-    let udName = ""
+    let udName = "";
     switch (dataType) {
       case "interest":
         udName = "Area of Interest";
@@ -197,21 +196,21 @@ export default function SpatialDataCard(props) {
         udName = "";
         break;
     }
-    if (udName) {
-      const layerIndex = stateApp.userDefinedLayers.findIndex(layer => layer.name === udName);
-      setStateApp({
-        ...stateApp,
-        tempCheckedUserDefinedLayers: layerIndex
-      });
-    } else {
-      setStateApp({
-        ...stateApp,
-        tempCheckedUserDefinedLayers: null
-      });
-    }
+    // if (udName) {
+    //   const layerIndex = stateApp.userDefinedLayers.findIndex(layer => layer.name === udName);
+    //   setStateApp({
+    //     ...stateApp,
+    //     tempCheckedUserDefinedLayers: layerIndex
+    //   });
+    // } else {
+    //   setStateApp({
+    //     ...stateApp,
+    //     tempCheckedUserDefinedLayers: null
+    //   });
+    // }
   }, [dataType]);
 
-  const updateDataNotes = evt => {
+  const updateDataNotes = (evt) => {
     let updatedNotes = evt.target.value;
     setDataNotes(updatedNotes);
   };
@@ -225,35 +224,35 @@ export default function SpatialDataCard(props) {
         // sdNotes: dataNotes
       };
       props.saveSpatialData(spatialData, dataType);
-  
-      const tmpChecked = stateApp.tempCheckedUserDefinedLayers;
-      const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
-      if (tmpChecked != null && stateApp.checkedUserDefinedLayers.indexOf(tmpChecked) === -1) {
-        checkedLayers.push(tmpChecked)
-      }
-      setStateApp({
-        ...stateApp,
-        checkedUserDefinedLayers: checkedLayers,
-        tempCheckedUserDefinedLayers: null
-      })
+
+      // const tmpChecked = stateApp.tempCheckedUserDefinedLayers;
+      // const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
+      // if (tmpChecked != null && stateApp.checkedUserDefinedLayers.indexOf(tmpChecked) === -1) {
+      //   checkedLayers.push(tmpChecked)
+      // }
+      // setStateApp({
+      //   ...stateApp,
+      //   checkedUserDefinedLayers: checkedLayers,
+      //   tempCheckedUserDefinedLayers: null
+      // })
     } else {
       setShowError(true);
     }
   };
 
   const closeSpatialDataCard = () => {
-    setStateApp({
-      ...stateApp,
-      tempCheckedUserDefinedLayers: null
-    });
+    // setStateApp({
+    //   ...stateApp,
+    //   tempCheckedUserDefinedLayers: null
+    // });
     props.closeSpatialDataCard();
-  }
+  };
 
   const deleteSpatialData = () => {
-    setStateApp({
-      ...stateApp,
-      tempCheckedUserDefinedLayers: null
-    });
+    // setStateApp({
+    //   ...stateApp,
+    //   tempCheckedUserDefinedLayers: null
+    // });
     props.deleteSpatialDataAndShape();
   };
   const calculateLandArea = () => {
@@ -277,7 +276,7 @@ export default function SpatialDataCard(props) {
         className={classes.cardHeader}
         classes={{
           title: classes.cardTitle,
-          subheader: classes.subheader
+          subheader: classes.subheader,
         }}
         title="Spatial Data"
         action={
@@ -304,14 +303,17 @@ export default function SpatialDataCard(props) {
             variant="outlined"
             className={classes.formControl}
           >
-            <InputLabel ref={inputLabel} className={classes.label}> Boundary Type </InputLabel>
+            <InputLabel ref={inputLabel} className={classes.label}>
+              {" "}
+              Boundary Type{" "}
+            </InputLabel>
             <Select
               value={dataType}
-              onChange={evt => setDataType(evt.target.value)}
+              onChange={(evt) => setDataType(evt.target.value)}
               labelWidth={labelWidth}
             >
               <MenuItem value="interest">Area of Interest</MenuItem>
-              <MenuItem value="parcel">Parcel/Tract</MenuItem>
+              <MenuItem value="parcel">Parcel</MenuItem>
               {/* {stateApp.currentFeature &&
                 stateApp.currentFeature.geometry.type === "Polygon" &&
                 !stateApp.currentFeature.properties.isCircle && (
@@ -333,8 +335,8 @@ export default function SpatialDataCard(props) {
                 //placeholder= "Enter Name"
                 value={dataName}
                 autoComplete="disabled"
-                onChange={evt => setDataName(evt.target.value)}
-                helperText={showError ? 'Name is required!' : ''}
+                onChange={(evt) => setDataName(evt.target.value)}
+                helperText={showError ? "Name is required!" : ""}
                 required
               ></TextField>
             </div>
@@ -347,7 +349,7 @@ export default function SpatialDataCard(props) {
                 //placeholder= "Enter Name"
                 value={grossAcres}
                 autoComplete="disabled"
-                onChange={evt => setGrossAcres(evt.target.value)}
+                onChange={(evt) => setGrossAcres(evt.target.value)}
               ></TextField>
             </div>
 

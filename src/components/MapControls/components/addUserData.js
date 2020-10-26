@@ -240,6 +240,7 @@ export default function AddUserData(props) {
                 variables: {
                   layer: {
                     layerName,
+                    identifier: layerName,
                     layerType: "file layer",
                     layerCategory: "UD layer",
                     public: true,

@@ -19,7 +19,7 @@ import { useLazyQuery } from "@apollo/client";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
 import Documents from "../Shared/Documents";
-import LeadScore from "../Shared/LeadScore";
+//import LeadScore from "../Shared/LeadScore";
 import ParcelsCard from "./components/ParcelsCard";
 import LeadStage from "../Shared/LeadStage";
 import { AppContext } from "../../AppContext";
@@ -434,7 +434,7 @@ export default function ContactDetailCard(props) {
           <div>
             <div className={classes.userIcon}>
               <StyleBadge
-                badgeContent={5}
+                //badgeContent={5}
                 //color={"#f6c16b"}
               >
                 <Avatar
@@ -541,7 +541,7 @@ export default function ContactDetailCard(props) {
           item
           xs={12}
           style={{
-            padding: "20px 15px 10px 15px",
+            padding: "10px 15px 0px 15px",
           }}
           className={classes.border}
         >
@@ -572,61 +572,12 @@ export default function ContactDetailCard(props) {
             id={contactData._id}
           />
         </Grid>
-
-        {/*/////////// new section //////////// */}
-        <Grid
-          container
-          item
-          xs={12}
-          className={`${classes.border}`}
-          style={{ padding: "23px 28px" }}
-          spacing={0}
-        >
-          <Grid item xs={12}>
-            <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
-              Associated Interest
-            </h4>
-          </Grid>
-
-          <Grid item xs={12}>
-            <Grid container spacing={2}>
-              <Grid item xs={4}>
-                <Card raised style={{ minHeight: "35px", height: "100%" }}>
-                  <WellsCard
-                    handleOpenExpandableCard={handleOpenExpandableCard}
-                    contactData={contactData}
-                  />
-                </Card>
-              </Grid>
-              <Grid item xs={4}>
-                <Card raised style={{ minHeight: "35px", height: "100%" }}>
-                  <ParcelsCard
-                    handleOpenExpandableCard={handleOpenExpandableCard}
-                    contactData={contactData}
-                  />
-                </Card>
-              </Grid>
-              <Grid item xs={4}>
-                <Card raised style={{ minHeight: "35px" }}>
-                  <DealsNew
-                    handleOpenExpandableCard={handleOpenExpandableCard}
-                    contact={contactData}
-                    transactData={transactData}
-                    transactId={transactId}
-                    selectRowOpenContact={props.selectRowOpenContact}
-                  />
-                </Card>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-
-        {/*/////////// new section //////////// */}
-        <Grid item xs={12} className={`${classes.border}`}>
+ {/*/////////// new section - lead stage //////////// */}
+ <Grid item xs={12} className={`${classes.border}`}>
           <div className={classes.SectMargin}>
             <Grid item xs={12} style={{ minHeight: "33px" }}>
               <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
-                Lead Stage Changed:{" "}
+                Lead Stage changed:{" "}
                 <span style={{ fontWeight: "normal" }}>
                   {moment(
                     Number(
@@ -653,6 +604,56 @@ export default function ContactDetailCard(props) {
             </Grid>
           </div>
         </Grid>
+
+        {/*/////////// new section -associated interests and deals //////////// */}
+        <Grid
+          container
+          item
+          xs={12}
+          className={`${classes.border}`}
+          style={{ padding: "23px 28px" }}
+          spacing={0}
+        >
+          <Grid item xs={12}>
+            <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
+              Associated Interests & Deals
+            </h4>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <Card raised style={{ minHeight: "35px", height: "100%" }}>
+                  <WellsCard
+                    handleOpenExpandableCard={handleOpenExpandableCard}
+                    contactData={contactData}
+                  />
+                </Card>
+              </Grid>
+              <Grid item xs={4}>
+                <Card raised style={{ minHeight: "35px", height: "100%" }}>
+                  <ParcelsCard
+                    handleOpenExpandableCard={handleOpenExpandableCard}
+                    contactData={contactData}
+                  />
+                </Card>
+              </Grid>
+              <Grid item xs={4}>
+                <Card raised style={{ minHeight: "35px",  height: "100%" }}>
+                  <DealsNew
+                    handleOpenExpandableCard={handleOpenExpandableCard}
+                    contact={contactData}
+                    transactData={transactData}
+                    transactId={transactId}
+                    selectRowOpenContact={props.selectRowOpenContact}
+                  />
+                </Card>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+
+       
         {/*/////////// Recent Activities. //////////// */}
         <Grid item xs={12} className={`${classes.border}`}>
           <div className={classes.SectMargin}>
@@ -667,14 +668,14 @@ export default function ContactDetailCard(props) {
         </Grid>
 
         {/*/////////// Recent Converstaion. //////////// */}
-        <Grid item xs={12} className={`${classes.border}`}>
+        {/* <Grid item xs={12} className={`${classes.border}`}>
           <div className={classes.SectMargin}>
             <RecentConversations
               header={"Recent Conversations"}
               handleOpenExpandableCard={handleOpenExpandableCard}
             />
           </div>
-        </Grid>
+        </Grid> */}
 
         {/*/////////// new section //////////// */}
         <Grid item xs={12} className={`${classes.border}`}>
@@ -820,7 +821,7 @@ export default function ContactDetailCard(props) {
               <Divider />
             </Grid>
 
-            <Grid item xs={12} className={classes.Comments}>
+            {/* <Grid item xs={12} className={classes.Comments}>
               <Card
                 raised
                 style={{
@@ -832,7 +833,7 @@ export default function ContactDetailCard(props) {
                 <LeadScore score={5} lastContacted={"Jun 24, 2020"} />
               </Card>
               <Divider />
-            </Grid>
+            </Grid> */}
 
             {/* <Grid item xs={12}>
                 <Activities

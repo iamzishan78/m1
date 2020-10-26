@@ -29,7 +29,7 @@ export default class Cube3D extends Component {
   };
 
   static defaultProps = {
-    height: '16px',
+    height: '24px',
     predefinedClassName: 'data-ex-icons-cube3d'
   };
 

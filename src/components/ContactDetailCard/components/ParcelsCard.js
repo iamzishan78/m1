@@ -40,8 +40,8 @@ export default function ParcelsCard(props) {
   return (
     <div className={classes.root}>
       <div>
-        <h4 style={{ marginTop: "0", float: "left" }}>Parcels (40)</h4>
-        <IconButton
+        <h4 style={{ marginTop: "0", float: "left" }}>Parcels (0)</h4>
+        {/* <IconButton
           size="small"
           className={classes.addIcon}
           onClick={() => {
@@ -55,7 +55,7 @@ export default function ParcelsCard(props) {
           }}
         >
           <AddIcon htmlColor="rgb(28 173 225 / 81%)" />
-        </IconButton>
+        </IconButton> */}
       </div>
       <div className={classes.cardContent}>
         <div className={classes.leftColumn}>
@@ -68,12 +68,12 @@ export default function ParcelsCard(props) {
           <h5 className={classes.h5}>
             Gross Acres
             <br />
-            <span className={classes.lastContactedSpan}>1280</span>
+            <span className={classes.lastContactedSpan}>-</span>
           </h5>
           <h5 className={classes.h5}>
             Net Acres
             <br />
-            <span className={classes.lastContactedSpan}>640</span>
+            <span className={classes.lastContactedSpan}>-</span>
           </h5>
         </div>
       </div>

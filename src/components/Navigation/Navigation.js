@@ -107,6 +107,9 @@ import { GETPROFILEIMAGE } from "../../graphQL/useQueryGetProfile";
 import { useDispatch, useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 
+import CheckIcon from '@material-ui/icons/Check';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+
 import {
   MuiThemeProvider,
   createMuiTheme,
@@ -495,8 +498,15 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   userMenuItem: {
+    padding:5,
+    paddingLeft:35,
+    width: "260px",
+    color: "#1daee1",
+  },
+  userTenantTitle: {
     padding: 10,
-    width: "250px",
+    paddingBottom: 15,
+    width: "260px",
     color: "#1daee1",
   },
   actionWrapper: {
@@ -753,6 +763,7 @@ export default function Navigation(props) {
     }));
   };
 
+
   useEffect(() => {
     if (location.pathname === "/") {
       setStateNav((state) => ({
@@ -919,7 +930,9 @@ export default function Navigation(props) {
     sessionStorage.clear();
     localStorage.clear();
 
-    stateApp.myMSALObj.logout(logoutRequest);
+    if(currentAccount) {
+      stateApp.myMSALObj.logout(logoutRequest);
+    }      
 
     window.location.replace(window.location.origin);
 
@@ -959,18 +972,24 @@ export default function Navigation(props) {
       onClose={handleMenuClose}
       className={classes.userMenu}
     >
+      <MenuItem disabled  className={classes.userTenantTitle}>
+        <CheckIcon/>
+        <Typography variant="inherit" color="textPrimary"> {sessionStorage.getItem("tenantName")} </Typography>
+        <FiberManualRecordIcon style={{color: "#34F125"}} fontSize="small"/>
+      </MenuItem>
+      <Divider/>
       <MenuItem
         className={classes.userMenuItem}
         onClick={(e) => openProfile(e)}
+        style={{marginTop: 10}}
       >
         <Typography
-          style={{ textDecoration: "none", color: "#1daee1" }}
+          style={{ textDecoration: "none", color: "#1daee1"}}
           variant="inherit"
         >
           My Account
         </Typography>
       </MenuItem>
-      <Divider />
       <MenuItem 
         className={classes.userMenuItem}
         onClick={(e) => openUserManagement(e)}>
@@ -981,7 +1000,6 @@ export default function Navigation(props) {
             User Management
           </Typography>
       </MenuItem>
-      <Divider />
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
         <Typography variant="inherit">Logout</Typography>
       </MenuItem>
@@ -1148,7 +1166,7 @@ export default function Navigation(props) {
 
             {matchFind ? (
               <div className={classes.search} id="searchBarDivParent">
-                <SearchBarWithToggleButton />
+                <SearchBarWithToggleButton/>
               </div>
             ) : null}
 

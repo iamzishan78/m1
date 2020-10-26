@@ -40,10 +40,10 @@ export default function AddOwnerToContactDialogContent(props) {
     () =>
       debounce((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName%2CAddress1&%24top=" +
+          "https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName%2CAddress1&top=" +
           top +
           "&search=" +
-          request.input;
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");

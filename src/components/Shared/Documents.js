@@ -64,14 +64,14 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   fileUploadSection: {
-    minHeight: "35px",
+    minHeight: "50px",
     display: "flex",
     justifyContent: "space-between",
     flexDirection: "column",
     width: "100%",
   },
   fileUploadTopSection: {
-    minHeight: "35px",
+    minHeight: "50px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -97,7 +97,8 @@ const useStyles = makeStyles((theme) => ({
     width: "fit-content",
   },
   fileDrop: {
-    minHeight: "35px",
+    minHeight: "125px",
+    width: "100%",
     padding: "10px 40px",
     color: "#757575",
     fontWeight: "normal",
@@ -107,7 +108,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     border: "2px dashed rgb(176, 176, 176)",
-    marginBottom: "23px",
+    marginBottom: "30px",
   },
   fileDropError: {
     color: "red",
@@ -171,9 +172,9 @@ function UploadZone(props) {
           <h5>Drag a file here or click to select a file to upload</h5>
         )}
       </div>
-      {props.addFileData && !props.addFileData.addFileDescriptor.success && (
+      {/* {props.addFileData && !props.addFileData.addFileDescriptor.success && (
         <p className={classes.fileDropError}>File could not be uploaded</p>
-      )}
+      )} */}
     </>
   );
 }

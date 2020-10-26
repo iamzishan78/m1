@@ -1,730 +1,730 @@
-export const styleLayers = [
-  {
-    name: "Permits",
-    id: ["permits"],
-    sourceProps: ["permits_source"],
-    layerProps: {
-      layerId: ["permits"],
-      layerType: ["circle"],
-      paintProps: {
-        "circle-radius": 5,
-        "circle-color": "#e362e3",
-        "circle-stroke-width": 2,
-        "circle-stroke-color": "#fff",
-      },
-      clusterProps: {
-        clusterPaintProps: {
-          "circle-color": {
-            property: "point_count",
-            type: "interval",
-            stops: [
-              [0, "#e362e3"],
-              [100, "#e362e3"],
-              [750, "#e362e3"],
-            ],
-          },
+// export const styleLayers = [
+//   {
+//     name: "Recent Permits",
+//     id: ["permits"],
+//     sourceProps: ["permits_source"],
+//     layerProps: {
+//       layerId: ["permits"],
+//       layerType: ["circle"],
+//       paintProps: {
+//         "circle-radius": 5,
+//         "circle-color": "#fb9828",
+//         "circle-stroke-width": 2,
+//         "circle-stroke-color": "#fff",
+//       },
+//       clusterProps: {
+//         clusterPaintProps: {
+//           "circle-color": {
+//             property: "point_count",
+//             type: "interval",
+//             stops: [
+//               [0, "#e362e3"],
+//               [100, "#e362e3"],
+//               [750, "#e362e3"],
+//             ],
+//           },
 
-          "circle-radius": [
-            "step",
-            ["get", "point_count"],
-            20,
-            5,
-            25,
-            10,
-            30,
-            20,
-            35,
-          ],
+//           "circle-radius": [
+//             "step",
+//             ["get", "point_count"],
+//             20,
+//             5,
+//             25,
+//             10,
+//             30,
+//             20,
+//             35,
+//           ],
 
-          "circle-stroke-width": 5,
-          "circle-stroke-color": "#fff",
-        },
-        clusterSymbolProps: {
-          "text-field": "{point_count}",
-          "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-          "text-size": 12,
-        },
-      },
-    },
-  },
-  // {
-  //   name: "Rig Activity",
-  //   id: ["rigs"],
-  //   sourceProps: ["rigs_source"],
-  //   layerProps: {
-  //     layerId: ["rigs"],
-  //     layerType: ["circle"],
-  //     paintProps: {
-  //       "circle-radius": 5,
-  //       "circle-color": "#666666",
-  //       "circle-stroke-width": 2,
-  //       "circle-stroke-color": "#fff",
-  //     },
-  //     clusterProps: {
-  //       clusterPaintProps: {
-  //         "circle-color": {
-  //           property: "point_count",
-  //           type: "interval",
-  //           stops: [
-  //             [0, "#666666"],
-  //             [100, "#666666"],
-  //             [750, "#666666"],
-  //           ],
-  //         },
-  //         "circle-radius": [
-  //           "step",
-  //           ["get", "point_count"],
-  //           20,
-  //           5,
-  //           25,
-  //           10,
-  //           30,
-  //           20,
-  //           35,
-  //         ],
+//           "circle-stroke-width": 5,
+//           "circle-stroke-color": "#fff",
+//         },
+//         clusterSymbolProps: {
+//           "text-field": "{point_count}",
+//           "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+//           "text-size": 12,
+//         },
+//       },
+//     },
+//   },
+//   // {
+//   //   name: "Rig Activity",
+//   //   id: ["rigs"],
+//   //   sourceProps: ["rigs_source"],
+//   //   layerProps: {
+//   //     layerId: ["rigs"],
+//   //     layerType: ["circle"],
+//   //     paintProps: {
+//   //       "circle-radius": 5,
+//   //       "circle-color": "#666666",
+//   //       "circle-stroke-width": 2,
+//   //       "circle-stroke-color": "#fff",
+//   //     },
+//   //     clusterProps: {
+//   //       clusterPaintProps: {
+//   //         "circle-color": {
+//   //           property: "point_count",
+//   //           type: "interval",
+//   //           stops: [
+//   //             [0, "#666666"],
+//   //             [100, "#666666"],
+//   //             [750, "#666666"],
+//   //           ],
+//   //         },
+//   //         "circle-radius": [
+//   //           "step",
+//   //           ["get", "point_count"],
+//   //           20,
+//   //           5,
+//   //           25,
+//   //           10,
+//   //           30,
+//   //           20,
+//   //           35,
+//   //         ],
 
-  //         "circle-stroke-width": 5,
-  //         "circle-stroke-color": "#fff",
-  //       },
-  //       clusterSymbolProps: {
-  //         "text-field": "{point_count}",
-  //         "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-  //         "text-size": 12,
-  //       },
-  //     }
-  //   }
-  // },
-  {
-    name: "Rig Activity",
-    id: ["rigs"],
-    sourceProps: ["rigs_source"],
-    layerProps: {
-      layerId: ["rigs"],
-      layerType: ["symbol"],
-      layoutProps: {
-        "icon-image": "marker-icon",
-        "icon-allow-overlap": true,
-        "icon-size": 2,
-        "text-field": "H",
-        "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
-        "text-size": 11,
-        "text-transform": "uppercase",
-        "text-letter-spacing": 0.05,
-        "text-offset": [0, -0.5],
-      },
-      paintProps: {
-        "icon-color": "#00ff00",
-        "icon-halo-color": "#fff",
-        "icon-halo-width": 2,
-      },
-      clusterProps: {
-        clusterPaintProps: {
-          "circle-color": {
-            property: "point_count",
-            type: "interval",
-            stops: [
-              [0, "#666666"],
-              [100, "#666666"],
-              [750, "#666666"],
-            ],
-          },
-          "circle-radius": [
-            "step",
-            ["get", "point_count"],
-            20,
-            5,
-            25,
-            10,
-            30,
-            20,
-            35,
-          ],
+//   //         "circle-stroke-width": 5,
+//   //         "circle-stroke-color": "#fff",
+//   //       },
+//   //       clusterSymbolProps: {
+//   //         "text-field": "{point_count}",
+//   //         "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+//   //         "text-size": 12,
+//   //       },
+//   //     }
+//   //   }
+//   // },
+//   {
+//     name: "Rig Activity",
+//     id: ["rigs"],
+//     sourceProps: ["rigs_source"],
+//     layerProps: {
+//       layerId: ["rigs"],
+//       layerType: ["symbol"],
+//       layoutProps: {
+//         "icon-image": "marker-icon",
+//         "icon-allow-overlap": true,
+//         "icon-size": 2,
+//         "text-field": "H",
+//         "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+//         "text-size": 11,
+//         "text-transform": "uppercase",
+//         "text-letter-spacing": 0.05,
+//         "text-offset": [0, -0.5],
+//       },
+//       paintProps: {
+//         "icon-color": "#00ff00",
+//         "icon-halo-color": "#fff",
+//         "icon-halo-width": 2,
+//       },
+//       clusterProps: {
+//         clusterPaintProps: {
+//           "circle-color": {
+//             property: "point_count",
+//             type: "interval",
+//             stops: [
+//               [0, "#666666"],
+//               [100, "#666666"],
+//               [750, "#666666"],
+//             ],
+//           },
+//           "circle-radius": [
+//             "step",
+//             ["get", "point_count"],
+//             20,
+//             5,
+//             25,
+//             10,
+//             30,
+//             20,
+//             35,
+//           ],
 
-          "circle-stroke-width": 5,
-          "circle-stroke-color": "#fff",
-        },
-        clusterSymbolProps: {
-          "text-field": "{point_count}",
-          "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-          "text-size": 12,
-        },
-      },
-    },
-  },
-  {
-    name: "Wells",
-    id: ["wellpoints", "welllines"],
-  },
-  {
-    name: "Basins",
-    id: ["basinLabels", "basinLayer"],
-  },
-  {
-    name: "Pipelines",
-    id: ["pipelineLayer"],
-  },
-  {
-    name: "Land Grid",
-    id: [
-      "PLSSTownships",
-      "PLSSTownshipLabels",
-      "PLSSFirstDivision",
-      "PLSSFirstDivisionLabels",
-      "TexasLandSurvey",
-      "TexasLandSurveyLabels",
-      "abstract_geo_fill_layer",
-      "abstract_geo_layer",
-      "abstract_geo_label_layer",
-    ],
-  },
+//           "circle-stroke-width": 5,
+//           "circle-stroke-color": "#fff",
+//         },
+//         clusterSymbolProps: {
+//           "text-field": "{point_count}",
+//           "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+//           "text-size": 12,
+//         },
+//       },
+//     },
+//   },
+//   {
+//     name: "Wells",
+//     id: ["wellpoints", "welllines"],
+//   },
+//   {
+//     name: "Basins",
+//     id: ["basinLabels", "basinLayer"],
+//   },
+//   {
+//     name: "Pipelines",
+//     id: ["pipelineLayer"],
+//   },
+//   {
+//     name: "Land Grid",
+//     id: [
+//       "PLSSTownships",
+//       "PLSSTownshipLabels",
+//       "PLSSFirstDivision",
+//       "PLSSFirstDivisionLabels",
+//       "TexasLandSurvey",
+//       "TexasLandSurveyLabels",
+//       "abstract_geo_fill_layer",
+//       "abstract_geo_layer",
+//       "abstract_geo_label_layer",
+//     ],
+//   },
 
-  {
-    name: "TX GLO Units",
-    id: ["GLOUnits", "GLOUnitLabels"],
-  },
-  {
-    name: "TX GLO Active Leases",
-    id: ["GLOLeases", "GLOLeaseLabels"],
-  },
-];
+//   {
+//     name: "TX GLO Units",
+//     id: ["GLOUnits", "GLOUnitLabels"],
+//   },
+//   {
+//     name: "TX GLO Active Leases",
+//     id: ["GLOLeases", "GLOLeaseLabels"],
+//   },
+// ];
 
-export const userDefinedLayers = [
-  {
-    name: "Parcels",
-    id: ["parcel", "parcel_labels"],
-    idColor: "#e07c71",
-    type: "data layer",
-    dataProps: [
-      {
-        dataId: "parcel",
-      },
-      {
-        dataId: "parcel_labels",
-      },
-    ],
-    sourceProps: [
-      {
-        sourceId: "parcel_source",
-        sourceType: "geojson",
-      },
-      {
-        sourceId: "parcel_labels_source",
-        sourceType: "geojson",
-      },
-    ],
-    layerProps: [
-      {
-        layerType: "fill",
-        layerId: "parcel",
-        minZoom: 8.5,
-        paintProps: {
-          "fill-color": "#e07c71",
-          "fill-opacity": [
-            "case",
-            ["boolean", ["feature-state", "hover"], false],
-            0.7,
-            0.4,
-          ],
-          "fill-outline-color": [
-            "case",
-            ["boolean", ["feature-state", "hover"], false],
-            "#fc5b49",
-            "#e07c71",
-          ],
-        },
-      },
-      {
-        layerType: "symbol",
-        layerId: "parcel_labels",
-        minZoom: 12,
-        symbolProps: {
-          "text-allow-overlap": true,
-          "text-anchor": "center",
-          "text-field": "{label}",
-          "text-size": [
-            "step",
-            ["zoom"],
-            0,
-            10.4,
-            0,
-            10.5,
-            14,
-            12,
-            16,
-            15,
-            20,
-            22,
-            24,
-          ],
-        },
-      },
-    ],
-    interactionProps: {
-      hoverActions: {
-        mouseMove: {
-          cursor: "pointer",
-        },
-        mouseLeave: {
-          cursor: "",
-        },
-      },
-    },
-  },
-  //// temporary commented Title layer
-  // {
-  //   name: "Title",
-  //   id: [],
-  //   idColor: "#b6a0d3",
-  //   type: "data layer",
-  // },
-  {
-    name: "Area of Interest",
-    id: ["interest", "interest_labels"],
-    idColor: "#62a27f",
-    type: "data layer",
-    dataProps: [
-      {
-        dataId: "interest",
-      },
-      {
-        dataId: "interest_labels",
-      },
-    ],
-    sourceProps: [
-      {
-        sourceId: "interest_source",
-        sourceType: "geojson",
-      },
-      {
-        sourceId: "interest_labels_source",
-        sourceType: "geojson",
-      },
-    ],
-    layerProps: [
-      {
-        layerType: "fill",
-        layerId: "interest",
-        paintProps: {
-          "fill-color": "#62a27f",
-          "fill-opacity": 0.4,
-          "fill-outline-color": "#62a27f",
-        },
-      },
-      {
-        layerType: "symbol",
-        layerId: "interest_labels",
-        symbolProps: {
-          "text-allow-overlap": true,
-          "text-anchor": "center",
-          "text-field": "{label}",
-          "text-size": [
-            "interpolate",
-            ["exponential", 1],
-            ["zoom"],
-            0,0,
-            // 11,0,
-            22,30,
-          ],
-        },
-      },
-    ],
-    interactionProps: {
-      hoverActions: {
-        mouseMove: {
-          cursor: "pointer",
-        },
-        mouseLeave: {
-          cursor: "",
-        },
-      },
-    },
-  },
+// export const userDefinedLayers = [
+//   {
+//     name: "Parcels",
+//     id: ["parcel", "parcel_labels"],
+//     idColor: "#e07c71",
+//     type: "data layer",
+//     dataProps: [
+//       {
+//         dataId: "parcel",
+//       },
+//       {
+//         dataId: "parcel_labels",
+//       },
+//     ],
+//     sourceProps: [
+//       {
+//         sourceId: "parcel_source",
+//         sourceType: "geojson",
+//       },
+//       {
+//         sourceId: "parcel_labels_source",
+//         sourceType: "geojson",
+//       },
+//     ],
+//     layerProps: [
+//       {
+//         layerType: "fill",
+//         layerId: "parcel",
+//         minZoom: 8.5,
+//         paintProps: {
+//           "fill-color": "#e07c71",
+//           "fill-opacity": [
+//             "case",
+//             ["boolean", ["feature-state", "hover"], false],
+//             0.7,
+//             0.4,
+//           ],
+//           "fill-outline-color": [
+//             "case",
+//             ["boolean", ["feature-state", "hover"], false],
+//             "#fc5b49",
+//             "#e07c71",
+//           ],
+//         },
+//       },
+//       {
+//         layerType: "symbol",
+//         layerId: "parcel_labels",
+//         minZoom: 12,
+//         symbolProps: {
+//           "text-allow-overlap": true,
+//           "text-anchor": "center",
+//           "text-field": "{label}",
+//           "text-size": [
+//             "step",
+//             ["zoom"],
+//             0,
+//             10.4,
+//             0,
+//             10.5,
+//             14,
+//             12,
+//             16,
+//             15,
+//             20,
+//             22,
+//             24,
+//           ],
+//         },
+//       },
+//     ],
+//     interactionProps: {
+//       hoverActions: {
+//         mouseMove: {
+//           cursor: "pointer",
+//         },
+//         mouseLeave: {
+//           cursor: "",
+//         },
+//       },
+//     },
+//   },
+//   //// temporary commented Title layer
+//   // {
+//   //   name: "Title",
+//   //   id: [],
+//   //   idColor: "#b6a0d3",
+//   //   type: "data layer",
+//   // },
+//   {
+//     name: "Area of Interest",
+//     id: ["interest", "interest_labels"],
+//     idColor: "#62a27f",
+//     type: "data layer",
+//     dataProps: [
+//       {
+//         dataId: "interest",
+//       },
+//       {
+//         dataId: "interest_labels",
+//       },
+//     ],
+//     sourceProps: [
+//       {
+//         sourceId: "interest_source",
+//         sourceType: "geojson",
+//       },
+//       {
+//         sourceId: "interest_labels_source",
+//         sourceType: "geojson",
+//       },
+//     ],
+//     layerProps: [
+//       {
+//         layerType: "fill",
+//         layerId: "interest",
+//         paintProps: {
+//           "fill-color": "#62a27f",
+//           "fill-opacity": 0.4,
+//           "fill-outline-color": "#62a27f",
+//         },
+//       },
+//       {
+//         layerType: "symbol",
+//         layerId: "interest_labels",
+//         symbolProps: {
+//           "text-allow-overlap": true,
+//           "text-anchor": "center",
+//           "text-field": "{label}",
+//           "text-size": [
+//             "interpolate",
+//             ["exponential", 1],
+//             ["zoom"],
+//             0,0,
+//             // 11,0,
+//             22,30,
+//           ],
+//         },
+//       },
+//     ],
+//     interactionProps: {
+//       hoverActions: {
+//         mouseMove: {
+//           cursor: "pointer",
+//         },
+//         mouseLeave: {
+//           cursor: "",
+//         },
+//       },
+//     },
+//   },
 
-  {
-    name: "Tracked Wells",
-    id: ["Tracked Wells"],
-    idColor: "#e4a773",
-    type: "data layer",
-    dataProps: [
-      {
-        dataId: "trackedWellsWells",
-        dataTypeId: "Point",
-      },
-    ],
-    sourceProps: [
-      {
-        sourceId: "tracked_wells_user_defined_source",
-        sourceType: "geojson",
-      },
-    ],
-    layerProps: [
-      {
-        layerId: "Tracked Wells",
-        layerType: "circle",
-        paintProps: {
-          "circle-radius": 5,
-          "circle-color": "#e4a773",
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "#fff",
-        },
-        clusterProps: {
-          clusterPaintProps: {
-            "circle-color": {
-              property: "point_count",
-              type: "interval",
-              stops: [
-                [0, "#e4a773"],
-                [100, "#e4a773"],
-                [750, "#e4a773"],
-              ],
-            },
+//   {
+//     name: "Tracked Wells",
+//     id: ["Tracked Wells"],
+//     idColor: "#e4a773",
+//     type: "data layer",
+//     dataProps: [
+//       {
+//         dataId: "trackedWellsWells",
+//         dataTypeId: "Point",
+//       },
+//     ],
+//     sourceProps: [
+//       {
+//         sourceId: "tracked_wells_user_defined_source",
+//         sourceType: "geojson",
+//       },
+//     ],
+//     layerProps: [
+//       {
+//         layerId: "Tracked Wells",
+//         layerType: "circle",
+//         paintProps: {
+//           "circle-radius": 5,
+//           "circle-color": "#e4a773",
+//           "circle-stroke-width": 2,
+//           "circle-stroke-color": "#fff",
+//         },
+//         clusterProps: {
+//           clusterPaintProps: {
+//             "circle-color": {
+//               property: "point_count",
+//               type: "interval",
+//               stops: [
+//                 [0, "#e4a773"],
+//                 [100, "#e4a773"],
+//                 [750, "#e4a773"],
+//               ],
+//             },
 
-            // 'circle-radius': {
-            //     property: 'point_count',
-            //     type: 'interval',
-            //     stops: [
-            //         [0, 20],
-            //         [100, 30],
-            //         [750, 40]
-            //     ]
-            //   },
+//             // 'circle-radius': {
+//             //     property: 'point_count',
+//             //     type: 'interval',
+//             //     stops: [
+//             //         [0, 20],
+//             //         [100, 30],
+//             //         [750, 40]
+//             //     ]
+//             //   },
 
-            "circle-radius": [
-              "step",
-              ["get", "point_count"],
-              20,
-              5,
-              25,
-              10,
-              30,
-              20,
-              35,
-            ],
+//             "circle-radius": [
+//               "step",
+//               ["get", "point_count"],
+//               20,
+//               5,
+//               25,
+//               10,
+//               30,
+//               20,
+//               35,
+//             ],
 
-            "circle-stroke-width": 5,
-            "circle-stroke-color": "#fff",
-          },
-          clusterSymbolProps: {
-            "text-field": "{point_count}",
-            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-            "text-size": 12,
-          },
-        },
-      },
-    ],
-    interactionProps: {
-      hoverActions: {
-        mouseMove: {
-          cursor: "pointer",
-        },
-        mouseLeave: {
-          cursor: "",
-        },
-      },
-      mouseClick: {
-        clickInteraction: {
-          boundTo: false,
-          flyTo: true,
-          easeTo: false,
-          popUp: false,
-        },
-        clusterClickInteraction: {
-          boundTo: false,
-          flyTo: false,
-          easeTo: true,
-          popUp: false,
-        },
-      },
-    },
-  },
+//             "circle-stroke-width": 5,
+//             "circle-stroke-color": "#fff",
+//           },
+//           clusterSymbolProps: {
+//             "text-field": "{point_count}",
+//             "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+//             "text-size": 12,
+//           },
+//         },
+//       },
+//     ],
+//     interactionProps: {
+//       hoverActions: {
+//         mouseMove: {
+//           cursor: "pointer",
+//         },
+//         mouseLeave: {
+//           cursor: "",
+//         },
+//       },
+//       mouseClick: {
+//         clickInteraction: {
+//           boundTo: false,
+//           flyTo: true,
+//           easeTo: false,
+//           popUp: false,
+//         },
+//         clusterClickInteraction: {
+//           boundTo: false,
+//           flyTo: false,
+//           easeTo: true,
+//           popUp: false,
+//         },
+//       },
+//     },
+//   },
 
-  {
-    name: "Tracked Owners",
-    id: ["Tracked Owners"],
-    idColor: "#01fdfe",
-    type: "data layer",
-    dataProps: [
-      {
-        dataId: "trackedOwnersWells",
-        dataTypeId: "Point",
-      },
-    ],
-    sourceProps: [
-      {
-        sourceId: "tracked_owners_user_defined_source",
-        sourceType: "geojson",
-      },
-    ],
-    layerProps: [
-      {
-        layerId: "Tracked Owners",
-        layerType: "circle",
-        paintProps: {
-          "circle-radius": 5,
-          "circle-color": "#01fdfe",
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "#fff",
-        },
-        clusterProps: {
-          cluster: true,
-          clusterBaseId: "Tracked Owners Clusters",
-          clusterCountId: "Tracked Owners Clusters Counts",
-          clusterPaintProps: {
-            "circle-color": {
-              property: "point_count",
-              type: "interval",
-              stops: [
-                [0, "#01fdfe"],
-                [100, "#01fdfe"],
-                [750, "#01fdfe"],
-              ],
-            },
+//   {
+//     name: "Tracked Owners",
+//     id: ["Tracked Owners"],
+//     idColor: "#01fdfe",
+//     type: "data layer",
+//     dataProps: [
+//       {
+//         dataId: "trackedOwnersWells",
+//         dataTypeId: "Point",
+//       },
+//     ],
+//     sourceProps: [
+//       {
+//         sourceId: "tracked_owners_user_defined_source",
+//         sourceType: "geojson",
+//       },
+//     ],
+//     layerProps: [
+//       {
+//         layerId: "Tracked Owners",
+//         layerType: "circle",
+//         paintProps: {
+//           "circle-radius": 5,
+//           "circle-color": "#01fdfe",
+//           "circle-stroke-width": 2,
+//           "circle-stroke-color": "#fff",
+//         },
+//         clusterProps: {
+//           cluster: true,
+//           clusterBaseId: "Tracked Owners Clusters",
+//           clusterCountId: "Tracked Owners Clusters Counts",
+//           clusterPaintProps: {
+//             "circle-color": {
+//               property: "point_count",
+//               type: "interval",
+//               stops: [
+//                 [0, "#01fdfe"],
+//                 [100, "#01fdfe"],
+//                 [750, "#01fdfe"],
+//               ],
+//             },
 
-            // 'circle-radius': {
-            //     property: 'point_count',
-            //     type: 'interval',
-            //     stops: [
-            //         [0, 20],
-            //         [100, 30],
-            //         [750, 40]
-            //     ]
-            //   },
+//             // 'circle-radius': {
+//             //     property: 'point_count',
+//             //     type: 'interval',
+//             //     stops: [
+//             //         [0, 20],
+//             //         [100, 30],
+//             //         [750, 40]
+//             //     ]
+//             //   },
 
-            "circle-radius": [
-              "step",
-              ["get", "point_count"],
-              20,
-              5,
-              25,
-              10,
-              30,
-              20,
-              35,
-            ],
+//             "circle-radius": [
+//               "step",
+//               ["get", "point_count"],
+//               20,
+//               5,
+//               25,
+//               10,
+//               30,
+//               20,
+//               35,
+//             ],
 
-            "circle-stroke-width": 5,
-            "circle-stroke-color": "#fff",
-          },
-          clusterSymbolProps: {
-            "text-field": "{point_count}",
-            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-            "text-size": 12,
-          },
-        },
-      },
-    ],
-    interactionProps: {
-      hoverActions: {
-        mouseMove: {
-          cursor: "pointer",
-        },
-        mouseLeave: {
-          cursor: "",
-        },
-      },
-      mouseClick: {
-        clickInteraction: {
-          boundTo: false,
-          flyTo: true,
-          easeTo: false,
-          popUp: false,
-        },
-        clusterClickInteraction: {
-          boundTo: false,
-          flyTo: false,
-          easeTo: true,
-          popUp: false,
-        },
-      },
-    },
-  },
+//             "circle-stroke-width": 5,
+//             "circle-stroke-color": "#fff",
+//           },
+//           clusterSymbolProps: {
+//             "text-field": "{point_count}",
+//             "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+//             "text-size": 12,
+//           },
+//         },
+//       },
+//     ],
+//     interactionProps: {
+//       hoverActions: {
+//         mouseMove: {
+//           cursor: "pointer",
+//         },
+//         mouseLeave: {
+//           cursor: "",
+//         },
+//       },
+//       mouseClick: {
+//         clickInteraction: {
+//           boundTo: false,
+//           flyTo: true,
+//           easeTo: false,
+//           popUp: false,
+//         },
+//         clusterClickInteraction: {
+//           boundTo: false,
+//           flyTo: false,
+//           easeTo: true,
+//           popUp: false,
+//         },
+//       },
+//     },
+//   },
 
-  {
-    name: "Tagged Wells/Owners",
-    id: ["Tags Filter"],
-    idColor: "rgb(30, 144, 255)",
-    type: "data layer",
-    dataProps: [
-      {
-        dataId: "wellsFromTagsFilter",
-        dataTypeId: "Point",
-      },
-    ],
-    sourceProps: [
-      {
-        sourceId: "wells_from_tag_filter_user_defined_source",
-        sourceType: "geojson",
-      },
-    ],
-    layerProps: [
-      {
-        layerId: "Tags Filter",
-        layerType: "circle",
-        paintProps: {
-          "circle-radius": 5,
-          "circle-color": "rgb(30, 144, 255)",
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "#fff",
-        },
-        clusterProps: {
-          clusterPaintProps: {
-            "circle-color": {
-              property: "point_count",
-              type: "interval",
-              stops: [
-                [0, "rgb(30, 144, 255)"],
-                [100, "rgb(30, 144, 255)"],
-                [750, "rgb(30, 144, 255)"],
-              ],
-            },
-            "circle-radius": [
-              "step",
-              ["get", "point_count"],
-              20,
-              5,
-              25,
-              10,
-              30,
-              20,
-              35,
-            ],
-            "circle-stroke-width": 5,
-            "circle-stroke-color": "#fff",
-          },
-          clusterSymbolProps: {
-            "text-field": "{point_count}",
-            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-            "text-size": 12,
-          },
-        },
-      },
-    ],
-    interactionProps: {
-      hoverActions: {
-        mouseMove: {
-          cursor: "pointer",
-        },
-        mouseLeave: {
-          cursor: "",
-        },
-      },
-      mouseClick: {
-        clickInteraction: {
-          boundTo: false,
-          flyTo: true,
-          easeTo: false,
-          popUp: false,
-        },
-        clusterClickInteraction: {
-          boundTo: false,
-          flyTo: false,
-          easeTo: true,
-          popUp: false,
-        },
-      },
-    },
-  },
+//   {
+//     name: "Tagged Wells/Owners",
+//     id: ["Tags Filter"],
+//     idColor: "rgb(30, 144, 255)",
+//     type: "data layer",
+//     dataProps: [
+//       {
+//         dataId: "wellsFromTagsFilter",
+//         dataTypeId: "Point",
+//       },
+//     ],
+//     sourceProps: [
+//       {
+//         sourceId: "wells_from_tag_filter_user_defined_source",
+//         sourceType: "geojson",
+//       },
+//     ],
+//     layerProps: [
+//       {
+//         layerId: "Tags Filter",
+//         layerType: "circle",
+//         paintProps: {
+//           "circle-radius": 5,
+//           "circle-color": "rgb(30, 144, 255)",
+//           "circle-stroke-width": 2,
+//           "circle-stroke-color": "#fff",
+//         },
+//         clusterProps: {
+//           clusterPaintProps: {
+//             "circle-color": {
+//               property: "point_count",
+//               type: "interval",
+//               stops: [
+//                 [0, "rgb(30, 144, 255)"],
+//                 [100, "rgb(30, 144, 255)"],
+//                 [750, "rgb(30, 144, 255)"],
+//               ],
+//             },
+//             "circle-radius": [
+//               "step",
+//               ["get", "point_count"],
+//               20,
+//               5,
+//               25,
+//               10,
+//               30,
+//               20,
+//               35,
+//             ],
+//             "circle-stroke-width": 5,
+//             "circle-stroke-color": "#fff",
+//           },
+//           clusterSymbolProps: {
+//             "text-field": "{point_count}",
+//             "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+//             "text-size": 12,
+//           },
+//         },
+//       },
+//     ],
+//     interactionProps: {
+//       hoverActions: {
+//         mouseMove: {
+//           cursor: "pointer",
+//         },
+//         mouseLeave: {
+//           cursor: "",
+//         },
+//       },
+//       mouseClick: {
+//         clickInteraction: {
+//           boundTo: false,
+//           flyTo: true,
+//           easeTo: false,
+//           popUp: false,
+//         },
+//         clusterClickInteraction: {
+//           boundTo: false,
+//           flyTo: false,
+//           easeTo: true,
+//           popUp: false,
+//         },
+//       },
+//     },
+//   },
 
-  {
-    name: "Search",
-    id: ["Search"],
-    idColor: "#00FF00",
-    type: "data layer",
-    dataProps: [
-      {
-        dataId: "wellsFromSearch",
-        dataTypeId: "Point",
-      },
-    ],
-    sourceProps: [
-      {
-        sourceId: "wells_from_search_user_defined_source",
-        sourceType: "geojson",
-      },
-    ],
-    layerProps: [
-      {
-        layerId: "Search",
-        layerType: "circle",
-        paintProps: {
-          "circle-radius": 5,
-          "circle-color": "#00FF00",
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "#fff",
-        },
-        clusterProps: {
-          clusterPaintProps: {
-            "circle-color": {
-              property: "point_count",
-              type: "interval",
-              stops: [
-                [0, "#00FF00"],
-                [100, "#00FF00"],
-                [750, "#00FF00"],
-              ],
-            },
-            "circle-radius": [
-              "step",
-              ["get", "point_count"],
-              20,
-              5,
-              25,
-              10,
-              30,
-              20,
-              35,
-            ],
-            "circle-stroke-width": 5,
-            "circle-stroke-color": "#fff",
-          },
-          clusterSymbolProps: {
-            "text-field": "{point_count}",
-            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-            "text-size": 12,
-          },
-        },
-      },
-    ],
-    interactionProps: {
-      hoverActions: {
-        mouseMove: {
-          cursor: "pointer",
-        },
-        mouseLeave: {
-          cursor: "",
-        },
-      },
-      mouseClick: {
-        clickInteraction: {
-          boundTo: false,
-          flyTo: true,
-          easeTo: false,
-          popUp: false,
-        },
-        clusterClickInteraction: {
-          boundTo: false,
-          flyTo: false,
-          easeTo: true,
-          popUp: false,
-        },
-      },
-    },
-  },
+//   {
+//     name: "Search",
+//     id: ["Search"],
+//     idColor: "#00FF00",
+//     type: "data layer",
+//     dataProps: [
+//       {
+//         dataId: "wellsFromSearch",
+//         dataTypeId: "Point",
+//       },
+//     ],
+//     sourceProps: [
+//       {
+//         sourceId: "wells_from_search_user_defined_source",
+//         sourceType: "geojson",
+//       },
+//     ],
+//     layerProps: [
+//       {
+//         layerId: "Search",
+//         layerType: "circle",
+//         paintProps: {
+//           "circle-radius": 5,
+//           "circle-color": "#00FF00",
+//           "circle-stroke-width": 2,
+//           "circle-stroke-color": "#fff",
+//         },
+//         clusterProps: {
+//           clusterPaintProps: {
+//             "circle-color": {
+//               property: "point_count",
+//               type: "interval",
+//               stops: [
+//                 [0, "#00FF00"],
+//                 [100, "#00FF00"],
+//                 [750, "#00FF00"],
+//               ],
+//             },
+//             "circle-radius": [
+//               "step",
+//               ["get", "point_count"],
+//               20,
+//               5,
+//               25,
+//               10,
+//               30,
+//               20,
+//               35,
+//             ],
+//             "circle-stroke-width": 5,
+//             "circle-stroke-color": "#fff",
+//           },
+//           clusterSymbolProps: {
+//             "text-field": "{point_count}",
+//             "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+//             "text-size": 12,
+//           },
+//         },
+//       },
+//     ],
+//     interactionProps: {
+//       hoverActions: {
+//         mouseMove: {
+//           cursor: "pointer",
+//         },
+//         mouseLeave: {
+//           cursor: "",
+//         },
+//       },
+//       mouseClick: {
+//         clickInteraction: {
+//           boundTo: false,
+//           flyTo: true,
+//           easeTo: false,
+//           popUp: false,
+//         },
+//         clusterClickInteraction: {
+//           boundTo: false,
+//           flyTo: false,
+//           easeTo: true,
+//           popUp: false,
+//         },
+//       },
+//     },
+//   },
 
-  // TEMPORARY COMMENT OUT. FEATURE IN PROGRESS
-  // DO NOT DELETE
-  // {
-  //   name: "Tracked Owners",
-  //   id: [],
-  //   type: 'data layer'
-  // },
-  // {
-  //   name: "Tag Layer",
-  //   id: [],
-  //   type: 'data layer'
+//   // TEMPORARY COMMENT OUT. FEATURE IN PROGRESS
+//   // DO NOT DELETE
+//   // {
+//   //   name: "Tracked Owners",
+//   //   id: [],
+//   //   type: 'data layer'
+//   // },
+//   // {
+//   //   name: "Tag Layer",
+//   //   id: [],
+//   //   type: 'data layer'
 
-  // },
-];
+//   // },
+// ];
 
 export const heatLayers = [
   {
@@ -777,6 +777,7 @@ export const baseMapLayers = [
       "airport-label",
       "transit-label",
       "poi-label",
+      "countyLabels",
     ],
   },
 
@@ -847,7 +848,6 @@ export const baseMapLayers = [
       "tunnel-primary-secondary-tertiary-case",
       "tunnel-street-minor-case",
       "tunnel-street-minor-low",
-
     ],
   },
 
@@ -859,6 +859,7 @@ export const baseMapLayers = [
       "admin-1-boundary",
       "admin-0-boundary-bg",
       "admin-1-boundary-bg",
+      "countyBoundaries",
     ],
   },
 
@@ -883,629 +884,630 @@ export const baseMapLayers = [
   },
 ];
 
-export const layers = [
-  {
-    layerName: "Parcels",
-    layerType: "data layer",
-    layerCategory: "UD layer",
-    layerSettings: {
-      interaction: {
-        interactionAble: true,
-        interactionDetail: {
-          hover: true,
-          click: true,
-        },
-      },
-      colorable: true,
-      showable: true,
-    },
-    layerPaintProps: [
-      {
-        id: "parcel",
-        sourceProps: "parcels_source",
-        paintType: "fill",
-        paintProps: {
-          "fill-color": "#e07c71",
-          "fill-opacity": [
-            "case",
-            ["boolean", ["feature-state", "hover"], false],
-            0.7,
-            0.4,
-          ],
-          "fill-outline-color": "#e07c71",
-        },
-      },
-      {
-        id: "parcel_labels",
-        sourceProps: "parcel_labels_source",
-        paintType: "symbol",
-        symbolProps: {
-          "text-allow-overlap": true,
-          "text-anchor": "center",
-          "text-field": "{label}",
-          "text-size": [
-            "interpolate",
-            ["exponential", 1],
-            ["zoom"],
-            0,
-            0,
-            // 11,0,
-            22,
-            30,
-          ],
-        },
-      },
-    ],
-  },
-  // {
-  //   layerName: "Title",
-  //   layerType: "data layer",
-  //   layerCategory: "UD layer",
-  //   layerSettings: {
-  //     interaction: {
-  //       interactionAble: true,
-  //       interactionDetail: {
-  //         hover: true,
-  //         click: true,
-  //       },
-  //     },
-  //     colorable: true,
-  //     showable: true,
-  //     visiable: false,
-  //   },
-  //   layerPaintProps: [],
-  // },
-  {
-    layerName: "Area of Interest",
-    layerType: "data layer",
-    layerCategory: "UD layer",
-    layerSettings: {
-      interaction: {
-        interactionAble: true,
-        interactionDetail: {
-          hover: true,
-          click: true,
-        },
-      },
-      colorable: true,
-      showable: true,
-    },
-    layerPaintProps: [
-      {
-        id: "interest",
-        sourceProps: "interest_source",
-        paintType: "fill",
-        paintProps: {
-          "fill-color": "#62a27f",
-          "fill-opacity": 0.4,
-          "fill-outline-color": "#62a27f",
-        },
-      },
-      {
-        id: "interest_labels",
-        sourceProps: "interest_labels_source",
-        paintType: "symbol",
-        symbolProps: {
-          "text-allow-overlap": true,
-          "text-anchor": "center",
-          "text-field": "{label}",
-          "text-size": [
-            "interpolate",
-            ["exponential", 1],
-            ["zoom"],
-            0,
-            0,
-            // 11,0,
-            22,
-            30,
-          ],
-        },
-      },
-    ],
-  },
-  {
-    layerName: "Tracked Wells",
-    layerType: "data layer",
-    layerCategory: "UD layer",
-    layerSettings: {
-      interaction: {
-        interactionAble: true,
-        interactionDetail: {
-          hover: true,
-          click: true,
-        },
-      },
-      colorable: true,
-      showable: true,
-    },
-    layerPaintProps: [
-      {
-        id: "Tracked Wells",
-        sourceProps: "tracked_wells_user_defined_source",
-        paintType: "circle",
-        paintProps: {
-          "circle-radius": 5,
-          "circle-color": "#e4a773",
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "#fff",
-        },
-        clusterProps: {
-          clusterPaintProps: {
-            "circle-color": {
-              property: "point_count",
-              type: "interval",
-              stops: [
-                [0, "#e4a773"],
-                [100, "#e4a773"],
-                [750, "#e4a773"],
-              ],
-            },
+// export const layers = [
+//   {
+//     layerName: "Parcels",
+//     layerType: "data layer",
+//     layerCategory: "UD layer",
+//     layerSettings: {
+//       interaction: {
+//         interactionAble: true,
+//         interactionDetail: {
+//           hover: true,
+//           click: true,
+//         },
+//       },
+//       colorable: true,
+//       showable: true,
+//     },
+//     layerPaintProps: [
+//       {
+//         id: "parcel",
+//         sourceProps: "parcels_source",
+//         paintType: "fill",
+//         paintProps: {
+//           "fill-color": "#e07c71",
+//           "fill-opacity": [
+//             "case",
+//             ["boolean", ["feature-state", "hover"], false],
+//             0.7,
+//             0.4,
+//           ],
+//           "fill-outline-color": "#e07c71",
+//         },
+//       },
+//       {
+//         id: "parcel_labels",
+//         sourceProps: "parcel_labels_source",
+//         paintType: "symbol",
+//         symbolProps: {
+//           "text-allow-overlap": true,
+//           "text-anchor": "center",
+//           "text-field": "{label}",
+//           "text-size": [
+//             "interpolate",
+//             ["exponential", 1],
+//             ["zoom"],
+//             0,
+//             0,
+//             // 11,0,
+//             22,
+//             30,
+//           ],
+//         },
+//       },
+//     ],
+//   },
+//   // {
+//   //   layerName: "Title",
+//   //   layerType: "data layer",
+//   //   layerCategory: "UD layer",
+//   //   layerSettings: {
+//   //     interaction: {
+//   //       interactionAble: true,
+//   //       interactionDetail: {
+//   //         hover: true,
+//   //         click: true,
+//   //       },
+//   //     },
+//   //     colorable: true,
+//   //     showable: true,
+//   //     visiable: false,
+//   //   },
+//   //   layerPaintProps: [],
+//   // },
+//   {
+//     layerName: "Area of Interest",
+//     layerType: "data layer",
+//     layerCategory: "UD layer",
+//     layerSettings: {
+//       interaction: {
+//         interactionAble: true,
+//         interactionDetail: {
+//           hover: true,
+//           click: true,
+//         },
+//       },
+//       colorable: true,
+//       showable: true,
+//     },
+//     layerPaintProps: [
+//       {
+//         id: "interest",
+//         sourceProps: "interest_source",
+//         paintType: "fill",
+//         paintProps: {
+//           "fill-color": "#62a27f",
+//           "fill-opacity": 0.4,
+//           "fill-outline-color": "#62a27f",
+//         },
+//       },
+//       {
+//         id: "interest_labels",
+//         sourceProps: "interest_labels_source",
+//         paintType: "symbol",
+//         symbolProps: {
+//           "text-allow-overlap": true,
+//           "text-anchor": "center",
+//           "text-field": "{label}",
+//           "text-size": [
+//             "interpolate",
+//             ["exponential", 1],
+//             ["zoom"],
+//             0,
+//             0,
+//             // 11,0,
+//             22,
+//             30,
+//           ],
+//         },
+//       },
+//     ],
+//   },
+//   {
+//     layerName: "Tracked Wells",
+//     layerType: "data layer",
+//     layerCategory: "UD layer",
+//     layerSettings: {
+//       interaction: {
+//         interactionAble: true,
+//         interactionDetail: {
+//           hover: true,
+//           click: true,
+//         },
+//       },
+//       colorable: true,
+//       showable: true,
+//     },
+//     layerPaintProps: [
+//       {
+//         id: "Tracked Wells",
+//         sourceProps: "tracked_wells_user_defined_source",
+//         paintType: "circle",
+//         paintProps: {
+//           "circle-radius": 5,
+//           "circle-color": "#e4a773",
+//           "circle-stroke-width": 2,
+//           "circle-stroke-color": "#fff",
+//         },
+//         clusterProps: {
+//           clusterPaintProps: {
+//             "circle-color": {
+//               property: "point_count",
+//               type: "interval",
+//               stops: [
+//                 [0, "#e4a773"],
+//                 [100, "#e4a773"],
+//                 [750, "#e4a773"],
+//               ],
+//             },
 
-            "circle-radius": [
-              "step",
-              ["get", "point_count"],
-              20,
-              5,
-              25,
-              10,
-              30,
-              20,
-              35,
-            ],
+//             "circle-radius": [
+//               "step",
+//               ["get", "point_count"],
+//               20,
+//               5,
+//               25,
+//               10,
+//               30,
+//               20,
+//               35,
+//             ],
 
-            "circle-stroke-width": 5,
-            "circle-stroke-color": "#fff",
-          },
-          clusterSymbolProps: {
-            "text-field": "{point_count}",
-            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-            "text-size": 12,
-          },
-        },
-      },
-    ],
-  },
-  {
-    layerName: "Tracked Owners",
-    layerType: "data layer",
-    layerCategory: "UD layer",
-    layerSettings: {
-      interaction: {
-        interactionAble: true,
-        interactionDetail: {
-          hover: true,
-          click: true,
-        },
-      },
-      colorable: true,
-      showable: true,
-    },
-    layerPaintProps: [
-      {
-        id: "Tracked Owners",
-        sourceProps: "tracked_owners_user_defined_source",
-        paintType: "circle",
-        paintProps: {
-          "circle-radius": 5,
-          "circle-color": "#01fdfe",
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "#fff",
-        },
-        clusterProps: {
-          cluster: true,
-          clusterBaseId: "Tracked Owners Clusters",
-          clusterCountId: "Tracked Owners Clusters Counts",
-          clusterPaintProps: {
-            "circle-color": {
-              property: "point_count",
-              type: "interval",
-              stops: [
-                [0, "#01fdfe"],
-                [100, "#01fdfe"],
-                [750, "#01fdfe"],
-              ],
-            },
+//             "circle-stroke-width": 5,
+//             "circle-stroke-color": "#fff",
+//           },
+//           clusterSymbolProps: {
+//             "text-field": "{point_count}",
+//             "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+//             "text-size": 12,
+//           },
+//         },
+//       },
+//     ],
+//   },
+//   {
+//     layerName: "Tracked Owners",
+//     layerType: "data layer",
+//     layerCategory: "UD layer",
+//     layerSettings: {
+//       interaction: {
+//         interactionAble: true,
+//         interactionDetail: {
+//           hover: true,
+//           click: true,
+//         },
+//       },
+//       colorable: true,
+//       showable: true,
+//     },
+//     layerPaintProps: [
+//       {
+//         id: "Tracked Owners",
+//         sourceProps: "tracked_owners_user_defined_source",
+//         paintType: "circle",
+//         paintProps: {
+//           "circle-radius": 5,
+//           "circle-color": "#01fdfe",
+//           "circle-stroke-width": 2,
+//           "circle-stroke-color": "#fff",
+//         },
+//         clusterProps: {
+//           cluster: true,
+//           clusterBaseId: "Tracked Owners Clusters",
+//           clusterCountId: "Tracked Owners Clusters Counts",
+//           clusterPaintProps: {
+//             "circle-color": {
+//               property: "point_count",
+//               type: "interval",
+//               stops: [
+//                 [0, "#01fdfe"],
+//                 [100, "#01fdfe"],
+//                 [750, "#01fdfe"],
+//               ],
+//             },
 
-            "circle-radius": [
-              "step",
-              ["get", "point_count"],
-              20,
-              5,
-              25,
-              10,
-              30,
-              20,
-              35,
-            ],
+//             "circle-radius": [
+//               "step",
+//               ["get", "point_count"],
+//               20,
+//               5,
+//               25,
+//               10,
+//               30,
+//               20,
+//               35,
+//             ],
 
-            "circle-stroke-width": 5,
-            "circle-stroke-color": "#fff",
-          },
-          clusterSymbolProps: {
-            "text-field": "{point_count}",
-            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-            "text-size": 12,
-          },
-        },
-      },
-    ],
-  },
-  {
-    layerName: "Tagged Wells/Owners",
-    layerType: "data layer",
-    layerCategory: "UD layer",
-    layerSettings: {
-      interaction: {
-        interactionAble: true,
-        interactionDetail: {
-          hover: true,
-          click: true,
-        },
-      },
-      colorable: true,
-      showable: true,
-      visiable: false,
-    },
-    layerPaintProps: [
-      {
-        id: "Tags Filter",
-        sourceProps: "tracked_owners_user_defined_source",
-        paintType: "circle",
-        paintProps: {
-          "circle-radius": 5,
-          "circle-color": "#01fdfe",
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "#fff",
-        },
-        clusterProps: {
-          cluster: true,
-          clusterBaseId: "Tracked Owners Clusters",
-          clusterCountId: "Tracked Owners Clusters Counts",
-          clusterPaintProps: {
-            "circle-color": {
-              property: "point_count",
-              type: "interval",
-              stops: [
-                [0, "#01fdfe"],
-                [100, "#01fdfe"],
-                [750, "#01fdfe"],
-              ],
-            },
+//             "circle-stroke-width": 5,
+//             "circle-stroke-color": "#fff",
+//           },
+//           clusterSymbolProps: {
+//             "text-field": "{point_count}",
+//             "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+//             "text-size": 12,
+//           },
+//         },
+//       },
+//     ],
+//   },
+//   {
+//     layerName: "Tagged Wells/Owners",
+//     layerType: "data layer",
+//     layerCategory: "UD layer",
+//     layerSettings: {
+//       interaction: {
+//         interactionAble: true,
+//         interactionDetail: {
+//           hover: true,
+//           click: true,
+//         },
+//       },
+//       colorable: true,
+//       showable: true,
+//       visiable: false,
+//     },
+//     layerPaintProps: [
+//       {
+//         id: "Tags Filter",
+//         sourceProps: "tracked_owners_user_defined_source",
+//         paintType: "circle",
+//         paintProps: {
+//           "circle-radius": 5,
+//           "circle-color": "#01fdfe",
+//           "circle-stroke-width": 2,
+//           "circle-stroke-color": "#fff",
+//         },
+//         clusterProps: {
+//           cluster: true,
+//           clusterBaseId: "Tracked Owners Clusters",
+//           clusterCountId: "Tracked Owners Clusters Counts",
+//           clusterPaintProps: {
+//             "circle-color": {
+//               property: "point_count",
+//               type: "interval",
+//               stops: [
+//                 [0, "#01fdfe"],
+//                 [100, "#01fdfe"],
+//                 [750, "#01fdfe"],
+//               ],
+//             },
 
-            "circle-radius": [
-              "step",
-              ["get", "point_count"],
-              20,
-              5,
-              25,
-              10,
-              30,
-              20,
-              35,
-            ],
+//             "circle-radius": [
+//               "step",
+//               ["get", "point_count"],
+//               20,
+//               5,
+//               25,
+//               10,
+//               30,
+//               20,
+//               35,
+//             ],
 
-            "circle-stroke-width": 5,
-            "circle-stroke-color": "#fff",
-          },
-          clusterSymbolProps: {
-            "text-field": "{point_count}",
-            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-            "text-size": 12,
-          },
-        },
-      },
-    ],
-  },
-  {
-    layerName: "Search",
-    layerType: "data layer",
-    layerCategory: "UD layer",
-    layerSettings: {
-      interaction: {
-        interactionAble: true,
-        interactionDetail: {
-          hover: true,
-          click: true,
-        },
-      },
-      colorable: true,
-      showable: true,
-      visiable: false,
-    },
-    layerPaintProps: [
-      {
-        id: "Search",
-        sourceProps: "wells_from_search_user_defined_source",
-        paintType: "circle",
-        paintProps: {
-          "circle-radius": 5,
-          "circle-color": "#00FF00",
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "#fff",
-        },
-        clusterProps: {
-          clusterPaintProps: {
-            "circle-color": {
-              property: "point_count",
-              type: "interval",
-              stops: [
-                [0, "#00FF00"],
-                [100, "#00FF00"],
-                [750, "#00FF00"],
-              ],
-            },
-            "circle-radius": [
-              "step",
-              ["get", "point_count"],
-              20,
-              5,
-              25,
-              10,
-              30,
-              20,
-              35,
-            ],
-            "circle-stroke-width": 5,
-            "circle-stroke-color": "#fff",
-          },
-          clusterSymbolProps: {
-            "text-field": "{point_count}",
-            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-            "text-size": 12,
-          },
-        },
-      },
-    ],
-  },
-  {
-    layerName: "Permits",
-    layerType: "data layer",
-    layerCategory: "M1 Layer",
-    layerSettings: {
-      interaction: {
-        interactionAble: true,
-        interactionDetail: {
-          hover: true,
-          click: true,
-        },
-      },
-      colorable: false,
-      showable: true,
-      visiable: false,
-    },
-    layerPaintProps: [
-      {
-        id: "permits",
-        sourceProps: "permits_source",
-        paintType: "circle",
-        paintProps: {
-          "circle-radius": 5,
-          "circle-color": "#e362e3",
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "#fff",
-        },
-        clusterProps: {
-          clusterPaintProps: {
-            "circle-color": "#e362e3",
+//             "circle-stroke-width": 5,
+//             "circle-stroke-color": "#fff",
+//           },
+//           clusterSymbolProps: {
+//             "text-field": "{point_count}",
+//             "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+//             "text-size": 12,
+//           },
+//         },
+//       },
+//     ],
+//   },
+//   {
+//     layerName: "Search",
+//     layerType: "data layer",
+//     layerCategory: "UD layer",
+//     layerSettings: {
+//       interaction: {
+//         interactionAble: true,
+//         interactionDetail: {
+//           hover: true,
+//           click: true,
+//         },
+//       },
+//       colorable: true,
+//       showable: true,
+//       visiable: false,
+//     },
+//     layerPaintProps: [
+//       {
+//         id: "Search",
+//         sourceProps: "wells_from_search_user_defined_source",
+//         paintType: "circle",
+//         paintProps: {
+//           "circle-radius": 5,
+//           "circle-color": "#00FF00",
+//           "circle-stroke-width": 2,
+//           "circle-stroke-color": "#fff",
+//         },
+//         clusterProps: {
+//           clusterPaintProps: {
+//             "circle-color": {
+//               property: "point_count",
+//               type: "interval",
+//               stops: [
+//                 [0, "#00FF00"],
+//                 [100, "#00FF00"],
+//                 [750, "#00FF00"],
+//               ],
+//             },
+//             "circle-radius": [
+//               "step",
+//               ["get", "point_count"],
+//               20,
+//               5,
+//               25,
+//               10,
+//               30,
+//               20,
+//               35,
+//             ],
+//             "circle-stroke-width": 5,
+//             "circle-stroke-color": "#fff",
+//           },
+//           clusterSymbolProps: {
+//             "text-field": "{point_count}",
+//             "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+//             "text-size": 12,
+//           },
+//         },
+//       },
+//     ],
+//   },
+//   {
+//     layerName: "Recent Permits",
+//     layerType: "data layer",
+//     layerCategory: "M1 Layer",
+//     layerSettings: {
+//       interaction: {
+//         interactionAble: true,
+//         interactionDetail: {
+//           hover: true,
+//           click: true,
+//         },
+//       },
+//       colorable: false,
+//       showable: true,
+//       visiable: false,
+//     },
+//     layerPaintProps: [
+//       {
+//         id: "permits",
+//         sourceProps: "permits_source",
+//         paintType: "circle",
+//         paintProps: {
+//           "circle-radius": 5,
+//           "circle-color": "#fb9828",
+//           "circle-stroke-width": 2,
+//           "circle-stroke-color": "#fff",
+//         },
+//         clusterProps: {
+//           clusterPaintProps: {
+//             "circle-color": "#fb9828",
 
-            "circle-radius": [
-              "step",
-              ["get", "point_count"],
-              20,
-              5,
-              25,
-              10,
-              30,
-              20,
-              35,
-            ],
+//             "circle-radius": [
+//               "step",
+//               ["get", "point_count"],
+//               20,
+//               5,
+//               25,
+//               10,
+//               30,
+//               20,
+//               35,
+//             ],
 
-            "circle-stroke-width": 5,
-            "circle-stroke-color": "#fff",
-          },
-          clusterSymbolProps: {
-            "text-field": "{point_count}",
-            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-            "text-size": 12,
-          },
-        },
-      },
-    ],
-  },
-  {
-    layerName: "Rig Activity",
-    layerType: "data layer",
-    layerCategory: "M1 Layer",
-    layerSettings: {
-      interaction: {
-        interactionAble: true,
-        interactionDetail: {
-          hover: true,
-          click: true,
-        },
-      },
-      colorable: false,
-      showable: true,
-      visiable: false,
-    },
-    layerPaintProps: [
-      {
-        id: "rigs",
-        sourceProps: "rigs_source",
-        paintType: "symbol",
-        layoutProps: {
-          "icon-image": "marker-icon",
-          "icon-allow-overlap": true,
-          "icon-size": 2,
-          "text-field": "H",
-          "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
-          "text-size": 11,
-          "text-transform": "uppercase",
-          "text-letter-spacing": 0.05,
-          "text-offset": [0, -0.5],
-        },
-        paintProps: {
-          "icon-color": "#00ff00",
-          "icon-halo-color": "#fff",
-          "icon-halo-width": 2,
-        },
-        clusterProps: {
-          clusterPaintProps: {
-            "circle-color": "#666",
-            "circle-radius": [
-              "step",
-              ["get", "point_count"],
-              20,
-              5,
-              25,
-              10,
-              30,
-              20,
-              35,
-            ],
+//             "circle-stroke-width": 5,
+//             "circle-stroke-color": "#fff",
+//           },
+//           clusterSymbolProps: {
+//             "text-field": "{point_count}",
+//             "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+//             "text-size": 12,
+//           },
+//         },
+//       },
+//     ],
+//   },
+//   {
+//     layerName: "Rig Activity",
+//     layerType: "data layer",
+//     layerCategory: "M1 Layer",
+//     layerSettings: {
+//       interaction: {
+//         interactionAble: true,
+//         interactionDetail: {
+//           hover: true,
+//           click: true,
+//         },
+//       },
+//       colorable: false,
+//       showable: true,
+//       visiable: false,
+//     },
+//     layerPaintProps: [
+//       {
+//         id: "rigs",
+//         sourceProps: "rigs_source",
+//         paintType: "symbol",
+//         layoutProps: {
+//           "icon-image": "marker-icon",
+//           "icon-allow-overlap": true,
+//           "icon-size": 2,
+//           "text-field": "H",
+//           "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+//           "text-size": 11,
+//           "text-transform": "uppercase",
+//           "text-letter-spacing": 0.05,
+//           "text-offset": [0, -0.5],
+//         },
+//         paintProps: {
+//           "icon-color": "#00ff00",
+//           "icon-halo-color": "#fff",
+//           "icon-halo-width": 2,
+//         },
+//         clusterProps: {
+//           clusterPaintProps: {
+//             "circle-color": "#666",
+//             "circle-radius": [
+//               "step",
+//               ["get", "point_count"],
+//               20,
+//               5,
+//               25,
+//               10,
+//               30,
+//               20,
+//               35,
+//             ],
 
-            "circle-stroke-width": 5,
-            "circle-stroke-color": "#fff",
-          },
-          clusterSymbolProps: {
-            "text-field": "{point_count}",
-            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-            "text-size": 12,
-          },
-        },
-      },
-    ],
-  },
-  {
-    layerName: "Wells",
-    layerType: "vector layer",
-    layerCategory: "M1 Layer",
-    layerSettings: {
-      interaction: {
-        interactionAble: true,
-        interactionDetail: {
-          hover: true,
-          click: true,
-        },
-      },
-      colorable: false,
-      showable: true,
-    },
-    layerPaintProps: {
-      ids: ["wellpoints", "welllines"],
-    },
-  },
-  {
-    layerName: "Basins",
-    layerType: "vector layer",
-    layerCategory: "M1 Layer",
-    layerSettings: {
-      interaction: {
-        interactionAble: false,
-        interactionDetail: {
-          hover: false,
-          click: false,
-        },
-      },
-      colorable: false,
-      showable: true,
-      visiable: false,
-    },
-    layerPaintProps: {
-      ids: ["basinLabels", "basinLayer"],
-    },
-  },
-  {
-    layerName: "Pipelines",
-    layerType: "vector layer",
-    layerCategory: "M1 Layer",
-    layerSettings: {
-      interaction: {
-        interactionAble: false,
-        interactionDetail: {
-          hover: false,
-          click: false,
-        },
-      },
-      colorable: false,
-      showable: true,
-      visiable: false,
-    },
-    layerPaintProps: {
-      ids: ["pipelineLayer"],
-    },
-  },
-  {
-    layerName: "Land Grid",
-    layerType: "vector layer",
-    layerCategory: "M1 Layer",
-    layerSettings: {
-      interaction: {
-        interactionAble: false,
-        interactionDetail: {
-          hover: false,
-          click: false,
-        },
-      },
-      colorable: false,
-      showable: true,
-      visiable: false,
-    },
-    layerPaintProps: {
-      ids: [
-        "PLSSTownships",
-        "PLSSTownshipLabels",
-        "PLSSFirstDivision",
-        "PLSSFirstDivisionLabels",
-        "TexasLandSurvey",
-        "TexasLandSurveyLabels",
-      ],
-    },
-  },
-  {
-    layerName: "TX GLO Units",
-    layerType: "vector layer",
-    layerCategory: "M1 Layer",
-    layerSettings: {
-      interaction: {
-        interactionAble: false,
-        interactionDetail: {
-          hover: false,
-          click: false,
-        },
-      },
-      colorable: false,
-      showable: true,
-    },
-    layerPaintProps: {
-      ids: ["GLOUnits", "GLOUnitLabels"],
-    },
-  },
-  {
-    layerName: "TX GLO Active Leases",
-    layerType: "vector layer",
-    layerCategory: "M1 Layer",
-    layerSettings: {
-      interaction: {
-        interactionAble: false,
-        interactionDetail: {
-          hover: false,
-          click: false,
-        },
-      },
-      colorable: false,
-      showable: true,
-      visiable: false,
-    },
-    layerPaintProps: {
-      ids: ["GLOLeases", "GLOLeaseLabels"],
-    },
-  },
-];
+//             "circle-stroke-width": 5,
+//             "circle-stroke-color": "#fff",
+//           },
+//           clusterSymbolProps: {
+//             "text-field": "{point_count}",
+//             "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+//             "text-size": 12,
+//           },
+//         },
+//       },
+//     ],
+//   },
+//   {
+//     layerName: "Wells",
+//     layerType: "vector layer",
+//     layerCategory: "M1 Layer",
+//     layerSettings: {
+//       interaction: {
+//         interactionAble: true,
+//         interactionDetail: {
+//           hover: true,
+//           click: true,
+//         },
+//       },
+//       colorable: false,
+//       showable: true,
+//     },
+//     layerPaintProps: {
+//       ids: ["wellpoints", "welllines"],
+//     },
+//   },
+//   {
+//     layerName: "Basins",
+//     layerType: "vector layer",
+//     layerCategory: "M1 Layer",
+//     layerSettings: {
+//       interaction: {
+//         interactionAble: false,
+//         interactionDetail: {
+//           hover: false,
+//           click: false,
+//         },
+//       },
+//       colorable: false,
+//       showable: true,
+//       visiable: false,
+//     },
+//     layerPaintProps: {
+//       ids: ["basinLabels", "basinLayer"],
+//     },
+//   },
+//   {
+//     layerName: "Pipelines",
+//     layerType: "vector layer",
+//     layerCategory: "M1 Layer",
+//     layerSettings: {
+//       interaction: {
+//         interactionAble: false,
+//         interactionDetail: {
+//           hover: false,
+//           click: false,
+//         },
+//       },
+//       colorable: false,
+//       showable: true,
+//       visiable: false,
+//     },
+//     layerPaintProps: {
+//       ids: ["pipelineLayer"],
+//     },
+//   },
+//   {
+//     layerName: "Land Grid",
+//     layerType: "vector layer",
+//     layerCategory: "M1 Layer",
+//     layerSettings: {
+//       interaction: {
+//         interactionAble: false,
+//         interactionDetail: {
+//           hover: false,
+//           click: false,
+//         },
+//       },
+//       colorable: false,
+//       showable: true,
+//       visiable: false,
+//     },
+//     layerPaintProps: {
+//       ids: [
+//         "PLSSTownships",
+//         "PLSSTownshipLabels",
+//         "PLSSFirstDivision",
+//         "PLSSFirstDivisionLabels",
+//         "TexasLandSurvey",
+//         "TexasLandSurveyLabels",
+//       ],
+//     },
+//   },
+//   {
+//     layerName: "TX GLO Units",
+//     layerType: "vector layer",
+//     layerCategory: "M1 Layer",
+//     layerSettings: {
+//       interaction: {
+//         interactionAble: false,
+//         interactionDetail: {
+//           hover: false,
+//           click: false,
+//         },
+//       },
+//       colorable: false,
+//       showable: true,
+//     },
+//     layerPaintProps: {
+//       ids: ["GLOUnits", "GLOUnitLabels"],
+//     },
+//   },
+//   {
+//     layerName: "TX GLO Active Leases",
+//     layerType: "vector layer",
+//     layerCategory: "M1 Layer",
+//     layerSettings: {
+//       interaction: {
+//         interactionAble: false,
+//         interactionDetail: {
+//           hover: false,
+//           click: false,
+//         },
+//       },
+//       colorable: false,
+//       showable: true,
+//       visiable: false,
+//     },
+//     layerPaintProps: {
+//       ids: ["GLOLeases", "GLOLeaseLabels"],
+//     },
+//   },
+// ];
 
 export const defaultLayers = [
   {
     layerName: "Tracked Owners",
+    identifier: "Tracked Owners",
     layerType: "data layer",
     layerCategory: "UD layer",
     layerSettings: {
@@ -1567,6 +1569,7 @@ export const defaultLayers = [
   },
   {
     layerName: "Tracked Wells",
+    identifier: "Tracked Wells",
     layerType: "data layer",
     layerCategory: "UD layer",
     layerSettings: {
@@ -1628,6 +1631,7 @@ export const defaultLayers = [
   },
   {
     layerName: "Area of Interest",
+    identifier: "Area of Interest",
     layerType: "data layer",
     layerCategory: "UD layer",
     layerSettings: {
@@ -1670,12 +1674,13 @@ export const defaultLayers = [
               30,
             ],
           },
-        }
+        },
       },
     ],
   },
   {
-    layerName: "Tagged Wells/Owners",
+    layerName: "User Tags",
+    identifier: "User Tags",
     layerType: "data layer",
     layerCategory: "UD layer",
     layerSettings: {
@@ -1737,6 +1742,7 @@ export const defaultLayers = [
   },
   {
     layerName: "Search",
+    identifier: "Search",
     layerType: "data layer",
     layerCategory: "UD layer",
     layerSettings: {
@@ -1799,6 +1805,7 @@ export const defaultLayers = [
 
   {
     layerName: "Parcels",
+    identifier: "Parcels",
     layerType: "data layer",
     layerCategory: "UD layer",
     layerSettings: {
@@ -1852,12 +1859,13 @@ export const defaultLayers = [
               24,
             ],
           },
-        }
+        },
       },
     ],
   },
   {
-    layerName: "Permits",
+    layerName: "Recent Permits",
+    identifier: "Recent Permits",
     layerType: "data layer",
     layerCategory: "M1 Layer",
     layerSettings: {
@@ -1879,13 +1887,13 @@ export const defaultLayers = [
         paintType: "circle",
         paintProps: {
           "circle-radius": 5,
-          "circle-color": "#e362e3",
+          "circle-color": "#fb9828",
           "circle-stroke-width": 2,
           "circle-stroke-color": "#fff",
         },
         clusterProps: {
           clusterPaintProps: {
-            "circle-color": "#e362e3",
+            "circle-color": "#fb9828",
             "circle-radius": [
               "step",
               ["get", "point_count"],
@@ -1911,6 +1919,7 @@ export const defaultLayers = [
   },
   {
     layerName: "Rig Activity",
+    identifier: "Rig Activity",
     layerType: "data layer",
     layerCategory: "M1 Layer",
     layerSettings: {
@@ -1934,7 +1943,7 @@ export const defaultLayers = [
           "icon-image": "marker-icon",
           "icon-allow-overlap": true,
           "icon-size": 2,
-          "text-field": "H",
+          "text-field": ["slice", ["get", "WellBoreProfile"], 0, 1],
           "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
           "text-size": 11,
           "text-transform": "uppercase",
@@ -1942,7 +1951,18 @@ export const defaultLayers = [
           "text-offset": [0, -0.5],
         },
         paintProps: {
-          "icon-color": "#00ff00",
+          "icon-color": [
+            "match",
+            ["get", "WellType"],
+            "OIL",
+            "#00ff00",
+            "GAS",
+            "#00ff00",
+            "#00ff00",
+
+            //"#ff0000",
+            // "#919191"
+          ],
           "icon-halo-color": "#fff",
           "icon-halo-width": 2,
         },
@@ -1974,6 +1994,7 @@ export const defaultLayers = [
   },
   {
     layerName: "Wells",
+    identifier: "Wells",
     layerType: "vector layer",
     layerCategory: "M1 Layer",
     layerSettings: {
@@ -1994,6 +2015,7 @@ export const defaultLayers = [
   },
   {
     layerName: "Basins",
+    identifier: "Basins",
     layerType: "vector layer",
     layerCategory: "M1 Layer",
     layerSettings: {
@@ -2009,11 +2031,12 @@ export const defaultLayers = [
       visiable: false,
     },
     layerPaintProps: {
-      ids: ["basinLayer", "basinLabels"],
+      ids: ["basinLabels", "basinLayer"],
     },
   },
   {
     layerName: "Pipelines",
+    identifier: "Pipelines",
     layerType: "vector layer",
     layerCategory: "M1 Layer",
     layerSettings: {
@@ -2034,6 +2057,7 @@ export const defaultLayers = [
   },
   {
     layerName: "Land Grid",
+    identifier: "Land Grid",
     layerType: "vector layer",
     layerCategory: "M1 Layer",
     layerSettings: {
@@ -2064,6 +2088,7 @@ export const defaultLayers = [
   },
   {
     layerName: "TX GLO Units",
+    identifier: "TX GLO Units",
     layerType: "vector layer",
     layerCategory: "M1 Layer",
     layerSettings: {
@@ -2083,6 +2108,7 @@ export const defaultLayers = [
   },
   {
     layerName: "TX GLO Active Leases",
+    identifier: "TX GLO Active Leases",
     layerType: "vector layer",
     layerCategory: "M1 Layer",
     layerSettings: {

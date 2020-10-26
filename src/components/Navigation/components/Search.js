@@ -164,6 +164,7 @@ function Search() {
     mapGridCardActivated,
     mapGridCardActiveTap,
     searchInputValue,
+    objToPopulateSearchLayer,
   } = useSelector(({ MapGridCard }) => MapGridCard);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [stateApp, setStateApp] = React.useContext(AppContext);
@@ -261,10 +262,10 @@ function Search() {
     () =>
       debounce((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2019-05-06&$count=true&searchFields=WellName,ApiNumber&$top=" +
+          "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=" +
           top +
           "&search=" +
-          request.input;
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -296,10 +297,10 @@ function Search() {
     () =>
       debounce((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2019-05-06&%24count=true&searchFields=OwnerName&%24top=" +
+          "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName&top=" +
           top +
           "&search=" +
-          request.input;
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -332,10 +333,10 @@ function Search() {
     () =>
       debounce((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2019-05-06&$count=true&searchFields=Operator&$top=" +
+          "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2020-06-30&queryType=full&ount=true&searchFields=Operator&top=" +
           top +
           "&search=" +
-          request.input;
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -367,10 +368,10 @@ function Search() {
     () =>
       debounce((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/lease-index/docs?api-version=2019-05-06&$count=true&searchFields=Lease,LeaseId&$top=" +
+          "https://m1search.search.windows.net/indexes/lease-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
           top +
           "&search=" +
-          request.input;
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -799,6 +800,31 @@ function Search() {
       }
     }
   }, [dataLeaseWells]);
+
+  //////////////////////////////////// populating the search layer from external resource ////
+  useEffect(() => {
+    if (objToPopulateSearchLayer) {
+      //// if owner
+      if (
+        objToPopulateSearchLayer.objectType === "owner" &&
+        objToPopulateSearchLayer.objectId
+      ) {
+        getOwnerWells({
+          variables: {
+            ownerId: objToPopulateSearchLayer.objectId,
+          },
+        });
+      }
+
+      //// add others types here
+      /////////////////////////////////
+      dispatch(
+        setMapGridCardState({
+          objToPopulateSearchLayer: null,
+        })
+      );
+    }
+  }, [objToPopulateSearchLayer]);
 
   ///////////////////////////////////////
 

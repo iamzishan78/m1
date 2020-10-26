@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: "350px",
   },
   list: {
-    border: "2px solid #ccc",
+    border: "2px solid #A9A9A9",
     padding: "0px",
     margin: "8px 0px",
     borderRadius: "8px",
@@ -88,11 +88,11 @@ const StyledListItem2 = withStyles((theme) => ({
     fontFamily: "Poppins",
     backgroundColor: theme.palette.common.white,
     color: "#263451",
-    border: "2px solid #17acdd",
+    border: "2px solid #263451",
     borderRadius: "5px",
-    "&:hover": {
-      background: "#4B618F",
-    },
+    // "&:hover": {
+    //   background: "#4B618F",
+    // },
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: "#263451",
     },
@@ -102,14 +102,14 @@ const StyledListItem2 = withStyles((theme) => ({
 const StyledListItem = withStyles((theme) => ({
   root: {
     fontFamily: "Poppins",
-    "&:hover": {
-      background: "#ccc",
-    },
+    // "&:hover": {
+    //   background: "#ccc",
+    // },
     backgroundColor: theme.palette.common.white,
     borderBottom: "2px solid #ccc",
     padding: "0px",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: "#999",
+      color: "dark gray",
     },
     "&:first-child": {
       borderTopLeftRadius: "5px",
@@ -170,7 +170,7 @@ export default function AddLayer(props) {
 
   const changeShowAble = (layer) => {
     const layerIndex = currentLayers.findIndex(
-      (clayer) => clayer.layerName == layer.layerName
+      (clayer) => clayer.identifier == layer.identifier
     );
     const cpLayer = {
       ...layer,
@@ -289,9 +289,9 @@ export default function AddLayer(props) {
   return (
     <>
       <Dialog open={isOpen} onClose={windowClose}>
-        <DialogTitle>Add a Layer</DialogTitle>
+        <DialogTitle>Layer Management</DialogTitle>
         <DialogContent dividers>
-          <DialogContentText>
+          <DialogContentText color="dark gray">
             Select one or more of the available layers below to add them to your
             current map view.
           </DialogContentText>
@@ -336,7 +336,7 @@ export default function AddLayer(props) {
                   <StyledListItem key={index} ContainerComponent="li">
                     <Checkbox
                       checked={layer.layerSettings.showable}
-                      color="primary"
+                      color="dark gray"
                       onChange={() => changeShowAble(layer)}
                       inputProps={{ "aria-label": "primary checkbox" }}
                     />
@@ -354,33 +354,37 @@ export default function AddLayer(props) {
             <List className={classes.list}>
               {UdLayers.map((layer, index) => {
                 const labelId = `udlayer-list-label-${index}`;
-                return (
-                  <StyledListItem key={index} ContainerComponent="li">
-                    <Checkbox
-                      checked={layer.layerSettings.showable}
-                      color="primary"
-                      onChange={() => changeShowAble(layer)}
-                      inputProps={{ "aria-label": "primary checkbox" }}
-                    />
-                    <ListItemText id={labelId} primary={layer.layerName} />
 
-                    {layer.layerType == "file layer" && (
-                      <ListItemSecondaryAction>
-                        <Tooltip title="Delete" placement="top">
-                          <IconButton
-                            edge="end"
-                            size="small"
-                            onClick={() => {
-                              setOpenDeleteDialog(layer);
-                            }}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </ListItemSecondaryAction>
-                    )}
-                  </StyledListItem>
-                );
+                //// remove the (layer.identifier!="Tracked Owners") if statement to show the tracked owers layer
+                if (layer.identifier != "Tracked Owners") {
+                  return (
+                    <StyledListItem key={index} ContainerComponent="li">
+                      <Checkbox
+                        checked={layer.layerSettings.showable}
+                        color="dark gray"
+                        onChange={() => changeShowAble(layer)}
+                        inputProps={{ "aria-label": "primary checkbox" }}
+                      />
+                      <ListItemText id={labelId} primary={layer.layerName} />
+
+                      {layer.layerType == "file layer" && (
+                        <ListItemSecondaryAction>
+                          <Tooltip title="Delete" placement="top">
+                            <IconButton
+                              edge="end"
+                              size="small"
+                              onClick={() => {
+                                setOpenDeleteDialog(layer);
+                              }}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </ListItemSecondaryAction>
+                      )}
+                    </StyledListItem>
+                  );
+                }
               })}
             </List>
           </Collapse>

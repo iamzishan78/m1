@@ -112,8 +112,9 @@ export default function AddContactDialogContent(props) {
   useEffect(() => {
     if (
       ((activeTapIndex === 1 && existingContact.name !== "") ||
-        (activeTapIndex === 0 && newContact.name.trim() !== "")) &&
-      !validated
+        (activeTapIndex === 0 && newContact.name.trim() !== "")) 
+      //   &&
+      // !validated
     ) {
       setValidated(true);
     } else {
@@ -263,7 +264,7 @@ export default function AddContactDialogContent(props) {
             <h3>Name</h3>
             <TextField
               size="small"
-              placeholder="E.g. Jacob"
+              //placeholder="E.g. Jacob"
               className={classes.maxWidth}
               multiline
               value={newContact.name}
@@ -279,7 +280,7 @@ export default function AddContactDialogContent(props) {
             <h3>Mobile Phone</h3>
             <TextField
               size="small"
-              placeholder="E.g. xxx-xxx-xxxx"
+              //placeholder="E.g. xxx-xxx-xxxx"
               className={classes.maxWidth}
               multiline
               value={newContact.mobilePhone}
@@ -297,7 +298,7 @@ export default function AddContactDialogContent(props) {
             <h3>Home Phone</h3>
             <TextField
               size="small"
-              placeholder="E.g. xxx-xxx-xxxx"
+             // placeholder="E.g. xxx-xxx-xxxx"
               className={classes.maxWidth}
               multiline
               value={newContact.homePhone}
@@ -315,7 +316,7 @@ export default function AddContactDialogContent(props) {
             <h3>Email</h3>
             <TextField
               size="small"
-              placeholder="E.g. jacob@m1neral.com"
+             // placeholder="E.g. jacob@m1neral.com"
               className={classes.maxWidth}
               multiline
               value={newContact.primaryEmail}
@@ -335,6 +336,7 @@ export default function AddContactDialogContent(props) {
               size="small"
               className={classes.maxWidth}
               multiline
+              autoComplete="nope"
               value={newContact.address1}
               onChange={(e) => {
                 setNewContact({
@@ -350,6 +352,7 @@ export default function AddContactDialogContent(props) {
               size="small"
               className={classes.maxWidth}
               multiline
+              autoComplete="nope"
               value={newContact.address2}
               onChange={(e) => {
                 setNewContact({

@@ -14,6 +14,8 @@ import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLa
 import { USERBYEMAIL } from "../../../../graphQL/useQueryUserByEmail";
 import Tooltip from "@material-ui/core/Tooltip";
 
+import { gql } from "@apollo/client";
+
 const useStyles = makeStyles((theme) => ({
   popUp: {
     minWidth: "320px",
@@ -42,7 +44,46 @@ const useStyles = makeStyles((theme) => ({
 export default (props) => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel}] = useMutation(UPSERTCUSTOMLAYER);
+  const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel}] = useMutation(
+    UPSERTCUSTOMLAYER,
+    {
+      update(cache, { data: { upsertCustomLayer: { customLayer } } }) {
+        console.log(`newCustomLayer: ${JSON.stringify(customLayer)}`);
+        cache.modify({
+          fields: {
+            allCustomLayers(existingCustomLayers = [], { readField }) {
+              const newCustomLayerRef = cache.writeFragment({
+                data: customLayer,
+                fragment: gql`
+                  fragment NewCustomLayer on CustomLayer {
+                    _id
+                    shape
+                    name
+                    layer
+                    user {
+                      _id
+                      name
+                      email
+                    }
+                  }
+                `
+              });
+
+              // Quick safety check - if the new comment is already
+              // present in the cache, we don't need to add it again.
+              if (existingCustomLayers.some(
+                ref => readField('id', ref) === customLayer._id
+              )) {
+                return existingCustomLayers;
+              }
+
+              return [...existingCustomLayers, newCustomLayerRef];
+            }
+          }
+        });
+      }
+    }
+  );
   const [error, setError] = useState(false);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [user, setUser] = useState({ _id: "" });

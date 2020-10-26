@@ -127,7 +127,7 @@ export default function FilterTags() {
       if (!stateNav.filterTrackedWells && !stateNav.filterTrackedOwners)
         stateApp.toggleLayersActivity("Wells", true);
 
-      stateApp.toggleLayersActivity("Tagged Wells/Owners", false);
+      stateApp.toggleLayersActivity("User Tags", false);
       setStateNav((stateNav) => ({
         ...stateNav,
         selectedTags: [],
@@ -150,13 +150,6 @@ export default function FilterTags() {
     </div>
   ) : (
     <Autocomplete
-      disabled={
-        !(
-          dataUserAvailableTags &&
-          dataUserAvailableTags.userAvailableFilterTags &&
-          dataUserAvailableTags.userAvailableFilterTags.length > 0
-        )
-      }
       ChipProps={{ color: "secondary" }}
       defaultValue={stateNav.selectedTags}
       onChange={(event, newValue) => {
