@@ -50,6 +50,30 @@ const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
 }));
 
+var ticksToDateString = function (ticks) {
+  var epochTicks = 621355968000000000;
+  var ticksPerMillisecond = 10000; // whoa!
+  var maxDateMilliseconds = 8640000000000000;
+
+  if (isNaN(ticks)) {
+    //      0001-01-01T00:00:00.000Z
+    return "NANA-NA-NATNA:NA:BA.TMAN";
+  }
+
+  // convert the ticks into something javascript understands
+  var ticksSinceEpoch = ticks - epochTicks;
+  var millisecondsSinceEpoch = ticksSinceEpoch / ticksPerMillisecond;
+
+  if (millisecondsSinceEpoch > maxDateMilliseconds) {
+    //      +035210-09-17T07:18:31.111Z
+    return "+WHOAWH-OA-ISTOO:FA:RA.WAYZ";
+  }
+
+  // output the result in something the human understands
+  var date = new Date(millisecondsSinceEpoch);
+  return date.toISOString();
+};
+
 ////////////HeadCells begin///////////////////////////////////////////////
 const TrackedOwnersHeadCells = [
   {
@@ -1666,6 +1690,22 @@ function M1nTable(props) {
         let wells = [...dataWells.wells.results];
         wells = wells.map((w) => {
           let well = { ...w };
+
+          //// temporary to fix the ticks dates fields comming from the rest api
+          if (well.permitApprovedDate && well.permitApprovedDate != "null")
+            well.permitApprovedDate = ticksToDateString(
+              well.permitApprovedDate
+            );
+          if (well.spudDate && well.spudDate != "null")
+            well.spudDate = ticksToDateString(well.spudDate);
+          if (well.completionDate && well.completionDate != "null")
+            well.completionDate = ticksToDateString(well.completionDate);
+          if (well.firstProductionDate && well.firstProductionDate != "null")
+            well.firstProductionDate = ticksToDateString(
+              well.firstProductionDate
+            );
+          //// temporary end
+
           well.isTracked = true;
           well.commentsCounter = 0;
           well.tags = [[], 0];
