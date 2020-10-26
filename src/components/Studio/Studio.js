@@ -6,20 +6,15 @@ import Iframe from 'react-iframe';
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
-  container: {
-    //paddingTop: "10px",
-    //paddingBottom: "10px",
-    //maxHeight: "100%",
-    //height:"100%"
-  },
+
   iframe: {
-    overflow:"hidden",
+    //overflow:"hidden",
     floatLeft: 'left',
-    paddingTop: '0px',
-    marginTop: '-10px',
-    marginLeft: '-10px',
-    width: "calc(100vw + 10px)",
-    height: "calc(100% + 10px)",
+    // paddingTop: '0px',
+    // marginTop: '-10px',
+    // marginLeft: '-10px',
+    width: "calc(100%)",
+    height: "calc(100vh - 20px)",
     },
 }));
 
@@ -28,21 +23,16 @@ export default function Studio() {
     return (
 
     /// TODO : check for configuration to host url, check if customer width & height is needed.
-      // <Container 
-      //     //maxWidth="xl" 
-      //     width="100%"
-      //     className={classes.container}
-      //       >
+
          
          <Iframe 
               className={classes.iframe} 
-              url="https://studio.m1neral.com"  
-              // url="https://m1studio-dev.azurewebsites.net/"
+              // url="https://studio.m1neral.com"  
+              url="https://m1studio-dev.azurewebsites.net/"
               frameBorder="0" 
               scrolling="no"
               /> 
 
-      // </Container>
 
 
     );
