@@ -58,6 +58,7 @@ const AppProvider = (props) => {
     owners: null,
     popupOpen: false, //map used in flyto
     expandedCard: false,
+    abstractPopupOpen: false,
     flyTo: null, //map used in flyto
     fitBounds: null, //map used in fitBounds
     selectedTitleOpinionId: null,

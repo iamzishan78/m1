@@ -17,6 +17,18 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { gql } from "@apollo/client";
 
 const useStyles = makeStyles((theme) => ({
+  mapOverlay: {
+    position: "absolute",
+    minWidth: "320px",
+    bottom: "20px",
+    left: "47%",
+  },
+  mapOverlayInner: {
+    backgroundColor: "#fff",
+    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+    borderRadius: "3px",
+    padding: "10px 20px",
+  },
   popUp: {
     minWidth: "320px",
     padding: "10px 20px",
@@ -217,31 +229,32 @@ export default (props) => {
 
   return (
     <Fragment>
-      <div className={classes.popUp}>
-        <div className={classes.content}>
-          <strong>{props.abstracts.length} {parcelLabel} selected</strong>
-          <div className={classes.actions}>
-            {isSavingParcel ? (
-              <CircularProgress size={20} color="secondary" />
-            ): (
-            <Tooltip title="Create Parcel">
-            <IconButton size="small" onClick={saveAndOpenParcelDetail} aria-label="Parcel" >
-              <LayerIcon color="secondary" />
-            
-            </IconButton>
-            </Tooltip>
-            )}
-            {/* <strong className={classes.label}>Parcel/Tract</strong> */}
-            <IconButton size="small" onClick={handleClose} aria-label="Close">
-              <CloseIcon color="secondary" fontSize="small" />
-            </IconButton>
+      <div className={classes.mapOverlay}>
+        <div class={classes.mapOverlayInner}>
+          <div className={classes.content}>
+            <strong>{props.abstracts.length} {parcelLabel} selected</strong>
+            <div className={classes.actions}>
+              {isSavingParcel ? (
+                <CircularProgress size={20} color="secondary" />
+              ): (
+              <Tooltip title="Create Parcel">
+              <IconButton size="small" onClick={saveAndOpenParcelDetail} aria-label="Parcel" >
+                <LayerIcon color="secondary" />
+              </IconButton>
+              </Tooltip>
+              )}
+              {/* <strong className={classes.label}>Parcel/Tract</strong> */}
+              <IconButton size="small" onClick={handleClose} aria-label="Close">
+                <CloseIcon color="secondary" fontSize="small" />
+              </IconButton>
+            </div>
           </div>
+          {error &&
+            <div className={classes.footer}>
+              <Typography color="error" align="center">Failed to create parcel.</Typography>
+            </div>
+          }
         </div>
-        {error &&
-          <div className={classes.footer}>
-            <Typography color="error" align="center">Failed to create parcel.</Typography>
-          </div>
-        }
       </div>
     </Fragment>
   );
