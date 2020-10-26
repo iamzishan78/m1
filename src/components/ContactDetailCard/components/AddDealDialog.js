@@ -144,7 +144,7 @@ function AddDealDialog(props) {
   useEffect(() => {
     console.log("CDATA", cData);
     if (cData?.contact) {
-      setContact(
+      setNameAutValue(
         cData?.contact
           ? { name: cData.contact.name, _id: cData.contact._id }
           : {}
@@ -236,10 +236,10 @@ function AddDealDialog(props) {
       setDescription(card.description ? card.description : "");
       setStage(card.laneId ? card.laneId : "lane1");
       if (card.contactId) {
-        setContact({ name: card.contactName, _id: card.contactId }); // setting contact
+        setNameAutValue({ name: card.contactName, _id: card.contactId }); // setting contact
       }
     } else if (props.contact) {
-      setContact({ name: props.contact.name, _id: props.contact._id });
+      setNameAutValue({ name: props.contact.name, _id: props.contact._id });
     } else if (props.contactId) {
       getContact({
         variables: {
@@ -263,7 +263,7 @@ function AddDealDialog(props) {
     setStage("");
     setNameAutValue(null);
     setNameAutInputValue("");
-    // setContact({});
+    setContact({});
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: false,
