@@ -142,6 +142,7 @@ function AddDealDialog(props) {
   }, [allContacts]);
 
   useEffect(() => {
+    console.log("CDATA", cData);
     if (cData?.contact) {
       setContact(
         cData?.contact
@@ -152,6 +153,7 @@ function AddDealDialog(props) {
   }, [cData]);
 
   useEffect(() => {
+    console.log("CONTACT", contact);
     if (contact?.name) {
       setNameAutValue(contact);
     }
@@ -270,7 +272,7 @@ function AddDealDialog(props) {
   const handleUpdate = () => {
     // if (title.trim() !== "" && description.trim() !== "") {
 
-    if (nameAutValue) {
+    if (nameAutValue && nameAutValue._id === "newEntity") {
       addContact({
         variables: {
           contact: {
@@ -364,7 +366,7 @@ function AddDealDialog(props) {
               label: label ? label.trim() : "",
               description: description ? description.trim() : "",
               id: uuid(),
-              contactId: nameAutValue?._id !== "newEntity" ? nameAutValue?._id : uuid(),
+              contactId: nameAutValue?._id ? nameAutValue?._id : uuid(),
               laneId: newStage,
             };
             cards.push(newCard);
