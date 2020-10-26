@@ -153,11 +153,17 @@ function AddDealDialog(props) {
   }, [cData]);
 
   useEffect(() => {
-    console.log("CONTACT", contact);
-    if (contact?.name) {
-      setNameAutValue(contact);
+    console.log("CONTACT", nameAutValue);
+    if (nameAutValue?.name) {
+      setContact(nameAutValue);
     }
-  }, [contact]);
+  }, [nameAutValue]);
+  // useEffect(() => {
+  //   console.log("CONTACT", contact);
+  //   if (contact?.name) {
+  //     setNameAutValue(contact);
+  //   }
+  // }, [contact]);
 
   let [transactData, setTransactData] = useState(
     props.transactData ? { ...props.transactData } : null
@@ -269,29 +275,22 @@ function AddDealDialog(props) {
     setOpenContactDialog(false);
   };
 
-  const handleUpdate = () => {
-    // if (title.trim() !== "" && description.trim() !== "") {
-
-    if (nameAutValue && nameAutValue._id === "newEntity") {
-      addContact({
-        variables: {
-          contact: {
-            ...newContact,
-            name: nameAutValue.name,
-            createBy: stateApp.user.mongoId,
-            lastUpdateBy: stateApp.user.mongoId,
-          },
-        },
-        refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
-        awaitRefetchQueries: true,
-      });
+  useEffect(() => {
+    if (addContactData) {
+      addUpdateDeal(addContactData);
     }
+  }, [addContactData]);
 
+  const addUpdateDeal = (newContact = null) => {
+    let tempContact = newContact ? newContact?.addContact?.contact : contact;
+
+    console.log("Contact: ", newContact, contact, tempContact);
     let newStage = stage ? stage : "lane1";
     if (transactData) {
       const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
       const laneId = stateApp.activeDeal?.laneId;
-      console.log("CARD AND LANE: ", cardId, laneId);
+
+      console.log("CARD AND LANE: ", cardId, laneId, stateApp.activeDeal);
       if (cardId && laneId) {
         // update existing
         const laneIndex = transactData.lanes.findIndex(
@@ -304,14 +303,15 @@ function AddDealDialog(props) {
         const updatedCard = {
           // dealName: dealName.trim(),
           // title: contact?.name.trim(),
-          contactName: nameAutValue?.name ? nameAutValue.name : "",
+          contactName: tempContact ? tempContact.name : "",
           title: title ? title.trim() : "",
+          contactId: tempContact ? tempContact._id : "",
           label: label ? label.trim() : "",
           description: description ? description.trim() : "",
           laneId: newStage,
-          contactId: nameAutValue?._id ? nameAutValue?._id : uuid(),
           id: card.id,
         };
+        console.log("Update existing: ", updatedCard);
 
         if (card.laneId !== newStage) {
           if (cardIndex > -1) {
@@ -361,14 +361,16 @@ function AddDealDialog(props) {
             const newCard = {
               // dealName: dealName.trim(),
               // title: contact?.name,
-              contactName: nameAutValue?.name ? nameAutValue.name : "",
+              contactName: tempContact ? tempContact.name : "",
               title: title ? title.trim() : "",
               label: label ? label.trim() : "",
               description: description ? description.trim() : "",
               id: uuid(),
-              contactId: nameAutValue?._id ? nameAutValue?._id : uuid(),
+              contactId: tempContact ? tempContact._id : "",
               laneId: newStage,
             };
+
+            console.log("Add new: ", newCard);
             cards.push(newCard);
             lane.cards = cards;
           }
@@ -378,6 +380,29 @@ function AddDealDialog(props) {
       }
 
       handleClose();
+    }
+  };
+
+  const handleUpdate = () => {
+    // if (title.trim() !== "" && description.trim() !== "") {
+
+    if (transactData) {
+      if (contact && contact._id === "newEntity") {
+        addContact({
+          variables: {
+            contact: {
+              ...newContact,
+              name: contact.name,
+              createBy: stateApp.user.mongoId,
+              lastUpdateBy: stateApp.user.mongoId,
+            },
+          },
+          refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
+          awaitRefetchQueries: true,
+        });
+      } else {
+        addUpdateDeal();
+      }
     }
   };
 
