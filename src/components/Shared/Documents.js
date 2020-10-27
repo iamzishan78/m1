@@ -124,11 +124,13 @@ function UploadZone(props) {
       const uri = props.addFileData.addFileDescriptor.file.uri;
       const interal_key = props.addFileData.addFileDescriptor.file.internalKey;
       const file_id = props.addFileData.addFileDescriptor.file.id;
+      const file_name = props.addFileData.addFileDescriptor.file.name;
 
       if (file_id) {
         fetch(uri, {
           headers: {
             "Content-Type": "text/plain; charset=UTF-8",
+            "x-ms-blob-content-disposition": `attachment; filename="${file_name}"`,
             "X-Ms-Blob-Type": "BlockBlob",
             "X-Ms-Meta-Internalkey": interal_key,
             "X-Ms-Version": "2015-02-21",
@@ -217,22 +219,15 @@ export default function Documents(props) {
   useEffect(() => {
     console.log("VIEW FILE RESULT", viewFileResult);
     if (viewFileResult) {
-      fetch(viewFileResult.viewFile.uri, {
-        headers: {
-          "Content-Type": "text/plain; charset=UTF-8",
-          "X-Ms-Blob-Type": "BlockBlob",
-          "X-Ms-Meta-Internalkey": viewFileResult.viewFile.internalKey,
-          "X-Ms-Version": "2015-02-21",
-        },
-        method: "GET",
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          console.log("FILE RESPONSE: ", res);
-        })
-        .catch((e) => {
-          console.log("Could not view file", e);
-        });
+      let a = document.createElement('a');
+      a.href = viewFileResult.viewFile.uri;
+      a.download = viewFileResult.viewFile.name;
+
+      // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
+      // a.target = "_blank";
+
+      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
+      a.click();
     }
   }, [viewFileResult]);
 

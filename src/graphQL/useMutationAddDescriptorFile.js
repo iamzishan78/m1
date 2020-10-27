@@ -12,6 +12,7 @@ export const ADDDESCRIPTORFILE = gql`
       error
       file {
         id
+        name
         uri
         internalKey
       }
