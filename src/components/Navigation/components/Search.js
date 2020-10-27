@@ -1285,8 +1285,13 @@ function Search() {
                             dispatch(
                               setMapGridCardState({
                                 searchInputValue: "",
+                                searchResultData: [],
                               })
                             );
+                            setStateApp((state) => ({
+                              ...state,
+                              wellListFromSearch: [],
+                            }));
                           }}
                         >
                           <ClearIcon htmlColor="#fff" />
