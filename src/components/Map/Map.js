@@ -5327,7 +5327,7 @@ export default function Map() {
       document.body.appendChild(script);
 
       return () => {
-        document.body.removeChild(script);
+        //document.body.removeChild(script);
       };
     } else if (stateApp.userSnap === false) {
       const feedbackScript = document.querySelector("#feedback-script");
