@@ -2102,7 +2102,7 @@ function M1nTable(props) {
       setHeader("Contacts");
       setAddAble({ parent: false, type: "contact" });
       getContacts();
-      setUploadIcon(true);
+      setUploadIcon(false);
       setStartPaginationAt(25);
     }
   }, [props.parent]);
