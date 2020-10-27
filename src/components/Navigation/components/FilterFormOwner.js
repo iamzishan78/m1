@@ -5,6 +5,8 @@ import TextField from "@material-ui/core/TextField";
 import { NavigationContext } from "../NavigationContext";
 import FilterOwnerCount from "./FilterOwnerCount";
 import Grid from "@material-ui/core/Grid";
+import FilterOwnerConfidence from "./FilterOwnerConfidence";
+
 // import FilterOwnerInterestSum from "./FilterOwnerInterestSum";
 
 const useStyles = makeStyles((theme) => ({
@@ -209,6 +211,11 @@ export default function FilterFormOwner() {
       </Grid>
 
       <FilterOwnerCount />
+
+      <Grid item sm={12}>
+        <FilterOwnerConfidence />
+        {/* {renderFMW} */}
+      </Grid>
 
       {/* TEMPORARY COMMENT OUT BELOW
       FEATURE WORKS AND WILL HELP WITH M1 LOCAL DEBUGGING
