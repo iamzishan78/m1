@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import uuid from "uuid";
 import { makeStyles } from "@material-ui/core/styles";
@@ -8,6 +8,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
+import DeleteIcon from "@material-ui/icons/Delete";
 import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
 import { AppContext } from "../../../AppContext";
@@ -20,7 +21,7 @@ import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/
 import { ALLENTITYNAMESFORPARCEL } from "../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner";
 import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Typography } from "@material-ui/core";
+import { CircularProgress, Typography } from "@material-ui/core";
 import RightDialog from "./RightDialog";
 
 const useStyles = makeStyles((theme) => ({
@@ -73,8 +74,15 @@ const useStyles = makeStyles((theme) => ({
   closeIcon: {
     color: theme.palette.secondary.main,
   },
+
+  topBtnGroup: {},
   inputField: {
     marginBottom: "30px",
+  },
+  dealStateDiv: {
+    padding: "8px 16px",
+    borderRadius: 5,
+    cursor: "pointer",
   },
 }));
 
@@ -100,6 +108,7 @@ function AddDealDialog(props) {
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [label, setLabel] = useState("");
   const [stage, setStage] = useState("");
+  const [dealState, setDealState] = useState("");
   const [description, setDescription] = useState("");
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
@@ -178,16 +187,23 @@ function AddDealDialog(props) {
     }
   }, [tdata]);
 
-  const [updateTransaction] = useMutation(UPDATETRANSACTION);
+  const [
+    updateTransaction,
+    {
+      data: updateTransactionData,
+      called: updateTransactionCalled,
+      loading: updateTransactionLoading,
+    },
+  ] = useMutation(UPDATETRANSACTION);
 
   const openContact = () => {
     handleClose();
     props.selectRowOpenContact(contact);
   };
 
-  const handleDataChange = (newData) => {
+  const handleDataChange = async (newData) => {
     if (tdata?.transactionData?._id) {
-      updateTransaction({
+      await updateTransaction({
         variables: {
           transactionId: tdata.transactionData._id,
           transaction: { allData: newData, user: stateApp.user.mongoId },
@@ -232,6 +248,7 @@ function AddDealDialog(props) {
       if (!card) return;
 
       setTitle(card.title ? card.title : "");
+      setDealState(card.dealState ? card.dealState : null);
       setLabel(card.label ? card.label : "");
       setDescription(card.description ? card.description : "");
       setStage(card.laneId ? card.laneId : "lane1");
@@ -257,18 +274,21 @@ function AddDealDialog(props) {
   // }, [contact]);
 
   const handleClose = () => {
-    setTitle("");
-    setLabel("");
-    setDescription("");
-    setStage("");
-    setNameAutValue(null);
-    setNameAutInputValue("");
-    setContact({});
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      dealDialog: false,
-      activeDeal: { cardId: null, laneId: null },
-    }));
+    if (!updateTransactionLoading && !addContactLoading) {
+      setTitle("");
+      setLabel("");
+      setDescription("");
+      setStage("");
+      setDealState(null);
+      setNameAutValue(null);
+      setNameAutInputValue("");
+      setContact({});
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        dealDialog: false,
+        activeDeal: { cardId: null, laneId: null },
+      }));
+    }
   };
 
   const handleCloseContactDialog = () => {
@@ -281,7 +301,47 @@ function AddDealDialog(props) {
     }
   }, [addContactData]);
 
-  const addUpdateDeal = (newContact = null) => {
+  const deleteDeal = async () => {
+    if (transactData) {
+      const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
+      const laneId = stateApp.activeDeal?.laneId;
+
+      const laneIndex = transactData.lanes.findIndex(
+        (lane) => lane.id === laneId
+      );
+      const lane = transactData.lanes[laneIndex];
+      const cardIndex = lane.cards.findIndex((card) => card.id === cardId);
+      const card = lane.cards[cardIndex];
+
+      const deletedCard = {
+        ...card,
+        isDeleted: true,
+      };
+
+      let td = {
+        ...transactData,
+        lanes: [
+          ...transactData.lanes.slice(0, laneIndex),
+          {
+            ...lane,
+            cards: [
+              ...lane.cards.slice(0, cardIndex),
+              { ...deletedCard },
+              ...lane.cards.slice(cardIndex + 1),
+            ],
+          },
+          ...transactData.lanes.slice(laneIndex + 1),
+        ],
+      };
+
+      setTransactData(td);
+      await handleDataChange(td);
+
+      handleClose();
+    }
+  };
+
+  const addUpdateDeal = async (newContact = null) => {
     let tempContact = newContact ? newContact?.addContact?.contact : contact;
 
     console.log("Contact: ", newContact, contact, tempContact);
@@ -303,12 +363,14 @@ function AddDealDialog(props) {
         const updatedCard = {
           // dealName: dealName.trim(),
           // title: contact?.name.trim(),
+          isDeleted: false,
           contactName: tempContact ? tempContact.name : "",
           title: title ? title.trim() : "",
           contactId: tempContact ? tempContact._id : "",
           label: label ? label.trim() : "",
           description: description ? description.trim() : "",
           laneId: newStage,
+          dealState: dealState,
           id: card.id,
         };
         console.log("Update existing: ", updatedCard);
@@ -333,12 +395,14 @@ function AddDealDialog(props) {
               td.lanes[stageIndex].cards.push(updatedCard);
             }
             setTransactData(td);
+            await handleDataChange(td);
           }
         } else {
           let td = { ...transactData };
 
           td.lanes[laneIndex].cards[cardIndex] = updatedCard;
           setTransactData(td);
+          await handleDataChange(td);
         }
       } else if (!cardId || !laneId) {
         // add new
@@ -361,10 +425,12 @@ function AddDealDialog(props) {
             const newCard = {
               // dealName: dealName.trim(),
               // title: contact?.name,
+              isDeleted: false,
               contactName: tempContact ? tempContact.name : "",
               title: title ? title.trim() : "",
               label: label ? label.trim() : "",
               description: description ? description.trim() : "",
+              dealState: dealState,
               id: uuid(),
               contactId: tempContact ? tempContact._id : "",
               laneId: newStage,
@@ -377,18 +443,21 @@ function AddDealDialog(props) {
         });
 
         setTransactData(td);
+        await handleDataChange(td);
       }
 
       handleClose();
     }
   };
 
-  const handleUpdate = () => {
+  console.log("LOADING", addContactLoading, updateTransactionLoading);
+
+  const handleUpdate = async () => {
     // if (title.trim() !== "" && description.trim() !== "") {
 
     if (transactData) {
       if (contact && contact._id === "newEntity") {
-        addContact({
+        await addContact({
           variables: {
             contact: {
               ...newContact,
@@ -401,27 +470,29 @@ function AddDealDialog(props) {
           awaitRefetchQueries: true,
         });
       } else {
-        addUpdateDeal();
+        await addUpdateDeal();
       }
     }
   };
 
-  useEffect(() => {
-    if (tdata?.transactionData?.allData) {
-      handleDataChange(transactData);
-    }
-  }, [transactData]);
+  // useEffect(() => {
+  //   if (tdata?.transactionData?.allData) {
+  //     handleDataChange(transactData);
+  //   }
+  // }, [transactData]);
 
   return (
     <RightDialog
       open={props.open}
       handleClickDialogClose={() => {
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          dealDialog: false,
-          activeDeal: { cardId: null, laneId: null },
-        }));
-        handleClose();
+        if (!updateTransactionLoading && !addContactLoading) {
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            dealDialog: false,
+            activeDeal: { cardId: null, laneId: null },
+          }));
+          handleClose();
+        }
       }}
       width={props.width}
     >
@@ -435,15 +506,58 @@ function AddDealDialog(props) {
           >
             Add Deals
           </h4>
+          <div style={{ float: "right" }}>
+            {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) &&
+              stateApp.activeDeal?.laneId && (
+                <IconButton
+                  disabled={updateTransactionLoading || addContactLoading}
+                  onClick={deleteDeal}
+                  size="small"
+                  style={{ marginRight: 8 }}
+                >
+                  <DeleteIcon className={classes.closeIcon} fontSize="small" />
+                </IconButton>
+              )}
 
-          <IconButton
-            onClick={props.onClose}
-            size="small"
-            style={{ float: "right", top: "-5px", right: "-5px" }}
-          >
-            <CloseIcon className={classes.closeIcon} fontSize="small" />
-          </IconButton>
+            <IconButton
+              disabled={updateTransactionLoading || addContactLoading}
+              onClick={handleClose}
+              size="small"
+            >
+              <CloseIcon className={classes.closeIcon} fontSize="small" />
+            </IconButton>
+          </div>
         </Grid>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            margin: "8px 0",
+          }}
+        >
+          <div
+            className={classes.dealStateDiv}
+            onClick={() => setDealState("won")}
+            style={{
+              backgroundColor: dealState === "won" ? "green" : "#d9d9d9",
+              color: dealState === "won" ? "white" : "black",
+              marginRight: 8,
+            }}
+          >
+            Won
+          </div>
+          <div
+            className={classes.dealStateDiv}
+            onClick={() => setDealState("lost")}
+            style={{
+              backgroundColor: dealState === "lost" ? "red" : "#d9d9d9",
+              color: dealState === "lost" ? "white" : "black",
+            }}
+          >
+            Lost
+          </div>
+        </div>
         <div className={classes.inputFieldDateRoot}>
           <TextField
             margin="dense"
@@ -565,7 +679,12 @@ function AddDealDialog(props) {
               color="default"
               size="medium"
               disableElevation
-              onClick={handleClose}
+              onClick={() => {
+                if (!updateTransactionLoading && !addContactLoading) {
+                  handleClose();
+                }
+              }}
+              disabled={updateTransactionLoading || addContactLoading}
               className={classes.footerButton}
               style={{
                 margin: "0px 15px 0px 0px",
@@ -584,9 +703,14 @@ function AddDealDialog(props) {
               disableElevation
               onClick={handleUpdate}
               className={classes.footerButton}
+              disabled={updateTransactionLoading || addContactLoading}
               // style={{ margin: "0px 20px 0px 0px" }}
             >
-              Save
+              {updateTransactionLoading || addContactLoading ? (
+                <CircularProgress size={14} />
+              ) : (
+                "Save"
+              )}
             </Button>
           </div>
         </div>

@@ -301,7 +301,7 @@ export default function Transact() {
           editable={false}
           canAddLanes={false}
           editLaneTitle={false}
-          hideCardDeleteIcon={false}
+          hideCardDeleteIcon={true}
           onDataChange={handleDataChange}
           onCardClick={handleCardClick}
           laneStyle={{
