@@ -148,7 +148,7 @@ const TransactAppBar = ({
             <OfflineBolt />
             <span>
               {activeLength}{" "}
-              {activeLength !== 1 ? "ACTIVE DEALS" : "ACTIVE DEAL"} |{" "}
+              {activeLength !== 1 ? "OPEN DEALS" : "OPEN DEAL"} |{" "}
               {activeSum}
             </span>
           </div>
@@ -156,7 +156,7 @@ const TransactAppBar = ({
             <CheckBox />
             <span>
               {closedLength}{" "}
-              {closedLength !== 1 ? "CLOSED DEALS" : "CLOSED DEAL"} |{" "}
+              {closedLength !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
               {closedSum}
             </span>
           </div>
