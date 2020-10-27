@@ -14,6 +14,7 @@ import { AppContext } from "../../../AppContext";
 import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACT } from "../../../graphQL/useQueryContact";
+import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
 import getLaneTitle from "../../Transact/getLaneTitle";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { ALLENTITYNAMESFORPARCEL } from "../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner";
@@ -77,6 +78,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const newContact = {
+  name: "",
+  mobilePhone: "",
+  homePhone: "",
+  primaryEmail: "",
+  address1: "",
+  address2: "",
+  city: "",
+  country: "",
+  state: "",
+  zip: "",
+};
+
 function AddDealDialog(props) {
   const classes = useStyles();
   // const { transactData, handleDataChange } = props;
@@ -94,6 +108,15 @@ function AddDealDialog(props) {
 
   const [openContactDialog, setOpenContactDialog] = useState(false);
   // const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
+
+  const [
+    addContact,
+    {
+      data: addContactData,
+      called: addContactCalled,
+      loading: addContactLoading,
+    },
+  ] = useMutation(ADDCONTACT);
 
   const [getTransactionData, { data: tdata }] = useLazyQuery(TRANSACTIONDATA);
 
@@ -119,8 +142,9 @@ function AddDealDialog(props) {
   }, [allContacts]);
 
   useEffect(() => {
+    console.log("CDATA", cData);
     if (cData?.contact) {
-      setContact(
+      setNameAutValue(
         cData?.contact
           ? { name: cData.contact.name, _id: cData.contact._id }
           : {}
@@ -129,10 +153,17 @@ function AddDealDialog(props) {
   }, [cData]);
 
   useEffect(() => {
-    if (contact?.name) {
-      setNameAutValue(contact);
+    console.log("CONTACT", nameAutValue);
+    if (nameAutValue?.name) {
+      setContact(nameAutValue);
     }
-  }, [contact]);
+  }, [nameAutValue]);
+  // useEffect(() => {
+  //   console.log("CONTACT", contact);
+  //   if (contact?.name) {
+  //     setNameAutValue(contact);
+  //   }
+  // }, [contact]);
 
   let [transactData, setTransactData] = useState(
     props.transactData ? { ...props.transactData } : null
@@ -205,10 +236,10 @@ function AddDealDialog(props) {
       setDescription(card.description ? card.description : "");
       setStage(card.laneId ? card.laneId : "lane1");
       if (card.contactId) {
-        setContact({ name: card.contactName, _id: card.contactId }); // setting contact
+        setNameAutValue({ name: card.contactName, _id: card.contactId }); // setting contact
       }
     } else if (props.contact) {
-      setContact({ name: props.contact.name, _id: props.contact._id });
+      setNameAutValue({ name: props.contact.name, _id: props.contact._id });
     } else if (props.contactId) {
       getContact({
         variables: {
@@ -232,7 +263,7 @@ function AddDealDialog(props) {
     setStage("");
     setNameAutValue(null);
     setNameAutInputValue("");
-    // setContact({});
+    setContact({});
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: false,
@@ -244,14 +275,22 @@ function AddDealDialog(props) {
     setOpenContactDialog(false);
   };
 
-  const handleUpdate = () => {
-    // if (title.trim() !== "" && description.trim() !== "") {
+  useEffect(() => {
+    if (addContactData) {
+      addUpdateDeal(addContactData);
+    }
+  }, [addContactData]);
 
+  const addUpdateDeal = (newContact = null) => {
+    let tempContact = newContact ? newContact?.addContact?.contact : contact;
+
+    console.log("Contact: ", newContact, contact, tempContact);
     let newStage = stage ? stage : "lane1";
     if (transactData) {
       const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
       const laneId = stateApp.activeDeal?.laneId;
-      console.log("CARD AND LANE: ", cardId, laneId);
+
+      console.log("CARD AND LANE: ", cardId, laneId, stateApp.activeDeal);
       if (cardId && laneId) {
         // update existing
         const laneIndex = transactData.lanes.findIndex(
@@ -264,14 +303,15 @@ function AddDealDialog(props) {
         const updatedCard = {
           // dealName: dealName.trim(),
           // title: contact?.name.trim(),
-          contactName: nameAutValue?.name ? nameAutValue.name : "",
+          contactName: tempContact ? tempContact.name : "",
           title: title ? title.trim() : "",
+          contactId: tempContact ? tempContact._id : "",
           label: label ? label.trim() : "",
           description: description ? description.trim() : "",
           laneId: newStage,
-          contactId: nameAutValue?._id ? nameAutValue?._id : uuid(),
           id: card.id,
         };
+        console.log("Update existing: ", updatedCard);
 
         if (card.laneId !== newStage) {
           if (cardIndex > -1) {
@@ -321,14 +361,16 @@ function AddDealDialog(props) {
             const newCard = {
               // dealName: dealName.trim(),
               // title: contact?.name,
-              contactName: nameAutValue?.name ? nameAutValue.name : "",
+              contactName: tempContact ? tempContact.name : "",
               title: title ? title.trim() : "",
               label: label ? label.trim() : "",
               description: description ? description.trim() : "",
               id: uuid(),
-              contactId: nameAutValue?._id ? nameAutValue?._id : uuid(),
+              contactId: tempContact ? tempContact._id : "",
               laneId: newStage,
             };
+
+            console.log("Add new: ", newCard);
             cards.push(newCard);
             lane.cards = cards;
           }
@@ -338,6 +380,29 @@ function AddDealDialog(props) {
       }
 
       handleClose();
+    }
+  };
+
+  const handleUpdate = () => {
+    // if (title.trim() !== "" && description.trim() !== "") {
+
+    if (transactData) {
+      if (contact && contact._id === "newEntity") {
+        addContact({
+          variables: {
+            contact: {
+              ...newContact,
+              name: contact.name,
+              createBy: stateApp.user.mongoId,
+              lastUpdateBy: stateApp.user.mongoId,
+            },
+          },
+          refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
+          awaitRefetchQueries: true,
+        });
+      } else {
+        addUpdateDeal();
+      }
     }
   };
 
