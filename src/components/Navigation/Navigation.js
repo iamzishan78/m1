@@ -1615,7 +1615,7 @@ export default function Navigation(props) {
               </ListItemIcon>
               <ListItemText
                 className={`${classes.sideNavText} uppercase`}
-                primary="Transact"
+                primary="Deals"
               />
               <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button
