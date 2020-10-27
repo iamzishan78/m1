@@ -36,6 +36,7 @@ import { CircularProgress } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
 import { deepEqualObjects } from "../../Shared/functions";
+import ClearIcon from "@material-ui/icons/Clear";
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -1274,8 +1275,27 @@ function Search() {
               endAdornment: !mapGridCardActivated && (
                 <InputAdornment className={classes.endAdornmentIcon}>
                   <div>
+                    {((searchInputValue && searchInputValue !== "") ||
+                      (stateApp.wellListFromSearch &&
+                        stateApp.wellListFromSearch.length > 0)) && (
+                      <Tooltip title="Clear" placement="top">
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            dispatch(
+                              setMapGridCardState({
+                                searchInputValue: "",
+                              })
+                            );
+                          }}
+                        >
+                          <ClearIcon htmlColor="#fff" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
                     <Tooltip title="Search History" placement="top">
                       <IconButton
+                        size="small"
                         onClick={(event) => {
                           setAnchorEl(event.currentTarget);
                         }}

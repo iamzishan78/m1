@@ -45,6 +45,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { deepEqualObjects, setStateIfDeepEqual } from "../functions";
 import RightDialog from "../../ContactDetailCard/components/RightDialog";
 import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
+import { setMapGridCardState, showWarningMessage } from "../../../actions";
+import { first } from "@amcharts/amcharts4/.internal/core/utils/Array";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
@@ -1339,7 +1341,10 @@ function M1nTable(props) {
   const setStartPaginationAt = (newState) => {
     setStateIfDeepEqual(StartPaginationAt, newState);
   };
-
+  const [viewportFeatures, ViewportFeatures] = useState(null);
+  const setViewportFeatures = (newState) => {
+    setStateIfDeepEqual(ViewportFeatures, newState);
+  };
   const { searchloading, searchResultData } = useSelector(
     ({ MapGridCard }) => MapGridCard
   );
@@ -2353,6 +2358,9 @@ function M1nTable(props) {
             result.coordinates = {};
             if (result.Longitude && result.Latitude)
               result.coordinates.center = [result.Longitude, result.Latitude];
+
+            //// set in the detailCard column
+            result.detailCard = result.Id;
           } else if (props.targetLabel && props.targetLabel == "location") {
             result.coordinates = {};
             if (result.bbox) result.coordinates.bbox = result.bbox;
@@ -2467,6 +2475,7 @@ function M1nTable(props) {
     props.showComments,
     props.showTags,
   ]);
+
   //////////// Search end///////////////////////////////////////////////
 
   ////////////Owners Per Parcel begin///////////////////////////////////////////////
@@ -2852,13 +2861,217 @@ function M1nTable(props) {
   ]);
 
   ////////////Deals end////////////////////////////////////////////////
+
+  ////////////Map Viewpor tWells begin///////////////////////////////////////////////
+
   useEffect(() => {
-    console.log(
-      "%cCONTACT ID : ",
-      "font-size:20px; color:tomato;",
-      props.contact
-    );
-  }, [props.contact]);
+    if (props.parent && props.parent === "mapViewportWells" && stateApp.map) {
+      let warningShowed = false;
+      const mapMoveEndHandler = () => {
+        const points = stateApp.map.queryRenderedFeatures({
+          layers: ["wellpoints", "welllines"],
+        });
+
+        if (points.length > 0) setLoading(true);
+
+        if (points.length === 0 && !warningShowed) {
+          dispatch(
+            showWarningMessage(
+              "We didn't find any well in the viewport, please make sure at least one layer with wells it's active, or zoom out untill you visualize some well spots."
+            )
+          );
+
+          warningShowed = true;
+        }
+
+        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@", points);
+        const IdsArray = [];
+        const featuresArray = [];
+        points.forEach((point) => {
+          if (point && point.properties && point.properties.id) {
+            IdsArray.push(point.properties.id.toLowerCase());
+            featuresArray.push({
+              ...point.properties,
+              id: point.properties.id.toLowerCase(),
+            });
+          }
+        });
+
+        if (IdsArray.length > 0) {
+          dispatch(setMapGridCardState({ viewportData: featuresArray }));
+          setViewportFeatures(featuresArray);
+          getCommentsCounter({
+            variables: {
+              objectsIdsArray: IdsArray,
+              userId: stateApp.user.mongoId,
+            },
+          });
+          getTagSamples({
+            variables: {
+              objectsIdsArray: IdsArray,
+              userId: stateApp.user.mongoId,
+            },
+          });
+        } else {
+          dispatch(setMapGridCardState({ viewportData: [] }));
+          setRows([]);
+          setLoading(false);
+        }
+      };
+
+      let firstTime = true;
+      if (!firstTime) stateApp.map.off("moveend", mapMoveEndHandler);
+      else firstTime = false;
+      stateApp.map.on("moveend", mapMoveEndHandler);
+
+      // stateApp.map.resize();
+
+      setTimeout(() => {
+        stateApp.map.resize();
+      }, 1500);
+    }
+  }, [props.parent, stateApp.map, stateApp.user, stateApp.layers]);
+
+  // useEffect(() => {
+  //   if (
+  //     props.parent &&
+  //     props.parent === "mapViewportWells" &&
+  //     stateApp.map &&
+  //     stateApp.layer
+  //   ) {
+  //     stateApp.map.resize();
+  //   }
+  // }, [props.parent, stateApp.map, stateApp.layer]);
+
+  useEffect(() => {
+    if (props.parent && props.parent === "mapViewportWells") {
+      setTargetLabel("well");
+
+      if (props.header) {
+        setHeader(props.header);
+      } else {
+        setHeader("Wells");
+      }
+      setAddAble(false);
+    }
+  }, [props.parent]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "mapViewportWells" &&
+      viewportFeatures &&
+      viewportFeatures.length > 0 &&
+      dataCommentsCounter &&
+      dataCommentsCounter.commentsCounter &&
+      dataTagSamples &&
+      dataTagSamples.tagSamples &&
+      dataTracks &&
+      dataTracks.tracksByObjectType
+    ) {
+      let wells = [...viewportFeatures];
+      wells = wells.map((w) => {
+        let well = { ...w };
+
+        well.isTracked = false;
+        well.commentsCounter = 0;
+        well.tags = [[], 0];
+
+        well.coordinates = {};
+
+        if (well.longitude && well.latitude)
+          well.coordinates.center = [well.longitude, well.latitude];
+
+        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+          if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+            well.commentsCounter = dataCommentsCounter.commentsCounter[i].total;
+            break;
+          }
+        }
+        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+          if (well.id === dataTagSamples.tagSamples[i]._id) {
+            well.tags = [
+              dataTagSamples.tagSamples[i].tags,
+              dataTagSamples.tagSamples[i].total,
+            ];
+
+            break;
+          }
+        }
+        for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+          if (
+            well.id === dataTracks.tracksByObjectType[i].trackOn.toLowerCase()
+          ) {
+            well.isTracked = true;
+            break;
+          }
+        }
+
+        return well;
+      });
+
+      let availableTags = [];
+      dataTagSamples.tagSamples.map((sample) => {
+        availableTags = [...availableTags, ...sample.tags];
+      });
+      const cleanAvailableTags = [...new Set(availableTags)];
+
+      setRows(wells);
+
+      const flyToColumn = {
+        name: "coordinates",
+        label: " ",
+        options: {
+          filter: false,
+          sort: false,
+          searchable: false,
+          download: false,
+          print: false,
+          viewColumns: false,
+        },
+      };
+
+      setColumns([
+        ...(cleanAvailableTags.length > 0
+          ? WellsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
+                  },
+                };
+              }
+              return column;
+            })
+          : WellsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })),
+        flyToColumn,
+      ]);
+
+      setStateApp((state) => ({
+        ...state,
+        trackedwells: wells,
+      }));
+      setLoading(false);
+    }
+  }, [viewportFeatures, dataTagSamples, dataCommentsCounter, dataTracks]);
+
+  ////////////Map Viewpor tWells end///////////////////////////////////////////////
 
   ////////////-----Add your code section here-----///////////////////////
   return (
@@ -2891,6 +3104,7 @@ function M1nTable(props) {
         orderByTracks={orderByTracks}
         startPaginationAt={startPaginationAt}
         contactId={props.contact?._id}
+        parent={props.parent}
       />
     </Container>
   );

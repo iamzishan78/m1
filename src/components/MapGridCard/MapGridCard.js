@@ -384,14 +384,16 @@ function MapGridCard(props) {
                 label={`Search Result (${searchResultData.length})`}
                 {...a11yProps(0)}
               />
-              {/* <Tab
-                className="cancelDraggableEffect"
-                label={`Viewport (${viewportData.length})`}
-                {...a11yProps(1)}
-              /> */}
+
               <Tab
                 className="cancelDraggableEffect"
                 label={`Tracked (${trackedDataCount})`}
+                {...a11yProps(1)}
+              />
+
+              <Tab
+                className="cancelDraggableEffect"
+                label={`Viewport (${viewportData.length})`}
                 {...a11yProps(1)}
               />
             </Tabs>
@@ -518,30 +520,6 @@ function MapGridCard(props) {
             </div>
           </TabPanel>
 
-          {/* //// viewport panel //// */}
-          {/* <TabPanel
-            value={mapGridCardActiveTap}
-            index={1}
-            className={classes.tapsPanelsPadding}
-          >
-            <div style={{ position: "relative" }}>
-              <TabLabels
-                labels={["Wells", "Interests", "Parcels", "AOI"]}
-                value={viewportTapValue}
-                setValue={setViewportTapValue}
-              />
-              <TabPanels
-                value={viewportTapValue}
-                panels={[
-                  <div>panel1</div>,
-                  <div>panel2</div>,
-                  <div>panel3</div>,
-                  <div>panel4</div>,
-                ]}
-              />
-            </div>
-          </TabPanel> */}
-
           {/* //// tracked panel //// */}
           <TabPanel
             value={mapGridCardActiveTap}
@@ -592,6 +570,27 @@ function MapGridCard(props) {
                       />
                     }
                   />,
+                ]}
+              />
+            </div>
+          </TabPanel>
+
+          {/* //// viewport panel //// */}
+          <TabPanel
+            value={mapGridCardActiveTap}
+            index={2}
+            className={classes.tapsPanelsPadding}
+          >
+            <div style={{ position: "relative" }}>
+              {/* <TabLabels
+                labels={["Wells", "Interests", "Parcels", "AOI"]}
+                value={viewportTapValue}
+                setValue={setViewportTapValue}
+              /> */}
+              <TabPanels
+                value={viewportTapValue}
+                panels={[
+                  <M1nTable dense parent="mapViewportWells" header={"Wells"} />,
                 ]}
               />
             </div>

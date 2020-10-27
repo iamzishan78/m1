@@ -38,7 +38,7 @@ import WellCardDetails from "./WellCardDetails";
 
 import TrackToggleButton from "../Shared/TrackToggleButton";
 
-import useQueryWell from "../../graphQL/useQueryWell";
+// import useQueryWell from "../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/client";
 // import { VERTEXEDGESQUERY } from "../../graphQL/useQueryVertexEdges";/////////////////
 import { WELLSUMMARYDETAILQUERY } from "../../graphQL/useQueryWellSummaryDetail";
@@ -261,8 +261,8 @@ export default function WellCard() {
   }, [dataWellSummary]);
 
   //make fire and forget call to REST api so that it begins to cache other well related api calls
-  const { data, loading, error } = useQueryWell(stateApp.selectedWell.id);
-  //console.log('fireForget',data)
+  // const { data, loading, error } = useQueryWell(stateApp.selectedWell.id);
+  // console.log('fireForget',data)
   /* useEffect(() => {
     setStateApp(state => ({ ...state, selectedWell: props.selectedWell }))
    
