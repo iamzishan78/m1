@@ -20,9 +20,11 @@ import getLaneTitle from "../../Transact/getLaneTitle";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { ALLENTITYNAMESFORPARCEL } from "../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner";
 import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
+import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CircularProgress, Typography } from "@material-ui/core";
 import RightDialog from "./RightDialog";
+import { DatePicker } from "@material-ui/pickers";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,6 +41,15 @@ const useStyles = makeStyles((theme) => ({
   },
   inputField: {
     marginBottom: "30px",
+  },
+  dateLabel: {
+    transform: "translate(10px, 2px) scale(0.75) !important",
+    backgroundColor: "#fff !important",
+    padding: "0 6px",
+  },
+  shrinkLabel: {
+    backgroundColor: "#fff !important",
+    padding: "0 6px",
   },
   inputFieldDateRoot: {
     "& .MuiDialog-root": {
@@ -58,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
   },
   dialogFooter: {
     display: "flex",
-    justifyContent: "flex-start",
+    justifyContent: "flex-end",
   },
   footerButton: {
     letterSpacing: "1px",
@@ -78,11 +89,24 @@ const useStyles = makeStyles((theme) => ({
   topBtnGroup: {},
   inputField: {
     marginBottom: "30px",
+    outline: "none",
   },
-  dealStateDiv: {
+  dealStateOpen: {
     padding: "8px 16px",
     borderRadius: 5,
     cursor: "pointer",
+    backgroundColor: "#d9d9d9",
+  },
+  dealStateClosed: {
+    padding: "8px 16px",
+    borderRadius: 18,
+    color: "#fff",
+  },
+  dealStateReopen: {
+    padding: "2px 10px",
+    cursor: "pointer",
+    borderRadius: 5,
+    border: "1px solid gray",
   },
 }));
 
@@ -108,12 +132,17 @@ function AddDealDialog(props) {
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [label, setLabel] = useState("");
   const [stage, setStage] = useState("");
-  const [dealState, setDealState] = useState("");
+  const [dealState, setDealState] = useState(null);
   const [description, setDescription] = useState("");
+  const [pipelineId, setPipelineId] = useState("");
+  const [ownerId, setOwnerId] = useState("");
+  const [users, setUsers] = useState([]);
+  const [closeDate, setCloseDate] = useState(null);
+  const [colaborators, setColaborators] = useState([]);
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-  const [nameAutInputValue, setNameAutInputValue] = useState("");
+  const [nameAutInputValue, setNameAutInputValue] = useState([]);
 
   const [openContactDialog, setOpenContactDialog] = useState(false);
   // const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
@@ -126,6 +155,10 @@ function AddDealDialog(props) {
       loading: addContactLoading,
     },
   ] = useMutation(ADDCONTACT);
+
+  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
+    fetchPolicy: "cache-and-network",
+  });
 
   const [getTransactionData, { data: tdata }] = useLazyQuery(TRANSACTIONDATA);
 
@@ -141,7 +174,12 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     getContacts();
+    getAllUsers();
   }, []);
+
+  useEffect(() => {
+    console.log("CURRENT USER", ownerId);
+  });
 
   useEffect(() => {
     console.log("ALL CONTACTS: ", allContacts);
@@ -186,6 +224,17 @@ function AddDealDialog(props) {
       );
     }
   }, [tdata]);
+
+  useEffect(() => {
+    if (userLists && userLists.allUsers) {
+      setUsers(
+        userLists.allUsers.map((user) => ({
+          value: user.id,
+          text: user.displayName,
+        }))
+      );
+    }
+  }, [userLists]);
 
   const [
     updateTransaction,
@@ -251,6 +300,10 @@ function AddDealDialog(props) {
       setDealState(card.dealState ? card.dealState : null);
       setLabel(card.label ? card.label : "");
       setDescription(card.description ? card.description : "");
+      setPipelineId(card.pipelineId ? card.pipelineId : "");
+      setOwnerId(card.ownerId ? card.ownerId : stateApp.user.mongoId);
+      setCloseDate(card.closeDate ? card.closeDate : null);
+      setColaborators(card.colaborators ? card.colaborators : []);
       setStage(card.laneId ? card.laneId : "lane1");
       if (card.contactId) {
         setNameAutValue({ name: card.contactName, _id: card.contactId }); // setting contact
@@ -282,6 +335,10 @@ function AddDealDialog(props) {
       setDealState(null);
       setNameAutValue(null);
       setNameAutInputValue("");
+      setPipelineId("");
+      setOwnerId("");
+      setCloseDate(null);
+      setColaborators([]);
       setContact({});
       setStateApp((stateApp) => ({
         ...stateApp,
@@ -422,6 +479,7 @@ function AddDealDialog(props) {
         td.lanes.forEach((lane) => {
           if (lane.id === newStage) {
             let cards = [...lane.cards];
+            // CARD STRUCTURE
             const newCard = {
               // dealName: dealName.trim(),
               // title: contact?.name,
@@ -434,6 +492,12 @@ function AddDealDialog(props) {
               id: uuid(),
               contactId: tempContact ? tempContact._id : "",
               laneId: newStage,
+              // VALUES TO SET
+              createdAt: Date.now(),
+              pipelineId: "",
+              ownerId: "",
+              expectedCloseDate: "",
+              colaborators: [],
             };
 
             console.log("Add new: ", newCard);
@@ -536,7 +600,65 @@ function AddDealDialog(props) {
             margin: "8px 0",
           }}
         >
-          <div
+          {dealState === null && (
+            <>
+              <div
+                className={classes.dealStateOpen}
+                onClick={() => setDealState("won")}
+                style={{
+                  marginRight: 8,
+                }}
+              >
+                Won
+              </div>
+              <div
+                className={classes.dealStateOpen}
+                onClick={() => setDealState("lost")}
+              >
+                Lost
+              </div>
+            </>
+          )}
+          {dealState === "won" && (
+            <>
+              <div
+                className={classes.dealStateClosed}
+                style={{
+                  backgroundColor: "green",
+                  marginRight: 8,
+                }}
+              >
+                Won
+              </div>
+              <div
+                className={classes.dealStateReopen}
+                onClick={() => setDealState(null)}
+              >
+                Repoen
+              </div>
+            </>
+          )}
+          {dealState === "lost" && (
+            <>
+              <div
+                className={classes.dealStateClosed}
+                style={{
+                  backgroundColor: "red",
+                  marginRight: 8,
+                }}
+              >
+                Closed
+              </div>
+              <div
+                className={classes.dealStateReopen}
+                onClick={() => setDealState(null)}
+              >
+                Repoen
+              </div>
+            </>
+          )}
+
+          {/* <div
             className={classes.dealStateDiv}
             onClick={() => setDealState("won")}
             style={{
@@ -556,7 +678,7 @@ function AddDealDialog(props) {
             }}
           >
             Lost
-          </div>
+          </div> */}
         </div>
         <div className={classes.inputFieldDateRoot}>
           <TextField
@@ -614,22 +736,98 @@ function AddDealDialog(props) {
             </div>
           )}
 
+          {/* <DatePicker
+            inputVariant="outlined"
+            label="Expected Close Date"
+            className={classes.inputField}
+            size="small"
+            style={{ zIndex: 999 }}
+            // value={closeDate}
+            // onChange={(date) => {
+            //   setCloseDate(date);
+            // }}
+          /> */}
+
           <FormControl
             variant="outlined"
             fullWidth
             className={classes.inputField}
             size="small"
           >
-            <InputLabel
-              id="demo-simple-select-outlined-label"
-              className={classes.label}
+            <InputLabel shrink className={classes.shrinkLabel}>
+              Owner Name
+            </InputLabel>
+            <Select
+              native
+              value={ownerId}
+              onChange={(e) => {
+                setOwnerId(e.target.value);
+              }}
+              fullWidth
             >
+              {users.map((user) => (
+                <option key={user.value} value={user.value}>
+                  {user.text}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl
+            variant="outlined"
+            fullWidth
+            size="small"
+            className={classes.inputField}
+          >
+            <InputLabel shrink className={classes.dateLabel}>
+              Expected Close Date
+            </InputLabel>
+            <TextField
+              margin="dense"
+              type="date"
+              variant="outlined"
+              value={closeDate}
+              placeholder=""
+              fullWidth
+              onChange={(e) => {
+                console.log("DATE", e);
+                setCloseDate(e.target.value);
+              }}
+            />
+          </FormControl>
+
+          <FormControl
+            variant="outlined"
+            fullWidth
+            className={classes.inputField}
+            size="small"
+          >
+            <InputLabel shrink className={classes.shrinkLabel}>
+              Pipeline
+            </InputLabel>
+            <Select
+              native
+              value={pipelineId}
+              onChange={(e) => {
+                setPipelineId(e.target.value);
+              }}
+              fullWidth
+              label="Pipeline"
+            >
+              {/* TODO: map over list of pipelines and render options */}
+            </Select>
+          </FormControl>
+
+          <FormControl
+            variant="outlined"
+            fullWidth
+            className={classes.inputField}
+            size="small"
+          >
+            <InputLabel shrink className={classes.shrinkLabel}>
               Deal Stage
             </InputLabel>
             <Select
               native
-              labelId="demo-simple-select-outlined-label"
-              id="demo-simple-select-outlined"
               value={stage}
               onChange={(e) => {
                 console.log("Stage: ", e.target.value);
@@ -663,7 +861,7 @@ function AddDealDialog(props) {
             multiline
             rows={8}
             value={description}
-            label="Offer Details"
+            label="Notes"
             fullWidth
             multiline
             //   required
