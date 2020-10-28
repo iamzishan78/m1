@@ -42,7 +42,7 @@ import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelInterests";
 
 import { useDispatch, useSelector } from "react-redux";
-import { deepEqualObjects, setStateIfDeepEqual } from "../functions";
+import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
 import RightDialog from "../../ContactDetailCard/components/RightDialog";
 import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
 import { setMapGridCardState, showWarningMessage } from "../../../actions";
@@ -1344,6 +1344,10 @@ function M1nTable(props) {
   const [viewportFeatures, ViewportFeatures] = useState(null);
   const setViewportFeatures = (newState) => {
     setStateIfDeepEqual(ViewportFeatures, newState);
+  };
+  const [warningShowed, WarningShowed] = useState(false);
+  const setWarningShowed = (newState) => {
+    setStateIfDeepEqual(WarningShowed, newState);
   };
   const { searchloading, searchResultData } = useSelector(
     ({ MapGridCard }) => MapGridCard
@@ -2862,86 +2866,52 @@ function M1nTable(props) {
 
   ////////////Deals end////////////////////////////////////////////////
 
-  ////////////Map Viewpor tWells begin///////////////////////////////////////////////
+  ////////////Map Viewport Wells begin///////////////////////////////////////////////
 
   useEffect(() => {
-    if (props.parent && props.parent === "mapViewportWells" && stateApp.map) {
-      let warningShowed = false;
-      const mapMoveEndHandler = () => {
-        const points = stateApp.map.queryRenderedFeatures({
-          layers: ["wellpoints", "welllines"],
+    if (
+      props.parent &&
+      props.parent === "mapViewportWells" &&
+      stateApp.viewportWells
+    ) {
+      const IdsArray = [];
+      stateApp.viewportWells.forEach((well) => {
+        if (well && well.id) {
+          IdsArray.push(well.id);
+        }
+      });
+
+      if (IdsArray.length > 0) {
+        setLoading(true);
+        getCommentsCounter({
+          variables: {
+            objectsIdsArray: IdsArray,
+            userId: stateApp.user.mongoId,
+          },
         });
+        getTagSamples({
+          variables: {
+            objectsIdsArray: IdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+        setViewportFeatures(stateApp.viewportWells);
+      } else {
+        setViewportFeatures(null);
+        setRows([]);
+        setLoading(false);
 
-        if (points.length > 0) setLoading(true);
-
-        if (points.length === 0 && !warningShowed) {
+        if (!warningShowed) {
           dispatch(
             showWarningMessage(
               "We didn't find any well in the viewport, please make sure at least one layer with wells it's active, or zoom out untill you visualize some well spots."
             )
           );
-
-          warningShowed = true;
+          setWarningShowed(true);
         }
-
-        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@", points);
-        const IdsArray = [];
-        const featuresArray = [];
-        points.forEach((point) => {
-          if (point && point.properties && point.properties.id) {
-            IdsArray.push(point.properties.id.toLowerCase());
-            featuresArray.push({
-              ...point.properties,
-              id: point.properties.id.toLowerCase(),
-            });
-          }
-        });
-
-        if (IdsArray.length > 0) {
-          dispatch(setMapGridCardState({ viewportData: featuresArray }));
-          setViewportFeatures(featuresArray);
-          getCommentsCounter({
-            variables: {
-              objectsIdsArray: IdsArray,
-              userId: stateApp.user.mongoId,
-            },
-          });
-          getTagSamples({
-            variables: {
-              objectsIdsArray: IdsArray,
-              userId: stateApp.user.mongoId,
-            },
-          });
-        } else {
-          dispatch(setMapGridCardState({ viewportData: [] }));
-          setRows([]);
-          setLoading(false);
-        }
-      };
-
-      let firstTime = true;
-      if (!firstTime) stateApp.map.off("moveend", mapMoveEndHandler);
-      else firstTime = false;
-      stateApp.map.on("moveend", mapMoveEndHandler);
-
-      // stateApp.map.resize();
-
-      setTimeout(() => {
-        stateApp.map.resize();
-      }, 1500);
+      }
     }
-  }, [props.parent, stateApp.map, stateApp.user, stateApp.layers]);
-
-  // useEffect(() => {
-  //   if (
-  //     props.parent &&
-  //     props.parent === "mapViewportWells" &&
-  //     stateApp.map &&
-  //     stateApp.layer
-  //   ) {
-  //     stateApp.map.resize();
-  //   }
-  // }, [props.parent, stateApp.map, stateApp.layer]);
+  }, [props.parent, stateApp.viewportWells, stateApp.user]);
 
   useEffect(() => {
     if (props.parent && props.parent === "mapViewportWells") {
@@ -3063,15 +3033,11 @@ function M1nTable(props) {
         flyToColumn,
       ]);
 
-      setStateApp((state) => ({
-        ...state,
-        trackedwells: wells,
-      }));
       setLoading(false);
     }
   }, [viewportFeatures, dataTagSamples, dataCommentsCounter, dataTracks]);
 
-  ////////////Map Viewpor tWells end///////////////////////////////////////////////
+  ////////////Map Viewport Wells end///////////////////////////////////////////////
 
   ////////////-----Add your code section here-----///////////////////////
   return (
