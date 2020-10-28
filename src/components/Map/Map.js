@@ -4643,7 +4643,6 @@ export default function Map() {
         const points = stateApp.map.queryRenderedFeatures({
           layers: [
             "wellpoints",
-            "welllines",
             // "Tracked Wells",
             // "Tags Filter",
             // "Search",
