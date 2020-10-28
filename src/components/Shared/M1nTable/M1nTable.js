@@ -3041,7 +3041,11 @@ function M1nTable(props) {
 
   ////////////-----Add your code section here-----///////////////////////
   return (
-    <Container maxWidth={false} className={classes.container}>
+    <Container
+      maxWidth={false}
+      className={classes.container}
+      id={props.id ? props.id : props.parent}
+    >
       {props.parent && props.parent === "Deals" && (
         <AddDealDialog
           open={stateApp.dealDialog ? true : false}

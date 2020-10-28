@@ -108,8 +108,8 @@ export default function CardDetailsMap() {
         ) {
           map.flyTo({
             center: [
-              stateApp.selectedWell.longitude,
-              stateApp.selectedWell.latitude,
+              stateApp.selectedWell?.longitude,
+              stateApp.selectedWell?.latitude,
             ],
             zoom: 16,
             //speed: 0.4,
@@ -132,17 +132,33 @@ export default function CardDetailsMap() {
       const initializeMap = ({ setMap, mapEl, setStateApp }) => {
         let id = mapEl.current.id;
 
-        const newMap = new mapboxgl.Map({
-          container: `${id}`,
-          style: "mapbox://styles/m1neral/" + mapStyles[index].id,
-          center: [
-            stateApp.selectedWell.longitude,
-            stateApp.selectedWell.latitude,
-          ],
-          zoom: 5,
-          pitch: 70,
-          bearing: 20,
-        });
+        let newMap;
+
+        if (
+          stateApp.selectedWell &&
+          stateApp.selectedWell.longitude &&
+          stateApp.selectedWell.latitude
+        )
+          newMap = new mapboxgl.Map({
+            container: `${id}`,
+            style: "mapbox://styles/m1neral/" + mapStyles[index].id,
+            center: [
+              stateApp.selectedWell.longitude,
+              stateApp.selectedWell.latitude,
+            ],
+            zoom: 5,
+            pitch: 70,
+            bearing: 20,
+          });
+        else
+          newMap = new mapboxgl.Map({
+            container: `${id}`,
+            style: "mapbox://styles/m1neral/" + mapStyles[index].id,
+            center: stateApp.mapVars.center,
+            zoom: stateApp.mapVars.zoom,
+            pitch: stateApp.mapVars.pitch,
+            bearing: stateApp.mapVars.bearing,
+          });
 
         var el = document.createElement("div");
         el.style.backgroundImage = "url(icons/favicon-inverted.png)";
@@ -168,12 +184,17 @@ export default function CardDetailsMap() {
 
         newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
 
-        new mapboxgl.Marker(el)
-          .setLngLat([
-            stateApp.selectedWell.longitude,
-            stateApp.selectedWell.latitude,
-          ])
-          .addTo(newMap);
+        if (
+          stateApp.selectedWell &&
+          stateApp.selectedWell.longitude &&
+          stateApp.selectedWell.latitude
+        )
+          new mapboxgl.Marker(el)
+            .setLngLat([
+              stateApp.selectedWell.longitude,
+              stateApp.selectedWell.latitude,
+            ])
+            .addTo(newMap);
 
         newMap.on("load", function (e) {
           setMap(newMap);
@@ -194,7 +215,12 @@ export default function CardDetailsMap() {
           }
         });
 
-        setFlyVar1(true);
+        if (
+          stateApp.selectedWell &&
+          stateApp.selectedWell.longitude &&
+          stateApp.selectedWell.latitude
+        )
+          setFlyVar1(true);
 
         // map.flyTo({
         //     center: [
