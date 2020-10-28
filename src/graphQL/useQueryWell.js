@@ -1,16 +1,25 @@
-import React from 'react';
-import { useQuery } from "@apollo/client";
+import React from "react";
 import gql from "graphql-tag";
 
-export default function useQueryWell(id) {
-
-  const WELLQUERY = gql`query {
-    well(wellId:"${id}") {
+export const WELLQUERY = gql`
+  query getWell($wellId: String) {
+    well(wellId: $wellId) {
+      id
       wellName
-    }
-  }`
-      const { data,loading, error} = useQuery(WELLQUERY);
-    
-      return {data,loading,error}
+      api
+      operator
+      wellType
+      latitude
+      longitude
+      wellBoreProfile
+      ownerCount
 
-}
+      wellStatus
+      lastTwelveMonthBOE
+      permitApprovedDate
+      spudDate
+      completionDate
+      firstProductionDate
+    }
+  }
+`;

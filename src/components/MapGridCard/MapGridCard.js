@@ -147,6 +147,20 @@ const useStyles = makeStyles((theme) => {
       backgroundColor: theme.palette.secondary.main,
       "&:hover": { color: "#757575", boxShadow: "none !important" },
     },
+    viewportWells: {
+      textAlign: ({ viewportWells }) => (viewportWells ? "inherit" : "center"),
+      "& #minimumZoomRequired": {
+        margin: "30px",
+        fontSize: "1.25rem",
+        fontFamily: "Poppins",
+        fontWeight: "500",
+        lineHeight: "1.6",
+        display: ({ viewportWells }) => (viewportWells ? "none" : "block"),
+      },
+      "& #viewportWellsTable": {
+        display: ({ viewportWells }) => (viewportWells ? "block" : "none"),
+      },
+    },
   };
 });
 
@@ -264,7 +278,7 @@ const locationsColumnHeaders = [
 ];
 
 function MapGridCard(props) {
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const dispatch = useDispatch();
   const {
     mapGridCardActivated,
@@ -295,6 +309,7 @@ function MapGridCard(props) {
   const classes = useStyles({
     mapGridCardActivated,
     mapGridCardActiveTap,
+    viewportWells: stateApp.viewportWells,
   });
 
   const handleMainTapChange = (event, newValue) => {
@@ -390,14 +405,20 @@ function MapGridCard(props) {
                 label={`Search Result (${searchResultData.length})`}
                 {...a11yProps(0)}
               />
-              {/* <Tab
-                className="cancelDraggableEffect"
-                label={`Viewport (${viewportData.length})`}
-                {...a11yProps(1)}
-              /> */}
+
               <Tab
                 className="cancelDraggableEffect"
                 label={`Tracked (${trackedDataCount})`}
+                {...a11yProps(1)}
+              />
+
+              <Tab
+                className="cancelDraggableEffect"
+                label={`Viewport${
+                  stateApp.viewportWells
+                    ? " (" + stateApp.viewportWells?.length + ")"
+                    : ""
+                }`}
                 {...a11yProps(1)}
               />
             </Tabs>
@@ -524,30 +545,6 @@ function MapGridCard(props) {
             </div>
           </TabPanel>
 
-          {/* //// viewport panel //// */}
-          {/* <TabPanel
-            value={mapGridCardActiveTap}
-            index={1}
-            className={classes.tapsPanelsPadding}
-          >
-            <div style={{ position: "relative" }}>
-              <TabLabels
-                labels={["Wells", "Interests", "Parcels", "AOI"]}
-                value={viewportTapValue}
-                setValue={setViewportTapValue}
-              />
-              <TabPanels
-                value={viewportTapValue}
-                panels={[
-                  <div>panel1</div>,
-                  <div>panel2</div>,
-                  <div>panel3</div>,
-                  <div>panel4</div>,
-                ]}
-              />
-            </div>
-          </TabPanel> */}
-
           {/* //// tracked panel //// */}
           <TabPanel
             value={mapGridCardActiveTap}
@@ -598,6 +595,39 @@ function MapGridCard(props) {
                       />
                     }
                   />,
+                ]}
+              />
+            </div>
+          </TabPanel>
+
+          {/* //// viewport panel //// */}
+          <TabPanel
+            value={mapGridCardActiveTap}
+            index={2}
+            className={classes.tapsPanelsPadding}
+          >
+            <div style={{ position: "relative" }}>
+              {/* <TabLabels
+                labels={["Wells", "Interests", "Parcels", "AOI"]}
+                value={viewportTapValue}
+                setValue={setViewportTapValue}
+              /> */}
+              <TabPanels
+                value={viewportTapValue}
+                panels={[
+                  <div className={classes.viewportWells}>
+                    <M1nTable
+                      id="viewportWellsTable"
+                      dense
+                      parent="mapViewportWells"
+                      header={"Wells"}
+                    />
+
+                    <h6 id="minimumZoomRequired">
+                      The minimum zoom required is{" "}
+                      {stateApp.minZoomToQueryViewport}
+                    </h6>
+                  </div>,
                 ]}
               />
             </div>

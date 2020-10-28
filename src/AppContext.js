@@ -143,6 +143,8 @@ const AppProvider = (props) => {
     wellListFromTagsFilter: [],
     m1neralHeaders: [],
     mappedHeadersFromCSV: [],
+    viewportWells: null,
+    minZoomToQueryViewport: 12.5,
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;
