@@ -1478,7 +1478,7 @@ function SubTable(props) {
                           );
                         }}
                       >
-                        Buy Info
+                        Buy Contact Info
                       </Button>
                       <Button
                         color="secondary"
@@ -1493,9 +1493,9 @@ function SubTable(props) {
                           );
                         }}
                       >
-                        Mailers
+                        Send Mailers
                       </Button>
-                      <Button
+                      {/* <Button
                         color="secondary"
                         startIcon={<LocalPrintshopRoundedIcon />}
                         className={classes.multiSelectionTopBarButtons}
@@ -1509,7 +1509,7 @@ function SubTable(props) {
                         }}
                       >
                         Labels
-                      </Button>
+                      </Button> */}
                       <Divider orientation="vertical" flexItem />
                     </>
                   )}
