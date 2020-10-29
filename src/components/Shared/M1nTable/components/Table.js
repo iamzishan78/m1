@@ -59,6 +59,32 @@ import TransactDialog from "../../../Transact/components/dialog";
 import ParcelScreenIcon from "../../svgIcons/parcelScreen";
 import ParcelsDetailCard from "../../../ParcelsDetailCard/ParcelsDetailCard";
 import AssessmentIcon from "@material-ui/icons/Assessment";
+import { WELLQUERY } from "../../../../graphQL/useQueryWell";
+import { useLazyQuery } from "@apollo/client";
+
+var ticksToDateString = function (ticks) {
+  var epochTicks = 621355968000000000;
+  var ticksPerMillisecond = 10000; // whoa!
+  var maxDateMilliseconds = 8640000000000000;
+
+  if (isNaN(ticks)) {
+    //      0001-01-01T00:00:00.000Z
+    return "NANA-NA-NATNA:NA:BA.TMAN";
+  }
+
+  // convert the ticks into something javascript understands
+  var ticksSinceEpoch = ticks - epochTicks;
+  var millisecondsSinceEpoch = ticksSinceEpoch / ticksPerMillisecond;
+
+  if (millisecondsSinceEpoch > maxDateMilliseconds) {
+    //      +035210-09-17T07:18:31.111Z
+    return "+WHOAWH-OA-ISTOO:FA:RA.WAYZ";
+  }
+
+  // output the result in something the human understands
+  var date = new Date(millisecondsSinceEpoch);
+  return date.toISOString();
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -276,6 +302,66 @@ function SubTable(props) {
     setStateIfDeepEqual(TrueTargetLabel, newState);
   };
 
+  const [getWell, { data: dataWell }] = useLazyQuery(WELLQUERY);
+
+  //// opening the well detail card after fetch the extra well data needed
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "search" &&
+      props.targetLabel == "well" &&
+      dataWell &&
+      dataWell.well
+    ) {
+      let selectedWell = props.rows.find((row) => {
+        if (row.id) return row.id == dataWell.well.id;
+        return row.Id == dataWell.well;
+      });
+
+      selectedWell = { ...selectedWell, ...dataWell.well };
+
+      //// temporary to fix the ticks dates fields comming from the rest api
+      if (
+        selectedWell.permitApprovedDate &&
+        selectedWell.permitApprovedDate != "null"
+      )
+        selectedWell.permitApprovedDate = ticksToDateString(
+          selectedWell.permitApprovedDate
+        );
+      if (selectedWell.spudDate && selectedWell.spudDate != "null")
+        selectedWell.spudDate = ticksToDateString(selectedWell.spudDate);
+      if (selectedWell.completionDate && selectedWell.completionDate != "null")
+        selectedWell.completionDate = ticksToDateString(
+          selectedWell.completionDate
+        );
+      if (
+        selectedWell.firstProductionDate &&
+        selectedWell.firstProductionDate != "null"
+      )
+        selectedWell.firstProductionDate = ticksToDateString(
+          selectedWell.firstProductionDate
+        );
+      //// temporary end
+
+      if (selectedWell) {
+        setSelectedRow(selectedWell);
+        setStateApp((state) => ({
+          ...state,
+          selectedWellId: dataWell.well.id,
+          selectedWell,
+        }));
+        setSubComponent(<WellCardProvider />);
+        setTitle(
+          selectedWell.wellName ? selectedWell.wellName : selectedWell.WellName
+        );
+        setSubTitle(
+          selectedWell.operator ? selectedWell.operator : selectedWell.Operator
+        );
+        handleOpenExpandableCard();
+      }
+    }
+  }, [dataWell]);
+
   useEffect(() => {
     if (props.targetLabel === "Parcel Interest")
       setTrueTargetLabel("Parcel Ownership");
@@ -428,7 +514,11 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
 
-                          if (props.targetLabel === "well") {
+                          if (value) {
+                            getWell({
+                              variables: { wellId: value },
+                            });
+                          } else if (props.targetLabel === "well") {
                             let selectedWell = props.rows.find((row) => {
                               if (row.id) return row.id == tableMeta.rowData[0];
                               return row.Id == tableMeta.rowData[0];
@@ -599,6 +689,7 @@ function SubTable(props) {
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
+
                           if (value) {
                             if (value.bbox || value.center) {
                               setStateApp((state) => {
@@ -1387,7 +1478,7 @@ function SubTable(props) {
                           );
                         }}
                       >
-                        Buy Info
+                        Buy Contact Info
                       </Button>
                       <Button
                         color="secondary"
@@ -1402,9 +1493,9 @@ function SubTable(props) {
                           );
                         }}
                       >
-                        Mailers
+                        Send Mailers
                       </Button>
-                      <Button
+                      {/* <Button
                         color="secondary"
                         startIcon={<LocalPrintshopRoundedIcon />}
                         className={classes.multiSelectionTopBarButtons}
@@ -1418,7 +1509,7 @@ function SubTable(props) {
                         }}
                       >
                         Labels
-                      </Button>
+                      </Button> */}
                       <Divider orientation="vertical" flexItem />
                     </>
                   )}

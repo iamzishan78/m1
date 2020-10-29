@@ -60,10 +60,11 @@ import { useDispatch, useSelector } from "react-redux";
 import MarkerIcon from "./sprites/marker-icon.png";
 import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
 import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
-import { deepEqualObjects } from "../Shared/functions";
+import { deepEqual, deepEqualObjects } from "../Shared/functions";
 import gjv from "geojson-validation";
 import { setMainMapState, showErrorMessage } from "../../actions";
 import { ZoomOutMapSharp } from "@material-ui/icons";
+import debounce from "lodash/debounce";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -390,7 +391,6 @@ export default function Map() {
     }
   }, [dataTracks]);
 
-  
   useEffect(() => {
     console.log("useEffect 2");
     if (dataTracksOwner && dataTracksOwner.tracksByObjectType) {
@@ -404,7 +404,7 @@ export default function Map() {
           owners: objectsIdsArray,
         }));
 
-        //// temporary 
+        //// temporary
         // getOwnersWells({
         //   variables: {
         //     ownersIds: objectsIdsArray,
@@ -4636,6 +4636,48 @@ export default function Map() {
     // stateApp.checkedLayersInteraction,
   ]);
 
+  // use effect to query the viewport
+  useEffect(() => {
+    if (stateApp.map) {
+      const queryViewportHandler = debounce(() => {
+        if (stateApp.map.getZoom() >= stateApp.minZoomToQueryViewport) {
+          const points = stateApp.map.queryRenderedFeatures({
+            layers: [
+              "wellpoints",
+              // "Tracked Wells",
+              // "Tags Filter",
+              // "Search",
+            ],
+          });
+
+          const featuresArray = [];
+          points.forEach((point) => {
+            if (point && point.properties && point.properties.id) {
+              featuresArray.push({
+                ...point.properties,
+                id: point.properties.id.toLowerCase(),
+              });
+            }
+          });
+
+          setStateApp((stateApp) => {
+            if (!deepEqual(stateApp.viewportWells, featuresArray))
+              return { ...stateApp, viewportWells: featuresArray };
+            return stateApp;
+          });
+        } else
+          setStateApp((stateApp) => {
+            if (stateApp.viewportWells)
+              return { ...stateApp, viewportWells: null };
+            return stateApp;
+          });
+      }, 300);
+
+      // stateApp.map.off("render", queryViewportHandler);
+      stateApp.map.on("render", queryViewportHandler);
+    }
+  }, [stateApp.map]);
+
   // Use effect for removing shape filter
   useEffect(() => {
     console.log("useEffect 28");
@@ -5365,7 +5407,12 @@ export default function Map() {
     }
   }, [stateApp.editingUserDefinedLayers]);
 
-  console.log("stateApp.selectedAbstracts", stateApp.popupOpen, stateApp.abstractPopupOpen, stateApp.selectedAbstracts);
+  console.log(
+    "stateApp.selectedAbstracts",
+    stateApp.popupOpen,
+    stateApp.abstractPopupOpen,
+    stateApp.selectedAbstracts
+  );
 
   return (
     <div className={classes.mapWrapper}>
