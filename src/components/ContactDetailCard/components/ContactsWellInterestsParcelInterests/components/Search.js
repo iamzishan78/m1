@@ -81,7 +81,7 @@ function Search(props) {
           "https://m1search.search.windows.net/indexes/wellheader-index-en-ms/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=" +
           searchTop +
           "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -116,7 +116,7 @@ function Search(props) {
           "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName&top=" +
           searchTop +
           "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
