@@ -1,18 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FieldContent, {
   FieldTypes,
 } from "./../../ContactDetailCard/components/FieldContent";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  MenuItem,
-  Checkbox,
-  Select,
-  InputLabel,
-  Grid,
-  Button,
-  FormControl,
-  Typography,
-} from "@material-ui/core";
+import { excludeList } from "./ExcludeList";
+import { Grid } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -97,27 +89,35 @@ export default ({ ...props }) => {
     <div style={{ padding: "23px 28px" }}>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
         <h4 style={{ margin: "0 0 13px 0" }}>Basic Information</h4>
+
         <Grid item xs={12} container className={props.wrapperClass} spacing={0}>
-          {Object.entries(props.rows).map(([key, value]) => (
-            <React.Fragment>
-              <Grid item xs={3} className="fieldName">
-                <p className="dataLabels">{key}</p>
-              </Grid>
-              <Grid item xs={9}>
-                <FieldContent
-                  onlyChildren={value.inner ? true : false}
-                  content={value.data}
-                  linkType={value.linkType}
-                >
-                  {value.inner}
-                </FieldContent>
-              </Grid>
-            </React.Fragment>
-          ))}
+          {Object.entries(props.rows).map(([key, value]) => {
+            if(!excludeList.includes(key)){ 
+              return(
+                <React.Fragment>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">{key}</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <FieldContent
+                      onlyChildren={value.inner ? true : false}
+                      content={value.data}
+                      linkType={value.linkType}
+                    >
+                      {value.inner}
+                    </FieldContent>
+                  </Grid>
+                </React.Fragment>
+            )};
+            return null;
+            }
+          )}
         </Grid>
-        {props.melissaData &&
-        props.melissaData.melissaAddressRecord &&
-        props.melissaData.melissaAddressRecord.CurrentAddress ? (
+
+
+        {/* {props.melissaData &&
+          props.melissaData.melissaAddressRecord &&
+          props.melissaData.melissaAddressRecord.CurrentAddress && (
           <>
             <h4 style={{ margin: "13px 0 13px 0" }}>Melissa Address Record</h4>
             <Grid
@@ -129,41 +129,45 @@ export default ({ ...props }) => {
             >
               {Object.entries(
                 props.melissaData.melissaAddressRecord.CurrentAddress
-              ).map(([key, value]) => (
-                <React.Fragment>
-                  <Grid item xs={3} className="fieldName">
-                    <p className="dataLabels">{key}</p>
-                  </Grid>
-                  <Grid item xs={9}>
-                    <FieldContent
-                      melissaAddressRecordId={
-                        props.melissaData.melissaAddressRecord._id
-                      }
-                      content={{ [key]: value }}
-                      fieldType={FieldTypes.MelissaAddressRecord}
-                      isEdited={
-                        props.melissaData.updatedMelissaRecords.find(
-                          (item) =>
-                            item.fieldName === key &&
-                            item.melissaRecordType === "address"
-                        )
-                          ? true
-                          : false
-                      }
-                    />
-                  </Grid>
-                </React.Fragment>
-              ))}
+              ).map(([key, value]) => {
+                if(!excludeList.includes(key)){ 
+                  return (
+                    <React.Fragment>
+                      <Grid item xs={3} className="fieldName">
+                        <p className="dataLabels">{key}</p>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <FieldContent
+                          melissaAddressRecordId={
+                            props.melissaData.melissaAddressRecord._id
+                          }
+                          content={{ [key]: value }}
+                          fieldType={FieldTypes.MelissaAddressRecord}
+                          isEdited={
+                            props.melissaData.updatedMelissaRecords.find(
+                              (item) =>
+                                item.fieldName === key &&
+                                item.melissaRecordType === "address"
+                            )
+                              ? true
+                              : false
+                          }
+                        />
+                      </Grid>
+                    </React.Fragment>
+               )
+              };
+              return null;
+              }
+            )}
             </Grid>
           </>
-        ) : (
-          <h4 style={{ margin: "13px 0 13px 0" }}>
-            No Melissa Address Records found
-          </h4>
-        )}
+        )} */}
+
+        
         {props.melissaData && props.melissaData.melissaRecord ? (
           <>
-            <h4 style={{ margin: "13px 0 13px 0" }}>Melissa Record</h4>
+          <h4 style={{ margin: "13px 0 13px 0" }}>Purchased Contact Data</h4>
             <Grid
               item
               xs={12}
@@ -171,35 +175,39 @@ export default ({ ...props }) => {
               className={props.wrapperClass}
               spacing={0}
             >
-              {Object.entries(props.melissaData.melissaRecord).map(
-                ([key, value]) => (
-                  <React.Fragment>
-                    <Grid item xs={3} className="fieldName">
-                      <p className="dataLabels">{key}</p>
-                    </Grid>
-                    <Grid item xs={9}>
-                      <FieldContent
-                        melissaRecordId={props.melissaData.melissaRecord._id}
-                        content={{ [key]: value }}
-                        fieldType={FieldTypes.MelissaRecord}
-                        isEdited={
-                          props.melissaData.updatedMelissaRecords.find(
-                            (item) =>
-                              item.fieldName === key &&
-                              item.melissaRecordType === "main"
-                          )
-                            ? true
-                            : false
-                        }
-                      />
-                    </Grid>
-                  </React.Fragment>
-                )
+              {Object.entries(props.melissaData.melissaRecord).map(([key, value]) => {
+                if(!excludeList.includes(key)){ 
+                  return (
+                    <React.Fragment>
+                      <Grid item xs={3} className="fieldName">
+                        <p className="dataLabels">{key}</p>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <FieldContent
+                          melissaRecordId={props.melissaData.melissaRecord._id}
+                          content={{ [key]: value }}
+                          fieldType={FieldTypes.MelissaRecord}
+                          isEdited={
+                            props.melissaData.updatedMelissaRecords.find(
+                              (item) =>
+                                item.fieldName === key &&
+                                item.melissaRecordType === "main"
+                            )
+                              ? true
+                              : false
+                          }
+                        />
+                      </Grid>
+                    </React.Fragment>
+                  )
+                };
+                return null;
+                }
               )}
             </Grid>
           </>
         ) : (
-          <h4 style={{ margin: "13px 0 13px 0" }}>No Melissa Records found</h4>
+          <h4 style={{ margin: "13px 0 13px 0" }}>No Purchased Contact Information to Display</h4>
         )}
       </Grid>
     </div>

@@ -11,6 +11,7 @@ const INIT_STATE = {
   searchInputValue: "",
   viewportData: [], //// mapGridCard Viewport Data
   trackedDataCount: 0, //// mapGridCard Viewport tracked count
+  objToPopulateSearchLayer: null, //// mapGridCard Viewport tracked count
 };
 
 export default (state = INIT_STATE, action) => {

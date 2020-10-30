@@ -84,6 +84,7 @@ export default function Simulation(props) {
   return (
     <TableContainer className={classes.tableContainer}>
     {stimulationData !== null ? (
+      <div>
       <Table
         aria-label="simple table"
         className={classes.table}
@@ -92,29 +93,28 @@ export default function Simulation(props) {
           <TableRow className={classes.tableRow}>
               {headers.map((head) => {
                   return (
-                      head!="COMMENTS" ?
-                      <TableCell scope="row" className={classes.rowName}>
+                      head !== "COMMENTS" ?
+                      <TableCell key={head} scope="row" className={classes.rowName}>
                         {head}
                       </TableCell> :
-                      <TableCell scope="row" className={classes.columnComments}>
+                      <TableCell key={head} scope="row" className={classes.columnComments}>
                         {head}
                       </TableCell>
                   );
               })
           }     
           </TableRow>
-          { stimulationData !== null && stimulationData.length > 0 ? 
-          stimulationData.map((row) => {
-                  return (
-                      <TableRow>
+          { stimulationData !== null && stimulationData.length > 0 && 
+          stimulationData.map((row, index) => (
+                      <TableRow key={index}>
                         <TableCell>
-                          {moment(row.StimDate).format("DD-MM-YYYY")}
+                          {moment(row.StimDate).format("MM-DD-YYYY")}
                         </TableCell>
                         <TableCell>
-                          {moment(row.StartDate).format("DD-MM-YYYY")}
+                          {moment(row.StartDate).format("MM-DD-YYYY")}
                         </TableCell>
                         <TableCell>
-                          {moment(row.EndDate).format("DD-MM-YYYY")}
+                          {moment(row.EndDate).format("MM-DD-YYYY")}
                         </TableCell>
                         <TableCell>
                           {row.ServiceCompany}
@@ -165,14 +165,16 @@ export default function Simulation(props) {
                           {row.Comments}
                         </TableCell>
                       </TableRow>
-                  );
-              })
-              : <TableRow>
-                  <Typography color="textSecondary"> No stimulation records available</Typography>
-                </TableRow>
+               ))
           }     
         </TableBody>
       </Table>
+      <Typography color="textSecondary" align="center"> 
+      {stimulationData !== null && stimulationData.length === 0 ?
+        "No Stimulation records available" : ""
+      }
+      </Typography>
+    </div>
     ) : <Typography align="center">Loading...</Typography>
   }
   </TableContainer>

@@ -147,6 +147,20 @@ const useStyles = makeStyles((theme) => {
       backgroundColor: theme.palette.secondary.main,
       "&:hover": { color: "#757575", boxShadow: "none !important" },
     },
+    viewportWells: {
+      textAlign: ({ viewportWells }) => (viewportWells ? "inherit" : "center"),
+      "& #minimumZoomRequired": {
+        margin: "30px",
+        fontSize: "1.25rem",
+        fontFamily: "Poppins",
+        fontWeight: "500",
+        lineHeight: "1.6",
+        display: ({ viewportWells }) => (viewportWells ? "none" : "block"),
+      },
+      "& #viewportWellsTable": {
+        display: ({ viewportWells }) => (viewportWells ? "block" : "none"),
+      },
+    },
   };
 });
 
@@ -180,7 +194,7 @@ const TabLabels = ({ labels, value, setValue }) => {
 };
 
 function tabPanelsPropsAreEqual(prevProps, nextProps) {
-  console.log(`${prevProps.value} ... ${nextProps.value}`)
+  console.log(`${prevProps.value} ... ${nextProps.value}`);
   return Object.is(prevProps.value, nextProps.value);
 }
 
@@ -204,19 +218,25 @@ const wellsColumnHeaders = [
     name: "ApiNumber",
     label: "API",
   },
-  
   {
     name: "WellName",
     label: "Well Name",
   },
- 
   {
-    name: "Latitude",
-    label: "Latitude",
+    name: "State",
+    label: "State",
   },
   {
-    name: "Longitude",
-    label: "Longitude",
+    name: "County",
+    label: "County",
+  },
+  {
+    name: "WellType",
+    label: "Well Type",
+  },
+  {
+    name: "WellStatus",
+    label: "Well Status",
   },
 ];
 const ownersColumnHeaders = [
@@ -244,7 +264,6 @@ const leasesColumnHeaders = [
     name: "Lease",
     label: "Lease",
   },
-
 ];
 
 const locationsColumnHeaders = [
@@ -259,6 +278,7 @@ const locationsColumnHeaders = [
 ];
 
 function MapGridCard(props) {
+  const [stateApp, setStateApp] = useContext(AppContext);
   const dispatch = useDispatch();
   const {
     mapGridCardActivated,
@@ -266,9 +286,7 @@ function MapGridCard(props) {
     searchResultData,
     viewportData,
     trackedDataCount,
-  } = useSelector(({ MapGridCard }) => MapGridCard,
-    shallowEqual
-  );
+  } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
   const [searchTapValue, SearchTapValue] = useState(0);
   const setSearchTapValue = (state) => {
     if (searchTapValue != state) {
@@ -291,6 +309,7 @@ function MapGridCard(props) {
   const classes = useStyles({
     mapGridCardActivated,
     mapGridCardActiveTap,
+    viewportWells: stateApp.viewportWells,
   });
 
   const handleMainTapChange = (event, newValue) => {
@@ -314,16 +333,18 @@ function MapGridCard(props) {
 
   const getTargetFromSearchTaps = () => {
     switch (searchTapValue) {
-      case 6:
-        return "location";
-      case 5:
-        return "parcel";
-      case 4:
-        return "interest";
-      case 3:
-        return "lease";
+      // case 6:
+      //   return "location";
+      // case 5:
+      //   return "parcel";
+      // case 4:
+      //   return "interest";
+      // case 3:
+      //   return "lease";
+      // case 2:
+      //   return "operator";
       case 2:
-        return "operator";
+        return "location";
       case 1:
         return "owner";
       default:
@@ -336,10 +357,10 @@ function MapGridCard(props) {
       labels={[
         "Wells",
         "Owners",
-        "Operators",
-        "Leases",
-       // "Interests",
-       // "Parcels",
+        // "Operators",
+        // "Leases",
+        // "Interests",
+        // "Parcels",
         "Locations",
       ]}
       value={searchTapValue}
@@ -384,14 +405,20 @@ function MapGridCard(props) {
                 label={`Search Result (${searchResultData.length})`}
                 {...a11yProps(0)}
               />
-              {/* <Tab
-                className="cancelDraggableEffect"
-                label={`Viewport (${viewportData.length})`}
-                {...a11yProps(1)}
-              /> */}
+
               <Tab
                 className="cancelDraggableEffect"
                 label={`Tracked (${trackedDataCount})`}
+                {...a11yProps(1)}
+              />
+
+              <Tab
+                className="cancelDraggableEffect"
+                label={`Viewport${
+                  stateApp.viewportWells
+                    ? " (" + stateApp.viewportWells?.length + ")"
+                    : ""
+                }`}
                 {...a11yProps(1)}
               />
             </Tabs>
@@ -478,34 +505,34 @@ function MapGridCard(props) {
                     showComments
                     showTracks
                   />,
-                  <M1nTable
-                    dense
-                    parent="search"
-                    privateColumns={operatorsColumnHeaders}
-                    targetLabel={getTargetFromSearchTaps()}
-                    header={<SearchTabPanels />}
-                  />,
-                  <M1nTable
-                    dense
-                    parent="search"
-                    privateColumns={leasesColumnHeaders}
-                    targetLabel={getTargetFromSearchTaps()}
-                    header={<SearchTabPanels />}
-                  />,
-                  <M1nTable
-                    dense
-                    parent="search"
-                    privateColumns={[]}
-                    targetLabel={getTargetFromSearchTaps()}
-                    header={<SearchTabPanels />}
-                  />,
-                  <M1nTable
-                    dense
-                    parent="search"
-                    privateColumns={[]}
-                    targetLabel={getTargetFromSearchTaps()}
-                    header={<SearchTabPanels />}
-                  />,
+                  // <M1nTable
+                  //   dense
+                  //   parent="search"
+                  //   privateColumns={operatorsColumnHeaders}
+                  //   targetLabel={getTargetFromSearchTaps()}
+                  //   header={<SearchTabPanels />}
+                  // />,
+                  // <M1nTable
+                  //   dense
+                  //   parent="search"
+                  //   privateColumns={leasesColumnHeaders}
+                  //   targetLabel={getTargetFromSearchTaps()}
+                  //   header={<SearchTabPanels />}
+                  // />,
+                  // <M1nTable
+                  //   dense
+                  //   parent="search"
+                  //   privateColumns={[]}
+                  //   targetLabel={getTargetFromSearchTaps()}
+                  //   header={<SearchTabPanels />}
+                  // />,
+                  // <M1nTable
+                  //   dense
+                  //   parent="search"
+                  //   privateColumns={[]}
+                  //   targetLabel={getTargetFromSearchTaps()}
+                  //   header={<SearchTabPanels />}
+                  // />,
                   <M1nTable
                     dense
                     parent="search"
@@ -517,30 +544,6 @@ function MapGridCard(props) {
               />
             </div>
           </TabPanel>
-
-          {/* //// viewport panel //// */}
-          {/* <TabPanel
-            value={mapGridCardActiveTap}
-            index={1}
-            className={classes.tapsPanelsPadding}
-          >
-            <div style={{ position: "relative" }}>
-              <TabLabels
-                labels={["Wells", "Interests", "Parcels", "AOI"]}
-                value={viewportTapValue}
-                setValue={setViewportTapValue}
-              />
-              <TabPanels
-                value={viewportTapValue}
-                panels={[
-                  <div>panel1</div>,
-                  <div>panel2</div>,
-                  <div>panel3</div>,
-                  <div>panel4</div>,
-                ]}
-              />
-            </div>
-          </TabPanel> */}
 
           {/* //// tracked panel //// */}
           <TabPanel
@@ -557,7 +560,16 @@ function MapGridCard(props) {
                     parent="trackWells"
                     header={
                       <TabLabels
-                        labels={["Wells", "Owners"]}
+                        labels={[
+                          `Wells (${
+                            stateApp.trackedwells
+                              ? stateApp.trackedwells.length
+                              : 0
+                          })`,
+                          `Owners (${
+                            stateApp.owners ? stateApp.owners.length : 0
+                          })`,
+                        ]}
                         value={trackedTapValue}
                         setValue={setTrackedTapValue}
                       />
@@ -568,12 +580,54 @@ function MapGridCard(props) {
                     parent="trackOwners"
                     header={
                       <TabLabels
-                        labels={["Wells", "Owners"]}
+                        labels={[
+                          `Wells (${
+                            stateApp.trackedwells
+                              ? stateApp.trackedwells.length
+                              : 0
+                          })`,
+                          `Owners (${
+                            stateApp.owners ? stateApp.owners.length : 0
+                          })`,
+                        ]}
                         value={trackedTapValue}
                         setValue={setTrackedTapValue}
                       />
                     }
                   />,
+                ]}
+              />
+            </div>
+          </TabPanel>
+
+          {/* //// viewport panel //// */}
+          <TabPanel
+            value={mapGridCardActiveTap}
+            index={2}
+            className={classes.tapsPanelsPadding}
+          >
+            <div style={{ position: "relative" }}>
+              {/* <TabLabels
+                labels={["Wells", "Interests", "Parcels", "AOI"]}
+                value={viewportTapValue}
+                setValue={setViewportTapValue}
+              /> */}
+              <TabPanels
+                value={viewportTapValue}
+                panels={[
+                  <div className={classes.viewportWells}>
+                    <M1nTable
+                      id="viewportWellsTable"
+                      dense
+                      parent="mapViewportWells"
+                      header={"Wells"}
+                    />
+
+                    <h6 id="minimumZoomRequired">
+                      The minimum zoom required is{" "}
+                      {stateApp.minZoomToQueryViewport}
+                    </h6>
+                  </div>,
                 ]}
               />
             </div>
@@ -615,8 +669,13 @@ function MapGridCard(props) {
 }
 
 function areEqual(prevProps, nextProps) {
-  console.log(`${prevProps.mapGridCardActivated} ... ${nextProps.mapGridCardActivated}`)
-  return Object.is(prevProps.mapGridCardActivated, nextProps.mapGridCardActivated);
+  console.log(
+    `${prevProps.mapGridCardActivated} ... ${nextProps.mapGridCardActivated}`
+  );
+  return Object.is(
+    prevProps.mapGridCardActivated,
+    nextProps.mapGridCardActivated
+  );
 }
 
 export default React.memo(MapGridCard, areEqual);

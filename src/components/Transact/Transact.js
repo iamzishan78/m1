@@ -17,11 +17,14 @@ import getLaneTitle from "./getLaneTitle";
 import AddDealDialog from "../ContactDetailCard/components/AddDealDialog";
 import RightDialog from "../ContactDetailCard/components/RightDialog";
 
+import "./index.css";
+import { AppBar } from "@material-ui/core";
+import TransactAppBar from "./components/TransactAppBar";
 // const data_file = {
 //   lanes: [
 //     {
 //       id: "lane1",
-//       title: "Offers in Progress",
+//       title: "Offer Preparation",
 //       cards: [
 //         {
 //           id: "Card1",
@@ -34,7 +37,8 @@ import RightDialog from "../ContactDetailCard/components/RightDialog";
 //     },
 //     {
 //       id: "lane2",
-//       title: "Offer Sent to Owner",
+//       title: "Offer Extended",
+//       cardStyle: { borderColor: "#EBC253" },
 //       cards: [
 //         // {
 //         //   id: "Card3",
@@ -55,6 +59,7 @@ import RightDialog from "../ContactDetailCard/components/RightDialog";
 //     {
 //       id: "lane3",
 //       title: "Accepted - Due Diligence",
+//       cardStyle: { borderColor: "#EBC253" },
 //       cards: [
 //         {
 //           id: "Card4",
@@ -67,7 +72,8 @@ import RightDialog from "../ContactDetailCard/components/RightDialog";
 //     },
 //     {
 //       id: "lane4",
-//       title: "Deal Closed",
+//       title: "Deal - Closed",
+//       cardStyle: { borderColor: "#35DA97" },
 //       cards: [
 //         {
 //           id: "Card5",
@@ -87,7 +93,7 @@ import RightDialog from "../ContactDetailCard/components/RightDialog";
 //     },
 //     {
 //       id: "lane5",
-//       title: "Offer Rejected",
+//       title: "Offer - Rejected",
 
 //       cards: [
 //         {
@@ -127,12 +133,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+let formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
+const sumDeals = (deals) => {
+  let sum = 0;
+  deals.forEach(
+    (card) =>
+      (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+  );
+  const formatted = formatter.format(sum);
+  return formatted.slice(0, formatted.length - 3);
+};
+
 export default function Transact() {
   const classes = useStyles();
   // const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [transactData, setTransactData] = useState();
   const [id, setId] = useState();
+  const [allDeals, setAllDeals] = useState([]);
+  const [activeDeals, setActiveDeals] = useState([]);
+  const [closedDeals, setClosedDeals] = useState([]);
 
   const [getTransactionData, { loading, data }] = useLazyQuery(TRANSACTIONDATA);
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
@@ -146,6 +170,39 @@ export default function Transact() {
       });
     }
   }, [stateApp.user]);
+
+  useEffect(() => {
+    if (
+      !loading &&
+      data?.transactionData?.allData?.lanes &&
+      data.transactionData.allData.lanes.length > 0
+    ) {
+      const lanes = data?.transactionData?.allData?.lanes;
+
+      // get all deals
+      const all = [];
+      lanes.forEach((deal) => {
+        deal.cards.forEach((card) => {
+          all.push(card);
+        });
+      });
+      setAllDeals(all);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    let active = [];
+    let closed = [];
+    let others = [];
+    allDeals.forEach((card) => {
+      if (card.laneId === "lane2" || card.laneId === "lane3") active.push(card);
+      else if (card.laneId === "lane4") closed.push(card);
+      else others.push(card);
+    });
+
+    setActiveDeals(active);
+    setClosedDeals(closed);
+  }, [allDeals]);
 
   const getLanesWithFixedTitles = (lanes) => {
     return lanes.map((lane) => {
@@ -193,7 +250,8 @@ export default function Transact() {
     }));
   };
 
-  console.log("TRANSACT DATA:", transactData);
+  const closedSum = sumDeals(closedDeals);
+  const activeSum = sumDeals(activeDeals);
 
   return !loading && data && transactData ? (
     <div className={classes.root}>
@@ -220,9 +278,15 @@ export default function Transact() {
           }))
         }
       />
+      <TransactAppBar
+        closedLength={closedDeals.length}
+        closedSum={closedSum}
+        activeLength={activeDeals.length}
+        activeSum={activeSum}
+      />
       <Board
         className={classes.list}
-        style={{ backgroundColor: "#efefef" }}
+        style={{ backgroundColor: "#fff" }}
         data={transactData}
         draggable={true}
         laneDraggable={false}
@@ -234,6 +298,15 @@ export default function Transact() {
         hideCardDeleteIcon={false}
         onDataChange={handleDataChange}
         onCardClick={handleCardClick}
+        laneStyle={{
+          backgroundColor: "#fff",
+          color: "#011133",
+          fontWeight: "bold",
+        }}
+        cardStyle={{
+          boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+          backgroundColor: "#F2F2F2",
+        }}
 
         //onCardAdd = {handleCardAdd}
         //onCardDelete = {handleCardDelete}

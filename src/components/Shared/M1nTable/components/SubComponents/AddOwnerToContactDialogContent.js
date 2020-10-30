@@ -43,7 +43,7 @@ export default function AddOwnerToContactDialogContent(props) {
           "https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName%2CAddress1&top=" +
           top +
           "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");

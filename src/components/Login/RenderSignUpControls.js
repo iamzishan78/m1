@@ -302,7 +302,7 @@ const RenderSignUpControls = () => {
               <Button
                 variant="outlined"
                 disableElevation
-                diabled
+                disabled
                 type="submit"
                 className={localClass.buttonLower}
               >

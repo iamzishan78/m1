@@ -930,7 +930,9 @@ export default function Navigation(props) {
     sessionStorage.clear();
     localStorage.clear();
 
-    stateApp.myMSALObj.logout(logoutRequest);
+    if(currentAccount) {
+      stateApp.myMSALObj.logout(logoutRequest);
+    }      
 
     window.location.replace(window.location.origin);
 
@@ -972,7 +974,7 @@ export default function Navigation(props) {
     >
       <MenuItem disabled  className={classes.userTenantTitle}>
         <CheckIcon/>
-        <Typography variant="inherit" color="textPrimary"> {stateApp.user !== null && stateApp.user.tenant.tenant} </Typography>
+        <Typography variant="inherit" color="textPrimary"> {sessionStorage.getItem("tenantName")} </Typography>
         <FiberManualRecordIcon style={{color: "#34F125"}} fontSize="small"/>
       </MenuItem>
       <Divider/>
@@ -1368,7 +1370,7 @@ export default function Navigation(props) {
                     }
                     aria-label="tags and Tracks"
                   />
-                  <Tab
+                  {/* <Tab
                     //disabled={true}
                     value={6}
                     classes={{ root: classes.tab }}
@@ -1381,7 +1383,7 @@ export default function Navigation(props) {
                       </Badge>
                     }
                     aria-label="ai"
-                  />
+                  /> */}
 
                   {/* <Tab
                     value={7}
@@ -1613,7 +1615,7 @@ export default function Navigation(props) {
               </ListItemIcon>
               <ListItemText
                 className={`${classes.sideNavText} uppercase`}
-                primary="Transact"
+                primary="Deals"
               />
               <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button
@@ -2029,11 +2031,7 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Artificial Intelligence"
                 />
-                {/* <CardActions
-                  classes={{
-                    root: classes.cardAction,
-                  }}
-                ></CardActions> */}
+
                 <CardContent className={classes.cardContent}>
                   <FilterFormAI />
                 </CardContent>
@@ -2061,11 +2059,6 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Advanced Search"
                 />
-                {/* <CardActions
-                  classes={{
-                    root: classes.cardAction,
-                  }}
-                ></CardActions> */}
                 <CardContent className={classes.cardContent}>
                   <FilterDefaults />
                 </CardContent>

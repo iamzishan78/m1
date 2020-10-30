@@ -43,13 +43,39 @@ import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelInterests";
 
 import { useDispatch, useSelector } from "react-redux";
-import { deepEqualObjects, setStateIfDeepEqual } from "../functions";
+import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
 import RightDialog from "../../ContactDetailCard/components/RightDialog";
 import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
+import { setMapGridCardState, showWarningMessage } from "../../../actions";
+import { first } from "@amcharts/amcharts4/.internal/core/utils/Array";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
 }));
+
+var ticksToDateString = function (ticks) {
+  var epochTicks = 621355968000000000;
+  var ticksPerMillisecond = 10000; // whoa!
+  var maxDateMilliseconds = 8640000000000000;
+
+  if (isNaN(ticks)) {
+    //      0001-01-01T00:00:00.000Z
+    return "NANA-NA-NATNA:NA:BA.TMAN";
+  }
+
+  // convert the ticks into something javascript understands
+  var ticksSinceEpoch = ticks - epochTicks;
+  var millisecondsSinceEpoch = ticksSinceEpoch / ticksPerMillisecond;
+
+  if (millisecondsSinceEpoch > maxDateMilliseconds) {
+    //      +035210-09-17T07:18:31.111Z
+    return "+WHOAWH-OA-ISTOO:FA:RA.WAYZ";
+  }
+
+  // output the result in something the human understands
+  var date = new Date(millisecondsSinceEpoch);
+  return date.toISOString();
+};
 
 ////////////HeadCells begin///////////////////////////////////////////////
 const TrackedOwnersHeadCells = [
@@ -66,10 +92,10 @@ const TrackedOwnersHeadCells = [
     },
   },
   { name: "name", label: "Name" },
-  {
-    name: "ownershipType",
-    label: "Entity",
-  },
+  // {
+  //   name: "ownershipType",
+  //   label: "Entity",
+  // },
   // { name: "interestType", label: "Type" },
   // {
   //   name: "ownershipPercentage",
@@ -162,6 +188,18 @@ const TrackedOwnersHeadCells = [
       viewColumns: false,
     },
   },
+  {
+    name: "coordinates",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 ];
 
 const WellsHeadCells = [
@@ -232,6 +270,18 @@ const WellsHeadCells = [
   },
   {
     name: "isTracked",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "detailCard",
     label: " ",
     options: {
       filter: false,
@@ -735,6 +785,18 @@ const SearchsHeadCells = [
       viewColumns: false,
     },
   },
+  {
+    name: "detailCard",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 ];
 
 const OwnersPerParcelHeadCells = [
@@ -1062,6 +1124,7 @@ const UserManagementHeadCells = [
     },
   },
 ];
+
 const DealsHeadCells = [
   {
     name: "id",
@@ -1242,7 +1305,7 @@ function M1nTable(props) {
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
-  const [loading, Loading] = useState(false);
+  const [loading, Loading] = useState(true);
   const setLoading = (newState) => {
     setStateIfDeepEqual(Loading, newState);
   };
@@ -1274,7 +1337,14 @@ function M1nTable(props) {
   const setStartPaginationAt = (newState) => {
     setStateIfDeepEqual(StartPaginationAt, newState);
   };
-
+  const [viewportFeatures, ViewportFeatures] = useState(null);
+  const setViewportFeatures = (newState) => {
+    setStateIfDeepEqual(ViewportFeatures, newState);
+  };
+  const [warningShowed, WarningShowed] = useState(false);
+  const setWarningShowed = (newState) => {
+    setStateIfDeepEqual(WarningShowed, newState);
+  };
   const { searchloading, searchResultData } = useSelector(
     ({ MapGridCard }) => MapGridCard
   );
@@ -1336,9 +1406,7 @@ function M1nTable(props) {
   //////////
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
   //////////
-  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
-    CUSTOMLAYER,
-  );
+  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
   //////////
   const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
   //////////
@@ -1406,14 +1474,13 @@ function M1nTable(props) {
         getOwners({
           variables: {
             ownerIdArray: tracksIdArray,
-            authToken: stateApp.user.authToken,
           },
         });
-        getOwnersWells({
-          variables: {
-            ownersIds: tracksIdArray,
-          },
-        });
+        // getOwnersWells({
+        //   variables: {
+        //     ownersIds: tracksIdArray,
+        //   },
+        // });
         getCommentsCounter({
           variables: {
             objectsIdsArray: tracksIdArray,
@@ -1435,35 +1502,39 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners" && dataOwners) {
-      console.log("ue mintable 4");
       if (
         dataOwners.owners &&
-        dataOwners.owners.results &&
-        dataOwners.owners.results.length > 0 &&
+        dataOwners.owners.length > 0 &&
         dataCommentsCounter &&
         dataCommentsCounter.commentsCounter &&
         dataTagSamples &&
-        dataTagSamples.tagSamples &&
-        dataOwnersWells
+        dataTagSamples.tagSamples
+        //  && dataOwnersWells
       ) {
-        let owners = [...dataOwners.owners.results];
+        let owners = [...dataOwners.owners];
         owners = owners.map((o) => {
           let owner = { ...o };
           owner.isTracked = true;
           owner.commentsCounter = 0;
           owner.tags = [[], 0];
           owner.wellsCounter = [];
+          owner.coordinates = {
+            objToPopulateSearchLayer: {
+              objectType: "owner",
+              objectId: owner.id,
+            },
+          };
 
-          if (dataOwnersWells.ownersWells) {
-            for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
-              if (owner.id === dataOwnersWells.ownersWells[i].ownerId) {
-                owner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
-                  (well) => well.wellId
-                );
-                break;
-              }
-            }
-          }
+          // if (dataOwnersWells.ownersWells) {
+          //   for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
+          //     if (owner.id === dataOwnersWells.ownersWells[i].ownerId) {
+          //       owner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
+          //         (well) => well.wellId
+          //       );
+          //       break;
+          //     }
+          //   }
+          // }
 
           for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
             if (owner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -1531,17 +1602,18 @@ function M1nTable(props) {
         }));
         setLoading(false);
       } else {
-        if (
-          dataOwners.owners &&
-          dataOwners.owners.results &&
-          dataOwners.owners.results.length === 0
-        ) {
+        if (dataOwners.owners && dataOwners.owners.length === 0) {
           setRows([]);
           setLoading(false);
         }
       }
     }
-  }, [dataOwners, dataTagSamples, dataCommentsCounter, dataOwnersWells]);
+  }, [
+    dataOwners,
+    dataTagSamples,
+    dataCommentsCounter,
+    //  dataOwnersWells
+  ]);
   ////////////Tracked Owners end///////////////////////////////////////////////
 
   ////////////Tracked Wells begin///////////////////////////////////////////////
@@ -1613,20 +1685,31 @@ function M1nTable(props) {
         let wells = [...dataWells.wells.results];
         wells = wells.map((w) => {
           let well = { ...w };
+
+          //// temporary to fix the ticks dates fields comming from the rest api
+          if (well.permitApprovedDate && well.permitApprovedDate != "null")
+            well.permitApprovedDate = ticksToDateString(
+              well.permitApprovedDate
+            );
+          if (well.spudDate && well.spudDate != "null")
+            well.spudDate = ticksToDateString(well.spudDate);
+          if (well.completionDate && well.completionDate != "null")
+            well.completionDate = ticksToDateString(well.completionDate);
+          if (well.firstProductionDate && well.firstProductionDate != "null")
+            well.firstProductionDate = ticksToDateString(
+              well.firstProductionDate
+            );
+          //// temporary end
+
           well.isTracked = true;
           well.commentsCounter = 0;
           well.tags = [[], 0];
-          well.coordinates = [];
-          if (well.longitude || well.Longitude) {
-            well.coordinates.push(
-              well.longitude ? well.longitude : well.Longitude
-            );
-          }
-          if (well.latitude || well.Latitude) {
-            well.coordinates.push(
-              well.latitude ? well.latitude : well.Latitude
-            );
-          }
+
+          well.coordinates = {};
+          if (well.Longitude && well.Latitude)
+            well.coordinates.center = [well.Longitude, well.Latitude];
+          if (well.longitude && well.latitude)
+            well.coordinates.center = [well.longitude, well.latitude];
 
           for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
             if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -1876,11 +1959,11 @@ function M1nTable(props) {
           (wellOwner) => wellOwner.id
         );
 
-        getOwnersWells({
-          variables: {
-            ownersIds: objectsIdsArray,
-          },
-        });
+        // getOwnersWells({
+        //   variables: {
+        //     ownersIds: objectsIdsArray,
+        //   },
+        // });
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
@@ -1905,7 +1988,7 @@ function M1nTable(props) {
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples &&
-      dataOwnersWells &&
+      // dataOwnersWells &&
       dataTracks &&
       dataTracks.tracksByObjectType
     ) {
@@ -1916,16 +1999,16 @@ function M1nTable(props) {
         wellOwner.wellsCounter = [];
         wellOwner.isTracked = false;
 
-        if (dataOwnersWells.ownersWells) {
-          for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
-            if (wellOwner.id === dataOwnersWells.ownersWells[i].ownerId) {
-              wellOwner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
-                (well) => well.wellId
-              );
-              break;
-            }
-          }
-        }
+        // if (dataOwnersWells.ownersWells) {
+        //   for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
+        //     if (wellOwner.id === dataOwnersWells.ownersWells[i].ownerId) {
+        //       wellOwner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
+        //         (well) => well.wellId
+        //       );
+        //       break;
+        //     }
+        //   }
+        // }
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (wellOwner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -2001,7 +2084,7 @@ function M1nTable(props) {
     dataTracks,
     dataTagSamples,
     dataCommentsCounter,
-    dataOwnersWells,
+    // dataOwnersWells,
     dataTracks,
   ]);
 
@@ -2016,13 +2099,9 @@ function M1nTable(props) {
       setTargetLabel("contact");
       setHeader("Contacts");
       setAddAble({ parent: false, type: "contact" });
-      getContacts({
-        variables: {
-          userId: stateApp.user.mongoId
-        },
-      });
+      getContacts();
       getContactsFilterOptions();
-      setUploadIcon(true);
+      setUploadIcon(false);
       setStartPaginationAt(25);
     }
   }, [props.parent]);
@@ -2142,14 +2221,6 @@ function M1nTable(props) {
   ]);
 
   useEffect(() => {
-    console.log(
-      "%cCONTACT ID : ",
-      "font-size:20px; color:tomato;",
-      props.contact
-    );
-  }, [props.contact]);
-
-  useEffect(() => {
     if (
       props.parent &&
       props.parent === "search" &&
@@ -2166,15 +2237,26 @@ function M1nTable(props) {
           result.id = result.Id;
 
           if (props.targetLabel && props.targetLabel == "well") {
-            result.coordinates = [];
-            if (result.Longitude) {
-              result.coordinates.push(result.Longitude);
-              result.longitude = result.Longitude;
-            }
-            if (result.Latitude) {
-              result.coordinates.push(result.Latitude);
-              result.latitude = result.Latitude;
-            }
+            if (result.Longitude) result.longitude = result.Longitude;
+            if (result.Latitude) result.latitude = result.Latitude;
+
+            result.coordinates = {};
+            if (result.Longitude && result.Latitude)
+              result.coordinates.center = [result.Longitude, result.Latitude];
+
+            //// set in the detailCard column
+            result.detailCard = result.Id;
+          } else if (props.targetLabel && props.targetLabel == "location") {
+            result.coordinates = {};
+            if (result.bbox) result.coordinates.bbox = result.bbox;
+            if (result.center) result.coordinates.center = result.center;
+          } else if (props.targetLabel && props.targetLabel == "owner") {
+            result.coordinates = {
+              objToPopulateSearchLayer: {
+                objectType: "owner",
+                objectId: result.Id,
+              },
+            };
           }
 
           if (props.showComments) {
@@ -2248,8 +2330,18 @@ function M1nTable(props) {
           );
         }
         if (props.showComments) buildingColumns.push(SearchsHeadCells[2]);
+
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
         if (props.targetLabel && props.targetLabel == "well")
+          //would only set the detail card icon for wells
+          buildingColumns.push(SearchsHeadCells[5]);
+        if (
+          props.targetLabel &&
+          (props.targetLabel == "well" ||
+            props.targetLabel == "location" ||
+            props.targetLabel == "owner")
+        )
+          //would only set flyto for wells, locations & owners
           buildingColumns.push(SearchsHeadCells[4]);
 
         setColumns([...buildingColumns]);
@@ -2268,6 +2360,7 @@ function M1nTable(props) {
     props.showComments,
     props.showTags,
   ]);
+
   //////////// Search end///////////////////////////////////////////////
 
   ////////////Owners Per Parcel begin///////////////////////////////////////////////
@@ -2505,6 +2598,7 @@ function M1nTable(props) {
       setLoading(true);
       getAllUsers();
       if (userLists?.allUsers) {
+        setTargetLabel("usermanagement");
         setHeader("Active Users");
         setRows(userLists.allUsers);
         setColumns(UserManagementHeadCells);
@@ -2655,9 +2749,186 @@ function M1nTable(props) {
 
   ////////////Deals end////////////////////////////////////////////////
 
+  ////////////Map Viewport Wells begin///////////////////////////////////////////////
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "mapViewportWells" &&
+      stateApp.viewportWells
+    ) {
+      const IdsArray = [];
+      stateApp.viewportWells.forEach((well) => {
+        if (well && well.id) {
+          IdsArray.push(well.id);
+        }
+      });
+
+      if (IdsArray.length > 0) {
+        setLoading(true);
+        getCommentsCounter({
+          variables: {
+            objectsIdsArray: IdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+        getTagSamples({
+          variables: {
+            objectsIdsArray: IdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+        setViewportFeatures(stateApp.viewportWells);
+      } else {
+        setViewportFeatures(null);
+        setRows([]);
+        setLoading(false);
+
+        if (!warningShowed) {
+          dispatch(
+            showWarningMessage(
+              "We didn't find any well in the viewport, please make sure at least one layer with wells it's active, or zoom out untill you visualize some well spots."
+            )
+          );
+          setWarningShowed(true);
+        }
+      }
+    }
+  }, [props.parent, stateApp.viewportWells, stateApp.user]);
+
+  useEffect(() => {
+    if (props.parent && props.parent === "mapViewportWells") {
+      setTargetLabel("well");
+
+      if (props.header) {
+        setHeader(props.header);
+      } else {
+        setHeader("Wells");
+      }
+      setAddAble(false);
+    }
+  }, [props.parent]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "mapViewportWells" &&
+      viewportFeatures &&
+      viewportFeatures.length > 0 &&
+      dataCommentsCounter &&
+      dataCommentsCounter.commentsCounter &&
+      dataTagSamples &&
+      dataTagSamples.tagSamples &&
+      dataTracks &&
+      dataTracks.tracksByObjectType
+    ) {
+      let wells = [...viewportFeatures];
+      wells = wells.map((w) => {
+        let well = { ...w };
+
+        well.isTracked = false;
+        well.commentsCounter = 0;
+        well.tags = [[], 0];
+
+        well.coordinates = {};
+
+        if (well.longitude && well.latitude)
+          well.coordinates.center = [well.longitude, well.latitude];
+
+        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+          if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+            well.commentsCounter = dataCommentsCounter.commentsCounter[i].total;
+            break;
+          }
+        }
+        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+          if (well.id === dataTagSamples.tagSamples[i]._id) {
+            well.tags = [
+              dataTagSamples.tagSamples[i].tags,
+              dataTagSamples.tagSamples[i].total,
+            ];
+
+            break;
+          }
+        }
+        for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+          if (
+            well.id === dataTracks.tracksByObjectType[i].trackOn.toLowerCase()
+          ) {
+            well.isTracked = true;
+            break;
+          }
+        }
+
+        return well;
+      });
+
+      let availableTags = [];
+      dataTagSamples.tagSamples.map((sample) => {
+        availableTags = [...availableTags, ...sample.tags];
+      });
+      const cleanAvailableTags = [...new Set(availableTags)];
+
+      setRows(wells);
+
+      const flyToColumn = {
+        name: "coordinates",
+        label: " ",
+        options: {
+          filter: false,
+          sort: false,
+          searchable: false,
+          download: false,
+          print: false,
+          viewColumns: false,
+        },
+      };
+
+      setColumns([
+        ...(cleanAvailableTags.length > 0
+          ? WellsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
+                  },
+                };
+              }
+              return column;
+            })
+          : WellsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })),
+        flyToColumn,
+      ]);
+
+      setLoading(false);
+    }
+  }, [viewportFeatures, dataTagSamples, dataCommentsCounter, dataTracks]);
+
+  ////////////Map Viewport Wells end///////////////////////////////////////////////
+
   ////////////-----Add your code section here-----///////////////////////
   return (
-    <Container maxWidth={false} className={classes.container}>
+    <Container
+      maxWidth={false}
+      className={classes.container}
+      id={props.id ? props.id : props.parent}
+    >
       {props.parent && props.parent === "Deals" && (
         <AddDealDialog
           open={stateApp.dealDialog ? true : false}
@@ -2691,6 +2962,7 @@ function M1nTable(props) {
           contactsCount: dataContacts ? dataContacts.paginatedContacts.totalCount : 0,
           setLoading
         }}
+        parent={props.parent}
       />
     </Container>
   );

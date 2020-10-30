@@ -101,24 +101,24 @@ export default function SendMailersDialogContent(props) {
   return (
     <React.Fragment>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
-        Mailing Campaign
+        Send Mailers
         <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={props.onClose}/>
       </DialogTitle>
       <DialogContent>
         <Grid container spacing={1}>
           <Grid item xs={12}>
-            <h3 style={{padding: 0, marginTop: '20px', marginBottom: 0}}>Name</h3>
+            <h3 style={{padding: 0, marginTop: '20px', marginBottom: 0}}>Campaign Name</h3>
           </Grid>
           <Grid item xs={12}>
             <TextField
               margin="none"
-              placeholder="E.g. Jacob"
+              placeholder="Enter a campaign name"
               style={{ width: "100%", marginBottom: "10px" }}
             />
           </Grid>
           <Grid item xs={12} style={{marginTop: '15px'}}>
             <h3 style={{margin: "0"}}>
-              Send Mailers
+              Mailing List
             </h3>
           </Grid>
           <Grid item xs={12} style={{margin: 0, paddingTop: 0}}>

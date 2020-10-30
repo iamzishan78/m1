@@ -1,14 +1,17 @@
 import React, { useState, createContext, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
-import { MSALB2CObj, B2CTenantCredentials } from "./components/Login/AADB2CAuthConfig";
+import {
+  MSALB2CObj,
+  B2CTenantCredentials,
+} from "./components/Login/AADB2CAuthConfig";
 import {
   //styleLayers,
   //userDefinedLayers,
   heatLayers,
   baseMapLayers,
   //layers,
-  defaultLayers,
+  // defaultLayers,
 } from "./LayerConfig";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
@@ -20,8 +23,8 @@ const AppProvider = (props) => {
     loading: false,
     registeredRoutes: [
       "/",
-      "/signup", 
-      "/loginb2c", 
+      "/signup",
+      "/loginb2c",
       "/forgotpassword",
       "/track",
       "/transact",
@@ -55,6 +58,7 @@ const AppProvider = (props) => {
     owners: null,
     popupOpen: false, //map used in flyto
     expandedCard: false,
+    abstractPopupOpen: false,
     flyTo: null, //map used in flyto
     fitBounds: null, //map used in fitBounds
     selectedTitleOpinionId: null,
@@ -69,7 +73,7 @@ const AppProvider = (props) => {
     selectedContact: null,
     // trackFilterOn: null,
     trackedWellArray: [],
-    userSnap: false,
+    userSnap: true,
     mapVars: {
       zoom: 4.88,
       center: { lng: -98.8, lat: 38 },
@@ -101,7 +105,7 @@ const AppProvider = (props) => {
     //styleLayers: styleLayers,
     heatLayers: heatLayers,
     layers: null,
-    defaultLayers: defaultLayers,
+    // defaultLayers: defaultLayers,
     baseMapLayers: baseMapLayers,
     //userDefinedLayers: userDefinedLayers,
     searchLayerIndex: null,
@@ -139,14 +143,16 @@ const AppProvider = (props) => {
     wellListFromTagsFilter: [],
     m1neralHeaders: [],
     mappedHeadersFromCSV: [],
-    toggleLayersActivity: (layerName, activityValue) => {
-      if (layerName) {
+    viewportWells: null,
+    minZoomToQueryViewport: 12.5,
+    toggleLayersActivity: (identifier, activityValue) => {
+      if (identifier) {
         let res;
         setStateApp((stateApp) => {
           if (stateApp.layers && Array.isArray(stateApp.layers)) {
             const currentLayers = [...stateApp.layers];
             const index = currentLayers.findIndex(
-              (l) => l.layerName == layerName
+              (l) => l.identifier == identifier
             );
 
             const updatedLayer = {

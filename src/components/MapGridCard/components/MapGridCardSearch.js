@@ -76,10 +76,10 @@ function MapGridCardSearch(props) {
     () =>
       debounce((request, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=" +
+          "https://m1search.search.windows.net/indexes/wellheader-index-en-ms/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=" +
           searchTop +
           "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -91,7 +91,7 @@ function MapGridCardSearch(props) {
         };
 
         console.log(
-          "request made to wellheader-index search at: " + new Date().toString()
+          "request made to wellheader-index-en-ms search at: " + new Date().toString()
         );
 
         fetch(endpoint, options)
@@ -114,7 +114,7 @@ function MapGridCardSearch(props) {
           "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName&top=" +
           searchTop +
           "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -149,7 +149,7 @@ function MapGridCardSearch(props) {
           "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Operator&top=" +
           searchTop +
           "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -184,7 +184,7 @@ function MapGridCardSearch(props) {
           "https://m1search.search.windows.net/indexes/lease-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
           searchTop +
           "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");

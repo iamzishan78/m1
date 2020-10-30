@@ -16,3 +16,12 @@ export function useQueryWellStimulation(id) {
     const { data,loading, error} = useQuery(QUERY);
     return {data, loading, error}
   }
+
+  
+export function useQueryWellFormation(id) {
+  const QUERY = gql`query {
+    wellFormation(wellID:"${id}")
+  }`
+  const { data,loading, error} = useQuery(QUERY);
+  return {data, loading, error}
+}

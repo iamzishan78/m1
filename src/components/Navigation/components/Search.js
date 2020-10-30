@@ -36,6 +36,7 @@ import { CircularProgress } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
 import { deepEqualObjects } from "../../Shared/functions";
+import ClearIcon from "@material-ui/icons/Clear";
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -164,6 +165,7 @@ function Search() {
     mapGridCardActivated,
     mapGridCardActiveTap,
     searchInputValue,
+    objToPopulateSearchLayer,
   } = useSelector(({ MapGridCard }) => MapGridCard);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [stateApp, setStateApp] = React.useContext(AppContext);
@@ -261,10 +263,10 @@ function Search() {
     () =>
       debounce((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=" +
+          "https://m1search.search.windows.net/indexes/wellheader-index-en-ms/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=" +
           top +
           "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -276,7 +278,7 @@ function Search() {
         };
 
         console.log(
-          "request made to wellheader-index search at: " + new Date().toString()
+          "request made to wellheader-index-en-ms search at: " + new Date().toString()
         );
 
         fetch(endpoint, options)
@@ -299,7 +301,7 @@ function Search() {
           "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName&top=" +
           top +
           "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -335,7 +337,7 @@ function Search() {
           "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2020-06-30&queryType=full&ount=true&searchFields=Operator&top=" +
           top +
           "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -370,7 +372,7 @@ function Search() {
           "https://m1search.search.windows.net/indexes/lease-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
           top +
           "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$/g, "~"));
+          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -800,6 +802,31 @@ function Search() {
     }
   }, [dataLeaseWells]);
 
+  //////////////////////////////////// populating the search layer from external resource ////
+  useEffect(() => {
+    if (objToPopulateSearchLayer) {
+      //// if owner
+      if (
+        objToPopulateSearchLayer.objectType === "owner" &&
+        objToPopulateSearchLayer.objectId
+      ) {
+        getOwnerWells({
+          variables: {
+            ownerId: objToPopulateSearchLayer.objectId,
+          },
+        });
+      }
+
+      //// add others types here
+      /////////////////////////////////
+      dispatch(
+        setMapGridCardState({
+          objToPopulateSearchLayer: null,
+        })
+      );
+    }
+  }, [objToPopulateSearchLayer]);
+
   ///////////////////////////////////////
 
   const handleChange = (newValue) => {
@@ -860,7 +887,7 @@ function Search() {
       //// if well, with lat long
       if (
         newValue &&
-        newValue.Source === "wellheader-index" &&
+        newValue.Source === "wellheader-index-en-ms" &&
         newValue.Longitude &&
         newValue.Latitude
       ) {
@@ -989,7 +1016,7 @@ function Search() {
         options={optionsWithHeader}
         groupBy={(option) => {
           if (option.Source === "globalowner-index") return "Owners";
-          if (option.Source === "wellheader-index") return "Wells";
+          if (option.Source === "wellheader-index-en-ms") return "Wells";
           if (option.Source === "operator-index") return "Operators";
           if (option.Source === "lease-index") return "Leases";
           if (option.Source === "mapboxSearch") return "Locations";
@@ -1248,8 +1275,32 @@ function Search() {
               endAdornment: !mapGridCardActivated && (
                 <InputAdornment className={classes.endAdornmentIcon}>
                   <div>
+                    {((searchInputValue && searchInputValue !== "") ||
+                      (stateApp.wellListFromSearch &&
+                        stateApp.wellListFromSearch.length > 0)) && (
+                      <Tooltip title="Clear" placement="top">
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            dispatch(
+                              setMapGridCardState({
+                                searchInputValue: "",
+                                searchResultData: [],
+                              })
+                            );
+                            setStateApp((state) => ({
+                              ...state,
+                              wellListFromSearch: [],
+                            }));
+                          }}
+                        >
+                          <ClearIcon htmlColor="#fff" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
                     <Tooltip title="Search History" placement="top">
                       <IconButton
+                        size="small"
                         onClick={(event) => {
                           setAnchorEl(event.currentTarget);
                         }}
@@ -1298,7 +1349,7 @@ function Search() {
                                 setSearchOption(
                                   option.Source === "globalowner-index"
                                     ? "owners"
-                                    : option.Source === "wellheader-index"
+                                    : option.Source === "wellheader-index-en-ms"
                                     ? "wells"
                                     : option.Source === "operator-index"
                                     ? "operators"
@@ -1340,7 +1391,7 @@ function Search() {
                                         color={"#757575"}
                                       />
                                     )}
-                                    {option.Source === "wellheader-index" && (
+                                    {option.Source === "wellheader-index-en-ms" && (
                                       <WellIcon
                                         className={classes.icon}
                                         color={"#757575"}
@@ -1432,7 +1483,7 @@ function Search() {
                   {option.Source === "operator-index" && (
                     <OperatorIcon className={classes.icon} color={"#757575"} />
                   )}
-                  {option.Source === "wellheader-index" && (
+                  {option.Source === "wellheader-index-en-ms" && (
                     <WellIcon
                       className={classes.icon}
                       color={"#757575"}
@@ -1482,7 +1533,7 @@ function Search() {
                       opacity: calcScoreOpacity(
                         option.Source === "globalowner-index"
                           ? maxMinOwnersScore
-                          : option.Source === "wellheader-index"
+                          : option.Source === "wellheader-index-en-ms"
                           ? maxMinWellsScore
                           : option.Source === "operator-index"
                           ? maxMinOperatosScore

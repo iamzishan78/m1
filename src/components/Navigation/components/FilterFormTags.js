@@ -63,7 +63,7 @@ export default function FilterFormProduction() {
         ...stateApp,
         wellListFromTagsFilter: [...dataWells.wells.results],
       }));
-      stateApp.toggleLayersActivity("Tagged Wells/Owners", true);
+      stateApp.toggleLayersActivity("User Tags", true);
     }
   }, [dataWells]);
 
@@ -77,11 +77,16 @@ export default function FilterFormProduction() {
       <Grid item sm={12} className={classes.gridItem}>
         <FilterTags />
       </Grid>
-      <Grid item sm={6} className={classes.gridItem}>
+
+      {/* //// tracked owners commented and replaced for the next <Grid> block, as well as some css inside FilterTrackedWells component */}
+      {/* <Grid item sm={6} className={classes.gridItem}>
         <FilterTrackedWells />
       </Grid>
-      <Grid item sm={6} className={classes.gridItem}>
+      {/* <Grid item sm={6} className={classes.gridItem}>
         <FilterTrackedOwners />
+      </Grid> */}
+      <Grid item sm={12} className={classes.gridItem}>
+        <FilterTrackedWells />
       </Grid>
     </Grid>
   );
