@@ -262,7 +262,6 @@ function FilterControl() {
         hugeRequest: null,
       }));
 
-   
       if (points && points.length > 0) {
         if (points.length > 100) {
           setStateApp((stateApp) => ({
@@ -280,11 +279,11 @@ function FilterControl() {
 
           const tracks = [];
           points.forEach((point) => {
-            const targetSourceId = point.properties.id.toLowerCase();
+            const sourceId = point.properties.id.toLowerCase();
             const track = {
               user: user,
               objectType: targetLabel,
-              trackOn: targetSourceId,
+              trackOn: sourceId,
             };
             tracks.push(track);
           });
@@ -312,11 +311,11 @@ function FilterControl() {
     const tracks = [];
     wellownerList.forEach((well) => {
       well.owners.forEach((owner) => {
-        const targetSourceId = owner.ownerId.toLowerCase();
+        const sourceId = owner.ownerId.toLowerCase();
         const track = {
           user: user,
           objectType: targetLabel,
-          trackOn: targetSourceId,
+          trackOn: sourceId,
         };
         tracks.push(track);
       });

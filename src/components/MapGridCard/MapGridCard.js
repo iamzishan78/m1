@@ -241,6 +241,18 @@ const wellsColumnHeaders = [
 ];
 const ownersColumnHeaders = [
   {
+    name: "entity",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
     name: "OwnerName",
     label: "Name",
   },

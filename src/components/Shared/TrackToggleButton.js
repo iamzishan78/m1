@@ -93,7 +93,7 @@ export default function TrackToggleButton(props) {
           track: {
             user: stateApp.user.mongoId,
             objectType: props.targetLabel,
-            trackOn: props.targetSourceId,
+            trackOn: props.targetSourceId.toLowerCase(),
           },
         },
         refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
@@ -107,7 +107,7 @@ export default function TrackToggleButton(props) {
               track: {
                 user: stateApp.user.mongoId,
                 objectType: props.targetLabel,
-                trackOn: props.multipleIds[i],
+                trackOn: props.multipleIds[i].toLowerCase(),
               },
             },
             refetchQueries: ["tracksByObjectType", "trackByObjectId"], ////add all queries for components with track icons////
