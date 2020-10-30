@@ -53,22 +53,40 @@ export default function MakeItAContactConfirmationDialogContent(props) {
       <DialogActions>
         <Button
           onClick={() => {
-            setStateApp((state) => ({
-              ...state,
-              universalCircularLoaderAct: true,
-            }));
-            addContact({
-              variables: {
-                contact: {
-                  entity: props.entity,
-                  createBy: stateApp.user.mongoId,
-                  lastUpdateBy: stateApp.user.mongoId,
-                },
-              },
-              refetchQueries: ["getContacts", "getCustomLayer"],
-              awaitRefetchQueries: true,
-            });
-            // props.onClose();
+            {
+              setStateApp((state) => ({
+                ...state,
+                universalCircularLoaderAct: true,
+              }));
+              if (props.targetLabel == "owner") {
+                addContact({
+                  variables: {
+                    contact: {
+                      ...props.entity,
+                      createBy: stateApp.user.mongoId,
+                      lastUpdateBy: stateApp.user.mongoId,
+                    },
+                  },
+                  refetchQueries: [
+                    "getContacts",
+                    "getCustomLayer",
+                    "checkIfOwnersAreContacts",
+                  ],
+                  awaitRefetchQueries: true,
+                });
+              } else
+                addContact({
+                  variables: {
+                    contact: {
+                      entity: props.entity,
+                      createBy: stateApp.user.mongoId,
+                      lastUpdateBy: stateApp.user.mongoId,
+                    },
+                  },
+                  refetchQueries: ["getContacts", "getCustomLayer"],
+                  awaitRefetchQueries: true,
+                });
+            }
           }}
           color="primary"
         >

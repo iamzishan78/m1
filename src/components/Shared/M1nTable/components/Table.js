@@ -981,7 +981,6 @@ function SubTable(props) {
                           : "Contact Details"
                       }
                       placement="top"
-                      style={{ marginRight: "10px" }}
                     >
                       <IconButton
                         size={props.dense ? "small" : "medium"}
@@ -1015,12 +1014,23 @@ function SubTable(props) {
                             setSubTitle(" ");
                             handleOpenExpandableCard();
                           } else {
-                            handleExpandClick(
-                              tableMeta.columnIndex,
-                              tableMeta.rowIndex,
-                              tableMeta.rowData[1],
-                              "makeOwnerAContact"
-                            );
+                            if (props.targetLabel == "owner") {
+                              handleExpandClick(
+                                tableMeta.columnIndex,
+                                tableMeta.rowIndex,
+                                {
+                                  globalOwner: tableMeta.rowData[0],
+                                  entity: tableMeta.rowData[1],
+                                },
+                                "makeOwnerAContact"
+                              );
+                            } else
+                              handleExpandClick(
+                                tableMeta.columnIndex,
+                                tableMeta.rowIndex,
+                                tableMeta.rowData[1],
+                                "makeOwnerAContact"
+                              );
                           }
                         }}
                         aria-label="show contact"
@@ -1758,7 +1768,15 @@ function SubTable(props) {
           title={props.header}
           data={rows ? rows : []}
           columns={columns ? columns : []}
-          options={{ print: false, download: false, ...options }}
+          options={{
+            print: false,
+            download:
+              // props.targetLabel == "owner" || props.targetLabel == "well"
+              //   ? true
+              //   :
+              false,
+            ...options,
+          }}
         />
 
         {/* <TransactDialog
@@ -1846,6 +1864,7 @@ function SubTable(props) {
             )}
             {openDialog === "makeOwnerAContact" && (
               <MakeItAContactConfirmationDialogContent
+                targetLabel={props.targetLabel}
                 onClose={handleCloseDialog}
                 entity={expandedObject}
                 openContactDetailCard={(contactId) => {
