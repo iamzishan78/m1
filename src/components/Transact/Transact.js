@@ -286,6 +286,7 @@ export default function Transact() {
   // const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [transactData, setTransactData] = useState();
+  const [filteredTransactData, setFilteredTransactData] = useState();
   const [id, setId] = useState();
   const [allDeals, setAllDeals] = useState([]);
   const [openDeals, setOpenDeals] = useState([]);
@@ -297,8 +298,7 @@ export default function Transact() {
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
 
   const [dealDisplayType, setDealDisplayType] = useState("board");
-
-  console.log("transactData", JSON.stringify(transactData, null, 2));
+  const [dealFilter, setDealFilter] = useState("open");
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
@@ -347,6 +347,36 @@ export default function Transact() {
     setDeletedDeals(deleted);
   }, [allDeals]);
 
+  // let cards = [];
+  //     if (filter === "all") {
+  //       lane.cards.forEach(
+  //         (card) => !card.isDeleted && cards.push({ ...card })
+  //       ); // remove deleted cards
+  //     } else if (filter === "won") {
+  //       lane.cards.forEach(
+  //         (card) =>
+  //           !card.isDeleted &&
+  //           card.dealState === "won" &&
+  //           cards.push({ ...card })
+  //       ); // get won cards
+  //     } else if (filter === "lost") {
+  //       lane.cards.forEach(
+  //         (card) =>
+  //           !card.isDeleted &&
+  //           card.dealState === "lost" &&
+  //           cards.push({ ...card })
+  //       ); //get lost cards
+  //     } else if (filter === "open") {
+  //       lane.cards.forEach(
+  //         (card) =>
+  //           !card.isDeleted &&
+  //           !card.dealState === "won" &&
+  //           !card.dealState === "lost" &&
+  //           cards.push({ ...card })
+  //       ); // get open cards
+  //     } else if (filter === "deleted") {
+  //       lane.cards.forEach((card) => card.isDeleted && cards.push({ ...card })); // get deleted cards
+  //     }
   const getLanesWithFixedTitles = (lanes) => {
     return lanes.map((lane) => {
       let title = getLaneTitle(lane.id);
@@ -371,7 +401,14 @@ export default function Transact() {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (transactData) {
+      setFilteredTransactData(transactData);
+    }
+  }, [transactData]);
+
   const handleDataChange = (newData) => {
+    console.log("DATA CHANGE", newData);
     updateTransaction({
       variables: {
         transactionId: id,
@@ -428,6 +465,8 @@ export default function Transact() {
         openSum={openSum}
         dealDisplayType={dealDisplayType}
         setDealDisplayType={setDealDisplayType}
+        dealFilter={dealFilter}
+        setDealFilter={setDealFilter}
       />
       {dealDisplayType === "board" && (
         <Board
