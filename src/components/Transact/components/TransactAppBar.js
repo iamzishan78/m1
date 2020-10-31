@@ -94,10 +94,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TransactAppBar = ({
-  closedSum,
-  closedLength,
-  activeSum,
-  activeLength,
+  wonLength,
+  wonSum,
+  openLength,
+  openSum,
   dealDisplayType,
   setDealDisplayType,
 }) => {
@@ -147,17 +147,15 @@ const TransactAppBar = ({
           <div className={classes.activeDeals}>
             <OfflineBolt />
             <span>
-              {activeLength}{" "}
-              {activeLength !== 1 ? "OPEN DEALS" : "OPEN DEAL"} |{" "}
-              {activeSum}
+              {openLength} {openLength !== 1 ? "OPEN DEALS" : "OPEN DEAL"} |{" "}
+              {openSum}
             </span>
           </div>
           <div className={classes.closedDeals}>
             <CheckBox />
             <span>
-              {closedLength}{" "}
-              {closedLength !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
-              {closedSum}
+              {wonLength} {wonLength !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
+              {wonSum}
             </span>
           </div>
           <Button className={classes.import} color="default" size="small">

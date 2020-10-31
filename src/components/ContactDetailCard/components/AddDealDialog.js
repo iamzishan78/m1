@@ -122,6 +122,10 @@ const newContact = {
   state: "",
   zip: "",
 };
+const wonStyle = { borderColor: "#35DA97" };
+const lostStyle = { borderColor: "#F74E1E" };
+const defaultStyle = { borderColor: "#e2e2e2" };
+const openStyle = { borderColor: "#EBC253" };
 
 function AddDealDialog(props) {
   const classes = useStyles();
@@ -257,7 +261,7 @@ function AddDealDialog(props) {
           transactionId: tdata.transactionData._id,
           transaction: { allData: newData, user: stateApp.user.mongoId },
         },
-        refetchQueries: ["getTransactionData", "getContact", "getContacts"],
+        refetchQueries: ["getTransactionData"],
         awaitRefetchQueries: true,
       });
     }
@@ -327,25 +331,25 @@ function AddDealDialog(props) {
   // }, [contact]);
 
   const handleClose = () => {
-    if (!updateTransactionLoading && !addContactLoading) {
-      setTitle("");
-      setLabel("");
-      setDescription("");
-      setStage("");
-      setDealState(null);
-      setNameAutValue(null);
-      setNameAutInputValue("");
-      setPipelineId("");
-      setOwnerId("");
-      setCloseDate(null);
-      setColaborators([]);
-      setContact({});
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        dealDialog: false,
-        activeDeal: { cardId: null, laneId: null },
-      }));
-    }
+    // if (!updateTransactionLoading && !addContactLoading) {
+    setTitle("");
+    setLabel("");
+    setDescription("");
+    setStage("");
+    setDealState(null);
+    setNameAutValue(null);
+    setNameAutInputValue("");
+    setPipelineId("");
+    setOwnerId("");
+    setCloseDate(null);
+    setColaborators([]);
+    setContact({});
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      dealDialog: false,
+      activeDeal: { cardId: null, laneId: null },
+    }));
+    // }
   };
 
   const handleCloseContactDialog = () => {
@@ -373,6 +377,7 @@ function AddDealDialog(props) {
       const deletedCard = {
         ...card,
         isDeleted: true,
+        style: defaultStyle,
       };
 
       let td = {
@@ -393,7 +398,6 @@ function AddDealDialog(props) {
 
       setTransactData(td);
       await handleDataChange(td);
-
       handleClose();
     }
   };
@@ -417,9 +421,20 @@ function AddDealDialog(props) {
         const cardIndex = lane.cards.findIndex((card) => card.id === cardId);
         const card = lane.cards[cardIndex];
 
+        let style;
+
+        if (dealState === "won") {
+          style = wonStyle;
+        } else if (dealState === "lost") {
+          style = lostStyle;
+        } else {
+          style = openStyle;
+        }
+
         const updatedCard = {
           // dealName: dealName.trim(),
           // title: contact?.name.trim(),
+          ...card,
           isDeleted: false,
           contactName: tempContact ? tempContact.name : "",
           title: title ? title.trim() : "",
@@ -428,7 +443,11 @@ function AddDealDialog(props) {
           description: description ? description.trim() : "",
           laneId: newStage,
           dealState: dealState,
-          id: card.id,
+          pipelineId: pipelineId,
+          ownerId: ownerId,
+          expectedCloseDate: closeDate,
+          colaborators: colaborators,
+          style,
         };
         console.log("Update existing: ", updatedCard);
 
@@ -479,6 +498,14 @@ function AddDealDialog(props) {
         td.lanes.forEach((lane) => {
           if (lane.id === newStage) {
             let cards = [...lane.cards];
+            let style;
+            if (dealState === "won") {
+              style = wonStyle;
+            } else if (dealState === "lost") {
+              style = lostStyle;
+            } else {
+              style = openStyle;
+            }
             // CARD STRUCTURE
             const newCard = {
               // dealName: dealName.trim(),
@@ -494,10 +521,11 @@ function AddDealDialog(props) {
               laneId: newStage,
               // VALUES TO SET
               createdAt: Date.now(),
-              pipelineId: "",
-              ownerId: "",
-              expectedCloseDate: "",
-              colaborators: [],
+              pipelineId: pipelineId,
+              ownerId: ownerId,
+              expectedCloseDate: closeDate,
+              colaborators: colaborators,
+              style,
             };
 
             console.log("Add new: ", newCard);
@@ -624,7 +652,7 @@ function AddDealDialog(props) {
               <div
                 className={classes.dealStateClosed}
                 style={{
-                  backgroundColor: "green",
+                  backgroundColor: "#35DA97",
                   marginRight: 8,
                 }}
               >
@@ -643,11 +671,11 @@ function AddDealDialog(props) {
               <div
                 className={classes.dealStateClosed}
                 style={{
-                  backgroundColor: "red",
+                  backgroundColor: "#F74E1E",
                   marginRight: 8,
                 }}
               >
-                Closed
+                Lost
               </div>
               <div
                 className={classes.dealStateReopen}
