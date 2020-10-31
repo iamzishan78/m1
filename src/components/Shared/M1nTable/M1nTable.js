@@ -2116,22 +2116,133 @@ function M1nTable(props) {
       console.log("ue mintable 23");
       if (dataContacts.paginatedContacts.edges && dataContacts.paginatedContacts.edges.length > 0
         && dataContactsFilterOptions && dataContactsFilterOptions.contactsFilterOptions) {
-        
-          setRows([...dataContacts.paginatedContacts.edges.map(el => el.node)]);
+        const objectsIdsArray = [];
+        dataContacts.paginatedContacts.edges.forEach(({node}) => {
+          node = Object.assign({}, node, {isTracked:false});
+          objectsIdsArray.push(node._id);
 
-        let contactsHeadCells = ContactsHeadCells.slice();
-        contactsHeadCells.find((column) => column.name === 'leadSource').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.leadSources } };
-        contactsHeadCells.find((column) => column.name === 'lastUpdateBy.name').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.lastUpdateBys.map(el => el.name) } };
-        contactsHeadCells.find((column) => column.name === 'tags').options = { filter: true, filterOptions: { names: dataContactsFilterOptions.contactsFilterOptions.tags } };
-        setColumns(contactsHeadCells)
+          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+            if (node.id === dataTracks.tracksByObjectType[i].trackOn) {
+              node.isTracked = true;
+              break;
+            }
+          }
+        });
 
-        setLoading(false);
+        getCommentsCounter({
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+        });
+        getTagSamples({
+          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+        });
+        getMelissaRowsCount({
+          variables: { objectsIdsArray },
+        });
       } else {
-        setRows([]);
         setLoading(false);
+        setRows([]);
       }
     }
   }, [dataContacts, dataContactsFilterOptions]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "Contacts" &&
+      dataContacts &&
+      dataContacts.paginatedContacts.edges && 
+      dataContacts.paginatedContacts.edges.length > 0 &&
+      dataCommentsCounter &&
+      dataCommentsCounter.commentsCounter &&
+      dataTagSamples &&
+      dataTagSamples.tagSamples &&
+      dataMelissaRowsCount &&
+      dataMelissaRowsCount.getMelissaRecordsCountForContactIds
+    ) {
+      console.log("ue mintable 24");
+      dataContacts.paginatedContacts.edges.forEach(({node}) => {
+        node.commentsCounter = 0;
+        node.tags = [[], 0];
+        // node.fullContactAddress = joinAddress(node);
+        // node.contactName = node.name;
+
+        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+          if (node._id === dataCommentsCounter.commentsCounter[i]._id) {
+            node.commentsCounter =
+              dataCommentsCounter.commentsCounter[i].total;
+            break;
+          }
+        }
+
+        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+          if (node._id === dataTagSamples.tagSamples[i]._id) {
+            node.tags = [
+              dataTagSamples.tagSamples[i].tags,
+              dataTagSamples.tagSamples[i].total,
+            ];
+
+            break;
+          }
+        }
+
+        let foundMelissaRowsCount = dataMelissaRowsCount.getMelissaRecordsCountForContactIds.find(
+          (value) => {
+            return node._id === value._id;
+          }
+        );
+        if (foundMelissaRowsCount) {
+          node.melissaRowsCount = foundMelissaRowsCount.total;
+        }
+      });
+
+      let availableTags = [];
+      dataTagSamples.tagSamples.map((sample) => {
+        availableTags = [...availableTags, ...sample.tags];
+      });
+      const cleanAvailableTags = [...new Set(availableTags)];
+
+      setColumns(
+        cleanAvailableTags.length > 0
+          ? ContactsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
+                  },
+                };
+              }
+              return column;
+            })
+          : ContactsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
+      );
+      console.log(JSON.stringify([...dataContacts.paginatedContacts.edges.node]))
+
+      setRows([...dataContacts.paginatedContacts.edges.map(el => el.node)]);
+      setLoading(false);
+    }
+  }, [
+    dataContacts,
+    dataTracks,
+    dataTagSamples,
+    dataCommentsCounter,
+    dataMelissaRowsCount,
+  ]);
 
   ////////////Contact Delete begin////////////////////////////////////////
 

@@ -1263,7 +1263,7 @@ function SubTable(props) {
 
                   if (column.name === "lastUpdateBy.name") {
                     if (props.rows[tableMeta.rowIndex]) {
-                      value = props.rows[tableMeta.rowIndex].lastUpdateBy.name;
+                      value = props.rows[tableMeta.rowIndex].lastUpdateBy?.name;
                     }
                   }
 
