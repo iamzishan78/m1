@@ -41,6 +41,7 @@ import { UPDATEPARCELOWNER } from "../../../graphQL/useMutationUpdateParcelOwner
 import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRecords";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelInterests";
+import { IFARECONTACTS } from "../../../graphQL/useQueryIfOwnersAreContacts";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -81,6 +82,18 @@ var ticksToDateString = function (ticks) {
 const TrackedOwnersHeadCells = [
   {
     name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "entity",
     options: {
       display: false,
       filter: false,
@@ -143,6 +156,19 @@ const TrackedOwnersHeadCells = [
   //     viewColumns: false,
   //   },
   // },
+
+  {
+    name: "isContact",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 
   /* 
   // TEMPORARY COMMENT OUT. DO NOT DELETE 
@@ -244,18 +270,18 @@ const WellsHeadCells = [
       },
     },
   },
-  {
-    name: "ownerCount",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  // {
+  //   name: "ownerCount",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
   {
     name: "commentsCounter",
     label: " ",
@@ -792,6 +818,18 @@ const SearchsHeadCells = [
       filter: false,
       sort: false,
       searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isContact",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
       download: false,
       print: false,
       viewColumns: false,
@@ -1423,6 +1461,13 @@ function M1nTable(props) {
   ] = useLazyQuery(CONTACTPARCELINTERESTS, {
     fetchPolicy: "cache-and-network",
   });
+  /////////
+  const [
+    checkIfOwnersAreContacts,
+    { data: checkIfOwnersAreContactsData },
+  ] = useLazyQuery(IFARECONTACTS, {
+    fetchPolicy: "cache-and-network",
+  });
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
@@ -1493,6 +1538,9 @@ function M1nTable(props) {
             userId: stateApp.user.mongoId,
           },
         });
+        checkIfOwnersAreContacts({
+          variables: { idsArray: tracksIdArray },
+        });
       } else {
         setRows([]);
         setLoading(false);
@@ -1508,7 +1556,9 @@ function M1nTable(props) {
         dataCommentsCounter &&
         dataCommentsCounter.commentsCounter &&
         dataTagSamples &&
-        dataTagSamples.tagSamples
+        dataTagSamples.tagSamples &&
+        checkIfOwnersAreContactsData &&
+        checkIfOwnersAreContactsData.ifAreContacts
         //  && dataOwnersWells
       ) {
         let owners = [...dataOwners.owners];
@@ -1524,7 +1574,7 @@ function M1nTable(props) {
               objectId: owner.id,
             },
           };
-
+          owner.isContact = false;
           // if (dataOwnersWells.ownersWells) {
           //   for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
           //     if (owner.id === dataOwnersWells.ownersWells[i].ownerId) {
@@ -1535,6 +1585,23 @@ function M1nTable(props) {
           //     }
           //   }
           // }
+
+          for (
+            let i = 0;
+            i < checkIfOwnersAreContactsData.ifAreContacts.length;
+            i++
+          ) {
+            if (
+              owner.id ===
+              checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
+            ) {
+              owner.isContact =
+                checkIfOwnersAreContactsData.ifAreContacts[i].isContact;
+
+              owner.entity = checkIfOwnersAreContactsData.ifAreContacts[i]._id;
+              break;
+            }
+          }
 
           for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
             if (owner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -1612,6 +1679,7 @@ function M1nTable(props) {
     dataOwners,
     dataTagSamples,
     dataCommentsCounter,
+    checkIfOwnersAreContactsData,
     //  dataOwnersWells
   ]);
   ////////////Tracked Owners end///////////////////////////////////////////////
@@ -2311,6 +2379,10 @@ function M1nTable(props) {
             variables: { objectsIdsArray, userId: stateApp.user.mongoId },
           });
         if (props.showTracks) setShowTracks(true);
+        if (props.targetLabel == "owner")
+          checkIfOwnersAreContacts({
+            variables: { idsArray: objectsIdsArray },
+          });
       } else {
         setShowTracks(false);
         if (!searchloading) {
@@ -2341,6 +2413,9 @@ function M1nTable(props) {
         (dataCommentsCounter && dataCommentsCounter.commentsCounter)) &&
       (!props.showTags || (dataTagSamples && dataTagSamples.tagSamples)) &&
       (!props.showTracks || (dataTracks && dataTracks.tracksByObjectType)) &&
+      (props.targetLabel !== "owner" ||
+        (checkIfOwnersAreContactsData &&
+          checkIfOwnersAreContactsData.ifAreContacts)) &&
       props.privateColumns
     ) {
       if (searchResultData.length > 0) {
@@ -2368,6 +2443,25 @@ function M1nTable(props) {
                 objectId: result.Id,
               },
             };
+
+            result.isContact = false;
+            for (
+              let i = 0;
+              i < checkIfOwnersAreContactsData.ifAreContacts.length;
+              i++
+            ) {
+              if (
+                result.Id ===
+                checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
+              ) {
+                result.isContact =
+                  checkIfOwnersAreContactsData.ifAreContacts[i].isContact;
+
+                result.entity =
+                  checkIfOwnersAreContactsData.ifAreContacts[i]._id;
+                break;
+              }
+            }
           }
 
           if (props.showComments) {
@@ -2440,6 +2534,10 @@ function M1nTable(props) {
                 }
           );
         }
+
+        if (props.targetLabel && props.targetLabel == "owner")
+          buildingColumns.push(SearchsHeadCells[6]);
+
         if (props.showComments) buildingColumns.push(SearchsHeadCells[2]);
 
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
@@ -2466,6 +2564,7 @@ function M1nTable(props) {
     dataTracks,
     dataTagSamples,
     dataCommentsCounter,
+    checkIfOwnersAreContactsData,
     props.privateColumns,
     props.showTracks,
     props.showComments,
