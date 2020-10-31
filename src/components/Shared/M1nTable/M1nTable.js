@@ -1427,7 +1427,7 @@ function M1nTable(props) {
   const [removeUser] = useMutation(REMOVEUSER);
   //////////
 
-  const [getContacts, { data: dataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+  const [getContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
   });
   const [getContactsFilterOptions, { data: dataContactsFilterOptions }] = useLazyQuery(CONTACTSFILTEROPTIONS, {
@@ -1471,6 +1471,30 @@ function M1nTable(props) {
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
+
+  // workaround to make constDataContacts.contacts[i] editable
+  // TODO: set correct isTracked on backend, not frontend
+  const [dataContacts, setDataContacts] = useState(null);
+  useEffect(() => {
+    if (constDataContacts && constDataContacts.paginatedContacts.edges) {
+      let tmpDataContacts = { 
+        ...constDataContacts,
+        paginatedContacts: {
+          ...constDataContacts.paginatedContacts,
+          edges: {
+            ...constDataContacts.paginatedContacts.edges.map((edge) => {
+              return {
+                ...edge,
+                node: { ...edge.node }
+              }
+            })
+          }
+        }
+      };
+
+      setDataContacts(tmpDataContacts);
+    }
+  }, [constDataContacts]);
 
   useEffect(() => {
     if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks && targetLabel !== "contact") {
@@ -2179,22 +2203,24 @@ function M1nTable(props) {
       props.parent &&
       props.parent === "Contacts" &&
       dataContacts &&
-      dataContactsFilterOptions
+      dataContactsFilterOptions /*&&
+      dataTracks &&
+      dataTracks.tracksByObjectType*/
     ) {
       console.log("ue mintable 23");
       if (dataContacts.paginatedContacts.edges && dataContacts.paginatedContacts.edges.length > 0
         && dataContactsFilterOptions && dataContactsFilterOptions.contactsFilterOptions) {
         const objectsIdsArray = [];
-        dataContacts.paginatedContacts.edges.forEach(({node}) => {
-          node = Object.assign({}, node, {isTracked:false});
+        dataContacts.paginatedContacts.edges.forEach(({node})=> {
+          node.isTracked = false;
           objectsIdsArray.push(node._id);
 
-          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-            if (node.id === dataTracks.tracksByObjectType[i].trackOn) {
-              node.isTracked = true;
-              break;
-            }
-          }
+          // for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+          //   if (node.id === dataTracks.tracksByObjectType[i].trackOn) {
+          //     node.isTracked = true;
+          //     break;
+          //   }
+          // }
         });
 
         getCommentsCounter({
@@ -2211,7 +2237,11 @@ function M1nTable(props) {
         setRows([]);
       }
     }
-  }, [dataContacts, dataContactsFilterOptions]);
+  }, [dataContacts,
+      dataContactsFilterOptions,
+      // dataTracks
+    ]
+  );
 
   useEffect(() => {
     if (
@@ -2299,7 +2329,6 @@ function M1nTable(props) {
               return column;
             })
       );
-      console.log(JSON.stringify([...dataContacts.paginatedContacts.edges.node]))
 
       setRows([...dataContacts.paginatedContacts.edges.map(el => el.node)]);
       setLoading(false);
