@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
 import WellCardProvider from "../../../WellCard/WellCardProvider";
+import Draggable from "react-draggable";
 import OwnersDetailCard from "../../../OwnersDetailCard/OwnersDetailCard";
 import ContactDetailCard from "../../../ContactDetailCard/ContactDetailCard";
 import { AppContext } from "../../../../AppContext";
@@ -524,6 +525,7 @@ function SubTable(props) {
                               return row.Id == tableMeta.rowData[0];
                             });
 
+                            setTargetLabelToExpand("well");
                             if (selectedWell) {
                               setSelectedRow(selectedWell);
                               setStateApp((state) => ({
@@ -2079,8 +2081,36 @@ function SubTable(props) {
           </Dialog>
         )}
 
-        {showExpandableCard && (
-          <Dialog
+        {showExpandableCard && (()=>{
+          let temp = [];
+          if (targetLabelToExpand == "well") {
+           temp.push(
+            <Draggable>
+            <div>
+              <ExpandableCardProvider
+                expanded={true}
+                handleCloseExpandableCard={handleCloseExpandableCard}
+                component={<WellCardProvider />}
+                title={stateApp.selectedWell.wellName}
+                subTitle={stateApp.selectedWell.operator}
+                parent="map"
+                mouseX={0}
+                mouseY={0}
+                position="relative"
+                zIndex={99}
+                cardLeft={-470}
+                cardTop={490}
+                cardWidthExpanded="50vw"
+                cardHeightExpanded="95vh"
+                targetSourceId={stateApp.selectedWell.id}
+                targetLabel="well"
+              ></ExpandableCardProvider>
+            </div>
+          </Draggable>
+           )
+          } else {
+            temp.push(
+              <Dialog
             className={classes.dialogExpCard}
             fullWidth
             maxWidth="xl"
@@ -2088,41 +2118,44 @@ function SubTable(props) {
             onClose={handleCloseExpandableCard}
           >
             <ExpandableCardProvider
-              expanded={true}
-              handleCloseExpandableCard={handleCloseExpandableCard}
-              component={subComponent}
-              title={title}
-              subTitle={subTitle}
-              parent="table"
-              mouseX={0}
-              mouseY={0}
-              position="relative"
-              cardLeft={"0"}
-              cardTop={"0"}
-              zIndex={1201}
-              cardWidthExpanded="100%"
-              cardHeightExpanded="100%"
-              targetSourceId={
-                targetLabelToExpand === "owner" ||
-                targetLabelToExpand === "well" ||
-                (!targetLabelToExpand &&
-                  (props.targetLabel === "owner" ||
-                    props.targetLabel === "well"))
-                  ? selectedRow.id
-                  : selectedRow._id
-              }
-              targetLabel={
-                targetLabelToExpand ? targetLabelToExpand : props.targetLabel
-              }
-              noTrackAvailable={
-                targetLabelToExpand === "contact" ||
-                (!targetLabelToExpand && props.targetLabel === "contact")
-                  ? true
-                  : false
-              }
-            />
+                expanded={true}
+                handleCloseExpandableCard={handleCloseExpandableCard}
+                component={subComponent}
+                title={title}
+                subTitle={subTitle}
+                parent="table"
+                mouseX={0}
+                mouseY={0}
+                position="relative"
+                cardLeft={"0"}
+                cardTop={"0"}
+                zIndex={1201}
+                cardWidthExpanded="100%"
+                cardHeightExpanded="100%"
+                targetSourceId={
+                  targetLabelToExpand === "owner" ||
+                  targetLabelToExpand === "well" ||
+                  (!targetLabelToExpand &&
+                    (props.targetLabel === "owner" ||
+                      props.targetLabel === "well"))
+                    ? selectedRow.id
+                    : selectedRow._id
+                }
+                targetLabel={
+                  targetLabelToExpand ? targetLabelToExpand : props.targetLabel
+                }
+                noTrackAvailable={
+                  targetLabelToExpand === "contact" ||
+                  (!targetLabelToExpand && props.targetLabel === "contact")
+                    ? true
+                    : false
+                }
+              />
           </Dialog>
-        )}
+            )
+          }
+          return temp;
+        })}
       </div>
 
       {props.loading && (

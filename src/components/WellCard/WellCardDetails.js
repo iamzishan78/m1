@@ -237,59 +237,54 @@ export default function WellCardDetails(props) {
 
   const WellInfo = () => (
     <Grid container spacing={2}>
-      <Grid item xs={12} sm={2}>
-        <QuadProvider />
+      <Grid item xs={12}>
+        <div className={classes.toggle}>
+          <FormControlLabel
+            control={
+              <OilSwitch
+                checked={stateWellCard.chartToggleOil}
+                onChange={handleChangeOil}
+                //name="chartToggleOil"
+              />
+            }
+            label="Oil"
+          />
+          <FormControlLabel
+            control={
+              <GasSwitch
+                checked={stateWellCard.chartToggleGas}
+                onChange={handleChangeGas}
+                name="checkedGas"
+                color="secondary"
+                // color="#e57373"//invalid color
+              />
+            }
+            label="Gas"
+          />
+          <FormControlLabel
+            control={
+              <WaterSwitch
+                checked={stateWellCard.chartToggleWater}
+                onChange={handleChangeWater}
+                name="checkedWater"
+              />
+            }
+            label="Water"
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={stateWellCard.chartToggleMultiAxis}
+                onChange={handleChangeMultiAxis}
+                color="primary"
+              />}
+            label="Multi-Axes"
+          />
+          <FormControlLabel disabled control={<Switch />} label="Log Scale" />
+        </div>
       </Grid>
-      <Grid item xs={12} sm={10}>
-        <Grid item xs={12}>
-          <div className={classes.toggle}>
-            <FormControlLabel
-              control={
-                <OilSwitch
-                  checked={stateWellCard.chartToggleOil}
-                  onChange={handleChangeOil}
-                  //name="chartToggleOil"
-                />
-              }
-              label="Oil"
-            />
-            <FormControlLabel
-              control={
-                <GasSwitch
-                  checked={stateWellCard.chartToggleGas}
-                  onChange={handleChangeGas}
-                  name="checkedGas"
-                  color="secondary"
-                  // color="#e57373"//invalid color
-                />
-              }
-              label="Gas"
-            />
-            <FormControlLabel
-              control={
-                <WaterSwitch
-                  checked={stateWellCard.chartToggleWater}
-                  onChange={handleChangeWater}
-                  name="checkedWater"
-                />
-              }
-              label="Water"
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={stateWellCard.chartToggleMultiAxis}
-                  onChange={handleChangeMultiAxis}
-                  color="primary"
-                />}
-              label="Multi-Axes"
-            />
-            <FormControlLabel disabled control={<Switch />} label="Log Scale" />
-          </div>
-        </Grid>
-        <Grid item xs={12}>
-          <WellProdChartProvider />
-        </Grid>
+      <Grid item xs={12}>
+        <WellProdChartProvider />
       </Grid>
       <Grid item sm={12}>
           <Taps
@@ -324,12 +319,13 @@ export default function WellCardDetails(props) {
       </Grid>
       <Grid item sm={12} container className={classes.gridWidthScroll}>
         <Grid item sm={12} container style={{ height: "482px" }}>
-          <Grid item sm={6} className={classes.gridItem}>
-            <TableSummary summary={props.summary} />
-          </Grid>
-          {/* <Divider orientation="vertical" /> */}
-          <Grid item sm={6} className={classes.gridItem}>
-            <CardDetailsMap />
+          <Grid container spacing={2}>
+            <Grid item sm={8} >
+              <TableSummary summary={props.summary} />
+            </Grid>
+            <Grid item xs={4}>
+              <QuadProvider />
+            </Grid>
           </Grid>
         </Grid>
         <Grid item sm={12}>

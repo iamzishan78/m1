@@ -227,7 +227,7 @@ export default function WellCard() {
     //   });
     // }
   }, [stateApp.user, source]);
-
+  
   // useEffect(() => {
   //   if (dataGraph) {
   //     if (dataGraph.vertexEdges) {
