@@ -24,6 +24,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
 import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
+// import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { CONTACTSFILTEROPTIONS } from "../../../graphQL/useQueryContactsFilterOptions";
 import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType";
