@@ -58,29 +58,25 @@ import Contact_card from "../../svgIcons/contact_card";
 import TransactDialog from "../../../Transact/components/dialog";
 import ParcelScreenIcon from "../../svgIcons/parcelScreen";
 import ParcelsDetailCard from "../../../ParcelsDetailCard/ParcelsDetailCard";
+import { debounce } from 'lodash';
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { WELLQUERY } from "../../../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/client";
-
 var ticksToDateString = function (ticks) {
   var epochTicks = 621355968000000000;
   var ticksPerMillisecond = 10000; // whoa!
   var maxDateMilliseconds = 8640000000000000;
-
   if (isNaN(ticks)) {
     //      0001-01-01T00:00:00.000Z
     return "NANA-NA-NATNA:NA:BA.TMAN";
   }
-
   // convert the ticks into something javascript understands
   var ticksSinceEpoch = ticks - epochTicks;
   var millisecondsSinceEpoch = ticksSinceEpoch / ticksPerMillisecond;
-
   if (millisecondsSinceEpoch > maxDateMilliseconds) {
     //      +035210-09-17T07:18:31.111Z
     return "+WHOAWH-OA-ISTOO:FA:RA.WAYZ";
   }
-
   // output the result in something the human understands
   var date = new Date(millisecondsSinceEpoch);
   return date.toISOString();
@@ -302,6 +298,10 @@ function SubTable(props) {
     setStateIfDeepEqual(TrueTargetLabel, newState);
   };
 
+  const [rowsPerPage, RowsPerPage] = useState(props.startPaginationAt);
+  const setRowsPerPage = (newState) => {
+    setStateIfDeepEqual(RowsPerPage, newState);
+  };
   const [getWell, { data: dataWell }] = useLazyQuery(WELLQUERY);
 
   //// opening the well detail card after fetch the extra well data needed
@@ -487,6 +487,17 @@ function SubTable(props) {
       </Menu>
     );
   };
+
+  const searchRequest = (e) => {
+    e.setLoading(true);
+    e.getContacts({
+      variables: {
+        pagination: e.pagination,
+        search: e.searchText
+      },
+    });
+  };
+  const delayedSearchRequest = debounce(e => searchRequest(e), 2000);
 
   useEffect(() => {
     if (props.columns) {
@@ -1260,6 +1271,12 @@ function SubTable(props) {
                     return v;
                   };
 
+                  if (column.name === "lastUpdateBy.name") {
+                    if (props.rows[tableMeta.rowIndex]) {
+                      value = props.rows[tableMeta.rowIndex].lastUpdateBy?.name;
+                    }
+                  }
+
                   ////// if non editable column
                   if (
                     !column.editable ||
@@ -1334,7 +1351,7 @@ function SubTable(props) {
                           props.columns.findIndex(
                             (val) => val.name === "melissaRowsCount"
                           )
-                        ] !== undefined && (
+                        ] !== 0 && (
                           <MonetizationOnIcon
                             className={classes.monetizationIcon}
                           />
@@ -1398,8 +1415,8 @@ function SubTable(props) {
   };
 
   const options = {
-    filterType: "multiselect",
-    rowsPerPage: props.startPaginationAt ? props.startPaginationAt : 25,
+    filterType: "dropdown",
+    rowsPerPage: rowsPerPage ? rowsPerPage : 25,
     rowsPerPageOptions:
       props.rows && props.rows.length > 25
         ? [10, 25, 50, 100]
@@ -1748,7 +1765,128 @@ function SubTable(props) {
         handleOpenExpandableCard();
       }
     },
+    onTableChange: (action, tableState) => {
+      console.log('onTableChange');
+      console.log(action, tableState);
+      if (props.header === "Contacts") {
+        switch (action) {
+          case 'changeRowsPerPage':
+            console.log('changeRowsPerPage')
+            props.contactsPageProps.setLoading(true);
+            tableState.page = 0
+            setRowsPerPage(tableState.rowsPerPage)
+            props.contactsPageProps.getContacts({
+              variables: {
+                pagination: {
+                  first: tableState.rowsPerPage,
+                  after: null
+                },
+                search: tableState.searchText
+              },
+            });
+            break;
+          case 'changePage':
+            props.contactsPageProps.setLoading(true);
+            props.contactsPageProps.getContacts({
+              variables: {
+                pagination: {
+                  first: tableState.rowsPerPage,
+                  after: props.rows[props.rows.length - 1]._id
+                },
+                sort: !tableState.activeColumn ? [] : {
+                  field: tableState.columns[tableState.activeColumn].name === 'fullContactAddress' ? 'address1' : tableState.columns[tableState.activeColumn].name,
+                  order: tableState.columns[tableState.activeColumn].sortDirection === 'asc' ? 1 : -1
+                },
+                search: tableState.searchText
+              },
+            });
+            break;
+          case 'sort':
+            props.contactsPageProps.setLoading(true);
+            props.contactsPageProps.getContacts({
+              variables: {
+                pagination: {
+                  first: tableState.rowsPerPage,
+                  after: null
+                },
+                sort: {
+                  field: tableState.columns[tableState.activeColumn].name === 'fullContactAddress' ? 'address1' : tableState.columns[tableState.activeColumn].name,
+                  order: tableState.columns[tableState.activeColumn].sortDirection === 'asc' ? 1 : -1
+                }
+              },
+            });
+            break;
+          case 'search':
+            delayedSearchRequest({
+              setLoading: props.contactsPageProps.setLoading,
+              getContacts: props.contactsPageProps.getContacts,
+              pagination: {
+                first: tableState.rowsPerPage,
+                after: null
+              },
+              searchText: tableState.searchText
+            });
+            break;
+          case 'propsUpdate':
+            console.log('work propsUpdate')
+            break;
+          case 'filterChange':
+            props.contactsPageProps.setLoading(true);
+            tableState.page = 0
+            let filters = []
+            const leadSourceIndex = tableState.columns.findIndex(i => i.name === "leadSource");
+            const lastUpdateByIndex = tableState.columns.findIndex(i => i.name === "lastUpdateBy.name");
+            const tagsIndex = tableState.columns.findIndex(i => i.name === "tags");
+
+            if (tableState.filterList[leadSourceIndex].length !== 0) {
+              filters.push({
+                field: 'leadSource',
+                value: tableState.filterList[leadSourceIndex]
+              })
+            }
+            if (tableState.filterList[lastUpdateByIndex].length !== 0) {
+              filters.push({
+                field: 'lastUpdateBy.name',
+                value: tableState.filterList[lastUpdateByIndex]
+              })
+            }
+            if (tableState.filterList[tagsIndex].length !== 0) {
+              filters.push({
+                field: 'tag',
+                value: tableState.filterList[tagsIndex]
+              })
+            }
+
+            props.contactsPageProps.getContacts({
+              variables: {
+                pagination: {
+                  first: tableState.rowsPerPage,
+                  after: null
+                },
+                filters: filters
+              },
+            });
+            break;
+          default:
+            console.log('action not handled.');
+        }
+      }
+    }
   };
+
+  if (props.header === "Contacts") {
+    console.log('props.header === "Contacts"')
+    options.rowsPerPageOptions =
+      props.contactsPageProps.contactsCount > 25
+        ? [10, 25, 50, 100]
+        : props.contactsPageProps.contactsCount > 10
+        ? [10, 25]
+        : [];
+    options.count = props.contactsPageProps.contactsCount;
+    options.serverSide = true;
+  }
+  
+  console.log("ROWSSS : ", rows);
 
   let history = useHistory();
 

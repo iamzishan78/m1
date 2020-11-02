@@ -24,7 +24,9 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
 import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
-import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
+// import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
+import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
+import { CONTACTSFILTEROPTIONS } from "../../../graphQL/useQueryContactsFilterOptions";
 import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType";
 import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
@@ -638,13 +640,8 @@ const ContactsHeadCells = [
     },
   },
 
-  { name: "name", label: "Name", editable: true },
-  {
-    name: "fullContactAddress",
-    label: "Primary Address",
-    editable: true,
-    options: { filter: false },
-  },
+  { name: "name", label: "Name", editable: true, options: { filter: false } },
+  { name: "fullContactAddress", label: "Primary Address", editable: true, options: { filter: false } },
   { name: "leadSource", label: "Lead Source", editable: true },
   { name: "lastUpdateBy.name", label: "Updated By" },
   { name: "lastUpdateAt", label: "Last Updated", options: { filter: false } },
@@ -1430,12 +1427,13 @@ function M1nTable(props) {
   });
   const [removeUser] = useMutation(REMOVEUSER);
   //////////
-  const [getContacts, { data: constDataContacts }] = useLazyQuery(
-    CONTACTSQUERY,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+
+  const [getContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
+  const [getContactsFilterOptions, { data: dataContactsFilterOptions }] = useLazyQuery(CONTACTSFILTEROPTIONS, {
+    fetchPolicy: "cache-and-network",
+  });
   //////////
   const [getTransactionData, { data: dataDeals }] = useLazyQuery(
     TRANSACTIONDATA
@@ -1479,17 +1477,28 @@ function M1nTable(props) {
   // TODO: set correct isTracked on backend, not frontend
   const [dataContacts, setDataContacts] = useState(null);
   useEffect(() => {
-    if (constDataContacts && constDataContacts.contacts) {
-      let tmpDataContacts = { contacts: [] };
-      constDataContacts.contacts.forEach((contact) => {
-        tmpDataContacts.contacts.push(Object.create(contact));
-      });
+    if (constDataContacts && constDataContacts.paginatedContacts.edges) {
+      let tmpDataContacts = { 
+        ...constDataContacts,
+        paginatedContacts: {
+          ...constDataContacts.paginatedContacts,
+          edges: [
+            ...constDataContacts.paginatedContacts.edges.map((edge) => {
+              return {
+                ...edge,
+                node: { ...edge.node }
+              }
+            })
+          ]
+        }
+      };
+
       setDataContacts(tmpDataContacts);
     }
   }, [constDataContacts]);
 
   useEffect(() => {
-    if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks) {
+    if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks && targetLabel !== "contact") {
       tracksByObjectType({
         variables: {
           objectType:
@@ -1527,6 +1536,7 @@ function M1nTable(props) {
     ) {
       console.log("ue mintable 3");
       if (dataTracks.tracksByObjectType.length !== 0) {
+        setLoading(true);
         const tracksIdArray = dataTracks.tracksByObjectType.map(
           (track) => track.trackOn
         );
@@ -1723,6 +1733,7 @@ function M1nTable(props) {
     ) {
       console.log("ue mintable 6");
       if (dataTracks.tracksByObjectType.length !== 0) {
+        setLoading(true);
         const tracksIdArray = dataTracks.tracksByObjectType.map(
           (track) => track.trackOn
         );
@@ -2021,6 +2032,7 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell") {
+      setLoading(true);
       console.log("ue mintable 10");
       setTargetLabel("owner");
       setHeader("Tax Roll Ownership");
@@ -2035,6 +2047,7 @@ function M1nTable(props) {
     if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
       console.log("ue mintable 11");
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
+        setLoading(true);
         const objectsIdsArray = dataWellOwners.wellOwners.map(
           (wellOwner) => wellOwner.id
         );
@@ -2174,11 +2187,13 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "Contacts") {
+      setLoading(true);
       console.log("ue mintable 22");
       setTargetLabel("contact");
       setHeader("Contacts");
       setAddAble({ parent: false, type: "contact" });
       getContacts();
+      getContactsFilterOptions();
       setUploadIcon(false);
       setStartPaginationAt(25);
     }
@@ -2189,22 +2204,24 @@ function M1nTable(props) {
       props.parent &&
       props.parent === "Contacts" &&
       dataContacts &&
+      dataContactsFilterOptions /*&&
       dataTracks &&
-      dataTracks.tracksByObjectType
+      dataTracks.tracksByObjectType*/
     ) {
       console.log("ue mintable 23");
-      if (dataContacts.contacts && dataContacts.contacts.length > 0) {
+      if (dataContacts.paginatedContacts.edges && dataContacts.paginatedContacts.edges.length > 0
+        && dataContactsFilterOptions && dataContactsFilterOptions.contactsFilterOptions) {
         const objectsIdsArray = [];
-        dataContacts.contacts.forEach((contact) => {
-          contact.isTracked = false;
-          objectsIdsArray.push(contact._id);
+        dataContacts.paginatedContacts.edges.forEach(({node})=> {
+          node.isTracked = false;
+          objectsIdsArray.push(node._id);
 
-          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-            if (contact.id === dataTracks.tracksByObjectType[i].trackOn) {
-              contact.isTracked = true;
-              break;
-            }
-          }
+          // for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+          //   if (node.id === dataTracks.tracksByObjectType[i].trackOn) {
+          //     node.isTracked = true;
+          //     break;
+          //   }
+          // }
         });
 
         getCommentsCounter({
@@ -2221,15 +2238,19 @@ function M1nTable(props) {
         setRows([]);
       }
     }
-  }, [dataContacts, dataTracks]);
+  }, [dataContacts,
+      dataContactsFilterOptions,
+      // dataTracks
+    ]
+  );
 
   useEffect(() => {
     if (
       props.parent &&
       props.parent === "Contacts" &&
       dataContacts &&
-      dataContacts.contacts &&
-      dataContacts.contacts.length > 0 &&
+      dataContacts.paginatedContacts.edges && 
+      dataContacts.paginatedContacts.edges.length > 0 &&
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
@@ -2238,23 +2259,23 @@ function M1nTable(props) {
       dataMelissaRowsCount.getMelissaRecordsCountForContactIds
     ) {
       console.log("ue mintable 24");
-      dataContacts.contacts.forEach((contact) => {
-        contact.commentsCounter = 0;
-        contact.tags = [[], 0];
-        // contact.fullContactAddress = joinAddress(contact);
-        // contact.contactName = contact.name;
+      dataContacts.paginatedContacts.edges.forEach(({node}) => {
+        node.commentsCounter = 0;
+        node.tags = [[], 0];
+        // node.fullContactAddress = joinAddress(node);
+        // node.contactName = node.name;
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-          if (contact._id === dataCommentsCounter.commentsCounter[i]._id) {
-            contact.commentsCounter =
+          if (node._id === dataCommentsCounter.commentsCounter[i]._id) {
+            node.commentsCounter =
               dataCommentsCounter.commentsCounter[i].total;
             break;
           }
         }
 
         for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-          if (contact._id === dataTagSamples.tagSamples[i]._id) {
-            contact.tags = [
+          if (node._id === dataTagSamples.tagSamples[i]._id) {
+            node.tags = [
               dataTagSamples.tagSamples[i].tags,
               dataTagSamples.tagSamples[i].total,
             ];
@@ -2265,11 +2286,11 @@ function M1nTable(props) {
 
         let foundMelissaRowsCount = dataMelissaRowsCount.getMelissaRecordsCountForContactIds.find(
           (value) => {
-            return contact._id === value._id;
+            return node._id === value._id;
           }
         );
         if (foundMelissaRowsCount) {
-          contact.melissaRowsCount = foundMelissaRowsCount.total;
+          node.melissaRowsCount = foundMelissaRowsCount.total;
         }
       });
 
@@ -2309,7 +2330,8 @@ function M1nTable(props) {
               return column;
             })
       );
-      setRows([...dataContacts.contacts]);
+
+      setRows([...dataContacts.paginatedContacts.edges.map(el => el.node)]);
       setLoading(false);
     }
   }, [
@@ -2813,6 +2835,7 @@ function M1nTable(props) {
   ////////////User management//////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "UserManagement") {
+      setLoading(true);
       getAllUsers();
       if (userLists?.allUsers) {
         setTargetLabel("usermanagement");
@@ -2852,6 +2875,7 @@ function M1nTable(props) {
   useEffect(() => {
     console.log("DEALS CHECK : ", props.parent, props.contact, stateApp.user);
     if (props.parent && props.parent === "Deals" && stateApp.user) {
+      setLoading(true);
       console.log("ue mintable 22");
       setTargetLabel("deals");
       setHeader("Deals");
@@ -3173,6 +3197,11 @@ function M1nTable(props) {
         orderByTracks={orderByTracks}
         startPaginationAt={startPaginationAt}
         contactId={props.contact?._id}
+        contactsPageProps={{
+          getContacts,
+          contactsCount: dataContacts ? dataContacts.paginatedContacts.totalCount : 0,
+          setLoading
+        }}
         parent={props.parent}
       />
     </Container>
