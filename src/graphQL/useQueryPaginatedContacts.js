@@ -23,14 +23,6 @@ export const PAGINATEDCONTACTSQUERY = gql`
         node {
           _id
           entity
-          mobilePhone
-          homePhone
-          primaryEmail
-          leadSource
-          lastUpdateAt
-          lastUpdateBy {
-            name
-          }
           name
           address1
           address2
@@ -38,9 +30,15 @@ export const PAGINATEDCONTACTSQUERY = gql`
           country
           state
           zip
-          commentsCounter
-          tags
-          melissaRowsCount
+          mobilePhone
+          homePhone
+          primaryEmail
+          owners
+          leadSource
+          lastUpdateAt
+          lastUpdateBy {
+            name
+          }
         },
         cursor
       },
