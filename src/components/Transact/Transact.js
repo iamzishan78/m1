@@ -2,7 +2,7 @@
 //////////react-trello info: https://github.com/rcdexta/react-trello  //////////
 ////////////////////////////////////////////////////////////////////////////////
 
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../AppContext";
 import Board from "react-trello";
@@ -16,7 +16,7 @@ import Dialog from "./components/dialog";
 import getLaneTitle from "./getLaneTitle";
 import AddDealDialog from "../ContactDetailCard/components/AddDealDialog";
 import RightDialog from "../ContactDetailCard/components/RightDialog";
-
+import { isEqual } from "lodash";
 import "./index.css";
 import { AppBar } from "@material-ui/core";
 import TransactAppBar from "./components/TransactAppBar";
@@ -255,6 +255,14 @@ const transact_data = {
   ],
 };
 
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  return ref.current;
+}
+
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100vh",
@@ -286,7 +294,8 @@ export default function Transact() {
   // const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [transactData, setTransactData] = useState();
-  const [filteredTransactData, setFilteredTransactData] = useState();
+  const [filteredTransactData, setFilteredTransactData] = useState(null);
+  const prevFiltertedTransactData = usePrevious(filteredTransactData);
   const [id, setId] = useState();
   const [allDeals, setAllDeals] = useState([]);
   const [openDeals, setOpenDeals] = useState([]);
@@ -299,6 +308,7 @@ export default function Transact() {
 
   const [dealDisplayType, setDealDisplayType] = useState("board");
   const [dealFilter, setDealFilter] = useState("open");
+  const prevDealFilter = usePrevious(dealFilter);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
@@ -347,41 +357,179 @@ export default function Transact() {
     setDeletedDeals(deleted);
   }, [allDeals]);
 
-  // let cards = [];
-  //     if (filter === "all") {
-  //       lane.cards.forEach(
-  //         (card) => !card.isDeleted && cards.push({ ...card })
-  //       ); // remove deleted cards
-  //     } else if (filter === "won") {
-  //       lane.cards.forEach(
-  //         (card) =>
-  //           !card.isDeleted &&
-  //           card.dealState === "won" &&
-  //           cards.push({ ...card })
-  //       ); // get won cards
-  //     } else if (filter === "lost") {
-  //       lane.cards.forEach(
-  //         (card) =>
-  //           !card.isDeleted &&
-  //           card.dealState === "lost" &&
-  //           cards.push({ ...card })
-  //       ); //get lost cards
-  //     } else if (filter === "open") {
-  //       lane.cards.forEach(
-  //         (card) =>
-  //           !card.isDeleted &&
-  //           !card.dealState === "won" &&
-  //           !card.dealState === "lost" &&
-  //           cards.push({ ...card })
-  //       ); // get open cards
-  //     } else if (filter === "deleted") {
-  //       lane.cards.forEach((card) => card.isDeleted && cards.push({ ...card })); // get deleted cards
+  useEffect(() => {
+    if (transactData) {
+      let lanes = transactData.lanes;
+      let filterted = filterCards(lanes, dealFilter);
+      console.log("TRANSACT DATA", transactData.lanes);
+      console.log("FILTERED DATA", dealFilter, filterted);
+
+      setFilteredTransactData({ lanes: [...filterted] });
+
+      updateTransaction({
+        variables: {
+          transactionId: id,
+          transaction: { allData: transactData, user: stateApp.user.mongoId },
+        },
+        refetchQueries: ["getTransactionData"],
+        awaitRefetchQueries: true,
+      });
+    }
+  }, [transactData, dealFilter]);
+
+  // const didLaneChange = (current, prev) => {
+  //   let changed = false;
+  //   console.log(current, prev);
+
+  //   for (let i = 0; i < current.length; i++) {
+  //     if (current[i].cards.length !== prev[i].cards.length) {
+  //       changed = true;
+  //       break;
   //     }
+  //   }
+
+  //   return changed;
+  // };
+
+  const getChanged = (current, prev) => {
+    let oldLane;
+    let newLane;
+    let newLaneIndex;
+    let oldLaneIndex;
+    let card;
+
+    for (let i = 0; i < current.length; i++) {
+      if (current[i].cards.length > prev[i].cards.length) {
+        newLane = current[i];
+        newLaneIndex = i;
+      } else if (current[i].cards.length < prev[i].cards.length) {
+        oldLane = current[i];
+        oldLaneIndex = i;
+      }
+    }
+
+    console.log(current, prev, newLaneIndex, oldLaneIndex);
+    if (newLaneIndex !== undefined && oldLaneIndex !== undefined) {
+      card = current[newLaneIndex].cards.find(
+        (card) =>
+          prev[oldLaneIndex].cards.findIndex((c) => c.id === card.id) !== -1
+      );
+    }
+
+    return { oldLane, newLane, oldLaneIndex, newLaneIndex, card };
+  };
+
+  useEffect(() => {
+    if (
+      filteredTransactData &&
+      prevFiltertedTransactData &&
+      !isEqual(filteredTransactData, prevFiltertedTransactData)
+    ) {
+      console.log("CURRENT DATA", filteredTransactData);
+      console.log("PREV DATA", prevFiltertedTransactData);
+
+      // HANDLE LANE CHANGE HERE
+      // const {
+      //   oldLane,
+      //   newLane,
+      //   card: movedCard,
+      //   oldLaneIndex,
+      //   newLaneIndex,
+      // } = getChanged(
+      //   filteredTransactData.lanes,
+      //   prevFiltertedTransactData.lanes
+      // );
+
+      // console.log(
+      //   oldLaneIndex,
+      //   newLaneIndex,
+      //   oldLane,
+      //   newLane,
+      //   movedCard,
+      //   transactData
+      // );
+
+      // setTransactData((prev) => {
+      //   const td = { ...prev };
+
+      //   let updatedOldLaneCards = td.lanes[oldLaneIndex].cards.filter(
+      //     (card) => card.id !== movedCard.id
+      //   );
+      //   let updatedOldLane = {
+      //     ...td.lanes[oldLaneIndex],
+      //     cards: updatedOldLaneCards,
+      //   };
+
+      //   let updatedNewLaneCards = [...td.lanes[newLaneIndex].cards, movedCard];
+      //   let updatedNewLane = {
+      //     ...td.lanes[oldLaneIndex],
+      //     cards: updatedNewLaneCards,
+      //   };
+
+      //   const before =
+      //     oldLaneIndex < newLaneIndex ? oldLaneIndex : newLaneIndex;
+      //   const laneBefore =
+      //     oldLaneIndex < newLaneIndex ? updatedOldLane : updatedNewLane;
+
+      //   const after = before === newLaneIndex ? oldLaneIndex : newLaneIndex;
+      //   const laneAfter =
+      //     before === newLaneIndex ? updatedOldLane : updatedNewLane;
+
+      //   console.log(td);
+      //   console.log(td, laneBefore, laneAfter, before, after);
+      //   return {
+      //     // ...td,
+      //     lanes: [
+      //       ...td.lanes.slice(0, before),
+      //       laneBefore,
+      //       ...td.lanes.slice(before + 1, after),
+      //       laneAfter,
+      //       ...td.lanes.slice(after + 1),
+      //     ],
+      //   };
+      // });
+    }
+  }, [filteredTransactData]);
+
+  const filterCards = (lanes, filter) => {
+    return lanes.map((lane) => {
+      let title = getLaneTitle(lane.id);
+      let cards = [];
+      if (filter === "all") {
+        lane.cards.forEach(
+          (card) => !card.isDeleted && cards.push({ ...card })
+        ); // remove deleted cards
+      } else if (filter === "won") {
+        lane.cards.forEach(
+          (card) =>
+            !card.isDeleted &&
+            card.dealState === "won" &&
+            cards.push({ ...card })
+        ); // get won cards
+      } else if (filter === "lost") {
+        lane.cards.forEach(
+          (card) =>
+            !card.isDeleted &&
+            card.dealState === "lost" &&
+            cards.push({ ...card })
+        ); //get lost cards
+      } else if (filter === "open") {
+        lane.cards.forEach(
+          (card) =>
+            !card.isDeleted && !card.dealState && cards.push({ ...card })
+        ); // get open cards
+      } else if (filter === "deleted") {
+        lane.cards.forEach((card) => card.isDeleted && cards.push({ ...card })); // get deleted cards
+      }
+      return { ...lane, title, cards };
+    });
+  };
+
   const getLanesWithFixedTitles = (lanes) => {
     return lanes.map((lane) => {
       let title = getLaneTitle(lane.id);
       let cards = [];
-      lane.cards.forEach((card) => !card.isDeleted && cards.push({ ...card })); // remove deleted cards
+      lane.cards.forEach((card) => cards.push({ ...card }));
       return { ...lane, title, cards };
     });
   };
@@ -401,22 +549,23 @@ export default function Transact() {
     }
   }, [data]);
 
-  useEffect(() => {
-    if (transactData) {
-      setFilteredTransactData(transactData);
-    }
-  }, [transactData]);
+  // useEffect(() => {
+  //   if (transactData) {
+  //     setFilteredTransactData(transactData);
+  //   }
+  // }, [transactData]);
 
   const handleDataChange = (newData) => {
     console.log("DATA CHANGE", newData);
-    updateTransaction({
-      variables: {
-        transactionId: id,
-        transaction: { allData: newData, user: stateApp.user.mongoId },
-      },
-      refetchQueries: ["getTransactionData"],
-      awaitRefetchQueries: true,
-    });
+    setFilteredTransactData(newData);
+    // updateTransaction({
+    //   variables: {
+    //     transactionId: id,
+    //     transaction: { allData: newData, user: stateApp.user.mongoId },
+    //   },
+    //   refetchQueries: ["getTransactionData"],
+    //   awaitRefetchQueries: true,
+    // });
   };
 
   const handleCardClick = (cardId, metadata, laneId) => {
@@ -428,6 +577,67 @@ export default function Transact() {
         laneId,
       },
     }));
+  };
+
+  const handleCardDragEnd = (
+    cardId,
+    sourceLaneId,
+    targetLaneId,
+    position,
+    cardDetails
+  ) => {
+    if (sourceLaneId !== targetLaneId) {
+      const lanes = transactData.lanes;
+      const sourceLane = lanes.find((lane) => lane.id === sourceLaneId);
+      const targetLane = lanes.find((lane) => lane.id === targetLaneId);
+      const sourceLaneIndex = lanes.findIndex(
+        (lane) => lane.id === sourceLaneId
+      );
+      const targetLaneIndex = lanes.findIndex(
+        (lane) => lane.id === targetLaneId
+      );
+
+      const updatedSourceLane = {
+        ...sourceLane,
+        cards: sourceLane.cards.filter((card) => card.id !== cardId),
+      };
+
+      // const updatedTargetLane = {
+      //   ...targetLane,
+      //   cards: [
+      //     ...targetLane.cards.slice(0, position),
+      //     { ...cardDetails },
+      //     ...targetLane.cards.slice(position + 1),
+      //   ],
+      // };
+
+      const updatedTargetLane = {
+        ...targetLane,
+        cards: [...targetLane.cards, { ...cardDetails }],
+      };
+
+      let updatedLanes;
+      if (sourceLaneIndex < targetLaneIndex) {
+        updatedLanes = [
+          ...lanes.slice(0, sourceLaneIndex),
+          updatedSourceLane,
+          ...lanes.slice(sourceLaneIndex + 1, targetLaneIndex),
+          updatedTargetLane,
+          ...lanes.slice(targetLaneIndex + 1),
+        ];
+      } else {
+        updatedLanes = [
+          ...lanes.slice(0, targetLaneIndex),
+          updatedTargetLane,
+          ...lanes.slice(targetLaneIndex + 1, sourceLaneIndex),
+          updatedSourceLane,
+          ...lanes.slice(sourceLaneIndex + 1),
+        ];
+      }
+
+      setTransactData({ lanes: updatedLanes });
+      console.log(cardId, sourceLaneId, targetLaneId, position, cardDetails);
+    }
   };
 
   const wonSum = sumDeals(wonDeals);
@@ -472,7 +682,8 @@ export default function Transact() {
         <Board
           className={classes.list}
           style={{ backgroundColor: "#fff" }}
-          data={transactData}
+          data={filteredTransactData || transactData}
+          handleDragEnd={handleCardDragEnd}
           draggable={true}
           laneDraggable={false}
           cardDraggable={true}
