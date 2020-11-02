@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 import { Modals } from "../../../../../styles/Modal";
@@ -13,6 +13,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import TextField from "@material-ui/core/TextField";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import { AppContext } from "../../../../../AppContext";
 
 const styles = (theme) => ({
   root: {
@@ -98,6 +99,12 @@ export default function SendMailersDialogContent(props) {
     if (!props.rows || props.rows.length === 0) props.onClose();
   }, [props.rows]);
 
+  const [stateApp] = useContext(AppContext);
+  // TODO: set better name for the method
+  const login = () => {
+    console.log('stateApp.user', stateApp.user)
+  }
+
   return (
     <React.Fragment>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
@@ -132,6 +139,9 @@ export default function SendMailersDialogContent(props) {
                 <FormLabel className={modalClass.inputLabel}>
                   {row.name}
                 </FormLabel>
+                <FormLabel className={modalClass.inputLabel}>
+                  {joinAddress(row)}
+                </FormLabel>
                 <FormLabel className={modalClass.inputContent}>
                  <DeleteOutlinedIcon fontSize="small" style={{cursor:'pointer', float:'right'}} onClick={()=> {
                     let reducedRows = [...props.rows];
@@ -152,7 +162,7 @@ export default function SendMailersDialogContent(props) {
         >
           Cancel
         </Button>
-        <Button onClick={() => {}} color="secondary" variant="contained">
+        <Button onClick={() => login()} color="secondary" variant="contained">
           Continue to Send Mailers
         </Button>
       </DialogActions>
