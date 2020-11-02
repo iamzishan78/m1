@@ -6,10 +6,7 @@ export const PAGINATEDCONTACTSQUERY = gql`
       first: 25,
       after: null
     },
-    $sort: ContactSortInput = {
-      field: "name",
-      order: 1
-    },
+    $sort: ContactSortInput = {},
     $filters: [FilterInput] = [],
     $search: String,
     $userId: ID

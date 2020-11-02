@@ -1791,14 +1791,17 @@ function SubTable(props) {
               variables: {
                 pagination: {
                   first: tableState.rowsPerPage,
-                  after: props.rows.pop()._id
+                  after: props.rows[props.rows.length - 1]._id
+                },
+                sort: !tableState.activeColumn ? [] : {
+                  field: tableState.columns[tableState.activeColumn].name === 'fullContactAddress' ? 'address1' : tableState.columns[tableState.activeColumn].name,
+                  order: tableState.columns[tableState.activeColumn].sortDirection === 'asc' ? 1 : -1
                 },
                 search: tableState.searchText
               },
             });
             break;
           case 'sort':
-            const backendColumnName = tableState.sortOrder.name === 'fullContactAddress' ? 'address1' : tableState.sortOrder.name;
             props.contactsPageProps.setLoading(true);
             props.contactsPageProps.getContacts({
               variables: {
@@ -1807,8 +1810,8 @@ function SubTable(props) {
                   after: null
                 },
                 sort: {
-                  field: backendColumnName,
-                  order: tableState.sortOrder.direction === 'desc' ? 1 : -1
+                  field: tableState.columns[tableState.activeColumn].name === 'fullContactAddress' ? 'address1' : tableState.columns[tableState.activeColumn].name,
+                  order: tableState.columns[tableState.activeColumn].sortDirection === 'asc' ? 1 : -1
                 }
               },
             });

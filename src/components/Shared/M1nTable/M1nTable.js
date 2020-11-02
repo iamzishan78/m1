@@ -1481,14 +1481,14 @@ function M1nTable(props) {
         ...constDataContacts,
         paginatedContacts: {
           ...constDataContacts.paginatedContacts,
-          edges: {
+          edges: [
             ...constDataContacts.paginatedContacts.edges.map((edge) => {
               return {
                 ...edge,
                 node: { ...edge.node }
               }
             })
-          }
+          ]
         }
       };
 
