@@ -108,7 +108,7 @@ export default function SendMailersDialogContent(props) {
   return (
     <React.Fragment>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
-        Send Mailers
+        New Mailer Campaign
         <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={props.onClose}/>
       </DialogTitle>
       <DialogContent>
