@@ -207,7 +207,7 @@ export default ({ ...props }) => {
             </Grid>
           </>
         ) : (
-          <h4 style={{ margin: "13px 0 13px 0" }}>No Melissa Records found</h4>
+          <h4 style={{ margin: "13px 0 13px 0" }}>No Purchased Contact Information to Display</h4>
         )}
       </Grid>
     </div>

@@ -58,7 +58,29 @@ import Contact_card from "../../svgIcons/contact_card";
 import TransactDialog from "../../../Transact/components/dialog";
 import ParcelScreenIcon from "../../svgIcons/parcelScreen";
 import ParcelsDetailCard from "../../../ParcelsDetailCard/ParcelsDetailCard";
+import { debounce } from "lodash";
 import AssessmentIcon from "@material-ui/icons/Assessment";
+import { WELLQUERY } from "../../../../graphQL/useQueryWell";
+import { useLazyQuery } from "@apollo/client";
+var ticksToDateString = function (ticks) {
+  var epochTicks = 621355968000000000;
+  var ticksPerMillisecond = 10000; // whoa!
+  var maxDateMilliseconds = 8640000000000000;
+  if (isNaN(ticks)) {
+    //      0001-01-01T00:00:00.000Z
+    return "NANA-NA-NATNA:NA:BA.TMAN";
+  }
+  // convert the ticks into something javascript understands
+  var ticksSinceEpoch = ticks - epochTicks;
+  var millisecondsSinceEpoch = ticksSinceEpoch / ticksPerMillisecond;
+  if (millisecondsSinceEpoch > maxDateMilliseconds) {
+    //      +035210-09-17T07:18:31.111Z
+    return "+WHOAWH-OA-ISTOO:FA:RA.WAYZ";
+  }
+  // output the result in something the human understands
+  var date = new Date(millisecondsSinceEpoch);
+  return date.toISOString();
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -199,10 +221,10 @@ function SubTable(props) {
     setStateIfDeepEqual(Rows, newState);
   };
 
-  const [columns, Columns] = useState([]);
-  const setColumns = (newState) => {
-    setStateIfDeepEqual(Columns, newState);
-  };
+  const [columns, setColumns] = useState([]);
+  // const setColumns = (newState) => {
+  //   setStateIfDeepEqual(Columns, newState);
+  // };
 
   const [viewColumns, ViewColumns] = useState([]);
   const setViewColumns = (newState) => {
@@ -254,18 +276,16 @@ function SubTable(props) {
     setStateIfDeepEqual(SubTitle, newState);
   };
 
-  const m1nSelectedRowsIndexesRef = useRef([]);
-  const setM1nSelectedRowsIndexes = (state) => {
-    if (!deepEqual(m1nSelectedRowsIndexesRef.current, state)) {
-      m1nSelectedRowsIndexesRef.current = state;
-    }
+  const [m1nSelectedRowsIndexes, M1nSelectedRowsIndexes] = useState([]);
+  const setM1nSelectedRowsIndexes = (newState) => {
+    setStateIfDeepEqual(M1nSelectedRowsIndexes, newState);
   };
-  const m1nSelectedRowsIdsRef = useRef([]);
-  const setM1nSelectedRowsIds = (state) => {
-    if (!deepEqual(m1nSelectedRowsIdsRef.current, state)) {
-      m1nSelectedRowsIdsRef.current = state;
-    }
+
+  const [m1nSelectedRowsIds, M1nSelectedRowsIds] = useState([]);
+  const setM1nSelectedRowsIds = (newState) => {
+    setStateIfDeepEqual(M1nSelectedRowsIds, newState);
   };
+
   const [m1nSelectedRowsTracks, M1nSelectedRowsTracks] = useState([]);
   const setM1nSelectedRowsTracks = (newState) => {
     setStateIfDeepEqual(M1nSelectedRowsTracks, newState);
@@ -275,6 +295,70 @@ function SubTable(props) {
   const setTrueTargetLabel = (newState) => {
     setStateIfDeepEqual(TrueTargetLabel, newState);
   };
+
+  const [rowsPerPage, RowsPerPage] = useState(props.startPaginationAt);
+  const setRowsPerPage = (newState) => {
+    setStateIfDeepEqual(RowsPerPage, newState);
+  };
+  const [getWell, { data: dataWell }] = useLazyQuery(WELLQUERY);
+
+  //// opening the well detail card after fetch the extra well data needed
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "search" &&
+      props.targetLabel == "well" &&
+      dataWell &&
+      dataWell.well
+    ) {
+      let selectedWell = props.rows.find((row) => {
+        if (row.id) return row.id == dataWell.well.id;
+        return row.Id == dataWell.well;
+      });
+
+      selectedWell = { ...selectedWell, ...dataWell.well };
+
+      //// temporary to fix the ticks dates fields comming from the rest api
+      if (
+        selectedWell.permitApprovedDate &&
+        selectedWell.permitApprovedDate != "null"
+      )
+        selectedWell.permitApprovedDate = ticksToDateString(
+          selectedWell.permitApprovedDate
+        );
+      if (selectedWell.spudDate && selectedWell.spudDate != "null")
+        selectedWell.spudDate = ticksToDateString(selectedWell.spudDate);
+      if (selectedWell.completionDate && selectedWell.completionDate != "null")
+        selectedWell.completionDate = ticksToDateString(
+          selectedWell.completionDate
+        );
+      if (
+        selectedWell.firstProductionDate &&
+        selectedWell.firstProductionDate != "null"
+      )
+        selectedWell.firstProductionDate = ticksToDateString(
+          selectedWell.firstProductionDate
+        );
+      //// temporary end
+
+      if (selectedWell) {
+        setSelectedRow(selectedWell);
+        setStateApp((state) => ({
+          ...state,
+          selectedWellId: dataWell.well.id,
+          selectedWell,
+        }));
+        setSubComponent(<WellCardProvider />);
+        setTitle(
+          selectedWell.wellName ? selectedWell.wellName : selectedWell.WellName
+        );
+        setSubTitle(
+          selectedWell.operator ? selectedWell.operator : selectedWell.Operator
+        );
+        handleOpenExpandableCard();
+      }
+    }
+  }, [dataWell]);
 
   useEffect(() => {
     if (props.targetLabel === "Parcel Interest")
@@ -294,31 +378,25 @@ function SubTable(props) {
   }, [props.rows, props.orderByTracks]);
 
   useEffect(() => {
-    if (rows && m1nSelectedRowsIndexesRef.current) {
-      if (rows.length > 0 && m1nSelectedRowsIndexesRef.current.length > 0) {
-        let selectedRowsTracks = m1nSelectedRowsIndexesRef.current.map(
-          (ind) => {
-            if (rows[ind] && rows[ind].isTracked) return rows[ind].isTracked;
-          }
-        );
+    if (rows && m1nSelectedRowsIndexes) {
+      if (rows.length > 0 && m1nSelectedRowsIndexes.length > 0) {
+        let selectedRowsTracks = m1nSelectedRowsIndexes.map((ind) => {
+          if (rows[ind]) return rows[ind].isTracked;
+        });
         setM1nSelectedRowsTracks(selectedRowsTracks);
       } else setM1nSelectedRowsTracks([]);
     }
-  }, [rows, props.columns]);
+  }, [rows, props.columns, m1nSelectedRowsIndexes]);
 
   const multiSelectMouseHoverColor = (id, color) => {
-    for (let i = 0; i < m1nSelectedRowsIndexesRef.current.length; i++) {
+    for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
       if (
         document.getElementById(
-          id +
-            m1nSelectedRowsIdsRef.current[i] +
-            m1nSelectedRowsIndexesRef.current[i]
+          id + m1nSelectedRowsIds[i] + m1nSelectedRowsIndexes[i]
         )
       )
         document.getElementById(
-          id +
-            m1nSelectedRowsIdsRef.current[i] +
-            m1nSelectedRowsIndexesRef.current[i]
+          id + m1nSelectedRowsIds[i] + m1nSelectedRowsIndexes[i]
         ).style.backgroundColor = color;
     }
   };
@@ -402,6 +480,17 @@ function SubTable(props) {
     );
   };
 
+  const searchRequest = (e) => {
+    e.setLoading(true);
+    e.getContacts({
+      variables: {
+        pagination: e.pagination,
+        search: e.searchText,
+      },
+    });
+  };
+  const delayedSearchRequest = debounce((e) => searchRequest(e), 2000);
+
   useEffect(() => {
     if (props.columns) {
       props.columns.forEach((column) => {
@@ -428,7 +517,11 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
 
-                          if (props.targetLabel === "well") {
+                          if (value) {
+                            getWell({
+                              variables: { wellId: value },
+                            });
+                          } else if (props.targetLabel === "well") {
                             let selectedWell = props.rows.find((row) => {
                               if (row.id) return row.id == tableMeta.rowData[0];
                               return row.Id == tableMeta.rowData[0];
@@ -599,6 +692,7 @@ function SubTable(props) {
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
+
                           if (value) {
                             if (value.bbox || value.center) {
                               setStateApp((state) => {
@@ -677,23 +771,20 @@ function SubTable(props) {
                       targetSourceId={tableMeta.rowData[0]}
                       dark
                       multipleIds={
-                        m1nSelectedRowsIndexesRef.current.indexOf(
-                          tableMeta.rowIndex
-                        ) !== -1 && m1nSelectedRowsIndexesRef.current.length > 1
-                          ? m1nSelectedRowsIdsRef.current
+                        m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !==
+                          -1 && m1nSelectedRowsIndexes.length > 1
+                          ? m1nSelectedRowsIds
                           : null
                       }
                       multipleTracks={
-                        m1nSelectedRowsIndexesRef.current.indexOf(
-                          tableMeta.rowIndex
-                        ) !== -1 && m1nSelectedRowsIndexesRef.current.length > 1
+                        m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !==
+                          -1 && m1nSelectedRowsIndexes.length > 1
                           ? m1nSelectedRowsTracks
                           : null
                       }
                       multiSelectMouseHoverColor={
-                        m1nSelectedRowsIndexesRef.current.indexOf(
-                          tableMeta.rowIndex
-                        ) !== -1 && m1nSelectedRowsIndexesRef.current.length > 1
+                        m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !==
+                          -1 && m1nSelectedRowsIndexes.length > 1
                           ? multiSelectMouseHoverColor
                           : null
                       }
@@ -749,19 +840,19 @@ function SubTable(props) {
                           aria-label="show comments"
                           onMouseOver={() => {
                             if (
-                              m1nSelectedRowsIndexesRef.current.indexOf(
+                              m1nSelectedRowsIndexes.indexOf(
                                 tableMeta.rowIndex
                               ) !== -1 &&
-                              m1nSelectedRowsIndexesRef.current.length > 1
+                              m1nSelectedRowsIndexes.length > 1
                             )
                               multiSelectMouseHoverColor(id, "#dadbde");
                           }}
                           onMouseOut={() => {
                             if (
-                              m1nSelectedRowsIndexesRef.current.indexOf(
+                              m1nSelectedRowsIndexes.indexOf(
                                 tableMeta.rowIndex
                               ) !== -1 &&
-                              m1nSelectedRowsIndexesRef.current.length > 1
+                              m1nSelectedRowsIndexes.length > 1
                             )
                               multiSelectMouseHoverColor(id, "#efefef");
                           }}
@@ -890,7 +981,6 @@ function SubTable(props) {
                           : "Contact Details"
                       }
                       placement="top"
-                      style={{ marginRight: "10px" }}
                     >
                       <IconButton
                         size={props.dense ? "small" : "medium"}
@@ -924,12 +1014,23 @@ function SubTable(props) {
                             setSubTitle(" ");
                             handleOpenExpandableCard();
                           } else {
-                            handleExpandClick(
-                              tableMeta.columnIndex,
-                              tableMeta.rowIndex,
-                              tableMeta.rowData[1],
-                              "makeOwnerAContact"
-                            );
+                            if (props.targetLabel == "owner") {
+                              handleExpandClick(
+                                tableMeta.columnIndex,
+                                tableMeta.rowIndex,
+                                {
+                                  globalOwner: tableMeta.rowData[0],
+                                  entity: tableMeta.rowData[1],
+                                },
+                                "makeOwnerAContact"
+                              );
+                            } else
+                              handleExpandClick(
+                                tableMeta.columnIndex,
+                                tableMeta.rowIndex,
+                                tableMeta.rowData[1],
+                                "makeOwnerAContact"
+                              );
                           }
                         }}
                         aria-label="show contact"
@@ -1081,19 +1182,19 @@ function SubTable(props) {
                           }}
                           onMouseOver={() => {
                             if (
-                              m1nSelectedRowsIndexesRef.current.indexOf(
+                              m1nSelectedRowsIndexes.indexOf(
                                 tableMeta.rowIndex
                               ) !== -1 &&
-                              m1nSelectedRowsIndexesRef.current.length > 1
+                              m1nSelectedRowsIndexes.length > 1
                             )
                               multiSelectMouseHoverColor(id, "#dadbde");
                           }}
                           onMouseOut={() => {
                             if (
-                              m1nSelectedRowsIndexesRef.current.indexOf(
+                              m1nSelectedRowsIndexes.indexOf(
                                 tableMeta.rowIndex
                               ) !== -1 &&
-                              m1nSelectedRowsIndexesRef.current.length > 1
+                              m1nSelectedRowsIndexes.length > 1
                             )
                               multiSelectMouseHoverColor(id, "#efefef");
                           }}
@@ -1158,6 +1259,12 @@ function SubTable(props) {
 
                     return v;
                   };
+
+                  if (column.name === "lastUpdateBy.name") {
+                    if (props.rows[tableMeta.rowIndex]) {
+                      value = props.rows[tableMeta.rowIndex].lastUpdateBy?.name;
+                    }
+                  }
 
                   ////// if non editable column
                   if (
@@ -1233,7 +1340,7 @@ function SubTable(props) {
                           props.columns.findIndex(
                             (val) => val.name === "melissaRowsCount"
                           )
-                        ] !== undefined && (
+                        ] !== 0 && (
                           <MonetizationOnIcon
                             className={classes.monetizationIcon}
                           />
@@ -1249,7 +1356,16 @@ function SubTable(props) {
       setColumns([...props.columns]);
       setViewColumns(props.addColumnFilter);
     }
-  }, [props.columns, props.rows, rows, colInd, rowInd, m1nSelectedRowsTracks]);
+  }, [
+    props.columns,
+    props.rows,
+    rows,
+    colInd,
+    rowInd,
+    m1nSelectedRowsTracks,
+    m1nSelectedRowsIndexes,
+    m1nSelectedRowsIds,
+  ]);
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -1297,8 +1413,8 @@ function SubTable(props) {
   };
 
   const options = {
-    filterType: "multiselect",
-    rowsPerPage: props.startPaginationAt ? props.startPaginationAt : 25,
+    filterType: "dropdown",
+    rowsPerPage: rowsPerPage ? rowsPerPage : 25,
     rowsPerPageOptions:
       props.rows && props.rows.length > 25
         ? [10, 25, 50, 100]
@@ -1341,7 +1457,7 @@ function SubTable(props) {
       handleExpandClick(null, null, null, "deleteOwnersFromContact");
       return false;
     },
-    rowsSelected: m1nSelectedRowsIndexesRef.current,
+    rowsSelected: m1nSelectedRowsIndexes,
     //// allows you to customize the top bar of selected items ////
     customToolbarSelect:
       props.header === "Interest Owners Tied to Contact"
@@ -1355,12 +1471,8 @@ function SubTable(props) {
             ) {
               const getSelectedRows = () => {
                 const selectedRows = [];
-                for (
-                  let i = 0;
-                  i < m1nSelectedRowsIndexesRef.current.length;
-                  i++
-                ) {
-                  selectedRows.push(rows[m1nSelectedRowsIndexesRef.current[i]]);
+                for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+                  selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
                 }
                 return selectedRows;
               };
@@ -1387,7 +1499,7 @@ function SubTable(props) {
                           );
                         }}
                       >
-                        Buy Info
+                        Buy Contact Info
                       </Button>
                       <Button
                         color="secondary"
@@ -1402,9 +1514,9 @@ function SubTable(props) {
                           );
                         }}
                       >
-                        Mailers
+                        Send Mailers
                       </Button>
-                      <Button
+                      {/* <Button
                         color="secondary"
                         startIcon={<LocalPrintshopRoundedIcon />}
                         className={classes.multiSelectionTopBarButtons}
@@ -1418,7 +1530,7 @@ function SubTable(props) {
                         }}
                       >
                         Labels
-                      </Button>
+                      </Button> */}
                       <Divider orientation="vertical" flexItem />
                     </>
                   )}
@@ -1647,7 +1759,152 @@ function SubTable(props) {
         handleOpenExpandableCard();
       }
     },
+    onTableChange: (action, tableState) => {
+      console.log("onTableChange");
+      console.log(action, tableState);
+      if (props.header === "Contacts") {
+        switch (action) {
+          case "changeRowsPerPage":
+            console.log("changeRowsPerPage");
+            props.contactsPageProps.setLoading(true);
+            tableState.page = 0;
+            setRowsPerPage(tableState.rowsPerPage);
+            props.contactsPageProps.getContacts({
+              variables: {
+                pagination: {
+                  first: tableState.rowsPerPage,
+                  after: null,
+                },
+                search: tableState.searchText,
+              },
+            });
+            break;
+          case "changePage":
+            props.contactsPageProps.setLoading(true);
+            props.contactsPageProps.getContacts({
+              variables: {
+                pagination: {
+                  first: tableState.rowsPerPage,
+                  after: props.rows[props.rows.length - 1]._id,
+                },
+                sort: !tableState.activeColumn
+                  ? []
+                  : {
+                      field:
+                        tableState.columns[tableState.activeColumn].name ===
+                        "fullContactAddress"
+                          ? "address1"
+                          : tableState.columns[tableState.activeColumn].name,
+                      order:
+                        tableState.columns[tableState.activeColumn]
+                          .sortDirection === "asc"
+                          ? 1
+                          : -1,
+                    },
+                search: tableState.searchText,
+              },
+            });
+            break;
+          case "sort":
+            props.contactsPageProps.setLoading(true);
+            props.contactsPageProps.getContacts({
+              variables: {
+                pagination: {
+                  first: tableState.rowsPerPage,
+                  after: null,
+                },
+                sort: {
+                  field:
+                    tableState.columns[tableState.activeColumn].name ===
+                    "fullContactAddress"
+                      ? "address1"
+                      : tableState.columns[tableState.activeColumn].name,
+                  order:
+                    tableState.columns[tableState.activeColumn]
+                      .sortDirection === "asc"
+                      ? 1
+                      : -1,
+                },
+              },
+            });
+            break;
+          case "search":
+            delayedSearchRequest({
+              setLoading: props.contactsPageProps.setLoading,
+              getContacts: props.contactsPageProps.getContacts,
+              pagination: {
+                first: tableState.rowsPerPage,
+                after: null,
+              },
+              searchText: tableState.searchText,
+            });
+            break;
+          case "propsUpdate":
+            console.log("work propsUpdate");
+            break;
+          case "filterChange":
+            props.contactsPageProps.setLoading(true);
+            tableState.page = 0;
+            let filters = [];
+            const leadSourceIndex = tableState.columns.findIndex(
+              (i) => i.name === "leadSource"
+            );
+            const lastUpdateByIndex = tableState.columns.findIndex(
+              (i) => i.name === "lastUpdateBy.name"
+            );
+            const tagsIndex = tableState.columns.findIndex(
+              (i) => i.name === "tags"
+            );
+
+            if (tableState.filterList[leadSourceIndex].length !== 0) {
+              filters.push({
+                field: "leadSource",
+                value: tableState.filterList[leadSourceIndex],
+              });
+            }
+            if (tableState.filterList[lastUpdateByIndex].length !== 0) {
+              filters.push({
+                field: "lastUpdateBy.name",
+                value: tableState.filterList[lastUpdateByIndex],
+              });
+            }
+            if (tableState.filterList[tagsIndex].length !== 0) {
+              filters.push({
+                field: "tag",
+                value: tableState.filterList[tagsIndex],
+              });
+            }
+
+            props.contactsPageProps.getContacts({
+              variables: {
+                pagination: {
+                  first: tableState.rowsPerPage,
+                  after: null,
+                },
+                filters: filters,
+              },
+            });
+            break;
+          default:
+            console.log("action not handled.");
+        }
+      }
+    },
   };
+
+  if (props.header === "Contacts") {
+    console.log('props.header === "Contacts"');
+    options.rowsPerPageOptions =
+      props.contactsPageProps.contactsCount > 25
+        ? [10, 25, 50, 100]
+        : props.contactsPageProps.contactsCount > 10
+        ? [10, 25]
+        : [];
+    options.count = props.contactsPageProps.contactsCount;
+    options.serverSide = true;
+  }
+
+  console.log("ROWSSS : ", rows);
 
   let history = useHistory();
 
@@ -1667,7 +1924,15 @@ function SubTable(props) {
           title={props.header}
           data={rows ? rows : []}
           columns={columns ? columns : []}
-          options={{ print: false, download: false, ...options }}
+          options={{
+            print: false,
+            download:
+              // props.targetLabel == "owner" || props.targetLabel == "well"
+              //   ? true
+              //   :
+              false,
+            ...options,
+          }}
         />
 
         {/* <TransactDialog
@@ -1721,9 +1986,9 @@ function SubTable(props) {
                   trueTargetLabel ? trueTargetLabel : props.targetLabel
                 }
                 multipleIds={
-                  m1nSelectedRowsIndexesRef.current.indexOf(rowInd) !== -1 &&
-                  m1nSelectedRowsIndexesRef.current.length > 1
-                    ? m1nSelectedRowsIdsRef.current
+                  m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
+                  m1nSelectedRowsIndexes.length > 1
+                    ? m1nSelectedRowsIds
                     : null
                 }
               />
@@ -1736,9 +2001,9 @@ function SubTable(props) {
                     trueTargetLabel ? trueTargetLabel : props.targetLabel
                   }
                   multipleIds={
-                    m1nSelectedRowsIndexesRef.current.indexOf(rowInd) !== -1 &&
-                    m1nSelectedRowsIndexesRef.current.length > 1
-                      ? m1nSelectedRowsIdsRef.current
+                    m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
+                    m1nSelectedRowsIndexes.length > 1
+                      ? m1nSelectedRowsIds
                       : null
                   }
                 />
@@ -1755,6 +2020,7 @@ function SubTable(props) {
             )}
             {openDialog === "makeOwnerAContact" && (
               <MakeItAContactConfirmationDialogContent
+                targetLabel={props.targetLabel}
                 onClose={handleCloseDialog}
                 entity={expandedObject}
                 openContactDetailCard={(contactId) => {
@@ -1801,14 +2067,11 @@ function SubTable(props) {
                 header="Delete Owner(s)"
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
+                m1nSelectedRowsIds={m1nSelectedRowsIds}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to permanently delete the owner${
-                  m1nSelectedRowsIdsRef.current &&
-                  m1nSelectedRowsIdsRef.current.length > 1
-                    ? "s"
-                    : ""
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
                 } from  this contact?`}
               </DeleteConfirmationDialogContent>
             )}
@@ -1817,21 +2080,19 @@ function SubTable(props) {
                 header="Delete Contact(s)"
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
+                m1nSelectedRowsIds={m1nSelectedRowsIds}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {props.header === "Owner's Contacts" &&
                   `Do you want to remove the contact${
-                    m1nSelectedRowsIdsRef.current &&
-                    m1nSelectedRowsIdsRef.current.length > 1
+                    m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
                       ? "s"
                       : ""
                   } from this owner?`}
 
                 {props.header === "Contacts" &&
                   `Do you want to delete the selected contact${
-                    m1nSelectedRowsIdsRef.current &&
-                    m1nSelectedRowsIdsRef.current.length > 1
+                    m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
                       ? "s"
                       : ""
                   }?`}
@@ -1840,42 +2101,30 @@ function SubTable(props) {
             {openDialog === "deleteParcelOwnership" && (
               <DeleteConfirmationDialogContent
                 header={`Delete Owner${
-                  m1nSelectedRowsIdsRef.current &&
-                  m1nSelectedRowsIdsRef.current.length > 1
-                    ? "s"
-                    : ""
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
                 }`}
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
+                m1nSelectedRowsIds={m1nSelectedRowsIds}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to delete the owner${
-                  m1nSelectedRowsIdsRef.current &&
-                  m1nSelectedRowsIdsRef.current.length > 1
-                    ? "s"
-                    : ""
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
                 }?`}
               </DeleteConfirmationDialogContent>
             )}
             {openDialog === "deleteParcelInterest" && (
               <DeleteConfirmationDialogContent
                 header={`Delete Parcel Interest${
-                  m1nSelectedRowsIdsRef.current &&
-                  m1nSelectedRowsIdsRef.current.length > 1
-                    ? "s"
-                    : ""
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
                 }`}
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
+                m1nSelectedRowsIds={m1nSelectedRowsIds}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to delete the Parcel Interest${
-                  m1nSelectedRowsIdsRef.current &&
-                  m1nSelectedRowsIdsRef.current.length > 1
-                    ? "s"
-                    : ""
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
                 }?`}
               </DeleteConfirmationDialogContent>
             )}
@@ -1883,21 +2132,15 @@ function SubTable(props) {
             {openDialog === "deleteDeal" && (
               <DeleteConfirmationDialogContent
                 header={`Delete Deal${
-                  m1nSelectedRowsIdsRef.current &&
-                  m1nSelectedRowsIdsRef.current.length > 1
-                    ? "s"
-                    : ""
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
                 }`}
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
+                m1nSelectedRowsIds={m1nSelectedRowsIds}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to delete the selected deal${
-                  m1nSelectedRowsIdsRef.current &&
-                  m1nSelectedRowsIdsRef.current.length > 1
-                    ? "s"
-                    : ""
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
                 }?`}
               </DeleteConfirmationDialogContent>
             )}
@@ -1943,24 +2186,20 @@ function SubTable(props) {
             {openDialog === "deleteUser" && (
               <DeleteConfirmationDialogContent
                 header={`Delete User${
-                  m1nSelectedRowsIdsRef.current &&
-                  m1nSelectedRowsIdsRef.current.length > 1
-                    ? "s"
-                    : ""
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
                 }`}
                 onClose={handleCloseDialog}
                 deleteFunc={() => {
                   props.deleteFunc(selectedUser.id);
                   closeMenu();
                 }}
-                m1nSelectedRowsIds={m1nSelectedRowsIdsRef.current}
+                m1nSelectedRowsIds={m1nSelectedRowsIds}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {selectedUser !== null
                   ? `Remove '${selectedUser.displayName}' from list?`
                   : `Are you sure you want to delete selected user${
-                      m1nSelectedRowsIdsRef.current &&
-                      m1nSelectedRowsIdsRef.current.length > 1
+                      m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
                         ? "s"
                         : ""
                     }?`}

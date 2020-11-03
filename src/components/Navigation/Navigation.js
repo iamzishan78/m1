@@ -1396,7 +1396,7 @@ export default function Navigation(props) {
                     }
                     aria-label="tags and Tracks"
                   />
-                  <Tab
+                  {/* <Tab
                     //disabled={true}
                     value={6}
                     classes={{ root: classes.tab }}
@@ -1409,7 +1409,7 @@ export default function Navigation(props) {
                       </Badge>
                     }
                     aria-label="ai"
-                  />
+                  /> */}
 
                   {/* <Tab
                     value={7}
@@ -1641,7 +1641,7 @@ export default function Navigation(props) {
               </ListItemIcon>
               <ListItemText
                 className={`${classes.sideNavText} uppercase`}
-                primary="Transact"
+                primary="Deals"
               />
               <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button
@@ -2088,11 +2088,7 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Artificial Intelligence"
                 />
-                {/* <CardActions
-                  classes={{
-                    root: classes.cardAction,
-                  }}
-                ></CardActions> */}
+
                 <CardContent className={classes.cardContent}>
                   <FilterFormAI />
                 </CardContent>
@@ -2120,11 +2116,6 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Advanced Search"
                 />
-                {/* <CardActions
-                  classes={{
-                    root: classes.cardAction,
-                  }}
-                ></CardActions> */}
                 <CardContent className={classes.cardContent}>
                   <FilterDefaults />
                 </CardContent>

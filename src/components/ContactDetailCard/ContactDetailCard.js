@@ -407,7 +407,7 @@ export default function ContactDetailCard(props) {
                 handleExpandClick("buyContactsInfo");
               }}
             >
-              Buy Info
+              Buy Contact Info
             </Button>
             {contactData.primaryEmail && (
               <a href={"mailto:" + contactData.primaryEmail}>

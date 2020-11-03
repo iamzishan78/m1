@@ -24,7 +24,9 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
 import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
-import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
+// import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
+import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
+import { CONTACTSFILTEROPTIONS } from "../../../graphQL/useQueryContactsFilterOptions";
 import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType";
 import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
@@ -40,11 +42,14 @@ import { UPDATEPARCELOWNER } from "../../../graphQL/useMutationUpdateParcelOwner
 import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRecords";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelInterests";
+import { IFARECONTACTS } from "../../../graphQL/useQueryIfOwnersAreContacts";
 
 import { useDispatch, useSelector } from "react-redux";
-import { deepEqualObjects, setStateIfDeepEqual } from "../functions";
+import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
 import RightDialog from "../../ContactDetailCard/components/RightDialog";
 import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
+import { setMapGridCardState, showWarningMessage } from "../../../actions";
+import { first } from "@amcharts/amcharts4/.internal/core/utils/Array";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
@@ -78,6 +83,18 @@ var ticksToDateString = function (ticks) {
 const TrackedOwnersHeadCells = [
   {
     name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "entity",
     options: {
       display: false,
       filter: false,
@@ -140,6 +157,19 @@ const TrackedOwnersHeadCells = [
   //     viewColumns: false,
   //   },
   // },
+
+  {
+    name: "isContact",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 
   /* 
   // TEMPORARY COMMENT OUT. DO NOT DELETE 
@@ -241,18 +271,18 @@ const WellsHeadCells = [
       },
     },
   },
-  {
-    name: "ownerCount",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  // {
+  //   name: "ownerCount",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
   {
     name: "commentsCounter",
     label: " ",
@@ -610,13 +640,8 @@ const ContactsHeadCells = [
     },
   },
 
-  { name: "name", label: "Name", editable: true },
-  {
-    name: "fullContactAddress",
-    label: "Primary Address",
-    editable: true,
-    options: { filter: false },
-  },
+  { name: "name", label: "Name", editable: true, options: { filter: false } },
+  { name: "fullContactAddress", label: "Primary Address", editable: true, options: { filter: false } },
   { name: "leadSource", label: "Lead Source", editable: true },
   { name: "lastUpdateBy.name", label: "Updated By" },
   { name: "lastUpdateAt", label: "Last Updated", options: { filter: false } },
@@ -794,6 +819,18 @@ const SearchsHeadCells = [
       filter: false,
       sort: false,
       searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isContact",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
       download: false,
       print: false,
       viewColumns: false,
@@ -1339,7 +1376,14 @@ function M1nTable(props) {
   const setStartPaginationAt = (newState) => {
     setStateIfDeepEqual(StartPaginationAt, newState);
   };
-
+  const [viewportFeatures, ViewportFeatures] = useState(null);
+  const setViewportFeatures = (newState) => {
+    setStateIfDeepEqual(ViewportFeatures, newState);
+  };
+  const [warningShowed, WarningShowed] = useState(false);
+  const setWarningShowed = (newState) => {
+    setStateIfDeepEqual(WarningShowed, newState);
+  };
   const { searchloading, searchResultData } = useSelector(
     ({ MapGridCard }) => MapGridCard
   );
@@ -1383,12 +1427,13 @@ function M1nTable(props) {
   });
   const [removeUser] = useMutation(REMOVEUSER);
   //////////
-  const [getContacts, { data: constDataContacts }] = useLazyQuery(
-    CONTACTSQUERY,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+
+  const [getContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
+  const [getContactsFilterOptions, { data: dataContactsFilterOptions }] = useLazyQuery(CONTACTSFILTEROPTIONS, {
+    fetchPolicy: "cache-and-network",
+  });
   //////////
   const [getTransactionData, { data: dataDeals }] = useLazyQuery(
     TRANSACTIONDATA
@@ -1417,6 +1462,13 @@ function M1nTable(props) {
   ] = useLazyQuery(CONTACTPARCELINTERESTS, {
     fetchPolicy: "cache-and-network",
   });
+  /////////
+  const [
+    checkIfOwnersAreContacts,
+    { data: checkIfOwnersAreContactsData },
+  ] = useLazyQuery(IFARECONTACTS, {
+    fetchPolicy: "cache-and-network",
+  });
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
@@ -1425,17 +1477,28 @@ function M1nTable(props) {
   // TODO: set correct isTracked on backend, not frontend
   const [dataContacts, setDataContacts] = useState(null);
   useEffect(() => {
-    if (constDataContacts && constDataContacts.contacts) {
-      let tmpDataContacts = { contacts: [] };
-      constDataContacts.contacts.forEach((contact) => {
-        tmpDataContacts.contacts.push(Object.create(contact));
-      });
+    if (constDataContacts && constDataContacts.paginatedContacts.edges) {
+      let tmpDataContacts = { 
+        ...constDataContacts,
+        paginatedContacts: {
+          ...constDataContacts.paginatedContacts,
+          edges: [
+            ...constDataContacts.paginatedContacts.edges.map((edge) => {
+              return {
+                ...edge,
+                node: { ...edge.node }
+              }
+            })
+          ]
+        }
+      };
+
       setDataContacts(tmpDataContacts);
     }
   }, [constDataContacts]);
 
   useEffect(() => {
-    if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks) {
+    if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks && targetLabel !== "contact") {
       tracksByObjectType({
         variables: {
           objectType:
@@ -1473,6 +1536,7 @@ function M1nTable(props) {
     ) {
       console.log("ue mintable 3");
       if (dataTracks.tracksByObjectType.length !== 0) {
+        setLoading(true);
         const tracksIdArray = dataTracks.tracksByObjectType.map(
           (track) => track.trackOn
         );
@@ -1499,6 +1563,9 @@ function M1nTable(props) {
             userId: stateApp.user.mongoId,
           },
         });
+        checkIfOwnersAreContacts({
+          variables: { idsArray: tracksIdArray },
+        });
       } else {
         setRows([]);
         setLoading(false);
@@ -1514,7 +1581,9 @@ function M1nTable(props) {
         dataCommentsCounter &&
         dataCommentsCounter.commentsCounter &&
         dataTagSamples &&
-        dataTagSamples.tagSamples
+        dataTagSamples.tagSamples &&
+        checkIfOwnersAreContactsData &&
+        checkIfOwnersAreContactsData.ifAreContacts
         //  && dataOwnersWells
       ) {
         let owners = [...dataOwners.owners];
@@ -1530,7 +1599,7 @@ function M1nTable(props) {
               objectId: owner.id,
             },
           };
-
+          owner.isContact = false;
           // if (dataOwnersWells.ownersWells) {
           //   for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
           //     if (owner.id === dataOwnersWells.ownersWells[i].ownerId) {
@@ -1541,6 +1610,23 @@ function M1nTable(props) {
           //     }
           //   }
           // }
+
+          for (
+            let i = 0;
+            i < checkIfOwnersAreContactsData.ifAreContacts.length;
+            i++
+          ) {
+            if (
+              owner.id ===
+              checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
+            ) {
+              owner.isContact =
+                checkIfOwnersAreContactsData.ifAreContacts[i].isContact;
+
+              owner.entity = checkIfOwnersAreContactsData.ifAreContacts[i]._id;
+              break;
+            }
+          }
 
           for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
             if (owner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -1618,6 +1704,7 @@ function M1nTable(props) {
     dataOwners,
     dataTagSamples,
     dataCommentsCounter,
+    checkIfOwnersAreContactsData,
     //  dataOwnersWells
   ]);
   ////////////Tracked Owners end///////////////////////////////////////////////
@@ -1646,6 +1733,7 @@ function M1nTable(props) {
     ) {
       console.log("ue mintable 6");
       if (dataTracks.tracksByObjectType.length !== 0) {
+        setLoading(true);
         const tracksIdArray = dataTracks.tracksByObjectType.map(
           (track) => track.trackOn
         );
@@ -1944,6 +2032,7 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell") {
+      setLoading(true);
       console.log("ue mintable 10");
       setTargetLabel("owner");
       setHeader("Tax Roll Ownership");
@@ -1958,6 +2047,7 @@ function M1nTable(props) {
     if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
       console.log("ue mintable 11");
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
+        setLoading(true);
         const objectsIdsArray = dataWellOwners.wellOwners.map(
           (wellOwner) => wellOwner.id
         );
@@ -2097,12 +2187,14 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "Contacts") {
+      setLoading(true);
       console.log("ue mintable 22");
       setTargetLabel("contact");
       setHeader("Contacts");
       setAddAble({ parent: false, type: "contact" });
       getContacts();
-      setUploadIcon(true);
+      getContactsFilterOptions();
+      setUploadIcon(false);
       setStartPaginationAt(25);
     }
   }, [props.parent]);
@@ -2112,22 +2204,24 @@ function M1nTable(props) {
       props.parent &&
       props.parent === "Contacts" &&
       dataContacts &&
+      dataContactsFilterOptions /*&&
       dataTracks &&
-      dataTracks.tracksByObjectType
+      dataTracks.tracksByObjectType*/
     ) {
       console.log("ue mintable 23");
-      if (dataContacts.contacts && dataContacts.contacts.length > 0) {
+      if (dataContacts.paginatedContacts.edges && dataContacts.paginatedContacts.edges.length > 0
+        && dataContactsFilterOptions && dataContactsFilterOptions.contactsFilterOptions) {
         const objectsIdsArray = [];
-        dataContacts.contacts.forEach((contact) => {
-          contact.isTracked = false;
-          objectsIdsArray.push(contact._id);
+        dataContacts.paginatedContacts.edges.forEach(({node})=> {
+          node.isTracked = false;
+          objectsIdsArray.push(node._id);
 
-          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-            if (contact.id === dataTracks.tracksByObjectType[i].trackOn) {
-              contact.isTracked = true;
-              break;
-            }
-          }
+          // for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+          //   if (node.id === dataTracks.tracksByObjectType[i].trackOn) {
+          //     node.isTracked = true;
+          //     break;
+          //   }
+          // }
         });
 
         getCommentsCounter({
@@ -2144,15 +2238,19 @@ function M1nTable(props) {
         setRows([]);
       }
     }
-  }, [dataContacts, dataTracks]);
+  }, [dataContacts,
+      dataContactsFilterOptions,
+      // dataTracks
+    ]
+  );
 
   useEffect(() => {
     if (
       props.parent &&
       props.parent === "Contacts" &&
       dataContacts &&
-      dataContacts.contacts &&
-      dataContacts.contacts.length > 0 &&
+      dataContacts.paginatedContacts.edges && 
+      dataContacts.paginatedContacts.edges.length > 0 &&
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
@@ -2161,23 +2259,23 @@ function M1nTable(props) {
       dataMelissaRowsCount.getMelissaRecordsCountForContactIds
     ) {
       console.log("ue mintable 24");
-      dataContacts.contacts.forEach((contact) => {
-        contact.commentsCounter = 0;
-        contact.tags = [[], 0];
-        // contact.fullContactAddress = joinAddress(contact);
-        // contact.contactName = contact.name;
+      dataContacts.paginatedContacts.edges.forEach(({node}) => {
+        node.commentsCounter = 0;
+        node.tags = [[], 0];
+        // node.fullContactAddress = joinAddress(node);
+        // node.contactName = node.name;
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-          if (contact._id === dataCommentsCounter.commentsCounter[i]._id) {
-            contact.commentsCounter =
+          if (node._id === dataCommentsCounter.commentsCounter[i]._id) {
+            node.commentsCounter =
               dataCommentsCounter.commentsCounter[i].total;
             break;
           }
         }
 
         for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-          if (contact._id === dataTagSamples.tagSamples[i]._id) {
-            contact.tags = [
+          if (node._id === dataTagSamples.tagSamples[i]._id) {
+            node.tags = [
               dataTagSamples.tagSamples[i].tags,
               dataTagSamples.tagSamples[i].total,
             ];
@@ -2188,11 +2286,11 @@ function M1nTable(props) {
 
         let foundMelissaRowsCount = dataMelissaRowsCount.getMelissaRecordsCountForContactIds.find(
           (value) => {
-            return contact._id === value._id;
+            return node._id === value._id;
           }
         );
         if (foundMelissaRowsCount) {
-          contact.melissaRowsCount = foundMelissaRowsCount.total;
+          node.melissaRowsCount = foundMelissaRowsCount.total;
         }
       });
 
@@ -2232,7 +2330,8 @@ function M1nTable(props) {
               return column;
             })
       );
-      setRows([...dataContacts.contacts]);
+
+      setRows([...dataContacts.paginatedContacts.edges.map(el => el.node)]);
       setLoading(false);
     }
   }, [
@@ -2310,6 +2409,10 @@ function M1nTable(props) {
             variables: { objectsIdsArray, userId: stateApp.user.mongoId },
           });
         if (props.showTracks) setShowTracks(true);
+        if (props.targetLabel == "owner")
+          checkIfOwnersAreContacts({
+            variables: { idsArray: objectsIdsArray },
+          });
       } else {
         setShowTracks(false);
         if (!searchloading) {
@@ -2340,6 +2443,9 @@ function M1nTable(props) {
         (dataCommentsCounter && dataCommentsCounter.commentsCounter)) &&
       (!props.showTags || (dataTagSamples && dataTagSamples.tagSamples)) &&
       (!props.showTracks || (dataTracks && dataTracks.tracksByObjectType)) &&
+      (props.targetLabel !== "owner" ||
+        (checkIfOwnersAreContactsData &&
+          checkIfOwnersAreContactsData.ifAreContacts)) &&
       props.privateColumns
     ) {
       if (searchResultData.length > 0) {
@@ -2353,6 +2459,9 @@ function M1nTable(props) {
             result.coordinates = {};
             if (result.Longitude && result.Latitude)
               result.coordinates.center = [result.Longitude, result.Latitude];
+
+            //// set in the detailCard column
+            result.detailCard = result.Id;
           } else if (props.targetLabel && props.targetLabel == "location") {
             result.coordinates = {};
             if (result.bbox) result.coordinates.bbox = result.bbox;
@@ -2364,6 +2473,25 @@ function M1nTable(props) {
                 objectId: result.Id,
               },
             };
+
+            result.isContact = false;
+            for (
+              let i = 0;
+              i < checkIfOwnersAreContactsData.ifAreContacts.length;
+              i++
+            ) {
+              if (
+                result.Id ===
+                checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
+              ) {
+                result.isContact =
+                  checkIfOwnersAreContactsData.ifAreContacts[i].isContact;
+
+                result.entity =
+                  checkIfOwnersAreContactsData.ifAreContacts[i]._id;
+                break;
+              }
+            }
           }
 
           if (props.showComments) {
@@ -2436,6 +2564,10 @@ function M1nTable(props) {
                 }
           );
         }
+
+        if (props.targetLabel && props.targetLabel == "owner")
+          buildingColumns.push(SearchsHeadCells[6]);
+
         if (props.showComments) buildingColumns.push(SearchsHeadCells[2]);
 
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
@@ -2462,11 +2594,13 @@ function M1nTable(props) {
     dataTracks,
     dataTagSamples,
     dataCommentsCounter,
+    checkIfOwnersAreContactsData,
     props.privateColumns,
     props.showTracks,
     props.showComments,
     props.showTags,
   ]);
+
   //////////// Search end///////////////////////////////////////////////
 
   ////////////Owners Per Parcel begin///////////////////////////////////////////////
@@ -2701,6 +2835,7 @@ function M1nTable(props) {
   ////////////User management//////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "UserManagement") {
+      setLoading(true);
       getAllUsers();
       if (userLists?.allUsers) {
         setTargetLabel("usermanagement");
@@ -2740,6 +2875,7 @@ function M1nTable(props) {
   useEffect(() => {
     console.log("DEALS CHECK : ", props.parent, props.contact, stateApp.user);
     if (props.parent && props.parent === "Deals" && stateApp.user) {
+      setLoading(true);
       console.log("ue mintable 22");
       setTargetLabel("deals");
       setHeader("Deals");
@@ -2852,17 +2988,187 @@ function M1nTable(props) {
   ]);
 
   ////////////Deals end////////////////////////////////////////////////
+
+  ////////////Map Viewport Wells begin///////////////////////////////////////////////
+
   useEffect(() => {
-    console.log(
-      "%cCONTACT ID : ",
-      "font-size:20px; color:tomato;",
-      props.contact
-    );
-  }, [props.contact]);
+    if (
+      props.parent &&
+      props.parent === "mapViewportWells" &&
+      stateApp.viewportWells
+    ) {
+      const IdsArray = [];
+      stateApp.viewportWells.forEach((well) => {
+        if (well && well.id) {
+          IdsArray.push(well.id);
+        }
+      });
+
+      if (IdsArray.length > 0) {
+        setLoading(true);
+        getCommentsCounter({
+          variables: {
+            objectsIdsArray: IdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+        getTagSamples({
+          variables: {
+            objectsIdsArray: IdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+        setViewportFeatures(stateApp.viewportWells);
+      } else {
+        setViewportFeatures(null);
+        setRows([]);
+        setLoading(false);
+
+        if (!warningShowed) {
+          dispatch(
+            showWarningMessage(
+              "We didn't find any well in the viewport, please make sure at least one layer with wells it's active, or zoom out untill you visualize some well spots."
+            )
+          );
+          setWarningShowed(true);
+        }
+      }
+    }
+  }, [props.parent, stateApp.viewportWells, stateApp.user]);
+
+  useEffect(() => {
+    if (props.parent && props.parent === "mapViewportWells") {
+      setTargetLabel("well");
+
+      if (props.header) {
+        setHeader(props.header);
+      } else {
+        setHeader("Wells");
+      }
+      setAddAble(false);
+    }
+  }, [props.parent]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "mapViewportWells" &&
+      viewportFeatures &&
+      viewportFeatures.length > 0 &&
+      dataCommentsCounter &&
+      dataCommentsCounter.commentsCounter &&
+      dataTagSamples &&
+      dataTagSamples.tagSamples &&
+      dataTracks &&
+      dataTracks.tracksByObjectType
+    ) {
+      let wells = [...viewportFeatures];
+      wells = wells.map((w) => {
+        let well = { ...w };
+
+        well.isTracked = false;
+        well.commentsCounter = 0;
+        well.tags = [[], 0];
+
+        well.coordinates = {};
+
+        if (well.longitude && well.latitude)
+          well.coordinates.center = [well.longitude, well.latitude];
+
+        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+          if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+            well.commentsCounter = dataCommentsCounter.commentsCounter[i].total;
+            break;
+          }
+        }
+        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+          if (well.id === dataTagSamples.tagSamples[i]._id) {
+            well.tags = [
+              dataTagSamples.tagSamples[i].tags,
+              dataTagSamples.tagSamples[i].total,
+            ];
+
+            break;
+          }
+        }
+        for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+          if (
+            well.id === dataTracks.tracksByObjectType[i].trackOn.toLowerCase()
+          ) {
+            well.isTracked = true;
+            break;
+          }
+        }
+
+        return well;
+      });
+
+      let availableTags = [];
+      dataTagSamples.tagSamples.map((sample) => {
+        availableTags = [...availableTags, ...sample.tags];
+      });
+      const cleanAvailableTags = [...new Set(availableTags)];
+
+      setRows(wells);
+
+      const flyToColumn = {
+        name: "coordinates",
+        label: " ",
+        options: {
+          filter: false,
+          sort: false,
+          searchable: false,
+          download: false,
+          print: false,
+          viewColumns: false,
+        },
+      };
+
+      setColumns([
+        ...(cleanAvailableTags.length > 0
+          ? WellsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
+                  },
+                };
+              }
+              return column;
+            })
+          : WellsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })),
+        flyToColumn,
+      ]);
+
+      setLoading(false);
+    }
+  }, [viewportFeatures, dataTagSamples, dataCommentsCounter, dataTracks]);
+
+  ////////////Map Viewport Wells end///////////////////////////////////////////////
 
   ////////////-----Add your code section here-----///////////////////////
   return (
-    <Container maxWidth={false} className={classes.container}>
+    <Container
+      maxWidth={false}
+      className={classes.container}
+      id={props.id ? props.id : props.parent}
+    >
       {props.parent && props.parent === "Deals" && (
         <AddDealDialog
           open={stateApp.dealDialog ? true : false}
@@ -2891,6 +3197,12 @@ function M1nTable(props) {
         orderByTracks={orderByTracks}
         startPaginationAt={startPaginationAt}
         contactId={props.contact?._id}
+        contactsPageProps={{
+          getContacts,
+          contactsCount: dataContacts ? dataContacts.paginatedContacts.totalCount : 0,
+          setLoading
+        }}
+        parent={props.parent}
       />
     </Container>
   );

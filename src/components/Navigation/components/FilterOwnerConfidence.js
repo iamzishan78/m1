@@ -170,7 +170,7 @@ export default function FilterOwnerConfidence() {
     <React.Fragment>
       <div className={classes.divBordersMinMax}>
         <FormLabel className={classes.inputLabel}>
-          Owner Confidence Score (0-100)
+          Owner Confidence (0-100)
         </FormLabel>
         <div className={classes.floatRight}>
           <NumberFormat
