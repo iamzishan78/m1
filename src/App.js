@@ -32,6 +32,7 @@ import Notifications from "./components/Notifications/Notifications";
 import { Provider as ReduxProvider } from "react-redux";
 import { ConnectedRouter } from "connected-react-router";
 import configureStore, { history } from "./store";
+import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
 // user management
 const store = configureStore(/ provide initial state if any /);
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
@@ -271,6 +272,11 @@ function App() {
                         exact
                         path="/transact"
                         component={TransactProvider}
+                      />
+                      <PrivateRoute
+                        exact
+                        path="/activities"
+                        component={ActivitiesProvider}
                       />
                       <PrivateRoute
                         exact
