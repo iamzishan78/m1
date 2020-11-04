@@ -145,6 +145,7 @@ const AppProvider = (props) => {
     mappedHeadersFromCSV: [],
     viewportWells: null,
     minZoomToQueryViewport: 12.5,
+    activateWellDetailsFromTable: false,
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;

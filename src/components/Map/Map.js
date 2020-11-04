@@ -4858,7 +4858,7 @@ export default function Map() {
         ],
       }));
 
-      map.flyTo({
+      !stateApp.activateWellDetailsFromTable && map.flyTo({
         center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
         zoom: stateApp.flyTo.zoom ? stateApp.flyTo.zoom : zVal,
         speed: 0.5,
@@ -5144,7 +5144,7 @@ export default function Map() {
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
     setAnchorElPoPOver(null);
-    setStateApp((state) => ({ ...state, expandedCard: false }));
+    setStateApp((state) => ({ ...state, expandedCard: false, activateWellDetailsFromTable: false }));
   };
 
   const handleCloseSpatialDataCard = (complete = true) => {
@@ -5454,11 +5454,12 @@ export default function Map() {
         )}
       </Portal>
       <Portal container={container.current}>
-        {stateApp.popupOpen ? (
+        {stateApp.popupOpen === true ? (
           <div>
-            {stateApp.selectedWell && (
+            {stateApp.selectedWell !== null && (
                 <PortalD id="popupContainer">
                   {showExpandableCard && !stateApp.expandedCard ? (
+                    <div>
                       <ExpandableCardProvider
                         expanded={false}
                         handleCloseExpandableCard={handleCloseExpandableCard}
@@ -5471,12 +5472,13 @@ export default function Map() {
                         position="relative"
                         cardLeft={0}
                         cardTop={0}
-                        zIndex={99}
+                        zIndex={3000}
                         cardWidthExpanded="50vw"
                         cardHeightExpanded="95vh"
                         targetSourceId={stateApp.selectedWell.id}
                         targetLabel="well"
                       ></ExpandableCardProvider>
+                    </div>
                   ) : (
                     <Draggable>
                       <div>
@@ -5491,8 +5493,8 @@ export default function Map() {
                           mouseY={0}
                           position="relative"
                           zIndex={99}
-                          cardLeft={-470}
-                          cardTop={490}
+                          cardLeft={-390}
+                          cardTop={-440}
                           cardWidthExpanded="50vw"
                           cardHeightExpanded="95vh"
                           targetSourceId={stateApp.selectedWell.id}
