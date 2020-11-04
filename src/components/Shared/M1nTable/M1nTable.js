@@ -2194,7 +2194,7 @@ function M1nTable(props) {
       setAddAble({ parent: false, type: "contact" });
       getContacts();
       getContactsFilterOptions();
-      setUploadIcon(false);
+      setUploadIcon(true);
       setStartPaginationAt(25);
     }
   }, [props.parent]);
