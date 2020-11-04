@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
 
-    "& h4": {
+    "& h1": {
       color: "#0DBBEA",
       marginRight: 16,
     },
@@ -139,7 +139,7 @@ const TransactAppBar = ({
       >
         <div className={classes.top}>
           <div className={classes.right}>
-            <h4>DEALS</h4>
+            <h1>DEALS</h1>
             <ButtonGroup>
               <IconButton
                 size="small"
