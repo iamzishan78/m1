@@ -936,7 +936,7 @@ export default function ContactDetailCard(props) {
                 {/* //// ViewAll card top bar //// */}
                 <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
                   <h3 className={classes.expTardTopBarNav}>
-                    <span>Leads</span>
+                    <span>Contacts</span>
                     {" > "}
                     <span
                       className={classes.expTardTopBarNavContName}
