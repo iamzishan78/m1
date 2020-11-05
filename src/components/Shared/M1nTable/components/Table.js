@@ -306,7 +306,7 @@ function SubTable(props) {
   useEffect(() => {
     if (
       props.parent &&
-      props.parent === "search" &&
+      (props.parent === "search" || props.parent === "owner_WellInterests") &&
       props.targetLabel == "well" &&
       dataWell &&
       dataWell.well
@@ -317,7 +317,6 @@ function SubTable(props) {
       });
 
       selectedWell = { ...selectedWell, ...dataWell.well };
-
       //// temporary to fix the ticks dates fields comming from the rest api
       if (
         selectedWell.permitApprovedDate &&
@@ -521,31 +520,39 @@ function SubTable(props) {
                             getWell({
                               variables: { wellId: value },
                             });
-                          } else if (props.targetLabel === "well") {
-                            let selectedWell = props.rows.find((row) => {
+                          } else {
+                            let selectedObj = props.rows.find((row) => {
                               if (row.id) return row.id == tableMeta.rowData[0];
                               return row.Id == tableMeta.rowData[0];
                             });
 
-                            if (selectedWell) {
-                              setSelectedRow(selectedWell);
-                              setStateApp((state) => ({
-                                ...state,
-                                selectedWellId: tableMeta.rowData[0],
-                                selectedWell,
-                              }));
-                              setSubComponent(<WellCardProvider />);
-                              setTitle(
-                                selectedWell.wellName
-                                  ? selectedWell.wellName
-                                  : selectedWell.WellName
-                              );
-                              setSubTitle(
-                                selectedWell.operator
-                                  ? selectedWell.operator
-                                  : selectedWell.Operator
-                              );
-                              handleOpenExpandableCard();
+                            if (selectedObj) {
+                              if (props.targetLabel === "well") {
+                                setSelectedRow(selectedObj);
+                                setStateApp((state) => ({
+                                  ...state,
+                                  selectedWellId: tableMeta.rowData[0],
+                                  selectedWell: selectedObj,
+                                }));
+                                setSubComponent(<WellCardProvider />);
+                                setTitle(
+                                  selectedObj.wellName
+                                    ? selectedObj.wellName
+                                    : selectedObj.WellName
+                                );
+                                setSubTitle(
+                                  selectedObj.operator
+                                    ? selectedObj.operator
+                                    : selectedObj.Operator
+                                );
+                                handleOpenExpandableCard();
+                              } else if (props.targetLabel === "owner") {
+                                dispatch(
+                                  setMapGridCardState({
+                                    selectedOwner: selectedObj,
+                                  })
+                                );
+                              }
                             }
                           }
                         }}

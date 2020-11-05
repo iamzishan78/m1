@@ -43,6 +43,7 @@ import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRec
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelInterests";
 import { IFARECONTACTS } from "../../../graphQL/useQueryIfOwnersAreContacts";
+import { OWNER_WELLINTERESTS } from "../../../graphQL/useQueryOwner_WellInterests";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -205,6 +206,18 @@ const TrackedOwnersHeadCells = [
   },
   {
     name: "isTracked",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "detailCard",
     label: " ",
     options: {
       filter: false,
@@ -641,7 +654,12 @@ const ContactsHeadCells = [
   },
 
   { name: "name", label: "Name", editable: true, options: { filter: false } },
-  { name: "fullContactAddress", label: "Primary Address", editable: true, options: { filter: false } },
+  {
+    name: "fullContactAddress",
+    label: "Primary Address",
+    editable: true,
+    options: { filter: false },
+  },
   { name: "leadSource", label: "Lead Source", editable: true },
   { name: "lastUpdateBy.name", label: "Updated By" },
   { name: "lastUpdateAt", label: "Last Updated", options: { filter: false } },
@@ -1297,6 +1315,102 @@ const ParcelInterestsPerContactHeadCells = [
   },
 ];
 
+const WellInterests = [
+  {
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  { name: "wellName", label: "Well" },
+  { name: "apiNumber", label: "API" },
+  { name: "operator", label: "Operator" },
+  { name: "interestType", label: "Type" },
+  {
+    name: "ownershipPercentage",
+    label: "Interest",
+  },
+  {
+    name: "appraisedValue",
+    label: "Appraised Value",
+  },
+  {
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
+  },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isTracked",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "detailCard",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "coordinates",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+];
+
 ////////////HeadCells end///////////////////////////////////////////////
 
 const capitalizeFirstLetter = (string) => {
@@ -1428,10 +1542,16 @@ function M1nTable(props) {
   const [removeUser] = useMutation(REMOVEUSER);
   //////////
 
-  const [getContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-  });
-  const [getContactsFilterOptions, { data: dataContactsFilterOptions }] = useLazyQuery(CONTACTSFILTEROPTIONS, {
+  const [getContacts, { data: constDataContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
+  const [
+    getContactsFilterOptions,
+    { data: dataContactsFilterOptions },
+  ] = useLazyQuery(CONTACTSFILTEROPTIONS, {
     fetchPolicy: "cache-and-network",
   });
   //////////
@@ -1469,6 +1589,11 @@ function M1nTable(props) {
   ] = useLazyQuery(IFARECONTACTS, {
     fetchPolicy: "cache-and-network",
   });
+  //////////
+  const [
+    getOwner_WellInterests,
+    { data: dataOwner_WellInterests },
+  ] = useLazyQuery(OWNER_WELLINTERESTS);
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
@@ -1478,7 +1603,7 @@ function M1nTable(props) {
   const [dataContacts, setDataContacts] = useState(null);
   useEffect(() => {
     if (constDataContacts && constDataContacts.paginatedContacts.edges) {
-      let tmpDataContacts = { 
+      let tmpDataContacts = {
         ...constDataContacts,
         paginatedContacts: {
           ...constDataContacts.paginatedContacts,
@@ -1486,11 +1611,11 @@ function M1nTable(props) {
             ...constDataContacts.paginatedContacts.edges.map((edge) => {
               return {
                 ...edge,
-                node: { ...edge.node }
-              }
-            })
-          ]
-        }
+                node: { ...edge.node },
+              };
+            }),
+          ],
+        },
       };
 
       setDataContacts(tmpDataContacts);
@@ -1498,7 +1623,13 @@ function M1nTable(props) {
   }, [constDataContacts]);
 
   useEffect(() => {
-    if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks && targetLabel !== "contact") {
+    if (
+      targetLabel &&
+      stateApp.user &&
+      stateApp.user.mongoId &&
+      showTracks &&
+      targetLabel !== "contact"
+    ) {
       tracksByObjectType({
         variables: {
           objectType:
@@ -2209,10 +2340,14 @@ function M1nTable(props) {
       dataTracks.tracksByObjectType*/
     ) {
       console.log("ue mintable 23");
-      if (dataContacts.paginatedContacts.edges && dataContacts.paginatedContacts.edges.length > 0
-        && dataContactsFilterOptions && dataContactsFilterOptions.contactsFilterOptions) {
+      if (
+        dataContacts.paginatedContacts.edges &&
+        dataContacts.paginatedContacts.edges.length > 0 &&
+        dataContactsFilterOptions &&
+        dataContactsFilterOptions.contactsFilterOptions
+      ) {
         const objectsIdsArray = [];
-        dataContacts.paginatedContacts.edges.forEach(({node})=> {
+        dataContacts.paginatedContacts.edges.forEach(({ node }) => {
           node.isTracked = false;
           objectsIdsArray.push(node._id);
 
@@ -2238,18 +2373,18 @@ function M1nTable(props) {
         setRows([]);
       }
     }
-  }, [dataContacts,
-      dataContactsFilterOptions,
-      // dataTracks
-    ]
-  );
+  }, [
+    dataContacts,
+    dataContactsFilterOptions,
+    // dataTracks
+  ]);
 
   useEffect(() => {
     if (
       props.parent &&
       props.parent === "Contacts" &&
       dataContacts &&
-      dataContacts.paginatedContacts.edges && 
+      dataContacts.paginatedContacts.edges &&
       dataContacts.paginatedContacts.edges.length > 0 &&
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter &&
@@ -2259,7 +2394,7 @@ function M1nTable(props) {
       dataMelissaRowsCount.getMelissaRecordsCountForContactIds
     ) {
       console.log("ue mintable 24");
-      dataContacts.paginatedContacts.edges.forEach(({node}) => {
+      dataContacts.paginatedContacts.edges.forEach(({ node }) => {
         node.commentsCounter = 0;
         node.tags = [[], 0];
         // node.fullContactAddress = joinAddress(node);
@@ -2267,8 +2402,7 @@ function M1nTable(props) {
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (node._id === dataCommentsCounter.commentsCounter[i]._id) {
-            node.commentsCounter =
-              dataCommentsCounter.commentsCounter[i].total;
+            node.commentsCounter = dataCommentsCounter.commentsCounter[i].total;
             break;
           }
         }
@@ -2331,7 +2465,7 @@ function M1nTable(props) {
             })
       );
 
-      setRows([...dataContacts.paginatedContacts.edges.map(el => el.node)]);
+      setRows([...dataContacts.paginatedContacts.edges.map((el) => el.node)]);
       setLoading(false);
     }
   }, [
@@ -2571,8 +2705,11 @@ function M1nTable(props) {
         if (props.showComments) buildingColumns.push(SearchsHeadCells[2]);
 
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
-        if (props.targetLabel && props.targetLabel == "well")
-          //would only set the detail card icon for wells
+        if (
+          (props.targetLabel && props.targetLabel == "well") ||
+          props.targetLabel == "owner"
+        )
+          //would only set the detail card icon for wells & owners
           buildingColumns.push(SearchsHeadCells[5]);
         if (
           props.targetLabel &&
@@ -3071,7 +3208,6 @@ function M1nTable(props) {
         well.tags = [[], 0];
 
         well.coordinates = {};
-
         if (well.longitude && well.latitude)
           well.coordinates.center = [well.longitude, well.latitude];
 
@@ -3162,6 +3298,175 @@ function M1nTable(props) {
 
   ////////////Map Viewport Wells end///////////////////////////////////////////////
 
+  ////////////Owner_WellInterests begin///////////////////////////////////////////
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "owner_WellInterests" &&
+      props.id &&
+      stateApp.user &&
+      stateApp.user.mongoId
+    ) {
+      setTargetLabel("well");
+      setHeader("Well Interests");
+      setAddAble(false);
+      getOwner_WellInterests({
+        variables: {
+          id: props.id,
+        },
+      });
+    }
+  }, [props.id, stateApp.user]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "owner_WellInterests" &&
+      dataOwner_WellInterests &&
+      dataOwner_WellInterests.owner_WellInterests &&
+      stateApp.user &&
+      stateApp.user.mongoId
+    ) {
+      const IdsArray = [];
+      dataOwner_WellInterests.owner_WellInterests.forEach((well) => {
+        if (well && well.id) {
+          IdsArray.push(well.id);
+        }
+      });
+
+      if (IdsArray.length > 0) {
+        getCommentsCounter({
+          variables: {
+            objectsIdsArray: IdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+        getTagSamples({
+          variables: {
+            objectsIdsArray: IdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+      } else {
+        setRows([]);
+        setLoading(false);
+      }
+    }
+  }, [dataOwner_WellInterests, stateApp.user]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "owner_WellInterests" &&
+      dataOwner_WellInterests &&
+      dataOwner_WellInterests.owner_WellInterests
+    ) {
+      if (
+        dataOwner_WellInterests.owner_WellInterests.length > 0 &&
+        dataCommentsCounter &&
+        dataCommentsCounter.commentsCounter &&
+        dataTagSamples &&
+        dataTagSamples.tagSamples &&
+        dataTracks &&
+        dataTracks.tracksByObjectType
+      ) {
+        let wells = dataOwner_WellInterests.owner_WellInterests.map((w) => {
+          let well = { ...w };
+
+          well.isTracked = false;
+          well.commentsCounter = 0;
+          well.tags = [[], 0];
+
+          //// set in the detailCard column
+          well.detailCard = well.id;
+
+          well.coordinates = {};
+          if (well.longitude && well.latitude)
+            well.coordinates.center = [well.longitude, well.latitude];
+
+          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+            if (well.id === dataTracks.tracksByObjectType[i].trackOn) {
+              well.isTracked = true;
+              break;
+            }
+          }
+          for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+            if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+              well.commentsCounter =
+                dataCommentsCounter.commentsCounter[i].total;
+              break;
+            }
+          }
+          for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+            if (well.id === dataTagSamples.tagSamples[i]._id) {
+              well.tags = [
+                dataTagSamples.tagSamples[i].tags,
+                dataTagSamples.tagSamples[i].total,
+              ];
+
+              break;
+            }
+          }
+          return well;
+        });
+
+        let availableTags = [];
+        dataTagSamples.tagSamples.map((sample) => {
+          availableTags = [...availableTags, ...sample.tags];
+        });
+        const cleanAvailableTags = [...new Set(availableTags)];
+
+        setRows(wells);
+
+        setColumns(
+          cleanAvailableTags.length > 0
+            ? WellInterests.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
+                    },
+                  };
+                }
+                return column;
+              })
+            : WellInterests.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })
+        );
+
+        setLoading(false);
+      }
+      // else {
+      //   setRows([]);
+      // }
+
+      // setLoading(false);
+    }
+  }, [
+    dataOwner_WellInterests,
+    dataTagSamples,
+    dataCommentsCounter,
+    dataTracks,
+  ]);
+
+  //////////// Owner_WellInterests end///////////////////////////////////////////////
+
   ////////////-----Add your code section here-----///////////////////////
   return (
     <Container
@@ -3199,8 +3504,10 @@ function M1nTable(props) {
         contactId={props.contact?._id}
         contactsPageProps={{
           getContacts,
-          contactsCount: dataContacts ? dataContacts.paginatedContacts.totalCount : 0,
-          setLoading
+          contactsCount: dataContacts
+            ? dataContacts.paginatedContacts.totalCount
+            : 0,
+          setLoading,
         }}
         parent={props.parent}
       />
