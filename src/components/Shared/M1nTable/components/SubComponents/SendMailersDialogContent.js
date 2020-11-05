@@ -1,4 +1,6 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useMutation } from "@apollo/client";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 import { Modals } from "../../../../../styles/Modal";
@@ -14,6 +16,8 @@ import TextField from "@material-ui/core/TextField";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { AppContext } from "../../../../../AppContext";
+import { showErrorMessage } from "../../../../../actions";
+import { UPLOADRECIPIENTS } from "../../../../../graphQL/useMutationUploadStorefrontRecipientsList";
 
 const styles = (theme) => ({
   root: {
@@ -93,16 +97,33 @@ const useStyles = makeStyles({});
 
 export default function SendMailersDialogContent(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const modalClass = Modals();
+
+  const [campaign, setCampaign] = useState("");
+
+  const [uploadRecipients] = useMutation(UPLOADRECIPIENTS);
 
   useEffect(() => {
     if (!props.rows || props.rows.length === 0) props.onClose();
   }, [props.rows]);
 
   const [stateApp] = useContext(AppContext);
-  // TODO: set better name for the method
-  const login = () => {
-    console.log('stateApp.user', stateApp.user)
+  
+  const runStorefront = () => {
+    if (campaign.trim() === "") {
+      dispatch(showErrorMessage("Please fill Campaign Name"));
+      return;
+    }
+    uploadRecipients({
+      variables: {
+        campaign: campaign,
+        email: stateApp.user.email,
+        recipients: props.rows.map(row => row._id)
+      }
+    });
+    window.open('https://m1neral.mydirectmailportal.com/uStore/Home','_blank');
+    props.onClose();
   }
 
   return (
@@ -121,6 +142,10 @@ export default function SendMailersDialogContent(props) {
               margin="none"
               placeholder="Enter a campaign name"
               style={{ width: "100%", marginBottom: "10px" }}
+              value={campaign}
+              onChange={(e) => {
+                setCampaign(e.target.value)
+              }}
             />
           </Grid>
           <Grid item xs={12} style={{marginTop: '15px'}}>
@@ -162,7 +187,7 @@ export default function SendMailersDialogContent(props) {
         >
           Cancel
         </Button>
-        <Button onClick={() => login()} color="secondary" variant="contained">
+        <Button onClick={() => runStorefront()} color="secondary" variant="contained">
           Continue to Send Mailers
         </Button>
       </DialogActions>
