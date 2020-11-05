@@ -47,7 +47,7 @@ export default function OwnersSummaryCard(props) {
   const { selectedOwner, mapGridCardActivated } = useSelector(
     ({ MapGridCard }) => MapGridCard
   );
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles({ mapGridCardActivated });
 
   return (
@@ -71,6 +71,14 @@ export default function OwnersSummaryCard(props) {
                   selectedOwner: null,
                 })
               );
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                wellListFromSearch: [],
+                // selectedWellId: null,
+                // selectedWell: null,
+                // wellSelectedCoordinates: null,
+                // popupOpen: false,
+              }));
             }}
           >
             Interest Owners

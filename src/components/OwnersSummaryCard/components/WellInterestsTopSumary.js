@@ -26,6 +26,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 var formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -122,7 +126,7 @@ export default function OwnersSummaryCard(props) {
               marginBottom: "10px",
             }}
           >
-            Well Interests ({ownerSummary.interestsCount})
+            Well Interests ({numberWithCommas(ownerSummary.interestsCount)})
           </h2>
           <Grid
             container
