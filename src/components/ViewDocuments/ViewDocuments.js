@@ -219,15 +219,13 @@ export default function ViewDocuments(props) {
             <div className={classes.documentRight}>
               <IconButton
                 style={{ marginBottom: "8px" }}
-                onClick={props.handleOpen}
+                onClick={() => {
+                  props.setOpenDeleteConfirmDialog(true);
+                  props.setFileIdToDelete(doc.descriptorId);
+                }}
               >
                 <DeleteIcon />
               </IconButton>
-              <DeleteDocumentConfirmation
-                open={props.open}
-                handleClose={props.handleClose}
-                handleAccept={() => props.handleAccept(doc.descriptorId)}
-              />
             </div>
           </li>
         ))}
