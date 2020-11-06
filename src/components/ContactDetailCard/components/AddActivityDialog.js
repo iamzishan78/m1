@@ -68,6 +68,12 @@ const getCurrentDateTime = () => {
   return dt.slice(0, dt.length - 1);
 };
 
+const get1hrLaterDateTime = () => {
+  let dt = new Date();
+  dt.setTime(dt.getTime() + 1 * 60 * 60 * 1000);
+  return dt.toISOString().slice(0, dt.length - 1);
+};
+
 function AddActivityDialog(props) {
   const classes = useStyles();
   const { selectedActivity, onClose } = props;
@@ -79,6 +85,7 @@ function AddActivityDialog(props) {
   const [notes, setNotes] = useState("");
 
   const [dateTime, setDateTime] = useState(getCurrentDateTime());
+  const [endDateTime, setEndDateTime] = useState(get1hrLaterDateTime());
   const [errors, setErrors] = useState({ ...initialErrors });
 
   useEffect(() => {
@@ -107,14 +114,16 @@ function AddActivityDialog(props) {
     let activityTypeErr = false;
     let notesErr = false;
     let dateTimeErr = false;
+    let endDateTimeErr = false;
     if (!activityType || activityType.length === 0) activityTypeErr = true;
     if (!notes || notes.length === 0) notesErr = true;
     setErrors({
       activityType: activityTypeErr,
       notes: notesErr,
       dateTime: dateTimeErr,
+      endDateTime: endDateTimeErr,
     });
-    return activityTypeErr || notesErr || dateTimeErr;
+    return activityTypeErr || notesErr || dateTimeErr || endDateTimeErr;
   };
 
   const addActivity = async () => {
@@ -125,6 +134,7 @@ function AddActivityDialog(props) {
           type: act.type,
           notes: act.notes,
           dateTime: act.dateTime,
+          endDateTime: act.endDateTime,
           user_id: act.user_id,
         }))
       : [];
@@ -133,6 +143,7 @@ function AddActivityDialog(props) {
       type: activityType,
       notes,
       dateTime: dateTime,
+      endDateTime: endDateTime,
       user_id: stateApp.user.email,
     });
 
@@ -156,6 +167,7 @@ function AddActivityDialog(props) {
           type: act.type,
           notes: act.notes,
           dateTime: act.dateTime,
+          endDateTime: act.endDateTime,
           user_id: act.user_id,
         }))
       : [];
@@ -173,6 +185,7 @@ function AddActivityDialog(props) {
         ...selectedActivity,
         type: activityType,
         dateTime,
+        endDateTime,
         notes,
       };
       newActLog.forEach((v) => delete v.__typename);
@@ -202,7 +215,7 @@ function AddActivityDialog(props) {
         Recent Activities
       </h4> */}
       <Grid item xs={12} style={{ minHeight: "35px" }}>
-        <h4 style={{ margin: "0 0 30px 0", float: "left" , fontSize: "1.1rem" }}>
+        <h4 style={{ margin: "0 0 30px 0", float: "left", fontSize: "1.1rem" }}>
           Recent Activities
         </h4>
 
@@ -244,6 +257,25 @@ function AddActivityDialog(props) {
           disabled={loading}
           className={classes.inputField}
           label="Activity Date"
+        />
+
+        <TextField
+          variant="outlined"
+          fullWidth
+          size="small"
+          id="enddatetime-local"
+          labelId="enddatetime-local-label"
+          // label="Activity Date"
+          type="enddatetime-local"
+          value={endDateTime}
+          onChange={(e) => {
+            console.log("PREV: ", endDateTime);
+            console.log("setting: ", e.target.value);
+            setEndDateTime(e.target.value);
+          }}
+          disabled={loading}
+          className={classes.inputField}
+          label="Activity End Date"
         />
 
         <FormControl
@@ -299,7 +331,7 @@ function AddActivityDialog(props) {
         />
 
         <div className={classes.dialogFooter}>
-        <Button
+          <Button
             variant="contained"
             color="default"
             size="medium"
@@ -310,7 +342,7 @@ function AddActivityDialog(props) {
           >
             Cancel
           </Button>
-         
+
           <Button
             variant="contained"
             color="secondary"
@@ -323,7 +355,7 @@ function AddActivityDialog(props) {
           >
             {addNew ? "Save" : "Update"}
           </Button>
-       
+
           {loading ? (
             <CircularProgress color="secondary" className={classes.progress} />
           ) : called && !loading ? (
