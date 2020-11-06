@@ -298,7 +298,7 @@ export default function Documents(props) {
                   <h4 className={classes.uploadTitle}>{file.fileName}</h4>
                   <h5 className={classes.uploadSubtext}>{file.userName}</h5>
                   <h5 className={classes.uploadSubtext}>
-                    {moment.unix(file.dateTime).fromNow()}
+                    {moment(new Date(Number(file.dateTime))).fromNow()}
                   </h5>
                 </div>
                 <div className={classes.IconSection}>
