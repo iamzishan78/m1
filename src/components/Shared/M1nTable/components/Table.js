@@ -1756,72 +1756,89 @@ function SubTable(props) {
       console.log("onTableChange");
       console.log(action, tableState);
       if (props.header === "Contacts") {
+        let filters = [];
+        const leadSourceIndex = tableState.columns.findIndex(
+          (i) => i.name === "leadSource"
+        );
+        const lastUpdateByIndex = tableState.columns.findIndex(
+          (i) => i.name === "lastUpdateBy.name"
+        );
+        const tagsIndex = tableState.columns.findIndex(
+          (i) => i.name === "tags"
+        );
+
+        if (tableState.filterList[leadSourceIndex]?.length !== 0) {
+          filters.push({
+            field: "leadSource",
+            value: tableState.filterList[leadSourceIndex],
+          });
+        }
+        if (tableState.filterList[lastUpdateByIndex]?.length !== 0) {
+          filters.push({
+            field: "lastUpdateBy.name",
+            value: tableState.filterList[lastUpdateByIndex],
+          });
+        }
+        if (tableState.filterList[tagsIndex]?.length !== 0) {
+          filters.push({
+            field: "tag",
+            value: tableState.filterList[tagsIndex],
+          });
+        }
+
+        const pageVariables = {
+          variables: {
+            pagination: {
+              first: tableState.rowsPerPage,
+              after: null
+            },
+            sort: tableState.activeColumn
+              ? {
+                field:
+                  tableState.columns[tableState.activeColumn]?.name === "fullContactAddress"
+                    ? "address1"
+                    : tableState.columns[tableState.activeColumn]?.name,
+                order:
+                  tableState.columns[tableState.activeColumn]?.sortDirection === "asc"
+                    ? 1
+                    : -1,
+              }
+              : [],
+
+            filters: filters,
+            //search: tableState.searchText,
+          },
+        }
+
         switch (action) {
           case "changeRowsPerPage":
             console.log("changeRowsPerPage");
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
             setRowsPerPage(tableState.rowsPerPage);
-            props.contactsPageProps.getContacts({
-              variables: {
-                pagination: {
-                  first: tableState.rowsPerPage,
-                  after: null,
-                },
-                search: tableState.searchText,
-              },
-            });
+            props.contactsPageProps.getContacts(pageVariables);
             break;
           case "changePage":
             props.contactsPageProps.setLoading(true);
             props.contactsPageProps.getContacts({
+              ...pageVariables,
               variables: {
+                ...pageVariables.variables,
                 pagination: {
-                  first: tableState.rowsPerPage,
-                  after: props.rows[props.rows.length - 1]._id,
-                },
-                sort: !tableState.activeColumn
-                  ? []
-                  : {
-                      field:
-                        tableState.columns[tableState.activeColumn].name ===
-                        "fullContactAddress"
-                          ? "address1"
-                          : tableState.columns[tableState.activeColumn].name,
-                      order:
-                        tableState.columns[tableState.activeColumn]
-                          .sortDirection === "asc"
-                          ? 1
-                          : -1,
-                    },
-                search: tableState.searchText,
-              },
+                  ...pageVariables.variables.pagination,
+                  after: props.rows ? props.rows[props.rows.length - 1]?._id : null
+                }
+              }
             });
             break;
           case "sort":
             props.contactsPageProps.setLoading(true);
-            props.contactsPageProps.getContacts({
-              variables: {
-                pagination: {
-                  first: tableState.rowsPerPage,
-                  after: null,
-                },
-                sort: {
-                  field:
-                    tableState.columns[tableState.activeColumn].name ===
-                    "fullContactAddress"
-                      ? "address1"
-                      : tableState.columns[tableState.activeColumn].name,
-                  order:
-                    tableState.columns[tableState.activeColumn]
-                      .sortDirection === "asc"
-                      ? 1
-                      : -1,
-                },
-              },
-            });
+            tableState.page = 0;
+            props.contactsPageProps.getContacts(pageVariables);
             break;
           case "search":
+            props.contactsPageProps.setLoading(true);
+            tableState.page = 0;
             delayedSearchRequest({
               setLoading: props.contactsPageProps.setLoading,
               getContacts: props.contactsPageProps.getContacts,
@@ -1838,45 +1855,7 @@ function SubTable(props) {
           case "filterChange":
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
-            let filters = [];
-            const leadSourceIndex = tableState.columns.findIndex(
-              (i) => i.name === "leadSource"
-            );
-            const lastUpdateByIndex = tableState.columns.findIndex(
-              (i) => i.name === "lastUpdateBy.name"
-            );
-            const tagsIndex = tableState.columns.findIndex(
-              (i) => i.name === "tags"
-            );
-
-            if (tableState.filterList[leadSourceIndex].length !== 0) {
-              filters.push({
-                field: "leadSource",
-                value: tableState.filterList[leadSourceIndex],
-              });
-            }
-            if (tableState.filterList[lastUpdateByIndex].length !== 0) {
-              filters.push({
-                field: "lastUpdateBy.name",
-                value: tableState.filterList[lastUpdateByIndex],
-              });
-            }
-            if (tableState.filterList[tagsIndex].length !== 0) {
-              filters.push({
-                field: "tag",
-                value: tableState.filterList[tagsIndex],
-              });
-            }
-
-            props.contactsPageProps.getContacts({
-              variables: {
-                pagination: {
-                  first: tableState.rowsPerPage,
-                  after: null,
-                },
-                filters: filters,
-              },
-            });
+            props.contactsPageProps.getContacts(pageVariables);
             break;
           default:
             console.log("action not handled.");
