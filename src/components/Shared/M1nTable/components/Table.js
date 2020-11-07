@@ -1795,7 +1795,7 @@ function SubTable(props) {
         }
         if (tableState.filterList[tagsIndex]?.length !== 0) {
           filters.push({
-            field: "tag",
+            field: "tag.tag",
             value: tableState.filterList[tagsIndex],
           });
         }
