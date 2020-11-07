@@ -186,22 +186,22 @@ export const FieldTypes = Object.freeze({
 const ConditionalWrap = ({ condition, wrap, children }) =>
   condition ? wrap(children) : children;
 
-export default function FieldContent({
-  children,
-  id,
-  entity,
-  melissaRecordId = null,
-  melissaAddressRecordId = null,
-  content,
-  childrenLeft,
-  onlyChildren,
-  name,
-  noMargin,
-  noInputFooter,
-  linkType,
-  fieldType = FieldTypes.Contact,
-  isEdited = false,
-}) {
+export default function FieldContent({  
+    children,
+    id,
+    entity,
+    melissaRecordId = null,
+    melissaAddressRecordId = null,
+    content,
+    childrenLeft,
+    onlyChildren,
+    name,
+    noMargin,
+    noInputFooter,
+    linkType,
+    fieldType = FieldTypes.Contact,
+    isEdited = false
+  }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
   //////////// entity - brings the entity id tide to the contact //////////////////////////////////////////////////
   //////////// melissaRecordId - brings the melissa record id tide to the contact /////////////////////////////////
@@ -217,7 +217,7 @@ export default function FieldContent({
   //////////// fieldType - FieldTypes value //default value = Contact /////////////////////////////////////////////
   //////////// isEdited - if value previously edited, show corresponding icon //default value = false /////////////
 
-  const [stateApp] = React.useContext(AppContext);
+  const [stateApp, setStateApp] = React.useContext(AppContext);
   const [edit, setEdit] = useState(null);
   const [editContent, setEditContent] = useState({ content });
   const [showContent, setShowContent] = useState(content);
@@ -287,12 +287,13 @@ export default function FieldContent({
           refetchQueries: ["getContacts"],
           awaitRefetchQueries: false,
         }).then((res) => {
-          let entries = Object.entries(editContent)[0];
-          let key = entries[0];
-          let updatedValue = entries[1];
-          content = { [key]: updatedValue };
-          setShowContent(content);
+          let entries = Object.entries(editContent);
+          entries.forEach((entry) => {
+            content = {...content, [entry[0]]: entry[1]}
+          });
+          setShowContent({...content});
           setEditContent({ ...content });
+          setStateApp({...stateApp, contactUpdated: id});
         });
       }
     } else if (fieldType == FieldTypes.MelissaRecord) {
@@ -309,9 +310,12 @@ export default function FieldContent({
         refetchQueries: ["getLastMelissaRecord"],
         awaitRefetchQueries: true,
       }).then((res) => {
-        content = { [key]: updatedValue };
         setIsCurEdited(true);
-        setShowContent(content);
+        let entries = Object.entries(editContent);
+        entries.forEach((entry) => {
+          content = {...content, [entry[0]]: entry[1]}
+        });
+        setShowContent({...content});
         setEditContent({ ...content });
       });
     } else if (fieldType == FieldTypes.MelissaAddressRecord) {
@@ -328,13 +332,15 @@ export default function FieldContent({
         refetchQueries: ["getLastMelissaRecord"],
         awaitRefetchQueries: true,
       }).then((res) => {
-        content = { [key]: updatedValue };
         setIsCurEdited(true);
-        setShowContent(content);
+        let entries = Object.entries(editContent);
+        entries.forEach((entry) => {
+          content = {...content, [entry[0]]: entry[1]}
+        });
+        setShowContent({...content});
         setEditContent({ ...content });
       });
     }
-
     setEdit(null);
   };
 

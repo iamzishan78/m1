@@ -327,18 +327,23 @@ export default function ContactDetailCard(props) {
     if (props.contactId) {
       getContact({
         variables: {
-          contactId: props.contactId,
+          contactId: stateApp.contactUpdated !== null 
+          ? stateApp.contactUpdated 
+          : props.contactId,
         },
       });
     }
-  }, [props.contactId]);
+
+  }, [props.contactId, stateApp.contactUpdated]);
 
   useEffect(() => {
     console.log("SET CONTACT:", data);
-    if (data && data.contact) {
+    if (!loading && data && data.contact) {
       setContactData(data.contact);
+      setStateApp({...stateApp, contactUpdated: null});
     }
-  }, [data]);
+    
+  }, [data, stateApp.contactUpdated]);
 
   useEffect(() => {
     if (props.contactId) {

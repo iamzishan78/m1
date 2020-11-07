@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MelissaTable from "./components/MelissaTable";
 import { makeStyles } from "@material-ui/core/styles";
 import FieldContent, {
@@ -127,54 +127,69 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default ({ header, ...props }) => {
-  const [basicInfExp, setBasicInfExp] = useState(false);
-  const classes = useStyles();
-
-  const basicInfoContent = {
-    "Primary Email": {
-      data: { primaryEmail: props.contactData.primaryEmail },
+const basicInfoAssign = (contactData) => {
+  const temp =  {
+      "Primary Email": {
+      data: { primaryEmail: contactData.primaryEmail },
       linkType: LinkTypes.Mail,
     },
     "Secondary Email": {
-      data: { secondaryEmail: props.contactData.secondaryEmail },
+      data: { secondaryEmail: contactData.secondaryEmail },
       linkType: LinkTypes.Mail,
     },
     "Mobile Phone": {
-      data: { mobilePhone: props.contactData.mobilePhone },
+      data: { mobilePhone: contactData.mobilePhone },
       linkType: LinkTypes.None,
     },
     "Home Phone": {
-      data: { homePhone: props.contactData.homePhone },
+      data: { homePhone: contactData.homePhone },
       linkType: LinkTypes.None,
     },
     "Alternate Phone": {
-      data: { AltPhone: props.contactData.AltPhone },
+      data: { AltPhone: contactData.AltPhone },
       linkType: LinkTypes.None,
     },
     "Primary Address": {
       data: {
-        address1: props.contactData.address1,
-        address2: props.contactData.address2,
-        city: props.contactData.city,
-        state: props.contactData.state,
-        zip: props.contactData.zip,
-        country: props.contactData.country,
+        address1: contactData.address1,
+        address2: contactData.address2,
+        city: contactData.city,
+        state: contactData.state,
+        zip: contactData.zip,
+        country: contactData.country,
       },
       linkType: LinkTypes.None,
     },
     "Secondary Address": {
       data: {
-        address1Alt: props.contactData.address1Alt,
-        address2Alt: props.contactData.address2Alt,
-        cityAlt: props.contactData.cityAlt,
-        stateAlt: props.contactData.stateAlt,
-        zipAlt: props.contactData.zipAlt,
-        countryAlt: props.contactData.countryAlt,
+        address1Alt: contactData.address1Alt,
+        address2Alt: contactData.address2Alt,
+        cityAlt: contactData.cityAlt,
+        stateAlt: contactData.stateAlt,
+        zipAlt: contactData.zipAlt,
+        countryAlt: contactData.countryAlt,
       },
       linkType: LinkTypes.None,
     },
   };
+
+  return temp;
+}
+export default function DetailInfo (props) {
+  const [basicInfExp, setBasicInfExp] = useState(false);
+  const classes = useStyles();
+  const [basicInfoContent, setBasicInfoContent] = useState({});
+  const [loading, setLoading]= useState(false);
+  
+  useEffect( () => {
+    setLoading(true);
+    async function update() {
+      const temp = await  basicInfoAssign(props.contactData);
+      setBasicInfoContent(temp);
+      setLoading(false);
+    }
+    update();
+  },[props.contactData])
 
   const basicInfoExpContent = {
     Relatives: {
@@ -314,7 +329,8 @@ export default ({ header, ...props }) => {
       </Grid>
 
       <Grid item xs={12} container className={classes.dataSect} spacing={0}>
-        {Object.entries(basicInfoContent).map(([key, row]) => (
+        {!loading && basicInfoContent &&
+          Object.entries(basicInfoContent).map(([key, row]) => (
           <React.Fragment>
             <Grid item xs={3} className="fieldName">
               <p className="dataLabels">{key}</p>

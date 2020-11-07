@@ -1896,6 +1896,7 @@ function SubTable(props) {
         : [];
     options.count = props.contactsPageProps.contactsCount;
     options.serverSide = true;
+    options.print = false;
   }
 
   console.log("ROWSSS : ", rows);
