@@ -2,30 +2,45 @@ import React, { useState, useEffect } from "react";
 import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { makeStyles } from "@material-ui/core/styles";
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
 import { uniqueId } from "lodash";
 
 import { useQuery } from "@apollo/client";
 import { GETALLACTIVITIES } from "../../graphQL/useQueryGetAllActivities";
+import ActivitiesToolbar from "./components/ActivitiesToolbar";
+import ActivitiesEvent from "./components/ActivitiesEvent";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import "./index.css";
 
 const localizer = momentLocalizer(moment);
 
-const ActivitiesCalendar = ({ events }) => (
-  <div>
-    <Calendar
-      localizer={localizer}
-      events={events}
-      startAccessor="start"
-      endAccessor="end"
-      defaultView="week"
-      defaultDate={new Date()}
-      style={{ height: "100%" }}
-    />
-  </div>
-);
+Date.prototype.addHours = function (h) {
+  this.setHours(this.getHours() + h * 60 * 60 * 1000);
+  return this;
+};
+
+const ActivitiesCalendar = ({ events }) => {
+  return (
+    <div>
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        defaultView={Views.WEEK}
+        defaultDate={new Date()}
+        style={{ height: "calc(100vh - 64px - 32px)" }}
+        step={60}
+        components={{
+          toolbar: ActivitiesToolbar,
+          event: ActivitiesEvent,
+        }}
+      />
+    </div>
+  );
+};
 
 const useStyles = makeStyles((theme) => ({
   progress: {
@@ -60,9 +75,7 @@ const Activities = () => {
           events={
             activitiesData?.activities?.map((act) => {
               const start = new Date(act.dateTime);
-              const end = act.endTime
-                ? new Date(act.endTime)
-                : start.setTime(start.getTime() + 1 * 60 * 60 * 1000);
+              const end = act.endDateTime ? new Date(act.endDateTime) : start;
               return {
                 id: uniqueId(),
                 start,
@@ -70,7 +83,6 @@ const Activities = () => {
                 title: act.fullname,
                 notes: act.notes,
                 type: act.type,
-                allDay: true,
               };
             }) || []
           }
