@@ -660,8 +660,25 @@ const ContactsHeadCells = [
     editable: true,
     options: { filter: false },
   },
-  { name: "leadSource", label: "Lead Source", editable: true },
-  { name: "lastUpdateBy.name", label: "Updated By" },
+  {
+    name: "leadSource",
+    label: "Lead Source",
+    editable: true,
+    options: {
+      filterOptions: {
+        names: []
+      }
+    }
+  },
+  {
+    name: "lastUpdateBy.name",
+    label: "Updated By",
+    options: {
+      filterOptions: {
+        names: []
+      }
+    }
+  },
   { name: "lastUpdateAt", label: "Last Updated", options: { filter: false } },
   // { name: "primaryEmail", label: "Primary Email" },
   // {
@@ -1791,32 +1808,32 @@ function M1nTable(props) {
         setColumns(
           cleanAvailableTags.length > 0
             ? TrackedOwnersHeadCells.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filterOptions: {
-                        ...column.options.filterOptions,
-                        names: cleanAvailableTags,
-                      },
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
                     },
-                  };
-                }
-                return column;
-              })
+                  },
+                };
+              }
+              return column;
+            })
             : TrackedOwnersHeadCells.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filter: false,
-                    },
-                  };
-                }
-                return column;
-              })
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
         );
 
         setStateApp((state) => ({
@@ -1979,32 +1996,32 @@ function M1nTable(props) {
         setColumns([
           ...(cleanAvailableTags.length > 0
             ? WellsHeadCells.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filterOptions: {
-                        ...column.options.filterOptions,
-                        names: cleanAvailableTags,
-                      },
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
                     },
-                  };
-                }
-                return column;
-              })
+                  },
+                };
+              }
+              return column;
+            })
             : WellsHeadCells.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filter: false,
-                    },
-                  };
-                }
-                return column;
-              })),
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })),
           flyToColumn,
         ]);
 
@@ -2117,32 +2134,32 @@ function M1nTable(props) {
         setColumns(
           cleanAvailableTags.length > 0
             ? WellsHeadCells.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filterOptions: {
-                        ...column.options.filterOptions,
-                        names: cleanAvailableTags,
-                      },
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
                     },
-                  };
-                }
-                return column;
-              })
+                  },
+                };
+              }
+              return column;
+            })
             : WellsHeadCells.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filter: false,
-                    },
-                  };
-                }
-                return column;
-              })
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
         );
 
         setStateApp((state) => ({
@@ -2272,32 +2289,32 @@ function M1nTable(props) {
       setColumns(
         cleanAvailableTags.length > 0
           ? OwnersPerWellHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
-                    },
+            if (column.name === "tags") {
+              return {
+                ...column,
+                options: {
+                  ...column.options,
+                  filterOptions: {
+                    ...column.options.filterOptions,
+                    names: cleanAvailableTags,
                   },
-                };
-              }
-              return column;
-            })
+                },
+              };
+            }
+            return column;
+          })
           : OwnersPerWellHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })
+            if (column.name === "tags") {
+              return {
+                ...column,
+                options: {
+                  ...column.options,
+                  filter: false,
+                },
+              };
+            }
+            return column;
+          })
       );
 
       setRows(wellOwners);
@@ -2334,29 +2351,21 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "Contacts" &&
-      dataContacts &&
-      dataContactsFilterOptions /*&&
+      dataContacts /*&&
+      dataContactsFilterOptions &&
       dataTracks &&
       dataTracks.tracksByObjectType*/
     ) {
       console.log("ue mintable 23");
       if (
         dataContacts.paginatedContacts.edges &&
-        dataContacts.paginatedContacts.edges.length > 0 &&
-        dataContactsFilterOptions &&
-        dataContactsFilterOptions.contactsFilterOptions
+        dataContacts.paginatedContacts.edges.length > 0
       ) {
         const objectsIdsArray = [];
         dataContacts.paginatedContacts.edges.forEach(({ node }) => {
           node.isTracked = false;
           objectsIdsArray.push(node._id);
 
-          // for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-          //   if (node.id === dataTracks.tracksByObjectType[i].trackOn) {
-          //     node.isTracked = true;
-          //     break;
-          //   }
-          // }
         });
 
         getCommentsCounter({
@@ -2375,8 +2384,88 @@ function M1nTable(props) {
     }
   }, [
     dataContacts,
-    dataContactsFilterOptions,
+    // dataContactsFilterOptions,
     // dataTracks
+  ]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "Contacts" &&
+      dataContactsFilterOptions
+    ) {
+      console.log("ue mintable 23.5");
+      if (
+        dataContactsFilterOptions &&
+        dataContactsFilterOptions.contactsFilterOptions
+      ) {
+
+        let filterTags = [...dataContactsFilterOptions.contactsFilterOptions.tags.map((tag) => {
+          return tag._id;
+        })
+        ]
+        let filterLeadSource = [...dataContactsFilterOptions.contactsFilterOptions.leadSource.map((leadSource) => {
+          return leadSource._id;
+        })
+        ]
+        let filterLastUpdateBy = [...dataContactsFilterOptions.contactsFilterOptions.lastUpdateBy.map((lastUpdateBy) => {
+          return lastUpdateBy._id;
+        })
+        ]
+
+
+        setColumns(
+            ContactsHeadCells.map((column) => {
+              switch(column.name) {
+
+                case 'tags':
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: filterTags,
+                      },
+                    },
+                  };
+
+                  case 'leadSource':
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: filterLeadSource,
+                      },
+                    },
+                  };
+
+                  case 'lastUpdateBy.name':
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: filterLastUpdateBy,
+                      },
+                    },
+                  };                  
+                
+                default:
+                  return column;
+              }
+            })
+        );
+
+      } else {
+        setLoading(false);
+      }
+    }
+  }, [
+    dataContactsFilterOptions
   ]);
 
   useEffect(() => {
@@ -2427,43 +2516,6 @@ function M1nTable(props) {
           node.melissaRowsCount = foundMelissaRowsCount.total;
         }
       });
-
-      let availableTags = [];
-      dataTagSamples.tagSamples.map((sample) => {
-        availableTags = [...availableTags, ...sample.tags];
-      });
-      const cleanAvailableTags = [...new Set(availableTags)];
-
-      setColumns(
-        cleanAvailableTags.length > 0
-          ? ContactsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
-                    },
-                  },
-                };
-              }
-              return column;
-            })
-          : ContactsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })
-      );
 
       setRows([...dataContacts.paginatedContacts.edges.map((el) => el.node)]);
       setLoading(false);
@@ -2680,22 +2732,22 @@ function M1nTable(props) {
           buildingColumns.push(
             cleanAvailableTags.length > 0
               ? {
-                  ...SearchsHeadCells[1],
-                  options: {
-                    ...SearchsHeadCells[1].options,
-                    filterOptions: {
-                      ...SearchsHeadCells[1].options.filterOptions,
-                      names: cleanAvailableTags,
-                    },
+                ...SearchsHeadCells[1],
+                options: {
+                  ...SearchsHeadCells[1].options,
+                  filterOptions: {
+                    ...SearchsHeadCells[1].options.filterOptions,
+                    names: cleanAvailableTags,
                   },
-                }
+                },
+              }
               : {
-                  ...SearchsHeadCells[1],
-                  options: {
-                    ...SearchsHeadCells[1].options,
-                    filter: false,
-                  },
-                }
+                ...SearchsHeadCells[1],
+                options: {
+                  ...SearchsHeadCells[1].options,
+                  filter: false,
+                },
+              }
           );
         }
 
@@ -3263,32 +3315,32 @@ function M1nTable(props) {
       setColumns([
         ...(cleanAvailableTags.length > 0
           ? WellsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
-                    },
+            if (column.name === "tags") {
+              return {
+                ...column,
+                options: {
+                  ...column.options,
+                  filterOptions: {
+                    ...column.options.filterOptions,
+                    names: cleanAvailableTags,
                   },
-                };
-              }
-              return column;
-            })
+                },
+              };
+            }
+            return column;
+          })
           : WellsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })),
+            if (column.name === "tags") {
+              return {
+                ...column,
+                options: {
+                  ...column.options,
+                  filter: false,
+                },
+              };
+            }
+            return column;
+          })),
         flyToColumn,
       ]);
 
@@ -3422,32 +3474,32 @@ function M1nTable(props) {
         setColumns(
           cleanAvailableTags.length > 0
             ? WellInterests.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filterOptions: {
-                        ...column.options.filterOptions,
-                        names: cleanAvailableTags,
-                      },
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
                     },
-                  };
-                }
-                return column;
-              })
+                  },
+                };
+              }
+              return column;
+            })
             : WellInterests.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filter: false,
-                    },
-                  };
-                }
-                return column;
-              })
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
         );
 
         setLoading(false);
@@ -3504,8 +3556,8 @@ function M1nTable(props) {
         contactId={props.contact?._id}
         contactsPageProps={{
           getContacts,
-          contactsCount: dataContacts
-            ? dataContacts.paginatedContacts.totalCount
+          contactsCount: dataContactsFilterOptions
+            ? dataContactsFilterOptions.contactsFilterOptions.totalCount[0].totalCount
             : 0,
           setLoading,
         }}
