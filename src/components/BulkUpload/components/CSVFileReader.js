@@ -181,6 +181,7 @@ export default function CSVFileReader(props) {
   }, []);
 
   let handleOnDrop = (data) => {
+    // console.log("111111111111111111",data)
     if (!unmounted.current) {
       mapped_headers_from_CSV(data);
       setStateApp((state) => ({
@@ -208,6 +209,8 @@ export default function CSVFileReader(props) {
   };
 
   let handleOnError = (err, file, inputElem, reason) => {
+    // console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",err,reason);
+
     if (!unmounted.current) {
       console.log(err);
     }
