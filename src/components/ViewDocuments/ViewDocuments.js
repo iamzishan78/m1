@@ -20,6 +20,11 @@ import SearchIcon from "@material-ui/icons/Search";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import DeleteDocumentConfirmation from "../Shared/DeleteDocumentConfirmation";
+import { GETCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
+import { AppContext } from "../../AppContext";
+import moment from "moment";
+import { useLazyQuery } from "@apollo/client";
+import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 
 const useStyles = makeStyles((theme) => ({
   viewAllCard: {
@@ -106,15 +111,68 @@ const docs = [
 export default function ViewDocuments(props) {
   const classes = useStyles();
   const [documentSearch, setDocumentSearch] = useState("");
-  const [allDocuments, setAllDocuments] = useState(docs);
+  const [allDocuments, setAllDocuments] = useState([]);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
+  const [stateApp] = React.useContext(AppContext);
+  const userId = stateApp.user.mongoId;
+
+  const [getAllFiles, { data: files }] = useLazyQuery(GETCONTACTFILES, {
+    fetchPolicy: "cache-and-network",
+  });
+
+  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
+    fetchPolicy: "network-only",
+  });
+
+  useEffect(() => {
+    console.log("VIEW FILE RESULT", viewFileResult);
+    if (viewFileResult) {
+      fetch(viewFileResult.viewFile.uri, {
+        headers: {
+          "Content-Type": "text/plain; charset=UTF-8",
+          "X-Ms-Blob-Type": "BlockBlob",
+          "X-Ms-Meta-Internalkey": viewFileResult.viewFile.internalKey,
+          "X-Ms-Version": "2015-02-21",
+        },
+        method: "GET",
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log("FILE RESPONSE: ", res);
+        })
+        .catch((e) => {
+          console.log("Could not view file", e);
+        });
+    }
+  }, [viewFileResult]);
+
+  const handleViewFile = async (id) => {
+    viewFile({ variables: { fileId: id } });
+  };
+
+  useEffect(() => {
+    getAllFiles({
+      variables: {
+        userId,
+        contactId: props.contactId,
+      },
+    });
+  }, []);
+
+  useEffect(() => {
+    if (files) {
+      setAllDocuments(files?.getFileDescriptors);
+    }
+    console.log("FILES:", files);
+  }, [files]);
 
   useEffect(() => {
     // Search logic (Search on change in search field text)
     let filtered = allDocuments.filter((doc) =>
-      doc.title.toLowerCase().includes(documentSearch.toLowerCase())
+      doc.fileName.toLowerCase().includes(documentSearch.toLowerCase())
     );
     setFilteredDocuments(filtered);
+    console.log("DOCS:", documentSearch, allDocuments);
   }, [documentSearch, allDocuments]);
 
   return (
@@ -142,18 +200,20 @@ export default function ViewDocuments(props) {
 
       <ul className={classes.documentsList}>
         {filteredDocuments.map((doc) => (
-          <li className={classes.document} key={doc.title}>
+          <li className={classes.document} key={doc.fileUrl}>
             <div className={classes.documentLeft}>
               <div
                 className={classes.greySquare}
-                onClick={props.downloadDocument}
+                onClick={() => handleViewFile(doc.fileId)}
               >
                 <GetAppIcon fontSize="large" />
               </div>
               <div className={classes.fileText}>
-                <h4 className={classes.uploadTitle}>{doc.title}</h4>
-                <h5 className={classes.uploadSubtext}>Kyle Chapman</h5>
-                <h5 className={classes.uploadSubtext}>July 04, 2020</h5>
+                <h4 className={classes.uploadTitle}>{doc.fileName}</h4>
+                <h5 className={classes.uploadSubtext}>{doc.userName}</h5>
+                <h5 className={classes.uploadSubtext}>
+                  {moment(doc.dateTime).format("MMM DD, YYYY")}
+                </h5>
               </div>
             </div>
             <div className={classes.documentRight}>
@@ -163,15 +223,15 @@ export default function ViewDocuments(props) {
               >
                 <DeleteIcon />
               </IconButton>
+              <DeleteDocumentConfirmation
+                open={props.open}
+                handleClose={props.handleClose}
+                handleAccept={() => props.handleAccept(doc.descriptorId)}
+              />
             </div>
           </li>
         ))}
       </ul>
-      {/* <DeleteDocumentConfirmation
-        open={props.open}
-        handleClose={props.handleClose}
-        handleAccept={props.handleAccept}
-      /> */}
     </div>
   );
 }

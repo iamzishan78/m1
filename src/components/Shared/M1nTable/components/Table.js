@@ -307,8 +307,8 @@ function SubTable(props) {
   useEffect(() => {
     if (
       props.parent &&
-      props.parent === "search" &&
-      props.targetLabel === "well" &&
+      (props.parent === "search" || props.parent === "owner_WellInterests") &&
+      props.targetLabel == "well" &&
       dataWell &&
       dataWell.well
     ) {
@@ -318,7 +318,6 @@ function SubTable(props) {
       });
 
       selectedWell = { ...selectedWell, ...dataWell.well };
-
       //// temporary to fix the ticks dates fields comming from the rest api
       if (
         selectedWell.permitApprovedDate &&

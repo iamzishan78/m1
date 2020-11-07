@@ -28,6 +28,7 @@ const AppProvider = (props) => {
       "/forgotpassword",
       "/track",
       "/transact",
+      "/activities",
       "/title",
       "/titleopinion",
       "/alerts",

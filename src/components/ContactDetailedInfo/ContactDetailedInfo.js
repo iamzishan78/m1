@@ -267,11 +267,11 @@ export default function DetailInfo (props) {
               ? props.contactData.createBy.name
               : ""
           }
-          ${
-            props.contactData.createAt
-              ? " - " + anyToDate(props.contactData.createAt).toLocaleString()
-              : ""
-          }`
+        ${
+          props.contactData.createAt
+            ? " - " + anyToDate(props.contactData.createAt).toLocaleString()
+            : ""
+        }`
         ) : (
           <p className={classes.notAvailableP}>Not Available</p>
         ),
