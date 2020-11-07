@@ -528,15 +528,16 @@ function SubTable(props) {
                                 ...state,
                                 activateWellDetailsFromTable: true,
                                 popupOpen: false,
-                                  selectedWell: null,
-                                  selectedWellId:
-                                    props.targetLabel === "well"
-                                      ? tableMeta.rowData[0]
-                                      : null,
-                                  flyTo: {
-                                    longitude: selectedWell.coordinates.center[0],
-                                    latitude: selectedWell.coordinates.center[1],
-                                  },
+                                expandedCard: true,
+                                selectedWell: null,
+                                selectedWellId:
+                                  props.targetLabel === "well"
+                                    ? tableMeta.rowData[0]
+                                    : null,
+                                flyTo: {
+                                  longitude: selectedWell.coordinates.center[0],
+                                  latitude: selectedWell.coordinates.center[1],
+                                },
                               }));
                             }
                           }
