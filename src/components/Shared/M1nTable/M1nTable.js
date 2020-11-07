@@ -3469,8 +3469,6 @@ function M1nTable(props) {
         });
         const cleanAvailableTags = [...new Set(availableTags)];
 
-        setRows(wells);
-
         setColumns(
           cleanAvailableTags.length > 0
             ? WellInterests.map((column) => {
@@ -3502,6 +3500,16 @@ function M1nTable(props) {
             })
         );
 
+        setRows(wells);
+        //// to populate the search layer
+        dispatch(
+          setMapGridCardState({
+            objToPopulateSearchLayer: {
+              objectType: "wells",
+              wells,
+            },
+          })
+        );
         setLoading(false);
       }
       // else {
