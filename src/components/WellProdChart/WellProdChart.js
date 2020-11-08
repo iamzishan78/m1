@@ -64,8 +64,8 @@ export default function WellProdChart(props) {
   //const {data,loading,error} = useQueryWellProdHistory(stateApp.selectedWellApi)
 
   useEffect(() => {
-    if (stateWellProdChart.wellProdHistory) {
-      //console.log('wellprodhistory',stateWellProdChart.wellProdHistory)
+    if (!loading && stateWellProdChart.wellProdHistory) {
+      //console.log('wellprodhistory',stateWellProdChart.wellProdHistory);
       let chart = am4core.create("chartDiv", am4charts.XYChart);
 
       chart.dateFormatter.inputDateFormat = "yyyy-MM-dd";
@@ -289,7 +289,8 @@ export default function WellProdChart(props) {
     return () => {
       console.log("will unmount");
       if (chart) {
-        am4core.disposeAllCharts();
+        //am4core.disposeAllCharts();
+        chart.dispose();
       }
     };
   }, [

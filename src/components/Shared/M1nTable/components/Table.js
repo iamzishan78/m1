@@ -521,15 +521,14 @@ function SubTable(props) {
                             let selectedWell = props.rows.find((row) => {
                               return row.id === tableMeta.rowData[0];
                             });
-                            console.log("selected well", selectedWell);
                             if (selectedWell) {
                               setSelectedRow(selectedWell);
                               setStateApp((state) => ({
                                 ...state,
                                 activateWellDetailsFromTable: true,
                                 popupOpen: false,
-                                expandedCard: true,
                                 selectedWell: null,
+                                expandedCard: true,
                                 selectedWellId:
                                   props.targetLabel === "well"
                                     ? tableMeta.rowData[0]
@@ -1877,8 +1876,6 @@ function SubTable(props) {
     options.serverSide = true;
     options.print = false;
   }
-
-  console.log("ROWSSS : ", rows);
 
   let history = useHistory();
 

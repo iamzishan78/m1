@@ -299,7 +299,7 @@ export default function WellCard() {
 
   if (stateApp.selectedWell && stateApp.selectedWell.wellStatus !== "Permit") {
     return stateApp.selectedWell ? (
-      !stateExpandableCard.expanded ? (
+      !stateApp.expandedCard ? (
         <div style={{ height: "100%", padding: "9px" }}>
           <Card>
             <CardActions

@@ -696,9 +696,9 @@ function MapGridCard(props) {
 }
 
 function areEqual(prevProps, nextProps) {
-  console.log(
-    `${prevProps.mapGridCardActivated} ... ${nextProps.mapGridCardActivated}`
-  );
+  // console.log(
+  //   `${prevProps.mapGridCardActivated} ... ${nextProps.mapGridCardActivated}`
+  // );
   return Object.is(
     prevProps.mapGridCardActivated,
     nextProps.mapGridCardActivated

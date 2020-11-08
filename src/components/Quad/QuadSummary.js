@@ -30,7 +30,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     //flexDirection:'column',
     overflow: "hidden",
-    paddingBottom: "2px",
   },
   gridList: {
     width: "auto",
@@ -57,13 +56,13 @@ const useStyles = makeStyles((theme) => ({
   },
   gridContainer: {
     width: "auto",
-    height: "auto",
-    paddingBottom: "2px",
+    paddingBottom: 0,
     margin: "8px",
     display: "flex",
     flexWrap: "wrap",
     alignContent: "center",
     justifyContent: "center",
+    marginBottom: 0,
   },
   tabContainer: {
     alignContent: "center",
@@ -98,6 +97,7 @@ const useStyles = makeStyles((theme) => ({
     // margin: theme.spacing(1),
     minWidth: "100%",
     // padding: "0px 16px",
+    marginBottom:0,
   },
   
   divider: {
@@ -262,7 +262,7 @@ export default function QuadSummary(props) {
         }
         <Grid item xs={12}>
           <MuiThemeProvider theme={toggleTheme} >
-          <ToggleButtonGroup exclusive style={{width: "100%"}} value={toggleAlignment} >
+          <ToggleButtonGroup exclusive style={{width: "100%", marginTop: 35}} value={toggleAlignment} >
               <ToggleButton
                 selected={!daily}
                 disabled={stateQuad.selectedRange === 0} 

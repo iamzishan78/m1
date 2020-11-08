@@ -90,7 +90,7 @@ export default function ExpandableCard(props) {
       borderColor: "#011133",
       //display: 'block'
       "& .MuiCardHeader-action": {
-        alignSelf: "auto",
+        alignSelf: "left",
       },
     },
     title: {
@@ -115,7 +115,6 @@ export default function ExpandableCard(props) {
       transition: "height 0.1s",
       background: "#fff",
       padding: "0 !important",
-      height: height,
       overflowY: "auto",
       height: stateExpandableCard.expanded
         ? "calc(100% - 72px)"
@@ -159,16 +158,6 @@ export default function ExpandableCard(props) {
     setZidx(props.zIndex);
   }, [props.zIndex]);
 
-  useEffect(() => {
-    setWidth(cardWidth);
-    setHeight(cardHeight);
-    if (props.expanded) {
-      handleExpand();
-    } else {
-      handleShrink();
-    }
-  }, [props.expanded]);
-
   const handleExpand = () => {
     if (parent === "map" && $("#popupContainer").length) {
       console.log("jquery expand");
@@ -182,7 +171,16 @@ export default function ExpandableCard(props) {
     setStateApp((state) => ({ ...state, expandedCard: true }));
     setStateExpandableCard((state) => ({ ...state, expanded: true }));
   };
-
+  useEffect(() => {
+    setWidth(cardWidth);
+    setHeight(cardHeight);
+    if (props.expanded) {
+      handleExpand();
+    } else {
+      handleShrink();
+    }
+  }, [props.expanded]);
+  
   const handleShrink = () => {
     if (parent === "map" && $("#popupContainer").length) {
       console.log("jquery shrink");
@@ -210,11 +208,10 @@ export default function ExpandableCard(props) {
         popupOpen: false,
         selectedWell: null,
         selectedParcel: null,
+        expandedCard:false,
       }));
     }
-
     props.handleCloseExpandableCard();
-
     //if EC is inside map popup you need to close it
   };
 
