@@ -25,14 +25,20 @@ export default function BulkUpload(props) {
       label: "First Name",
       mapped_key: "",
       required: false,
-      actual_key: "first_name",
+      actual_key: "firstName",
     },
     {
       label: "Last Name",
       mapped_key: "",
       required: false,
-      actual_key: "last_name",
+      actual_key: "lastName",
     },
+    // {
+    //   label: "Full Name",
+    //   mapped_key: "",
+    //   required: false,
+    //   actual_key: "name",
+    // },
     {
       label: "Street Address",
       mapped_key: "",
@@ -58,16 +64,77 @@ export default function BulkUpload(props) {
       actual_key: "zip",
     },
     {
-      label: "Email",
+      label: "Primary Email",
       mapped_key: "",
       required: false,
       actual_key: "primaryEmail",
     },
+    /////
     {
-      label: "Phone Number",
+      label: "Home Phone",
+      mapped_key: "",
+      required: false,
+      actual_key: "homePhone",
+    },
+    {
+      label: "Mobile Phone",
       mapped_key: "",
       required: false,
       actual_key: "mobilePhone",
+    },
+    {
+      label: "Work Phone",
+      mapped_key: "",
+      required: false,
+      actual_key: "AltPhone",
+    },
+    {
+      label: "Alternate Email 2",
+      mapped_key: "",
+      required: false,
+      actual_key: "secondaryEmail",
+    },
+    {
+      label: "Alternate Email 3",
+      mapped_key: "",
+      required: false,
+      actual_key: "email3",
+    },
+    {
+      label: "Alternate Home Phone 2",
+      mapped_key: "",
+      required: false,
+      actual_key: "homePhone2",
+    },
+    {
+      label: "Alternate Home Phone 3",
+      mapped_key: "",
+      required: false,
+      actual_key: "homePhone3",
+    },
+    {
+      label: "Alternate Mobile Phone 2",
+      mapped_key: "",
+      required: false,
+      actual_key: "mobilephone2",
+    },
+    {
+      label: "Alternate Mobile Phone 3",
+      mapped_key: "",
+      required: false,
+      actual_key: "mobilephone3",
+    },
+    {
+      label: "Alternate Work Phone 2",
+      mapped_key: "",
+      required: false,
+      actual_key: "AltPhone2",
+    },
+    {
+      label: "Alternate Work Phone 3",
+      mapped_key: "",
+      required: false,
+      actual_key: "AltPhone3",
     },
   ];
   const reset_state = () => {
