@@ -1,18 +1,14 @@
-.rbc-timeslot-group {
-  min-height: 100px !important;
-}
-
 .rbc-event {
   width: 100% !important;
   min-height: 50px !important;
   background-color: #d0f1fc;
   color: #15a9d7;
-  border: none !important;
+  border: 2px solid #fff !important;
 }
 
 .rbc-event.rbc-selected {
   background-color: #d0f1fc !important;
-  border: none !important;
+  border: 2px solid #fff !important;
 }
 
 .rbc-event-label {

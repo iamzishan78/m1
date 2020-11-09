@@ -55,6 +55,10 @@ const useStyles = makeStyles((theme) => ({
   closeIcon: {
     color: theme.palette.secondary.main,
   },
+  shrinkLabel: {
+    backgroundColor: "#fff !important",
+    padding: "0 6px",
+  },
 }));
 
 const initialErrors = {
@@ -258,26 +262,31 @@ function AddActivityDialog(props) {
           className={classes.inputField}
           label="Activity Date"
         />
-
-        <TextField
+        <FormControl
           variant="outlined"
           fullWidth
-          size="small"
-          id="enddatetime-local"
-          labelId="enddatetime-local-label"
-          // label="Activity Date"
-          type="enddatetime-local"
-          value={endDateTime}
-          onChange={(e) => {
-            console.log("PREV: ", endDateTime);
-            console.log("setting: ", e.target.value);
-            setEndDateTime(e.target.value);
-          }}
-          disabled={loading}
           className={classes.inputField}
-          label="Activity End Date"
-        />
-
+          size="small"
+        >
+          <InputLabel shrink className={classes.shrinkLabel}>
+            Activity End Date
+          </InputLabel>
+          <TextField
+            fullWidth
+            size="small"
+            variant="outlined"
+            id="enddatetime-local"
+            labelId="enddatetime-local-label"
+            type="datetime-local"
+            value={endDateTime}
+            onChange={(e) => {
+              console.log("PREV: ", endDateTime);
+              console.log("setting: ", e.target.value);
+              setEndDateTime(e.target.value);
+            }}
+            disabled={loading}
+          />
+        </FormControl>
         <FormControl
           variant="outlined"
           fullWidth
@@ -303,12 +312,11 @@ function AddActivityDialog(props) {
             disabled={loading}
             error={errors.activityType}
           >
-            <option value={"general"}>General Update</option>
-            <option value={"phone"}>Phone Call</option>
-            <option value={"email"}>Email</option>
+            <option value={"call"}>Call</option>
             <option value={"meeting"}>Meeting</option>
-            <option value={"sms"}>SMS</option>
-            <option value={"campaign"}>Campaign</option>
+            <option value={"email"}>Email</option>
+            <option value={"task"}>Task</option>
+            <option value={"deadline"}>Deadline</option>
           </Select>
         </FormControl>
 

@@ -44,7 +44,7 @@ const ActivitiesEvent = ({ event }) => {
       : event.end.getMinutes()
   }`;
 
-  const icon = <DefaultIcon />;
+  let icon = <DefaultIcon />;
 
   switch (event.type) {
     case "call":
