@@ -16,6 +16,11 @@ export const ADDCONTACT = gql`
         country
         state
         zip
+        title
+        firstName
+        lastName
+        middleName
+        suffix
         mobilePhone
         homePhone
         primaryEmail
@@ -26,6 +31,20 @@ export const ADDCONTACT = gql`
         lastUpdateBy {
           name
         }
+        homePhone2
+        homePhone3
+        mobilephone2
+        mobilephone3
+        AltPhone2
+        AltPhone3
+        email3
+        status
+        hasAuthority
+        doNotDisturb
+        timeZone
+        notes
+        website
+        industryType
       }
     }
   }

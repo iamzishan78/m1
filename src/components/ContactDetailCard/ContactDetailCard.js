@@ -434,8 +434,8 @@ export default function ContactDetailCard(props) {
           <div>
             <div className={classes.userIcon}>
               <StyleBadge
-                //badgeContent={5}
-                //color={"#f6c16b"}
+              //badgeContent={5}
+              //color={"#f6c16b"}
               >
                 <Avatar
                   className={classes.grey}
@@ -572,8 +572,8 @@ export default function ContactDetailCard(props) {
             id={contactData._id}
           />
         </Grid>
- {/*/////////// new section - lead stage //////////// */}
- <Grid item xs={12} className={`${classes.border}`}>
+        {/*/////////// new section - lead stage //////////// */}
+        <Grid item xs={12} className={`${classes.border}`}>
           <div className={classes.SectMargin}>
             <Grid item xs={12} style={{ minHeight: "33px" }}>
               <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
@@ -639,7 +639,7 @@ export default function ContactDetailCard(props) {
                 </Card>
               </Grid>
               <Grid item xs={4}>
-                <Card raised style={{ minHeight: "35px",  height: "100%" }}>
+                <Card raised style={{ minHeight: "35px", height: "100%" }}>
                   <DealsNew
                     handleOpenExpandableCard={handleOpenExpandableCard}
                     contact={contactData}
@@ -653,7 +653,6 @@ export default function ContactDetailCard(props) {
           </Grid>
         </Grid>
 
-       
         {/*/////////// Recent Activities. //////////// */}
         <Grid item xs={12} className={`${classes.border}`}>
           <div className={classes.SectMargin}>

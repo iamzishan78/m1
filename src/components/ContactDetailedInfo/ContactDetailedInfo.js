@@ -132,6 +132,16 @@ export default ({ header, ...props }) => {
   const classes = useStyles();
 
   const basicInfoContent = {
+    "Full Name": {
+      data: {
+        title: props.contactData.title,
+        firstName: props.contactData.firstName,
+        middleName: props.contactData.middleName,
+        lastName: props.contactData.lastName,
+        suffix: props.contactData.suffix,
+      },
+      linkType: LinkTypes.None,
+    },
     "Primary Email": {
       data: { primaryEmail: props.contactData.primaryEmail },
       linkType: LinkTypes.Mail,
@@ -177,6 +187,55 @@ export default ({ header, ...props }) => {
   };
 
   const basicInfoExpContent = {
+    "Home Phone 2": {
+      data: { homePhone2: props.contactData.homePhone2 },
+      linkType: LinkTypes.None,
+    },
+    "Home Phone 3": {
+      data: { homePhone3: props.contactData.homePhone3 },
+      linkType: LinkTypes.None,
+    },
+    "Mobile Phone 2": {
+      data: { mobilephone2: props.contactData.mobilephone2 },
+      linkType: LinkTypes.None,
+    },
+    "Mobile Phone 3": {
+      data: { mobilephone3: props.contactData.mobilephone3 },
+      linkType: LinkTypes.None,
+    },
+    "Alternate Phone 2": {
+      data: { AltPhone2: props.contactData.AltPhone2 },
+      linkType: LinkTypes.None,
+    },
+    "Alternate Phone 3": {
+      data: { AltPhone3: props.contactData.AltPhone3 },
+      linkType: LinkTypes.None,
+    },
+    "Email 3": {
+      data: { email3: props.contactData.email3 },
+      linkType: LinkTypes.None,
+    },
+    Status: {
+      data: { status: props.contactData.status },
+      linkType: LinkTypes.None,
+    },
+    "Time Zone": {
+      data: { timeZone: props.contactData.timeZone },
+      linkType: LinkTypes.None,
+    },
+    Notes: {
+      data: { notes: props.contactData.notes },
+      linkType: LinkTypes.None,
+    },
+    Website: {
+      data: { website: props.contactData.website },
+      linkType: LinkTypes.None,
+    },
+    "Industry Type": {
+      data: { industryType: props.contactData.industryType },
+      linkType: LinkTypes.None,
+    },
+
     Relatives: {
       data: { relatives: props.contactData.relatives },
       linkType: LinkTypes.None,
