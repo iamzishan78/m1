@@ -417,7 +417,12 @@ export default function FieldContent({
         key === "zip" ||
         key === "country" ||
         key === "zipAlt" ||
-        key === "countryAlt"
+        key === "countryAlt" ||
+        key === "title" ||
+        key === "firstName" ||
+        key === "middleName" ||
+        key === "lastName" ||
+        key === "suffix"
       ) {
         textArray = [[textArray.join(", "), showContent[key]].join(" ")];
       } else if (key === "jobTitle") {

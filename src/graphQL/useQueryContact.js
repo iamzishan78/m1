@@ -12,6 +12,12 @@ export const CONTACT = gql`
       country
       state
       zip
+      title
+      firstName
+      lastName
+      middleName
+      suffix
+      globalOwner
       mobilePhone
       homePhone
       primaryEmail
@@ -49,6 +55,22 @@ export const CONTACT = gql`
         fullname
         user_id
       }
+      homePhone2
+      homePhone3
+      mobilephone2
+      mobilephone3
+      AltPhone2
+      AltPhone3
+      email3
+      status
+
+      hasAuthority
+      doNotDisturb
+
+      timeZone
+      notes
+      website
+      industryType
     }
   }
 `;

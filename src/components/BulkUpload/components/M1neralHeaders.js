@@ -70,6 +70,9 @@ const StyledTableCell = withStyles((theme) => ({
     border: "1px solid #ddd",
     padding: "0px 15px",
     color: "#a6a6a6",
+    "& .MuiIconButton-root.Mui-disabled": {
+      color: "rgb(0 0 0 / 6%) !important",
+    },
   },
 }))(TableCell);
 
@@ -125,6 +128,7 @@ export default function M1neralHeaders(props) {
   const changeDataToSendState = () => {
     let headers = stateApp.mappedHeadersFromCSV;
     let arr_data = stateApp.csvContactsList;
+
     let filtered_data_to_send = arr_data.map((obj) => {
       let return_obj = {};
       for (let header of headers) {
@@ -136,33 +140,39 @@ export default function M1neralHeaders(props) {
           return_obj[header.actual_key] = obj.data[header.mapped_key];
         }
       }
-      if (return_obj === {}) {
+      if (
+        return_obj === {} ||
+        !(return_obj["firstName"] || return_obj["lastName"])
+      ) {
         return null;
       }
-      return_obj["name"] = "";
-      if (return_obj["first_name"]) {
-        return_obj["name"] = return_obj["first_name"];
+      //// mandatory fields
+      if (return_obj["firstName"] || return_obj["lastName"]) {
+        return_obj["name"] = "";
+        return_obj["leadSource"] = createLeadSource();
       }
-      if (return_obj["first_name"] && return_obj["last_name"]) {
+
+      if (return_obj["firstName"] && return_obj["lastName"]) {
         return_obj["name"] =
-          return_obj["first_name"] + " " + return_obj["last_name"];
+          return_obj["firstName"] + " " + return_obj["lastName"];
       } else {
-        if (return_obj["first_name"]) {
-          return_obj["name"] = return_obj["first_name"];
+        if (return_obj["firstName"]) {
+          return_obj["name"] = return_obj["firstName"];
         }
-        if (return_obj["last_name"]) {
-          return_obj["name"] = return_obj["last_name"];
+        if (return_obj["lastName"]) {
+          return_obj["name"] = return_obj["lastName"];
         }
       }
-      return_obj["leadSource"] = createLeadSource();
+
       return return_obj;
     });
     filtered_data_to_send = filtered_data_to_send.filter((obj) => {
-      if (Object.keys(obj).length !== 0) {
+      if (obj && Object.keys(obj).length !== 0) {
         return true;
       }
       return false;
     });
+
     setStateApp((state) => ({
       ...state,
       csvContactsListToSend: filtered_data_to_send,
@@ -197,6 +207,7 @@ export default function M1neralHeaders(props) {
                     <TableRow key={index}>
                       <StyledTableCell key={columns[0].label}>
                         <Checkbox
+                          disabled={row.actual_key === "" ? true : false}
                           checked={row.required}
                           color="default"
                           onChange={(event) =>
@@ -246,6 +257,10 @@ export default function M1neralHeaders(props) {
             </Table>
           </TableContainer>
         </Paper>
+        <div style={{ ...text_grey }}>
+          *First Name or Last Name is required to be mapped <br /> before
+          uploading contacts.
+        </div>
       </div>
     </div>
   );
