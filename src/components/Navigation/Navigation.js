@@ -1129,6 +1129,8 @@ export default function Navigation(props) {
     }));
   };
 
+  console.log("LOCATION", location);
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -1146,27 +1148,46 @@ export default function Navigation(props) {
                   {theme.direction === "rtl" ? <MenuIcon /> : <MenuIcon />}
                 </IconButton>
 
-                <div style={{ marginRight: "35px" }}>
-                  {matchFind ? (
-                    <Button
-                      color="secondary"
-                      size="large"
-                      onClick={handleClickLogo}
-                      className={classes.margin}
-                    >
-                      <M1neralLogoWhiteLetters />
-                    </Button>
-                  ) : (
-                    <Button
-                      color="secondary"
-                      size="large"
-                      onClick={(event) => handleListItemClick(event, 0, "/")}
-                      className={classes.margin}
-                    >
-                      <M1neralLogoWhiteLetters />
-                    </Button>
-                  )}
-                </div>
+                {location.pathname !== "/activities" ? (
+                  <div style={{ marginRight: "35px" }}>
+                    {matchFind ? (
+                      <Button
+                        color="secondary"
+                        size="large"
+                        onClick={handleClickLogo}
+                        className={classes.margin}
+                      >
+                        <M1neralLogoWhiteLetters />
+                      </Button>
+                    ) : (
+                      <Button
+                        color="secondary"
+                        size="large"
+                        onClick={(event) => handleListItemClick(event, 0, "/")}
+                        className={classes.margin}
+                      >
+                        <M1neralLogoWhiteLetters />
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    {/*SEARCH UI FOR ACTIVITIES */}
+                    <div className={classes.search} style={{ minWidth: 300 }}>
+                      <div className={classes.searchIcon}>
+                        <SearchIcon />
+                      </div>
+                      <InputBase
+                        placeholder="Search from projects"
+                        classes={{
+                          root: classes.inputRoot,
+                          input: classes.inputInput,
+                        }}
+                        inputProps={{ "aria-label": "search" }}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             ) : null}
 

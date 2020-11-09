@@ -33,8 +33,16 @@ const useStyles = makeStyles((theme) => ({
 const ActivitiesEvent = ({ event }) => {
   const classes = useStyles();
 
-  const startTime = `${event.start.getHours()}:${event.start.getMinutes()}`;
-  const endTime = `${event.end.getHours()}:${event.end.getMinutes()}`;
+  const startTime = `${event.start.getHours()}:${
+    event.start.getMinutes() < 10
+      ? `0${event.start.getMinutes()}`
+      : event.start.getMinutes()
+  }`;
+  const endTime = `${event.end.getHours()}:${
+    event.end.getMinutes() < 10
+      ? `0${event.end.getMinutes()}`
+      : event.end.getMinutes()
+  }`;
 
   const icon = <DefaultIcon />;
 

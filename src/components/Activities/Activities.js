@@ -6,13 +6,14 @@ import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
 import { uniqueId } from "lodash";
 
-import { useQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { GETALLACTIVITIES } from "../../graphQL/useQueryGetAllActivities";
 import ActivitiesToolbar from "./components/ActivitiesToolbar";
 import ActivitiesEvent from "./components/ActivitiesEvent";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./index.css";
+import ActivitiesAppBar from "./components/ActivitiesAppbar";
 
 const localizer = momentLocalizer(moment);
 
@@ -21,7 +22,15 @@ Date.prototype.addHours = function (h) {
   return this;
 };
 
-const ActivitiesCalendar = ({ events }) => {
+const ActivitiesCalendar = ({
+  events,
+  activityFilterByType,
+  setActivityFilterByType,
+  activityFilterByTime,
+  setActivityFilterByTime,
+  view,
+  setView,
+}) => {
   return (
     <div>
       <Calendar
@@ -34,7 +43,17 @@ const ActivitiesCalendar = ({ events }) => {
         style={{ height: "calc(100vh - 64px - 32px)" }}
         step={60}
         components={{
-          toolbar: ActivitiesToolbar,
+          toolbar: (props) => (
+            <ActivitiesToolbar
+              {...props}
+              activityFilterByType={activityFilterByType}
+              setActivityFilterByType={setActivityFilterByType}
+              activityFilterByTime={activityFilterByTime}
+              setActivityFilterByTime={setActivityFilterByTime}
+              view={view}
+              setView={setView}
+            />
+          ),
           event: ActivitiesEvent,
         }}
       />
@@ -47,21 +66,114 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "30px",
     verticalAlign: "middle",
   },
-  root: {
-    padding: 16,
-  },
+  root: {},
 }));
+
+const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
+  const filterByTypeCondition =
+    e.type === activityFilterByType || activityFilterByType === "all";
+  let filterByTimeCondition;
+  const today = new Date();
+  const tommorow = new Date(today.getDate() + 1);
+  const thisWeekEnd = new Date(today.getDate() + 7);
+  const nextWeekStart = new Date(today.getDate() + 8);
+  const nextWeekEnd = new Date(today.getDate() + 14);
+
+  switch (activityFilterByTime) {
+    case "todo":
+      filterByTimeCondition = moment(e.end).isSameOrAfter(
+        today.setHours(0, 0, 0, 0)
+      );
+      break;
+    case "overdue":
+      filterByTimeCondition = moment(e.end).isBefore(
+        today.setHours(0, 0, 0, 0)
+      );
+      break;
+    case "today":
+      filterByTimeCondition = moment(e.end).isSame(
+        today.setHours(0, 0, 0, 0),
+        "day"
+      );
+      break;
+    case "tommorow":
+      filterByTimeCondition = moment(e.end).isSame(
+        tommorow.setHours(0, 0, 0, 0),
+        "day"
+      );
+    case "this-week":
+      filterByTimeCondition = moment(e.end).isBetween(
+        today.setHours(0, 0, 0, 0),
+        thisWeekEnd.setHours(0, 0, 0, 0),
+        "day"
+      );
+    case "next-week":
+      filterByTimeCondition = moment(e.end).isBetween(
+        nextWeekStart.setHours(0, 0, 0, 0),
+        nextWeekEnd.setHours(0, 0, 0, 0),
+        "day"
+      );
+      break;
+    default:
+      filterByTimeCondition = moment(e.end).isSameOrAfter(
+        today.setHours(0, 0, 0, 0),
+        "day"
+      );
+  }
+
+  return filterByTypeCondition && filterByTimeCondition;
+};
 
 const Activities = () => {
   const classes = useStyles();
 
-  const {
-    data: activitiesData,
-    loading: activitiesLoading,
-    error: activitiesError,
-  } = useQuery(GETALLACTIVITIES);
+  const [
+    getAllActivities,
+    {
+      data: activitiesData,
+      loading: activitiesLoading,
+      error: activitiesError,
+    },
+  ] = useLazyQuery(GETALLACTIVITIES);
 
-  console.log("ACTIVITIES", activitiesData, activitiesLoading);
+  const [events, setEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [activityDisplayType, setActivityDisplayType] = useState("calender");
+  const [activityFilterByType, setActivityFilterByType] = useState("all");
+  const [activityFilterByTime, setActivityFilterByTime] = useState("todo");
+  const [view, setView] = React.useState(Views.WEEK);
+
+  useEffect(() => {
+    getAllActivities();
+  }, []);
+
+  useEffect(() => {
+    if (activitiesData) {
+      setEvents(
+        activitiesData?.activities?.map((act) => {
+          const start = new Date(act.dateTime);
+          const end = act.endDateTime ? new Date(act.endDateTime) : start;
+          return {
+            id: uniqueId(),
+            start,
+            end,
+            title: act.fullname,
+            notes: act.notes,
+            type: act.type,
+          };
+        })
+      );
+    }
+  }, [activitiesData]);
+
+  useEffect(() => {
+    setFilteredEvents(
+      events.filter((e) =>
+        getFilterCondition(e, activityFilterByType, activityFilterByTime)
+      )
+    );
+  }, [events, activityFilterByType, activityFilterByTime]);
+
   return (
     <div className={classes.root}>
       {activitiesLoading ? (
@@ -71,22 +183,21 @@ const Activities = () => {
           disableShrink
         />
       ) : (
-        <ActivitiesCalendar
-          events={
-            activitiesData?.activities?.map((act) => {
-              const start = new Date(act.dateTime);
-              const end = act.endDateTime ? new Date(act.endDateTime) : start;
-              return {
-                id: uniqueId(),
-                start,
-                end,
-                title: act.fullname,
-                notes: act.notes,
-                type: act.type,
-              };
-            }) || []
-          }
-        />
+        <>
+          <ActivitiesAppBar
+            activityDisplayType={activityDisplayType}
+            setActivityDisplayType={setActivityDisplayType}
+          />
+          <ActivitiesCalendar
+            activityFilterByType={activityFilterByType}
+            setActivityFilterByType={setActivityFilterByType}
+            activityFilterByTime={activityFilterByTime}
+            setActivityFilterByTime={setActivityFilterByTime}
+            view={view}
+            setView={setView}
+            events={filteredEvents}
+          />
+        </>
       )}
     </div>
   );
