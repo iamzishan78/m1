@@ -692,26 +692,6 @@ const ContactsHeadCells = [
     editable: true,
     options: { filter: false },
   },
-  {
-    name: "leadSource",
-    label: "Lead Source",
-    editable: true,
-    options: {
-      filterOptions: {
-        names: [],
-      },
-    },
-  },
-  {
-    name: "lastUpdateBy.name",
-    label: "Updated By",
-    options: {
-      filterOptions: {
-        names: [],
-      },
-    },
-  },
-  { name: "lastUpdateAt", label: "Last Updated", options: { filter: false } },
 
   {
     name: "melissaRowsCount",
@@ -806,6 +786,27 @@ const ContactsHeadCells = [
       sort: false,
     },
   },
+  {
+    name: "leadSource",
+    label: "Lead Source",
+    editable: false,
+    options: {
+      filterOptions: {
+        names: [],
+      },
+    },
+  },
+  {
+    name: "lastUpdateBy.name",
+    label: "Updated By",
+    options: {
+      filterOptions: {
+        names: [],
+      },
+    },
+  },
+  { name: "lastUpdateAt", label: "Last Updated", options: { filter: false } },
+
   {
     name: "tags",
     label: "Tags ",

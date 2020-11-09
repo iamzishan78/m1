@@ -83,7 +83,7 @@ export default function OwnersSummaryCard(props) {
           >
             Interest Owners
           </Typography>
-          <Typography color="secondary">
+          <Typography  className="wellInterestsText" >
             {selectedOwner && selectedOwner.name
               ? selectedOwner.name
               : selectedOwner.OwnerName}
