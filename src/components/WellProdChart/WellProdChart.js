@@ -287,10 +287,9 @@ export default function WellProdChart(props) {
     }
 
     return () => {
-      console.log("will unmount");
-      if (chart) {
-        //am4core.disposeAllCharts();
-        chart.dispose();
+      if (am4core) {
+        am4core.disposeAllCharts();
+        // chart.dispose();
       }
     };
   }, [

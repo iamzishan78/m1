@@ -580,6 +580,7 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
+
   {
     name: "address1",
     options: {
@@ -655,6 +656,37 @@ const ContactsHeadCells = [
 
   { name: "name", label: "Name", editable: true, options: { filter: false } },
   {
+    name: "firstName",
+    label: "First Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "middleName",
+    label: "Middle Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "lastName",
+    label: "Last Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+
+  {
     name: "fullContactAddress",
     label: "Primary Address",
     editable: true,
@@ -666,31 +698,114 @@ const ContactsHeadCells = [
     editable: true,
     options: {
       filterOptions: {
-        names: []
-      }
-    }
+        names: [],
+      },
+    },
   },
   {
     name: "lastUpdateBy.name",
     label: "Updated By",
     options: {
       filterOptions: {
-        names: []
-      }
-    }
+        names: [],
+      },
+    },
   },
   { name: "lastUpdateAt", label: "Last Updated", options: { filter: false } },
-  // { name: "primaryEmail", label: "Primary Email" },
-  // {
-  //   name: "mobilePhone",
-  //   label: "Mobile Phone",
-  // },
-  // {
-  //   name: "homePhone",
-  //   label: "Home Phone",
-  // },
-  // {
 
+  {
+    name: "melissaRowsCount",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+
+  {
+    name: "mobilephone",
+    label: "Primary Mobile Phone",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "homePhone",
+    label: "Primary Home Phone",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "primaryEmail",
+    label: "Primary Email",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "status",
+    label: "Status",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "timeZone",
+    label: "Time Zone",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "campaignName",
+    label: "Campaign Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "website ",
+    label: "Website",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "industryType ",
+    label: "Industry Type",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
   {
     name: "tags",
     label: "Tags ",
@@ -700,15 +815,6 @@ const ContactsHeadCells = [
       print: false,
       filterOptions: {
         names: [],
-        logic(rowVal, pickedTags) {
-          let containIts = true;
-          pickedTags.map((pickedTag) => {
-            if (rowVal[0].indexOf(pickedTag) === -1) {
-              containIts = false;
-            }
-          });
-          return !containIts;
-        },
       },
     },
   },
@@ -755,18 +861,6 @@ const ContactsHeadCells = [
   //     filterType: "dropdown",
   //   },
   // },
-  {
-    name: "melissaRowsCount",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
 ];
 
 const SearchsHeadCells = [
@@ -1808,32 +1902,32 @@ function M1nTable(props) {
         setColumns(
           cleanAvailableTags.length > 0
             ? TrackedOwnersHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
                     },
-                  },
-                };
-              }
-              return column;
-            })
+                  };
+                }
+                return column;
+              })
             : TrackedOwnersHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })
         );
 
         setStateApp((state) => ({
@@ -1996,32 +2090,32 @@ function M1nTable(props) {
         setColumns([
           ...(cleanAvailableTags.length > 0
             ? WellsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
                     },
-                  },
-                };
-              }
-              return column;
-            })
+                  };
+                }
+                return column;
+              })
             : WellsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })),
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })),
           flyToColumn,
         ]);
 
@@ -2134,32 +2228,32 @@ function M1nTable(props) {
         setColumns(
           cleanAvailableTags.length > 0
             ? WellsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
                     },
-                  },
-                };
-              }
-              return column;
-            })
+                  };
+                }
+                return column;
+              })
             : WellsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })
         );
 
         setStateApp((state) => ({
@@ -2289,32 +2383,32 @@ function M1nTable(props) {
       setColumns(
         cleanAvailableTags.length > 0
           ? OwnersPerWellHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filterOptions: {
-                    ...column.options.filterOptions,
-                    names: cleanAvailableTags,
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
                   },
-                },
-              };
-            }
-            return column;
-          })
+                };
+              }
+              return column;
+            })
           : OwnersPerWellHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filter: false,
-                },
-              };
-            }
-            return column;
-          })
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
       );
 
       setRows(wellOwners);
@@ -2365,7 +2459,6 @@ function M1nTable(props) {
         dataContacts.paginatedContacts.edges.forEach(({ node }) => {
           node.isTracked = false;
           objectsIdsArray.push(node._id);
-
         });
 
         getCommentsCounter({
@@ -2399,74 +2492,75 @@ function M1nTable(props) {
         dataContactsFilterOptions &&
         dataContactsFilterOptions.contactsFilterOptions
       ) {
-
-        let filterTags = [...dataContactsFilterOptions.contactsFilterOptions.tags.map((tag) => {
-          return tag._id;
-        })
-        ]
-        let filterLeadSource = [...dataContactsFilterOptions.contactsFilterOptions.leadSource.map((leadSource) => {
-          return leadSource._id;
-        })
-        ]
-        let filterLastUpdateBy = [...dataContactsFilterOptions.contactsFilterOptions.lastUpdateBy.map((lastUpdateBy) => {
-          return lastUpdateBy._id;
-        })
-        ]
-
+        let filterTags = [
+          ...dataContactsFilterOptions.contactsFilterOptions.tags.map((tag) => {
+            return tag._id;
+          }),
+        ];
+        let filterLeadSource = [
+          ...dataContactsFilterOptions.contactsFilterOptions.leadSource.map(
+            (leadSource) => {
+              return leadSource._id;
+            }
+          ),
+        ];
+        let filterLastUpdateBy = [
+          ...dataContactsFilterOptions.contactsFilterOptions.lastUpdateBy.map(
+            (lastUpdateBy) => {
+              return lastUpdateBy._id;
+            }
+          ),
+        ];
 
         setColumns(
-            ContactsHeadCells.map((column) => {
-              switch(column.name) {
-
-                case 'tags':
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filterOptions: {
-                        ...column.options.filterOptions,
-                        names: filterTags,
-                      },
+          ContactsHeadCells.map((column) => {
+            switch (column.name) {
+              case "tags":
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: filterTags,
                     },
-                  };
+                  },
+                };
 
-                  case 'leadSource':
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filterOptions: {
-                        ...column.options.filterOptions,
-                        names: filterLeadSource,
-                      },
+              case "leadSource":
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: filterLeadSource,
                     },
-                  };
+                  },
+                };
 
-                  case 'lastUpdateBy.name':
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filterOptions: {
-                        ...column.options.filterOptions,
-                        names: filterLastUpdateBy,
-                      },
+              case "lastUpdateBy.name":
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: filterLastUpdateBy,
                     },
-                  };                  
-                
-                default:
-                  return column;
-              }
-            })
+                  },
+                };
+
+              default:
+                return column;
+            }
+          })
         );
-
       } else {
         setLoading(false);
       }
     }
-  }, [
-    dataContactsFilterOptions
-  ]);
+  }, [dataContactsFilterOptions]);
 
   useEffect(() => {
     if (
@@ -2732,22 +2826,22 @@ function M1nTable(props) {
           buildingColumns.push(
             cleanAvailableTags.length > 0
               ? {
-                ...SearchsHeadCells[1],
-                options: {
-                  ...SearchsHeadCells[1].options,
-                  filterOptions: {
-                    ...SearchsHeadCells[1].options.filterOptions,
-                    names: cleanAvailableTags,
+                  ...SearchsHeadCells[1],
+                  options: {
+                    ...SearchsHeadCells[1].options,
+                    filterOptions: {
+                      ...SearchsHeadCells[1].options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
                   },
-                },
-              }
+                }
               : {
-                ...SearchsHeadCells[1],
-                options: {
-                  ...SearchsHeadCells[1].options,
-                  filter: false,
-                },
-              }
+                  ...SearchsHeadCells[1],
+                  options: {
+                    ...SearchsHeadCells[1].options,
+                    filter: false,
+                  },
+                }
           );
         }
 
@@ -3315,32 +3409,32 @@ function M1nTable(props) {
       setColumns([
         ...(cleanAvailableTags.length > 0
           ? WellsHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filterOptions: {
-                    ...column.options.filterOptions,
-                    names: cleanAvailableTags,
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
                   },
-                },
-              };
-            }
-            return column;
-          })
+                };
+              }
+              return column;
+            })
           : WellsHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filter: false,
-                },
-              };
-            }
-            return column;
-          })),
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })),
         flyToColumn,
       ]);
 
@@ -3472,32 +3566,32 @@ function M1nTable(props) {
         setColumns(
           cleanAvailableTags.length > 0
             ? WellInterests.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
                     },
-                  },
-                };
-              }
-              return column;
-            })
+                  };
+                }
+                return column;
+              })
             : WellInterests.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })
         );
 
         setRows(wells);
@@ -3565,7 +3659,8 @@ function M1nTable(props) {
         contactsPageProps={{
           getContacts,
           contactsCount: dataContactsFilterOptions
-            ? dataContactsFilterOptions.contactsFilterOptions.totalCount[0].totalCount
+            ? dataContactsFilterOptions.contactsFilterOptions.totalCount[0]
+                .totalCount
             : 0,
           setLoading,
         }}

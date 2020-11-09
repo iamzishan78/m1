@@ -5465,7 +5465,7 @@ export default function Map() {
                           title={stateApp.selectedWell.wellName}
                           subTitle={stateApp.selectedWell.operator}
                           parent="map"
-                          cardTop={window.innerHeight / 2}
+                          cardTop={window.innerHeight / 2.2}
                           cardLeft={-(window.innerWidth / 4.4)}
                           position="relative"
                           zIndex={99}

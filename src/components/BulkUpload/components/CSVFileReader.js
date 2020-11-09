@@ -11,6 +11,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
+import { useDispatch } from "react-redux";
+import { showErrorMessage } from "../../../actions";
 
 const useStyles = makeStyles({
   table: {
@@ -29,8 +31,8 @@ const useStyles = makeStyles({
 });
 
 function createData(
-  first_name,
-  last_name,
+  firstName,
+  lastName,
   address,
   city,
   state,
@@ -38,7 +40,7 @@ function createData(
   email,
   phone
 ) {
-  return { first_name, last_name, address, city, state, zip, email, phone };
+  return { firstName, lastName, address, city, state, zip, email, phone };
 }
 
 const rows = [
@@ -170,6 +172,7 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 
 export default function CSVFileReader(props) {
+  const dispatch = useDispatch();
   let [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
   let unmounted = useRef(false);
@@ -182,12 +185,20 @@ export default function CSVFileReader(props) {
 
   let handleOnDrop = (data) => {
     if (!unmounted.current) {
-      mapped_headers_from_CSV(data);
-      setStateApp((state) => ({
-        ...state,
-        csvContactsList: data,
-        activeStepNumber: stateApp.activeStepNumber + 1,
-      }));
+      if (data && data.length <= 1001) {
+        mapped_headers_from_CSV(data);
+        setStateApp((state) => ({
+          ...state,
+          csvContactsList: data,
+          activeStepNumber: stateApp.activeStepNumber + 1,
+        }));
+      } else {
+        dispatch(
+          showErrorMessage(
+            "The file you have uploaded contains more than 1,000 rows of data. Please upload a new file with less than 1,000 rows of data."
+          )
+        );
+      }
     }
   };
 
@@ -222,7 +233,7 @@ export default function CSVFileReader(props) {
   return (
     <div style={main_div}>
       <div style={{ ...big_text, ...padding_div_top }}>
-        Select a File to Import
+        Select a File to Import (Max 1,000 rows)
       </div>
       <div style={{ ...text_grey, ...padding_div }}>
         Don't forget to upload CSV with first row containing the column headers
@@ -258,9 +269,16 @@ export default function CSVFileReader(props) {
           <div style={big_grey_text}>
             A CSV with these columns will yield good results
           </div>
-          <Link to="/downloadables/Sample_Contacts_Upload.csv" target="_blank" download style={linkContent}>Download sample CSV template and then upload with your information</Link>
+          <Link
+            to="/downloadables/Sample_Contacts_Upload.csv"
+            target="_blank"
+            download
+            style={linkContent}
+          >
+            Download sample CSV template and then upload with your information
+          </Link>
         </div>
-        
+
         <div style={{ ...padding_div_top, ...padding_div_bottom }}>
           <TableContainer component={Paper} style={style_papaer}>
             <Table className={classes.table} aria-label="simple table">
@@ -280,10 +298,10 @@ export default function CSVFileReader(props) {
                 {rows.map((row, i) => (
                   <TableRow key={i + row.first_name}>
                     <StyledTableCell align="left">
-                      {row.first_name}
+                      {row.firstName}
                     </StyledTableCell>
                     <StyledTableCell align="left">
-                      {row.last_name}
+                      {row.lastName}
                     </StyledTableCell>
                     <StyledTableCell align="left">
                       {row.address}

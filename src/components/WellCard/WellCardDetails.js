@@ -155,10 +155,13 @@ export default function WellCardDetails(props) {
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
   const [tabValue, setTabValue] = React.useState(0);
   const [target, setTarget] = useState(null);
+  const [chartDisplay, setChartDisplay] = useState([]);
+
   useEffect(() => {
     if (props.target) {
       setTarget(props.target);
     }
+    WellInfo();
   }, [props.target, setTarget]);
 
   const handleChangeOil = (event) => {
@@ -235,73 +238,77 @@ export default function WellCardDetails(props) {
     track: {},
   })(Switch);
 
-  const WellInfo = () => (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <div className={classes.toggle}>
-          <FormControlLabel
-            control={
-              <OilSwitch
-                checked={stateWellCard.chartToggleOil}
-                onChange={handleChangeOil}
-                //name="chartToggleOil"
+  const WellInfo = () => {
+    if (chartDisplay.length === 0) {
+      setChartDisplay(
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <div className={classes.toggle}>
+              <FormControlLabel
+                control={
+                  <OilSwitch
+                    checked={stateWellCard.chartToggleOil}
+                    onChange={handleChangeOil}
+                    //name="chartToggleOil"
+                  />
+                }
+                label="Oil"
               />
-            }
-            label="Oil"
-          />
-          <FormControlLabel
-            control={
-              <GasSwitch
-                checked={stateWellCard.chartToggleGas}
-                onChange={handleChangeGas}
-                name="checkedGas"
-                color="secondary"
-                // color="#e57373"//invalid color
+              <FormControlLabel
+                control={
+                  <GasSwitch
+                    checked={stateWellCard.chartToggleGas}
+                    onChange={handleChangeGas}
+                    name="checkedGas"
+                    color="secondary"
+                    // color="#e57373"//invalid color
+                  />
+                }
+                label="Gas"
               />
-            }
-            label="Gas"
-          />
-          <FormControlLabel
-            control={
-              <WaterSwitch
-                checked={stateWellCard.chartToggleWater}
-                onChange={handleChangeWater}
-                name="checkedWater"
+              <FormControlLabel
+                control={
+                  <WaterSwitch
+                    checked={stateWellCard.chartToggleWater}
+                    onChange={handleChangeWater}
+                    name="checkedWater"
+                  />
+                }
+                label="Water"
               />
-            }
-            label="Water"
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={stateWellCard.chartToggleMultiAxis}
-                onChange={handleChangeMultiAxis}
-                color="primary"
-              />}
-            label="Multi-Axes"
-          />
-          <FormControlLabel disabled control={<Switch />} label="Log Scale" />
-        </div>
-      </Grid>
-      <Grid item xs={12}>
-        <WellProdChartProvider />
-      </Grid>
-      <Grid item sm={12}>
-          <Taps
-            tabLabels={[
-              "Completion",
-              "Stimulation",
-              "Formation",
-            ]}
-            tabPanels={[
-              <CompletionsContainer/>,
-              <SimulationContainer/>,
-              <FormationContainer/>,
-            ]}
-          />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={stateWellCard.chartToggleMultiAxis}
+                    onChange={handleChangeMultiAxis}
+                    color="primary"
+                  />}
+                label="Multi-Axes"
+              />
+              <FormControlLabel disabled control={<Switch />} label="Log Scale" />
+            </div>
+          </Grid>
+          <Grid item xs={12}>
+            <WellProdChartProvider />
+          </Grid>
+          <Grid item sm={12}>
+              <Taps
+                tabLabels={[
+                  "Completion",
+                  "Stimulation",
+                  "Formation",
+                ]}
+                tabPanels={[
+                  <CompletionsContainer/>,
+                  <SimulationContainer/>,
+                  <FormationContainer/>,
+                ]}
+              />
+            </Grid>
         </Grid>
-    </Grid>
-  );
+      );
+    }
+  }
 
   return stateApp.selectedWell ? (
     <React.Fragment>
@@ -339,7 +346,7 @@ export default function WellCardDetails(props) {
             ]}
             tabPanels={[
               <Paper elevation={3} style={{ padding: "10px" }}>
-                <WellInfo/>     
+                { chartDisplay }
               </Paper>
               ,
               <M1nTable
