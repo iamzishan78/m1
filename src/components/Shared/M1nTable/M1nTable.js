@@ -797,7 +797,17 @@ const ContactsHeadCells = [
     },
   },
   {
-    name: "industryType ",
+    name: "campaignName",
+    label: "Campaign Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "industryType",
     label: "Industry Type",
     options: {
       display: false,

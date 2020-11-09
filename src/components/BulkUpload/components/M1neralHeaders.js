@@ -9,6 +9,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Checkbox from "@material-ui/core/Checkbox";
 import { AppContext } from "../../../AppContext";
+import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 
 const useStyles = makeStyles({
   root: {
@@ -119,8 +120,15 @@ export default function M1neralHeaders(props) {
 
   const createLeadSource = () => {
     var newDate = new Date().toISOString();
-    newDate = newDate.split("T")[0];
-    newDate = newDate.split("-").reverse().join(".");
+    // newDate = newDate.split("T")[0];
+    // newDate = newDate.split("-").reverse().join(".");
+
+    newDate = anyToDate(newDate).toLocaleString("en-US", {
+      year: "numeric",
+      day: "numeric",
+      month: "numeric",
+    });
+
     let leadSource = "Manual Upload on " + newDate;
     return leadSource;
   };
