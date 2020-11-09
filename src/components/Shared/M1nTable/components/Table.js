@@ -239,6 +239,10 @@ function SubTable(props) {
   const setRowInd = (newState) => {
     setStateIfDeepEqual(RowInd, newState);
   };
+  const [pageInd, PageInd] = useState(0);
+  const setPageInd = (newState) => {
+    setStateIfDeepEqual(PageInd, newState);
+  };
   const [expandedObject, ExpandedObject] = useState();
   const setExpandedObject = (newState) => {
     setStateIfDeepEqual(ExpandedObject, newState);
@@ -1766,6 +1770,10 @@ function SubTable(props) {
         handleOpenExpandableCard();
       }
     },
+    onChangePage: (pageState) => {
+      console.log(`here: pageInd=${pageInd} pageState=${pageState}`);
+      setPageInd(pageState);
+    },
     onTableChange: (action, tableState) => {
       console.log("onTableChange");
       console.log(action, tableState);
@@ -1829,6 +1837,7 @@ function SubTable(props) {
             console.log("changeRowsPerPage");
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
+            setPageInd(tableState.page);
             setRowsPerPage(tableState.rowsPerPage);
             props.contactsPageProps.getContacts(pageVariables);
             break;
@@ -1840,7 +1849,8 @@ function SubTable(props) {
                 ...pageVariables.variables,
                 pagination: {
                   ...pageVariables.variables.pagination,
-                  after: props.rows ? props.rows[props.rows.length - 1]?._id : null
+                  before: props.rows && tableState.page < pageInd ? props.rows[0]?._id : null,
+                  after: props.rows && tableState.page > pageInd ? props.rows[props.rows.length - 1]?._id : null
                 }
               }
             });
@@ -1848,11 +1858,13 @@ function SubTable(props) {
           case "sort":
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
+            setPageInd(tableState.page);
             props.contactsPageProps.getContacts(pageVariables);
             break;
           case "search":
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
+            setPageInd(tableState.page);
             delayedSearchRequest({
               setLoading: props.contactsPageProps.setLoading,
               getContacts: props.contactsPageProps.getContacts,
@@ -1869,6 +1881,7 @@ function SubTable(props) {
           case "filterChange":
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
+            setPageInd(tableState.page);
             props.contactsPageProps.getContacts(pageVariables);
             break;
           default:
