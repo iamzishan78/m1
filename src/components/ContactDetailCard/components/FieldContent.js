@@ -269,6 +269,7 @@ export default function FieldContent({
         _id: id,
         lastUpdateBy: stateApp.user.mongoId,
       };
+
       if (entity) trimmedEditContent.entity = entity;
       let differences = false;
       for (const field in editContent) {
@@ -284,7 +285,7 @@ export default function FieldContent({
             contact: trimmedEditContent,
             ignoreResponse: true,
           },
-          refetchQueries: ["getContacts"],
+          refetchQueries: ["getContacts", "getContact"],
           awaitRefetchQueries: false,
         }).then((res) => {
           let entries = Object.entries(editContent)[0];

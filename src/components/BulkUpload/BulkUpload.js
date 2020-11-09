@@ -22,10 +22,22 @@ export default function BulkUpload(props) {
   }, []);
   const M1neral_headers = [
     {
+      label: "Title",
+      mapped_key: "",
+      required: false,
+      actual_key: "title",
+    },
+    {
       label: "First Name",
       mapped_key: "",
       required: false,
       actual_key: "firstName",
+    },
+    {
+      label: "Middle Name",
+      mapped_key: "",
+      required: false,
+      actual_key: "middleName",
     },
     {
       label: "Last Name",
@@ -33,23 +45,35 @@ export default function BulkUpload(props) {
       required: false,
       actual_key: "lastName",
     },
-    // {
-    //   label: "Full Name",
-    //   mapped_key: "",
-    //   required: false,
-    //   actual_key: "name",
-    // },
     {
-      label: "Street Address",
+      label: "Suffix",
+      mapped_key: "",
+      required: false,
+      actual_key: "suffix",
+    },
+    {
+      label: "Primary Address 1",
       mapped_key: "",
       required: false,
       actual_key: "address1",
+    },
+    {
+      label: "Primary Address 2",
+      mapped_key: "",
+      required: false,
+      actual_key: "address2",
     },
     {
       label: "City",
       mapped_key: "",
       required: false,
       actual_key: "city",
+    },
+    {
+      label: "Country",
+      mapped_key: "",
+      required: false,
+      actual_key: "country",
     },
     {
       label: "State",
@@ -71,70 +95,65 @@ export default function BulkUpload(props) {
     },
     /////
     {
-      label: "Home Phone",
+      label: "Primary Home Phone",
       mapped_key: "",
       required: false,
       actual_key: "homePhone",
     },
     {
-      label: "Mobile Phone",
+      label: "Primary Mobile Phone",
       mapped_key: "",
       required: false,
       actual_key: "mobilePhone",
     },
     {
-      label: "Work Phone",
+      label: "Primary Work Phone",
       mapped_key: "",
       required: false,
       actual_key: "AltPhone",
     },
     {
-      label: "Alternate Email 2",
+      label: "Email 2",
       mapped_key: "",
       required: false,
       actual_key: "secondaryEmail",
     },
+
     {
-      label: "Alternate Email 3",
+      label: "LinkedIn Profile",
       mapped_key: "",
       required: false,
-      actual_key: "email3",
+      actual_key: "linkedin",
     },
     {
-      label: "Alternate Home Phone 2",
+      label: "Facebook Profile",
       mapped_key: "",
       required: false,
-      actual_key: "homePhone2",
+      actual_key: "facebook",
     },
     {
-      label: "Alternate Home Phone 3",
+      label: "Twitter Profile",
       mapped_key: "",
       required: false,
-      actual_key: "homePhone3",
+      actual_key: "twitter",
     },
     {
-      label: "Alternate Mobile Phone 2",
+      label: "Company Name",
       mapped_key: "",
       required: false,
-      actual_key: "mobilephone2",
+      actual_key: "companyName",
     },
     {
-      label: "Alternate Mobile Phone 3",
+      label: "Job Title",
       mapped_key: "",
       required: false,
-      actual_key: "mobilephone3",
+      actual_key: "jobTitle",
     },
     {
-      label: "Alternate Work Phone 2",
+      label: "Lead Stage",
       mapped_key: "",
       required: false,
-      actual_key: "AltPhone2",
-    },
-    {
-      label: "Alternate Work Phone 3",
-      mapped_key: "",
-      required: false,
-      actual_key: "AltPhone3",
+      actual_key: "leadStage",
     },
   ];
   const reset_state = () => {

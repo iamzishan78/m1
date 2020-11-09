@@ -231,11 +231,14 @@ export default ({ header, ...props }) => {
       data: { website: props.contactData.website },
       linkType: LinkTypes.None,
     },
+    "Campaign Name": {
+      data: { campaignName: props.contactData.campaignName },
+      linkType: LinkTypes.None,
+    },
     "Industry Type": {
       data: { industryType: props.contactData.industryType },
       linkType: LinkTypes.None,
     },
-
     Relatives: {
       data: { relatives: props.contactData.relatives },
       linkType: LinkTypes.None,

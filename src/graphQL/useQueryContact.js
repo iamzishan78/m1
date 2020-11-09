@@ -71,6 +71,7 @@ export const CONTACT = gql`
       notes
       website
       industryType
+      campaignName
     }
   }
 `;
