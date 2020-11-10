@@ -334,7 +334,7 @@ export default function ContactDetailCard(props) {
   }, [props.contactId]);
 
   useEffect(() => {
-    console.log("SET CONTACT:", data);
+    console.log("SET CONTACTtttttttttttt:", data);
     if (data && data.contact) {
       setContactData(data.contact);
     }
@@ -505,6 +505,7 @@ export default function ContactDetailCard(props) {
               </h2>
               <h4>
                 <FieldContent
+                test={true}
                   childrenLeft
                   noMargin
                   name="Address"
