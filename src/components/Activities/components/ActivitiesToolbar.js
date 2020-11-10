@@ -240,11 +240,11 @@ const ActivitiesToolbar = ({
             <Button
               size="small"
               className={`${classes.filterToggleBtn} ${
-                activityFilterByTime === "tommorrow" && classes.activeBtn
+                activityFilterByTime === "tomorrow" && classes.activeBtn
               }`}
-              onClick={() => setActivityFilterByTime("tommorrow")}
+              onClick={() => setActivityFilterByTime("tomorrow")}
             >
-              Tommorrow
+              Tomorrow
             </Button>
             <Button
               size="small"

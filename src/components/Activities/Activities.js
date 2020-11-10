@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { makeStyles } from "@material-ui/core/styles";
@@ -14,6 +14,9 @@ import ActivitiesEvent from "./components/ActivitiesEvent";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./index.css";
 import ActivitiesAppBar from "./components/ActivitiesAppbar";
+import ActivitiesTable from "./components/ActivitiesTable";
+import ActivitiesModal from "./components/ActivitiesModal";
+import { AppContext } from "../../AppContext";
 
 const localizer = momentLocalizer(moment);
 
@@ -73,52 +76,43 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
   const filterByTypeCondition =
     e.type === activityFilterByType || activityFilterByType === "all";
   let filterByTimeCondition;
-  const today = new Date();
-  const tommorow = new Date(today.getDate() + 1);
-  const thisWeekEnd = new Date(today.getDate() + 7);
-  const nextWeekStart = new Date(today.getDate() + 8);
-  const nextWeekEnd = new Date(today.getDate() + 14);
+  const today = moment();
+  const tomorrow = moment().add(1, "d");
+  const thisWeekEnd = moment().add(7, "d");
+  const nextWeekStart = moment().add(8, "d");
+  const nextWeekEnd = moment().add(14, "d");
 
   switch (activityFilterByTime) {
     case "todo":
-      filterByTimeCondition = moment(e.end).isSameOrAfter(
-        today.setHours(0, 0, 0, 0)
-      );
+      filterByTimeCondition = moment(e.end).isSameOrAfter(today);
       break;
     case "overdue":
-      filterByTimeCondition = moment(e.end).isBefore(
-        today.setHours(0, 0, 0, 0)
-      );
+      filterByTimeCondition = moment(e.end).isBefore(today);
       break;
     case "today":
-      filterByTimeCondition = moment(e.end).isSame(
-        today.setHours(0, 0, 0, 0),
-        "day"
-      );
+      filterByTimeCondition = moment(e.end).isSame(today, "day");
       break;
-    case "tommorow":
-      filterByTimeCondition = moment(e.end).isSame(
-        tommorow.setHours(0, 0, 0, 0),
-        "day"
-      );
+    case "tomorrow":
+      filterByTimeCondition = moment(e.end).isSame(tomorrow, "day");
+      break;
     case "this-week":
       filterByTimeCondition = moment(e.end).isBetween(
-        today.setHours(0, 0, 0, 0),
-        thisWeekEnd.setHours(0, 0, 0, 0),
-        "day"
+        today,
+        thisWeekEnd,
+        "day",
+        "[]"
       );
+      break;
     case "next-week":
       filterByTimeCondition = moment(e.end).isBetween(
-        nextWeekStart.setHours(0, 0, 0, 0),
-        nextWeekEnd.setHours(0, 0, 0, 0),
-        "day"
+        nextWeekStart,
+        nextWeekEnd,
+        "day",
+        "[]"
       );
       break;
     default:
-      filterByTimeCondition = moment(e.end).isSameOrAfter(
-        today.setHours(0, 0, 0, 0),
-        "day"
-      );
+      filterByTimeCondition = moment(e.end).isSameOrAfter(today, "day");
   }
 
   return filterByTypeCondition && filterByTimeCondition;
@@ -135,6 +129,8 @@ const Activities = () => {
       error: activitiesError,
     },
   ] = useLazyQuery(GETALLACTIVITIES);
+
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
@@ -174,6 +170,20 @@ const Activities = () => {
     );
   }, [events, activityFilterByType, activityFilterByTime]);
 
+  const onModalClose = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      activityDialog: false,
+    }));
+  };
+
+  const onModalOpen = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      activityDialog: true,
+    }));
+  };
+
   return (
     <div className={classes.root}>
       {activitiesLoading ? (
@@ -187,15 +197,25 @@ const Activities = () => {
           <ActivitiesAppBar
             activityDisplayType={activityDisplayType}
             setActivityDisplayType={setActivityDisplayType}
+            onAddActivityClick={onModalOpen}
           />
-          <ActivitiesCalendar
-            activityFilterByType={activityFilterByType}
-            setActivityFilterByType={setActivityFilterByType}
-            activityFilterByTime={activityFilterByTime}
-            setActivityFilterByTime={setActivityFilterByTime}
-            view={view}
-            setView={setView}
-            events={filteredEvents}
+          {activityDisplayType === "calender" ? (
+            <ActivitiesCalendar
+              activityFilterByType={activityFilterByType}
+              setActivityFilterByType={setActivityFilterByType}
+              activityFilterByTime={activityFilterByTime}
+              setActivityFilterByTime={setActivityFilterByTime}
+              view={view}
+              setView={setView}
+              events={filteredEvents}
+            />
+          ) : (
+            <ActivitiesTable />
+          )}
+          <ActivitiesModal
+            open={stateApp.activityDialog ? true : false}
+            onClose={onModalClose}
+            selectedActivity={null}
           />
         </>
       )}
