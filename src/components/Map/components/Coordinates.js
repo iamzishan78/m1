@@ -3,10 +3,10 @@ import { makeStyles } from '@material-ui/core/styles'
 const useStyles = makeStyles(theme => ({
   coordinates: {
     padding: "0 5px",
-    backgroundColor: "hsla(0,0%,100%,.5)",
+    backgroundColor: "hsla(0,0%,100%,.7)",
     margin: 0,
-    fontSize: 10,
-    right: "9vw",
+    fontSize: 12,
+    right: "6vw",
     bottom: '12px',
     position: "absolute",
   },

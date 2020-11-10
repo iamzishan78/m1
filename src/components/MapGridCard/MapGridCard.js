@@ -650,8 +650,8 @@ function MapGridCard(props) {
                       />
 
                       <h6 id="minimumZoomRequired">
-                        The minimum zoom required is{" "}
-                        {stateApp.minZoomToQueryViewport}
+                        Please zoom in to leverage this feature (min zoom level = {" "}
+                        {stateApp.minZoomToQueryViewport})
                       </h6>
                     </div>,
                   ]}
