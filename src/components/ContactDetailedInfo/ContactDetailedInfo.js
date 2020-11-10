@@ -147,15 +147,15 @@ export default ({ header, ...props }) => {
       linkType: LinkTypes.Mail,
     },
 
-    "Mobile Phone": {
+    "Primary Mobile Phone": {
       data: { mobilePhone: props.contactData.mobilePhone },
       linkType: LinkTypes.None,
     },
-    "Home Phone": {
+    "Primary Home Phone": {
       data: { homePhone: props.contactData.homePhone },
       linkType: LinkTypes.None,
     },
-    "Work Phone": {
+    "Primary Work Phone": {
       data: { AltPhone: props.contactData.AltPhone },
       linkType: LinkTypes.None,
     },
@@ -181,8 +181,6 @@ export default ({ header, ...props }) => {
       },
       linkType: LinkTypes.None,
     },
-
-
   };
 
   const basicInfoExpContent = {
@@ -227,7 +225,6 @@ export default ({ header, ...props }) => {
       data: { website: props.contactData.website },
       linkType: LinkTypes.None,
     },
-    
 
     "Linkedln Profile": {
       data: { linkedln: props.contactData.linkedln },
@@ -285,11 +282,22 @@ export default ({ header, ...props }) => {
       data: { relatives: props.contactData.relatives },
       linkType: LinkTypes.None,
     },
+    "Company Name": {
+      data: { companyName: props.contactData.companyName },
+      linkType: LinkTypes.None,
+    },
+    "Job Title": {
+      data: { jobTitle: props.contactData.jobTitle },
+      linkType: LinkTypes.None,
+    },
+    "Lead Stage": {
+      data: { leadStage: props.contactData.leadStage },
+      linkType: LinkTypes.None,
+    },
     "Industry Type": {
       data: { industryType: props.contactData.industryType },
       linkType: LinkTypes.None,
     },
-
 
     "Campaign Name": {
       data: { campaignName: props.contactData.campaignName },
@@ -305,6 +313,10 @@ export default ({ header, ...props }) => {
     },
     "Time Zone": {
       data: { timeZone: props.contactData.timeZone },
+      linkType: LinkTypes.None,
+    },
+    Territory: {
+      data: { territory: props.contactData.territory },
       linkType: LinkTypes.None,
     },
     "Created By": {
