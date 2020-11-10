@@ -58,7 +58,7 @@ import Contact_card from "../../svgIcons/contact_card";
 import TransactDialog from "../../../Transact/components/dialog";
 import ParcelScreenIcon from "../../svgIcons/parcelScreen";
 import ParcelsDetailCard from "../../../ParcelsDetailCard/ParcelsDetailCard";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { WELLQUERY } from "../../../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/client";
@@ -492,7 +492,14 @@ function SubTable(props) {
       },
     });
   };
-  const delayedSearchRequest = debounce((e) => searchRequest(e), 2000);
+  
+  const delayedSearchRequest = React.useMemo(
+    () =>
+      debounce((request, callback) => {
+        searchRequest(request)
+      }, 500),
+    []
+  );
 
   useEffect(() => {
     if (props.columns) {
@@ -1179,7 +1186,9 @@ function SubTable(props) {
                               ? classes.iconSelected
                               : ""
                           }`}
-                          badgeContent={value[1]}
+                          badgeContent={
+                            value ? value[1] : 0
+                          }
                           color="secondary"
                           onClick={(e) => {
                             e.preventDefault();
@@ -1210,7 +1219,7 @@ function SubTable(props) {
                               multiSelectMouseHoverColor(id, "#efefef");
                           }}
                         >
-                          {value[0] && value[0].length > 0 ? (
+                          {value && value[0] && value[0].length > 0 ? (
                             <React.Fragment>
                               <p className="first">{value[0].join(", ")}</p>
                               <p className="two">...</p>
@@ -1271,11 +1280,11 @@ function SubTable(props) {
                     return v;
                   };
 
-                  if (column.name === "lastUpdateBy.name") {
-                    if (props.rows[tableMeta.rowIndex]) {
-                      value = props.rows[tableMeta.rowIndex].lastUpdateBy?.name;
-                    }
-                  }
+                  // if (column.name === "lastUpdateBy.name") {
+                  //   if (props.rows[tableMeta.rowIndex]) {
+                  //     value = props.rows[tableMeta.rowIndex].lastUpdateBy?.name;
+                  //   }
+                  // }
 
                   ////// if non editable column
                   if (
@@ -1886,6 +1895,12 @@ function SubTable(props) {
             console.log("work propsUpdate");
             break;
           case "filterChange":
+            props.contactsPageProps.setLoading(true);
+            tableState.page = 0;
+            setPageInd(tableState.page);
+            props.contactsPageProps.getContacts(pageVariables);
+            break;
+          case "resetFilters":
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
             setPageInd(tableState.page);
