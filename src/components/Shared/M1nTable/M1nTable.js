@@ -216,18 +216,19 @@ const TrackedOwnersHeadCells = [
       viewColumns: false,
     },
   },
-  {
-    name: "detailCard",
-    label: " ",
-    options: {
-      filter: false,
-      sort: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  //temporarily comment out until release of owner summary card
+  // {
+  //   name: "detailCard",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     sort: false,
+  //     searchable: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
   {
     name: "coordinates",
     label: " ",
@@ -2863,8 +2864,10 @@ function M1nTable(props) {
 
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
         if (
-          (props.targetLabel && props.targetLabel == "well") ||
-          props.targetLabel == "owner"
+          (props.targetLabel && props.targetLabel == "well") 
+         //temporarily remove until we release the owner summary card
+          // ||
+          // props.targetLabel == "owner"
         )
           //would only set the detail card icon for wells & owners
           buildingColumns.push(SearchsHeadCells[5]);

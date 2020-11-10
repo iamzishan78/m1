@@ -1931,13 +1931,14 @@ function SubTable(props) {
           data={rows ? rows : []}
           columns={columns ? columns : []}
           options={{
-            print: false,
+            
             download:
               // props.targetLabel == "owner" || props.targetLabel == "well"
               //   ? true
               //   :
               false,
             ...options,
+            print: false,
           }}
         />
 
