@@ -21,6 +21,12 @@ export default function BulkUpload(props) {
     reset_state();
   }, []);
   const M1neral_headers = [
+    // {
+    //   label: "Full Name",
+    //   mapped_key: "",
+    //   required: false,
+    //   actual_key: "name",
+    // },
     {
       label: "Title",
       mapped_key: "",
@@ -154,6 +160,37 @@ export default function BulkUpload(props) {
       mapped_key: "",
       required: false,
       actual_key: "leadStage",
+    },
+    {
+      label: "Lead Source",
+      mapped_key: "",
+      required: false,
+      actual_key: "leadSource",
+    },
+
+    {
+      label: "Created Date",
+      mapped_key: "",
+      required: false,
+      actual_key: "createAt",
+    },
+    {
+      label: "Created By",
+      mapped_key: "",
+      required: false,
+      actual_key: "createBy",
+    },
+    {
+      label: "Last Update",
+      mapped_key: "",
+      required: false,
+      actual_key: "lastUpdate",
+    },
+    {
+      label: "Last Updated By",
+      mapped_key: "",
+      required: false,
+      actual_key: "lastUpdateBy",
     },
   ];
   const reset_state = () => {
