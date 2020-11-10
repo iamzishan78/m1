@@ -291,20 +291,6 @@ export default function WellCardDetails(props) {
           <Grid item xs={12}>
             <WellProdChartProvider />
           </Grid>
-          <Grid item sm={12}>
-              <Taps
-                tabLabels={[
-                  "Completion",
-                  "Stimulation",
-                  "Formation",
-                ]}
-                tabPanels={[
-                  <CompletionsContainer/>,
-                  <SimulationContainer/>,
-                  <FormationContainer/>,
-                ]}
-              />
-            </Grid>
         </Grid>
       );
     }
@@ -338,11 +324,11 @@ export default function WellCardDetails(props) {
         <Grid item sm={12}>
           <Taps
             tabLabels={[
-              "Well",
+              "Production",
               "Interest Owners",
-              // "Property History",
-              // "Title",
-              // "Documents",
+              "Completion",
+              "Stimulation",
+              "Formation",
             ]}
             tabPanels={[
               <Paper elevation={3} style={{ padding: "10px" }}>
@@ -353,9 +339,9 @@ export default function WellCardDetails(props) {
                 parent="OwnersPerWell"
                 selectedWell={stateApp.selectedWell}
               />,
-              // <h3>Coming Soon-</h3>,
-              // <h3>Coming Soon--</h3>,
-              // <h3>Coming Soon---</h3>,
+              <CompletionsContainer/>,
+              <SimulationContainer/>,
+              <FormationContainer/>,
             ]}
           />
         </Grid>
