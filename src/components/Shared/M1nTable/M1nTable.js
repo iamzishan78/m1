@@ -968,6 +968,7 @@ const ContactsHeadCells = [
     label: "Lead Source",
     editable: false,
     options: {
+      sort: false,
       filterOptions: {
         names: [],
       },
