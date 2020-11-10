@@ -238,6 +238,12 @@ export default function BulkUpload(props) {
       actual_key: "timeZone",
     },
     {
+      label: "Territory",
+      mapped_key: "",
+      required: false,
+      actual_key: "territory",
+    },
+    {
       label: "Campaign Name",
       mapped_key: "",
       required: false,
