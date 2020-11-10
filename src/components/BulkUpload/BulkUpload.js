@@ -111,24 +111,24 @@ export default function BulkUpload(props) {
       required: false,
       actual_key: "primaryEmail",
     },
-    {
-      label: "Created By",
-      mapped_key: "",
-      required: false,
-      actual_key: "createBy",
-    },
-    {
-      label: "Last Update",
-      mapped_key: "",
-      required: false,
-      actual_key: "lastUpdate",
-    },
-    {
-      label: "Last Updated By",
-      mapped_key: "",
-      required: false,
-      actual_key: "lastUpdateBy",
-    },
+    // {
+    //   label: "Created By",
+    //   mapped_key: "",
+    //   required: false,
+    //   actual_key: "createBy",
+    // },
+    // {
+    //   label: "Last Update",
+    //   mapped_key: "",
+    //   required: false,
+    //   actual_key: "lastUpdate",
+    // },
+    // {
+    //   label: "Last Updated By",
+    //   mapped_key: "",
+    //   required: false,
+    //   actual_key: "lastUpdateBy",
+    // },
     {
       label: "Primary Work Phone",
       mapped_key: "",
