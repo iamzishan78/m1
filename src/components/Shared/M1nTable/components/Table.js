@@ -1287,10 +1287,10 @@ function SubTable(props) {
 
                   ////// if non editable column
                   if (
-                    !column.editable ||
-                    (props.targetLabel === "Parcel Ownershipship" &&
-                      column.name === "name" &&
-                      tableMeta.rowData[11] !== "false")
+                    !column.editable &&
+                    props.targetLabel === "Parcel Ownershipship" &&
+                    column.name === "name" &&
+                    tableMeta.rowData[11] !== "false"
                   ) {
                     //// if no value
                     if (value === "" || value === null || !value)
@@ -1352,6 +1352,7 @@ function SubTable(props) {
                             ? tableMeta.rowData[1]
                             : null
                         }
+                        nonEditable={!column.editable}
                       />
                       {props.targetLabel === "contact" &&
                         column.name === "name" &&
