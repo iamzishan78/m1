@@ -132,24 +132,21 @@ export default ({ header, ...props }) => {
   const classes = useStyles();
 
   const basicInfoContent = {
-    "Full Name": {
-      data: {
-        title: props.contactData.title,
-        firstName: props.contactData.firstName,
-        middleName: props.contactData.middleName,
-        lastName: props.contactData.lastName,
-        suffix: props.contactData.suffix,
-      },
-      linkType: LinkTypes.None,
-    },
+    // "Full Name": {
+    //   data: {
+    //     title: props.contactData.title,
+    //     firstName: props.contactData.firstName,
+    //     middleName: props.contactData.middleName,
+    //     lastName: props.contactData.lastName,
+    //     suffix: props.contactData.suffix,
+    //   },
+    //   linkType: LinkTypes.None,
+    // },
     "Primary Email": {
       data: { primaryEmail: props.contactData.primaryEmail },
       linkType: LinkTypes.Mail,
     },
-    "Secondary Email": {
-      data: { secondaryEmail: props.contactData.secondaryEmail },
-      linkType: LinkTypes.Mail,
-    },
+
     "Mobile Phone": {
       data: { mobilePhone: props.contactData.mobilePhone },
       linkType: LinkTypes.None,
@@ -158,7 +155,7 @@ export default ({ header, ...props }) => {
       data: { homePhone: props.contactData.homePhone },
       linkType: LinkTypes.None,
     },
-    "Alternate Phone": {
+    "Work Phone": {
       data: { AltPhone: props.contactData.AltPhone },
       linkType: LinkTypes.None,
     },
@@ -184,15 +181,17 @@ export default ({ header, ...props }) => {
       },
       linkType: LinkTypes.None,
     },
+
+
   };
 
   const basicInfoExpContent = {
-    "Home Phone 2": {
-      data: { homePhone2: props.contactData.homePhone2 },
-      linkType: LinkTypes.None,
+    "Email 2": {
+      data: { secondaryEmail: props.contactData.secondaryEmail },
+      linkType: LinkTypes.Mail,
     },
-    "Home Phone 3": {
-      data: { homePhone3: props.contactData.homePhone3 },
+    "Email 3": {
+      data: { email3: props.contactData.email3 },
       linkType: LinkTypes.None,
     },
     "Mobile Phone 2": {
@@ -203,46 +202,33 @@ export default ({ header, ...props }) => {
       data: { mobilephone3: props.contactData.mobilephone3 },
       linkType: LinkTypes.None,
     },
-    "Alternate Phone 2": {
+    "Home Phone 2": {
+      data: { homePhone2: props.contactData.homePhone2 },
+      linkType: LinkTypes.None,
+    },
+    "Home Phone 3": {
+      data: { homePhone3: props.contactData.homePhone3 },
+      linkType: LinkTypes.None,
+    },
+    "Work Phone 2": {
       data: { AltPhone2: props.contactData.AltPhone2 },
       linkType: LinkTypes.None,
     },
-    "Alternate Phone 3": {
+    "Work Phone 3": {
       data: { AltPhone3: props.contactData.AltPhone3 },
       linkType: LinkTypes.None,
     },
-    "Email 3": {
-      data: { email3: props.contactData.email3 },
-      linkType: LinkTypes.None,
-    },
-    Status: {
-      data: { status: props.contactData.status },
-      linkType: LinkTypes.None,
-    },
-    "Time Zone": {
-      data: { timeZone: props.contactData.timeZone },
-      linkType: LinkTypes.None,
-    },
-    Notes: {
-      data: { notes: props.contactData.notes },
-      linkType: LinkTypes.None,
-    },
+
+    // Notes: {
+    //   data: { notes: props.contactData.notes },
+    //   linkType: LinkTypes.None,
+    // },
     Website: {
       data: { website: props.contactData.website },
       linkType: LinkTypes.None,
     },
-    "Campaign Name": {
-      data: { campaignName: props.contactData.campaignName },
-      linkType: LinkTypes.None,
-    },
-    "Industry Type": {
-      data: { industryType: props.contactData.industryType },
-      linkType: LinkTypes.None,
-    },
-    Relatives: {
-      data: { relatives: props.contactData.relatives },
-      linkType: LinkTypes.None,
-    },
+    
+
     "Linkedln Profile": {
       data: { linkedln: props.contactData.linkedln },
       linkType: LinkTypes.None,
@@ -294,8 +280,31 @@ export default ({ header, ...props }) => {
         </a>
       ),
     },
+
+    "Relative Names": {
+      data: { relatives: props.contactData.relatives },
+      linkType: LinkTypes.None,
+    },
+    "Industry Type": {
+      data: { industryType: props.contactData.industryType },
+      linkType: LinkTypes.None,
+    },
+
+
+    "Campaign Name": {
+      data: { campaignName: props.contactData.campaignName },
+      linkType: LinkTypes.None,
+    },
     "Lead Source": {
       data: { leadSource: props.contactData.leadSource },
+      linkType: LinkTypes.None,
+    },
+    Status: {
+      data: { status: props.contactData.status },
+      linkType: LinkTypes.None,
+    },
+    "Time Zone": {
+      data: { timeZone: props.contactData.timeZone },
       linkType: LinkTypes.None,
     },
     "Created By": {
@@ -323,7 +332,7 @@ export default ({ header, ...props }) => {
           <p className={classes.notAvailableP}>Not Available</p>
         ),
     },
-    "Last Update By": {
+    "Last Updated By": {
       data: { primaryEmail: props.contactData.primaryEmail },
       linkType: LinkTypes.None,
       inner:
