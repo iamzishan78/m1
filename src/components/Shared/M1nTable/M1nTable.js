@@ -348,6 +348,18 @@ const OwnersPerWellHeadCells = [
       viewColumns: false,
     },
   },
+  {
+    name: "entity",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
   { name: "name", label: "Name" },
   {
     name: "ownershipType",
@@ -383,18 +395,19 @@ const OwnersPerWellHeadCells = [
       },
     },
   },
-  // {
-  //   name: "contactsCounter",
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
+
+  {
+    name: "isContact",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 
   /*   
 // TEMPORARY COMMENT OUT. DO NOT DELETE 
@@ -2484,6 +2497,9 @@ function M1nTable(props) {
         getTagSamples({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
+        checkIfOwnersAreContacts({
+          variables: { idsArray: objectsIdsArray },
+        });
       } else {
         setLoading(false);
         setRows([]);
@@ -2504,7 +2520,9 @@ function M1nTable(props) {
       dataTagSamples.tagSamples &&
       // dataOwnersWells &&
       dataTracks &&
-      dataTracks.tracksByObjectType
+      dataTracks.tracksByObjectType &&
+      checkIfOwnersAreContactsData &&
+      checkIfOwnersAreContactsData.ifAreContacts
     ) {
       const wellOwners = dataWellOwners.wellOwners.map((o) => {
         let wellOwner = { ...o };
@@ -2523,6 +2541,24 @@ function M1nTable(props) {
         //     }
         //   }
         // }
+
+        for (
+          let i = 0;
+          i < checkIfOwnersAreContactsData.ifAreContacts.length;
+          i++
+        ) {
+          if (
+            wellOwner.id ===
+            checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
+          ) {
+            wellOwner.isContact =
+              checkIfOwnersAreContactsData.ifAreContacts[i].isContact;
+
+            wellOwner.entity =
+              checkIfOwnersAreContactsData.ifAreContacts[i]._id;
+            break;
+          }
+        }
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (wellOwner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -2599,6 +2635,7 @@ function M1nTable(props) {
     dataTagSamples,
     dataCommentsCounter,
     // dataOwnersWells,
+    checkIfOwnersAreContactsData,
     dataTracks,
   ]);
 
