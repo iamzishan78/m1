@@ -4323,12 +4323,16 @@ export default function Map() {
         newMap.boxZoom.enable();
         newMap.touchZoomRotate.enable();
 
+
+        
         newMap.addControl(
           new mapboxgl.ScaleControl({
+            
             maxWidth: 80,
             unit: "imperial",
           }),
           "bottom-right"
+          
         );
 
         newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
