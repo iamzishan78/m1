@@ -603,6 +603,9 @@ const ContactsHeadCells = [
       filter: false,
       searchable: false,
       sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
     },
   },
   {
@@ -613,6 +616,9 @@ const ContactsHeadCells = [
       filter: false,
       searchable: false,
       sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
     },
   },
   {
@@ -623,6 +629,9 @@ const ContactsHeadCells = [
       filter: false,
       searchable: false,
       sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
     },
   },
   {
@@ -633,6 +642,9 @@ const ContactsHeadCells = [
       filter: false,
       searchable: false,
       sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
     },
   },
   {
@@ -643,6 +655,9 @@ const ContactsHeadCells = [
       filter: false,
       searchable: false,
       sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
     },
   },
   {
@@ -653,13 +668,16 @@ const ContactsHeadCells = [
       filter: false,
       searchable: false,
       sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
     },
   },
 
   {
     name: "name",
     label: "Full Name",
-    editable: true,
+    // editable: true,
     options: {
       sort: false,
       filter: false,
@@ -718,7 +736,7 @@ const ContactsHeadCells = [
   {
     name: "fullContactAddress",
     label: "Primary Address",
-    editable: true,
+    // editable: true,
     options: {
       sort: false,
       filter: false,
@@ -989,7 +1007,7 @@ const ContactsHeadCells = [
   {
     name: "leadSource",
     label: "Lead Source",
-    editable: false,
+    // editable: false,
     options: {
       sort: false,
       filterOptions: {
