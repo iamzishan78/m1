@@ -78,9 +78,7 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
   let filterByTimeCondition;
   const today = moment();
   const tomorrow = moment().add(1, "d");
-  const thisWeekEnd = moment().add(7, "d");
-  const nextWeekStart = moment().add(8, "d");
-  const nextWeekEnd = moment().add(14, "d");
+  const nextWeekDay = moment().add(7, "d");
 
   switch (activityFilterByTime) {
     case "todo":
@@ -96,20 +94,12 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
       filterByTimeCondition = moment(e.end).isSame(tomorrow, "day");
       break;
     case "this-week":
-      filterByTimeCondition = moment(e.end).isBetween(
-        today,
-        thisWeekEnd,
-        "day",
-        "[]"
-      );
+      filterByTimeCondition = moment(e.end).isSame(today, "week");
+
       break;
     case "next-week":
-      filterByTimeCondition = moment(e.end).isBetween(
-        nextWeekStart,
-        nextWeekEnd,
-        "day",
-        "[]"
-      );
+      filterByTimeCondition = moment(e.end).isSame(nextWeekDay, "week");
+
       break;
     default:
       filterByTimeCondition = moment(e.end).isSameOrAfter(today, "day");
@@ -212,11 +202,7 @@ const Activities = () => {
           ) : (
             <ActivitiesTable />
           )}
-          <ActivitiesModal
-            open={stateApp.activityDialog ? true : false}
-            onClose={onModalClose}
-            selectedActivity={null}
-          />
+          <ActivitiesModal selectedActivity={null} />
         </>
       )}
     </div>

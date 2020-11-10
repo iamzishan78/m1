@@ -39,7 +39,8 @@ const useToolbarStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     padding: "2px 4px",
-    borderLeft: "1px solid #fff",
+    border: "1px solid #fff",
+    borderRadius: 3,
     cursor: "pointer",
 
     "& span": {

@@ -1,326 +1,429 @@
-import React, { useState, useEffect, useContext } from "react";
-import { DateTimePicker } from "@material-ui/pickers";
-import { useMutation } from "@apollo/client";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext, useState, useEffect } from "react";
+import clsx from "clsx";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { Grid } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import Dialog from "@material-ui/core/Dialog";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
+import moment from "moment";
+import Avatar from "react-avatar";
+import Badge from "@material-ui/core/Badge";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import MenuItem from "@material-ui/core/MenuItem";
-import Typography from "@material-ui/core/Typography";
-import Select from "@material-ui/core/Select";
+import { useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../../AppContext";
-import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
+import Dialog from "@material-ui/core/Dialog";
+import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
+import Toolbar from "@material-ui/core/Toolbar";
+import { useDispatch, useSelector } from "react-redux";
+import Card from "@material-ui/core/Card";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import CallIcon from "@material-ui/icons/Call";
+import MeetingIcon from "@material-ui/icons/Group";
+import TaskIcon from "@material-ui/icons/WatchLater";
+import DeadlineIcon from "@material-ui/icons/Flag";
+import EmailIcon from "@material-ui/icons/Email";
+import DotsIcon from "@material-ui/icons/MoreHoriz";
+import DocumentIcon from "@material-ui/icons/DescriptionOutlined";
+import PersonIcon from "@material-ui/icons/Person";
+import LinkIcon from "@material-ui/icons/Link";
+import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
+import BusinessIcon from "@material-ui/icons/Business";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    "&  .MuiPaper-root": {
-      maxWidth: "400px",
-      padding: "25px",
+  dialogExpCard: {
+    "& .MuiDialog-paperScrollPaper": {
+      height: "100%",
+    },
+    "& *": {
+      margin: 0,
     },
   },
-  dialogTitle: {
-    textAlign: "center",
+  addAct: {
+    width: "100%",
+    backgroundColor: "#fff",
+    minHeight: "100%",
+    display: "flex",
   },
-  dialogContentText: {
-    textAlign: "center",
+  left: {
+    width: "55%",
+    borderRight: "2px solid #d9d9d9",
+    padding: "20px 0",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flexstart",
+    justifyContent: "flexstart",
   },
-  inputField: {
-    marginBottom: "15px",
+  row: {
+    display: "flex",
+    alignItems: "flexstart",
+    justifyContent: "flexstart",
+    marginBottom: 16,
   },
-  inputFieldDate: {
-    marginBottom: "15px",
-    "& .MuiInputBase-input": {
-      paddingTop: "10.5px",
-      paddingBottom: "10.5px",
-    },
+  rowIcon: {
+    minWidth: 60,
+    color: "#B9C5D1",
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "center",
+    paddingTop: 16,
   },
-  progress: {
-    marginLeft: "30px",
-    verticalAlign: "middle",
+  typeDisplay: {
+    border: "1px solid #d9d9d9",
+    borderRadius: 3,
+    display: "flex",
+    alignItems: "center",
   },
-  dialogFooter: { display: "flex", justifyContent: "space-between" },
+  filterDisplay: {
+    color: "#48A8ED",
+    backgroundColor: "#F1F2F3",
+    display: "flex",
+    alignItems: "center",
+    padding: "2px 4px",
+    border: "1px solid #fff",
+    borderRadius: 3,
+    cursor: "pointer",
+    userSelect: "none",
 
-  label: {
-    backgroundColor: "white",
+    "& span": {
+      marginLeft: 4,
+    },
+  },
+  dateTimeRow: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+  },
+  dateTimeField: {
+    width: 160,
+    marginBottom: 8,
+  },
+  marginLeft: {
+    marginLeft: 8,
+  },
+  marginBottom: {
+    marginBottom: 8,
+  },
+  line: {
+    height: 2,
+    width: 16,
+    margin: "0 8px",
+    backgroundColor: "#B9C5D1",
+  },
+  notes: {
+    backgroundColor: "#FFFCDC",
+    display: "block",
+    width: "100%",
+
+    "& .MuiOutlinedInput-root": {
+      width: "100%",
+    },
+  },
+  fieldWidth: {
+    width: 400,
+  },
+  btnGroup: {
+    width: 400,
+    display: "flex",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  active: {
+    backgroundColor: "#D0F1FC",
+    color: "#48A8ED !important",
+  },
+  right: {
+    width: "45%",
   },
 }));
 
-const initialErrors = {
-  notes: false,
-  activityType: false,
-  dateTime: false,
+const getCurrentDate = () => {
+  const d = new Date().toISOString();
+  return d.slice(0, d.indexOf("T"));
 };
 
-function ActivitiesModal(props) {
+export default function ContactDetailCard(props) {
   const classes = useStyles();
-  const { open, onClose, selectedActivity } = props;
-  const [stateApp] = useContext(AppContext);
-  const [addNew, setAddNew] = useState(true);
-
-  console.log("USER: ", stateApp);
-
-  const [updateContact, { called, loading, data }] = useMutation(UPDATECONTACT);
-  const [activityType, setActivityType] = useState("general");
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [activityType, setActivityType] = useState("");
+  const [startDate, setStartDate] = useState(getCurrentDate());
+  const [endDate, setEndDate] = useState(getCurrentDate());
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
   const [notes, setNotes] = useState("");
 
-  const [dateTime, setDateTime] = useState(new Date());
-  const [errors, setErrors] = useState({ ...initialErrors });
-
-  useEffect(() => {
-    if (selectedActivity !== null) {
-      setAddNew(false);
-      setActivityType(selectedActivity.type);
-      setNotes(selectedActivity.notes);
-      setDateTime(selectedActivity.dateTime);
-    } else {
-      setAddNew(true);
-      setActivityType("general");
-      setNotes("");
-      setDateTime(new Date());
-    }
-  }, [selectedActivity]);
-
-  //   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
-  //     COMMENTSBYOBJECTIDQUERY
-  //   );
-  // const [upsertComment] = useMutation(UPSERTCOMMENT);
-
-  console.log("DATAAAA: ", data);
-
-  const addActivityStatus = data ? data.updateContact : null;
-
-  const clearFields = () => {
-    setNotes("");
-    setActivityType("general");
-    setDateTime(new Date());
+  const onModalClose = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      activityDialog: false,
+    }));
   };
 
-  const updateErrors = () => {
-    let activityTypeErr = false;
-    let notesErr = false;
-    let dateTimeErr = false;
-    if (!activityType || activityType.length === 0) activityTypeErr = true;
-    if (!notes || notes.length === 0) notesErr = true;
-    setErrors({
-      activityType: activityTypeErr,
-      notes: notesErr,
-      dateTime: dateTimeErr,
-    });
-    return activityTypeErr || notesErr || dateTimeErr;
-  };
-
-  const addActivity = async () => {
-    if (updateErrors()) return;
-
-    let activityLog = props.activityLog
-      ? props.activityLog.map((act) => ({
-          type: act.type,
-          notes: act.notes,
-          dateTime: act.dateTime,
-          user_id: act.user_id,
-        }))
-      : [];
-
-    activityLog.push({
-      type: activityType,
-      notes,
-      dateTime: dateTime.toISOString(),
-      user_id: stateApp.user.email,
-    });
-
-    console.log("UPDATING ACTIVITY LOG: ", {
-      _id: props.id,
-      activityLog,
-    });
-
-    updateContact({
-      variables: {
-        contact: {
-          _id: props.id,
-          activityLog,
-        },
-      },
-      refetchQueries: ["getContact"],
-      awaitRefetchQueries: true,
-    });
-  };
-
-  const updateActivity = () => {
-    if (updateErrors()) return;
-
-    let activityLog = props.activityLog
-      ? props.activityLog.map((act) => ({
-          type: act.type,
-          notes: act.notes,
-          dateTime: act.dateTime,
-          user_id: act.user_id,
-        }))
-      : [];
-
-    let newActLog = [...activityLog];
-    const index =
-      newActLog &&
-      newActLog.findIndex(
-        (activity) =>
-          activity.dateTime === selectedActivity.dateTime &&
-          activity.user_id === selectedActivity.user_id
-      );
-    if (index > -1) {
-      newActLog[index] = {
-        ...selectedActivity,
-        dateTime:
-          typeof dateTime.toISOString === "function"
-            ? dateTime.toISOString()
-            : dateTime,
-        type: activityType,
-        notes,
-      };
-      newActLog.forEach((v) => delete v.__typename);
-
-      updateContact({
-        variables: {
-          contact: {
-            _id: props.id,
-            activityLog: [...newActLog],
-          },
-        },
-        refetchQueries: ["getContact"],
-        awaitRefetchQueries: true,
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (called && !loading && addActivityStatus.success === true && addNew) {
-      clearFields();
-    }
-  }, [called, loading, addActivityStatus, addNew]);
+  console.log("START", new Date().toLocaleDateString());
 
   return (
     <Dialog
-      aria-labelledby="simple-dialog-title"
-      open={open}
-      onClose={onClose}
-      className={classes.root}
+      className={classes.dialogExpCard}
+      fullWidth
+      maxWidth="xl"
+      open={stateApp.activityDialog ? true : false}
+      onClose={onModalClose}
     >
-      <DialogTitle id="simple-dialog-title" className={classes.dialogTitle}>
-        Activity Log
-      </DialogTitle>
-      <DialogContent>
-        {/* <TextField
-          fullWidth
-          variant="outlined"
-          label="Activity Date"
-          type="datetime-local"
-          className={classes.inputField}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          value={dateTime}
-          onChange={(e) => {
-            setDateTime(e.target.value);
-          }}
-          disabled={loading}
-          error={errors.dateTime}
-        /> */}
-        <DateTimePicker
-          value={dateTime}
-          //disablePast
-          fullWidth
-          className={classes.inputFieldDate}
-          onChange={setDateTime}
-          label="Activity Date"
-          showTodayButton
-          disabled={loading}
-          inputVariant="outlined"
-        />
+      <ExpandableCardProvider
+        expanded={true}
+        handleCloseExpandableCard={onModalClose}
+        title={"Add Activity"}
+        subTitle={""}
+        parent="calender"
+        mouseX={0}
+        mouseY={0}
+        position="relative"
+        cardLeft={"0"}
+        cardTop={"0"}
+        zIndex={1201}
+        cardWidthExpanded="100%"
+        cardHeightExpanded="100%"
+        targetSourceId=""
+        targetLabel={"activity"}
+        noTrackAvailable={true}
+        component={
+          <div className={classes.addAct}>
+            <div className={classes.left}>
+              <div className={classes.row}>
+                <span className={classes.rowIcon}></span>
+                <TextField
+                  className={classes.fieldWidth}
+                  type="text"
+                  variant="outlined"
+                />
+              </div>
+              <div className={classes.row}>
+                <span className={classes.rowIcon}></span>
+                <div className={classes.typeDisplay}>
+                  <span
+                    className={clsx(
+                      classes.filterDisplay,
+                      activityType === "call" && classes.active
+                    )}
+                    onClick={() => setActivityType("call")}
+                  >
+                    <CallIcon /> <span>Call</span>
+                  </span>
+                  <span
+                    className={clsx(
+                      classes.filterDisplay,
 
-        <FormControl
-          variant="outlined"
-          fullWidth
-          className={classes.inputField}
-          size="small"
-        >
-          <InputLabel
-            id="demo-simple-select-outlined-label"
-            className={classes.label}
-          >
-            Activity Type
-          </InputLabel>
-          <Select
-            labelId="demo-simple-select-outlined-label"
-            id="demo-simple-select-outlined"
-            value={activityType}
-            onChange={(e) => {
-              setActivityType(e.target.value);
-            }}
-            fullWidth
-            label="Activity Type"
-            disabled={loading}
-            error={errors.activityType}
-          >
-            <MenuItem value={"general"}>General Update</MenuItem>
-            <MenuItem value={"phone"}>Phone Call</MenuItem>
-            <MenuItem value={"email"}>Email</MenuItem>
-            <MenuItem value={"meeting"}>Meeting</MenuItem>
-            <MenuItem value={"sms"}>SMS</MenuItem>
-            <MenuItem value={"campaign"}>Campaign</MenuItem>
-          </Select>
-        </FormControl>
+                      activityType === "meeting" && classes.active
+                    )}
+                    onClick={() => setActivityType("meeting")}
+                  >
+                    <MeetingIcon /> <span>Meeting</span>
+                  </span>
+                  <span
+                    className={clsx(
+                      classes.filterDisplay,
+                      activityType === "task" && classes.active
+                    )}
+                    onClick={() => setActivityType("task")}
+                  >
+                    <TaskIcon /> <span>Task</span>
+                  </span>
+                  <span
+                    className={clsx(
+                      classes.filterDisplay,
+                      activityType === "deadline" && classes.active
+                    )}
+                    onClick={() => setActivityType("deadline")}
+                  >
+                    <DeadlineIcon /> <span>Deadline</span>
+                  </span>
+                  <span
+                    className={clsx(
+                      classes.filterDisplay,
+                      activityType === "email" && classes.active
+                    )}
+                    onClick={() => setActivityType("email")}
+                  >
+                    <EmailIcon /> <span>Email</span>
+                  </span>
+                </div>
+              </div>
+              <div className={classes.row}>
+                <span className={classes.rowIcon}>
+                  <TaskIcon />
+                </span>
+                <div className={classes.dateTimeRow}>
+                  <TextField
+                    className={classes.dateTimeField}
+                    value={startDate}
+                    type="date"
+                    variant="outlined"
+                    onChange={(e) => {
+                      setStartDate(e.target.value);
+                    }}
+                  />
+                  <TextField
+                    className={clsx(classes.dateTimeField, classes.marginLeft)}
+                    value={startTime}
+                    type="time"
+                    variant="outlined"
+                    onChange={(e) => {
+                      setStartTime(e.target.value);
+                    }}
+                  />
+                  <span className={classes.line} />
+                  <TextField
+                    className={classes.dateTimeField}
+                    value={endTime}
+                    type="time"
+                    variant="outlined"
+                    onChange={(e) => {
+                      setEndTime(e.target.value);
+                    }}
+                  />
+                  <TextField
+                    className={clsx(classes.dateTimeField, classes.marginLeft)}
+                    value={endDate}
+                    type="date"
+                    variant="outlined"
+                    onChange={(e) => {
+                      setEndDate(e.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+              <div className={classes.row}>
+                <span className={classes.rowIcon}></span>
+                Add{" "}
+                <span style={{ color: "#48A8ED", marginLeft: 8 }}>
+                  guests, location, video call, description
+                </span>
+              </div>
+              <div className={classes.row}>
+                <span className={classes.rowIcon}>
+                  <DotsIcon />
+                </span>
+                <Select disabled variant="outlined" value="free">
+                  <MenuItem value="free">Free</MenuItem>
+                </Select>
+              </div>
+              <div className={classes.row}>
+                <span className={classes.rowIcon}>
+                  <DocumentIcon />
+                </span>
+                <div style={{ width: "100%", marginRight: 24 }}>
+                  <TextField
+                    multiline
+                    rows={4}
+                    variant="outlined"
+                    value={notes}
+                    className={classes.notes}
+                    onChange={(e) => {
+                      setNotes(e.target.value);
+                    }}
+                  />
+                  <small>
+                    Notes are private and visible only within your Pipedrive
+                    account
+                  </small>
+                </div>
+              </div>
+              <div className={classes.row}>
+                <span className={classes.rowIcon}>
+                  <PersonIcon />
+                </span>
+                <Select
+                  className={classes.fieldWidth}
+                  disabled
+                  variant="outlined"
+                  value="Jacob Avery"
+                >
+                  <MenuItem value="Jacob Avery">Jacob Avery</MenuItem>
+                </Select>
+              </div>
+              <div className={classes.row}>
+                <span className={classes.rowIcon}>
+                  <LinkIcon />
+                </span>
+                <div>
+                  <TextField
+                    type="text"
+                    disabled
+                    variant="outlined"
+                    className={clsx(classes.marginBottom, classes.fieldWidth)}
+                    placeholder="Deal or lead"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <AttachMoneyIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <br />
+                  <TextField
+                    type="text"
+                    disabled
+                    variant="outlined"
+                    className={clsx(classes.marginBottom, classes.fieldWidth)}
+                    placeholder="Deal or lead"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <PersonIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <br />
 
-        <TextField
-          variant="outlined"
-          multiline
-          rows={4}
-          id="notes"
-          label="Notes"
-          type="text"
-          size="small"
-          fullWidth
-          className={classes.inputField}
-          value={notes}
-          onChange={(e) => {
-            setNotes(e.target.value);
-          }}
-          disabled={loading}
-          error={errors.notes}
-        />
-
-        <div className={classes.dialogFooter}>
-          <Button
-            variant="contained"
-            color="secondary"
-            size="large"
-            disableElevation
-            onClick={() => {
-              addNew ? addActivity() : updateActivity();
-            }}
-            disabled={loading}
-          >
-            {addNew ? "Add" : "Update"}
-          </Button>
-          {loading ? (
-            <CircularProgress color="secondary" className={classes.progress} />
-          ) : called && !loading ? (
-            addActivityStatus.success ? (
-              <Typography color="secondary" variant="subtitle2" gutterBottom>
-                Activity {addNew ? "added" : "updated"}.
-              </Typography>
-            ) : (
-              <Typography color="primary" variant="subtitle2" gutterBottom>
-                Unable to {addNew ? "add" : "update"} activity.
-              </Typography>
-            )
-          ) : null}
-        </div>
-      </DialogContent>
+                  <TextField
+                    type="text"
+                    disabled
+                    variant="outlined"
+                    className={clsx(classes.marginBottom, classes.fieldWidth)}
+                    placeholder="Organization"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <BusinessIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </div>
+              </div>
+              <div className={classes.row}>
+                <span className={classes.rowIcon}></span>
+                <div className={classes.btnGroup}>
+                  <FormControlLabel
+                    disabled
+                    control={<Checkbox color="primary" />}
+                    label="Mark as done"
+                  />
+                  <Button
+                    className={classes.marginLeft}
+                    variant="contained"
+                    onClick={onModalClose}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className={classes.marginLeft}
+                    color="primary"
+                    variant="contained"
+                  >
+                    Save
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <div className={classes.right}></div>
+          </div>
+        }
+      />
     </Dialog>
   );
 }
-
-export default ActivitiesModal;
