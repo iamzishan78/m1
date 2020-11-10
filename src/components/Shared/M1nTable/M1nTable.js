@@ -51,7 +51,6 @@ import RightDialog from "../../ContactDetailCard/components/RightDialog";
 import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
 import { setMapGridCardState, showWarningMessage } from "../../../actions";
 import { first } from "@amcharts/amcharts4/.internal/core/utils/Array";
-import { el } from "date-fns/locale";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
