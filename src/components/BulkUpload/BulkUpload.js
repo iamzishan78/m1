@@ -21,12 +21,12 @@ export default function BulkUpload(props) {
     reset_state();
   }, []);
   const M1neral_headers = [
-    // {
-    //   label: "Full Name",
-    //   mapped_key: "",
-    //   required: false,
-    //   actual_key: "name",
-    // },
+    {
+      label: "Full Name",
+      mapped_key: "",
+      required: false,
+      actual_key: "name",
+    },
     {
       label: "Title",
       mapped_key: "",
@@ -40,16 +40,16 @@ export default function BulkUpload(props) {
       actual_key: "firstName",
     },
     {
-      label: "Middle Name",
-      mapped_key: "",
-      required: false,
-      actual_key: "middleName",
-    },
-    {
       label: "Last Name",
       mapped_key: "",
       required: false,
       actual_key: "lastName",
+    },
+    {
+      label: "Middle Name",
+      mapped_key: "",
+      required: false,
+      actual_key: "middleName",
     },
     {
       label: "Suffix",
@@ -94,12 +94,11 @@ export default function BulkUpload(props) {
       actual_key: "zip",
     },
     {
-      label: "Primary Email",
+      label: "Primary Mobile Phone",
       mapped_key: "",
       required: false,
-      actual_key: "primaryEmail",
+      actual_key: "mobilePhone",
     },
-    /////
     {
       label: "Primary Home Phone",
       mapped_key: "",
@@ -107,10 +106,28 @@ export default function BulkUpload(props) {
       actual_key: "homePhone",
     },
     {
-      label: "Primary Mobile Phone",
+      label: "Primary Email",
       mapped_key: "",
       required: false,
-      actual_key: "mobilePhone",
+      actual_key: "primaryEmail",
+    },
+    {
+      label: "Created By",
+      mapped_key: "",
+      required: false,
+      actual_key: "createBy",
+    },
+    {
+      label: "Last Update",
+      mapped_key: "",
+      required: false,
+      actual_key: "lastUpdate",
+    },
+    {
+      label: "Last Updated By",
+      mapped_key: "",
+      required: false,
+      actual_key: "lastUpdateBy",
     },
     {
       label: "Primary Work Phone",
@@ -124,7 +141,6 @@ export default function BulkUpload(props) {
       required: false,
       actual_key: "secondaryEmail",
     },
-
     {
       label: "LinkedIn Profile",
       mapped_key: "",
@@ -142,6 +158,12 @@ export default function BulkUpload(props) {
       mapped_key: "",
       required: false,
       actual_key: "twitter",
+    },
+    {
+      label: "Lead Source",
+      mapped_key: "",
+      required: false,
+      actual_key: "leadSource",
     },
     {
       label: "Company Name",
@@ -162,35 +184,82 @@ export default function BulkUpload(props) {
       actual_key: "leadStage",
     },
     {
-      label: "Lead Source",
+      label: "Home Phone 2",
       mapped_key: "",
       required: false,
-      actual_key: "leadSource",
-    },
-
-    {
-      label: "Created Date",
-      mapped_key: "",
-      required: false,
-      actual_key: "createAt",
+      actual_key: "homePhone2",
     },
     {
-      label: "Created By",
+      label: "Home Phone 3",
       mapped_key: "",
       required: false,
-      actual_key: "createBy",
+      actual_key: "homePhone3",
     },
     {
-      label: "Last Update",
+      label: "Mobile Phone 2",
       mapped_key: "",
       required: false,
-      actual_key: "lastUpdate",
+      actual_key: "mobilephone2",
     },
     {
-      label: "Last Updated By",
+      label: "Mobile Phone 3",
       mapped_key: "",
       required: false,
-      actual_key: "lastUpdateBy",
+      actual_key: "mobilephone3",
+    },
+    {
+      label: "Work Phone 2",
+      mapped_key: "",
+      required: false,
+      actual_key: "AltPhone2",
+    },
+    {
+      label: "Work Phone 3",
+      mapped_key: "",
+      required: false,
+      actual_key: "AltPhone3",
+    },
+    {
+      label: "Email 3",
+      mapped_key: "",
+      required: false,
+      actual_key: "email3",
+    },
+    {
+      label: "Status",
+      mapped_key: "",
+      required: false,
+      actual_key: "status",
+    },
+    {
+      label: "Time Zone",
+      mapped_key: "",
+      required: false,
+      actual_key: "timeZone",
+    },
+    {
+      label: "Campaign Name",
+      mapped_key: "",
+      required: false,
+      actual_key: "campaignName",
+    },
+    {
+      label: "Comments",
+      mapped_key: "",
+      required: false,
+      actual_key: "notes",
+    },
+    {
+      label: "Website",
+      mapped_key: "",
+      required: false,
+      actual_key: "website",
+    },
+    {
+      label: "Industry Type",
+      mapped_key: "",
+      required: false,
+      actual_key: "industryType ",
     },
   ];
   const reset_state = () => {
