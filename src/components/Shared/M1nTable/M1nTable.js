@@ -217,18 +217,19 @@ const TrackedOwnersHeadCells = [
       viewColumns: false,
     },
   },
-  {
-    name: "detailCard",
-    label: " ",
-    options: {
-      filter: false,
-      sort: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  //temporarily comment out until release of owner summary card
+  // {
+  //   name: "detailCard",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     sort: false,
+  //     searchable: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
   {
     name: "coordinates",
     label: " ",
@@ -584,83 +585,83 @@ const ContactsHeadCells = [
 
   {
     name: "address1",
+    label: "Primary Address 1",
     options: {
       display: false,
       filter: false,
       searchable: false,
       sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
     },
   },
   {
     name: "address2",
+    label: "Primary Address 2",
     options: {
       display: false,
       filter: false,
       searchable: false,
       sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
     },
   },
   {
     name: "city",
+    label: "City",
     options: {
       display: false,
       filter: false,
       searchable: false,
       sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
     },
   },
   {
     name: "state",
+    label: "State",
     options: {
       display: false,
       filter: false,
       searchable: false,
       sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
     },
   },
   {
     name: "zip",
+    label: "Zip",
     options: {
       display: false,
       filter: false,
       searchable: false,
       sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
     },
   },
   {
     name: "country",
+    label: "Country",
     options: {
       display: false,
       filter: false,
       searchable: false,
       sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
     },
   },
-  { name: "name", 
-    label: "Name", 
-    editable: true, 
-    options: { 
+
+  {
+    name: "name",
+    label: "Full Name",
+    editable: true,
+    options: {
       sort: false,
-      filter: false 
-    } 
+      filter: false,
+    },
+  },
+  {
+    name: "title",
+    label: "Title",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
   },
   {
     name: "firstName",
@@ -692,44 +693,25 @@ const ContactsHeadCells = [
       sort: false,
     },
   },
-
+  {
+    name: "suffix",
+    label: "Suffix",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
   {
     name: "fullContactAddress",
     label: "Primary Address",
     editable: true,
     options: { 
+      sort: false,
       filter: false,
-      sort: false,
     },
   },
-  {
-    name: "leadSource",
-    label: "Lead Source",
-    editable: true,
-    options: {
-      sort: false,
-      filterOptions: {
-        names: [],
-      },
-    },
-  },
-  {
-    name: "lastUpdateBy.name",
-    label: "Updated By",
-    options: {
-      sort: false,
-      filterOptions: {
-        names: [],
-      },
-    },
-  },
-  { name: "lastUpdateAt",
-    label: "Last Updated",
-    options: { 
-      filter: false 
-    } 
-  },
-
   {
     name: "melissaRowsCount",
     options: {
@@ -742,7 +724,6 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
-
   {
     name: "mobilephone",
     label: "Primary Mobile Phone",
@@ -766,6 +747,156 @@ const ContactsHeadCells = [
   {
     name: "primaryEmail",
     label: "Primary Email",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "AltPhone",
+    label: "Primary Work Phone",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "secondaryEmail",
+    label: "Email 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "linkedin",
+    label: "LinkedIn Profile",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "facebook",
+    label: "Facebook Profile",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "twitter",
+    label: "Twitter Profile",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "companyName",
+    label: "Company Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "jobTitle",
+    label: "Job Title",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "leadStage",
+    label: "Lead Stage",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "homePhone2",
+    label: "Home Phone 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "homePhone3",
+    label: "Home Phone 3",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "mobilephone2",
+    label: "Mobile Phone 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "mobilephone3",
+    label: "Mobile Phone 3",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "AltPhone2",
+    label: "Work Phone 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "AltPhone3",
+    label: "Work Phone 3",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "email3",
+    label: "Email 3",
     options: {
       display: false,
       filter: false,
@@ -804,6 +935,16 @@ const ContactsHeadCells = [
     },
   },
   {
+    name: "notes",
+    label: "Comments",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
     name: "website ",
     label: "Website",
     options: {
@@ -814,7 +955,7 @@ const ContactsHeadCells = [
     },
   },
   {
-    name: "industryType ",
+    name: "industryType",
     label: "Industry Type",
     options: {
       display: false,
@@ -823,6 +964,53 @@ const ContactsHeadCells = [
       sort: false,
     },
   },
+  {
+    name: "leadSource",
+    label: "Lead Source",
+    editable: false,
+    options: {
+      filterOptions: {
+        names: [],
+      },
+    },
+  },
+  {
+    name: "lastUpdateBy.name",
+    label: "Updated By",
+    options: {
+      sort: false,
+      filterOptions: {
+        names: [],
+      },
+    },
+  },
+  { 
+    name: "lastUpdateAt", 
+    label: "Last Updated", 
+    options: { 
+      filter: false 
+    } 
+  },
+  // {
+  //   name: "createBy.name",
+  //   label: "Created By",
+  //   options: {
+  //     display: false,
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //   },
+  // },
+  // {
+  //   name: "createAt",
+  //   label: "Created Date",
+  //   options: {
+  //     display: false,
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //   },
+  // },
   {
     name: "tags",
     label: "Tags ",
@@ -835,18 +1023,6 @@ const ContactsHeadCells = [
       },
     },
   },
-  // {
-  //   name: "owners", //ownerPerContactCount
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
   {
     name: "commentsCounter",
     label: " ",
@@ -2906,8 +3082,11 @@ function M1nTable(props) {
 
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
         if (
-          (props.targetLabel && props.targetLabel == "well") ||
-          props.targetLabel == "owner"
+          props.targetLabel &&
+          props.targetLabel == "well"
+          //temporarily remove until we release the owner summary card
+          // ||
+          // props.targetLabel == "owner"
         )
           //would only set the detail card icon for wells & owners
           buildingColumns.push(SearchsHeadCells[5]);

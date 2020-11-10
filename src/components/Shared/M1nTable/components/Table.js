@@ -1360,6 +1360,11 @@ function SubTable(props) {
                           props.columns.findIndex(
                             (val) => val.name === "melissaRowsCount"
                           )
+                        ] &&
+                        tableMeta.rowData[
+                          props.columns.findIndex(
+                            (val) => val.name === "melissaRowsCount"
+                          )
                         ] !== 0 && (
                           <MonetizationOnIcon
                             className={classes.monetizationIcon}
@@ -1821,25 +1826,27 @@ function SubTable(props) {
           variables: {
             pagination: {
               first: tableState.rowsPerPage,
-              after: null
+              after: null,
             },
             sort: tableState.activeColumn
               ? {
-                field:
-                  tableState.columns[tableState.activeColumn]?.name === "fullContactAddress"
-                    ? "address1"
-                    : tableState.columns[tableState.activeColumn]?.name,
-                order:
-                  tableState.columns[tableState.activeColumn]?.sortDirection === "asc"
-                    ? 1
-                    : -1,
-              }
+                  field:
+                    tableState.columns[tableState.activeColumn]?.name ===
+                    "fullContactAddress"
+                      ? "address1"
+                      : tableState.columns[tableState.activeColumn]?.name,
+                  order:
+                    tableState.columns[tableState.activeColumn]
+                      ?.sortDirection === "asc"
+                      ? 1
+                      : -1,
+                }
               : [],
 
             filters: filters,
             //search: tableState.searchText,
           },
-        }
+        };
 
         switch (action) {
           case "changeRowsPerPage":
@@ -1939,13 +1946,14 @@ function SubTable(props) {
           data={rows ? rows : []}
           columns={columns ? columns : []}
           options={{
-            print: false,
+            
             download:
               // props.targetLabel == "owner" || props.targetLabel == "well"
               //   ? true
               //   :
               false,
             ...options,
+            print: false,
           }}
         />
 
