@@ -273,7 +273,7 @@ export default function FieldContent({
       if (entity) trimmedEditContent.entity = entity;
       let differences = false;
       for (const field in editContent) {
-        if (editContent[field] !== null) {
+        if (editContent[field] !== null && editContent[field] !== undefined) {
           trimmedEditContent[field] = editContent[field].trim();
           if (editContent[field].trim() !== content[field]) differences = true;
         }
@@ -285,7 +285,7 @@ export default function FieldContent({
             contact: trimmedEditContent,
             ignoreResponse: true,
           },
-          refetchQueries: ["getContacts", "getContact"],
+          refetchQueries: ["getContacts", "getContact", "getPaginatedContacts"],
           awaitRefetchQueries: false,
         }).then((res) => {
           let entries = Object.entries(editContent)[0];
