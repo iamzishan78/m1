@@ -65,6 +65,7 @@ const initialErrors = {
   notes: false,
   activityType: false,
   dateTime: false,
+  endDateTime: false,
 };
 
 const getCurrentDateTime = () => {
@@ -98,11 +99,13 @@ function AddActivityDialog(props) {
       setActivityType(selectedActivity.type);
       setNotes(selectedActivity.notes);
       setDateTime(selectedActivity.dateTime);
+      setEndDateTime(selectedActivity.dateTime);
     } else {
       setAddNew(true);
       setActivityType("general");
       setNotes("");
       setDateTime(getCurrentDateTime());
+      setEndDateTime(get1hrLaterDateTime());
     }
   }, [selectedActivity]);
 
@@ -112,6 +115,7 @@ function AddActivityDialog(props) {
     setNotes("");
     setActivityType("general");
     setDateTime(getCurrentDateTime());
+    setEndDateTime(get1hrLaterDateTime());
   };
 
   const updateErrors = () => {
@@ -121,12 +125,16 @@ function AddActivityDialog(props) {
     let endDateTimeErr = false;
     if (!activityType || activityType.length === 0) activityTypeErr = true;
     if (!notes || notes.length === 0) notesErr = true;
+    if (!dateTime) dateTimeErr = true;
+    if (!endDateTime) endDateTimeErr = true;
+
     setErrors({
       activityType: activityTypeErr,
       notes: notesErr,
       dateTime: dateTimeErr,
       endDateTime: endDateTimeErr,
     });
+
     return activityTypeErr || notesErr || dateTimeErr || endDateTimeErr;
   };
 

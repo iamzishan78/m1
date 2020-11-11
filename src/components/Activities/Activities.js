@@ -33,6 +33,7 @@ const ActivitiesCalendar = ({
   setActivityFilterByTime,
   view,
   setView,
+  onEventClick,
 }) => {
   return (
     <div>
@@ -45,6 +46,7 @@ const ActivitiesCalendar = ({
         defaultDate={new Date()}
         style={{ height: "calc(100vh - 64px - 32px)" }}
         step={60}
+        onSelectEvent={(e) => onEventClick(e)}
         components={{
           toolbar: (props) => (
             <ActivitiesToolbar
@@ -108,6 +110,11 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
   return filterByTypeCondition && filterByTimeCondition;
 };
 
+const filterEventsByDate = (events, date) => {
+  const day = moment(date);
+  return events.filter((e) => moment(e.end).isSame(day, "day"));
+};
+
 const Activities = () => {
   const classes = useStyles();
 
@@ -128,6 +135,7 @@ const Activities = () => {
   const [activityFilterByType, setActivityFilterByType] = useState("all");
   const [activityFilterByTime, setActivityFilterByTime] = useState("todo");
   const [view, setView] = React.useState(Views.WEEK);
+  const [selectedActivity, setSelectedActivity] = useState(null);
 
   useEffect(() => {
     getAllActivities();
@@ -141,6 +149,7 @@ const Activities = () => {
           const end = act.endDateTime ? new Date(act.endDateTime) : start;
           return {
             id: uniqueId(),
+            ...act,
             start,
             end,
             title: act.fullname,
@@ -174,6 +183,12 @@ const Activities = () => {
     }));
   };
 
+  const onEventClick = (event) => {
+    console.log("EVENT", event);
+    setSelectedActivity(event);
+    onModalOpen();
+  };
+
   return (
     <div className={classes.root}>
       {activitiesLoading ? (
@@ -198,11 +213,15 @@ const Activities = () => {
               view={view}
               setView={setView}
               events={filteredEvents}
+              onEventClick={onEventClick}
             />
           ) : (
             <ActivitiesTable />
           )}
-          <ActivitiesModal selectedActivity={null} />
+          <ActivitiesModal
+            selectedActivity={selectedActivity}
+            events={events}
+          />
         </>
       )}
     </div>

@@ -8,7 +8,7 @@ import moment from "moment";
 import Avatar from "react-avatar";
 import Badge from "@material-ui/core/Badge";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { AppContext } from "../../../AppContext";
 import Dialog from "@material-ui/core/Dialog";
 import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
@@ -31,6 +31,13 @@ import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import BusinessIcon from "@material-ui/icons/Business";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
+import { CONTACT } from "../../../graphQL/useQueryContact";
+import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
+import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
+import gql from "graphql-tag";
+import { Calendar, momentLocalizer, Views } from "react-big-calendar";
+import ActivitiesEvent from "./ActivitiesEvent";
 
 const useStyles = makeStyles((theme) => ({
   dialogExpCard: {
@@ -48,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
   },
   left: {
-    width: "55%",
+    width: "50%",
     borderRight: "2px solid #d9d9d9",
     padding: "20px 0",
     display: "flex",
@@ -135,7 +142,10 @@ const useStyles = makeStyles((theme) => ({
     color: "#48A8ED !important",
   },
   right: {
-    width: "45%",
+    width: "40%",
+  },
+  error: {
+    border: "2px solid red !important",
   },
 }));
 
@@ -144,15 +154,140 @@ const getCurrentDate = () => {
   return d.slice(0, d.indexOf("T"));
 };
 
-export default function ContactDetailCard(props) {
+const getTimeFromString = (d) => {
+  return d.slice(d.indexOf("T") + 1, d.indexOf("."));
+};
+
+const getDateFromString = (d) => {
+  return d.slice(0, d.indexOf("T"));
+};
+
+const mergeDateAndTime = (d, t) => {
+  return `${d}T${t}`;
+};
+
+const initialErrors = {
+  notes: false,
+  activityType: false,
+  startDate: false,
+  startTime: false,
+  endDate: false,
+  endTime: false,
+  contact: false,
+};
+
+const localizer = momentLocalizer(moment);
+
+export default function ContactDetailCard({ selectedActivity, events }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [addNew, setAddNew] = useState(true);
   const [activityType, setActivityType] = useState("");
   const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
-  const [startTime, setStartTime] = useState(null);
-  const [endTime, setEndTime] = useState(null);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [notes, setNotes] = useState("");
+  const [contactId, setContactId] = useState("");
+  const [contact, setContact] = useState({});
+  const [errors, setErrors] = useState({ ...initialErrors });
+
+  const [updateContact, { called, loading, data }] = useMutation(
+    UPDATECONTACT,
+    {
+      onCompleted: () => {
+        clearFields();
+        onModalClose();
+      },
+    }
+  );
+
+  const [getContacts, { data: allContacts }] = useLazyQuery(
+    gql`
+      query getContactNames {
+        contacts {
+          _id
+          name
+        }
+      }
+    `,
+    {
+      fetchPolicy: "cache-first",
+    }
+  );
+
+  const [getContact, { data: cData, cLoading }] = useLazyQuery(CONTACT, {
+    fetchPolicy: "cache-and-network",
+  });
+
+  useEffect(() => {
+    getContacts();
+  }, [selectedActivity]);
+
+  const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
+  const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
+  const [nameAutInputValue, setNameAutInputValue] = useState([]);
+
+  useEffect(() => {
+    if (allContacts?.contacts) {
+      setMongoEntitiesArray(allContacts.contacts);
+    }
+  }, [allContacts]);
+
+  useEffect(() => {
+    if (cData?.contact) {
+      setNameAutValue(
+        cData?.contact
+          ? { name: cData.contact.name, _id: cData.contact._id }
+          : {}
+      );
+    }
+  }, [cData]);
+
+  useEffect(() => {
+    console.log("CONTACT", nameAutValue);
+    if (nameAutValue?.name) {
+      setContact(nameAutValue);
+    }
+  }, [nameAutValue]);
+
+  useEffect(() => {
+    if (contactId) {
+      getContact({
+        variables: {
+          contactId: contactId,
+        },
+      });
+    }
+  }, [contactId]);
+
+  useEffect(() => {
+    if (selectedActivity) {
+      console.log(
+        "EVENT: SET ACTIVITY:",
+        selectedActivity.dateTime
+        // getDateFromString(selectedActivity.dateTime),
+        // getTimeFromString(selectedActivity.dateTime)
+      );
+      setAddNew(true);
+      setNotes(selectedActivity.notes);
+      setActivityType(selectedActivity.type);
+      setContactId(selectedActivity.contactId);
+      setStartDate(getDateFromString(selectedActivity.start.toISOString()));
+      setStartTime(getTimeFromString(selectedActivity.start.toISOString()));
+      setEndDate(getDateFromString(selectedActivity.end.toISOString()));
+      setEndTime(getTimeFromString(selectedActivity.end.toISOString()));
+    } else {
+      setAddNew(true);
+      setNotes("");
+      setActivityType("");
+      setContactId("");
+      setStartDate(getCurrentDate());
+      setEndDate(getCurrentDate());
+      setStartTime("");
+      setEndTime("");
+    }
+  }, [selectedActivity]);
 
   const onModalClose = () => {
     setStateApp((stateApp) => ({
@@ -161,7 +296,136 @@ export default function ContactDetailCard(props) {
     }));
   };
 
-  console.log("START", new Date().toLocaleDateString());
+  const clearFields = () => {
+    setAddNew(false);
+    setNotes("");
+    setActivityType("");
+    setStartDate(getCurrentDate());
+    setEndDate(getCurrentDate());
+    setContactId("");
+    setStartTime("");
+    setEndTime("");
+    setNameAutValue(null);
+    setNameAutInputValue("");
+  };
+
+  const updateErrors = () => {
+    let activityTypeErr = false;
+    let notesErr = false;
+    let startDataErr = false;
+    let startTimeErr = false;
+    let endDateErr = false;
+    let endTimeErr = false;
+    let contactErr = false;
+
+    if (!activityType || activityType.length === 0) activityTypeErr = true;
+    if (!notes || notes.length === 0) notesErr = true;
+    if (!startDate) startDataErr = true;
+    if (!startTime) startTimeErr = true;
+    if (!endDate) endDateErr = true;
+    if (!endTime) endTimeErr = true;
+    if (nameAutValue && nameAutValue.name) contactErr = true;
+
+    setErrors({
+      activityType: activityTypeErr,
+      notes: notesErr,
+      startDate: startDataErr,
+      startTime: startTimeErr,
+      endDate: endDateErr,
+      endTime: endTimeErr,
+      contact: contactErr,
+    });
+    return (
+      activityTypeErr ||
+      notesErr ||
+      startDataErr ||
+      startTimeErr ||
+      endDateErr ||
+      endTimeErr ||
+      contactErr
+    );
+  };
+
+  const addActivity = async () => {
+    if (updateErrors()) return;
+
+    let activityLog =
+      cData && cData.contact.activityLog
+        ? cData.contact.activityLog.map((act) => ({
+            type: act.type,
+            notes: act.notes,
+            dateTime: act.dateTime,
+            endDateTime: act.endDateTime,
+            user_id: act.user_id,
+          }))
+        : [];
+
+    const dateTime = mergeDateAndTime(startDate, startTime);
+    const endDateTime = mergeDateAndTime(endDate, endTime);
+
+    activityLog.push({
+      type: activityType,
+      notes,
+      dateTime: dateTime,
+      endDateTime: endDateTime,
+      user_id: stateApp.user.email,
+    });
+
+    updateContact({
+      variables: {
+        contact: {
+          _id: cData.contact.id,
+          activityLog,
+        },
+      },
+      refetchQueries: ["getContact"],
+      awaitRefetchQueries: true,
+    });
+  };
+
+  const updateActivity = () => {
+    if (updateErrors()) return;
+
+    const dateTime = mergeDateAndTime(startDate, startTime);
+    const endDateTime = mergeDateAndTime(endDate, endTime);
+
+    let activityLog =
+      cData && cData.contact.activityLog
+        ? cData.contact.activityLog.map((act) => ({
+            type: act.type,
+            notes: act.notes,
+            dateTime: act.dateTime,
+            endDateTime: act.endDateTime,
+            user_id: act.user_id,
+          }))
+        : [];
+
+    let newActLog = [...activityLog];
+    const index =
+      newActLog &&
+      newActLog.findIndex((activity) => activity._id === selectedActivity._id);
+    if (index > -1) {
+      newActLog[index] = {
+        ...selectedActivity,
+        type: activityType,
+        dateTime,
+        endDateTime,
+        notes,
+      };
+      newActLog.forEach((v) => delete v.__typename);
+
+      updateContact({
+        variables: {
+          contact: {
+            _id: cData.contact.id,
+            activityLog: [...newActLog],
+          },
+        },
+        refetchQueries: ["getContact"],
+        awaitRefetchQueries: true,
+      });
+    }
+  };
 
   return (
     <Dialog
@@ -169,12 +433,26 @@ export default function ContactDetailCard(props) {
       fullWidth
       maxWidth="xl"
       open={stateApp.activityDialog ? true : false}
-      onClose={onModalClose}
+      onClose={
+        loading && cLoading
+          ? () => {}
+          : () => {
+              clearFields();
+              onModalClose();
+            }
+      }
     >
       <ExpandableCardProvider
         expanded={true}
-        handleCloseExpandableCard={onModalClose}
-        title={"Add Activity"}
+        handleCloseExpandableCard={
+          loading && cLoading
+            ? () => {}
+            : () => {
+                clearFields();
+                onModalClose();
+              }
+        }
+        title={`${addNew ? "Add" : "Update"} Activity`}
         subTitle={""}
         parent="calender"
         mouseX={0}
@@ -201,7 +479,12 @@ export default function ContactDetailCard(props) {
               </div>
               <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
-                <div className={classes.typeDisplay}>
+                <div
+                  className={clsx(
+                    classes.typeDisplay,
+                    errors.activityType && classes.error
+                  )}
+                >
                   <span
                     className={clsx(
                       classes.filterDisplay,
@@ -256,7 +539,10 @@ export default function ContactDetailCard(props) {
                 </span>
                 <div className={classes.dateTimeRow}>
                   <TextField
-                    className={classes.dateTimeField}
+                    className={clsx(
+                      classes.dateTimeField,
+                      errors.startDate && classes.error
+                    )}
                     value={startDate}
                     type="date"
                     variant="outlined"
@@ -265,26 +551,39 @@ export default function ContactDetailCard(props) {
                     }}
                   />
                   <TextField
-                    className={clsx(classes.dateTimeField, classes.marginLeft)}
+                    className={clsx(
+                      classes.dateTimeField,
+                      classes.marginLeft,
+                      errors.startTime && classes.error
+                    )}
                     value={startTime}
                     type="time"
                     variant="outlined"
                     onChange={(e) => {
                       setStartTime(e.target.value);
+                      console.log("EVENT: START TIME", e.target.value);
                     }}
                   />
                   <span className={classes.line} />
                   <TextField
-                    className={classes.dateTimeField}
+                    className={clsx(
+                      classes.dateTimeField,
+                      errors.endTime && classes.error
+                    )}
                     value={endTime}
                     type="time"
                     variant="outlined"
                     onChange={(e) => {
                       setEndTime(e.target.value);
+                      console.log("EVENT: END TIME", e.target.value);
                     }}
                   />
                   <TextField
-                    className={clsx(classes.dateTimeField, classes.marginLeft)}
+                    className={clsx(
+                      classes.dateTimeField,
+                      classes.marginLeft,
+                      errors.endDate && classes.error
+                    )}
                     value={endDate}
                     type="date"
                     variant="outlined"
@@ -319,7 +618,10 @@ export default function ContactDetailCard(props) {
                     rows={4}
                     variant="outlined"
                     value={notes}
-                    className={classes.notes}
+                    className={clsx(
+                      classes.notes,
+                      errors.notes && classes.error
+                    )}
                     onChange={(e) => {
                       setNotes(e.target.value);
                     }}
@@ -334,14 +636,24 @@ export default function ContactDetailCard(props) {
                 <span className={classes.rowIcon}>
                   <PersonIcon />
                 </span>
-                <Select
-                  className={classes.fieldWidth}
-                  disabled
-                  variant="outlined"
-                  value="Jacob Avery"
+                <div
+                  className={clsx(
+                    classes.fieldWidth,
+                    errors.contact && classes.error
+                  )}
+                  style={{ margin: "7.5px 0" }}
                 >
-                  <MenuItem value="Jacob Avery">Jacob Avery</MenuItem>
-                </Select>
+                  <AutocompEntityNamesVirtualizeList
+                    mongoEntitiesArray={mongoEntitiesArray}
+                    setMongoEntitiesArray={setMongoEntitiesArray}
+                    nameAutValue={nameAutValue}
+                    setNameAutValue={setNameAutValue}
+                    nameAutInputValue={nameAutInputValue}
+                    setNameAutInputValue={setNameAutInputValue}
+                    variant="outlined"
+                    label=""
+                  />
+                </div>
               </div>
               <div className={classes.row}>
                 <span className={classes.rowIcon}>
@@ -406,21 +718,41 @@ export default function ContactDetailCard(props) {
                   <Button
                     className={classes.marginLeft}
                     variant="contained"
-                    onClick={onModalClose}
+                    onClick={() => {
+                      clearFields();
+                      onModalClose();
+                    }}
+                    disabled={loading && cLoading}
                   >
                     Cancel
                   </Button>
                   <Button
+                    disabled={loading && cLoading}
                     className={classes.marginLeft}
                     color="primary"
                     variant="contained"
+                    onClick={addNew ? addActivity : updateActivity}
                   >
-                    Save
+                    {addNew ? "Add" : "Save"}
                   </Button>
                 </div>
               </div>
             </div>
-            <div className={classes.right}></div>
+            <div className={classes.right}>
+              <Calendar
+                localizer={localizer}
+                events={events}
+                startAccessor="start"
+                endAccessor="end"
+                defaultView={"day"}
+                defaultDate={startDate}
+                step={60}
+                components={{
+                  event: ActivitiesEvent,
+                }}
+                toolbar={false}
+              />
+            </div>
           </div>
         }
       />
