@@ -201,6 +201,7 @@ export default function FieldContent({
   linkType,
   fieldType = FieldTypes.Contact,
   isEdited = false,
+  ...props
 }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
   //////////// entity - brings the entity id tide to the contact //////////////////////////////////////////////////
@@ -234,6 +235,7 @@ export default function FieldContent({
   useEffect(() => {
     if (content) {
       setEditContent({ ...content });
+      setShowContent({ ...content });
 
       let count = 0;
       for (const fieldName in content) {

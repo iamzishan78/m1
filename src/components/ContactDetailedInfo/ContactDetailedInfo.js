@@ -282,14 +282,14 @@ export default ({ header, ...props }) => {
       data: { relatives: props.contactData.relatives },
       linkType: LinkTypes.None,
     },
-    "Company Name": {
-      data: { companyName: props.contactData.companyName },
-      linkType: LinkTypes.None,
-    },
-    "Job Title": {
-      data: { jobTitle: props.contactData.jobTitle },
-      linkType: LinkTypes.None,
-    },
+    // "Company Name": {
+    //   data: { companyName: props.contactData.companyName },
+    //   linkType: LinkTypes.None,
+    // },
+    // "Job Title": {
+    //   data: { jobTitle: props.contactData.jobTitle },
+    //   linkType: LinkTypes.None,
+    // },
     "Lead Stage": {
       data: { leadStage: props.contactData.leadStage },
       linkType: LinkTypes.None,
