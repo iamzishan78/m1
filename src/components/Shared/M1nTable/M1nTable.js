@@ -3891,6 +3891,7 @@ function M1nTable(props) {
         contactId={props.contact?._id}
         contactsPageProps={{
           getContacts,
+          getContactsFilterOptions,
           contactsCount: dataContactsFilterOptions
             ? dataContactsFilterOptions.contactsFilterOptions.totalCount[0]
               .totalCount

@@ -485,12 +485,11 @@ function SubTable(props) {
 
   const searchRequest = (e) => {
     e.setLoading(true);
-    e.getContacts({
-      variables: {
-        pagination: e.pagination,
-        search: e.searchText,
-      },
-    });
+    e.tableState.page = 0;
+    e.tableState.count = 0;
+    setPageInd(e.tableState.page);
+    e.getContacts(e.pageVariables);
+    e.getContactsFilterOptions(e.pageVariables);
   };
   
   const delayedSearchRequest = React.useMemo(
@@ -1844,7 +1843,7 @@ function SubTable(props) {
               : [],
 
             filters: filters,
-            //search: tableState.searchText,
+            search: tableState.searchText,
           },
         };
 
@@ -1878,18 +1877,21 @@ function SubTable(props) {
             props.contactsPageProps.getContacts(pageVariables);
             break;
           case "search":
-            props.contactsPageProps.setLoading(true);
-            tableState.page = 0;
-            setPageInd(tableState.page);
             delayedSearchRequest({
+              tableState: tableState,
               setLoading: props.contactsPageProps.setLoading,
               getContacts: props.contactsPageProps.getContacts,
-              pagination: {
-                first: tableState.rowsPerPage,
-                after: null,
-              },
-              searchText: tableState.searchText,
+              getContactsFilterOptions: props.contactsPageProps.getContactsFilterOptions,
+              pageVariables
             });
+            break;
+          case "onSearchClose":
+            props.contactsPageProps.setLoading(true);
+            tableState.page = 0;
+            tableState.count = 0;
+            setPageInd(tableState.page);
+            props.contactsPageProps.getContacts(pageVariables);
+            props.contactsPageProps.getContactsFilterOptions();
             break;
           case "propsUpdate":
             console.log("work propsUpdate");
