@@ -1,5 +1,11 @@
 import gql from "graphql-tag";
 
 export const CONTACTSFILTEROPTIONS = gql`
-  { contactsFilterOptions }
+  query getContactsFilterOptions(
+    $search: String
+  ) {
+    contactsFilterOptions(
+      search: $search
+    )
+  }
 `;
