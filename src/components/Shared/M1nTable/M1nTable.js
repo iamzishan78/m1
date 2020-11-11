@@ -3954,9 +3954,8 @@ function M1nTable(props) {
         contactsPageProps={{
           getContacts,
           getContactsFilterOptions,
-          contactsCount: dataContactsFilterOptions
-            ? dataContactsFilterOptions.contactsFilterOptions.totalCount[0]
-                .totalCount
+          contactsCount: dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
+            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]?.totalCount
             : 0,
           setLoading,
         }}
