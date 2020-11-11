@@ -80,12 +80,12 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexWrap: "wrap",
     alignContent: "center",
-    justifyContent: "center",
+    justifyContent: "center"
     // height : 100,
     // width: 100,
   },
   content: {
-
+    margin: 15
   },
 
   bread: {
@@ -212,7 +212,7 @@ export default function QuadSummary(props) {
 
   return data && stateQuad.quadChart ? (
     <div className={classes.gridContainer}>
-      <Grid container spacing={2}>
+      <Grid container spacing={1}>
         <Grid item xs={12}>
           <FormControl variant="outlined" className={classes.formControl}>
             <Select
@@ -262,7 +262,7 @@ export default function QuadSummary(props) {
         }
         <Grid item xs={12}>
           <MuiThemeProvider theme={toggleTheme} >
-          <ToggleButtonGroup exclusive style={{width: "100%", marginTop: 35}} value={toggleAlignment} >
+          <ToggleButtonGroup exclusive style={{width: "100%"}} value={toggleAlignment} >
               <ToggleButton
                 selected={!daily}
                 disabled={stateQuad.selectedRange === 0} 
