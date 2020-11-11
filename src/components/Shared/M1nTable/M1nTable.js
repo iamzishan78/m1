@@ -348,6 +348,18 @@ const OwnersPerWellHeadCells = [
       viewColumns: false,
     },
   },
+  {
+    name: "entity",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
   { name: "name", label: "Name" },
   {
     name: "ownershipType",
@@ -383,18 +395,19 @@ const OwnersPerWellHeadCells = [
       },
     },
   },
-  // {
-  //   name: "contactsCounter",
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
+
+  {
+    name: "isContact",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 
   /*   
 // TEMPORARY COMMENT OUT. DO NOT DELETE 
@@ -590,6 +603,9 @@ const ContactsHeadCells = [
       filter: false,
       searchable: false,
       sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
     },
   },
   {
@@ -600,6 +616,9 @@ const ContactsHeadCells = [
       filter: false,
       searchable: false,
       sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
     },
   },
   {
@@ -610,6 +629,9 @@ const ContactsHeadCells = [
       filter: false,
       searchable: false,
       sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
     },
   },
   {
@@ -620,6 +642,9 @@ const ContactsHeadCells = [
       filter: false,
       searchable: false,
       sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
     },
   },
   {
@@ -630,6 +655,9 @@ const ContactsHeadCells = [
       filter: false,
       searchable: false,
       sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
     },
   },
   {
@@ -640,13 +668,16 @@ const ContactsHeadCells = [
       filter: false,
       searchable: false,
       sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
     },
   },
 
   {
     name: "name",
     label: "Full Name",
-    editable: true,
+    // editable: true,
     options: {
       sort: false,
       filter: false,
@@ -705,8 +736,8 @@ const ContactsHeadCells = [
   {
     name: "fullContactAddress",
     label: "Primary Address",
-    editable: true,
-    options: { 
+    // editable: true,
+    options: {
       sort: false,
       filter: false,
     },
@@ -924,6 +955,16 @@ const ContactsHeadCells = [
     },
   },
   {
+    name: "territory",
+    label: "Territory",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
     name: "campaignName",
     label: "Campaign Name",
     options: {
@@ -966,7 +1007,7 @@ const ContactsHeadCells = [
   {
     name: "leadSource",
     label: "Lead Source",
-    editable: false,
+    // editable: false,
     options: {
       sort: false,
       filterOptions: {
@@ -984,12 +1025,12 @@ const ContactsHeadCells = [
       },
     },
   },
-  { 
-    name: "lastUpdateAt", 
-    label: "Last Updated", 
-    options: { 
-      filter: false 
-    } 
+  {
+    name: "lastUpdateAt",
+    label: "Last Updated",
+    options: {
+      filter: false,
+    },
   },
   // {
   //   name: "createBy.name",
@@ -1827,12 +1868,9 @@ function M1nTable(props) {
       fetchPolicy: "cache-and-network",
     }
   );
-  const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(
-    TAGSAMPLES, 
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+  const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(TAGSAMPLES, {
+    fetchPolicy: "cache-and-network",
+  });
   //////////
   const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
   const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(
@@ -1862,12 +1900,12 @@ function M1nTable(props) {
       fetchPolicy: "cache-and-network",
     }
   );
-  const [getContactsFilterOptions, { data: dataContactsFilterOptions }] = useLazyQuery(
-    CONTACTSFILTEROPTIONS,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+  const [
+    getContactsFilterOptions,
+    { data: dataContactsFilterOptions },
+  ] = useLazyQuery(CONTACTSFILTEROPTIONS, {
+    fetchPolicy: "cache-and-network",
+  });
   //////////
   const [getTransactionData, { data: dataDeals }] = useLazyQuery(
     TRANSACTIONDATA
@@ -2081,32 +2119,32 @@ function M1nTable(props) {
         setColumns(
           cleanAvailableTags.length > 0
             ? TrackedOwnersHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
                     },
-                  },
-                };
-              }
-              return column;
-            })
+                  };
+                }
+                return column;
+              })
             : TrackedOwnersHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })
         );
 
         setStateApp((state) => ({
@@ -2269,32 +2307,32 @@ function M1nTable(props) {
         setColumns([
           ...(cleanAvailableTags.length > 0
             ? WellsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
                     },
-                  },
-                };
-              }
-              return column;
-            })
+                  };
+                }
+                return column;
+              })
             : WellsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })),
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })),
           flyToColumn,
         ]);
 
@@ -2407,32 +2445,32 @@ function M1nTable(props) {
         setColumns(
           cleanAvailableTags.length > 0
             ? WellsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
                     },
-                  },
-                };
-              }
-              return column;
-            })
+                  };
+                }
+                return column;
+              })
             : WellsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })
         );
 
         setStateApp((state) => ({
@@ -2484,6 +2522,9 @@ function M1nTable(props) {
         getTagSamples({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
+        checkIfOwnersAreContacts({
+          variables: { idsArray: objectsIdsArray },
+        });
       } else {
         setLoading(false);
         setRows([]);
@@ -2504,7 +2545,9 @@ function M1nTable(props) {
       dataTagSamples.tagSamples &&
       // dataOwnersWells &&
       dataTracks &&
-      dataTracks.tracksByObjectType
+      dataTracks.tracksByObjectType &&
+      checkIfOwnersAreContactsData &&
+      checkIfOwnersAreContactsData.ifAreContacts
     ) {
       const wellOwners = dataWellOwners.wellOwners.map((o) => {
         let wellOwner = { ...o };
@@ -2523,6 +2566,24 @@ function M1nTable(props) {
         //     }
         //   }
         // }
+
+        for (
+          let i = 0;
+          i < checkIfOwnersAreContactsData.ifAreContacts.length;
+          i++
+        ) {
+          if (
+            wellOwner.id ===
+            checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
+          ) {
+            wellOwner.isContact =
+              checkIfOwnersAreContactsData.ifAreContacts[i].isContact;
+
+            wellOwner.entity =
+              checkIfOwnersAreContactsData.ifAreContacts[i]._id;
+            break;
+          }
+        }
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (wellOwner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -2562,32 +2623,32 @@ function M1nTable(props) {
       setColumns(
         cleanAvailableTags.length > 0
           ? OwnersPerWellHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filterOptions: {
-                    ...column.options.filterOptions,
-                    names: cleanAvailableTags,
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
                   },
-                },
-              };
-            }
-            return column;
-          })
+                };
+              }
+              return column;
+            })
           : OwnersPerWellHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filter: false,
-                },
-              };
-            }
-            return column;
-          })
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
       );
 
       setRows(wellOwners);
@@ -2599,6 +2660,7 @@ function M1nTable(props) {
     dataTagSamples,
     dataCommentsCounter,
     // dataOwnersWells,
+    checkIfOwnersAreContactsData,
     dataTracks,
   ]);
 
@@ -2634,7 +2696,6 @@ function M1nTable(props) {
         constDataContacts?.paginatedContacts?.edges &&
         constDataContacts.paginatedContacts.edges.length > 0
       ) {
-
         let tmpDataContacts = {
           ...constDataContacts,
           paginatedContacts: {
@@ -2643,9 +2704,9 @@ function M1nTable(props) {
               ...constDataContacts.paginatedContacts.edges.map((edge) => {
                 return {
                   ...edge,
-                  node: { 
+                  node: {
                     ...edge.node,
-                    isTracked: false
+                    isTracked: false,
                   },
                 };
               }),
@@ -2654,9 +2715,10 @@ function M1nTable(props) {
         };
 
         setDataContacts(tmpDataContacts);
-        setRows([...tmpDataContacts.paginatedContacts.edges.map((el) => el.node)]);
+        setRows([
+          ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
+        ]);
         setLoading(false);
-
       } else {
         setLoading(false);
         setRows([]);
@@ -2692,9 +2754,7 @@ function M1nTable(props) {
         variables: { objectsIdsArray },
       });
     }
-  }, [
-    dataContacts
-  ]);
+  }, [dataContacts]);
 
   useEffect(() => {
     if (
@@ -2842,7 +2902,9 @@ function M1nTable(props) {
         }
       });
 
-      setRows([...tmpDataContacts.paginatedContacts.edges.map((el) => el.node)]);
+      setRows([
+        ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
+      ]);
       // setLoading(false);
     }
   }, [
@@ -3056,22 +3118,22 @@ function M1nTable(props) {
           buildingColumns.push(
             cleanAvailableTags.length > 0
               ? {
-                ...SearchsHeadCells[1],
-                options: {
-                  ...SearchsHeadCells[1].options,
-                  filterOptions: {
-                    ...SearchsHeadCells[1].options.filterOptions,
-                    names: cleanAvailableTags,
+                  ...SearchsHeadCells[1],
+                  options: {
+                    ...SearchsHeadCells[1].options,
+                    filterOptions: {
+                      ...SearchsHeadCells[1].options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
                   },
-                },
-              }
+                }
               : {
-                ...SearchsHeadCells[1],
-                options: {
-                  ...SearchsHeadCells[1].options,
-                  filter: false,
-                },
-              }
+                  ...SearchsHeadCells[1],
+                  options: {
+                    ...SearchsHeadCells[1].options,
+                    filter: false,
+                  },
+                }
           );
         }
 
@@ -3642,32 +3704,32 @@ function M1nTable(props) {
       setColumns([
         ...(cleanAvailableTags.length > 0
           ? WellsHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filterOptions: {
-                    ...column.options.filterOptions,
-                    names: cleanAvailableTags,
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
                   },
-                },
-              };
-            }
-            return column;
-          })
+                };
+              }
+              return column;
+            })
           : WellsHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filter: false,
-                },
-              };
-            }
-            return column;
-          })),
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })),
         flyToColumn,
       ]);
 
@@ -3799,32 +3861,32 @@ function M1nTable(props) {
         setColumns(
           cleanAvailableTags.length > 0
             ? WellInterests.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
                     },
-                  },
-                };
-              }
-              return column;
-            })
+                  };
+                }
+                return column;
+              })
             : WellInterests.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })
         );
 
         setRows(wells);
@@ -3894,7 +3956,7 @@ function M1nTable(props) {
           getContactsFilterOptions,
           contactsCount: dataContactsFilterOptions
             ? dataContactsFilterOptions.contactsFilterOptions.totalCount[0]
-              .totalCount
+                .totalCount
             : 0,
           setLoading,
         }}

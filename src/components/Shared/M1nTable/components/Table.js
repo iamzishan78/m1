@@ -491,11 +491,11 @@ function SubTable(props) {
     e.getContacts(e.pageVariables);
     e.getContactsFilterOptions(e.pageVariables);
   };
-  
+
   const delayedSearchRequest = React.useMemo(
     () =>
       debounce((request, callback) => {
-        searchRequest(request)
+        searchRequest(request);
       }, 500),
     []
   );
@@ -1185,9 +1185,7 @@ function SubTable(props) {
                               ? classes.iconSelected
                               : ""
                           }`}
-                          badgeContent={
-                            value ? value[1] : 0
-                          }
+                          badgeContent={value ? value[1] : 0}
                           color="secondary"
                           onClick={(e) => {
                             e.preventDefault();
@@ -1253,6 +1251,7 @@ function SubTable(props) {
                         country: tableMeta.rowData[7],
                       }}
                       targetLabel={props.targetLabel}
+                      nonEditable={!column.editable}
                     />
                   );
                 },
@@ -1287,10 +1286,10 @@ function SubTable(props) {
 
                   ////// if non editable column
                   if (
-                    !column.editable ||
-                    (props.targetLabel === "Parcel Ownershipship" &&
-                      column.name === "name" &&
-                      tableMeta.rowData[11] !== "false")
+                    !column.editable &&
+                    props.targetLabel === "Parcel Ownershipship" &&
+                    column.name === "name" &&
+                    tableMeta.rowData[11] !== "false"
                   ) {
                     //// if no value
                     if (value === "" || value === null || !value)
@@ -1352,6 +1351,7 @@ function SubTable(props) {
                             ? tableMeta.rowData[1]
                             : null
                         }
+                        nonEditable={!column.editable}
                       />
                       {props.targetLabel === "contact" &&
                         column.name === "name" &&
@@ -1864,10 +1864,16 @@ function SubTable(props) {
                 ...pageVariables.variables,
                 pagination: {
                   ...pageVariables.variables.pagination,
-                  before: props.rows && tableState.page < pageInd ? props.rows[0]?._id : null,
-                  after: props.rows && tableState.page > pageInd ? props.rows[props.rows.length - 1]?._id : null
-                }
-              }
+                  before:
+                    props.rows && tableState.page < pageInd
+                      ? props.rows[0]?._id
+                      : null,
+                  after:
+                    props.rows && tableState.page > pageInd
+                      ? props.rows[props.rows.length - 1]?._id
+                      : null,
+                },
+              },
             });
             break;
           case "sort":
@@ -1948,7 +1954,6 @@ function SubTable(props) {
           data={rows ? rows : []}
           columns={columns ? columns : []}
           options={{
-            
             download:
               // props.targetLabel == "owner" || props.targetLabel == "well"
               //   ? true
