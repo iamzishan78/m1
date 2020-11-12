@@ -13,35 +13,14 @@ import { showSuccessMessage, showErrorMessage } from "../../../actions";
 export default function ConfirmationDialog(props) {
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [updateContact, { data: contactDeleted }] = useMutation(UPDATECONTACT);
-
-  useEffect(() => {
-    if (contactDeleted && contactDeleted.updateContact) {
-      if (contactDeleted.updateContact.success) {
-        dispatch(
-          showSuccessMessage(
-            contactDeleted.updateContact.contact &&
-              contactDeleted.updateContact.contact.name
-              ? `${contactDeleted.updateContact.contact.name} was successfully removed`
-              : "The contact was successfully removed"
-          )
-        );
-        // props.handleDialogClose(false);
-        props.handleCloseExpandableCard();
-        setStateApp((state) => ({
-          ...state,
-          universalCircularLoaderAct: false,
-        }));
-      } else {
-        dispatch(showErrorMessage("Error occurred"));
-      }
-    }
-  }, [contactDeleted]);
+  const [updateContact] = useMutation(UPDATECONTACT);
 
   const handleAccept = () => {
     props.handleDialogClose(false);
+    // props.handleCloseExpandableCard();
+
     setStateApp((state) => ({ ...state, universalCircularLoaderAct: true }));
-    updateContact({
+    let res = updateContact({
       variables: {
         contact: {
           _id: props.id,
@@ -55,6 +34,30 @@ export default function ConfirmationDialog(props) {
         "getCustomLayer",
       ],
       awaitRefetchQueries: true,
+    });
+
+    res.then((result) => {
+      const { data } = result;
+
+      if (data && data.updateContact) {
+        if (data.updateContact.success) {
+          dispatch(
+            showSuccessMessage(
+              data.updateContact.contact && data.updateContact.contact.name //// name it's not currently bringed from db
+                ? `${data.updateContact.contact.name} was successfully removed`
+                : "The contact was successfully removed"
+            )
+          );
+          // props.handleDialogClose(false);
+          props.handleCloseExpandableCard();
+        } else {
+          dispatch(showErrorMessage("Error occurred"));
+        }
+        setStateApp((state) => ({
+          ...state,
+          universalCircularLoaderAct: false,
+        }));
+      }
     });
   };
 
@@ -77,7 +80,7 @@ export default function ConfirmationDialog(props) {
         {/* <DialogContent>
         </DialogContent> */}
         <DialogActions>
-        <Button
+          <Button
             onClick={() => {
               props.handleDialogClose(false);
             }}
@@ -93,7 +96,6 @@ export default function ConfirmationDialog(props) {
           >
             Delete
           </Button>
-        
         </DialogActions>
       </Dialog>
     </div>
