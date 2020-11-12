@@ -13,6 +13,7 @@ import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
 import { AppContext } from "../../../AppContext";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
+import { DateTimePicker } from "@material-ui/pickers";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,8 +66,8 @@ const initialErrors = {
 
 const getCurrentDateTime = () => {
   let dt = new Date().toISOString();
-  return dt.slice(0, dt.length - 1);
-  // return dt;
+  // return dt.slice(0, dt.length - 1);
+  return dt;
 };
 
 function AddActivityDialog(props) {
@@ -228,7 +229,7 @@ function AddActivityDialog(props) {
           inputVariant="outlined"
         /> */}
 
-        <TextField
+        {/* <TextField
           variant="outlined"
           fullWidth
           size="small"
@@ -245,6 +246,30 @@ function AddActivityDialog(props) {
           disabled={loading}
           className={classes.inputField}
           label="Activity Date"
+        /> */}
+        <DateTimePicker
+          disabled={loading}
+          size="small"
+          id="datetime-local"
+          className={classes.inputField}
+          DialogProps={{
+            style: {
+              zIndex: "10000",
+              left: "left: calc( 100vw/1.5  ) !important",
+              top: "-140px",
+            },
+          }}
+          inputVariant="outlined"
+          value={dateTime}
+          // disablePast
+          onChange={(e) => {
+            // console.log("PREV: ", dateTime);
+            // console.log("setting: ", e._d.toISOString());
+            setDateTime(e._d.toISOString());
+          }}
+          label="Activity Date"
+          showTodayButton
+          fullWidth
         />
 
         <FormControl

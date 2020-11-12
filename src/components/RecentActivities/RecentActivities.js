@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 // import MUIDataTable from "mui-datatables";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -15,6 +15,7 @@ import ActivitiesList from "./components/ActivitiesList";
 import ActivitySummary from "./components/ActivitySummary";
 import RightDialog from "../ContactDetailCard/components/RightDialog";
 import AddActivityDialog from "../ContactDetailCard/components/AddActivityDialog";
+import { AppContext } from "../../AppContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -260,11 +261,13 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
 function ViewActivities({
   id,
   user_id,
-  activityLog,
+  // activityLog,
   updateActivity,
   addActivity,
 }) {
   const classes = useStyles();
+  const [stateApp] = useContext(AppContext);
+
   const [activitiesFilter, setActivitiesFilter] = useState([
     "general",
     "meeting",
@@ -274,7 +277,7 @@ function ViewActivities({
     "email",
   ]);
 
-  const filteredActivities = activityLog.filter((act) =>
+  const filteredActivities = stateApp.currentContatcAtivities.filter((act) =>
     activitiesFilter.includes(act.type)
   );
 
@@ -360,7 +363,7 @@ export default ({
               <ViewActivities
                 id={props.id}
                 user_id={props.user_id}
-                activityLog={props.activityLog}
+                // activityLog={props.activityLog}
                 updateActivity={updateActivity}
                 addActivity={addActivity}
               />,
