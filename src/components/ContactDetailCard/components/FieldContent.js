@@ -436,6 +436,10 @@ export default function FieldContent({
 
   const getHrefValue = (linkValue, linkType) => {
     if (linkType == LinkTypes.Mail) return `mailto:${linkValue}`;
+    if (linkType == LinkTypes.Simple)
+      return `${
+        !linkValue.startsWith("http") && !linkValue.startsWith("//") ? "//" : ""
+      }${linkValue}`;
     else return linkValue;
   };
 
@@ -449,13 +453,15 @@ export default function FieldContent({
             : ""
           : textArray.join(", ")
         : `${name ? name + " " : ""} Not Available`}
-      <PencilEditIcon
-        handleUpdating={handleUpdating}
-        anchorEl={edit}
-        setAnchorEl={setEdit}
-        content={inputsArray}
-        onClick={handleEditClick}
-      />
+      {!onlyChildren && (
+        <PencilEditIcon
+          handleUpdating={handleUpdating}
+          anchorEl={edit}
+          setAnchorEl={setEdit}
+          content={inputsArray}
+          onClick={handleEditClick}
+        />
+      )}
       {!childrenLeft && !onlyChildren && children ? children : ""}
       {isCurEdited ? " (edited)" : ""}
     </span>
