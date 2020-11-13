@@ -110,7 +110,7 @@ export default function TransactDialog(props) {
           transactionId: tdata.transactionData._id,
           transaction: { allData: newData, user: stateApp.user.mongoId },
         },
-        refetchQueries: ["getTransactionData", "getContact", "getContacts"],
+        refetchQueries: ["getTransactionData", "getContact", "getPaginatedContacts"],
         awaitRefetchQueries: true,
       });
     }

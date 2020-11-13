@@ -183,7 +183,7 @@ export default function CustomizedSteppers(props) {
         variables: {
           contactList: data_to_send,
         },
-        refetchQueries: ["getContacts", "getContact"],
+        refetchQueries: ["getPaginatedContacts", "getContact"],
         awaitRefetchQueries: true,
       });
 
