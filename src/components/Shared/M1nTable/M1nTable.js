@@ -216,18 +216,19 @@ const TrackedOwnersHeadCells = [
       viewColumns: false,
     },
   },
-  {
-    name: "detailCard",
-    label: " ",
-    options: {
-      filter: false,
-      sort: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  //temporarily comment out until release of owner summary card
+  // {
+  //   name: "detailCard",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     sort: false,
+  //     searchable: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
   {
     name: "coordinates",
     label: " ",
@@ -347,6 +348,18 @@ const OwnersPerWellHeadCells = [
       viewColumns: false,
     },
   },
+  {
+    name: "entity",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
   { name: "name", label: "Name" },
   {
     name: "ownershipType",
@@ -382,18 +395,19 @@ const OwnersPerWellHeadCells = [
       },
     },
   },
-  // {
-  //   name: "contactsCounter",
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
+
+  {
+    name: "isContact",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 
   /*   
 // TEMPORARY COMMENT OUT. DO NOT DELETE 
@@ -583,6 +597,7 @@ const ContactsHeadCells = [
 
   {
     name: "address1",
+    label: "Primary Address 1",
     options: {
       display: false,
       filter: false,
@@ -595,6 +610,7 @@ const ContactsHeadCells = [
   },
   {
     name: "address2",
+    label: "Primary Address 2",
     options: {
       display: false,
       filter: false,
@@ -607,6 +623,7 @@ const ContactsHeadCells = [
   },
   {
     name: "city",
+    label: "City",
     options: {
       display: false,
       filter: false,
@@ -619,6 +636,7 @@ const ContactsHeadCells = [
   },
   {
     name: "state",
+    label: "State",
     options: {
       display: false,
       filter: false,
@@ -631,6 +649,7 @@ const ContactsHeadCells = [
   },
   {
     name: "zip",
+    label: "Zip",
     options: {
       display: false,
       filter: false,
@@ -643,6 +662,7 @@ const ContactsHeadCells = [
   },
   {
     name: "country",
+    label: "Country",
     options: {
       display: false,
       filter: false,
@@ -654,7 +674,25 @@ const ContactsHeadCells = [
     },
   },
 
-  { name: "name", label: "Name", editable: true, options: { filter: false } },
+  {
+    name: "name",
+    label: "Full Name",
+    // editable: true,
+    options: {
+      sort: false,
+      filter: false,
+    },
+  },
+  {
+    name: "title",
+    label: "Title",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
   {
     name: "firstName",
     label: "First Name",
@@ -685,34 +723,25 @@ const ContactsHeadCells = [
       sort: false,
     },
   },
-
+  {
+    name: "suffix",
+    label: "Suffix",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
   {
     name: "fullContactAddress",
     label: "Primary Address",
-    editable: true,
-    options: { filter: false },
-  },
-  {
-    name: "leadSource",
-    label: "Lead Source",
-    editable: true,
+    // editable: true,
     options: {
-      filterOptions: {
-        names: [],
-      },
+      sort: false,
+      filter: false,
     },
   },
-  {
-    name: "lastUpdateBy.name",
-    label: "Updated By",
-    options: {
-      filterOptions: {
-        names: [],
-      },
-    },
-  },
-  { name: "lastUpdateAt", label: "Last Updated", options: { filter: false } },
-
   {
     name: "melissaRowsCount",
     options: {
@@ -725,7 +754,6 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
-
   {
     name: "mobilephone",
     label: "Primary Mobile Phone",
@@ -757,6 +785,156 @@ const ContactsHeadCells = [
     },
   },
   {
+    name: "AltPhone",
+    label: "Primary Work Phone",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "secondaryEmail",
+    label: "Email 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "linkedin",
+    label: "LinkedIn Profile",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "facebook",
+    label: "Facebook Profile",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "twitter",
+    label: "Twitter Profile",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "companyName",
+    label: "Company Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "jobTitle",
+    label: "Job Title",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "leadStage",
+    label: "Lead Stage",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "homePhone2",
+    label: "Home Phone 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "homePhone3",
+    label: "Home Phone 3",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "mobilephone2",
+    label: "Mobile Phone 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "mobilephone3",
+    label: "Mobile Phone 3",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "AltPhone2",
+    label: "Work Phone 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "AltPhone3",
+    label: "Work Phone 3",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "email3",
+    label: "Email 3",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
     name: "status",
     label: "Status",
     options: {
@@ -777,8 +955,28 @@ const ContactsHeadCells = [
     },
   },
   {
+    name: "territory",
+    label: "Territory",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
     name: "campaignName",
     label: "Campaign Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "notes",
+    label: "Comments",
     options: {
       display: false,
       filter: false,
@@ -797,7 +995,7 @@ const ContactsHeadCells = [
     },
   },
   {
-    name: "industryType ",
+    name: "industryType",
     label: "Industry Type",
     options: {
       display: false,
@@ -806,6 +1004,54 @@ const ContactsHeadCells = [
       sort: false,
     },
   },
+  {
+    name: "leadSource",
+    label: "Lead Source",
+    // editable: false,
+    options: {
+      sort: false,
+      filterOptions: {
+        names: [],
+      },
+    },
+  },
+  {
+    name: "lastUpdateBy.name",
+    label: "Updated By",
+    options: {
+      sort: false,
+      filterOptions: {
+        names: [],
+      },
+    },
+  },
+  {
+    name: "lastUpdateAt",
+    label: "Last Updated",
+    options: {
+      filter: false,
+    },
+  },
+  // {
+  //   name: "createBy.name",
+  //   label: "Created By",
+  //   options: {
+  //     display: false,
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //   },
+  // },
+  // {
+  //   name: "createAt",
+  //   label: "Created Date",
+  //   options: {
+  //     display: false,
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //   },
+  // },
   {
     name: "tags",
     label: "Tags ",
@@ -818,18 +1064,6 @@ const ContactsHeadCells = [
       },
     },
   },
-  // {
-  //   name: "owners", //ownerPerContactCount
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
   {
     name: "commentsCounter",
     label: " ",
@@ -1522,6 +1756,115 @@ const WellInterests = [
   },
 ];
 
+////////////PRODUCTION DETAILS//////////////////////////////////////////
+const ProductionDetailsHeaders = [
+  {
+    name: "Id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "ReportDate",
+    label: "Date",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "oil",
+    label: "Oil Monthly (BBL)",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "gas",
+    label: "Gas Monthly (MCF)",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "water",
+    label: "H2O Monthly (BBL)",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "allocatedOil",
+    label: "Alocated Oil Monthly (BBL)",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "allocatedGas",
+    label: "Alocated Gas Monthly (MCF)",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "allocatedWater",
+    label: "Alocated Water Monthly (BBL)",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+]
+////////////PRODUCTION DETAILS end//////////////////////////////////////
+
 ////////////HeadCells end///////////////////////////////////////////////
 
 const capitalizeFirstLetter = (string) => {
@@ -1555,9 +1898,11 @@ function M1nTable(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [rows, Rows] = useState([]);
+
   const [addDealOpen, setAddDealOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState();
+
+  const [rows, Rows] = useState([]);
   const setRows = (newState) => {
     setStateIfDeepEqual(Rows, newState);
   };
@@ -1612,6 +1957,11 @@ function M1nTable(props) {
   const { searchloading, searchResultData } = useSelector(
     ({ MapGridCard }) => MapGridCard
   );
+
+  const [dataContacts, DataContacts] = useState(null);
+  const setDataContacts = (newState) => {
+    setStateIfDeepEqual(DataContacts, newState);
+  };
 
   ////////////Queries begin///////////////////////////////////////////////
 
@@ -1708,30 +2058,6 @@ function M1nTable(props) {
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
-
-  // workaround to make constDataContacts.contacts[i] editable
-  // TODO: set correct isTracked on backend, not frontend
-  const [dataContacts, setDataContacts] = useState(null);
-  useEffect(() => {
-    if (constDataContacts && constDataContacts.paginatedContacts.edges) {
-      let tmpDataContacts = {
-        ...constDataContacts,
-        paginatedContacts: {
-          ...constDataContacts.paginatedContacts,
-          edges: [
-            ...constDataContacts.paginatedContacts.edges.map((edge) => {
-              return {
-                ...edge,
-                node: { ...edge.node },
-              };
-            }),
-          ],
-        },
-      };
-
-      setDataContacts(tmpDataContacts);
-    }
-  }, [constDataContacts]);
 
   useEffect(() => {
     if (
@@ -2305,6 +2631,9 @@ function M1nTable(props) {
         getTagSamples({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
+        checkIfOwnersAreContacts({
+          variables: { idsArray: objectsIdsArray },
+        });
       } else {
         setLoading(false);
         setRows([]);
@@ -2325,7 +2654,9 @@ function M1nTable(props) {
       dataTagSamples.tagSamples &&
       // dataOwnersWells &&
       dataTracks &&
-      dataTracks.tracksByObjectType
+      dataTracks.tracksByObjectType &&
+      checkIfOwnersAreContactsData &&
+      checkIfOwnersAreContactsData.ifAreContacts
     ) {
       const wellOwners = dataWellOwners.wellOwners.map((o) => {
         let wellOwner = { ...o };
@@ -2344,6 +2675,24 @@ function M1nTable(props) {
         //     }
         //   }
         // }
+
+        for (
+          let i = 0;
+          i < checkIfOwnersAreContactsData.ifAreContacts.length;
+          i++
+        ) {
+          if (
+            wellOwner.id ===
+            checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
+          ) {
+            wellOwner.isContact =
+              checkIfOwnersAreContactsData.ifAreContacts[i].isContact;
+
+            wellOwner.entity =
+              checkIfOwnersAreContactsData.ifAreContacts[i]._id;
+            break;
+          }
+        }
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (wellOwner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -2420,6 +2769,7 @@ function M1nTable(props) {
     dataTagSamples,
     dataCommentsCounter,
     // dataOwnersWells,
+    checkIfOwnersAreContactsData,
     dataTracks,
   ]);
 
@@ -2445,41 +2795,75 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "Contacts" &&
-      dataContacts /*&&
+      constDataContacts /*&&
       dataContactsFilterOptions &&
       dataTracks &&
       dataTracks.tracksByObjectType*/
     ) {
       console.log("ue mintable 23");
       if (
-        dataContacts.paginatedContacts.edges &&
-        dataContacts.paginatedContacts.edges.length > 0
+        constDataContacts?.paginatedContacts?.edges &&
+        constDataContacts.paginatedContacts.edges.length > 0
       ) {
-        const objectsIdsArray = [];
-        dataContacts.paginatedContacts.edges.forEach(({ node }) => {
-          node.isTracked = false;
-          objectsIdsArray.push(node._id);
-        });
+        let tmpDataContacts = {
+          ...constDataContacts,
+          paginatedContacts: {
+            ...constDataContacts.paginatedContacts,
+            edges: [
+              ...constDataContacts.paginatedContacts.edges.map((edge) => {
+                return {
+                  ...edge,
+                  node: {
+                    ...edge.node,
+                    isTracked: false,
+                  },
+                };
+              }),
+            ],
+          },
+        };
 
-        getCommentsCounter({
-          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
-        });
-        getTagSamples({
-          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
-        });
-        getMelissaRowsCount({
-          variables: { objectsIdsArray },
-        });
+        setDataContacts(tmpDataContacts);
+        setRows([
+          ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
+        ]);
+        setLoading(false);
       } else {
         setLoading(false);
         setRows([]);
       }
     }
   }, [
-    dataContacts,
+    constDataContacts,
     // dataContactsFilterOptions,
     // dataTracks
   ]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "Contacts" &&
+      dataContacts?.paginatedContacts?.edges &&
+      dataContacts?.paginatedContacts?.edges.length > 0
+    ) {
+      console.log("ue mintable 23");
+
+      const objectsIdsArray = [];
+      dataContacts.paginatedContacts.edges.forEach(({ node }) => {
+        objectsIdsArray.push(node._id);
+      });
+
+      getCommentsCounter({
+        variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+      });
+      getTagSamples({
+        variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+      });
+      getMelissaRowsCount({
+        variables: { objectsIdsArray },
+      });
+    }
+  }, [dataContacts]);
 
   useEffect(() => {
     if (
@@ -2557,7 +2941,7 @@ function M1nTable(props) {
           })
         );
       } else {
-        setLoading(false);
+        // setLoading(false);
       }
     }
   }, [dataContactsFilterOptions]);
@@ -2577,7 +2961,23 @@ function M1nTable(props) {
       dataMelissaRowsCount.getMelissaRecordsCountForContactIds
     ) {
       console.log("ue mintable 24");
-      dataContacts.paginatedContacts.edges.forEach(({ node }) => {
+
+      let tmpDataContacts = {
+        ...dataContacts,
+        paginatedContacts: {
+          ...dataContacts.paginatedContacts,
+          edges: [
+            ...dataContacts.paginatedContacts.edges.map((edge) => {
+              return {
+                ...edge,
+                node: { ...edge.node },
+              };
+            }),
+          ],
+        },
+      };
+
+      tmpDataContacts.paginatedContacts.edges.forEach(({ node }) => {
         node.commentsCounter = 0;
         node.tags = [[], 0];
         // node.fullContactAddress = joinAddress(node);
@@ -2611,12 +3011,13 @@ function M1nTable(props) {
         }
       });
 
-      setRows([...dataContacts.paginatedContacts.edges.map((el) => el.node)]);
-      setLoading(false);
+      setRows([
+        ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
+      ]);
+      // setLoading(false);
     }
   }, [
-    dataContacts,
-    dataTracks,
+    // dataTracks,
     dataTagSamples,
     dataCommentsCounter,
     dataMelissaRowsCount,
@@ -2852,8 +3253,11 @@ function M1nTable(props) {
 
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
         if (
-          (props.targetLabel && props.targetLabel == "well") ||
-          props.targetLabel == "owner"
+          props.targetLabel &&
+          props.targetLabel == "well"
+          //temporarily remove until we release the owner summary card
+          // ||
+          // props.targetLabel == "owner"
         )
           //would only set the detail card icon for wells & owners
           buildingColumns.push(SearchsHeadCells[5]);
@@ -3174,7 +3578,6 @@ function M1nTable(props) {
   }, [props.parent, stateApp.user]);
 
   useEffect(() => {
-    console.log("DEALS m1n : ", props.parent, dataDeals);
     if (
       props.parent &&
       props.parent === "Deals" &&
@@ -3621,6 +4024,23 @@ function M1nTable(props) {
 
   //////////// Owner_WellInterests end///////////////////////////////////////////////
 
+
+  /////////// PRODUCTION DETAILS ////////////////////////////////////////
+  useEffect(()=> {
+    setLoading(true);
+    if ( props.parent &&
+      props.parent === "production_WellDetails") {
+        setTargetLabel("production_detail");
+        setHeader("Monthly Production")
+        setColumns(ProductionDetailsHeaders);
+        setLoading(false);
+        setAddAble(false);
+        setRows(props.productionDetails);
+        setOrderByTracks(false);
+      }
+  },[props.props]);
+  /////////// PRODUCTION DETAILS ////////////////////////////////////////
+
   ////////////-----Add your code section here-----///////////////////////
   return (
     <Container
@@ -3658,9 +4078,9 @@ function M1nTable(props) {
         contactId={props.contact?._id}
         contactsPageProps={{
           getContacts,
-          contactsCount: dataContactsFilterOptions
-            ? dataContactsFilterOptions.contactsFilterOptions.totalCount[0]
-                .totalCount
+          getContactsFilterOptions,
+          contactsCount: dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
+            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]?.totalCount
             : 0,
           setLoading,
         }}

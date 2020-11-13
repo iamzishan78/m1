@@ -40,6 +40,10 @@ import CompletionsContainer from "./components/Completions";
 import SimulationContainer from "./components/Stimulation";
 import FormationContainer from "./components/Formation";
 
+import { useLazyQuery } from "@apollo/client";
+import { PRODUCTIONDETAILQUERY } from "../../graphQL/useQueryProductionDetail";
+import moment from 'moment';
+
 const useStyles = makeStyles((theme) => ({
   grid: {
     // height: "100%",
@@ -149,20 +153,71 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const tableGridStyle = makeStyles({
+  table: {
+    minHeight: "100px !important",
+  },
+  tableContainer: {
+    overflowX: "auto",
+    marginBottom: 20,
+    background: "white",
+  },
+  rowName: {
+    fontWeight: "bold",
+    background: "#ebebeb",
+    minWidth: 150
+  },
+  columnComments: {
+    fontWeight: "bold",
+    background: "#ebebeb",
+    minWidth: 450
+  },
+  tableRow: {
+    "& > td": {
+      padding: "4px 15px !important",
+      border: "2px solid #e3e3e3",
+    },
+  },
+});
+
 export default function WellCardDetails(props) {
   const classes = useStyles();
+  const table_classes = tableGridStyle();
   const [stateApp] = useContext(AppContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
   const [tabValue, setTabValue] = React.useState(0);
+  const [production, setProduction] = useState(null);
   const [target, setTarget] = useState(null);
   const [chartDisplay, setChartDisplay] = useState([]);
 
-  useEffect(() => {
-    if (props.target) {
-      setTarget(props.target);
+  const [
+    getProductionDetail,
+    { loading: loadingProductionDetail, data: productionDetail },
+  ] = useLazyQuery(PRODUCTIONDETAILQUERY);
+
+  useEffect(()=> {
+    getProductionDetail({
+      variables: { id: stateApp.selectedWell.id },
+    });
+  }, []);
+
+  useEffect(()=> {
+    if (productionDetail) {
+      let temp = [];
+      productionDetail.productionDetail.forEach(element => {
+        let temp_row = {...element}
+        temp_row.ReportDate = moment(temp_row.ReportDate).format("MM/YYYY");
+        temp.push(temp_row)
+      });
+      setProduction(temp);
+      WellInfo(temp);
+      if (props.target) {
+        setTarget(props.target);
+      }
+    } else {
+      setProduction(null);
     }
-    WellInfo();
-  }, [props.target, setTarget]);
+  },[productionDetail, props.target, setTarget])
 
   const handleChangeOil = (event) => {
     setStateWellCard({
@@ -238,7 +293,7 @@ export default function WellCardDetails(props) {
     track: {},
   })(Switch);
 
-  const WellInfo = () => {
+  const WellInfo = (productionProps) => {
     if (chartDisplay.length === 0) {
       setChartDisplay(
         <Grid container spacing={2}>
@@ -291,6 +346,13 @@ export default function WellCardDetails(props) {
           <Grid item xs={12}>
             <WellProdChartProvider />
           </Grid>
+          <Grid item xs={12}>
+            <M1nTable
+              dense
+              parent="production_WellDetails"
+              productionDetails={productionProps}
+            />
+          </Grid>
         </Grid>
       );
     }
@@ -311,8 +373,8 @@ export default function WellCardDetails(props) {
         <FirstProdDateCard />
       </Grid>
       <Grid item sm={12} container className={classes.gridWidthScroll}>
-        <Grid item sm={12} container style={{ height: "482px" }}>
-          <Grid container spacing={2}>
+        <Grid item sm={12} container style={{ height: "482px"}}>
+          <Grid container spacing={2} style={{marginRight: 0, marginLeft: 0}}>
             <Grid item sm={8} >
               <TableSummary summary={props.summary} />
             </Grid>

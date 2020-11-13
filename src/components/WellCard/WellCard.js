@@ -42,6 +42,7 @@ import TrackToggleButton from "../Shared/TrackToggleButton";
 import { useLazyQuery } from "@apollo/client";
 // import { VERTEXEDGESQUERY } from "../../graphQL/useQueryVertexEdges";/////////////////
 import { WELLSUMMARYDETAILQUERY } from "../../graphQL/useQueryWellSummaryDetail";
+import { PRODUCTIONDETAILQUERY } from "../../graphQL/useQueryProductionDetail";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -204,6 +205,12 @@ export default function WellCard() {
     getWellSummaryDetail,
     { loading: loadingWellSummary, data: dataWellSummary },
   ] = useLazyQuery(WELLSUMMARYDETAILQUERY);
+
+  const [
+    getProductionDetail,
+    { loading: loadingProductionDetail, data: productionDetail },
+  ] = useLazyQuery(PRODUCTIONDETAILQUERY);
+
   const [target, setTarget] = useState(null);
   const [summary, setSummary] = useState(null);
   const [source, setSource] = useState(null);

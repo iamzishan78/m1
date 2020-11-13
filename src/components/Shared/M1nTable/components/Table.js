@@ -59,7 +59,7 @@ import Contact_card from "../../svgIcons/contact_card";
 import TransactDialog from "../../../Transact/components/dialog";
 import ParcelScreenIcon from "../../svgIcons/parcelScreen";
 import ParcelsDetailCard from "../../../ParcelsDetailCard/ParcelsDetailCard";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { WELLQUERY } from "../../../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/client";
@@ -240,6 +240,10 @@ function SubTable(props) {
   const setRowInd = (newState) => {
     setStateIfDeepEqual(RowInd, newState);
   };
+  const [pageInd, PageInd] = useState(0);
+  const setPageInd = (newState) => {
+    setStateIfDeepEqual(PageInd, newState);
+  };
   const [expandedObject, ExpandedObject] = useState();
   const setExpandedObject = (newState) => {
     setStateIfDeepEqual(ExpandedObject, newState);
@@ -340,8 +344,8 @@ function SubTable(props) {
           selectedWell.firstProductionDate
         );
       //// temporary end
-
       if (selectedWell) {
+
         setSelectedRow(selectedWell);
         setStateApp((state) => ({
           ...state,
@@ -482,14 +486,20 @@ function SubTable(props) {
 
   const searchRequest = (e) => {
     e.setLoading(true);
-    e.getContacts({
-      variables: {
-        pagination: e.pagination,
-        search: e.searchText,
-      },
-    });
+    e.tableState.page = 0;
+    e.tableState.count = 0;
+    setPageInd(e.tableState.page);
+    e.getContacts(e.pageVariables);
+    e.getContactsFilterOptions(e.pageVariables);
   };
-  const delayedSearchRequest = debounce((e) => searchRequest(e), 2000);
+
+  const delayedSearchRequest = React.useMemo(
+    () =>
+      debounce((request, callback) => {
+        searchRequest(request);
+      }, 500),
+    []
+  );
 
   useEffect(() => {
     if (props.columns) {
@@ -1160,7 +1170,7 @@ function SubTable(props) {
                               ? classes.iconSelected
                               : ""
                           }`}
-                          badgeContent={value[1]}
+                          badgeContent={value ? value[1] : 0}
                           color="secondary"
                           onClick={(e) => {
                             e.preventDefault();
@@ -1191,7 +1201,7 @@ function SubTable(props) {
                               multiSelectMouseHoverColor(id, "#efefef");
                           }}
                         >
-                          {value[0] && value[0].length > 0 ? (
+                          {value && value[0] && value[0].length > 0 ? (
                             <React.Fragment>
                               <p className="first">{value[0].join(", ")}</p>
                               <p className="two">...</p>
@@ -1226,6 +1236,7 @@ function SubTable(props) {
                         country: tableMeta.rowData[7],
                       }}
                       targetLabel={props.targetLabel}
+                      nonEditable={!column.editable}
                     />
                   );
                 },
@@ -1252,18 +1263,18 @@ function SubTable(props) {
                     return v;
                   };
 
-                  if (column.name === "lastUpdateBy.name") {
-                    if (props.rows[tableMeta.rowIndex]) {
-                      value = props.rows[tableMeta.rowIndex].lastUpdateBy?.name;
-                    }
-                  }
+                  // if (column.name === "lastUpdateBy.name") {
+                  //   if (props.rows[tableMeta.rowIndex]) {
+                  //     value = props.rows[tableMeta.rowIndex].lastUpdateBy?.name;
+                  //   }
+                  // }
 
                   ////// if non editable column
                   if (
-                    !column.editable ||
-                    (props.targetLabel === "Parcel Ownershipship" &&
-                      column.name === "name" &&
-                      tableMeta.rowData[11] !== "false")
+                    !column.editable &&
+                    props.targetLabel === "Parcel Ownershipship" &&
+                    column.name === "name" &&
+                    tableMeta.rowData[11] !== "false"
                   ) {
                     //// if no value
                     if (value === "" || value === null || !value)
@@ -1325,9 +1336,15 @@ function SubTable(props) {
                             ? tableMeta.rowData[1]
                             : null
                         }
+                        nonEditable={!column.editable}
                       />
                       {props.targetLabel === "contact" &&
                         column.name === "name" &&
+                        tableMeta.rowData[
+                          props.columns.findIndex(
+                            (val) => val.name === "melissaRowsCount"
+                          )
+                        ] &&
                         tableMeta.rowData[
                           props.columns.findIndex(
                             (val) => val.name === "melissaRowsCount"
@@ -1414,9 +1431,9 @@ function SubTable(props) {
         : props.rows && props.rows.length > 10
         ? [10, 25]
         : [],
-    selectableRows: "multiple",
+    selectableRows: props.targetLabel == "production_detail" ? false : "multiple",
     print:
-      props.targetLabel !== "deals" && props.targetLabel !== "usermanagement",
+      props.targetLabel !== "deals" &&  props.targetLabel !== "usermanagement",
     viewColumns: props.targetLabel !== "usermanagement",
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
@@ -1752,6 +1769,10 @@ function SubTable(props) {
         handleOpenExpandableCard();
       }
     },
+    onChangePage: (pageState) => {
+      console.log(`here: pageInd=${pageInd} pageState=${pageState}`);
+      setPageInd(pageState);
+    },
     onTableChange: (action, tableState) => {
       console.log("onTableChange");
       console.log(action, tableState);
@@ -1790,31 +1811,34 @@ function SubTable(props) {
           variables: {
             pagination: {
               first: tableState.rowsPerPage,
-              after: null
+              after: null,
             },
             sort: tableState.activeColumn
               ? {
-                field:
-                  tableState.columns[tableState.activeColumn]?.name === "fullContactAddress"
-                    ? "address1"
-                    : tableState.columns[tableState.activeColumn]?.name,
-                order:
-                  tableState.columns[tableState.activeColumn]?.sortDirection === "asc"
-                    ? 1
-                    : -1,
-              }
+                  field:
+                    tableState.columns[tableState.activeColumn]?.name ===
+                    "fullContactAddress"
+                      ? "address1"
+                      : tableState.columns[tableState.activeColumn]?.name,
+                  order:
+                    tableState.columns[tableState.activeColumn]
+                      ?.sortDirection === "asc"
+                      ? 1
+                      : -1,
+                }
               : [],
 
             filters: filters,
-            //search: tableState.searchText,
+            search: tableState.searchText,
           },
-        }
+        };
 
         switch (action) {
           case "changeRowsPerPage":
             console.log("changeRowsPerPage");
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
+            setPageInd(tableState.page);
             setRowsPerPage(tableState.rowsPerPage);
             props.contactsPageProps.getContacts(pageVariables);
             break;
@@ -1826,28 +1850,40 @@ function SubTable(props) {
                 ...pageVariables.variables,
                 pagination: {
                   ...pageVariables.variables.pagination,
-                  after: props.rows ? props.rows[props.rows.length - 1]?._id : null
-                }
-              }
+                  before:
+                    props.rows && tableState.page < pageInd
+                      ? props.rows[0]?._id
+                      : null,
+                  after:
+                    props.rows && tableState.page > pageInd
+                      ? props.rows[props.rows.length - 1]?._id
+                      : null,
+                },
+              },
             });
             break;
           case "sort":
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
+            setPageInd(tableState.page);
             props.contactsPageProps.getContacts(pageVariables);
             break;
           case "search":
-            props.contactsPageProps.setLoading(true);
-            tableState.page = 0;
             delayedSearchRequest({
+              tableState: tableState,
               setLoading: props.contactsPageProps.setLoading,
               getContacts: props.contactsPageProps.getContacts,
-              pagination: {
-                first: tableState.rowsPerPage,
-                after: null,
-              },
-              searchText: tableState.searchText,
+              getContactsFilterOptions: props.contactsPageProps.getContactsFilterOptions,
+              pageVariables
             });
+            break;
+          case "onSearchClose":
+            props.contactsPageProps.setLoading(true);
+            tableState.page = 0;
+            tableState.count = 0;
+            setPageInd(tableState.page);
+            props.contactsPageProps.getContacts(pageVariables);
+            props.contactsPageProps.getContactsFilterOptions();
             break;
           case "propsUpdate":
             console.log("work propsUpdate");
@@ -1855,6 +1891,13 @@ function SubTable(props) {
           case "filterChange":
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
+            setPageInd(tableState.page);
+            props.contactsPageProps.getContacts(pageVariables);
+            break;
+          case "resetFilters":
+            props.contactsPageProps.setLoading(true);
+            tableState.page = 0;
+            setPageInd(tableState.page);
             props.contactsPageProps.getContacts(pageVariables);
             break;
           default:
@@ -1890,21 +1933,20 @@ function SubTable(props) {
           rows && !props.loading ? "" : classes.loadingTable
         } ${columns && columns.length > 0 ? "" : classes.emptyTable}`}
       >
-          <MUIDataTable
-            className={classes.table}
-            title={props.header}
-            data={rows ? rows : []}
-            columns={columns ? columns : []}
-            options={{
-              print: false,
-              download:
-                // props.targetLabel == "owner" || props.targetLabel == "well"
-                //   ? true
-                //   :
-                false,
-              ...options,
-            }}
-          />
+        <MUIDataTable
+          className={classes.table}
+          title={props.header}
+          data={rows ? rows : []}
+          columns={columns ? columns : []}
+          options={{
+            download:
+              // props.targetLabel == "owner" || props.targetLabel == "well"
+              //   ? true
+              //   :
+              false,
+            ...options,
+          }}
+        />
 
         {/* <TransactDialog
           selectRowOpenContact={selectRowOpenContact}
@@ -2178,7 +2220,7 @@ function SubTable(props) {
             )}
           </Dialog>
         )}
-
+        
         {showExpandableCard && targetLabelToExpand !== "well" && (
                 <Dialog
                   className={classes.dialogExpCard}

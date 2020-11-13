@@ -130,16 +130,110 @@ const useStyles = makeStyles((theme) => ({
 export default function DetailInfo (props) {
   const [basicInfExp, setBasicInfExp] = useState(false);
   const classes = useStyles();
-  const [basicInfoContent, setBasicInfoContent] = useState({});
   const [loading, setLoading]= useState(false);
+  const basicInfoContent = {
+    // "Full Name": {
+    //   data: {
+    //     title: props.contactData.title,
+    //     firstName: props.contactData.firstName,
+    //     middleName: props.contactData.middleName,
+    //     lastName: props.contactData.lastName,
+    //     suffix: props.contactData.suffix,
+    //   },
+    //   linkType: LinkTypes.None,
+    // },
+    "Primary Email": {
+      data: { primaryEmail: props.contactData.primaryEmail },
+      linkType: LinkTypes.Mail,
+    },
 
-  const basicInfoExpContent = {
-    "Home Phone 2": {
-      data: { homePhone2: props.contactData.homePhone2 },
+    "Primary Mobile Phone": {
+      data: { mobilePhone: props.contactData.mobilePhone },
       linkType: LinkTypes.None,
     },
-    "Home Phone 3": {
-      data: { homePhone3: props.contactData.homePhone3 },
+    "Primary Home Phone": {
+      data: { homePhone: props.contactData.homePhone },
+      linkType: LinkTypes.None,
+    },
+    "Primary Work Phone": {
+      data: { AltPhone: props.contactData.AltPhone },
+      linkType: LinkTypes.None,
+    },
+    "Primary Address": {
+      data: {
+        address1: props.contactData.address1,
+        address2: props.contactData.address2,
+        city: props.contactData.city,
+        state: props.contactData.state,
+        zip: props.contactData.zip,
+        country: props.contactData.country,
+      },
+      linkType: LinkTypes.None,
+    },
+    "Secondary Address": {
+      data: {
+        address1Alt: props.contactData.address1Alt,
+        address2Alt: props.contactData.address2Alt,
+        cityAlt: props.contactData.cityAlt,
+        stateAlt: props.contactData.stateAlt,
+        zipAlt: props.contactData.zipAlt,
+        countryAlt: props.contactData.countryAlt,
+      },
+      linkType: LinkTypes.None,
+    },
+  };
+
+  const lastUpdateByRow =
+    props.contactData.lastUpdateBy &&
+    props.contactData.lastUpdateBy.name === null ? (
+      <span className={classes.userSmallLoader}>
+        <CircularProgress size={22} color="secondary" />
+      </span>
+    ) : (props.contactData.lastUpdateBy &&
+        props.contactData.lastUpdateBy.name) ||
+      props.contactData.lastUpdateAt ? (
+      `${
+        props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name
+          ? props.contactData.lastUpdateBy.name
+          : ""
+      }
+    ${
+      props.contactData.lastUpdateAt
+        ? " - " + anyToDate(props.contactData.lastUpdateAt).toLocaleString()
+        : ""
+    }`
+    ) : (
+      <p className={classes.notAvailableP}>Not Available</p>
+    );
+
+  const createByRow =
+    props.contactData.createBy && props.contactData.createBy.name === null ? (
+      <span className={classes.userSmallLoader}>
+        <CircularProgress size={22} color="secondary" />
+      </span>
+    ) : (props.contactData.createBy && props.contactData.createBy.name) ||
+      props.contactData.createAt ? (
+      `${
+        props.contactData.createBy && props.contactData.createBy.name
+          ? props.contactData.createBy.name
+          : ""
+      }
+    ${
+      props.contactData.createAt
+        ? " - " + anyToDate(props.contactData.createAt).toLocaleString()
+        : ""
+    }`
+    ) : (
+      <p className={classes.notAvailableP}>Not Available</p>
+    );
+
+  const basicInfoExpContent = {
+    "Email 2": {
+      data: { secondaryEmail: props.contactData.secondaryEmail },
+      linkType: LinkTypes.Mail,
+    },
+    "Email 3": {
+      data: { email3: props.contactData.email3 },
       linkType: LinkTypes.None,
     },
     "Mobile Phone 2": {
@@ -150,16 +244,111 @@ export default function DetailInfo (props) {
       data: { mobilephone3: props.contactData.mobilephone3 },
       linkType: LinkTypes.None,
     },
-    "Alternate Phone 2": {
+    "Home Phone 2": {
+      data: { homePhone2: props.contactData.homePhone2 },
+      linkType: LinkTypes.None,
+    },
+    "Home Phone 3": {
+      data: { homePhone3: props.contactData.homePhone3 },
+      linkType: LinkTypes.None,
+    },
+    "Work Phone 2": {
       data: { AltPhone2: props.contactData.AltPhone2 },
       linkType: LinkTypes.None,
     },
-    "Alternate Phone 3": {
+    "Work Phone 3": {
       data: { AltPhone3: props.contactData.AltPhone3 },
       linkType: LinkTypes.None,
     },
-    "Email 3": {
-      data: { email3: props.contactData.email3 },
+
+    // Notes: {
+    //   data: { notes: props.contactData.notes },
+    //   linkType: LinkTypes.None,
+    // },
+    Website: {
+      data: { website: props.contactData.website },
+      linkType: LinkTypes.None,
+    },
+
+    "Linkedln Profile": {
+      data: { linkedln: props.contactData.linkedln },
+      linkType: LinkTypes.Simple,
+      // inner: props.contactData.linkedln && (
+      //   <a
+      //     href={`${
+      //       !props.contactData.linkedln.startsWith("http") &&
+      //       !props.contactData.linkedln.startsWith("//")
+      //         ? "//"
+      //         : ""
+      //     }${props.contactData.linkedln}`}
+      //     target="_blank"
+      //   >
+      //     {props.contactData.linkedln}
+      //   </a>
+      // ),
+    },
+    "Facebook Profile": {
+      data: { facebook: props.contactData.facebook },
+      linkType: LinkTypes.Simple,
+      // inner: props.contactData.facebook && (
+      //   <a
+      //     href={`${
+      //       !props.contactData.facebook.startsWith("http") &&
+      //       !props.contactData.facebook.startsWith("//")
+      //         ? "//"
+      //         : ""
+      //     }${props.contactData.facebook}`}
+      //     target="_blank"
+      //   >
+      //     {props.contactData.facebook}
+      //   </a>
+      // ),
+    },
+    "Twitter Profile": {
+      data: { twitter: props.contactData.twitter },
+      linkType: LinkTypes.Simple,
+      // inner: props.contactData.twitter && (
+      //   <a
+      //     href={`${
+      //       !props.contactData.twitter.startsWith("http") &&
+      //       !props.contactData.twitter.startsWith("//")
+      //         ? "//"
+      //         : ""
+      //     }${props.contactData.twitter}`}
+      //     target="_blank"
+      //   >
+      //     {props.contactData.twitter}
+      //   </a>
+      // ),
+    },
+
+    "Relative Names": {
+      data: { relatives: props.contactData.relatives },
+      linkType: LinkTypes.None,
+    },
+    // "Company Name": {
+    //   data: { companyName: props.contactData.companyName },
+    //   linkType: LinkTypes.None,
+    // },
+    // "Job Title": {
+    //   data: { jobTitle: props.contactData.jobTitle },
+    //   linkType: LinkTypes.None,
+    // },
+    "Lead Stage": {
+      data: { leadStage: props.contactData.leadStage },
+      linkType: LinkTypes.None,
+    },
+    "Industry Type": {
+      data: { industryType: props.contactData.industryType },
+      linkType: LinkTypes.None,
+    },
+
+    "Campaign Name": {
+      data: { campaignName: props.contactData.campaignName },
+      linkType: LinkTypes.None,
+    },
+    "Lead Source": {
+      data: { leadSource: props.contactData.leadSource },
       linkType: LinkTypes.None,
     },
     Status: {
@@ -170,129 +359,19 @@ export default function DetailInfo (props) {
       data: { timeZone: props.contactData.timeZone },
       linkType: LinkTypes.None,
     },
-    Notes: {
-      data: { notes: props.contactData.notes },
-      linkType: LinkTypes.None,
-    },
-    Website: {
-      data: { website: props.contactData.website },
-      linkType: LinkTypes.None,
-    },
-    "Industry Type": {
-      data: { industryType: props.contactData.industryType },
-      linkType: LinkTypes.None,
-    },
-
-    Relatives: {
-      data: { relatives: props.contactData.relatives },
-      linkType: LinkTypes.None,
-    },
-    "Linkedln Profile": {
-      data: { linkedln: props.contactData.linkedln },
-      linkType: LinkTypes.None,
-      inner: props.contactData.linkedln && (
-        <a
-          href={`${
-            !props.contactData.linkedln.startsWith("http") &&
-            !props.contactData.linkedln.startsWith("//")
-              ? "//"
-              : ""
-          }${props.contactData.linkedln}`}
-          target="_blank"
-        >
-          {props.contactData.linkedln}
-        </a>
-      ),
-    },
-    "Facebook Profile": {
-      data: { facebook: props.contactData.facebook },
-      linkType: LinkTypes.None,
-      inner: props.contactData.facebook && (
-        <a
-          href={`${
-            !props.contactData.facebook.startsWith("http") &&
-            !props.contactData.facebook.startsWith("//")
-              ? "//"
-              : ""
-          }${props.contactData.facebook}`}
-          target="_blank"
-        >
-          {props.contactData.facebook}
-        </a>
-      ),
-    },
-    "Twitter Profile": {
-      data: { twitter: props.contactData.twitter },
-      linkType: LinkTypes.None,
-      innner: props.contactData.twitter && (
-        <a
-          href={`${
-            !props.contactData.twitter.startsWith("http") &&
-            !props.contactData.twitter.startsWith("//")
-              ? "//"
-              : ""
-          }${props.contactData.twitter}`}
-          target="_blank"
-        >
-          {props.contactData.twitter}
-        </a>
-      ),
-    },
-    "Lead Source": {
-      data: { leadSource: props.contactData.leadSource },
+    Territory: {
+      data: { territory: props.contactData.territory },
       linkType: LinkTypes.None,
     },
     "Created By": {
-      data: { primaryEmail: props.contactData.primaryEmail },
+      data: { createByRow },
       linkType: LinkTypes.None,
-      inner:
-        props.contactData.createBy &&
-        props.contactData.createBy.name === null ? (
-          <span className={classes.userSmallLoader}>
-            <CircularProgress size={22} color="secondary" />
-          </span>
-        ) : (props.contactData.createBy && props.contactData.createBy.name) ||
-          props.contactData.createAt ? (
-          `${
-            props.contactData.createBy && props.contactData.createBy.name
-              ? props.contactData.createBy.name
-              : ""
-          }
-        ${
-          props.contactData.createAt
-            ? " - " + anyToDate(props.contactData.createAt).toLocaleString()
-            : ""
-        }`
-        ) : (
-          <p className={classes.notAvailableP}>Not Available</p>
-        ),
+      inner: createByRow,
     },
-    "Last Update By": {
-      data: { primaryEmail: props.contactData.primaryEmail },
+    "Last Updated By": {
+      data: { lastUpdateByRow },
       linkType: LinkTypes.None,
-      inner:
-        props.contactData.lastUpdateBy &&
-        props.contactData.lastUpdateBy.name === null ? (
-          <span className={classes.userSmallLoader}>
-            <CircularProgress size={22} color="secondary" />
-          </span>
-        ) : (props.contactData.lastUpdateBy &&
-            props.contactData.lastUpdateBy.name) ||
-          props.contactData.lastUpdateAt ? (
-          `${
-            props.contactData.lastUpdateBy &&
-            props.contactData.lastUpdateBy.name
-              ? props.contactData.lastUpdateBy.name
-              : ""
-          }
-        ${
-          props.contactData.lastUpdateAt
-            ? " - " + anyToDate(props.contactData.lastUpdateAt).toLocaleString()
-            : ""
-        }`
-        ) : (
-          <p className={classes.notAvailableP}>Not Available</p>
-        ),
+      inner: lastUpdateByRow,
     },
   };
 
@@ -315,6 +394,8 @@ export default function DetailInfo (props) {
           onClick={() => {
             props.handleOpenExpandableCard(
               <MelissaTable
+                id={props.contactData._id}
+                entity={props.contactData.entity}
                 rows={{ ...basicInfoContent, ...basicInfoExpContent }}
                 wrapperClass={classes.dataSect}
                 melissaData={props.melissaData}
@@ -348,7 +429,7 @@ export default function DetailInfo (props) {
         {basicInfExp && (
           <>
             {Object.entries(basicInfoExpContent).map(([key, row]) => (
-              <React.Fragment>
+              <React.Fragment key={key}>
                 <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">{key}</p>
                 </Grid>

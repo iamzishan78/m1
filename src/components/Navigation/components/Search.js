@@ -875,7 +875,6 @@ function Search() {
 
   const handleChange = (newValue) => {
     console.log("search Selected", newValue);
-
     if (
       !value ||
       (newValue &&

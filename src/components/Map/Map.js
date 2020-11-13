@@ -3726,18 +3726,16 @@ export default function Map() {
       let coordinates = [currentFeature.longitude, currentFeature.latitude];
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
-
       new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
         .setMaxWidth("none")
         .setHTML(`<div id="popupContainer"></div>`)
         .addTo(map);
       new mapboxgl.Popup({ offset: 0, closeOnClick: false })
-      .setLngLat(map.getCenter())
+      .setLngLat(stateApp.wellListFromSearch.length === 0 ? map.getCenter() : coordinates)
       .setMaxWidth("none")
-      .setHTML(`<div id="popupContainer2"></div>`)
+      .setHTML(`<div id="popupContainer2" style="width: 0; height: 0;"></div>`)
       .addTo(map);
-
       // //show wellcard in popup Portal
       setStateApp((state) => ({ ...state, popupOpen: true, 
         expandedCard: stateApp.activateWellDetailsFromTable ? true : false 
@@ -3746,7 +3744,7 @@ export default function Map() {
       //setStateApp((state) => ({ ...state, wellSelectedCoordinates: [currentFeature.longitude, currentFeature.latitude] }));
       handleOpenExpandableCard();
     },
-    [map, setStateApp]
+    [map, stateApp]
   );
 
   const createFilterPopup = useCallback(
@@ -4331,12 +4329,16 @@ export default function Map() {
         newMap.boxZoom.enable();
         newMap.touchZoomRotate.enable();
 
+
+        
         newMap.addControl(
           new mapboxgl.ScaleControl({
+            
             maxWidth: 80,
             unit: "imperial",
           }),
           "bottom-right"
+          
         );
 
         newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
@@ -5451,6 +5453,7 @@ export default function Map() {
       )}
        
       <div id="tempPopupHolder" className={classes.portal} ref={container}>
+       
       {stateApp.popupOpen === true && (
           <Portal container={container.current}>
             <PortalD id="popupContainer2">
@@ -5465,8 +5468,8 @@ export default function Map() {
                           title={stateApp.selectedWell.wellName}
                           subTitle={stateApp.selectedWell.operator}
                           parent="map"
-                          cardTop={window.innerHeight / 2.2}
-                          cardLeft={-(window.innerWidth / 4.4)}
+                          cardTop={-window.innerHeight / 2.2}
+                          cardLeft={-window.innerWidth / 2.1}
                           position="relative"
                           zIndex={99}
                           cardWidthExpanded="50vw"
@@ -5511,6 +5514,7 @@ export default function Map() {
                     cardLeft={0}
                     cardTop={0}
                     zIndex={3000}
+                    cardWidth="350px"
                     cardWidthExpanded="50vw"
                     cardHeightExpanded="95vh"
                     targetSourceId={stateApp.selectedWell.id}
@@ -5537,7 +5541,7 @@ export default function Map() {
                     zIndex={99}
                     cardWidth="350px"
                     // cardHeight="350px"
-                    cardWidthExpanded="95vw"
+                    cardWidthExpanded="50vw"
                     cardHeightExpanded="90vh"
                     targetSourceId={stateApp.selectedParcel.id}
                     targetLabel="parcel"

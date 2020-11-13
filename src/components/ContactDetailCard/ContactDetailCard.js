@@ -43,6 +43,7 @@ import WellsCard from "./components/WellsCard";
 import RecentActivities from "../RecentActivities/RecentActivities";
 import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
 import ViewDocuments from "../ViewDocuments/ViewDocuments";
+import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -337,7 +338,6 @@ export default function ContactDetailCard(props) {
   }, [props.contactId, stateApp.contactUpdated]);
 
   useEffect(() => {
-    console.log("SET CONTACT:", data);
     if (!loading && data && data.contact) {
       setContactData(data.contact);
       setStateApp({...stateApp, contactUpdated: null});
@@ -584,13 +584,11 @@ export default function ContactDetailCard(props) {
               <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
                 Lead Stage changed:{" "}
                 <span style={{ fontWeight: "normal" }}>
-                  {moment(
-                    Number(
-                      contactData.lastUpdateLeadStageAt
-                        ? contactData.lastUpdateLeadStageAt
-                        : contactData.lastUpdateAt
-                    )
-                  ).fromNow()}
+                  {anyToDate(
+                    contactData.lastUpdateLeadStageAt
+                      ? contactData.lastUpdateLeadStageAt
+                      : contactData.lastUpdateAt
+                  ).toLocaleString()}
                 </span>
               </h4>
             </Grid>

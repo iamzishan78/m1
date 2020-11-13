@@ -55,6 +55,7 @@ export const PAGINATEDCONTACTSQUERY = gql`
           notes
           website
           industryType
+          campaignName
         }
         cursor
       }
