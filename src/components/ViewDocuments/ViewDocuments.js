@@ -199,38 +199,41 @@ export default function ViewDocuments(props) {
       <div className={classes.divider} />
 
       <ul className={classes.documentsList}>
-        {filteredDocuments.map((doc) => (
-          <li className={classes.document} key={doc.fileUrl}>
-            <div className={classes.documentLeft}>
-              <div
-                className={classes.greySquare}
-                onClick={() => handleViewFile(doc.fileId)}
-              >
-                <GetAppIcon fontSize="large" />
+        {filteredDocuments.map((doc) => {
+          console.log("FILE", doc);
+          return (
+            <li className={classes.document} key={doc.fileUrl}>
+              <div className={classes.documentLeft}>
+                <div
+                  className={classes.greySquare}
+                  onClick={() => handleViewFile(doc.fileId)}
+                >
+                  <GetAppIcon fontSize="large" />
+                </div>
+                <div className={classes.fileText}>
+                  <h4 className={classes.uploadTitle}>{doc.fileName}</h4>
+                  <h5 className={classes.uploadSubtext}>{doc.userName}</h5>
+                  <h5 className={classes.uploadSubtext}>
+                    {moment(new Date(Number(doc.dateTime))).format(
+                      "MMM DD, YYYY"
+                    )}
+                  </h5>
+                </div>
               </div>
-              <div className={classes.fileText}>
-                <h4 className={classes.uploadTitle}>{doc.fileName}</h4>
-                <h5 className={classes.uploadSubtext}>{doc.userName}</h5>
-                <h5 className={classes.uploadSubtext}>
-                  {moment(doc.dateTime).format("MMM DD, YYYY")}
-                </h5>
+              <div className={classes.documentRight}>
+                <IconButton
+                  style={{ marginBottom: "8px" }}
+                  onClick={() => {
+                    props.setOpenDeleteConfirmDialog(true);
+                    props.setFileIdToDelete(doc.descriptorId);
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
               </div>
-            </div>
-            <div className={classes.documentRight}>
-              <IconButton
-                style={{ marginBottom: "8px" }}
-                onClick={props.handleOpen}
-              >
-                <DeleteIcon />
-              </IconButton>
-              <DeleteDocumentConfirmation
-                open={props.open}
-                handleClose={props.handleClose}
-                handleAccept={() => props.handleAccept(doc.descriptorId)}
-              />
-            </div>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
