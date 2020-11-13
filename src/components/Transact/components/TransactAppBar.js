@@ -99,8 +99,11 @@ const useStyles = makeStyles((theme) => ({
   },
   addDeal: {
     marginLeft: 8,
-    paddingLeft: 8,
-    paddingRight: 8,
+    padding: 9,
+    borderRadius: 5,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#011133",
     color: "#fff",
     transition: "200ms all",
@@ -234,7 +237,7 @@ const TransactAppBar = ({
             </div>
             {/* <Button className={classes.import} color="default" size="small">
               IMPORT
-            </Button>
+            </Button> */}
             <Button
               className={classes.addDeal}
               color="primary"
@@ -243,7 +246,7 @@ const TransactAppBar = ({
               onClick={handleClickAddDeal}
             >
               Add Deal
-            </Button> */}
+            </Button>
           </div>
         </div>
         
