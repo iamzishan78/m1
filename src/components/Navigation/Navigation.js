@@ -85,6 +85,7 @@ import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import DescriptionIcon from "@material-ui/icons/Description";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import FlowIcon from "@material-ui/icons/Repeat";
+import ActivityIcon from "@material-ui/icons/Event";
 import ProfileProvider from "../Profile/ProfileProvider";
 import UserManagementProvider from "../UserManagement/UserManagementProvider";
 import FilterFormWell from "./components/FilterFormWell";
@@ -1679,7 +1680,7 @@ export default function Navigation(props) {
             </div>
           </ListItem>
 
-          {/* <ListItem
+          <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected,
@@ -1691,7 +1692,7 @@ export default function Navigation(props) {
           >
             <div className={classes.tabContent}>
               <ListItemIcon className={classes.sideNavIcon}>
-                <ShoppingCartIcon />
+                <ActivityIcon />
               </ListItemIcon>
               <ListItemText
                 className={`${classes.sideNavText} uppercase`}
@@ -1708,7 +1709,7 @@ export default function Navigation(props) {
                 </Button>
               </ListItemSecondaryAction>
             </div>
-          </ListItem> */}
+          </ListItem>
 
           {/* <ListItem
             classes={{
