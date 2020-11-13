@@ -132,23 +132,30 @@ export default ({ header, ...props }) => {
   const classes = useStyles();
 
   const basicInfoContent = {
+    // "Full Name": {
+    //   data: {
+    //     title: props.contactData.title,
+    //     firstName: props.contactData.firstName,
+    //     middleName: props.contactData.middleName,
+    //     lastName: props.contactData.lastName,
+    //     suffix: props.contactData.suffix,
+    //   },
+    //   linkType: LinkTypes.None,
+    // },
     "Primary Email": {
       data: { primaryEmail: props.contactData.primaryEmail },
       linkType: LinkTypes.Mail,
     },
-    "Secondary Email": {
-      data: { secondaryEmail: props.contactData.secondaryEmail },
-      linkType: LinkTypes.Mail,
-    },
-    "Mobile Phone": {
+
+    "Primary Mobile Phone": {
       data: { mobilePhone: props.contactData.mobilePhone },
       linkType: LinkTypes.None,
     },
-    "Home Phone": {
+    "Primary Home Phone": {
       data: { homePhone: props.contactData.homePhone },
       linkType: LinkTypes.None,
     },
-    "Alternate Phone": {
+    "Primary Work Phone": {
       data: { AltPhone: props.contactData.AltPhone },
       linkType: LinkTypes.None,
     },
@@ -176,117 +183,195 @@ export default ({ header, ...props }) => {
     },
   };
 
+  const lastUpdateByRow =
+    props.contactData.lastUpdateBy &&
+    props.contactData.lastUpdateBy.name === null ? (
+      <span className={classes.userSmallLoader}>
+        <CircularProgress size={22} color="secondary" />
+      </span>
+    ) : (props.contactData.lastUpdateBy &&
+        props.contactData.lastUpdateBy.name) ||
+      props.contactData.lastUpdateAt ? (
+      `${
+        props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name
+          ? props.contactData.lastUpdateBy.name
+          : ""
+      }
+    ${
+      props.contactData.lastUpdateAt
+        ? " - " + anyToDate(props.contactData.lastUpdateAt).toLocaleString()
+        : ""
+    }`
+    ) : (
+      <p className={classes.notAvailableP}>Not Available</p>
+    );
+
+  const createByRow =
+    props.contactData.createBy && props.contactData.createBy.name === null ? (
+      <span className={classes.userSmallLoader}>
+        <CircularProgress size={22} color="secondary" />
+      </span>
+    ) : (props.contactData.createBy && props.contactData.createBy.name) ||
+      props.contactData.createAt ? (
+      `${
+        props.contactData.createBy && props.contactData.createBy.name
+          ? props.contactData.createBy.name
+          : ""
+      }
+    ${
+      props.contactData.createAt
+        ? " - " + anyToDate(props.contactData.createAt).toLocaleString()
+        : ""
+    }`
+    ) : (
+      <p className={classes.notAvailableP}>Not Available</p>
+    );
+
   const basicInfoExpContent = {
-    Relatives: {
-      data: { relatives: props.contactData.relatives },
+    "Email 2": {
+      data: { secondaryEmail: props.contactData.secondaryEmail },
+      linkType: LinkTypes.Mail,
+    },
+    "Email 3": {
+      data: { email3: props.contactData.email3 },
       linkType: LinkTypes.None,
     },
+    "Mobile Phone 2": {
+      data: { mobilephone2: props.contactData.mobilephone2 },
+      linkType: LinkTypes.None,
+    },
+    "Mobile Phone 3": {
+      data: { mobilephone3: props.contactData.mobilephone3 },
+      linkType: LinkTypes.None,
+    },
+    "Home Phone 2": {
+      data: { homePhone2: props.contactData.homePhone2 },
+      linkType: LinkTypes.None,
+    },
+    "Home Phone 3": {
+      data: { homePhone3: props.contactData.homePhone3 },
+      linkType: LinkTypes.None,
+    },
+    "Work Phone 2": {
+      data: { AltPhone2: props.contactData.AltPhone2 },
+      linkType: LinkTypes.None,
+    },
+    "Work Phone 3": {
+      data: { AltPhone3: props.contactData.AltPhone3 },
+      linkType: LinkTypes.None,
+    },
+
+    // Notes: {
+    //   data: { notes: props.contactData.notes },
+    //   linkType: LinkTypes.None,
+    // },
+    Website: {
+      data: { website: props.contactData.website },
+      linkType: LinkTypes.None,
+    },
+
     "Linkedln Profile": {
       data: { linkedln: props.contactData.linkedln },
-      linkType: LinkTypes.None,
-      inner: props.contactData.linkedln && (
-        <a
-          href={`${
-            !props.contactData.linkedln.startsWith("http") &&
-            !props.contactData.linkedln.startsWith("//")
-              ? "//"
-              : ""
-          }${props.contactData.linkedln}`}
-          target="_blank"
-        >
-          {props.contactData.linkedln}
-        </a>
-      ),
+      linkType: LinkTypes.Simple,
+      // inner: props.contactData.linkedln && (
+      //   <a
+      //     href={`${
+      //       !props.contactData.linkedln.startsWith("http") &&
+      //       !props.contactData.linkedln.startsWith("//")
+      //         ? "//"
+      //         : ""
+      //     }${props.contactData.linkedln}`}
+      //     target="_blank"
+      //   >
+      //     {props.contactData.linkedln}
+      //   </a>
+      // ),
     },
     "Facebook Profile": {
       data: { facebook: props.contactData.facebook },
-      linkType: LinkTypes.None,
-      inner: props.contactData.facebook && (
-        <a
-          href={`${
-            !props.contactData.facebook.startsWith("http") &&
-            !props.contactData.facebook.startsWith("//")
-              ? "//"
-              : ""
-          }${props.contactData.facebook}`}
-          target="_blank"
-        >
-          {props.contactData.facebook}
-        </a>
-      ),
+      linkType: LinkTypes.Simple,
+      // inner: props.contactData.facebook && (
+      //   <a
+      //     href={`${
+      //       !props.contactData.facebook.startsWith("http") &&
+      //       !props.contactData.facebook.startsWith("//")
+      //         ? "//"
+      //         : ""
+      //     }${props.contactData.facebook}`}
+      //     target="_blank"
+      //   >
+      //     {props.contactData.facebook}
+      //   </a>
+      // ),
     },
     "Twitter Profile": {
       data: { twitter: props.contactData.twitter },
+      linkType: LinkTypes.Simple,
+      // inner: props.contactData.twitter && (
+      //   <a
+      //     href={`${
+      //       !props.contactData.twitter.startsWith("http") &&
+      //       !props.contactData.twitter.startsWith("//")
+      //         ? "//"
+      //         : ""
+      //     }${props.contactData.twitter}`}
+      //     target="_blank"
+      //   >
+      //     {props.contactData.twitter}
+      //   </a>
+      // ),
+    },
+
+    "Relative Names": {
+      data: { relatives: props.contactData.relatives },
       linkType: LinkTypes.None,
-      innner: props.contactData.twitter && (
-        <a
-          href={`${
-            !props.contactData.twitter.startsWith("http") &&
-            !props.contactData.twitter.startsWith("//")
-              ? "//"
-              : ""
-          }${props.contactData.twitter}`}
-          target="_blank"
-        >
-          {props.contactData.twitter}
-        </a>
-      ),
+    },
+    // "Company Name": {
+    //   data: { companyName: props.contactData.companyName },
+    //   linkType: LinkTypes.None,
+    // },
+    // "Job Title": {
+    //   data: { jobTitle: props.contactData.jobTitle },
+    //   linkType: LinkTypes.None,
+    // },
+    "Lead Stage": {
+      data: { leadStage: props.contactData.leadStage },
+      linkType: LinkTypes.None,
+    },
+    "Industry Type": {
+      data: { industryType: props.contactData.industryType },
+      linkType: LinkTypes.None,
+    },
+
+    "Campaign Name": {
+      data: { campaignName: props.contactData.campaignName },
+      linkType: LinkTypes.None,
     },
     "Lead Source": {
       data: { leadSource: props.contactData.leadSource },
       linkType: LinkTypes.None,
     },
-    "Created By": {
-      data: { primaryEmail: props.contactData.primaryEmail },
+    Status: {
+      data: { status: props.contactData.status },
       linkType: LinkTypes.None,
-      inner:
-        props.contactData.createBy &&
-        props.contactData.createBy.name === null ? (
-          <span className={classes.userSmallLoader}>
-            <CircularProgress size={22} color="secondary" />
-          </span>
-        ) : (props.contactData.createBy && props.contactData.createBy.name) ||
-          props.contactData.createAt ? (
-          `${
-            props.contactData.createBy && props.contactData.createBy.name
-              ? props.contactData.createBy.name
-              : ""
-          }
-        ${
-          props.contactData.createAt
-            ? " - " + anyToDate(props.contactData.createAt).toLocaleString()
-            : ""
-        }`
-        ) : (
-          <p className={classes.notAvailableP}>Not Available</p>
-        ),
     },
-    "Last Update By": {
-      data: { primaryEmail: props.contactData.primaryEmail },
+    "Time Zone": {
+      data: { timeZone: props.contactData.timeZone },
       linkType: LinkTypes.None,
-      inner:
-        props.contactData.lastUpdateBy &&
-        props.contactData.lastUpdateBy.name === null ? (
-          <span className={classes.userSmallLoader}>
-            <CircularProgress size={22} color="secondary" />
-          </span>
-        ) : (props.contactData.lastUpdateBy &&
-            props.contactData.lastUpdateBy.name) ||
-          props.contactData.lastUpdateAt ? (
-          `${
-            props.contactData.lastUpdateBy &&
-            props.contactData.lastUpdateBy.name
-              ? props.contactData.lastUpdateBy.name
-              : ""
-          }
-        ${
-          props.contactData.lastUpdateAt
-            ? " - " + anyToDate(props.contactData.lastUpdateAt).toLocaleString()
-            : ""
-        }`
-        ) : (
-          <p className={classes.notAvailableP}>Not Available</p>
-        ),
+    },
+    Territory: {
+      data: { territory: props.contactData.territory },
+      linkType: LinkTypes.None,
+    },
+    "Created By": {
+      data: { createByRow },
+      linkType: LinkTypes.None,
+      inner: createByRow,
+    },
+    "Last Updated By": {
+      data: { lastUpdateByRow },
+      linkType: LinkTypes.None,
+      inner: lastUpdateByRow,
     },
   };
 
@@ -301,6 +386,8 @@ export default ({ header, ...props }) => {
           onClick={() => {
             props.handleOpenExpandableCard(
               <MelissaTable
+                id={props.contactData._id}
+                entity={props.contactData.entity}
                 rows={{ ...basicInfoContent, ...basicInfoExpContent }}
                 wrapperClass={classes.dataSect}
                 melissaData={props.melissaData}
@@ -333,7 +420,7 @@ export default ({ header, ...props }) => {
         {basicInfExp && (
           <>
             {Object.entries(basicInfoExpContent).map(([key, row]) => (
-              <React.Fragment>
+              <React.Fragment key={key}>
                 <Grid item xs={3} className="fieldName">
                   <p className="dataLabels">{key}</p>
                 </Grid>

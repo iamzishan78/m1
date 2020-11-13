@@ -13,15 +13,15 @@ export default function DeleteDocumentConfirmation({
     <div>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle id="alert-dialog-title">
-          Are you sure you want to delete this document?
+          Are you sure you want to delete the selected document(s)?
         </DialogTitle>
 
         <DialogActions>
-          <Button onClick={handleAccept} color="primary">
-            Delete
-          </Button>
           <Button onClick={handleClose} color="primary" autoFocus>
             Cancel
+          </Button>
+          <Button onClick={handleAccept} color="primary">
+            Delete
           </Button>
         </DialogActions>
       </Dialog>

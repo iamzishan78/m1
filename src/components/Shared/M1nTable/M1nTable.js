@@ -43,6 +43,7 @@ import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRec
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelInterests";
 import { IFARECONTACTS } from "../../../graphQL/useQueryIfOwnersAreContacts";
+import { OWNER_WELLINTERESTS } from "../../../graphQL/useQueryOwner_WellInterests";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -215,6 +216,19 @@ const TrackedOwnersHeadCells = [
       viewColumns: false,
     },
   },
+  //temporarily comment out until release of owner summary card
+  // {
+  //   name: "detailCard",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     sort: false,
+  //     searchable: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
   {
     name: "coordinates",
     label: " ",
@@ -334,6 +348,18 @@ const OwnersPerWellHeadCells = [
       viewColumns: false,
     },
   },
+  {
+    name: "entity",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
   { name: "name", label: "Name" },
   {
     name: "ownershipType",
@@ -369,18 +395,19 @@ const OwnersPerWellHeadCells = [
       },
     },
   },
-  // {
-  //   name: "contactsCounter",
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
+
+  {
+    name: "isContact",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 
   /*   
 // TEMPORARY COMMENT OUT. DO NOT DELETE 
@@ -567,8 +594,10 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
+
   {
     name: "address1",
+    label: "Primary Address 1",
     options: {
       display: false,
       filter: false,
@@ -581,6 +610,7 @@ const ContactsHeadCells = [
   },
   {
     name: "address2",
+    label: "Primary Address 2",
     options: {
       display: false,
       filter: false,
@@ -593,6 +623,7 @@ const ContactsHeadCells = [
   },
   {
     name: "city",
+    label: "City",
     options: {
       display: false,
       filter: false,
@@ -605,6 +636,7 @@ const ContactsHeadCells = [
   },
   {
     name: "state",
+    label: "State",
     options: {
       display: false,
       filter: false,
@@ -617,6 +649,7 @@ const ContactsHeadCells = [
   },
   {
     name: "zip",
+    label: "Zip",
     options: {
       display: false,
       filter: false,
@@ -629,6 +662,7 @@ const ContactsHeadCells = [
   },
   {
     name: "country",
+    label: "Country",
     options: {
       display: false,
       filter: false,
@@ -640,22 +674,384 @@ const ContactsHeadCells = [
     },
   },
 
-  { name: "name", label: "Name", editable: true, options: { filter: false } },
-  { name: "fullContactAddress", label: "Primary Address", editable: true, options: { filter: false } },
-  { name: "leadSource", label: "Lead Source", editable: true },
-  { name: "lastUpdateBy.name", label: "Updated By" },
-  { name: "lastUpdateAt", label: "Last Updated", options: { filter: false } },
-  // { name: "primaryEmail", label: "Primary Email" },
+  {
+    name: "name",
+    label: "Full Name",
+    // editable: true,
+    options: {
+      sort: false,
+      filter: false,
+    },
+  },
+  {
+    name: "title",
+    label: "Title",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "firstName",
+    label: "First Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "middleName",
+    label: "Middle Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "lastName",
+    label: "Last Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "suffix",
+    label: "Suffix",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "fullContactAddress",
+    label: "Primary Address",
+    // editable: true,
+    options: {
+      sort: false,
+      filter: false,
+    },
+  },
+  {
+    name: "melissaRowsCount",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "mobilephone",
+    label: "Primary Mobile Phone",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "homePhone",
+    label: "Primary Home Phone",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "primaryEmail",
+    label: "Primary Email",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "AltPhone",
+    label: "Primary Work Phone",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "secondaryEmail",
+    label: "Email 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "linkedin",
+    label: "LinkedIn Profile",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "facebook",
+    label: "Facebook Profile",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "twitter",
+    label: "Twitter Profile",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "companyName",
+    label: "Company Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "jobTitle",
+    label: "Job Title",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "leadStage",
+    label: "Lead Stage",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "homePhone2",
+    label: "Home Phone 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "homePhone3",
+    label: "Home Phone 3",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "mobilephone2",
+    label: "Mobile Phone 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "mobilephone3",
+    label: "Mobile Phone 3",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "AltPhone2",
+    label: "Work Phone 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "AltPhone3",
+    label: "Work Phone 3",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "email3",
+    label: "Email 3",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "status",
+    label: "Status",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "timeZone",
+    label: "Time Zone",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "territory",
+    label: "Territory",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "campaignName",
+    label: "Campaign Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "notes",
+    label: "Comments",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "website ",
+    label: "Website",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "industryType",
+    label: "Industry Type",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "leadSource",
+    label: "Lead Source",
+    // editable: false,
+    options: {
+      sort: false,
+      filterOptions: {
+        names: [],
+      },
+    },
+  },
+  {
+    name: "lastUpdateBy.name",
+    label: "Updated By",
+    options: {
+      sort: false,
+      filterOptions: {
+        names: [],
+      },
+    },
+  },
+  {
+    name: "lastUpdateAt",
+    label: "Last Updated",
+    options: {
+      filter: false,
+    },
+  },
   // {
-  //   name: "mobilePhone",
-  //   label: "Mobile Phone",
+  //   name: "createBy.name",
+  //   label: "Created By",
+  //   options: {
+  //     display: false,
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //   },
   // },
   // {
-  //   name: "homePhone",
-  //   label: "Home Phone",
+  //   name: "createAt",
+  //   label: "Created Date",
+  //   options: {
+  //     display: false,
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //   },
   // },
-  // {
-
   {
     name: "tags",
     label: "Tags ",
@@ -665,30 +1061,9 @@ const ContactsHeadCells = [
       print: false,
       filterOptions: {
         names: [],
-        logic(rowVal, pickedTags) {
-          let containIts = true;
-          pickedTags.map((pickedTag) => {
-            if (rowVal[0].indexOf(pickedTag) === -1) {
-              containIts = false;
-            }
-          });
-          return !containIts;
-        },
       },
     },
   },
-  // {
-  //   name: "owners", //ownerPerContactCount
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
   {
     name: "commentsCounter",
     label: " ",
@@ -720,18 +1095,6 @@ const ContactsHeadCells = [
   //     filterType: "dropdown",
   //   },
   // },
-  {
-    name: "melissaRowsCount",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
 ];
 
 const SearchsHeadCells = [
@@ -1297,6 +1660,102 @@ const ParcelInterestsPerContactHeadCells = [
   },
 ];
 
+const WellInterests = [
+  {
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  { name: "wellName", label: "Well" },
+  { name: "apiNumber", label: "API" },
+  { name: "operator", label: "Operator" },
+  { name: "interestType", label: "Type" },
+  {
+    name: "ownershipPercentage",
+    label: "Interest",
+  },
+  {
+    name: "appraisedValue",
+    label: "Appraised Value",
+  },
+  {
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
+  },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isTracked",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "detailCard",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "coordinates",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+];
+
 ////////////HeadCells end///////////////////////////////////////////////
 
 const capitalizeFirstLetter = (string) => {
@@ -1330,9 +1789,11 @@ function M1nTable(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [rows, Rows] = useState([]);
+
   const [addDealOpen, setAddDealOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState();
+
+  const [rows, Rows] = useState([]);
   const setRows = (newState) => {
     setStateIfDeepEqual(Rows, newState);
   };
@@ -1388,6 +1849,11 @@ function M1nTable(props) {
     ({ MapGridCard }) => MapGridCard
   );
 
+  const [dataContacts, DataContacts] = useState(null);
+  const setDataContacts = (newState) => {
+    setStateIfDeepEqual(DataContacts, newState);
+  };
+
   ////////////Queries begin///////////////////////////////////////////////
 
   const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(
@@ -1428,10 +1894,16 @@ function M1nTable(props) {
   const [removeUser] = useMutation(REMOVEUSER);
   //////////
 
-  const [getContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-  });
-  const [getContactsFilterOptions, { data: dataContactsFilterOptions }] = useLazyQuery(CONTACTSFILTEROPTIONS, {
+  const [getContacts, { data: constDataContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
+  const [
+    getContactsFilterOptions,
+    { data: dataContactsFilterOptions },
+  ] = useLazyQuery(CONTACTSFILTEROPTIONS, {
     fetchPolicy: "cache-and-network",
   });
   //////////
@@ -1469,36 +1941,23 @@ function M1nTable(props) {
   ] = useLazyQuery(IFARECONTACTS, {
     fetchPolicy: "cache-and-network",
   });
+  //////////
+  const [
+    getOwner_WellInterests,
+    { data: dataOwner_WellInterests },
+  ] = useLazyQuery(OWNER_WELLINTERESTS);
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
 
-  // workaround to make constDataContacts.contacts[i] editable
-  // TODO: set correct isTracked on backend, not frontend
-  const [dataContacts, setDataContacts] = useState(null);
   useEffect(() => {
-    if (constDataContacts && constDataContacts.paginatedContacts.edges) {
-      let tmpDataContacts = { 
-        ...constDataContacts,
-        paginatedContacts: {
-          ...constDataContacts.paginatedContacts,
-          edges: [
-            ...constDataContacts.paginatedContacts.edges.map((edge) => {
-              return {
-                ...edge,
-                node: { ...edge.node }
-              }
-            })
-          ]
-        }
-      };
-
-      setDataContacts(tmpDataContacts);
-    }
-  }, [constDataContacts]);
-
-  useEffect(() => {
-    if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks && targetLabel !== "contact") {
+    if (
+      targetLabel &&
+      stateApp.user &&
+      stateApp.user.mongoId &&
+      showTracks &&
+      targetLabel !== "contact"
+    ) {
       tracksByObjectType({
         variables: {
           objectType:
@@ -2063,6 +2522,9 @@ function M1nTable(props) {
         getTagSamples({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
+        checkIfOwnersAreContacts({
+          variables: { idsArray: objectsIdsArray },
+        });
       } else {
         setLoading(false);
         setRows([]);
@@ -2083,7 +2545,9 @@ function M1nTable(props) {
       dataTagSamples.tagSamples &&
       // dataOwnersWells &&
       dataTracks &&
-      dataTracks.tracksByObjectType
+      dataTracks.tracksByObjectType &&
+      checkIfOwnersAreContactsData &&
+      checkIfOwnersAreContactsData.ifAreContacts
     ) {
       const wellOwners = dataWellOwners.wellOwners.map((o) => {
         let wellOwner = { ...o };
@@ -2102,6 +2566,24 @@ function M1nTable(props) {
         //     }
         //   }
         // }
+
+        for (
+          let i = 0;
+          i < checkIfOwnersAreContactsData.ifAreContacts.length;
+          i++
+        ) {
+          if (
+            wellOwner.id ===
+            checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
+          ) {
+            wellOwner.isContact =
+              checkIfOwnersAreContactsData.ifAreContacts[i].isContact;
+
+            wellOwner.entity =
+              checkIfOwnersAreContactsData.ifAreContacts[i]._id;
+            break;
+          }
+        }
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (wellOwner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -2178,6 +2660,7 @@ function M1nTable(props) {
     dataTagSamples,
     dataCommentsCounter,
     // dataOwnersWells,
+    checkIfOwnersAreContactsData,
     dataTracks,
   ]);
 
@@ -2194,7 +2677,7 @@ function M1nTable(props) {
       setAddAble({ parent: false, type: "contact" });
       getContacts();
       getContactsFilterOptions();
-      setUploadIcon(false);
+      setUploadIcon(true);
       setStartPaginationAt(25);
     }
   }, [props.parent]);
@@ -2203,53 +2686,163 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "Contacts" &&
-      dataContacts &&
-      dataContactsFilterOptions /*&&
+      constDataContacts /*&&
+      dataContactsFilterOptions &&
       dataTracks &&
       dataTracks.tracksByObjectType*/
     ) {
       console.log("ue mintable 23");
-      if (dataContacts.paginatedContacts.edges && dataContacts.paginatedContacts.edges.length > 0
-        && dataContactsFilterOptions && dataContactsFilterOptions.contactsFilterOptions) {
-        const objectsIdsArray = [];
-        dataContacts.paginatedContacts.edges.forEach(({node})=> {
-          node.isTracked = false;
-          objectsIdsArray.push(node._id);
+      if (
+        constDataContacts?.paginatedContacts?.edges &&
+        constDataContacts.paginatedContacts.edges.length > 0
+      ) {
+        let tmpDataContacts = {
+          ...constDataContacts,
+          paginatedContacts: {
+            ...constDataContacts.paginatedContacts,
+            edges: [
+              ...constDataContacts.paginatedContacts.edges.map((edge) => {
+                return {
+                  ...edge,
+                  node: {
+                    ...edge.node,
+                    isTracked: false,
+                  },
+                };
+              }),
+            ],
+          },
+        };
 
-          // for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-          //   if (node.id === dataTracks.tracksByObjectType[i].trackOn) {
-          //     node.isTracked = true;
-          //     break;
-          //   }
-          // }
-        });
-
-        getCommentsCounter({
-          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
-        });
-        getTagSamples({
-          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
-        });
-        getMelissaRowsCount({
-          variables: { objectsIdsArray },
-        });
+        setDataContacts(tmpDataContacts);
+        setRows([
+          ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
+        ]);
+        setLoading(false);
       } else {
         setLoading(false);
         setRows([]);
       }
     }
-  }, [dataContacts,
-      dataContactsFilterOptions,
-      // dataTracks
-    ]
-  );
+  }, [
+    constDataContacts,
+    // dataContactsFilterOptions,
+    // dataTracks
+  ]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "Contacts" &&
+      dataContacts?.paginatedContacts?.edges &&
+      dataContacts?.paginatedContacts?.edges.length > 0
+    ) {
+      console.log("ue mintable 23");
+
+      const objectsIdsArray = [];
+      dataContacts.paginatedContacts.edges.forEach(({ node }) => {
+        objectsIdsArray.push(node._id);
+      });
+
+      getCommentsCounter({
+        variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+      });
+      getTagSamples({
+        variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+      });
+      getMelissaRowsCount({
+        variables: { objectsIdsArray },
+      });
+    }
+  }, [dataContacts]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "Contacts" &&
+      dataContactsFilterOptions
+    ) {
+      console.log("ue mintable 23.5");
+      if (
+        dataContactsFilterOptions &&
+        dataContactsFilterOptions.contactsFilterOptions
+      ) {
+        let filterTags = [
+          ...dataContactsFilterOptions.contactsFilterOptions.tags.map((tag) => {
+            return tag._id;
+          }),
+        ];
+        let filterLeadSource = [
+          ...dataContactsFilterOptions.contactsFilterOptions.leadSource.map(
+            (leadSource) => {
+              return leadSource._id;
+            }
+          ),
+        ];
+        let filterLastUpdateBy = [
+          ...dataContactsFilterOptions.contactsFilterOptions.lastUpdateBy.map(
+            (lastUpdateBy) => {
+              return lastUpdateBy._id;
+            }
+          ),
+        ];
+
+        setColumns(
+          ContactsHeadCells.map((column) => {
+            switch (column.name) {
+              case "tags":
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: filterTags,
+                    },
+                  },
+                };
+
+              case "leadSource":
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: filterLeadSource,
+                    },
+                  },
+                };
+
+              case "lastUpdateBy.name":
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: filterLastUpdateBy,
+                    },
+                  },
+                };
+
+              default:
+                return column;
+            }
+          })
+        );
+      } else {
+        // setLoading(false);
+      }
+    }
+  }, [dataContactsFilterOptions]);
 
   useEffect(() => {
     if (
       props.parent &&
       props.parent === "Contacts" &&
       dataContacts &&
-      dataContacts.paginatedContacts.edges && 
+      dataContacts.paginatedContacts.edges &&
       dataContacts.paginatedContacts.edges.length > 0 &&
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter &&
@@ -2259,7 +2852,23 @@ function M1nTable(props) {
       dataMelissaRowsCount.getMelissaRecordsCountForContactIds
     ) {
       console.log("ue mintable 24");
-      dataContacts.paginatedContacts.edges.forEach(({node}) => {
+
+      let tmpDataContacts = {
+        ...dataContacts,
+        paginatedContacts: {
+          ...dataContacts.paginatedContacts,
+          edges: [
+            ...dataContacts.paginatedContacts.edges.map((edge) => {
+              return {
+                ...edge,
+                node: { ...edge.node },
+              };
+            }),
+          ],
+        },
+      };
+
+      tmpDataContacts.paginatedContacts.edges.forEach(({ node }) => {
         node.commentsCounter = 0;
         node.tags = [[], 0];
         // node.fullContactAddress = joinAddress(node);
@@ -2267,8 +2876,7 @@ function M1nTable(props) {
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (node._id === dataCommentsCounter.commentsCounter[i]._id) {
-            node.commentsCounter =
-              dataCommentsCounter.commentsCounter[i].total;
+            node.commentsCounter = dataCommentsCounter.commentsCounter[i].total;
             break;
           }
         }
@@ -2294,49 +2902,13 @@ function M1nTable(props) {
         }
       });
 
-      let availableTags = [];
-      dataTagSamples.tagSamples.map((sample) => {
-        availableTags = [...availableTags, ...sample.tags];
-      });
-      const cleanAvailableTags = [...new Set(availableTags)];
-
-      setColumns(
-        cleanAvailableTags.length > 0
-          ? ContactsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
-                    },
-                  },
-                };
-              }
-              return column;
-            })
-          : ContactsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })
-      );
-
-      setRows([...dataContacts.paginatedContacts.edges.map(el => el.node)]);
-      setLoading(false);
+      setRows([
+        ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
+      ]);
+      // setLoading(false);
     }
   }, [
-    dataContacts,
-    dataTracks,
+    // dataTracks,
     dataTagSamples,
     dataCommentsCounter,
     dataMelissaRowsCount,
@@ -2571,8 +3143,14 @@ function M1nTable(props) {
         if (props.showComments) buildingColumns.push(SearchsHeadCells[2]);
 
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
-        if (props.targetLabel && props.targetLabel == "well")
-          //would only set the detail card icon for wells
+        if (
+          props.targetLabel &&
+          props.targetLabel == "well"
+          //temporarily remove until we release the owner summary card
+          // ||
+          // props.targetLabel == "owner"
+        )
+          //would only set the detail card icon for wells & owners
           buildingColumns.push(SearchsHeadCells[5]);
         if (
           props.targetLabel &&
@@ -3071,7 +3649,6 @@ function M1nTable(props) {
         well.tags = [[], 0];
 
         well.coordinates = {};
-
         if (well.longitude && well.latitude)
           well.coordinates.center = [well.longitude, well.latitude];
 
@@ -3162,6 +3739,183 @@ function M1nTable(props) {
 
   ////////////Map Viewport Wells end///////////////////////////////////////////////
 
+  ////////////Owner_WellInterests begin///////////////////////////////////////////
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "owner_WellInterests" &&
+      props.id &&
+      stateApp.user &&
+      stateApp.user.mongoId
+    ) {
+      setTargetLabel("well");
+      setHeader("Well Interests");
+      setAddAble(false);
+      getOwner_WellInterests({
+        variables: {
+          id: props.id,
+        },
+      });
+    }
+  }, [props.id, stateApp.user]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "owner_WellInterests" &&
+      dataOwner_WellInterests &&
+      dataOwner_WellInterests.owner_WellInterests &&
+      stateApp.user &&
+      stateApp.user.mongoId
+    ) {
+      const IdsArray = [];
+      dataOwner_WellInterests.owner_WellInterests.forEach((well) => {
+        if (well && well.id) {
+          IdsArray.push(well.id);
+        }
+      });
+
+      if (IdsArray.length > 0) {
+        getCommentsCounter({
+          variables: {
+            objectsIdsArray: IdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+        getTagSamples({
+          variables: {
+            objectsIdsArray: IdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+      } else {
+        setRows([]);
+        setLoading(false);
+      }
+    }
+  }, [dataOwner_WellInterests, stateApp.user]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "owner_WellInterests" &&
+      dataOwner_WellInterests &&
+      dataOwner_WellInterests.owner_WellInterests
+    ) {
+      if (
+        dataOwner_WellInterests.owner_WellInterests.length > 0 &&
+        dataCommentsCounter &&
+        dataCommentsCounter.commentsCounter &&
+        dataTagSamples &&
+        dataTagSamples.tagSamples &&
+        dataTracks &&
+        dataTracks.tracksByObjectType
+      ) {
+        let wells = dataOwner_WellInterests.owner_WellInterests.map((w) => {
+          let well = { ...w };
+
+          well.isTracked = false;
+          well.commentsCounter = 0;
+          well.tags = [[], 0];
+
+          //// set in the detailCard column
+          well.detailCard = well.id;
+
+          well.coordinates = {};
+          if (well.longitude && well.latitude)
+            well.coordinates.center = [well.longitude, well.latitude];
+
+          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+            if (well.id === dataTracks.tracksByObjectType[i].trackOn) {
+              well.isTracked = true;
+              break;
+            }
+          }
+          for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+            if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+              well.commentsCounter =
+                dataCommentsCounter.commentsCounter[i].total;
+              break;
+            }
+          }
+          for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+            if (well.id === dataTagSamples.tagSamples[i]._id) {
+              well.tags = [
+                dataTagSamples.tagSamples[i].tags,
+                dataTagSamples.tagSamples[i].total,
+              ];
+
+              break;
+            }
+          }
+          return well;
+        });
+
+        let availableTags = [];
+        dataTagSamples.tagSamples.map((sample) => {
+          availableTags = [...availableTags, ...sample.tags];
+        });
+        const cleanAvailableTags = [...new Set(availableTags)];
+
+        setColumns(
+          cleanAvailableTags.length > 0
+            ? WellInterests.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
+                    },
+                  };
+                }
+                return column;
+              })
+            : WellInterests.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })
+        );
+
+        setRows(wells);
+        //// to populate the search layer
+        dispatch(
+          setMapGridCardState({
+            objToPopulateSearchLayer: {
+              objectType: "wells",
+              wells,
+            },
+          })
+        );
+        setLoading(false);
+      }
+      // else {
+      //   setRows([]);
+      // }
+
+      // setLoading(false);
+    }
+  }, [
+    dataOwner_WellInterests,
+    dataTagSamples,
+    dataCommentsCounter,
+    dataTracks,
+  ]);
+
+  //////////// Owner_WellInterests end///////////////////////////////////////////////
+
   ////////////-----Add your code section here-----///////////////////////
   return (
     <Container
@@ -3199,8 +3953,11 @@ function M1nTable(props) {
         contactId={props.contact?._id}
         contactsPageProps={{
           getContacts,
-          contactsCount: dataContacts ? dataContacts.paginatedContacts.totalCount : 0,
-          setLoading
+          getContactsFilterOptions,
+          contactsCount: dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
+            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]?.totalCount
+            : 0,
+          setLoading,
         }}
         parent={props.parent}
       />

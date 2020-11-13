@@ -84,7 +84,7 @@ import PeopleOutlineIcon from "@material-ui/icons/PeopleOutline";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import DescriptionIcon from "@material-ui/icons/Description";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-
+import FlowIcon from "@material-ui/icons/Repeat";
 import ProfileProvider from "../Profile/ProfileProvider";
 import UserManagementProvider from "../UserManagement/UserManagementProvider";
 import FilterFormWell from "./components/FilterFormWell";
@@ -109,6 +109,7 @@ import { useLazyQuery } from "@apollo/client";
 
 import CheckIcon from "@material-ui/icons/Check";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import Add from "@material-ui/icons/Add";
 
 import {
   MuiThemeProvider,
@@ -1225,6 +1226,7 @@ export default function Navigation(props) {
                     onClick={handleClickAddDeal}
                     color="secondary"
                     variant="contained"
+                    startIcon={<Add />}
                   >
                     Add Deal
                   </Button>
@@ -1658,11 +1660,11 @@ export default function Navigation(props) {
           >
             <div className={classes.tabContent}>
               <ListItemIcon className={classes.sideNavIcon}>
-                <ShoppingCartIcon />
+                <FlowIcon/>
               </ListItemIcon>
               <ListItemText
                 className={`${classes.sideNavText} uppercase`}
-                primary="Deals"
+                primary="Flow"
               />
               <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button
@@ -1677,7 +1679,7 @@ export default function Navigation(props) {
             </div>
           </ListItem>
 
-          <ListItem
+          {/* <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected,
@@ -1706,7 +1708,7 @@ export default function Navigation(props) {
                 </Button>
               </ListItemSecondaryAction>
             </div>
-          </ListItem>
+          </ListItem> */}
 
           {/* <ListItem
             classes={{

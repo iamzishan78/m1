@@ -71,6 +71,7 @@ const initialErrors = {
 const getCurrentDateTime = () => {
   let dt = new Date().toISOString();
   return dt.slice(0, dt.length - 1);
+  // return dt;
 };
 
 const get1hrLaterDateTime = () => {

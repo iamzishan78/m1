@@ -2,23 +2,20 @@ import gql from "graphql-tag";
 
 export const PAGINATEDCONTACTSQUERY = gql`
   query getPaginatedContacts(
-    $pagination: PaginationInput = {
-      first: 25,
-      after: null
-    },
-    $sort: ContactSortInput = {},
-    $filters: [FilterInput] = [],
-    $search: String,
+    $pagination: PaginationInput = { first: 25, after: null }
+    $sort: ContactSortInput = {}
+    $filters: [FilterInput] = []
+    $search: String
     $userId: ID
   ) {
     paginatedContacts(
-      pagination: $pagination,
-      sort: $sort,
-      filters: $filters,
-      search: $search,
+      pagination: $pagination
+      sort: $sort
+      filters: $filters
+      search: $search
       userId: $userId
     ) {
-      totalCount,
+      totalCount
       edges {
         node {
           _id
@@ -30,6 +27,11 @@ export const PAGINATEDCONTACTSQUERY = gql`
           country
           state
           zip
+          title
+          firstName
+          lastName
+          middleName
+          suffix
           mobilePhone
           homePhone
           primaryEmail
@@ -39,13 +41,28 @@ export const PAGINATEDCONTACTSQUERY = gql`
           lastUpdateBy {
             name
           }
-        },
+          homePhone2
+          homePhone3
+          mobilephone2
+          mobilephone3
+          AltPhone2
+          AltPhone3
+          email3
+          status
+          hasAuthority
+          doNotDisturb
+          timeZone
+          notes
+          website
+          industryType
+          campaignName
+        }
         cursor
-      },
+      }
       pageInfo {
-        hasNextPage,
+        hasNextPage
         endCursor
-      },
+      }
     }
   }
 `;
