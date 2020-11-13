@@ -335,9 +335,13 @@ export default function ContactDetailCard(props) {
   }, [props.contactId]);
 
   useEffect(() => {
-    console.log("SET CONTACTtttttttttttttttttttt:", data);
+    console.log("SET CONTACT:", data);
     if (data && data.contact) {
       setContactData(data.contact);
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        currentContatcAtivities: data.contact.activityLog,
+      }));
     }
   }, [data]);
 
