@@ -596,7 +596,7 @@ function AddDealDialog(props) {
           <h4
             style={{ margin: "0 0 15px 0", float: "left", fontSize: "1.1rem" }}
           >
-            Add Deals
+            Deal Information
           </h4>
           <div style={{ float: "right" }}>
             {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) &&
@@ -610,14 +610,14 @@ function AddDealDialog(props) {
                   <DeleteIcon className={classes.closeIcon} fontSize="small" />
                 </IconButton>
               )}
-
+{/* 
             <IconButton
               disabled={updateTransactionLoading || addContactLoading}
               onClick={handleClose}
               size="small"
             >
               <CloseIcon className={classes.closeIcon} fontSize="small" />
-            </IconButton>
+            </IconButton> */}
           </div>
         </Grid>
         <div
