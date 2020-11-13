@@ -256,11 +256,15 @@ export default function Documents(props) {
     viewFile({ variables: { fileId: id } });
   };
 
+  console.log("FILEss", files?.getFileDescriptors);
+
   return (
     <div className={classes.root} variant="outlined">
       <CardActions style={{ padding: "23px 23px 8px 23px" }}>
         <Grid item xs={12} style={{ minHeight: "35px" }}>
-          <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Recent Documents</h4>
+          <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
+            Recent Documents
+          </h4>
           <h4
             className={classes.viewAll}
             // onClick={(e) => {
@@ -298,7 +302,7 @@ export default function Documents(props) {
                   <h4 className={classes.uploadTitle}>{file.fileName}</h4>
                   <h5 className={classes.uploadSubtext}>{file.userName}</h5>
                   <h5 className={classes.uploadSubtext}>
-                    {moment(new Date(Number(file.dateTime))).fromNow()}
+                    {moment.utc(file.dateTime).fromNow()}
                   </h5>
                 </div>
                 <div className={classes.IconSection}>
