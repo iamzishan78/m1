@@ -84,7 +84,7 @@ import PeopleOutlineIcon from "@material-ui/icons/PeopleOutline";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import DescriptionIcon from "@material-ui/icons/Description";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-
+import FlowIcon from "@material-ui/icons/Repeat";
 import ProfileProvider from "../Profile/ProfileProvider";
 import UserManagementProvider from "../UserManagement/UserManagementProvider";
 import FilterFormWell from "./components/FilterFormWell";
@@ -1639,11 +1639,11 @@ export default function Navigation(props) {
           >
             <div className={classes.tabContent}>
               <ListItemIcon className={classes.sideNavIcon}>
-                <ShoppingCartIcon />
+                <FlowIcon/>
               </ListItemIcon>
               <ListItemText
                 className={`${classes.sideNavText} uppercase`}
-                primary="Deals"
+                primary="Flow"
               />
               <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button
