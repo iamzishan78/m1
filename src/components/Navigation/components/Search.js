@@ -266,7 +266,9 @@ function Search() {
           "https://m1search.search.windows.net/indexes/wellheader-index-en-ms/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=" +
           top +
           "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
+          encodeURIComponent(
+            request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~")
+          );
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -278,7 +280,8 @@ function Search() {
         };
 
         console.log(
-          "request made to wellheader-index-en-ms search at: " + new Date().toString()
+          "request made to wellheader-index-en-ms search at: " +
+            new Date().toString()
         );
 
         fetch(endpoint, options)
@@ -301,7 +304,9 @@ function Search() {
           "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName&top=" +
           top +
           "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
+          encodeURIComponent(
+            request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~")
+          );
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -337,7 +342,9 @@ function Search() {
           "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2020-06-30&queryType=full&ount=true&searchFields=Operator&top=" +
           top +
           "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
+          encodeURIComponent(
+            request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~")
+          );
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -372,7 +379,9 @@ function Search() {
           "https://m1search.search.windows.net/indexes/lease-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
           top +
           "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
+          encodeURIComponent(
+            request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~")
+          );
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -815,6 +824,41 @@ function Search() {
             ownerId: objToPopulateSearchLayer.objectId,
           },
         });
+      }
+
+      //// if multiple wells
+      if (
+        objToPopulateSearchLayer.objectType === "wells" &&
+        objToPopulateSearchLayer.wells
+      ) {
+        if (objToPopulateSearchLayer.wells.length !== 0) {
+          setStateApp((stateApp) =>
+            objToPopulateSearchLayer.wells.length === 1
+              ? {
+                  ...stateApp,
+                  selectedWell: null,
+                  fitBounds: null,
+                  selectedWellId: objToPopulateSearchLayer.wells[0].id.toLowerCase(),
+                  wellSelectedCoordinates: [
+                    objToPopulateSearchLayer.wells[0].longitude,
+                    objToPopulateSearchLayer.wells[0].latitude,
+                  ],
+                  wellListFromSearch: [...objToPopulateSearchLayer.wells],
+                }
+              : {
+                  ...stateApp,
+                  fitBounds: null,
+                  wellListFromSearch: [...objToPopulateSearchLayer.wells],
+                }
+          );
+          stateApp.toggleLayersActivity("Search", true);
+        } else {
+          stateApp.toggleLayersActivity("Search", false);
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            wellListFromSearch: [],
+          }));
+        }
       }
 
       //// add others types here
@@ -1391,7 +1435,8 @@ function Search() {
                                         color={"#757575"}
                                       />
                                     )}
-                                    {option.Source === "wellheader-index-en-ms" && (
+                                    {option.Source ===
+                                      "wellheader-index-en-ms" && (
                                       <WellIcon
                                         className={classes.icon}
                                         color={"#757575"}

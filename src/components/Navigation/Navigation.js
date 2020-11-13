@@ -84,7 +84,7 @@ import PeopleOutlineIcon from "@material-ui/icons/PeopleOutline";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import DescriptionIcon from "@material-ui/icons/Description";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-
+import FlowIcon from "@material-ui/icons/Repeat";
 import ProfileProvider from "../Profile/ProfileProvider";
 import UserManagementProvider from "../UserManagement/UserManagementProvider";
 import FilterFormWell from "./components/FilterFormWell";
@@ -107,8 +107,9 @@ import { GETPROFILEIMAGE } from "../../graphQL/useQueryGetProfile";
 import { useDispatch, useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 
-import CheckIcon from '@material-ui/icons/Check';
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import CheckIcon from "@material-ui/icons/Check";
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import Add from "@material-ui/icons/Add";
 
 import {
   MuiThemeProvider,
@@ -498,8 +499,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   userMenuItem: {
-    padding:5,
-    paddingLeft:35,
+    padding: 5,
+    paddingLeft: 35,
     width: "260px",
     color: "#1daee1",
   },
@@ -714,6 +715,7 @@ export default function Navigation(props) {
   const [matchLocation, setMatchLocation] = useState(false);
   const [matchTrack, setMatchTrack] = useState(false);
   const [matchTransact, setMatchTransact] = useState(false);
+  const [matchActivities, setMatchActivities] = useState(false);
   const [matchFind, setMatchFind] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const classes = useStyles({ mapGridCardActivated });
@@ -763,7 +765,6 @@ export default function Navigation(props) {
     }));
   };
 
-
   useEffect(() => {
     if (location.pathname === "/") {
       setStateNav((state) => ({
@@ -776,6 +777,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
+        selectedMenuIndexActivities: 0,
       }));
     } else if (location.pathname === "/track") {
       setStateNav((state) => ({
@@ -788,6 +790,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
+        selectedMenuIndexActivities: 0,
       }));
     } else if (location.pathname === "/transact") {
       setStateNav((state) => ({
@@ -800,6 +803,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
+        selectedMenuIndexActivities: 0,
       }));
     } else if (location.pathname === "/title") {
       setStateNav((state) => ({
@@ -813,6 +817,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
+        selectedMenuIndexActivities: 0,
       }));
     } else if (location.pathname === "/contacts") {
       setStateNav((state) => ({
@@ -825,6 +830,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 1,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
+        selectedMenuIndexActivities: 0,
       }));
     } else if (location.pathname === "/alerts") {
       setStateNav((state) => ({
@@ -837,6 +843,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
+        selectedMenuIndexActivities: 0,
       }));
     } else if (location.pathname === "/dashboard") {
       setStateNav((state) => ({
@@ -849,6 +856,7 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 1,
         selectedMenuIndexStudio: 0,
+        selectedMenuIndexActivities: 0,
       }));
     } else if (location.pathname === "/studio") {
       setStateNav((state) => ({
@@ -861,6 +869,20 @@ export default function Navigation(props) {
         selectedMenuIndexContacts: 0,
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 1,
+        selectedMenuIndexActivities: 0,
+      }));
+    } else if (location.pathname === "/activities") {
+      setStateNav((state) => ({
+        ...state,
+        selectedMenuIndexFind: 0,
+        selectedMenuIndexTrack: 0,
+        selectedMenuIndexTransact: 0,
+        selectedMenuIndexTitle: 0,
+        selectedMenuIndexAlerts: 0,
+        selectedMenuIndexContacts: 0,
+        selectedMenuIndexDashboard: 0,
+        selectedMenuIndexStudio: 0,
+        selectedMenuIndexActivities: 1,
       }));
     }
   }, [location, setStateNav]);
@@ -894,6 +916,14 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   useEffect(() => {
+    if (location.pathname === "/activities") {
+      setMatchActivities(true);
+    } else {
+      setMatchActivities(false);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
     if (location.pathname === "/") {
       setMatchLocation(true);
       setMatchFind(true);
@@ -915,24 +945,25 @@ export default function Navigation(props) {
   };
   const handleLogout = async () => {
     const currentAccounts = stateApp.myMSALObj.getAllAccounts();
-    const currentAccount = currentAccounts && currentAccounts.length === 1
-      ? currentAccounts[0]
-      : (() => {
-          // Add choose account code here
-          return;
-        })();
+    const currentAccount =
+      currentAccounts && currentAccounts.length === 1
+        ? currentAccounts[0]
+        : (() => {
+            // Add choose account code here
+            return;
+          })();
 
     const logoutRequest = {
-      account: currentAccount
+      account: currentAccount,
     };
 
     setAnchorEl(null);
     sessionStorage.clear();
     localStorage.clear();
 
-    if(currentAccount) {
+    if (currentAccount) {
       stateApp.myMSALObj.logout(logoutRequest);
-    }      
+    }
 
     window.location.replace(window.location.origin);
 
@@ -950,13 +981,13 @@ export default function Navigation(props) {
     setStateNav({ ...stateNav, isProfileOpen: true });
     setOpenProfileModal(true);
   };
-  
+
   const openUserManagement = (event) => {
     event.preventDefault();
     handleMenuClose();
     setStateNav({ ...stateNav, isUserManagementOpen: true });
     setOpenUserManagementModal(true);
-  }
+  };
 
   const menuId = "primary-search-account-menu";
 
@@ -972,33 +1003,37 @@ export default function Navigation(props) {
       onClose={handleMenuClose}
       className={classes.userMenu}
     >
-      <MenuItem disabled  className={classes.userTenantTitle}>
-        <CheckIcon/>
-        <Typography variant="inherit" color="textPrimary"> {sessionStorage.getItem("tenantName")} </Typography>
-        <FiberManualRecordIcon style={{color: "#34F125"}} fontSize="small"/>
+      <MenuItem disabled className={classes.userTenantTitle}>
+        <CheckIcon />
+        <Typography variant="inherit" color="textPrimary">
+          {" "}
+          {sessionStorage.getItem("tenantName")}{" "}
+        </Typography>
+        <FiberManualRecordIcon style={{ color: "#34F125" }} fontSize="small" />
       </MenuItem>
-      <Divider/>
+      <Divider />
       <MenuItem
         className={classes.userMenuItem}
         onClick={(e) => openProfile(e)}
-        style={{marginTop: 10}}
+        style={{ marginTop: 10 }}
       >
         <Typography
-          style={{ textDecoration: "none", color: "#1daee1"}}
+          style={{ textDecoration: "none", color: "#1daee1" }}
           variant="inherit"
         >
           My Account
         </Typography>
       </MenuItem>
-      <MenuItem 
+      <MenuItem
         className={classes.userMenuItem}
-        onClick={(e) => openUserManagement(e)}>
-          <Typography
-            style={{ textDecoration: "none", color: "#1daee1" }}
-            variant="inherit"
-          >
-            User Management
-          </Typography>
+        onClick={(e) => openUserManagement(e)}
+      >
+        <Typography
+          style={{ textDecoration: "none", color: "#1daee1" }}
+          variant="inherit"
+        >
+          User Management
+        </Typography>
       </MenuItem>
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
         <Typography variant="inherit">Logout</Typography>
@@ -1029,7 +1064,6 @@ export default function Navigation(props) {
     setStateApp((stateApp) => ({ ...stateApp, toggleZoomOut: true }));
   };
 
-  
   const handleDrawerClose = () => {
     setOpenDrawer(false);
   };
@@ -1108,38 +1142,31 @@ export default function Navigation(props) {
         {stateApp.user ? (
           <Toolbar>
             {!openDrawer ? (
-
-
               <div className={classes.toolbar}>
-  
-              <IconButton color="secondary" onClick={handleDrawerOpen}>
-                {theme.direction === "rtl" ? <MenuIcon /> : <MenuIcon />}
-              </IconButton>
+                <IconButton color="secondary" onClick={handleDrawerOpen}>
+                  {theme.direction === "rtl" ? <MenuIcon /> : <MenuIcon />}
+                </IconButton>
 
                 <div style={{ marginRight: "35px" }}>
-
-                {matchFind ? (
-                  <Button
-                    color="secondary"
-                    size="large"
-                    onClick={handleClickLogo}
-                    className={classes.margin}
-                  >
-                    <M1neralLogoWhiteLetters />
-                  </Button>
-                              ) : 
-                              
-                  <Button
-                    color="secondary"
-                    size="large"
-                    onClick={(event) => handleListItemClick(event, 0, "/")}
-                    className={classes.margin}
-                  >
-                    <M1neralLogoWhiteLetters />
-                  </Button>
-                  
-                  }
-
+                  {matchFind ? (
+                    <Button
+                      color="secondary"
+                      size="large"
+                      onClick={handleClickLogo}
+                      className={classes.margin}
+                    >
+                      <M1neralLogoWhiteLetters />
+                    </Button>
+                  ) : (
+                    <Button
+                      color="secondary"
+                      size="large"
+                      onClick={(event) => handleListItemClick(event, 0, "/")}
+                      className={classes.margin}
+                    >
+                      <M1neralLogoWhiteLetters />
+                    </Button>
+                  )}
                 </div>
               </div>
             ) : null}
@@ -1166,7 +1193,7 @@ export default function Navigation(props) {
 
             {matchFind ? (
               <div className={classes.search} id="searchBarDivParent">
-                <SearchBarWithToggleButton/>
+                <SearchBarWithToggleButton />
               </div>
             ) : null}
 
@@ -1174,13 +1201,14 @@ export default function Navigation(props) {
             {matchTransact ? (
               <div>
                 <div ref={anchorEl} className={classes.filterTabs}>
-                  <Button
+                  {/* <Button
                     onClick={handleClickAddDeal}
                     color="secondary"
                     variant="contained"
+                    startIcon={<Add />}
                   >
                     Add Deal
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             ) : (
@@ -1611,11 +1639,11 @@ export default function Navigation(props) {
           >
             <div className={classes.tabContent}>
               <ListItemIcon className={classes.sideNavIcon}>
-                <ShoppingCartIcon />
+                <FlowIcon/>
               </ListItemIcon>
               <ListItemText
                 className={`${classes.sideNavText} uppercase`}
-                primary="Deals"
+                primary="Flow"
               />
               <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button
@@ -1629,6 +1657,37 @@ export default function Navigation(props) {
               </ListItemSecondaryAction>
             </div>
           </ListItem>
+
+          {/* <ListItem
+            classes={{
+              root: classes.menuListItem,
+              selected: classes.menuListItemSelected,
+            }}
+            button
+            selected={stateNav.selectedMenuIndexActivities === 1}
+            onClick={(event) => handleListItemClick(event, 0, "/activities")}
+            key="activities"
+          >
+            <div className={classes.tabContent}>
+              <ListItemIcon className={classes.sideNavIcon}>
+                <ShoppingCartIcon />
+              </ListItemIcon>
+              <ListItemText
+                className={`${classes.sideNavText} uppercase`}
+                primary="Activities"
+              />
+              <ListItemSecondaryAction className={classes.sideNavAction}>
+                <Button
+                  disabled
+                  className={`${classes.betaSideNav3} uppercase`}
+                  edge="start"
+                  aria-label="beta"
+                >
+                  beta
+                </Button>
+              </ListItemSecondaryAction>
+            </div>
+          </ListItem> */}
 
           {/* <ListItem
             classes={{
@@ -2072,8 +2131,8 @@ export default function Navigation(props) {
         {props.children}
       </main>
       {renderMenu}
-      {openProfileModal && <ProfileProvider/>}
-      {openUserManagementModal && <UserManagementProvider/>}
+      {openProfileModal && <ProfileProvider />}
+      {openUserManagementModal && <UserManagementProvider />}
     </div>
   );
 }

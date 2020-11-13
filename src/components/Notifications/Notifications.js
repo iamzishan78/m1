@@ -54,7 +54,7 @@ export default function Notifications(props) {
 
   useEffect(() => {
     if (errorMessage && errorMessage !== "") {
-      NotificationManager.error(errorMessage, "Error", 4000);
+      NotificationManager.error(errorMessage, "Error", 6000);
       dispatch(hideErrorMessage());
     }
   }, [errorMessage]);

@@ -215,6 +215,7 @@ export default function CellContentEdition({
   targetLabel,
   dropDownOptions,
   entityId,
+  nonEditable,
 }) {
   //////////// id - brings the object id //////////////////////////////////////////////////////////////////////////
   //////////// content - brings an object with fielNames and values ///////////////////////////////////////////////
@@ -323,7 +324,10 @@ export default function CellContentEdition({
           awaitRefetchQueries: true,
         });
       }
-      if (targetLabel === "Parcel Ownership" || targetLabel === "Parcel Interest") {
+      if (
+        targetLabel === "Parcel Ownership" ||
+        targetLabel === "Parcel Interest"
+      ) {
         trimmedEditContent.ownerEntityId = entityId;
         updateParcelOwner({
           variables: {
@@ -504,18 +508,22 @@ export default function CellContentEdition({
               : ""
             : textArray.join(", ")
           : `${name ? name + " " : ""} N/A`}
-        <PencilEditIcon
-          handleUpdating={handleUpdating}
-          anchorEl={
-            (edit && fieldsCount > 1) || (edit && dropDownOptions) ? edit : null
-          }
-          setAnchorEl={(e) => {
-            setEdit(e);
-            toStart();
-          }}
-          content={inputsArray}
-          onClick={handleEditClick}
-        />
+        {!nonEditable && (
+          <PencilEditIcon
+            handleUpdating={handleUpdating}
+            anchorEl={
+              (edit && fieldsCount > 1) || (edit && dropDownOptions)
+                ? edit
+                : null
+            }
+            setAnchorEl={(e) => {
+              setEdit(e);
+              toStart();
+            }}
+            content={inputsArray}
+            onClick={handleEditClick}
+          />
+        )}
         {!childrenLeft && !onlyChildren && children ? children : ""}
       </p>
       {(loadingUpdContact || loadingUpdPOwner) && (
