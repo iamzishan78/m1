@@ -130,7 +130,7 @@ function UploadZone(props) {
         fetch(uri, {
           headers: {
             "Content-Type": "text/plain; charset=UTF-8",
-            "x-ms-blob-content-disposition": `attachment; filename="${file_name}"`,
+            "X-Ms-Blob-Content-Disposition": `attachment; filename="${file_name}"`,
             "X-Ms-Blob-Type": "BlockBlob",
             "X-Ms-Meta-Internalkey": interal_key,
             "X-Ms-Version": "2015-02-21",
@@ -184,6 +184,7 @@ function UploadZone(props) {
 export default function Documents(props) {
   const classes = useStyles();
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
+  const [fileIdToDelete, setFileIdToDelete] = useState(null);
   const [stateApp] = React.useContext(AppContext);
   const userId = stateApp.user.mongoId;
   const [getRecentFiles, { data: files }] = useLazyQuery(
@@ -219,12 +220,12 @@ export default function Documents(props) {
   useEffect(() => {
     console.log("VIEW FILE RESULT", viewFileResult);
     if (viewFileResult) {
-      let a = document.createElement('a');
+      let a = document.createElement("a");
       a.href = viewFileResult.viewFile.uri;
       a.download = viewFileResult.viewFile.name;
 
       // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
-      // a.target = "_blank";
+      a.target = "_blank";
 
       // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
       a.click();
@@ -232,19 +233,23 @@ export default function Documents(props) {
   }, [viewFileResult]);
 
   const handleDeleteCancel = () => {
+    setFileIdToDelete(null);
     setOpenDeleteConfirmDialog(false);
   };
 
-  const handleDeleteAccept = (id) => {
+  const handleDeleteAccept = () => {
     // Delete Document Logic goes here
-    setOpenDeleteConfirmDialog(false);
-    deleteFile({
-      variables: {
-        id: id,
-      },
-      refetchQueries: ["getRecentContactFiles"],
-      awaitRefetchQueries: true,
-    });
+    if (fileIdToDelete) {
+      deleteFile({
+        variables: {
+          id: fileIdToDelete,
+        },
+        refetchQueries: ["getRecentContactFiles", "getContactFiles"],
+        awaitRefetchQueries: true,
+      });
+      setFileIdToDelete(null);
+      setOpenDeleteConfirmDialog(false);
+    }
   };
 
   const handleViewFile = async (id) => {
@@ -255,7 +260,7 @@ export default function Documents(props) {
     <div className={classes.root} variant="outlined">
       <CardActions style={{ padding: "23px 23px 8px 23px" }}>
         <Grid item xs={12} style={{ minHeight: "35px" }}>
-          <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents</h4>
+          <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Recent Documents</h4>
           <h4
             className={classes.viewAll}
             // onClick={(e) => {
@@ -269,10 +274,11 @@ export default function Documents(props) {
                   contactId={props.id}
                   user_id={props.user_id}
                   activityLog={props.activityLog}
-                  open={openDeleteConfirmDialog}
+                  openDeleteConfirmDialog={openDeleteConfirmDialog}
                   handleClose={handleDeleteCancel}
                   handleAccept={handleDeleteAccept}
-                  handleOpen={() => setOpenDeleteConfirmDialog(true)}
+                  setOpenDeleteConfirmDialog={setOpenDeleteConfirmDialog}
+                  setFileIdToDelete={setFileIdToDelete}
                 />,
                 "Documents"
               );
@@ -292,22 +298,21 @@ export default function Documents(props) {
                   <h4 className={classes.uploadTitle}>{file.fileName}</h4>
                   <h5 className={classes.uploadSubtext}>{file.userName}</h5>
                   <h5 className={classes.uploadSubtext}>
-                    {moment.unix(file.dateTime).fromNow()}
+                    {moment(new Date(Number(file.dateTime))).fromNow()}
                   </h5>
                 </div>
                 <div className={classes.IconSection}>
                   <IconButton
                     size="small"
                     style={{ marginBottom: "8px" }}
-                    onClick={() => setOpenDeleteConfirmDialog(true)}
+                    onClick={() => {
+                      setOpenDeleteConfirmDialog(true);
+                      setFileIdToDelete(file.descriptorId);
+                    }}
                   >
                     <DeleteIcon />
                   </IconButton>
-                  <DeleteDocumentConfirmation
-                    open={openDeleteConfirmDialog}
-                    handleClose={handleDeleteCancel}
-                    handleAccept={() => handleDeleteAccept(file.descriptorId)}
-                  />
+
                   <IconButton
                     size="small"
                     onClick={() => handleViewFile(file.fileId)}
@@ -318,6 +323,13 @@ export default function Documents(props) {
               </div>
             </>
           ))}
+          <DeleteDocumentConfirmation
+            open={openDeleteConfirmDialog}
+            handleClose={handleDeleteCancel}
+            handleAccept={() => {
+              handleDeleteAccept();
+            }}
+          />
           <UploadZone
             contactId={props.id}
             userId={userId}

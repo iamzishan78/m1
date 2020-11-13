@@ -4,7 +4,7 @@ const TransactTable = ({ deals }) => {
   console.log(deals);
   return (
     <div>
-      <h1>TABLE</h1>
+      <h1>COMING SOON</h1>
     </div>
   );
 };

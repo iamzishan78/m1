@@ -338,9 +338,13 @@ export default function ContactDetailCard(props) {
   }, [props.contactId, stateApp.contactUpdated]);
 
   useEffect(() => {
-    if (!loading && data && data.contact) {
+    console.log("SET CONTACT:", data);
+    if (data && data.contact) {
       setContactData(data.contact);
-      setStateApp({...stateApp, contactUpdated: null});
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        currentContatcAtivities: data.contact.activityLog,
+      }));
     }
     
   }, [data, stateApp.contactUpdated]);

@@ -148,6 +148,7 @@ const AppProvider = (props) => {
     minZoomToQueryViewport: 12.5,
     activateWellDetailsFromTable: false,
     contactUpdated: null,
+    currentContatcAtivities: [],
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;
