@@ -25,6 +25,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CircularProgress, Typography } from "@material-ui/core";
 import RightDialog from "./RightDialog";
 import { DatePicker } from "@material-ui/pickers";
+import moment from "moment";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -108,6 +109,12 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 5,
     border: "1px solid gray",
   },
+  originationDate: {
+    paddingBottom: 12,
+    fontSize: 16,
+    letterSpacing: 2,
+    fontWeight: "bold",
+  },
 }));
 
 const newContact = {
@@ -143,6 +150,7 @@ function AddDealDialog(props) {
   const [users, setUsers] = useState([]);
   const [closeDate, setCloseDate] = useState(null);
   const [colaborators, setColaborators] = useState([]);
+  const [originationDate, setOriginationDate] = useState("");
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
@@ -173,6 +181,8 @@ function AddDealDialog(props) {
   const [getContacts, { data: allContacts }] = useLazyQuery(CONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
   });
+
+  console.log("AAD DEAL", tdata);
 
   const [contact, setContact] = useState({});
 
@@ -308,6 +318,7 @@ function AddDealDialog(props) {
       setOwnerId(card.ownerId ? card.ownerId : stateApp.user.mongoId);
       setCloseDate(card.closeDate ? card.closeDate : null);
       setColaborators(card.colaborators ? card.colaborators : []);
+      setOriginationDate(card.createdAt ? card.createdAt : "");
       setStage(card.laneId ? card.laneId : "lane1");
       if (card.contactId) {
         setNameAutValue({ name: card.contactName, _id: card.contactId }); // setting contact
@@ -343,6 +354,7 @@ function AddDealDialog(props) {
     setOwnerId("");
     setCloseDate(null);
     setColaborators([]);
+    setOriginationDate("");
     setContact({});
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -520,7 +532,7 @@ function AddDealDialog(props) {
               contactId: tempContact ? tempContact._id : "",
               laneId: newStage,
               // VALUES TO SET
-              createdAt: Date.now(),
+              createdAt: new Date().toISOString(),
               pipelineId: pipelineId,
               ownerId: ownerId,
               expectedCloseDate: closeDate,
@@ -610,7 +622,7 @@ function AddDealDialog(props) {
                   <DeleteIcon className={classes.closeIcon} fontSize="small" />
                 </IconButton>
               )}
-{/* 
+            {/* 
             <IconButton
               disabled={updateTransactionLoading || addContactLoading}
               onClick={handleClose}
@@ -898,6 +910,13 @@ function AddDealDialog(props) {
             }}
             className={classes.inputField}
           />
+
+          {originationDate && (
+            <div className={classes.originationDate}>
+              Origination Date:{" "}
+              {moment(originationDate).format("M/DD/YYYY, HH:mmA")}
+            </div>
+          )}
 
           <div className={classes.dialogFooter}>
             <Button
