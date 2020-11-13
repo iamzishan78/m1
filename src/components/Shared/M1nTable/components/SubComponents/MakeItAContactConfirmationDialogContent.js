@@ -51,6 +51,15 @@ export default function MakeItAContactConfirmationDialogContent(props) {
         <h3 className={modalClass.inputLabel}>{props.children}</h3>
       </DialogContent>
       <DialogActions>
+
+      <Button
+          onClick={() => {
+            props.onClose();
+          }}
+          color="primary"
+        >
+          Cancel
+        </Button>
         <Button
           onClick={() => {
             {
@@ -90,16 +99,9 @@ export default function MakeItAContactConfirmationDialogContent(props) {
           }}
           color="primary"
         >
-          Accept
+          Continue
         </Button>
-        <Button
-          onClick={() => {
-            props.onClose();
-          }}
-          color="primary"
-        >
-          Cancel
-        </Button>
+
       </DialogActions>
     </React.Fragment>
   );

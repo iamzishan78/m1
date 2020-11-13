@@ -58,7 +58,7 @@ import Contact_card from "../../svgIcons/contact_card";
 import TransactDialog from "../../../Transact/components/dialog";
 import ParcelScreenIcon from "../../svgIcons/parcelScreen";
 import ParcelsDetailCard from "../../../ParcelsDetailCard/ParcelsDetailCard";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { WELLQUERY } from "../../../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/client";
@@ -239,6 +239,10 @@ function SubTable(props) {
   const setRowInd = (newState) => {
     setStateIfDeepEqual(RowInd, newState);
   };
+  const [pageInd, PageInd] = useState(0);
+  const setPageInd = (newState) => {
+    setStateIfDeepEqual(PageInd, newState);
+  };
   const [expandedObject, ExpandedObject] = useState();
   const setExpandedObject = (newState) => {
     setStateIfDeepEqual(ExpandedObject, newState);
@@ -306,7 +310,7 @@ function SubTable(props) {
   useEffect(() => {
     if (
       props.parent &&
-      props.parent === "search" &&
+      (props.parent === "search" || props.parent === "owner_WellInterests") &&
       props.targetLabel == "well" &&
       dataWell &&
       dataWell.well
@@ -317,7 +321,6 @@ function SubTable(props) {
       });
 
       selectedWell = { ...selectedWell, ...dataWell.well };
-
       //// temporary to fix the ticks dates fields comming from the rest api
       if (
         selectedWell.permitApprovedDate &&
@@ -482,14 +485,20 @@ function SubTable(props) {
 
   const searchRequest = (e) => {
     e.setLoading(true);
-    e.getContacts({
-      variables: {
-        pagination: e.pagination,
-        search: e.searchText,
-      },
-    });
+    e.tableState.page = 0;
+    e.tableState.count = 0;
+    setPageInd(e.tableState.page);
+    e.getContacts(e.pageVariables);
+    e.getContactsFilterOptions(e.pageVariables);
   };
-  const delayedSearchRequest = debounce((e) => searchRequest(e), 2000);
+
+  const delayedSearchRequest = React.useMemo(
+    () =>
+      debounce((request, callback) => {
+        searchRequest(request);
+      }, 500),
+    []
+  );
 
   useEffect(() => {
     if (props.columns) {
@@ -521,31 +530,39 @@ function SubTable(props) {
                             getWell({
                               variables: { wellId: value },
                             });
-                          } else if (props.targetLabel === "well") {
-                            let selectedWell = props.rows.find((row) => {
+                          } else {
+                            let selectedObj = props.rows.find((row) => {
                               if (row.id) return row.id == tableMeta.rowData[0];
                               return row.Id == tableMeta.rowData[0];
                             });
 
-                            if (selectedWell) {
-                              setSelectedRow(selectedWell);
-                              setStateApp((state) => ({
-                                ...state,
-                                selectedWellId: tableMeta.rowData[0],
-                                selectedWell,
-                              }));
-                              setSubComponent(<WellCardProvider />);
-                              setTitle(
-                                selectedWell.wellName
-                                  ? selectedWell.wellName
-                                  : selectedWell.WellName
-                              );
-                              setSubTitle(
-                                selectedWell.operator
-                                  ? selectedWell.operator
-                                  : selectedWell.Operator
-                              );
-                              handleOpenExpandableCard();
+                            if (selectedObj) {
+                              if (props.targetLabel === "well") {
+                                setSelectedRow(selectedObj);
+                                setStateApp((state) => ({
+                                  ...state,
+                                  selectedWellId: tableMeta.rowData[0],
+                                  selectedWell: selectedObj,
+                                }));
+                                setSubComponent(<WellCardProvider />);
+                                setTitle(
+                                  selectedObj.wellName
+                                    ? selectedObj.wellName
+                                    : selectedObj.WellName
+                                );
+                                setSubTitle(
+                                  selectedObj.operator
+                                    ? selectedObj.operator
+                                    : selectedObj.Operator
+                                );
+                                handleOpenExpandableCard();
+                              } else if (props.targetLabel === "owner") {
+                                dispatch(
+                                  setMapGridCardState({
+                                    selectedOwner: selectedObj,
+                                  })
+                                );
+                              }
                             }
                           }
                         }}
@@ -1168,7 +1185,7 @@ function SubTable(props) {
                               ? classes.iconSelected
                               : ""
                           }`}
-                          badgeContent={value[1]}
+                          badgeContent={value ? value[1] : 0}
                           color="secondary"
                           onClick={(e) => {
                             e.preventDefault();
@@ -1199,7 +1216,7 @@ function SubTable(props) {
                               multiSelectMouseHoverColor(id, "#efefef");
                           }}
                         >
-                          {value[0] && value[0].length > 0 ? (
+                          {value && value[0] && value[0].length > 0 ? (
                             <React.Fragment>
                               <p className="first">{value[0].join(", ")}</p>
                               <p className="two">...</p>
@@ -1234,6 +1251,7 @@ function SubTable(props) {
                         country: tableMeta.rowData[7],
                       }}
                       targetLabel={props.targetLabel}
+                      nonEditable={!column.editable}
                     />
                   );
                 },
@@ -1260,18 +1278,18 @@ function SubTable(props) {
                     return v;
                   };
 
-                  if (column.name === "lastUpdateBy.name") {
-                    if (props.rows[tableMeta.rowIndex]) {
-                      value = props.rows[tableMeta.rowIndex].lastUpdateBy?.name;
-                    }
-                  }
+                  // if (column.name === "lastUpdateBy.name") {
+                  //   if (props.rows[tableMeta.rowIndex]) {
+                  //     value = props.rows[tableMeta.rowIndex].lastUpdateBy?.name;
+                  //   }
+                  // }
 
                   ////// if non editable column
                   if (
-                    !column.editable ||
-                    (props.targetLabel === "Parcel Ownershipship" &&
-                      column.name === "name" &&
-                      tableMeta.rowData[11] !== "false")
+                    !column.editable &&
+                    props.targetLabel === "Parcel Ownershipship" &&
+                    column.name === "name" &&
+                    tableMeta.rowData[11] !== "false"
                   ) {
                     //// if no value
                     if (value === "" || value === null || !value)
@@ -1333,9 +1351,15 @@ function SubTable(props) {
                             ? tableMeta.rowData[1]
                             : null
                         }
+                        nonEditable={!column.editable}
                       />
                       {props.targetLabel === "contact" &&
                         column.name === "name" &&
+                        tableMeta.rowData[
+                          props.columns.findIndex(
+                            (val) => val.name === "melissaRowsCount"
+                          )
+                        ] &&
                         tableMeta.rowData[
                           props.columns.findIndex(
                             (val) => val.name === "melissaRowsCount"
@@ -1759,85 +1783,121 @@ function SubTable(props) {
         handleOpenExpandableCard();
       }
     },
+    onChangePage: (pageState) => {
+      console.log(`here: pageInd=${pageInd} pageState=${pageState}`);
+      setPageInd(pageState);
+    },
     onTableChange: (action, tableState) => {
       console.log("onTableChange");
       console.log(action, tableState);
       if (props.header === "Contacts") {
+        let filters = [];
+        const leadSourceIndex = tableState.columns.findIndex(
+          (i) => i.name === "leadSource"
+        );
+        const lastUpdateByIndex = tableState.columns.findIndex(
+          (i) => i.name === "lastUpdateBy.name"
+        );
+        const tagsIndex = tableState.columns.findIndex(
+          (i) => i.name === "tags"
+        );
+
+        if (tableState.filterList[leadSourceIndex]?.length !== 0) {
+          filters.push({
+            field: "leadSource",
+            value: tableState.filterList[leadSourceIndex],
+          });
+        }
+        if (tableState.filterList[lastUpdateByIndex]?.length !== 0) {
+          filters.push({
+            field: "lastUpdateBy.name",
+            value: tableState.filterList[lastUpdateByIndex],
+          });
+        }
+        if (tableState.filterList[tagsIndex]?.length !== 0) {
+          filters.push({
+            field: "tag.tag",
+            value: tableState.filterList[tagsIndex],
+          });
+        }
+
+        const pageVariables = {
+          variables: {
+            pagination: {
+              first: tableState.rowsPerPage,
+              after: null,
+            },
+            sort: tableState.activeColumn
+              ? {
+                  field:
+                    tableState.columns[tableState.activeColumn]?.name ===
+                    "fullContactAddress"
+                      ? "address1"
+                      : tableState.columns[tableState.activeColumn]?.name,
+                  order:
+                    tableState.columns[tableState.activeColumn]
+                      ?.sortDirection === "asc"
+                      ? 1
+                      : -1,
+                }
+              : [],
+
+            filters: filters,
+            search: tableState.searchText,
+          },
+        };
+
         switch (action) {
           case "changeRowsPerPage":
             console.log("changeRowsPerPage");
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
+            setPageInd(tableState.page);
             setRowsPerPage(tableState.rowsPerPage);
-            props.contactsPageProps.getContacts({
-              variables: {
-                pagination: {
-                  first: tableState.rowsPerPage,
-                  after: null,
-                },
-                search: tableState.searchText,
-              },
-            });
+            props.contactsPageProps.getContacts(pageVariables);
             break;
           case "changePage":
             props.contactsPageProps.setLoading(true);
             props.contactsPageProps.getContacts({
+              ...pageVariables,
               variables: {
+                ...pageVariables.variables,
                 pagination: {
-                  first: tableState.rowsPerPage,
-                  after: props.rows[props.rows.length - 1]._id,
+                  ...pageVariables.variables.pagination,
+                  before:
+                    props.rows && tableState.page < pageInd
+                      ? props.rows[0]?._id
+                      : null,
+                  after:
+                    props.rows && tableState.page > pageInd
+                      ? props.rows[props.rows.length - 1]?._id
+                      : null,
                 },
-                sort: !tableState.activeColumn
-                  ? []
-                  : {
-                      field:
-                        tableState.columns[tableState.activeColumn].name ===
-                        "fullContactAddress"
-                          ? "address1"
-                          : tableState.columns[tableState.activeColumn].name,
-                      order:
-                        tableState.columns[tableState.activeColumn]
-                          .sortDirection === "asc"
-                          ? 1
-                          : -1,
-                    },
-                search: tableState.searchText,
               },
             });
             break;
           case "sort":
             props.contactsPageProps.setLoading(true);
-            props.contactsPageProps.getContacts({
-              variables: {
-                pagination: {
-                  first: tableState.rowsPerPage,
-                  after: null,
-                },
-                sort: {
-                  field:
-                    tableState.columns[tableState.activeColumn].name ===
-                    "fullContactAddress"
-                      ? "address1"
-                      : tableState.columns[tableState.activeColumn].name,
-                  order:
-                    tableState.columns[tableState.activeColumn]
-                      .sortDirection === "asc"
-                      ? 1
-                      : -1,
-                },
-              },
-            });
+            tableState.page = 0;
+            setPageInd(tableState.page);
+            props.contactsPageProps.getContacts(pageVariables);
             break;
           case "search":
             delayedSearchRequest({
+              tableState: tableState,
               setLoading: props.contactsPageProps.setLoading,
               getContacts: props.contactsPageProps.getContacts,
-              pagination: {
-                first: tableState.rowsPerPage,
-                after: null,
-              },
-              searchText: tableState.searchText,
+              getContactsFilterOptions: props.contactsPageProps.getContactsFilterOptions,
+              pageVariables
             });
+            break;
+          case "onSearchClose":
+            props.contactsPageProps.setLoading(true);
+            tableState.page = 0;
+            tableState.count = 0;
+            setPageInd(tableState.page);
+            props.contactsPageProps.getContacts(pageVariables);
+            props.contactsPageProps.getContactsFilterOptions();
             break;
           case "propsUpdate":
             console.log("work propsUpdate");
@@ -1845,45 +1905,14 @@ function SubTable(props) {
           case "filterChange":
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
-            let filters = [];
-            const leadSourceIndex = tableState.columns.findIndex(
-              (i) => i.name === "leadSource"
-            );
-            const lastUpdateByIndex = tableState.columns.findIndex(
-              (i) => i.name === "lastUpdateBy.name"
-            );
-            const tagsIndex = tableState.columns.findIndex(
-              (i) => i.name === "tags"
-            );
-
-            if (tableState.filterList[leadSourceIndex].length !== 0) {
-              filters.push({
-                field: "leadSource",
-                value: tableState.filterList[leadSourceIndex],
-              });
-            }
-            if (tableState.filterList[lastUpdateByIndex].length !== 0) {
-              filters.push({
-                field: "lastUpdateBy.name",
-                value: tableState.filterList[lastUpdateByIndex],
-              });
-            }
-            if (tableState.filterList[tagsIndex].length !== 0) {
-              filters.push({
-                field: "tag",
-                value: tableState.filterList[tagsIndex],
-              });
-            }
-
-            props.contactsPageProps.getContacts({
-              variables: {
-                pagination: {
-                  first: tableState.rowsPerPage,
-                  after: null,
-                },
-                filters: filters,
-              },
-            });
+            setPageInd(tableState.page);
+            props.contactsPageProps.getContacts(pageVariables);
+            break;
+          case "resetFilters":
+            props.contactsPageProps.setLoading(true);
+            tableState.page = 0;
+            setPageInd(tableState.page);
+            props.contactsPageProps.getContacts(pageVariables);
             break;
           default:
             console.log("action not handled.");
@@ -1925,13 +1954,13 @@ function SubTable(props) {
           data={rows ? rows : []}
           columns={columns ? columns : []}
           options={{
-            print: false,
             download:
               // props.targetLabel == "owner" || props.targetLabel == "well"
               //   ? true
               //   :
               false,
             ...options,
+            print: false,
           }}
         />
 

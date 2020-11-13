@@ -111,8 +111,8 @@ export default function LeadStage({ leadStage, id }) {
           lastUpdateLeadStageAt: new Date().toString(),
         },
       },
-      // refetchQueries: ["getContact"],
-      // awaitRefetchQueries: false,
+      refetchQueries: ["getContact"],
+      awaitRefetchQueries: false,
     });
     setCurrentLeadStage(stg);
   };

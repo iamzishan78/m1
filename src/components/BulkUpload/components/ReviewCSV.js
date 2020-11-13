@@ -56,14 +56,14 @@ const padding_div_top = {
   paddingTop: "4vh",
 };
 const table = {
-  maxWidth: "90%",
+  maxWidth: "90vw",
   margin: "auto",
 };
 
 export default function MaterialTableDemo() {
   const [stateApp, setStateApp] = React.useContext(AppContext);
   let actual_columns = stateApp.m1neralHeaders;
-  
+
   let columns = () => {
     actual_columns.forEach((element) => {
       element.title = element.label;
@@ -71,7 +71,7 @@ export default function MaterialTableDemo() {
     });
     return actual_columns;
   };
-  
+
   const checkProperties = (obj) => {
     for (var key in obj) {
       if (obj[key] !== null && obj[key] != "") {
@@ -79,12 +79,12 @@ export default function MaterialTableDemo() {
       }
     }
     return true;
-  }
+  };
 
-  useEffect(()=> {
+  useEffect(() => {
     let temp_state = [];
-    stateApp.csvContactsListToSend.forEach(element => {
-      let temp = {...element};
+    stateApp.csvContactsListToSend.forEach((element) => {
+      let temp = { ...element };
       temp.leadSource = null;
       temp.tableData = null;
       if (checkProperties(temp) == false) {
@@ -93,9 +93,9 @@ export default function MaterialTableDemo() {
     });
     setStateApp({
       ...stateApp,
-      csvContactsListToSend: temp_state
-    })
-  },[])
+      csvContactsListToSend: temp_state,
+    });
+  }, []);
 
   return (
     <div style={main_div}>
