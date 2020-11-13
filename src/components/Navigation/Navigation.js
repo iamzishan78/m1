@@ -1223,14 +1223,14 @@ export default function Navigation(props) {
             {matchTransact ? (
               <div>
                 <div ref={anchorEl} className={classes.filterTabs}>
-                  <Button
+                  {/* <Button
                     onClick={handleClickAddDeal}
                     color="secondary"
                     variant="contained"
                     startIcon={<Add />}
                   >
                     Add Deal
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             ) : (
