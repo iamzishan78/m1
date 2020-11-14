@@ -287,7 +287,7 @@ export default function FieldContent({
             contact: trimmedEditContent,
             ignoreResponse: true,
           },
-          refetchQueries: ["getContacts", "getContact", "getPaginatedContacts"],
+          refetchQueries: ["getPaginatedContacts", "getContact"],
           awaitRefetchQueries: false,
         }).then((res) => {
           let entries = Object.entries(editContent);

@@ -489,7 +489,7 @@ function SubTable(props) {
     e.tableState.page = 0;
     e.tableState.count = 0;
     setPageInd(e.tableState.page);
-    e.getContacts(e.pageVariables);
+    e.getPaginatedContacts(e.pageVariables);
     e.getContactsFilterOptions(e.pageVariables);
   };
 
@@ -1840,11 +1840,11 @@ function SubTable(props) {
             tableState.page = 0;
             setPageInd(tableState.page);
             setRowsPerPage(tableState.rowsPerPage);
-            props.contactsPageProps.getContacts(pageVariables);
+            props.contactsPageProps.getPaginatedContacts(pageVariables);
             break;
           case "changePage":
             props.contactsPageProps.setLoading(true);
-            props.contactsPageProps.getContacts({
+            props.contactsPageProps.getPaginatedContacts({
               ...pageVariables,
               variables: {
                 ...pageVariables.variables,
@@ -1866,13 +1866,13 @@ function SubTable(props) {
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
             setPageInd(tableState.page);
-            props.contactsPageProps.getContacts(pageVariables);
+            props.contactsPageProps.getPaginatedContacts(pageVariables);
             break;
           case "search":
             delayedSearchRequest({
               tableState: tableState,
               setLoading: props.contactsPageProps.setLoading,
-              getContacts: props.contactsPageProps.getContacts,
+              getPaginatedContacts: props.contactsPageProps.getPaginatedContacts,
               getContactsFilterOptions: props.contactsPageProps.getContactsFilterOptions,
               pageVariables
             });
@@ -1882,7 +1882,7 @@ function SubTable(props) {
             tableState.page = 0;
             tableState.count = 0;
             setPageInd(tableState.page);
-            props.contactsPageProps.getContacts(pageVariables);
+            props.contactsPageProps.getPaginatedContacts(pageVariables);
             props.contactsPageProps.getContactsFilterOptions();
             break;
           case "propsUpdate":
@@ -1892,13 +1892,13 @@ function SubTable(props) {
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
             setPageInd(tableState.page);
-            props.contactsPageProps.getContacts(pageVariables);
+            props.contactsPageProps.getPaginatedContacts(pageVariables);
             break;
           case "resetFilters":
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
             setPageInd(tableState.page);
-            props.contactsPageProps.getContacts(pageVariables);
+            props.contactsPageProps.getPaginatedContacts(pageVariables);
             break;
           default:
             console.log("action not handled.");

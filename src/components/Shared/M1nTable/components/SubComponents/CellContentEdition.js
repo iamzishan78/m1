@@ -320,7 +320,7 @@ export default function CellContentEdition({
           variables: {
             contact: trimmedEditContent,
           },
-          refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
+          refetchQueries: ["getPaginatedContacts", "getContact", "getCustomLayer"],
           awaitRefetchQueries: true,
         });
       }

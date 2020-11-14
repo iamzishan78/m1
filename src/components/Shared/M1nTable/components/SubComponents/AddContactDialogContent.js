@@ -12,7 +12,7 @@ import { Grid } from "@material-ui/core";
 import { AppContext } from "../../../../../AppContext";
 import { Modals } from "../../../../../styles/Modal";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { CONTACTSQUERY } from "../../../../../graphQL/useQueryContacts";
+import { PAGINATEDCONTACTSQUERY } from "../../../../../graphQL/useQueryPaginatedContacts";
 import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -78,9 +78,9 @@ export default function AddContactDialogContent(props) {
     // owners: props.parent ? [props.parent] : [],
   });
   const [
-    getContacts,
+    getPaginatedContacts,
     { loading: loadingContacts, data: dataContacts },
-  ] = useLazyQuery(CONTACTSQUERY, {
+  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
   });
 
@@ -96,7 +96,7 @@ export default function AddContactDialogContent(props) {
   //// comented after scale to more than 100 000 contacts
   // useEffect(() => {
   //   if (props.parent || props.setDealsContact) {
-  //     getContacts();
+  //     getPaginatedContacts();
   //   }
   // }, [props.parent, props.setDealsContact]);
 
@@ -175,7 +175,7 @@ export default function AddContactDialogContent(props) {
               lastUpdateBy: stateApp.user.mongoId,
             },
           },
-          refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
+          refetchQueries: ["getPaginatedContacts", "getContact", "getCustomLayer"],
           awaitRefetchQueries: true,
         });
         e.preventDefault();
@@ -201,7 +201,7 @@ export default function AddContactDialogContent(props) {
             lastUpdateBy: stateApp.user.mongoId,
           },
         },
-        refetchQueries: ["getContacts", "getContact"],
+        refetchQueries: ["getPaginatedContacts", "getContact"],
         awaitRefetchQueries: true,
       });
     }

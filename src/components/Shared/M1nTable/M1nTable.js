@@ -24,7 +24,6 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
 import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
-// import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { CONTACTSFILTEROPTIONS } from "../../../graphQL/useQueryContactsFilterOptions";
 import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType";
@@ -2003,7 +2002,7 @@ function M1nTable(props) {
   const [removeUser] = useMutation(REMOVEUSER);
   //////////
 
-  const [getContacts, { data: constDataContacts }] = useLazyQuery(
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
     PAGINATEDCONTACTSQUERY,
     {
       fetchPolicy: "cache-and-network",
@@ -2784,7 +2783,7 @@ function M1nTable(props) {
       setTargetLabel("contact");
       setHeader("Contacts");
       setAddAble({ parent: false, type: "contact" });
-      getContacts();
+      getPaginatedContacts();
       getContactsFilterOptions();
       setUploadIcon(true);
       setStartPaginationAt(25);
@@ -3044,7 +3043,7 @@ function M1nTable(props) {
                   IsDeleted: true,
                 },
               },
-              refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
+              refetchQueries: ["getPaginatedContacts", "getContact", "getCustomLayer"],
               awaitRefetchQueries: true,
             });
           }
@@ -3659,7 +3658,7 @@ function M1nTable(props) {
               transactionId: dataDeals.transactionData._id,
               transaction: { allData: newData, user: stateApp.user.mongoId },
             },
-            refetchQueries: ["getTransactionData", "getContact", "getContacts"],
+            refetchQueries: ["getTransactionData", "getContact", "getPaginatedContacts"],
             awaitRefetchQueries: true,
           });
         }
@@ -4077,7 +4076,7 @@ function M1nTable(props) {
         startPaginationAt={startPaginationAt}
         contactId={props.contact?._id}
         contactsPageProps={{
-          getContacts,
+          getPaginatedContacts,
           getContactsFilterOptions,
           contactsCount: dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
             ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]?.totalCount

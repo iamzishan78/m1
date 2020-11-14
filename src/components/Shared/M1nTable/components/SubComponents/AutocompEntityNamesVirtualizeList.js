@@ -4,7 +4,8 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import PropTypes from "prop-types";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme, makeStyles } from "@material-ui/core/styles";
-import { VariableSizeList } from "react-window";
+import { FixedSizeList, VariableSizeList } from "react-window";
+import InfiniteLoader from "react-window-infinite-loader";
 import { Typography } from "@material-ui/core";
 import { Grid } from "@material-ui/core";
 
@@ -36,15 +37,15 @@ const joinAddress = (row) => {
 
 const LISTBOX_PADDING = 8; // px
 
-function renderRow(props) {
-  const { data, index, style } = props;
-  return React.cloneElement(data[index], {
-    style: {
-      ...style,
-      top: style.top + LISTBOX_PADDING,
-    },
-  });
-}
+// function renderRow(props) {
+//   const { data, index, style } = props;
+//   return React.cloneElement(data[index], {
+//     style: {
+//       ...style,
+//       top: style.top + LISTBOX_PADDING,
+//     },
+//   });
+// }
 
 const OuterElementContext = React.createContext({});
 
@@ -68,19 +69,58 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
   props,
   ref
 ) {
-  const { children, ...other } = props;
+  const { 
+    children,
+    isItemLoaded,
+    loadMoreItems,
+    itemCount,
+    isNextPageLoading,
+    ...other
+  } = props;
+
   const itemData = React.Children.toArray(children);
   const theme = useTheme();
-  //   const smUp = useMediaQuery(theme.breakpoints.up("sm"), { noSsr: true });
-  const itemCount = itemData.length;
-  //   const itemSize = smUp ? 36 : 48;
+  // const smUp = useMediaQuery(theme.breakpoints.up("sm"), { noSsr: true });
+  // const itemCount = /*hasNextPage ? itemData.length + 1 : */itemData.length;
+  // const itemSize = smUp ? 36 : 48;
   const itemSize = 65;
+
+  const getChildSize = (child) => {
+    // if (React.isValidElement(child) && child.type === ListSubheader) {
+    //   return 48;
+    // }
+
+    return itemSize;
+  };
 
   const getHeight = () => {
     if (itemCount > 4) {
       return 4 * itemSize;
     }
-    return itemCount * itemSize;
+    return itemData.map(getChildSize).reduce((a, b) => a + b, 0);
+  };
+
+  const renderRow = (props) => {
+    const { data, index, style } = props;
+
+    if (!isItemLoaded(index)) {
+      // TODO - improve loading state
+      return null;
+      // return <li style={style}>Loading...</li>;
+    }
+
+    if (!data[index]) {
+      // eslint-disable-next-line
+      console.log('isLoaded but no data', { data, index });
+      return null;
+    }
+
+    return React.cloneElement(data[index], {
+      style: {
+        ...style,
+        top: style.top + LISTBOX_PADDING,
+      },
+    });
   };
 
   const gridRef = useResetCache(itemCount);
@@ -88,26 +128,36 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
   return (
     <div ref={ref}>
       <OuterElementContext.Provider value={other}>
-        <VariableSizeList
-          itemData={itemData}
-          height={getHeight() + 2 * LISTBOX_PADDING}
-          width="100%"
-          ref={gridRef}
-          outerElementType={OuterElementType}
-          innerElementType="ul"
-          itemSize={() => itemSize}
-          overscanCount={5}
+        <InfiniteLoader
+          isItemLoaded={isItemLoaded}
           itemCount={itemCount}
+          loadMoreItems={loadMoreItems}
         >
-          {renderRow}
-        </VariableSizeList>
+          {({ onItemsRendered, ref: refList }) => (
+            <FixedSizeList
+              ref={refList}
+              itemData={itemData}
+              height={getHeight() + 2 * LISTBOX_PADDING}
+              width="100%"         
+              key={itemCount}     
+              outerElementType={OuterElementType}
+              innerElementType="ul"
+              itemSize={itemSize}
+              overscanCount={5}
+              itemCount={itemCount}
+              onItemsRendered={onItemsRendered}
+            >
+              {renderRow}
+            </FixedSizeList>
+          )}
+        </InfiniteLoader>
       </OuterElementContext.Provider>
-    </div>
+     </div>
   );
 });
 
 ListboxComponent.propTypes = {
-  children: PropTypes.node,
+  children: PropTypes.node
 };
 
 const useStyles = makeStyles({
@@ -130,11 +180,40 @@ export default function AutocompEntityNamesVirtualizeList(props) {
     setNameAutInputValue,
     variant = "standard",
     label = "",
+    hasNextPage,
+    isNextPageLoading,
+    loadNextPage,
   } = props;
   const classes = useStyles();
   //   const [nameAutValue, setNameAutValue] = useState(null);
   //   const [nameAutInputValue, setNameAutInputValue] = useState("");
   //   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
+
+  const isItemLoaded = (index)=> {
+    if (!hasNextPage) {
+      return true;
+    }
+
+    return !!mongoEntitiesArray[index];
+  };
+
+  const loadMoreItems = (() => {
+    if (isNextPageLoading || !hasNextPage ) {
+      return () => {}
+    }
+    else {
+      loadNextPage();
+    }
+  })();
+
+  const itemCount = mongoEntitiesArray.length + 1;
+
+  const ListboxProps = {
+    isItemLoaded,
+    loadMoreItems,
+    itemCount,
+    isNextPageLoading,
+  };
 
   useEffect(() => {
     console.log("ENTITIES : ", mongoEntitiesArray);
@@ -190,6 +269,15 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       disableListWrap
       classes={classes}
       ListboxComponent={ListboxComponent}
+      // {(props) => (
+      //   <ListboxComponent
+      //     hasNextPage={hasNextPage}
+      //     isNextPageLoading={isNextPageLoading}
+      //     loadNextPage={loadNextPage}
+      //     {...props}
+      //   />
+      // )}
+      ListboxProps={ListboxProps}
       renderOption={(option) => {
         if (option._id === "newEntity")
           return (

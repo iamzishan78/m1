@@ -147,7 +147,7 @@ export default function Deals({ contact, ...props }) {
           transactionId: data.transactionData._id,
           transaction: { allData: newData, user: stateApp.user.mongoId },
         },
-        refetchQueries: ["getTransactionData", "getContact", "getContacts"],
+        refetchQueries: ["getTransactionData", "getContact", "getPaginatedContacts"],
         awaitRefetchQueries: true,
       });
     }
