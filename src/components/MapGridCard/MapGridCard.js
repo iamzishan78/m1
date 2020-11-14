@@ -442,8 +442,6 @@ function MapGridCard(props) {
               className="cancelDraggableEffect"
               onClick={(e) => {
                 e.stopPropagation();
-                e.preventDefault();
-
                 dispatch(
                   setMapGridCardState({
                     mapGridCardActivated:
@@ -462,7 +460,6 @@ function MapGridCard(props) {
               className="cancelDraggableEffect"
               onClick={(e) => {
                 e.stopPropagation();
-                e.preventDefault();
                 dispatch(
                   setMapGridCardState({
                     mapGridCardActivated: false,
