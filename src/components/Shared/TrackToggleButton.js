@@ -101,7 +101,10 @@ export default function TrackToggleButton(props) {
       });
     } else {
       for (let i = 0; i < props.multipleIds.length; i++) {
-        if (props.target.isTracked === props.multipleTracks[i]) {
+        if (
+          props.multipleIds.indexOf(props.multipleIds[i]) === i && //// only first time it's appear if duplicated
+          props.target.isTracked === props.multipleTracks[i]
+        ) {
           toggleCreateRemoveTrack({
             variables: {
               track: {
