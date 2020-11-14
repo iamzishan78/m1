@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
     // width: 100,
   },
   content: {
-    margin: 15
+    margin: 10
   },
 
   bread: {

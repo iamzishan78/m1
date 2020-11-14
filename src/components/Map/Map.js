@@ -5448,43 +5448,36 @@ export default function Map() {
             deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
           />
         )}
+
       {mapGridCardActivated && (
         <MapGridCard mapGridCardActivated={mapGridCardActivated} />
       )}
        
-      <div id="tempPopupHolder" className={classes.portal} ref={container}>
-       
-      {stateApp.popupOpen === true && (
-          <Portal container={container.current}>
-            <PortalD id="popupContainer2">
-              {stateApp.selectedWell !== null && showExpandableCard &&
-              stateApp.expandedCard && (
-                    <Draggable>
-                      <div>
-                        <ExpandableCardProvider
-                          expanded
-                          handleCloseExpandableCard={handleCloseExpandableCard}
-                          component={<WellCardProvider />}
-                          title={stateApp.selectedWell.wellName}
-                          subTitle={stateApp.selectedWell.operator}
-                          parent="map"
-                          cardTop={-window.innerHeight / 2.2}
-                          cardLeft={-window.innerWidth / 2.1}
-                          position="relative"
-                          zIndex={99}
-                          cardWidthExpanded="50vw"
-                          cardHeightExpanded="90vh"
-                          targetSourceId={stateApp.selectedWell.id}
-                          targetLabel="well"
-                        />
-                      </div>
-                    </Draggable>
-                  )
-              }
-            </PortalD>
-          </Portal>
-        )}
-      </div>
+      {stateApp.popupOpen === true && 
+        stateApp.selectedWell !== null && showExpandableCard &&
+        stateApp.expandedCard && (
+            <Draggable>
+              <div style={{width: 0, height: 0}}>
+                <ExpandableCardProvider
+                  expanded
+                  handleCloseExpandableCard={handleCloseExpandableCard}
+                  component={<WellCardProvider />}
+                  title={stateApp.selectedWell.wellName}
+                  subTitle={stateApp.selectedWell.operator}
+                  parent="map"
+                  cardTop={20}
+                  cardLeft={20}
+                  position="relative"
+                  zIndex={99}
+                  cardWidthExpanded="50vw"
+                  cardHeightExpanded="90vh"
+                  targetSourceId={stateApp.selectedWell.id}
+                  targetLabel="well"
+                />
+              </div>
+            </Draggable>
+          )
+        }
       <div id="modalHolder" ref={modalContainer} />
       <Portal container={modalContainer.current}>
         {stateApp.selectedAbstracts.length > 0 && (
