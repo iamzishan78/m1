@@ -5,6 +5,7 @@ export const WELLOWNERSQUERY = gql`
   query getWellOwners($id: String) {
     wellOwners(wellId: $id) {
       id
+      globalOwnerId
       name
       ownershipType
       interestType

@@ -337,22 +337,23 @@ function AddActivityDialog(props) {
             Cancel
           </Button>
 
-          <Button
-            variant="contained"
-            color="secondary"
-            size="medium"
-            disableElevation
-            onClick={() => {
-              addNew ? addActivity() : updateActivity();
-            }}
-            disabled={loading}
-          >
-            {addNew ? "Save" : "Update"}
-          </Button>
-
           {loading ? (
-            <CircularProgress color="secondary" className={classes.progress} />
-          ) : called && !loading ? (
+            <CircularProgress color="secondary" size={34} className={classes.progress} />
+          ) : (
+            <Button
+              variant="contained"
+              color="secondary"
+              size="medium"
+              disableElevation
+              onClick={() => {
+                addNew ? addActivity() : updateActivity();
+              }}
+              disabled={loading}
+            >
+              {addNew ? "Save" : "Update"}
+            </Button>
+          )}
+          {/* called && !loading ? (
             addActivityStatus.success ? (
               <Typography color="secondary" variant="subtitle2" gutterBottom>
                 Activity {addNew ? "added" : "updated"}.
@@ -362,7 +363,7 @@ function AddActivityDialog(props) {
                 Unable to {addNew ? "add" : "update"} activity.
               </Typography>
             )
-          ) : null}
+          ) : null */}
         </div>
       </div>
     </div>
