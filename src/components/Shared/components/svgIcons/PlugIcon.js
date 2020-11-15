@@ -9,8 +9,8 @@ export default function PlugIcon(props) {
     {...props}>
 <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="61"
-      height="62"
+      width="80"
+      height="80"
       overflow="hidden"
     >
       <defs>
