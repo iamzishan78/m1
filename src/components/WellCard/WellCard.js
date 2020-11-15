@@ -493,6 +493,7 @@ export default function WellCard() {
         </div>
       ) : (
         <div style={{ height: "100%" }}>
+
           <Card className={classes.card}>
             <CardContent className={classes.content}>
               <WellCardDetails target={target} summary={summary} />

@@ -184,7 +184,7 @@ const tableGridStyle = makeStyles({
 export default function WellCardDetails(props) {
   const classes = useStyles();
   const table_classes = tableGridStyle();
-  const [stateApp] = useContext(AppContext);
+  const [stateApp,setStateApp] = useContext(AppContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
   const [tabValue, setTabValue] = React.useState(0);
   const [production, setProduction] = useState(null);
@@ -359,10 +359,10 @@ export default function WellCardDetails(props) {
     }
   }
 
+
   return stateApp.selectedWell ? (
     <React.Fragment>
       <Grid item sm={12} className={classes.gridItemGrey}>
-        {/* <WellApiCard /> */}
         <WellTypeCard />
         <WellStatusCard />
         <Last12StatusCard />

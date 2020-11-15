@@ -46,6 +46,7 @@ const AppProvider = (props) => {
     signUpUserType: null,
     wellCount: 500,
     wells: null,
+    wellDetailCardOpen: null,
     trackedwells: null,
     trackedOwnerWells: null,
     selectedWell: null,
