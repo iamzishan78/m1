@@ -399,14 +399,16 @@ function SubTable(props) {
         return [...newRows, ...updatedRows.filter((r) => r)];
       };
 
-      if (props.rows.length > 0 && props.orderByTracks && firstMount) {
-        setRows([
-          ...props.rows.sort((a, b) => {
-            return b.isTracked - a.isTracked;
-          }),
-        ]);
-        setFirstMount(false);
-      } else setRows(updInSameOrder([...props.rows]));
+      if (props.rows.length > 0 && props.orderByTracks) {
+        if (firstMount) {
+          setRows([
+            ...props.rows.sort((a, b) => {
+              return b.isTracked - a.isTracked;
+            }),
+          ]);
+          setFirstMount(false);
+        } else setRows(updInSameOrder([...props.rows]));
+      } else setRows([...props.rows]);
     }
   }, [props.rows, props.orderByTracks]);
 

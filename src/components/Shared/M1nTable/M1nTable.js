@@ -2691,6 +2691,7 @@ function M1nTable(props) {
       console.log("ue mintable 22");
       setTargetLabel("contact");
       setHeader("Contacts");
+      setOrderByTracks(false);
       setAddAble({ parent: false, type: "contact" });
       getPaginatedContacts();
       getContactsFilterOptions();
@@ -2952,7 +2953,11 @@ function M1nTable(props) {
                   IsDeleted: true,
                 },
               },
-              refetchQueries: ["getPaginatedContacts", "getContact", "getCustomLayer"],
+              refetchQueries: [
+                "getPaginatedContacts",
+                "getContact",
+                "getCustomLayer",
+              ],
               awaitRefetchQueries: true,
             });
           }
@@ -3568,7 +3573,11 @@ function M1nTable(props) {
               transactionId: dataDeals.transactionData._id,
               transaction: { allData: newData, user: stateApp.user.mongoId },
             },
-            refetchQueries: ["getTransactionData", "getContact", "getPaginatedContacts"],
+            refetchQueries: [
+              "getTransactionData",
+              "getContact",
+              "getPaginatedContacts",
+            ],
             awaitRefetchQueries: true,
           });
         }
