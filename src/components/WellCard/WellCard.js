@@ -617,7 +617,7 @@ export default function WellCard() {
                       </TableCell>
                       <TableCell className={classes.cell2} align="right">
                         {stateApp.selectedWell.measuredDepth
-                          ? stateApp.selectedWell.measuredDepth
+                          ? formatBOE(stateApp.selectedWell.measuredDepth)
                           : '--'}
                       </TableCell>
                     </TableRow>
@@ -627,7 +627,7 @@ export default function WellCard() {
                       </TableCell>
                       <TableCell className={classes.cell2} align="right">
                         {stateApp.selectedWell.lateralLength
-                          ? stateApp.selectedWell.lateralLength
+                          ? formatBOE(stateApp.selectedWell.lateralLength)
                           : '--'}
                       </TableCell>
                     </TableRow>
