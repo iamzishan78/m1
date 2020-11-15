@@ -131,7 +131,7 @@ export default (props) => {
         selectedAbstracts: []
       }));
     }
-    if (customLayerInsertedData.upsertCustomLayer  && customLayerInsertedData.upsertCustomLayer.customLayer && !customLayerInsertedData.success) {
+    if (customLayerInsertedData.upsertCustomLayer  && customLayerInsertedData.upsertCustomLayer.customLayer && !customLayerInsertedData.upsertCustomLayer.success) {
       setError(true);
     }
   }, [customLayerInsertedData]);

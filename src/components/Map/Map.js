@@ -3645,17 +3645,9 @@ export default function Map() {
         .setMaxWidth("none")
         .setHTML(`<div id="popupContainer"></div>`)
         .addTo(map);
-      new mapboxgl.Popup({ offset: 0, closeOnClick: false })
-      .setLngLat(stateApp.wellListFromSearch.length === 0 ? map.getCenter() : coordinates)
-      .setMaxWidth("none")
-      .setHTML(`<div id="popupContainer2" style="width: 0; height: 0;"></div>`)
-      .addTo(map);
-      // //show wellcard in popup Portal
       setStateApp((state) => ({ ...state, popupOpen: true, 
         expandedCard: stateApp.activateWellDetailsFromTable ? true : false 
       }));
-      //setStateApp((state) => ({ ...state, wellSelected: true }));
-      //setStateApp((state) => ({ ...state, wellSelectedCoordinates: [currentFeature.longitude, currentFeature.latitude] }));
       handleOpenExpandableCard();
     },
     [map, stateApp]
