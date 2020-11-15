@@ -420,11 +420,11 @@ export default function WellCard() {
                 <TableBody>
                   <TableRow className={classes.rowGrey}>
                     <TableCell className={classes.cell1} align="left">
-                      API
+                      Operator
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {stateApp.selectedWell.api
-                        ? stateApp.selectedWell.api
+                      {stateApp.selectedWell.operator
+                        ? stateApp.selectedWell.operator
                         : "--"}
                     </TableCell>
                   </TableRow>
@@ -562,11 +562,11 @@ export default function WellCard() {
                     </TableRow>
                     <TableRow className={classes.rowWhite}>
                       <TableCell className={classes.cell1} align="left">
-                        API
+                        Operator
                       </TableCell>
                       <TableCell className={classes.cell2} align="right">
-                        {stateApp.selectedWell.api
-                          ? stateApp.selectedWell.api
+                        {stateApp.selectedWell.operator
+                          ? stateApp.selectedWell.operator
                           : '--'}
                       </TableCell>
                     </TableRow>
