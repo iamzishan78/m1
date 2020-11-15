@@ -32,6 +32,7 @@ import PermitDateCard from "../Shared/PermitDateCard";
 import ProfileCard from "../Shared/ProfileCard";
 import WellTypeCard from "../Shared/WellTypeCard";
 import SpudDateCard from "../Shared/SpudDateCard";
+import PlugDateCard from "../Shared/PlugDateCard";
 import WellApiCard from "../Shared/WellApiCard";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
@@ -361,7 +362,7 @@ export default function WellCardDetails(props) {
   return stateApp.selectedWell ? (
     <React.Fragment>
       <Grid item sm={12} className={classes.gridItemGrey}>
-        <WellApiCard />
+        {/* <WellApiCard /> */}
         <WellTypeCard />
         <WellStatusCard />
         <Last12StatusCard />
@@ -371,6 +372,8 @@ export default function WellCardDetails(props) {
         <SpudDateCard />
         <CompletionDateCard />
         <FirstProdDateCard />
+        <PlugDateCard />
+
       </Grid>
       <Grid item sm={12} container className={classes.gridWidthScroll}>
         <Grid item sm={12} container style={{ height: "482px"}}>

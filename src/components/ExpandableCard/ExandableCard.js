@@ -304,18 +304,18 @@ export default function ExpandableCard(props) {
                 />
               )}
 
-              {/* {stateExpandableCard.expanded && (
+              {stateExpandableCard.expanded && (
               <Tooltip title={"Report Bug"} placement="top">
                 <IconButton
                   size="medium"
                   onClick={() => setOpenBugModal(true)}
-                  //aria-label="expand"
                   className={classes.icons}
                 >
                   <BugsIcon viewBox="0 0 64 64" color="white" />
                 </IconButton>
               </Tooltip>
-            )} */}
+            )}
+
       {stateExpandableCard.expanded && targetLabel === "parcel" && (
                 <Tooltip title={"Delete Parcel"} placement="top">
                   {isDeletingCustomLayer ? (
