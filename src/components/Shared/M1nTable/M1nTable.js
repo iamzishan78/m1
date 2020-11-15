@@ -359,6 +359,19 @@ const OwnersPerWellHeadCells = [
       viewColumns: false,
     },
   },
+  {
+    name: "globalOwnerId",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+
   { name: "name", label: "Name" },
   {
     name: "ownershipType",
@@ -2616,7 +2629,7 @@ function M1nTable(props) {
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
         setLoading(true);
         const objectsIdsArray = dataWellOwners.wellOwners.map(
-          (wellOwner) => wellOwner.id
+          (wellOwner) => wellOwner.globalOwnerId
         );
 
         // getOwnersWells({
@@ -2666,7 +2679,7 @@ function M1nTable(props) {
 
         // if (dataOwnersWells.ownersWells) {
         //   for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
-        //     if (wellOwner.id === dataOwnersWells.ownersWells[i].ownerId) {
+        //     if (wellOwner.globalOwnerId === dataOwnersWells.ownersWells[i].ownerId) {
         //       wellOwner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
         //         (well) => well.wellId
         //       );
@@ -2681,7 +2694,7 @@ function M1nTable(props) {
           i++
         ) {
           if (
-            wellOwner.id ===
+            wellOwner.globalOwnerId ===
             checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
           ) {
             wellOwner.isContact =
@@ -2694,7 +2707,10 @@ function M1nTable(props) {
         }
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-          if (wellOwner.id === dataCommentsCounter.commentsCounter[i]._id) {
+          if (
+            wellOwner.globalOwnerId ===
+            dataCommentsCounter.commentsCounter[i]._id
+          ) {
             wellOwner.commentsCounter =
               dataCommentsCounter.commentsCounter[i].total;
             break;
@@ -2702,7 +2718,7 @@ function M1nTable(props) {
         }
 
         for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-          if (wellOwner.id === dataTagSamples.tagSamples[i]._id) {
+          if (wellOwner.globalOwnerId === dataTagSamples.tagSamples[i]._id) {
             wellOwner.tags = [
               dataTagSamples.tagSamples[i].tags,
               dataTagSamples.tagSamples[i].total,
@@ -2713,7 +2729,9 @@ function M1nTable(props) {
         }
 
         for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-          if (wellOwner.id === dataTracks.tracksByObjectType[i].trackOn) {
+          if (
+            wellOwner.globalOwnerId === dataTracks.tracksByObjectType[i].trackOn
+          ) {
             wellOwner.isTracked = true;
             break;
           }
@@ -2782,6 +2800,7 @@ function M1nTable(props) {
       console.log("ue mintable 22");
       setTargetLabel("contact");
       setHeader("Contacts");
+      setOrderByTracks(false);
       setAddAble({ parent: false, type: "contact" });
       getPaginatedContacts();
       getContactsFilterOptions();
@@ -3043,7 +3062,11 @@ function M1nTable(props) {
                   IsDeleted: true,
                 },
               },
-              refetchQueries: ["getPaginatedContacts", "getContact", "getCustomLayer"],
+              refetchQueries: [
+                "getPaginatedContacts",
+                "getContact",
+                "getCustomLayer",
+              ],
               awaitRefetchQueries: true,
             });
           }
@@ -3658,7 +3681,11 @@ function M1nTable(props) {
               transactionId: dataDeals.transactionData._id,
               transaction: { allData: newData, user: stateApp.user.mongoId },
             },
-            refetchQueries: ["getTransactionData", "getContact", "getPaginatedContacts"],
+            refetchQueries: [
+              "getTransactionData",
+              "getContact",
+              "getPaginatedContacts",
+            ],
             awaitRefetchQueries: true,
           });
         }
@@ -4078,8 +4105,10 @@ function M1nTable(props) {
         contactsPageProps={{
           getPaginatedContacts,
           getContactsFilterOptions,
-          contactsCount: dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
-            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]?.totalCount
+          contactsCount: dataContactsFilterOptions?.contactsFilterOptions
+            ?.totalCount[0]
+            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
+                ?.totalCount
             : 0,
           setLoading,
         }}

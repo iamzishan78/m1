@@ -83,6 +83,8 @@ var ticksToDateString = function (ticks) {
   return date.toISOString();
 };
 
+const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -305,6 +307,12 @@ function SubTable(props) {
   const setRowsPerPage = (newState) => {
     setStateIfDeepEqual(RowsPerPage, newState);
   };
+
+  const [firstMount, FirstMount] = useState(true);
+  const setFirstMount = (newState) => {
+    setStateIfDeepEqual(FirstMount, newState);
+  };
+
   const [getWell, { data: dataWell }] = useLazyQuery(WELLQUERY);
 
   //// opening the well detail card after fetch the extra well data needed
@@ -371,13 +379,37 @@ function SubTable(props) {
 
   useEffect(() => {
     if (props.rows) {
-      if (props.orderByTracks)
-        setRows([
-          ...props.rows.sort((a, b) => {
-            return b.isTracked - a.isTracked;
-          }),
-        ]);
-      else setRows([...props.rows]);
+      const updInSameOrder = (commingRows) => {
+        if (!rows || rows.length == 0) return commingRows;
+
+        let updatedRows = [];
+        let newRows = [];
+
+        commingRows.forEach((updRow) => {
+          const position = rows.findIndex(
+            (row) =>
+              (row.id && row.id === updRow.id) ||
+              (row.Id && row.Id === updRow.Id) ||
+              (row._id && row._id === updRow._id)
+          );
+
+          if (position) updatedRows[position] = updRow;
+          else newRows.push(updRow);
+        });
+
+        return [...newRows, ...updatedRows.filter((r) => r)];
+      };
+
+      if (props.rows.length > 0 && props.orderByTracks) {
+        if (firstMount) {
+          setRows([
+            ...props.rows.sort((a, b) => {
+              return b.isTracked - a.isTracked;
+            }),
+          ]);
+          setFirstMount(false);
+        } else setRows(updInSameOrder([...props.rows]));
+      } else setRows([...props.rows]);
     }
   }, [props.rows, props.orderByTracks]);
 
@@ -531,23 +563,39 @@ function SubTable(props) {
                             let selectedWell = props.rows.find((row) => {
                               return row.id === tableMeta.rowData[0];
                             });
+
                             if (selectedWell) {
-                              setSelectedRow(selectedWell);
-                              setStateApp((state) => ({
-                                ...state,
-                                activateWellDetailsFromTable: true,
-                                popupOpen: false,
-                                selectedWell: null,
-                                expandedCard: true,
-                                selectedWellId:
-                                  props.targetLabel === "well"
-                                    ? tableMeta.rowData[0]
-                                    : null,
-                                flyTo: {
-                                  longitude: selectedWell.coordinates.center[0],
-                                  latitude: selectedWell.coordinates.center[1],
-                                },
-                              }));
+                              if (props.targetLabel === "well") {
+                                setSelectedRow(selectedWell);
+                                setStateApp((state) => ({
+                                  ...state,
+                                  selectedWellId: tableMeta.rowData[0],
+                                  selectedWell: selectedWell,
+                                }));
+                                setSubComponent(<WellCardProvider />);
+                                setTitle(
+                                  selectedWell.wellName
+                                    ? selectedWell.wellName
+                                    : selectedWell.WellName
+                                );
+                                setSubTitle(
+                                  selectedWell.operator
+                                    ? selectedWell.operator
+                                    : selectedWell.Operator
+                                );
+                                handleOpenExpandableCard();
+                              } else if (props.targetLabel === "owner") {
+                                if (props.parent === "OwnersPerWell") {
+                                  selectedWell.id = selectedWell.globalOwnerId;
+                                  delete selectedWell.globalOwnerId;
+                                }
+
+                                dispatch(
+                                  setMapGridCardState({
+                                    selectedOwner: selectedWell,
+                                  })
+                                );
+                              }
                             }
                           }
                         }}
@@ -763,14 +811,19 @@ function SubTable(props) {
                   let id =
                     (trueTargetLabel ? trueTargetLabel : props.targetLabel) +
                     tableMeta.columnIndex;
+
+                  let targetSourceId =
+                    props.parent === "OwnersPerWell"
+                      ? tableMeta.rowData[2]
+                      : tableMeta.rowData[0];
                   return (
                     <TrackToggleButton
-                      id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                      id={id + targetSourceId + tableMeta.rowIndex}
                       target={{ isTracked: value }}
                       targetLabel={
                         trueTargetLabel ? trueTargetLabel : props.targetLabel
                       }
-                      targetSourceId={tableMeta.rowData[0]}
+                      targetSourceId={targetSourceId}
                       dark
                       multipleIds={
                         m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !==
@@ -805,6 +858,10 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
+                  let targetSourceId =
+                    props.parent === "OwnersPerWell"
+                      ? tableMeta.rowData[2]
+                      : tableMeta.rowData[0];
 
                   return (
                     <Tooltip
@@ -819,7 +876,7 @@ function SubTable(props) {
                         color="secondary"
                       >
                         <IconButton
-                          id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                          id={id + targetSourceId + tableMeta.rowIndex}
                           size={props.dense ? "small" : "medium"}
                           color="primary"
                           className={`${classes.icons} ${
@@ -835,7 +892,7 @@ function SubTable(props) {
                             handleExpandClick(
                               tableMeta.columnIndex,
                               tableMeta.rowIndex,
-                              tableMeta.rowData[0],
+                              targetSourceId,
                               "comment"
                             );
                           }}
@@ -1021,7 +1078,10 @@ function SubTable(props) {
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
                                 {
-                                  globalOwner: tableMeta.rowData[0],
+                                  globalOwner:
+                                    props.parent === "OwnersPerWell"
+                                      ? tableMeta.rowData[2]
+                                      : tableMeta.rowData[0],
                                   entity: tableMeta.rowData[1],
                                 },
                                 "makeOwnerAContact"
@@ -1030,7 +1090,7 @@ function SubTable(props) {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
-                                tableMeta.rowData[1],
+                                tableMeta.rowData[0],
                                 "makeOwnerAContact"
                               );
                           }
@@ -1156,6 +1216,11 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
+                  let targetSourceId =
+                    props.parent === "OwnersPerWell"
+                      ? tableMeta.rowData[2]
+                      : tableMeta.rowData[0];
+
                   return (
                     <div style={{ marginRight: "10px" }}>
                       <Tooltip
@@ -1163,7 +1228,7 @@ function SubTable(props) {
                         placement="top"
                       >
                         <Badge
-                          id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                          id={id + targetSourceId + tableMeta.rowIndex}
                           className={`${classes.TagSample} ${
                             colInd === tableMeta.columnIndex &&
                             rowInd === tableMeta.rowIndex
@@ -1178,7 +1243,7 @@ function SubTable(props) {
                             handleExpandClick(
                               tableMeta.columnIndex,
                               tableMeta.rowIndex,
-                              tableMeta.rowData[0],
+                              targetSourceId,
                               "tag"
                             );
                           }}
@@ -1449,6 +1514,7 @@ function SubTable(props) {
               (row, index) => indexArray.indexOf(index) !== -1
             );
             let selectedRowsIds = selectedRows.map((row) => {
+              if (props.parent === "OwnersPerWell") return row.globalOwnerId;
               if (row.id) return row.id;
               if (row.Id) return row.Id;
               if (row._id) return row._id;
@@ -1872,9 +1938,11 @@ function SubTable(props) {
             delayedSearchRequest({
               tableState: tableState,
               setLoading: props.contactsPageProps.setLoading,
-              getPaginatedContacts: props.contactsPageProps.getPaginatedContacts,
-              getContactsFilterOptions: props.contactsPageProps.getContactsFilterOptions,
-              pageVariables
+              getPaginatedContacts:
+                props.contactsPageProps.getPaginatedContacts,
+              getContactsFilterOptions:
+                props.contactsPageProps.getContactsFilterOptions,
+              pageVariables,
             });
             break;
           case "onSearchClose":
@@ -2001,7 +2069,7 @@ function SubTable(props) {
                 multipleIds={
                   m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
                   m1nSelectedRowsIndexes.length > 1
-                    ? m1nSelectedRowsIds
+                    ? removeDuplicatesIds(m1nSelectedRowsIds)
                     : null
                 }
               />
@@ -2016,7 +2084,7 @@ function SubTable(props) {
                   multipleIds={
                     m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
                     m1nSelectedRowsIndexes.length > 1
-                      ? m1nSelectedRowsIds
+                      ? removeDuplicatesIds(m1nSelectedRowsIds)
                       : null
                   }
                 />
@@ -2080,11 +2148,15 @@ function SubTable(props) {
                 header="Delete Owner(s)"
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIds}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to permanently delete the owner${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                  m1nSelectedRowsIds &&
+                  m1nSelectedRowsIds.length > 1 &&
+                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                 } from  this contact?`}
               </DeleteConfirmationDialogContent>
             )}
@@ -2093,19 +2165,23 @@ function SubTable(props) {
                 header="Delete Contact(s)"
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIds}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {props.header === "Owner's Contacts" &&
                   `Do you want to remove the contact${
-                    m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
+                    m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                       ? "s"
                       : ""
                   } from this owner?`}
 
                 {props.header === "Contacts" &&
                   `Do you want to delete the selected contact${
-                    m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
+                    m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                       ? "s"
                       : ""
                   }?`}
@@ -2114,15 +2190,23 @@ function SubTable(props) {
             {openDialog === "deleteParcelOwnership" && (
               <DeleteConfirmationDialogContent
                 header={`Delete Owner${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                  m1nSelectedRowsIds &&
+                  m1nSelectedRowsIds.length > 1 &&
+                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                 }`}
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIds}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to delete the owner${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                  m1nSelectedRowsIds &&
+                  m1nSelectedRowsIds.length > 1 &&
+                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                 }?`}
               </DeleteConfirmationDialogContent>
             )}
@@ -2133,7 +2217,7 @@ function SubTable(props) {
                 }`}
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIds}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to delete the Parcel Interest${
@@ -2149,7 +2233,7 @@ function SubTable(props) {
                 }`}
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIds}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to delete the selected deal${
@@ -2206,7 +2290,7 @@ function SubTable(props) {
                   props.deleteFunc(selectedUser.id);
                   closeMenu();
                 }}
-                m1nSelectedRowsIds={m1nSelectedRowsIds}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {selectedUser !== null
