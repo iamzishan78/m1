@@ -1146,15 +1146,20 @@ export default function Map() {
         setStateApp((state) => ({
           ...state,
           selectedWell:
-            properties.wellName && properties.operator ? properties : null,
+            //properties.wellName && 
+            properties.api ? properties : null,
           selectedWellId: properties.id ? properties.id.toLowerCase() : null,
           wellSelectedCoordinates: [properties.longitude, properties.latitude],
         }));
 
-        if (properties.wellName && properties.operator) {
+        // if (properties.wellName && properties.api) {
+        //   createPopUp(properties);
+        //   map.resize();
+        // }
+
           createPopUp(properties);
           map.resize();
-        }
+
       }
     };
 
@@ -1529,98 +1534,7 @@ export default function Map() {
     }
   }, [removeLayerFromMap]);
 
-  // useEffect(() => {
-  //   console.log("useEffect 14");
-
-  //   // USE EFFECT FOR M1 LAYER HANDLES
-  //   console.log("layer ue start");
-
-  //   setStateApp((state) => ({
-  //     ...state,
-  //     popupOpen: false,
-  //     selectedUserDefinedLayer: undefined,
-  //   }));
-
-  //   if (stateApp.styleLayers.length > 0 && map) {
-  //     stateApp.styleLayers.forEach((l) => {
-  //       l.id.forEach((k) => {
-  //         if (map.getLayer(k)) {
-  //           map.setLayoutProperty(k, "visibility", "none");
-  //         }
-  //         if (l.layerProps && l.layerProps.clusterProps) {
-  //           if (map.getLayer(k + "-clusters-counts")) {
-  //             map.setLayoutProperty(
-  //               k + "-clusters-counts",
-  //               "visibility",
-  //               "none"
-  //             );
-  //           }
-  //           if (map.getLayer(k + "-clusters")) {
-  //             map.setLayoutProperty(k + "-clusters", "visibility", "none");
-  //           }
-  //         }
-  //       });
-  //     });
-
-  //     const checkedLayers = stateApp.checkedLayers.slice(0);
-  //     if (stateApp.tempCheckedLayer) {
-  //       checkedLayers.push(stateApp.tempCheckedLayer);
-  //     }
-
-  //     if (checkedLayers.length > 0) {
-  //       let layers = checkedLayers;
-  //       layers.sort(function (a, b) {
-  //         return b - a;
-  //       });
-  //       if (layers.length > 0) {
-  //         let belowlayer = null;
-  //         for (let k = layers.length - 1; k >= 0; k--) {
-  //           let i = layers[k];
-  //           let layerConfig = stateApp.styleLayers[i];
-  //           let currentLayerArray = stateApp.styleLayers[i].id;
-  //           // eslint-disable-next-line no-loop-func
-  //           currentLayerArray.forEach((j) => {
-  //             let mapLayer = map.getLayer(j);
-  //             if (
-  //               mapLayer &&
-  //               layerConfig.layerProps &&
-  //               layerConfig.layerProps.clusterProps &&
-  //               !mapLayer.source.includes("_filter")
-  //             ) {
-  //               map.setLayoutProperty(
-  //                 j + "-clusters-counts",
-  //                 "visibility",
-  //                 "visible"
-  //               );
-  //               if (belowlayer != null) {
-  //                 map.moveLayer(j + "-clusters-counts", belowlayer);
-  //               }
-  //               belowlayer = j + "-clusters-counts";
-  //               map.setLayoutProperty(j + "-clusters", "visibility", "visible");
-  //               map.moveLayer(j + "-clusters", belowlayer);
-  //               belowlayer = j + "-clusters";
-  //             }
-  //             if (typeof mapLayer !== "undefined") {
-  //               if (map.getLayer(j)) {
-  //                 map.setLayoutProperty(j, "visibility", "visible");
-  //                 if (belowlayer != null) {
-  //                   map.moveLayer(j, belowlayer);
-  //                 }
-  //                 belowlayer = j;
-  //               }
-  //             } else {
-  //             }
-  //           });
-  //         }
-  //       }
-  //     }
-  //   }
-  // }, [
-  //   map,
-  //   stateApp.checkedLayers,
-  //   stateApp.tempCheckedLayer,
-  //   stateApp.styleLayers,
-  // ]);
+ 
 
   useEffect(() => {
     console.log("useEffect 15");
@@ -5463,7 +5377,7 @@ export default function Map() {
                   handleCloseExpandableCard={handleCloseExpandableCard}
                   component={<WellCardProvider />}
                   title={stateApp.selectedWell.wellName}
-                  subTitle={stateApp.selectedWell.operator}
+                  subTitle={stateApp.selectedWell.api}
                   parent="map"
                   cardTop={20}
                   cardLeft={20}
@@ -5499,7 +5413,7 @@ export default function Map() {
                     handleCloseExpandableCard={handleCloseExpandableCard}
                     component={<WellCardProvider />}
                     title={stateApp.selectedWell.wellName}
-                    subTitle={stateApp.selectedWell.operator}
+                    subTitle={stateApp.selectedWell.api}
                     parent="map"
                     mouseX={0}
                     mouseY={0}

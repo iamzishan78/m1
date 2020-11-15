@@ -361,7 +361,7 @@ export default function WellCardDetails(props) {
   return stateApp.selectedWell ? (
     <React.Fragment>
       <Grid item sm={12} className={classes.gridItemGrey}>
-        <WellApiCard />
+        {/* <WellApiCard /> */}
         <WellTypeCard />
         <WellStatusCard />
         <Last12StatusCard />
