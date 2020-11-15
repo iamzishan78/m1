@@ -5362,7 +5362,7 @@ export default function Map() {
       {stateApp.popupOpen === true && 
         stateApp.selectedWell !== null && showExpandableCard &&
         stateApp.expandedCard && (
-            <Draggable>
+            <Draggable handle="#detailCardHeader">
               <div style={{width: 0, height: 0}}>
                 <ExpandableCardProvider
                   expanded
