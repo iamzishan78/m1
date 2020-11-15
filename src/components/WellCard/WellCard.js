@@ -308,6 +308,7 @@ export default function WellCard() {
         && stateApp.selectedWell.wellStatus !== "PERMIT" 
         && stateApp.selectedWell.wellStatus !== "PERMIT - EXISTING WELL"
         && stateApp.selectedWell.wellStatus !== "EXPIRED PERMIT"
+        && stateApp.selectedWell.wellStatus !== "CANCELLED PERMIT"
         && stateApp.selectedWell.wellStatus !== "PERMIT - NEW DRILL") {
       return stateApp.selectedWell ? (
       !stateApp.expandedCard ? (
@@ -473,6 +474,18 @@ export default function WellCard() {
                       {convertDate(stateApp.selectedWell.firstProductionDate)}
                     </TableCell>
                   </TableRow>
+
+                  {stateApp.selectedWell.wellStatus == "P&A"? 
+                    <TableRow className={classes.rowGrey}>
+                      <TableCell className={classes.cell1} align="left">
+                        Plug Date
+                      </TableCell>
+                      <TableCell className={classes.cell2} align="right">
+                        {convertDate(stateApp.selectedWell.plugDate)}
+                      </TableCell>
+                    </TableRow>
+                  : null}
+
                 </TableBody>
               </Table>
             </CardContent>
@@ -618,6 +631,8 @@ export default function WellCard() {
                           : '--'}
                       </TableCell>
                     </TableRow>
+
+
       
                   </TableBody>
                 </Table>
