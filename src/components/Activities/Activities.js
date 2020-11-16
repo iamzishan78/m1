@@ -167,7 +167,7 @@ const Activities = () => {
         getFilterCondition(e, activityFilterByType, activityFilterByTime)
       )
     );
-  }, [events, activityFilterByType, activityFilterByTime]);
+  }, [events, activityFilterByType, activityFilterByTime, view]);
 
   const onModalClose = () => {
     setStateApp((stateApp) => ({

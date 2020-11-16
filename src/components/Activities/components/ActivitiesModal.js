@@ -178,7 +178,7 @@ const initialErrors = {
 
 const localizer = momentLocalizer(moment);
 
-export default function ContactDetailCard({ selectedActivity, events }) {
+export default function ActivitiesModal({ selectedActivity, events }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [addNew, setAddNew] = useState(true);
@@ -469,13 +469,13 @@ export default function ContactDetailCard({ selectedActivity, events }) {
         component={
           <div className={classes.addAct}>
             <div className={classes.left}>
-              <div className={classes.row} >
+              <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
                 <TextField
                   className={classes.fieldWidth}
                   type="text"
                   variant="outlined"
-                  placeholder= "Enter activity name"
+                  placeholder="Enter activity name"
                   style={{ width: "73%", marginRight: 24 }}
                 />
               </div>
@@ -580,7 +580,7 @@ export default function ContactDetailCard({ selectedActivity, events }) {
                       setEndDate(e.target.value);
                     }}
                   />
-                                    <TextField
+                  <TextField
                     className={clsx(
                       classes.dateTimeField,
                       classes.marginLeft,
@@ -655,7 +655,6 @@ export default function ContactDetailCard({ selectedActivity, events }) {
                     variant="outlined"
                     className={clsx(classes.marginBottom, classes.fieldWidth)}
 
-                    
                     // InputProps={{
                     //   startAdornment: (
                     //     <InputAdornment position="start">
@@ -695,7 +694,7 @@ export default function ContactDetailCard({ selectedActivity, events }) {
                         </InputAdornment>
                       ),
                     }}
-                    />
+                  />
 
                   <br />
                   <TextField
@@ -704,7 +703,6 @@ export default function ContactDetailCard({ selectedActivity, events }) {
                     variant="outlined"
                     className={clsx(classes.marginBottom, classes.fieldWidth)}
                     placeholder=" Associated Contact or Lead"
-
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -712,7 +710,6 @@ export default function ContactDetailCard({ selectedActivity, events }) {
                         </InputAdornment>
                       ),
                     }}
-                    
                   />
                   <br />
 

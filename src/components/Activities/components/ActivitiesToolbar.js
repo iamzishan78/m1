@@ -1,5 +1,5 @@
 import React from "react";
-import { Views } from "react-big-calendar";
+import { Views, Navigate } from "react-big-calendar";
 import moment from "moment";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
@@ -97,6 +97,20 @@ const ActivitiesToolbar = ({
   };
   const goToCurrent = () => {
     toolbar.onNavigate("TODAY");
+  };
+  const goToNextWeek = () => {
+    var today = new Date();
+    toolbar.onNavigate(
+      "DATE",
+      new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
+    );
+  };
+  const goToTomorrow = () => {
+    var today = new Date();
+    toolbar.onNavigate(
+      "DATE",
+      new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000)
+    );
   };
 
   const handleViewChange = (event) => {
@@ -243,7 +257,10 @@ const ActivitiesToolbar = ({
               className={`${classes.filterToggleBtn} ${
                 activityFilterByTime === "tomorrow" && classes.activeBtn
               }`}
-              onClick={() => setActivityFilterByTime("tomorrow")}
+              onClick={() => {
+                setActivityFilterByTime("tomorrow");
+                goToTomorrow();
+              }}
             >
               Tomorrow
             </Button>
@@ -252,7 +269,10 @@ const ActivitiesToolbar = ({
               className={`${classes.filterToggleBtn} ${
                 activityFilterByTime === "this-week" && classes.activeBtn
               }`}
-              onClick={() => setActivityFilterByTime("this-week")}
+              onClick={() => {
+                setActivityFilterByTime("this-week");
+                goToCurrent();
+              }}
             >
               This week
             </Button>
@@ -261,11 +281,14 @@ const ActivitiesToolbar = ({
               className={`${classes.filterToggleBtn} ${
                 activityFilterByTime === "next-week" && classes.activeBtn
               }`}
-              onClick={() => setActivityFilterByTime("next-week")}
+              onClick={() => {
+                setActivityFilterByTime("next-week");
+                goToNextWeek();
+              }}
             >
               Next week
             </Button>
-            <Button
+            {/* <Button
               size="small"
               className={`${classes.filterToggleBtn} ${
                 activityFilterByTime === "custom" && classes.activeBtn
@@ -273,7 +296,7 @@ const ActivitiesToolbar = ({
               onClick={() => setActivityFilterByTime("custom")}
             >
               Custom
-            </Button>
+            </Button> */}
           </ButtonGroup>
         </div>
       </div>
