@@ -1,5 +1,5 @@
 .rbc-event {
-  width: 100% !important;
+  min-width: 50px;
   min-height: 50px !important;
   background-color: #d0f1fc;
   color: #15a9d7;

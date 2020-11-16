@@ -316,7 +316,7 @@ function AddDealDialog(props) {
       setDescription(card.description ? card.description : "");
       setPipelineId(card.pipelineId ? card.pipelineId : "");
       setOwnerId(card.ownerId ? card.ownerId : stateApp.user.mongoId);
-      setCloseDate(card.closeDate ? card.closeDate : null);
+      setCloseDate(card.expectedCloseDate ? card.expectedCloseDate : null);
       setColaborators(card.colaborators ? card.colaborators : []);
       setOriginationDate(card.createdAt ? card.createdAt : "");
       setStage(card.laneId ? card.laneId : "lane1");
