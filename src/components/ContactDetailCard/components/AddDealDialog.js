@@ -914,7 +914,7 @@ function AddDealDialog(props) {
           {originationDate && (
             <div className={classes.originationDate}>
               Origination Date:{" "}
-              {moment(originationDate).format("M/DD/YYYY, HH:mmA")}
+              {moment(originationDate).format("M/DD/YYYY, hh:mmA")}
             </div>
           )}
 
