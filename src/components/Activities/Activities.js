@@ -155,6 +155,7 @@ const Activities = () => {
             title: act.fullname,
             notes: act.notes,
             type: act.type,
+            name: act.name,
           };
         })
       );

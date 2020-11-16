@@ -170,6 +170,7 @@ const mergeDateAndTime = (d, t) => {
 const initialErrors = {
   notes: false,
   activityType: false,
+  activityName: false,
   startDate: false,
   startTime: false,
   endDate: false,
@@ -188,6 +189,8 @@ export default function ActivitiesModal({
   const [stateApp, setStateApp] = useContext(AppContext);
   const [addNew, setAddNew] = useState(true);
   const [activityType, setActivityType] = useState("");
+  const [activityName, setActivityName] = useState("");
+  const [closed, setClosed] = useState(false);
   const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
   const [startTime, setStartTime] = useState("");
@@ -269,13 +272,15 @@ export default function ActivitiesModal({
     if (selectedActivity) {
       console.log(
         "EVENT: SET ACTIVITY:",
-        selectedActivity.dateTime
+        selectedActivity
         // getDateFromString(selectedActivity.dateTime),
         // getTimeFromString(selectedActivity.dateTime)
       );
       setAddNew(false);
       setNotes(selectedActivity.notes);
       setActivityType(selectedActivity.type);
+      setActivityName(selectedActivity.name);
+      setClosed(selectedActivity.isClosed);
       setContactId(selectedActivity.contactId);
       setStartDate(getDateFromString(selectedActivity.start.toISOString()));
       setStartTime(getTimeFromString(selectedActivity.start.toISOString()));
@@ -283,8 +288,10 @@ export default function ActivitiesModal({
       setEndTime(getTimeFromString(selectedActivity.end.toISOString()));
     } else {
       setAddNew(true);
+      setClosed(false);
       setNotes("");
       setActivityType("");
+      setActivityName("");
       setContactId("");
       setStartDate(getCurrentDate());
       setEndDate(getCurrentDate());
@@ -306,6 +313,8 @@ export default function ActivitiesModal({
     setAddNew(true);
     setNotes("");
     setActivityType("");
+    setActivityName("");
+    setClosed(false);
     setStartDate(getCurrentDate());
     setEndDate(getCurrentDate());
     setContactId("");
@@ -317,6 +326,7 @@ export default function ActivitiesModal({
 
   const updateErrors = () => {
     let activityTypeErr = false;
+    let activityNameErr = false;
     let notesErr = false;
     let startDataErr = false;
     let startTimeErr = false;
@@ -325,6 +335,7 @@ export default function ActivitiesModal({
     let contactErr = false;
 
     if (!activityType || activityType.length === 0) activityTypeErr = true;
+    if (!activityName || activityName.length === 0) activityNameErr = true;
     if (!notes || notes.length === 0) notesErr = true;
     if (!startDate) startDataErr = true;
     if (!startTime) startTimeErr = true;
@@ -334,6 +345,7 @@ export default function ActivitiesModal({
 
     setErrors({
       activityType: activityTypeErr,
+      activityName: activityNameErr,
       notes: notesErr,
       startDate: startDataErr,
       startTime: startTimeErr,
@@ -342,6 +354,7 @@ export default function ActivitiesModal({
       contact: contactErr,
     });
     return (
+      activityNameErr ||
       activityTypeErr ||
       notesErr ||
       startDataErr ||
@@ -371,6 +384,7 @@ export default function ActivitiesModal({
 
     activityLog.push({
       type: activityType,
+      name: activityName,
       notes,
       dateTime: dateTime,
       endDateTime: endDateTime,
@@ -384,7 +398,7 @@ export default function ActivitiesModal({
           activityLog,
         },
       },
-      refetchQueries: ["getContact"],
+      refetchQueries: ["getContact", "getAllActivities"],
       awaitRefetchQueries: true,
     });
   };
@@ -399,6 +413,7 @@ export default function ActivitiesModal({
       cData && cData.contact.activityLog
         ? cData.contact.activityLog.map((act) => ({
             type: act.type,
+            name: act.name,
             notes: act.notes,
             dateTime: act.dateTime,
             endDateTime: act.endDateTime,
@@ -414,6 +429,7 @@ export default function ActivitiesModal({
       newActLog[index] = {
         ...selectedActivity,
         type: activityType,
+        name: activityName,
         dateTime,
         endDateTime,
         notes,
@@ -427,7 +443,7 @@ export default function ActivitiesModal({
             activityLog: [...newActLog],
           },
         },
-        refetchQueries: ["getContact"],
+        refetchQueries: ["getContact", "getAllActivities"],
         awaitRefetchQueries: true,
       });
     }
@@ -456,7 +472,13 @@ export default function ActivitiesModal({
                 onModalClose();
               }
         }
-        title={`${addNew ? "Add Activity" : activityType.toUpperCase()}`}
+        title={`${
+          addNew
+            ? "Add Activity"
+            : activityName
+            ? activityName.toUpperCase()
+            : activityType.toUpperCase()
+        }`}
         subTitle={""}
         parent="calendar"
         mouseX={0}
@@ -476,11 +498,16 @@ export default function ActivitiesModal({
               <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
                 <TextField
-                  className={classes.fieldWidth}
+                  className={clsx(
+                    classes.fieldWidth,
+                    activityName === "" && errors.activityName && classes.error
+                  )}
                   type="text"
                   variant="outlined"
                   placeholder="Enter activity name"
                   style={{ width: "73%", marginRight: 24 }}
+                  value={activityName}
+                  onChange={(e) => setActivityName(e.target.value)}
                 />
               </div>
               <div className={classes.row}>
@@ -488,7 +515,7 @@ export default function ActivitiesModal({
                 <div
                   className={clsx(
                     classes.typeDisplay,
-                    errors.activityType && classes.error
+                    activityType === "" && errors.activityType && classes.error
                   )}
                 >
                   <span
@@ -547,7 +574,7 @@ export default function ActivitiesModal({
                   <TextField
                     className={clsx(
                       classes.dateTimeField,
-                      errors.startDate && classes.error
+                      !startDate && errors.startDate && classes.error
                     )}
                     value={startDate}
                     type="date"
@@ -560,7 +587,7 @@ export default function ActivitiesModal({
                     className={clsx(
                       classes.dateTimeField,
                       classes.marginLeft,
-                      errors.startTime && classes.error
+                      !startTime && errors.startTime && classes.error
                     )}
                     value={startTime}
                     type="time"
@@ -575,7 +602,7 @@ export default function ActivitiesModal({
                   <TextField
                     className={clsx(
                       classes.dateTimeField,
-                      errors.endDate && classes.error
+                      !endDate && errors.endDate && classes.error
                     )}
                     value={endDate}
                     type="date"
@@ -588,7 +615,7 @@ export default function ActivitiesModal({
                     className={clsx(
                       classes.dateTimeField,
                       classes.marginLeft,
-                      errors.endTime && classes.error
+                      !endTime && errors.endTime && classes.error
                     )}
                     value={endTime}
                     type="time"
@@ -628,7 +655,7 @@ export default function ActivitiesModal({
                     value={notes}
                     className={clsx(
                       classes.notes,
-                      errors.notes && classes.error
+                      !notes && errors.notes && classes.error
                     )}
                     onChange={(e) => {
                       setNotes(e.target.value);
@@ -647,7 +674,7 @@ export default function ActivitiesModal({
                 <div
                   className={clsx(
                     classes.fieldWidth,
-                    errors.contact && classes.error
+                    !contact && errors.contact && classes.error
                   )}
                   style={{ margin: "7.5px 0" }}
                 >
@@ -738,7 +765,13 @@ export default function ActivitiesModal({
                 <div className={classes.btnGroup}>
                   <FormControlLabel
                     enabled
-                    control={<Checkbox color="primary" />}
+                    control={
+                      <Checkbox
+                        checked={closed}
+                        onChange={(e) => setClosed(e.target.checked)}
+                        color="primary"
+                      />
+                    }
                     label="Mark as done"
                   />
                   <Button
@@ -756,7 +789,10 @@ export default function ActivitiesModal({
                     className={classes.marginLeft}
                     color="primary"
                     variant="contained"
-                    onClick={addNew ? addActivity : updateActivity}
+                    onClick={() => {
+                      if (addNew) addActivity();
+                      else updateActivity();
+                    }}
                   >
                     {addNew ? "Add" : "Save"}
                   </Button>

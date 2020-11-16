@@ -10,6 +10,8 @@ export const GETALLACTIVITIES = gql`
       endDateTime
       notes
       type
+      name
+      isClosed
     }
   }
 `;

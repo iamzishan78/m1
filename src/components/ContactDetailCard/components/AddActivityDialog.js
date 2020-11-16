@@ -64,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
 const initialErrors = {
   notes: false,
   activityType: false,
+  activityName: false,
   dateTime: false,
   endDateTime: false,
 };
@@ -87,7 +88,9 @@ function AddActivityDialog(props) {
   const [addNew, setAddNew] = useState(true);
 
   const [updateContact, { called, loading, data }] = useMutation(UPDATECONTACT);
-  const [activityType, setActivityType] = useState("general");
+  const [activityType, setActivityType] = useState("call");
+  const [activityName, setActivityName] = useState("");
+
   const [notes, setNotes] = useState("");
 
   const [dateTime, setDateTime] = useState(getCurrentDateTime());
@@ -98,12 +101,15 @@ function AddActivityDialog(props) {
     if (selectedActivity !== null) {
       setAddNew(false);
       setActivityType(selectedActivity.type);
+      setActivityName(selectedActivity.name);
+
       setNotes(selectedActivity.notes);
       setDateTime(selectedActivity.dateTime);
       setEndDateTime(selectedActivity.dateTime);
     } else {
       setAddNew(true);
-      setActivityType("general");
+      setActivityType("call");
+      setActivityName("");
       setNotes("");
       setDateTime(getCurrentDateTime());
       setEndDateTime(get1hrLaterDateTime());
@@ -114,16 +120,21 @@ function AddActivityDialog(props) {
 
   const clearFields = () => {
     setNotes("");
-    setActivityType("general");
+    setActivityType("call");
+    setActivityName("");
     setDateTime(getCurrentDateTime());
     setEndDateTime(get1hrLaterDateTime());
   };
 
   const updateErrors = () => {
     let activityTypeErr = false;
+    let activityNameErr = false;
+
     let notesErr = false;
     let dateTimeErr = false;
     let endDateTimeErr = false;
+    if (!activityName || activityName.length === 0) activityNameErr = true;
+
     if (!activityType || activityType.length === 0) activityTypeErr = true;
     if (!notes || notes.length === 0) notesErr = true;
     if (!dateTime) dateTimeErr = true;
@@ -134,9 +145,16 @@ function AddActivityDialog(props) {
       notes: notesErr,
       dateTime: dateTimeErr,
       endDateTime: endDateTimeErr,
+      activityName: activityNameErr,
     });
 
-    return activityTypeErr || notesErr || dateTimeErr || endDateTimeErr;
+    return (
+      activityNameErr ||
+      activityTypeErr ||
+      notesErr ||
+      dateTimeErr ||
+      endDateTimeErr
+    );
   };
 
   const addActivity = async () => {
@@ -154,6 +172,7 @@ function AddActivityDialog(props) {
 
     activityLog.push({
       type: activityType,
+      name: activityName,
       notes,
       dateTime: dateTime,
       endDateTime: endDateTime,
@@ -178,6 +197,7 @@ function AddActivityDialog(props) {
     let activityLog = props.activityLog
       ? props.activityLog.map((act) => ({
           type: act.type,
+          name: act.name,
           notes: act.notes,
           dateTime: act.dateTime,
           endDateTime: act.endDateTime,
@@ -197,6 +217,7 @@ function AddActivityDialog(props) {
       newActLog[index] = {
         ...selectedActivity,
         type: activityType,
+        name: activityName,
         dateTime,
         endDateTime,
         notes,
@@ -294,6 +315,29 @@ function AddActivityDialog(props) {
               setEndDateTime(e.target.value);
             }}
             disabled={loading}
+            error={errors.endDateTime}
+          />
+        </FormControl>
+        <FormControl
+          variant="outlined"
+          fullWidth
+          className={classes.inputField}
+          size="small"
+        >
+          <InputLabel shrink className={classes.shrinkLabel}>
+            Activity Name
+          </InputLabel>
+          <TextField
+            fullWidth
+            size="small"
+            variant="outlined"
+            type="text"
+            value={activityName}
+            onChange={(e) => {
+              setActivityName(e.target.value);
+            }}
+            disabled={loading}
+            error={errors.activityName}
           />
         </FormControl>
         <FormControl
