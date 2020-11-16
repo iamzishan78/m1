@@ -178,7 +178,11 @@ const initialErrors = {
 
 const localizer = momentLocalizer(moment);
 
-export default function ActivitiesModal({ selectedActivity, events }) {
+export default function ActivitiesModal({
+  setSelectedActivity,
+  selectedActivity,
+  events,
+}) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [addNew, setAddNew] = useState(true);
@@ -196,7 +200,6 @@ export default function ActivitiesModal({ selectedActivity, events }) {
     UPDATECONTACT,
     {
       onCompleted: () => {
-        clearFields();
         onModalClose();
       },
     }
@@ -269,7 +272,7 @@ export default function ActivitiesModal({ selectedActivity, events }) {
         // getDateFromString(selectedActivity.dateTime),
         // getTimeFromString(selectedActivity.dateTime)
       );
-      setAddNew(true);
+      setAddNew(false);
       setNotes(selectedActivity.notes);
       setActivityType(selectedActivity.type);
       setContactId(selectedActivity.contactId);
@@ -290,6 +293,8 @@ export default function ActivitiesModal({ selectedActivity, events }) {
   }, [selectedActivity]);
 
   const onModalClose = () => {
+    clearFields();
+    setSelectedActivity(null);
     setStateApp((stateApp) => ({
       ...stateApp,
       activityDialog: false,
@@ -297,7 +302,7 @@ export default function ActivitiesModal({ selectedActivity, events }) {
   };
 
   const clearFields = () => {
-    setAddNew(false);
+    setAddNew(true);
     setNotes("");
     setActivityType("");
     setStartDate(getCurrentDate());
@@ -437,7 +442,6 @@ export default function ActivitiesModal({ selectedActivity, events }) {
         loading && cLoading
           ? () => {}
           : () => {
-              clearFields();
               onModalClose();
             }
       }
@@ -448,11 +452,10 @@ export default function ActivitiesModal({ selectedActivity, events }) {
           loading && cLoading
             ? () => {}
             : () => {
-                clearFields();
                 onModalClose();
               }
         }
-        title={`${addNew ? "Add" : "Update"} Activity`}
+        title={`${addNew ? "Add Activity" : activityType.toUpperCase()}`}
         subTitle={""}
         parent="calendar"
         mouseX={0}
@@ -741,7 +744,6 @@ export default function ActivitiesModal({ selectedActivity, events }) {
                     className={classes.marginLeft}
                     variant="contained"
                     onClick={() => {
-                      clearFields();
                       onModalClose();
                     }}
                     disabled={loading && cLoading}

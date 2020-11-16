@@ -220,6 +220,7 @@ const Activities = () => {
           )}
           <ActivitiesModal
             selectedActivity={selectedActivity}
+            setSelectedActivity={setSelectedActivity}
             events={events}
           />
         </>
