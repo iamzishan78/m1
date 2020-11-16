@@ -5344,9 +5344,12 @@ export default function Map() {
                   ];
 
       map.fitBounds(bbox,{
-        speed: 0.4,
-        pitch: 60,
-        bearing: -10,
+        speed: 0.3,
+        pitch: 80,
+        bearing: -1,
+        easing: function (t) {
+                  return Math.sin((t * Math.PI) / 2);
+                }
       });
 
       setStateApp({
@@ -5357,26 +5360,27 @@ export default function Map() {
 
       // setFlyVar1(false);
 
-      // map.on("moveend", function (e) {
-      //   if (
-      //     map.getBearing() === -10 &&
-      //     map.getZoom() === 16
-      //   ) {
-      //     map.flyTo({
-      //       center: [
-      //         stateApp.selectedWell?.longitude,
-      //         stateApp.selectedWell?.latitude,
-      //       ],
-      //       zoom: 16,
-      //       //speed: 0.4,
-      //       bearing: 540,
-      //       duration: 100000,
-      //       easing: function (t) {
-      //         return Math.sin((t * Math.PI) / 2);
-      //       },
-      //     });
-      //   }
-      // });
+      map.on("moveend", function (e) {
+        if (
+          map.getBearing() === -1 
+          //&&
+          // map.getZoom() === 16
+        ) {
+          map.flyTo({
+            around: [
+              stateApp.selectedWell.longitude,
+              stateApp.selectedWell?.latitude,
+            ],
+            // zoom: 16,
+            //speed: 0.4,
+            bearing: 540,
+            duration: 100000,
+            easing: function (t) {
+              return Math.sin((t * Math.PI) / 2);
+            },
+          });
+        }
+      });
     }
   }, [stateApp.wellDetailCardOpen]);
 
