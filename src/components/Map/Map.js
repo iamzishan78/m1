@@ -5338,21 +5338,16 @@ export default function Map() {
       ])
 
       const alpha = 0.01;
+      const bbox = [
+                      [stateApp.selectedWell.longitude-1.5*alpha,stateApp.selectedWell.latitude],
+                      [stateApp.selectedWell.longitude+0.5*alpha,stateApp.selectedWell.latitude]
+                  ];
 
-      map.fitBounds(
-        [
-          [stateApp.selectedWell.longitude-1.5*alpha,stateApp.selectedWell.latitude],
-          [stateApp.selectedWell.longitude+0.5*alpha,stateApp.selectedWell.latitude]
-        ],
-        // zoom: 16,
-        // speed: 0.4,
-        // bearing: -10,
-        // pitch: 80,
-        // easing: function (t) {
-        //   return Math.sin((t * Math.PI) / 2);
-        // },
-      {});
-
+      map.fitBounds(bbox,{
+        speed: 0.4,
+        pitch: 60,
+        bearing: -10,
+      });
 
       setStateApp({
         ...stateApp,
