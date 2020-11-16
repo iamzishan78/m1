@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 16,
   },
   rowIcon: {
-    minWidth: 60,
+    minWidth: 75,
     color: "#B9C5D1",
     display: "flex",
     alignItems: "flex-start",
@@ -104,11 +104,11 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
   },
   dateTimeField: {
-    width: 160,
+    width: 162,
     marginBottom: 8,
   },
   marginLeft: {
-    marginLeft: 8,
+    marginLeft: 6,
   },
   marginBottom: {
     marginBottom: 8,
@@ -454,7 +454,7 @@ export default function ContactDetailCard({ selectedActivity, events }) {
         }
         title={`${addNew ? "Add" : "Update"} Activity`}
         subTitle={""}
-        parent="calender"
+        parent="calendar"
         mouseX={0}
         mouseY={0}
         position="relative"
@@ -469,12 +469,14 @@ export default function ContactDetailCard({ selectedActivity, events }) {
         component={
           <div className={classes.addAct}>
             <div className={classes.left}>
-              <div className={classes.row}>
+              <div className={classes.row} >
                 <span className={classes.rowIcon}></span>
                 <TextField
                   className={classes.fieldWidth}
                   type="text"
                   variant="outlined"
+                  placeholder= "Enter activity name"
+                  style={{ width: "73%", marginRight: 24 }}
                 />
               </div>
               <div className={classes.row}>
@@ -565,9 +567,23 @@ export default function ContactDetailCard({ selectedActivity, events }) {
                     }}
                   />
                   <span className={classes.line} />
+
                   <TextField
                     className={clsx(
                       classes.dateTimeField,
+                      errors.endDate && classes.error
+                    )}
+                    value={endDate}
+                    type="date"
+                    variant="outlined"
+                    onChange={(e) => {
+                      setEndDate(e.target.value);
+                    }}
+                  />
+                                    <TextField
+                    className={clsx(
+                      classes.dateTimeField,
+                      classes.marginLeft,
                       errors.endTime && classes.error
                     )}
                     value={endTime}
@@ -578,45 +594,33 @@ export default function ContactDetailCard({ selectedActivity, events }) {
                       console.log("EVENT: END TIME", e.target.value);
                     }}
                   />
-                  <TextField
-                    className={clsx(
-                      classes.dateTimeField,
-                      classes.marginLeft,
-                      errors.endDate && classes.error
-                    )}
-                    value={endDate}
-                    type="date"
-                    variant="outlined"
-                    onChange={(e) => {
-                      setEndDate(e.target.value);
-                    }}
-                  />
                 </div>
               </div>
-              <div className={classes.row}>
+              {/* <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
                 Add{" "}
                 <span style={{ color: "#48A8ED", marginLeft: 8 }}>
                   guests, location, video call, description
                 </span>
-              </div>
-              <div className={classes.row}>
+              </div> */}
+              {/* <div className={classes.row}>
                 <span className={classes.rowIcon}>
                   <DotsIcon />
                 </span>
                 <Select disabled variant="outlined" value="free">
                   <MenuItem value="free">Free</MenuItem>
                 </Select>
-              </div>
+              </div> */}
               <div className={classes.row}>
                 <span className={classes.rowIcon}>
                   <DocumentIcon />
                 </span>
-                <div style={{ width: "100%", marginRight: 24 }}>
+                <div style={{ width: "73%", marginRight: 24 }}>
                   <TextField
                     multiline
-                    rows={4}
+                    rows={8}
                     variant="outlined"
+                    placeholder="Enter activity notes here"
                     value={notes}
                     className={clsx(
                       classes.notes,
@@ -626,10 +630,10 @@ export default function ContactDetailCard({ selectedActivity, events }) {
                       setNotes(e.target.value);
                     }}
                   />
-                  <small>
+                  {/* <small>
                     Notes are private and visible only within your Pipedrive
                     account
-                  </small>
+                  </small> */}
                 </div>
               </div>
               <div className={classes.row}>
@@ -643,7 +647,25 @@ export default function ContactDetailCard({ selectedActivity, events }) {
                   )}
                   style={{ margin: "7.5px 0" }}
                 >
-                  <AutocompEntityNamesVirtualizeList
+                  <TextField
+                    //type="text"
+                    //select
+                    //disabled
+                    placeholder="Activity Owner"
+                    variant="outlined"
+                    className={clsx(classes.marginBottom, classes.fieldWidth)}
+
+                    
+                    // InputProps={{
+                    //   startAdornment: (
+                    //     <InputAdornment position="start">
+                    //       <AttachMoneyIcon />
+                    //     </InputAdornment>
+                    //   ),
+                    // }}
+                  />
+
+                  {/* <AutocompEntityNamesVirtualizeList
                     mongoEntitiesArray={mongoEntitiesArray}
                     setMongoEntitiesArray={setMongoEntitiesArray}
                     nameAutValue={nameAutValue}
@@ -652,7 +674,7 @@ export default function ContactDetailCard({ selectedActivity, events }) {
                     setNameAutInputValue={setNameAutInputValue}
                     variant="outlined"
                     label=""
-                  />
+                  /> */}
                 </div>
               </div>
               <div className={classes.row}>
@@ -665,7 +687,7 @@ export default function ContactDetailCard({ selectedActivity, events }) {
                     disabled
                     variant="outlined"
                     className={clsx(classes.marginBottom, classes.fieldWidth)}
-                    placeholder="Deal or lead"
+                    placeholder=" Associated Deal"
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -673,14 +695,16 @@ export default function ContactDetailCard({ selectedActivity, events }) {
                         </InputAdornment>
                       ),
                     }}
-                  />
+                    />
+
                   <br />
                   <TextField
                     type="text"
                     disabled
                     variant="outlined"
                     className={clsx(classes.marginBottom, classes.fieldWidth)}
-                    placeholder="Deal or lead"
+                    placeholder=" Associated Contact or Lead"
+
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -688,6 +712,7 @@ export default function ContactDetailCard({ selectedActivity, events }) {
                         </InputAdornment>
                       ),
                     }}
+                    
                   />
                   <br />
 
@@ -696,7 +721,7 @@ export default function ContactDetailCard({ selectedActivity, events }) {
                     disabled
                     variant="outlined"
                     className={clsx(classes.marginBottom, classes.fieldWidth)}
-                    placeholder="Organization"
+                    placeholder=" Organization"
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -711,7 +736,7 @@ export default function ContactDetailCard({ selectedActivity, events }) {
                 <span className={classes.rowIcon}></span>
                 <div className={classes.btnGroup}>
                   <FormControlLabel
-                    disabled
+                    enabled
                     control={<Checkbox color="primary" />}
                     label="Mark as done"
                   />

@@ -1175,12 +1175,24 @@ export default function Navigation(props) {
                 ) : (
                   <>
                     {/*SEARCH UI FOR ACTIVITIES */}
-                    <div className={classes.search} style={{ minWidth: 300 }}>
-                      <div className={classes.searchIcon}>
-                        <SearchIcon />
+
+                    <div>                  
+                      <Button
+                        color="secondary"
+                        size="large"
+                        onClick={(event) => handleListItemClick(event, 0, "/")}
+                        className={classes.margin}
+                      >
+                        <M1neralLogoWhiteLetters />
+                      </Button>
+                      </div>   
+
+                    <div className={classes.search} style={{  minWidth: 500, marginLeft: 20, verticalAlign:"middle", paddingTop: 4}}>
+                      <div className={classes.searchIcon}  >
+                        <SearchIcon style={{ verticalAlign:"middle"}}/>
                       </div>
                       <InputBase
-                        placeholder="Search from projects"
+                        placeholder="Search for activities"
                         classes={{
                           root: classes.inputRoot,
                           input: classes.inputInput,

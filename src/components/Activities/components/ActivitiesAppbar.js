@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
 
-    "& h4": {
+    "& h1": {
       color: "#0DBBEA",
       marginRight: 16,
     },
@@ -70,8 +70,7 @@ const useStyles = makeStyles((theme) => ({
   },
   addDeal: {
     marginLeft: 8,
-    paddingLeft: 8,
-    paddingRight: 8,
+    padding: 9,
     backgroundColor: "#011133",
     color: "#fff",
     transition: "200ms all",
@@ -103,7 +102,7 @@ const ActivitiesAppBar = ({ activityDisplayType, setActivityDisplayType }) => {
       >
         <div className={classes.top}>
           <div className={classes.right}>
-            <h4>ACTIVITIES</h4>
+            <h1>ACTIVITIES</h1>
             <ButtonGroup>
               <IconButton
                 size="small"
@@ -124,18 +123,18 @@ const ActivitiesAppBar = ({ activityDisplayType, setActivityDisplayType }) => {
                 <CalendarToday />
               </IconButton>
             </ButtonGroup>
-            <Select
+            {/* <Select
               className={classes.selectFilter}
               variant="outlined"
               value="all"
             >
               <MenuItem value="all">All Deals</MenuItem>
-            </Select>
+            </Select> */}
           </div>
           <div className={classes.left}>
-            <Button className={classes.import} color="default" size="small">
+            {/* <Button className={classes.import} color="default" size="small">
               IMPORT
-            </Button>
+            </Button> */}
             <Button
               className={classes.addDeal}
               color="primary"
