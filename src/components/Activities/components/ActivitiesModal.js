@@ -84,18 +84,19 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   filterDisplay: {
-    color: "#48A8ED",
-    backgroundColor: "#F1F2F3",
+    color: "#999",
+    backgroundColor: "#f9f9f9",
     display: "flex",
     alignItems: "center",
-    padding: "2px 4px",
+    padding: "4px 16px",
     border: "1px solid #fff",
     borderRadius: 3,
     cursor: "pointer",
     userSelect: "none",
+    height: 40,
 
     "& span": {
-      marginLeft: 4,
+      marginLeft: 8,
     },
   },
   dateTimeRow: {
@@ -139,7 +140,7 @@ const useStyles = makeStyles((theme) => ({
   },
   active: {
     backgroundColor: "#D0F1FC",
-    color: "#48A8ED !important",
+    color: "#259AED !important",
   },
   right: {
     width: "40%",
