@@ -66,7 +66,7 @@ import gjv from "geojson-validation";
 import { setMainMapState, showErrorMessage } from "../../actions";
 import { ZoomOutMapSharp } from "@material-ui/icons";
 import debounce from "lodash/debounce";
-import { AvSortByAlpha } from "material-ui/svg-icons";
+//import { AvSortByAlpha } from "material-ui/svg-icons";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -5326,11 +5326,6 @@ export default function Map() {
   }, [stateApp.editingUserDefinedLayers]);
 
 
-  useEffect(() => {
-    console.log("!!!!!!!! @@@@@@@ !!!!!!!!!")
-  }, [stateApp.wellDetailCardOpen]);
-
-
 
   useEffect(() => {
     if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
@@ -5358,7 +5353,14 @@ export default function Map() {
         // },
       {});
 
-      setFlyVar1(false);
+
+      setStateApp({
+        ...stateApp,
+        wellDetailCardOpen: false,
+      });
+
+
+      // setFlyVar1(false);
 
       // map.on("moveend", function (e) {
       //   if (
