@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import clsx from "clsx";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
@@ -223,6 +223,13 @@ export default function ActivitiesModal({
     fetchPolicy: "cache-and-network",
   });
 
+  const [getPrevContact, { data: prevCData, prevCLoading }] = useLazyQuery(
+    CONTACT,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
+
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutInputValue, setNameAutInputValue] = useState([]);
@@ -236,6 +243,18 @@ export default function ActivitiesModal({
     return null;
   };
 
+  const [prevContactId, setPrevContactId] = useState();
+
+  useEffect(() => {
+    if (prevContactId) {
+      getPrevContact({
+        variables: {
+          contactId: prevContactId,
+        },
+      });
+    }
+  }, [prevContactId]);
+
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
       setMongoEntitiesArray([
@@ -248,14 +267,14 @@ export default function ActivitiesModal({
 
   useEffect(() => {
     console.log("ADd CDATA", cData);
-    if (cData?.contact) {
+    if (cData?.contact && !nameAutValue?.name) {
       setNameAutValue(
         cData?.contact
           ? { name: cData.contact.name, _id: cData.contact._id }
           : {}
       );
     }
-  }, [cData]);
+  });
 
   useEffect(() => {
     console.log("CONTACT", nameAutValue);
@@ -284,6 +303,7 @@ export default function ActivitiesModal({
       setActivityName(selectedActivity.name);
       setClosed(selectedActivity.isClosed);
       setContactId(selectedActivity.contactId);
+      setPrevContactId(selectedActivity.contactId);
       setStartDate(getDateFromString(selectedActivity.start.toISOString()));
       setStartTime(moment(selectedActivity.start).format("HH:mm"));
       setEndDate(getDateFromString(selectedActivity.end.toISOString()));
@@ -295,6 +315,7 @@ export default function ActivitiesModal({
       setActivityType("");
       setActivityName("");
       setContactId("");
+      setPrevContactId(null);
       setStartDate(getCurrentDate());
       setEndDate(getCurrentDate());
       setStartTime("");
@@ -343,7 +364,7 @@ export default function ActivitiesModal({
     if (!startTime) startTimeErr = true;
     if (!endDate) endDateErr = true;
     if (!endTime) endTimeErr = true;
-    if (!nameAutValue && !nameAutValue.name) contactErr = true;
+    if (!nameAutValue || !nameAutValue?.name) contactErr = true;
 
     const dateTime = mergeDateAndTime(startDate, startTime);
     const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -378,24 +399,12 @@ export default function ActivitiesModal({
   };
 
   const addActivity = async () => {
-    console.log(
-      "ADD ACTIVITY",
-      cData,
-      activityType,
-      activityName,
-      notes,
-      stateApp.user.email,
-      updateErrors()
-    );
-
     if (updateErrors()) return;
 
     let activityLog =
       cData && cData.contact.activityLog
         ? cData.contact.activityLog.map((a) => a)
         : [];
-
-    console.log("ADD ACTLOG", activityLog);
 
     const dateTime = mergeDateAndTime(startDate, startTime);
     const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -410,8 +419,6 @@ export default function ActivitiesModal({
       isClosed: closed,
     });
 
-    console.log("ADD ACTLOG 2", cData.contact, activityLog);
-
     updateContact({
       variables: {
         contact: {
@@ -419,12 +426,12 @@ export default function ActivitiesModal({
           activityLog,
         },
       },
-      refetchQueries: ["getContact", "getAllActivities"],
+      refetchQueries: ["getAllActivities"],
       awaitRefetchQueries: true,
     });
   };
 
-  const updateActivity = () => {
+  const updateActivity = async () => {
     if (updateErrors()) return;
 
     const dateTime = mergeDateAndTime(startDate, startTime);
@@ -439,6 +446,7 @@ export default function ActivitiesModal({
     const index =
       newActLog &&
       newActLog.findIndex((activity) => activity._id === selectedActivity._id);
+
     if (index > -1) {
       newActLog[index] = {
         user_id: selectedActivity.user_id,
@@ -453,16 +461,58 @@ export default function ActivitiesModal({
       };
       newActLog.forEach((v) => delete v.__typename);
 
-      console.log("ADD", newActLog);
-
-      updateContact({
+      await updateContact({
         variables: {
           contact: {
             _id: cData.contact._id,
             activityLog: [...newActLog],
           },
         },
-        refetchQueries: ["getContact", "getAllActivities"],
+        refetchQueries: ["getAllActivities"],
+        awaitRefetchQueries: true,
+      });
+    } else {
+      let prevActivityLog =
+        prevCData && prevCData.contact.activityLog
+          ? prevCData.contact.activityLog.map((a) => a)
+          : [];
+
+      let newActLog = [...prevActivityLog];
+      const index =
+        newActLog &&
+        newActLog.findIndex(
+          (activity) => activity._id === selectedActivity._id
+        );
+
+      newActLog.splice(index, 1);
+
+      activityLog.push({
+        type: activityType,
+        name: activityName,
+        notes,
+        dateTime: dateTime,
+        endDateTime: endDateTime,
+        user_id: stateApp.user.email,
+        isClosed: closed,
+      });
+
+      await updateContact({
+        variables: {
+          contact: {
+            _id: prevContactId,
+            activityLog: [...newActLog],
+          },
+        },
+      });
+
+      await updateContact({
+        variables: {
+          contact: {
+            _id: cData.contact._id,
+            activityLog,
+          },
+        },
+        refetchQueries: ["getAllActivities"],
         awaitRefetchQueries: true,
       });
     }
@@ -746,6 +796,14 @@ export default function ActivitiesModal({
                     loadNextPage={loadNextPage}
                     canAddNew={false}
                   />
+                  {errors.contact && (
+                    <>
+                      <br />
+                      <small style={{ color: "red" }}>
+                        This is a required field
+                      </small>
+                    </>
+                  )}
                   <br />
 
                   <TextField
