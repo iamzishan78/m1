@@ -66,6 +66,7 @@ import gjv from "geojson-validation";
 import { setMainMapState, showErrorMessage } from "../../actions";
 import { ZoomOutMapSharp } from "@material-ui/icons";
 import debounce from "lodash/debounce";
+//import { AvSortByAlpha } from "material-ui/svg-icons";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -117,7 +118,7 @@ export default function Map() {
     drawingCircle:
       stateApp.draw && stateApp.draw.getMode() == "drag_circle" ? true : false,
   });
-
+  const [flyVar1, setFlyVar1] = useState([null]);
   const dispatch = useDispatch();
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
@@ -5323,6 +5324,108 @@ export default function Map() {
       });
     }
   }, [stateApp.editingUserDefinedLayers]);
+
+
+
+  useEffect(() => {
+    if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
+      
+      console.log('!!!!! long ',stateApp.selectedWell.longitude)
+      console.log('!!!!! lat ',stateApp.selectedWell.latitude)
+      console.log('!!!!! lnglat ',[
+        [stateApp.selectedWell.longitude-0.01,stateApp.selectedWell.latitude-0.01],
+        [stateApp.selectedWell.longitude+0.01,stateApp.selectedWell.latitude+0.01]
+      ])
+
+      const alpha = 0.01;
+      const bbox = [
+                      [stateApp.selectedWell.longitude-1.5*alpha,stateApp.selectedWell.latitude],
+                      [stateApp.selectedWell.longitude+0.5*alpha,stateApp.selectedWell.latitude]
+                  ];
+
+      map.fitBounds(bbox,{
+        speed: 0.3,
+        pitch: 80,
+        bearing: -1,
+        easing: function (t) {
+                  return Math.sin((t * Math.PI) / 2);
+                }
+      });
+
+      setStateApp({
+        ...stateApp,
+        wellDetailCardOpen: false,
+      });
+
+
+      // setFlyVar1(false);
+
+      map.on("moveend", function (e) {
+        if (
+          map.getBearing() === -1 
+          //&&
+          // map.getZoom() === 16
+        ) {
+          map.flyTo({
+            around: [
+              stateApp.selectedWell.longitude,
+              stateApp.selectedWell?.latitude,
+            ],
+            // zoom: 16,
+            //speed: 0.4,
+            bearing: 540,
+            duration: 100000,
+            easing: function (t) {
+              return Math.sin((t * Math.PI) / 2);
+            },
+          });
+        }
+      });
+    }
+  }, [stateApp.wellDetailCardOpen]);
+
+
+  // useEffect(() => {
+  //   if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
+  //     map.flyTo({
+  //       center: [
+  //         stateApp.selectedWell.longitude,
+  //         stateApp.selectedWell.latitude,
+  //       ],
+  //       zoom: 16,
+  //       speed: 0.4,
+  //       bearing: -10,
+  //       pitch: 80,
+  //       easing: function (t) {
+  //         return Math.sin((t * Math.PI) / 2);
+  //       },
+  //     });
+
+  //     setFlyVar1(false);
+
+  //     map.on("moveend", function (e) {
+  //       if (
+  //         map.getBearing() === -10 &&
+  //         map.getZoom() === 16
+  //       ) {
+  //         map.flyTo({
+  //           center: [
+  //             stateApp.selectedWell?.longitude,
+  //             stateApp.selectedWell?.latitude,
+  //           ],
+  //           zoom: 16,
+  //           //speed: 0.4,
+  //           bearing: 540,
+  //           duration: 100000,
+  //           easing: function (t) {
+  //             return Math.sin((t * Math.PI) / 2);
+  //           },
+  //         });
+  //       }
+  //     });
+  //   }
+  // }, [stateApp.wellDetailCardOpen]);
+
 
   // console.log(
   //   "stateApp.selectedAbstracts",
