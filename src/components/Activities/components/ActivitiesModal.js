@@ -155,10 +155,6 @@ const getCurrentDate = () => {
   return d.slice(0, d.indexOf("T"));
 };
 
-const getTimeFromString = (d) => {
-  return d.slice(d.indexOf("T") + 1, d.indexOf("."));
-};
-
 const getDateFromString = (d) => {
   return d.slice(0, d.indexOf("T"));
 };
@@ -270,12 +266,7 @@ export default function ActivitiesModal({
 
   useEffect(() => {
     if (selectedActivity) {
-      console.log(
-        "EVENT: SET ACTIVITY:",
-        selectedActivity
-        // getDateFromString(selectedActivity.dateTime),
-        // getTimeFromString(selectedActivity.dateTime)
-      );
+      console.log("EVENT: SET ACTIVITY:", selectedActivity);
       setAddNew(false);
       setNotes(selectedActivity.notes);
       setActivityType(selectedActivity.type);
@@ -283,9 +274,9 @@ export default function ActivitiesModal({
       setClosed(selectedActivity.isClosed);
       setContactId(selectedActivity.contactId);
       setStartDate(getDateFromString(selectedActivity.start.toISOString()));
-      setStartTime(getTimeFromString(selectedActivity.start.toISOString()));
+      setStartTime(moment(selectedActivity.start).format("HH:mm"));
       setEndDate(getDateFromString(selectedActivity.end.toISOString()));
-      setEndTime(getTimeFromString(selectedActivity.end.toISOString()));
+      setEndTime(moment(selectedActivity.end).format("HH:mm"));
     } else {
       setAddNew(true);
       setClosed(false);
@@ -342,6 +333,16 @@ export default function ActivitiesModal({
     if (!endDate) endDateErr = true;
     if (!endTime) endTimeErr = true;
     if (nameAutValue && nameAutValue.name) contactErr = true;
+
+    const dateTime = mergeDateAndTime(startDate, startTime);
+    const endDateTime = mergeDateAndTime(endDate, endTime);
+
+    if (moment(endDateTime).isBefore(dateTime)) {
+      startDataErr = true;
+      startTimeErr = true;
+      endDateErr = true;
+      endTimeErr = true;
+    }
 
     setErrors({
       activityType: activityTypeErr,

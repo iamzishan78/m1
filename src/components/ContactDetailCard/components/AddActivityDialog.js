@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useMutation } from "@apollo/client";
+import moment from "moment";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -11,6 +12,8 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { AppContext } from "../../../AppContext";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 
@@ -71,14 +74,15 @@ const initialErrors = {
 
 const getCurrentDateTime = () => {
   let dt = new Date().toISOString();
-  return dt.slice(0, dt.length - 1);
+  return dt.slice(0, dt.indexOf("T") + 6);
   // return dt;
 };
 
 const get1hrLaterDateTime = () => {
   let dt = new Date();
-  dt.setTime(dt.getTime() + 1 * 60 * 60 * 1000);
-  return dt.toISOString().slice(0, dt.length - 1);
+  let newDt = new Date(dt.getTime() + 1 * 60 * 60 * 1000).toISOString();
+  console.log("set activity 2", newDt);
+  return newDt.slice(0, newDt.indexOf("T") + 6);
 };
 
 function AddActivityDialog(props) {
@@ -92,6 +96,7 @@ function AddActivityDialog(props) {
   const [activityName, setActivityName] = useState("");
 
   const [notes, setNotes] = useState("");
+  const [closed, setClosed] = useState(false);
 
   const [dateTime, setDateTime] = useState(getCurrentDateTime());
   const [endDateTime, setEndDateTime] = useState(get1hrLaterDateTime());
@@ -99,15 +104,18 @@ function AddActivityDialog(props) {
 
   useEffect(() => {
     if (selectedActivity !== null) {
+      console.log("SELECTED ACTIVITY", selectedActivity);
       setAddNew(false);
       setActivityType(selectedActivity.type);
       setActivityName(selectedActivity.name);
 
       setNotes(selectedActivity.notes);
+      setClosed(selectedActivity.isClosed);
       setDateTime(selectedActivity.dateTime);
-      setEndDateTime(selectedActivity.dateTime);
+      setEndDateTime(selectedActivity.endDateTime);
     } else {
       setAddNew(true);
+      setClosed(false);
       setActivityType("call");
       setActivityName("");
       setNotes("");
@@ -122,6 +130,8 @@ function AddActivityDialog(props) {
     setNotes("");
     setActivityType("call");
     setActivityName("");
+    setAddNew(true);
+    setClosed(false);
     setDateTime(getCurrentDateTime());
     setEndDateTime(get1hrLaterDateTime());
   };
@@ -134,11 +144,14 @@ function AddActivityDialog(props) {
     let dateTimeErr = false;
     let endDateTimeErr = false;
     if (!activityName || activityName.length === 0) activityNameErr = true;
-
     if (!activityType || activityType.length === 0) activityTypeErr = true;
     if (!notes || notes.length === 0) notesErr = true;
     if (!dateTime) dateTimeErr = true;
     if (!endDateTime) endDateTimeErr = true;
+    if (moment(endDateTime).isBefore(dateTime)) {
+      dateTimeErr = true;
+      endDateTimeErr = true;
+    }
 
     setErrors({
       activityType: activityTypeErr,
@@ -167,12 +180,14 @@ function AddActivityDialog(props) {
           dateTime: act.dateTime,
           endDateTime: act.endDateTime,
           user_id: act.user_id,
+          isClosed: act.isClosed,
         }))
       : [];
 
     activityLog.push({
       type: activityType,
       name: activityName,
+      isClosed: closed,
       notes,
       dateTime: dateTime,
       endDateTime: endDateTime,
@@ -202,6 +217,7 @@ function AddActivityDialog(props) {
           dateTime: act.dateTime,
           endDateTime: act.endDateTime,
           user_id: act.user_id,
+          isClosed: act.isClosed,
         }))
       : [];
 
@@ -221,6 +237,7 @@ function AddActivityDialog(props) {
         dateTime,
         endDateTime,
         notes,
+        isClosed: closed,
       };
       newActLog.forEach((v) => delete v.__typename);
 
@@ -291,6 +308,7 @@ function AddActivityDialog(props) {
           disabled={loading}
           className={classes.inputField}
           label="Activity Date"
+          error={errors.dateTime}
         />
         <FormControl
           variant="outlined"
@@ -389,6 +407,18 @@ function AddActivityDialog(props) {
           }}
           disabled={loading}
           error={errors.notes}
+        />
+
+        <FormControlLabel
+          className={classes.inputField}
+          enabled
+          control={
+            <Checkbox
+              checked={closed}
+              onChange={(e) => setClosed(e.target.checked)}
+            />
+          }
+          label="Mark as done"
         />
 
         <div className={classes.dialogFooter}>
