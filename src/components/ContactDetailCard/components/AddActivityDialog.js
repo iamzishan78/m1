@@ -170,14 +170,14 @@ function AddActivityDialog(props) {
           activity.dateTime === selectedActivity.dateTime &&
           activity.user_id === selectedActivity.user_id
       );
+
     if (index > -1) {
       newActLog[index] = {
-        ...selectedActivity,
+        user_id: selectedActivity?.user_id,
         type: activityType,
         dateTime,
         notes,
       };
-      newActLog.forEach((v) => delete v.__typename);
 
       updateContact({
         variables: {
@@ -193,7 +193,13 @@ function AddActivityDialog(props) {
   };
 
   useEffect(() => {
-    if (called && !loading && addActivityStatus.success === true && addNew) {
+    if (
+      called &&
+      !loading &&
+      addActivityStatus &&
+      addActivityStatus.success === true &&
+      addNew
+    ) {
       clearFields();
     }
   }, [called, loading, addActivityStatus, addNew]);
@@ -338,7 +344,11 @@ function AddActivityDialog(props) {
           </Button>
 
           {loading ? (
-            <CircularProgress color="secondary" size={34} className={classes.progress} />
+            <CircularProgress
+              color="secondary"
+              size={34}
+              className={classes.progress}
+            />
           ) : (
             <Button
               variant="contained"
