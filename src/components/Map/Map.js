@@ -1126,7 +1126,7 @@ export default function Map() {
     };
 
     const wellPointClick = (feature) => {
-      console.log("feature", feature);
+      console.log("feature !!!!!!!!", feature);
 
       if (feature && feature.properties) {
         const objFiledsToLowerCase = (feature) => {
@@ -1327,7 +1327,7 @@ export default function Map() {
         [e.point.x + 10, e.point.y + 10],
       ];
 
-      console.log("checking layers", layers);
+      console.log("!!!!!!!! checking layers", layers);
 
       let features = map.queryRenderedFeatures(bbox, {
         layers: [...layers],
@@ -3750,20 +3750,55 @@ export default function Map() {
     [map, setStateApp]
   );
 
+
+
+
+
   useEffect(() => {
-    console.log("useEffect 23");
+    
+    // console.log("useEffect 23");
+    // console.log("wellSelected", stateApp.wellSelected);
+    // console.log("wellSelectedCoordinates", stateApp.wellSelectedCoordinates);
 
-    console.log("wellSelected", stateApp.wellSelected);
-    console.log("wellSelectedCoordinates", stateApp.wellSelectedCoordinates);
-
-    // if( map
-    //     && stateApp.wellSelected === false
-    //     ){
-    //       map.removeLayer('well-point');
-    //       map.removeSource('well-select-point')
-    //     }
 
     if (map && stateApp.wellSelectedCoordinates) {
+
+      console.log(':::',stateApp.selectedWellId)
+      console.log(':::',stateApp.selectedWell)
+
+     const PointFeature = map.querySourceFeatures("composite", {
+        sourceLayer: "wellPoints",
+        filter: ["in", "id", stateApp.selectedWellId.toUpperCase()],
+      });
+
+      const LineFeature = map.querySourceFeatures("composite", {
+        sourceLayer: "wellLines",
+        filter: ["in", "id", stateApp.selectedWellId.toUpperCase()],
+      });      
+
+      var el = document.createElement("div");
+      el.style.backgroundImage = "url(icons/favicon-inverted.png)";
+      el.style.width = "28px";
+      el.style.height = "64px";
+
+      new mapboxgl.Marker(el)
+      .setLngLat([
+        stateApp.selectedWell.longitude,
+        stateApp.selectedWell.latitude,
+      ])
+      .addTo(map);
+
+      console.log('!!2@@@@@@@@@', PointFeature)
+      console.log('!!2@@@@@@@@@', LineFeature)
+
+
+      // console.log("!!!!!!!! checking layers", layers);
+
+      // let features = map.queryRenderedFeatures(bbox, {
+      //   layers: [...layers],
+      // });
+
+
       if (map.getLayer("well-point")) {
         map.removeLayer("well-point");
         map.removeSource("well-select-point");
@@ -3801,11 +3836,12 @@ export default function Map() {
 
   useEffect(() => {
     (async () => {
-      console.log("useEffect 24");
-
-      console.log("selectedWell", stateApp.selectedWell);
-      console.log("selectedWellId", stateApp.selectedWellId);
-      console.log("wellSelectedCoordinates", stateApp.wellSelectedCoordinates);
+      
+      // console.log("useEffect 24");
+      // console.log("selectedWell", stateApp.selectedWell);
+      // console.log("selectedWellId", stateApp.selectedWellId);
+      // console.log("wellSelectedCoordinates", stateApp.wellSelectedCoordinates);
+      
       if (
         map &&
         stateApp.selectedWellId &&
@@ -5270,7 +5306,7 @@ export default function Map() {
   };
 
   useEffect(() => {
-    console.log("useEffect 40");
+    //console.log("useEffect usersnap");
 
     if (stateApp.userSnap === true) {
       var script = document.createElement("script");
@@ -5298,7 +5334,7 @@ export default function Map() {
 
 
   useEffect(() => {
-    console.log("useEffect 41");
+    //console.log("useEffect 41");
 
     if (stateApp.editingUserDefinedLayers.length > 0) {
       const { map } = stateApp;
@@ -5330,13 +5366,6 @@ export default function Map() {
   useEffect(() => {
     if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
       
-      console.log('!!!!! long ',stateApp.selectedWell.longitude)
-      console.log('!!!!! lat ',stateApp.selectedWell.latitude)
-      console.log('!!!!! lnglat ',[
-        [stateApp.selectedWell.longitude-0.01,stateApp.selectedWell.latitude-0.01],
-        [stateApp.selectedWell.longitude+0.01,stateApp.selectedWell.latitude+0.01]
-      ])
-
       const alpha = 0.01;
       const bbox = [
                       [stateApp.selectedWell.longitude-1.5*alpha,stateApp.selectedWell.latitude],
@@ -5344,7 +5373,7 @@ export default function Map() {
                   ];
 
       map.fitBounds(bbox,{
-        speed: 0.3,
+        speed: 0.4,
         pitch: 80,
         bearing: -1,
         easing: function (t) {
@@ -5356,9 +5385,6 @@ export default function Map() {
         ...stateApp,
         wellDetailCardOpen: false,
       });
-
-
-      // setFlyVar1(false);
 
       map.on("moveend", function (e) {
         if (
@@ -5372,7 +5398,7 @@ export default function Map() {
               stateApp.selectedWell?.latitude,
             ],
             // zoom: 16,
-            //speed: 0.4,
+            speed: 0.4,
             bearing: 540,
             duration: 100000,
             easing: function (t) {
