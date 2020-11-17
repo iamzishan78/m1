@@ -3776,17 +3776,7 @@ export default function Map() {
         filter: ["in", "id", stateApp.selectedWellId.toUpperCase()],
       });      
 
-      var el = document.createElement("div");
-      el.style.backgroundImage = "url(icons/favicon-inverted.png)";
-      el.style.width = "28px";
-      el.style.height = "64px";
 
-      new mapboxgl.Marker(el)
-      .setLngLat([
-        stateApp.selectedWell.longitude,
-        stateApp.selectedWell.latitude,
-      ])
-      .addTo(map);
 
       console.log('!!2@@@@@@@@@', PointFeature)
       console.log('!!2@@@@@@@@@', LineFeature)
@@ -3805,6 +3795,19 @@ export default function Map() {
       }
 
       if (stateApp.wellSelectedCoordinates.length > 0) {
+        
+        // var el = document.createElement("div");
+        // el.style.backgroundImage = "url(icons/favicon-inverted.png)";
+        // el.style.width = "28px";
+        // el.style.height = "64px";
+  
+        // new mapboxgl.Marker(el)
+        // .setLngLat([
+        //   stateApp.selectedWell.longitude,
+        //   stateApp.selectedWell.latitude,
+        // ])
+        // .addTo(map);
+        
         map.addSource("well-select-point", {
           type: "geojson",
           data: {
