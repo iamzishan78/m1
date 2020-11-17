@@ -683,7 +683,7 @@ function Search() {
                 wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
               }
         );
-        console.log("##############################1")
+
         stateApp.toggleLayersActivity("Search", true);
       } else {
         console.log("Not wells found for the owner");

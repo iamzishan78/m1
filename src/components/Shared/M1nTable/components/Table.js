@@ -559,6 +559,12 @@ function SubTable(props) {
                           e.stopPropagation();
 
                           if (value) {
+                            setStateApp((state) => ({
+                              ...state,
+                              popupOpen: false,
+                              selectedWell: null,
+                              selectedParcel: null,
+                            }));
                             getWell({
                               variables: { wellId: value },
                             });
