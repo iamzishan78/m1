@@ -37,6 +37,7 @@ import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/
 import gql from "graphql-tag";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import ActivitiesEvent from "./ActivitiesEvent";
+import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 
 const useStyles = makeStyles((theme) => ({
   dialogExpCard: {
@@ -111,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 6,
   },
   marginBottom: {
-    marginBottom: 8,
+    marginBottom: 20,
   },
   line: {
     height: 2,
@@ -130,6 +131,13 @@ const useStyles = makeStyles((theme) => ({
   },
   fieldWidth: {
     width: 400,
+  },
+  inputField: {
+    height: 41,
+
+    "& .MuiOutlinedInput-root": {
+      height: 41,
+    },
   },
   btnGroup: {
     width: 400,
@@ -204,17 +212,10 @@ export default function ActivitiesModal({
     }
   );
 
-  const [getContacts, { data: allContacts }] = useLazyQuery(
-    gql`
-      query getContactNames {
-        contacts {
-          _id
-          name
-        }
-      }
-    `,
+  const [getPaginatedContacts, { data: allContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
     {
-      fetchPolicy: "cache-first",
+      fetchPolicy: "cache-and-network",
     }
   );
 
@@ -222,21 +223,31 @@ export default function ActivitiesModal({
     fetchPolicy: "cache-and-network",
   });
 
-  useEffect(() => {
-    getContacts();
-  }, [selectedActivity]);
-
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutInputValue, setNameAutInputValue] = useState([]);
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [isNextPageLoading, setIsNextPageLoading] = useState(false);
+
+  const loadNextPage = (...args) => {
+    console.log("loadNextPage", ...args);
+    setIsNextPageLoading(true);
+    getPaginatedContacts();
+    return null;
+  };
 
   useEffect(() => {
-    if (allContacts?.contacts) {
-      setMongoEntitiesArray(allContacts.contacts);
+    if (allContacts?.paginatedContacts) {
+      setMongoEntitiesArray([
+        ...allContacts?.paginatedContacts?.edges?.map((el) => el.node),
+      ]);
+      setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
     }
+    setIsNextPageLoading(false);
   }, [allContacts]);
 
   useEffect(() => {
+    console.log("ADd CDATA", cData);
     if (cData?.contact) {
       setNameAutValue(
         cData?.contact
@@ -250,6 +261,7 @@ export default function ActivitiesModal({
     console.log("CONTACT", nameAutValue);
     if (nameAutValue?.name) {
       setContact(nameAutValue);
+      setContactId(nameAutValue._id);
     }
   }, [nameAutValue]);
 
@@ -331,7 +343,7 @@ export default function ActivitiesModal({
     if (!startTime) startTimeErr = true;
     if (!endDate) endDateErr = true;
     if (!endTime) endTimeErr = true;
-    if (nameAutValue && nameAutValue.name) contactErr = true;
+    if (!nameAutValue && !nameAutValue.name) contactErr = true;
 
     const dateTime = mergeDateAndTime(startDate, startTime);
     const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -366,18 +378,24 @@ export default function ActivitiesModal({
   };
 
   const addActivity = async () => {
+    console.log(
+      "ADD ACTIVITY",
+      cData,
+      activityType,
+      activityName,
+      notes,
+      stateApp.user.email,
+      updateErrors()
+    );
+
     if (updateErrors()) return;
 
     let activityLog =
       cData && cData.contact.activityLog
-        ? cData.contact.activityLog.map((act) => ({
-            type: act.type,
-            notes: act.notes,
-            dateTime: act.dateTime,
-            endDateTime: act.endDateTime,
-            user_id: act.user_id,
-          }))
+        ? cData.contact.activityLog.map((a) => a)
         : [];
+
+    console.log("ADD ACTLOG", activityLog);
 
     const dateTime = mergeDateAndTime(startDate, startTime);
     const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -389,12 +407,15 @@ export default function ActivitiesModal({
       dateTime: dateTime,
       endDateTime: endDateTime,
       user_id: stateApp.user.email,
+      isClosed: closed,
     });
+
+    console.log("ADD ACTLOG 2", cData.contact, activityLog);
 
     updateContact({
       variables: {
         contact: {
-          _id: cData.contact.id,
+          _id: cData.contact._id,
           activityLog,
         },
       },
@@ -411,14 +432,7 @@ export default function ActivitiesModal({
 
     let activityLog =
       cData && cData.contact.activityLog
-        ? cData.contact.activityLog.map((act) => ({
-            type: act.type,
-            name: act.name,
-            notes: act.notes,
-            dateTime: act.dateTime,
-            endDateTime: act.endDateTime,
-            user_id: act.user_id,
-          }))
+        ? cData.contact.activityLog.map((a) => a)
         : [];
 
     let newActLog = [...activityLog];
@@ -427,19 +441,24 @@ export default function ActivitiesModal({
       newActLog.findIndex((activity) => activity._id === selectedActivity._id);
     if (index > -1) {
       newActLog[index] = {
-        ...selectedActivity,
+        user_id: selectedActivity.user_id,
+        _id: selectedActivity._id,
+        fullname: selectedActivity.fullname,
         type: activityType,
         name: activityName,
         dateTime,
         endDateTime,
         notes,
+        isClosed: closed,
       };
       newActLog.forEach((v) => delete v.__typename);
+
+      console.log("ADD", newActLog);
 
       updateContact({
         variables: {
           contact: {
-            _id: cData.contact.id,
+            _id: cData.contact._id,
             activityLog: [...newActLog],
           },
         },
@@ -694,17 +713,6 @@ export default function ActivitiesModal({
                     //   ),
                     // }}
                   />
-
-                  {/* <AutocompEntityNamesVirtualizeList
-                    mongoEntitiesArray={mongoEntitiesArray}
-                    setMongoEntitiesArray={setMongoEntitiesArray}
-                    nameAutValue={nameAutValue}
-                    setNameAutValue={setNameAutValue}
-                    nameAutInputValue={nameAutInputValue}
-                    setNameAutInputValue={setNameAutInputValue}
-                    variant="outlined"
-                    label=""
-                  /> */}
                 </div>
               </div>
               <div className={classes.row}>
@@ -714,49 +722,41 @@ export default function ActivitiesModal({
                 <div>
                   <TextField
                     type="text"
-                    disabled
                     variant="outlined"
-                    className={clsx(classes.marginBottom, classes.fieldWidth)}
-                    placeholder=" Associated Deal"
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <AttachMoneyIcon />
-                        </InputAdornment>
-                      ),
-                    }}
+                    className={clsx(
+                      classes.marginBottom,
+                      classes.inputField,
+                      classes.fieldWidth
+                    )}
+                    placeholder="Associated Deal"
                   />
 
                   <br />
-                  <TextField
-                    type="text"
-                    disabled
+                  <AutocompEntityNamesVirtualizeList
+                    mongoEntitiesArray={mongoEntitiesArray}
+                    setMongoEntitiesArray={setMongoEntitiesArray}
+                    nameAutValue={nameAutValue}
+                    setNameAutValue={setNameAutValue}
+                    nameAutInputValue={nameAutInputValue}
+                    setNameAutInputValue={setNameAutInputValue}
                     variant="outlined"
-                    className={clsx(classes.marginBottom, classes.fieldWidth)}
-                    placeholder=" Associated Contact or Lead"
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <PersonIcon />
-                        </InputAdornment>
-                      ),
-                    }}
+                    label="Associated Contact or Lead"
+                    hasNextPage={hasNextPage}
+                    isNextPageLoading={isNextPageLoading}
+                    loadNextPage={loadNextPage}
+                    canAddNew={false}
                   />
                   <br />
 
                   <TextField
                     type="text"
-                    disabled
                     variant="outlined"
-                    className={clsx(classes.marginBottom, classes.fieldWidth)}
-                    placeholder=" Organization"
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <BusinessIcon />
-                        </InputAdornment>
-                      ),
-                    }}
+                    className={clsx(
+                      classes.marginBottom,
+                      classes.inputField,
+                      classes.fieldWidth
+                    )}
+                    placeholder="Organization"
                   />
                 </div>
               </div>
@@ -790,6 +790,7 @@ export default function ActivitiesModal({
                     color="primary"
                     variant="contained"
                     onClick={() => {
+                      console.log("ADD", addNew);
                       if (addNew) addActivity();
                       else updateActivity();
                     }}

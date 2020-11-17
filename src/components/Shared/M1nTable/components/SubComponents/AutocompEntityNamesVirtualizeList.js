@@ -69,7 +69,7 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
   props,
   ref
 ) {
-  const { 
+  const {
     children,
     isItemLoaded,
     loadMoreItems,
@@ -111,7 +111,7 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
 
     if (!data[index]) {
       // eslint-disable-next-line
-      console.log('isLoaded but no data', { data, index });
+      console.log("isLoaded but no data", { data, index });
       return null;
     }
 
@@ -138,8 +138,8 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
               ref={refList}
               itemData={itemData}
               height={getHeight() + 2 * LISTBOX_PADDING}
-              width="100%"         
-              key={itemCount}     
+              width="100%"
+              key={itemCount}
               outerElementType={OuterElementType}
               innerElementType="ul"
               itemSize={itemSize}
@@ -152,12 +152,12 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
           )}
         </InfiniteLoader>
       </OuterElementContext.Provider>
-     </div>
+    </div>
   );
 });
 
 ListboxComponent.propTypes = {
-  children: PropTypes.node
+  children: PropTypes.node,
 };
 
 const useStyles = makeStyles({
@@ -183,13 +183,14 @@ export default function AutocompEntityNamesVirtualizeList(props) {
     hasNextPage,
     isNextPageLoading,
     loadNextPage,
+    canAddNew = true,
   } = props;
   const classes = useStyles();
   //   const [nameAutValue, setNameAutValue] = useState(null);
   //   const [nameAutInputValue, setNameAutInputValue] = useState("");
   //   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
 
-  const isItemLoaded = (index)=> {
+  const isItemLoaded = (index) => {
     if (!hasNextPage) {
       return true;
     }
@@ -198,10 +199,9 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   };
 
   const loadMoreItems = (() => {
-    if (isNextPageLoading || !hasNextPage ) {
-      return () => {}
-    }
-    else {
+    if (isNextPageLoading || !hasNextPage) {
+      return () => {};
+    } else {
       loadNextPage();
     }
   })();
@@ -217,7 +217,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 
   useEffect(() => {
     console.log("ENTITIES : ", mongoEntitiesArray);
-    if (nameAutInputValue && nameAutInputValue !== "") {
+    if (nameAutInputValue && nameAutInputValue !== "" && canAddNew) {
       setMongoEntitiesArray((eArray) => [
         {
           _id: "newEntity",
@@ -263,7 +263,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
           }}
           size="small"
           multiline
-         // placeholder="E.g. Jacob"
+          // placeholder="E.g. Jacob"
         />
       )}
       disableListWrap
@@ -281,7 +281,9 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       renderOption={(option) => {
         if (option._id === "newEntity")
           return (
-            <Typography style={{ color: "midnightblue" }}>{option.name}</Typography>
+            <Typography style={{ color: "midnightblue" }}>
+              {option.name}
+            </Typography>
           );
 
         return (
