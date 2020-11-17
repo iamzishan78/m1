@@ -19,7 +19,7 @@ import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
 import getLaneTitle from "../../Transact/getLaneTitle";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { ALLENTITYNAMESFORPARCEL } from "../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner";
-import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
+import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CircularProgress, Typography } from "@material-ui/core";
@@ -159,6 +159,10 @@ function AddDealDialog(props) {
   const [openContactDialog, setOpenContactDialog] = useState(false);
   // const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
 
+  const [pageVariables, setPageVariables] = useState(false);
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [isNextPageLoading, setIsNextPageLoading] = useState(false);
+
   const [
     addContact,
     {
@@ -178,7 +182,7 @@ function AddDealDialog(props) {
     fetchPolicy: "cache-and-network",
   });
 
-  const [getContacts, { data: allContacts }] = useLazyQuery(CONTACTSQUERY, {
+  const [getPaginatedContacts, { data: allContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
   });
 
@@ -187,7 +191,7 @@ function AddDealDialog(props) {
   const [contact, setContact] = useState({});
 
   useEffect(() => {
-    getContacts();
+    // getPaginatedContacts();
     getAllUsers();
   }, []);
 
@@ -197,10 +201,19 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     console.log("ALL CONTACTS: ", allContacts);
-    if (allContacts?.contacts) {
-      setMongoEntitiesArray(allContacts.contacts);
+    if (allContacts?.paginatedContacts) {
+      setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map((el) => el.node)]);
+      setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
     }
+    setIsNextPageLoading(false);
   }, [allContacts]);
+
+  const loadNextPage = (...args) => {
+    console.log("loadNextPage", ...args);
+    setIsNextPageLoading(true);
+    getPaginatedContacts();
+    return null
+  };
 
   useEffect(() => {
     console.log("CDATA", cData);
@@ -570,7 +583,7 @@ function AddDealDialog(props) {
               lastUpdateBy: stateApp.user.mongoId,
             },
           },
-          refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
+          refetchQueries: ["getPaginatedContacts", "getContact", "getCustomLayer"],
           awaitRefetchQueries: true,
         });
       } else {
@@ -770,6 +783,9 @@ function AddDealDialog(props) {
                     setNameAutInputValue={setNameAutInputValue}
                     variant="outlined"
                     label="Contact Name"
+                    hasNextPage={hasNextPage}
+                    isNextPageLoading={isNextPageLoading}
+                    loadNextPage={loadNextPage}
                   />
                 </Grid>
               </Grid>

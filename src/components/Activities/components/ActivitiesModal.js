@@ -34,7 +34,6 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
-import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
 import gql from "graphql-tag";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import ActivitiesEvent from "./ActivitiesEvent";

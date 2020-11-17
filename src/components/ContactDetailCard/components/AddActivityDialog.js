@@ -16,6 +16,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { AppContext } from "../../../AppContext";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
+import { DateTimePicker } from "@material-ui/pickers";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -291,7 +292,7 @@ function AddActivityDialog(props) {
           inputVariant="outlined"
         /> */}
 
-        <TextField
+        {/* <TextField
           variant="outlined"
           fullWidth
           size="small"
@@ -309,6 +310,30 @@ function AddActivityDialog(props) {
           className={classes.inputField}
           label="Activity Date"
           error={errors.dateTime}
+        /> */}
+        <DateTimePicker
+          disabled={loading}
+          size="small"
+          id="datetime-local"
+          className={classes.inputField}
+          DialogProps={{
+            style: {
+              zIndex: "10000",
+              left: "left: calc( 100vw/1.5  ) !important",
+              top: "-140px",
+            },
+          }}
+          inputVariant="outlined"
+          value={dateTime}
+          // disablePast
+          onChange={(e) => {
+            // console.log("PREV: ", dateTime);
+            // console.log("setting: ", e._d.toISOString());
+            setDateTime(e._d.toISOString());
+          }}
+          label="Activity Date"
+          showTodayButton
+          fullWidth
         />
         <FormControl
           variant="outlined"
@@ -434,22 +459,27 @@ function AddActivityDialog(props) {
             Cancel
           </Button>
 
-          <Button
-            variant="contained"
-            color="secondary"
-            size="medium"
-            disableElevation
-            onClick={() => {
-              addNew ? addActivity() : updateActivity();
-            }}
-            disabled={loading}
-          >
-            {addNew ? "Save" : "Update"}
-          </Button>
-
           {loading ? (
-            <CircularProgress color="secondary" className={classes.progress} />
-          ) : called && !loading ? (
+            <CircularProgress
+              color="secondary"
+              size={34}
+              className={classes.progress}
+            />
+          ) : (
+            <Button
+              variant="contained"
+              color="secondary"
+              size="medium"
+              disableElevation
+              onClick={() => {
+                addNew ? addActivity() : updateActivity();
+              }}
+              disabled={loading}
+            >
+              {addNew ? "Save" : "Update"}
+            </Button>
+          )}
+          {/* called && !loading ? (
             addActivityStatus.success ? (
               <Typography color="secondary" variant="subtitle2" gutterBottom>
                 Activity {addNew ? "added" : "updated"}.
@@ -459,7 +489,7 @@ function AddActivityDialog(props) {
                 Unable to {addNew ? "add" : "update"} activity.
               </Typography>
             )
-          ) : null}
+          ) : null */}
         </div>
       </div>
     </div>

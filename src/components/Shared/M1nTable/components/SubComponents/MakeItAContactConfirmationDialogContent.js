@@ -77,7 +77,7 @@ export default function MakeItAContactConfirmationDialogContent(props) {
                     },
                   },
                   refetchQueries: [
-                    "getContacts",
+                    "getPaginatedContacts",
                     "getCustomLayer",
                     "checkIfOwnersAreContacts",
                   ],
@@ -92,7 +92,7 @@ export default function MakeItAContactConfirmationDialogContent(props) {
                       lastUpdateBy: stateApp.user.mongoId,
                     },
                   },
-                  refetchQueries: ["getContacts", "getCustomLayer"],
+                  refetchQueries: ["getPaginatedContacts", "getCustomLayer"],
                   awaitRefetchQueries: true,
                 });
             }
