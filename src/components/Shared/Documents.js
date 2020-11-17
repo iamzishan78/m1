@@ -12,6 +12,8 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GetAppIcon from "@material-ui/icons/GetApp";
+import { CircularProgress } from "@material-ui/core";
+
 import ViewDocuments from "../ViewDocuments/ViewDocuments";
 
 import { useDropzone } from "react-dropzone";
@@ -192,18 +194,23 @@ export default function Documents(props) {
     { fetchPolicy: "cache-and-network" }
   );
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
-  const [addFile, { data: addFileData }] = useMutation(ADDDESCRIPTORFILE, {
-    onCompleted: () => {
-      setTimeout(() => {
-        getRecentFiles({
-          variables: {
-            userId,
-            contactId: props.id,
-          },
-        });
-      }, 3000);
-    },
-  });
+  const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
+    ADDDESCRIPTORFILE,
+    {
+      refetchQueries: ["getRecentContactFiles"],
+      awaitRefetchQueries: true,
+      onCompleted: () => {
+        // setTimeout(() => {
+        //   getRecentFiles({
+        //     variables: {
+        //       userId,
+        //       contactId: props.id,
+        //     },
+        //   });
+        // }, 3000);
+      },
+    }
+  );
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "network-only",
   });
@@ -256,11 +263,15 @@ export default function Documents(props) {
     viewFile({ variables: { fileId: id } });
   };
 
+  console.log("FILEss", files?.getFileDescriptors);
+
   return (
     <div className={classes.root} variant="outlined">
       <CardActions style={{ padding: "23px 23px 8px 23px" }}>
         <Grid item xs={12} style={{ minHeight: "35px" }}>
-          <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Recent Documents</h4>
+          <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
+            Recent Documents
+          </h4>
           <h4
             className={classes.viewAll}
             // onClick={(e) => {
@@ -298,7 +309,7 @@ export default function Documents(props) {
                   <h4 className={classes.uploadTitle}>{file.fileName}</h4>
                   <h5 className={classes.uploadSubtext}>{file.userName}</h5>
                   <h5 className={classes.uploadSubtext}>
-                    {moment(new Date(Number(file.dateTime))).fromNow()}
+                    {moment.utc(file.dateTime).format("MMM DD, YYYY")}
                   </h5>
                 </div>
                 <div className={classes.IconSection}>
@@ -336,6 +347,11 @@ export default function Documents(props) {
             addFile={addFile}
             addFileData={addFileData}
           />
+          {addFileLoading && (
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <CircularProgress size="20px" />
+            </div>
+          )}
         </div>
       </CardContent>
     </div>
