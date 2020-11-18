@@ -936,9 +936,8 @@ export default function Map() {
         }));
         setStateApp((state) => ({
           ...state,
-          selectedWell:
-            //properties.wellName && 
-            properties.api ? properties : null,
+          // selectedWell: properties.wellName && properties.api ? properties : null,
+          selectedWell: properties,
           selectedWellId: properties.id ? properties.id.toLowerCase() : null,
           wellSelectedCoordinates: [properties.longitude, properties.latitude],
         }));

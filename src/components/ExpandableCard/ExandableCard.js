@@ -83,12 +83,9 @@ export default function ExpandableCard(props) {
       width: width,
       height: props.expanded ? height : "inherit",
       background: "#011133",
-      //background: "#efefef",
-      //background: "#000",
       borderStyle: "solid",
       borderWidth: "thin",
       borderColor: "#011133",
-      //display: 'block'
       "& .MuiCardHeader-action": {
         alignSelf: "left",
       },
@@ -99,7 +96,6 @@ export default function ExpandableCard(props) {
       fontSize: props.title === "Contact" ? "22px" : "15px",
     },
     headerIcons: {
-      // paddingTop: "10px",
       "& .MuiBadge-anchorOriginTopRightRectangle": {
         right: "10px",
         top: "5px",
@@ -164,11 +160,6 @@ export default function ExpandableCard(props) {
     }
     setWidth(cardWidthExpanded);
     setHeight(cardHeightExpanded);
-    //setZidx(9)
-    //setPosition('absolute')
-    //setCardTop(0);
-    //setCardLeft(0);
-    //console.log('!!!!!Target',props.targetLabel )
 
     if(props.targetLabel == 'well'){
       setStateApp((state) => ({ ...state, 
