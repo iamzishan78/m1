@@ -174,9 +174,12 @@ function AddDealDialog(props) {
     fetchPolicy: "cache-and-network",
   });
 
-  const [getPaginatedContacts, { data: allContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-  });
+  const [getPaginatedContacts, { data: allContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
 
   const [contact, setContact] = useState({});
 
@@ -186,13 +189,11 @@ function AddDealDialog(props) {
   }, []);
 
   useEffect(() => {
-    console.log("CURRENT USER", ownerId);
-  });
-
-  useEffect(() => {
     console.log("ALL CONTACTS: ", allContacts);
     if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map((el) => el.node)]);
+      setMongoEntitiesArray([
+        ...allContacts?.paginatedContacts?.edges?.map((el) => el.node),
+      ]);
       setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
     }
     setIsNextPageLoading(false);
@@ -202,7 +203,7 @@ function AddDealDialog(props) {
     console.log("loadNextPage", ...args);
     setIsNextPageLoading(true);
     getPaginatedContacts();
-    return null
+    return null;
   };
 
   useEffect(() => {
@@ -234,7 +235,7 @@ function AddDealDialog(props) {
   );
 
   useEffect(() => {
-    console.log("TDATAAAAAAAAA : ", tdata?.transactionData?.allData);
+    console.log("TDATA : ", tdata?.transactionData?.allData);
     if (tdata?.transactionData?.allData) {
       setTransactData(
         JSON.parse(JSON.stringify(tdata?.transactionData?.allData))
@@ -356,7 +357,7 @@ function AddDealDialog(props) {
     setOwnerId("");
     setCloseDate(null);
     setColaborators([]);
-    setContact({});
+    if (props.isTransactPage) setContact({});
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: false,
@@ -571,7 +572,11 @@ function AddDealDialog(props) {
               lastUpdateBy: stateApp.user.mongoId,
             },
           },
-          refetchQueries: ["getPaginatedContacts", "getContact", "getCustomLayer"],
+          refetchQueries: [
+            "getPaginatedContacts",
+            "getContact",
+            "getCustomLayer",
+          ],
           awaitRefetchQueries: true,
         });
       } else {
@@ -623,7 +628,7 @@ function AddDealDialog(props) {
                   <DeleteIcon className={classes.closeIcon} fontSize="small" />
                 </IconButton>
               )}
-{/* 
+            {/* 
             <IconButton
               disabled={updateTransactionLoading || addContactLoading}
               onClick={handleClose}

@@ -558,10 +558,21 @@ function SubTable(props) {
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (props.targetLabel === "well") {
-                            setTargetLabelToExpand("well");
-                            let selectedWell = props.rows.find((row) => {
-                              return row.id === tableMeta.rowData[0];
+
+                          if (value) {
+                            setStateApp((state) => ({
+                              ...state,
+                              popupOpen: false,
+                              selectedWell: null,
+                              selectedParcel: null,
+                            }));
+                            getWell({
+                              variables: { wellId: value },
+                            });
+                          } else {
+                            let selectedObj = props.rows.find((row) => {
+                              if (row.id) return row.id == tableMeta.rowData[0];
+                              return row.Id == tableMeta.rowData[0];
                             });
 
                             if (selectedWell) {

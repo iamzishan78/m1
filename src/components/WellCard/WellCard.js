@@ -303,15 +303,10 @@ export default function WellCard() {
       return date;
     }
   };
-
-  if (stateApp.selectedWell 
-        && stateApp.selectedWell.wellStatus !== "PERMIT" 
-        && stateApp.selectedWell.wellStatus !== "PERMIT - EXISTING WELL"
-        && stateApp.selectedWell.wellStatus !== "EXPIRED PERMIT"
-        && stateApp.selectedWell.wellStatus !== "CANCELLED PERMIT"
-        && stateApp.selectedWell.wellStatus !== "PERMIT - NEW DRILL") {
-      return stateApp.selectedWell ? (
-      !stateApp.expandedCard ? (
+  
+  if (stateApp.selectedWell && stateApp.selectedWell.wellStatus !== "Permit") {
+    return stateApp.selectedWell ? (
+      !stateExpandableCard.expanded ? (
         <div style={{ height: "100%", padding: "9px" }}>
           <Card>
             <CardActions
