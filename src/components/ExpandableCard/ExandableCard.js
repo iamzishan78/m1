@@ -171,12 +171,14 @@ export default function ExpandableCard(props) {
     //console.log('!!!!!Target',props.targetLabel )
 
     if(props.targetLabel == 'well'){
-      setStateApp((state) => ({ ...state, wellDetailCardOpen: true }));
+      setStateApp((state) => ({ ...state, 
+        wellDetailCardOpen: true,
+        popupOpen: false, }));
     }
-
+    else {
     setStateApp((state) => ({ ...state, expandedCard: true }));
     setStateExpandableCard((state) => ({ ...state, expanded: true }));
-
+    }
   };
   useEffect(() => {
     setWidth(cardWidth);
@@ -381,25 +383,6 @@ export default function ExpandableCard(props) {
               </Tooltip>
             </div>
           }
-          // title={
-          //   title
-          //     ? title.length > 30
-          //       ? `${title.substr(0, 30)}...${
-          //           stateExpandableCard.expanded
-          //             // ? props. !== undefined
-          //             //   ? `(${props.})`
-          //             //   : ""
-          //             // : ""
-          //         }`
-          //       : `${title} ${
-          //           stateExpandableCard.expanded
-          //             // ? props. !== undefined
-          //             //   ? `(${props.})`
-          //             //   : ""
-          //             // : ""
-          //         }`
-          //     : "--"
-          // }
 
           title={getTitle()}
           subheader={
