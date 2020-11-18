@@ -916,7 +916,6 @@ export default function Map() {
     };
 
     const wellPointClick = (feature) => {
-      console.log("feature !!!!!!!!", feature);
 
       if (feature && feature.properties) {
         const objFiledsToLowerCase = (feature) => {
@@ -3036,16 +3035,16 @@ export default function Map() {
 
 
       
-      if (map.getLayer("well-point")) {
-        map.removeLayer("well-point");
-        map.removeSource("well-select-point");
+      if (map.getLayer("well-point-active-select")) {
+        map.removeLayer("well-point-active-select");
+        map.removeSource("well-active-select-source");
       }
 
       if (stateApp.wellSelectedCoordinates.length > 0) {
         
 
         
-        map.addSource("well-select-point", {
+        map.addSource("well-active-select-source", {
           type: "geojson",
           data: {
             type: "FeatureCollection",
@@ -3062,9 +3061,9 @@ export default function Map() {
         });
 
         map.addLayer({
-          id: "well-point",
+          id: "well-point-active-select",
           type: "circle",
-          source: "well-select-point",
+          source: "well-active-select-source",
           paint: {
             "circle-radius": 5,
             "circle-color": "yellow",
@@ -4750,8 +4749,8 @@ export default function Map() {
         <MapGridCard mapGridCardActivated={mapGridCardActivated} />
       )}
        
-      {stateApp.popupOpen === true && 
-        stateApp.selectedWell !== null && showExpandableCard &&
+      {/* {stateApp.popupOpen === true &&  */}
+      {stateApp.selectedWell !== null && showExpandableCard &&
         stateApp.expandedCard && (
             <Draggable handle="#detailCardHeader">
               <div style={{width: 0, height: 0}}>
@@ -4789,7 +4788,9 @@ export default function Map() {
       <Portal container={container.current}>
         {stateApp.popupOpen === true ? (
           <div>
-            {stateApp.selectedWell !== null && showExpandableCard && (
+            {stateApp.selectedWell !== null 
+              // && stateApp.popupOpen==true
+              && showExpandableCard && (
               <PortalD id="popupContainer"> 
                 {!stateApp.expandedCard && (
                   <ExpandableCardProvider

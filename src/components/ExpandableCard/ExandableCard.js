@@ -164,12 +164,13 @@ export default function ExpandableCard(props) {
     if(props.targetLabel == 'well'){
       setStateApp((state) => ({ ...state, 
         wellDetailCardOpen: true,
-        popupOpen: false, }));
+        popupOpen: false, 
+      }));
     }
-    else {
+
     setStateApp((state) => ({ ...state, expandedCard: true }));
     setStateExpandableCard((state) => ({ ...state, expanded: true }));
-    }
+    
   };
   useEffect(() => {
     setWidth(cardWidth);
