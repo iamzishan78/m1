@@ -4637,7 +4637,7 @@ export default function Map() {
 
 
       map.fitBounds(bbox,{
-        speed: 0.5,
+        speed: 0.75,
         pitch: 60,
         bearing: 20,
         easing: function (t) {
