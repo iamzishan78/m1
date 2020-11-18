@@ -46,7 +46,6 @@ import { PRODUCTIONDETAILQUERY } from "../../graphQL/useQueryProductionDetail";
 
 const useStyles = makeStyles((theme) => ({
   card: {
-    // overflowY: "auto !important",
     borderStyle: "none",
     height: "100%",
   },
@@ -54,36 +53,11 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: "Poppins",
     color: "#FFFFFF",
     fontSize: "15px",
-    /* fontStyle: 'normal',
-    fontWeight: 600,
-    fontSize: '15px',
-    lineHeight: '22px',
-    color: '#FFFFFF',
-    textTransform: 'uppercase',
-    position: 'relative',
-    height: '23px',
-    top:'2px',
-    left:"5px" */
-    //left: '7.46%',
-    //right: '39.32%',
-    //top: 'calc(50% - 23px/2 - 140px)'
   },
   subheader: {
     fontFamily: "Poppins",
     color: "#FFFFFF",
     fontSize: "11px",
-    /*fontStyle: 'normal',
-    fontWeight: 300,
-    fontSize: '11px',
-    lineHeight: '16px',
-    color: '#FFFFFF',
-    position: 'relative',
-    height: '17px',
-    top:'8px',
-    left:"5px"
-     left: '7.46%',
-    right: '58.31%',
-    top: 'calc(50% - 17px/2 - 120px)' */
   },
 
   avatar: {
@@ -94,8 +68,6 @@ const useStyles = makeStyles((theme) => ({
     margin: "0px",
   },
   content: {
-    // backgroundColor: "#efefef",
-    // overflowY: "auto",
     padding: "0 !important",
     height: "100%",
   },
@@ -235,23 +207,6 @@ export default function WellCard() {
     // }
   }, [stateApp.user, source]);
   
-  // useEffect(() => {
-  //   if (dataGraph) {
-  //     if (dataGraph.vertexEdges) {
-  //       if (dataGraph.vertexEdges.sourceIds) {
-  //         if (dataGraph.vertexEdges.sourceIds.length > 0) {
-  //           dataGraph.vertexEdges.sourceIds.forEach((id) => {
-  //             if (stateApp.selectedWell.id === id) {
-  //               let trackedWell = target || stateApp.selectedWell;
-  //               trackedWell.isTracked = true;
-  //               setTarget(trackedWell);
-  //             }
-  //           });
-  //         }
-  //       }
-  //     }
-  //   }
-  // }, [stateApp.user, stateApp.selectedWell, dataGraph]);
 
   useEffect(() => {
     getWellSummaryDetail({
