@@ -192,23 +192,23 @@ const ActivitiesToolbar = ({
             <EmailIcon /> <span>Email</span>
           </span>
         </div>
-        <div>
-          <IconButton
-            size="small"
-            className={classes.marginLeft}
-            onClick={() => goToBack()}
-          >
-            <NavigateBeforeIcon />
-          </IconButton>
-          <small className={classes.marginLeft}>{toolbar.label}</small>
-          <IconButton
-            size="small"
-            className={classes.marginLeft}
-            onClick={() => goToNext()}
-          >
-            <NavigateNextIcon />
-          </IconButton>
-        </div>
+      </div>
+      <div>
+        <IconButton
+          size="small"
+          className={classes.marginLeft}
+          onClick={() => goToBack()}
+        >
+          <NavigateBeforeIcon />
+        </IconButton>
+        <small className={classes.marginLeft}>{toolbar.label}</small>
+        <IconButton
+          size="small"
+          className={classes.marginLeft}
+          onClick={() => goToNext()}
+        >
+          <NavigateNextIcon />
+        </IconButton>
       </div>
       <div className={classes.right}>
         <Select

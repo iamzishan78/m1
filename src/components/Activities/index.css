@@ -30,6 +30,11 @@
   text-align: left;
   display: flex;
   align-items: center;
+  pointer-events: none;
+}
+
+.rbc-header a {
+  pointer-events: none;
 }
 
 .rbc-header.rbc-today {
