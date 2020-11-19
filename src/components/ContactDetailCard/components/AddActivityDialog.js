@@ -230,9 +230,10 @@ function AddActivityDialog(props) {
           activity.dateTime === selectedActivity.dateTime &&
           activity.user_id === selectedActivity.user_id
       );
+
     if (index > -1) {
       newActLog[index] = {
-        ...selectedActivity,
+        user_id: selectedActivity?.user_id,
         type: activityType,
         name: activityName,
         dateTime,
@@ -240,7 +241,6 @@ function AddActivityDialog(props) {
         notes,
         isClosed: closed,
       };
-      newActLog.forEach((v) => delete v.__typename);
 
       updateContact({
         variables: {
@@ -256,7 +256,13 @@ function AddActivityDialog(props) {
   };
 
   useEffect(() => {
-    if (called && !loading && addActivityStatus.success === true && addNew) {
+    if (
+      called &&
+      !loading &&
+      addActivityStatus &&
+      addActivityStatus.success === true &&
+      addNew
+    ) {
       clearFields();
     }
   }, [called, loading, addActivityStatus, addNew]);

@@ -22,7 +22,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { GETPERSONDATA } from "../../../../../graphQL/useQueryGetPersonData";
 import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 
 const styles = (theme) => ({
   root: {
@@ -102,49 +102,56 @@ export default function BuyContactsInfoDialogContent(props) {
   const dispatch = useDispatch();
   const modalClass = Modals();
 
-  const [getPersonDataQuery, { data: personsData }] = useLazyQuery(GETPERSONDATA, {
-    onCompleted: data => {
-      props.onClose()
-      if (data.getPersonData.allSuccess) {
-        if (props.updateMelissaTable) {
-          props.updateMelissaTable()
+  const [getPersonDataQuery, { data: personsData }] = useLazyQuery(
+    GETPERSONDATA,
+    {
+      onCompleted: (data) => {
+        props.onClose();
+        if (data.getPersonData.allSuccess) {
+          if (props.updateMelissaTable) {
+            props.updateMelissaTable();
+          }
+          dispatch(showSuccessMessage("All records saved successfully"));
+        } else {
+          dispatch(showErrorMessage("Error occurred"));
         }
-        dispatch(showSuccessMessage("All records saved successfully"))
-      } else {
-        dispatch(showErrorMessage("Error occurred"))
-      }
+      },
     }
-  })
+  );
 
   function loadPersonData() {
-    let persons = []
+    let persons = [];
     for (const row of props.rows) {
       let person = {
         id: row._id,
         fullName: row.name,
-        address: row.address1 + (row.address2 ? ", " + row.address2 : ''),
+        address: row.address1 + (row.address2 ? ", " + row.address2 : ""),
         city: row.city,
         state: row.state,
         country: row.country,
-        postal: row.zip
-      }
+        postal: row.zip,
+      };
 
       if (
         (!person.address || !person.city || !person.state) &&
         !person.postal
       ) {
-        dispatch(showErrorMessage("Invalid data: [state, city, address] or [ZIP code] required"))
-        return
+        dispatch(
+          showErrorMessage(
+            "Invalid data: [state, city, address] or [ZIP code] required"
+          )
+        );
+        return;
       }
 
-      persons.push(person)
+      persons.push(person);
     }
 
     getPersonDataQuery({
       variables: { persons },
       refetchQueries: ["getLastMelissaRecord"],
       awaitRefetchQueries: true,
-    })
+    });
   }
 
   useEffect(() => {
@@ -157,12 +164,18 @@ export default function BuyContactsInfoDialogContent(props) {
     <React.Fragment>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
         Contact Info Purchase
-        <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={props.onClose}/>
+        <HighlightOffIcon
+          fontSize="large"
+          className={modalClass.titleClose}
+          onClick={props.onClose}
+        />
       </DialogTitle>
       <DialogContent>
         <Grid container spacing={1}>
           <Grid item xs={12}>
-            <h3 style={{padding: 0, marginTop: '20px', marginBottom: 0}}>Credits</h3>
+            <h3 style={{ padding: 0, marginTop: "20px", marginBottom: 0 }}>
+              Credits
+            </h3>
           </Grid>
           <Grid item xs={12} className={modalClass.inputContainer}>
             <FormLabel className={modalClass.inputLabel}>
@@ -173,14 +186,13 @@ export default function BuyContactsInfoDialogContent(props) {
               {currentCredits && currentCredits > 1 ? "s" : ""}
             </FormLabel>
           </Grid>
-          <Grid item xs={12} style={{marginTop: '15px'}}>
-            <h3 style={{margin: "0"}}>
-              Contact To Purchase
-            </h3>
+          <Grid item xs={12} style={{ marginTop: "15px" }}>
+            <h3 style={{ margin: "0" }}>Contact To Purchase</h3>
           </Grid>
-          <Grid item xs={12} style={{margin: 0, paddingTop: 0}}>
+          <Grid item xs={12} style={{ margin: 0, paddingTop: 0 }}>
             <FormLabel>
-              {props.rows && props.rows.length ? props.rows.length : ""} selected at 1 Credit each
+              {props.rows && props.rows.length ? props.rows.length : ""}{" "}
+              selected at 1 Credit each
             </FormLabel>
           </Grid>
           {props.rows &&
@@ -190,22 +202,26 @@ export default function BuyContactsInfoDialogContent(props) {
                   {row.name}
                 </FormLabel>
                 <FormLabel className={modalClass.inputContent}>
-                 <DeleteOutlinedIcon fontSize="small" style={{cursor:'pointer', float:'right'}} onClick={()=> {
-                    let reducedRows = [...props.rows];
-                    reducedRows.splice(index, 1);
-                    props.setRows(reducedRows);
-                 }}/>
+                  <DeleteOutlinedIcon
+                    fontSize="small"
+                    style={{ cursor: "pointer", float: "right" }}
+                    onClick={() => {
+                      let reducedRows = [...props.rows];
+                      reducedRows.splice(index, 1);
+                      props.setRows(reducedRows);
+                    }}
+                  />
                 </FormLabel>
               </Grid>
             ))}
           <Grid item xs={12} className={modalClass.greyedInputContainer}>
-            <h3 style={{float: "left", margin: '5px'}}>TOTAL</h3>
-            <h3 style={{float: "right", margin: '5px'}}>
-                {props.rows && props.rows.length ? props.rows.length : ""} CREDIT
-                {props.rows && props.rows.length && props.rows.length > 1
-                  ? "S"
-                  : ""}
-              </h3>
+            <h3 style={{ float: "left", margin: "5px" }}>TOTAL</h3>
+            <h3 style={{ float: "right", margin: "5px" }}>
+              {props.rows && props.rows.length ? props.rows.length : ""} CREDIT
+              {props.rows && props.rows.length && props.rows.length > 1
+                ? "S"
+                : ""}
+            </h3>
           </Grid>
         </Grid>
       </DialogContent>
@@ -218,11 +234,16 @@ export default function BuyContactsInfoDialogContent(props) {
         >
           Cancel
         </Button>
-        <Button onClick={() => { loadPersonData() }} color="secondary" variant="contained">
+        <Button
+          onClick={() => {
+            loadPersonData();
+          }}
+          color="secondary"
+          variant="contained"
+        >
           Buy Now
         </Button>
       </DialogActions>
-
     </React.Fragment>
   );
 }
