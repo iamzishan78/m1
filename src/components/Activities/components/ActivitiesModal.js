@@ -171,7 +171,6 @@ const mergeDateAndTime = (d, t) => {
 };
 
 const initialErrors = {
-  notes: false,
   activityType: false,
   activityName: false,
   startDate: false,
@@ -350,7 +349,6 @@ export default function ActivitiesModal({
   const updateErrors = () => {
     let activityTypeErr = false;
     let activityNameErr = false;
-    let notesErr = false;
     let startDataErr = false;
     let startTimeErr = false;
     let endDateErr = false;
@@ -359,7 +357,6 @@ export default function ActivitiesModal({
 
     if (!activityType || activityType.length === 0) activityTypeErr = true;
     if (!activityName || activityName.length === 0) activityNameErr = true;
-    if (!notes || notes.length === 0) notesErr = true;
     if (!startDate) startDataErr = true;
     if (!startTime) startTimeErr = true;
     if (!endDate) endDateErr = true;
@@ -379,7 +376,6 @@ export default function ActivitiesModal({
     setErrors({
       activityType: activityTypeErr,
       activityName: activityNameErr,
-      notes: notesErr,
       startDate: startDataErr,
       startTime: startTimeErr,
       endDate: endDateErr,
@@ -389,7 +385,6 @@ export default function ActivitiesModal({
     return (
       activityNameErr ||
       activityTypeErr ||
-      notesErr ||
       startDataErr ||
       startTimeErr ||
       endDateErr ||
@@ -722,10 +717,7 @@ export default function ActivitiesModal({
                     variant="outlined"
                     placeholder="Enter activity notes here"
                     value={notes}
-                    className={clsx(
-                      classes.notes,
-                      !notes && errors.notes && classes.error
-                    )}
+                    className={clsx(classes.notes)}
                     onChange={(e) => {
                       setNotes(e.target.value);
                     }}
