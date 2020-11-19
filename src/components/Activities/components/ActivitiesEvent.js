@@ -21,6 +21,12 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 14,
     fontWeight: "bold",
     textTransform: "capitalize",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    height: 16,
+    paddingRight: 12,
+    maxWidth: "100%",
   },
   time: {
     fontSize: 10,
@@ -73,7 +79,7 @@ const ActivitiesEvent = ({ event }) => {
     <div className={clsx(classes.root, event.isClosed && classes.isClosed)}>
       <div className={classes.icon}>{icon}</div>
       <div>
-        <h6 className={classes.type}>{event.type}</h6>
+        <h6 className={classes.type}>{event.name}</h6>
         <span className={classes.time}>{startTime + " - " + endTime}</span>
       </div>
     </div>
