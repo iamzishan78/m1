@@ -105,7 +105,7 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
   },
   dateTimeField: {
-    width: 162,
+    width: 172,
     marginBottom: 8,
   },
   marginLeft: {
