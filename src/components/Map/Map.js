@@ -894,26 +894,27 @@ export default function Map() {
   useEffect(() => {
     console.log("useEffect 12");
 
-    const wellLineClick = (currentFeature) => {
-      console.log("clicked well lines", currentFeature);
+    // const wellLineClick = (currentFeature) => {
+    //   console.log("clicked well lines", currentFeature);
 
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
-        selectedUserDefinedLayer: undefined,
-      }));
-      setStateApp((state) => ({
-        ...state,
-        selectedWell: currentFeature.properties,
-        selectedWellId: currentFeature.properties.id,
-        wellSelectedCoordinates: [
-          currentFeature.properties.longitude,
-          currentFeature.properties.latitude,
-        ],
-      }));
+    //   setStateApp((state) => ({
+    //     ...state,
+    //     popupOpen: false,
+    //     selectedUserDefinedLayer: undefined,
+    //     selectedParcel: null,
+    //   }));
+    //   setStateApp((state) => ({
+    //     ...state,
+    //     selectedWell: currentFeature.properties,
+    //     selectedWellId: currentFeature.properties.id,
+    //     wellSelectedCoordinates: [
+    //       currentFeature.properties.longitude,
+    //       currentFeature.properties.latitude,
+    //     ],
+    //   }));
 
-      createPopUp(currentFeature.properties);
-    };
+    //   createPopUp(currentFeature.properties);
+    // };
 
     const wellPointClick = (feature) => {
 
@@ -952,23 +953,23 @@ export default function Map() {
       }
     };
 
-    const layerClickHander = (feature) => {
-      let zVal;
-      if (map && map.getZoom() && map.getZoom() > 12) zVal = map.getZoom();
+    // const layerClickHander = (feature) => {
+    //   let zVal;
+    //   if (map && map.getZoom() && map.getZoom() > 12) zVal = map.getZoom();
 
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
-        selectedUserDefinedLayer: undefined,
-        selectedWell: null,
-        selectedWellId: feature.properties.id
-          ? feature.properties.id.toLowerCase()
-          : null,
-        flyTo: zVal
-          ? { ...feature.properties, zoom: zVal }
-          : feature.properties,
-      }));
-    };
+    //   setStateApp((state) => ({
+    //     ...state,
+    //     popupOpen: false,
+    //     selectedUserDefinedLayer: undefined,
+    //     selectedWell: null,
+    //     selectedWellId: feature.properties.id
+    //       ? feature.properties.id.toLowerCase()
+    //       : null,
+    //     flyTo: zVal
+    //       ? { ...feature.properties, zoom: zVal }
+    //       : feature.properties,
+    //   }));
+    // };
 
     const udLayerClickHandler = (feature) => {
       console.log("Current Parcel Layer", feature);
@@ -996,23 +997,23 @@ export default function Map() {
       map.resize();
     };
 
-    const udLayerHighlightHandler = (feature) => {
-      const id = feature.id;
-      if (hoverUdIds.indexOf(id) > -1) {
-        console.log("remove Hover");
-        map.setFeatureState(
-          { source: feature.source, id: feature.id },
-          { hover: false }
-        );
-      } else {
-        console.log("set Hover");
-        map.setFeatureState(
-          { source: feature.source, id: feature.id },
-          { hover: true }
-        );
-      }
-      setHoverUdIds(id);
-    };
+    // const udLayerHighlightHandler = (feature) => {
+    //   const id = feature.id;
+    //   if (hoverUdIds.indexOf(id) > -1) {
+    //     console.log("remove Hover");
+    //     map.setFeatureState(
+    //       { source: feature.source, id: feature.id },
+    //       { hover: false }
+    //     );
+    //   } else {
+    //     console.log("set Hover");
+    //     map.setFeatureState(
+    //       { source: feature.source, id: feature.id },
+    //       { hover: true }
+    //     );
+    //   }
+    //   setHoverUdIds(id);
+    // };
 
     const clusterClickHandler = (feature, map) => {
       if (feature && feature.properties && feature.properties.cluster_id) {
@@ -1150,6 +1151,7 @@ export default function Map() {
             udLayerClickHandler(feature);
             break;
           case layerId === "wellpoints" ||
+            layerId === "welllines" ||
             layerId === "Parcels" ||
             layerId === "Area of Interest" ||
             layerId === "Tracked Wells" ||
@@ -1159,9 +1161,9 @@ export default function Map() {
             layerId === "permits":
             wellPointClick(feature);
             break;
-          case layerId === "welllines":
-            wellLineClick(feature);
-            break;
+          // case layerId === "welllines":
+          //   wellLineClick(feature);
+          //   break;
           default:
             break;
         }
@@ -3447,11 +3449,7 @@ export default function Map() {
 
   const onAbstactLayerClick = function (feature, action) {
     console.log("feature, action", feature, action);
-    setStateApp((state) => ({
-      ...state,
-      popupOpen: false,
-      abstractPopupOpen: false,
-    }));
+
     if (!feature) {
       setStateApp((state) => ({
         ...state,
@@ -3459,6 +3457,10 @@ export default function Map() {
       }));
       return;
     }
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+    }));
     if (action === "add") {
       setStateApp((state) => ({
         ...state,
@@ -3473,10 +3475,6 @@ export default function Map() {
         ),
       }));
     }
-    setStateApp((state) => ({
-      ...state,
-      abstractPopupOpen: true,
-    }));
   };
 
   useEffect(() => {
@@ -3600,16 +3598,12 @@ export default function Map() {
         newMap.boxZoom.enable();
         newMap.touchZoomRotate.enable();
 
-
-        
         newMap.addControl(
           new mapboxgl.ScaleControl({
-            
             maxWidth: 80,
             unit: "imperial",
           }),
           "bottom-right"
-          
         );
 
         newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
@@ -4597,129 +4591,6 @@ export default function Map() {
     }
   }, [stateApp.editingUserDefinedLayers]);
 
-
-
-  useEffect(() => {
-  /////// USE EFFECT  to handle the map zoom / flyto for selected map elements 
-
-
-    if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
-      
-
-      // set and remove map marker
-
-      // var el = document.createElement("div");
-      // el.style.backgroundImage = "url(icons/favicon-inverted.png)";
-      // el.style.width = "28px";
-      // el.style.height = "64px";
-
-      // if(mapboxgl.Marker()){mapboxgl.Marker(el).remove()}
-      
-      // var marker = new mapboxgl.Marker(el)
-      // .setLngLat([
-      //   stateApp.selectedWell.longitude,
-      //   stateApp.selectedWell.latitude,
-      // ])
-      // .addTo(map);
-        
-
-
-      // mathematical formula for screen fit 
-      const alpha = 0.01;
-      const bbox = [
-                      [stateApp.selectedWell.longitude-1.5*alpha,stateApp.selectedWell.latitude],
-                      [stateApp.selectedWell.longitude+0.5*alpha,stateApp.selectedWell.latitude]
-                  ];
-
-
-
-
-      map.fitBounds(bbox,{
-        speed: 0.75,
-        pitch: 60,
-        bearing: 20,
-        easing: function (t) {
-                  return Math.sin((t * Math.PI) / 2);
-                }
-      });
-
-      setStateApp({
-        ...stateApp,
-        wellDetailCardOpen: false,
-      });
-
-      // map.on("moveend", function (e) {
-      //   if (
-      //     map.getBearing() === -1 
-      //     //&&
-      //     // map.getZoom() === 16
-      //   ) {
-      //     map.flyTo({
-      //       around: [
-      //         stateApp.selectedWell.longitude,
-      //         stateApp.selectedWell?.latitude,
-      //       ],
-      //       speed: 0.4,
-      //       bearing: 540,
-      //       duration: 100000,
-      //       easing: function (t) {
-      //         return Math.sin((t * Math.PI) / 2);
-      //       },
-      //     });
-      //   }
-      // });
-    }
-  }, [stateApp.wellDetailCardOpen]);
-
-
-  // useEffect(() => {
-  //   if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
-  //     map.flyTo({
-  //       center: [
-  //         stateApp.selectedWell.longitude,
-  //         stateApp.selectedWell.latitude,
-  //       ],
-  //       zoom: 16,
-  //       speed: 0.4,
-  //       bearing: -10,
-  //       pitch: 80,
-  //       easing: function (t) {
-  //         return Math.sin((t * Math.PI) / 2);
-  //       },
-  //     });
-
-  //     setFlyVar1(false);
-
-  //     map.on("moveend", function (e) {
-  //       if (
-  //         map.getBearing() === -10 &&
-  //         map.getZoom() === 16
-  //       ) {
-  //         map.flyTo({
-  //           center: [
-  //             stateApp.selectedWell?.longitude,
-  //             stateApp.selectedWell?.latitude,
-  //           ],
-  //           zoom: 16,
-  //           //speed: 0.4,
-  //           bearing: 540,
-  //           duration: 100000,
-  //           easing: function (t) {
-  //             return Math.sin((t * Math.PI) / 2);
-  //           },
-  //         });
-  //       }
-  //     });
-  //   }
-  // }, [stateApp.wellDetailCardOpen]);
-
-
-  // console.log(
-  //   "stateApp.selectedAbstracts",
-  //   stateApp.popupOpen,
-  //   stateApp.abstractPopupOpen,
-  //   stateApp.selectedAbstracts
-  // );
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
