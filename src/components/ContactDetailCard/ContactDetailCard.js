@@ -15,7 +15,7 @@ import { CONTACT } from "../../graphQL/useQueryContact";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { LASTMELISSARECORD } from "../../graphQL/useQueryGetMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
 import Documents from "../Shared/Documents";
@@ -44,6 +44,7 @@ import RecentActivities from "../RecentActivities/RecentActivities";
 import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
 import ViewDocuments from "../ViewDocuments/ViewDocuments";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
+import { UPDATECONTACT } from "../../graphQL/useMutationUpdateContact";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -289,6 +290,7 @@ export default function ContactDetailCard(props) {
       fetchPolicy: "network-only",
     }
   );
+  const [updateContact] = useMutation(UPDATECONTACT);
 
   const handleClickRightDialogOpen = (childrenToOpen) => {
     setRightDialogOpen(childrenToOpen);
@@ -867,6 +869,17 @@ export default function ContactDetailCard(props) {
                   variables: {
                     contactId: props.contactId,
                   },
+                });
+                updateContact({
+                  variables: {
+                    contact: {
+                      _id: props.contactId,
+                      lastUpdateBy: stateApp.user.mongoId,
+                    },
+                    ignoreResponse: true,
+                  },
+                  refetchQueries: ["getPaginatedContacts", "getContact"],
+                  awaitRefetchQueries: false,
                 });
               }}
             />
