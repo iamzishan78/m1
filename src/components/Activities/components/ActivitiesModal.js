@@ -265,14 +265,18 @@ export default function ActivitiesModal({
   }, [allContacts]);
 
   useEffect(() => {
-    if (cData?.contact) {
-      setNameAutValue((prev) =>
-        cData?.contact
-          ? { name: cData.contact.name, _id: cData.contact._id }
-          : { ...prev }
-      );
+    if (stateApp.activityDialog) {
+      if (addNew) {
+        setNameAutValue({ name: "", id: 0, _id: 0 });
+      } else if (cData?.contact) {
+        setNameAutValue((prev) =>
+          cData?.contact
+            ? { name: cData.contact.name, _id: cData.contact._id }
+            : { ...prev }
+        );
+      }
     }
-  }, [cData]);
+  }, [cData, stateApp.activityDialog]);
 
   useEffect(() => {
     console.log("CONTACT", nameAutValue);
