@@ -265,15 +265,14 @@ export default function ActivitiesModal({
   }, [allContacts]);
 
   useEffect(() => {
-    console.log("ADd CDATA", cData);
-    if (cData?.contact && !nameAutValue?.name) {
+    if (cData?.contact) {
       setNameAutValue(
         cData?.contact
           ? { name: cData.contact.name, _id: cData.contact._id }
-          : {}
+          : { name: "", id: 0, _id: 0 }
       );
     }
-  });
+  }, [cData]);
 
   useEffect(() => {
     console.log("CONTACT", nameAutValue);
@@ -319,6 +318,8 @@ export default function ActivitiesModal({
       setEndDate(getCurrentDate());
       setStartTime("00:00");
       setEndTime("00:00");
+      setNameAutValue({ name: "", id: 0, _id: 0 });
+      setContact({ name: "", id: 0, _id: 0 });
     }
   }, [selectedActivity]);
 
@@ -342,7 +343,6 @@ export default function ActivitiesModal({
     setContactId("");
     setStartTime("");
     setEndTime("");
-    setNameAutValue(null);
     setNameAutInputValue("");
   };
 
