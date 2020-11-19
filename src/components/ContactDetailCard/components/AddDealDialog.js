@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
   inputField: {
-    marginBottom: "30px",
+    marginBottom: "10px",
   },
   dateLabel: {
     transform: "translate(10px, 2px) scale(0.75) !important",
@@ -71,12 +71,13 @@ const useStyles = makeStyles((theme) => ({
   dialogFooter: {
     display: "flex",
     justifyContent: "flex-end",
+    paddingTop: "10px"
   },
   footerButton: {
     letterSpacing: "1px",
     textTransform: "capitalize",
     fontWeight: "bold",
-    padding: "8px 35px",
+    padding: "8px 20px",
   },
 
   label: {
@@ -110,10 +111,11 @@ const useStyles = makeStyles((theme) => ({
     border: "1px solid gray",
   },
   originationDate: {
-    paddingBottom: 12,
-    fontSize: 16,
+    paddingBottom: "12px",
+    fontSize: 12,
     letterSpacing: 2,
-    fontWeight: "bold",
+   // fontWeight: "bold",
+    textAlign: "center"
   },
 }));
 
@@ -635,14 +637,14 @@ function AddDealDialog(props) {
                   <DeleteIcon className={classes.closeIcon} fontSize="small" />
                 </IconButton>
               )}
-            {/* 
+            
             <IconButton
               disabled={updateTransactionLoading || addContactLoading}
               onClick={handleClose}
               size="small"
             >
               <CloseIcon className={classes.closeIcon} fontSize="small" />
-            </IconButton> */}
+            </IconButton>
           </div>
         </Grid>
         <div
