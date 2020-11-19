@@ -197,6 +197,7 @@ const Activities = () => {
           className={classes.progress}
           size={80}
           disableShrink
+          color="secondary"
         />
       ) : (
         <>
