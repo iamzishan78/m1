@@ -201,6 +201,7 @@ export default function ActivitiesModal({
   const [contactId, setContactId] = useState("");
   const [contact, setContact] = useState({});
   const [errors, setErrors] = useState({ ...initialErrors });
+  const [allLoading, setAllLoading] = useState(false);
 
   const [updateContact, { called, loading, data }] = useMutation(
     UPDATECONTACT,
@@ -264,29 +265,45 @@ export default function ActivitiesModal({
     setIsNextPageLoading(false);
   }, [allContacts]);
 
-  useEffect(() => {
-    if (stateApp.activityDialog) {
-      if (addNew) {
-        setNameAutValue({ name: "", id: 0, _id: 0 });
-      } else if (cData?.contact) {
-        setNameAutValue((prev) =>
-          cData?.contact
-            ? { name: cData.contact.name, _id: cData.contact._id }
-            : { ...prev }
-        );
-      }
-    }
-  }, [cData, stateApp.activityDialog]);
+  // useEffect(() => {
+  //   console.log(
+  //     "SET CDATA stateApp.activityDialog 1",
+  //     addNew,
+  //     stateApp.activityDialog,
+  //     cData?.contact,
+  //     nameAutValue
+  //   );
+
+  //   setNameAutValue((prev) =>
+  //     !addNew ? { ...prev } : { name: "", id: 0, _id: 0 }
+  //   );
+  // }, [addNew]);
 
   useEffect(() => {
-    console.log("CONTACT", nameAutValue);
+    console.log("SET CDATA 1", addNew, stateApp.activityDialog, cData?.contact);
+
+    if (stateApp.activityDialog) {
+      setNameAutValue((prev) =>
+        cData?.contact
+          ? { name: cData.contact.name, _id: cData.contact._id }
+          : { ...prev }
+      );
+    }
+    if (stateApp.activityDialog && addNew) {
+      setNameAutValue({ name: "", id: 0, _id: 0 });
+    }
+  }, [cData, stateApp.activityDialog, addNew]);
+
+  useEffect(() => {
+    console.log("SET CDATA NAME AUT", nameAutValue);
     if (nameAutValue?.name) {
       setContact(nameAutValue);
-      setContactId(nameAutValue._id);
     }
   }, [nameAutValue]);
 
   useEffect(() => {
+    console.log("SET CDATA CONTACT", contactId);
+
     if (contactId) {
       getContact({
         variables: {
@@ -297,8 +314,8 @@ export default function ActivitiesModal({
   }, [contactId]);
 
   useEffect(() => {
+    console.log("set cdata EVENT: SET ACTIVITY:", selectedActivity);
     if (selectedActivity) {
-      console.log("EVENT: SET ACTIVITY:", selectedActivity);
       setAddNew(false);
       setNotes(selectedActivity.notes);
       setActivityType(selectedActivity.type);
@@ -312,6 +329,7 @@ export default function ActivitiesModal({
       setEndTime(moment(selectedActivity.end).format("HH:mm"));
     } else {
       setAddNew(true);
+      setNameAutValue({ name: "", id: 0, _id: 0 });
       setClosed(false);
       setNotes("");
       setActivityType("");
@@ -322,8 +340,6 @@ export default function ActivitiesModal({
       setEndDate(getCurrentDate());
       setStartTime("00:00");
       setEndTime("00:00");
-      // setNameAutValue({ name: "", id: 0, _id: 0 });
-      // setContact({ name: "", id: 0, _id: 0 });
     }
   }, [selectedActivity]);
 
@@ -400,6 +416,7 @@ export default function ActivitiesModal({
   const addActivity = async () => {
     if (updateErrors()) return;
 
+    setAllLoading(true);
     let activityLog =
       cData && cData.contact.activityLog
         ? cData.contact.activityLog.map((a) => a)
@@ -418,7 +435,7 @@ export default function ActivitiesModal({
       isClosed: closed,
     });
 
-    updateContact({
+    await updateContact({
       variables: {
         contact: {
           _id: cData.contact._id,
@@ -428,10 +445,13 @@ export default function ActivitiesModal({
       refetchQueries: ["getAllActivities"],
       awaitRefetchQueries: true,
     });
+    setAllLoading(false);
   };
 
   const updateActivity = async () => {
     if (updateErrors()) return;
+
+    setAllLoading(true);
 
     const dateTime = mergeDateAndTime(startDate, startTime);
     const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -515,6 +535,8 @@ export default function ActivitiesModal({
         awaitRefetchQueries: true,
       });
     }
+
+    setAllLoading(false);
   };
 
   return (
@@ -834,12 +856,13 @@ export default function ActivitiesModal({
                     onClick={() => {
                       onModalClose();
                     }}
-                    disabled={loading && cLoading}
+                    disabled={loading || cLoading || allLoading}
                   >
                     Cancel
                   </Button>
+
                   <Button
-                    disabled={loading && cLoading}
+                    disabled={loading || cLoading || allLoading}
                     className={classes.marginLeft}
                     color="primary"
                     variant="contained"
@@ -849,6 +872,13 @@ export default function ActivitiesModal({
                       else updateActivity();
                     }}
                   >
+                    {allLoading && (
+                      <CircularProgress
+                        style={{ marginRight: 8 }}
+                        color="#fff"
+                        size={20}
+                      />
+                    )}
                     {addNew ? "Add" : "Save"}
                   </Button>
                 </div>
