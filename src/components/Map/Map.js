@@ -4181,7 +4181,6 @@ export default function Map() {
     setStateApp((state) => ({
       ...state,
       popupOpen: false,
-      // abstractPopupOpen: false,
     }));
     if (action === "add") {
       setStateApp((state) => ({
@@ -4197,10 +4196,6 @@ export default function Map() {
         ),
       }));
     }
-    // setStateApp((state) => ({
-    //   ...state,
-    //   abstractPopupOpen: true,
-    // }));
   };
 
   useEffect(() => {
@@ -5407,13 +5402,6 @@ export default function Map() {
       });
     }
   }, [stateApp.editingUserDefinedLayers]);
-
-  console.log(
-    "stateApp.selectedAbstracts",
-    stateApp.popupOpen,
-    stateApp.abstractPopupOpen,
-    stateApp.selectedAbstracts
-  );
 
   return (
     <div className={classes.mapWrapper}>
