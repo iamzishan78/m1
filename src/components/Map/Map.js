@@ -4170,11 +4170,7 @@ export default function Map() {
 
   const onAbstactLayerClick = function (feature, action) {
     console.log("feature, action", feature, action);
-    setStateApp((state) => ({
-      ...state,
-      popupOpen: false,
-      abstractPopupOpen: false,
-    }));
+
     if (!feature) {
       setStateApp((state) => ({
         ...state,
@@ -4182,6 +4178,10 @@ export default function Map() {
       }));
       return;
     }
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+    }));
     if (action === "add") {
       setStateApp((state) => ({
         ...state,
@@ -4196,10 +4196,6 @@ export default function Map() {
         ),
       }));
     }
-    setStateApp((state) => ({
-      ...state,
-      abstractPopupOpen: true,
-    }));
   };
 
   useEffect(() => {
@@ -4323,16 +4319,12 @@ export default function Map() {
         newMap.boxZoom.enable();
         newMap.touchZoomRotate.enable();
 
-
-        
         newMap.addControl(
           new mapboxgl.ScaleControl({
-            
             maxWidth: 80,
             unit: "imperial",
           }),
           "bottom-right"
-          
         );
 
         newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
@@ -5410,13 +5402,6 @@ export default function Map() {
       });
     }
   }, [stateApp.editingUserDefinedLayers]);
-
-  console.log(
-    "stateApp.selectedAbstracts",
-    stateApp.popupOpen,
-    stateApp.abstractPopupOpen,
-    stateApp.selectedAbstracts
-  );
 
   return (
     <div className={classes.mapWrapper}>

@@ -405,6 +405,7 @@ function MapGridCardSearch(props) {
       className={`cancelDraggableEffect ${classes.root}`}
       noValidate
       autoComplete="off"
+      onSubmit={(e)=> {e.preventDefault();}}
     >
       <TextField
         id="mapGridCardSearch-basic"
@@ -415,6 +416,7 @@ function MapGridCardSearch(props) {
               className={classes.inputAdornment}
               position="start"
               onClick={(e) => {
+                
                 e.stopPropagation();
                 props.ativateSearchPanel();
               }}
