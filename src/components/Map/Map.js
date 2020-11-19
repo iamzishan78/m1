@@ -4590,7 +4590,128 @@ export default function Map() {
       });
     }
   }, [stateApp.editingUserDefinedLayers]);
+  
+  useEffect(() => {
+  /////// USE EFFECT  to handle the map zoom / flyto for selected map elements 
 
+
+    if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
+      
+
+      // set and remove map marker
+
+      // var el = document.createElement("div");
+      // el.style.backgroundImage = "url(icons/favicon-inverted.png)";
+      // el.style.width = "28px";
+      // el.style.height = "64px";
+
+      // if(mapboxgl.Marker()){mapboxgl.Marker(el).remove()}
+      
+      // var marker = new mapboxgl.Marker(el)
+      // .setLngLat([
+      //   stateApp.selectedWell.longitude,
+      //   stateApp.selectedWell.latitude,
+      // ])
+      // .addTo(map);
+        
+
+
+      // mathematical formula for screen fit 
+      const alpha = 0.01;
+      const bbox = [
+                      [stateApp.selectedWell.longitude-1.5*alpha,stateApp.selectedWell.latitude],
+                      [stateApp.selectedWell.longitude+0.5*alpha,stateApp.selectedWell.latitude]
+                  ];
+
+
+
+
+      map.fitBounds(bbox,{
+        speed: 0.75,
+        pitch: 60,
+        bearing: 20,
+        easing: function (t) {
+                  return Math.sin((t * Math.PI) / 2);
+                }
+      });
+
+      setStateApp({
+        ...stateApp,
+        wellDetailCardOpen: false,
+      });
+
+      // map.on("moveend", function (e) {
+      //   if (
+      //     map.getBearing() === -1 
+      //     //&&
+      //     // map.getZoom() === 16
+      //   ) {
+      //     map.flyTo({
+      //       around: [
+      //         stateApp.selectedWell.longitude,
+      //         stateApp.selectedWell?.latitude,
+      //       ],
+      //       speed: 0.4,
+      //       bearing: 540,
+      //       duration: 100000,
+      //       easing: function (t) {
+      //         return Math.sin((t * Math.PI) / 2);
+      //       },
+      //     });
+      //   }
+      // });
+    }
+  }, [stateApp.wellDetailCardOpen]);
+
+
+  // useEffect(() => {
+  //   if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
+  //     map.flyTo({
+  //       center: [
+  //         stateApp.selectedWell.longitude,
+  //         stateApp.selectedWell.latitude,
+  //       ],
+  //       zoom: 16,
+  //       speed: 0.4,
+  //       bearing: -10,
+  //       pitch: 80,
+  //       easing: function (t) {
+  //         return Math.sin((t * Math.PI) / 2);
+  //       },
+  //     });
+
+  //     setFlyVar1(false);
+
+  //     map.on("moveend", function (e) {
+  //       if (
+  //         map.getBearing() === -10 &&
+  //         map.getZoom() === 16
+  //       ) {
+  //         map.flyTo({
+  //           center: [
+  //             stateApp.selectedWell?.longitude,
+  //             stateApp.selectedWell?.latitude,
+  //           ],
+  //           zoom: 16,
+  //           //speed: 0.4,
+  //           bearing: 540,
+  //           duration: 100000,
+  //           easing: function (t) {
+  //             return Math.sin((t * Math.PI) / 2);
+  //           },
+  //         });
+  //       }
+  //     });
+  //   }
+  // }, [stateApp.wellDetailCardOpen]);
+
+
+  // console.log(
+  //   "stateApp.selectedAbstracts",
+  //   stateApp.popupOpen,
+  //   stateApp.abstractPopupOpen,
+  //   stateApp.selectedAbstracts
+  // );
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
