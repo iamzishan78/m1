@@ -9,6 +9,7 @@
 .rbc-event.rbc-selected {
   background-color: #d0f1fc !important;
   border: 2px solid #fff !important;
+  z-index: 1000;
 }
 
 .rbc-event-label {
@@ -57,4 +58,13 @@
 
 .rbc-allday-cell {
   display: none;
+}
+
+.rbc-day-bg.rbc-today {
+  background-color: #d0f1fc66 !important;
+}
+
+.rbc-date-cell.rbc-now.rbc-current a {
+  color: #259aed !important;
+  font-weight: bolder;
 }
