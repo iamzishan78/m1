@@ -224,6 +224,16 @@ function SubTable(props) {
     setStateIfDeepEqual(Rows, newState);
   };
 
+  const [total, Total] = useState(false);
+  const setTotal = (newState) => {
+    setStateIfDeepEqual(Total, newState);
+  };
+
+  const [cumulative, Cumulative] = useState({});
+  const setCumulative = (newState) => {
+    setStateIfDeepEqual(Cumulative, newState);
+  };
+
   const [columns, setColumns] = useState([]);
   // const setColumns = (newState) => {
   //   setStateIfDeepEqual(Columns, newState);
@@ -410,8 +420,52 @@ function SubTable(props) {
           setFirstMount(false);
         } else setRows(updInSameOrder([...props.rows]));
       } else setRows([...props.rows]);
+
+      if (props.total == true) {
+        let temp = {};
+        let calc_keys = ['oil', 'gas', 'water', 'allocatedOil', 'allocatedWater', 'allocatedGas'];
+        let current_keys = [];
+        if ([...props.rows].length != 0) {
+          let keys = Object.keys([...props.rows][0]);
+          current_keys = calc_keys.filter(value => keys.includes(value));
+        }
+        temp = computeCumulative(current_keys, [...props.rows])
+        switch(props.parent){
+          case "production_WellDetails":
+            let reconstruct_row = {
+              ...props.rows[0],
+              ...temp
+            }
+            Object.keys(reconstruct_row).forEach(key => {
+              if (!calc_keys.includes(key)) {
+                reconstruct_row[key] = "";
+              }
+            });
+            reconstruct_row["ReportDate"] = "Cumulative";
+            setRows(displayCumulative([...props.rows], props.total, reconstruct_row));
+            setCumulative(reconstruct_row);
+            break;
+          default:
+            break;
+        }
+      }
+      setTotal(props.total);
     }
   }, [props.rows, props.orderByTracks]);
+
+  const computeCumulative = (keys, data) => {
+    let ret_val = {};
+    data.forEach(row => {
+        keys.forEach(key => {
+          if (ret_val[key]) {
+            ret_val[key] = ret_val[key] + parseFloat(row[key].trim());
+          } else {
+            ret_val[key] = parseFloat(row[key].trim());
+          }
+        });
+    });
+    return ret_val;
+  }
 
   useEffect(() => {
     if (rows && m1nSelectedRowsIndexes) {
@@ -570,7 +624,7 @@ function SubTable(props) {
                               variables: { wellId: value },
                             });
                           } else {
-                            let selectedObj = props.rows.find((row) => {
+                            let selectedWell = props.rows.find((row) => {
                               if (row.id) return row.id == tableMeta.rowData[0];
                               return row.Id == tableMeta.rowData[0];
                             });
@@ -655,7 +709,6 @@ function SubTable(props) {
             }
 
             break;
-
           case "adminAccess":
             {
               column.options = {
@@ -717,7 +770,6 @@ function SubTable(props) {
               };
             }
             break;
-
           case "coordinates": //// fly to the map icon
             {
               column.options = {
@@ -813,7 +865,6 @@ function SubTable(props) {
               };
             }
             break;
-
           case "isTracked":
             {
               column.options = {
@@ -1120,7 +1171,6 @@ function SubTable(props) {
               };
             }
             break;
-
           case "ownerCount":
             {
               column.options = {
@@ -1169,7 +1219,6 @@ function SubTable(props) {
               };
             }
             break;
-
           case "owners": //ownerPerContactCount
             {
               column.options = {
@@ -1220,7 +1269,6 @@ function SubTable(props) {
               };
             }
             break;
-
           case "tags":
             {
               column.options = {
@@ -1293,7 +1341,6 @@ function SubTable(props) {
               };
             }
             break;
-
           case "fullContactAddress":
             {
               column.options = {
@@ -1319,7 +1366,6 @@ function SubTable(props) {
               };
             }
             break;
-
           default:
             {
               column.options = {
@@ -1850,9 +1896,52 @@ function SubTable(props) {
       console.log(`here: pageInd=${pageInd} pageState=${pageState}`);
       setPageInd(pageState);
     },
+    onChangeRowsPerPage: (numberOfRows) => {
+      if (props.total === true) {
+        switch(props.parent) {
+          case "production_WellDetails":
+            let trimmed = rows.filter(item => item.ReportDate !== "Cumulative");
+            setRows(displayCumulative(trimmed, props.total, cumulative));
+            break;
+          default:
+            break;
+        }
+      }
+    },
+    // onColumnSortChange: (selectedColumn, direction) => {
+    //   console.log("------------------------------------------");
+    //   console.log(selectedColumn);
+    //   console.log(direction);
+    //   console.log(rows);
+    //   console.log("------------------------------------------");
+    // },
+    // customSort: (data, colIndex, order) => {
+      // console.log("---------------------------");
+      // console.log(data);
+      // console.log(colIndex);
+      // console.log(order);
+      // console.log("---------------------------");
+
+      // return data.sort((a, b) => {
+      //   return (a.data[colIndex].length < b.data[colIndex].length ? -1: 1 ) * (order === 'desc' ? 1 : -1);
+      // });
+
+    //   if (props.total === true) {
+    //     switch(props.parent) {
+    //       case "production_WellDetails":
+    //         let trimmed = rows.filter(item => item.ReportDate !== "Cumulative");
+    //         setRows(displayCumulative(trimmed, props.total, cumulative));
+    //         break;
+    //       default:
+    //         break;
+    //     }
+    //   } else {
+    //     return data.sort((a, b) => {
+    //       return (a.data[colIndex].length < b.data[colIndex].length ? -1: 1 ) * (order === 'desc' ? 1 : -1);
+    //     });
+    //   }
+    // },
     onTableChange: (action, tableState) => {
-      console.log("onTableChange");
-      console.log(action, tableState);
       if (props.header === "Contacts") {
         let filters = [];
         const leadSourceIndex = tableState.columns.findIndex(
@@ -1909,7 +1998,7 @@ function SubTable(props) {
             search: tableState.searchText,
           },
         };
-
+        console.log("ACTION:", action);
         switch (action) {
           case "changeRowsPerPage":
             console.log("changeRowsPerPage");
@@ -2005,6 +2094,27 @@ function SubTable(props) {
     history.push(route);
   };
 
+  const displayCumulative = (data, total, cumulative) => {
+    let rows = data;
+    if (total === true) {
+      let insertInBetween = options.rowsPerPage - 1;
+      if (Object.entries(cumulative).length != 0) {
+        let multiplier = rows.length / insertInBetween;
+        for (let temp = 1; temp <= multiplier; temp++) {
+          let insert_index = 0;
+          if (temp != 1) {
+            insert_index = temp * options.rowsPerPage;
+            rows.splice(insert_index - 1, 0, cumulative);
+          } else {
+            rows.splice(insertInBetween, 0, cumulative);
+          }
+        };
+        rows.push(cumulative)
+      }
+    }
+    return rows;
+  }
+
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <div
@@ -2031,7 +2141,6 @@ function SubTable(props) {
           selectRowOpenContact={selectRowOpenContact}
           contactId={props.contactId}
         /> */}
-
         {openDialog && openDialog !== "addDeals" && (
           <Dialog
             className={classes.dialog}

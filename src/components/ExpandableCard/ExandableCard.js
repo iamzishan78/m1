@@ -333,8 +333,6 @@ export default function ExpandableCard(props) {
                   )}
                 </Tooltip>
               )}
-
-
               {stateExpandableCard.expanded
                 ? parent !== "table" && (
                     <Tooltip title={"Shrink"} placement="top">
@@ -360,9 +358,6 @@ export default function ExpandableCard(props) {
                       </IconButton>
                     </Tooltip>
                   )}
-
-        
-            
               <Tooltip title={"Close"} placement="top">
                 <IconButton
                   size={stateExpandableCard.expanded ? "medium" : "small"}

@@ -308,7 +308,7 @@ export default function WellCardDetails(props) {
                     //name="chartToggleOil"
                   />
                 }
-                label="Oil"
+                label="Allocated Oil"
               />
               <FormControlLabel
                 control={
@@ -320,7 +320,7 @@ export default function WellCardDetails(props) {
                     // color="#e57373"//invalid color
                   />
                 }
-                label="Gas"
+                label="Allocated Gas"
               />
               <FormControlLabel
                 control={
@@ -330,7 +330,7 @@ export default function WellCardDetails(props) {
                     name="checkedWater"
                   />
                 }
-                label="Water"
+                label="Allocated Water"
               />
               <FormControlLabel
                 control={
