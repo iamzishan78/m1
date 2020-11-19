@@ -35,6 +35,7 @@ import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import gql from "graphql-tag";
+import { setStateIfDeepEqual } from "../../Shared/functions";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import ActivitiesEvent from "./ActivitiesEvent";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
@@ -212,12 +213,12 @@ export default function ActivitiesModal({
     }
   );
 
-  const [getPaginatedContacts, { data: allContacts }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+  const [
+    getPaginatedContacts,
+    { data: allContacts, fetchMore: fetchMorePaginatedContacts },
+  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
 
   const [getContact, { data: cData, cLoading }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
@@ -232,14 +233,28 @@ export default function ActivitiesModal({
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-  const [nameAutInputValue, setNameAutInputValue] = useState([]);
+  const [nameAutInputValue, NameAutInputValue] = useState([]);
+  const setNameAutInputValue = (newState) => {
+    setStateIfDeepEqual(NameAutInputValue, newState);
+  };
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
 
-  const loadNextPage = (...args) => {
-    console.log("loadNextPage", ...args);
+  useEffect(() => {
+    console.log("AUTOCOMPLETE INPUT CHANGE: ", nameAutInputValue);
+
+    //will also run during initial mount
     setIsNextPageLoading(true);
-    getPaginatedContacts();
+    getPaginatedContacts({
+      variables: {
+        search: nameAutInputValue,
+      },
+    });
+  }, [nameAutInputValue]);
+
+  const loadNextPage = async (pageVariables) => {
+    setIsNextPageLoading(true);
+    fetchMorePaginatedContacts(pageVariables);
     return null;
   };
 
@@ -812,7 +827,6 @@ export default function ActivitiesModal({
                     hasNextPage={hasNextPage}
                     isNextPageLoading={isNextPageLoading}
                     loadNextPage={loadNextPage}
-                    canAddNew={false}
                   />
                   {errors.contact && (
                     <>
