@@ -25,6 +25,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CircularProgress, Typography } from "@material-ui/core";
 import RightDialog from "./RightDialog";
 import { DatePicker } from "@material-ui/pickers";
+import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../../Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -146,7 +147,10 @@ function AddDealDialog(props) {
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-  const [nameAutInputValue, setNameAutInputValue] = useState([]);
+  const [nameAutInputValue, NameAutInputValue] = useState("");
+  const setNameAutInputValue = (newState) => {
+    setStateIfDeepEqual(NameAutInputValue, newState);
+  };
 
   const [openContactDialog, setOpenContactDialog] = useState(false);
   // const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
@@ -174,9 +178,10 @@ function AddDealDialog(props) {
     fetchPolicy: "cache-and-network",
   });
 
-  const [getPaginatedContacts, { data: allContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-  });
+  const [getPaginatedContacts, { 
+    data: allContacts, 
+    loading,
+    fetchMore: fetchMorePaginatedContacts}] = useLazyQuery(PAGINATEDCONTACTSQUERY);
 
   const [contact, setContact] = useState({});
 
@@ -192,17 +197,27 @@ function AddDealDialog(props) {
   useEffect(() => {
     console.log("ALL CONTACTS: ", allContacts);
     if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map((el) => el.node)]);
+      setMongoEntitiesArray(allContacts?.paginatedContacts?.edges?.map((el) => el.node));
       setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
+      setIsNextPageLoading(false);
     }
-    setIsNextPageLoading(false);
   }, [allContacts]);
 
-  const loadNextPage = (...args) => {
-    console.log("loadNextPage", ...args);
+  useEffect(() => {
+    console.log("AUTOCOMPLETE INPUT CHANGE: ", nameAutInputValue);
+
+    //will also run during initial mount
     setIsNextPageLoading(true);
-    getPaginatedContacts();
-    return null
+    getPaginatedContacts({
+      variables: {
+        search: nameAutInputValue
+      }
+    });
+  }, [nameAutInputValue]);
+
+  const loadNextPage = async (pageVariables) => {
+    setIsNextPageLoading(true);
+    fetchMorePaginatedContacts(pageVariables);
   };
 
   useEffect(() => {
