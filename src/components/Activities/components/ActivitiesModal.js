@@ -195,8 +195,8 @@ export default function ActivitiesModal({
   const [closed, setClosed] = useState(false);
   const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [startTime, setStartTime] = useState("00:00");
+  const [endTime, setEndTime] = useState("00:00");
   const [notes, setNotes] = useState("");
   const [contactId, setContactId] = useState("");
   const [contact, setContact] = useState({});
@@ -317,8 +317,8 @@ export default function ActivitiesModal({
       setPrevContactId(null);
       setStartDate(getCurrentDate());
       setEndDate(getCurrentDate());
-      setStartTime("");
-      setEndTime("");
+      setStartTime("00:00");
+      setEndTime("00:00");
     }
   }, [selectedActivity]);
 
