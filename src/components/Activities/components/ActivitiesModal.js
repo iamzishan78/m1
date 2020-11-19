@@ -266,10 +266,10 @@ export default function ActivitiesModal({
 
   useEffect(() => {
     if (cData?.contact) {
-      setNameAutValue(
+      setNameAutValue((prev) =>
         cData?.contact
           ? { name: cData.contact.name, _id: cData.contact._id }
-          : { name: "", id: 0, _id: 0 }
+          : { ...prev }
       );
     }
   }, [cData]);
@@ -318,8 +318,8 @@ export default function ActivitiesModal({
       setEndDate(getCurrentDate());
       setStartTime("00:00");
       setEndTime("00:00");
-      setNameAutValue({ name: "", id: 0, _id: 0 });
-      setContact({ name: "", id: 0, _id: 0 });
+      // setNameAutValue({ name: "", id: 0, _id: 0 });
+      // setContact({ name: "", id: 0, _id: 0 });
     }
   }, [selectedActivity]);
 
