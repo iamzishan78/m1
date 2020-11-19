@@ -22,6 +22,7 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
+import { relayStylePagination } from "./graphQL/apolloPaginationSchemes.js";
 import { CircularProgress, Typography } from "@material-ui/core";
 // import ProfileProvider from "./components/Profile/ProfileProvider";
 // import ProfileDetailsProvider from "./components/Profile/ProfileDetailsProvider";
@@ -213,7 +214,15 @@ function App() {
         //   mode: 'no-cors',
         // },
         headers: {},
-        cache: new InMemoryCache(),
+        cache: new InMemoryCache({
+          typePolicies: {
+            Query: {
+              fields: {
+                paginatedContacts: relayStylePagination(),
+              },
+            },
+          },
+        }),
       });
 
       setApolloClient((state, props) => {
