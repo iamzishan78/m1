@@ -213,6 +213,8 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 
   return (
     <Autocomplete
+      defaultValue={nameAutValue}
+      value={nameAutValue}
       disableListWrap
       classes={classes}
       ListboxComponent={ListboxComponent}
