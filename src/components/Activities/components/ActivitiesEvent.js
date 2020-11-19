@@ -1,4 +1,5 @@
 import React from "react";
+import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import CallIcon from "@material-ui/icons/Call";
 import MeetingIcon from "@material-ui/icons/Group";
@@ -9,7 +10,7 @@ import DefaultIcon from "@material-ui/icons/Event";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: 4,
+    padding: "8px 12px",
     display: "flex",
     alignItems: "flex-start",
     justifyContent: "flex-start",
@@ -27,6 +28,10 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     fontSize: 12,
     marginRight: 8,
+  },
+  isClosed: {
+    backgroundColor: "#d9d9d9",
+    color: "#555",
   },
 }));
 
@@ -65,7 +70,7 @@ const ActivitiesEvent = ({ event }) => {
   }
 
   return (
-    <div className={classes.root}>
+    <div className={clsx(classes.root, event.isClosed && classes.isClosed)}>
       <div className={classes.icon}>{icon}</div>
       <div>
         <h6 className={classes.type}>{event.type}</h6>

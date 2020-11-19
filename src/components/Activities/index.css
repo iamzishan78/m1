@@ -4,6 +4,7 @@
   background-color: #d0f1fc;
   color: #15a9d7;
   border: 2px solid #fff !important;
+  padding: 0px !important;
 }
 
 .rbc-event.rbc-selected {

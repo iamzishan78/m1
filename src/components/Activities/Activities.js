@@ -59,7 +59,7 @@ const ActivitiesCalendar = ({
               setView={setView}
             />
           ),
-          event: ActivitiesEvent,
+          event: (props) => <ActivitiesEvent {...props} />,
         }}
       />
     </div>
@@ -108,11 +108,6 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
   }
 
   return filterByTypeCondition && filterByTimeCondition;
-};
-
-const filterEventsByDate = (events, date) => {
-  const day = moment(date);
-  return events.filter((e) => moment(e.end).isSame(day, "day"));
 };
 
 const Activities = () => {
