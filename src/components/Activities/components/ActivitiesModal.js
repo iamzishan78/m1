@@ -580,9 +580,12 @@ export default function ActivitiesModal({
         title={`${
           addNew
             ? "Add Activity"
-            : activityName
-            ? activityName.toUpperCase()
-            : activityType.toUpperCase()
+            : "Activity Details"
+            ? "Activity Details"
+            : "Activity Details"
+           // : activityName
+            //? activityName.toUpperCase()
+           // : activityType.toUpperCase()
         }`}
         subTitle={""}
         parent="calendar"
