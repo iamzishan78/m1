@@ -458,9 +458,9 @@ function SubTable(props) {
     data.forEach(row => {
         keys.forEach(key => {
           if (ret_val[key]) {
-            ret_val[key] = ret_val[key] + parseFloat(row[key].trim());
+            ret_val[key] = ret_val[key] + parseFloat(row[key]);
           } else {
-            ret_val[key] = parseFloat(row[key].trim());
+            ret_val[key] = parseFloat(row[key]);
           }
         });
     });
@@ -1381,7 +1381,6 @@ function SubTable(props) {
                         day: "numeric",
                         month: "numeric",
                       });
-
                     return v;
                   };
 
@@ -1908,39 +1907,18 @@ function SubTable(props) {
         }
       }
     },
-    // onColumnSortChange: (selectedColumn, direction) => {
-    //   console.log("------------------------------------------");
-    //   console.log(selectedColumn);
-    //   console.log(direction);
-    //   console.log(rows);
-    //   console.log("------------------------------------------");
-    // },
-    // customSort: (data, colIndex, order) => {
-      // console.log("---------------------------");
-      // console.log(data);
-      // console.log(colIndex);
-      // console.log(order);
-      // console.log("---------------------------");
-
-      // return data.sort((a, b) => {
-      //   return (a.data[colIndex].length < b.data[colIndex].length ? -1: 1 ) * (order === 'desc' ? 1 : -1);
-      // });
-
-    //   if (props.total === true) {
-    //     switch(props.parent) {
-    //       case "production_WellDetails":
-    //         let trimmed = rows.filter(item => item.ReportDate !== "Cumulative");
-    //         setRows(displayCumulative(trimmed, props.total, cumulative));
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    //   } else {
-    //     return data.sort((a, b) => {
-    //       return (a.data[colIndex].length < b.data[colIndex].length ? -1: 1 ) * (order === 'desc' ? 1 : -1);
-    //     });
-    //   }
-    // },
+    onColumnSortChange: (column, direction) => {
+      if (props.total === true) {
+        switch(props.parent) {
+          case "production_WellDetails":
+            let trimmed = rows.filter(item => item.ReportDate !== "Cumulative");
+            setRows(trimmed);
+            break;
+          default:
+            break;
+        }
+      }
+    },
     onTableChange: (action, tableState) => {
       if (props.header === "Contacts") {
         let filters = [];
@@ -1998,7 +1976,6 @@ function SubTable(props) {
             search: tableState.searchText,
           },
         };
-        console.log("ACTION:", action);
         switch (action) {
           case "changeRowsPerPage":
             console.log("changeRowsPerPage");
@@ -2070,6 +2047,14 @@ function SubTable(props) {
             break;
           default:
             console.log("action not handled.");
+        }
+      } else if (props.header === "Monthly Production") {
+        switch(action) {
+          case "propsUpdate":
+            console.log(tableState.data);
+            break;
+          default:
+            break;
         }
       }
     },

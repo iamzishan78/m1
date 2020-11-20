@@ -1771,12 +1771,12 @@ const WellInterests = [
 const ProductionDetailsHeaders = [
   {
     name: "Id",
+    editable: false,
     options: {
       display: false,
       filter: false,
       searchable: false,
-      // sort: true,
-      sort: false,
+      sort: true,
       download: false,
       print: true,
       viewColumns: false,
@@ -1786,10 +1786,10 @@ const ProductionDetailsHeaders = [
   {
     name: "ReportDate",
     label: "Date",
+    editable: false,
     options: {
       filter: false,
-      // sort: true,
-      sort: false,
+      sort: true,
       searchable: false,
       download: false,
       print: true,
@@ -1800,10 +1800,10 @@ const ProductionDetailsHeaders = [
   {
     name: "oil",
     label: "Oil (BBL)",
+    editable: false,
     options: {
       filter: false,
-      // sort: true,
-      sort: false,
+      sort: true,
       searchable: false,
       download: false,
       print: true,
@@ -1814,10 +1814,10 @@ const ProductionDetailsHeaders = [
   {
     name: "gas",
     label: "Gas (MCF)",
+    editable: false,
     options: {
       filter: false,
-      // sort: true,
-      sort: false,
+      sort: true,
       searchable: false,
       download: false,
       print: true,
@@ -1828,10 +1828,10 @@ const ProductionDetailsHeaders = [
   {
     name: "water",
     label: "H2O (BBL)",
+    editable: false,
     options: {
       filter: false,
-      // sort: true,
-      sort: false,
+      sort: true,
       searchable: false,
       download: false,
       print: true,
@@ -1842,10 +1842,10 @@ const ProductionDetailsHeaders = [
   {
     name: "allocatedOil",
     label: "Alocated Oil (BBL)",
+    editable: false,
     options: {
       filter: false,
-      // sort: true,
-      sort: false,
+      sort: true,
       searchable: false,
       download: false,
       print: true,
@@ -1856,10 +1856,10 @@ const ProductionDetailsHeaders = [
   {
     name: "allocatedGas",
     label: "Alocated Gas (MCF)",
+    editable: false,
     options: {
       filter: false,
-      // sort: true,
-      sort: false,
+      sort: true,
       searchable: false,
       download: false,
       print: true,
@@ -1870,10 +1870,10 @@ const ProductionDetailsHeaders = [
   {
     name: "allocatedWater",
     label: "Alocated Water (BBL)",
+    editable: false,
     options: {
       filter: false,
-      // sort: true,
-      sort: false,
+      sort: true,
       searchable: false,
       download: false,
       print: true,
@@ -3288,8 +3288,11 @@ function M1nTable(props) {
 
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
         if (
-          (props.targetLabel && props.targetLabel == "well") ||
-          props.targetLabel == "owner"
+          props.targetLabel &&
+          props.targetLabel == "well"
+          //temporarily remove until we release the owner summary card
+          // ||
+          // props.targetLabel == "owner"
         )
           //would only set the detail card icon for wells & owners
           buildingColumns.push(SearchsHeadCells[5]);
