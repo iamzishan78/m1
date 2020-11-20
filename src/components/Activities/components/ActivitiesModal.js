@@ -610,7 +610,7 @@ export default function ActivitiesModal({
                   type="text"
                   variant="outlined"
                   placeholder="Enter activity name"
-                  style={{ width: "73%", marginRight: 24 }}
+                  style={{ width: "76%", marginRight: 24 }}
                   value={activityName}
                   onChange={(e) => setActivityName(e.target.value)}
                 />
@@ -751,7 +751,7 @@ export default function ActivitiesModal({
                 <span className={classes.rowIcon}>
                   <DocumentIcon />
                 </span>
-                <div style={{ width: "73%", marginRight: 24 }}>
+                <div style={{ width: "76%", marginRight: 24 }}>
                   <TextField
                     multiline
                     rows={8}
