@@ -104,6 +104,16 @@ const useStyles = makeStyles((theme) => ({
     left: "47%",
     transform: "translate(-50%, -50%)",
   },
+  draggable: {
+    width: 0,
+    height: 0,
+    "& div.MuiCardHeader-root": {
+      cursor: 'move',
+      "& .MuiCardHeader-content": {
+        cursor: "text"
+      }
+    }
+  }
 }));
 
 const random_hex_color_code = () => {
@@ -4745,7 +4755,7 @@ export default function Map() {
       {stateApp.selectedWell !== null && showExpandableCard &&
         stateApp.expandedCard && (
             <Draggable handle="#detailCardHeader" cancel=".MuiCardHeader-content">
-              <div style={{width: 0, height: 0}}>
+              <div className={classes.draggable}>
                 <ExpandableCardProvider
                   expanded
                   handleCloseExpandableCard={handleCloseExpandableCard}

@@ -317,7 +317,7 @@ export default function ExpandableCard(props) {
               </Tooltip>
             )}
 
-      {stateExpandableCard.expanded && targetLabel === "parcel" && (
+              {stateExpandableCard.expanded && targetLabel === "parcel" && (
                 <Tooltip title={"Delete Parcel"} placement="top">
                   {isDeletingCustomLayer ? (
                     <CircularProgress size={20} color="secondary" />

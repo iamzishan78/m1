@@ -400,10 +400,12 @@ export default function WellCardDetails(props) {
                 { chartDisplay }
               </Paper>
               ,
-              <M1nTable
-                parent="OwnersPerWell"
-                selectedWell={stateApp.selectedWell}
-              />,
+              <Paper elevation={3} style={{ padding: "10px" }}>
+                <M1nTable
+                  parent="OwnersPerWell"
+                  selectedWell={stateApp.selectedWell}
+                />
+              </Paper>,
               <CompletionsContainer/>,
               <SimulationContainer/>,
               <FormationContainer/>,

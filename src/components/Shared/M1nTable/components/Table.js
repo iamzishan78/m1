@@ -2,8 +2,7 @@ import React, { useState, useContext, useEffect, useRef, Fragment } from "react"
 import { useHistory } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
-import WellCardProvider from "../../../WellCard/WellCardProvider";
-import Draggable from "react-draggable";
+import WellCardProvider from "../../../WellCard/WellCardProvider"
 import OwnersDetailCard from "../../../OwnersDetailCard/OwnersDetailCard";
 import ContactDetailCard from "../../../ContactDetailCard/ContactDetailCard";
 import { AppContext } from "../../../../AppContext";
@@ -85,13 +84,54 @@ var ticksToDateString = function (ticks) {
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
 
+const customStyles = makeStyles((theme) => ({
+  table: {
+    "& .MuiTableCell-body": {
+      padding: (props) => (props.dense ? "0 !important" : "0px 16px !important")
+    },
+    "& .MuiTableHead-root": {
+      "& th": {
+        backgroundColor: "#F2F2F2",
+        zIndex: "auto",
+        padding: (props) => (props.dense ? "10px" : null),
+      },
+      "& .MuiTableCell-paddingCheckbox": {
+        padding: (props) => (props.dense ? "0 !important" : "16px"),
+      },
+    },
+    "& tr": {
+      paddingRight: (props) => (props.dense ? "12px" : null),
+      "& td:nth-child(3)": {
+        "& div": {
+          width: 400
+        }
+      },
+      "& td:nth-child(13)": {
+        "& div": {
+          width: 400
+        }
+      },
+    },
+    "& thead": {
+      opacity: "1",
+      transition: "opacity 1s ease-out",
+      WebkitTransition: "opacity 1s ease-out",
+    },
+    "& tbody": {
+      opacity: "1",
+      transition: "opacity 1s ease-out",
+      WebkitTransition: "opacity 1s ease-out",
+    },
+  }
+}));
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
   },
   table: {
     "& .MuiTableCell-body": {
-      padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
+      padding: (props) => (props.dense ? "0 !important" : "12px 16px")
     },
     "& .MuiTableHead-root": {
       "& th": {
@@ -216,6 +256,7 @@ var formatter = new Intl.NumberFormat("en-US", {
 
 function SubTable(props) {
   const classes = useStyles(props);
+  const customClassess = customStyles(props);
   const dispatch = useDispatch();
 
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -1366,6 +1407,23 @@ function SubTable(props) {
               };
             }
             break;
+          case "oil":
+          case "gas":
+          case "water":
+          case "allocatedWater":
+          case "allocatedGas":
+          case "allocatedOil":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value, tableMeta, updateValue) => {
+                if (value) {
+                  return (<span style={{paddingLeft: 10, paddingRight: 10}}>{value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>);
+                } else {
+                  return (<span style={{paddingLeft: 10, paddingRight: 10}}>0</span>)
+                }
+              },
+            };
+            break;
           default:
             {
               column.options = {
@@ -1554,7 +1612,7 @@ function SubTable(props) {
         : [],
     selectableRows: props.targetLabel == "production_detail" ? false : "multiple",
     print:
-      props.targetLabel !== "deals" &&  props.targetLabel !== "usermanagement",
+      props.targetLabel !== "deals" && props.targetLabel !== "usermanagement" && props.targetLabel !== "owner",
     viewColumns: props.targetLabel !== "usermanagement",
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
@@ -1907,18 +1965,18 @@ function SubTable(props) {
         }
       }
     },
-    onColumnSortChange: (column, direction) => {
-      if (props.total === true) {
-        switch(props.parent) {
-          case "production_WellDetails":
-            let trimmed = rows.filter(item => item.ReportDate !== "Cumulative");
-            setRows(trimmed);
-            break;
-          default:
-            break;
-        }
-      }
-    },
+    // onColumnSortChange: (column, direction) => {
+    //   if (props.total === true) {
+    //     switch(props.parent) {
+    //       case "production_WellDetails":
+    //         let trimmed = rows.filter(item => item.ReportDate !== "Cumulative");
+    //         setRows(trimmed);
+    //         break;
+    //       default:
+    //         break;
+    //     }
+    //   }
+    // },
     onTableChange: (action, tableState) => {
       if (props.header === "Contacts") {
         let filters = [];
@@ -2048,15 +2106,16 @@ function SubTable(props) {
           default:
             console.log("action not handled.");
         }
-      } else if (props.header === "Monthly Production") {
-        switch(action) {
-          case "propsUpdate":
-            console.log(tableState.data);
-            break;
-          default:
-            break;
-        }
-      }
+      } 
+      // else if (props.header === "Monthly Production") {
+      //   switch(action) {
+      //     case "propsUpdate":
+      //       console.log(tableState.data);
+      //       break;
+      //     default:
+      //       break;
+      //   }
+      // }
     },
   };
 
@@ -2081,22 +2140,23 @@ function SubTable(props) {
 
   const displayCumulative = (data, total, cumulative) => {
     let rows = data;
-    if (total === true) {
-      let insertInBetween = options.rowsPerPage - 1;
-      if (Object.entries(cumulative).length != 0) {
-        let multiplier = rows.length / insertInBetween;
-        for (let temp = 1; temp <= multiplier; temp++) {
-          let insert_index = 0;
-          if (temp != 1) {
-            insert_index = temp * options.rowsPerPage;
-            rows.splice(insert_index - 1, 0, cumulative);
-          } else {
-            rows.splice(insertInBetween, 0, cumulative);
-          }
-        };
-        rows.push(cumulative)
+      if (total === true && rows.length != 0) {
+        let insertInBetween = options.rowsPerPage - 1;
+        if (Object.entries(cumulative).length != 0) {
+          let multiplier = rows.length / insertInBetween;
+          for (let temp = 1; temp <= multiplier; temp++) {
+            let insert_index = 0;
+            if (temp != 1) {
+              insert_index = temp * options.rowsPerPage;
+              rows.splice(insert_index - 1, 0, cumulative);
+            } else {
+              rows.splice(insertInBetween, 0, cumulative);
+            }
+          };
+          rows.push(cumulative)
+        }
       }
-    }
+
     return rows;
   }
 
@@ -2108,10 +2168,11 @@ function SubTable(props) {
         } ${columns && columns.length > 0 ? "" : classes.emptyTable}`}
       >
         <MUIDataTable
-          className={classes.table}
+          className={props.targetLabel == "owner" ? customClassess.table : classes.table}
           title={props.header}
           data={rows ? rows : []}
           columns={columns ? columns : []}
+          
           options={{
             download:
               // props.targetLabel == "owner" || props.targetLabel == "well"

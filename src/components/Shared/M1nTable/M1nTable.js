@@ -371,7 +371,7 @@ const OwnersPerWellHeadCells = [
     },
   },
 
-  { name: "name", label: "Name" },
+  { name: "name", label: "Name"},
   {
     name: "ownershipType",
     label: "Entity",
@@ -1776,7 +1776,8 @@ const ProductionDetailsHeaders = [
       display: false,
       filter: false,
       searchable: false,
-      sort: true,
+      // sort: true,
+      sort: false,
       download: false,
       print: true,
       viewColumns: false,
@@ -1789,7 +1790,8 @@ const ProductionDetailsHeaders = [
     editable: false,
     options: {
       filter: false,
-      sort: true,
+      // sort: true,
+      sort: false,
       searchable: false,
       download: false,
       print: true,
@@ -1803,7 +1805,8 @@ const ProductionDetailsHeaders = [
     editable: false,
     options: {
       filter: false,
-      sort: true,
+      // sort: true,
+      sort: false,
       searchable: false,
       download: false,
       print: true,
@@ -1817,7 +1820,8 @@ const ProductionDetailsHeaders = [
     editable: false,
     options: {
       filter: false,
-      sort: true,
+      // sort: true,
+      sort: false,
       searchable: false,
       download: false,
       print: true,
@@ -1831,7 +1835,8 @@ const ProductionDetailsHeaders = [
     editable: false,
     options: {
       filter: false,
-      sort: true,
+      // sort: true,
+      sort: false,
       searchable: false,
       download: false,
       print: true,
@@ -1845,7 +1850,8 @@ const ProductionDetailsHeaders = [
     editable: false,
     options: {
       filter: false,
-      sort: true,
+      // sort: true,
+      sort: false,
       searchable: false,
       download: false,
       print: true,
@@ -1859,7 +1865,8 @@ const ProductionDetailsHeaders = [
     editable: false,
     options: {
       filter: false,
-      sort: true,
+      // sort: true,
+      sort: false,
       searchable: false,
       download: false,
       print: true,
@@ -1873,7 +1880,8 @@ const ProductionDetailsHeaders = [
     editable: false,
     options: {
       filter: false,
-      sort: true,
+      // sort: true,
+      sort: false,
       searchable: false,
       download: false,
       print: true,
