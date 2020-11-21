@@ -371,7 +371,7 @@ const OwnersPerWellHeadCells = [
     },
   },
 
-  { name: "name", label: "Name" },
+  { name: "name", label: "Name"},
   {
     name: "ownershipType",
     label: "Entity",
@@ -1771,10 +1771,12 @@ const WellInterests = [
 const ProductionDetailsHeaders = [
   {
     name: "Id",
+    editable: false,
     options: {
       display: false,
       filter: false,
       searchable: false,
+      // sort: true,
       sort: false,
       download: false,
       print: true,
@@ -1785,8 +1787,10 @@ const ProductionDetailsHeaders = [
   {
     name: "ReportDate",
     label: "Date",
+    editable: false,
     options: {
       filter: false,
+      // sort: true,
       sort: false,
       searchable: false,
       download: false,
@@ -1797,9 +1801,11 @@ const ProductionDetailsHeaders = [
   },
   {
     name: "oil",
-    label: "Oil Monthly (BBL)",
+    label: "Oil (BBL)",
+    editable: false,
     options: {
       filter: false,
+      // sort: true,
       sort: false,
       searchable: false,
       download: false,
@@ -1810,9 +1816,11 @@ const ProductionDetailsHeaders = [
   },
   {
     name: "gas",
-    label: "Gas Monthly (MCF)",
+    label: "Gas (MCF)",
+    editable: false,
     options: {
       filter: false,
+      // sort: true,
       sort: false,
       searchable: false,
       download: false,
@@ -1823,9 +1831,11 @@ const ProductionDetailsHeaders = [
   },
   {
     name: "water",
-    label: "H2O Monthly (BBL)",
+    label: "H2O (BBL)",
+    editable: false,
     options: {
       filter: false,
+      // sort: true,
       sort: false,
       searchable: false,
       download: false,
@@ -1836,9 +1846,11 @@ const ProductionDetailsHeaders = [
   },
   {
     name: "allocatedOil",
-    label: "Alocated Oil Monthly (BBL)",
+    label: "Alocated Oil (BBL)",
+    editable: false,
     options: {
       filter: false,
+      // sort: true,
       sort: false,
       searchable: false,
       download: false,
@@ -1849,9 +1861,11 @@ const ProductionDetailsHeaders = [
   },
   {
     name: "allocatedGas",
-    label: "Alocated Gas Monthly (MCF)",
+    label: "Alocated Gas (MCF)",
+    editable: false,
     options: {
       filter: false,
+      // sort: true,
       sort: false,
       searchable: false,
       download: false,
@@ -1862,9 +1876,11 @@ const ProductionDetailsHeaders = [
   },
   {
     name: "allocatedWater",
-    label: "Alocated Water Monthly (BBL)",
+    label: "Alocated Water (BBL)",
+    editable: false,
     options: {
       filter: false,
+      // sort: true,
       sort: false,
       searchable: false,
       download: false,
@@ -1917,6 +1933,12 @@ function M1nTable(props) {
   const setRows = (newState) => {
     setStateIfDeepEqual(Rows, newState);
   };
+
+  const [total, Total] = useState(false);
+  const setTotal = (newState) => {
+    setStateIfDeepEqual(Total, newState);
+  };
+
   const [header, Header] = useState("");
   const setHeader = (newState) => {
     setStateIfDeepEqual(Header, newState);
@@ -4064,6 +4086,7 @@ function M1nTable(props) {
         setAddAble(false);
         setRows(props.productionDetails);
         setOrderByTracks(false);
+        setTotal(true);
       }
   },[props.props]);
   /////////// PRODUCTION DETAILS ////////////////////////////////////////
@@ -4089,11 +4112,13 @@ function M1nTable(props) {
           contactId={props.contact?._id}
         />
       )}
+
       <Table
         style={{ backgroundColor: "#fff" }}
         header={header}
         columns={columns}
         rows={rows}
+        total={total}
         loading={loading}
         addAble={addAble}
         targetLabel={targetLabel}

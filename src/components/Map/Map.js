@@ -104,6 +104,16 @@ const useStyles = makeStyles((theme) => ({
     left: "47%",
     transform: "translate(-50%, -50%)",
   },
+  draggable: {
+    width: 0,
+    height: 0,
+    "& div.MuiCardHeader-root": {
+      cursor: 'move',
+      "& .MuiCardHeader-content": {
+        cursor: "text"
+      }
+    }
+  }
 }));
 
 const random_hex_color_code = () => {
@@ -894,26 +904,27 @@ export default function Map() {
   useEffect(() => {
     console.log("useEffect 12");
 
-    const wellLineClick = (currentFeature) => {
-      console.log("clicked well lines", currentFeature);
+    // const wellLineClick = (currentFeature) => {
+    //   console.log("clicked well lines", currentFeature);
 
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
-        selectedUserDefinedLayer: undefined,
-      }));
-      setStateApp((state) => ({
-        ...state,
-        selectedWell: currentFeature.properties,
-        selectedWellId: currentFeature.properties.id,
-        wellSelectedCoordinates: [
-          currentFeature.properties.longitude,
-          currentFeature.properties.latitude,
-        ],
-      }));
+    //   setStateApp((state) => ({
+    //     ...state,
+    //     popupOpen: false,
+    //     selectedUserDefinedLayer: undefined,
+    //     selectedParcel: null,
+    //   }));
+    //   setStateApp((state) => ({
+    //     ...state,
+    //     selectedWell: currentFeature.properties,
+    //     selectedWellId: currentFeature.properties.id,
+    //     wellSelectedCoordinates: [
+    //       currentFeature.properties.longitude,
+    //       currentFeature.properties.latitude,
+    //     ],
+    //   }));
 
-      createPopUp(currentFeature.properties);
-    };
+    //   createPopUp(currentFeature.properties);
+    // };
 
     const wellPointClick = (feature) => {
 
@@ -952,23 +963,23 @@ export default function Map() {
       }
     };
 
-    const layerClickHander = (feature) => {
-      let zVal;
-      if (map && map.getZoom() && map.getZoom() > 12) zVal = map.getZoom();
+    // const layerClickHander = (feature) => {
+    //   let zVal;
+    //   if (map && map.getZoom() && map.getZoom() > 12) zVal = map.getZoom();
 
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
-        selectedUserDefinedLayer: undefined,
-        selectedWell: null,
-        selectedWellId: feature.properties.id
-          ? feature.properties.id.toLowerCase()
-          : null,
-        flyTo: zVal
-          ? { ...feature.properties, zoom: zVal }
-          : feature.properties,
-      }));
-    };
+    //   setStateApp((state) => ({
+    //     ...state,
+    //     popupOpen: false,
+    //     selectedUserDefinedLayer: undefined,
+    //     selectedWell: null,
+    //     selectedWellId: feature.properties.id
+    //       ? feature.properties.id.toLowerCase()
+    //       : null,
+    //     flyTo: zVal
+    //       ? { ...feature.properties, zoom: zVal }
+    //       : feature.properties,
+    //   }));
+    // };
 
     const udLayerClickHandler = (feature) => {
       console.log("Current Parcel Layer", feature);
@@ -996,23 +1007,23 @@ export default function Map() {
       map.resize();
     };
 
-    const udLayerHighlightHandler = (feature) => {
-      const id = feature.id;
-      if (hoverUdIds.indexOf(id) > -1) {
-        console.log("remove Hover");
-        map.setFeatureState(
-          { source: feature.source, id: feature.id },
-          { hover: false }
-        );
-      } else {
-        console.log("set Hover");
-        map.setFeatureState(
-          { source: feature.source, id: feature.id },
-          { hover: true }
-        );
-      }
-      setHoverUdIds(id);
-    };
+    // const udLayerHighlightHandler = (feature) => {
+    //   const id = feature.id;
+    //   if (hoverUdIds.indexOf(id) > -1) {
+    //     console.log("remove Hover");
+    //     map.setFeatureState(
+    //       { source: feature.source, id: feature.id },
+    //       { hover: false }
+    //     );
+    //   } else {
+    //     console.log("set Hover");
+    //     map.setFeatureState(
+    //       { source: feature.source, id: feature.id },
+    //       { hover: true }
+    //     );
+    //   }
+    //   setHoverUdIds(id);
+    // };
 
     const clusterClickHandler = (feature, map) => {
       if (feature && feature.properties && feature.properties.cluster_id) {
@@ -1150,6 +1161,7 @@ export default function Map() {
             udLayerClickHandler(feature);
             break;
           case layerId === "wellpoints" ||
+            layerId === "welllines" ||
             layerId === "Parcels" ||
             layerId === "Area of Interest" ||
             layerId === "Tracked Wells" ||
@@ -1159,9 +1171,9 @@ export default function Map() {
             layerId === "permits":
             wellPointClick(feature);
             break;
-          case layerId === "welllines":
-            wellLineClick(feature);
-            break;
+          // case layerId === "welllines":
+          //   wellLineClick(feature);
+          //   break;
           default:
             break;
         }
@@ -3450,11 +3462,7 @@ export default function Map() {
 
   const onAbstactLayerClick = function (feature, action) {
     console.log("feature, action", feature, action);
-    setStateApp((state) => ({
-      ...state,
-      popupOpen: false,
-      abstractPopupOpen: false,
-    }));
+
     if (!feature) {
       setStateApp((state) => ({
         ...state,
@@ -3462,6 +3470,10 @@ export default function Map() {
       }));
       return;
     }
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+    }));
     if (action === "add") {
       setStateApp((state) => ({
         ...state,
@@ -3476,10 +3488,6 @@ export default function Map() {
         ),
       }));
     }
-    setStateApp((state) => ({
-      ...state,
-      abstractPopupOpen: true,
-    }));
   };
 
   useEffect(() => {
@@ -3603,16 +3611,12 @@ export default function Map() {
         newMap.boxZoom.enable();
         newMap.touchZoomRotate.enable();
 
-
-        
         newMap.addControl(
           new mapboxgl.ScaleControl({
-            
             maxWidth: 80,
             unit: "imperial",
           }),
           "bottom-right"
-          
         );
 
         newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
@@ -4599,9 +4603,7 @@ export default function Map() {
       });
     }
   }, [stateApp.editingUserDefinedLayers]);
-
-
-
+  
   useEffect(() => {
   /////// USE EFFECT  to handle the map zoom / flyto for selected map elements 
 
@@ -4755,8 +4757,8 @@ export default function Map() {
       {/* {stateApp.popupOpen === true &&  */}
       {stateApp.selectedWell !== null && showExpandableCard &&
         stateApp.expandedCard && (
-            <Draggable handle="#detailCardHeader">
-              <div style={{width: 0, height: 0}}>
+            <Draggable handle="#detailCardHeader" cancel=".MuiCardHeader-content">
+              <div className={classes.draggable}>
                 <ExpandableCardProvider
                   expanded
                   handleCloseExpandableCard={handleCloseExpandableCard}
