@@ -104,9 +104,7 @@ export default function ExpandableCard(props) {
     title: {
       fontFamily: "Poppins",
       color: "#FFFFFF",
-      fontSize: ["Contact", "Add Activity", "Activity Details"].includes(
-        "Contact"
-      )
+      fontSize: ["Contact", "Add Activity", "Activity Details"].includes(title)
         ? "22px"
         : "15px",
     },
@@ -340,7 +338,8 @@ export default function ExpandableCard(props) {
               </Tooltip>
             )} */}
               {stateExpandableCard.expanded &&
-                ["parcel", "activity"].includes(targetLabel) && (
+                ["parcel", "activity"].includes(targetLabel) &&
+                title !== "Add Activity" && (
                   <Tooltip title={`Delete ${targetLabel}`} placement="top">
                     {isDeletingCustomLayer ? (
                       <CircularProgress size={20} color="secondary" />
