@@ -243,6 +243,8 @@ export default function ExpandableCard(props) {
   const deleteFunc = () => {
     if (targetLabel === "parcel") {
       deleteParcel();
+    } else if (targetLabel === "activity") {
+      deleteActivity();
     }
   };
 
@@ -262,6 +264,10 @@ export default function ExpandableCard(props) {
     handleClose();
   };
 
+  const deleteActivity = () => {
+    props.handleDelete();
+  };
+
   return (
     <React.Fragment>
       {openDialog && (
@@ -273,7 +279,7 @@ export default function ExpandableCard(props) {
           maxWidth="sm"
         >
           <DeleteConfirmationDialogContent
-            header="Delete Parcel"
+            header={`Delete ${targetLabel}`}
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
@@ -293,7 +299,7 @@ export default function ExpandableCard(props) {
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
             <div className={classes.headerIcons}>
-              {targetLabel !== "activity" && (
+              {targetLabel !== "activity" ? (
                 <>
                   <CommentsWithIcon
                     objectId={targetSourceId.toLowerCase()}
@@ -307,7 +313,7 @@ export default function ExpandableCard(props) {
                     iconZiseSmall={!stateExpandableCard.expanded}
                   />
                 </>
-              )}
+              ) : null}
               {!props.noTrackAvailable && (
                 <TrackToggleButton
                   target={target}
@@ -329,21 +335,22 @@ export default function ExpandableCard(props) {
                 </IconButton>
               </Tooltip>
             )} */}
-              {stateExpandableCard.expanded && targetLabel === "parcel" && (
-                <Tooltip title={"Delete Parcel"} placement="top">
-                  {isDeletingCustomLayer ? (
-                    <CircularProgress size={20} color="secondary" />
-                  ) : (
-                    <IconButton
-                      onClick={openConfirmationDialog}
-                      aria-label="Delete"
-                      className={classes.icons}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  )}
-                </Tooltip>
-              )}
+              {stateExpandableCard.expanded &&
+                ["parcel", "activity"].includes(targetLabel) && (
+                  <Tooltip title={`Delete ${targetLabel}`} placement="top">
+                    {isDeletingCustomLayer ? (
+                      <CircularProgress size={20} color="secondary" />
+                    ) : (
+                      <IconButton
+                        onClick={openConfirmationDialog}
+                        aria-label="Delete"
+                        className={classes.icons}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
+                  </Tooltip>
+                )}
 
               {stateExpandableCard.expanded && targetLabel !== "activity"
                 ? parent !== "table" &&

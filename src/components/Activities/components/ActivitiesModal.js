@@ -560,6 +560,35 @@ export default function ActivitiesModal({
     setAllLoading(false);
   };
 
+  const deleteActivity = async () => {
+    let activityLog =
+      cData && cData.contact.activityLog
+        ? cData.contact.activityLog.map((a) => a)
+        : [];
+
+    let newActLog = [...activityLog];
+    const index =
+      newActLog &&
+      newActLog.findIndex((activity) => activity._id === selectedActivity._id);
+
+    if (index > -1) {
+      newActLog.splice(index, 1);
+      newActLog.forEach((v) => delete v.__typename);
+      await updateContact({
+        variables: {
+          contact: {
+            _id: cData.contact._id,
+            activityLog: [...newActLog],
+          },
+        },
+        refetchQueries: ["getAllActivities"],
+        awaitRefetchQueries: true,
+      });
+    }
+
+    onModalClose();
+  };
+
   return (
     <Dialog
       className={classes.dialogExpCard}
@@ -567,7 +596,7 @@ export default function ActivitiesModal({
       maxWidth="xl"
       open={stateApp.activityDialog ? true : false}
       onClose={
-        loading && cLoading
+        loading && cLoading && allLoading
           ? () => {}
           : () => {
               onModalClose();
@@ -577,7 +606,7 @@ export default function ActivitiesModal({
       <ExpandableCardProvider
         expanded={true}
         handleCloseExpandableCard={
-          loading && cLoading
+          loading && cLoading && allLoading
             ? () => {}
             : () => {
                 onModalClose();
@@ -606,6 +635,7 @@ export default function ActivitiesModal({
         targetSourceId=""
         targetLabel={"activity"}
         noTrackAvailable={true}
+        handleDelete={deleteActivity}
         component={
           <div className={classes.addAct}>
             <div className={classes.left}>
