@@ -61,6 +61,9 @@ const useToolbarStyles = makeStyles((theme) => ({
   marginLeft: {
     marginLeft: 8,
   },
+  centerNav: {
+    display: "flex",
+  },
   filterToggleBtn: {
     borderRadius: 5,
     border: "1px solid #d9d9d9",
@@ -193,7 +196,7 @@ const ActivitiesToolbar = ({
           </span>
         </div>
       </div>
-      <div>
+      <div className={classes.centerNav}>
         <IconButton
           size="small"
           className={classes.marginLeft}
@@ -201,7 +204,7 @@ const ActivitiesToolbar = ({
         >
           <NavigateBeforeIcon />
         </IconButton>
-        <small className={classes.marginLeft}>{toolbar.label}</small>
+        <p className={classes.marginLeft}>{toolbar.label}</p>
         <IconButton
           size="small"
           className={classes.marginLeft}
