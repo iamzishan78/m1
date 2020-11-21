@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import clsx from "clsx";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { Grid } from "@material-ui/core";
+import { FormControl, Grid, InputLabel } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import moment from "moment";
@@ -39,6 +39,8 @@ import { setStateIfDeepEqual } from "../../Shared/functions";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import ActivitiesEvent from "./ActivitiesEvent";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
+import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const useStyles = makeStyles((theme) => ({
   dialogExpCard: {
@@ -363,6 +365,58 @@ export default function ActivitiesModal({
       setEndTime("00:00");
     }
   }, [selectedActivity]);
+
+  const [openDeals, setOpenDeals] = useState([]);
+  const [getTransactionData, { loading: tloading, data: tdata }] = useLazyQuery(
+    TRANSACTIONDATA
+  );
+
+  console.log("OPEN DEALS", openDeals);
+
+  useEffect(() => {
+    if (stateApp.user && stateApp.user.mongoId) {
+      console.log("OPEN DEALS GET", stateApp.user);
+      getTransactionData({
+        variables: {
+          userId: stateApp.user.mongoId,
+        },
+      });
+    }
+  }, [stateApp.user]);
+
+  useEffect(() => {
+    if (
+      !tloading &&
+      tdata?.transactionData?.allData?.lanes &&
+      tdata.transactionData.allData.lanes.length > 0
+    ) {
+      const lanes = tdata?.transactionData?.allData?.lanes;
+
+      // get all deals
+      const all = [];
+      lanes.forEach((deal) => {
+        deal.cards.forEach((card) => {
+          all.push(card);
+        });
+      });
+
+      let open = [];
+
+      all.forEach((card) => {
+        if (card.dealState === "won") {
+          // do nothing
+        } else if (card.dealState === "lost") {
+          // do nothing
+        } else if (card.isDeleted) {
+          // do nothing
+        } else open.push(card);
+      });
+
+      console.log("OPEN DEALS", open, all);
+
+      setOpenDeals(open);
+    }
+  }, [tdata]);
 
   const onModalClose = () => {
     clearFields();
@@ -841,15 +895,18 @@ export default function ActivitiesModal({
                   <LinkIcon />
                 </span>
                 <div style={{ width: "76%", marginRight: 24 }}>
-                  <TextField
-                    type="text"
-                    variant="outlined"
-                    className={clsx(
-                      classes.marginBottom,
-                      classes.inputField,
-                      classes.fieldWidth
+                  <Autocomplete
+                    className={classes.fieldWidth}
+                    options={openDeals}
+                    getOptionLabel={(option) => option.title}
+                    renderInput={(params) => (
+                      <TextField
+                        margin="dense"
+                        {...params}
+                        label="Associated Deal"
+                        variant="outlined"
+                      />
                     )}
-                    placeholder="Associated Deal"
                   />
 
                   <br />
