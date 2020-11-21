@@ -4193,7 +4193,7 @@ export default function Map() {
   }, [map, stateApp.wellListFromSearch]);
 
   useEffect(() => {
-    console.log("useEffect 35");
+    //console.log("useEffect 35");
 
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
@@ -4605,7 +4605,7 @@ export default function Map() {
   }, [stateApp.editingUserDefinedLayers]);
   
   useEffect(() => {
-  /////// USE EFFECT  to handle the map zoom / flyto for selected map elements 
+  /////// USE EFFECT  to handle the map zoom /  for selected map elements 
 
 
     if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
@@ -4641,12 +4641,14 @@ export default function Map() {
 
       map.fitBounds(bbox,{
         speed: 0.75,
-        pitch: 60,
-        bearing: 20,
-        easing: function (t) {
-                  return Math.sin((t * Math.PI) / 2);
-                }
+        linear: true,  
+        // pitch: 60,
+        // bearing: 20,
+        // easing: function (t) {
+        //           return Math.sin((t * Math.PI) / 2);
+        //         }
       });
+
 
       setStateApp({
         ...stateApp,
