@@ -2948,8 +2948,10 @@ export default function Map() {
     ) {      
 
 
-      // console.log(':::',stateApp.selectedWellId)
-      // console.log(':::',stateApp.selectedWell)
+      console.log(':::',stateApp.selectedWellId)
+      console.log(':::',stateApp.selectedWell)
+      console.log(':::',stateApp.wellSelectedCoordinates)
+  
 
      const PointFeature = map.querySourceFeatures("composite", {
         sourceLayer: "wellPoints",
@@ -2971,60 +2973,61 @@ export default function Map() {
 
 
       // let features = map.queryRenderedFeatures(bbox, {
-      //   layers: ["wellpoints"],
+      //   layers: ["welllines"],
       // });
 
       // let currentFeature = features.find(
       //   (element) =>
       //     element.properties.id.toLowerCase() == stateApp.selectedWellId
       // );
+
       // console.log("current feature", currentFeature);
 
-      // if (!currentFeature) {
-      //   features = map.querySourceFeatures("composite", {
-      //     sourceLayer: "wellPoints",
-      //     filter: ["in", "id", stateApp.selectedWellId],
-      //   });
-      //   currentFeature = features.find(
-      //     (element) =>
-      //       element.properties.id.toLowerCase() == stateApp.selectedWellId
-      //   );
-      // }
+      let features = map.querySourceFeatures("composite", {
+          sourceLayer: "wellLines",
+          filter: ["in", "id", stateApp.selectedWellId],
+        });
 
-      // if (!currentFeature) {
-      //   const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${
-      //     stateApp.mapboxglAccessToken
-      //   }`;
+      let currentFeature = features.find(
+          (element) =>
+            element.properties.id.toLowerCase() == stateApp.selectedWellId
+        );
+      
 
-      //   const headers = new Headers();
-      //   headers.append("Content-Type", "application/json");
-      //   headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
+      if (!currentFeature) {
+        const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellLines&access_token=${
+          stateApp.mapboxglAccessToken
+        }`;
 
-      //   const options = {
-      //     method: "GET",
-      //     headers: headers,
-      //   };
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
 
-      //   console.log(
-      //     "request made to lod2019-index search at: " + new Date().toString()
-      //   );
+        const options = {
+          method: "GET",
+          headers: headers,
+        };
 
-      //   await fetch(endpoint, options)
-      //     .then((response) => response.json())
-      //     .then((response) => {
-      //       console.log(response);
-      //       features = response.features;
-      //       currentFeature = features.find(
-      //         (element) =>
-      //           element.properties.id.toLowerCase() == stateApp.selectedWellId
-      //       );
-      //     })
-      //     .catch((error) => {
-      //       console.log(error);
-      //     });
+        console.log(
+          "request made to lod2019-index search at: " + new Date().toString()
+        );
 
-      //   console.log("current feature", currentFeature);
-      // }
+        await fetch(endpoint, options)
+          .then((response) => response.json())
+          .then((response) => {
+            console.log(response);
+            features = response.features;
+            currentFeature = features.find(
+              (element) =>
+                element.properties.id.toLowerCase() == stateApp.selectedWellId
+            );
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+
+        console.log("current feature", currentFeature);
+      }
 
 
 
