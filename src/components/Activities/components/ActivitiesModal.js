@@ -613,11 +613,7 @@ export default function ActivitiesModal({
               }
         }
         title={`${
-          addNew
-            ? "Add Activity"
-            : "Activity Details"
-            ? "Activity Details"
-            : "Activity Details"
+          addNew ? "Add Activity" : "Activity Details"
           // : activityName
           //? activityName.toUpperCase()
           // : activityType.toUpperCase()
