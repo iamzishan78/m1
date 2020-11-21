@@ -63,6 +63,7 @@ const useToolbarStyles = makeStyles((theme) => ({
   },
   centerNav: {
     display: "flex",
+    alignItems: "center",
   },
   filterToggleBtn: {
     borderRadius: 5,
