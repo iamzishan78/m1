@@ -583,9 +583,9 @@ export default function ActivitiesModal({
             : "Activity Details"
             ? "Activity Details"
             : "Activity Details"
-           // : activityName
-            //? activityName.toUpperCase()
-           // : activityType.toUpperCase()
+          // : activityName
+          //? activityName.toUpperCase()
+          // : activityType.toUpperCase()
         }`}
         subTitle={""}
         parent="calendar"
@@ -689,6 +689,7 @@ export default function ActivitiesModal({
                     variant="outlined"
                     onChange={(e) => {
                       setStartDate(e.target.value);
+                      setEndDate(e.target.value);
                     }}
                   />
                   <TextField
