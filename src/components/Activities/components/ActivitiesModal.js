@@ -106,8 +106,13 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
   },
   dateTimeField: {
+    height: 41,
     width: 172,
     marginBottom: 8,
+
+    "& .MuiInputBase-root": {
+      height: "100%",
+    },
   },
   marginLeft: {
     marginLeft: 6,
@@ -131,7 +136,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   fieldWidth: {
-    width: 400,
+    width: "100%",
+    maxWidth: 400,
   },
   inputField: {
     height: 41,
@@ -608,6 +614,7 @@ export default function ActivitiesModal({
                 <TextField
                   className={clsx(
                     classes.fieldWidth,
+                    classes.inputField,
                     activityName === "" && errors.activityName && classes.error
                   )}
                   type="text"
@@ -778,11 +785,8 @@ export default function ActivitiesModal({
                   <PersonIcon />
                 </span>
                 <div
-                  className={clsx(
-                    classes.fieldWidth,
-                    !contact && errors.contact && classes.error
-                  )}
-                  style={{ margin: "7.5px 0" }}
+                  className={clsx(!contact && errors.contact && classes.error)}
+                  style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}
                 >
                   <TextField
                     //type="text"
@@ -790,7 +794,11 @@ export default function ActivitiesModal({
                     //disabled
                     placeholder="Activity Owner"
                     variant="outlined"
-                    className={clsx(classes.marginBottom, classes.fieldWidth)}
+                    className={clsx(
+                      classes.marginBottom,
+                      classes.fieldWidth,
+                      classes.inputField
+                    )}
 
                     // InputProps={{
                     //   startAdornment: (
@@ -806,7 +814,7 @@ export default function ActivitiesModal({
                 <span className={classes.rowIcon}>
                   <LinkIcon />
                 </span>
-                <div>
+                <div style={{ width: "76%", marginRight: 24 }}>
                   <TextField
                     type="text"
                     variant="outlined"
@@ -819,19 +827,22 @@ export default function ActivitiesModal({
                   />
 
                   <br />
-                  <AutocompEntityNamesVirtualizeList
-                    mongoEntitiesArray={mongoEntitiesArray}
-                    setMongoEntitiesArray={setMongoEntitiesArray}
-                    nameAutValue={nameAutValue}
-                    setNameAutValue={setNameAutValue}
-                    nameAutInputValue={nameAutInputValue}
-                    setNameAutInputValue={setNameAutInputValue}
-                    variant="outlined"
-                    label="Associated Contact or Lead"
-                    hasNextPage={hasNextPage}
-                    isNextPageLoading={isNextPageLoading}
-                    loadNextPage={loadNextPage}
-                  />
+                  <div className={classes.fieldWidth}>
+                    <AutocompEntityNamesVirtualizeList
+                      mongoEntitiesArray={mongoEntitiesArray}
+                      setMongoEntitiesArray={setMongoEntitiesArray}
+                      nameAutValue={nameAutValue}
+                      setNameAutValue={setNameAutValue}
+                      nameAutInputValue={nameAutInputValue}
+                      setNameAutInputValue={setNameAutInputValue}
+                      variant="outlined"
+                      label="Associated Contact or Lead"
+                      hasNextPage={hasNextPage}
+                      isNextPageLoading={isNextPageLoading}
+                      loadNextPage={loadNextPage}
+                    />
+                  </div>
+
                   {errors.contact && (
                     <>
                       <br />
@@ -856,7 +867,10 @@ export default function ActivitiesModal({
               </div>
               <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
-                <div className={classes.btnGroup}>
+                <div
+                  className={classes.btnGroup}
+                  style={{ width: "76%", marginRight: 24 }}
+                >
                   <FormControlLabel
                     enabled
                     control={
