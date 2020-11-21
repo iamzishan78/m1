@@ -24,8 +24,7 @@ const useStyles = makeStyles((theme) => ({
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
-    height: 16,
-    paddingRight: 12,
+    height: 18,
     maxWidth: "100%",
   },
   time: {
@@ -33,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
   icon: {
     fontSize: 12,
-    marginRight: 8,
+    marginRight: "8px !important",
   },
   isClosed: {
     backgroundColor: "#d9d9d9",
