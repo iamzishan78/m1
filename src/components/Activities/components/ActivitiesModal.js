@@ -382,8 +382,8 @@ export default function ActivitiesModal({
     setStartDate(getCurrentDate());
     setEndDate(getCurrentDate());
     setContactId("");
-    setStartTime("");
-    setEndTime("");
+    setStartTime("00:00");
+    setEndTime("00:00");
     setNameAutInputValue("");
   };
 
