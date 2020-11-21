@@ -44,7 +44,7 @@ const ActivitiesCalendar = ({
         endAccessor="end"
         view={view}
         defaultDate={new Date()}
-        style={{ height: "calc(100vh - 64px - 32px)" }}
+        style={{ height: "calc(100vh - 64px - 80px)" }}
         step={60}
         onSelectEvent={(e) => onEventClick(e)}
         components={{
