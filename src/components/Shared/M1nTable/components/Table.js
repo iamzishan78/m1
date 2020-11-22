@@ -62,6 +62,7 @@ import debounce from "lodash/debounce";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { WELLQUERY } from "../../../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/client";
+
 var ticksToDateString = function (ticks) {
   var epochTicks = 621355968000000000;
   var ticksPerMillisecond = 10000; // whoa!
@@ -101,16 +102,66 @@ const customStyles = makeStyles((theme) => ({
     },
     "& tr": {
       paddingRight: (props) => (props.dense ? "12px" : null),
+      "& td": {
+        "& div": {
+          padding: 0
+        }
+      },
       "& td:nth-child(3)": {
         "& div": {
-          width: 400
+          width: 300
         }
       },
       "& td:nth-child(13)": {
         "& div": {
-          width: 400
+          width: 300,
+          "& span": {
+            maxWidth: 300
+          }
         }
       },
+    },
+    "& thead": {
+      opacity: "1",
+      transition: "opacity 1s ease-out",
+      WebkitTransition: "opacity 1s ease-out",
+    },
+    "& tbody": {
+      opacity: "1",
+      transition: "opacity 1s ease-out",
+      WebkitTransition: "opacity 1s ease-out",
+    },
+  }
+}));
+
+const productionStyle = makeStyles((theme) => ({
+  table: {
+    "& .MuiTableCell-body": {
+      padding: (props) => (props.dense ? "0 !important" : "0px 16px !important")
+    },
+    "& .MuiTableCell-head": {
+      "& span": {
+        justifyContent: 'center'
+      }
+    },
+    "& .MuiTableHead-root": {
+      "& th": {
+        backgroundColor: "#F2F2F2",
+        zIndex: "auto",
+        padding: (props) => (props.dense ? "10px" : null),
+      },
+      "& .MuiTableCell-paddingCheckbox": {
+        padding: (props) => (props.dense ? "0 !important" : "16px"),
+      },
+    },
+    "& tr": {
+      paddingRight: (props) => (props.dense ? "12px" : null),
+      "& td": {
+        textAlign: 'center',
+        "& div": {
+          justifyContent: 'center'
+        }
+      }
     },
     "& thead": {
       opacity: "1",
@@ -257,6 +308,8 @@ var formatter = new Intl.NumberFormat("en-US", {
 function SubTable(props) {
   const classes = useStyles(props);
   const customClassess = customStyles(props);
+  const productionClassess = productionStyle(props);
+
   const dispatch = useDispatch();
 
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -636,9 +689,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  
                   let id = props.targetLabel + tableMeta.columnIndex;
-                  
                   return (
                     <Tooltip title={"Detail Card"} placement="top">
                       <IconButton
@@ -1612,7 +1663,10 @@ function SubTable(props) {
         : [],
     selectableRows: props.targetLabel == "production_detail" ? false : "multiple",
     print:
-      props.targetLabel !== "deals" && props.targetLabel !== "usermanagement" && props.targetLabel !== "owner",
+      props.targetLabel !== "deals" && 
+      props.targetLabel !== "usermanagement" && 
+      props.targetLabel !== "owner" && 
+      props.targetLabel !== "production_detail",
     viewColumns: props.targetLabel !== "usermanagement",
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
@@ -1953,18 +2007,18 @@ function SubTable(props) {
       console.log(`here: pageInd=${pageInd} pageState=${pageState}`);
       setPageInd(pageState);
     },
-    onChangeRowsPerPage: (numberOfRows) => {
-      if (props.total === true) {
-        switch(props.parent) {
-          case "production_WellDetails":
-            let trimmed = rows.filter(item => item.ReportDate !== "Cumulative");
-            setRows(displayCumulative(trimmed, props.total, cumulative));
-            break;
-          default:
-            break;
-        }
-      }
-    },
+    // onChangeRowsPerPage: (numberOfRows) => {
+    //   if (props.total === true) {
+    //     switch(props.parent) {
+    //       case "production_WellDetails":
+    //         let trimmed = rows.filter(item => item.ReportDate !== "Cumulative");
+    //         setRows(displayCumulative(trimmed, props.total, cumulative));
+    //         break;
+    //       default:
+    //         break;
+    //     }
+    //   }
+    // },
     // onColumnSortChange: (column, direction) => {
     //   if (props.total === true) {
     //     switch(props.parent) {
@@ -2168,7 +2222,7 @@ function SubTable(props) {
         } ${columns && columns.length > 0 ? "" : classes.emptyTable}`}
       >
         <MUIDataTable
-          className={props.targetLabel == "owner" ? customClassess.table : classes.table}
+          className={props.targetLabel == "owner" ? customClassess.table : props.targetLabel == "production_detail"  ? productionClassess.table : classes.table}
           title={props.header}
           data={rows ? rows : []}
           columns={columns ? columns : []}

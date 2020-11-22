@@ -32,6 +32,8 @@ export default function ExpandableCard(props) {
     ExpandableCardContext
   );
   const [openBugModal, setOpenBugModal] = useState(false);
+  const [toggleExpand, setToggleExpand] = useState(false);
+  const [isExpanded, setExpanded] = useState([]);
   const [title] = useState(props.title);
   const [subTitle] = useState(props.subTitle);
   const [parent] = useState(props.parent);
@@ -158,10 +160,20 @@ export default function ExpandableCard(props) {
     if (parent === "map" && $("#popupContainer").length) {
       console.log("jquery expand");
     }
-    setWidth(cardWidthExpanded);
+
+    if (toggleExpand == false) {
+      setToggleExpand(true);
+      setWidth(cardWidthExpanded);
+      setExpanded(false);
+    } else {
+      setToggleExpand(false);
+      setWidth("95vw");
+      setExpanded(true);
+    }
     setHeight(cardHeightExpanded);
 
-    if(props.targetLabel == 'well'){
+    if(props.targetLabel == 'well' || props.targetLabel == 'expandedWell'){
+
       setStateApp((state) => ({ ...state, 
         wellDetailCardOpen: true,
         popupOpen: false, 
@@ -172,6 +184,7 @@ export default function ExpandableCard(props) {
     setStateExpandableCard((state) => ({ ...state, expanded: true }));
     
   };
+
   useEffect(() => {
     setWidth(cardWidth);
     setHeight(cardHeight);
@@ -333,19 +346,43 @@ export default function ExpandableCard(props) {
                   )}
                 </Tooltip>
               )}
+              
               {stateExpandableCard.expanded
-                ? parent !== "table" && (
-                    <Tooltip title={"Shrink"} placement="top">
-                      <IconButton
-                        color="secondary"
-                        onClick={handleShrink}
-                        aria-label="shrink"
-                        className={classes.icons}
-                      >
-                        <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
-                      </IconButton>
-                    </Tooltip>
-                  )
+                ? parent !== "table" && targetLabel !== "expandedWell" ? (
+                  <Tooltip title={"Shrink"} placement="top">
+                    <IconButton
+                      color="secondary"
+                      onClick={handleShrink}
+                      aria-label="shrink"
+                      className={classes.icons}
+                    >
+                      <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                ) : isExpanded == false ? (
+                      <Tooltip title={"Expand"} placement="top">
+                        <IconButton
+                          size="small"
+                          onClick={handleExpand}
+                          aria-label="expand"
+                          className={classes.icons}
+                        >
+                          <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                        </IconButton>
+                      </Tooltip>
+                    ) :
+                      (
+                        <Tooltip title={"Shrink"} placement="top">
+                          <IconButton
+                            color="secondary"
+                            onClick={handleExpand}
+                            aria-label="shrink"
+                            className={classes.icons}
+                          >
+                            <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
+                          </IconButton>
+                        </Tooltip>
+                      )
                 : parent !== "table" && (
                     <Tooltip title={"Expand"} placement="top">
                       <IconButton

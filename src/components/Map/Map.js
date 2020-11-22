@@ -113,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
         cursor: "text"
       }
     }
-  }
+  },
 }));
 
 const random_hex_color_code = () => {
@@ -4775,7 +4775,7 @@ export default function Map() {
                   cardWidthExpanded="50vw"
                   cardHeightExpanded="90vh"
                   targetSourceId={stateApp.selectedWell.id}
-                  targetLabel="well"
+                  targetLabel="expandedWell"
                 />
               </div>
             </Draggable>

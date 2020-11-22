@@ -1776,8 +1776,8 @@ const ProductionDetailsHeaders = [
       display: false,
       filter: false,
       searchable: false,
-      // sort: true,
-      sort: false,
+      sort: true,
+      // sort: false,
       download: false,
       print: true,
       viewColumns: false,
@@ -1790,8 +1790,8 @@ const ProductionDetailsHeaders = [
     editable: false,
     options: {
       filter: false,
-      // sort: true,
-      sort: false,
+      sort: true,
+      // sort: false,
       searchable: false,
       download: false,
       print: true,
@@ -1805,8 +1805,8 @@ const ProductionDetailsHeaders = [
     editable: false,
     options: {
       filter: false,
-      // sort: true,
-      sort: false,
+      sort: true,
+      // sort: false,
       searchable: false,
       download: false,
       print: true,
@@ -1820,8 +1820,8 @@ const ProductionDetailsHeaders = [
     editable: false,
     options: {
       filter: false,
-      // sort: true,
-      sort: false,
+      sort: true,
+      // sort: false,
       searchable: false,
       download: false,
       print: true,
@@ -1835,8 +1835,8 @@ const ProductionDetailsHeaders = [
     editable: false,
     options: {
       filter: false,
-      // sort: true,
-      sort: false,
+      sort: true,
+      // sort: false,
       searchable: false,
       download: false,
       print: true,
@@ -1850,8 +1850,8 @@ const ProductionDetailsHeaders = [
     editable: false,
     options: {
       filter: false,
-      // sort: true,
-      sort: false,
+      sort: true,
+      // sort: false,
       searchable: false,
       download: false,
       print: true,
@@ -1865,8 +1865,8 @@ const ProductionDetailsHeaders = [
     editable: false,
     options: {
       filter: false,
-      // sort: true,
-      sort: false,
+      sort: true,
+      // sort: false,
       searchable: false,
       download: false,
       print: true,
@@ -1880,8 +1880,8 @@ const ProductionDetailsHeaders = [
     editable: false,
     options: {
       filter: false,
-      // sort: true,
-      sort: false,
+      sort: true,
+      // sort: false,
       searchable: false,
       download: false,
       print: true,
@@ -3603,7 +3603,6 @@ function M1nTable(props) {
   ////////////Deals start////////////////////////////////////////////////
 
   useEffect(() => {
-    console.log("DEALS CHECK : ", props.parent, props.contact, stateApp.user);
     if (props.parent && props.parent === "Deals" && stateApp.user) {
       setLoading(true);
       console.log("ue mintable 22");
@@ -4086,7 +4085,7 @@ function M1nTable(props) {
         setAddAble(false);
         setRows(props.productionDetails);
         setOrderByTracks(false);
-        setTotal(true);
+        // setTotal(true);
       }
   },[props.props]);
   /////////// PRODUCTION DETAILS ////////////////////////////////////////
