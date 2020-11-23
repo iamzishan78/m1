@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MelissaTable from "./components/MelissaTable";
 import { makeStyles } from "@material-ui/core/styles";
 import FieldContent, {
@@ -127,10 +127,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default ({ header, ...props }) => {
+export default function DetailInfo (props) {
   const [basicInfExp, setBasicInfExp] = useState(false);
   const classes = useStyles();
-
+  const [loading, setLoading]= useState(false);
   const basicInfoContent = {
     // "Full Name": {
     //   data: {
@@ -375,6 +375,14 @@ export default ({ header, ...props }) => {
     },
   };
 
+  useEffect(() => {
+    setLoading(true);
+    async function update() {
+      setLoading(false);
+    }
+    update();
+  },[props.contactData])
+
   return (
     <div className={classes.root}>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
@@ -401,7 +409,8 @@ export default ({ header, ...props }) => {
       </Grid>
 
       <Grid item xs={12} container className={classes.dataSect} spacing={0}>
-        {Object.entries(basicInfoContent).map(([key, row]) => (
+        {!loading && basicInfoContent &&
+          Object.entries(basicInfoContent).map(([key, row]) => (
           <React.Fragment>
             <Grid item xs={3} className="fieldName">
               <p className="dataLabels">{key}</p>

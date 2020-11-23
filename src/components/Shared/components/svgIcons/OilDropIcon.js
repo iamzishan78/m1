@@ -4,7 +4,7 @@ import SvgIcon from '@material-ui/core/SvgIcon'
 export default function OilDropIcon(props) {
   return (
     <SvgIcon             
-        viewBox="0 0 125 125"
+        viewBox="0 0 100 100"
         xmlSpace="preserve"  
         {...props}>
           

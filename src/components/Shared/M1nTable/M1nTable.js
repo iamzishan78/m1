@@ -371,7 +371,7 @@ const OwnersPerWellHeadCells = [
     },
   },
 
-  { name: "name", label: "Name" },
+  { name: "name", label: "Name"},
   {
     name: "ownershipType",
     label: "Entity",
@@ -1767,6 +1767,131 @@ const WellInterests = [
   },
 ];
 
+////////////PRODUCTION DETAILS//////////////////////////////////////////
+const ProductionDetailsHeaders = [
+  {
+    name: "Id",
+    editable: false,
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: true,
+      // sort: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "ReportDate",
+    label: "Date",
+    editable: false,
+    options: {
+      filter: false,
+      sort: true,
+      // sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "oil",
+    label: "Oil (BBL)",
+    editable: false,
+    options: {
+      filter: false,
+      sort: true,
+      // sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "gas",
+    label: "Gas (MCF)",
+    editable: false,
+    options: {
+      filter: false,
+      sort: true,
+      // sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "water",
+    label: "H2O (BBL)",
+    editable: false,
+    options: {
+      filter: false,
+      sort: true,
+      // sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "allocatedOil",
+    label: "Alocated Oil (BBL)",
+    editable: false,
+    options: {
+      filter: false,
+      sort: true,
+      // sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "allocatedGas",
+    label: "Alocated Gas (MCF)",
+    editable: false,
+    options: {
+      filter: false,
+      sort: true,
+      // sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "allocatedWater",
+    label: "Alocated Water (BBL)",
+    editable: false,
+    options: {
+      filter: false,
+      sort: true,
+      // sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+]
+////////////PRODUCTION DETAILS end//////////////////////////////////////
+
 ////////////HeadCells end///////////////////////////////////////////////
 
 const capitalizeFirstLetter = (string) => {
@@ -1808,6 +1933,12 @@ function M1nTable(props) {
   const setRows = (newState) => {
     setStateIfDeepEqual(Rows, newState);
   };
+
+  const [total, Total] = useState(false);
+  const setTotal = (newState) => {
+    setStateIfDeepEqual(Total, newState);
+  };
+
   const [header, Header] = useState("");
   const setHeader = (newState) => {
     setStateIfDeepEqual(Header, newState);
@@ -3167,8 +3298,11 @@ function M1nTable(props) {
 
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
         if (
-          (props.targetLabel && props.targetLabel == "well") ||
-          props.targetLabel == "owner"
+          props.targetLabel &&
+          props.targetLabel == "well"
+          //temporarily remove until we release the owner summary card
+          // ||
+          // props.targetLabel == "owner"
         )
           //would only set the detail card icon for wells & owners
           buildingColumns.push(SearchsHeadCells[5]);
@@ -3471,7 +3605,6 @@ function M1nTable(props) {
   ////////////Deals start////////////////////////////////////////////////
 
   useEffect(() => {
-    console.log("DEALS CHECK : ", props.parent, props.contact, stateApp.user);
     if (props.parent && props.parent === "Deals" && stateApp.user) {
       setLoading(true);
       console.log("ue mintable 22");
@@ -3490,7 +3623,6 @@ function M1nTable(props) {
   }, [props.parent, stateApp.user]);
 
   useEffect(() => {
-    console.log("DEALS m1n : ", props.parent, dataDeals);
     if (
       props.parent &&
       props.parent === "Deals" &&
@@ -3942,6 +4074,24 @@ function M1nTable(props) {
 
   //////////// Owner_WellInterests end///////////////////////////////////////////////
 
+
+  /////////// PRODUCTION DETAILS ////////////////////////////////////////
+  useEffect(()=> {
+    setLoading(true);
+    if ( props.parent &&
+      props.parent === "production_WellDetails") {
+        setTargetLabel("production_detail");
+        setHeader("Monthly Production")
+        setColumns(ProductionDetailsHeaders);
+        setLoading(false);
+        setAddAble(false);
+        setRows(props.productionDetails);
+        setOrderByTracks(false);
+        // setTotal(true);
+      }
+  },[props.props]);
+  /////////// PRODUCTION DETAILS ////////////////////////////////////////
+
   ////////////-----Add your code section here-----///////////////////////
   return (
     <Container
@@ -3963,11 +4113,13 @@ function M1nTable(props) {
           contactId={props.contact?._id}
         />
       )}
+
       <Table
         style={{ backgroundColor: "#fff" }}
         header={header}
         columns={columns}
         rows={rows}
+        total={total}
         loading={loading}
         addAble={addAble}
         targetLabel={targetLabel}

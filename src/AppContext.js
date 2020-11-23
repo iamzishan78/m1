@@ -46,6 +46,7 @@ const AppProvider = (props) => {
     signUpUserType: null,
     wellCount: 500,
     wells: null,
+    wellDetailCardOpen: null,
     trackedwells: null,
     trackedOwnerWells: null,
     selectedWell: null,
@@ -145,6 +146,8 @@ const AppProvider = (props) => {
     mappedHeadersFromCSV: [],
     viewportWells: null,
     minZoomToQueryViewport: 12.5,
+    activateWellDetailsFromTable: false,
+    contactUpdated: null,
     currentContatcAtivities: [],
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
