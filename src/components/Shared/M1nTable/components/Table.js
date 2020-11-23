@@ -62,6 +62,7 @@ import debounce from "lodash/debounce";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { WELLQUERY } from "../../../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/client";
+import moment from 'moment';
 
 var ticksToDateString = function (ticks) {
   var epochTicks = 621355968000000000;
@@ -2007,17 +2008,35 @@ function SubTable(props) {
       console.log(`here: pageInd=${pageInd} pageState=${pageState}`);
       setPageInd(pageState);
     },
+    customSort: (data, colIndex, order) => {
+      if (props.parent === "production_WellDetails") {
+        return data.sort((a, b) => { if (colIndex === 1) 
+          { 
+            const dateA = moment(moment(a.data[colIndex], "MM/YYYY")).valueOf();
+            const dateB = moment(moment(b.data[colIndex], "MM/YYYY")).valueOf();
+            return (dateA < dateB ? -1 : 1) * (order === "desc" ? 1 : -1);
+          }  else { 
+            return (a.data[colIndex] < b.data[colIndex] ? -1: 1 ) * (order === 'desc' ? 1 : -1); 
+          }
+        });
+      } else {
+        return data.sort((a, b) => { 
+          return (a.data[colIndex] < b.data[colIndex] ? -1: 1 ) * (order === 'desc' ? 1 : -1); 
+        });
+      }
+    },
     // onChangeRowsPerPage: (numberOfRows) => {
-    //   if (props.total === true) {
-    //     switch(props.parent) {
-    //       case "production_WellDetails":
-    //         let trimmed = rows.filter(item => item.ReportDate !== "Cumulative");
-    //         setRows(displayCumulative(trimmed, props.total, cumulative));
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    //   }
+    //   console.log(numberOfRows);
+      // if (props.total === true) {
+      //   switch(props.parent) {
+      //     case "production_WellDetails":
+      //       let trimmed = rows.filter(item => item.ReportDate !== "Cumulative");
+      //       setRows(displayCumulative(trimmed, props.total, cumulative));
+      //       break;
+      //     default:
+      //       break;
+      //   }
+      // }
     // },
     // onColumnSortChange: (column, direction) => {
     //   if (props.total === true) {

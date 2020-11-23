@@ -293,7 +293,6 @@ export default function ExpandableCard(props) {
           onClose={() => setOpenBugModal(false)}
         />
         <CardHeader
-          id="detailCardHeader"
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
             <div className={classes.headerIcons}>

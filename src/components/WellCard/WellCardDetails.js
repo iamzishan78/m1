@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { AppContext } from "../../AppContext";
 import { WellCardContext } from "./WellCardContext";
 import { makeStyles } from "@material-ui/core/styles";
@@ -190,7 +190,9 @@ export default function WellCardDetails(props) {
   const [production, setProduction] = useState(null);
   const [target, setTarget] = useState(null);
   const [chartDisplay, setChartDisplay] = useState([]);
+  const [productionContainer, setProductionContainer] = useState(null);
 
+  let temp_state = useRef(null);
   const [
     getProductionDetail,
     { loading: loadingProductionDetail, data: productionDetail },
@@ -211,14 +213,12 @@ export default function WellCardDetails(props) {
         temp.push(temp_row)
       });
       setProduction(temp);
-      WellInfo(temp);
       if (props.target) {
         setTarget(props.target);
       }
     } else {
-      setProduction(null);
     }
-  },[productionDetail, props.target, setTarget])
+  },[productionDetail, props.target, setTarget]);
 
   const handleChangeOil = (event) => {
     setStateWellCard({
@@ -294,74 +294,21 @@ export default function WellCardDetails(props) {
     track: {},
   })(Switch);
 
-  const WellInfo = (productionProps) => {
+  const productionGrid = (productionProps) => {
     if (chartDisplay.length === 0) {
-      setChartDisplay(
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <div className={classes.toggle}>
-              <FormControlLabel
-                control={
-                  <OilSwitch
-                    checked={stateWellCard.chartToggleOil}
-                    onChange={handleChangeOil}
-                    //name="chartToggleOil"
-                  />
-                }
-                label="Allocated Oil"
-              />
-              <FormControlLabel
-                control={
-                  <GasSwitch
-                    checked={stateWellCard.chartToggleGas}
-                    onChange={handleChangeGas}
-                    name="checkedGas"
-                    color="secondary"
-                    // color="#e57373"//invalid color
-                  />
-                }
-                label="Allocated Gas"
-              />
-              <FormControlLabel
-                control={
-                  <WaterSwitch
-                    checked={stateWellCard.chartToggleWater}
-                    onChange={handleChangeWater}
-                    name="checkedWater"
-                  />
-                }
-                label="Allocated Water"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={stateWellCard.chartToggleMultiAxis}
-                    onChange={handleChangeMultiAxis}
-                    color="primary"
-                  />}
-                label="Multi-Axes"
-              />
-              <FormControlLabel disabled control={<Switch />} label="Log Scale" />
-            </div>
-          </Grid>
-          <Grid item xs={12}>
-            <WellProdChartProvider />
-          </Grid>
-          <Grid item xs={12}>
-            <M1nTable
-              dense
-              parent="production_WellDetails"
-              productionDetails={productionProps}
-            />
-          </Grid>
-        </Grid>
+      setProductionContainer(
+        <M1nTable
+          dense
+          parent="production_WellDetails"
+          productionDetails={productionProps}
+        />
       );
     }
   }
 
 
   return stateApp.selectedWell ? (
-    <React.Fragment>
+    <React.Fragment >
       <Grid item sm={12} className={classes.gridItemGrey}>
         <WellTypeCard />
         <WellStatusCard />
@@ -397,7 +344,66 @@ export default function WellCardDetails(props) {
             ]}
             tabPanels={[
               <Paper elevation={3} style={{ padding: "10px" }}>
-                { chartDisplay }
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <div className={classes.toggle}>
+                      <FormControlLabel
+                        control={
+                          <OilSwitch
+                            checked={stateWellCard.chartToggleOil}
+                            onChange={handleChangeOil}
+                            //name="chartToggleOil"
+                          />
+                        }
+                        label="Allocated Oil"
+                      />
+                      <FormControlLabel
+                        control={
+                          <GasSwitch
+                            checked={stateWellCard.chartToggleGas}
+                            onChange={handleChangeGas}
+                            name="checkedGas"
+                            color="secondary"
+                            // color="#e57373"//invalid color
+                          />
+                        }
+                        label="Allocated Gas"
+                      />
+                      <FormControlLabel
+                        control={
+                          <WaterSwitch
+                            checked={stateWellCard.chartToggleWater}
+                            onChange={handleChangeWater}
+                            name="checkedWater"
+                          />
+                        }
+                        label="Allocated Water"
+                      />
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={stateWellCard.chartToggleMultiAxis}
+                            onChange={handleChangeMultiAxis}
+                            color="primary"
+                          />}
+                        label="Multi-Axes"
+                      />
+                      <FormControlLabel disabled control={<Switch />} label="Log Scale" />
+                    </div>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <WellProdChartProvider />
+                  </Grid>
+                  <Grid item xs={12}>
+                    {
+                      production != null && <M1nTable
+                        dense
+                        parent="production_WellDetails"
+                        productionDetails={production}
+                      />
+                    }
+                  </Grid>
+                </Grid>
               </Paper>
               ,
               <Paper elevation={3} style={{ padding: "10px" }}>

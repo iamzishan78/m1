@@ -66,6 +66,7 @@ import gjv from "geojson-validation";
 import { setMainMapState, showErrorMessage } from "../../actions";
 import { ZoomOutMapSharp } from "@material-ui/icons";
 import debounce from "lodash/debounce";
+import { createFalse } from "typescript";
 //import { AvSortByAlpha } from "material-ui/svg-icons";
 
 const useStyles = makeStyles((theme) => ({
@@ -177,11 +178,11 @@ export default function Map() {
   const container = useRef(null);
   const modalContainer = useRef(null);
   const [showExpandableCard, ShowExpandableCard] = useState(false);
+
   const setShowExpandableCard = (state) => {
-    if (showExpandableCard != state) {
       ShowExpandableCard(state);
-    }
   };
+
   const [mapStyles, MapStyles] = useState([]);
   const setMapStyles = (state) => {
     if (mapStyles != state) {
@@ -956,7 +957,6 @@ export default function Map() {
         //   createPopUp(properties);
         //   map.resize();
         // }
-
           createPopUp(properties);
           map.resize();
 
@@ -2931,15 +2931,10 @@ export default function Map() {
         .addTo(map);
 
       setStateApp((state) => ({ ...state, popupOpen: true }));
-
       handleOpenExpandableCard();
     },
     [map, setStateApp]
   );
-
-
-
-
 
   useEffect(() => {
     (async () => {
@@ -4327,7 +4322,7 @@ export default function Map() {
     }
   }, [stateApp.editDraw, stateNav.drawingMode]);
 
-  const handleOpenExpandableCard = (e) => {
+  const handleOpenExpandableCard = () => {
     setAnchorElPoPOver(container.current);
     setShowExpandableCard(true);
   };
@@ -4339,7 +4334,7 @@ export default function Map() {
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
     setAnchorElPoPOver(null);
-    setStateApp((state) => ({ ...state, expandedCard: false, activateWellDetailsFromTable: false }));
+    setStateApp((state) => ({ ...state ,expandedCard: false, activateWellDetailsFromTable: false }));
   };
 
   const handleCloseSpatialDataCard = (complete = true) => {
@@ -4759,7 +4754,7 @@ export default function Map() {
       {/* {stateApp.popupOpen === true &&  */}
       {stateApp.selectedWell !== null && showExpandableCard &&
         stateApp.expandedCard && (
-            <Draggable handle="#detailCardHeader" cancel=".MuiCardHeader-content">
+            <Draggable handle=".MuiCardHeader-root" >
               <div className={classes.draggable}>
                 <ExpandableCardProvider
                   expanded
