@@ -41,6 +41,7 @@ import ActivitiesEvent from "./ActivitiesEvent";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
 
 const useStyles = makeStyles((theme) => ({
   dialogExpCard: {
@@ -196,6 +197,7 @@ export default function ActivitiesModal({
   selectedActivity,
   events,
 }) {
+  console.log("SELCTED ACTIVITY", selectedActivity);
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [addNew, setAddNew] = useState(true);
@@ -207,10 +209,31 @@ export default function ActivitiesModal({
   const [startTime, setStartTime] = useState("00:00");
   const [endTime, setEndTime] = useState("00:00");
   const [notes, setNotes] = useState("");
+  const [ownerId, setOwnerId] = useState("");
   const [contactId, setContactId] = useState("");
   const [contact, setContact] = useState({});
   const [errors, setErrors] = useState({ ...initialErrors });
   const [allLoading, setAllLoading] = useState(false);
+  const [users, setUsers] = useState([]);
+
+  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
+    fetchPolicy: "cache-and-network",
+  });
+
+  useEffect(() => {
+    getAllUsers();
+  }, []);
+
+  useEffect(() => {
+    if (userLists && userLists.allUsers) {
+      setUsers(
+        userLists.allUsers.map((user) => ({
+          value: user.id,
+          text: user.displayName,
+        }))
+      );
+    }
+  }, [userLists]);
 
   const [updateContact, { called, loading, data }] = useMutation(
     UPDATECONTACT,
@@ -341,6 +364,7 @@ export default function ActivitiesModal({
     if (selectedActivity) {
       setAddNew(false);
       setNotes(selectedActivity.notes);
+      setOwnerId(selectedActivity.ownerId);
       setActivityType(selectedActivity.type);
       setActivityName(selectedActivity.name);
       setClosed(selectedActivity.isClosed);
@@ -355,6 +379,7 @@ export default function ActivitiesModal({
       setNameAutValue({ name: "", id: 0, _id: 0 });
       setClosed(false);
       setNotes("");
+      setOwnerId("");
       setActivityType("");
       setActivityName("");
       setContactId("");
@@ -430,6 +455,7 @@ export default function ActivitiesModal({
   const clearFields = () => {
     setAddNew(true);
     setNotes("");
+    setOwnerId("");
     setActivityType("");
     setActivityName("");
     setClosed(false);
@@ -504,6 +530,7 @@ export default function ActivitiesModal({
       type: activityType,
       name: activityName,
       notes,
+      ownerId,
       dateTime: dateTime,
       endDateTime: endDateTime,
       user_id: stateApp.user.email,
@@ -551,6 +578,7 @@ export default function ActivitiesModal({
         dateTime,
         endDateTime,
         notes,
+        ownerId,
         isClosed: closed,
       };
       newActLog.forEach((v) => delete v.__typename);
@@ -584,6 +612,7 @@ export default function ActivitiesModal({
         type: activityType,
         name: activityName,
         notes,
+        ownerId,
         dateTime: dateTime,
         endDateTime: endDateTime,
         user_id: stateApp.user.email,
@@ -868,25 +897,23 @@ export default function ActivitiesModal({
                   className={clsx(!contact && errors.contact && classes.error)}
                   style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}
                 >
-                  <TextField
-                    //type="text"
-                    //select
-                    //disabled
-                    placeholder="Activity Owner"
-                    variant="outlined"
-                    className={clsx(
-                      classes.marginBottom,
-                      classes.fieldWidth,
-                      classes.inputField
+                  <Autocomplete
+                    className={classes.fieldWidth}
+                    options={users}
+                    onChange={(e, user) => {
+                      setOwnerId(user.value);
+                    }}
+                    value={users.find((user) => user.value === ownerId) || null}
+                    getOptionLabel={(option) => option.text}
+                    getOptionSelected={(option) => option.value === ownerId}
+                    renderInput={(params) => (
+                      <TextField
+                        margin="dense"
+                        {...params}
+                        variant="outlined"
+                        label="Activity Owner"
+                      />
                     )}
-
-                    // InputProps={{
-                    //   startAdornment: (
-                    //     <InputAdornment position="start">
-                    //       <AttachMoneyIcon />
-                    //     </InputAdornment>
-                    //   ),
-                    // }}
                   />
                 </div>
               </div>

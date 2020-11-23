@@ -12,6 +12,7 @@ export const GETALLACTIVITIES = gql`
       type
       name
       isClosed
+      ownerId
     }
   }
 `;

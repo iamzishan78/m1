@@ -149,6 +149,7 @@ const Activities = () => {
             end,
             title: act.fullname,
             notes: act.notes,
+            ownerId: act.ownerId,
             type: act.type,
             name: act.name,
           };
