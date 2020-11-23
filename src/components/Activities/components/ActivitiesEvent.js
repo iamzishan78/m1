@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     textTransform: "capitalize",
     whiteSpace: "nowrap",
-    overflow: "hidden",
+    overflow: "visible",
     textOverflow: "ellipsis",
     height: 18,
     maxWidth: "100%",
