@@ -26,6 +26,9 @@ export default function CommentsWithIcon(props) {
     },
     iconSelected: {
       color: theme.palette.secondary.main,
+      "& svg": {
+        fill: `${theme.palette.secondary.main} !important`,
+      },
     },
     tagsDiv: {
       margin: "8px",
