@@ -69,6 +69,7 @@ export default function OwnersSummaryCard(props) {
               dispatch(
                 setMapGridCardState({
                   selectedOwner: null,
+                  selectedOwnerWellIntsSummary: null,
                 })
               );
               setStateApp((stateApp) => ({
@@ -83,7 +84,7 @@ export default function OwnersSummaryCard(props) {
           >
             Interest Owners
           </Typography>
-          <Typography  className="wellInterestsText" >
+          <Typography className="wellInterestsText">
             {selectedOwner && selectedOwner.name
               ? selectedOwner.name
               : selectedOwner.OwnerName}
