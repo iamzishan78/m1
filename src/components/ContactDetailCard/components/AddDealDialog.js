@@ -622,6 +622,8 @@ function AddDealDialog(props) {
   //   }
   // }, [transactData]);
 
+  console.log("USERS", users);
+
   return (
     <RightDialog
       open={props.open}
@@ -834,23 +836,25 @@ function AddDealDialog(props) {
             className={classes.inputField}
             size="small"
           >
-            <InputLabel shrink className={classes.shrinkLabel}>
-              Owner Name
-            </InputLabel>
-            <Select
-              native
-              value={ownerId}
-              onChange={(e) => {
-                setOwnerId(e.target.value);
+            <Autocomplete
+              className={classes.fieldWidth}
+              options={users}
+              onChange={(e, user) => {
+                setOwnerId(user.value);
               }}
-              fullWidth
-            >
-              {users.map((user) => (
-                <option key={user.value} value={user.value}>
-                  {user.text}
-                </option>
-              ))}
-            </Select>
+              value={users.find((user) => user.value === ownerId) || null}
+              getOptionLabel={(option) => option.text}
+              getOptionSelected={(option) => option.value === ownerId}
+              renderInput={(params) => (
+                <TextField
+                  margin="dense"
+                  {...params}
+                  variant="outlined"
+                  label="Owner Name"
+                  InputLabelProps={{ shrink: true }}
+                />
+              )}
+            />
           </FormControl>
           <FormControl
             variant="outlined"
