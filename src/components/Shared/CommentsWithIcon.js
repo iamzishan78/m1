@@ -20,7 +20,8 @@ export default function CommentsWithIcon(props) {
       color: "#ffffff",
       marginLeft: "auto",
       "&:hover": {
-        backgroundColor: "#031d40",
+        backgroundColor:
+          props.targetLabel === "deal" ? "#dadbde88 !important" : "#031d40",
       },
     },
     iconSelected: {
@@ -28,6 +29,11 @@ export default function CommentsWithIcon(props) {
     },
     tagsDiv: {
       margin: "8px",
+    },
+    dialog: {
+      "&.MuiDialog-root": {
+        zIndex: "9999999999 !important",
+      },
     },
   }));
   const classes = useStyles();

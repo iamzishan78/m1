@@ -34,6 +34,7 @@ import {
 import TrackToggleButton from "../../Shared/TrackToggleButton";
 import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
 import TaggerWithIcon from "../../Shared/TaggerWithIcon";
+import CommentsWithIcon from "../../Shared/CommentsWithIcon";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -698,6 +699,11 @@ function AddDealDialog(props) {
             {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) &&
               stateApp.activeDeal?.laneId && (
                 <>
+                  <CommentsWithIcon
+                    objectId={stateApp.activeDeal?.cardId}
+                    targetLabel={"deal"}
+                    iconZiseSmall={true}
+                  />
                   <TaggerWithIcon
                     objectId={stateApp.activeDeal?.cardId}
                     targetLabel={"deal"}
