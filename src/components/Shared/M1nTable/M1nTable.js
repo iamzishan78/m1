@@ -1881,9 +1881,11 @@ function M1nTable(props) {
   const setWarningShowed = (newState) => {
     setStateIfDeepEqual(WarningShowed, newState);
   };
-  const { searchloading, searchResultData } = useSelector(
-    ({ MapGridCard }) => MapGridCard
-  );
+  const {
+    searchloading,
+    searchResultData,
+    selectedOwnerWellIntsSummary,
+  } = useSelector(({ MapGridCard }) => MapGridCard);
 
   const [dataContacts, DataContacts] = useState(null);
   const setDataContacts = (newState) => {
