@@ -1102,26 +1102,27 @@ export default function Map() {
   useEffect(() => {
     console.log("useEffect 12");
 
-    const wellLineClick = (currentFeature) => {
-      console.log("clicked well lines", currentFeature);
+    // const wellLineClick = (currentFeature) => {
+    //   console.log("clicked well lines", currentFeature);
 
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
-        selectedUserDefinedLayer: undefined,
-      }));
-      setStateApp((state) => ({
-        ...state,
-        selectedWell: currentFeature.properties,
-        selectedWellId: currentFeature.properties.id,
-        wellSelectedCoordinates: [
-          currentFeature.properties.longitude,
-          currentFeature.properties.latitude,
-        ],
-      }));
+    //   setStateApp((state) => ({
+    //     ...state,
+    //     popupOpen: false,
+    //     selectedUserDefinedLayer: undefined,
+    //     selectedParcel: null,
+    //   }));
+    //   setStateApp((state) => ({
+    //     ...state,
+    //     selectedWell: currentFeature.properties,
+    //     selectedWellId: currentFeature.properties.id,
+    //     wellSelectedCoordinates: [
+    //       currentFeature.properties.longitude,
+    //       currentFeature.properties.latitude,
+    //     ],
+    //   }));
 
-      createPopUp(currentFeature.properties);
-    };
+    //   createPopUp(currentFeature.properties);
+    // };
 
     const wellPointClick = (feature) => {
       console.log("feature", feature);
@@ -1157,23 +1158,23 @@ export default function Map() {
       }
     };
 
-    const layerClickHander = (feature) => {
-      let zVal;
-      if (map && map.getZoom() && map.getZoom() > 12) zVal = map.getZoom();
+    // const layerClickHander = (feature) => {
+    //   let zVal;
+    //   if (map && map.getZoom() && map.getZoom() > 12) zVal = map.getZoom();
 
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
-        selectedUserDefinedLayer: undefined,
-        selectedWell: null,
-        selectedWellId: feature.properties.id
-          ? feature.properties.id.toLowerCase()
-          : null,
-        flyTo: zVal
-          ? { ...feature.properties, zoom: zVal }
-          : feature.properties,
-      }));
-    };
+    //   setStateApp((state) => ({
+    //     ...state,
+    //     popupOpen: false,
+    //     selectedUserDefinedLayer: undefined,
+    //     selectedWell: null,
+    //     selectedWellId: feature.properties.id
+    //       ? feature.properties.id.toLowerCase()
+    //       : null,
+    //     flyTo: zVal
+    //       ? { ...feature.properties, zoom: zVal }
+    //       : feature.properties,
+    //   }));
+    // };
 
     const udLayerClickHandler = (feature) => {
       console.log("Current Parcel Layer", feature);
@@ -1202,23 +1203,23 @@ export default function Map() {
       map.resize();
     };
 
-    const udLayerHighlightHandler = (feature) => {
-      const id = feature.id;
-      if (hoverUdIds.indexOf(id) > -1) {
-        console.log("remove Hover");
-        map.setFeatureState(
-          { source: feature.source, id: feature.id },
-          { hover: false }
-        );
-      } else {
-        console.log("set Hover");
-        map.setFeatureState(
-          { source: feature.source, id: feature.id },
-          { hover: true }
-        );
-      }
-      setHoverUdIds(id);
-    };
+    // const udLayerHighlightHandler = (feature) => {
+    //   const id = feature.id;
+    //   if (hoverUdIds.indexOf(id) > -1) {
+    //     console.log("remove Hover");
+    //     map.setFeatureState(
+    //       { source: feature.source, id: feature.id },
+    //       { hover: false }
+    //     );
+    //   } else {
+    //     console.log("set Hover");
+    //     map.setFeatureState(
+    //       { source: feature.source, id: feature.id },
+    //       { hover: true }
+    //     );
+    //   }
+    //   setHoverUdIds(id);
+    // };
 
     const clusterClickHandler = (feature, map) => {
       if (feature && feature.properties && feature.properties.cluster_id) {
@@ -1356,6 +1357,7 @@ export default function Map() {
             udLayerClickHandler(feature);
             break;
           case layerId === "wellpoints" ||
+            layerId === "welllines" ||
             layerId === "Parcels" ||
             layerId === "Area of Interest" ||
             layerId === "Tracked Wells" ||
@@ -1365,9 +1367,9 @@ export default function Map() {
             layerId === "permits":
             wellPointClick(feature);
             break;
-          case layerId === "welllines":
-            wellLineClick(feature);
-            break;
+          // case layerId === "welllines":
+          //   wellLineClick(feature);
+          //   break;
           default:
             break;
         }
