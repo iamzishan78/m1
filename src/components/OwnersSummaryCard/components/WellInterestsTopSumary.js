@@ -6,6 +6,8 @@ import { OWNERSUMMARY } from "../../../graphQL/useQueryOwnerSummary";
 import { useLazyQuery } from "@apollo/client";
 import Paper from "@material-ui/core/Paper";
 import WellIcon from "../../Shared/svgIcons/well";
+import { useDispatch, useSelector } from "react-redux";
+import { setMapGridCardState } from "../../../actions";
 
 const useStyles = makeStyles((theme) => ({
   Paper: {
@@ -62,9 +64,12 @@ const joinAddress = (row) => {
 
   return textArray.join(", ");
 };
-export default function OwnersSummaryCard(props) {
-  const [ownerSummary, setOwnerSummary] = useState();
+export default function WellInterestsTopSumary(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const selectedOwnerWellIntsSummary = useSelector(
+    ({ MapGridCard }) => MapGridCard.selectedOwnerWellIntsSummary
+  );
 
   const [getOwnerSummary, { data }] = useLazyQuery(OWNERSUMMARY);
   useEffect(() => {
@@ -77,10 +82,15 @@ export default function OwnersSummaryCard(props) {
   }, [props.id]);
 
   useEffect(() => {
-    if (data && data.ownerSummary) setOwnerSummary(data.ownerSummary);
+    if (data)
+      dispatch(
+        setMapGridCardState({
+          selectedOwnerWellIntsSummary: data.ownerSummary,
+        })
+      );
   }, [data]);
 
-  return ownerSummary ? (
+  return selectedOwnerWellIntsSummary ? (
     <Grid container spacing={0}>
       <Grid
         item
@@ -98,17 +108,17 @@ export default function OwnersSummaryCard(props) {
             Name & Address
           </h2>
           <h3>
-            {ownerSummary.ownerName ? (
+            {selectedOwnerWellIntsSummary.ownerName ? (
               <span>
-                {ownerSummary.ownerName} <br />
+                {selectedOwnerWellIntsSummary.ownerName} <br />
               </span>
             ) : null}
-            {ownerSummary.streetAddress ? (
+            {selectedOwnerWellIntsSummary.streetAddress ? (
               <span>
-                {ownerSummary.streetAddress} <br />
+                {selectedOwnerWellIntsSummary.streetAddress} <br />
               </span>
             ) : null}
-            {joinAddress(ownerSummary)}
+            {joinAddress(selectedOwnerWellIntsSummary)}
           </h3>
         </Paper>
       </Grid>
@@ -126,7 +136,8 @@ export default function OwnersSummaryCard(props) {
               marginBottom: "10px",
             }}
           >
-            Well Interests ({numberWithCommas(ownerSummary.interestsCount)})
+            Well Interests (
+            {numberWithCommas(selectedOwnerWellIntsSummary.interestsCount)})
           </h2>
           <Grid
             container
@@ -150,29 +161,31 @@ export default function OwnersSummaryCard(props) {
                 >
                   <span>
                     Average Appraisal Value:{" "}
-                    {ownerSummary.averageValue
-                      ? valueFormatter(ownerSummary.averageValue)
+                    {selectedOwnerWellIntsSummary.averageValue
+                      ? valueFormatter(
+                          selectedOwnerWellIntsSummary.averageValue
+                        )
                       : "N/A"}
                     <br />
                   </span>
                   <span>
                     Max Appraisal Value:{" "}
-                    {ownerSummary.maxValue
-                      ? valueFormatter(ownerSummary.maxValue)
+                    {selectedOwnerWellIntsSummary.maxValue
+                      ? valueFormatter(selectedOwnerWellIntsSummary.maxValue)
                       : "N/A"}
                     <br />
                   </span>
                   <span>
                     Total Appraisal Value:{" "}
-                    {ownerSummary.totalValue
-                      ? valueFormatter(ownerSummary.totalValue)
+                    {selectedOwnerWellIntsSummary.totalValue
+                      ? valueFormatter(selectedOwnerWellIntsSummary.totalValue)
                       : "N/A"}
                     <br />
                   </span>
                   <span>
                     Number of Counties:{" "}
-                    {ownerSummary.countyCount
-                      ? ownerSummary.countyCount
+                    {selectedOwnerWellIntsSummary.countyCount
+                      ? selectedOwnerWellIntsSummary.countyCount
                       : "N/A"}
                     <br />
                   </span>

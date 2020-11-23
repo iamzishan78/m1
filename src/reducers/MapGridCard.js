@@ -13,6 +13,7 @@ const INIT_STATE = {
   trackedDataCount: 0, //// mapGridCard Viewport tracked count
   objToPopulateSearchLayer: null, //// mapGridCard Viewport tracked count
   selectedOwner: null,
+  selectedOwnerWellIntsSummary: null,
 };
 
 export default (state = INIT_STATE, action) => {
@@ -25,6 +26,7 @@ export default (state = INIT_STATE, action) => {
         ...state,
         mapGridCardActivated: !state.mapGridCardActivated,
         selectedOwner: null,
+        selectedOwnerWellIntsSummary: null,
       };
     }
 

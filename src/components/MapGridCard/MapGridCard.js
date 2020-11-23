@@ -333,6 +333,7 @@ function MapGridCard(props) {
       setMapGridCardState({
         mapGridCardActiveTap: newValue,
         selectedOwner: null,
+        selectedOwnerWellIntsSummary: null,
       })
     );
   };
@@ -464,6 +465,7 @@ function MapGridCard(props) {
                   setMapGridCardState({
                     mapGridCardActivated: false,
                     selectedOwner: null,
+                    selectedOwnerWellIntsSummary: null,
                   })
                 );
               }}
@@ -647,8 +649,8 @@ function MapGridCard(props) {
                       />
 
                       <h6 id="minimumZoomRequired">
-                        Please zoom in to leverage this feature (min zoom level = {" "}
-                        {stateApp.minZoomToQueryViewport})
+                        Please zoom in to leverage this feature (min zoom level
+                        = {stateApp.minZoomToQueryViewport})
                       </h6>
                     </div>,
                   ]}

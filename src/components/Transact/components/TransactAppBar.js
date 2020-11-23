@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    
   },
   bottom: {
     display: "flex",
@@ -167,58 +166,57 @@ const TransactAppBar = ({
               </IconButton>
             </ButtonGroup>
 
-      <div className={classes.bottom}>
-          <ButtonGroup>           
-            <Button
-              size="small" 
-              className={`${classes.filterToggleBtn} ${
-                dealFilter === "all" && classes.activeBtn
-              }`}
-              onClick={() => setDealFilter("all")}
-            >
-              ALL
-            </Button>
-            <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                dealFilter === "open" && classes.activeBtn
-              }`}
-              onClick={() => setDealFilter("open")}
-            >
-              OPEN
-            </Button>
-            <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                dealFilter === "won" && classes.activeBtn
-              }`}
-              onClick={() => setDealFilter("won")}
-            >
-              Won
-            </Button>
+            <div className={classes.bottom}>
+              <ButtonGroup>
+                <Button
+                  size="small"
+                  className={`${classes.filterToggleBtn} ${
+                    dealFilter === "all" && classes.activeBtn
+                  }`}
+                  onClick={() => setDealFilter("all")}
+                >
+                  ALL
+                </Button>
+                <Button
+                  size="small"
+                  className={`${classes.filterToggleBtn} ${
+                    dealFilter === "open" && classes.activeBtn
+                  }`}
+                  onClick={() => setDealFilter("open")}
+                >
+                  OPEN
+                </Button>
+                <Button
+                  size="small"
+                  className={`${classes.filterToggleBtn} ${
+                    dealFilter === "won" && classes.activeBtn
+                  }`}
+                  onClick={() => setDealFilter("won")}
+                >
+                  Won
+                </Button>
 
-            <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                dealFilter === "lost" && classes.activeBtn
-              }`}
-              onClick={() => setDealFilter("lost")}
-            >
-              Lost
-            </Button>
+                <Button
+                  size="small"
+                  className={`${classes.filterToggleBtn} ${
+                    dealFilter === "lost" && classes.activeBtn
+                  }`}
+                  onClick={() => setDealFilter("lost")}
+                >
+                  Lost
+                </Button>
 
-            <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                dealFilter === "deleted" && classes.activeBtn
-              }`}
-              onClick={() => setDealFilter("deleted")}
-            >
-              Deleted
-            </Button>
-          </ButtonGroup>
-          </div>
-      
+                <Button
+                  size="small"
+                  className={`${classes.filterToggleBtn} ${
+                    dealFilter === "deleted" && classes.activeBtn
+                  }`}
+                  onClick={() => setDealFilter("deleted")}
+                >
+                  Deleted
+                </Button>
+              </ButtonGroup>
+            </div>
           </div>
           <div className={classes.left}>
             <div className={classes.activeDeals}>
@@ -249,7 +247,6 @@ const TransactAppBar = ({
             </Button>
           </div>
         </div>
-        
       </AppBar>
     </>
   );
