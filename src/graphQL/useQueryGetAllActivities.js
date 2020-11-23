@@ -13,6 +13,7 @@ export const GETALLACTIVITIES = gql`
       name
       isClosed
       ownerId
+      dealId
     }
   }
 `;

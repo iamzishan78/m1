@@ -211,6 +211,7 @@ export default function ActivitiesModal({
   const [endTime, setEndTime] = useState("00:00");
   const [notes, setNotes] = useState("");
   const [ownerId, setOwnerId] = useState("");
+  const [dealId, setDealId] = useState("");
   const [contactId, setContactId] = useState("");
   const [contact, setContact] = useState({});
   const [errors, setErrors] = useState({ ...initialErrors });
@@ -366,6 +367,7 @@ export default function ActivitiesModal({
       setAddNew(false);
       setNotes(selectedActivity.notes);
       setOwnerId(selectedActivity.ownerId);
+      setDealId(selectedActivity.dealId);
       setActivityType(selectedActivity.type);
       setActivityName(selectedActivity.name);
       setClosed(selectedActivity.isClosed);
@@ -381,6 +383,7 @@ export default function ActivitiesModal({
       setClosed(false);
       setNotes("");
       setOwnerId("");
+      setDealId("");
       setActivityType("");
       setActivityName("");
       setContactId("");
@@ -457,6 +460,7 @@ export default function ActivitiesModal({
     setAddNew(true);
     setNotes("");
     setOwnerId("");
+    setDealId("");
     setActivityType("");
     setActivityName("");
     setClosed(false);
@@ -532,6 +536,7 @@ export default function ActivitiesModal({
       name: activityName,
       notes,
       ownerId,
+      dealId,
       dateTime: dateTime,
       endDateTime: endDateTime,
       user_id: stateApp.user.email,
@@ -580,6 +585,7 @@ export default function ActivitiesModal({
         endDateTime,
         notes,
         ownerId,
+        dealId,
         isClosed: closed,
       };
       newActLog.forEach((v) => delete v.__typename);
@@ -614,6 +620,7 @@ export default function ActivitiesModal({
         name: activityName,
         notes,
         ownerId,
+        dealId,
         dateTime: dateTime,
         endDateTime: endDateTime,
         user_id: stateApp.user.email,
@@ -926,6 +933,11 @@ export default function ActivitiesModal({
                   <Autocomplete
                     className={classes.fieldWidth}
                     options={openDeals}
+                    onChange={(e, deal) => {
+                      setDealId(deal.id);
+                    }}
+                    value={openDeals.find((deal) => deal.id === dealId) || null}
+                    getOptionSelected={(option) => option.id === dealId}
                     getOptionLabel={(option) => option.title}
                     renderInput={(params) => (
                       <TextField
