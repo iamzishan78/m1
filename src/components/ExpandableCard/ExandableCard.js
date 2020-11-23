@@ -80,6 +80,8 @@ export default function ExpandableCard(props) {
     }
   );
 
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   const useStyles = makeStyles((theme) => ({
     card: {
       position: position,
@@ -138,6 +140,7 @@ export default function ExpandableCard(props) {
       color: "white",
     },
   }));
+
   const classes = useStyles();
 
   const [
@@ -242,11 +245,13 @@ export default function ExpandableCard(props) {
     setOpenDialog(false);
   };
 
-  const deleteFunc = () => {
+  const deleteFunc = async () => {
     if (targetLabel === "parcel") {
       deleteParcel();
     } else if (targetLabel === "activity") {
-      deleteActivity();
+      setDeleteLoading(true);
+      await deleteActivity();
+      setDeleteLoading(false);
     }
   };
 
@@ -266,8 +271,8 @@ export default function ExpandableCard(props) {
     handleClose();
   };
 
-  const deleteActivity = () => {
-    props.handleDelete();
+  const deleteActivity = async () => {
+    await props.handleDelete();
   };
 
   return (
@@ -341,7 +346,7 @@ export default function ExpandableCard(props) {
                 ["parcel", "activity"].includes(targetLabel) &&
                 title !== "Add Activity" && (
                   <Tooltip title={`Delete ${targetLabel}`} placement="top">
-                    {isDeletingCustomLayer ? (
+                    {isDeletingCustomLayer || deleteLoading ? (
                       <CircularProgress size={20} color="secondary" />
                     ) : (
                       <IconButton
