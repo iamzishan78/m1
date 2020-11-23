@@ -197,9 +197,10 @@ export default function ActivitiesModal({
   selectedActivity,
   events,
 }) {
-  console.log("SELCTED ACTIVITY", selectedActivity);
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
+  console.log("SELECTED ACTIVITY", selectedActivity, stateApp);
+
   const [addNew, setAddNew] = useState(true);
   const [activityType, setActivityType] = useState("");
   const [activityName, setActivityName] = useState("");

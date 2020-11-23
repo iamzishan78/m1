@@ -31,6 +31,8 @@ import {
   deepEqualObjects,
   setStateIfDeepEqual,
 } from "../../Shared/functions";
+import TrackToggleButton from "../../Shared/TrackToggleButton";
+import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -154,6 +156,7 @@ function AddDealDialog(props) {
   const [description, setDescription] = useState("");
   const [pipelineId, setPipelineId] = useState("");
   const [ownerId, setOwnerId] = useState("");
+  const [cardId, setCardId] = useState("");
   const [users, setUsers] = useState([]);
   const [closeDate, setCloseDate] = useState(null);
   const [colaborators, setColaborators] = useState([]);
@@ -192,12 +195,12 @@ function AddDealDialog(props) {
     fetchPolicy: "cache-and-network",
   });
 
+  // CONTACT
+
   const [
     getPaginatedContacts,
     { data: allContacts, loading, fetchMore: fetchMorePaginatedContacts },
   ] = useLazyQuery(PAGINATEDCONTACTSQUERY);
-
-  console.log("AAD DEAL", tdata);
 
   const [contact, setContact] = useState({});
 
@@ -251,6 +254,26 @@ function AddDealDialog(props) {
       setContact(nameAutValue);
     }
   }, [nameAutValue]);
+
+  // CONTACT END
+
+  // TRACK
+  const [
+    trackByObjectId,
+    { loading: loadingTrack, data: dataTrack },
+  ] = useLazyQuery(TRACKBYOBJECTID);
+
+  const [target, setTarget] = useState({});
+
+  useEffect(() => {
+    if (dataTrack) {
+      setTarget({
+        isTracked: dataTrack.trackByObjectId ? true : false,
+      });
+    }
+  }, [dataTrack]);
+  // TRACK END
+
   // useEffect(() => {
   //   console.log("CONTACT", contact);
   //   if (contact?.name) {
@@ -342,6 +365,19 @@ function AddDealDialog(props) {
       const card = lane.cards.find((card) => card.id === cardId); // selecting card
       if (!card) return;
 
+      console.log("ACTIVE DEAL: ", stateApp.activeDeal, card, stateApp.user);
+
+      // TRACK
+      setCardId(card.id);
+      if (stateApp.user && stateApp.user.mongoId) {
+        trackByObjectId({
+          variables: {
+            userId: stateApp.user.mongoId,
+            objectId: card.id.toLowerCase(),
+          },
+        });
+      }
+
       setTitle(card.title ? card.title : "");
       setDealState(card.dealState ? card.dealState : null);
       setLabel(card.label ? card.label : "");
@@ -364,7 +400,13 @@ function AddDealDialog(props) {
         },
       });
     }
-  }, [transactData, stateApp.activeDeal, props.contact, stateApp.dealDialog]);
+  }, [
+    transactData,
+    stateApp.activeDeal,
+    props.contact,
+    stateApp.dealDialog,
+    stateApp.user,
+  ]);
 
   // old
   // useEffect(() => {
@@ -388,6 +430,8 @@ function AddDealDialog(props) {
     setColaborators([]);
     setOriginationDate("");
     setContact({});
+    setTarget({});
+    setCardId("");
     if (props.isTransactPage) setContact({});
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -652,14 +696,26 @@ function AddDealDialog(props) {
           <div style={{ float: "right" }}>
             {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) &&
               stateApp.activeDeal?.laneId && (
-                <IconButton
-                  disabled={updateTransactionLoading || addContactLoading}
-                  onClick={deleteDeal}
-                  size="small"
-                  style={{ marginRight: 8 }}
-                >
-                  <DeleteIcon className={classes.closeIcon} fontSize="small" />
-                </IconButton>
+                <>
+                  <TrackToggleButton
+                    target={target}
+                    targetLabel={"deal"}
+                    targetSourceId={stateApp.activeDeal?.cardId}
+                    iconZiseSmall={true}
+                    dark={true}
+                  />
+                  <IconButton
+                    disabled={updateTransactionLoading || addContactLoading}
+                    onClick={deleteDeal}
+                    size="small"
+                    style={{ margin: "0 8px" }}
+                  >
+                    <DeleteIcon
+                      className={classes.closeIcon}
+                      fontSize="small"
+                    />
+                  </IconButton>
+                </>
               )}
 
             <IconButton

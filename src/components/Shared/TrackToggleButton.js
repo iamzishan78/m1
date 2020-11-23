@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     // backgroundColor: "transparent !important",
     "&:hover": {
       backgroundColor: (props) =>
-        props.dark ? "#dadbde !important" : "#031d40 !important",
+        props.dark ? "#dadbde88 !important" : "#031d40 !important",
     },
   },
   aaa: { backgroundColor: "green" },
@@ -27,6 +27,9 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#EDF8FC",
     borderRadius: "50%",
     visibility: "hidden", //visible
+  },
+  activeTrack: {
+    fill: `${theme.palette.secondary.main} !important`,
   },
 }));
 
@@ -138,7 +141,6 @@ export default function TrackToggleButton(props) {
         }}
         id={props.id ? props.id : ""}
         size="small"
-        // classes={{ root: classes.root }}
         className={classes.root}
         value="check"
         selected={selected}
@@ -163,7 +165,7 @@ export default function TrackToggleButton(props) {
           />
         ) : selected ? (
           <>
-            <MyLocationIcon color="secondary" />
+            <MyLocationIcon className={classes.activeTrack} color="secondary" />
             <CircularProgress
               className={classes.hiddenLoader}
               id={props.targetLabel + props.targetSourceId + "loader"}
