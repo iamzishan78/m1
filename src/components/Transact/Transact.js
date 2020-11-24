@@ -294,9 +294,11 @@ export default function Transact() {
   // const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [transactData, setTransactData] = useState();
+  const [id, setId] = useState();
+  const [index, setIndex] = useState(0);
+  const [pipelines, setPipelines] = useState([]);
   const [filteredTransactData, setFilteredTransactData] = useState(null);
   const prevFiltertedTransactData = usePrevious(filteredTransactData);
-  const [id, setId] = useState();
   const [allDeals, setAllDeals] = useState([]);
   const [openDeals, setOpenDeals] = useState([]);
   const [wonDeals, setWonDeals] = useState([]);
@@ -321,13 +323,23 @@ export default function Transact() {
   }, [stateApp.user]);
 
   useEffect(() => {
+    if (!loading && data?.transactionData) {
+      setPipelines(
+        data?.transactionData.map((v, i) => ({
+          index: i,
+          name: v.pipeline,
+          id: v._id,
+        }))
+      );
+    }
+
     if (
       !loading &&
-      data?.transactionData[0] &&
-      data?.transactionData[0]?.allData?.lanes &&
-      data.transactionData[0].allData.lanes.length > 0
+      data?.transactionData[index] &&
+      data?.transactionData[index]?.allData?.lanes &&
+      data.transactionData[index].allData.lanes.length > 0
     ) {
-      const lanes = data?.transactionData[0]?.allData?.lanes;
+      const lanes = data?.transactionData[index]?.allData?.lanes;
 
       // get all deals
       const all = [];
@@ -338,7 +350,7 @@ export default function Transact() {
       });
       setAllDeals(all);
     }
-  }, [data]);
+  }, [data, index]);
 
   useEffect(() => {
     let open = [];
@@ -539,17 +551,19 @@ export default function Transact() {
     if (
       data &&
       data.transactionData &&
-      data.transactionData[0] &&
-      data.transactionData[0].allData &&
-      data.transactionData[0].allData.lanes
+      data.transactionData[index] &&
+      data.transactionData[index].allData &&
+      data.transactionData[index].allData.lanes
     ) {
       setTransactData({
-        ...data.transactionData[0].allData,
-        lanes: getLanesWithFixedTitles(data.transactionData[0].allData.lanes),
+        ...data.transactionData[index].allData,
+        lanes: getLanesWithFixedTitles(
+          data.transactionData[index].allData.lanes
+        ),
       });
-      setId(data.transactionData[0]._id);
+      setId(data.transactionData[index]._id);
     }
-  }, [data]);
+  }, [data, index]);
 
   // useEffect(() => {
   //   if (transactData) {
@@ -679,6 +693,9 @@ export default function Transact() {
         setDealDisplayType={setDealDisplayType}
         dealFilter={dealFilter}
         setDealFilter={setDealFilter}
+        pipelines={pipelines}
+        setIndex={setIndex}
+        index={index}
       />
       {dealDisplayType === "board" && (
         <Board
