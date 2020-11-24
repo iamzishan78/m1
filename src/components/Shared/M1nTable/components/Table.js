@@ -2133,6 +2133,7 @@ function SubTable(props) {
                       ? props.rows[props.rows.length - 1]?._id
                       : null,
                 },
+                pageOverride: tableState.page
               },
             });
             break;
