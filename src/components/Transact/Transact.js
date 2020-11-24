@@ -676,6 +676,10 @@ export default function Transact() {
         open={stateApp.dealDialog ? true : false}
         width="450px"
         isTransactPage
+        pipelineId={id}
+        pipeline={transactData}
+        pipelines={pipelines}
+        index={index}
         onClose={() =>
           setStateApp((stateApp) => ({
             ...stateApp,

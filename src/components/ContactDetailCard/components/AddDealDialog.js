@@ -156,7 +156,7 @@ function AddDealDialog(props) {
   const [stage, setStage] = useState("");
   const [dealState, setDealState] = useState(null);
   const [description, setDescription] = useState("");
-  const [pipelineId, setPipelineId] = useState("");
+  const [pipelineId, setPipelineId] = useState(props.pipelineId);
   const [ownerId, setOwnerId] = useState("");
   const [cardId, setCardId] = useState("");
   const [users, setUsers] = useState([]);
@@ -288,13 +288,13 @@ function AddDealDialog(props) {
   );
 
   useEffect(() => {
-    console.log("TDATA : ", tdata?.transactionData[0]?.allData);
-    if (tdata?.transactionData[0]?.allData) {
+    console.log("TDATA : ", tdata?.transactionData[props.index]?.allData);
+    if (tdata?.transactionData[props.index]?.allData) {
       setTransactData(
-        JSON.parse(JSON.stringify(tdata?.transactionData[0]?.allData))
+        JSON.parse(JSON.stringify(tdata?.transactionData[props.index]?.allData))
       );
     }
-  }, [tdata]);
+  }, [tdata, props.index]);
 
   useEffect(() => {
     if (userLists && userLists.allUsers) {
@@ -322,10 +322,10 @@ function AddDealDialog(props) {
   };
 
   const handleDataChange = async (newData) => {
-    if (tdata?.transactionData[0]?._id) {
+    if (tdata?.transactionData[props.index]?._id) {
       await updateTransaction({
         variables: {
-          transactionId: tdata.transactionData[0]._id,
+          transactionId: tdata.transactionData[props.index]._id,
           transaction: { allData: newData, user: stateApp.user.mongoId },
         },
         refetchQueries: ["getTransactionData"],
