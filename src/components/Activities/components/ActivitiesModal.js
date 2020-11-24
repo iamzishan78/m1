@@ -41,7 +41,7 @@ import ActivitiesEvent from "./ActivitiesEvent";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
+import { GETMONGOUSERS as GETUSERS } from "../../../graphQL/useQueryGetUsers";
 
 const useStyles = makeStyles((theme) => ({
   dialogExpCard: {
@@ -230,8 +230,8 @@ export default function ActivitiesModal({
     if (userLists && userLists.allUsers) {
       setUsers(
         userLists.allUsers.map((user) => ({
-          value: user.id,
-          text: user.displayName,
+          value: user._id,
+          text: user.name,
         }))
       );
     }
