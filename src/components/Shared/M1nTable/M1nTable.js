@@ -373,7 +373,7 @@ const OwnersPerWellHeadCells = [
     },
   },
 
-  { name: "name", label: "Name"},
+  { name: "name", label: "Name" },
   {
     name: "ownershipType",
     label: "Entity",
@@ -1686,39 +1686,47 @@ const WellInterests = [
       viewColumns: false,
     },
   },
-  { name: "wellName", label: "Well",
+  {
+    name: "wellName",
+    label: "Well",
     options: {
       filter: false,
-    }
+    },
   },
-  { name: "apiNumber", label: "API",
+  {
+    name: "apiNumber",
+    label: "API",
     options: {
       filter: false,
-    }
+    },
   },
-  { name: "operator", label: "Operator",
+  {
+    name: "operator",
+    label: "Operator",
     options: {
       filter: false,
-    }
+    },
   },
-  { name: "interestType", label: "Type",
+  {
+    name: "interestType",
+    label: "Type",
     options: {
       filter: false,
-    }
+    },
   },
   {
     name: "ownershipPercentage",
     label: "Interest",
     options: {
       filter: false,
-    }
+    },
   },
   {
     name: "appraisedValue",
     label: "Appraised Value",
     options: {
       filter: false,
-    }
+    },
   },
   {
     name: "tags",
@@ -1914,7 +1922,7 @@ const ProductionDetailsHeaders = [
       selectableRows: false,
     },
   },
-]
+];
 ////////////PRODUCTION DETAILS end//////////////////////////////////////
 
 ////////////HeadCells end///////////////////////////////////////////////
@@ -2121,15 +2129,18 @@ function M1nTable(props) {
     { data: dataOwner_WellInterests },
   ] = useLazyQuery(OWNER_WELLINTERESTS);
 
-  const [getPaginatedWellInterests, { data: constDataWellInterests }] = useLazyQuery(
-    PAGINATEDWELLINTERESTSQUERY, {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+  const [
+    getPaginatedWellInterests,
+    { data: constDataWellInterests },
+  ] = useLazyQuery(PAGINATEDWELLINTERESTSQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
 
-  const [getWellInterestsFilterOptions, { data: dataWellInterestsFilterOptions }] = useLazyQuery(
-    WELLINTERESTSFILTEROPTIONS, {
-      fetchPolicy: "cache-and-network",
+  const [
+    getWellInterestsFilterOptions,
+    { data: dataWellInterestsFilterOptions },
+  ] = useLazyQuery(WELLINTERESTSFILTEROPTIONS, {
+    fetchPolicy: "cache-and-network",
   });
   ////////////Queries end///////////////////////////////////////////////
 
@@ -3340,10 +3351,7 @@ function M1nTable(props) {
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
         if (
           props.targetLabel &&
-          props.targetLabel == "well"
-          //temporarily remove until we release the owner summary card
-          // ||
-          // props.targetLabel == "owner"
+          (props.targetLabel == "well" || props.targetLabel == "owner")
         )
           //would only set the detail card icon for wells & owners
           buildingColumns.push(SearchsHeadCells[5]);
@@ -3955,8 +3963,8 @@ function M1nTable(props) {
         variables: {
           filters: {
             field: "id",
-            value: props.id
-          }
+            value: props.id,
+          },
         },
       });
 
@@ -3965,7 +3973,7 @@ function M1nTable(props) {
         setMapGridCardState({
           objToPopulateSearchLayer: {
             objectId: props.id,
-            objectType: "owner"
+            objectType: "owner",
           },
         })
       );
@@ -3984,7 +3992,9 @@ function M1nTable(props) {
         constDataWellInterests.paginatedWellInterests.edges.length > 0
       ) {
         setDataWellInterests([
-          ...constDataWellInterests.paginatedWellInterests.edges.map((el) => el.node),
+          ...constDataWellInterests.paginatedWellInterests.edges.map(
+            (el) => el.node
+          ),
         ]);
         setLoading(false);
       } else {
@@ -3992,9 +4002,7 @@ function M1nTable(props) {
         setRows([]);
       }
     }
-  }, [
-    constDataWellInterests
-  ]);
+  }, [constDataWellInterests]);
 
   useEffect(() => {
     if (
@@ -4132,31 +4140,24 @@ function M1nTable(props) {
 
       // setLoading(false);
     }
-  }, [
-    dataWellInterests,
-    dataTagSamples,
-    dataCommentsCounter,
-    dataTracks,
-  ]);
+  }, [dataWellInterests, dataTagSamples, dataCommentsCounter, dataTracks]);
 
   //////////// Owner_WellInterests end///////////////////////////////////////////////
 
-
   /////////// PRODUCTION DETAILS ////////////////////////////////////////
-  useEffect(()=> {
+  useEffect(() => {
     setLoading(true);
-    if ( props.parent &&
-      props.parent === "production_WellDetails") {
-        setTargetLabel("production_detail");
-        setHeader("Monthly Production")
-        setColumns(ProductionDetailsHeaders);
-        setLoading(false);
-        setAddAble(false);
-        setRows(props.productionDetails);
-        setOrderByTracks(false);
-        // setTotal(true);
-      }
-  },[props.props]);
+    if (props.parent && props.parent === "production_WellDetails") {
+      setTargetLabel("production_detail");
+      setHeader("Monthly Production");
+      setColumns(ProductionDetailsHeaders);
+      setLoading(false);
+      setAddAble(false);
+      setRows(props.productionDetails);
+      setOrderByTracks(false);
+      // setTotal(true);
+    }
+  }, [props.props]);
   /////////// PRODUCTION DETAILS ////////////////////////////////////////
 
   ////////////-----Add your code section here-----///////////////////////
@@ -4199,8 +4200,10 @@ function M1nTable(props) {
         contactsPageProps={{
           getPaginatedContacts,
           getContactsFilterOptions,
-          contactsCount: dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
-            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]?.totalCount
+          contactsCount: dataContactsFilterOptions?.contactsFilterOptions
+            ?.totalCount[0]
+            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
+                ?.totalCount
             : 0,
           setLoading,
         }}
