@@ -101,6 +101,15 @@ const SetApolloClient = (props) => {
     }
   }, [stateApp.user]);
 
+  useEffect(()=> {
+    let draggableArea = document.getElementById("root");
+    if (window.location.pathname == "/") {
+      draggableArea.style.overflow='hidden'
+    } else {
+      draggableArea.style.overflow='visible'
+    }
+  }, [stateApp]);
+
   useEffect(() => {
     if (stateApp.userSnap === true) {
       var script = document.createElement("script");

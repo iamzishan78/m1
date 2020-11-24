@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../AppContext";
 import Draggable from "react-draggable";
@@ -452,9 +452,9 @@ function MapGridCard(props) {
               }}
             >
               {mapGridCardActivated === "exp" ? (
-                <ShrinkIcon viewBox="0 0 64 64" htmlColor="#fff" />
+                <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
               ) : (
-                <ExpandIcon viewBox="0 0 64 64" htmlColor="#fff" />
+                <ExpandIcon viewBox="0 0 64 64" color="secondary"  />
               )}
             </IconButton>
             <IconButton
@@ -470,7 +470,7 @@ function MapGridCard(props) {
                 );
               }}
             >
-              <CloseIcon htmlColor="#fff" />
+              <CloseIcon color="secondary"  />
             </IconButton>
           </Toolbar>
         </AppBar>
@@ -695,9 +695,9 @@ function MapGridCard(props) {
 }
 
 function areEqual(prevProps, nextProps) {
-  console.log(
-    `${prevProps.mapGridCardActivated} ... ${nextProps.mapGridCardActivated}`
-  );
+  // console.log(
+  //   `${prevProps.mapGridCardActivated} ... ${nextProps.mapGridCardActivated}`
+  // );
   return Object.is(
     prevProps.mapGridCardActivated,
     nextProps.mapGridCardActivated

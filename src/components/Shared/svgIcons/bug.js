@@ -29,8 +29,8 @@ export default class Bug extends Component {
   };
 
   static defaultProps = {
-    width: "24px",
-    height: "24px",
+    width: "30px",
+    height: "30px",
     predefinedClassName: "data-ex-icons-bug",
   };
 

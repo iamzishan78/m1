@@ -19,6 +19,7 @@ import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
 import Portal from "@material-ui/core/Portal";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
+import Draggable from "react-draggable";
 import DrawStatus from "./components/DrawStatus";
 import ZoomFault from "./components/ZoomFault";
 import HugeRequest from "./components/HugeRequest";
@@ -65,6 +66,8 @@ import gjv from "geojson-validation";
 import { setMainMapState, showErrorMessage } from "../../actions";
 import { ZoomOutMapSharp } from "@material-ui/icons";
 import debounce from "lodash/debounce";
+import { createFalse } from "typescript";
+//import { AvSortByAlpha } from "material-ui/svg-icons";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -102,6 +105,16 @@ const useStyles = makeStyles((theme) => ({
     left: "47%",
     transform: "translate(-50%, -50%)",
   },
+  draggable: {
+    width: 0,
+    height: 0,
+    "& div.MuiCardHeader-root": {
+      cursor: 'move',
+      "& .MuiCardHeader-content": {
+        cursor: "text"
+      }
+    }
+  },
 }));
 
 const random_hex_color_code = () => {
@@ -116,7 +129,7 @@ export default function Map() {
     drawingCircle:
       stateApp.draw && stateApp.draw.getMode() == "drag_circle" ? true : false,
   });
-
+  const [flyVar1, setFlyVar1] = useState([null]);
   const dispatch = useDispatch();
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
@@ -165,11 +178,11 @@ export default function Map() {
   const container = useRef(null);
   const modalContainer = useRef(null);
   const [showExpandableCard, ShowExpandableCard] = useState(false);
+
   const setShowExpandableCard = (state) => {
-    if (showExpandableCard != state) {
       ShowExpandableCard(state);
-    }
   };
+
   const [mapStyles, MapStyles] = useState([]);
   const setMapStyles = (state) => {
     if (mapStyles != state) {
@@ -373,11 +386,6 @@ export default function Map() {
           (track) => track.trackOn
         );
 
-        // setStateApp((stateApp) => ({
-        //   ...stateApp,
-        //   trackedwells: dataTracks.tracksByObjectType,
-        // }));
-
         getWells({
           variables: {
             wellIdArray: tracksIdArray,
@@ -404,12 +412,6 @@ export default function Map() {
           owners: objectsIdsArray,
         }));
 
-        //// temporary
-        // getOwnersWells({
-        //   variables: {
-        //     ownersIds: objectsIdsArray,
-        //   },
-        // });
       }
     }
   }, [dataTracksOwner]);
@@ -423,7 +425,6 @@ export default function Map() {
         customLayers: customLayerData.allCustomLayers,
         selectedUserDefinedLayer: null,
         editLayer: false,
-        // popupOpen: false, //// temporary comented
       }));
     }
   }, [customLayerData]);
@@ -498,23 +499,7 @@ export default function Map() {
     }
   };
 
-  // useEffect(() => {
-  //   if (viewFileResult && viewFileResult.viewFile && stateApp.layers) {
-  //     const result = viewFileResult.viewFile;
-  //     const fileId = result.id;
-  //     if (result.uri && result.internalKey) {
-  //       const layerIndex = stateApp.layers.findIndex(
-  //         (layer) => layer.file == fileId
-  //       );
-  //       handleFileAsync(result.uri, result.internalKey, layerIndex);
-  //     } else if (fileId)
-  //       viewFile({
-  //         variables: {
-  //           fileId,
-  //         },
-  //       });
-  //   }
-  // }, [viewFileResult]);
+
 
   useEffect(() => {
     if (viewFileResult && viewFileResult.viewFile && stateApp.layers) {
@@ -879,187 +864,12 @@ export default function Map() {
     return beforelayer;
   };
 
-  // const setUserDefinedLayer = (data, layerName, map) => {
-  //   const configIndex = stateApp.userDefinedLayers.findIndex(
-  //     (value) => value.name === layerName
-  //   );
-  //   const config = stateApp.userDefinedLayers[configIndex];
-  //   let beforelayer = null;
-  //   for (let i = 0; i < config.id.length; i++) {
-  //     // -> fetch data
-  //     let layerData = [];
-  //     if (config.dataProps[i].dataId == "trackedWellsWells") {
-  //       layerData = data;
-  //     } else if (config.dataProps[i].dataId == "trackedOwnersWells") {
-  //       layerData = data;
-  //     } else if (config.dataProps[i].dataId == "wellsFromSearch") {
-  //       layerData = data;
-  //     } else if (config.dataProps[i].dataId == "wellsFromTagsFilter") {
-  //       layerData = data;
-  //     } else {
-  //       const dataId = config.dataProps[i].dataId;
-
-  //       const groupBy = (arr, property) => {
-  //         return arr.reduce((memo, x) => {
-  //           if (!memo[x[property]]) {
-  //             memo[x[property]] = [];
-  //           }
-  //           memo[x[property]].push(x);
-  //           return memo;
-  //         }, {});
-  //       };
-
-  //       layerData = groupBy(data, "layer")[dataId];
-  //     }
-
-  //     if (layerData && layerData.length !== 0) {
-  //       const layerId = config.layerProps[i].layerId;
-
-  //       if (!map.getLayer(layerId)) {
-  //         // -> make GEOJSON
-
-  //         const makeGeoJSON = (data) => {
-  //           return {
-  //             type: "FeatureCollection",
-  //             features: data.map((feature) => {
-  //               if (config.dataProps[i].dataTypeId == "Point") {
-  //                 return {
-  //                   type: "Feature",
-  //                   properties: feature,
-  //                   geometry: {
-  //                     type: config.dataProps[i].dataTypeId,
-  //                     coordinates: [feature.longitude, feature.latitude],
-  //                   },
-  //                 };
-  //               } else {
-  //                 return JSON.parse(feature.shape);
-  //               }
-  //             }),
-  //           };
-  //         };
-
-  //         const myGeoJSONData = makeGeoJSON(layerData);
-
-  //         // -> add source
-  //         if (config.dataProps[i].dataTypeId == "Point") {
-  //           if (map.getSource(config.sourceProps[i].sourceId)) {
-  //             map
-  //               .getSource(config.sourceProps[i].sourceId)
-  //               .setData(myGeoJSONData);
-  //           } else {
-  //             map.addSource(config.sourceProps[i].sourceId, {
-  //               type: config.sourceProps[i].sourceType,
-  //               data: myGeoJSONData,
-  //               cluster: true,
-  //               clusterRadius: 50,
-  //               clusterMaxZoom: 6,
-  //             });
-  //           }
-  //           const filterLayerId = config.sourceProps[i].sourceId + "_filter";
-  //           if (map.getSource(filterLayerId)) {
-  //             map.getSource(filterLayerId).setData(myGeoJSONData);
-  //           } else {
-  //             map.addSource(filterLayerId, {
-  //               type: config.sourceProps[i].sourceType,
-  //               data: myGeoJSONData,
-  //             });
-  //           }
-  //         } else {
-  //           if (map.getSource(config.sourceProps[i].sourceId)) {
-  //             map
-  //               .getSource(config.sourceProps[i].sourceId)
-  //               .setData(myGeoJSONData);
-  //           } else {
-  //             map.addSource(config.sourceProps[i].sourceId, {
-  //               type: config.sourceProps[i].sourceType,
-  //               data: myGeoJSONData,
-  //               promoteId: "id",
-  //             });
-  //           }
-  //         }
-
-  //         // -> add layer
-  //         // eslint-disable-next-line eqeqeq
-  //         if (config.layerProps[i].layerType == "symbol") {
-  //           map.addLayer({
-  //             id: config.layerProps[i].layerId,
-  //             type: config.layerProps[i].layerType,
-  //             source: config.sourceProps[i].sourceId,
-  //             layout: config.layerProps[i].symbolProps,
-  //           });
-  //         } else {
-  //           map.addLayer({
-  //             id: config.layerProps[i].layerId,
-  //             type: config.layerProps[i].layerType,
-  //             source: config.sourceProps[i].sourceId,
-  //             paint: config.layerProps[i].paintProps,
-  //           });
-  //         }
-
-  //         map.setLayoutProperty(
-  //           config.layerProps[i].layerId,
-  //           "visibility",
-  //           "none"
-  //         );
-
-  //         // -> add cluster layer
-
-  //         if (
-  //           config &&
-  //           config.layerProps &&
-  //           config.layerProps[i].clusterProps
-  //         ) {
-  //           var clusterVar = config.layerProps[i].layerId + "-clusters";
-  //           var clusterLabelBar =
-  //             config.layerProps[i].layerId + "-clusters-counts";
-
-  //           map.addLayer({
-  //             id: clusterLabelBar,
-  //             type: "symbol",
-  //             source: config.sourceProps[i].sourceId,
-  //             filter: ["has", "point_count"],
-  //             layout: config.layerProps[i].clusterProps.clusterSymbolProps,
-  //           });
-  //           map.setLayoutProperty(clusterLabelBar, "visibility", "none");
-  //           if (beforelayer) {
-  //             map.moveLayer(clusterLabelBar, beforelayer);
-  //           }
-  //           beforelayer = clusterLabelBar;
-
-  //           map.addLayer({
-  //             id: clusterVar,
-  //             type: config.layerProps[i].layerType,
-  //             source: config.sourceProps[i].sourceId,
-  //             filter: ["has", "point_count"],
-  //             paint: config.layerProps[i].clusterProps.clusterPaintProps,
-  //           });
-  //           map.setLayoutProperty(clusterVar, "visibility", "none");
-  //           if (beforelayer) {
-  //             map.moveLayer(clusterVar, beforelayer);
-  //           }
-  //           beforelayer = clusterVar;
-  //         }
-
-  //         if (beforelayer) {
-  //           map.moveLayer(config.layerProps[i].layerId, beforelayer);
-  //         }
-  //         beforelayer = config.layerProps[i].layerId;
-  //       }
-  //     }
-  //   }
-  // };
+ 
 
   useEffect(() => {
     if (permitData && permitData.permits && permitData.permits.length > 0) {
       const nextOffset = permits.length + permitData.permits.length;
       setPermitData([...permits, ...permitData.permits]);
-
-      // getPermits({
-      // variables: {
-      //   offset: nextOffset,
-      //   amount: 500,
-      // },
-      // });
     }
   }, [permitData]);
 
@@ -1067,13 +877,6 @@ export default function Map() {
     if (rigData && rigData.rigs && rigData.rigs.length > 0) {
       const nextOffset = rigs.length + rigData.rigs.length;
       setRigData([...rigs, ...rigData.rigs]);
-
-      // getRigs({
-      //   variables: {
-      //     offset: nextOffset,
-      //     amount: 500,
-      //   },
-      // });
     }
   }, [rigData]);
 
@@ -1125,7 +928,6 @@ export default function Map() {
     // };
 
     const wellPointClick = (feature) => {
-      console.log("feature", feature);
 
       if (feature && feature.properties) {
         const objFiledsToLowerCase = (feature) => {
@@ -1145,16 +947,19 @@ export default function Map() {
         }));
         setStateApp((state) => ({
           ...state,
-          selectedWell:
-            properties.wellName && properties.operator ? properties : null,
+          // selectedWell: properties.wellName && properties.api ? properties : null,
+          selectedWell: properties,
           selectedWellId: properties.id ? properties.id.toLowerCase() : null,
           wellSelectedCoordinates: [properties.longitude, properties.latitude],
         }));
 
-        if (properties.wellName && properties.operator) {
+        // if (properties.wellName && properties.api) {
+        //   createPopUp(properties);
+        //   map.resize();
+        // }
           createPopUp(properties);
           map.resize();
-        }
+
       }
     };
 
@@ -1198,7 +1003,6 @@ export default function Map() {
         }));
       }
 
-      // setStateApp({...stateApp, currentFeature: feature});
       createUDPopUp(feature.properties);
       map.resize();
     };
@@ -1321,7 +1125,7 @@ export default function Map() {
         [e.point.x + 10, e.point.y + 10],
       ];
 
-      console.log("checking layers", layers);
+      console.log("!!!!!!!! checking layers", layers);
 
       let features = map.queryRenderedFeatures(bbox, {
         layers: [...layers],
@@ -1388,10 +1192,6 @@ export default function Map() {
   }, [
     map,
     stateApp.layers,
-    // stateApp.checkedUserDefinedLayersInteraction,
-    // stateApp.checkedLayers,
-    // stateApp.checkedUserDefinedLayers,
-    // hoverUdIds,
   ]);
 
   useEffect(() => {
@@ -1476,12 +1276,6 @@ export default function Map() {
 
       console.log("after set data", map);
 
-      ////temporary comented to test
-      // setStateApp((state) => ({
-      //   ...state,
-      //   popupOpen: false,
-      //   selectedUserDefinedLayer: undefined,
-      // }));
     }
   }, [
     stateApp.layers,
@@ -1530,98 +1324,7 @@ export default function Map() {
     }
   }, [removeLayerFromMap]);
 
-  // useEffect(() => {
-  //   console.log("useEffect 14");
-
-  //   // USE EFFECT FOR M1 LAYER HANDLES
-  //   console.log("layer ue start");
-
-  //   setStateApp((state) => ({
-  //     ...state,
-  //     popupOpen: false,
-  //     selectedUserDefinedLayer: undefined,
-  //   }));
-
-  //   if (stateApp.styleLayers.length > 0 && map) {
-  //     stateApp.styleLayers.forEach((l) => {
-  //       l.id.forEach((k) => {
-  //         if (map.getLayer(k)) {
-  //           map.setLayoutProperty(k, "visibility", "none");
-  //         }
-  //         if (l.layerProps && l.layerProps.clusterProps) {
-  //           if (map.getLayer(k + "-clusters-counts")) {
-  //             map.setLayoutProperty(
-  //               k + "-clusters-counts",
-  //               "visibility",
-  //               "none"
-  //             );
-  //           }
-  //           if (map.getLayer(k + "-clusters")) {
-  //             map.setLayoutProperty(k + "-clusters", "visibility", "none");
-  //           }
-  //         }
-  //       });
-  //     });
-
-  //     const checkedLayers = stateApp.checkedLayers.slice(0);
-  //     if (stateApp.tempCheckedLayer) {
-  //       checkedLayers.push(stateApp.tempCheckedLayer);
-  //     }
-
-  //     if (checkedLayers.length > 0) {
-  //       let layers = checkedLayers;
-  //       layers.sort(function (a, b) {
-  //         return b - a;
-  //       });
-  //       if (layers.length > 0) {
-  //         let belowlayer = null;
-  //         for (let k = layers.length - 1; k >= 0; k--) {
-  //           let i = layers[k];
-  //           let layerConfig = stateApp.styleLayers[i];
-  //           let currentLayerArray = stateApp.styleLayers[i].id;
-  //           // eslint-disable-next-line no-loop-func
-  //           currentLayerArray.forEach((j) => {
-  //             let mapLayer = map.getLayer(j);
-  //             if (
-  //               mapLayer &&
-  //               layerConfig.layerProps &&
-  //               layerConfig.layerProps.clusterProps &&
-  //               !mapLayer.source.includes("_filter")
-  //             ) {
-  //               map.setLayoutProperty(
-  //                 j + "-clusters-counts",
-  //                 "visibility",
-  //                 "visible"
-  //               );
-  //               if (belowlayer != null) {
-  //                 map.moveLayer(j + "-clusters-counts", belowlayer);
-  //               }
-  //               belowlayer = j + "-clusters-counts";
-  //               map.setLayoutProperty(j + "-clusters", "visibility", "visible");
-  //               map.moveLayer(j + "-clusters", belowlayer);
-  //               belowlayer = j + "-clusters";
-  //             }
-  //             if (typeof mapLayer !== "undefined") {
-  //               if (map.getLayer(j)) {
-  //                 map.setLayoutProperty(j, "visibility", "visible");
-  //                 if (belowlayer != null) {
-  //                   map.moveLayer(j, belowlayer);
-  //                 }
-  //                 belowlayer = j;
-  //               }
-  //             } else {
-  //             }
-  //           });
-  //         }
-  //       }
-  //     }
-  //   }
-  // }, [
-  //   map,
-  //   stateApp.checkedLayers,
-  //   stateApp.tempCheckedLayer,
-  //   stateApp.styleLayers,
-  // ]);
+ 
 
   useEffect(() => {
     console.log("useEffect 15");
@@ -1709,597 +1412,6 @@ export default function Map() {
     }
   }, [map, stateApp.checkedHeats, stateApp.heatLayers]);
 
-  // useEffect(() => {
-  //   console.log("useEffect 17");
-
-  //   ///////////////// EFFECT FOR SHOWING TRACKED WELLS /////////////////
-
-  //   if (map && stateApp.trackFilterOn && stateApp.trackedWellArray) {
-  //     console.log("array ", stateApp.trackedWellArray);
-
-  //     const makeGeoJSON = (data) => {
-  //       return {
-  //         type: "FeatureCollection",
-  //         features: data.map((feature) => {
-  //           return {
-  //             type: "Feature",
-  //             properties: {
-  //               api: feature.api,
-  //               id: feature.id,
-  //               latitude: feature.latitude,
-  //               longitude: feature.longitude,
-  //               operator: feature.operator,
-  //               WellName: feature.wellName,
-  //             },
-  //             geometry: {
-  //               type: "Point",
-  //               coordinates: [feature.longitude, feature.latitude],
-  //             },
-  //           };
-  //         }),
-  //       };
-  //     };
-
-  //     const myGeoJSONData = makeGeoJSON(
-  //       stateApp.trackedWellArray.wells.results
-  //     );
-
-  //     map.addSource("track_well_points_source", {
-  //       type: "geojson",
-  //       data: myGeoJSONData,
-  //     });
-
-  //     map.addLayer({
-  //       id: "track_well_points_layer",
-  //       type: "circle",
-  //       source: "track_well_points_source",
-  //       paint: {
-  //         "circle-radius": 5,
-  //         "circle-color": "yellow",
-  //       },
-  //     });
-
-  //     // const latArray = stateApp.trackedWellArray.wells.results.map(
-  //     //   (item) => item.latitude
-  //     // );
-  //     // const longArray = stateApp.trackedWellArray.wells.results.map(
-  //     //   (item) => item.longitude
-  //     // );
-
-  //     map.on("click", "track_well_points_layer", function (e) {
-  //       var bbox = [
-  //         [e.point.x - 10, e.point.y - 10],
-  //         [e.point.x + 10, e.point.y + 10],
-  //       ];
-
-  //       let features = map.queryRenderedFeatures(bbox, {
-  //         layers: ["track_well_points_layer"],
-  //       });
-
-  //       setStateApp((state) => ({ ...state, flyTo: features[0].properties }));
-  //     });
-
-  //     map.on("mousemove", "track_well_points_layer", (e) => {
-  //       map.getCanvas().style.cursor = "pointer";
-  //     });
-
-  //     map.on("mouseleave", "track_well_points_layer", function () {
-  //       map.getCanvas().style.cursor = "";
-  //     });
-
-  //     // var bbox = [
-  //     //   [Math.min(...longArray), Math.min(...latArray)],
-  //     //   [Math.max(...longArray), Math.max(...latArray)],
-  //     // ];
-
-  //     // map.fitBounds(bbox, {
-  //     //   padding: { top: 50, bottom: 50, left: 50, right: 50 },
-  //     // });
-  //   }
-  // }, [stateApp.trackFilterOn]);
-
-  // useEffect(() => {
-  //   console.log("useEffect 18");
-
-  //   // USE EFFECT FOR USER DEFINED DATA LAYER HANDLE
-  //   // setStateApp((state) => ({
-  //   //   ...state,
-  //   //   popupOpen: false,
-  //   //   selectedUserDefinedLayer: undefined,
-  //   // }));
-
-  //   if (stateApp.userDefinedLayers.length > 0 && map) {
-  //     stateApp.userDefinedLayers.forEach((l) => {
-  //       l.id.forEach((k, i) => {
-  //         let clusterLabelBar = k + "-clusters-counts";
-  //         if (map.getLayer(clusterLabelBar)) {
-  //           // map.removeLayer(clusterLabelBar);
-  //           // map.removeSource(l.sourceProps[i].sourceId);
-  //           map.setLayoutProperty(clusterLabelBar, "visibility", "none");
-  //         }
-
-  //         let clusterVar = k + "-clusters";
-  //         if (map.getLayer(clusterVar)) {
-  //           // map.removeLayer(clusterVar);
-  //           // map.removeSource(l.sourceProps[i].sourceId);
-  //           map.setLayoutProperty(clusterVar, "visibility", "none");
-  //         }
-
-  //         if (map.getLayer(k)) {
-  //           // map.removeLayer(k);
-  //           // map.removeSource(l.sourceProps[i].sourceId);
-  //           map.setLayoutProperty(k, "visibility", "none");
-  //         }
-  //       });
-  //     });
-  //   }
-
-  //   // this section adds the updated list of layers
-  //   const tmpCheckedLayer = stateApp.tempCheckedUserDefinedLayer;
-  //   const tmpCheckedAOILayer = stateApp.tempCheckedAOILayer;
-  //   const tmpCheckedParcelLayer = stateApp.tempCheckedParcleLayer;
-
-  //   const checkedLayers = stateApp.checkedUserDefinedLayers.slice(0);
-  //   if (
-  //     tmpCheckedLayer != null &&
-  //     stateApp.checkedUserDefinedLayers.indexOf(tmpCheckedLayer) === -1
-  //   ) {
-  //     checkedLayers.push(tmpCheckedLayer);
-  //   }
-
-  //   if (
-  //     tmpCheckedAOILayer != null &&
-  //     stateApp.checkedUserDefinedLayers.indexOf(tmpCheckedAOILayer) === -1
-  //   ) {
-  //     checkedLayers.push(tmpCheckedAOILayer);
-  //   }
-
-  //   if (
-  //     tmpCheckedParcelLayer != null &&
-  //     stateApp.checkedUserDefinedLayers.indexOf(tmpCheckedParcelLayer) === -1
-  //   ) {
-  //     checkedLayers.push(tmpCheckedParcelLayer);
-  //   }
-
-  //   if (map && checkedLayers.length > 0) {
-  //     let layers = checkedLayers;
-  //     layers.sort(function (a, b) {
-  //       return b - a;
-  //     });
-  //     const layerList = stateApp.userDefinedLayers.slice(0);
-  //     let beforelayer = null;
-  //     let fitBounds = null;
-
-  //     for (let k = layers.length - 1; k >= 0; k--) {
-  //       const l = layers[k];
-
-  //       const selectLayerProps = { ...layerList[l] };
-
-  //       if (selectLayerProps.type === "data layer") {
-  //         for (let i = 0; i < selectLayerProps.id.length; i++) {
-  //           // -> fetch data
-  //           let layerData = [];
-  //           if (selectLayerProps.dataProps[i].dataId == "trackedWellsWells") {
-  //             layerData = stateApp.trackedwells;
-  //           } else if (
-  //             selectLayerProps.dataProps[i].dataId == "trackedOwnersWells"
-  //           ) {
-  //             layerData = stateApp.trackedOwnerWells;
-  //           } else if (
-  //             selectLayerProps.dataProps[i].dataId == "wellsFromSearch"
-  //           ) {
-  //             layerData = stateApp.wellListFromSearch;
-  //           } else if (
-  //             selectLayerProps.dataProps[i].dataId == "wellsFromTagsFilter"
-  //           ) {
-  //             layerData = stateApp.wellListFromTagsFilter;
-  //           } else {
-  //             const dataId = selectLayerProps.dataProps[i].dataId;
-
-  //             const groupBy = (arr, property) => {
-  //               return arr.reduce((memo, x) => {
-  //                 if (!memo[x[property]]) {
-  //                   memo[x[property]] = [];
-  //                 }
-  //                 memo[x[property]].push(x);
-  //                 return memo;
-  //               }, {});
-  //             };
-
-  //             layerData = groupBy(stateApp.customLayers, "layer")[dataId];
-  //           }
-
-  //           if (layerData && layerData.length !== 0) {
-  //             // -> make GEOJSON
-
-  //             const makeGeoJSON = (data) => {
-  //               return {
-  //                 type: "FeatureCollection",
-  //                 features: data.map((feature) => {
-  //                   if (selectLayerProps.dataProps[i].dataTypeId == "Point") {
-  //                     return {
-  //                       type: "Feature",
-  //                       properties: feature,
-  //                       geometry: {
-  //                         type: selectLayerProps.dataProps[i].dataTypeId,
-  //                         coordinates: [feature.longitude, feature.latitude],
-  //                       },
-  //                     };
-  //                   } else {
-  //                     return JSON.parse(feature.shape);
-  //                   }
-  //                 }),
-  //               };
-  //             };
-
-  //             const myGeoJSONData = makeGeoJSON(layerData);
-
-  //             const layerId = selectLayerProps.layerProps[i].layerId;
-  //             if (map.getLayer(layerId)) {
-  //               map.setLayoutProperty(layerId, "visibility", "visible");
-  //               if (map.getSource(selectLayerProps.sourceProps[i].sourceId)) {
-  //                 map
-  //                   .getSource(selectLayerProps.sourceProps[i].sourceId)
-  //                   .setData(myGeoJSONData);
-  //               }
-  //               if (
-  //                 map.getSource(
-  //                   selectLayerProps.sourceProps[i].sourceId + "_filter"
-  //                 )
-  //               ) {
-  //                 map
-  //                   .getSource(
-  //                     selectLayerProps.sourceProps[i].sourceId + "_filter"
-  //                   )
-  //                   .setData(myGeoJSONData);
-  //               }
-  //               const layer = map.getLayer(layerId);
-  //               if (!layer.source.includes("_filter")) {
-  //                 let clusterLabelBar = layerId + "-clusters-counts";
-  //                 if (map.getLayer(clusterLabelBar)) {
-  //                   map.setLayoutProperty(
-  //                     clusterLabelBar,
-  //                     "visibility",
-  //                     "visible"
-  //                   );
-  //                   if (beforelayer) {
-  //                     map.moveLayer(clusterLabelBar, beforelayer);
-  //                   }
-  //                   beforelayer = clusterLabelBar;
-  //                 }
-
-  //                 let clusterVar = layerId + "-clusters";
-  //                 if (map.getLayer(clusterVar)) {
-  //                   map.setLayoutProperty(clusterVar, "visibility", "visible");
-  //                   if (beforelayer) {
-  //                     map.moveLayer(clusterVar, beforelayer);
-  //                   }
-  //                   beforelayer = clusterVar;
-  //                 }
-  //               }
-  //             } else {
-  //               // -> add source
-  //               if (selectLayerProps.dataProps[i].dataTypeId == "Point") {
-  //                 if (map.getSource(selectLayerProps.sourceProps[i].sourceId)) {
-  //                   map.getSource(selectLayerProps.sourceProps[i].sourceId).setData(myGeoJSONData);
-  //                 } else {
-  //                   map.addSource(selectLayerProps.sourceProps[i].sourceId, {
-  //                     type: selectLayerProps.sourceProps[i].sourceType,
-  //                     data: myGeoJSONData,
-  //                     cluster: true,
-  //                     clusterRadius: 50,
-  //                     clusterMaxZoom: 6,
-  //                   });
-  //                 }
-  //                 const filterLayerId = selectLayerProps.sourceProps[i].sourceId + "_filter";
-  //                 if (map.getSource(filterLayerId)) {
-  //                   map.getSource(filterLayerId).setData(myGeoJSONData);
-  //                 } else {
-  //                   map.addSource(filterLayerId, {
-  //                     type: selectLayerProps.sourceProps[i].sourceType,
-  //                     data: myGeoJSONData,
-  //                   });
-  //                 }
-  //               } else {
-  //                 if (map.getSource(selectLayerProps.sourceProps[i].sourceId)) {
-  //                   map.getSource(selectLayerProps.sourceProps[i].sourceId).setData(myGeoJSONData);
-  //                 } else {
-  //                   map.addSource(selectLayerProps.sourceProps[i].sourceId, {
-  //                     type: selectLayerProps.sourceProps[i].sourceType,
-  //                     data: myGeoJSONData,
-  //                     promoteId: "id",
-  //                   });
-  //                 }
-  //               }
-
-  //               // -> add layer
-  //               // eslint-disable-next-line eqeqeq
-  //               if (selectLayerProps.layerProps[i].layerType == "symbol") {
-  //                 map.addLayer({
-  //                   id: selectLayerProps.layerProps[i].layerId,
-  //                   type: selectLayerProps.layerProps[i].layerType,
-  //                   source: selectLayerProps.sourceProps[i].sourceId,
-  //                   layout: selectLayerProps.layerProps[i].symbolProps,
-  //                 });
-  //               } else {
-  //                 map.addLayer({
-  //                   id: selectLayerProps.layerProps[i].layerId,
-  //                   type: selectLayerProps.layerProps[i].layerType,
-  //                   source: selectLayerProps.sourceProps[i].sourceId,
-  //                   paint: selectLayerProps.layerProps[i].paintProps,
-  //                 });
-  //               }
-
-  //               // -> add cluster layer
-
-  //               if (
-  //                 selectLayerProps &&
-  //                 selectLayerProps.layerProps &&
-  //                 selectLayerProps.layerProps[i].clusterProps
-  //               ) {
-  //                 var clusterVar =
-  //                   selectLayerProps.layerProps[i].layerId + "-clusters";
-  //                 var clusterLabelBar =
-  //                   selectLayerProps.layerProps[i].layerId + "-clusters-counts";
-
-  //                 map.addLayer({
-  //                   id: clusterLabelBar,
-  //                   type: "symbol",
-  //                   source: selectLayerProps.sourceProps[i].sourceId,
-  //                   filter: ["has", "point_count"],
-  //                   layout:
-  //                     selectLayerProps.layerProps[i].clusterProps
-  //                       .clusterSymbolProps,
-  //                 });
-  //                 if (beforelayer) {
-  //                   map.moveLayer(clusterLabelBar, beforelayer);
-  //                 }
-  //                 beforelayer = clusterLabelBar;
-
-  //                 map.addLayer({
-  //                   id: clusterVar,
-  //                   type: selectLayerProps.layerProps[i].layerType,
-  //                   source: selectLayerProps.sourceProps[i].sourceId,
-  //                   filter: ["has", "point_count"],
-  //                   paint:
-  //                     selectLayerProps.layerProps[i].clusterProps
-  //                       .clusterPaintProps,
-  //                 });
-
-  //                 if (beforelayer) {
-  //                   map.moveLayer(clusterVar, beforelayer);
-  //                 }
-  //                 beforelayer = clusterVar;
-  //               }
-  //             }
-
-  //             // -> add interaction (note to change later w/ interaction panel)
-  //             if (selectLayerProps && selectLayerProps.interactionProps) {
-  //               const availableInteraction =
-  //                 stateApp.checkedUserDefinedLayersInteraction.indexOf(l) !==
-  //                 -1;
-  //               if (
-  //                 selectLayerProps &&
-  //                 selectLayerProps.interactionProps &&
-  //                 selectLayerProps.interactionProps.hoverActions
-  //               ) {
-  //                 var clusterVar =
-  //                   selectLayerProps.layerProps[i].layerId + "-clusters";
-
-  //                 if (
-  //                   selectLayerProps.interactionProps.hoverActions.mouseMove
-  //                 ) {
-  //                   const mouseMoveHandler = () => {
-  //                     map.getCanvas().style.cursor =
-  //                       selectLayerProps.interactionProps.hoverActions.mouseMove.cursor;
-  //                   };
-  //                   if (
-  //                     selectLayerProps.interactionProps.hoverActions
-  //                       .mouseMoveHandler
-  //                   ) {
-  //                     const oldHander =
-  //                       selectLayerProps.interactionProps.hoverActions
-  //                         .mouseMoveHandler;
-  //                     map.off(
-  //                       "mousemove",
-  //                       selectLayerProps.layerProps[i].layerId,
-  //                       oldHander
-  //                     );
-  //                     if (selectLayerProps.layerProps[i].clusterProps) {
-  //                       map.off("mousemove", clusterVar, oldHander);
-  //                     }
-  //                   }
-  //                   if (availableInteraction) {
-  //                     let handler = null;
-  //                     if (
-  //                       selectLayerProps.interactionProps.hoverActions
-  //                         .mouseMoveHandler
-  //                     ) {
-  //                       handler =
-  //                         selectLayerProps.interactionProps.hoverActions
-  //                           .mouseMoveHandler;
-  //                     } else {
-  //                       handler = mouseMoveHandler;
-  //                     }
-
-  //                     map.on(
-  //                       "mousemove",
-  //                       selectLayerProps.layerProps[i].layerId,
-  //                       handler
-  //                     );
-  //                     if (selectLayerProps.layerProps[i].clusterProps) {
-  //                       map.on("mousemove", clusterVar, handler);
-  //                     }
-  //                     selectLayerProps.interactionProps.hoverActions.mouseMoveHandler = handler;
-  //                   }
-  //                 }
-
-  //                 if (
-  //                   selectLayerProps.interactionProps.hoverActions.mouseLeave
-  //                 ) {
-  //                   const mouseLeaveHandler = () => {
-  //                     map.getCanvas().style.cursor =
-  //                       selectLayerProps.interactionProps.hoverActions.mouseLeave.cursor;
-  //                   };
-  //                   if (
-  //                     selectLayerProps.interactionProps.hoverActions
-  //                       .mouseLeaveHandler
-  //                   ) {
-  //                     const oldHander =
-  //                       selectLayerProps.interactionProps.hoverActions
-  //                         .mouseLeaveHandler;
-  //                     map.off(
-  //                       "mouseleave",
-  //                       selectLayerProps.layerProps[i].layerId,
-  //                       oldHander
-  //                     );
-  //                     if (selectLayerProps.layerProps[i].clusterProps) {
-  //                       map.off("mouseleave", clusterVar, oldHander);
-  //                     }
-  //                   }
-  //                   if (availableInteraction) {
-  //                     let handler = null;
-  //                     if (
-  //                       selectLayerProps.interactionProps.hoverActions
-  //                         .mouseLeaveHandler
-  //                     ) {
-  //                       handler =
-  //                         selectLayerProps.interactionProps.hoverActions
-  //                           .mouseLeaveHandler;
-  //                     } else {
-  //                       handler = mouseLeaveHandler;
-  //                     }
-  //                     map.on(
-  //                       "mouseleave",
-  //                       selectLayerProps.layerProps[i].layerId,
-  //                       mouseLeaveHandler
-  //                     );
-  //                     if (selectLayerProps.layerProps[i].clusterProps) {
-  //                       map.on("mouseleave", clusterVar, mouseLeaveHandler);
-  //                     }
-  //                     selectLayerProps.interactionProps.hoverActions.mouseLeaveHandler = mouseLeaveHandler;
-  //                   }
-  //                 }
-  //               }
-
-  //               layerList[l] = selectLayerProps;
-  //             }
-
-  //             if (beforelayer) {
-  //               map.moveLayer(
-  //                 selectLayerProps.layerProps[i].layerId,
-  //                 beforelayer
-  //               );
-  //             }
-  //             beforelayer = selectLayerProps.layerProps[i].layerId;
-
-  //             //// finding and fitting bounds
-  //             // eslint-disable-next-line no-loop-func
-  //             const findBounds = (wells) => {
-  //               let latArray = wells.map((item) => item.latitude);
-  //               let longArray = wells.map((item) => item.longitude);
-
-  //               latArray = latArray.filter((item) => item !== 0);
-  //               longArray = longArray.filter((item) => item !== 0);
-
-  //               let maxLat = Math.max(...latArray);
-  //               let minLat = Math.min(...latArray);
-  //               let maxLong = Math.max(...longArray);
-  //               let minLong = Math.min(...longArray);
-
-  //               if (fitBounds) {
-  //                 const {
-  //                   maxLat: maxLatSApp,
-  //                   minLat: minLatSApp,
-  //                   maxLong: maxLongSApp,
-  //                   minLong: minLongSApp,
-  //                 } = fitBounds;
-
-  //                 return {
-  //                   maxLat: maxLatSApp < maxLat ? maxLat : maxLatSApp,
-  //                   minLat: minLatSApp > minLat ? minLat : minLatSApp,
-  //                   maxLong: maxLongSApp < maxLong ? maxLong : maxLongSApp,
-  //                   minLong: minLongSApp > minLong ? minLong : minLongSApp,
-  //                 };
-  //               }
-
-  //               return { maxLat, minLat, maxLong, minLong };
-  //             };
-
-  //             fitBounds = layerData ? findBounds(layerData) : null;
-  //           }
-  //         }
-  //       }
-  //     }
-  //     if (fitBounds) {
-  //       const fitOverBounds = ({ maxLat, minLat, maxLong, minLong }) => {
-  //         const latDif = maxLat - minLat;
-  //         const longDif = maxLong - minLong;
-
-  //         if (latDif === 0) {
-  //           maxLat = maxLat + 0.005 > 90 ? 90 : maxLat + 0.005;
-  //           minLat = minLat - 0.005 < -90 ? -90 : minLat - 0.005;
-  //         } else {
-  //           maxLat = maxLat + latDif * 0.08 > 90 ? 90 : maxLat + latDif * 0.08;
-  //           minLat =
-  //             minLat - latDif * 0.08 < -90 ? -90 : minLat - latDif * 0.08;
-  //         }
-
-  //         if (longDif === 0) {
-  //           maxLong = maxLong + 0.005 > 180 ? 180 : maxLong + 0.005;
-  //           minLong = minLong - 0.005 < -180 ? -180 : minLong - 0.005;
-  //         } else {
-  //           maxLong =
-  //             maxLong + longDif * 0.08 > 180 ? 180 : maxLong + latDif * 0.08;
-  //           maxLong =
-  //             maxLong - longDif * 0.08 < -180 ? -180 : maxLong - latDif * 0.08;
-  //         }
-
-  //         return {
-  //           maxLat,
-  //           minLat,
-  //           maxLong,
-  //           minLong,
-  //         };
-  //       };
-
-  //       let bounds = fitOverBounds(fitBounds);
-
-  //       if (
-  //         bounds &&
-  //         bounds.minLong &&
-  //         bounds.maxLong &&
-  //         bounds.minLat &&
-  //         bounds.maxLat &&
-  //         !stateApp.fitBounds
-  //       ) {
-  //         map.fitBounds([
-  //           [bounds.minLong, bounds.minLat],
-  //           [bounds.maxLong, bounds.maxLat],
-  //         ]);
-  //       }
-  //     }
-
-  //     setStateApp((stateApp) => ({
-  //       ...stateApp,
-  //       userDefinedLayers: layerList,
-  //       fitBounds: { ...stateApp.fitBounds },
-  //     }));
-  //   }
-  // }, [
-  //   map,
-  //   stateApp.checkedUserDefinedLayers,
-  //   stateApp.checkedUserDefinedLayersInteraction,
-  //   stateApp.tempCheckedUserDefinedLayer,
-  //   stateApp.tempCheckedAOILayer,
-  //   stateApp.tempCheckedParcleLayer,
-  //   stateApp.customLayers,
-  //   stateApp.trackedwells,
-  //   stateApp.trackedOwnerWells,
-  //   stateApp.wellListFromSearch,
-  //   stateApp.wellListFromTagsFilter,
-  // ]);
-
   useEffect(() => {
     console.log("useEffect 19");
 
@@ -2349,17 +1461,6 @@ export default function Map() {
         !stateNav.filterWellType &&
         filterArray.length === 0
       ) {
-        // let defaultTypeName = ["typeName", ["GAS", "OIL", "OIL AND GAS", "PERMITTED", "UNKNOWN"]];
-        // let defaultStatusName = ["statusName",
-        // [
-        //   "ACTIVE",
-        //   "ACTIVE - DRILLING",
-        //   "COMPLETED - NOT ACTIVE",
-        //   "DRILLED UNCOMPLETED (DUC)",
-        //   "PERMIT",
-        //   "PERMIT - EXISTING WELL",
-        //   "PERMIT - NEW DRILL",
-        // ],];
 
         let defaultTypeName = ["typeName", []];
         let defaultStatusName = ["statusName", []];
@@ -3727,20 +2828,17 @@ export default function Map() {
       let coordinates = [currentFeature.longitude, currentFeature.latitude];
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
-
-      let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+      new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
         .setMaxWidth("none")
         .setHTML(`<div id="popupContainer"></div>`)
         .addTo(map);
-
-      // //show wellcard in popup Portal
-      setStateApp((state) => ({ ...state, popupOpen: true }));
-      //setStateApp((state) => ({ ...state, wellSelected: true }));
-      //setStateApp((state) => ({ ...state, wellSelectedCoordinates: [currentFeature.longitude, currentFeature.latitude] }));
+      setStateApp((state) => ({ ...state, popupOpen: true, 
+        expandedCard: stateApp.activateWellDetailsFromTable ? true : false 
+      }));
       handleOpenExpandableCard();
     },
-    [map, setStateApp]
+    [map, stateApp]
   );
 
   const createFilterPopup = useCallback(
@@ -3833,33 +2931,130 @@ export default function Map() {
         .addTo(map);
 
       setStateApp((state) => ({ ...state, popupOpen: true }));
-
       handleOpenExpandableCard();
     },
     [map, setStateApp]
   );
 
   useEffect(() => {
-    console.log("useEffect 23");
+    (async () => {
 
-    console.log("wellSelected", stateApp.wellSelected);
-    console.log("wellSelectedCoordinates", stateApp.wellSelectedCoordinates);
+    // console.log("useEffect 23");
+    // console.log("wellSelected", stateApp.wellSelected);
+    // console.log("wellSelectedCoordinates", stateApp.wellSelectedCoordinates);
 
-    // if( map
-    //     && stateApp.wellSelected === false
-    //     ){
-    //       map.removeLayer('well-point');
-    //       map.removeSource('well-select-point')
-    //     }
 
-    if (map && stateApp.wellSelectedCoordinates) {
-      if (map.getLayer("well-point")) {
-        map.removeLayer("well-point");
-        map.removeSource("well-select-point");
+    // if (map && stateApp.wellSelectedCoordinates) {
+
+    if (
+      map 
+      && stateApp.selectedWellId 
+      && stateApp.wellSelectedCoordinates 
+      && stateApp.wellSelectedCoordinates.length > 0 
+      && stateApp.selectedWell
+    ) {      
+
+
+      console.log(':::',stateApp.selectedWellId)
+      console.log(':::',stateApp.selectedWell)
+      console.log(':::',stateApp.wellSelectedCoordinates)
+  
+
+     const PointFeature = map.querySourceFeatures("composite", {
+        sourceLayer: "wellPoints",
+        filter: ["in", "id", stateApp.selectedWellId.toUpperCase()],
+      });
+
+      const LineFeature = map.querySourceFeatures("composite", {
+        sourceLayer: "wellLines",
+        filter: ["in", "id", stateApp.selectedWellId.toUpperCase()],
+      });      
+
+
+
+      console.log('!!2@@@@@@@@@', PointFeature)
+      console.log('!!2@@@@@@@@@', LineFeature)
+
+
+
+
+
+      // let features = map.queryRenderedFeatures(bbox, {
+      //   layers: ["welllines"],
+      // });
+
+      // let currentFeature = features.find(
+      //   (element) =>
+      //     element.properties.id.toLowerCase() == stateApp.selectedWellId
+      // );
+
+      // console.log("current feature", currentFeature);
+
+      let features = map.querySourceFeatures("composite", {
+          sourceLayer: "wellLines",
+          filter: ["in", "id", stateApp.selectedWellId],
+        });
+
+      let currentFeature = features.find(
+          (element) =>
+            element.properties.id.toLowerCase() == stateApp.selectedWellId
+        );
+      
+
+      if (!currentFeature) {
+        const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellLines&access_token=${
+          stateApp.mapboxglAccessToken
+        }`;
+
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
+
+        const options = {
+          method: "GET",
+          headers: headers,
+        };
+
+        console.log(
+          "request made to lod2019-index search at: " + new Date().toString()
+        );
+
+        await fetch(endpoint, options)
+          .then((response) => response.json())
+          .then((response) => {
+            console.log(response);
+            features = response.features;
+            currentFeature = features.find(
+              (element) =>
+                element.properties.id.toLowerCase() == stateApp.selectedWellId
+            );
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+
+        console.log("current feature", currentFeature);
+      }
+
+
+
+
+
+
+
+
+
+      
+      if (map.getLayer("well-point-active-select")) {
+        map.removeLayer("well-point-active-select");
+        map.removeSource("well-active-select-source");
       }
 
       if (stateApp.wellSelectedCoordinates.length > 0) {
-        map.addSource("well-select-point", {
+        
+
+        
+        map.addSource("well-active-select-source", {
           type: "geojson",
           data: {
             type: "FeatureCollection",
@@ -3876,9 +3071,9 @@ export default function Map() {
         });
 
         map.addLayer({
-          id: "well-point",
+          id: "well-point-active-select",
           type: "circle",
-          source: "well-select-point",
+          source: "well-active-select-source",
           paint: {
             "circle-radius": 5,
             "circle-color": "yellow",
@@ -3886,31 +3081,79 @@ export default function Map() {
         });
       }
     }
+
+  })();
+
   }, [stateApp.wellSelectedCoordinates]);
+
+
+
+
+
+
+
+
+
+
+  // useEffect(() => {
+  //   (async () => {
+      
+
+
+
+
+  //   })();
+
+  // }, [stateApp.wellSelectedCoordinates]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   useEffect(() => {
     (async () => {
-      console.log("useEffect 24");
-
-      console.log("selectedWell", stateApp.selectedWell);
-      console.log("selectedWellId", stateApp.selectedWellId);
-      console.log("wellSelectedCoordinates", stateApp.wellSelectedCoordinates);
+      
+      // console.log("useEffect 24");
+      // console.log("selectedWell", stateApp.selectedWell);
+      // console.log("selectedWellId", stateApp.selectedWellId);
+      // console.log("wellSelectedCoordinates", stateApp.wellSelectedCoordinates);
+      
       if (
         map &&
         stateApp.selectedWellId &&
         stateApp.wellSelectedCoordinates &&
-        stateApp.wellSelectedCoordinates.length > 0 &&
-        !stateApp.selectedWell
+        stateApp.wellSelectedCoordinates.length > 0 
+        && !stateApp.selectedWell
       ) {
+
+        //console.log('useeffect for well selections that are not map driven (aka grid selections)')
+
         let point = map.project(stateApp.wellSelectedCoordinates);
 
         var bbox = [
           [point.x - 10, point.y - 10],
           [point.x + 10, point.y + 10],
         ];
+
+
+
         let features = map.queryRenderedFeatures(bbox, {
           layers: ["wellpoints"],
         });
+
         let currentFeature = features.find(
           (element) =>
             element.properties.id.toLowerCase() == stateApp.selectedWellId
@@ -3974,6 +3217,48 @@ export default function Map() {
           // map.fire('click', { lngLat: stateApp.wellSelectedCoordinates, point: point, originalEvent: {} })
           createPopUp(currentFeature.properties);
           map.resize();
+
+                  
+        // var el = document.createElement("div");
+        // el.style.backgroundImage = "url(icons/favicon-inverted.png)";
+        // el.style.width = "28px";
+        // el.style.height = "64px";
+  
+        // new mapboxgl.Marker(el)
+        // .setLngLat([
+        //   stateApp.selectedWell.longitude,
+        //   stateApp.selectedWell.latitude,
+        // ])
+        // .addTo(map);
+        
+        // map.addSource("well-select-point", {
+        //   type: "geojson",
+        //   data: {
+        //     type: "FeatureCollection",
+        //     features: [
+        //       {
+        //         type: "Feature",
+        //         geometry: {
+        //           type: "Point",
+        //           coordinates: stateApp.wellSelectedCoordinates,
+        //         },
+        //       },
+        //     ],
+        //   },
+        // });
+
+        // map.addLayer({
+        //   id: "well-point",
+        //   type: "circle",
+        //   source: "well-select-point",
+        //   paint: {
+        //     "circle-radius": 5,
+        //     "circle-color": "yellow",
+        //   },
+        // });
+      
+    
+
         }
       }
     })();
@@ -4527,98 +3812,6 @@ export default function Map() {
       } else {
         console.log("map extra components start");
 
-        // additional map interactions
-        // for some reason these do not work when initializing but do here
-        // map.boxZoom.enable();
-        // map.touchZoomRotate.enable();
-
-        // const selectedLayerIntereactions = stateApp.checkedLayersInteraction.slice(
-        //   0
-        // );
-        // const styleLayers = stateApp.styleLayers.slice(0);
-        // styleLayers.forEach((config, layerIndex) => {
-        //   // const config = stateApp.styleLayers[layerIndex];
-        //   if (config.mouseMoveHandler) {
-        //     if (config.layerProps) {
-        //       map.off("mousemove", config.id[0], config.mouseMoveHandler);
-        //       map.off(
-        //         "mousemove",
-        //         config.id[0] + "-clusters",
-        //         config.mouseMoveHandler
-        //       );
-        //       map.off(
-        //         "mousemove",
-        //         config.id[0] + "-clusters-counts",
-        //         config.mouseMoveHandler
-        //       );
-        //     } else {
-        //       map.off("mousemove", "wellpoints", config.mouseMoveHandler);
-        //       map.off("mousemove", "welllines", config.mouseMoveHandler);
-        //     }
-        //   }
-        //   if (config.mouseLeaveHandler) {
-        //     if (config.layerProps) {
-        //       map.off("mouseleave", config.id[0], config.mouseLeaveHandler);
-        //       map.off(
-        //         "mouseleave",
-        //         config.id[0] + "-clusters",
-        //         config.mouseLeaveHandler
-        //       );
-        //       map.off(
-        //         "mouseleave",
-        //         config.id[0] + "-clusters-counts",
-        //         config.mouseLeaveHandler
-        //       );
-        //     } else {
-        //       map.off("mouseleave", "wellpoints", config.mouseLeaveHandler);
-        //       map.off("mouseleave", "welllines", config.mouseLeaveHandler);
-        //     }
-        //   }
-
-        //   if (
-        //     selectedLayerIntereactions.length > 0 &&
-        //     selectedLayerIntereactions.indexOf(layerIndex) > -1
-        //   ) {
-        //     if (config.layerProps) {
-        //       map.on("mousemove", config.id[0], mouseMoveHandler);
-        //       map.on("mousemove", config.id[0] + "-clusters", mouseMoveHandler);
-        //       map.on(
-        //         "mousemove",
-        //         config.id[0] + "-clusters-counts",
-        //         mouseMoveHandler
-        //       );
-        //       map.on("mouseleave", config.id[0], mouseLeaveHandler);
-        //       map.on(
-        //         "mouseleave",
-        //         config.id[0] + "-clusters",
-        //         mouseLeaveHandler
-        //       );
-        //       map.on(
-        //         "mouseleave",
-        //         config.id[0] + "-clusters-counts",
-        //         mouseLeaveHandler
-        //       );
-        //     } else {
-        //       map.on("mousemove", "wellpoints", mouseMoveHandler);
-        //       map.on("mouseleave", "wellpoints", mouseLeaveHandler);
-        //       map.on("mousemove", "welllines", mouseMoveHandler);
-        //       map.on("mouseleave", "welllines", mouseLeaveHandler);
-        //     }
-
-        //     const configcp = { ...config };
-        //     configcp.mouseMoveHandler = mouseMoveHandler;
-        //     configcp.mouseLeaveHandler = mouseLeaveHandler;
-
-        //     styleLayers[layerIndex] = configcp;
-        //   }
-        // });
-
-        // setStateApp({
-        //   ...stateApp,
-        //   styleLayers,
-        // });
-
-        // map.off("mousemove", mapMouseMove);
 
         map.on("mousemove", mapMouseMove);
         map.on("zoom", mapZoom);
@@ -4855,7 +4048,7 @@ export default function Map() {
         ],
       }));
 
-      map.flyTo({
+      !stateApp.activateWellDetailsFromTable && map.flyTo({
         center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
         zoom: stateApp.flyTo.zoom ? stateApp.flyTo.zoom : zVal,
         speed: 0.5,
@@ -4995,7 +4188,7 @@ export default function Map() {
   }, [map, stateApp.wellListFromSearch]);
 
   useEffect(() => {
-    console.log("useEffect 35");
+    //console.log("useEffect 35");
 
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
@@ -5129,7 +4322,7 @@ export default function Map() {
     }
   }, [stateApp.editDraw, stateNav.drawingMode]);
 
-  const handleOpenExpandableCard = (e) => {
+  const handleOpenExpandableCard = () => {
     setAnchorElPoPOver(container.current);
     setShowExpandableCard(true);
   };
@@ -5141,7 +4334,7 @@ export default function Map() {
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
     setAnchorElPoPOver(null);
-    setStateApp((state) => ({ ...state, expandedCard: false }));
+    setStateApp((state) => ({ ...state ,expandedCard: false, activateWellDetailsFromTable: false }));
   };
 
   const handleCloseSpatialDataCard = (complete = true) => {
@@ -5351,7 +4544,7 @@ export default function Map() {
   };
 
   useEffect(() => {
-    console.log("useEffect 40");
+    //console.log("useEffect usersnap");
 
     if (stateApp.userSnap === true) {
       var script = document.createElement("script");
@@ -5377,8 +4570,9 @@ export default function Map() {
     }
   }, [stateApp.userSnap]);
 
+
   useEffect(() => {
-    console.log("useEffect 41");
+    //console.log("useEffect 41");
 
     if (stateApp.editingUserDefinedLayers.length > 0) {
       const { map } = stateApp;
@@ -5404,7 +4598,130 @@ export default function Map() {
       });
     }
   }, [stateApp.editingUserDefinedLayers]);
+  
+  useEffect(() => {
+  /////// USE EFFECT  to handle the map zoom /  for selected map elements 
 
+
+    if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
+      
+
+      // set and remove map marker
+
+      // var el = document.createElement("div");
+      // el.style.backgroundImage = "url(icons/favicon-inverted.png)";
+      // el.style.width = "28px";
+      // el.style.height = "64px";
+
+      // if(mapboxgl.Marker()){mapboxgl.Marker(el).remove()}
+      
+      // var marker = new mapboxgl.Marker(el)
+      // .setLngLat([
+      //   stateApp.selectedWell.longitude,
+      //   stateApp.selectedWell.latitude,
+      // ])
+      // .addTo(map);
+        
+
+
+      // mathematical formula for screen fit 
+      const alpha = 0.01;
+      const bbox = [
+                      [stateApp.selectedWell.longitude-1.5*alpha,stateApp.selectedWell.latitude],
+                      [stateApp.selectedWell.longitude+0.5*alpha,stateApp.selectedWell.latitude]
+                  ];
+
+
+
+
+      map.fitBounds(bbox,{
+        speed: 0.75,
+        linear: true,  
+        // pitch: 60,
+        // bearing: 20,
+        // easing: function (t) {
+        //           return Math.sin((t * Math.PI) / 2);
+        //         }
+      });
+
+
+      setStateApp({
+        ...stateApp,
+        wellDetailCardOpen: false,
+      });
+
+      // map.on("moveend", function (e) {
+      //   if (
+      //     map.getBearing() === -1 
+      //     //&&
+      //     // map.getZoom() === 16
+      //   ) {
+      //     map.flyTo({
+      //       around: [
+      //         stateApp.selectedWell.longitude,
+      //         stateApp.selectedWell?.latitude,
+      //       ],
+      //       speed: 0.4,
+      //       bearing: 540,
+      //       duration: 100000,
+      //       easing: function (t) {
+      //         return Math.sin((t * Math.PI) / 2);
+      //       },
+      //     });
+      //   }
+      // });
+    }
+  }, [stateApp.wellDetailCardOpen]);
+
+
+  // useEffect(() => {
+  //   if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
+  //     map.flyTo({
+  //       center: [
+  //         stateApp.selectedWell.longitude,
+  //         stateApp.selectedWell.latitude,
+  //       ],
+  //       zoom: 16,
+  //       speed: 0.4,
+  //       bearing: -10,
+  //       pitch: 80,
+  //       easing: function (t) {
+  //         return Math.sin((t * Math.PI) / 2);
+  //       },
+  //     });
+
+  //     setFlyVar1(false);
+
+  //     map.on("moveend", function (e) {
+  //       if (
+  //         map.getBearing() === -10 &&
+  //         map.getZoom() === 16
+  //       ) {
+  //         map.flyTo({
+  //           center: [
+  //             stateApp.selectedWell?.longitude,
+  //             stateApp.selectedWell?.latitude,
+  //           ],
+  //           zoom: 16,
+  //           //speed: 0.4,
+  //           bearing: 540,
+  //           duration: 100000,
+  //           easing: function (t) {
+  //             return Math.sin((t * Math.PI) / 2);
+  //           },
+  //         });
+  //       }
+  //     });
+  //   }
+  // }, [stateApp.wellDetailCardOpen]);
+
+
+  // console.log(
+  //   "stateApp.selectedAbstracts",
+  //   stateApp.popupOpen,
+  //   stateApp.abstractPopupOpen,
+  //   stateApp.selectedAbstracts
+  // );
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
@@ -5429,10 +4746,36 @@ export default function Map() {
             deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
           />
         )}
+
       {mapGridCardActivated && (
         <MapGridCard mapGridCardActivated={mapGridCardActivated} />
       )}
-      <div id="tempPopupHolder" className={classes.portal} ref={container} />
+       
+      {/* {stateApp.popupOpen === true &&  */}
+      {stateApp.selectedWell !== null && showExpandableCard &&
+        stateApp.expandedCard && (
+            <Draggable handle=".MuiCardHeader-root" cancel={".MuiCardHeader-content"} >
+              <div className={classes.draggable}>
+                <ExpandableCardProvider
+                  expanded
+                  handleCloseExpandableCard={handleCloseExpandableCard}
+                  component={<WellCardProvider />}
+                  title={stateApp.selectedWell.wellName}
+                  subTitle={stateApp.selectedWell.api}
+                  parent="map"
+                  cardTop={20}
+                  cardLeft={20}
+                  position="relative"
+                  zIndex={99}
+                  cardWidthExpanded="50vw"
+                  cardHeightExpanded="90vh"
+                  targetSourceId={stateApp.selectedWell.id}
+                  targetLabel="expandedWell"
+                />
+              </div>
+            </Draggable>
+          )
+        }
       <div id="modalHolder" ref={modalContainer} />
       <Portal container={modalContainer.current}>
         {stateApp.selectedAbstracts.length > 0 && (
@@ -5443,70 +4786,34 @@ export default function Map() {
           />
         )}
       </Portal>
+       
       <Portal container={container.current}>
-        {stateApp.popupOpen ? (
+        {stateApp.popupOpen === true ? (
           <div>
-            {stateApp.selectedWell && (
-              <PortalD id="popupContainer">
-                {showExpandableCard && !stateApp.expandedCard ? (
+            {stateApp.selectedWell !== null 
+              // && stateApp.popupOpen==true
+              && showExpandableCard && (
+              <PortalD id="popupContainer"> 
+                {!stateApp.expandedCard && (
                   <ExpandableCardProvider
-                    expanded={false}
                     handleCloseExpandableCard={handleCloseExpandableCard}
-                    component={<WellCardProvider></WellCardProvider>}
+                    component={<WellCardProvider />}
                     title={stateApp.selectedWell.wellName}
-                    subTitle={stateApp.selectedWell.operator}
+                    subTitle={stateApp.selectedWell.api}
                     parent="map"
                     mouseX={0}
                     mouseY={0}
                     position="relative"
-                    cardLeft={20}
-                    cardTop={70}
-                    zIndex={99}
+                    cardLeft={0}
+                    cardTop={0}
+                    zIndex={3000}
                     cardWidth="350px"
-                    // cardHeight="350px"
-                    cardWidthExpanded="95vw"
-                    cardHeightExpanded="90vh"
+                    cardWidthExpanded="50vw"
+                    cardHeightExpanded="95vh"
                     targetSourceId={stateApp.selectedWell.id}
                     targetLabel="well"
                   ></ExpandableCardProvider>
-                ) : (
-                  <Popover
-                    open={stateApp.expandedCard}
-                    anchorEl={anchorElPoPOver}
-                    anchorReference="anchorEl"
-                    style={{ width: "100%" }} //right:30, left: "-30px"}}
-                    BackdropProps={{ invisible: false }}
-                    anchorOrigin={{
-                      vertical: "center",
-                      horizontal: "center",
-                    }}
-                    transformOrigin={{
-                      vertical: "center",
-                      horizontal: "center",
-                    }}
-                  >
-                    <ExpandableCardProvider
-                      expanded={true}
-                      handleCloseExpandableCard={handleCloseExpandableCard}
-                      component={<WellCardProvider></WellCardProvider>}
-                      title={stateApp.selectedWell.wellName}
-                      subTitle={stateApp.selectedWell.operator}
-                      parent="map"
-                      mouseX={0}
-                      mouseY={0}
-                      position="relative"
-                      // cardLeft={"0px"}
-                      // cardTop={"0px"}
-                      zIndex={99}
-                      // cardWidth="380px"
-                      // cardHeight="380px"
-                      cardWidthExpanded="95vw"
-                      cardHeightExpanded="95vh"
-                      targetSourceId={stateApp.selectedWell.id}
-                      targetLabel="well"
-                    ></ExpandableCardProvider>
-                  </Popover>
-                )}
+                  )}
               </PortalD>
             )}
             {stateApp.selectedParcel && (
@@ -5527,7 +4834,7 @@ export default function Map() {
                     zIndex={99}
                     cardWidth="350px"
                     // cardHeight="350px"
-                    cardWidthExpanded="95vw"
+                    cardWidthExpanded="50vw"
                     cardHeightExpanded="90vh"
                     targetSourceId={stateApp.selectedParcel.id}
                     targetLabel="parcel"
