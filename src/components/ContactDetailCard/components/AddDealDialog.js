@@ -288,10 +288,10 @@ function AddDealDialog(props) {
   );
 
   useEffect(() => {
-    console.log("TDATA : ", tdata?.transactionData?.allData);
-    if (tdata?.transactionData?.allData) {
+    console.log("TDATA : ", tdata?.transactionData[0]?.allData);
+    if (tdata?.transactionData[0]?.allData) {
       setTransactData(
-        JSON.parse(JSON.stringify(tdata?.transactionData?.allData))
+        JSON.parse(JSON.stringify(tdata?.transactionData[0]?.allData))
       );
     }
   }, [tdata]);
@@ -322,10 +322,10 @@ function AddDealDialog(props) {
   };
 
   const handleDataChange = async (newData) => {
-    if (tdata?.transactionData?._id) {
+    if (tdata?.transactionData[0]?._id) {
       await updateTransaction({
         variables: {
-          transactionId: tdata.transactionData._id,
+          transactionId: tdata.transactionData[0]._id,
           transaction: { allData: newData, user: stateApp.user.mongoId },
         },
         refetchQueries: ["getTransactionData"],
@@ -371,14 +371,13 @@ function AddDealDialog(props) {
 
       // TRACK
       setCardId(card.id);
-      if (stateApp.user && stateApp.user.mongoId) {
-        trackByObjectId({
-          variables: {
-            userId: stateApp.user.mongoId,
-            objectId: card.id.toLowerCase(),
-          },
-        });
-      }
+
+      trackByObjectId({
+        variables: {
+          userId: stateApp.user.mongoId,
+          objectId: card.id.toLowerCase(),
+        },
+      });
 
       setTitle(card.title ? card.title : "");
       setDealState(card.dealState ? card.dealState : null);

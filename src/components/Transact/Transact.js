@@ -323,10 +323,11 @@ export default function Transact() {
   useEffect(() => {
     if (
       !loading &&
-      data?.transactionData?.allData?.lanes &&
-      data.transactionData.allData.lanes.length > 0
+      data?.transactionData[0] &&
+      data?.transactionData[0]?.allData?.lanes &&
+      data.transactionData[0].allData.lanes.length > 0
     ) {
-      const lanes = data?.transactionData?.allData?.lanes;
+      const lanes = data?.transactionData[0]?.allData?.lanes;
 
       // get all deals
       const all = [];
@@ -538,14 +539,15 @@ export default function Transact() {
     if (
       data &&
       data.transactionData &&
-      data.transactionData.allData &&
-      data.transactionData.allData.lanes
+      data.transactionData[0] &&
+      data.transactionData[0].allData &&
+      data.transactionData[0].allData.lanes
     ) {
       setTransactData({
-        ...data.transactionData.allData,
-        lanes: getLanesWithFixedTitles(data.transactionData.allData.lanes),
+        ...data.transactionData[0].allData,
+        lanes: getLanesWithFixedTitles(data.transactionData[0].allData.lanes),
       });
-      setId(data.transactionData._id);
+      setId(data.transactionData[0]._id);
     }
   }, [data]);
 

@@ -1131,8 +1131,6 @@ export default function Navigation(props) {
     }));
   };
 
-  console.log("LOCATION", location);
-
   return (
     <div className={classes.root}>
       <CssBaseline />

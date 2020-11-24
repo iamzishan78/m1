@@ -6,6 +6,7 @@ export const TRANSACTIONDATA = gql`
       _id
       allData
       user
+      pipeline
     }
   }
 `;
