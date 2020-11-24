@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 export const PAGINATEDWELLINTERESTSQUERY = gql`
   query getPaginatedWellInterests(
     $pagination: PaginationInput = { first: 25, after: null }
-    $sort: ContactSortInput = {}
+    $sort: WellInterestSortInput = {}
     $filters: [FilterInput] = []
     $search: String = ""
     $userId: ID
@@ -30,7 +30,7 @@ export const PAGINATEDWELLINTERESTSQUERY = gql`
           interestType
           ownershipPercentage
           appraisedValue
-          lodId
+          cursor
         },
         cursor
       },

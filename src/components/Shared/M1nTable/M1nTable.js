@@ -3821,7 +3821,10 @@ function M1nTable(props) {
       setAddAble(false);
       getPaginatedWellInterests({
         variables: {
-          search: props.id,
+          filters: {
+            field: "id",
+            value: props.id
+          }
         },
       });
 
@@ -4053,9 +4056,9 @@ function M1nTable(props) {
           ownerId: props.id,
           getPaginatedWellInterests,
           getWellInterestsFilterOptions,
-          wellInterestsCount: dataWellInterestsFilterOptions?.wellInterestsFilterOptions?.totalCount[0]
-            ? dataWellInterestsFilterOptions?.wellInterestsFilterOptions?.totalCount[0]?.totalCount
-            : 100,
+          wellInterestsCount: selectedOwnerWellIntsSummary?.interestsCount
+            ? selectedOwnerWellIntsSummary.interestsCount
+            : 0,
           setLoading,
         }}
         parent={props.parent}
