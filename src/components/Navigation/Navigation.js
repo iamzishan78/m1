@@ -1150,60 +1150,77 @@ export default function Navigation(props) {
                   {theme.direction === "rtl" ? <MenuIcon /> : <MenuIcon />}
                 </IconButton>
 
-                {location.pathname !== "/activities" ? (
-                  <div style={{ marginRight: "35px" }}>
-                    {matchFind ? (
-                      <Button
-                        color="secondary"
-                        size="large"
-                        onClick={handleClickLogo}
-                        className={classes.margin}
-                      >
-                        <M1neralLogoWhiteLetters />
-                      </Button>
-                    ) : (
-                      <Button
-                        color="secondary"
-                        size="large"
-                        onClick={(event) => handleListItemClick(event, 0, "/")}
-                        className={classes.margin}
-                      >
-                        <M1neralLogoWhiteLetters />
-                      </Button>
-                    )}
-                  </div>
-                ) : (
-                  <>
-                    {/*SEARCH UI FOR ACTIVITIES */}
-
-                    <div>                  
-                      <Button
-                        color="secondary"
-                        size="large"
-                        onClick={(event) => handleListItemClick(event, 0, "/")}
-                        className={classes.margin}
-                      >
-                        <M1neralLogoWhiteLetters />
-                      </Button>
-                      </div>   
-
-                    <div className={classes.search} style={{  minWidth: 500, marginLeft: 20, verticalAlign:"middle", paddingTop: 4}}>
-                      <div className={classes.searchIcon}  >
-                        <SearchIcon style={{ verticalAlign:"middle"}}/>
-                      </div>
-                      <InputBase
-                        placeholder="Search for activities"
-                        classes={{
-                          root: classes.inputRoot,
-                          input: classes.inputInput,
-                        }}
-                        inputProps={{ "aria-label": "search" }}
-                      />
-                    </div>
-                  </>
-                )}
+                <div style={{ marginRight: 20 }}>
+                  {matchFind ? (
+                    <Button
+                      color="secondary"
+                      size="large"
+                      onClick={handleClickLogo}
+                      className={classes.margin}
+                    >
+                      <M1neralLogoWhiteLetters />
+                    </Button>
+                  ) : (
+                    <Button
+                      color="secondary"
+                      size="large"
+                      onClick={(event) => handleListItemClick(event, 0, "/")}
+                      className={classes.margin}
+                    >
+                      <M1neralLogoWhiteLetters />
+                    </Button>
+                  )}
+                </div>
               </div>
             ) : null}
+
+            {/*SEARCH UI FOR ACTIVITIES */}
+            {location.pathname === "/activities" && (
+              <div
+                className={classes.search}
+                style={{
+                  minWidth: 500,
+                  verticalAlign: "middle",
+                  paddingTop: 4,
+                }}
+              >
+                <div className={classes.searchIcon}>
+                  <SearchIcon style={{ verticalAlign: "middle" }} />
+                </div>
+                <InputBase
+                  placeholder="Search for activities"
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                  inputProps={{ "aria-label": "search" }}
+                />
+              </div>
+            )}
+
+            {/*SEARCH UI FOR DEALS */}
+            {location.pathname === "/transact" && (
+              <div
+                className={classes.search}
+                style={{
+                  minWidth: 500,
+                  verticalAlign: "middle",
+                  paddingTop: 4,
+                }}
+              >
+                <div className={classes.searchIcon}>
+                  <SearchIcon style={{ verticalAlign: "middle" }} />
+                </div>
+                <InputBase
+                  placeholder="Search for deals"
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                  inputProps={{ "aria-label": "search" }}
+                />
+              </div>
+            )}
 
             {openDrawer ? (
               <div className={classes.toolbar}>
@@ -1673,7 +1690,7 @@ export default function Navigation(props) {
           >
             <div className={classes.tabContent}>
               <ListItemIcon className={classes.sideNavIcon}>
-                <FlowIcon/>
+                <FlowIcon />
               </ListItemIcon>
               <ListItemText
                 className={`${classes.sideNavText} uppercase`}
