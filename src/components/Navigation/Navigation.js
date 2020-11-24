@@ -1627,7 +1627,7 @@ export default function Navigation(props) {
             </div>
           </ListItem>
 
-          <ListItem
+          {/* <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected,
@@ -1656,7 +1656,7 @@ export default function Navigation(props) {
                 </Button>
               </ListItemSecondaryAction>
             </div>
-          </ListItem>
+          </ListItem> */}
 
           {/* <ListItem
             classes={{
