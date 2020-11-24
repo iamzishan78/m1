@@ -20,7 +20,7 @@ import getLaneTitle from "../../Transact/getLaneTitle";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { ALLENTITYNAMESFORPARCEL } from "../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
-import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
+import { GETMONGOUSERS as GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CircularProgress, Typography } from "@material-ui/core";
 import RightDialog from "./RightDialog";
@@ -300,8 +300,8 @@ function AddDealDialog(props) {
     if (userLists && userLists.allUsers) {
       setUsers(
         userLists.allUsers.map((user) => ({
-          value: user.id,
-          text: user.displayName,
+          value: user._id,
+          text: user.name,
         }))
       );
     }

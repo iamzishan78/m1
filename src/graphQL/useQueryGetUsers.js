@@ -5,3 +5,9 @@ export const GETUSERS = gql`
     allUsers
   }
 `;
+
+export const GETMONGOUSERS = gql`
+  query getAllMongoUsers {
+    allUsers: allUsersFromMongo
+  }
+`;
