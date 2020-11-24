@@ -43,6 +43,8 @@ import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelInterests";
 import { IFARECONTACTS } from "../../../graphQL/useQueryIfOwnersAreContacts";
 import { OWNER_WELLINTERESTS } from "../../../graphQL/useQueryOwner_WellInterests";
+import { PAGINATEDWELLINTERESTSQUERY } from "../../../graphQL/useQueryPaginatedWellInterests.js";
+import { WELLINTERESTSFILTEROPTIONS } from "../../../graphQL/useQueryWellInterestsFilterOptions";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -1684,22 +1686,45 @@ const WellInterests = [
       viewColumns: false,
     },
   },
-  { name: "wellName", label: "Well" },
-  { name: "apiNumber", label: "API" },
-  { name: "operator", label: "Operator" },
-  { name: "interestType", label: "Type" },
+  { name: "wellName", label: "Well",
+    options: {
+      filter: false,
+    }
+  },
+  { name: "apiNumber", label: "API",
+    options: {
+      filter: false,
+    }
+  },
+  { name: "operator", label: "Operator",
+    options: {
+      filter: false,
+    }
+  },
+  { name: "interestType", label: "Type",
+    options: {
+      filter: false,
+    }
+  },
   {
     name: "ownershipPercentage",
     label: "Interest",
+    options: {
+      filter: false,
+    }
   },
   {
     name: "appraisedValue",
     label: "Appraised Value",
+    options: {
+      filter: false,
+    }
   },
   {
     name: "tags",
     label: "Tags ",
     options: {
+      filter: false,
       sort: false,
       download: false,
       print: false,
@@ -1998,6 +2023,11 @@ function M1nTable(props) {
     setStateIfDeepEqual(DataContacts, newState);
   };
 
+  const [dataWellInterests, DataWellInterests] = useState(null);
+  const setDataWellInterests = (newState) => {
+    setStateIfDeepEqual(DataWellInterests, newState);
+  };
+
   ////////////Queries begin///////////////////////////////////////////////
 
   const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(
@@ -2090,6 +2120,17 @@ function M1nTable(props) {
     getOwner_WellInterests,
     { data: dataOwner_WellInterests },
   ] = useLazyQuery(OWNER_WELLINTERESTS);
+
+  const [getPaginatedWellInterests, { data: constDataWellInterests }] = useLazyQuery(
+    PAGINATEDWELLINTERESTSQUERY, {
+      fetchPolicy: "cache-and-network",
+    }
+  );
+
+  const [getWellInterestsFilterOptions, { data: dataWellInterestsFilterOptions }] = useLazyQuery(
+    WELLINTERESTSFILTEROPTIONS, {
+      fetchPolicy: "cache-and-network",
+  });
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
@@ -3910,11 +3951,24 @@ function M1nTable(props) {
       setTargetLabel("well");
       setHeader("Well Interests");
       setAddAble(false);
-      getOwner_WellInterests({
+      getPaginatedWellInterests({
         variables: {
-          id: props.id,
+          filters: {
+            field: "id",
+            value: props.id
+          }
         },
       });
+
+      // to populate the search layer
+      dispatch(
+        setMapGridCardState({
+          objToPopulateSearchLayer: {
+            objectId: props.id,
+            objectType: "owner"
+          },
+        })
+      );
     }
   }, [props.id, stateApp.user]);
 
@@ -3922,13 +3976,36 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "owner_WellInterests" &&
-      dataOwner_WellInterests &&
-      dataOwner_WellInterests.owner_WellInterests &&
+      constDataWellInterests
+    ) {
+      console.log("ue mintable 23");
+      if (
+        constDataWellInterests?.paginatedWellInterests?.edges &&
+        constDataWellInterests.paginatedWellInterests.edges.length > 0
+      ) {
+        setDataWellInterests([
+          ...constDataWellInterests.paginatedWellInterests.edges.map((el) => el.node),
+        ]);
+        setLoading(false);
+      } else {
+        setLoading(false);
+        setRows([]);
+      }
+    }
+  }, [
+    constDataWellInterests
+  ]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "owner_WellInterests" &&
+      dataWellInterests &&
       stateApp.user &&
       stateApp.user.mongoId
     ) {
       const IdsArray = [];
-      dataOwner_WellInterests.owner_WellInterests.forEach((well) => {
+      dataWellInterests.forEach((well) => {
         if (well && well.id) {
           IdsArray.push(well.id);
         }
@@ -3952,17 +4029,16 @@ function M1nTable(props) {
         setLoading(false);
       }
     }
-  }, [dataOwner_WellInterests, stateApp.user]);
+  }, [dataWellInterests, stateApp.user]);
 
   useEffect(() => {
     if (
       props.parent &&
       props.parent === "owner_WellInterests" &&
-      dataOwner_WellInterests &&
-      dataOwner_WellInterests.owner_WellInterests
+      dataWellInterests
     ) {
       if (
-        dataOwner_WellInterests.owner_WellInterests.length > 0 &&
+        dataWellInterests.length > 0 &&
         dataCommentsCounter &&
         dataCommentsCounter.commentsCounter &&
         dataTagSamples &&
@@ -3970,7 +4046,7 @@ function M1nTable(props) {
         dataTracks &&
         dataTracks.tracksByObjectType
       ) {
-        let wells = dataOwner_WellInterests.owner_WellInterests.map((w) => {
+        let wells = dataWellInterests.map((w) => {
           let well = { ...w };
 
           well.isTracked = false;
@@ -4048,15 +4124,6 @@ function M1nTable(props) {
         );
 
         setRows(wells);
-        //// to populate the search layer
-        dispatch(
-          setMapGridCardState({
-            objToPopulateSearchLayer: {
-              objectType: "wells",
-              wells,
-            },
-          })
-        );
         setLoading(false);
       }
       // else {
@@ -4066,7 +4133,7 @@ function M1nTable(props) {
       // setLoading(false);
     }
   }, [
-    dataOwner_WellInterests,
+    dataWellInterests,
     dataTagSamples,
     dataCommentsCounter,
     dataTracks,
@@ -4132,10 +4199,17 @@ function M1nTable(props) {
         contactsPageProps={{
           getPaginatedContacts,
           getContactsFilterOptions,
-          contactsCount: dataContactsFilterOptions?.contactsFilterOptions
-            ?.totalCount[0]
-            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
-                ?.totalCount
+          contactsCount: dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
+            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]?.totalCount
+            : 0,
+          setLoading,
+        }}
+        wellInterestsPageProps={{
+          ownerId: props.id,
+          getPaginatedWellInterests,
+          getWellInterestsFilterOptions,
+          wellInterestsCount: selectedOwnerWellIntsSummary?.interestsCount
+            ? selectedOwnerWellIntsSummary.interestsCount
             : 0,
           setLoading,
         }}

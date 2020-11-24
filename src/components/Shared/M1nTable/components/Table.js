@@ -498,7 +498,7 @@ function SubTable(props) {
               (row._id && row._id === updRow._id)
           );
 
-          if (position) updatedRows[position] = updRow;
+          if (position > -1) updatedRows[position] = updRow;
           else newRows.push(updRow);
         });
 
@@ -2179,7 +2179,142 @@ function SubTable(props) {
           default:
             console.log("action not handled.");
         }
-      } 
+      }
+
+      if (props.header === "Well Interests") {
+        // let filters = [];
+        // const leadSourceIndex = tableState.columns.findIndex(
+        //   (i) => i.name === "leadSource"
+        // );
+        // const lastUpdateByIndex = tableState.columns.findIndex(
+        //   (i) => i.name === "lastUpdateBy.name"
+        // );
+        // const tagsIndex = tableState.columns.findIndex(
+        //   (i) => i.name === "tags"
+        // );
+
+        // if (tableState.filterList[leadSourceIndex]?.length !== 0) {
+        //   filters.push({
+        //     field: "leadSource",
+        //     value: tableState.filterList[leadSourceIndex],
+        //   });
+        // }
+        // if (tableState.filterList[lastUpdateByIndex]?.length !== 0) {
+        //   filters.push({
+        //     field: "lastUpdateBy.name",
+        //     value: tableState.filterList[lastUpdateByIndex],
+        //   });
+        // }
+        // if (tableState.filterList[tagsIndex]?.length !== 0) {
+        //   filters.push({
+        //     field: "tag.tag",
+        //     value: tableState.filterList[tagsIndex],
+        //   });
+        // }
+
+        const pageVariables = {
+          variables: {
+            pagination: {
+              first: tableState.rowsPerPage,
+              after: null,
+            },
+            sort: tableState.activeColumn
+              ? {
+                  field:
+                    tableState.columns[tableState.activeColumn]?.name ===
+                    "fullContactAddress"
+                      ? "address1"
+                      : tableState.columns[tableState.activeColumn]?.name,
+                  order:
+                    tableState.columns[tableState.activeColumn]
+                      ?.sortDirection === "asc"
+                      ? 1
+                      : -1,
+                }
+              : [],
+
+            filters: {
+              field: "id",
+              value: props.wellInterestsPageProps.ownerId,
+            },
+            // search: tableState.searchText,
+          },
+        };
+
+        switch (action) {
+          case "changeRowsPerPage":
+            console.log("changeRowsPerPage");
+            props.wellInterestsPageProps.setLoading(true);
+            tableState.page = 0;
+            setPageInd(tableState.page);
+            setRowsPerPage(tableState.rowsPerPage);
+            props.wellInterestsPageProps.getPaginatedWellInterests(pageVariables);
+            break;
+          case "changePage":
+            props.wellInterestsPageProps.setLoading(true);
+            props.wellInterestsPageProps.getPaginatedWellInterests({
+              ...pageVariables,
+              variables: {
+                ...pageVariables.variables,
+                pagination: {
+                  ...pageVariables.variables.pagination,
+                  before:
+                    props.rows && tableState.page < pageInd
+                      ? props.rows[0]?.cursor
+                      : null,
+                  after:
+                    props.rows && tableState.page > pageInd
+                      ? props.rows[props.rows.length - 1]?.cursor
+                      : null,
+                },
+              },
+            });
+            break;
+          case "sort":
+            props.wellInterestsPageProps.setLoading(true);
+            tableState.page = 0;
+            setPageInd(tableState.page);
+            props.wellInterestsPageProps.getPaginatedWellInterests(pageVariables);
+            break;
+          case "search":
+            // delayedSearchRequest({
+            //   tableState: tableState,
+            //   setLoading: props.wellInterestsPageProps.setLoading,
+            //   getPaginatedWellInterests:
+            //     props.wellInterestsPageProps.getPaginatedWellInterests,
+            //   getContactsFilterOptions:
+            //     props.wellInterestsPageProps.getContactsFilterOptions,
+            //   pageVariables,
+            // });
+            break;
+          case "onSearchClose":
+            // props.wellInterestsPageProps.setLoading(true);
+            // tableState.page = 0;
+            // tableState.count = 0;
+            // setPageInd(tableState.page);
+            // props.wellInterestsPageProps.getPaginatedWellInterests(pageVariables);
+            // props.wellInterestsPageProps.getContactsFilterOptions();
+            break;
+          case "propsUpdate":
+            console.log("work propsUpdate");
+            break;
+          case "filterChange":
+            // props.wellInterestsPageProps.setLoading(true);
+            // tableState.page = 0;
+            // setPageInd(tableState.page);
+            // props.wellInterestsPageProps.getPaginatedWellInterests(pageVariables);
+            break;
+          case "resetFilters":
+            // props.wellInterestsPageProps.setLoading(true);
+            // tableState.page = 0;
+            // setPageInd(tableState.page);
+            // props.wellInterestsPageProps.getPaginatedWellInterests(pageVariables);
+            break;
+          default:
+            console.log("action not handled.");
+        }
+      }
+
       // else if (props.header === "Monthly Production") {
       //   switch(action) {
       //     case "propsUpdate":
@@ -2191,6 +2326,18 @@ function SubTable(props) {
       // }
     },
   };
+
+  if (props.header === "Well Interests") {
+    console.log('props.header === "Well Interests"');
+    options.rowsPerPageOptions = 
+      props.wellInterestsPageProps.wellInterestsCount > 25
+        ? [10, 25, 50, 100]
+        : props.wellInterestsPageProps.wellInterestsCount > 10
+        ? [10, 25]
+        : [];
+    options.count = props.wellInterestsPageProps.wellInterestsCount;
+    options.serverSide = true;
+  }
 
   if (props.header === "Contacts") {
     console.log('props.header === "Contacts"');
