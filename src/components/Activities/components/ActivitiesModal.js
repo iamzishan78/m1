@@ -374,10 +374,16 @@ export default function ActivitiesModal({
       setClosed(selectedActivity.isClosed);
       setContactId(selectedActivity.contactId);
       setPrevContactId(selectedActivity.contactId);
-      setStartDate(getDateFromString(selectedActivity.start.toISOString()));
+      setStartDate(moment(selectedActivity.start).format("yyyy-MM-DD"));
       setStartTime(moment(selectedActivity.start).format("HH:mm"));
-      setEndDate(getDateFromString(selectedActivity.end.toISOString()));
+
+      setEndDate(moment(selectedActivity.end).format("yyyy-MM-DD"));
       setEndTime(moment(selectedActivity.end).format("HH:mm"));
+      console.log(
+        "SELECTED ACTIVITY",
+        getDateFromString(selectedActivity.end.toISOString()),
+        moment(selectedActivity.end).format("yyyy-MM-DD")
+      );
     } else {
       setAddNew(true);
       setNameAutValue({ name: "", id: 0, _id: 0 });
