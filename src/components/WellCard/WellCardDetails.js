@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { AppContext } from "../../AppContext";
 import { WellCardContext } from "./WellCardContext";
 import { makeStyles } from "@material-ui/core/styles";
@@ -32,6 +32,7 @@ import PermitDateCard from "../Shared/PermitDateCard";
 import ProfileCard from "../Shared/ProfileCard";
 import WellTypeCard from "../Shared/WellTypeCard";
 import SpudDateCard from "../Shared/SpudDateCard";
+import PlugDateCard from "../Shared/PlugDateCard";
 import WellApiCard from "../Shared/WellApiCard";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
@@ -39,6 +40,10 @@ import Switch from "@material-ui/core/Switch";
 import CompletionsContainer from "./components/Completions";
 import SimulationContainer from "./components/Stimulation";
 import FormationContainer from "./components/Formation";
+
+import { useLazyQuery } from "@apollo/client";
+import { PRODUCTIONDETAILQUERY } from "../../graphQL/useQueryProductionDetail";
+import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -149,17 +154,71 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const tableGridStyle = makeStyles({
+  table: {
+    minHeight: "100px !important",
+  },
+  tableContainer: {
+    overflowX: "auto",
+    marginBottom: 20,
+    background: "white",
+  },
+  rowName: {
+    fontWeight: "bold",
+    background: "#ebebeb",
+    minWidth: 150
+  },
+  columnComments: {
+    fontWeight: "bold",
+    background: "#ebebeb",
+    minWidth: 450
+  },
+  tableRow: {
+    "& > td": {
+      padding: "4px 15px !important",
+      border: "2px solid #e3e3e3",
+    },
+  },
+});
+
 export default function WellCardDetails(props) {
   const classes = useStyles();
-  const [stateApp] = useContext(AppContext);
+  const table_classes = tableGridStyle();
+  const [stateApp,setStateApp] = useContext(AppContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
   const [tabValue, setTabValue] = React.useState(0);
+  const [production, setProduction] = useState(null);
   const [target, setTarget] = useState(null);
-  useEffect(() => {
-    if (props.target) {
-      setTarget(props.target);
+  const [chartDisplay, setChartDisplay] = useState([]);
+  const [productionContainer, setProductionContainer] = useState(null);
+
+  let temp_state = useRef(null);
+  const [
+    getProductionDetail,
+    { loading: loadingProductionDetail, data: productionDetail },
+  ] = useLazyQuery(PRODUCTIONDETAILQUERY);
+
+  useEffect(()=> {
+    getProductionDetail({
+      variables: { id: stateApp.selectedWell.id },
+    });
+  }, []);
+
+  useEffect(()=> {
+    if (productionDetail) {
+      let temp = [];
+      productionDetail.productionDetail.forEach(element => {
+        let temp_row = {...element}
+        temp_row.ReportDate = moment(temp_row.ReportDate).format("MM/YYYY");
+        temp.push(temp_row)
+      });
+      setProduction(temp);
+      if (props.target) {
+        setTarget(props.target);
+      }
+    } else {
     }
-  }, [props.target, setTarget]);
+  },[productionDetail, props.target, setTarget]);
 
   const handleChangeOil = (event) => {
     setStateWellCard({
@@ -235,83 +294,22 @@ export default function WellCardDetails(props) {
     track: {},
   })(Switch);
 
-  const WellInfo = () => (
-    <Grid container spacing={2}>
-      <Grid item xs={12} sm={2}>
-        <QuadProvider />
-      </Grid>
-      <Grid item xs={12} sm={10}>
-        <Grid item xs={12}>
-          <div className={classes.toggle}>
-            <FormControlLabel
-              control={
-                <OilSwitch
-                  checked={stateWellCard.chartToggleOil}
-                  onChange={handleChangeOil}
-                  //name="chartToggleOil"
-                />
-              }
-              label="Oil"
-            />
-            <FormControlLabel
-              control={
-                <GasSwitch
-                  checked={stateWellCard.chartToggleGas}
-                  onChange={handleChangeGas}
-                  name="checkedGas"
-                  color="secondary"
-                  // color="#e57373"//invalid color
-                />
-              }
-              label="Gas"
-            />
-            <FormControlLabel
-              control={
-                <WaterSwitch
-                  checked={stateWellCard.chartToggleWater}
-                  onChange={handleChangeWater}
-                  name="checkedWater"
-                />
-              }
-              label="Water"
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={stateWellCard.chartToggleMultiAxis}
-                  onChange={handleChangeMultiAxis}
-                  color="primary"
-                />}
-              label="Multi-Axes"
-            />
-            <FormControlLabel disabled control={<Switch />} label="Log Scale" />
-          </div>
-        </Grid>
-        <Grid item xs={12}>
-          <WellProdChartProvider />
-        </Grid>
-      </Grid>
-      <Grid item sm={12}>
-          <Taps
-            tabLabels={[
-              "Completion",
-              "Stimulation",
-              "Formation",
-            ]}
-            tabPanels={[
-              <CompletionsContainer/>,
-              <SimulationContainer/>,
-              <FormationContainer/>,
-            ]}
-          />
-        </Grid>
-    </Grid>
-  );
+  const productionGrid = (productionProps) => {
+    if (chartDisplay.length === 0) {
+      setProductionContainer(
+        <M1nTable
+          dense
+          parent="production_WellDetails"
+          productionDetails={productionProps}
+        />
+      );
+    }
+  }
+
 
   return stateApp.selectedWell ? (
-    <React.Fragment>
+    <React.Fragment >
       <Grid item sm={12} className={classes.gridItemGrey}>
-        <WellApiCard />
         <WellTypeCard />
         <WellStatusCard />
         <Last12StatusCard />
@@ -321,38 +319,102 @@ export default function WellCardDetails(props) {
         <SpudDateCard />
         <CompletionDateCard />
         <FirstProdDateCard />
+        <PlugDateCard />
+
       </Grid>
       <Grid item sm={12} container className={classes.gridWidthScroll}>
-        <Grid item sm={12} container style={{ height: "482px" }}>
-          <Grid item sm={6} className={classes.gridItem}>
-            <TableSummary summary={props.summary} />
-          </Grid>
-          {/* <Divider orientation="vertical" /> */}
-          <Grid item sm={6} className={classes.gridItem}>
-            <CardDetailsMap />
+        <Grid item sm={12} container style={{ height: "482px"}}>
+          <Grid container spacing={2} style={{marginRight: 0, marginLeft: 0}}>
+            <Grid item sm={8} >
+              <TableSummary summary={props.summary} />
+            </Grid>
+            <Grid item xs={4}>
+              <QuadProvider />
+            </Grid>
           </Grid>
         </Grid>
         <Grid item sm={12}>
           <Taps
             tabLabels={[
-              "Well",
+              "Production",
               "Interest Owners",
-              // "Property History",
-              // "Title",
-              // "Documents",
+              "Completion",
+              "Stimulation",
+              "Formation",
             ]}
             tabPanels={[
               <Paper elevation={3} style={{ padding: "10px" }}>
-                <WellInfo/>     
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <div className={classes.toggle}>
+                      <FormControlLabel
+                        control={
+                          <OilSwitch
+                            checked={stateWellCard.chartToggleOil}
+                            onChange={handleChangeOil}
+                            //name="chartToggleOil"
+                          />
+                        }
+                        label="Allocated Oil"
+                      />
+                      <FormControlLabel
+                        control={
+                          <GasSwitch
+                            checked={stateWellCard.chartToggleGas}
+                            onChange={handleChangeGas}
+                            name="checkedGas"
+                            color="secondary"
+                            // color="#e57373"//invalid color
+                          />
+                        }
+                        label="Allocated Gas"
+                      />
+                      <FormControlLabel
+                        control={
+                          <WaterSwitch
+                            checked={stateWellCard.chartToggleWater}
+                            onChange={handleChangeWater}
+                            name="checkedWater"
+                          />
+                        }
+                        label="Allocated Water"
+                      />
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={stateWellCard.chartToggleMultiAxis}
+                            onChange={handleChangeMultiAxis}
+                            color="primary"
+                          />}
+                        label="Multi-Axes"
+                      />
+                      <FormControlLabel disabled control={<Switch />} label="Log Scale" />
+                    </div>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <WellProdChartProvider />
+                  </Grid>
+                  <Grid item xs={12}>
+                    {
+                      production != null && <M1nTable
+                        dense
+                        parent="production_WellDetails"
+                        productionDetails={production}
+                      />
+                    }
+                  </Grid>
+                </Grid>
               </Paper>
               ,
-              <M1nTable
-                parent="OwnersPerWell"
-                selectedWell={stateApp.selectedWell}
-              />,
-              // <h3>Coming Soon-</h3>,
-              // <h3>Coming Soon--</h3>,
-              // <h3>Coming Soon---</h3>,
+              <Paper elevation={3} style={{ padding: "10px" }}>
+                <M1nTable
+                  parent="OwnersPerWell"
+                  selectedWell={stateApp.selectedWell}
+                />
+              </Paper>,
+              <CompletionsContainer/>,
+              <SimulationContainer/>,
+              <FormationContainer/>,
             ]}
           />
         </Grid>

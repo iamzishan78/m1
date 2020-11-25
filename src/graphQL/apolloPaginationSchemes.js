@@ -32,8 +32,8 @@ export function relayStylePagination(keyArgs) {
         keyArgs: keyArgs,
         read: function (existing, _a) {
             var canRead = _a.canRead;
-            var existingArgs = {sort: existing?.args?.sort, filter: existing?.args?.filter, search: existing?.args?.search};
-            var incomingArgs = {sort: _a?.args?.sort, filter: _a?.args?.filter, search: _a?.args?.search};
+            var existingArgs = {sort: existing?.args?.sort, filter: existing?.args?.filter, search: existing?.args?.search, pageOverride: existing?.args?.pageOverride};
+            var incomingArgs = {sort: _a?.args?.sort, filter: _a?.args?.filter, search: _a?.args?.search, pageOverride: _a?.args?.pageOverride};
             if (!existing || !deepEqualObjects(existingArgs, incomingArgs))
                 return;
             var edges = existing.edges.filter(function (edge) { return canRead(edge.node); });
@@ -51,13 +51,13 @@ export function relayStylePagination(keyArgs) {
             }
             var prefix = existing.edges;
             var suffix = [];
-            if (args.pagination.after) {
+            if (args.pagination.after && args.pageOverride === void 0) {
                 var index = prefix.findIndex(function (edge) { return edge.cursor === args.pagination.after; });
                 if (index >= 0) {
                     prefix = prefix.slice(0, index + 1);
                 }
             }
-            else if (args.pagination.before) {
+            else if (args.pagination.before && args.pageOverride === void 0) {
                 var index = prefix.findIndex(function (edge) { return edge.cursor === args.pagination.before; });
                 suffix = index < 0 ? prefix : prefix.slice(index);
                 prefix = [];
