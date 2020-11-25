@@ -414,37 +414,32 @@ export default function ActivitiesModal({
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (
-      !tloading &&
-      tdata?.transactionData?.allData?.lanes &&
-      tdata.transactionData.allData.lanes.length > 0
-    ) {
-      const lanes = tdata?.transactionData?.allData?.lanes;
+    let open = [];
 
-      // get all deals
-      const all = [];
-      lanes.forEach((deal) => {
-        deal.cards.forEach((card) => {
-          all.push(card);
+    if (!tloading && tdata?.transactionData) {
+      tdata.transactionData.forEach((pipeline) => {
+        const lanes = pipeline.allData?.lanes;
+
+        // get all deals
+        const all = [];
+        lanes.forEach((deal) => {
+          deal.cards.forEach((card) => {
+            all.push(card);
+          });
+        });
+
+        all.forEach((card) => {
+          if (card.dealState === "won") {
+            // do nothing
+          } else if (card.dealState === "lost") {
+            // do nothing
+          } else if (card.isDeleted) {
+            // do nothing
+          } else open.push(card);
         });
       });
-
-      let open = [];
-
-      all.forEach((card) => {
-        if (card.dealState === "won") {
-          // do nothing
-        } else if (card.dealState === "lost") {
-          // do nothing
-        } else if (card.isDeleted) {
-          // do nothing
-        } else open.push(card);
-      });
-
-      console.log("OPEN DEALS", open, all);
-
-      setOpenDeals(open);
     }
+    setOpenDeals(open);
   }, [tdata]);
 
   const onModalClose = () => {
