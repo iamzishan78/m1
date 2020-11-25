@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import PropTypes from "prop-types";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -51,7 +51,7 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
   props,
   ref
 ) {
-  const { 
+  const {
     children,
     isItemLoaded,
     loadMoreItems,
@@ -94,7 +94,7 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
 
     if (!data[index]) {
       // eslint-disable-next-line
-      console.log('isLoaded but no data', { data, index });
+      console.log("isLoaded but no data", { data, index });
       return null;
     }
 
@@ -120,7 +120,7 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
               ref={refList}
               itemData={itemData}
               height={getHeight() + 2 * LISTBOX_PADDING}
-              width="100%"         
+              width="100%"
               outerElementType={OuterElementType}
               innerElementType="ul"
               itemSize={() => itemSize}
@@ -133,12 +133,12 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
           )}
         </InfiniteLoader>
       </OuterElementContext.Provider>
-     </div>
+    </div>
   );
 });
 
 ListboxComponent.propTypes = {
-  children: PropTypes.node
+  children: PropTypes.node,
 };
 
 const useStyles = makeStyles({
@@ -168,7 +168,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   } = props;
   const classes = useStyles();
 
-  const isItemLoaded = (index)=> {
+  const isItemLoaded = (index) => {
     if (!hasNextPage) {
       return true;
     }
@@ -177,18 +177,17 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   };
 
   const loadMoreItems = async (startIndex, stopIndex) => {
-    if (isNextPageLoading || !hasNextPage ) {
-      return () => {}
-    }
-    else {
-      console.log(mongoEntitiesArray[startIndex-1])
+    if (isNextPageLoading || !hasNextPage) {
+      return () => {};
+    } else {
+      console.log(mongoEntitiesArray[startIndex - 1]);
       return loadNextPage({
         variables: {
           pagination: {
-            after: mongoEntitiesArray[startIndex-1]?._id,
+            after: mongoEntitiesArray[startIndex - 1]?._id,
           },
-          search: nameAutInputValue
-        }
+          search: nameAutInputValue,
+        },
       });
     }
   };
@@ -200,35 +199,37 @@ export default function AutocompEntityNamesVirtualizeList(props) {
     loadMoreItems,
     itemCount,
     isNextPageLoading,
-    nameAutInputValue
+    nameAutInputValue,
   };
 
   const onInputChange = React.useMemo(
     () =>
-      debounce(
-        (event, value, reason) => {
-          console.log("here")
-          setNameAutInputValue(value);
-        }, 500),
+      debounce((event, value, reason) => {
+        console.log("here");
+        setNameAutInputValue(value);
+      }, 500),
     []
   );
 
   return (
     <Autocomplete
+      defaultValue={nameAutValue}
+      value={nameAutValue}
       disableListWrap
       classes={classes}
       ListboxComponent={ListboxComponent}
       ListboxProps={ListboxProps}
       options={mongoEntitiesArray}
-      getOptionLabel={(option) => option?.name ? option?.name : ""}
+      getOptionLabel={(option) => (option?.name ? option?.name : "")}
       getOptionSelected={(option, value) => {
-          return option?._id === value?._id
-        }
-      }
+        return option?._id === value?._id;
+      }}
       renderOption={(option) => {
         if (option._id === "newEntity")
           return (
-            <Typography style={{ color: "midnightblue" }}>{option.name}</Typography>
+            <Typography style={{ color: "midnightblue" }}>
+              {option.name}
+            </Typography>
           );
 
         return (
@@ -266,14 +267,16 @@ export default function AutocompEntityNamesVirtualizeList(props) {
             ...params.InputProps,
             endAdornment: (
               <>
-                {isNextPageLoading ? <CircularProgress color='inherit' size={20} /> : null}
+                {isNextPageLoading ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : null}
                 {params.InputProps.endAdornment}
               </>
             ),
           }}
           size="small"
           multiline
-         // placeholder="E.g. Jacob"
+          // placeholder="E.g. Jacob"
         />
       )}
       {...other}

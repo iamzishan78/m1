@@ -57,7 +57,14 @@ export default function ExpandableCard(props) {
   const [updateCustomLayer, { loading: isDeletingCustomLayer }] = useMutation(
     UPDATECUSTOMLAYER,
     {
-      update(cache, { data: { updateCustomLayer: { customLayer } } }) {
+      update(
+        cache,
+        {
+          data: {
+            updateCustomLayer: { customLayer },
+          },
+        }
+      ) {
         console.log(`newCustomLayer: ${JSON.stringify(customLayer)}`);
 
         cache.modify({
@@ -65,14 +72,17 @@ export default function ExpandableCard(props) {
           fields: {
             allCustomLayers(existingCustomLayerRefs, { readField }) {
               return existingCustomLayerRefs.filter(
-                customLayerRef => customLayer._id !== readField('_id', customLayerRef)
+                (customLayerRef) =>
+                  customLayer._id !== readField("_id", customLayerRef)
               );
             },
           },
         });
-      }
+      },
     }
   );
+
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const useStyles = makeStyles((theme) => ({
     card: {
@@ -95,7 +105,9 @@ export default function ExpandableCard(props) {
     title: {
       fontFamily: "Poppins",
       color: "#FFFFFF",
-      fontSize: props.title === "Contact" ? "22px" : "15px",
+      fontSize: ["Contact", "Add Activity", "Activity Details"].includes(title)
+        ? "22px"
+        : "15px",
     },
     headerIcons: {
       "& .MuiBadge-anchorOriginTopRightRectangle": {
@@ -121,11 +133,11 @@ export default function ExpandableCard(props) {
     icons: {
       "&:hover": {
         backgroundColor: "#031d40",
-       
       },
-      color: "white"
+      color: "white",
     },
   }));
+
   const classes = useStyles();
 
   const [
@@ -244,9 +256,13 @@ export default function ExpandableCard(props) {
     setOpenDialog(false);
   };
 
-  const deleteFunc = () => {
+  const deleteFunc = async () => {
     if (targetLabel === "parcel") {
       deleteParcel();
+    } else if (targetLabel === "activity") {
+      setDeleteLoading(true);
+      await deleteActivity();
+      setDeleteLoading(false);
     }
   };
 
@@ -266,6 +282,10 @@ export default function ExpandableCard(props) {
     handleClose();
   };
 
+  const deleteActivity = async () => {
+    await props.handleDelete();
+  };
+
   return (
     <React.Fragment>
       {openDialog && (
@@ -277,37 +297,42 @@ export default function ExpandableCard(props) {
           maxWidth="sm"
         >
           <DeleteConfirmationDialogContent
-            header="Delete Parcel"
+            header={`Delete ${targetLabel}`}
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => {}}
           >
-            Do you want to delete {targetLabel}?
+            Are you sure you want to delete the selected {targetLabel}?
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
       <Card className={classes.card}>
-        <ReportBugModal
-          open={openBugModal}
-          onClose={() => setOpenBugModal(false)}
-        />
+        
+      <ReportBugModal
+       open={openBugModal}
+       onClose={() => setOpenBugModal(false)}
+      />
         <CardHeader
+        
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
             <div className={classes.headerIcons}>
-              <CommentsWithIcon
-                objectId={targetSourceId.toLowerCase()}
-                targetLabel={props.targetLabel}
-                iconZiseSmall={!stateExpandableCard.expanded}
-              />
+              {targetLabel !== "activity" ? (
+                <>
+                  <CommentsWithIcon
+                    objectId={targetSourceId.toLowerCase()}
+                    targetLabel={props.targetLabel}
+                    iconZiseSmall={!stateExpandableCard.expanded}
+                  />
 
-              <TaggerWithIcon
-                objectId={targetSourceId.toLowerCase()}
-                targetLabel={props.targetLabel}
-                iconZiseSmall={!stateExpandableCard.expanded}
-              />
-
+                  <TaggerWithIcon
+                    objectId={targetSourceId.toLowerCase()}
+                    targetLabel={props.targetLabel}
+                    iconZiseSmall={!stateExpandableCard.expanded}
+                  />
+                </>
+              ) : null}
               {!props.noTrackAvailable && (
                 <TrackToggleButton
                   target={target}
@@ -317,7 +342,7 @@ export default function ExpandableCard(props) {
                 />
               )}
 
-              {stateExpandableCard.expanded && (
+              {stateExpandableCard.expanded && targetLabel !== "activity" && (
               <Tooltip title={"Report Bug"} placement="top">
                 <IconButton
                   size="medium"
@@ -327,9 +352,28 @@ export default function ExpandableCard(props) {
                   <BugsIcon viewBox="0 0 64 64" color="white" />
                 </IconButton>
               </Tooltip>
-            )}
+            )} 
 
-              {stateExpandableCard.expanded && targetLabel === "parcel" && (
+              {stateExpandableCard.expanded &&
+                ["activity","parcel"].includes(targetLabel) &&
+                title !== "Add Activity" && (
+                  <Tooltip title={`Delete ${targetLabel}`} placement="top">
+                    {isDeletingCustomLayer || deleteLoading ? (
+                      <CircularProgress size={20} color="secondary" />
+                    ) : (
+                      <IconButton
+                        onClick={openConfirmationDialog}
+                        aria-label="Delete"
+                        className={classes.icons}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
+                  </Tooltip>
+                )}
+
+
+              {/* {stateExpandableCard.expanded && targetLabel === "parcel" && (
                 <Tooltip title={"Delete Parcel"} placement="top">
                   {isDeletingCustomLayer ? (
                     <CircularProgress size={20} color="secondary" />
@@ -344,10 +388,12 @@ export default function ExpandableCard(props) {
                     </IconButton>
                   )}
                 </Tooltip>
-              )}
+              )} */}
               
-              {stateExpandableCard.expanded
-                ? parent !== "table" && targetLabel !== "expandedWell" ? (
+            
+              {stateExpandableCard.expanded && targetLabel !== "activity"
+                ? parent !== "table" && targetLabel !== "expandedWell" 
+                  ? (
                   <Tooltip title={"Shrink"} placement="top">
                     <IconButton
                       color="secondary"
@@ -358,7 +404,8 @@ export default function ExpandableCard(props) {
                       <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
                     </IconButton>
                   </Tooltip>
-                ) : isExpanded == false ? (
+                    ) 
+                : isExpanded == false && targetLabel !== "activity"  ? (
                       <Tooltip title={"Expand"} placement="top">
                         <IconButton
                           size="small"
@@ -369,7 +416,7 @@ export default function ExpandableCard(props) {
                           <ExpandIcon viewBox="0 0 64 64" color="secondary" />
                         </IconButton>
                       </Tooltip>
-                    ) :
+                    ) : 
                       (
                         <Tooltip title={"Shrink"} placement="top">
                           <IconButton
@@ -382,7 +429,7 @@ export default function ExpandableCard(props) {
                           </IconButton>
                         </Tooltip>
                       )
-                : parent !== "table" && (
+                : parent !== "table" && targetLabel !== "activity" &&(
                     <Tooltip title={"Expand"} placement="top">
                       <IconButton
                         size="small"
@@ -394,6 +441,7 @@ export default function ExpandableCard(props) {
                       </IconButton>
                     </Tooltip>
                   )}
+
               <Tooltip title={"Close"} placement="top">
                 <IconButton
                   size={stateExpandableCard.expanded ? "medium" : "small"}

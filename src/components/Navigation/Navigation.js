@@ -85,6 +85,7 @@ import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import DescriptionIcon from "@material-ui/icons/Description";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import FlowIcon from "@material-ui/icons/Repeat";
+import ActivityIcon from "@material-ui/icons/Event";
 import ProfileProvider from "../Profile/ProfileProvider";
 import UserManagementProvider from "../UserManagement/UserManagementProvider";
 import FilterFormWell from "./components/FilterFormWell";
@@ -1147,7 +1148,7 @@ export default function Navigation(props) {
                   {theme.direction === "rtl" ? <MenuIcon /> : <MenuIcon />}
                 </IconButton>
 
-                <div style={{ marginRight: "35px" }}>
+                <div style={{ marginRight: 20 }}>
                   {matchFind ? (
                     <Button
                       color="secondary"
@@ -1170,6 +1171,54 @@ export default function Navigation(props) {
                 </div>
               </div>
             ) : null}
+
+            {/*SEARCH UI FOR ACTIVITIES */}
+            {location.pathname === "/activities" && (
+              <div
+                className={classes.search}
+                style={{
+                  minWidth: 500,
+                  verticalAlign: "middle",
+                  paddingTop: 4,
+                }}
+              >
+                <div className={classes.searchIcon}>
+                  <SearchIcon style={{ verticalAlign: "middle" }} />
+                </div>
+                <InputBase
+                  placeholder="Search for activities"
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                  inputProps={{ "aria-label": "search" }}
+                />
+              </div>
+            )}
+
+            {/*SEARCH UI FOR DEALS */}
+            {location.pathname === "/transact" && (
+              <div
+                className={classes.search}
+                style={{
+                  minWidth: 500,
+                  verticalAlign: "middle",
+                  paddingTop: 4,
+                }}
+              >
+                <div className={classes.searchIcon}>
+                  <SearchIcon style={{ verticalAlign: "middle" }} />
+                </div>
+                <InputBase
+                  placeholder="Search for deals"
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                  inputProps={{ "aria-label": "search" }}
+                />
+              </div>
+            )}
 
             {openDrawer ? (
               <div className={classes.toolbar}>
@@ -1639,7 +1688,7 @@ export default function Navigation(props) {
           >
             <div className={classes.tabContent}>
               <ListItemIcon className={classes.sideNavIcon}>
-                <FlowIcon/>
+                <FlowIcon />
               </ListItemIcon>
               <ListItemText
                 className={`${classes.sideNavText} uppercase`}
@@ -1658,7 +1707,7 @@ export default function Navigation(props) {
             </div>
           </ListItem> */}
 
-          {/* <ListItem
+          <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected,
@@ -1670,7 +1719,7 @@ export default function Navigation(props) {
           >
             <div className={classes.tabContent}>
               <ListItemIcon className={classes.sideNavIcon}>
-                <ShoppingCartIcon />
+                <ActivityIcon />
               </ListItemIcon>
               <ListItemText
                 className={`${classes.sideNavText} uppercase`}
@@ -1687,7 +1736,7 @@ export default function Navigation(props) {
                 </Button>
               </ListItemSecondaryAction>
             </div>
-          </ListItem> */}
+          </ListItem>
 
           {/* <ListItem
             classes={{

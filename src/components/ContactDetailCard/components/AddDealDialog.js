@@ -20,12 +20,22 @@ import getLaneTitle from "../../Transact/getLaneTitle";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { ALLENTITYNAMESFORPARCEL } from "../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
-import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
+import { GETMONGOUSERS as GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { CircularProgress, Typography } from "@material-ui/core";
+import { CircularProgress, Dialog, Typography } from "@material-ui/core";
 import RightDialog from "./RightDialog";
 import { DatePicker } from "@material-ui/pickers";
-import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../../Shared/functions";
+import moment from "moment";
+import {
+  deepEqual,
+  deepEqualObjects,
+  setStateIfDeepEqual,
+} from "../../Shared/functions";
+import TrackToggleButton from "../../Shared/TrackToggleButton";
+import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
+import TaggerWithIcon from "../../Shared/TaggerWithIcon";
+import CommentsWithIcon from "../../Shared/CommentsWithIcon";
+import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
   inputField: {
-    marginBottom: "30px",
+    marginBottom: "10px",
   },
   dateLabel: {
     transform: "translate(10px, 2px) scale(0.75) !important",
@@ -71,12 +81,13 @@ const useStyles = makeStyles((theme) => ({
   dialogFooter: {
     display: "flex",
     justifyContent: "flex-end",
+    paddingTop: "10px",
   },
   footerButton: {
     letterSpacing: "1px",
     textTransform: "capitalize",
     fontWeight: "bold",
-    padding: "8px 35px",
+    padding: "8px 20px",
   },
 
   label: {
@@ -109,6 +120,16 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 5,
     border: "1px solid gray",
   },
+  originationDate: {
+    paddingBottom: "12px",
+    fontSize: 12,
+    letterSpacing: 2,
+    // fontWeight: "bold",
+    textAlign: "center",
+  },
+  dialog: {
+    zIndex: "9999999999 !important",
+  },
 }));
 
 const newContact = {
@@ -139,11 +160,13 @@ function AddDealDialog(props) {
   const [stage, setStage] = useState("");
   const [dealState, setDealState] = useState(null);
   const [description, setDescription] = useState("");
-  const [pipelineId, setPipelineId] = useState("");
+  const [pipelineId, setPipelineId] = useState(props.pipelineId);
   const [ownerId, setOwnerId] = useState("");
+  const [cardId, setCardId] = useState("");
   const [users, setUsers] = useState([]);
   const [closeDate, setCloseDate] = useState(null);
   const [colaborators, setColaborators] = useState([]);
+  const [originationDate, setOriginationDate] = useState("");
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
@@ -178,10 +201,12 @@ function AddDealDialog(props) {
     fetchPolicy: "cache-and-network",
   });
 
-  const [getPaginatedContacts, { 
-    data: allContacts, 
-    loading,
-    fetchMore: fetchMorePaginatedContacts}] = useLazyQuery(PAGINATEDCONTACTSQUERY);
+  // CONTACT
+
+  const [
+    getPaginatedContacts,
+    { data: allContacts, loading, fetchMore: fetchMorePaginatedContacts },
+  ] = useLazyQuery(PAGINATEDCONTACTSQUERY);
 
   const [contact, setContact] = useState({});
 
@@ -193,7 +218,9 @@ function AddDealDialog(props) {
   useEffect(() => {
     console.log("ALL CONTACTS: ", allContacts);
     if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray(allContacts?.paginatedContacts?.edges?.map((el) => el.node));
+      setMongoEntitiesArray(
+        allContacts?.paginatedContacts?.edges?.map((el) => el.node)
+      );
       setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
       setIsNextPageLoading(false);
     }
@@ -206,8 +233,8 @@ function AddDealDialog(props) {
     setIsNextPageLoading(true);
     getPaginatedContacts({
       variables: {
-        search: nameAutInputValue
-      }
+        search: nameAutInputValue,
+      },
     });
   }, [nameAutInputValue]);
 
@@ -233,6 +260,26 @@ function AddDealDialog(props) {
       setContact(nameAutValue);
     }
   }, [nameAutValue]);
+
+  // CONTACT END
+
+  // TRACK
+  const [
+    trackByObjectId,
+    { loading: loadingTrack, data: dataTrack },
+  ] = useLazyQuery(TRACKBYOBJECTID);
+
+  const [target, setTarget] = useState({});
+
+  useEffect(() => {
+    if (dataTrack) {
+      setTarget({
+        isTracked: dataTrack.trackByObjectId ? true : false,
+      });
+    }
+  }, [dataTrack]);
+  // TRACK END
+
   // useEffect(() => {
   //   console.log("CONTACT", contact);
   //   if (contact?.name) {
@@ -245,20 +292,20 @@ function AddDealDialog(props) {
   );
 
   useEffect(() => {
-    console.log("TDATA : ", tdata?.transactionData?.allData);
-    if (tdata?.transactionData?.allData) {
+    console.log("TDATA : ", tdata?.transactionData[props.index]?.allData);
+    if (tdata?.transactionData[props.index]?.allData) {
       setTransactData(
-        JSON.parse(JSON.stringify(tdata?.transactionData?.allData))
+        JSON.parse(JSON.stringify(tdata?.transactionData[props.index]?.allData))
       );
     }
-  }, [tdata]);
+  }, [tdata, props.index]);
 
   useEffect(() => {
     if (userLists && userLists.allUsers) {
       setUsers(
         userLists.allUsers.map((user) => ({
-          value: user.id,
-          text: user.displayName,
+          value: user._id,
+          text: user.name,
         }))
       );
     }
@@ -279,10 +326,10 @@ function AddDealDialog(props) {
   };
 
   const handleDataChange = async (newData) => {
-    if (tdata?.transactionData?._id) {
+    if (tdata?.transactionData[props.index]?._id) {
       await updateTransaction({
         variables: {
-          transactionId: tdata.transactionData._id,
+          transactionId: tdata.transactionData[props.index]._id,
           transaction: { allData: newData, user: stateApp.user.mongoId },
         },
         refetchQueries: ["getTransactionData"],
@@ -324,14 +371,27 @@ function AddDealDialog(props) {
       const card = lane.cards.find((card) => card.id === cardId); // selecting card
       if (!card) return;
 
+      console.log("ACTIVE DEAL: ", stateApp.activeDeal, card, stateApp.user);
+
+      // TRACK
+      setCardId(card.id);
+
+      trackByObjectId({
+        variables: {
+          userId: stateApp.user.mongoId,
+          objectId: card.id.toLowerCase(),
+        },
+      });
+
       setTitle(card.title ? card.title : "");
       setDealState(card.dealState ? card.dealState : null);
       setLabel(card.label ? card.label : "");
       setDescription(card.description ? card.description : "");
       setPipelineId(card.pipelineId ? card.pipelineId : "");
       setOwnerId(card.ownerId ? card.ownerId : stateApp.user.mongoId);
-      setCloseDate(card.closeDate ? card.closeDate : null);
+      setCloseDate(card.expectedCloseDate ? card.expectedCloseDate : null);
       setColaborators(card.colaborators ? card.colaborators : []);
+      setOriginationDate(card.createdAt ? card.createdAt : "");
       setStage(card.laneId ? card.laneId : "lane1");
       if (card.contactId) {
         setNameAutValue({ name: card.contactName, _id: card.contactId }); // setting contact
@@ -345,7 +405,13 @@ function AddDealDialog(props) {
         },
       });
     }
-  }, [transactData, stateApp.activeDeal, props.contact, stateApp.dealDialog]);
+  }, [
+    transactData,
+    stateApp.activeDeal,
+    props.contact,
+    stateApp.dealDialog,
+    stateApp.user,
+  ]);
 
   // old
   // useEffect(() => {
@@ -367,6 +433,10 @@ function AddDealDialog(props) {
     setOwnerId("");
     setCloseDate(null);
     setColaborators([]);
+    setOriginationDate("");
+    setContact({});
+    setTarget({});
+    setCardId("");
     if (props.isTransactPage) setContact({});
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -544,7 +614,7 @@ function AddDealDialog(props) {
               contactId: tempContact ? tempContact._id : "",
               laneId: newStage,
               // VALUES TO SET
-              createdAt: Date.now(),
+              createdAt: new Date().toISOString(),
               pipelineId: pipelineId,
               ownerId: ownerId,
               expectedCloseDate: closeDate,
@@ -601,120 +671,192 @@ function AddDealDialog(props) {
   //   }
   // }, [transactData]);
 
+  console.log("USERS", users);
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const openConfirmationDialog = () => {
+    setDeleteDialogOpen(true);
+  };
+  const handleCloseDialog = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  const deleteFunc = async () => {
+    try {
+      setIsDeleting(true);
+      await deleteDeal();
+      setIsDeleting(false);
+    } catch {
+      setIsDeleting(false);
+    }
+  };
+
   return (
-    <RightDialog
-      open={props.open}
-      handleClickDialogClose={() => {
-        if (!updateTransactionLoading && !addContactLoading) {
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            dealDialog: false,
-            activeDeal: { cardId: null, laneId: null },
-          }));
-          handleClose();
-        }
-      }}
-      width={props.width}
-    >
-      <div style={{ padding: "30px" }}>
-        {/* <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
+    <>
+      {deleteDialogOpen && (
+        <Dialog
+          className={classes.dialog}
+          open={deleteDialogOpen ? true : false}
+          onClose={handleCloseDialog}
+          fullWidth={false}
+          maxWidth="sm"
+        >
+          <DeleteConfirmationDialogContent
+            header={`Delete Deal`}
+            onClose={handleCloseDialog}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={null}
+            setM1nSelectedRowsIndexes={() => {}}
+          >
+            Do you want to delete deal?
+          </DeleteConfirmationDialogContent>
+        </Dialog>
+      )}
+      <RightDialog
+        open={props.open}
+        handleClickDialogClose={() => {
+          if (!updateTransactionLoading && !addContactLoading) {
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              dealDialog: false,
+              activeDeal: { cardId: null, laneId: null },
+            }));
+            handleClose();
+          }
+        }}
+        width={props.width}
+      >
+        <div style={{ padding: "30px" }}>
+          {/* <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
         Recent Activities
       </h4> */}
-        <Grid item xs={12} style={{ minHeight: "35px" }}>
-          <h4
-            style={{ margin: "0 0 15px 0", float: "left", fontSize: "1.1rem" }}
-          >
-            Deal Information
-          </h4>
-          <div style={{ float: "right" }}>
-            {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) &&
-              stateApp.activeDeal?.laneId && (
-                <IconButton
-                  disabled={updateTransactionLoading || addContactLoading}
-                  onClick={deleteDeal}
-                  size="small"
-                  style={{ marginRight: 8 }}
-                >
-                  <DeleteIcon className={classes.closeIcon} fontSize="small" />
-                </IconButton>
-              )}
-            {/* 
-            <IconButton
-              disabled={updateTransactionLoading || addContactLoading}
-              onClick={handleClose}
-              size="small"
+          <Grid item xs={12} style={{ minHeight: "35px" }}>
+            <h4
+              style={{
+                margin: "0 0 15px 0",
+                float: "left",
+                fontSize: "1.1rem",
+              }}
             >
-              <CloseIcon className={classes.closeIcon} fontSize="small" />
-            </IconButton> */}
-          </div>
-        </Grid>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-            margin: "8px 0",
-          }}
-        >
-          {dealState === null && (
-            <>
-              <div
-                className={classes.dealStateOpen}
-                onClick={() => setDealState("won")}
-                style={{
-                  marginRight: 8,
-                }}
-              >
-                Won
-              </div>
-              <div
-                className={classes.dealStateOpen}
-                onClick={() => setDealState("lost")}
-              >
-                Lost
-              </div>
-            </>
-          )}
-          {dealState === "won" && (
-            <>
-              <div
-                className={classes.dealStateClosed}
-                style={{
-                  backgroundColor: "#35DA97",
-                  marginRight: 8,
-                }}
-              >
-                Won
-              </div>
-              <div
-                className={classes.dealStateReopen}
-                onClick={() => setDealState(null)}
-              >
-                Repoen
-              </div>
-            </>
-          )}
-          {dealState === "lost" && (
-            <>
-              <div
-                className={classes.dealStateClosed}
-                style={{
-                  backgroundColor: "#F74E1E",
-                  marginRight: 8,
-                }}
-              >
-                Lost
-              </div>
-              <div
-                className={classes.dealStateReopen}
-                onClick={() => setDealState(null)}
-              >
-                Repoen
-              </div>
-            </>
-          )}
+              Deal Information
+            </h4>
+            <div style={{ float: "right" }}>
+              {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) &&
+                stateApp.activeDeal?.laneId && (
+                  <>
+                    <CommentsWithIcon
+                      objectId={stateApp.activeDeal?.cardId}
+                      targetLabel={"deal"}
+                      iconZiseSmall={true}
+                    />
+                    <TaggerWithIcon
+                      objectId={stateApp.activeDeal?.cardId}
+                      targetLabel={"deal"}
+                      iconZiseSmall={true}
+                    />
+                    <TrackToggleButton
+                      target={target}
+                      targetLabel={"deal"}
+                      targetSourceId={stateApp.activeDeal?.cardId}
+                      iconZiseSmall={true}
+                      dark={true}
+                    />
+                    <IconButton
+                      disabled={updateTransactionLoading || addContactLoading}
+                      onClick={openConfirmationDialog}
+                      size="small"
+                      style={{ margin: "0 8px" }}
+                    >
+                      {isDeleting ? (
+                        <CircularProgress size={20} color="secondary" />
+                      ) : (
+                        <DeleteIcon
+                          className={classes.closeIcon}
+                          fontSize="small"
+                        />
+                      )}
+                    </IconButton>
+                  </>
+                )}
 
-          {/* <div
+              <IconButton
+                disabled={updateTransactionLoading || addContactLoading}
+                onClick={handleClose}
+                size="small"
+              >
+                <CloseIcon className={classes.closeIcon} fontSize="small" />
+              </IconButton>
+            </div>
+          </Grid>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              margin: "8px 0",
+            }}
+          >
+            {dealState === null && (
+              <>
+                <div
+                  className={classes.dealStateOpen}
+                  onClick={() => setDealState("won")}
+                  style={{
+                    marginRight: 8,
+                  }}
+                >
+                  Won
+                </div>
+                <div
+                  className={classes.dealStateOpen}
+                  onClick={() => setDealState("lost")}
+                >
+                  Lost
+                </div>
+              </>
+            )}
+            {dealState === "won" && (
+              <>
+                <div
+                  className={classes.dealStateClosed}
+                  style={{
+                    backgroundColor: "#35DA97",
+                    marginRight: 8,
+                  }}
+                >
+                  Won
+                </div>
+                <div
+                  className={classes.dealStateReopen}
+                  onClick={() => setDealState(null)}
+                >
+                  Repoen
+                </div>
+              </>
+            )}
+            {dealState === "lost" && (
+              <>
+                <div
+                  className={classes.dealStateClosed}
+                  style={{
+                    backgroundColor: "#F74E1E",
+                    marginRight: 8,
+                  }}
+                >
+                  Lost
+                </div>
+                <div
+                  className={classes.dealStateReopen}
+                  onClick={() => setDealState(null)}
+                >
+                  Repoen
+                </div>
+              </>
+            )}
+
+            {/* <div
             className={classes.dealStateDiv}
             onClick={() => setDealState("won")}
             style={{
@@ -735,67 +877,67 @@ function AddDealDialog(props) {
           >
             Lost
           </div> */}
-        </div>
-        <div className={classes.inputFieldDateRoot}>
-          <TextField
-            margin="dense"
-            value={title}
-            label="Deal Name"
-            variant="outlined"
-            fullWidth
-            //   required
-            onChange={(e) => {
-              setTitle(e.target.value);
-            }}
-            className={classes.inputField}
-          />
+          </div>
+          <div className={classes.inputFieldDateRoot}>
+            <TextField
+              margin="dense"
+              value={title}
+              label="Deal Name"
+              variant="outlined"
+              fullWidth
+              //   required
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
+              className={classes.inputField}
+            />
 
-          {/* <InputLabel
+            {/* <InputLabel
             id="demo-simple-select-outlined-label"
             className={classes.label}
           >
             Contact Name
           </InputLabel> */}
 
-          {!(
-            (Object.keys(contact).length === 0 &&
-              contact.constructor === Object) ||
-            contact === null
-          ) && !props.isTransactPage ? (
-            <div className={classes.inputFieldDateRoot}>
-              <TextField
-                variant="outlined"
-                margin="dense"
-                value={contact?.name}
-                label="Contact Name"
-                fullWidth
-                disabled
-                className={classes.inputField}
-              />
-            </div>
-          ) : (
-            <div className={classes.inputField}>
-              <Grid container>
-                <Grid item xs={12}>
-                  <AutocompEntityNamesVirtualizeList
-                    mongoEntitiesArray={mongoEntitiesArray}
-                    setMongoEntitiesArray={setMongoEntitiesArray}
-                    nameAutValue={nameAutValue}
-                    setNameAutValue={setNameAutValue}
-                    nameAutInputValue={nameAutInputValue}
-                    setNameAutInputValue={setNameAutInputValue}
-                    variant="outlined"
-                    label="Contact Name"
-                    hasNextPage={hasNextPage}
-                    isNextPageLoading={isNextPageLoading}
-                    loadNextPage={loadNextPage}
-                  />
+            {!(
+              (Object.keys(contact).length === 0 &&
+                contact.constructor === Object) ||
+              contact === null
+            ) && !props.isTransactPage ? (
+              <div className={classes.inputFieldDateRoot}>
+                <TextField
+                  variant="outlined"
+                  margin="dense"
+                  value={contact?.name}
+                  label="Contact Name"
+                  fullWidth
+                  disabled
+                  className={classes.inputField}
+                />
+              </div>
+            ) : (
+              <div className={classes.inputField}>
+                <Grid container>
+                  <Grid item xs={12}>
+                    <AutocompEntityNamesVirtualizeList
+                      mongoEntitiesArray={mongoEntitiesArray}
+                      setMongoEntitiesArray={setMongoEntitiesArray}
+                      nameAutValue={nameAutValue}
+                      setNameAutValue={setNameAutValue}
+                      nameAutInputValue={nameAutInputValue}
+                      setNameAutInputValue={setNameAutInputValue}
+                      variant="outlined"
+                      label="Contact Name"
+                      hasNextPage={hasNextPage}
+                      isNextPageLoading={isNextPageLoading}
+                      loadNextPage={loadNextPage}
+                    />
+                  </Grid>
                 </Grid>
-              </Grid>
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* <DatePicker
+            {/* <DatePicker
             inputVariant="outlined"
             label="Expected Close Date"
             className={classes.inputField}
@@ -807,172 +949,182 @@ function AddDealDialog(props) {
             // }}
           /> */}
 
-          <FormControl
-            variant="outlined"
-            fullWidth
-            className={classes.inputField}
-            size="small"
-          >
-            <InputLabel shrink className={classes.shrinkLabel}>
-              Owner Name
-            </InputLabel>
-            <Select
-              native
-              value={ownerId}
-              onChange={(e) => {
-                setOwnerId(e.target.value);
-              }}
+            <FormControl
+              variant="outlined"
               fullWidth
+              className={classes.inputField}
+              size="small"
             >
-              {users.map((user) => (
-                <option key={user.value} value={user.value}>
-                  {user.text}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl
-            variant="outlined"
-            fullWidth
-            size="small"
-            className={classes.inputField}
-          >
-            <InputLabel shrink className={classes.dateLabel}>
-              Expected Close Date
-            </InputLabel>
+              <Autocomplete
+                className={classes.fieldWidth}
+                options={users}
+                onChange={(e, user) => {
+                  setOwnerId(user.value);
+                }}
+                value={users.find((user) => user.value === ownerId) || null}
+                getOptionLabel={(option) => option.text}
+                getOptionSelected={(option) => option.value === ownerId}
+                renderInput={(params) => (
+                  <TextField
+                    margin="dense"
+                    {...params}
+                    variant="outlined"
+                    label="Owner Name"
+                    InputLabelProps={{ shrink: true }}
+                  />
+                )}
+              />
+            </FormControl>
+            <FormControl
+              variant="outlined"
+              fullWidth
+              size="small"
+              className={classes.inputField}
+            >
+              <InputLabel shrink className={classes.dateLabel}>
+                Expected Close Date
+              </InputLabel>
+              <TextField
+                margin="dense"
+                type="date"
+                variant="outlined"
+                value={closeDate}
+                placeholder=""
+                fullWidth
+                onChange={(e) => {
+                  console.log("DATE", e);
+                  setCloseDate(e.target.value);
+                }}
+              />
+            </FormControl>
+
+            <FormControl
+              variant="outlined"
+              fullWidth
+              className={classes.inputField}
+              size="small"
+            >
+              <InputLabel shrink className={classes.shrinkLabel}>
+                Pipeline
+              </InputLabel>
+              <Select
+                native
+                value={pipelineId}
+                onChange={(e) => {
+                  setPipelineId(e.target.value);
+                }}
+                fullWidth
+                label="Pipeline"
+              >
+                {/* TODO: map over list of pipelines and render options */}
+              </Select>
+            </FormControl>
+
+            <FormControl
+              variant="outlined"
+              fullWidth
+              className={classes.inputField}
+              size="small"
+            >
+              <InputLabel shrink className={classes.shrinkLabel}>
+                Deal Stage
+              </InputLabel>
+              <Select
+                native
+                value={stage}
+                onChange={(e) => {
+                  console.log("Stage: ", e.target.value);
+                  setStage(e.target.value);
+                }}
+                fullWidth
+                label="Deal Stage"
+              >
+                <option value={"lane1"}>Offer Preparation</option>
+                <option value={"lane2"}>Offer Extended</option>
+                <option value={"lane3"}>Accepted - Due Diligence</option>
+                <option value={"lane4"}>Deal Closed</option>
+                <option value={"lane5"}>Offer Rejected</option>
+              </Select>
+            </FormControl>
             <TextField
               margin="dense"
-              type="date"
               variant="outlined"
-              value={closeDate}
-              placeholder=""
+              value={label}
+              label="Offer Price"
               fullWidth
               onChange={(e) => {
-                console.log("DATE", e);
-                setCloseDate(e.target.value);
+                setLabel(e.target.value);
               }}
+              className={classes.inputField}
             />
-          </FormControl>
-
-          <FormControl
-            variant="outlined"
-            fullWidth
-            className={classes.inputField}
-            size="small"
-          >
-            <InputLabel shrink className={classes.shrinkLabel}>
-              Pipeline
-            </InputLabel>
-            <Select
-              native
-              value={pipelineId}
-              onChange={(e) => {
-                setPipelineId(e.target.value);
-              }}
+            <TextField
+              //   autoFocus
+              margin="dense"
+              variant="outlined"
+              multiline
+              rows={8}
+              value={description}
+              label="Notes"
               fullWidth
-              label="Pipeline"
-            >
-              {/* TODO: map over list of pipelines and render options */}
-            </Select>
-          </FormControl>
-
-          <FormControl
-            variant="outlined"
-            fullWidth
-            className={classes.inputField}
-            size="small"
-          >
-            <InputLabel shrink className={classes.shrinkLabel}>
-              Deal Stage
-            </InputLabel>
-            <Select
-              native
-              value={stage}
+              multiline
+              //   required
               onChange={(e) => {
-                console.log("Stage: ", e.target.value);
-                setStage(e.target.value);
+                setDescription(e.target.value);
               }}
-              fullWidth
-              label="Deal Stage"
-            >
-              <option value={"lane1"}>Offer Preparation</option>
-              <option value={"lane2"}>Offer Extended</option>
-              <option value={"lane3"}>Accepted - Due Diligence</option>
-              <option value={"lane4"}>Deal Closed</option>
-              <option value={"lane5"}>Offer Rejected</option>
-            </Select>
-          </FormControl>
-          <TextField
-            margin="dense"
-            variant="outlined"
-            value={label}
-            label="Offer Price"
-            fullWidth
-            onChange={(e) => {
-              setLabel(e.target.value);
-            }}
-            className={classes.inputField}
-          />
-          <TextField
-            //   autoFocus
-            margin="dense"
-            variant="outlined"
-            multiline
-            rows={8}
-            value={description}
-            label="Notes"
-            fullWidth
-            multiline
-            //   required
-            onChange={(e) => {
-              setDescription(e.target.value);
-            }}
-            className={classes.inputField}
-          />
+              className={classes.inputField}
+            />
 
-          <div className={classes.dialogFooter}>
-            <Button
-              variant="contained"
-              color="default"
-              size="medium"
-              disableElevation
-              onClick={() => {
-                if (!updateTransactionLoading && !addContactLoading) {
-                  handleClose();
-                }
-              }}
-              disabled={updateTransactionLoading || addContactLoading}
-              className={classes.footerButton}
-              style={{
-                margin: "0px 15px 0px 0px",
-                // padding: "8px 35px",
-                // background: "rgb(215,244,254)",
-                // color: "rgb(23, 170, 221)",
-              }}
-            >
-              Cancel
-            </Button>
+            {originationDate && (
+              <div className={classes.originationDate}>
+                Origination Date:{" "}
+                {moment(originationDate).format("M/DD/YYYY, hh:mmA")}
+              </div>
+            )}
 
-            <Button
-              variant="contained"
-              color="secondary"
-              size="medium"
-              disableElevation
-              onClick={handleUpdate}
-              className={classes.footerButton}
-              disabled={updateTransactionLoading || addContactLoading}
-              // style={{ margin: "0px 20px 0px 0px" }}
-            >
-              {updateTransactionLoading || addContactLoading ? (
-                <CircularProgress size={14} />
-              ) : (
-                "Save"
-              )}
-            </Button>
+            <div className={classes.dialogFooter}>
+              <Button
+                variant="contained"
+                color="default"
+                size="medium"
+                disableElevation
+                onClick={() => {
+                  if (!updateTransactionLoading && !addContactLoading) {
+                    handleClose();
+                  }
+                }}
+                disabled={updateTransactionLoading || addContactLoading}
+                className={classes.footerButton}
+                style={{
+                  margin: "0px 15px 0px 0px",
+                  // padding: "8px 35px",
+                  // background: "rgb(215,244,254)",
+                  // color: "rgb(23, 170, 221)",
+                }}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                variant="contained"
+                color="secondary"
+                size="medium"
+                disableElevation
+                onClick={handleUpdate}
+                className={classes.footerButton}
+                disabled={updateTransactionLoading || addContactLoading}
+                // style={{ margin: "0px 20px 0px 0px" }}
+              >
+                {updateTransactionLoading || addContactLoading ? (
+                  <CircularProgress size={14} />
+                ) : (
+                  "Save"
+                )}
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-    </RightDialog>
+      </RightDialog>
+    </>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useMutation } from "@apollo/client";
+import moment from "moment";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -11,6 +12,8 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { AppContext } from "../../../AppContext";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import { DateTimePicker } from "@material-ui/pickers";
@@ -56,18 +59,31 @@ const useStyles = makeStyles((theme) => ({
   closeIcon: {
     color: theme.palette.secondary.main,
   },
+  shrinkLabel: {
+    backgroundColor: "#fff !important",
+    padding: "0 6px",
+  },
 }));
 
 const initialErrors = {
   notes: false,
   activityType: false,
+  activityName: false,
   dateTime: false,
+  endDateTime: false,
 };
 
 const getCurrentDateTime = () => {
   let dt = new Date().toISOString();
-  // return dt.slice(0, dt.length - 1);
-  return dt;
+  return dt.slice(0, dt.indexOf("T") + 6);
+  // return dt;
+};
+
+const get1hrLaterDateTime = () => {
+  let dt = new Date();
+  let newDt = new Date(dt.getTime() + 1 * 60 * 60 * 1000).toISOString();
+  console.log("set activity 2", newDt);
+  return newDt.slice(0, newDt.indexOf("T") + 6);
 };
 
 function AddActivityDialog(props) {
@@ -77,23 +93,35 @@ function AddActivityDialog(props) {
   const [addNew, setAddNew] = useState(true);
 
   const [updateContact, { called, loading, data }] = useMutation(UPDATECONTACT);
-  const [activityType, setActivityType] = useState("general");
+  const [activityType, setActivityType] = useState("call");
+  const [activityName, setActivityName] = useState("");
+
   const [notes, setNotes] = useState("");
+  const [closed, setClosed] = useState(false);
 
   const [dateTime, setDateTime] = useState(getCurrentDateTime());
+  const [endDateTime, setEndDateTime] = useState(get1hrLaterDateTime());
   const [errors, setErrors] = useState({ ...initialErrors });
 
   useEffect(() => {
     if (selectedActivity !== null) {
+      console.log("SELECTED ACTIVITY", selectedActivity);
       setAddNew(false);
       setActivityType(selectedActivity.type);
+      setActivityName(selectedActivity.name);
+
       setNotes(selectedActivity.notes);
+      setClosed(selectedActivity.isClosed);
       setDateTime(selectedActivity.dateTime);
+      setEndDateTime(selectedActivity.endDateTime);
     } else {
       setAddNew(true);
-      setActivityType("general");
+      setClosed(false);
+      setActivityType("call");
+      setActivityName("");
       setNotes("");
       setDateTime(getCurrentDateTime());
+      setEndDateTime(get1hrLaterDateTime());
     }
   }, [selectedActivity]);
 
@@ -101,22 +129,46 @@ function AddActivityDialog(props) {
 
   const clearFields = () => {
     setNotes("");
-    setActivityType("general");
+    setActivityType("call");
+    setActivityName("");
+    setAddNew(true);
+    setClosed(false);
     setDateTime(getCurrentDateTime());
+    setEndDateTime(get1hrLaterDateTime());
   };
 
   const updateErrors = () => {
     let activityTypeErr = false;
+    let activityNameErr = false;
+
     let notesErr = false;
     let dateTimeErr = false;
+    let endDateTimeErr = false;
+    if (!activityName || activityName.length === 0) activityNameErr = true;
     if (!activityType || activityType.length === 0) activityTypeErr = true;
     if (!notes || notes.length === 0) notesErr = true;
+    if (!dateTime) dateTimeErr = true;
+    if (!endDateTime) endDateTimeErr = true;
+    if (moment(endDateTime).isBefore(dateTime)) {
+      dateTimeErr = true;
+      endDateTimeErr = true;
+    }
+
     setErrors({
       activityType: activityTypeErr,
       notes: notesErr,
       dateTime: dateTimeErr,
+      endDateTime: endDateTimeErr,
+      activityName: activityNameErr,
     });
-    return activityTypeErr || notesErr || dateTimeErr;
+
+    return (
+      activityNameErr ||
+      activityTypeErr ||
+      notesErr ||
+      dateTimeErr ||
+      endDateTimeErr
+    );
   };
 
   const addActivity = async () => {
@@ -127,14 +179,19 @@ function AddActivityDialog(props) {
           type: act.type,
           notes: act.notes,
           dateTime: act.dateTime,
+          endDateTime: act.endDateTime,
           user_id: act.user_id,
+          isClosed: act.isClosed,
         }))
       : [];
 
     activityLog.push({
       type: activityType,
+      name: activityName,
+      isClosed: closed,
       notes,
       dateTime: dateTime,
+      endDateTime: endDateTime,
       user_id: stateApp.user.email,
     });
 
@@ -156,9 +213,12 @@ function AddActivityDialog(props) {
     let activityLog = props.activityLog
       ? props.activityLog.map((act) => ({
           type: act.type,
+          name: act.name,
           notes: act.notes,
           dateTime: act.dateTime,
+          endDateTime: act.endDateTime,
           user_id: act.user_id,
+          isClosed: act.isClosed,
         }))
       : [];
 
@@ -175,8 +235,11 @@ function AddActivityDialog(props) {
       newActLog[index] = {
         user_id: selectedActivity?.user_id,
         type: activityType,
+        name: activityName,
         dateTime,
+        endDateTime,
         notes,
+        isClosed: closed,
       };
 
       updateContact({
@@ -252,6 +315,7 @@ function AddActivityDialog(props) {
           disabled={loading}
           className={classes.inputField}
           label="Activity Date"
+          error={errors.dateTime}
         /> */}
         <DateTimePicker
           disabled={loading}
@@ -277,7 +341,54 @@ function AddActivityDialog(props) {
           showTodayButton
           fullWidth
         />
-
+        <FormControl
+          variant="outlined"
+          fullWidth
+          className={classes.inputField}
+          size="small"
+        >
+          <InputLabel shrink className={classes.shrinkLabel}>
+            Activity End Date
+          </InputLabel>
+          <TextField
+            fullWidth
+            size="small"
+            variant="outlined"
+            id="enddatetime-local"
+            labelId="enddatetime-local-label"
+            type="datetime-local"
+            value={endDateTime}
+            onChange={(e) => {
+              console.log("PREV: ", endDateTime);
+              console.log("setting: ", e.target.value);
+              setEndDateTime(e.target.value);
+            }}
+            disabled={loading}
+            error={errors.endDateTime}
+          />
+        </FormControl>
+        <FormControl
+          variant="outlined"
+          fullWidth
+          className={classes.inputField}
+          size="small"
+        >
+          <InputLabel shrink className={classes.shrinkLabel}>
+            Activity Name
+          </InputLabel>
+          <TextField
+            fullWidth
+            size="small"
+            variant="outlined"
+            type="text"
+            value={activityName}
+            onChange={(e) => {
+              setActivityName(e.target.value);
+            }}
+            disabled={loading}
+            error={errors.activityName}
+          />
+        </FormControl>
         <FormControl
           variant="outlined"
           fullWidth
@@ -303,12 +414,11 @@ function AddActivityDialog(props) {
             disabled={loading}
             error={errors.activityType}
           >
-            <option value={"general"}>General Update</option>
-            <option value={"phone"}>Phone Call</option>
-            <option value={"email"}>Email</option>
+            <option value={"call"}>Call</option>
             <option value={"meeting"}>Meeting</option>
-            <option value={"sms"}>SMS</option>
-            <option value={"campaign"}>Campaign</option>
+            <option value={"email"}>Email</option>
+            <option value={"task"}>Task</option>
+            <option value={"deadline"}>Deadline</option>
           </Select>
         </FormControl>
 
@@ -328,6 +438,18 @@ function AddActivityDialog(props) {
           }}
           disabled={loading}
           error={errors.notes}
+        />
+
+        <FormControlLabel
+          className={classes.inputField}
+          enabled
+          control={
+            <Checkbox
+              checked={closed}
+              onChange={(e) => setClosed(e.target.checked)}
+            />
+          }
+          label="Mark as done"
         />
 
         <div className={classes.dialogFooter}>

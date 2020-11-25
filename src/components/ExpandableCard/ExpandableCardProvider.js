@@ -33,6 +33,7 @@ export default function ExpandableCardProvider(props) {
         targetLabel={props.targetLabel}
         Api={props.Api}
         noTrackAvailable={props.noTrackAvailable}
+        handleDelete={props.handleDelete}
       />
     </ExpandableCardContextProvider>
   );

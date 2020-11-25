@@ -41,6 +41,7 @@ body {
   color: #fff !important;
 }
 
-.MuiAutocomplete-popper {
-  z-index: 999999 !important;
+.MuiAutocomplete-popper,
+.MuiTooltip-popper {
+  z-index: 9999999999 !important;
 }
