@@ -42,6 +42,7 @@ import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContac
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { GETMONGOUSERS as GETUSERS } from "../../../graphQL/useQueryGetUsers";
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
   dialogExpCard: {
@@ -439,6 +440,7 @@ export default function ActivitiesModal({
         });
       });
     }
+    console.log("ALL", open);
     setOpenDeals(open);
   }, [tdata]);
 
@@ -934,6 +936,23 @@ export default function ActivitiesModal({
                     value={openDeals.find((deal) => deal.id === dealId) || null}
                     getOptionSelected={(option) => option.id === dealId}
                     getOptionLabel={(option) => option.title}
+                    renderOption={(option) => {
+                      return (
+                        <Grid container spacing={0}>
+                          <Grid container item xs={12} alignItems="center">
+                            <Grid item xs>
+                              <span style={{ fontWeight: 400 }}>
+                                {option.title}
+                              </span>
+
+                              <Typography variant="body2" color="textSecondary">
+                                {option.label}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      );
+                    }}
                     renderInput={(params) => (
                       <TextField
                         margin="dense"
