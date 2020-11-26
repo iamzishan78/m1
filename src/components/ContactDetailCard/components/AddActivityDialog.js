@@ -110,7 +110,7 @@ function AddActivityDialog(props) {
   const [addActivityMutation, { loading: addLoading }] = useMutation(
     ADDACTIVITY,
     {
-      refetchQueries: ["getContact"],
+      refetchQueries: ["getContact", "getAllActivities"],
       awaitRefetchQueries: true,
     }
   );
@@ -118,7 +118,7 @@ function AddActivityDialog(props) {
   const [updateActivityMutation, { loading: updateLoading }] = useMutation(
     UPDATEACTIVITY,
     {
-      refetchQueries: ["getContact"],
+      refetchQueries: ["getContact", "getAllActivities"],
       awaitRefetchQueries: true,
     }
   );

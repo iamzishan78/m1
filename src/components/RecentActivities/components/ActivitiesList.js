@@ -100,7 +100,7 @@ export default function ActivitiesList({
   const [deleteActivityMutation, { loading: deleteLoading }] = useMutation(
     DELETEACTIVITY,
     {
-      refetchQueries: ["getContact"],
+      refetchQueries: ["getContact","getAllActivities"],
       awaitRefetchQueries: true,
     }
   );
