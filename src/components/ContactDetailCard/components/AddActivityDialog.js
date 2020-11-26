@@ -17,6 +17,10 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { AppContext } from "../../../AppContext";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import { DateTimePicker } from "@material-ui/pickers";
+import {
+  ADDACTIVITY,
+  UPDATEACTIVITY,
+} from "../../../graphQL/useMutationActivity";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -103,6 +107,22 @@ function AddActivityDialog(props) {
   const [endDateTime, setEndDateTime] = useState(get1hrLaterDateTime());
   const [errors, setErrors] = useState({ ...initialErrors });
 
+  const [addActivityMutation, { loading: addLoading }] = useMutation(
+    ADDACTIVITY,
+    {
+      refetchQueries: ["getContact"],
+      awaitRefetchQueries: true,
+    }
+  );
+
+  const [updateActivityMutation, { loading: updateLoading }] = useMutation(
+    UPDATEACTIVITY,
+    {
+      refetchQueries: ["getContact"],
+      awaitRefetchQueries: true,
+    }
+  );
+
   useEffect(() => {
     if (selectedActivity !== null) {
       console.log("SELECTED ACTIVITY", selectedActivity);
@@ -172,87 +192,47 @@ function AddActivityDialog(props) {
   };
 
   const addActivity = async () => {
+    console.log("ADD ACTIVITY", updateErrors());
     if (updateErrors()) return;
 
-    let activityLog = props.activityLog
-      ? props.activityLog.map((act) => ({
-          type: act.type,
-          notes: act.notes,
-          dateTime: act.dateTime,
-          endDateTime: act.endDateTime,
-          user_id: act.user_id,
-          isClosed: act.isClosed,
-        }))
-      : [];
-
-    activityLog.push({
-      type: activityType,
-      name: activityName,
-      isClosed: closed,
-      notes,
-      dateTime: dateTime,
-      endDateTime: endDateTime,
-      user_id: stateApp.user.email,
-    });
-
-    updateContact({
+    await addActivityMutation({
       variables: {
-        contact: {
-          _id: props.id,
-          activityLog,
+        activity: {
+          type: activityType,
+          name: activityName,
+          notes,
+          ownerId: stateApp.user._id,
+          ownerName: stateApp.user.name || stateApp.user.email,
+          contactId: props.contactData._id,
+          contactName: props.contactData.name,
+          dateTime,
+          endDateTime,
+          isClosed: closed,
         },
       },
-      refetchQueries: ["getContact"],
-      awaitRefetchQueries: true,
     });
   };
 
-  const updateActivity = () => {
+  const updateActivity = async () => {
     if (updateErrors()) return;
 
-    let activityLog = props.activityLog
-      ? props.activityLog.map((act) => ({
-          type: act.type,
-          name: act.name,
-          notes: act.notes,
-          dateTime: act.dateTime,
-          endDateTime: act.endDateTime,
-          user_id: act.user_id,
-          isClosed: act.isClosed,
-        }))
-      : [];
-
-    let newActLog = [...activityLog];
-    const index =
-      newActLog &&
-      newActLog.findIndex(
-        (activity) =>
-          activity.dateTime === selectedActivity.dateTime &&
-          activity.user_id === selectedActivity.user_id
-      );
-
-    if (index > -1) {
-      newActLog[index] = {
-        user_id: selectedActivity?.user_id,
-        type: activityType,
-        name: activityName,
-        dateTime,
-        endDateTime,
-        notes,
-        isClosed: closed,
-      };
-
-      updateContact({
-        variables: {
-          contact: {
-            _id: props.id,
-            activityLog: [...newActLog],
-          },
+    await updateActivityMutation({
+      variables: {
+        activity: {
+          _id: selectedActivity._id,
+          type: activityType,
+          name: activityName,
+          notes,
+          ownerId: stateApp.user._id,
+          ownerName: stateApp.user.name || stateApp.user.email,
+          contactId: props.contactData._id,
+          contactName: props.contactData.name,
+          dateTime,
+          endDateTime,
+          isClosed: closed,
         },
-        refetchQueries: ["getContact"],
-        awaitRefetchQueries: true,
-      });
-    }
+      },
+    });
   };
 
   useEffect(() => {
@@ -477,8 +457,8 @@ function AddActivityDialog(props) {
               color="secondary"
               size="medium"
               disableElevation
-              onClick={() => {
-                addNew ? addActivity() : updateActivity();
+              onClick={async () => {
+                addNew ? await addActivity() : await updateActivity();
               }}
               disabled={loading}
             >

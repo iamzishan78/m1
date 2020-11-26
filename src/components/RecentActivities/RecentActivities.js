@@ -345,7 +345,7 @@ export default ({
         <AddActivityDialog
           onClose={() => setActivityModalOpen(false)}
           id={props.id}
-          activityLog={props.activityLog}
+          contactData={props.contactData}
           selectedActivity={selectedActivity}
         />
       </RightDialog>
