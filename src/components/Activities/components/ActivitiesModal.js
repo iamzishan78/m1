@@ -213,8 +213,8 @@ export default function ActivitiesModal({
   const [closed, setClosed] = useState(false);
   const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
-  const [startTime, setStartTime] = useState("00:00");
-  const [endTime, setEndTime] = useState("00:00");
+  const [startTime, setStartTime] = useState("08:00");
+  const [endTime, setEndTime] = useState("08:00");
   const [notes, setNotes] = useState("");
   const [owner, setOwner] = useState({ name: "", id: null });
   const [dealId, setDealId] = useState("");
@@ -373,8 +373,8 @@ export default function ActivitiesModal({
       setActivityName("");
       setStartDate(getCurrentDate());
       setEndDate(getCurrentDate());
-      setStartTime("00:00");
-      setEndTime("00:00");
+      setStartTime("08:00");
+      setEndTime("08:00");
     }
   }, [selectedActivity]);
 
@@ -449,8 +449,8 @@ export default function ActivitiesModal({
     setClosed(false);
     setStartDate(getCurrentDate());
     setEndDate(getCurrentDate());
-    setStartTime("00:00");
-    setEndTime("00:00");
+    setStartTime("08:00");
+    setEndTime("08:00");
     setNameAutInputValue("");
   };
 
@@ -717,6 +717,7 @@ export default function ActivitiesModal({
                     variant="outlined"
                     onChange={(e) => {
                       setStartTime(e.target.value);
+                      setEndTime(e.target.value);
                       console.log("EVENT: START TIME", e.target.value);
                     }}
                   />
