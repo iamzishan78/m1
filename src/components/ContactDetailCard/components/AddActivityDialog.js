@@ -223,8 +223,6 @@ function AddActivityDialog(props) {
           type: activityType,
           name: activityName,
           notes,
-          ownerId: stateApp.user._id,
-          ownerName: stateApp.user.name || stateApp.user.email,
           contactId: props.contactData._id,
           contactName: props.contactData.name,
           dateTime,

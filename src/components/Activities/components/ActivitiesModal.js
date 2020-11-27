@@ -364,7 +364,10 @@ export default function ActivitiesModal({
       setNameAutValue({ name: "", _id: null });
       setClosed(false);
       setNotes("");
-      setOwner({ name: stateApp.user.fullname, id: stateApp.user.mongoId });
+      setOwner({
+        name: stateApp.user.fullname || stateApp.user.email,
+        id: stateApp.user.mongoId,
+      });
       setDealId("");
       setActivityType("");
       setActivityName("");
@@ -435,7 +438,10 @@ export default function ActivitiesModal({
   const clearFields = () => {
     setAddNew(true);
     setNotes("");
-    setOwner({ name: stateApp.user.fullname, id: stateApp.user.mongoId });
+    setOwner({
+      name: stateApp.user.fullname || stateApp.user.email,
+      id: stateApp.user.mongoId,
+    });
     setNameAutValue({ name: "", _id: null });
     setDealId("");
     setActivityType("");
