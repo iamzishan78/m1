@@ -43,6 +43,7 @@ import WellsCard from "./components/WellsCard";
 import RecentActivities from "../RecentActivities/RecentActivities";
 import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
 import ViewDocuments from "../ViewDocuments/ViewDocuments";
+import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -334,7 +335,7 @@ export default function ContactDetailCard(props) {
   }, [props.contactId]);
 
   useEffect(() => {
-    console.log("SET CONTACT:", data);
+    console.log("SET CONTACTtttttttttttttttttttt:", data);
     if (data && data.contact) {
       setContactData(data.contact);
     }
@@ -434,8 +435,8 @@ export default function ContactDetailCard(props) {
           <div>
             <div className={classes.userIcon}>
               <StyleBadge
-                //badgeContent={5}
-                //color={"#f6c16b"}
+              //badgeContent={5}
+              //color={"#f6c16b"}
               >
                 <Avatar
                   className={classes.grey}
@@ -572,20 +573,18 @@ export default function ContactDetailCard(props) {
             id={contactData._id}
           />
         </Grid>
- {/*/////////// new section - lead stage //////////// */}
- <Grid item xs={12} className={`${classes.border}`}>
+        {/*/////////// new section - lead stage //////////// */}
+        <Grid item xs={12} className={`${classes.border}`}>
           <div className={classes.SectMargin}>
             <Grid item xs={12} style={{ minHeight: "33px" }}>
               <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
                 Lead Stage changed:{" "}
                 <span style={{ fontWeight: "normal" }}>
-                  {moment(
-                    Number(
-                      contactData.lastUpdateLeadStageAt
-                        ? contactData.lastUpdateLeadStageAt
-                        : contactData.lastUpdateAt
-                    )
-                  ).fromNow()}
+                  {anyToDate(
+                    contactData.lastUpdateLeadStageAt
+                      ? contactData.lastUpdateLeadStageAt
+                      : contactData.lastUpdateAt
+                  ).toLocaleString()}
                 </span>
               </h4>
             </Grid>
@@ -639,7 +638,7 @@ export default function ContactDetailCard(props) {
                 </Card>
               </Grid>
               <Grid item xs={4}>
-                <Card raised style={{ minHeight: "35px",  height: "100%" }}>
+                <Card raised style={{ minHeight: "35px", height: "100%" }}>
                   <DealsNew
                     handleOpenExpandableCard={handleOpenExpandableCard}
                     contact={contactData}
@@ -653,7 +652,6 @@ export default function ContactDetailCard(props) {
           </Grid>
         </Grid>
 
-       
         {/*/////////// Recent Activities. //////////// */}
         <Grid item xs={12} className={`${classes.border}`}>
           <div className={classes.SectMargin}>
@@ -753,7 +751,7 @@ export default function ContactDetailCard(props) {
               />
             </IconButton>
 
-            <IconButton className={classes.shrinkRightColumnIcons}>
+            {/* <IconButton className={classes.shrinkRightColumnIcons}>
               <DescriptionRoundedIcon
                 onClick={() =>
                   handleOpenExpandableCard(
@@ -766,7 +764,7 @@ export default function ContactDetailCard(props) {
                   )
                 }
               />
-            </IconButton>
+            </IconButton> */}
           </div>
         ) : (
           <Grid container spacing={0} id="expandedRCContent">
@@ -936,7 +934,7 @@ export default function ContactDetailCard(props) {
                 {/* //// ViewAll card top bar //// */}
                 <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
                   <h3 className={classes.expTardTopBarNav}>
-                    <span>Leads</span>
+                    <span>Contacts</span>
                     {" > "}
                     <span
                       className={classes.expTardTopBarNavContName}

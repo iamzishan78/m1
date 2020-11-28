@@ -1,30 +1,74 @@
+import React, { useContext } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Add from "@material-ui/icons/Add";
+import List from "@material-ui/icons/List";
+import GridOn from "@material-ui/icons/GridOn";
 import OfflineBolt from "@material-ui/icons/OfflineBolt";
 import CheckBox from "@material-ui/icons/CheckBox";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useContext } from "react";
 import { AppContext } from "../../../AppContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "64px",
+    minHeight: "50px",
     backgroundColor: "#fff",
+    padding: "0 16px 0px",
+  },
+  top: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "0 12px",
+    
+  },
+  bottom: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    padding: 20,
   },
   right: {
-    "& h2": {
+    display: "flex",
+    alignItems: "center",
+
+    "& h1": {
       color: "#0DBBEA",
-      padding: "12px"
+      marginRight: 16,
+    },
+  },
+
+  toggleBtn: {
+    borderRadius: 5,
+    border: "1px solid #1CB6DA",
+    color: "#1CB6DA",
+    transition: "200ms all",
+    "&:hover": {
+      backgroundColor: "#1CB6DA44",
+    },
+  },
+  filterToggleBtn: {
+    borderRadius: 5,
+    border: "1px solid #d9d9d9",
+    color: "#333",
+    transition: "200ms all",
+    backgroundColor: "#f5f5f5",
+  },
+  activeBtn: {
+    borderRadius: 5,
+    border: "1px solid #1CB6DA",
+    backgroundColor: "#1CB6DA",
+    color: "#fff",
+    "&:hover": {
+      backgroundColor: "#1CB6DAdd",
     },
   },
   left: {
     display: "flex",
+    alignItems: "center",
   },
   closedDeals: {
     marginLeft: 8,
@@ -55,8 +99,11 @@ const useStyles = makeStyles((theme) => ({
   },
   addDeal: {
     marginLeft: 8,
-    paddingLeft: 8,
-    paddingRight: 8,
+    padding: 9,
+    borderRadius: 5,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#011133",
     color: "#fff",
     transition: "200ms all",
@@ -68,10 +115,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TransactAppBar = ({
-  closedSum,
-  closedLength,
-  activeSum,
-  activeLength,
+  wonLength,
+  wonSum,
+  openLength,
+  openSum,
+  dealDisplayType,
+  setDealDisplayType,
+  dealFilter,
+  setDealFilter,
 }) => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -86,40 +137,119 @@ const TransactAppBar = ({
 
   return (
     <>
-      <AppBar className={classes.root} position="sticky" variant="outlined">
-        <div className={classes.right}>
-          <h2>DEALS</h2>
-        </div>
-        <div className={classes.left}>
-          <div className={classes.activeDeals}>
-            <OfflineBolt />
-            <span>
-              {activeLength}{" "}
-              {activeLength !== 1 ? "ACTIVE DEALS" : "ACTIVE DEAL"} |{" "}
-              {activeSum}
-            </span>
+      <AppBar
+        elevation={1}
+        className={classes.root}
+        position="static"
+        variant="outlined"
+      >
+        <div className={classes.top}>
+          <div className={classes.right}>
+            <h1>DEAL FLOW</h1>
+            <ButtonGroup>
+              <IconButton
+                size="small"
+                className={`${classes.toggleBtn} ${
+                  dealDisplayType === "table" && classes.activeBtn
+                }`}
+                onClick={() => setDealDisplayType("table")}
+              >
+                <List />
+              </IconButton>
+              <IconButton
+                size="small"
+                className={`${classes.toggleBtn} ${
+                  dealDisplayType === "board" && classes.activeBtn
+                }`}
+                onClick={() => setDealDisplayType("board")}
+              >
+                <GridOn />
+              </IconButton>
+            </ButtonGroup>
+
+      <div className={classes.bottom}>
+          <ButtonGroup>           
+            <Button
+              size="small" 
+              className={`${classes.filterToggleBtn} ${
+                dealFilter === "all" && classes.activeBtn
+              }`}
+              onClick={() => setDealFilter("all")}
+            >
+              ALL
+            </Button>
+            <Button
+              size="small"
+              className={`${classes.filterToggleBtn} ${
+                dealFilter === "open" && classes.activeBtn
+              }`}
+              onClick={() => setDealFilter("open")}
+            >
+              OPEN
+            </Button>
+            <Button
+              size="small"
+              className={`${classes.filterToggleBtn} ${
+                dealFilter === "won" && classes.activeBtn
+              }`}
+              onClick={() => setDealFilter("won")}
+            >
+              Won
+            </Button>
+
+            <Button
+              size="small"
+              className={`${classes.filterToggleBtn} ${
+                dealFilter === "lost" && classes.activeBtn
+              }`}
+              onClick={() => setDealFilter("lost")}
+            >
+              Lost
+            </Button>
+
+            <Button
+              size="small"
+              className={`${classes.filterToggleBtn} ${
+                dealFilter === "deleted" && classes.activeBtn
+              }`}
+              onClick={() => setDealFilter("deleted")}
+            >
+              Deleted
+            </Button>
+          </ButtonGroup>
           </div>
-          <div className={classes.closedDeals}>
-            <CheckBox />
-            <span>
-              {closedLength}{" "}
-              {closedLength !== 1 ? "CLOSED DEALS" : "CLOSED DEAL"} |{" "}
-              {closedSum}
-            </span>
+      
           </div>
-          {/* <Button className={classes.import} color="default" size="small">
-            IMPORT
-          </Button> */}
-          {/* <Button
-            className={classes.addDeal}
-            color="primary"
-            size="small"
-            startIcon={<Add />}
-            onClick={handleClickAddDeal}
-          >
-            Add Deal
-          </Button> */}
+          <div className={classes.left}>
+            <div className={classes.activeDeals}>
+              <OfflineBolt />
+              <span>
+                {openLength} {openLength !== 1 ? "OPEN DEALS" : "OPEN DEAL"} |{" "}
+                {openSum}
+              </span>
+            </div>
+            <div className={classes.closedDeals}>
+              <CheckBox />
+              <span>
+                {wonLength} {wonLength !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
+                {wonSum}
+              </span>
+            </div>
+            {/* <Button className={classes.import} color="default" size="small">
+              IMPORT
+            </Button> */}
+            <Button
+              className={classes.addDeal}
+              color="primary"
+              size="small"
+              startIcon={<Add />}
+              onClick={handleClickAddDeal}
+            >
+              Add Deal
+            </Button>
+          </div>
         </div>
+        
       </AppBar>
     </>
   );

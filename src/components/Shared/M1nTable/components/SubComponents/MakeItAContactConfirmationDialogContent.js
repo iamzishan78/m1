@@ -51,30 +51,8 @@ export default function MakeItAContactConfirmationDialogContent(props) {
         <h3 className={modalClass.inputLabel}>{props.children}</h3>
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={() => {
-            setStateApp((state) => ({
-              ...state,
-              universalCircularLoaderAct: true,
-            }));
-            addContact({
-              variables: {
-                contact: {
-                  entity: props.entity,
-                  createBy: stateApp.user.mongoId,
-                  lastUpdateBy: stateApp.user.mongoId,
-                },
-              },
-              refetchQueries: ["getContacts", "getCustomLayer"],
-              awaitRefetchQueries: true,
-            });
-            // props.onClose();
-          }}
-          color="primary"
-        >
-          Accept
-        </Button>
-        <Button
+
+      <Button
           onClick={() => {
             props.onClose();
           }}
@@ -82,6 +60,48 @@ export default function MakeItAContactConfirmationDialogContent(props) {
         >
           Cancel
         </Button>
+        <Button
+          onClick={() => {
+            {
+              setStateApp((state) => ({
+                ...state,
+                universalCircularLoaderAct: true,
+              }));
+              if (props.targetLabel == "owner") {
+                addContact({
+                  variables: {
+                    contact: {
+                      ...props.entity,
+                      createBy: stateApp.user.mongoId,
+                      lastUpdateBy: stateApp.user.mongoId,
+                    },
+                  },
+                  refetchQueries: [
+                    "getContacts",
+                    "getCustomLayer",
+                    "checkIfOwnersAreContacts",
+                  ],
+                  awaitRefetchQueries: true,
+                });
+              } else
+                addContact({
+                  variables: {
+                    contact: {
+                      entity: props.entity,
+                      createBy: stateApp.user.mongoId,
+                      lastUpdateBy: stateApp.user.mongoId,
+                    },
+                  },
+                  refetchQueries: ["getContacts", "getCustomLayer"],
+                  awaitRefetchQueries: true,
+                });
+            }
+          }}
+          color="primary"
+        >
+          Continue
+        </Button>
+
       </DialogActions>
     </React.Fragment>
   );

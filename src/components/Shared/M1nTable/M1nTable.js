@@ -24,7 +24,9 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
 import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
-import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
+// import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
+import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
+import { CONTACTSFILTEROPTIONS } from "../../../graphQL/useQueryContactsFilterOptions";
 import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType";
 import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
@@ -40,6 +42,8 @@ import { UPDATEPARCELOWNER } from "../../../graphQL/useMutationUpdateParcelOwner
 import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRecords";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelInterests";
+import { IFARECONTACTS } from "../../../graphQL/useQueryIfOwnersAreContacts";
+import { OWNER_WELLINTERESTS } from "../../../graphQL/useQueryOwner_WellInterests";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -80,6 +84,18 @@ var ticksToDateString = function (ticks) {
 const TrackedOwnersHeadCells = [
   {
     name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "entity",
     options: {
       display: false,
       filter: false,
@@ -143,6 +159,19 @@ const TrackedOwnersHeadCells = [
   //   },
   // },
 
+  {
+    name: "isContact",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+
   /* 
   // TEMPORARY COMMENT OUT. DO NOT DELETE 
   // WILL BE RE-ADDED ONCE WE FIGURE OUT HOW TO DRAW AGGREGATIONS 
@@ -187,6 +216,19 @@ const TrackedOwnersHeadCells = [
       viewColumns: false,
     },
   },
+  //temporarily comment out until release of owner summary card
+  // {
+  //   name: "detailCard",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     sort: false,
+  //     searchable: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
   {
     name: "coordinates",
     label: " ",
@@ -243,18 +285,18 @@ const WellsHeadCells = [
       },
     },
   },
-  {
-    name: "ownerCount",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  // {
+  //   name: "ownerCount",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
   {
     name: "commentsCounter",
     label: " ",
@@ -306,6 +348,18 @@ const OwnersPerWellHeadCells = [
       viewColumns: false,
     },
   },
+  {
+    name: "entity",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
   { name: "name", label: "Name" },
   {
     name: "ownershipType",
@@ -341,18 +395,19 @@ const OwnersPerWellHeadCells = [
       },
     },
   },
-  // {
-  //   name: "contactsCounter",
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
+
+  {
+    name: "isContact",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 
   /*   
 // TEMPORARY COMMENT OUT. DO NOT DELETE 
@@ -539,8 +594,10 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
+
   {
     name: "address1",
+    label: "Primary Address 1",
     options: {
       display: false,
       filter: false,
@@ -553,6 +610,7 @@ const ContactsHeadCells = [
   },
   {
     name: "address2",
+    label: "Primary Address 2",
     options: {
       display: false,
       filter: false,
@@ -565,6 +623,7 @@ const ContactsHeadCells = [
   },
   {
     name: "city",
+    label: "City",
     options: {
       display: false,
       filter: false,
@@ -577,6 +636,7 @@ const ContactsHeadCells = [
   },
   {
     name: "state",
+    label: "State",
     options: {
       display: false,
       filter: false,
@@ -589,6 +649,7 @@ const ContactsHeadCells = [
   },
   {
     name: "zip",
+    label: "Zip",
     options: {
       display: false,
       filter: false,
@@ -601,6 +662,7 @@ const ContactsHeadCells = [
   },
   {
     name: "country",
+    label: "Country",
     options: {
       display: false,
       filter: false,
@@ -612,27 +674,384 @@ const ContactsHeadCells = [
     },
   },
 
-  { name: "name", label: "Name", editable: true },
+  {
+    name: "name",
+    label: "Full Name",
+    // editable: true,
+    options: {
+      sort: false,
+      filter: false,
+    },
+  },
+  {
+    name: "title",
+    label: "Title",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "firstName",
+    label: "First Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "middleName",
+    label: "Middle Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "lastName",
+    label: "Last Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "suffix",
+    label: "Suffix",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
   {
     name: "fullContactAddress",
     label: "Primary Address",
-    editable: true,
-    options: { filter: false },
+    // editable: true,
+    options: {
+      sort: false,
+      filter: false,
+    },
   },
-  { name: "leadSource", label: "Lead Source", editable: true },
-  { name: "lastUpdateBy.name", label: "Updated By" },
-  { name: "lastUpdateAt", label: "Last Updated", options: { filter: false } },
-  // { name: "primaryEmail", label: "Primary Email" },
+  {
+    name: "melissaRowsCount",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "mobilephone",
+    label: "Primary Mobile Phone",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "homePhone",
+    label: "Primary Home Phone",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "primaryEmail",
+    label: "Primary Email",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "AltPhone",
+    label: "Primary Work Phone",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "secondaryEmail",
+    label: "Email 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "linkedin",
+    label: "LinkedIn Profile",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "facebook",
+    label: "Facebook Profile",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "twitter",
+    label: "Twitter Profile",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "companyName",
+    label: "Company Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "jobTitle",
+    label: "Job Title",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "leadStage",
+    label: "Lead Stage",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "homePhone2",
+    label: "Home Phone 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "homePhone3",
+    label: "Home Phone 3",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "mobilephone2",
+    label: "Mobile Phone 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "mobilephone3",
+    label: "Mobile Phone 3",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "AltPhone2",
+    label: "Work Phone 2",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "AltPhone3",
+    label: "Work Phone 3",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "email3",
+    label: "Email 3",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "status",
+    label: "Status",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "timeZone",
+    label: "Time Zone",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "territory",
+    label: "Territory",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "campaignName",
+    label: "Campaign Name",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "notes",
+    label: "Comments",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "website ",
+    label: "Website",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "industryType",
+    label: "Industry Type",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "leadSource",
+    label: "Lead Source",
+    // editable: false,
+    options: {
+      sort: false,
+      filterOptions: {
+        names: [],
+      },
+    },
+  },
+  {
+    name: "lastUpdateBy.name",
+    label: "Updated By",
+    options: {
+      sort: false,
+      filterOptions: {
+        names: [],
+      },
+    },
+  },
+  {
+    name: "lastUpdateAt",
+    label: "Last Updated",
+    options: {
+      filter: false,
+    },
+  },
   // {
-  //   name: "mobilePhone",
-  //   label: "Mobile Phone",
+  //   name: "createBy.name",
+  //   label: "Created By",
+  //   options: {
+  //     display: false,
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //   },
   // },
   // {
-  //   name: "homePhone",
-  //   label: "Home Phone",
+  //   name: "createAt",
+  //   label: "Created Date",
+  //   options: {
+  //     display: false,
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //   },
   // },
-  // {
-
   {
     name: "tags",
     label: "Tags ",
@@ -642,30 +1061,9 @@ const ContactsHeadCells = [
       print: false,
       filterOptions: {
         names: [],
-        logic(rowVal, pickedTags) {
-          let containIts = true;
-          pickedTags.map((pickedTag) => {
-            if (rowVal[0].indexOf(pickedTag) === -1) {
-              containIts = false;
-            }
-          });
-          return !containIts;
-        },
       },
     },
   },
-  // {
-  //   name: "owners", //ownerPerContactCount
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
   {
     name: "commentsCounter",
     label: " ",
@@ -697,18 +1095,6 @@ const ContactsHeadCells = [
   //     filterType: "dropdown",
   //   },
   // },
-  {
-    name: "melissaRowsCount",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
 ];
 
 const SearchsHeadCells = [
@@ -796,6 +1182,18 @@ const SearchsHeadCells = [
       filter: false,
       sort: false,
       searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isContact",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
       download: false,
       print: false,
       viewColumns: false,
@@ -1262,6 +1660,102 @@ const ParcelInterestsPerContactHeadCells = [
   },
 ];
 
+const WellInterests = [
+  {
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  { name: "wellName", label: "Well" },
+  { name: "apiNumber", label: "API" },
+  { name: "operator", label: "Operator" },
+  { name: "interestType", label: "Type" },
+  {
+    name: "ownershipPercentage",
+    label: "Interest",
+  },
+  {
+    name: "appraisedValue",
+    label: "Appraised Value",
+  },
+  {
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
+  },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isTracked",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "detailCard",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "coordinates",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+];
+
 ////////////HeadCells end///////////////////////////////////////////////
 
 const capitalizeFirstLetter = (string) => {
@@ -1295,9 +1789,11 @@ function M1nTable(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [rows, Rows] = useState([]);
+
   const [addDealOpen, setAddDealOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState();
+
+  const [rows, Rows] = useState([]);
   const setRows = (newState) => {
     setStateIfDeepEqual(Rows, newState);
   };
@@ -1353,6 +1849,11 @@ function M1nTable(props) {
     ({ MapGridCard }) => MapGridCard
   );
 
+  const [dataContacts, DataContacts] = useState(null);
+  const setDataContacts = (newState) => {
+    setStateIfDeepEqual(DataContacts, newState);
+  };
+
   ////////////Queries begin///////////////////////////////////////////////
 
   const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(
@@ -1392,12 +1893,19 @@ function M1nTable(props) {
   });
   const [removeUser] = useMutation(REMOVEUSER);
   //////////
+
   const [getContacts, { data: constDataContacts }] = useLazyQuery(
-    CONTACTSQUERY,
+    PAGINATEDCONTACTSQUERY,
     {
       fetchPolicy: "cache-and-network",
     }
   );
+  const [
+    getContactsFilterOptions,
+    { data: dataContactsFilterOptions },
+  ] = useLazyQuery(CONTACTSFILTEROPTIONS, {
+    fetchPolicy: "cache-and-network",
+  });
   //////////
   const [getTransactionData, { data: dataDeals }] = useLazyQuery(
     TRANSACTIONDATA
@@ -1426,25 +1934,30 @@ function M1nTable(props) {
   ] = useLazyQuery(CONTACTPARCELINTERESTS, {
     fetchPolicy: "cache-and-network",
   });
+  /////////
+  const [
+    checkIfOwnersAreContacts,
+    { data: checkIfOwnersAreContactsData },
+  ] = useLazyQuery(IFARECONTACTS, {
+    fetchPolicy: "cache-and-network",
+  });
+  //////////
+  const [
+    getOwner_WellInterests,
+    { data: dataOwner_WellInterests },
+  ] = useLazyQuery(OWNER_WELLINTERESTS);
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
 
-  // workaround to make constDataContacts.contacts[i] editable
-  // TODO: set correct isTracked on backend, not frontend
-  const [dataContacts, setDataContacts] = useState(null);
   useEffect(() => {
-    if (constDataContacts && constDataContacts.contacts) {
-      let tmpDataContacts = { contacts: [] };
-      constDataContacts.contacts.forEach((contact) => {
-        tmpDataContacts.contacts.push(Object.create(contact));
-      });
-      setDataContacts(tmpDataContacts);
-    }
-  }, [constDataContacts]);
-
-  useEffect(() => {
-    if (targetLabel && stateApp.user && stateApp.user.mongoId && showTracks) {
+    if (
+      targetLabel &&
+      stateApp.user &&
+      stateApp.user.mongoId &&
+      showTracks &&
+      targetLabel !== "contact"
+    ) {
       tracksByObjectType({
         variables: {
           objectType:
@@ -1482,6 +1995,7 @@ function M1nTable(props) {
     ) {
       console.log("ue mintable 3");
       if (dataTracks.tracksByObjectType.length !== 0) {
+        setLoading(true);
         const tracksIdArray = dataTracks.tracksByObjectType.map(
           (track) => track.trackOn
         );
@@ -1508,6 +2022,9 @@ function M1nTable(props) {
             userId: stateApp.user.mongoId,
           },
         });
+        checkIfOwnersAreContacts({
+          variables: { idsArray: tracksIdArray },
+        });
       } else {
         setRows([]);
         setLoading(false);
@@ -1523,7 +2040,9 @@ function M1nTable(props) {
         dataCommentsCounter &&
         dataCommentsCounter.commentsCounter &&
         dataTagSamples &&
-        dataTagSamples.tagSamples
+        dataTagSamples.tagSamples &&
+        checkIfOwnersAreContactsData &&
+        checkIfOwnersAreContactsData.ifAreContacts
         //  && dataOwnersWells
       ) {
         let owners = [...dataOwners.owners];
@@ -1539,7 +2058,7 @@ function M1nTable(props) {
               objectId: owner.id,
             },
           };
-
+          owner.isContact = false;
           // if (dataOwnersWells.ownersWells) {
           //   for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
           //     if (owner.id === dataOwnersWells.ownersWells[i].ownerId) {
@@ -1550,6 +2069,23 @@ function M1nTable(props) {
           //     }
           //   }
           // }
+
+          for (
+            let i = 0;
+            i < checkIfOwnersAreContactsData.ifAreContacts.length;
+            i++
+          ) {
+            if (
+              owner.id ===
+              checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
+            ) {
+              owner.isContact =
+                checkIfOwnersAreContactsData.ifAreContacts[i].isContact;
+
+              owner.entity = checkIfOwnersAreContactsData.ifAreContacts[i]._id;
+              break;
+            }
+          }
 
           for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
             if (owner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -1627,6 +2163,7 @@ function M1nTable(props) {
     dataOwners,
     dataTagSamples,
     dataCommentsCounter,
+    checkIfOwnersAreContactsData,
     //  dataOwnersWells
   ]);
   ////////////Tracked Owners end///////////////////////////////////////////////
@@ -1655,6 +2192,7 @@ function M1nTable(props) {
     ) {
       console.log("ue mintable 6");
       if (dataTracks.tracksByObjectType.length !== 0) {
+        setLoading(true);
         const tracksIdArray = dataTracks.tracksByObjectType.map(
           (track) => track.trackOn
         );
@@ -1953,6 +2491,7 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell") {
+      setLoading(true);
       console.log("ue mintable 10");
       setTargetLabel("owner");
       setHeader("Tax Roll Ownership");
@@ -1967,6 +2506,7 @@ function M1nTable(props) {
     if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
       console.log("ue mintable 11");
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
+        setLoading(true);
         const objectsIdsArray = dataWellOwners.wellOwners.map(
           (wellOwner) => wellOwner.id
         );
@@ -1981,6 +2521,9 @@ function M1nTable(props) {
         });
         getTagSamples({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+        });
+        checkIfOwnersAreContacts({
+          variables: { idsArray: objectsIdsArray },
         });
       } else {
         setLoading(false);
@@ -2002,7 +2545,9 @@ function M1nTable(props) {
       dataTagSamples.tagSamples &&
       // dataOwnersWells &&
       dataTracks &&
-      dataTracks.tracksByObjectType
+      dataTracks.tracksByObjectType &&
+      checkIfOwnersAreContactsData &&
+      checkIfOwnersAreContactsData.ifAreContacts
     ) {
       const wellOwners = dataWellOwners.wellOwners.map((o) => {
         let wellOwner = { ...o };
@@ -2021,6 +2566,24 @@ function M1nTable(props) {
         //     }
         //   }
         // }
+
+        for (
+          let i = 0;
+          i < checkIfOwnersAreContactsData.ifAreContacts.length;
+          i++
+        ) {
+          if (
+            wellOwner.id ===
+            checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
+          ) {
+            wellOwner.isContact =
+              checkIfOwnersAreContactsData.ifAreContacts[i].isContact;
+
+            wellOwner.entity =
+              checkIfOwnersAreContactsData.ifAreContacts[i]._id;
+            break;
+          }
+        }
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (wellOwner.id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -2097,6 +2660,7 @@ function M1nTable(props) {
     dataTagSamples,
     dataCommentsCounter,
     // dataOwnersWells,
+    checkIfOwnersAreContactsData,
     dataTracks,
   ]);
 
@@ -2106,6 +2670,7 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "Contacts") {
+      setLoading(true);
       console.log("ue mintable 22");
       setTargetLabel("contact");
       setHeader("Contacts");
@@ -2115,6 +2680,7 @@ function M1nTable(props) {
           userId: stateApp.user.mongoId
         },
       });
+      getContactsFilterOptions
       setUploadIcon(false);
       setStartPaginationAt(25);
     }
@@ -2124,48 +2690,164 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "Contacts" &&
-      dataContacts &&
+      constDataContacts /*&&
+      dataContactsFilterOptions &&
       dataTracks &&
-      dataTracks.tracksByObjectType
+      dataTracks.tracksByObjectType*/
     ) {
       console.log("ue mintable 23");
-      if (dataContacts.contacts && dataContacts.contacts.length > 0) {
-        const objectsIdsArray = [];
-        dataContacts.contacts.forEach((contact) => {
-          contact.isTracked = false;
-          objectsIdsArray.push(contact._id);
+      if (
+        constDataContacts?.paginatedContacts?.edges &&
+        constDataContacts.paginatedContacts.edges.length > 0
+      ) {
+        let tmpDataContacts = {
+          ...constDataContacts,
+          paginatedContacts: {
+            ...constDataContacts.paginatedContacts,
+            edges: [
+              ...constDataContacts.paginatedContacts.edges.map((edge) => {
+                return {
+                  ...edge,
+                  node: {
+                    ...edge.node,
+                    isTracked: false,
+                  },
+                };
+              }),
+            ],
+          },
+        };
 
-          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-            if (contact.id === dataTracks.tracksByObjectType[i].trackOn) {
-              contact.isTracked = true;
-              break;
-            }
-          }
-        });
-
-        getCommentsCounter({
-          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
-        });
-        getTagSamples({
-          variables: { objectsIdsArray, userId: stateApp.user.mongoId },
-        });
-        getMelissaRowsCount({
-          variables: { objectsIdsArray },
-        });
+        setDataContacts(tmpDataContacts);
+        setRows([
+          ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
+        ]);
+        setLoading(false);
       } else {
         setLoading(false);
         setRows([]);
       }
     }
-  }, [dataContacts, dataTracks]);
+  }, [
+    constDataContacts,
+    // dataContactsFilterOptions,
+    // dataTracks
+  ]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "Contacts" &&
+      dataContacts?.paginatedContacts?.edges &&
+      dataContacts?.paginatedContacts?.edges.length > 0
+    ) {
+      console.log("ue mintable 23");
+
+      const objectsIdsArray = [];
+      dataContacts.paginatedContacts.edges.forEach(({ node }) => {
+        objectsIdsArray.push(node._id);
+      });
+
+      getCommentsCounter({
+        variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+      });
+      getTagSamples({
+        variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+      });
+      getMelissaRowsCount({
+        variables: { objectsIdsArray },
+      });
+    }
+  }, [dataContacts]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "Contacts" &&
+      dataContactsFilterOptions
+    ) {
+      console.log("ue mintable 23.5");
+      if (
+        dataContactsFilterOptions &&
+        dataContactsFilterOptions.contactsFilterOptions
+      ) {
+        let filterTags = [
+          ...dataContactsFilterOptions.contactsFilterOptions.tags.map((tag) => {
+            return tag._id;
+          }),
+        ];
+        let filterLeadSource = [
+          ...dataContactsFilterOptions.contactsFilterOptions.leadSource.map(
+            (leadSource) => {
+              return leadSource._id;
+            }
+          ),
+        ];
+        let filterLastUpdateBy = [
+          ...dataContactsFilterOptions.contactsFilterOptions.lastUpdateBy.map(
+            (lastUpdateBy) => {
+              return lastUpdateBy._id;
+            }
+          ),
+        ];
+
+        setColumns(
+          ContactsHeadCells.map((column) => {
+            switch (column.name) {
+              case "tags":
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: filterTags,
+                    },
+                  },
+                };
+
+              case "leadSource":
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: filterLeadSource,
+                    },
+                  },
+                };
+
+              case "lastUpdateBy.name":
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: filterLastUpdateBy,
+                    },
+                  },
+                };
+
+              default:
+                return column;
+            }
+          })
+        );
+      } else {
+        // setLoading(false);
+      }
+    }
+  }, [dataContactsFilterOptions]);
 
   useEffect(() => {
     if (
       props.parent &&
       props.parent === "Contacts" &&
       dataContacts &&
-      dataContacts.contacts &&
-      dataContacts.contacts.length > 0 &&
+      dataContacts.paginatedContacts.edges &&
+      dataContacts.paginatedContacts.edges.length > 0 &&
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
@@ -2174,23 +2856,38 @@ function M1nTable(props) {
       dataMelissaRowsCount.getMelissaRecordsCountForContactIds
     ) {
       console.log("ue mintable 24");
-      dataContacts.contacts.forEach((contact) => {
-        contact.commentsCounter = 0;
-        contact.tags = [[], 0];
-        // contact.fullContactAddress = joinAddress(contact);
-        // contact.contactName = contact.name;
+
+      let tmpDataContacts = {
+        ...dataContacts,
+        paginatedContacts: {
+          ...dataContacts.paginatedContacts,
+          edges: [
+            ...dataContacts.paginatedContacts.edges.map((edge) => {
+              return {
+                ...edge,
+                node: { ...edge.node },
+              };
+            }),
+          ],
+        },
+      };
+
+      tmpDataContacts.paginatedContacts.edges.forEach(({ node }) => {
+        node.commentsCounter = 0;
+        node.tags = [[], 0];
+        // node.fullContactAddress = joinAddress(node);
+        // node.contactName = node.name;
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-          if (contact._id === dataCommentsCounter.commentsCounter[i]._id) {
-            contact.commentsCounter =
-              dataCommentsCounter.commentsCounter[i].total;
+          if (node._id === dataCommentsCounter.commentsCounter[i]._id) {
+            node.commentsCounter = dataCommentsCounter.commentsCounter[i].total;
             break;
           }
         }
 
         for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-          if (contact._id === dataTagSamples.tagSamples[i]._id) {
-            contact.tags = [
+          if (node._id === dataTagSamples.tagSamples[i]._id) {
+            node.tags = [
               dataTagSamples.tagSamples[i].tags,
               dataTagSamples.tagSamples[i].total,
             ];
@@ -2201,56 +2898,21 @@ function M1nTable(props) {
 
         let foundMelissaRowsCount = dataMelissaRowsCount.getMelissaRecordsCountForContactIds.find(
           (value) => {
-            return contact._id === value._id;
+            return node._id === value._id;
           }
         );
         if (foundMelissaRowsCount) {
-          contact.melissaRowsCount = foundMelissaRowsCount.total;
+          node.melissaRowsCount = foundMelissaRowsCount.total;
         }
       });
 
-      let availableTags = [];
-      dataTagSamples.tagSamples.map((sample) => {
-        availableTags = [...availableTags, ...sample.tags];
-      });
-      const cleanAvailableTags = [...new Set(availableTags)];
-
-      setColumns(
-        cleanAvailableTags.length > 0
-          ? ContactsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
-                    },
-                  },
-                };
-              }
-              return column;
-            })
-          : ContactsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })
-      );
-      setRows([...dataContacts.contacts]);
-      setLoading(false);
+      setRows([
+        ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
+      ]);
+      // setLoading(false);
     }
   }, [
-    dataContacts,
-    dataTracks,
+    // dataTracks,
     dataTagSamples,
     dataCommentsCounter,
     dataMelissaRowsCount,
@@ -2323,6 +2985,10 @@ function M1nTable(props) {
             variables: { objectsIdsArray, userId: stateApp.user.mongoId },
           });
         if (props.showTracks) setShowTracks(true);
+        if (props.targetLabel == "owner")
+          checkIfOwnersAreContacts({
+            variables: { idsArray: objectsIdsArray },
+          });
       } else {
         setShowTracks(false);
         if (!searchloading) {
@@ -2353,6 +3019,9 @@ function M1nTable(props) {
         (dataCommentsCounter && dataCommentsCounter.commentsCounter)) &&
       (!props.showTags || (dataTagSamples && dataTagSamples.tagSamples)) &&
       (!props.showTracks || (dataTracks && dataTracks.tracksByObjectType)) &&
+      (props.targetLabel !== "owner" ||
+        (checkIfOwnersAreContactsData &&
+          checkIfOwnersAreContactsData.ifAreContacts)) &&
       props.privateColumns
     ) {
       if (searchResultData.length > 0) {
@@ -2380,6 +3049,25 @@ function M1nTable(props) {
                 objectId: result.Id,
               },
             };
+
+            result.isContact = false;
+            for (
+              let i = 0;
+              i < checkIfOwnersAreContactsData.ifAreContacts.length;
+              i++
+            ) {
+              if (
+                result.Id ===
+                checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
+              ) {
+                result.isContact =
+                  checkIfOwnersAreContactsData.ifAreContacts[i].isContact;
+
+                result.entity =
+                  checkIfOwnersAreContactsData.ifAreContacts[i]._id;
+                break;
+              }
+            }
           }
 
           if (props.showComments) {
@@ -2452,11 +3140,21 @@ function M1nTable(props) {
                 }
           );
         }
+
+        if (props.targetLabel && props.targetLabel == "owner")
+          buildingColumns.push(SearchsHeadCells[6]);
+
         if (props.showComments) buildingColumns.push(SearchsHeadCells[2]);
 
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
-        if (props.targetLabel && props.targetLabel == "well")
-          //would only set the detail card icon for wells
+        if (
+          props.targetLabel &&
+          props.targetLabel == "well"
+          //temporarily remove until we release the owner summary card
+          // ||
+          // props.targetLabel == "owner"
+        )
+          //would only set the detail card icon for wells & owners
           buildingColumns.push(SearchsHeadCells[5]);
         if (
           props.targetLabel &&
@@ -2478,6 +3176,7 @@ function M1nTable(props) {
     dataTracks,
     dataTagSamples,
     dataCommentsCounter,
+    checkIfOwnersAreContactsData,
     props.privateColumns,
     props.showTracks,
     props.showComments,
@@ -2718,6 +3417,7 @@ function M1nTable(props) {
   ////////////User management//////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "UserManagement") {
+      setLoading(true);
       getAllUsers();
       if (userLists?.allUsers) {
         setTargetLabel("usermanagement");
@@ -2757,6 +3457,7 @@ function M1nTable(props) {
   useEffect(() => {
     console.log("DEALS CHECK : ", props.parent, props.contact, stateApp.user);
     if (props.parent && props.parent === "Deals" && stateApp.user) {
+      setLoading(true);
       console.log("ue mintable 22");
       setTargetLabel("deals");
       setHeader("Deals");
@@ -2952,7 +3653,6 @@ function M1nTable(props) {
         well.tags = [[], 0];
 
         well.coordinates = {};
-
         if (well.longitude && well.latitude)
           well.coordinates.center = [well.longitude, well.latitude];
 
@@ -3043,6 +3743,183 @@ function M1nTable(props) {
 
   ////////////Map Viewport Wells end///////////////////////////////////////////////
 
+  ////////////Owner_WellInterests begin///////////////////////////////////////////
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "owner_WellInterests" &&
+      props.id &&
+      stateApp.user &&
+      stateApp.user.mongoId
+    ) {
+      setTargetLabel("well");
+      setHeader("Well Interests");
+      setAddAble(false);
+      getOwner_WellInterests({
+        variables: {
+          id: props.id,
+        },
+      });
+    }
+  }, [props.id, stateApp.user]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "owner_WellInterests" &&
+      dataOwner_WellInterests &&
+      dataOwner_WellInterests.owner_WellInterests &&
+      stateApp.user &&
+      stateApp.user.mongoId
+    ) {
+      const IdsArray = [];
+      dataOwner_WellInterests.owner_WellInterests.forEach((well) => {
+        if (well && well.id) {
+          IdsArray.push(well.id);
+        }
+      });
+
+      if (IdsArray.length > 0) {
+        getCommentsCounter({
+          variables: {
+            objectsIdsArray: IdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+        getTagSamples({
+          variables: {
+            objectsIdsArray: IdsArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+      } else {
+        setRows([]);
+        setLoading(false);
+      }
+    }
+  }, [dataOwner_WellInterests, stateApp.user]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "owner_WellInterests" &&
+      dataOwner_WellInterests &&
+      dataOwner_WellInterests.owner_WellInterests
+    ) {
+      if (
+        dataOwner_WellInterests.owner_WellInterests.length > 0 &&
+        dataCommentsCounter &&
+        dataCommentsCounter.commentsCounter &&
+        dataTagSamples &&
+        dataTagSamples.tagSamples &&
+        dataTracks &&
+        dataTracks.tracksByObjectType
+      ) {
+        let wells = dataOwner_WellInterests.owner_WellInterests.map((w) => {
+          let well = { ...w };
+
+          well.isTracked = false;
+          well.commentsCounter = 0;
+          well.tags = [[], 0];
+
+          //// set in the detailCard column
+          well.detailCard = well.id;
+
+          well.coordinates = {};
+          if (well.longitude && well.latitude)
+            well.coordinates.center = [well.longitude, well.latitude];
+
+          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+            if (well.id === dataTracks.tracksByObjectType[i].trackOn) {
+              well.isTracked = true;
+              break;
+            }
+          }
+          for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+            if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+              well.commentsCounter =
+                dataCommentsCounter.commentsCounter[i].total;
+              break;
+            }
+          }
+          for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+            if (well.id === dataTagSamples.tagSamples[i]._id) {
+              well.tags = [
+                dataTagSamples.tagSamples[i].tags,
+                dataTagSamples.tagSamples[i].total,
+              ];
+
+              break;
+            }
+          }
+          return well;
+        });
+
+        let availableTags = [];
+        dataTagSamples.tagSamples.map((sample) => {
+          availableTags = [...availableTags, ...sample.tags];
+        });
+        const cleanAvailableTags = [...new Set(availableTags)];
+
+        setColumns(
+          cleanAvailableTags.length > 0
+            ? WellInterests.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
+                      },
+                    },
+                  };
+                }
+                return column;
+              })
+            : WellInterests.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })
+        );
+
+        setRows(wells);
+        //// to populate the search layer
+        dispatch(
+          setMapGridCardState({
+            objToPopulateSearchLayer: {
+              objectType: "wells",
+              wells,
+            },
+          })
+        );
+        setLoading(false);
+      }
+      // else {
+      //   setRows([]);
+      // }
+
+      // setLoading(false);
+    }
+  }, [
+    dataOwner_WellInterests,
+    dataTagSamples,
+    dataCommentsCounter,
+    dataTracks,
+  ]);
+
+  //////////// Owner_WellInterests end///////////////////////////////////////////////
+
   ////////////-----Add your code section here-----///////////////////////
   return (
     <Container
@@ -3078,6 +3955,14 @@ function M1nTable(props) {
         orderByTracks={orderByTracks}
         startPaginationAt={startPaginationAt}
         contactId={props.contact?._id}
+        contactsPageProps={{
+          getContacts,
+          getContactsFilterOptions,
+          contactsCount: dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
+            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]?.totalCount
+            : 0,
+          setLoading,
+        }}
         parent={props.parent}
       />
     </Container>

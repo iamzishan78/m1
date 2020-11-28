@@ -1,5 +1,8 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { useMutation, useLazyQuery } from "@apollo/client";
+import gql from "graphql-tag";
+import moment from "moment";
 import Card from "@material-ui/core/Card";
 import Button from "@material-ui/core/Button";
 import CardActions from "@material-ui/core/CardActions";
@@ -13,6 +16,12 @@ import ViewDocuments from "../ViewDocuments/ViewDocuments";
 
 import { useDropzone } from "react-dropzone";
 import DeleteDocumentConfirmation from "./DeleteDocumentConfirmation";
+import { ADDFILE } from "../../graphQL/useMutationAddFile";
+import { AppContext } from "../../AppContext";
+import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
+import { GETRECENTCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
+import { DELETEDESCRIPTORFILE } from "../../graphQL/useMutationDeleteDescriptorFile";
+import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -101,50 +110,157 @@ const useStyles = makeStyles((theme) => ({
     border: "2px dashed rgb(176, 176, 176)",
     marginBottom: "30px",
   },
+  fileDropError: {
+    color: "red",
+  },
 }));
 
-function UploadZone() {
+function UploadZone(props) {
+  const [inputFile, setInputFile] = useState(null);
+
+  useEffect(() => {
+    if (props.addFileData && props.addFileData?.addFileDescriptor?.success) {
+      console.log("HALLO ADD FILE DATA HERE", props.addFileData);
+      const uri = props.addFileData.addFileDescriptor.file.uri;
+      const interal_key = props.addFileData.addFileDescriptor.file.internalKey;
+      const file_id = props.addFileData.addFileDescriptor.file.id;
+      const file_name = props.addFileData.addFileDescriptor.file.name;
+
+      if (file_id) {
+        fetch(uri, {
+          headers: {
+            "Content-Type": "text/plain; charset=UTF-8",
+            "X-Ms-Blob-Content-Disposition": `attachment; filename="${file_name}"`,
+            "X-Ms-Blob-Type": "BlockBlob",
+            "X-Ms-Meta-Internalkey": interal_key,
+            "X-Ms-Version": "2015-02-21",
+          },
+          method: "PUT",
+          body: JSON.stringify(inputFile),
+        })
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err));
+      }
+    }
+  }, [props.addFileData]);
+
   const onDrop = useCallback((acceptedFiles) => {
     // Do something with the files
+
+    const [file] = acceptedFiles;
+    const fileName = file.name;
+
+    setInputFile(file);
+
+    props.addFile({
+      variables: {
+        fileName,
+        userId: props.userId,
+        contactId: props.contactId,
+      },
+    });
   }, []);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   const classes = useStyles();
 
   return (
-    <div {...getRootProps()} className={classes.fileDrop}>
-      <input {...getInputProps()} />
-      {isDragActive ? (
-        <h5>Drop the files here ...</h5>
-      ) : (
-        <h5>Drag a file here or click to select a file to upload</h5>
-      )}
-    </div>
+    <>
+      <div {...getRootProps()} className={classes.fileDrop}>
+        <input {...getInputProps()} />
+        {isDragActive ? (
+          <h5>Drop the files here ...</h5>
+        ) : (
+          <h5>Drag a file here or click to select a file to upload</h5>
+        )}
+      </div>
+      {/* {props.addFileData && !props.addFileData.addFileDescriptor.success && (
+        <p className={classes.fileDropError}>File could not be uploaded</p>
+      )} */}
+    </>
   );
 }
 
 export default function Documents(props) {
   const classes = useStyles();
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
+  const [fileIdToDelete, setFileIdToDelete] = useState(null);
+  const [stateApp] = React.useContext(AppContext);
+  const userId = stateApp.user.mongoId;
+  const [getRecentFiles, { data: files }] = useLazyQuery(
+    GETRECENTCONTACTFILES,
+    { fetchPolicy: "cache-and-network" }
+  );
+  const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
+  const [addFile, { data: addFileData }] = useMutation(ADDDESCRIPTORFILE, {
+    onCompleted: () => {
+      setTimeout(() => {
+        getRecentFiles({
+          variables: {
+            userId,
+            contactId: props.id,
+          },
+        });
+      }, 3000);
+    },
+  });
+  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
+    fetchPolicy: "network-only",
+  });
+
+  useEffect(() => {
+    getRecentFiles({
+      variables: {
+        userId,
+        contactId: props.id,
+      },
+    });
+  }, []);
+
+  useEffect(() => {
+    console.log("VIEW FILE RESULT", viewFileResult);
+    if (viewFileResult) {
+      let a = document.createElement("a");
+      a.href = viewFileResult.viewFile.uri;
+      a.download = viewFileResult.viewFile.name;
+
+      // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
+      a.target = "_blank";
+
+      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
+      a.click();
+    }
+  }, [viewFileResult]);
 
   const handleDeleteCancel = () => {
+    setFileIdToDelete(null);
     setOpenDeleteConfirmDialog(false);
   };
 
   const handleDeleteAccept = () => {
     // Delete Document Logic goes here
-    setOpenDeleteConfirmDialog(false);
+    if (fileIdToDelete) {
+      deleteFile({
+        variables: {
+          id: fileIdToDelete,
+        },
+        refetchQueries: ["getRecentContactFiles", "getContactFiles"],
+        awaitRefetchQueries: true,
+      });
+      setFileIdToDelete(null);
+      setOpenDeleteConfirmDialog(false);
+    }
   };
 
-  const downloadDocument = () => {
-    // Download Document logic goes here
-    console.log("Download Document");
+  const handleViewFile = async (id) => {
+    viewFile({ variables: { fileId: id } });
   };
 
   return (
     <div className={classes.root} variant="outlined">
       <CardActions style={{ padding: "23px 23px 8px 23px" }}>
         <Grid item xs={12} style={{ minHeight: "35px" }}>
-          <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents</h4>
+          <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Recent Documents</h4>
           <h4
             className={classes.viewAll}
             // onClick={(e) => {
@@ -155,14 +271,14 @@ export default function Documents(props) {
             onClick={() => {
               props.handleOpenExpandableCard(
                 <ViewDocuments
-                  id={props.id}
+                  contactId={props.id}
                   user_id={props.user_id}
                   activityLog={props.activityLog}
-                  open={openDeleteConfirmDialog}
+                  openDeleteConfirmDialog={openDeleteConfirmDialog}
                   handleClose={handleDeleteCancel}
                   handleAccept={handleDeleteAccept}
-                  handleOpen={() => setOpenDeleteConfirmDialog(true)}
-                  downloadDocument={downloadDocument}
+                  setOpenDeleteConfirmDialog={setOpenDeleteConfirmDialog}
+                  setFileIdToDelete={setFileIdToDelete}
                 />,
                 "Documents"
               );
@@ -175,35 +291,51 @@ export default function Documents(props) {
       <CardContent style={{ padding: "0 23px" }}>
         <div className={classes.fileUploadSection}>
           {/* Show two recent docs */}
-          {[1, 2].map((upload) => (
+          {files?.getFileDescriptors?.map((file) => (
             <>
               <div className={classes.fileUploadTopSection}>
                 <div>
-                  <h4 className={classes.uploadTitle}>Testupload.pdf</h4>
-                  <h5 className={classes.uploadSubtext}>Kyle Chapman</h5>
-                  <h5 className={classes.uploadSubtext}>a few seconds ago</h5>
+                  <h4 className={classes.uploadTitle}>{file.fileName}</h4>
+                  <h5 className={classes.uploadSubtext}>{file.userName}</h5>
+                  <h5 className={classes.uploadSubtext}>
+                    {moment(new Date(Number(file.dateTime))).fromNow()}
+                  </h5>
                 </div>
                 <div className={classes.IconSection}>
                   <IconButton
                     size="small"
                     style={{ marginBottom: "8px" }}
-                    onClick={() => setOpenDeleteConfirmDialog(true)}
+                    onClick={() => {
+                      setOpenDeleteConfirmDialog(true);
+                      setFileIdToDelete(file.descriptorId);
+                    }}
                   >
                     <DeleteIcon />
                   </IconButton>
-                  <DeleteDocumentConfirmation
-                    open={openDeleteConfirmDialog}
-                    handleClose={handleDeleteCancel}
-                    handleAccept={handleDeleteAccept}
-                  />
-                  <IconButton size="small" onClick={downloadDocument}>
+
+                  <IconButton
+                    size="small"
+                    onClick={() => handleViewFile(file.fileId)}
+                  >
                     <GetAppIcon />
                   </IconButton>
                 </div>
               </div>
             </>
           ))}
-          <UploadZone />
+          <DeleteDocumentConfirmation
+            open={openDeleteConfirmDialog}
+            handleClose={handleDeleteCancel}
+            handleAccept={() => {
+              handleDeleteAccept();
+            }}
+          />
+          <UploadZone
+            contactId={props.id}
+            userId={userId}
+            addFile={addFile}
+            addFileData={addFileData}
+          />
         </div>
       </CardContent>
     </div>

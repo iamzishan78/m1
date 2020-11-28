@@ -175,26 +175,29 @@ export default function CustomizedSteppers(props) {
       data_to_send.forEach((element) => {
         element.createBy = userID;
         element.lastUpdateBy = userID;
-        delete element.first_name;
-        delete element.last_name;
+        // delete element.first_name;
+        // delete element.last_name;
         delete element.tableData;
       });
       let ret_val = createBulkContacts({
         variables: {
           contactList: data_to_send,
         },
-        refetchQueries: [
-          "getContacts",
-          "getContact",
-        ],
+        refetchQueries: ["getContacts", "getContact"],
         awaitRefetchQueries: true,
       });
 
-      ret_val.then((result)=>{
-        const { data: { createBulkContacts: { success } } }  = result; 
-       
+      ret_val.then((result) => {
+        const {
+          data: {
+            createBulkContacts: { success },
+          },
+        } = result;
+
         if (success === true) {
-          dispatch(showSuccessMessage("All records have been uploaded successfully"));
+          dispatch(
+            showSuccessMessage("All records have been uploaded successfully")
+          );
         }
       });
 
@@ -276,6 +279,11 @@ export default function CustomizedSteppers(props) {
             ) : null}
             {stateApp.activeStepNumber > 0 ? (
               <Button
+                disabled={
+                  (stateApp.activeStepNumber === 1 &&
+                    !stateApp.csvContactsListToSend) ||
+                  stateApp.csvContactsListToSend.length === 0
+                }
                 variant="contained"
                 color="primary"
                 onClick={handleNext}

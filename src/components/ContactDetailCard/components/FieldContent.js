@@ -201,6 +201,7 @@ export default function FieldContent({
   linkType,
   fieldType = FieldTypes.Contact,
   isEdited = false,
+  ...props
 }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
   //////////// entity - brings the entity id tide to the contact //////////////////////////////////////////////////
@@ -234,6 +235,7 @@ export default function FieldContent({
   useEffect(() => {
     if (content) {
       setEditContent({ ...content });
+      setShowContent({ ...content });
 
       let count = 0;
       for (const fieldName in content) {
@@ -269,10 +271,11 @@ export default function FieldContent({
         _id: id,
         lastUpdateBy: stateApp.user.mongoId,
       };
+
       if (entity) trimmedEditContent.entity = entity;
       let differences = false;
       for (const field in editContent) {
-        if (editContent[field] !== null) {
+        if (editContent[field] !== null && editContent[field] !== undefined) {
           trimmedEditContent[field] = editContent[field].trim();
           if (editContent[field].trim() !== content[field]) differences = true;
         }
@@ -284,7 +287,7 @@ export default function FieldContent({
             contact: trimmedEditContent,
             ignoreResponse: true,
           },
-          refetchQueries: ["getContacts"],
+          refetchQueries: ["getContacts", "getContact", "getPaginatedContacts"],
           awaitRefetchQueries: false,
         }).then((res) => {
           let entries = Object.entries(editContent)[0];
@@ -417,7 +420,12 @@ export default function FieldContent({
         key === "zip" ||
         key === "country" ||
         key === "zipAlt" ||
-        key === "countryAlt"
+        key === "countryAlt" ||
+        key === "title" ||
+        key === "firstName" ||
+        key === "middleName" ||
+        key === "lastName" ||
+        key === "suffix"
       ) {
         textArray = [[textArray.join(", "), showContent[key]].join(" ")];
       } else if (key === "jobTitle") {
@@ -428,6 +436,10 @@ export default function FieldContent({
 
   const getHrefValue = (linkValue, linkType) => {
     if (linkType == LinkTypes.Mail) return `mailto:${linkValue}`;
+    if (linkType == LinkTypes.Simple)
+      return `${
+        !linkValue.startsWith("http") && !linkValue.startsWith("//") ? "//" : ""
+      }${linkValue}`;
     else return linkValue;
   };
 
@@ -441,13 +453,15 @@ export default function FieldContent({
             : ""
           : textArray.join(", ")
         : `${name ? name + " " : ""} Not Available`}
-      <PencilEditIcon
-        handleUpdating={handleUpdating}
-        anchorEl={edit}
-        setAnchorEl={setEdit}
-        content={inputsArray}
-        onClick={handleEditClick}
-      />
+      {!onlyChildren && (
+        <PencilEditIcon
+          handleUpdating={handleUpdating}
+          anchorEl={edit}
+          setAnchorEl={setEdit}
+          content={inputsArray}
+          onClick={handleEditClick}
+        />
+      )}
       {!childrenLeft && !onlyChildren && children ? children : ""}
       {isCurEdited ? " (edited)" : ""}
     </span>

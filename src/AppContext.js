@@ -28,6 +28,7 @@ const AppProvider = (props) => {
       "/forgotpassword",
       "/track",
       "/transact",
+      "/activities",
       "/title",
       "/titleopinion",
       "/alerts",
@@ -73,7 +74,7 @@ const AppProvider = (props) => {
     selectedContact: null,
     // trackFilterOn: null,
     trackedWellArray: [],
-    userSnap: true,
+    userSnap: false,
     mapVars: {
       zoom: 4.88,
       center: { lng: -98.8, lat: 38 },

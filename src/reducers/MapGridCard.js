@@ -12,6 +12,7 @@ const INIT_STATE = {
   viewportData: [], //// mapGridCard Viewport Data
   trackedDataCount: 0, //// mapGridCard Viewport tracked count
   objToPopulateSearchLayer: null, //// mapGridCard Viewport tracked count
+  selectedOwner: null,
 };
 
 export default (state = INIT_STATE, action) => {
@@ -20,7 +21,11 @@ export default (state = INIT_STATE, action) => {
       return { ...state, ...(action.payload ? action.payload : {}) };
     }
     case TOGGLE_MAP_GRID_ACTIVATED: {
-      return { ...state, mapGridCardActivated: !state.mapGridCardActivated };
+      return {
+        ...state,
+        mapGridCardActivated: !state.mapGridCardActivated,
+        selectedOwner: null,
+      };
     }
 
     default:

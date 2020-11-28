@@ -103,20 +103,20 @@ export default function AddContactDialogContent(props) {
     }
   }, [props.parent, props.setDealsContact]);
 
-  useEffect(() => {
-    if (
-      dataContacts &&
-      dataContacts.contacts &&
-      dataContacts.contacts.length > 0
-    ) {
-      setContacts([...dataContacts.contacts]);
-    }
-  }, [dataContacts]);
+  // useEffect(() => {
+  //   if (
+  //     dataContacts &&
+  //     dataContacts.contacts &&
+  //     dataContacts.contacts.length > 0
+  //   ) {
+  //     setContacts([...dataContacts.contacts]);
+  //   }
+  // }, [dataContacts]);
 
   useEffect(() => {
     if (
-      ((activeTapIndex === 1 && existingContact.name !== "") ||
-        (activeTapIndex === 0 && newContact.name.trim() !== "")) 
+      (activeTapIndex === 1 && existingContact.name !== "") ||
+      (activeTapIndex === 0 && newContact.name.trim() !== "")
       //   &&
       // !validated
     ) {
@@ -302,7 +302,7 @@ export default function AddContactDialogContent(props) {
             <h3>Home Phone</h3>
             <TextField
               size="small"
-             // placeholder="E.g. xxx-xxx-xxxx"
+              // placeholder="E.g. xxx-xxx-xxxx"
               className={classes.maxWidth}
               multiline
               value={newContact.homePhone}
@@ -320,7 +320,7 @@ export default function AddContactDialogContent(props) {
             <h3>Email</h3>
             <TextField
               size="small"
-             // placeholder="E.g. jacob@m1neral.com"
+              // placeholder="E.g. jacob@m1neral.com"
               className={classes.maxWidth}
               multiline
               value={newContact.primaryEmail}
