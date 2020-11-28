@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const CONTACTSQUERY = gql`
-  query getContacts {
-    contacts {
+  query getContacts($userId: ID) {
+    contacts(userId: $userId) {
       _id
       entity
       name

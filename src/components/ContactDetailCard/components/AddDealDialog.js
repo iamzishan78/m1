@@ -131,7 +131,11 @@ function AddDealDialog(props) {
   const [contact, setContact] = useState({});
 
   useEffect(() => {
-    getContacts();
+    getContacts({
+      variables: {
+        userId: stateApp.user.mongoId
+      },
+    });
   }, []);
 
   useEffect(() => {

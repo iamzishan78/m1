@@ -95,7 +95,11 @@ export default function AddContactDialogContent(props) {
 
   useEffect(() => {
     if (props.parent || props.setDealsContact) {
-      getContacts();
+      getContacts({
+        variables: {
+          userId: stateApp.user.mongoId
+        },
+      });
     }
   }, [props.parent, props.setDealsContact]);
 

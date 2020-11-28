@@ -2110,7 +2110,11 @@ function M1nTable(props) {
       setTargetLabel("contact");
       setHeader("Contacts");
       setAddAble({ parent: false, type: "contact" });
-      getContacts();
+      getContacts({
+        variables: {
+          userId: stateApp.user.mongoId
+        },
+      });
       setUploadIcon(false);
       setStartPaginationAt(25);
     }
