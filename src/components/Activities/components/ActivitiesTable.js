@@ -3,7 +3,7 @@ import React from "react";
 const ActivitiesTable = () => {
   return (
     <div>
-      <h1>ACTIVITIES TABLE</h1>
+      <h1>ACTIVITIES TABLE COMING SOON</h1>
     </div>
   );
 };
