@@ -6,6 +6,7 @@ export const PAGINATEDCONTACTSQUERY = gql`
     $sort: ContactSortInput = {}
     $filters: [FilterInput] = []
     $search: String = ""
+    $pageOverride: Int
     $userId: ID
   ) {
     paginatedContacts(
@@ -13,6 +14,7 @@ export const PAGINATEDCONTACTSQUERY = gql`
       sort: $sort
       filters: $filters
       search: $search
+      pageOverride: $pageOverride
       userId: $userId
     ) {
       totalCount

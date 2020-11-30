@@ -101,6 +101,15 @@ const SetApolloClient = (props) => {
     }
   }, [stateApp.user]);
 
+  useEffect(()=> {
+    let draggableArea = document.getElementById("root");
+    if (window.location.pathname == "/") {
+      draggableArea.style.overflow='hidden'
+    } else {
+      draggableArea.style.overflow='visible'
+    }
+  }, [stateApp]);
+
   useEffect(() => {
     if (stateApp.userSnap === true) {
       var script = document.createElement("script");
@@ -205,7 +214,7 @@ function App() {
 
   const updateApolloClient = (endpoint, token) => {
     //uncomment to run against local
-    endpoint = "http://localhost:7071/api/m1graph";
+    // endpoint = "http://localhost:7071/api/m1graph";
 
     if (!apolloClient) {
       let client = new ApolloClient({

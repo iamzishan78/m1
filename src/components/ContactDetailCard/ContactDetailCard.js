@@ -330,11 +330,14 @@ export default function ContactDetailCard(props) {
     if (props.contactId) {
       getContact({
         variables: {
-          contactId: props.contactId,
+          contactId: stateApp.contactUpdated !== null 
+          ? stateApp.contactUpdated 
+          : props.contactId,
         },
       });
     }
-  }, [props.contactId]);
+
+  }, [props.contactId, stateApp.contactUpdated]);
 
   useEffect(() => {
     console.log("SET CONTACT:", data);
@@ -345,7 +348,8 @@ export default function ContactDetailCard(props) {
         currentContatcAtivities: data.contact.activityLog,
       }));
     }
-  }, [data]);
+    
+  }, [data, stateApp.contactUpdated]);
 
   useEffect(() => {
     if (props.contactId) {

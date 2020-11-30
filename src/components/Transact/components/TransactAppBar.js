@@ -239,15 +239,15 @@ const TransactAppBar = ({
               Won
             </Button>
 
-            <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                dealFilter === "lost" && classes.activeBtn
-              }`}
-              onClick={() => setDealFilter("lost")}
-            >
-              Lost
-            </Button>
+                <Button
+                  size="small"
+                  className={`${classes.filterToggleBtn} ${
+                    dealFilter === "lost" && classes.activeBtn
+                  }`}
+                  onClick={() => setDealFilter("lost")}
+                >
+                  Lost
+                </Button>
 
             <Button
               size="small"

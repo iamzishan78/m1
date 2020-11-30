@@ -80,7 +80,6 @@ export default function CardDetailsMap() {
   }
 
   useEffect(() => {
-    if (flyVar1 && flyVar1 === true) {
       map.flyTo({
         center: [
           stateApp.selectedWell.longitude,
@@ -121,8 +120,8 @@ export default function CardDetailsMap() {
           });
         }
       });
-    }
-  }, [flyVar1]);
+  
+  }, [stateApp.selectedWell]);
 
   useEffect(() => {
     if (mapStyles.length > 0) {

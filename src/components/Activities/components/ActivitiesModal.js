@@ -620,7 +620,7 @@ export default function ActivitiesModal({
                 <span className={classes.rowIcon}></span>
                 <TextField
                   className={clsx(
-                    classes.fieldWidth,
+                   // classes.fieldWidth,
                     classes.inputField,
                     activityName === "" && errors.activityName && classes.error
                   )}

@@ -32,6 +32,8 @@ export default function ExpandableCard(props) {
     ExpandableCardContext
   );
   const [openBugModal, setOpenBugModal] = useState(false);
+  const [toggleExpand, setToggleExpand] = useState(false);
+  const [isExpanded, setExpanded] = useState([]);
   const [title] = useState(props.title);
   const [subTitle] = useState(props.subTitle);
   const [parent] = useState(props.parent);
@@ -93,14 +95,11 @@ export default function ExpandableCard(props) {
       width: width,
       height: props.expanded ? height : "inherit",
       background: "#011133",
-      //background: "#efefef",
-      //background: "#000",
       borderStyle: "solid",
       borderWidth: "thin",
       borderColor: "#011133",
-      //display: 'block'
       "& .MuiCardHeader-action": {
-        alignSelf: "auto",
+        alignSelf: "left",
       },
     },
     title: {
@@ -111,7 +110,6 @@ export default function ExpandableCard(props) {
         : "15px",
     },
     headerIcons: {
-      // paddingTop: "10px",
       "& .MuiBadge-anchorOriginTopRightRectangle": {
         right: "10px",
         top: "5px",
@@ -127,7 +125,6 @@ export default function ExpandableCard(props) {
       transition: "height 0.1s",
       background: "#fff",
       padding: "0 !important",
-      height: height,
       overflowY: "auto",
       height: stateExpandableCard.expanded
         ? "calc(100% - 72px)"
@@ -171,6 +168,35 @@ export default function ExpandableCard(props) {
     setZidx(props.zIndex);
   }, [props.zIndex]);
 
+  const handleExpand = () => {
+    if (parent === "map" && $("#popupContainer").length) {
+      console.log("jquery expand");
+    }
+
+    if (toggleExpand == false) {
+      setToggleExpand(true);
+      setWidth(cardWidthExpanded);
+      setExpanded(false);
+    } else {
+      setToggleExpand(false);
+      setWidth("95vw");
+      setExpanded(true);
+    }
+    setHeight(cardHeightExpanded);
+
+    if(props.targetLabel == 'well' || props.targetLabel == 'expandedWell'){
+
+      setStateApp((state) => ({ ...state, 
+        wellDetailCardOpen: true,
+        popupOpen: false, 
+      }));
+    }
+
+    setStateApp((state) => ({ ...state, expandedCard: true }));
+    setStateExpandableCard((state) => ({ ...state, expanded: true }));
+    
+  };
+
   useEffect(() => {
     setWidth(cardWidth);
     setHeight(cardHeight);
@@ -180,21 +206,7 @@ export default function ExpandableCard(props) {
       handleShrink();
     }
   }, [props.expanded]);
-
-  const handleExpand = () => {
-    if (parent === "map" && $("#popupContainer").length) {
-      console.log("jquery expand");
-    }
-    setWidth(cardWidthExpanded);
-    setHeight(cardHeightExpanded);
-    //setZidx(9)
-    //setPosition('absolute')
-    //setCardTop(0);
-    //setCardLeft(0);
-    setStateApp((state) => ({ ...state, expandedCard: true }));
-    setStateExpandableCard((state) => ({ ...state, expanded: true }));
-  };
-
+  
   const handleShrink = () => {
     if (parent === "map" && $("#popupContainer").length) {
       console.log("jquery shrink");
@@ -222,11 +234,10 @@ export default function ExpandableCard(props) {
         popupOpen: false,
         selectedWell: null,
         selectedParcel: null,
+        expandedCard:false,
       }));
     }
-
     props.handleCloseExpandableCard();
-
     //if EC is inside map popup you need to close it
   };
 
@@ -292,17 +303,18 @@ export default function ExpandableCard(props) {
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => {}}
           >
-            Do you want to delete {targetLabel}?
+            Are you sure you want to delete the selected {targetLabel}?
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
       <Card className={classes.card}>
-        <ReportBugModal
-          open={openBugModal}
-          onClose={() => setOpenBugModal(false)}
-        />
+        
+      <ReportBugModal
+       open={openBugModal}
+       onClose={() => setOpenBugModal(false)}
+      />
         <CardHeader
-          id="detailCardHeader"
+        
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
             <div className={classes.headerIcons}>
@@ -330,20 +342,20 @@ export default function ExpandableCard(props) {
                 />
               )}
 
-              {/* {stateExpandableCard.expanded && (
+              {stateExpandableCard.expanded && targetLabel !== "activity" && (
               <Tooltip title={"Report Bug"} placement="top">
                 <IconButton
                   size="medium"
                   onClick={() => setOpenBugModal(true)}
-                  //aria-label="expand"
                   className={classes.icons}
                 >
                   <BugsIcon viewBox="0 0 64 64" color="white" />
                 </IconButton>
               </Tooltip>
-            )} */}
+            )} 
+
               {stateExpandableCard.expanded &&
-                ["parcel", "activity"].includes(targetLabel) &&
+                ["activity","parcel"].includes(targetLabel) &&
                 title !== "Add Activity" && (
                   <Tooltip title={`Delete ${targetLabel}`} placement="top">
                     {isDeletingCustomLayer || deleteLoading ? (
@@ -360,22 +372,64 @@ export default function ExpandableCard(props) {
                   </Tooltip>
                 )}
 
+
+              {/* {stateExpandableCard.expanded && targetLabel === "parcel" && (
+                <Tooltip title={"Delete Parcel"} placement="top">
+                  {isDeletingCustomLayer ? (
+                    <CircularProgress size={20} color="secondary" />
+                  ) : (
+                    <IconButton
+                      onClick={openConfirmationDialog}
+                      aria-label="Delete"
+                      className={classes.icons}
+                     
+                    >
+                      <DeleteIcon  />
+                    </IconButton>
+                  )}
+                </Tooltip>
+              )} */}
+              
+            
               {stateExpandableCard.expanded && targetLabel !== "activity"
-                ? parent !== "table" &&
-                  targetLabel !== "activity" && (
-                    <Tooltip title={"Shrink"} placement="top">
-                      <IconButton
-                        color="secondary"
-                        onClick={handleShrink}
-                        aria-label="shrink"
-                        className={classes.icons}
-                      >
-                        <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
-                      </IconButton>
-                    </Tooltip>
-                  )
-                : parent !== "table" &&
-                  targetLabel !== "activity" && (
+                ? parent !== "table" && targetLabel !== "expandedWell" 
+                  ? (
+                  <Tooltip title={"Shrink"} placement="top">
+                    <IconButton
+                      color="secondary"
+                      onClick={handleShrink}
+                      aria-label="shrink"
+                      className={classes.icons}
+                    >
+                      <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                    ) 
+                : isExpanded == false && targetLabel !== "activity"  ? (
+                      <Tooltip title={"Expand"} placement="top">
+                        <IconButton
+                          size="small"
+                          onClick={handleExpand}
+                          aria-label="expand"
+                          className={classes.icons}
+                        >
+                          <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                        </IconButton>
+                      </Tooltip>
+                    ) : 
+                      (
+                        <Tooltip title={"Shrink"} placement="top">
+                          <IconButton
+                            color="secondary"
+                            onClick={handleExpand}
+                            aria-label="shrink"
+                            className={classes.icons}
+                          >
+                            <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
+                          </IconButton>
+                        </Tooltip>
+                      )
+                : parent !== "table" && targetLabel !== "activity" &&(
                     <Tooltip title={"Expand"} placement="top">
                       <IconButton
                         size="small"
@@ -400,25 +454,6 @@ export default function ExpandableCard(props) {
               </Tooltip>
             </div>
           }
-          // title={
-          //   title
-          //     ? title.length > 30
-          //       ? `${title.substr(0, 30)}...${
-          //           stateExpandableCard.expanded
-          //             // ? props. !== undefined
-          //             //   ? `(${props.})`
-          //             //   : ""
-          //             // : ""
-          //         }`
-          //       : `${title} ${
-          //           stateExpandableCard.expanded
-          //             // ? props. !== undefined
-          //             //   ? `(${props.})`
-          //             //   : ""
-          //             // : ""
-          //         }`
-          //     : "--"
-          // }
 
           title={getTitle()}
           subheader={
