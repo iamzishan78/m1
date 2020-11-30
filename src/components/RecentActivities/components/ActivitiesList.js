@@ -16,7 +16,7 @@ import ChatIcon from "@material-ui/icons/Chat";
 import EventNoteIcon from "@material-ui/icons/EventNote";
 import StarIcon from "@material-ui/icons/Star";
 import PeopleIcon from "@material-ui/icons/People";
-import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
+import { DELETEACTIVITY } from "../../../graphQL/useMutationActivity";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -95,9 +95,15 @@ export default function ActivitiesList({
   viewAll,
   ...props
 }) {
-  const [updateContact] = useMutation(UPDATECONTACT);
-
   const classes = useStyles();
+
+  const [deleteActivityMutation, { loading: deleteLoading }] = useMutation(
+    DELETEACTIVITY,
+    {
+      refetchQueries: ["getContact","getAllActivities"],
+      awaitRefetchQueries: true,
+    }
+  );
 
   const getIcon = (activityType) => {
     switch (activityType) {
@@ -118,38 +124,12 @@ export default function ActivitiesList({
     }
   };
 
-  const deleteActivity = (act) => {
-    let newActLog = [...activityLog];
-    const index =
-      newActLog &&
-      newActLog.findIndex(
-        (activity) =>
-          activity.dateTime === act.dateTime && activity.user_id === act.user_id
-      );
-    if (index > -1 && newActLog[index]) {
-      newActLog.splice(index, 1);
-      const newLog = newActLog.map(v => {
-        //  if(v.__typename) delete v._?_typename
-         return {
-           dateTime: v.dateTime,
-           fullname: v.fullname,
-           notes: v.notes,
-           type: v.type,
-           user_id: v.user_id
-         }
-      });
-      // newActLog.forEach((v) => { if(v.__typename) delete v.__typename });
-      updateContact({
-        variables: {
-          contact: {
-            _id: props.id,
-            activityLog: [...newLog],
-          },
-        },
-        refetchQueries: ["getContact"],
-        awaitRefetchQueries: true,
-      });
-    }
+  const deleteActivity = async (act) => {
+    await deleteActivityMutation({
+      variables: {
+        id: act._id,
+      },
+    });
   };
 
   let sortedActivityLog =
@@ -184,7 +164,7 @@ export default function ActivitiesList({
                   {activity.notes}
                 </Typography>
                 <Typography variant="body2" className={classes.blue}>
-                  {activity.fullname ? activity.fullname : activity.user_id} ●{" "}
+                  {activity.ownerName} ●{" "}
                   {moment(activity.dateTime).format("MMMM D, YYYY hh:mm a")} ●{" "}
                   <span
                     className={classes.deleteLine}

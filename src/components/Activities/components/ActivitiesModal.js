@@ -43,6 +43,11 @@ import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { GETMONGOUSERS as GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import Typography from "@material-ui/core/Typography";
+import {
+  ADDACTIVITY,
+  DELETEACTIVITY,
+  UPDATEACTIVITY,
+} from "../../../graphQL/useMutationActivity";
 
 const useStyles = makeStyles((theme) => ({
   dialogExpCard: {
@@ -188,7 +193,7 @@ const initialErrors = {
   startTime: false,
   endDate: false,
   endTime: false,
-  contact: false,
+  owner: false,
 };
 
 const localizer = momentLocalizer(moment);
@@ -208,15 +213,13 @@ export default function ActivitiesModal({
   const [closed, setClosed] = useState(false);
   const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
-  const [startTime, setStartTime] = useState("00:00");
-  const [endTime, setEndTime] = useState("00:00");
+  const [startTime, setStartTime] = useState("08:00");
+  const [endTime, setEndTime] = useState("08:00");
   const [notes, setNotes] = useState("");
-  const [ownerId, setOwnerId] = useState("");
+  const [owner, setOwner] = useState({ name: "", id: null });
   const [dealId, setDealId] = useState("");
-  const [contactId, setContactId] = useState("");
   const [contact, setContact] = useState({});
   const [errors, setErrors] = useState({ ...initialErrors });
-  const [allLoading, setAllLoading] = useState(false);
   const [users, setUsers] = useState([]);
 
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
@@ -238,12 +241,36 @@ export default function ActivitiesModal({
     }
   }, [userLists]);
 
-  const [updateContact, { called, loading, data }] = useMutation(
-    UPDATECONTACT,
+  const [addActivityMutation, { loading: addLoading }] = useMutation(
+    ADDACTIVITY,
     {
       onCompleted: () => {
         onModalClose();
       },
+      refetchQueries: ["getAllActivities"],
+      awaitRefetchQueries: true,
+    }
+  );
+
+  const [updateActivityMutation, { loading: updateLoading }] = useMutation(
+    UPDATEACTIVITY,
+    {
+      onCompleted: () => {
+        onModalClose();
+      },
+      refetchQueries: ["getAllActivities"],
+      awaitRefetchQueries: true,
+    }
+  );
+
+  const [deleteActivityMutation, { loading: deleteLoading }] = useMutation(
+    DELETEACTIVITY,
+    {
+      onCompleted: () => {
+        onModalClose();
+      },
+      refetchQueries: ["getAllActivities"],
+      awaitRefetchQueries: true,
     }
   );
 
@@ -254,18 +281,7 @@ export default function ActivitiesModal({
     fetchPolicy: "cache-and-network",
   });
 
-  const [getContact, { data: cData, cLoading }] = useLazyQuery(CONTACT, {
-    fetchPolicy: "cache-and-network",
-  });
-
-  const [getPrevContact, { data: prevCData, prevCLoading }] = useLazyQuery(
-    CONTACT,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
-
-  const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
+  const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutInputValue, NameAutInputValue] = useState([]);
   const setNameAutInputValue = (newState) => {
@@ -292,18 +308,6 @@ export default function ActivitiesModal({
     return null;
   };
 
-  const [prevContactId, setPrevContactId] = useState();
-
-  useEffect(() => {
-    if (prevContactId) {
-      getPrevContact({
-        variables: {
-          contactId: prevContactId,
-        },
-      });
-    }
-  }, [prevContactId]);
-
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
       setMongoEntitiesArray([
@@ -329,51 +333,22 @@ export default function ActivitiesModal({
   // }, [addNew]);
 
   useEffect(() => {
-    console.log("SET CDATA 1", addNew, stateApp.activityDialog, cData?.contact);
-
-    if (stateApp.activityDialog) {
-      setNameAutValue((prev) =>
-        cData?.contact
-          ? { name: cData.contact.name, _id: cData.contact._id }
-          : { ...prev }
-      );
-    }
-    if (stateApp.activityDialog && addNew) {
-      setNameAutValue({ name: "", id: 0, _id: 0 });
-    }
-  }, [cData, stateApp.activityDialog, addNew]);
-
-  useEffect(() => {
-    console.log("SET CDATA NAME AUT", nameAutValue);
-    if (nameAutValue?.name) {
-      setContact(nameAutValue);
-    }
-  }, [nameAutValue]);
-
-  useEffect(() => {
-    console.log("SET CDATA CONTACT", contactId);
-
-    if (contactId) {
-      getContact({
-        variables: {
-          contactId: contactId,
-        },
-      });
-    }
-  }, [contactId]);
-
-  useEffect(() => {
     console.log("set cdata EVENT: SET ACTIVITY:", selectedActivity);
     if (selectedActivity) {
       setAddNew(false);
       setNotes(selectedActivity.notes);
-      setOwnerId(selectedActivity.ownerId);
+      setOwner({
+        name: selectedActivity.ownerName,
+        id: selectedActivity.ownerId,
+      });
       setDealId(selectedActivity.dealId);
       setActivityType(selectedActivity.type);
       setActivityName(selectedActivity.name);
       setClosed(selectedActivity.isClosed);
-      setContactId(selectedActivity.contactId);
-      setPrevContactId(selectedActivity.contactId);
+      setNameAutValue({
+        name: selectedActivity.contactName,
+        _id: selectedActivity.contactId,
+      });
       setStartDate(moment(selectedActivity.start).format("yyyy-MM-DD"));
       setStartTime(moment(selectedActivity.start).format("HH:mm"));
 
@@ -386,19 +361,20 @@ export default function ActivitiesModal({
       );
     } else {
       setAddNew(true);
-      setNameAutValue({ name: "", id: 0, _id: 0 });
+      setNameAutValue({ name: "", _id: null });
       setClosed(false);
       setNotes("");
-      setOwnerId("");
+      setOwner({
+        name: stateApp.user.fullname || stateApp.user.email,
+        id: stateApp.user.mongoId,
+      });
       setDealId("");
       setActivityType("");
       setActivityName("");
-      setContactId("");
-      setPrevContactId(null);
       setStartDate(getCurrentDate());
       setEndDate(getCurrentDate());
-      setStartTime("00:00");
-      setEndTime("00:00");
+      setStartTime("08:00");
+      setEndTime("08:00");
     }
   }, [selectedActivity]);
 
@@ -462,16 +438,19 @@ export default function ActivitiesModal({
   const clearFields = () => {
     setAddNew(true);
     setNotes("");
-    setOwnerId("");
+    setOwner({
+      name: stateApp.user.fullname || stateApp.user.email,
+      id: stateApp.user.mongoId,
+    });
+    setNameAutValue({ name: "", _id: null });
     setDealId("");
     setActivityType("");
     setActivityName("");
     setClosed(false);
     setStartDate(getCurrentDate());
     setEndDate(getCurrentDate());
-    setContactId("");
-    setStartTime("00:00");
-    setEndTime("00:00");
+    setStartTime("08:00");
+    setEndTime("08:00");
     setNameAutInputValue("");
   };
 
@@ -482,7 +461,7 @@ export default function ActivitiesModal({
     let startTimeErr = false;
     let endDateErr = false;
     let endTimeErr = false;
-    let contactErr = false;
+    let ownerErr = false;
 
     if (!activityType || activityType.length === 0) activityTypeErr = true;
     if (!activityName || activityName.length === 0) activityNameErr = true;
@@ -490,7 +469,7 @@ export default function ActivitiesModal({
     if (!startTime) startTimeErr = true;
     if (!endDate) endDateErr = true;
     if (!endTime) endTimeErr = true;
-    if (!nameAutValue || !nameAutValue?.name) contactErr = true;
+    if (!owner.id) ownerErr = true;
 
     const dateTime = mergeDateAndTime(startDate, startTime);
     const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -509,7 +488,17 @@ export default function ActivitiesModal({
       startTime: startTimeErr,
       endDate: endDateErr,
       endTime: endTimeErr,
-      contact: contactErr,
+      owner: ownerErr,
+    });
+
+    console.log("ADD ERROR", {
+      activityType: activityTypeErr,
+      activityName: activityNameErr,
+      startDate: startDataErr,
+      startTime: startTimeErr,
+      endDate: endDateErr,
+      endTime: endTimeErr,
+      owner: ownerErr,
     });
     return (
       activityNameErr ||
@@ -518,169 +507,67 @@ export default function ActivitiesModal({
       startTimeErr ||
       endDateErr ||
       endTimeErr ||
-      contactErr
+      ownerErr
     );
   };
 
   const addActivity = async () => {
     if (updateErrors()) return;
 
-    setAllLoading(true);
-    let activityLog =
-      cData && cData.contact.activityLog
-        ? cData.contact.activityLog.map((a) => a)
-        : [];
-
     const dateTime = mergeDateAndTime(startDate, startTime);
     const endDateTime = mergeDateAndTime(endDate, endTime);
 
-    activityLog.push({
-      type: activityType,
-      name: activityName,
-      notes,
-      ownerId,
-      dealId,
-      dateTime: dateTime,
-      endDateTime: endDateTime,
-      user_id: stateApp.user.email,
-      isClosed: closed,
-    });
-
-    await updateContact({
+    await addActivityMutation({
       variables: {
-        contact: {
-          _id: cData.contact._id,
-          activityLog,
+        activity: {
+          type: activityType,
+          name: activityName,
+          notes,
+          ownerId: owner.id,
+          ownerName: owner.name,
+          contactId: nameAutValue._id,
+          contactName: nameAutValue.name,
+          dealId,
+          dateTime,
+          endDateTime,
+          isClosed: closed,
         },
       },
-      refetchQueries: ["getAllActivities"],
-      awaitRefetchQueries: true,
     });
-    setAllLoading(false);
   };
 
   const updateActivity = async () => {
     if (updateErrors()) return;
 
-    setAllLoading(true);
-
     const dateTime = mergeDateAndTime(startDate, startTime);
     const endDateTime = mergeDateAndTime(endDate, endTime);
 
-    let activityLog =
-      cData && cData.contact.activityLog
-        ? cData.contact.activityLog.map((a) => a)
-        : [];
-
-    let newActLog = [...activityLog];
-    const index =
-      newActLog &&
-      newActLog.findIndex((activity) => activity._id === selectedActivity._id);
-
-    if (index > -1) {
-      newActLog[index] = {
-        user_id: selectedActivity.user_id,
-        _id: selectedActivity._id,
-        fullname: selectedActivity.fullname,
-        type: activityType,
-        name: activityName,
-        dateTime,
-        endDateTime,
-        notes,
-        ownerId,
-        dealId,
-        isClosed: closed,
-      };
-      newActLog.forEach((v) => delete v.__typename);
-
-      await updateContact({
-        variables: {
-          contact: {
-            _id: cData.contact._id,
-            activityLog: [...newActLog],
-          },
+    await updateActivityMutation({
+      variables: {
+        activity: {
+          _id: selectedActivity._id,
+          type: activityType,
+          name: activityName,
+          dateTime,
+          endDateTime,
+          notes,
+          ownerId: owner.id,
+          ownerName: owner.name,
+          contactId: nameAutValue._id,
+          contactName: nameAutValue.name,
+          dealId,
+          isClosed: closed,
         },
-        refetchQueries: ["getAllActivities"],
-        awaitRefetchQueries: true,
-      });
-    } else {
-      let prevActivityLog =
-        prevCData && prevCData.contact.activityLog
-          ? prevCData.contact.activityLog.map((a) => a)
-          : [];
-
-      let newActLog = [...prevActivityLog];
-      const index =
-        newActLog &&
-        newActLog.findIndex(
-          (activity) => activity._id === selectedActivity._id
-        );
-
-      newActLog.splice(index, 1);
-
-      activityLog.push({
-        type: activityType,
-        name: activityName,
-        notes,
-        ownerId,
-        dealId,
-        dateTime: dateTime,
-        endDateTime: endDateTime,
-        user_id: stateApp.user.email,
-        isClosed: closed,
-      });
-
-      await updateContact({
-        variables: {
-          contact: {
-            _id: prevContactId,
-            activityLog: [...newActLog],
-          },
-        },
-      });
-
-      await updateContact({
-        variables: {
-          contact: {
-            _id: cData.contact._id,
-            activityLog,
-          },
-        },
-        refetchQueries: ["getAllActivities"],
-        awaitRefetchQueries: true,
-      });
-    }
-
-    setAllLoading(false);
+      },
+    });
   };
 
   const deleteActivity = async () => {
-    let activityLog =
-      cData && cData.contact.activityLog
-        ? cData.contact.activityLog.map((a) => a)
-        : [];
-
-    let newActLog = [...activityLog];
-    const index =
-      newActLog &&
-      newActLog.findIndex((activity) => activity._id === selectedActivity._id);
-
-    if (index > -1) {
-      newActLog.splice(index, 1);
-      newActLog.forEach((v) => delete v.__typename);
-      await updateContact({
-        variables: {
-          contact: {
-            _id: cData.contact._id,
-            activityLog: [...newActLog],
-          },
-        },
-        refetchQueries: ["getAllActivities"],
-        awaitRefetchQueries: true,
-      });
-    }
-
-    onModalClose();
+    await deleteActivityMutation({
+      variables: {
+        id: selectedActivity._id,
+      },
+    });
   };
 
   return (
@@ -690,7 +577,7 @@ export default function ActivitiesModal({
       maxWidth="xl"
       open={stateApp.activityDialog ? true : false}
       onClose={
-        loading && cLoading && allLoading
+        addLoading && updateLoading
           ? () => {}
           : () => {
               onModalClose();
@@ -700,7 +587,7 @@ export default function ActivitiesModal({
       <ExpandableCardProvider
         expanded={true}
         handleCloseExpandableCard={
-          loading && cLoading && allLoading
+          addLoading && updateLoading
             ? () => {}
             : () => {
                 onModalClose();
@@ -830,6 +717,7 @@ export default function ActivitiesModal({
                     variant="outlined"
                     onChange={(e) => {
                       setStartTime(e.target.value);
+                      setEndTime(e.target.value);
                       console.log("EVENT: START TIME", e.target.value);
                     }}
                   />
@@ -909,14 +797,19 @@ export default function ActivitiesModal({
                   style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}
                 >
                   <Autocomplete
-                    className={classes.fieldWidth}
+                    className={clsx(
+                      classes.fieldWidth,
+                      !owner.id && errors.owner && classes.error
+                    )}
                     options={users}
                     onChange={(e, user) => {
-                      setOwnerId(user.value);
+                      setOwner({ name: user.text, id: user.value });
                     }}
-                    value={users.find((user) => user.value === ownerId) || null}
+                    value={
+                      users.find((user) => user.value === owner.id) || null
+                    }
                     getOptionLabel={(option) => option.text}
-                    getOptionSelected={(option) => option.value === ownerId}
+                    getOptionSelected={(option) => option.value === owner.id}
                     renderInput={(params) => (
                       <TextField
                         margin="dense"
@@ -986,14 +879,6 @@ export default function ActivitiesModal({
                     />
                   </div>
 
-                  {errors.contact && (
-                    <>
-                      <br />
-                      <small style={{ color: "red" }}>
-                        This is a required field
-                      </small>
-                    </>
-                  )}
                   <br />
 
                   <TextField
@@ -1031,13 +916,13 @@ export default function ActivitiesModal({
                     onClick={() => {
                       onModalClose();
                     }}
-                    disabled={loading || cLoading || allLoading}
+                    disabled={addLoading || updateLoading}
                   >
                     Cancel
                   </Button>
 
                   <Button
-                    disabled={loading || cLoading || allLoading}
+                    disabled={addLoading || updateLoading}
                     className={classes.marginLeft}
                     color="primary"
                     variant="contained"
@@ -1047,7 +932,7 @@ export default function ActivitiesModal({
                       else updateActivity();
                     }}
                   >
-                    {allLoading && (
+                    {(addLoading || updateLoading) && (
                       <CircularProgress
                         style={{ marginRight: 8 }}
                         color="#fff"

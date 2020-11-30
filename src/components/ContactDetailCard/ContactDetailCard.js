@@ -670,6 +670,7 @@ export default function ContactDetailCard(props) {
               handleOpenExpandableCard={handleOpenExpandableCard}
               id={contactData._id}
               user_id={stateApp.user.email}
+              contactData={contactData}
               activityLog={contactData.activityLog}
             />
           </div>
