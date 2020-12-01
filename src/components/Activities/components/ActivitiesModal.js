@@ -620,7 +620,7 @@ export default function ActivitiesModal({
                 <span className={classes.rowIcon}></span>
                 <TextField
                   className={clsx(
-                   // classes.fieldWidth,
+                    // classes.fieldWidth,
                     classes.inputField,
                     activityName === "" && errors.activityName && classes.error
                   )}
@@ -946,6 +946,9 @@ export default function ActivitiesModal({
             </div>
             <div className={classes.right}>
               <Calendar
+                culture="en-GB"
+                drilldownView="week"
+                popup={true}
                 localizer={localizer}
                 events={events}
                 startAccessor="start"
