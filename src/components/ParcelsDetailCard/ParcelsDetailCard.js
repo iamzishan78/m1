@@ -24,6 +24,26 @@ const useStyles = makeStyles((theme) => ({
   gridItem: {
     flexGrow: 1,
     display: "flex",
+    height: "100%",
+  },
+  gridPortion: {
+    flexGrow: 1,
+    display: "flex",
+    height: "100%",
+    justifyContent: 'center'
+  },
+  gridPacelDetails: {
+    flexGrow: 1,
+    display: "flex",
+    height: "100%",
+    padding: 10
+  },
+  parcelSummmary: {
+    marginBottom: '0px'
+  },
+  gridPortion: {
+    flexGrow: 1,
+    display: "flex",
     justifyContent: "space-around",
     height: "100%",
   },
@@ -32,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
   },
   calcSummary: {
-    margin: "8px",
+    width: '100%'
   },
   parcelMap: {
     margin: "8px",
@@ -151,82 +171,82 @@ export default function ParcelsDetailCard(props) {
   return parcelObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
       <Grid item sm={12} container>
-        <Grid item sm={2} className={classes.gridItem}>
+        <Grid item sm={4} className={classes.gridItem}>
           <LeftTopSummary parcelData={parcelObj} />
         </Grid>
-
-        <Grid item sm={6} className={classes.gridItem}>
+        <Grid item sm={5} className={classes.gridPortion}>
+          <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
+        </Grid>
+        <Grid item sm={3} className={classes.gridPacelDetails}>
           <Grid item sm={12} container>
-            <Grid item sm={7} className={classes.gridItem}>
-              <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
-            </Grid>
-            <Grid item sm={5}>
-              <div className={classes.calcSummary}>
-                <p className="formLabel">Parcel Name</p>
-                <TextField
-                  size="small"
-                  value={parcelName}
-                  variant="outlined"
-                  onChange={(e) => {
-                    setParcelName(e.target.value);
-                  }}
-                  onKeyDown={(e) => {
-                    updateParcel(e, "shapeLabel", parcelName);
-                  }}
-                  fullWidth
-                />
-                <p className="formLabel">Gross Acres</p>
-                <TextField
-                  size="small"
-                  value={grossAcres}
-                  variant="outlined"
-                  onChange={(e) => {
-                    setGrossAcres(e.target.value);
-                  }}
-                  onKeyDown={(e) => {
-                    updateParcel(e, "sdGrossAcres", grossAcres);
-                  }}
-                  fullWidth
-                />
-                <p className="formLabel">Calc. Acres</p>
-                <TextField
-                  disabled
-                  size="small"
-                  value={parcelProperties.shapeArea}
-                  variant="outlined"
-                  fullWidth
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
+            <div className={classes.calcSummary}>
+              <p className={classes.parcelSummmary}>Parcel Name</p>
+              <TextField
+                size="small"
+                value={parcelName}
+                variant="outlined"
+                onChange={(e) => {
+                  setParcelName(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  updateParcel(e, "shapeLabel", parcelName);
+                }}
+                fullWidth
+              />
+              <p className={classes.parcelSummmary}>Gross Acres</p>
+              <TextField
+                size="small"
+                value={grossAcres}
+                variant="outlined"
+                onChange={(e) => {
+                  setGrossAcres(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  updateParcel(e, "sdGrossAcres", grossAcres);
+                }}
+                fullWidth
+              />
+              <p className={classes.parcelSummmary}>Calc. Acres</p>
+              <TextField
+                disabled
+                size="small"
+                value={parcelProperties.shapeArea}
+                variant="outlined"
+                fullWidth
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
 
-                <p className="formLabel">Full Legal Description</p>
-                <TextField
-                  size="small"
-                  multiline
-                  rows={7}
-                  value={legalDescription}
-                  variant="outlined"
-                  fullWidth
-                  placeholder="Enter legal description here"
-                  onChange={(e) => {
-                    setLegalDesc(e.target.value);
-                  }}
-                  onKeyDown={(e) => {
-                    updateParcel(e, "legalDescription", legalDescription);
-                  }}
-                />
-              </div>
-            </Grid>
+              <p className={classes.parcelSummmary}>Full Legal Description</p>
+              <TextField
+                size="small"
+                multiline
+                rows={7}
+                value={legalDescription}
+                variant="outlined"
+                fullWidth
+                placeholder="Enter legal description here"
+                onChange={(e) => {
+                  setLegalDesc(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  updateParcel(e, "legalDescription", legalDescription);
+                }}
+              />
+            </div>
           </Grid>
         </Grid>
-        <Grid item sm={4} className={classes.gridItem}>
-          <div className={classes.parcelMap} id="parcelMap">
-            <ParcelDetailsMap parcelData={parcelObj} />
-          </div>
-        </Grid>
-      </Grid>
 
+        {/* <Grid item sm={6} className={classes.gridItem}>
+          <Grid item sm={12} container> */}
+
+            {/* <Grid item sm={5}>
+              
+            </Grid> */}
+          {/* </Grid>
+        </Grid> */}
+      </Grid>
       <Grid item sm={12}>
         <Taps
           tabLabels={["Owners", "Wells"]}

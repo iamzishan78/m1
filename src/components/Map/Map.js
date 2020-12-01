@@ -3310,7 +3310,6 @@ export default function Map() {
 
   const mapZoom = (e) => {
     let zooms = map.getZoom();
-    console.log("zoomz", zooms);
     setZoom(zooms);
   };
 
@@ -4610,7 +4609,6 @@ export default function Map() {
         <MapGridCard mapGridCardActivated={mapGridCardActivated} />
       )}
        
-      {/* {stateApp.popupOpen === true &&  */}
       {stateApp.selectedWell !== null && showExpandableCard &&
         stateApp.expandedCard && (
             <Draggable handle=".MuiCardHeader-root" cancel={".MuiCardHeader-content"} >
@@ -4635,6 +4633,32 @@ export default function Map() {
             </Draggable>
           )
         }
+
+        {stateApp.selectedParcel !== null && showExpandableCard &&
+          stateApp.expandedCard && (
+            <Draggable handle=".MuiCardHeader-root" cancel={".MuiCardHeader-content"} >
+              <div className={classes.draggable}>
+                <ExpandableCardProvider
+                  expanded={true}
+                  handleCloseExpandableCard={handleCloseExpandableCard}
+                  component={<ParcelCardProvider></ParcelCardProvider>}
+                  title={stateApp.selectedParcel.shapeLabel}
+                  subTitle=""
+                  parent="map"
+                  position="relative"
+                  cardTop={20}
+                  cardLeft={20}
+                  zIndex={99}
+                  cardWidthExpanded="50vw"
+                  cardHeightExpanded="95vh"
+                  targetSourceId={stateApp.selectedParcel.id}
+                  targetLabel="expandedParcel"
+                ></ExpandableCardProvider>
+              </div>
+            </Draggable>
+          )
+        }
+
       <div id="modalHolder" ref={modalContainer} />
       <Portal container={modalContainer.current}>
         {stateApp.selectedAbstracts.length > 0 && (
@@ -4645,7 +4669,6 @@ export default function Map() {
           />
         )}
       </Portal>
-       
       <Portal container={container.current}>
         {stateApp.popupOpen === true ? (
           <div>
@@ -4677,7 +4700,7 @@ export default function Map() {
             )}
             {stateApp.selectedParcel && (
               <PortalD id="popupContainer">
-                {showExpandableCard && !stateApp.expandedCard ? (
+                {showExpandableCard && !stateApp.expandedCard && (
                   <ExpandableCardProvider
                     expanded={false}
                     handleCloseExpandableCard={handleCloseExpandableCard}
@@ -4698,46 +4721,10 @@ export default function Map() {
                     targetSourceId={stateApp.selectedParcel.id}
                     targetLabel="parcel"
                   ></ExpandableCardProvider>
-                ) : (
-                  <Popover
-                    open={stateApp.expandedCard}
-                    anchorEl={anchorElPoPOver}
-                    anchorReference="anchorEl"
-                    style={{ width: "100%" }} //right:30, left: "-30px"}}
-                    BackdropProps={{ invisible: false }}
-                    anchorOrigin={{
-                      vertical: "center",
-                      horizontal: "center",
-                    }}
-                    transformOrigin={{
-                      vertical: "center",
-                      horizontal: "center",
-                    }}
-                  >
-                    <ExpandableCardProvider
-                      expanded={true}
-                      handleCloseExpandableCard={handleCloseExpandableCard}
-                      component={<ParcelCardProvider></ParcelCardProvider>}
-                      title={stateApp.selectedParcel.shapeLabel}
-                      subTitle=""
-                      parent="map"
-                      mouseX={0}
-                      mouseY={0}
-                      position="relative"
-                      // cardLeft={"0px"}
-                      // cardTop={"0px"}
-                      zIndex={99}
-                      // cardWidth="380px"
-                      // cardHeight="380px"
-                      cardWidthExpanded="95vw"
-                      cardHeightExpanded="95vh"
-                      targetSourceId={stateApp.selectedParcel.id}
-                      targetLabel="parcel"
-                    ></ExpandableCardProvider>
-                  </Popover>
                 )}
-              </PortalD>
+                </PortalD>
             )}
+
             {stateApp.selectedUserDefinedLayer && (
               <PortalD id="popupContainer">
                 <SpatialDataCardEdit

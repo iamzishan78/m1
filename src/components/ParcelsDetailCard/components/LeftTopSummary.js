@@ -24,7 +24,6 @@ const useStyles = makeStyles({
     "& > td": {
       padding: "4px 10px !important",
       border: "2px solid #e3e3e3",
-      width: "50%",
     },
   },
 });
