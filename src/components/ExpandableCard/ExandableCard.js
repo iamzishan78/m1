@@ -190,11 +190,14 @@ export default function ExpandableCard(props) {
         wellDetailCardOpen: true,
         popupOpen: false, 
       }));
+    } else if (props.targetLabel == "expandedParcel" || props.targetLabel == "parcel") {
+      setStateApp((state) => ({ ...state, 
+        popupOpen: false, 
+      }));
     }
 
     setStateApp((state) => ({ ...state, expandedCard: true }));
     setStateExpandableCard((state) => ({ ...state, expanded: true }));
-    
   };
 
   useEffect(() => {

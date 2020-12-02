@@ -2921,7 +2921,7 @@ export default function Map() {
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
 
-      let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+      new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
         .setMaxWidth("none")
         .setHTML(`<div id="popupContainer"></div>`)
@@ -4700,7 +4700,7 @@ export default function Map() {
             )}
             {stateApp.selectedParcel && (
               <PortalD id="popupContainer">
-                {showExpandableCard && !stateApp.expandedCard && (
+                {!stateApp.expandedCard && (
                   <ExpandableCardProvider
                     expanded={false}
                     handleCloseExpandableCard={handleCloseExpandableCard}
