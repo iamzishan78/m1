@@ -342,7 +342,7 @@ export default function ExpandableCard(props) {
                 />
               )}
 
-              {stateExpandableCard.expanded && targetLabel !== "activity" && (
+              {stateExpandableCard.expanded && targetLabel !== "activity" && targetLabel !== "contact" && (
               <Tooltip title={"Report Bug"} placement="top">
                 <IconButton
                   size="medium"
@@ -405,18 +405,21 @@ export default function ExpandableCard(props) {
                     </IconButton>
                   </Tooltip>
                     ) 
-                : isExpanded == false && targetLabel !== "activity"  ? (
-                      <Tooltip title={"Expand"} placement="top">
-                        <IconButton
-                          size="small"
-                          onClick={handleExpand}
-                          aria-label="expand"
-                          className={classes.icons}
-                        >
-                          <ExpandIcon viewBox="0 0 64 64" color="secondary" />
-                        </IconButton>
-                      </Tooltip>
-                    ) : 
+                : isExpanded == false && targetLabel !== "activity"  ? 
+                  targetLabel !== "contact" ?
+                  (
+                    <Tooltip title={"Expand"} placement="top">
+                      <IconButton
+                        size="small"
+                        onClick={handleExpand}
+                        aria-label="expand"
+                        className={classes.icons}
+                      >
+                        <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                      </IconButton>
+                    </Tooltip>
+                  ) : null
+                  : 
                       (
                         <Tooltip title={"Shrink"} placement="top">
                           <IconButton
