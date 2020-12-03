@@ -211,8 +211,10 @@ export default function ActivitiesModal({
   const [activityType, setActivityType] = useState("");
   const [activityName, setActivityName] = useState("");
   const [closed, setClosed] = useState(false);
-  const [startDate, setStartDate] = useState(getCurrentDate());
-  const [endDate, setEndDate] = useState(getCurrentDate());
+  const [startDate, setStartDate] = useState(
+    moment.parseZone(getCurrentDate())
+  );
+  const [endDate, setEndDate] = useState(moment.parseZone(getCurrentDate()));
   const [startTime, setStartTime] = useState("08:00");
   const [endTime, setEndTime] = useState("08:00");
   const [notes, setNotes] = useState("");
@@ -349,11 +351,13 @@ export default function ActivitiesModal({
         name: selectedActivity.contactName,
         _id: selectedActivity.contactId,
       });
-      setStartDate(moment(selectedActivity.start).format("yyyy-MM-DD"));
-      setStartTime(moment(selectedActivity.start).format("HH:mm"));
+      setStartDate(
+        moment.parseZone(selectedActivity.start).format("yyyy-MM-DD")
+      );
+      setStartTime(moment.parseZone(selectedActivity.start).format("HH:mm"));
 
-      setEndDate(moment(selectedActivity.end).format("yyyy-MM-DD"));
-      setEndTime(moment(selectedActivity.end).format("HH:mm"));
+      setEndDate(moment.parseZone(selectedActivity.end).format("yyyy-MM-DD"));
+      setEndTime(moment.parseZone(selectedActivity.end).format("HH:mm"));
       console.log(
         "SELECTED ACTIVITY",
         getDateFromString(selectedActivity.end.toISOString()),
@@ -371,8 +375,8 @@ export default function ActivitiesModal({
       setDealId("");
       setActivityType("");
       setActivityName("");
-      setStartDate(getCurrentDate());
-      setEndDate(getCurrentDate());
+      setStartDate(moment.parseZone(getCurrentDate()));
+      setEndDate(moment.parseZone(getCurrentDate()));
       setStartTime("08:00");
       setEndTime("08:00");
     }
