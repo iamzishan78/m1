@@ -38,7 +38,6 @@ const ActivitiesCalendar = ({
   return (
     <div>
       <Calendar
-        culture="en-GB"
         drilldownView="week"
         popup={true}
         localizer={localizer}
