@@ -958,8 +958,8 @@ export default function ActivitiesModal({
                 startAccessor="start"
                 endAccessor="end"
                 defaultView={"day"}
-                defaultDate={startDate}
-                date={startDate}
+                defaultDate={new Date(startDate)}
+                date={new Date(startDate)}
                 step={60}
                 components={{
                   event: ActivitiesEvent,
