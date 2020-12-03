@@ -18,6 +18,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
+import Pipelines from "./Pipelines";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,12 +32,21 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  bottom: {
+  bottomRight: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingBottom: 20,
+    justifyContent: "flex-end",
+    marginTop: "10px",
+    // padding: 20,
+  },
+  bottomLeft: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingBottom: "4px",
+    // padding: "0 0 20 0",
   },
   right: {
     display: "flex",
@@ -44,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
 
     "& h1": {
       color: "#0DBBEA",
-      marginRight: 16,
+      margin: "0 35px 0 0",
     },
   },
 
@@ -156,7 +166,7 @@ const TransactAppBar = ({
         position="static"
         variant="outlined"
       >
-        <div className={classes.top}>
+        <div className={classes.top} style={{ marginTop: 15 }}>
           <div className={classes.right}>
             <h1>DEAL FLOW</h1>
             <ButtonGroup>
@@ -209,7 +219,7 @@ const TransactAppBar = ({
             </Button>
           </div>
         </div>
-        <div className={classes.bottom}>
+        {/* <div className={classes.bottom}>
           <ButtonGroup>
             <Button
               size="small"
@@ -298,7 +308,64 @@ const TransactAppBar = ({
                 Edit Pipeline
               </MenuItem>
             </Select>
-          </FormControl>
+          </FormControl> */}
+        <div className={classes.top} style={{ marginBottom: 16 }}>
+          {/* <div className={classes.right}> */}
+          <div className={classes.bottomLeft}>
+            <ButtonGroup style={{ minHeight: 32 }}>
+              <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "all" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("all")}
+              >
+                ALL
+              </Button>
+              <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "open" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("open")}
+              >
+                OPEN
+              </Button>
+              <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "won" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("won")}
+              >
+                Won
+              </Button>
+
+              <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "lost" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("lost")}
+              >
+                Lost
+              </Button>
+
+              <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "deleted" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("deleted")}
+              >
+                Deleted
+              </Button>
+            </ButtonGroup>
+          </div>
+          <div className={classes.bottomRight}>
+            <Pipelines />
+          </div>
+          {/* </div> */}
         </div>
       </AppBar>
     </>
