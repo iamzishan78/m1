@@ -212,6 +212,10 @@ function AddDealDialog(props) {
   const [contact, setContact] = useState({});
 
   useEffect(() => {
+    if (selectedPipe?._id) setPipelineId(selectedPipe._id);
+  }, [selectedPipe]);
+
+  useEffect(() => {
     // getPaginatedContacts();
     getAllUsers();
   }, []);
@@ -430,7 +434,7 @@ function AddDealDialog(props) {
     setDealState(null);
     setNameAutValue(null);
     setNameAutInputValue("");
-    setPipelineId("");
+    setPipelineId(selectedPipe?._id);
     setOwnerId("");
     setCloseDate(null);
     setColaborators([]);
@@ -702,6 +706,12 @@ function AddDealDialog(props) {
     }
     return comparison;
   });
+
+  const locallySelectedPipe =
+    pipelines && pipelineId
+      ? pipelines.filter((pipe) => pipe._id === pipelineId)[0]
+      : null;
+  const stagesToChoose = locallySelectedPipe?.stages;
 
   return (
     <>
@@ -1055,9 +1065,10 @@ function AddDealDialog(props) {
                 fullWidth
                 label="Deal Stage"
               >
-                {selectedPipe?.stages?.map((stage) => (
-                  <option value={stage._id}>{stage.name}</option>
-                ))}
+                {stagesToChoose &&
+                  stagesToChoose.map((stage) => (
+                    <option value={stage._id}>{stage.name}</option>
+                  ))}
               </Select>
             </FormControl>
             <TextField
