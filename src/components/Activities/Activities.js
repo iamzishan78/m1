@@ -87,28 +87,40 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
   const nextWeekDay = moment().add(7, "d");
 
   switch (activityFilterByTime) {
-    case "todo":
-      filterByTimeCondition = moment(e.end).isSameOrAfter(today);
+    case "all":
+      filterByTimeCondition = true;
+      break;
+    case "upcoming":
+      filterByTimeCondition = moment(e.start).isSameOrAfter(today);
       break;
     case "overdue":
       filterByTimeCondition = moment(e.end).isBefore(today);
       break;
-    case "today":
-      filterByTimeCondition = moment(e.end).isSame(today, "day");
+    case "open":
+      filterByTimeCondition = !e.isClosed;
       break;
-    case "tomorrow":
-      filterByTimeCondition = moment(e.end).isSame(tomorrow, "day");
+    case "closed":
+      filterByTimeCondition = e.isClosed;
       break;
-    case "this-week":
-      filterByTimeCondition = moment(e.end).isSame(today, "week");
+      // case "todo":
+      //   filterByTimeCondition = moment(e.end).isSameOrAfter(today);
+      //   break;
+      // case "today":
+      //   filterByTimeCondition = moment(e.end).isSame(today, "day");
+      //   break;
+      // case "tomorrow":
+      //   filterByTimeCondition = moment(e.end).isSame(tomorrow, "day");
+      //   break;
+      // case "this-week":
+      //   filterByTimeCondition = moment(e.end).isSame(today, "week");
 
-      break;
-    case "next-week":
-      filterByTimeCondition = moment(e.end).isSame(nextWeekDay, "week");
+      //   break;
+      // case "next-week":
+      //   filterByTimeCondition = moment(e.end).isSame(nextWeekDay, "week");
 
       break;
     default:
-      filterByTimeCondition = moment(e.end).isSameOrAfter(today, "day");
+      filterByTimeCondition = true;
   }
 
   return filterByTypeCondition && filterByTimeCondition;
@@ -132,7 +144,7 @@ const Activities = () => {
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [activityDisplayType, setActivityDisplayType] = useState("calender");
   const [activityFilterByType, setActivityFilterByType] = useState("all");
-  const [activityFilterByTime, setActivityFilterByTime] = useState("todo");
+  const [activityFilterByTime, setActivityFilterByTime] = useState("all");
   const [view, setView] = React.useState(Views.WEEK);
   const [selectedActivity, setSelectedActivity] = useState(null);
 
