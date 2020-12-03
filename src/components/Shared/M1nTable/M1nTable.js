@@ -1996,6 +1996,11 @@ function M1nTable(props) {
   const setTargetLabel = (newState) => {
     setStateIfDeepEqual(TargetLabel, newState);
   };
+  const [targetLabelToExpand, TargetLabelToExpand] = useState(null);
+  const setTargetLabelToExpand = (newState) => {
+    setStateIfDeepEqual(TargetLabelToExpand, newState);
+  };
+
   const [deleteFunc, setDeleteFunc] = useState(null);
   // const setDeleteFunc = (newState) => {
   //   setStateIfDeepEqual(DeleteFunc, newState);
@@ -2872,7 +2877,7 @@ function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "Contacts") {
       setLoading(true);
-      console.log("ue mintable 22");
+      console.log("ue mintable 22- contact");
       setTargetLabel("contact");
       setHeader("Contacts");
       setOrderByTracks(false);
@@ -3656,7 +3661,7 @@ function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "Deals" && stateApp.user) {
       setLoading(true);
-      console.log("ue mintable 22");
+      console.log("ue mintable 22 - deals");
       setTargetLabel("deals");
       setHeader("Deals");
       getTransactionData({
