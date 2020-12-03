@@ -333,9 +333,6 @@ export default function Transact() {
       // );
     }
 
-  
-
-
     if (
       !loading &&
       data?.transactionData[index] &&
@@ -661,7 +658,7 @@ export default function Transact() {
 
   const wonSum = sumDeals(wonDeals);
   const openSum = sumDeals(openDeals);
-  
+
   return !loading && data && transactData ? (
     <div className={classes.root}>
       {/* <Dialog transactData={transactData} handleDataChange={handleDataChange} /> */}

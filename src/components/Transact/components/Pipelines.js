@@ -120,12 +120,11 @@ const reorder = (list, startPosition, endPosition) => {
 
 export default function Pipelines(props) {
   const dispatch = useDispatch();
-  const { openPipeDialog, selectedPipe, pipeToShow } = useSelector(
+  const { openPipeDialog, selectedPipe, pipelines, pipeToShow } = useSelector(
     ({ Flow }) => Flow
   );
   const [stateApp] = useContext(AppContext);
   const classes = useStyles();
-  const [pipelines, setPipelines] = useState([]);
   const [name, setName] = useState("");
   const [error, setError] = useState(false);
   const [stages, setStages] = useState([]);
@@ -145,19 +144,19 @@ export default function Pipelines(props) {
 
   useEffect(() => {
     if (pipelinesData?.pipelines) {
-      setPipelines(pipelinesData.pipelines);
-
       //// select first one as default
       if (pipelinesData.pipelines.length > 0)
         dispatch(
           setFlowState({
             selectedPipe: pipelinesData.pipelines[0],
+            pipelines: pipelinesData.pipelines,
           })
         );
       else
         dispatch(
           setFlowState({
             selectedPipe: null,
+            pipelines: [],
           })
         );
     }

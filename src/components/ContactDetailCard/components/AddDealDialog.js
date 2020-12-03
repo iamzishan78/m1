@@ -36,6 +36,7 @@ import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
 import TaggerWithIcon from "../../Shared/TaggerWithIcon";
 import CommentsWithIcon from "../../Shared/CommentsWithIcon";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { useDispatch, useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -152,15 +153,15 @@ const openStyle = { borderColor: "#EBC253" };
 function AddDealDialog(props) {
   const classes = useStyles();
   // const { transactData, handleDataChange } = props;
-
+  const { selectedPipe, pipelines } = useSelector(({ Flow }) => Flow);
   const [stateApp, setStateApp] = useContext(AppContext);
   // const [title, setTitle] = useState(props.contact ? props.contact.name : ""); // title change from contact.name to dealName
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [label, setLabel] = useState("");
-  const [stage, setStage] = useState("");
+  const [stageId, setStageId] = useState("");
   const [dealState, setDealState] = useState(null);
   const [description, setDescription] = useState("");
-  const [pipelineId, setPipelineId] = useState(props.pipelineId);
+  const [pipelineId, setPipelineId] = useState(selectedPipe?._id);
   const [ownerId, setOwnerId] = useState("");
   const [cardId, setCardId] = useState("");
   const [users, setUsers] = useState([]);
@@ -392,7 +393,7 @@ function AddDealDialog(props) {
       setCloseDate(card.expectedCloseDate ? card.expectedCloseDate : null);
       setColaborators(card.colaborators ? card.colaborators : []);
       setOriginationDate(card.createdAt ? card.createdAt : "");
-      setStage(card.laneId ? card.laneId : "lane1");
+      setStageId(card.laneId ? card.laneId : "lane1");
       if (card.contactId) {
         setNameAutValue({ name: card.contactName, _id: card.contactId }); // setting contact
       }
@@ -425,7 +426,7 @@ function AddDealDialog(props) {
     setTitle("");
     setLabel("");
     setDescription("");
-    setStage("");
+    setStageId("");
     setDealState(null);
     setNameAutValue(null);
     setNameAutInputValue("");
@@ -500,7 +501,7 @@ function AddDealDialog(props) {
     let tempContact = newContact ? newContact?.addContact?.contact : contact;
 
     console.log("Contact: ", newContact, contact, tempContact);
-    let newStage = stage ? stage : "lane1";
+    let newStage = stageId ? stageId : "lane1";
     if (transactData) {
       const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
       const laneId = stateApp.activeDeal?.laneId;
@@ -692,6 +693,15 @@ function AddDealDialog(props) {
       setIsDeleting(false);
     }
   };
+  const sortedPipelines = [...pipelines].sort((a, b) => {
+    let comparison = 0;
+    if (a.name.toUpperCase() > b.name.toUpperCase()) {
+      comparison = 1;
+    } else if (a.name.toUpperCase() < b.name.toUpperCase()) {
+      comparison = -1;
+    }
+    return comparison;
+  });
 
   return (
     <>
@@ -1016,7 +1026,13 @@ function AddDealDialog(props) {
                 fullWidth
                 label="Pipeline"
               >
-                {/* TODO: map over list of pipelines and render options */}
+                {selectedPipe && (
+                  <option value={selectedPipe._id}>{selectedPipe.name}</option>
+                )}
+                {sortedPipelines.map((pipeline) => {
+                  if (selectedPipe && selectedPipe._id === pipeline._id) return;
+                  return <option value={pipeline._id}>{pipeline.name}</option>;
+                })}
               </Select>
             </FormControl>
 
@@ -1031,19 +1047,17 @@ function AddDealDialog(props) {
               </InputLabel>
               <Select
                 native
-                value={stage}
+                value={stageId}
                 onChange={(e) => {
                   console.log("Stage: ", e.target.value);
-                  setStage(e.target.value);
+                  setStageId(e.target.value);
                 }}
                 fullWidth
                 label="Deal Stage"
               >
-                <option value={"lane1"}>Offer Preparation</option>
-                <option value={"lane2"}>Offer Extended</option>
-                <option value={"lane3"}>Accepted - Due Diligence</option>
-                <option value={"lane4"}>Deal Closed</option>
-                <option value={"lane5"}>Offer Rejected</option>
+                {selectedPipe?.stages?.map((stage) => (
+                  <option value={stage._id}>{stage.name}</option>
+                ))}
               </Select>
             </FormControl>
             <TextField
