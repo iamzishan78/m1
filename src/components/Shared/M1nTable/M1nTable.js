@@ -1879,7 +1879,7 @@ const ProductionDetailsHeaders = [
   },
   {
     name: "allocatedOil",
-    label: "Alocated Oil (BBL)",
+    label: "Allocated Oil (BBL)",
     editable: false,
     options: {
       filter: false,
@@ -1894,7 +1894,7 @@ const ProductionDetailsHeaders = [
   },
   {
     name: "allocatedGas",
-    label: "Alocated Gas (MCF)",
+    label: "Allocated Gas (MCF)",
     editable: false,
     options: {
       filter: false,
@@ -1909,7 +1909,7 @@ const ProductionDetailsHeaders = [
   },
   {
     name: "allocatedWater",
-    label: "Alocated Water (BBL)",
+    label: "Allocated Water (BBL)",
     editable: false,
     options: {
       filter: false,
@@ -4155,7 +4155,7 @@ function M1nTable(props) {
       setAddAble(false);
       setRows(props.productionDetails);
       setOrderByTracks(false);
-      // setTotal(true);
+      setTotal(true);
     }
   }, [props.props]);
   /////////// PRODUCTION DETAILS ////////////////////////////////////////

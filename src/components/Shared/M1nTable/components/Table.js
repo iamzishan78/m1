@@ -2004,12 +2004,13 @@ function SubTable(props) {
       }
     },
     onChangePage: (pageState) => {
-      console.log(`here: pageInd=${pageInd} pageState=${pageState}`);
       setPageInd(pageState);
     },
     customSort: (data, colIndex, order) => {
       if (props.parent === "production_WellDetails") {
-        return data.sort((a, b) => { if (colIndex === 1) 
+        let temp = data.filter(item => item.data[1] != "Cumulative");
+        let temp_rows_per_page = rowsPerPage ? rowsPerPage : 25;
+        let temp_rows = temp.sort((a, b) => { if (colIndex === 1) 
           { 
             const dateA = moment(moment(a.data[colIndex], "MM/YYYY")).valueOf();
             const dateB = moment(moment(b.data[colIndex], "MM/YYYY")).valueOf();
@@ -2018,25 +2019,56 @@ function SubTable(props) {
             return (a.data[colIndex] < b.data[colIndex] ? -1: 1 ) * (order === 'desc' ? 1 : -1); 
           }
         });
+
+        let insertInBetween = temp_rows_per_page - 1;
+        let cumulative_array = Object.values(cumulative);
+        let temp_cumulative_array = [];
+
+        for(let counter = 0; counter < cumulative_array.length; counter++) {
+          if (counter != 0 &&
+            counter != 9 &&
+            counter != 10 &&
+            counter != 11 &&
+            counter != 12) {
+              temp_cumulative_array.push(cumulative_array[counter]);
+            }
+        }
+
+        if (Object.entries(cumulative).length != 0) {
+          let multiplier = temp_rows.length / insertInBetween;
+
+          for (let counter = 1; counter <= multiplier; counter++) {
+            let insert_index = 0;
+            if (counter != 1) {
+              insert_index = counter * temp_rows_per_page;
+              temp_rows.splice(insert_index - 1, 0, {data: temp_cumulative_array});
+            } else {
+              temp_rows.splice(insertInBetween, 0, {data: temp_cumulative_array});
+            }
+          };
+        };
+
+        temp_rows.push({data: temp_cumulative_array});
+        return temp_rows;
       } else {
         return data.sort((a, b) => { 
           return (a.data[colIndex] < b.data[colIndex] ? -1: 1 ) * (order === 'desc' ? 1 : -1); 
         });
       }
     },
-    // onChangeRowsPerPage: (numberOfRows) => {
-    //   console.log(numberOfRows);
-      // if (props.total === true) {
-      //   switch(props.parent) {
-      //     case "production_WellDetails":
-      //       let trimmed = rows.filter(item => item.ReportDate !== "Cumulative");
-      //       setRows(displayCumulative(trimmed, props.total, cumulative));
-      //       break;
-      //     default:
-      //       break;
-      //   }
-      // }
-    // },
+    onChangeRowsPerPage: (numberOfRows) => {
+      if (props.total === true) {
+        switch(props.parent) {
+          case "production_WellDetails":
+            let trimmed = rows.filter(item => item.ReportDate != "Cumulative");
+            setRowsPerPage(numberOfRows);
+            setRows(displayCumulative(trimmed, props.total, cumulative, numberOfRows));
+            break;
+          default:
+            break;
+        }
+      }
+    },
     // onColumnSortChange: (column, direction) => {
     //   if (props.total === true) {
     //     switch(props.parent) {
@@ -2357,16 +2389,16 @@ function SubTable(props) {
     history.push(route);
   };
 
-  const displayCumulative = (data, total, cumulative) => {
+  const displayCumulative = (data, total, cumulative, rowsPerPage = 25) => {
     let rows = data;
       if (total === true && rows.length != 0) {
-        let insertInBetween = options.rowsPerPage - 1;
+        let insertInBetween = rowsPerPage - 1;
         if (Object.entries(cumulative).length != 0) {
           let multiplier = rows.length / insertInBetween;
           for (let temp = 1; temp <= multiplier; temp++) {
             let insert_index = 0;
             if (temp != 1) {
-              insert_index = temp * options.rowsPerPage;
+              insert_index = temp * rowsPerPage;
               rows.splice(insert_index - 1, 0, cumulative);
             } else {
               rows.splice(insertInBetween, 0, cumulative);
@@ -2375,7 +2407,6 @@ function SubTable(props) {
           rows.push(cumulative)
         }
       }
-
     return rows;
   }
 

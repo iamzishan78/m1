@@ -467,7 +467,13 @@ export default function ExpandableCard(props) {
               : ""
           }
         />
-        <CardContent className={classes.content}>{props.component}</CardContent>
+        
+          <CardContent className={classes.content}>
+            <div id="cardContent">
+              {props.component}
+            </div>
+          </CardContent>
+        
       </Card>
     </React.Fragment>
   );
