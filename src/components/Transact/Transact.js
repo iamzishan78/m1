@@ -21,6 +21,8 @@ import "./index.css";
 import { AppBar } from "@material-ui/core";
 import TransactAppBar from "./components/TransactAppBar";
 import TransactTable from "./components/TransactTable";
+import { useDispatch, useSelector } from "react-redux";
+
 // const data_file = {
 //   lanes: [
 //     {
@@ -291,6 +293,7 @@ const sumDeals = (deals) => {
 
 export default function Transact() {
   const classes = useStyles();
+  const { pipeToShow } = useSelector(({ Flow }) => Flow);
   // const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [transactData, setTransactData] = useState({ lanes: [] });
@@ -701,51 +704,58 @@ export default function Transact() {
         setIndex={setIndex}
         index={index}
       />
-      {dealDisplayType === "board" && (
-        <Board
-          className={classes.list}
-          style={{ backgroundColor: "#fff" }}
-          data={filteredTransactData || transactData}
-          handleDragEnd={handleCardDragEnd}
-          draggable={true}
-          laneDraggable={false}
-          cardDraggable={true}
-          collapsibleLanes={true}
-          editable={false}
-          canAddLanes={false}
-          editLaneTitle={false}
-          hideCardDeleteIcon={true}
-          onDataChange={handleDataChange}
-          onCardClick={handleCardClick}
-          laneStyle={{
-            backgroundColor: "#fff",
-            color: "#011133",
-            fontWeight: "bold",
-          }}
-          cardStyle={{
-            boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
-            backgroundColor: "#F2F2F2",
-          }}
+      {pipeToShow ? (
+        <>
+          {dealDisplayType === "board" && (
+            <Board
+              className={classes.list}
+              style={{ backgroundColor: "#fff" }}
+              data={filteredTransactData || transactData}
+              handleDragEnd={handleCardDragEnd}
+              draggable={true}
+              laneDraggable={false}
+              cardDraggable={true}
+              collapsibleLanes={true}
+              editable={false}
+              canAddLanes={false}
+              editLaneTitle={false}
+              hideCardDeleteIcon={true}
+              onDataChange={handleDataChange}
+              onCardClick={handleCardClick}
+              laneStyle={{
+                backgroundColor: "#fff",
+                color: "#011133",
+                fontWeight: "bold",
+              }}
+              cardStyle={{
+                boxShadow:
+                  "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+                backgroundColor: "#F2F2F2",
+              }}
 
-          //onCardAdd = {handleCardAdd}
-          //onCardDelete = {handleCardDelete}
-          // handleDragStart = {}
-          // handleDragEnd={}
-          // handleLaneDragStart
-          // onDataChange
-          // onCardAdd
-          // onBeforeCardDelete
-          // onCardDelete
-          // onCardMoveAcrossLanes
-          // onLaneAdd
-          // onLaneDelete
-          // onLaneUpdate
-          // onLaneClick
-          // onLaneScroll
-          //onCardMoveAcrossLanes
-        />
+              //onCardAdd = {handleCardAdd}
+              //onCardDelete = {handleCardDelete}
+              // handleDragStart = {}
+              // handleDragEnd={}
+              // handleLaneDragStart
+              // onDataChange
+              // onCardAdd
+              // onBeforeCardDelete
+              // onCardDelete
+              // onCardMoveAcrossLanes
+              // onLaneAdd
+              // onLaneDelete
+              // onLaneUpdate
+              // onLaneClick
+              // onLaneScroll
+              //onCardMoveAcrossLanes
+            />
+          )}
+          {dealDisplayType === "table" && <TransactTable deals={allDeals} />}{" "}
+        </>
+      ) : (
+        <CircularProgress size={80} disableShrink color="secondary" />
       )}
-      {dealDisplayType === "table" && <TransactTable deals={allDeals} />}
     </div>
   ) : (
     <CircularProgress size={80} disableShrink color="secondary" />
