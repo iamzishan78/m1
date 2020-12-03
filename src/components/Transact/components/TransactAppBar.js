@@ -143,9 +143,6 @@ const TransactAppBar = ({
   setDealDisplayType,
   dealFilter,
   setDealFilter,
-  pipelines,
-  setIndex,
-  index,
 }) => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);

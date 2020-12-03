@@ -178,9 +178,18 @@ export default function Pipelines(props) {
 
   useEffect(() => {
     if (pipelineData) {
+      let pipe = pipelineData.pipeline
+        ? {
+            ...pipelineData.pipeline,
+            lanes: pipelineData.pipeline.lanes?.map((lane) => ({
+              ...lane,
+              cards: lane.cards?.map((card) => ({ ...card })),
+            })),
+          }
+        : {};
       dispatch(
         setFlowState({
-          pipeToShow: pipelineData.pipeline,
+          pipeToShow: pipe,
         })
       );
     }
