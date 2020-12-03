@@ -103,7 +103,7 @@ const SetApolloClient = (props) => {
 
   useEffect(()=> {
     let draggableArea = document.getElementById("root");
-    if (window.location.pathname == "/") {
+    if (window.location.pathname == "/" && stateApp.user != null) {
       draggableArea.style.overflow='hidden'
     } else {
       draggableArea.style.overflow='visible'

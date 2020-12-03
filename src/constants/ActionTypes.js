@@ -22,3 +22,6 @@ export const SET_ADD_PARCEL_INTEREST_STATE = "SET_ADD_PARCEL_INTEREST_STATE";
 
 // MainMap
 export const SET_MAIN_MAP_STATE = "SET_MAIN_MAP_STATE";
+
+// Flow
+export const SET_FLOW_STATE = "SET_FLOW_STATE";

@@ -1633,7 +1633,6 @@ function SubTable(props) {
   const selectRowOpenContact = (contact) => {
     const rowIndex = rows.findIndex((r) => r._id === contact._id);
     const row = rows[rowIndex];
-
     setSelectedRow(rows);
 
     setStateApp((stateApp) => ({
@@ -1989,7 +1988,7 @@ function SubTable(props) {
       if (props.targetLabel === "contact") {
         setStateApp((stateApp) => ({
           ...stateApp,
-          selectedContact: rows[dataIndex].id,
+          selectedContact: rows[dataIndex]._id,
         }));
 
         setSubComponent(
@@ -2373,7 +2372,6 @@ function SubTable(props) {
   }
 
   if (props.header === "Contacts") {
-    console.log('props.header === "Contacts"');
     options.rowsPerPageOptions =
       props.contactsPageProps.contactsCount > 25
         ? [10, 25, 50, 100]

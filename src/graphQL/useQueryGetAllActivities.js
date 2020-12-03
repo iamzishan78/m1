@@ -4,16 +4,17 @@ export const GETALLACTIVITIES = gql`
   query getAllActivities {
     activities {
       _id
-      contactId
-      fullname
       dateTime
       endDateTime
       notes
+      ownerId
+      contactId
+      dealId
       type
+      ownerName
+      contactName
       name
       isClosed
-      ownerId
-      dealId
     }
   }
 `;

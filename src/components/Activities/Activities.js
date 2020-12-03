@@ -38,15 +38,19 @@ const ActivitiesCalendar = ({
   return (
     <div>
       <Calendar
+        culture="en-GB"
+        drilldownView="week"
+        popup={true}
         localizer={localizer}
         events={events}
-        startAccessor="start"
-        endAccessor="end"
+        endAccessor={"end"}
+        startAccessor={"start"}
         view={view}
         defaultDate={new Date()}
         style={{ height: "calc(100vh - 64px - 80px)" }}
         step={60}
         onSelectEvent={(e) => onEventClick(e)}
+        showMultiDayTimes
         components={{
           toolbar: (props) => (
             <ActivitiesToolbar
@@ -165,6 +169,8 @@ const Activities = () => {
       )
     );
   }, [events, activityFilterByType, activityFilterByTime, view]);
+
+  console.log("ACTIVITIES", activitiesData, events, filteredEvents);
 
   const onModalClose = () => {
     setStateApp((stateApp) => ({

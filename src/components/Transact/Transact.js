@@ -293,7 +293,7 @@ export default function Transact() {
   const classes = useStyles();
   // const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [transactData, setTransactData] = useState();
+  const [transactData, setTransactData] = useState({ lanes: [] });
   const [id, setId] = useState();
   const [index, setIndex] = useState(0);
   const [pipelines, setPipelines] = useState([]);
@@ -324,13 +324,13 @@ export default function Transact() {
 
   useEffect(() => {
     if (!loading && data?.transactionData) {
-      setPipelines(
-        data?.transactionData.map((v, i) => ({
-          index: i,
-          name: v.pipeline,
-          id: v._id,
-        }))
-      );
+      // setPipelines(
+      //   data?.transactionData.map((v, i) => ({
+      //     index: i,
+      //     name: v.pipeline,
+      //     id: v._id,
+      //   }))
+      // );
     }
 
     if (
@@ -370,25 +370,25 @@ export default function Transact() {
     setDeletedDeals(deleted);
   }, [allDeals]);
 
-  useEffect(() => {
-    if (transactData) {
-      let lanes = transactData.lanes;
-      let filterted = filterCards(lanes, dealFilter);
-      console.log("TRANSACT DATA", transactData.lanes);
-      console.log("FILTERED DATA", dealFilter, filterted);
+  // useEffect(() => {
+  //   if (transactData) {
+  //     let lanes = transactData.lanes;
+  //     let filterted = filterCards(lanes, dealFilter);
+  //     console.log("TRANSACT DATA", transactData.lanes);
+  //     console.log("FILTERED DATA", dealFilter, filterted);
 
-      setFilteredTransactData({ lanes: [...filterted] });
+  //     setFilteredTransactData({ lanes: [...filterted] });
 
-      updateTransaction({
-        variables: {
-          transactionId: id,
-          transaction: { allData: transactData, user: stateApp.user.mongoId },
-        },
-        refetchQueries: ["getTransactionData"],
-        awaitRefetchQueries: true,
-      });
-    }
-  }, [transactData, dealFilter]);
+  //     updateTransaction({
+  //       variables: {
+  //         transactionId: id,
+  //         transaction: { allData: transactData, user: stateApp.user.mongoId },
+  //       },
+  //       refetchQueries: ["getTransactionData"],
+  //       awaitRefetchQueries: true,
+  //     });
+  //   }
+  // }, [transactData, dealFilter]);
 
   // const didLaneChange = (current, prev) => {
   //   let changed = false;
