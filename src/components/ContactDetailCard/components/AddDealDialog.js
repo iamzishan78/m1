@@ -196,7 +196,7 @@ function AddDealDialog(props) {
     fetchPolicy: "cache-and-network",
   });
 
-  const [getTransactionData, { data: tdata }] = useLazyQuery(TRANSACTIONDATA);
+  // const [getTransactionData, { data: tdata }] = useLazyQuery(TRANSACTIONDATA);
 
   const [getContact, { data: cData }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
@@ -296,14 +296,14 @@ function AddDealDialog(props) {
     props.transactData ? { ...props.transactData } : null
   );
 
-  useEffect(() => {
-    console.log("TDATA : ", tdata?.transactionData[props.index]?.allData);
-    if (tdata?.transactionData[props.index]?.allData) {
-      setTransactData(
-        JSON.parse(JSON.stringify(tdata?.transactionData[props.index]?.allData))
-      );
-    }
-  }, [tdata, props.index]);
+  // useEffect(() => {
+  //   console.log("TDATA : ", tdata?.transactionData[props.index]?.allData);
+  //   if (tdata?.transactionData[props.index]?.allData) {
+  //     setTransactData(
+  //       JSON.parse(JSON.stringify(tdata?.transactionData[props.index]?.allData))
+  //     );
+  //   }
+  // }, [tdata, props.index]);
 
   useEffect(() => {
     if (userLists && userLists.allUsers) {
@@ -331,28 +331,28 @@ function AddDealDialog(props) {
   };
 
   const handleDataChange = async (newData) => {
-    if (tdata?.transactionData[props.index]?._id) {
-      await updateTransaction({
-        variables: {
-          transactionId: tdata.transactionData[props.index]._id,
-          transaction: { allData: newData, user: stateApp.user.mongoId },
-        },
-        refetchQueries: ["getTransactionData"],
-        awaitRefetchQueries: true,
-      });
-    }
+    // if (tdata?.transactionData[props.index]?._id) {
+    //   await updateTransaction({
+    //     variables: {
+    //       transactionId: tdata.transactionData[props.index]._id,
+    //       transaction: { allData: newData, user: stateApp.user.mongoId },
+    //     },
+    //     refetchQueries: ["getTransactionData"],
+    //     awaitRefetchQueries: true,
+    //   });
+    // }
   };
 
-  useEffect(() => {
-    if (stateApp.user && stateApp.user.mongoId) {
-      console.log(stateApp.user);
-      getTransactionData({
-        variables: {
-          userId: stateApp.user.mongoId,
-        },
-      });
-    }
-  }, [stateApp.user]);
+  // useEffect(() => {
+  //   if (stateApp.user && stateApp.user.mongoId) {
+  //     console.log(stateApp.user);
+  //     getTransactionData({
+  //       variables: {
+  //         userId: stateApp.user.mongoId,
+  //       },
+  //     });
+  //   }
+  // }, [stateApp.user]);
 
   useEffect(() => {
     if (props.contactId) {
