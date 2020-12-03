@@ -706,7 +706,6 @@ export default function Transact() {
       />
       {pipeToShow ? (
         <>
-          {" "}
           {dealDisplayType === "board" && (
             <Board
               className={classes.list}
