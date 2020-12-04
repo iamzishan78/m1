@@ -175,7 +175,7 @@ const useStyles = makeStyles((theme) => ({
   },
   boardAndTable: {
     maxWidth: "100vw",
-    "& .react-trello-board": { minHeight: "calc( 100vh - 188px)" },
+    "& .react-trello-board": { height: "calc( 100vh - 188px)" },
   },
 }));
 
@@ -493,19 +493,20 @@ export default function Transact() {
   };
 
   const handleCardClick = (cardId, metadata, laneId) => {
-    dispatch(
-      setFlowState({
-        selectedCard: { ...metadata, laneId },
-      })
-    );
+    // dispatch(
+    //   setFlowState({
+    //     selectedCard: { ...metadata, laneId },
+    //   })
+    // );
 
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: true,
-      // activeDeal: {
-      //   cardId,
-      //   laneId,
-      // },
+      activeDeal: {
+        cardId,
+        laneId,
+        ...metadata,
+      },
     }));
   };
 
