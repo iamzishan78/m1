@@ -209,7 +209,7 @@ const Activities = () => {
   useEffect(() => {
     if (stateApp.selectedActivityId) {
       setSelectedActivity(
-        filteredEvents.find((act) => act._id === stateApp.selectedActivityId)
+        events.find((act) => act._id === stateApp.selectedActivityId)
       );
     }
   }, [stateApp.selectedActivityId]);

@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { borders } from "@material-ui/system";
 import { shadows } from "@material-ui/system";
-import { Paper } from "@material-ui/core";
+import { Grid, Paper, TextField } from "@material-ui/core";
 import { NavigationContext } from "./NavigationContext";
 import { TransactContext } from "../Transact/TransactContext";
 import { AppContext } from "../../AppContext";
@@ -117,6 +117,8 @@ import {
   createMuiTheme,
   withStyles,
 } from "@material-ui/core/styles";
+import { GETALLACTIVITIESFORSEARCH } from "../../graphQL/useQueryGetAllActivities";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const theme = createMuiTheme({
   overrides: {
@@ -600,6 +602,24 @@ const useStyles = makeStyles((theme) => ({
     transform: "unset",
     flex: 1,
   },
+  activitySearchField: {
+    color: "#fff",
+
+    "& .MuiOutlinedInput-input": {
+      width: "100%",
+      color: "#ffffff",
+      "&::placeholder": {
+        color: "#788092",
+        textDecoration: "bold",
+      },
+      "&:-ms-input-placeholder": {
+        color: "#788092",
+      },
+      "&::-ms-input-placeholder": {
+        color: "#788092",
+      },
+    },
+  },
 }));
 
 const M1neralLogoDrawer = (props) => (
@@ -723,6 +743,22 @@ export default function Navigation(props) {
   const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE);
   const [openProfileModal, setOpenProfileModal] = useState(false);
   const [openUserManagementModal, setOpenUserManagementModal] = useState(false);
+  const [activities, setActivities] = useState([]);
+
+  const [
+    getAllActivitiesForSearch,
+    {
+      data: activitiesData,
+      loading: activitiesLoading,
+      error: activitiesError,
+    },
+  ] = useLazyQuery(GETALLACTIVITIESFORSEARCH);
+
+  useEffect(() => {
+    if (activitiesData) {
+      setActivities(activitiesData?.activities);
+    }
+  }, [activitiesData]);
 
   useEffect(() => {
     if (stateApp?.user?.email) {
@@ -919,6 +955,7 @@ export default function Navigation(props) {
   useEffect(() => {
     if (location.pathname === "/activities") {
       setMatchActivities(true);
+      getAllActivitiesForSearch();
     } else {
       setMatchActivities(false);
     }
@@ -1123,11 +1160,11 @@ export default function Navigation(props) {
     );
   };
 
-  const handleClickAddDeal = () => {
+  const handleSelectActivity = (id) => {
     setStateApp((stateApp) => ({
       ...stateApp,
-      dealDialog: true,
-      activeDeal: { cardId: null, laneId: null },
+      activityDialog: true,
+      selectedActivityId: id || null,
     }));
   };
 
@@ -1174,26 +1211,49 @@ export default function Navigation(props) {
 
             {/*SEARCH UI FOR ACTIVITIES */}
             {location.pathname === "/activities" && (
-              <div
-                className={classes.search}
-                style={{
-                  minWidth: 500,
-                  verticalAlign: "middle",
-                  paddingTop: 4,
-                }}
-              >
-                <div className={classes.searchIcon}>
-                  <SearchIcon style={{ verticalAlign: "middle" }} />
-                </div>
-                <InputBase
-                  placeholder="Search for activities"
-                  classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput,
+              <>
+                <SearchIcon style={{ marginRight: 8 }} />
+                <Autocomplete
+                  className={clsx(classes.search)}
+                  style={{
+                    margin: 0,
                   }}
-                  inputProps={{ "aria-label": "search" }}
+                  options={activities}
+                  onChange={(e, act) => {
+                    handleSelectActivity(act?._id);
+                  }}
+                  getOptionLabel={(option) => option.name}
+                  renderOption={(option) => {
+                    return (
+                      <Grid container spacing={0}>
+                        <Grid container item xs={12} alignItems="center">
+                          <Grid item xs>
+                            <span style={{ fontWeight: 400 }}>
+                              {option.name}
+                            </span>
+
+                            <Typography variant="body2" color="textSecondary">
+                              {option.type}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      style={{
+                        margin: 0,
+                      }}
+                      className={clsx(classes.activitySearchField)}
+                      margin="dense"
+                      {...params}
+                      variant="outlined"
+                      placeholder="Search for activities"
+                    />
+                  )}
                 />
-              </div>
+              </>
             )}
 
             {/*SEARCH UI FOR DEALS */}
@@ -1676,7 +1736,7 @@ export default function Navigation(props) {
             </div>
           </ListItem>
 
-           <ListItem
+          <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected,
@@ -1705,7 +1765,7 @@ export default function Navigation(props) {
                 </Button>
               </ListItemSecondaryAction>
             </div>
-          </ListItem> 
+          </ListItem>
 
           <ListItem
             classes={{
