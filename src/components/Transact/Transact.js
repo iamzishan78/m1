@@ -10,6 +10,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { TransactContext } from "./TransactContext";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { UPDATETRANSACTION } from "../../graphQL/useMutationUpdateTransaction";
+import { UPDATESTAGEDEALDESCRIPTORS } from "../../graphQL/useMutationUpdateStageDealDescriptors";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Button from "@material-ui/core/Button";
 import Dialog from "./components/dialog";
@@ -215,6 +216,7 @@ export default function Transact() {
 
   // const [getTransactionData, { loading, data }] = useLazyQuery(TRANSACTIONDATA);
   // const [updateTransaction] = useMutation(UPDATETRANSACTION);
+  const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
 
   const [dealDisplayType, setDealDisplayType] = useState("board");
   const [dealFilter, setDealFilter] = useState("open");
@@ -514,54 +516,63 @@ export default function Transact() {
     position,
     cardDetails
   ) => {
-    if (sourceLaneId !== targetLaneId) {
-      //   const lanes = transactData.lanes;
-      //   const sourceLane = lanes.find((lane) => lane.id === sourceLaneId);
-      //   const targetLane = lanes.find((lane) => lane.id === targetLaneId);
-      //   const sourceLaneIndex = lanes.findIndex(
-      //     (lane) => lane.id === sourceLaneId
-      //   );
-      //   const targetLaneIndex = lanes.findIndex(
-      //     (lane) => lane.id === targetLaneId
-      //   );
-      //   const updatedSourceLane = {
-      //     ...sourceLane,
-      //     cards: sourceLane.cards.filter((card) => card.id !== cardId),
-      //   };
-      //   // const updatedTargetLane = {
-      //   //   ...targetLane,
-      //   //   cards: [
-      //   //     ...targetLane.cards.slice(0, position),
-      //   //     { ...cardDetails },
-      //   //     ...targetLane.cards.slice(position + 1),
-      //   //   ],
-      //   // };
-      //   const updatedTargetLane = {
-      //     ...targetLane,
-      //     cards: [...targetLane.cards, { ...cardDetails }],
-      //   };
-      //   let updatedLanes;
-      //   if (sourceLaneIndex < targetLaneIndex) {
-      //     updatedLanes = [
-      //       ...lanes.slice(0, sourceLaneIndex),
-      //       updatedSourceLane,
-      //       ...lanes.slice(sourceLaneIndex + 1, targetLaneIndex),
-      //       updatedTargetLane,
-      //       ...lanes.slice(targetLaneIndex + 1),
-      //     ];
-      //   } else {
-      //     updatedLanes = [
-      //       ...lanes.slice(0, targetLaneIndex),
-      //       updatedTargetLane,
-      //       ...lanes.slice(targetLaneIndex + 1, sourceLaneIndex),
-      //       updatedSourceLane,
-      //       ...lanes.slice(sourceLaneIndex + 1),
-      //     ];
-      //   }
-      //   // setTransactData({ lanes: updatedLanes });///// use dispatch to the reducer instead
-      //   console.log(cardId, sourceLaneId, targetLaneId, position, cardDetails);
+
+    // handle drag within lanes - runs first
+    console.log(`handleCardDragEnd: ${cardId}, ${sourceLaneId}, ${targetLaneId}, ${position}, ${cardDetails}`);
+
+    let unfilteredSourceLane = pipeToShow.lanes.find((lane) => lane.id === sourceLaneId);
+    let unfilteredTargetLane = pipeToShow.lanes.find((lane) => lane.id === targetLaneId);
+
+    let filteredSourceLane = filteredTransactData.lanes.find((lane) => lane.id === sourceLaneId);
+    let filteredTargetLane = filteredTransactData.lanes.find((lane) => lane.id === targetLaneId);
+
+    let filteredSourcePosition = filteredSourceLane.cards.findIndex((card) => card.id === cardId);
+    let filteredTargetPosition = position;
+
+    let unfilteredSourcePosition = unfilteredSourceLane.cards.findIndex((card) => card.id === cardId);
+    let unfilteredTargetPosition = position !== 0 ? unfilteredTargetLane.cards[position - 1].metadata.position + 1 : 0
+
+    // update moved card descriptor
+    let movedCardDescriptor = {
+      _id: cardDetails.metadata.descriptorId,
+      relatedObject: targetLaneId,
+      position: unfilteredTargetPosition
     }
+
+    // update unfilteredSourceLane descriptors
+    let unfilteredSourceLaneDescriptors = [
+      ...unfilteredSourceLane.cards.slice(unfilteredSourcePosition + 1).map((card) => {
+        return {
+          _id: card.metadata.descriptorId,
+          position: card.metadata.position - 1
+        }
+      })
+    ]
+
+    // update unfilteredTargetLane descriptors
+    let unfilteredTargetLaneDescriptors = [
+      ...unfilteredTargetLane.cards.slice(unfilteredTargetPosition + 1).map((card) => {
+        return {
+          _id: card.metadata.descriptorId,
+          position: card.metadata.position + 1
+        }
+      })
+    ]
+
+    updateStageDealDescriptors({
+      variables: {
+        stageDealDescriptors: [movedCardDescriptor, ...unfilteredSourceLaneDescriptors, ...unfilteredTargetLaneDescriptors],
+      },
+      refetchQueries: ["getPipeline"],
+      awaitRefetchQueries: true,
+    });
   };
+
+  const onCardMoveAcrossLanes = (fromLaneId, toLaneId, cardId, addedIndex) => {
+    if (fromLaneId !== toLaneId) {
+      console.log(`onCardMoveAcrossLanes: ${fromLaneId}, ${toLaneId}, ${cardId}, ${addedIndex}`)
+    }
+  }
 
   // const wonSum = sumDeals(wonDeals);
   // const openSum = sumDeals(openDeals);
@@ -613,7 +624,6 @@ export default function Transact() {
               style={{ backgroundColor: "#fff" }}
               // data={filteredTransactData || transactData}
               data={filteredTransactData}
-              handleDragEnd={handleCardDragEnd}
               draggable={true}
               laneDraggable={false}
               cardDraggable={true}
@@ -622,8 +632,10 @@ export default function Transact() {
               canAddLanes={false}
               editLaneTitle={false}
               hideCardDeleteIcon={true}
+              handleDragEnd={handleCardDragEnd}
               onDataChange={handleDataChange}
               onCardClick={handleCardClick}
+              onCardMoveAcrossLanes={onCardMoveAcrossLanes}
               laneStyle={{
                 backgroundColor: "#fff",
                 color: "#011133",
@@ -635,29 +647,29 @@ export default function Transact() {
                 backgroundColor: "#F2F2F2",
               }}
 
-              //onCardAdd = {handleCardAdd}
-              //onCardDelete = {handleCardDelete}
-              // handleDragStart = {}
-              // handleDragEnd={}
-              // handleLaneDragStart
-              // onDataChange
-              // onCardAdd
-              // onBeforeCardDelete
-              // onCardDelete
-              // onCardMoveAcrossLanes
-              // onLaneAdd
-              // onLaneDelete
-              // onLaneUpdate
-              // onLaneClick
-              // onLaneScroll
-              //onCardMoveAcrossLanes
+            //onCardAdd = {handleCardAdd}
+            //onCardDelete = {handleCardDelete}
+            // handleDragStart = {}
+            // handleDragEnd={}
+            // handleLaneDragStart
+            // onDataChange
+            // onCardAdd
+            // onBeforeCardDelete
+            // onCardDelete
+            // onCardMoveAcrossLanes
+            // onLaneAdd
+            // onLaneDelete
+            // onLaneUpdate
+            // onLaneClick
+            // onLaneScroll
+            //onCardMoveAcrossLanes
             />
           )}
           {dealDisplayType === "table" && <TransactTable />}
         </div>
       ) : (
-        <CircularProgress size={80} disableShrink color="secondary" />
-      )}
+          <CircularProgress size={80} disableShrink color="secondary" />
+        )}
     </div>
   );
 }
