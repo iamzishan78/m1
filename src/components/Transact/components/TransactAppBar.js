@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
@@ -19,6 +19,7 @@ import Select from "@material-ui/core/Select";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import Pipelines from "./Pipelines";
+import { useDispatch, useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -134,18 +135,52 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+let formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
+const sumDeals = (lanes, status) => {
+  let sumAmount = 0;
+  let sumCount = 0;
+
+  lanes.forEach((deal) => {
+    deal.cards.forEach((card) => {
+      if (card.metadata.status === status) {
+        if (card.label)
+          sumAmount += parseFloat(
+            card.label.split("$").join("").split(",").join("")
+          );
+        sumCount++;
+      }
+    });
+  });
+  const formatted = formatter.format(sumAmount);
+  return { count: sumCount, amount: formatted.slice(0, formatted.length - 3) };
+};
+
 const TransactAppBar = ({
-  wonLength,
-  wonSum,
-  openLength,
-  openSum,
+  // wonLength,
+  // wonSum,
+  // openLength,
+  // openSum,
   dealDisplayType,
   setDealDisplayType,
   dealFilter,
   setDealFilter,
 }) => {
   const classes = useStyles();
+  const { pipeToShow } = useSelector(({ Flow }) => Flow);
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [openDeals, setOpenDeals] = useState({ count: 0, amount: "$0" });
+  const [wonDeals, setWonDeals] = useState({ count: 0, amount: "$0" });
+
+  useEffect(() => {
+    if (pipeToShow?.lanes) {
+      setOpenDeals(sumDeals(pipeToShow.lanes, "open"));
+      setWonDeals(sumDeals(pipeToShow.lanes, "won"));
+    }
+  }, [pipeToShow]);
 
   const handleClickAddDeal = () => {
     setStateApp((stateApp) => ({
@@ -191,15 +226,17 @@ const TransactAppBar = ({
             <div className={classes.activeDeals}>
               <OfflineBolt />
               <span>
-                {openLength} {openLength !== 1 ? "OPEN DEALS" : "OPEN DEAL"} |{" "}
-                {openSum}
+                {openDeals.count}{" "}
+                {openDeals.count !== 1 ? "OPEN DEALS" : "OPEN DEAL"} |{" "}
+                {openDeals.amount}
               </span>
             </div>
             <div className={classes.closedDeals}>
               <CheckBox />
               <span>
-                {wonLength} {wonLength !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
-                {wonSum}
+                {wonDeals.count}{" "}
+                {wonDeals.count !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
+                {wonDeals.amount}
               </span>
             </div>
             {/* <Button className={classes.import} color="default" size="small">
