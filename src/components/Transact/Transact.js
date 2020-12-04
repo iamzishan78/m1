@@ -22,6 +22,7 @@ import { AppBar } from "@material-ui/core";
 import TransactAppBar from "./components/TransactAppBar";
 import TransactTable from "./components/TransactTable";
 import { useDispatch, useSelector } from "react-redux";
+import { setFlowState } from "../../actions";
 
 const transact_data = {
   lanes: [
@@ -165,7 +166,6 @@ function usePrevious(value) {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    // height: "100vh",
     backgroundColor: "#efefef",
   },
   list: {
@@ -178,44 +178,47 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-let formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
+// let formatter = new Intl.NumberFormat("en-US", {
+//   style: "currency",
+//   currency: "USD",
+// });
 
-const sumDeals = (deals) => {
-  let sum = 0;
-  deals.forEach(
-    (card) =>
-      (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
-  );
-  const formatted = formatter.format(sum);
-  return formatted.slice(0, formatted.length - 3);
-};
+// const sumDeals = (deals) => {
+//   let sum = 0;
+//   deals.forEach(
+//     (card) =>
+//       (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+//   );
+//   const formatted = formatter.format(sum);
+//   return formatted.slice(0, formatted.length - 3);
+// };
 
 export default function Transact() {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const { pipeToShow } = useSelector(({ Flow }) => Flow);
   // const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   // const [transactData, setTransactData] = useState({ lanes: [] });
   // const [id, setId] = useState();
-  const [index, setIndex] = useState(0);
+  // const [index, setIndex] = useState(0);
   // const [pipelines, setPipelines] = useState([]);
-  const [filteredTransactData, setFilteredTransactData] = useState(null);
-  const prevFiltertedTransactData = usePrevious(filteredTransactData);
-  const [allDeals, setAllDeals] = useState([]);
-  const [openDeals, setOpenDeals] = useState([]);
-  const [wonDeals, setWonDeals] = useState([]);
-  const [lostDeals, setLostDeals] = useState([]);
-  const [deletedDeals, setDeletedDeals] = useState([]);
+  const [filteredTransactData, setFilteredTransactData] = useState({
+    lanes: [],
+  });
+  // const prevFiltertedTransactData = usePrevious(filteredTransactData);
+  // const [allDeals, setAllDeals] = useState([]);
+  // const [openDeals, setOpenDeals] = useState([]);
+  // const [wonDeals, setWonDeals] = useState([]);
+  // const [lostDeals, setLostDeals] = useState([]);
+  // const [deletedDeals, setDeletedDeals] = useState([]);
 
   // const [getTransactionData, { loading, data }] = useLazyQuery(TRANSACTIONDATA);
   // const [updateTransaction] = useMutation(UPDATETRANSACTION);
 
   const [dealDisplayType, setDealDisplayType] = useState("board");
   const [dealFilter, setDealFilter] = useState("open");
-  const prevDealFilter = usePrevious(dealFilter);
+  // const prevDealFilter = usePrevious(dealFilter);
 
   // useEffect(() => {
   //   if (stateApp.user && stateApp.user.mongoId) {
@@ -253,27 +256,29 @@ export default function Transact() {
   //         all.push(card);
   //       });
   //     });
-  //     setAllDeals(all); ////////////////////////////////////////////////////
+  //     setAllDeals(all);
   //   }
   // }, [data, index]);
 
-  useEffect(() => {
-    let open = [];
-    let won = [];
-    let lost = [];
-    let deleted = [];
-    allDeals.forEach((card) => {
-      if (card.dealState === "won") won.push(card);
-      else if (card.dealState === "lost") lost.push(card);
-      else if (card.isDeleted) deleted.push(card);
-      else open.push(card);
-    });
+  // useEffect(() => {
+  //   if (pipeToShow?.lanes) {
+  //     let open = [];
+  //     let won = [];
+  //     let lost = [];
+  //     let deleted = [];
+  //     pipeToShow.lanes.forEach((card) => {
+  //       if (card.dealState === "won") won.push(card);
+  //       else if (card.dealState === "lost") lost.push(card);
+  //       else if (card.isDeleted) deleted.push(card);
+  //       else open.push(card);
+  //     });
 
-    setOpenDeals(open);
-    setWonDeals(won);
-    setLostDeals(lost);
-    setDeletedDeals(deleted);
-  }, [allDeals]);
+  //     setOpenDeals(open);
+  //     setWonDeals(won);
+  //     setLostDeals(lost);
+  //     setDeletedDeals(deleted);
+  //   }
+  // }, [pipeToShow]);
 
   // useEffect(() => {
   //   if (transactData) {
@@ -411,46 +416,42 @@ export default function Transact() {
 
   const filterCards = (lanes, filter) => {
     return lanes.map((lane) => {
-      let title = getLaneTitle(lane.id);
-      let cards = [];
-      if (filter === "all") {
-        lane.cards.forEach(
-          (card) => !card.isDeleted && cards.push({ ...card })
-        ); // remove deleted cards
-      } else if (filter === "won") {
-        lane.cards.forEach(
-          (card) =>
-            !card.isDeleted &&
-            card.dealState === "won" &&
-            cards.push({ ...card })
-        ); // get won cards
-      } else if (filter === "lost") {
-        lane.cards.forEach(
-          (card) =>
-            !card.isDeleted &&
-            card.dealState === "lost" &&
-            cards.push({ ...card })
-        ); //get lost cards
-      } else if (filter === "open") {
-        lane.cards.forEach(
-          (card) =>
-            !card.isDeleted && !card.dealState && cards.push({ ...card })
-        ); // get open cards
-      } else if (filter === "deleted") {
-        lane.cards.forEach((card) => card.isDeleted && cards.push({ ...card })); // get deleted cards
+      let cards = [...lane.cards];
+
+      switch (filter) {
+        case "all":
+          cards = cards.filter((card) => !card.metadata.isDeleted); // remove deleted cards
+          break;
+
+        case "deleted":
+          cards = cards.filter((card) => card.metadata.isDeleted); // get deleted cards
+          break;
+
+        default:
+          cards = cards.filter((card) => card.metadata.status == filter);
+          break;
       }
-      return { ...lane, title, cards };
+
+      return { ...lane, cards };
     });
   };
 
-  const getLanesWithFixedTitles = (lanes) => {
-    return lanes.map((lane) => {
-      let title = getLaneTitle(lane.id);
-      let cards = [];
-      lane.cards.forEach((card) => cards.push({ ...card }));
-      return { ...lane, title, cards };
-    });
-  };
+  useEffect(() => {
+    if (pipeToShow?.lanes && dealFilter) {
+      setFilteredTransactData({
+        lanes: [...filterCards(pipeToShow.lanes, dealFilter)],
+      });
+    }
+  }, [pipeToShow, dealFilter]);
+
+  // const getLanesWithFixedTitles = (lanes) => {
+  //   return lanes.map((lane) => {
+  //     let title = getLaneTitle(lane.id);
+  //     let cards = [];
+  //     lane.cards.forEach((card) => cards.push({ ...card }));
+  //     return { ...lane, title, cards };
+  //   });
+  // };
 
   // useEffect(() => {
   //   if (
@@ -478,7 +479,7 @@ export default function Transact() {
 
   const handleDataChange = (newData) => {
     console.log("DATA CHANGE", newData);
-    setFilteredTransactData(newData);
+    // setFilteredTransactData(newData);
     // updateTransaction({
     //   variables: {
     //     transactionId: id,
@@ -490,13 +491,19 @@ export default function Transact() {
   };
 
   const handleCardClick = (cardId, metadata, laneId) => {
+    dispatch(
+      setFlowState({
+        selectedCard: { ...metadata, laneId },
+      })
+    );
+
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: true,
-      activeDeal: {
-        cardId,
-        laneId,
-      },
+      // activeDeal: {
+      //   cardId,
+      //   laneId,
+      // },
     }));
   };
 
@@ -556,8 +563,8 @@ export default function Transact() {
     }
   };
 
-  const wonSum = sumDeals(wonDeals);
-  const openSum = sumDeals(openDeals);
+  // const wonSum = sumDeals(wonDeals);
+  // const openSum = sumDeals(openDeals);
 
   return (
     <div className={classes.root}>
@@ -589,10 +596,10 @@ export default function Transact() {
         }
       />
       <TransactAppBar
-        wonLength={wonDeals.length}
-        wonSum={wonSum}
-        openLength={openDeals.length}
-        openSum={openSum}
+        // wonLength={wonDeals.length}
+        // wonSum={wonSum}
+        // openLength={openDeals.length}
+        // openSum={openSum}
         dealDisplayType={dealDisplayType}
         setDealDisplayType={setDealDisplayType}
         dealFilter={dealFilter}
@@ -605,7 +612,7 @@ export default function Transact() {
               className={classes.list}
               style={{ backgroundColor: "#fff" }}
               // data={filteredTransactData || transactData}
-              data={{ lanes: pipeToShow?.lanes }}
+              data={filteredTransactData}
               handleDragEnd={handleCardDragEnd}
               draggable={true}
               laneDraggable={false}
@@ -646,7 +653,7 @@ export default function Transact() {
               //onCardMoveAcrossLanes
             />
           )}
-          {dealDisplayType === "table" && <TransactTable deals={allDeals} />}{" "}
+          {dealDisplayType === "table" && <TransactTable />}
         </div>
       ) : (
         <CircularProgress size={80} disableShrink color="secondary" />

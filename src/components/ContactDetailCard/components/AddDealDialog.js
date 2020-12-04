@@ -969,32 +969,18 @@ function AddDealDialog(props) {
             // }}
           /> */}
 
-            <FormControl
+            <TextField
+              margin="dense"
               variant="outlined"
+              value={label}
+              label="Offer Price"
               fullWidth
+              onChange={(e) => {
+                setLabel(e.target.value);
+              }}
               className={classes.inputField}
-              size="small"
-            >
-              <Autocomplete
-                className={classes.fieldWidth}
-                options={users}
-                onChange={(e, user) => {
-                  setOwnerId(user.value);
-                }}
-                value={users.find((user) => user.value === ownerId) || null}
-                getOptionLabel={(option) => option.text}
-                getOptionSelected={(option) => option.value === ownerId}
-                renderInput={(params) => (
-                  <TextField
-                    margin="dense"
-                    {...params}
-                    variant="outlined"
-                    label="Owner Name"
-                    InputLabelProps={{ shrink: true }}
-                  />
-                )}
-              />
-            </FormControl>
+            />
+
             <FormControl
               variant="outlined"
               fullWidth
@@ -1071,17 +1057,34 @@ function AddDealDialog(props) {
                   ))}
               </Select>
             </FormControl>
-            <TextField
-              margin="dense"
+
+            <FormControl
               variant="outlined"
-              value={label}
-              label="Offer Price"
               fullWidth
-              onChange={(e) => {
-                setLabel(e.target.value);
-              }}
               className={classes.inputField}
-            />
+              size="small"
+            >
+              <Autocomplete
+                className={classes.fieldWidth}
+                options={users}
+                onChange={(e, user) => {
+                  setOwnerId(user.value);
+                }}
+                value={users.find((user) => user.value === ownerId) || null}
+                getOptionLabel={(option) => option.text}
+                getOptionSelected={(option) => option.value === ownerId}
+                renderInput={(params) => (
+                  <TextField
+                    margin="dense"
+                    {...params}
+                    variant="outlined"
+                    label="Deal Owner"
+                    InputLabelProps={{ shrink: true }}
+                  />
+                )}
+              />
+            </FormControl>
+
             <TextField
               //   autoFocus
               margin="dense"
