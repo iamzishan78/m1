@@ -145,7 +145,6 @@ const Activities = () => {
   const [activityFilterByType, setActivityFilterByType] = useState("all");
   const [activityFilterByTime, setActivityFilterByTime] = useState("all");
   const [view, setView] = React.useState(Views.WEEK);
-  const [selectedActivity, setSelectedActivity] = useState(null);
 
   useEffect(() => {
     getAllActivities();
@@ -199,6 +198,13 @@ const Activities = () => {
     }));
   };
 
+  const setSelectedActivity = (act) => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedActivity: act,
+    }));
+  };
+
   const onEventClick = (event) => {
     console.log("EVENT", event);
     setSelectedActivity(event);
@@ -236,8 +242,7 @@ const Activities = () => {
             <ActivitiesTable />
           )}
           <ActivitiesModal
-            selectedActivity={selectedActivity}
-            setSelectedActivity={setSelectedActivity}
+            selectedActivity={stateApp.selectedActivity}
             events={events}
           />
         </>
