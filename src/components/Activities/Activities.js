@@ -145,6 +145,7 @@ const Activities = () => {
   const [activityFilterByType, setActivityFilterByType] = useState("all");
   const [activityFilterByTime, setActivityFilterByTime] = useState("all");
   const [view, setView] = React.useState(Views.WEEK);
+  const [selectedActivity, setSelectedActivity] = useState(null);
 
   useEffect(() => {
     getAllActivities();
@@ -198,16 +199,24 @@ const Activities = () => {
     }));
   };
 
-  const setSelectedActivity = (act) => {
+  const setSelectedActivityId = (id) => {
     setStateApp((stateApp) => ({
       ...stateApp,
-      selectedActivity: act,
+      selectedActivityId: id,
     }));
   };
 
+  useEffect(() => {
+    if (stateApp.selectedActivityId) {
+      setSelectedActivity(
+        filteredEvents.find((act) => act._id === stateApp.selectedActivityId)
+      );
+    }
+  }, [stateApp.selectedActivityId]);
+
   const onEventClick = (event) => {
     console.log("EVENT", event);
-    setSelectedActivity(event);
+    setSelectedActivityId(event._id);
     onModalOpen();
   };
 
@@ -242,7 +251,7 @@ const Activities = () => {
             <ActivitiesTable />
           )}
           <ActivitiesModal
-            selectedActivity={stateApp.selectedActivity}
+            selectedActivity={selectedActivity}
             events={events}
           />
         </>
