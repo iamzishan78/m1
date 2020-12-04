@@ -18,3 +18,13 @@ export const GETALLACTIVITIES = gql`
     }
   }
 `;
+
+export const GETALLACTIVITIESFORSEARCH = gql`
+  query getAllActivitiesForSearch {
+    activities {
+      _id
+      name
+      type
+    }
+  }
+`;

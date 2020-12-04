@@ -155,8 +155,10 @@ const Activities = () => {
     if (activitiesData) {
       setEvents(
         activitiesData?.activities?.map((act) => {
-          const start = new Date(act.dateTime);
-          const end = act.endDateTime ? new Date(act.endDateTime) : start;
+          const start = new Date(Number(act.dateTime));
+          const end = act.endDateTime
+            ? new Date(Number(act.endDateTime))
+            : start;
           return {
             id: uniqueId(),
             ...act,
@@ -197,9 +199,24 @@ const Activities = () => {
     }));
   };
 
+  const setSelectedActivityId = (id) => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedActivityId: id,
+    }));
+  };
+
+  useEffect(() => {
+    if (stateApp.selectedActivityId) {
+      setSelectedActivity(
+        events.find((act) => act._id === stateApp.selectedActivityId)
+      );
+    }
+  }, [stateApp.selectedActivityId]);
+
   const onEventClick = (event) => {
     console.log("EVENT", event);
-    setSelectedActivity(event);
+    setSelectedActivityId(event._id);
     onModalOpen();
   };
 
@@ -235,7 +252,6 @@ const Activities = () => {
           )}
           <ActivitiesModal
             selectedActivity={selectedActivity}
-            setSelectedActivity={setSelectedActivity}
             events={events}
           />
         </>

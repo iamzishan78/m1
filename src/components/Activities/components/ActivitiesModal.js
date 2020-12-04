@@ -198,11 +198,7 @@ const initialErrors = {
 
 const localizer = momentLocalizer(moment);
 
-export default function ActivitiesModal({
-  setSelectedActivity,
-  selectedActivity,
-  events,
-}) {
+export default function ActivitiesModal({ selectedActivity, events }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   console.log("SELECTED ACTIVITY", selectedActivity, stateApp);
@@ -211,10 +207,9 @@ export default function ActivitiesModal({
   const [activityType, setActivityType] = useState("");
   const [activityName, setActivityName] = useState("");
   const [closed, setClosed] = useState(false);
-  const [startDate, setStartDate] = useState(
-    moment.parseZone(getCurrentDate())
-  );
-  const [endDate, setEndDate] = useState(moment.parseZone(getCurrentDate()));
+  const [startDate, setStartDate] = useState(getCurrentDate());
+  const [endDate, setEndDate] = useState(getCurrentDate());
+  const [calenderDate, setCalenderDate] = useState(new Date());
   const [startTime, setStartTime] = useState("08:00");
   const [endTime, setEndTime] = useState("08:00");
   const [notes, setNotes] = useState("");
@@ -335,6 +330,11 @@ export default function ActivitiesModal({
   // }, [addNew]);
 
   useEffect(() => {
+    const date = mergeDateAndTime(startDate, startTime);
+    setCalenderDate(new Date(date));
+  }, [startDate, startTime]);
+
+  useEffect(() => {
     console.log("set cdata EVENT: SET ACTIVITY:", selectedActivity);
     if (selectedActivity) {
       setAddNew(false);
@@ -351,13 +351,12 @@ export default function ActivitiesModal({
         name: selectedActivity.contactName,
         _id: selectedActivity.contactId,
       });
-      setStartDate(
-        moment.parseZone(selectedActivity.start).format("yyyy-MM-DD")
-      );
-      setStartTime(moment.parseZone(selectedActivity.start).format("HH:mm"));
+      setStartDate(moment.utc(selectedActivity.start).format("yyyy-MM-DD"));
+      setStartTime(moment.utc(selectedActivity.start).format("HH:mm"));
+      setCalenderDate(selectedActivity.start);
 
-      setEndDate(moment.parseZone(selectedActivity.end).format("yyyy-MM-DD"));
-      setEndTime(moment.parseZone(selectedActivity.end).format("HH:mm"));
+      setEndDate(moment.utc(selectedActivity.end).format("yyyy-MM-DD"));
+      setEndTime(moment.utc(selectedActivity.end).format("HH:mm"));
       console.log(
         "SELECTED ACTIVITY",
         getDateFromString(selectedActivity.end.toISOString()),
@@ -375,8 +374,9 @@ export default function ActivitiesModal({
       setDealId("");
       setActivityType("");
       setActivityName("");
-      setStartDate(moment.parseZone(getCurrentDate()));
-      setEndDate(moment.parseZone(getCurrentDate()));
+      setStartDate(getCurrentDate());
+      setCalenderDate(new Date());
+      setEndDate(getCurrentDate());
       setStartTime("08:00");
       setEndTime("08:00");
     }
@@ -432,10 +432,10 @@ export default function ActivitiesModal({
 
   const onModalClose = () => {
     clearFields();
-    setSelectedActivity(null);
     setStateApp((stateApp) => ({
       ...stateApp,
       activityDialog: false,
+      selectedActivity: null,
     }));
   };
 
@@ -452,6 +452,7 @@ export default function ActivitiesModal({
     setActivityName("");
     setClosed(false);
     setStartDate(getCurrentDate());
+    setCalenderDate(new Date());
     setEndDate(getCurrentDate());
     setStartTime("08:00");
     setEndTime("08:00");
@@ -532,8 +533,8 @@ export default function ActivitiesModal({
           contactId: nameAutValue._id,
           contactName: nameAutValue.name,
           dealId,
-          dateTime,
-          endDateTime,
+          dateTime: new Date(dateTime).toUTCString(),
+          endDateTime: new Date(endDateTime).toUTCString(),
           isClosed: closed,
         },
       },
@@ -552,8 +553,8 @@ export default function ActivitiesModal({
           _id: selectedActivity._id,
           type: activityType,
           name: activityName,
-          dateTime,
-          endDateTime,
+          dateTime: new Date(dateTime).toUTCString(),
+          endDateTime: new Date(endDateTime).toUTCString(),
           notes,
           ownerId: owner.id,
           ownerName: owner.name,
@@ -950,7 +951,6 @@ export default function ActivitiesModal({
             </div>
             <div className={classes.right}>
               <Calendar
-                culture="en-GB"
                 drilldownView="week"
                 popup={true}
                 localizer={localizer}
@@ -958,8 +958,8 @@ export default function ActivitiesModal({
                 startAccessor="start"
                 endAccessor="end"
                 defaultView={"day"}
-                defaultDate={new Date(startDate)}
-                date={new Date(startDate)}
+                defaultDate={calenderDate}
+                date={calenderDate}
                 step={60}
                 components={{
                   event: ActivitiesEvent,
