@@ -37,6 +37,7 @@ import TaggerWithIcon from "../../Shared/TaggerWithIcon";
 import CommentsWithIcon from "../../Shared/CommentsWithIcon";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useDispatch, useSelector } from "react-redux";
+import { ADDDEAL } from "../../../graphQL/useMutationAddDeal";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -153,16 +154,20 @@ const openStyle = { borderColor: "#EBC253" };
 function AddDealDialog(props) {
   const classes = useStyles();
   // const { transactData, handleDataChange } = props;
-  const { selectedPipe, pipelines } = useSelector(({ Flow }) => Flow);
+  const { selectedPipe, pipelines, pipeToShow } = useSelector(
+    ({ Flow }) => Flow
+  );
   const [stateApp, setStateApp] = useContext(AppContext);
   // const [title, setTitle] = useState(props.contact ? props.contact.name : ""); // title change from contact.name to dealName
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [label, setLabel] = useState("");
-  const [stageId, setStageId] = useState("");
+  const [stageId, setStageId] = useState(null);
+  const [dealPosition, setDealPosition] = useState(null);
   const [dealState, setDealState] = useState(null);
   const [description, setDescription] = useState("");
   const [pipelineId, setPipelineId] = useState(selectedPipe?._id);
-  const [ownerId, setOwnerId] = useState("");
+  const [stagesToChoose, setStagesToChoose] = useState([]);
+  const [ownerId, setOwnerId] = useState(null);
   const [cardId, setCardId] = useState("");
   const [users, setUsers] = useState([]);
   const [closeDate, setCloseDate] = useState(null);
@@ -182,6 +187,9 @@ function AddDealDialog(props) {
   const [pageVariables, setPageVariables] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
+  let [transactData, setTransactData] = useState(
+    props.transactData ? { ...props.transactData } : null
+  );
 
   const [
     addContact,
@@ -197,6 +205,9 @@ function AddDealDialog(props) {
   });
 
   // const [getTransactionData, { data: tdata }] = useLazyQuery(TRANSACTIONDATA);
+  const [addDeal, { data: addDealData, loading: addDealLoading }] = useMutation(
+    ADDDEAL
+  );
 
   const [getContact, { data: cData }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
@@ -214,6 +225,40 @@ function AddDealDialog(props) {
   useEffect(() => {
     if (selectedPipe?._id) setPipelineId(selectedPipe._id);
   }, [selectedPipe]);
+
+  useEffect(() => {
+    if (pipelines && pipelineId) {
+      const i = pipelines.findIndex((pipe) => pipe._id === pipelineId);
+      if (i >= 0 && pipelines[i] && pipelines[i].stages) {
+        setStagesToChoose(pipelines[i].stages);
+        setStageId(pipelines[i].stages[0]?._id);
+      }
+    }
+  }, [pipelineId, pipelines]);
+
+  useEffect(() => {
+    if (stageId)
+      if (pipeToShow?._id === pipelineId) {
+        let position = -1;
+
+        if (pipeToShow.lanes) {
+          for (let i = 0; i < pipeToShow.lanes.length; i++) {
+            const lane = pipeToShow.lanes[i];
+            if (lane.id === stageId && lane.cards) {
+              lane.cards.map((card) => {
+                if (card.metadata?.position > position)
+                  position = card.metadata.position;
+              });
+
+              break;
+            }
+          }
+        }
+        setDealPosition(position + 1);
+      } else {
+        setDealPosition(null);
+      }
+  }, [stageId, pipeToShow]);
 
   useEffect(() => {
     // getPaginatedContacts();
@@ -291,10 +336,6 @@ function AddDealDialog(props) {
   //     setNameAutValue(contact);
   //   }
   // }, [contact]);
-
-  let [transactData, setTransactData] = useState(
-    props.transactData ? { ...props.transactData } : null
-  );
 
   // useEffect(() => {
   //   console.log("TDATA : ", tdata?.transactionData[props.index]?.allData);
@@ -430,12 +471,12 @@ function AddDealDialog(props) {
     setTitle("");
     setLabel("");
     setDescription("");
-    setStageId("");
+    // setStageId(null);
     setDealState(null);
     setNameAutValue(null);
     setNameAutInputValue("");
     setPipelineId(selectedPipe?._id);
-    setOwnerId("");
+    setOwnerId(null);
     setCloseDate(null);
     setColaborators([]);
     setOriginationDate("");
@@ -462,212 +503,243 @@ function AddDealDialog(props) {
   }, [addContactData]);
 
   const deleteDeal = async () => {
-    if (transactData) {
-      const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
-      const laneId = stateApp.activeDeal?.laneId;
-
-      const laneIndex = transactData.lanes.findIndex(
-        (lane) => lane.id === laneId
-      );
-      const lane = transactData.lanes[laneIndex];
-      const cardIndex = lane.cards.findIndex((card) => card.id === cardId);
-      const card = lane.cards[cardIndex];
-
-      const deletedCard = {
-        ...card,
-        isDeleted: true,
-        style: defaultStyle,
-      };
-
-      let td = {
-        ...transactData,
-        lanes: [
-          ...transactData.lanes.slice(0, laneIndex),
-          {
-            ...lane,
-            cards: [
-              ...lane.cards.slice(0, cardIndex),
-              { ...deletedCard },
-              ...lane.cards.slice(cardIndex + 1),
-            ],
-          },
-          ...transactData.lanes.slice(laneIndex + 1),
-        ],
-      };
-
-      setTransactData(td);
-      await handleDataChange(td);
-      handleClose();
-    }
+    // if (transactData) {
+    //   const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
+    //   const laneId = stateApp.activeDeal?.laneId;
+    //   const laneIndex = transactData.lanes.findIndex(
+    //     (lane) => lane.id === laneId
+    //   );
+    //   const lane = transactData.lanes[laneIndex];
+    //   const cardIndex = lane.cards.findIndex((card) => card.id === cardId);
+    //   const card = lane.cards[cardIndex];
+    //   const deletedCard = {
+    //     ...card,
+    //     isDeleted: true,
+    //     style: defaultStyle,
+    //   };
+    //   let td = {
+    //     ...transactData,
+    //     lanes: [
+    //       ...transactData.lanes.slice(0, laneIndex),
+    //       {
+    //         ...lane,
+    //         cards: [
+    //           ...lane.cards.slice(0, cardIndex),
+    //           { ...deletedCard },
+    //           ...lane.cards.slice(cardIndex + 1),
+    //         ],
+    //       },
+    //       ...transactData.lanes.slice(laneIndex + 1),
+    //     ],
+    //   };
+    //   setTransactData(td);
+    //   await handleDataChange(td);
+    //   handleClose();
+    // }
   };
 
   const addUpdateDeal = async (newContact = null) => {
     let tempContact = newContact ? newContact?.addContact?.contact : contact;
+    let contactId = tempContact?._id;
 
-    console.log("Contact: ", newContact, contact, tempContact);
-    let newStage = stageId ? stageId : "lane1";
-    if (transactData) {
+    //// foreing deal ids:
+    //// stageId, pipelineId, ownerId, contactId
+
+    if (pipelineId && stageId && title && title.trim() !== "") {
       const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
-      const laneId = stateApp.activeDeal?.laneId;
 
-      console.log("CARD AND LANE: ", cardId, laneId, stateApp.activeDeal);
-      if (cardId && laneId) {
-        // update existing
-        const laneIndex = transactData.lanes.findIndex(
-          (lane) => lane.id === laneId
-        );
-        const lane = transactData.lanes[laneIndex];
-        const cardIndex = lane.cards.findIndex((card) => card.id === cardId);
-        const card = lane.cards[cardIndex];
+      const deal = {
+        name: title ? title.trim() : null,
+        offerPrice: label ? label.trim() : null,
+        notes: description ? description.trim() : null,
+        status: dealState ? dealState : "open",
+        closeDate: closeDate,
+      };
 
-        let style;
-
-        if (dealState === "won") {
-          style = wonStyle;
-        } else if (dealState === "lost") {
-          style = lostStyle;
-        } else {
-          style = openStyle;
-        }
-
-        const updatedCard = {
-          // dealName: dealName.trim(),
-          // title: contact?.name.trim(),
-          ...card,
-          isDeleted: false,
-          contactName: tempContact ? tempContact.name : "",
-          title: title ? title.trim() : "",
-          contactId: tempContact ? tempContact._id : "",
-          label: label ? label.trim() : "",
-          description: description ? description.trim() : "",
-          laneId: newStage,
-          dealState: dealState,
-          pipelineId: pipelineId,
-          ownerId: ownerId,
-          expectedCloseDate: closeDate,
-          colaborators: colaborators,
-          style,
-        };
-        console.log("Update existing: ", updatedCard);
-
-        if (card.laneId !== newStage) {
-          if (cardIndex > -1) {
-            // remove card from current lane
-            let td = { ...transactData };
-            td.lanes[laneIndex].cards.splice(cardIndex, 1);
-            // add card to updated lane
-            const stageIndex = td.lanes.findIndex(
-              (lane) => lane.id === newStage
-            );
-            if (stageIndex === -1) {
-              td.lanes.push({
-                // create lane if doesn't exist
-                id: newStage,
-                title: getLaneTitle(newStage),
-                cards: [updatedCard],
-              });
-            } else {
-              td.lanes[stageIndex].cards.push(updatedCard);
-            }
-            setTransactData(td);
-            await handleDataChange(td);
-          }
-        } else {
-          let td = { ...transactData };
-
-          td.lanes[laneIndex].cards[cardIndex] = updatedCard;
-          setTransactData(td);
-          await handleDataChange(td);
-        }
-      } else if (!cardId || !laneId) {
-        // add new
-
-        let td = { ...transactData };
-        console.log(td, transactData, stateApp.user.mongoId);
-
-        // create lane if doesn't exist
-        if (td?.lanes.findIndex((lane) => lane.id === newStage) === -1) {
-          td.lanes.push({
-            id: newStage,
-            title: getLaneTitle(newStage),
-            cards: [],
-          });
-        }
-
-        td.lanes.forEach((lane) => {
-          if (lane.id === newStage) {
-            let cards = [...lane.cards];
-            let style;
-            if (dealState === "won") {
-              style = wonStyle;
-            } else if (dealState === "lost") {
-              style = lostStyle;
-            } else {
-              style = openStyle;
-            }
-            // CARD STRUCTURE
-            const newCard = {
-              // dealName: dealName.trim(),
-              // title: contact?.name,
-              isDeleted: false,
-              contactName: tempContact ? tempContact.name : "",
-              title: title ? title.trim() : "",
-              label: label ? label.trim() : "",
-              description: description ? description.trim() : "",
-              dealState: dealState,
-              id: uuid(),
-              contactId: tempContact ? tempContact._id : "",
-              laneId: newStage,
-              // VALUES TO SET
-              createdAt: new Date().toISOString(),
-              pipelineId: pipelineId,
-              ownerId: ownerId,
-              expectedCloseDate: closeDate,
-              colaborators: colaborators,
-              style,
-            };
-
-            console.log("Add new: ", newCard);
-            cards.push(newCard);
-            lane.cards = cards;
-          }
+      if (cardId) {
+        //// update existing deal
+      } else {
+        //// add a new deal
+        addDeal({
+          variables: {
+            deal,
+            stageId,
+            pipelineId,
+            ownerId,
+            contactId,
+            position: dealPosition?.toString(),
+            userId: stateApp.user.mongoId,
+          },
+          refetchQueries: ["getPipeline"],
+          awaitRefetchQueries: true,
         });
-
-        setTransactData(td);
-        await handleDataChange(td);
       }
+      //////////////////////////////////////////////////////////
+      // console.log("Contact: ", newContact, contact, tempContact);
+      // let newStage = stageId ? stageId : "lane1";
+      // if (transactData) {
+      //   const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
+      //   const laneId = stateApp.activeDeal?.laneId;
+
+      //   console.log("CARD AND LANE: ", cardId, laneId, stateApp.activeDeal);
+      //   if (cardId && laneId) {
+      //     // update existing
+      //     const laneIndex = transactData.lanes.findIndex(
+      //       (lane) => lane.id === laneId
+      //     );
+      //     const lane = transactData.lanes[laneIndex];
+      //     const cardIndex = lane.cards.findIndex((card) => card.id === cardId);
+      //     const card = lane.cards[cardIndex];
+
+      //     let style;
+
+      //     if (dealState === "won") {
+      //       style = wonStyle;
+      //     } else if (dealState === "lost") {
+      //       style = lostStyle;
+      //     } else {
+      //       style = openStyle;
+      //     }
+
+      //     const updatedCard = {
+      //       // dealName: dealName.trim(),
+      //       // title: contact?.name.trim(),
+      //       ...card,
+      //       isDeleted: false,
+      //       contactName: tempContact ? tempContact.name : "",
+      //       title: title ? title.trim() : "",
+      //       contactId: tempContact ? tempContact._id : "",
+      //       label: label ? label.trim() : "",
+      //       description: description ? description.trim() : "",
+      //       laneId: newStage,
+      //       dealState: dealState,
+      //       pipelineId: pipelineId,
+      //       ownerId: ownerId,
+      //       expectedCloseDate: closeDate,
+      //       colaborators: colaborators,
+      //       style,
+      //     };
+      //     console.log("Update existing: ", updatedCard);
+
+      //     if (card.laneId !== newStage) {
+      //       if (cardIndex > -1) {
+      //         // remove card from current lane
+      //         let td = { ...transactData };
+      //         td.lanes[laneIndex].cards.splice(cardIndex, 1);
+      //         // add card to updated lane
+      //         const stageIndex = td.lanes.findIndex(
+      //           (lane) => lane.id === newStage
+      //         );
+      //         if (stageIndex === -1) {
+      //           td.lanes.push({
+      //             // create lane if doesn't exist
+      //             id: newStage,
+      //             title: getLaneTitle(newStage),
+      //             cards: [updatedCard],
+      //           });
+      //         } else {
+      //           td.lanes[stageIndex].cards.push(updatedCard);
+      //         }
+      //         setTransactData(td);
+      //         await handleDataChange(td);
+      //       }
+      //     } else {
+      //       let td = { ...transactData };
+
+      //       td.lanes[laneIndex].cards[cardIndex] = updatedCard;
+      //       setTransactData(td);
+      //       await handleDataChange(td);
+      //     }
+      //   } else if (!cardId || !laneId) {
+      //     // add new
+
+      //     let td = { ...transactData };
+      //     console.log(td, transactData, stateApp.user.mongoId);
+
+      //     // create lane if doesn't exist
+      //     if (td?.lanes.findIndex((lane) => lane.id === newStage) === -1) {
+      //       td.lanes.push({
+      //         id: newStage,
+      //         title: getLaneTitle(newStage),
+      //         cards: [],
+      //       });
+      //     }
+
+      //     td.lanes.forEach((lane) => {
+      //       if (lane.id === newStage) {
+      //         let cards = [...lane.cards];
+      //         let style;
+      //         if (dealState === "won") {
+      //           style = wonStyle;
+      //         } else if (dealState === "lost") {
+      //           style = lostStyle;
+      //         } else {
+      //           style = openStyle;
+      //         }
+      //         // CARD STRUCTURE
+      //         const newCard = {
+      //           // dealName: dealName.trim(),
+      //           // title: contact?.name,
+      //           isDeleted: false,
+      //           contactName: tempContact ? tempContact.name : "",
+      //           title: title ? title.trim() : "",
+      //           label: label ? label.trim() : "",
+      //           description: description ? description.trim() : "",
+      //           dealState: dealState,
+      //           id: uuid(),
+      //           contactId: tempContact ? tempContact._id : "",
+      //           laneId: newStage,
+      //           // VALUES TO SET
+      //           createdAt: new Date().toISOString(),
+      //           pipelineId: pipelineId,
+      //           ownerId: ownerId,
+      //           expectedCloseDate: closeDate,
+      //           colaborators: colaborators,
+      //           style,
+      //         };
+
+      //         console.log("Add new: ", newCard);
+      //         cards.push(newCard);
+      //         lane.cards = cards;
+      //       }
+      //     });
+
+      //     setTransactData(td);
+      //     await handleDataChange(td);
+      //   }
 
       handleClose();
     }
+    // }
   };
 
-  console.log("LOADING", addContactLoading, updateTransactionLoading);
+  // console.log("LOADING", addContactLoading, updateTransactionLoading);
 
   const handleUpdate = async () => {
     // if (title.trim() !== "" && description.trim() !== "") {
 
-    if (transactData) {
-      if (contact && contact._id === "newEntity") {
-        await addContact({
-          variables: {
-            contact: {
-              ...newContact,
-              name: contact.name,
-              createBy: stateApp.user.mongoId,
-              lastUpdateBy: stateApp.user.mongoId,
-            },
+    // if (transactData) {
+    if (transactData && contact && contact._id === "newEntity") {
+      await addContact({
+        variables: {
+          contact: {
+            ...newContact,
+            name: contact.name,
+            createBy: stateApp.user.mongoId,
+            lastUpdateBy: stateApp.user.mongoId,
           },
-          refetchQueries: [
-            "getPaginatedContacts",
-            "getContact",
-            "getCustomLayer",
-          ],
-          awaitRefetchQueries: true,
-        });
-      } else {
-        await addUpdateDeal();
-      }
+        },
+        refetchQueries: [
+          "getPaginatedContacts",
+          "getContact",
+          "getCustomLayer",
+        ],
+        awaitRefetchQueries: true,
+      });
+    } else {
+      await addUpdateDeal();
     }
+    // }
   };
 
   // useEffect(() => {
@@ -676,7 +748,7 @@ function AddDealDialog(props) {
   //   }
   // }, [transactData]);
 
-  console.log("USERS", users);
+  // console.log("USERS", users);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -707,11 +779,11 @@ function AddDealDialog(props) {
     return comparison;
   });
 
-  const locallySelectedPipe =
-    pipelines && pipelineId
-      ? pipelines.filter((pipe) => pipe._id === pipelineId)[0]
-      : null;
-  const stagesToChoose = locallySelectedPipe?.stages;
+  // const locallySelectedPipe =
+  //   pipelines && pipelineId
+  //     ? pipelines.filter((pipe) => pipe._id === pipelineId)[0]
+  //     : null;
+  // const stagesToChoose = locallySelectedPipe?.stages;
 
   return (
     <>
@@ -875,28 +947,6 @@ function AddDealDialog(props) {
                 </div>
               </>
             )}
-
-            {/* <div
-            className={classes.dealStateDiv}
-            onClick={() => setDealState("won")}
-            style={{
-              backgroundColor: dealState === "won" ? "green" : "#d9d9d9",
-              color: dealState === "won" ? "white" : "black",
-              marginRight: 8,
-            }}
-          >
-            Won
-          </div>
-          <div
-            className={classes.dealStateDiv}
-            onClick={() => setDealState("lost")}
-            style={{
-              backgroundColor: dealState === "lost" ? "red" : "#d9d9d9",
-              color: dealState === "lost" ? "white" : "black",
-            }}
-          >
-            Lost
-          </div> */}
           </div>
           <div className={classes.inputFieldDateRoot}>
             <TextField
@@ -911,13 +961,6 @@ function AddDealDialog(props) {
               }}
               className={classes.inputField}
             />
-
-            {/* <InputLabel
-            id="demo-simple-select-outlined-label"
-            className={classes.label}
-          >
-            Contact Name
-          </InputLabel> */}
 
             {!(
               (Object.keys(contact).length === 0 &&
@@ -956,18 +999,6 @@ function AddDealDialog(props) {
                 </Grid>
               </div>
             )}
-
-            {/* <DatePicker
-            inputVariant="outlined"
-            label="Expected Close Date"
-            className={classes.inputField}
-            size="small"
-            style={{ zIndex: 999 }}
-            // value={closeDate}
-            // onChange={(date) => {
-            //   setCloseDate(date);
-            // }}
-          /> */}
 
             <TextField
               margin="dense"
@@ -1124,9 +1155,6 @@ function AddDealDialog(props) {
                 className={classes.footerButton}
                 style={{
                   margin: "0px 15px 0px 0px",
-                  // padding: "8px 35px",
-                  // background: "rgb(215,244,254)",
-                  // color: "rgb(23, 170, 221)",
                 }}
               >
                 Cancel
@@ -1140,7 +1168,6 @@ function AddDealDialog(props) {
                 onClick={handleUpdate}
                 className={classes.footerButton}
                 disabled={updateTransactionLoading || addContactLoading}
-                // style={{ margin: "0px 20px 0px 0px" }}
               >
                 {updateTransactionLoading || addContactLoading ? (
                   <CircularProgress size={14} />
