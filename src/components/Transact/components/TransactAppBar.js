@@ -38,7 +38,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
-    marginTop: "10px",
+    marginTop: "8px",
+    marginBottom: "4px",
     // padding: 20,
   },
   bottomLeft: {
@@ -46,7 +47,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingBottom: "4px",
+    marginTop: "8px",
+    marginBottom: "4px",
+    //paddingBottom: "6px",
     // padding: "0 0 20 0",
   },
   right: {
@@ -92,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 8,
     backgroundColor: "#3DD698",
     borderRadius: 5,
-    padding: 8,
+    padding: 6,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -103,7 +106,7 @@ const useStyles = makeStyles((theme) => ({
   activeDeals: {
     backgroundColor: "#E8C059",
     borderRadius: 5,
-    padding: 8,
+    padding: 6,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -117,12 +120,17 @@ const useStyles = makeStyles((theme) => ({
   },
   addDeal: {
     marginLeft: 8,
-    padding: 9,
+    padding: 6,
+    paddingRight: 10,
     borderRadius: 5,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#011133",
+    "& span": {
+      marginleft: 2,
+      marginright:4,
+    },
+    backgroundColor: "#1CB6DA",
     color: "#fff",
     transition: "200ms all",
 
@@ -132,6 +140,8 @@ const useStyles = makeStyles((theme) => ({
   },
   pipelineControl: {
     minWidth: 180,
+    marginBottom: 2,
+    borderRadius: 5,
   },
 }));
 
@@ -246,10 +256,10 @@ const TransactAppBar = ({
               className={classes.addDeal}
               color="primary"
               size="small"
-              startIcon={<Add />}
+              startIcon={<Add/>}
               onClick={handleClickAddDeal}
             >
-              Add Deal
+              New Deal
             </Button>
           </div>
         </div>
@@ -343,10 +353,10 @@ const TransactAppBar = ({
               </MenuItem>
             </Select>
           </FormControl> */}
-        <div className={classes.top} style={{ marginBottom: 16 }}>
+        <div className={classes.top} style={{ marginBottom: 4, marginTop:2 }}>
           {/* <div className={classes.right}> */}
           <div className={classes.bottomLeft}>
-            <ButtonGroup style={{ minHeight: 32 }}>
+            <ButtonGroup style={{ minHeight: 36 }}>
               <Button
                 size="small"
                 className={`${classes.filterToggleBtn} ${
