@@ -555,15 +555,11 @@ export default function Pipelines(props) {
                             <TableHead>
                               <TableRow>
                                 <TableCell padding="checkbox"></TableCell>
-                                <TableCell align="left">Name</TableCell>
-                                <TableCell align="left">
-                                  Deal Probability
-                                </TableCell>
-                                <TableCell align="left">
-                                  Rotting in&nbsp;(days)
-                                </TableCell>
-                                <TableCell align="left">Deals Status</TableCell>
-                                <TableCell padding="checkbox"></TableCell>
+                                <TableCell align="left">Stage Name</TableCell>
+                                <TableCell align="left">Deal Probability</TableCell>
+                                <TableCell align="left">Rotting in&nbsp;(days)</TableCell>
+                                <TableCell align="left">Deal Status</TableCell>
+                                {/* <TableCell padding="checkbox"></TableCell> */}
                                 {/* <TableCell align="left">Auto-Assign</TableCell> */}
                               </TableRow>
                             </TableHead>
@@ -671,7 +667,8 @@ export default function Pipelines(props) {
 
                                           {/* {stage.dealsStatus} */}
                                         </TableCell>
-                                        <TableCell padding="checkbox">
+
+                                        {/* <TableCell padding="checkbox">
                                           <Tooltip
                                             title="Rotten Stats"
                                             placement="top"
@@ -690,7 +687,7 @@ export default function Pipelines(props) {
                                               }
                                             />
                                           </Tooltip>
-                                        </TableCell>
+                                        </TableCell> */}
                                         {/* <TableCell align="left">
                                           {stage.autoAssign}
                                         </TableCell> */}
@@ -722,7 +719,7 @@ export default function Pipelines(props) {
                       error && stages.length === 0 ? "visible" : "hidden",
                   }}
                 >
-                  Please add al least an stage.
+                  Please add at least one stage.
                 </p>
               </Grid>
             </Grid>
