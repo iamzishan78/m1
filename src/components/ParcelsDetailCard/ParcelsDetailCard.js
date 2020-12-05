@@ -11,9 +11,20 @@ import M1nTable from "../Shared/M1nTable/M1nTable";
 import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 import QtrQtrSelector from "./components/QtrQtrSelector";
 import LeftTopSummary from "./components/LeftTopSummary";
+import StateCard from "./components/StateCard";
+import CountyCard from "./components/CountyCard";
+import MeridianCard from "./components/MeridianCard";
+import TownshipCard from "./components/TownshipCard";
+import RangeCard from "./components/RangeCard";
+import SurveyCard from "./components/SurveyCard";
+import BlockCard from "./components/BlockCard";
+import SectionCard from "./components/SectionCard";
+import AbstractCard from "./components/AbstractCard";
+import AltSurveyCard from "./components/AltSurveyCard";
 import ParcelDetailsMap from "./components/ParcelDetailsMap";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { showSuccessMessage, showErrorMessage } from "../../actions";
+import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 
 const ENTER_KEY = 13;
 
@@ -50,6 +61,21 @@ const useStyles = makeStyles((theme) => ({
   gridWidthScroll: {
     maxHeight: "calc(100% - 88px)",
     overflow: "auto",
+  },
+  gridItemGrey: {
+    flexGrow: 1,
+    display: "flex",
+    justifyContent: "space-around",
+    // background: "#f6f6f6",
+    position: "relative",
+    top: "0",
+    left: "0",
+    paddingTop: "7px",
+    borderBottom: "1px solid rgb(190, 190, 190)",
+    background: "#ebebeb",
+  },
+  gridHeaderDivision: {
+    display: "flex"
   },
   calcSummary: {
     width: '100%'
@@ -98,6 +124,7 @@ export default function ParcelsDetailCard(props) {
   const dispatch = useDispatch();
   const [parcelObj, setParcelObj] = useState();
   const [parcelProperties, setProperties] = useState();
+  const [originalProperties, setOriginalProperties] = useState(null);
   const [parcelName, setParcelName] = useState();
   const [grossAcres, setGrossAcres] = useState();
   const [legalDescription, setLegalDesc] = useState();
@@ -151,6 +178,13 @@ export default function ParcelsDetailCard(props) {
     setParcelObj((parcelData) => ({ ...parcelData, qtrQtr }));
   };
 
+  useEffect(()=> {
+    if (parcelObj) {
+      const original_properties = getParcelOriginalProperties(parcelObj.shape.properties);
+      setOriginalProperties(original_properties);
+    }
+  }, [parcelObj]);
+
   const updateParcel = (e, field, value) => {
     if (e.keyCode === ENTER_KEY) {
       e.preventDefault();
@@ -171,13 +205,30 @@ export default function ParcelsDetailCard(props) {
   return parcelObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
       <Grid item sm={12} container>
-        <Grid item sm={4} className={classes.gridItem}>
+        {originalProperties && (
+          <Grid item sm={12} className={classes.gridItemGrey}>
+            <StateCard state={originalProperties.state}/>
+            <CountyCard county={originalProperties.county}/>
+            {originalProperties.state == "TX" ? (
+                [<SurveyCard survey={originalProperties.survey}/>,
+                <BlockCard block={originalProperties.block}/>,
+                <SectionCard section={originalProperties.section}/>,
+                <AbstractCard abstract={originalProperties.abstract}/>,
+                <AltSurveyCard altSurvey={originalProperties.altSurvey}/>]
+            ) : (
+              [<MeridianCard meridian={originalProperties.meridian}/>,
+                <TownshipCard township={originalProperties.township}/>,
+                <RangeCard range={originalProperties.range}/>,
+                <SectionCard section={originalProperties.section}/>]
+            )}
+          </Grid>
+        )}
+
+        {/* <Grid item sm={4} className={classes.gridItem}>
           <LeftTopSummary parcelData={parcelObj} />
-        </Grid>
-        <Grid item sm={5} className={classes.gridPortion}>
-          <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
-        </Grid>
-        <Grid item sm={3} className={classes.gridPacelDetails}>
+        </Grid> */}
+
+        <Grid item sm={6} className={classes.gridPacelDetails}>
           <Grid item sm={12} container>
             <div className={classes.calcSummary}>
               <p className={classes.parcelSummmary}>Parcel Name</p>
@@ -236,6 +287,9 @@ export default function ParcelsDetailCard(props) {
               />
             </div>
           </Grid>
+        </Grid>
+        <Grid item sm={6} className={classes.gridPortion}>
+          <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
         </Grid>
 
         {/* <Grid item sm={6} className={classes.gridItem}>

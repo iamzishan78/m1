@@ -320,7 +320,6 @@ export default function WellCardDetails(props) {
         <CompletionDateCard />
         <FirstProdDateCard />
         <PlugDateCard />
-
       </Grid>
       <Grid item sm={12} container className={classes.gridWidthScroll}>
         <Grid item sm={12} container style={{ height: "482px"}}>
