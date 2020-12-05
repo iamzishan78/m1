@@ -2680,7 +2680,7 @@ function M1nTable(props) {
           userId: stateApp.user.mongoId
         },
       });
-      getContactsFilterOptions
+      getContactsFilterOptions();
       setUploadIcon(false);
       setStartPaginationAt(25);
     }
