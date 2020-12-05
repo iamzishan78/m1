@@ -531,7 +531,7 @@ export default function Transact() {
     let filteredTargetPosition = position;
 
     let unfilteredSourcePosition = unfilteredSourceLane.cards.findIndex((card) => card.id === cardId);
-    let unfilteredTargetPosition = position !== 0 ? unfilteredTargetLane.cards[position - 1].metadata.position + 1 : 0
+    let unfilteredTargetPosition = position !== 0 ? unfilteredTargetLane.cards.findIndex((card) => card.id === filteredTargetLane.cards[position - 1].id) + 1 : 0
 
     // update moved card descriptor
     let movedCardDescriptor = {
@@ -541,21 +541,25 @@ export default function Transact() {
     }
 
     // update unfilteredSourceLane descriptors
+    let sourceSliceStart = unfilteredSourcePosition + 1
+    let sourceSliceEnd = sourceLaneId === targetLaneId ? unfilteredTargetPosition + 1 : undefined
     let unfilteredSourceLaneDescriptors = [
-      ...unfilteredSourceLane.cards.slice(unfilteredSourcePosition + 1).map((card) => {
+      ...unfilteredSourceLane.cards.slice(sourceSliceStart, sourceSliceEnd).map((card, index) => {
         return {
           _id: card.metadata.descriptorId,
-          position: card.metadata.position - 1
+          position: unfilteredSourcePosition + index
         }
       })
     ]
 
     // update unfilteredTargetLane descriptors
+    let targetSliceStart = unfilteredTargetPosition
+    let targetSliceEnd = sourceLaneId === targetLaneId ? unfilteredSourcePosition : undefined
     let unfilteredTargetLaneDescriptors = [
-      ...unfilteredTargetLane.cards.slice(unfilteredTargetPosition + 1).map((card) => {
+      ...unfilteredTargetLane.cards.slice(targetSliceStart, targetSliceEnd).map((card, index) => {
         return {
           _id: card.metadata.descriptorId,
-          position: card.metadata.position + 1
+          position: unfilteredTargetPosition + index + 1
         }
       })
     ]
