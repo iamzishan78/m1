@@ -211,6 +211,8 @@ const Activities = () => {
       setSelectedActivity(
         events.find((act) => act._id === stateApp.selectedActivityId)
       );
+    } else {
+      setSelectedActivity(null);
     }
   }, [stateApp.selectedActivityId]);
 
@@ -252,6 +254,7 @@ const Activities = () => {
           )}
           <ActivitiesModal
             selectedActivity={selectedActivity}
+            setSelectedActivityId={setSelectedActivityId}
             events={events}
           />
         </>

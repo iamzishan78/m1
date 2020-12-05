@@ -198,7 +198,11 @@ const initialErrors = {
 
 const localizer = momentLocalizer(moment);
 
-export default function ActivitiesModal({ selectedActivity, events }) {
+export default function ActivitiesModal({
+  selectedActivity,
+  events,
+  setSelectedActivityId,
+}) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   console.log("SELECTED ACTIVITY", selectedActivity, stateApp);
@@ -432,6 +436,7 @@ export default function ActivitiesModal({ selectedActivity, events }) {
 
   const onModalClose = () => {
     clearFields();
+    setSelectedActivityId(null);
     setStateApp((stateApp) => ({
       ...stateApp,
       activityDialog: false,
