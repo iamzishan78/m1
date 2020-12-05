@@ -38,6 +38,7 @@ import CommentsWithIcon from "../../Shared/CommentsWithIcon";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useDispatch, useSelector } from "react-redux";
 import { ADDDEAL } from "../../../graphQL/useMutationAddDeal";
+import InputAdornment from '@material-ui/core/InputAdornment';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -132,7 +133,18 @@ const useStyles = makeStyles((theme) => ({
   dialog: {
     zIndex: "9999999999 !important",
   },
+  notes: {
+    backgroundColor: "#FFFCDC",
+    display: "block",
+    width: "100%",
+
+    "& .MuiOutlinedInput-root": {
+      width: "100%",
+    },
+  },
+
 }));
+
 
 const newContact = {
   name: "",
@@ -1010,6 +1022,9 @@ function AddDealDialog(props) {
                 setLabel(e.target.value);
               }}
               className={classes.inputField}
+              InputProps={{
+                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+              }}
             />
 
             <FormControl
@@ -1130,7 +1145,7 @@ function AddDealDialog(props) {
               onChange={(e) => {
                 setDescription(e.target.value);
               }}
-              className={classes.inputField}
+              className={classes.notes}
             />
 
             {originationDate && (
