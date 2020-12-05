@@ -81,19 +81,19 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
   const filterByTypeCondition =
     e.type === activityFilterByType || activityFilterByType === "all";
   let filterByTimeCondition;
-  const today = moment();
-  const tomorrow = moment().add(1, "d");
-  const nextWeekDay = moment().add(7, "d");
+  const today = new Date();
+  // const tomorrow = moment().add(1, "d");
+  // const nextWeekDay = moment().add(7, "d");
 
   switch (activityFilterByTime) {
     case "all":
       filterByTimeCondition = true;
       break;
     case "upcoming":
-      filterByTimeCondition = moment(e.start).isSameOrAfter(today);
+      filterByTimeCondition = moment(e.start).isSameOrAfter(today, "day");
       break;
     case "overdue":
-      filterByTimeCondition = moment(e.end).isBefore(today);
+      filterByTimeCondition = moment(e.end).isBefore(today, "day");
       break;
     case "open":
       filterByTimeCondition = !e.isClosed;
@@ -153,6 +153,7 @@ const Activities = () => {
 
   useEffect(() => {
     if (activitiesData) {
+      console.log("ACTIVITIES", activitiesData);
       setEvents(
         activitiesData?.activities?.map((act) => {
           const start = new Date(Number(act.dateTime));
@@ -211,6 +212,8 @@ const Activities = () => {
       setSelectedActivity(
         events.find((act) => act._id === stateApp.selectedActivityId)
       );
+    } else {
+      setSelectedActivity(null);
     }
   }, [stateApp.selectedActivityId]);
 
@@ -252,6 +255,7 @@ const Activities = () => {
           )}
           <ActivitiesModal
             selectedActivity={selectedActivity}
+            setSelectedActivityId={setSelectedActivityId}
             events={events}
           />
         </>

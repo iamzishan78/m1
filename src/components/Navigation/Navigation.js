@@ -54,6 +54,8 @@ import SupportCenterModal from "./components/SupportCenter";
 //icons
 import CloseIcon from "@material-ui/icons/Close";
 import SearchIcon from "@material-ui/icons/Search";
+import ClearIcon from "@material-ui/icons/Clear";
+
 import HeadsetIcon from "@material-ui/icons/Headset";
 import DesktopWindowsIcon from "@material-ui/icons/DesktopWindows";
 import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
@@ -119,6 +121,7 @@ import {
 } from "@material-ui/core/styles";
 import { GETALLACTIVITIESFORSEARCH } from "../../graphQL/useQueryGetAllActivities";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import ActivitySearch from "./components/ActivitySearch";
 
 const theme = createMuiTheme({
   overrides: {
@@ -606,7 +609,6 @@ const useStyles = makeStyles((theme) => ({
     color: "#fff",
 
     "& .MuiOutlinedInput-input": {
-      width: "100%",
       color: "#ffffff",
       "&::placeholder": {
         color: "#788092",
@@ -743,22 +745,6 @@ export default function Navigation(props) {
   const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE);
   const [openProfileModal, setOpenProfileModal] = useState(false);
   const [openUserManagementModal, setOpenUserManagementModal] = useState(false);
-  const [activities, setActivities] = useState([]);
-
-  const [
-    getAllActivitiesForSearch,
-    {
-      data: activitiesData,
-      loading: activitiesLoading,
-      error: activitiesError,
-    },
-  ] = useLazyQuery(GETALLACTIVITIESFORSEARCH);
-
-  useEffect(() => {
-    if (activitiesData) {
-      setActivities(activitiesData?.activities);
-    }
-  }, [activitiesData]);
 
   useEffect(() => {
     if (stateApp?.user?.email) {
@@ -955,7 +941,6 @@ export default function Navigation(props) {
   useEffect(() => {
     if (location.pathname === "/activities") {
       setMatchActivities(true);
-      getAllActivitiesForSearch();
     } else {
       setMatchActivities(false);
     }
@@ -1160,14 +1145,6 @@ export default function Navigation(props) {
     );
   };
 
-  const handleSelectActivity = (id) => {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      activityDialog: true,
-      selectedActivityId: id || null,
-    }));
-  };
-
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -1212,47 +1189,7 @@ export default function Navigation(props) {
             {/*SEARCH UI FOR ACTIVITIES */}
             {location.pathname === "/activities" && (
               <>
-                <SearchIcon style={{ marginRight: 8 }} />
-                <Autocomplete
-                  className={clsx(classes.search)}
-                  style={{
-                    margin: 0,
-                  }}
-                  options={activities}
-                  onChange={(e, act) => {
-                    handleSelectActivity(act?._id);
-                  }}
-                  getOptionLabel={(option) => option.name}
-                  renderOption={(option) => {
-                    return (
-                      <Grid container spacing={0}>
-                        <Grid container item xs={12} alignItems="center">
-                          <Grid item xs>
-                            <span style={{ fontWeight: 400 }}>
-                              {option.name}
-                            </span>
-
-                            <Typography variant="body2" color="textSecondary">
-                              {option.type}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                    );
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      style={{
-                        margin: 0,
-                      }}
-                      className={clsx(classes.activitySearchField)}
-                      margin="dense"
-                      {...params}
-                      variant="outlined"
-                      placeholder="Search for activities"
-                    />
-                  )}
-                />
+                <ActivitySearch />
               </>
             )}
 

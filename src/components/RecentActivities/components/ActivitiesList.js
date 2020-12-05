@@ -100,7 +100,7 @@ export default function ActivitiesList({
   const [deleteActivityMutation, { loading: deleteLoading }] = useMutation(
     DELETEACTIVITY,
     {
-      refetchQueries: ["getContact","getAllActivities"],
+      refetchQueries: ["getContact", "getAllActivities"],
       awaitRefetchQueries: true,
     }
   );
@@ -156,22 +156,21 @@ export default function ActivitiesList({
             </TimelineSeparator>
             <TimelineContent className={classes.timelineContent}>
               <div className={classes.timelineText}>
+                <div onClick={() => props.updateActivity(activity)}>
+                  <Typography className={classes.itemHeading} variant="body1">
+                    {activity.notes}
+                  </Typography>
+                  <Typography variant="body2" className={classes.blue}>
+                    {activity.ownerName} ●{" "}
+                    {moment(activity.dateTime).format("MMMM D, YYYY hh:mm a")} ●{" "}
+                  </Typography>
+                </div>
                 <Typography
-                  className={classes.itemHeading}
-                  variant="body1"
-                  onClick={() => props.updateActivity(activity)}
+                  variant="body2"
+                  className={classes.deleteLine}
+                  onClick={() => deleteActivity(activity)}
                 >
-                  {activity.notes}
-                </Typography>
-                <Typography variant="body2" className={classes.blue}>
-                  {activity.ownerName} ●{" "}
-                  {moment(activity.dateTime).format("MMMM D, YYYY hh:mm a")} ●{" "}
-                  <span
-                    className={classes.deleteLine}
-                    onClick={() => deleteActivity(activity)}
-                  >
-                    Delete
-                  </span>
+                  Delete
                 </Typography>
               </div>
             </TimelineContent>

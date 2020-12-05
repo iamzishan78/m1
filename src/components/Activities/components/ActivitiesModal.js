@@ -198,7 +198,11 @@ const initialErrors = {
 
 const localizer = momentLocalizer(moment);
 
-export default function ActivitiesModal({ selectedActivity, events }) {
+export default function ActivitiesModal({
+  selectedActivity,
+  events,
+  setSelectedActivityId,
+}) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   console.log("SELECTED ACTIVITY", selectedActivity, stateApp);
@@ -351,12 +355,14 @@ export default function ActivitiesModal({ selectedActivity, events }) {
         name: selectedActivity.contactName,
         _id: selectedActivity.contactId,
       });
-      setStartDate(moment.utc(selectedActivity.start).format("yyyy-MM-DD"));
-      setStartTime(moment.utc(selectedActivity.start).format("HH:mm"));
+      setStartDate(
+        moment.parseZone(selectedActivity.start).format("yyyy-MM-DD")
+      );
+      setStartTime(moment.parseZone(selectedActivity.start).format("HH:mm"));
       setCalenderDate(selectedActivity.start);
 
-      setEndDate(moment.utc(selectedActivity.end).format("yyyy-MM-DD"));
-      setEndTime(moment.utc(selectedActivity.end).format("HH:mm"));
+      setEndDate(moment.parseZone(selectedActivity.end).format("yyyy-MM-DD"));
+      setEndTime(moment.parseZone(selectedActivity.end).format("HH:mm"));
       console.log(
         "SELECTED ACTIVITY",
         getDateFromString(selectedActivity.end.toISOString()),
@@ -432,6 +438,7 @@ export default function ActivitiesModal({ selectedActivity, events }) {
 
   const onModalClose = () => {
     clearFields();
+    setSelectedActivityId(null);
     setStateApp((stateApp) => ({
       ...stateApp,
       activityDialog: false,
@@ -798,7 +805,6 @@ export default function ActivitiesModal({ selectedActivity, events }) {
                   <PersonIcon />
                 </span>
                 <div
-                  className={clsx(!contact && errors.contact && classes.error)}
                   style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}
                 >
                   <Autocomplete
