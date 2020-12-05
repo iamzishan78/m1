@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
@@ -19,6 +19,7 @@ import Select from "@material-ui/core/Select";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import Pipelines from "./Pipelines";
+import { useDispatch, useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,7 +38,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
-    marginTop: "10px",
+    marginTop: "8px",
+    marginBottom: "4px",
     // padding: 20,
   },
   bottomLeft: {
@@ -45,7 +47,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingBottom: "4px",
+    marginTop: "8px",
+    marginBottom: "4px",
+    //paddingBottom: "6px",
     // padding: "0 0 20 0",
   },
   right: {
@@ -91,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 8,
     backgroundColor: "#3DD698",
     borderRadius: 5,
-    padding: 8,
+    padding: 6,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -102,7 +106,7 @@ const useStyles = makeStyles((theme) => ({
   activeDeals: {
     backgroundColor: "#E8C059",
     borderRadius: 5,
-    padding: 8,
+    padding: 6,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -116,12 +120,17 @@ const useStyles = makeStyles((theme) => ({
   },
   addDeal: {
     marginLeft: 8,
-    padding: 9,
+    padding: 6,
+    paddingRight: 10,
     borderRadius: 5,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#011133",
+    "& span": {
+      marginleft: 2,
+      marginright:4,
+    },
+    backgroundColor: "#1CB6DA",
     color: "#fff",
     transition: "200ms all",
 
@@ -131,24 +140,57 @@ const useStyles = makeStyles((theme) => ({
   },
   pipelineControl: {
     minWidth: 180,
+    marginBottom: 2,
+    borderRadius: 5,
   },
 }));
 
+let formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
+const sumDeals = (lanes, status) => {
+  let sumAmount = 0;
+  let sumCount = 0;
+
+  lanes.forEach((deal) => {
+    deal.cards.forEach((card) => {
+      if (card.metadata.status === status) {
+        if (card.label)
+          sumAmount += parseFloat(
+            card.label.split("$").join("").split(",").join("")
+          );
+        sumCount++;
+      }
+    });
+  });
+  const formatted = formatter.format(sumAmount);
+  return { count: sumCount, amount: formatted.slice(0, formatted.length - 3) };
+};
+
 const TransactAppBar = ({
-  wonLength,
-  wonSum,
-  openLength,
-  openSum,
+  // wonLength,
+  // wonSum,
+  // openLength,
+  // openSum,
   dealDisplayType,
   setDealDisplayType,
   dealFilter,
   setDealFilter,
-  pipelines,
-  setIndex,
-  index,
 }) => {
   const classes = useStyles();
+  const { pipeToShow } = useSelector(({ Flow }) => Flow);
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [openDeals, setOpenDeals] = useState({ count: 0, amount: "$0" });
+  const [wonDeals, setWonDeals] = useState({ count: 0, amount: "$0" });
+
+  useEffect(() => {
+    if (pipeToShow?.lanes) {
+      setOpenDeals(sumDeals(pipeToShow.lanes, "open"));
+      setWonDeals(sumDeals(pipeToShow.lanes, "won"));
+    }
+  }, [pipeToShow]);
 
   const handleClickAddDeal = () => {
     setStateApp((stateApp) => ({
@@ -194,15 +236,17 @@ const TransactAppBar = ({
             <div className={classes.activeDeals}>
               <OfflineBolt />
               <span>
-                {openLength} {openLength !== 1 ? "OPEN DEALS" : "OPEN DEAL"} |{" "}
-                {openSum}
+                {openDeals.count}{" "}
+                {openDeals.count !== 1 ? "OPEN DEALS" : "OPEN DEAL"} |{" "}
+                {openDeals.amount}
               </span>
             </div>
             <div className={classes.closedDeals}>
               <CheckBox />
               <span>
-                {wonLength} {wonLength !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
-                {wonSum}
+                {wonDeals.count}{" "}
+                {wonDeals.count !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
+                {wonDeals.amount}
               </span>
             </div>
             {/* <Button className={classes.import} color="default" size="small">
@@ -212,10 +256,10 @@ const TransactAppBar = ({
               className={classes.addDeal}
               color="primary"
               size="small"
-              startIcon={<Add />}
+              startIcon={<Add/>}
               onClick={handleClickAddDeal}
             >
-              Add Deal
+              New Deal
             </Button>
           </div>
         </div>
@@ -309,10 +353,10 @@ const TransactAppBar = ({
               </MenuItem>
             </Select>
           </FormControl> */}
-        <div className={classes.top} style={{ marginBottom: 16 }}>
+        <div className={classes.top} style={{ marginBottom: 4, marginTop:2 }}>
           {/* <div className={classes.right}> */}
           <div className={classes.bottomLeft}>
-            <ButtonGroup style={{ minHeight: 32 }}>
+            <ButtonGroup style={{ minHeight: 36 }}>
               <Button
                 size="small"
                 className={`${classes.filterToggleBtn} ${

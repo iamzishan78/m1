@@ -28,8 +28,10 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
 import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
+import { GETPIPELINE } from "../../../graphQL/useQueryPipeline";
 import { ADDPIPELINE } from "../../../graphQL/useMutationAddPipeline";
 import { UPDATEPIPELINE } from "../../../graphQL/useMutationUpdatePipeline";
 import { ADDSTAGES } from "../../../graphQL/useMutationAddStages";
@@ -52,7 +54,12 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "1.6rem",
   },
   addIconButton: {
-    backgroundColor: "#D5F4FF",
+    //backgroundColor: "#D5F4FF",
+    color: "gray",
+    fontSize: "14px",
+    "&:hover": {
+      color: "#008ebf"
+    }
   },
   list: {
     padding: 0,
@@ -132,9 +139,14 @@ export default function Pipelines(props) {
   const [updatePipeline] = useMutation(UPDATEPIPELINE);
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
-  const [getPipelines, { loading, data: pipelinesData }] = useLazyQuery(
-    GETPIPELINES
-  );
+  const [
+    getPipelines,
+    { loading: loadingPipelines, data: pipelinesData },
+  ] = useLazyQuery(GETPIPELINES);
+  const [
+    getPipeline,
+    { loading: loadingPipeline, data: pipelineData },
+  ] = useLazyQuery(GETPIPELINE);
 
   // const addingNewPipe = selectedPipe ? false : true;
 
@@ -157,22 +169,44 @@ export default function Pipelines(props) {
           setFlowState({
             selectedPipe: null,
             pipelines: [],
+            pipeToShow: null,
           })
         );
     }
   }, [pipelinesData]);
 
-  // //// get the whole selected pipe
-  // useEffect(() => {
-  //   //////////////
-  // }, [selectedPipe]);
+  //// get the whole selected pipe
+  useEffect(() => {
+    if (selectedPipe) {
+      getPipeline({ variables: { id: selectedPipe._id } });
+    }
+  }, [selectedPipe]);
 
   useEffect(() => {
-    if (openPipeDialog && selectedPipe) {
+    if (pipelineData) {
+      let pipe = pipelineData.pipeline
+        ? {
+            ...pipelineData.pipeline,
+            lanes: pipelineData.pipeline.lanes?.map((lane) => ({
+              ...lane,
+              cards: lane.cards?.map((card) => ({ ...card })),
+            })),
+          }
+        : {};
+      dispatch(
+        setFlowState({
+          pipeToShow: pipe,
+        })
+      );
+    }
+  }, [pipelineData]);
+
+  useEffect(() => {
+    if (openPipeDialog && selectedPipe && openPipeDialog !== "newPipe") {
       if (selectedPipe.stages) setStages(selectedPipe.stages);
       if (selectedPipe.name) setName(selectedPipe.name);
     }
-  }, [openPipeDialog]);
+  }, [openPipeDialog, selectedPipe]);
 
   const handleClose = () => {
     if (error) setError(false);
@@ -254,7 +288,7 @@ export default function Pipelines(props) {
     if (!name || name === "" || !valid || stages.length === 0) {
       setError(true);
     } else {
-      if (!selectedPipe)
+      if (openPipeDialog === "newPipe")
         //// save it
         addPipeline({
           variables: {
@@ -265,7 +299,7 @@ export default function Pipelines(props) {
           refetchQueries: ["getPipelines", "getPipeline"],
           awaitRefetchQueries: true,
         });
-      else {
+      else if (selectedPipe) {
         ////update
         let stagesToUpdate = [];
 
@@ -402,7 +436,7 @@ export default function Pipelines(props) {
 
   //// checking if the something to update in the pipe or the stages
   const checkingIfEdited = () => {
-    if (selectedPipe) {
+    if (openPipeDialog !== "newPipe" && selectedPipe) {
       if (
         selectedPipe.name !== name ||
         selectedPipe.stages?.length !== stages.length
@@ -442,8 +476,7 @@ export default function Pipelines(props) {
                   onClick={() => {
                     dispatch(
                       setFlowState({
-                        openPipeDialog: true,
-                        selectedPipe: null,
+                        openPipeDialog: "newPipe",
                       })
                     );
                   }}
@@ -468,6 +501,7 @@ export default function Pipelines(props) {
             dispatch(
               setFlowState({
                 selectedPipe: newValue,
+                pipeToShow: null,
               })
             );
           }}
@@ -492,13 +526,15 @@ export default function Pipelines(props) {
       {/* //// pipelines dialog //// */}
       {openPipeDialog && (
         <Dialog
-          open={openPipeDialog}
+          open={openPipeDialog ? true : false}
           onClose={handleClose}
           fullWidth={true}
           maxWidth={"lg"}
         >
           <DialogTitle className={classes.title}>
-            {selectedPipe ? "Edit Pipeline" : "Add A New Pipeline"}
+            {openPipeDialog !== "newPipe"
+              ? "Edit Pipeline"
+              : "Add a New Pipeline"}
             <CloseIcon className={classes.titleClose} onClick={handleClose} />
           </DialogTitle>
 
@@ -525,15 +561,12 @@ export default function Pipelines(props) {
                             <TableHead>
                               <TableRow>
                                 <TableCell padding="checkbox"></TableCell>
-                                <TableCell align="left">Name</TableCell>
-                                <TableCell align="left">
-                                  Deal Probability
-                                </TableCell>
-                                <TableCell align="left">
-                                  Rotting in&nbsp;(days)
-                                </TableCell>
-                                <TableCell align="left">Deals Status</TableCell>
+                                <TableCell align="left">Stage Name</TableCell>
+                                <TableCell align="left">Deal Probability(%)</TableCell>
+                                <TableCell align="left">Rotting in&nbsp;(days)</TableCell>
+                                <TableCell align="left">Stage Status</TableCell>
                                 <TableCell padding="checkbox"></TableCell>
+                                {/* <TableCell padding="checkbox"></TableCell> */}
                                 {/* <TableCell align="left">Auto-Assign</TableCell> */}
                               </TableRow>
                             </TableHead>
@@ -641,7 +674,17 @@ export default function Pipelines(props) {
 
                                           {/* {stage.dealsStatus} */}
                                         </TableCell>
-                                        <TableCell padding="checkbox">
+
+                                       <TableCell padding="checkbox">
+                                       <Tooltip
+                                            title="Remove Stage"
+                                            placement="top"
+                                          >
+                                       <   RemoveCircleOutlineIcon />
+                                        </Tooltip>
+                                       </TableCell>
+
+                                        {/* <TableCell padding="checkbox">
                                           <Tooltip
                                             title="Rotten Stats"
                                             placement="top"
@@ -660,7 +703,7 @@ export default function Pipelines(props) {
                                               }
                                             />
                                           </Tooltip>
-                                        </TableCell>
+                                        </TableCell> */}
                                         {/* <TableCell align="left">
                                           {stage.autoAssign}
                                         </TableCell> */}
@@ -677,12 +720,16 @@ export default function Pipelines(props) {
                   </DragDropContext>
                 )}
               </Grid>
-              <Grid item xs={12} style={{ display: "flex" }}>
+              <Grid item xs={10} style={{ display: "flex" }}>
                 <IconButton
                   className={classes.addIconButton}
                   onClick={handleAddStage}
+                  style={{ backgroundColor: 'transparent' }}
                 >
-                  <AddIcon className={classes.colorAction} color="action" />
+                  <AddIcon  />
+                  <span>
+                    Add new stage
+                  </span>
                 </IconButton>
                 <p
                   style={{
@@ -692,7 +739,7 @@ export default function Pipelines(props) {
                       error && stages.length === 0 ? "visible" : "hidden",
                   }}
                 >
-                  Please add al least an stage.
+                  Please add at least one stage.
                 </p>
               </Grid>
             </Grid>
@@ -705,10 +752,12 @@ export default function Pipelines(props) {
               style={{
                 marginRight: 15,
                 visibility:
-                  !selectedPipe || checkingIfEdited() ? "visible" : "hidden",
+                  openPipeDialog === "newPipe" || checkingIfEdited()
+                    ? "visible"
+                    : "hidden",
               }}
             >
-              {!selectedPipe ? "Save" : "Update"}
+              {openPipeDialog === "newPipe" ? "Save" : "Update"}
             </Button>
           </DialogActions>
         </Dialog>
