@@ -283,7 +283,7 @@ export default function ActivitiesModal({
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-  const [nameAutInputValue, NameAutInputValue] = useState([]);
+  const [nameAutInputValue, NameAutInputValue] = useState("");
   const setNameAutInputValue = (newState) => {
     setStateIfDeepEqual(NameAutInputValue, newState);
   };
@@ -553,8 +553,8 @@ export default function ActivitiesModal({
           notes,
           ownerId: owner.id,
           ownerName: owner.name,
-          contactId: nameAutValue._id,
-          contactName: nameAutValue.name,
+          contactId: nameAutValue?._id,
+          contactName: nameAutValue?.name,
           dealId,
           isClosed: closed,
         },
@@ -620,7 +620,7 @@ export default function ActivitiesModal({
                 <span className={classes.rowIcon}></span>
                 <TextField
                   className={clsx(
-                   // classes.fieldWidth,
+                    // classes.fieldWidth,
                     classes.inputField,
                     activityName === "" && errors.activityName && classes.error
                   )}
@@ -946,6 +946,9 @@ export default function ActivitiesModal({
             </div>
             <div className={classes.right}>
               <Calendar
+                culture="en-GB"
+                drilldownView="week"
+                popup={true}
                 localizer={localizer}
                 events={events}
                 startAccessor="start"

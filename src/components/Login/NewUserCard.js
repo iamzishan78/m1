@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     width: "500px",
     height: "935px",
     //backgroundColor: theme.palette.secondary.dark,
-    backgroundColor: "#fafafa",
+    backgroundColor: "#fffff",
     //border: `1px solid ${theme.palette.secondary.main}`,
     display: "flex",
     flexDirection: "column",

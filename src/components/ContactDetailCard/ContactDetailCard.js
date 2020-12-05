@@ -278,9 +278,7 @@ export default function ContactDetailCard(props) {
     null
   );
 
-  const [getContact, { loading, data }] = useLazyQuery(CONTACT, {
-    fetchPolicy: "cache-and-network",
-  });
+  const [getContact, { loading, data }] = useLazyQuery(CONTACT);
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
     TRANSACTIONDATA
   );
@@ -302,11 +300,10 @@ export default function ContactDetailCard(props) {
 
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
-    // setStateApp((state) => ({
-    //   ...state,
-    //   popupOpen: false,
-    //   expandedCard: false,
-    // }));
+    setStateApp((state) => ({
+      ...state,
+      contactUpdated: null
+    }));
   };
   const handleOpenExpandableCard = (subComponent, subComponentTitle) => {
     setExpCardSubComponent(subComponent);
@@ -317,6 +314,10 @@ export default function ContactDetailCard(props) {
     setOpenDialog(type);
   };
   const handleCloseDialog = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      contactUpdated: null,
+    }));
     setOpenDialog(false);
   };
 
@@ -330,9 +331,7 @@ export default function ContactDetailCard(props) {
     if (props.contactId) {
       getContact({
         variables: {
-          contactId: stateApp.contactUpdated !== null 
-          ? stateApp.contactUpdated 
-          : props.contactId,
+          contactId: props.contactId
         },
       });
     }
@@ -340,7 +339,6 @@ export default function ContactDetailCard(props) {
   }, [props.contactId, stateApp.contactUpdated]);
 
   useEffect(() => {
-    console.log("SET CONTACT:", data);
     if (data && data.contact) {
       setContactData(data.contact);
       setStateApp((stateApp) => ({
