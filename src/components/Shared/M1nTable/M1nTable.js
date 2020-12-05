@@ -2395,8 +2395,7 @@ function M1nTable(props) {
 
         getWells({
           variables: {
-            wellIdArray: tracksIdArray,
-            authToken: stateApp.user.authToken,
+            wellIdArray: tracksIdArray
           },
         });
         getCommentsCounter({
@@ -2567,8 +2566,7 @@ function M1nTable(props) {
       setAddAble(false);
       getWells({
         variables: {
-          wellIdArray: props.wellsIdsArray,
-          authToken: stateApp.user.authToken,
+          wellIdArray: props.wellsIdsArray
         },
       });
       getCommentsCounter({

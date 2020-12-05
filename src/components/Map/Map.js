@@ -388,8 +388,7 @@ export default function Map() {
 
         getWells({
           variables: {
-            wellIdArray: tracksIdArray,
-            authToken: stateApp.user.authToken,
+            wellIdArray: tracksIdArray
           },
         });
       } else {
