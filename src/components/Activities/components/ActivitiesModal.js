@@ -805,7 +805,6 @@ export default function ActivitiesModal({
                   <PersonIcon />
                 </span>
                 <div
-                  className={clsx(!contact && errors.contact && classes.error)}
                   style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}
                 >
                   <Autocomplete
