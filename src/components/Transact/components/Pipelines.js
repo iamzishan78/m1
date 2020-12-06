@@ -61,6 +61,15 @@ const useStyles = makeStyles((theme) => ({
       color: "#008ebf"
     }
   },
+
+  removeIconButton: {
+    color: "gray",
+    "&:hover": {
+      color: "#454545"
+    }
+
+  },
+
   list: {
     padding: 0,
   },
@@ -680,7 +689,10 @@ export default function Pipelines(props) {
                                             title="Remove Stage"
                                             placement="top"
                                           >
-                                       <   RemoveCircleOutlineIcon />
+                                       <RemoveCircleOutlineIcon
+                                       className={classes.removeIconButton}
+                                       // style={{ color: "gray" }}
+                                       />
                                         </Tooltip>
                                        </TableCell>
 

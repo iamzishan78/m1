@@ -130,7 +130,7 @@ const useStyles = makeStyles((theme) => ({
       marginleft: 2,
       marginright:4,
     },
-    backgroundColor: "#1CB6DA",
+    backgroundColor: "#011133",
     color: "#fff",
     transition: "200ms all",
 
