@@ -605,12 +605,7 @@ export default function ActivitiesModal({
                 onModalClose();
               }
         }
-        title={`${
-          addNew ? "Add Activity" : "Activity Details"
-          // : activityName
-          //? activityName.toUpperCase()
-          // : activityType.toUpperCase()
-        }`}
+        title={addNew ? "Add Activity" : "Activity Details"}
         subTitle={""}
         parent="calendar"
         mouseX={0}

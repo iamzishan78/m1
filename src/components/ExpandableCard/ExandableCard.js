@@ -35,7 +35,7 @@ export default function ExpandableCard(props) {
   const [openBugModal, setOpenBugModal] = useState(false);
   const [toggleExpand, setToggleExpand] = useState(false);
   const [isExpanded, setExpanded] = useState([]);
-  const [title] = useState(props.title);
+  const [title, setTitle] = useState(props.title);
   const [subTitle] = useState(props.subTitle);
   const [parent] = useState(props.parent);
   const [cardWidth] = useState(props.cardWidth);
@@ -84,6 +84,12 @@ export default function ExpandableCard(props) {
   );
 
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  useEffect(() => {
+    if(props.targetLabel === "activity"){
+      setTitle(props.title)
+    }
+  }, [props.title, props.targetLabel])
 
   const useStyles = makeStyles((theme) => ({
     card: {
