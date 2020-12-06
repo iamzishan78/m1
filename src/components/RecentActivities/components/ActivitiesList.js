@@ -10,12 +10,15 @@ import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
 import TimelineConnector from "@material-ui/lab/TimelineConnector";
 import TimelineContent from "@material-ui/lab/TimelineContent";
 import TimelineDot from "@material-ui/lab/TimelineDot";
-import EmailIcon from "@material-ui/icons/Email";
-import PhoneIcon from "@material-ui/icons/Phone";
 import ChatIcon from "@material-ui/icons/Chat";
 import EventNoteIcon from "@material-ui/icons/EventNote";
-import StarIcon from "@material-ui/icons/Star";
-import PeopleIcon from "@material-ui/icons/People";
+
+import CallIcon from "@material-ui/icons/Call";
+import DefaultIcon from "@material-ui/icons/Event";
+import MeetingIcon from "@material-ui/icons/Group";
+import TaskIcon from "@material-ui/icons/WatchLater";
+import DeadlineIcon from "@material-ui/icons/Flag";
+import EmailIcon from "@material-ui/icons/Email";
 import { DELETEACTIVITY } from "../../../graphQL/useMutationActivity";
 
 const useStyles = makeStyles((theme) => ({
@@ -107,20 +110,18 @@ export default function ActivitiesList({
 
   const getIcon = (activityType) => {
     switch (activityType) {
-      case "general":
-        return <StarIcon className={classes.itemIcon} color="secondary" />;
-      case "phone":
-        return <PhoneIcon className={classes.itemIcon} color="secondary" />;
+      case "call":
+        return <CallIcon className={classes.itemIcon} color="secondary" />;
       case "email":
         return <EmailIcon className={classes.itemIcon} color="secondary" />;
       case "meeting":
-        return <PeopleIcon className={classes.itemIcon} color="secondary" />;
-      case "sms":
-        return <ChatIcon className={classes.itemIcon} color="secondary" />;
-      case "campaign":
-        return <EventNoteIcon className={classes.itemIcon} color="secondary" />;
+        return <MeetingIcon className={classes.itemIcon} color="secondary" />;
+      case "task":
+        return <TaskIcon className={classes.itemIcon} color="secondary" />;
+      case "deadline":
+        return <DeadlineIcon className={classes.itemIcon} color="secondary" />;
       default:
-        return <StarIcon className={classes.itemIcon} color="secondary" />;
+        return <DefaultIcon className={classes.itemIcon} color="secondary" />;
     }
   };
 
