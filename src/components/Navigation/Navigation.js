@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { borders } from "@material-ui/system";
 import { shadows } from "@material-ui/system";
-import { Paper } from "@material-ui/core";
+import { Grid, Paper, TextField } from "@material-ui/core";
 import { NavigationContext } from "./NavigationContext";
 import { TransactContext } from "../Transact/TransactContext";
 import { AppContext } from "../../AppContext";
@@ -54,6 +54,8 @@ import SupportCenterModal from "./components/SupportCenter";
 //icons
 import CloseIcon from "@material-ui/icons/Close";
 import SearchIcon from "@material-ui/icons/Search";
+import ClearIcon from "@material-ui/icons/Clear";
+
 import HeadsetIcon from "@material-ui/icons/Headset";
 import DesktopWindowsIcon from "@material-ui/icons/DesktopWindows";
 import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
@@ -117,6 +119,9 @@ import {
   createMuiTheme,
   withStyles,
 } from "@material-ui/core/styles";
+import { GETALLACTIVITIESFORSEARCH } from "../../graphQL/useQueryGetAllActivities";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import ActivitySearch from "./components/ActivitySearch";
 
 const theme = createMuiTheme({
   overrides: {
@@ -599,6 +604,23 @@ const useStyles = makeStyles((theme) => ({
     position: "unset",
     transform: "unset",
     flex: 1,
+  },
+  activitySearchField: {
+    color: "#fff",
+
+    "& .MuiOutlinedInput-input": {
+      color: "#ffffff",
+      "&::placeholder": {
+        color: "#788092",
+        textDecoration: "bold",
+      },
+      "&:-ms-input-placeholder": {
+        color: "#788092",
+      },
+      "&::-ms-input-placeholder": {
+        color: "#788092",
+      },
+    },
   },
 }));
 
@@ -1123,14 +1145,6 @@ export default function Navigation(props) {
     );
   };
 
-  const handleClickAddDeal = () => {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      dealDialog: true,
-      activeDeal: { cardId: null, laneId: null },
-    }));
-  };
-
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -1174,26 +1188,9 @@ export default function Navigation(props) {
 
             {/*SEARCH UI FOR ACTIVITIES */}
             {location.pathname === "/activities" && (
-              <div
-                className={classes.search}
-                style={{
-                  minWidth: 500,
-                  verticalAlign: "middle",
-                  paddingTop: 4,
-                }}
-              >
-                <div className={classes.searchIcon}>
-                  <SearchIcon style={{ verticalAlign: "middle" }} />
-                </div>
-                <InputBase
-                  placeholder="Search for activities"
-                  classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput,
-                  }}
-                  inputProps={{ "aria-label": "search" }}
-                />
-              </div>
+              <>
+                <ActivitySearch />
+              </>
             )}
 
             {/*SEARCH UI FOR DEALS */}
@@ -1676,7 +1673,7 @@ export default function Navigation(props) {
             </div>
           </ListItem>
 
-           <ListItem
+          <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected,
@@ -1705,7 +1702,7 @@ export default function Navigation(props) {
                 </Button>
               </ListItemSecondaryAction>
             </div>
-          </ListItem> 
+          </ListItem>
 
           <ListItem
             classes={{

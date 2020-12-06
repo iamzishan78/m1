@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useMutation } from "@apollo/client";
+import clsx from "clsx";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import moment from "moment";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -21,6 +22,9 @@ import {
   ADDACTIVITY,
   UPDATEACTIVITY,
 } from "../../../graphQL/useMutationActivity";
+import { GETMONGOUSERS as GETUSERS } from "../../../graphQL/useQueryGetUsers";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -67,50 +71,165 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#fff !important",
     padding: "0 6px",
   },
+  notes: {
+    backgroundColor: "#FFFCDC",
+    display: "block",
+    width: "100%",
+    marginBottom: "20px",
+
+    "& .MuiOutlinedInput-root": {
+      width: "100%",
+    },
+  },
+
+  inputField: {
+    height: 41,
+    marginBottom: "20px",
+
+    "& .MuiOutlinedInput-root": {
+      height: 41,
+    },
+  },
+  error: {
+    border: "2px solid red !important",
+  },
+  dateTimeRow: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    columnGap: "16px",
+  },
+  dateTimeField: {
+    height: 41,
+    width: "100%",
+    marginBottom: "20px",
+
+    "& .MuiInputBase-root": {
+      height: "100%",
+    },
+  },
+  marginLeft: {
+    marginLeft: 6,
+  },
+  btnGroup: {
+    width: 400,
+    display: "flex",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
 }));
 
 const initialErrors = {
-  notes: false,
   activityType: false,
   activityName: false,
-  dateTime: false,
-  endDateTime: false,
+  startDate: false,
+  startTime: false,
+  endDate: false,
+  endTime: false,
+  owner: false,
 };
 
-const getCurrentDateTime = () => {
-  let dt = new Date().toISOString();
-  return dt.slice(0, dt.indexOf("T") + 6);
-  // return dt;
+const getCurrentDate = () => {
+  const d = new Date().toISOString();
+  return d.slice(0, d.indexOf("T"));
 };
 
-const get1hrLaterDateTime = () => {
-  let dt = new Date();
-  let newDt = new Date(dt.getTime() + 1 * 60 * 60 * 1000).toISOString();
-  console.log("set activity 2", newDt);
-  return newDt.slice(0, newDt.indexOf("T") + 6);
+const getDateFromString = (d) => {
+  return d.slice(0, d.indexOf("T"));
+};
+
+const mergeDateAndTime = (d, t) => {
+  return `${d}T${t}`;
 };
 
 function AddActivityDialog(props) {
+  console.log("ACTIVITY", props);
   const classes = useStyles();
-  const { selectedActivity, onClose } = props;
+  const { selectedActivity, onClose, contactData } = props;
   const [stateApp] = useContext(AppContext);
+
   const [addNew, setAddNew] = useState(true);
-
-  const [updateContact, { called, loading, data }] = useMutation(UPDATECONTACT);
-  const [activityType, setActivityType] = useState("call");
+  const [activityType, setActivityType] = useState("");
   const [activityName, setActivityName] = useState("");
-
-  const [notes, setNotes] = useState("");
   const [closed, setClosed] = useState(false);
-
-  const [dateTime, setDateTime] = useState(getCurrentDateTime());
-  const [endDateTime, setEndDateTime] = useState(get1hrLaterDateTime());
+  const [startDate, setStartDate] = useState(getCurrentDate());
+  const [endDate, setEndDate] = useState(getCurrentDate());
+  const [calenderDate, setCalenderDate] = useState(new Date());
+  const [startTime, setStartTime] = useState("08:00");
+  const [endTime, setEndTime] = useState("08:00");
+  const [notes, setNotes] = useState("");
+  const [owner, setOwner] = useState({ name: "", id: null });
+  const [dealId, setDealId] = useState("");
   const [errors, setErrors] = useState({ ...initialErrors });
+  const [users, setUsers] = useState([]);
+
+  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
+    fetchPolicy: "cache-and-network",
+  });
+
+  useEffect(() => {
+    getAllUsers();
+  }, []);
+
+  useEffect(() => {
+    if (userLists && userLists.allUsers) {
+      setUsers(
+        userLists.allUsers.map((user) => ({
+          value: user._id,
+          text: user.name,
+        }))
+      );
+    }
+  }, [userLists]);
+
+  const [openDeals, setOpenDeals] = useState([]);
+  const [getTransactionData, { loading: tloading, data: tdata }] = useLazyQuery(
+    TRANSACTIONDATA
+  );
+
+  useEffect(() => {
+    if (stateApp.user && stateApp.user.mongoId) {
+      console.log("OPEN DEALS GET", stateApp.user);
+      getTransactionData({
+        variables: {
+          userId: stateApp.user.mongoId,
+        },
+      });
+    }
+  }, [stateApp.user]);
+
+  useEffect(() => {
+    let open = [];
+
+    if (!tloading && tdata?.transactionData) {
+      tdata.transactionData.forEach((pipeline) => {
+        const lanes = pipeline.allData?.lanes;
+
+        // get all deals
+        const all = [];
+        lanes.forEach((deal) => {
+          deal.cards.forEach((card) => {
+            all.push(card);
+          });
+        });
+
+        all.forEach((card) => {
+          if (card.dealState === "won") {
+            // do nothing
+          } else if (card.dealState === "lost") {
+            // do nothing
+          } else if (card.isDeleted) {
+            // do nothing
+          } else open.push(card);
+        });
+      });
+    }
+    setOpenDeals(open);
+  }, [tdata]);
 
   const [addActivityMutation, { loading: addLoading }] = useMutation(
     ADDACTIVITY,
     {
-      refetchQueries: ["getContact", "getAllActivities"],
+      refetchQueries: ["getContact", "getAllActivities", "getMelissaRecordsCountForContactIds"],
       awaitRefetchQueries: true,
     }
   );
@@ -118,82 +237,137 @@ function AddActivityDialog(props) {
   const [updateActivityMutation, { loading: updateLoading }] = useMutation(
     UPDATEACTIVITY,
     {
-      refetchQueries: ["getContact", "getAllActivities"],
+      refetchQueries: ["getContact", "getAllActivities", "getMelissaRecordsCountForContactIds"],
       awaitRefetchQueries: true,
     }
   );
 
+  const loading = addLoading || updateLoading;
+
   useEffect(() => {
-    if (selectedActivity !== null) {
+    if (selectedActivity) {
       console.log("SELECTED ACTIVITY", selectedActivity);
       setAddNew(false);
+      setNotes(selectedActivity.notes);
+      setOwner({
+        name: selectedActivity.ownerName,
+        id: selectedActivity.ownerId,
+      });
+      setDealId(selectedActivity.dealId);
       setActivityType(selectedActivity.type);
       setActivityName(selectedActivity.name);
-
-      setNotes(selectedActivity.notes);
       setClosed(selectedActivity.isClosed);
-      setDateTime(selectedActivity.dateTime);
-      setEndDateTime(selectedActivity.endDateTime);
+
+      setStartDate(
+        moment
+          .parseZone(new Date(selectedActivity.dateTime))
+          .format("yyyy-MM-DD")
+      );
+      setStartTime(
+        moment.parseZone(new Date(selectedActivity.dateTime)).format("HH:mm")
+      );
+
+      setEndDate(
+        moment
+          .parseZone(new Date(selectedActivity.endDateTime))
+          .format("yyyy-MM-DD")
+      );
+      setEndTime(
+        moment.parseZone(new Date(selectedActivity.endDateTime)).format("HH:mm")
+      );
     } else {
       setAddNew(true);
       setClosed(false);
-      setActivityType("call");
-      setActivityName("");
       setNotes("");
-      setDateTime(getCurrentDateTime());
-      setEndDateTime(get1hrLaterDateTime());
+      setOwner({
+        name: stateApp.user.fullname || stateApp.user.email,
+        id: stateApp.user.mongoId,
+      });
+      setDealId("");
+      setActivityType("");
+      setActivityName("");
+      setStartDate(getCurrentDate());
+      setEndDate(getCurrentDate());
+      setStartTime("08:00");
+      setEndTime("08:00");
     }
   }, [selectedActivity]);
 
-  const addActivityStatus = data ? data.updateContact : null;
-
   const clearFields = () => {
-    setNotes("");
-    setActivityType("call");
-    setActivityName("");
     setAddNew(true);
+    setNotes("");
+    setOwner({
+      name: stateApp.user.fullname || stateApp.user.email,
+      id: stateApp.user.mongoId,
+    });
+    setDealId("");
+    setActivityType("");
+    setActivityName("");
     setClosed(false);
-    setDateTime(getCurrentDateTime());
-    setEndDateTime(get1hrLaterDateTime());
+    setStartDate(getCurrentDate());
+    setEndDate(getCurrentDate());
+    setStartTime("08:00");
+    setEndTime("08:00");
+  };
+
+  const onModalClose = () => {
+    onClose();
+    clearFields();
   };
 
   const updateErrors = () => {
     let activityTypeErr = false;
     let activityNameErr = false;
+    let startDataErr = false;
+    let startTimeErr = false;
+    let endDateErr = false;
+    let endTimeErr = false;
+    let ownerErr = false;
 
-    let notesErr = false;
-    let dateTimeErr = false;
-    let endDateTimeErr = false;
-    if (!activityName || activityName.length === 0) activityNameErr = true;
     if (!activityType || activityType.length === 0) activityTypeErr = true;
-    if (!notes || notes.length === 0) notesErr = true;
-    if (!dateTime) dateTimeErr = true;
-    if (!endDateTime) endDateTimeErr = true;
+    if (!activityName || activityName.length === 0) activityNameErr = true;
+    if (!startDate) startDataErr = true;
+    if (!startTime) startTimeErr = true;
+    if (!endDate) endDateErr = true;
+    if (!endTime) endTimeErr = true;
+    if (!owner.id) ownerErr = true;
+
+    const dateTime = mergeDateAndTime(startDate, startTime);
+    const endDateTime = mergeDateAndTime(endDate, endTime);
+
     if (moment(endDateTime).isBefore(dateTime)) {
-      dateTimeErr = true;
-      endDateTimeErr = true;
+      startDataErr = true;
+      startTimeErr = true;
+      endDateErr = true;
+      endTimeErr = true;
     }
 
     setErrors({
       activityType: activityTypeErr,
-      notes: notesErr,
-      dateTime: dateTimeErr,
-      endDateTime: endDateTimeErr,
       activityName: activityNameErr,
+      startDate: startDataErr,
+      startTime: startTimeErr,
+      endDate: endDateErr,
+      endTime: endTimeErr,
+      owner: ownerErr,
     });
 
     return (
       activityNameErr ||
       activityTypeErr ||
-      notesErr ||
-      dateTimeErr ||
-      endDateTimeErr
+      startDataErr ||
+      startTimeErr ||
+      endDateErr ||
+      endTimeErr ||
+      ownerErr
     );
   };
 
   const addActivity = async () => {
-    console.log("ADD ACTIVITY", updateErrors());
     if (updateErrors()) return;
+
+    const dateTime = mergeDateAndTime(startDate, startTime);
+    const endDateTime = mergeDateAndTime(endDate, endTime);
 
     await addActivityMutation({
       variables: {
@@ -201,20 +375,26 @@ function AddActivityDialog(props) {
           type: activityType,
           name: activityName,
           notes,
-          ownerId: stateApp.user._id,
-          ownerName: stateApp.user.name || stateApp.user.email,
-          contactId: props.contactData._id,
-          contactName: props.contactData.name,
-          dateTime,
-          endDateTime,
+          ownerId: owner.id,
+          ownerName: owner.name,
+          contactId: contactData?._id,
+          contactName: contactData?.name,
+          dealId,
+          dateTime: new Date(dateTime).toUTCString(),
+          endDateTime: new Date(endDateTime).toUTCString(),
           isClosed: closed,
         },
       },
     });
+
+    onModalClose();
   };
 
   const updateActivity = async () => {
     if (updateErrors()) return;
+
+    const dateTime = mergeDateAndTime(startDate, startTime);
+    const endDateTime = mergeDateAndTime(endDate, endTime);
 
     await updateActivityMutation({
       variables: {
@@ -222,28 +402,21 @@ function AddActivityDialog(props) {
           _id: selectedActivity._id,
           type: activityType,
           name: activityName,
+          dateTime: new Date(dateTime).toUTCString(),
+          endDateTime: new Date(endDateTime).toUTCString(),
           notes,
-          contactId: props.contactData._id,
-          contactName: props.contactData.name,
-          dateTime,
-          endDateTime,
+          ownerId: owner.id,
+          ownerName: owner.name,
+          contactId: contactData?._id,
+          contactName: contactData?.name,
+          dealId,
           isClosed: closed,
         },
       },
     });
-  };
 
-  useEffect(() => {
-    if (
-      called &&
-      !loading &&
-      addActivityStatus &&
-      addActivityStatus.success === true &&
-      addNew
-    ) {
-      clearFields();
-    }
-  }, [called, loading, addActivityStatus, addNew]);
+    onModalClose();
+  };
 
   return (
     <div style={{ padding: "30px" }}>
@@ -256,225 +429,237 @@ function AddActivityDialog(props) {
         </h4>
 
         <IconButton
-          onClick={onClose}
+          onClick={onModalClose}
           size="small"
           style={{ float: "right", top: "-5px", right: "-5px" }}
         >
           <CloseIcon className={classes.closeIcon} fontSize="small" />
         </IconButton>
       </Grid>
-      <div className={classes.inputFieldDateRoot}>
-        {/* <DateTimePicker
-          value={dateTime}
-          //disablePast
-          fullWidth
-          className={classes.inputFieldDate}
-          onChange={setDateTime}
-          label="Activity Date"
-          showTodayButton
-          disabled={loading}
-          inputVariant="outlined"
-        /> */}
-
-        {/* <TextField
-          variant="outlined"
-          fullWidth
-          size="small"
-          id="datetime-local"
-          labelId="datetime-local-label"
-          // label="Activity Date"
-          type="datetime-local"
-          value={dateTime}
+      <Grid></Grid>
+      <TextField
+        className={clsx(
+          classes.inputField,
+          activityName === "" && errors.activityName && classes.error
+        )}
+        fullWidth
+        type="text"
+        variant="outlined"
+        label="Activity Name"
+        InputLabelProps={{ shrink: true }}
+        value={activityName}
+        onChange={(e) => setActivityName(e.target.value)}
+        disabled={loading}
+      />
+      <FormControl
+        variant="outlined"
+        fullWidth
+        className={clsx(
+          classes.inputField,
+          (activityType === "" || !activityType) && errors.activityType && classes.error
+        )}
+        size="small"
+      >
+        <InputLabel id="activity-type-label" className={classes.label}>
+          Activity Type
+        </InputLabel>
+        <Select
+          native
+          labelId="activity-type-label"
+          id="activity-type-input"
+          value={activityType}
           onChange={(e) => {
-            console.log("PREV: ", dateTime);
-            console.log("setting: ", e.target.value);
-            setDateTime(e.target.value);
+            setActivityType(e.target.value);
           }}
+          fullWidth
+          label="Activity Type"
           disabled={loading}
-          className={classes.inputField}
-          label="Activity Date"
-          error={errors.dateTime}
-        /> */}
-        <DateTimePicker
-          disabled={loading}
-          size="small"
-          id="datetime-local"
-          className={classes.inputField}
-          DialogProps={{
-            style: {
-              zIndex: "10000",
-              left: "left: calc( 100vw/1.5  ) !important",
-              top: "-140px",
-            },
-          }}
-          inputVariant="outlined"
-          value={dateTime}
-          // disablePast
-          onChange={(e) => {
-            // console.log("PREV: ", dateTime);
-            // console.log("setting: ", e._d.toISOString());
-            setDateTime(e._d.toISOString());
-          }}
-          label="Activity Date"
-          showTodayButton
-          fullWidth
-        />
-        <FormControl
-          variant="outlined"
-          fullWidth
-          className={classes.inputField}
-          size="small"
         >
-          <InputLabel shrink className={classes.shrinkLabel}>
-            Activity End Date
-          </InputLabel>
-          <TextField
-            fullWidth
-            size="small"
-            variant="outlined"
-            id="enddatetime-local"
-            labelId="enddatetime-local-label"
-            type="datetime-local"
-            value={endDateTime}
-            onChange={(e) => {
-              console.log("PREV: ", endDateTime);
-              console.log("setting: ", e.target.value);
-              setEndDateTime(e.target.value);
-            }}
-            disabled={loading}
-            error={errors.endDateTime}
-          />
-        </FormControl>
-        <FormControl
-          variant="outlined"
-          fullWidth
-          className={classes.inputField}
-          size="small"
-        >
-          <InputLabel shrink className={classes.shrinkLabel}>
-            Activity Name
-          </InputLabel>
-          <TextField
-            fullWidth
-            size="small"
-            variant="outlined"
-            type="text"
-            value={activityName}
-            onChange={(e) => {
-              setActivityName(e.target.value);
-            }}
-            disabled={loading}
-            error={errors.activityName}
-          />
-        </FormControl>
-        <FormControl
-          variant="outlined"
-          fullWidth
-          className={classes.inputField}
-          size="small"
-        >
-          <InputLabel
-            id="demo-simple-select-outlined-label"
-            className={classes.label}
-          >
-            Activity Type
-          </InputLabel>
-          <Select
-            native
-            labelId="demo-simple-select-outlined-label"
-            id="demo-simple-select-outlined"
-            value={activityType}
-            onChange={(e) => {
-              setActivityType(e.target.value);
-            }}
-            fullWidth
-            label="Activity Type"
-            disabled={loading}
-            error={errors.activityType}
-          >
-            <option value={"call"}>Call</option>
-            <option value={"meeting"}>Meeting</option>
-            <option value={"email"}>Email</option>
-            <option value={"task"}>Task</option>
-            <option value={"deadline"}>Deadline</option>
-          </Select>
-        </FormControl>
-
+          <option aria-label="None" value="" />
+          <option value={"call"}>Call</option>
+          <option value={"meeting"}>Meeting</option>
+          <option value={"email"}>Email</option>
+          <option value={"task"}>Task</option>
+          <option value={"deadline"}>Deadline</option>
+        </Select>
+      </FormControl>
+      <div className={classes.dateTimeRow}>
         <TextField
+          className={clsx(
+            classes.dateTimeField,
+            !startDate && errors.startDate && classes.error
+          )}
+          value={startDate}
+          label="Start Date"
+          InputLabelProps={{ shrink: true }}
+          type="date"
           variant="outlined"
-          multiline
-          rows={8}
-          id="notes"
-          label="Notes"
-          type="text"
-          size="small"
-          fullWidth
-          className={classes.inputField}
-          value={notes}
           onChange={(e) => {
-            setNotes(e.target.value);
+            setStartDate(e.target.value);
+            setEndDate(e.target.value);
           }}
-          disabled={loading}
-          error={errors.notes}
         />
+        <TextField
+          className={clsx(
+            classes.dateTimeField,
+            !startTime && errors.startTime && classes.error
+          )}
+          value={startTime}
+          type="time"
+          variant="outlined"
+          onChange={(e) => {
+            setStartTime(e.target.value);
+            setEndTime(e.target.value);
+          }}
+        />
+      </div>
+      <div className={classes.dateTimeRow}>
+        <TextField
+          className={clsx(
+            classes.dateTimeField,
+            !endDate && errors.endDate && classes.error
+          )}
+          value={endDate}
+          type="date"
+          label="End Date"
+          InputLabelProps={{ shrink: true }}
+          variant="outlined"
+          onChange={(e) => {
+            setEndDate(e.target.value);
+          }}
+        />
+        <TextField
+          className={clsx(
+            classes.dateTimeField,
+            !endTime && errors.endTime && classes.error
+          )}
+          value={endTime}
+          type="time"
+          variant="outlined"
+          onChange={(e) => {
+            setEndTime(e.target.value);
+          }}
+        />
+      </div>
+      <TextField
+        multiline
+        fullWidth
+        rows={6}
+        variant="outlined"
+        placeholder="Activity Notes"
+        InputLabelProps={{ shrink: true }}
+        value={notes}
+        className={clsx(classes.notes)}
+        onChange={(e) => {
+          setNotes(e.target.value);
+        }}
+      />
+      <TextField
+        fullWidth
+        className={clsx(classes.inputField)}
+        disabled
+        variant="outlined"
+        label="Contact Name"
+        InputLabelProps={{ shrink: true }}
+        value={contactData?.name}
+      />
+      <Autocomplete
+        options={openDeals}
+        onChange={(e, deal) => {
+          setDealId(deal.id);
+        }}
+        value={openDeals.find((deal) => deal.id === dealId) || null}
+        getOptionSelected={(option) => option.id === dealId}
+        getOptionLabel={(option) => option.title}
+        renderOption={(option) => {
+          return (
+            <Grid container spacing={0}>
+              <Grid container item xs={12} alignItems="center">
+                <Grid item xs>
+                  <span style={{ fontWeight: 400 }}>{option.title}</span>
 
+                  <Typography variant="body2" color="textSecondary">
+                    {option.label}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+          );
+        }}
+        renderInput={(params) => (
+          <TextField
+            className={clsx(classes.inputField)}
+            margin="dense"
+            {...params}
+            InputLabelProps={{ shrink: true }}
+            label="Associated Deal"
+            variant="outlined"
+          />
+        )}
+      />
+      <Autocomplete
+        className={clsx(!owner.id && errors.owner && classes.error)}
+        options={users}
+        onChange={(e, user) => {
+          setOwner({ name: user.text, id: user.value });
+        }}
+        value={users.find((user) => user.value === owner.id) || null}
+        getOptionLabel={(option) => option.text}
+        getOptionSelected={(option) => option.value === owner.id}
+        renderInput={(params) => (
+          <TextField
+            className={clsx(classes.inputField)}
+            margin="dense"
+            {...params}
+            variant="outlined"
+            InputLabelProps={{ shrink: true }}
+            label="Activity Owner"
+          />
+        )}
+      />
+      <div className={classes.btnGroup} style={{ width: "100%" }}>
         <FormControlLabel
-          className={classes.inputField}
           enabled
           control={
             <Checkbox
               checked={closed}
               onChange={(e) => setClosed(e.target.checked)}
+              color="primary"
             />
           }
           label="Mark as done"
         />
+        <Button
+          className={classes.marginLeft}
+          variant="contained"
+          onClick={() => {
+            onModalClose();
+          }}
+          disabled={loading}
+        >
+          Cancel
+        </Button>
 
-        <div className={classes.dialogFooter}>
-          <Button
-            variant="contained"
-            color="default"
-            size="medium"
-            disableElevation
-            onClick={onClose}
-            disabled={loading}
-            style={{ margin: "0px 15px 0px 0px" }}
-          >
-            Cancel
-          </Button>
-
-          {loading ? (
+        <Button
+          disabled={loading}
+          className={classes.marginLeft}
+          color="primary"
+          variant="contained"
+          onClick={() => {
+            console.log("ADD", addNew);
+            if (addNew) addActivity();
+            else updateActivity();
+          }}
+        >
+          {(addLoading || updateLoading) && (
             <CircularProgress
-              color="secondary"
-              size={34}
-              className={classes.progress}
+              style={{ marginRight: 8 }}
+              color="#fff"
+              size={20}
             />
-          ) : (
-            <Button
-              variant="contained"
-              color="secondary"
-              size="medium"
-              disableElevation
-              onClick={async () => {
-                addNew ? await addActivity() : await updateActivity();
-              }}
-              disabled={loading}
-            >
-              {addNew ? "Save" : "Update"}
-            </Button>
           )}
-          {/* called && !loading ? (
-            addActivityStatus.success ? (
-              <Typography color="secondary" variant="subtitle2" gutterBottom>
-                Activity {addNew ? "added" : "updated"}.
-              </Typography>
-            ) : (
-              <Typography color="primary" variant="subtitle2" gutterBottom>
-                Unable to {addNew ? "add" : "update"} activity.
-              </Typography>
-            )
-          ) : null */}
-        </div>
+          {addNew ? "Add" : "Save"}
+        </Button>
       </div>
     </div>
   );

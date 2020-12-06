@@ -229,6 +229,51 @@ const ActivitiesToolbar = ({
             <Button
               size="small"
               className={`${classes.filterToggleBtn} ${
+                activityFilterByTime === "all" && classes.activeBtn
+              }`}
+              onClick={() => setActivityFilterByTime("all")}
+            >
+              All
+            </Button>
+            <Button
+              size="small"
+              className={`${classes.filterToggleBtn} ${
+                activityFilterByTime === "upcoming" && classes.activeBtn
+              }`}
+              onClick={() => setActivityFilterByTime("upcoming")}
+            >
+              Upcoming
+            </Button>
+            <Button
+              size="small"
+              className={`${classes.filterToggleBtn} ${
+                activityFilterByTime === "overdue" && classes.activeBtn
+              }`}
+              onClick={() => setActivityFilterByTime("overdue")}
+            >
+              Overdue
+            </Button>
+            <Button
+              size="small"
+              className={`${classes.filterToggleBtn} ${
+                activityFilterByTime === "open" && classes.activeBtn
+              }`}
+              onClick={() => setActivityFilterByTime("open")}
+            >
+              Open
+            </Button>
+            <Button
+              size="small"
+              className={`${classes.filterToggleBtn} ${
+                activityFilterByTime === "closed" && classes.activeBtn
+              }`}
+              onClick={() => setActivityFilterByTime("closed")}
+            >
+              Closed
+            </Button>
+            {/* <Button
+              size="small"
+              className={`${classes.filterToggleBtn} ${
                 activityFilterByTime === "todo" && classes.activeBtn
               }`}
               onClick={() => setActivityFilterByTime("todo")}
@@ -291,7 +336,7 @@ const ActivitiesToolbar = ({
               }}
             >
               Next week
-            </Button>
+            </Button> */}
             {/* <Button
               size="small"
               className={`${classes.filterToggleBtn} ${

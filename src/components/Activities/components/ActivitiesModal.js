@@ -199,9 +199,9 @@ const initialErrors = {
 const localizer = momentLocalizer(moment);
 
 export default function ActivitiesModal({
-  setSelectedActivity,
   selectedActivity,
   events,
+  setSelectedActivityId,
 }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -213,6 +213,7 @@ export default function ActivitiesModal({
   const [closed, setClosed] = useState(false);
   const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
+  const [calenderDate, setCalenderDate] = useState(new Date());
   const [startTime, setStartTime] = useState("08:00");
   const [endTime, setEndTime] = useState("08:00");
   const [notes, setNotes] = useState("");
@@ -333,6 +334,11 @@ export default function ActivitiesModal({
   // }, [addNew]);
 
   useEffect(() => {
+    const date = mergeDateAndTime(startDate, startTime);
+    setCalenderDate(new Date(date));
+  }, [startDate, startTime]);
+
+  useEffect(() => {
     console.log("set cdata EVENT: SET ACTIVITY:", selectedActivity);
     if (selectedActivity) {
       setAddNew(false);
@@ -349,11 +355,14 @@ export default function ActivitiesModal({
         name: selectedActivity.contactName,
         _id: selectedActivity.contactId,
       });
-      setStartDate(moment(selectedActivity.start).format("yyyy-MM-DD"));
-      setStartTime(moment(selectedActivity.start).format("HH:mm"));
+      setStartDate(
+        moment.parseZone(selectedActivity.start).format("yyyy-MM-DD")
+      );
+      setStartTime(moment.parseZone(selectedActivity.start).format("HH:mm"));
+      setCalenderDate(selectedActivity.start);
 
-      setEndDate(moment(selectedActivity.end).format("yyyy-MM-DD"));
-      setEndTime(moment(selectedActivity.end).format("HH:mm"));
+      setEndDate(moment.parseZone(selectedActivity.end).format("yyyy-MM-DD"));
+      setEndTime(moment.parseZone(selectedActivity.end).format("HH:mm"));
       console.log(
         "SELECTED ACTIVITY",
         getDateFromString(selectedActivity.end.toISOString()),
@@ -372,6 +381,7 @@ export default function ActivitiesModal({
       setActivityType("");
       setActivityName("");
       setStartDate(getCurrentDate());
+      setCalenderDate(new Date());
       setEndDate(getCurrentDate());
       setStartTime("08:00");
       setEndTime("08:00");
@@ -428,10 +438,11 @@ export default function ActivitiesModal({
 
   const onModalClose = () => {
     clearFields();
-    setSelectedActivity(null);
+    setSelectedActivityId(null);
     setStateApp((stateApp) => ({
       ...stateApp,
       activityDialog: false,
+      selectedActivity: null,
     }));
   };
 
@@ -448,6 +459,7 @@ export default function ActivitiesModal({
     setActivityName("");
     setClosed(false);
     setStartDate(getCurrentDate());
+    setCalenderDate(new Date());
     setEndDate(getCurrentDate());
     setStartTime("08:00");
     setEndTime("08:00");
@@ -528,8 +540,8 @@ export default function ActivitiesModal({
           contactId: nameAutValue._id,
           contactName: nameAutValue.name,
           dealId,
-          dateTime,
-          endDateTime,
+          dateTime: new Date(dateTime).toUTCString(),
+          endDateTime: new Date(endDateTime).toUTCString(),
           isClosed: closed,
         },
       },
@@ -548,8 +560,8 @@ export default function ActivitiesModal({
           _id: selectedActivity._id,
           type: activityType,
           name: activityName,
-          dateTime,
-          endDateTime,
+          dateTime: new Date(dateTime).toUTCString(),
+          endDateTime: new Date(endDateTime).toUTCString(),
           notes,
           ownerId: owner.id,
           ownerName: owner.name,
@@ -593,12 +605,7 @@ export default function ActivitiesModal({
                 onModalClose();
               }
         }
-        title={`${
-          addNew ? "Add Activity" : "Activity Details"
-          // : activityName
-          //? activityName.toUpperCase()
-          // : activityType.toUpperCase()
-        }`}
+        title={addNew ? "Add Activity" : "Activity Details"}
         subTitle={""}
         parent="calendar"
         mouseX={0}
@@ -702,8 +709,10 @@ export default function ActivitiesModal({
                     type="date"
                     variant="outlined"
                     onChange={(e) => {
-                      setStartDate(e.target.value);
-                      setEndDate(e.target.value);
+                      if (e.target.value && e.target.value.length > 0) {
+                        setStartDate(e.target.value);
+                        setEndDate(e.target.value);
+                      }
                     }}
                   />
                   <TextField
@@ -716,9 +725,10 @@ export default function ActivitiesModal({
                     type="time"
                     variant="outlined"
                     onChange={(e) => {
-                      setStartTime(e.target.value);
-                      setEndTime(e.target.value);
-                      console.log("EVENT: START TIME", e.target.value);
+                      if (e.target.value && e.target.value.length > 0) {
+                        setStartTime(e.target.value);
+                        setEndTime(e.target.value);
+                      }
                     }}
                   />
                   <span className={classes.line} />
@@ -732,7 +742,9 @@ export default function ActivitiesModal({
                     type="date"
                     variant="outlined"
                     onChange={(e) => {
-                      setEndDate(e.target.value);
+                      if (e.target.value && e.target.value.length > 0) {
+                        setEndDate(e.target.value);
+                      }
                     }}
                   />
                   <TextField
@@ -744,9 +756,10 @@ export default function ActivitiesModal({
                     value={endTime}
                     type="time"
                     variant="outlined"
-                    onChange={(e) => {
-                      setEndTime(e.target.value);
-                      console.log("EVENT: END TIME", e.target.value);
+                    onChange={(e) => {                    
+                      if (e.target.value && e.target.value.length > 0) {
+                        setEndTime(e.target.value);
+                      }
                     }}
                   />
                 </div>
@@ -793,7 +806,6 @@ export default function ActivitiesModal({
                   <PersonIcon />
                 </span>
                 <div
-                  className={clsx(!contact && errors.contact && classes.error)}
                   style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}
                 >
                   <Autocomplete
@@ -946,7 +958,6 @@ export default function ActivitiesModal({
             </div>
             <div className={classes.right}>
               <Calendar
-                culture="en-GB"
                 drilldownView="week"
                 popup={true}
                 localizer={localizer}
@@ -954,8 +965,8 @@ export default function ActivitiesModal({
                 startAccessor="start"
                 endAccessor="end"
                 defaultView={"day"}
-                defaultDate={startDate}
-                date={startDate}
+                defaultDate={calenderDate}
+                date={calenderDate}
                 step={60}
                 components={{
                   event: ActivitiesEvent,
