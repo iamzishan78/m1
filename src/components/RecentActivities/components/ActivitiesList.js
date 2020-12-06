@@ -158,11 +158,11 @@ export default function ActivitiesList({
               <div className={classes.timelineText}>
                 <div onClick={() => props.updateActivity(activity)}>
                   <Typography className={classes.itemHeading} variant="body1">
-                    {activity.notes}
+                    {activity.name}
                   </Typography>
                   <Typography variant="body2" className={classes.blue}>
                     {activity.ownerName} ●{" "}
-                    {moment(activity.dateTime).format("MMMM D, YYYY hh:mm a")} ●{" "}
+                    {moment(activity.dateTime).format("MMMM D, YYYY hh:mm a")}
                   </Typography>
                 </div>
                 <Typography
