@@ -148,7 +148,7 @@ function AddActivityDialog(props) {
   const [stateApp] = useContext(AppContext);
 
   const [addNew, setAddNew] = useState(true);
-  const [activityType, setActivityType] = useState("call");
+  const [activityType, setActivityType] = useState("");
   const [activityName, setActivityName] = useState("");
   const [closed, setClosed] = useState(false);
   const [startDate, setStartDate] = useState(getCurrentDate());
@@ -229,7 +229,7 @@ function AddActivityDialog(props) {
   const [addActivityMutation, { loading: addLoading }] = useMutation(
     ADDACTIVITY,
     {
-      refetchQueries: ["getContact", "getAllActivities"],
+      refetchQueries: ["getContact", "getAllActivities", "getMelissaRecordsCountForContactIds"],
       awaitRefetchQueries: true,
     }
   );
@@ -237,7 +237,7 @@ function AddActivityDialog(props) {
   const [updateActivityMutation, { loading: updateLoading }] = useMutation(
     UPDATEACTIVITY,
     {
-      refetchQueries: ["getContact", "getAllActivities"],
+      refetchQueries: ["getContact", "getAllActivities", "getMelissaRecordsCountForContactIds"],
       awaitRefetchQueries: true,
     }
   );
@@ -456,7 +456,7 @@ function AddActivityDialog(props) {
         fullWidth
         className={clsx(
           classes.inputField,
-          activityType === "" && errors.activityType && classes.error
+          (activityType === "" || !activityType) && errors.activityType && classes.error
         )}
         size="small"
       >
@@ -475,6 +475,7 @@ function AddActivityDialog(props) {
           label="Activity Type"
           disabled={loading}
         >
+          <option aria-label="None" value="" />
           <option value={"call"}>Call</option>
           <option value={"meeting"}>Meeting</option>
           <option value={"email"}>Email</option>

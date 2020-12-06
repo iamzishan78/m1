@@ -714,8 +714,10 @@ export default function ActivitiesModal({
                     type="date"
                     variant="outlined"
                     onChange={(e) => {
-                      setStartDate(e.target.value);
-                      setEndDate(e.target.value);
+                      if (e.target.value && e.target.value.length > 0) {
+                        setStartDate(e.target.value);
+                        setEndDate(e.target.value);
+                      }
                     }}
                   />
                   <TextField
@@ -728,9 +730,10 @@ export default function ActivitiesModal({
                     type="time"
                     variant="outlined"
                     onChange={(e) => {
-                      setStartTime(e.target.value);
-                      setEndTime(e.target.value);
-                      console.log("EVENT: START TIME", e.target.value);
+                      if (e.target.value && e.target.value.length > 0) {
+                        setStartTime(e.target.value);
+                        setEndTime(e.target.value);
+                      }
                     }}
                   />
                   <span className={classes.line} />
@@ -744,7 +747,9 @@ export default function ActivitiesModal({
                     type="date"
                     variant="outlined"
                     onChange={(e) => {
-                      setEndDate(e.target.value);
+                      if (e.target.value && e.target.value.length > 0) {
+                        setEndDate(e.target.value);
+                      }
                     }}
                   />
                   <TextField
@@ -756,9 +761,10 @@ export default function ActivitiesModal({
                     value={endTime}
                     type="time"
                     variant="outlined"
-                    onChange={(e) => {
-                      setEndTime(e.target.value);
-                      console.log("EVENT: END TIME", e.target.value);
+                    onChange={(e) => {                    
+                      if (e.target.value && e.target.value.length > 0) {
+                        setEndTime(e.target.value);
+                      }
                     }}
                   />
                 </div>

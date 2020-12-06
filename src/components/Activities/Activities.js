@@ -135,7 +135,9 @@ const Activities = () => {
       loading: activitiesLoading,
       error: activitiesError,
     },
-  ] = useLazyQuery(GETALLACTIVITIES);
+  ] = useLazyQuery(GETALLACTIVITIES, {
+    fetchPolicy: `network-only`,
+  });
 
   const [stateApp, setStateApp] = useContext(AppContext);
 
