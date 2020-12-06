@@ -258,6 +258,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ContactDetailCard(props) {
+
   const dispatch = useDispatch();
   const shrinkRightColumn = useSelector(
     ({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn
@@ -393,7 +394,7 @@ export default function ContactDetailCard(props) {
       setTransactId(tData.transactionData._id);
     }
   }, [tData, tLoading]);
-
+  
   return contactData ? (
     <div className={classes.mainGridContainer}>
       {/*/////////// left column //////////// */}
@@ -924,7 +925,7 @@ export default function ContactDetailCard(props) {
           fullWidth
           maxWidth="xl"
           open={showExpandableCard}
-          onClose={handleCloseExpandableCard}
+          onClose={handleCloseDialog}
         >
           <ExpandableCardProvider
             expanded={true}

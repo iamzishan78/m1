@@ -307,6 +307,7 @@ var formatter = new Intl.NumberFormat("en-US", {
 });
 
 function SubTable(props) {
+
   const classes = useStyles(props);
   const customClassess = customStyles(props);
   const productionClassess = productionStyle(props);
@@ -363,6 +364,11 @@ function SubTable(props) {
   const [showExpandableCard, ShowExpandableCard] = useState(false);
   const setShowExpandableCard = (newState) => {
     setStateIfDeepEqual(ShowExpandableCard, newState);
+  };
+
+  const [multipleExpandableCard, MultipleExpandableCard] = useState(false);
+  const setMultipleExpandableCard = (newState) => {
+    setStateIfDeepEqual(MultipleExpandableCard, newState);
   };
 
   const [selectedRow, SelectedRow] = useState();
@@ -1225,6 +1231,7 @@ function SubTable(props) {
                               />
                             );
                             setTitle("CONTACT DETAILS");
+                            setMultipleExpandableCard(true);
                             setSubTitle(" ");
                             handleOpenExpandableCard();
                           } else {
@@ -1619,16 +1626,23 @@ function SubTable(props) {
     setShowExpandableCard(true);
     console.log("Expandable card opened");
   };
-  const handleCloseExpandableCard = () => {
-    setShowExpandableCard(false);
-    setTargetLabelToExpand(null);
-    setStateApp((state) => ({
-      ...state,
-      popupOpen: false,
-      expandedCard: false,
-    }));
-  };
 
+  const handleCloseExpandableCard = () => {
+    if (targetLabelToExpand === "contact") {
+      setMultipleExpandableCard(false);
+      setTargetLabelToExpand("well");
+    } else {
+      setShowExpandableCard(false);
+      setTargetLabelToExpand(null);
+      setStateApp((state) => ({
+        ...state,
+        popupOpen: false,
+        expandedCard: false,
+      }));
+    }
+    
+  };
+  
   // 'view contact' on deals modal
   const selectRowOpenContact = (contact) => {
     const rowIndex = rows.findIndex((r) => r._id === contact._id);
@@ -2721,15 +2735,54 @@ function SubTable(props) {
             )}
           </Dialog>
         )}
-        
-        {showExpandableCard && targetLabelToExpand !== "well" && (
-                <Dialog
-                  className={classes.dialogExpCard}
-                  fullWidth
-                  maxWidth="xl"
-                  open={showExpandableCard}
-                  onClose={handleCloseExpandableCard}
-                >
+
+        {multipleExpandableCard && targetLabelToExpand == "contact" && (
+          <Dialog
+          className={classes.dialogExpCard}
+          fullWidth
+          maxWidth="xl"
+          open={multipleExpandableCard}
+          onClose={handleCloseExpandableCard}
+          >
+          <ExpandableCardProvider
+            expanded={true}
+            handleCloseExpandableCard={handleCloseExpandableCard}
+            component={subComponent}
+            title={title}
+            subTitle={subTitle}
+            parent="table"
+            mouseX={0}
+            mouseY={0}
+            position="relative"
+            cardLeft={"0"}
+            cardTop={"0"}
+            zIndex={1201}
+            cardWidthExpanded="100%"
+            cardHeightExpanded="100%"
+            targetSourceId={selectedRow._id}
+            targetLabel={
+              targetLabelToExpand ? targetLabelToExpand : props.targetLabel
+            }
+            noTrackAvailable={
+              targetLabelToExpand === "contact" ||
+              (!targetLabelToExpand && props.targetLabel === "contact")
+                ? true
+                : false
+            }
+          />
+          </Dialog>
+        )}
+        {showExpandableCard && 
+        targetLabelToExpand !== "well" && 
+        targetLabelToExpand !== 'contact' &&
+        multipleExpandableCard == false && (
+              <Dialog
+                className={classes.dialogExpCard}
+                fullWidth
+                maxWidth="xl"
+                open={showExpandableCard}
+                onClose={handleCloseExpandableCard}
+              > 
                 <ExpandableCardProvider
                   expanded={true}
                   handleCloseExpandableCard={handleCloseExpandableCard}
@@ -2750,7 +2803,7 @@ function SubTable(props) {
                     targetLabelToExpand === "well" ||
                     (!targetLabelToExpand &&
                       (props.targetLabel === "owner" ||
-                        props.targetLabel === "well"))
+                        props.targetLabel === "well" ))
                       ? selectedRow.id
                       : selectedRow._id
                   }
@@ -2764,8 +2817,8 @@ function SubTable(props) {
                       : false
                   }
                 />
-                </Dialog>
-        )}    
+              </Dialog>
+        )}
       </div>
 
       {props.loading && (

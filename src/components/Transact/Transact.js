@@ -422,15 +422,17 @@ export default function Transact() {
 
       switch (filter) {
         case "all":
-          cards = cards.filter((card) => !card.metadata.isDeleted); // remove deleted cards
+          cards = cards.filter((card) => !card.metadata.IsDeleted); // remove deleted cards
           break;
 
         case "deleted":
-          cards = cards.filter((card) => card.metadata.isDeleted); // get deleted cards
+          cards = cards.filter((card) => card.metadata.IsDeleted); // get deleted cards
           break;
 
         default:
-          cards = cards.filter((card) => card.metadata.status == filter);
+          cards = cards.filter(
+            (card) => card.metadata.status == filter && !card.metadata.IsDeleted
+          );
           break;
       }
 
@@ -517,52 +519,84 @@ export default function Transact() {
     position,
     cardDetails
   ) => {
-
     // handle drag within lanes - runs first
-    console.log(`handleCardDragEnd: ${cardId}, ${sourceLaneId}, ${targetLaneId}, ${position}, ${cardDetails}`);
+    console.log(
+      `handleCardDragEnd: ${cardId}, ${sourceLaneId}, ${targetLaneId}, ${position}, ${cardDetails}`
+    );
 
-    let unfilteredSourceLane = pipeToShow.lanes.find((lane) => lane.id === sourceLaneId);
-    let unfilteredTargetLane = pipeToShow.lanes.find((lane) => lane.id === targetLaneId);
+    let unfilteredSourceLane = pipeToShow.lanes.find(
+      (lane) => lane.id === sourceLaneId
+    );
+    let unfilteredTargetLane = pipeToShow.lanes.find(
+      (lane) => lane.id === targetLaneId
+    );
 
-    let filteredSourceLane = filteredTransactData.lanes.find((lane) => lane.id === sourceLaneId);
-    let filteredTargetLane = filteredTransactData.lanes.find((lane) => lane.id === targetLaneId);
+    let filteredSourceLane = filteredTransactData.lanes.find(
+      (lane) => lane.id === sourceLaneId
+    );
+    let filteredTargetLane = filteredTransactData.lanes.find(
+      (lane) => lane.id === targetLaneId
+    );
 
-    let filteredSourcePosition = filteredSourceLane.cards.findIndex((card) => card.id === cardId);
+    let filteredSourcePosition = filteredSourceLane.cards.findIndex(
+      (card) => card.id === cardId
+    );
     let filteredTargetPosition = position;
 
-    let unfilteredSourcePosition = unfilteredSourceLane.cards.findIndex((card) => card.id === cardId);
-    let unfilteredTargetPosition = position !== 0 ? unfilteredTargetLane.cards[position - 1].metadata.position + 1 : 0
+    let unfilteredSourcePosition = unfilteredSourceLane.cards.findIndex(
+      (card) => card.id === cardId
+    );
+    let unfilteredTargetPosition =
+      position !== 0
+        ? unfilteredTargetLane.cards.findIndex(
+            (card) => card.id === filteredTargetLane.cards[position - 1].id
+          ) + 1
+        : 0;
 
     // update moved card descriptor
     let movedCardDescriptor = {
       _id: cardDetails.metadata.descriptorId,
       relatedObject: targetLaneId,
-      position: unfilteredTargetPosition
-    }
+      position: unfilteredTargetPosition,
+    };
 
     // update unfilteredSourceLane descriptors
+    let sourceSliceStart = unfilteredSourcePosition + 1;
+    let sourceSliceEnd =
+      sourceLaneId === targetLaneId ? unfilteredTargetPosition + 1 : undefined;
     let unfilteredSourceLaneDescriptors = [
-      ...unfilteredSourceLane.cards.slice(unfilteredSourcePosition + 1).map((card) => {
-        return {
-          _id: card.metadata.descriptorId,
-          position: card.metadata.position - 1
-        }
-      })
-    ]
+      ...unfilteredSourceLane.cards
+        .slice(sourceSliceStart, sourceSliceEnd)
+        .map((card, index) => {
+          return {
+            _id: card.metadata.descriptorId,
+            position: unfilteredSourcePosition + index,
+          };
+        }),
+    ];
 
     // update unfilteredTargetLane descriptors
+    let targetSliceStart = unfilteredTargetPosition;
+    let targetSliceEnd =
+      sourceLaneId === targetLaneId ? unfilteredSourcePosition : undefined;
     let unfilteredTargetLaneDescriptors = [
-      ...unfilteredTargetLane.cards.slice(unfilteredTargetPosition + 1).map((card) => {
-        return {
-          _id: card.metadata.descriptorId,
-          position: card.metadata.position + 1
-        }
-      })
-    ]
+      ...unfilteredTargetLane.cards
+        .slice(targetSliceStart, targetSliceEnd)
+        .map((card, index) => {
+          return {
+            _id: card.metadata.descriptorId,
+            position: unfilteredTargetPosition + index + 1,
+          };
+        }),
+    ];
 
     updateStageDealDescriptors({
       variables: {
-        stageDealDescriptors: [movedCardDescriptor, ...unfilteredSourceLaneDescriptors, ...unfilteredTargetLaneDescriptors],
+        stageDealDescriptors: [
+          movedCardDescriptor,
+          ...unfilteredSourceLaneDescriptors,
+          ...unfilteredTargetLaneDescriptors,
+        ],
       },
       refetchQueries: ["getPipeline"],
       awaitRefetchQueries: true,
@@ -571,9 +605,11 @@ export default function Transact() {
 
   const onCardMoveAcrossLanes = (fromLaneId, toLaneId, cardId, addedIndex) => {
     if (fromLaneId !== toLaneId) {
-      console.log(`onCardMoveAcrossLanes: ${fromLaneId}, ${toLaneId}, ${cardId}, ${addedIndex}`)
+      console.log(
+        `onCardMoveAcrossLanes: ${fromLaneId}, ${toLaneId}, ${cardId}, ${addedIndex}`
+      );
     }
-  }
+  };
 
   // const wonSum = sumDeals(wonDeals);
   // const openSum = sumDeals(openDeals);
@@ -648,29 +684,29 @@ export default function Transact() {
                 backgroundColor: "#F2F2F2",
               }}
 
-            //onCardAdd = {handleCardAdd}
-            //onCardDelete = {handleCardDelete}
-            // handleDragStart = {}
-            // handleDragEnd={}
-            // handleLaneDragStart
-            // onDataChange
-            // onCardAdd
-            // onBeforeCardDelete
-            // onCardDelete
-            // onCardMoveAcrossLanes
-            // onLaneAdd
-            // onLaneDelete
-            // onLaneUpdate
-            // onLaneClick
-            // onLaneScroll
-            //onCardMoveAcrossLanes
+              //onCardAdd = {handleCardAdd}
+              //onCardDelete = {handleCardDelete}
+              // handleDragStart = {}
+              // handleDragEnd={}
+              // handleLaneDragStart
+              // onDataChange
+              // onCardAdd
+              // onBeforeCardDelete
+              // onCardDelete
+              // onCardMoveAcrossLanes
+              // onLaneAdd
+              // onLaneDelete
+              // onLaneUpdate
+              // onLaneClick
+              // onLaneScroll
+              //onCardMoveAcrossLanes
             />
           )}
           {dealDisplayType === "table" && <TransactTable />}
         </div>
       ) : (
-          <CircularProgress size={80} disableShrink color="secondary" />
-        )}
+        <CircularProgress size={80} disableShrink color="secondary" />
+      )}
     </div>
   );
 }
