@@ -144,6 +144,8 @@ export default function ParcelsDetailCard(props) {
   const [grossAcres, setGrossAcres] = useState();
   const [legalDescription, setLegalDesc] = useState();
 
+  const [onChangeFooterLabel, setChangeFooterLabel] = useState({parcelName: false, grossAcres: false, legalDescription: false});
+
   const [updateCustomLayer, { data: updatedParcel }] = useMutation(
     UPDATECUSTOMLAYER, 
   );
@@ -252,14 +254,13 @@ export default function ParcelsDetailCard(props) {
                 onKeyDown={(e) => {
                   updateParcel(e, "shapeLabel", parcelName);
                 }}
-                onFocus={console.log("FOCUS ME")}
-                onBlur={console.log("OUT")}
+                onFocus={()=> {setChangeFooterLabel({...onChangeFooterLabel, parcelName: true})}}
+                onBlur={()=> {setChangeFooterLabel({...onChangeFooterLabel, parcelName: false})}}
                 InputProps={{
-                  endAdornment: (
+                  endAdornment: (onChangeFooterLabel.parcelName == true &&
                     <p className={classes.foodText}>
                       <span>Return</span> to save
-                    </p>
-                  )
+                    </p>)
                 }}
                 fullWidth
               >
@@ -275,6 +276,14 @@ export default function ParcelsDetailCard(props) {
                 onKeyDown={(e) => {
                   updateParcel(e, "sdGrossAcres", grossAcres);
                 }}
+                onFocus={()=> {setChangeFooterLabel({...onChangeFooterLabel, grossAcres: true})}}
+                onBlur={()=> {setChangeFooterLabel({...onChangeFooterLabel, grossAcres: false})}}
+                InputProps={{
+                  endAdornment: (onChangeFooterLabel.grossAcres == true &&
+                    <p className={classes.foodText}>
+                      <span>Return</span> to save
+                    </p>)
+                }}
                 fullWidth
               />
               <p className={classes.parcelSummmary}>Calc. Acres</p>
@@ -285,7 +294,7 @@ export default function ParcelsDetailCard(props) {
                 variant="outlined"
                 fullWidth
                 InputProps={{
-                  readOnly: true,
+                  readOnly: true
                 }}
               />
 
@@ -303,6 +312,14 @@ export default function ParcelsDetailCard(props) {
                 }}
                 onKeyDown={(e) => {
                   updateParcel(e, "legalDescription", legalDescription);
+                }}
+                onFocus={()=> {setChangeFooterLabel({...onChangeFooterLabel, legalDescription: true})}}
+                onBlur={()=> {setChangeFooterLabel({...onChangeFooterLabel, legalDescription: false})}}
+                InputProps={{
+                  endAdornment: (onChangeFooterLabel.legalDescription == true &&
+                    <p className={classes.foodText}>
+                      <span>Return</span> to save
+                    </p>)
                 }}
               />
             </div>
