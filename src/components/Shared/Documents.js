@@ -263,8 +263,6 @@ export default function Documents(props) {
     viewFile({ variables: { fileId: id } });
   };
 
-  console.log("FILEss", files?.getFileDescriptors);
-
   return (
     <div className={classes.root} variant="outlined">
       <CardActions style={{ padding: "23px 23px 8px 23px" }}>

@@ -86,10 +86,10 @@ export default function ExpandableCard(props) {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
-    if(props.targetLabel === "activity"){
-      setTitle(props.title)
+    if (props.targetLabel === "activity") {
+      setTitle(props.title);
     }
-  }, [props.title, props.targetLabel])
+  }, [props.title, props.targetLabel]);
 
   const useStyles = makeStyles((theme) => ({
     card: {
@@ -359,17 +359,19 @@ export default function ExpandableCard(props) {
                 />
               )}
 
-              {stateExpandableCard.expanded && targetLabel !== "activity" && (
-                <Tooltip title={"Report Bug"} placement="top">
-                  <IconButton
-                    size="medium"
-                    onClick={() => setOpenBugModal(true)}
-                    className={classes.icons}
-                  >
-                    <BugsIcon viewBox="0 0 64 64" color="white" />
-                  </IconButton>
-                </Tooltip>
-              )}
+              {stateExpandableCard.expanded &&
+                targetLabel !== "activity" &&
+                targetLabel !== "contact" && (
+                  <Tooltip title={"Report Bug"} placement="top">
+                    <IconButton
+                      size="medium"
+                      onClick={() => setOpenBugModal(true)}
+                      className={classes.icons}
+                    >
+                      <BugsIcon viewBox="0 0 64 64" color="white" />
+                    </IconButton>
+                  </Tooltip>
+                )}
 
               {stateExpandableCard.expanded &&
                 ["activity", "parcel"].includes(targetLabel) &&
@@ -404,6 +406,57 @@ export default function ExpandableCard(props) {
                     </IconButton>
                   )}
                 </Tooltip>
+              )} */}
+
+              {/* {stateExpandableCard.expanded && targetLabel !== "activity" ? (
+                parent !== "table" && targetLabel !== "expandedWell" ? (
+                  <Tooltip title={"Shrink"} placement="top">
+                    <IconButton
+                      color="secondary"
+                      onClick={handleShrink}
+                      aria-label="shrink"
+                      className={classes.icons}
+                    >
+                      <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                ) : isExpanded == false && targetLabel !== "activity" ? (
+                  <Tooltip title={"Expand"} placement="top">
+                    <IconButton
+                      size="small"
+                      onClick={handleExpand}
+                      aria-label="expand"
+                      className={classes.icons}
+                    >
+                      <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title={"Shrink"} placement="top">
+                    <IconButton
+                      color="secondary"
+                      onClick={handleExpand}
+                      aria-label="shrink"
+                      className={classes.icons}
+                    >
+                      <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                )
+              ) : (
+                parent !== "table" &&
+                targetLabel !== "activity" && (
+                  <Tooltip title={"Expand"} placement="top">
+                    <IconButton
+                      size="small"
+                      onClick={handleExpand}
+                      aria-label="expand"
+                      className={classes.icons}
+                    >
+                      <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                )
               )} */}
 
               {stateExpandableCard.expanded && targetLabel !== "activity" ? (
@@ -478,7 +531,10 @@ export default function ExpandableCard(props) {
               : ""
           }
         />
-        <CardContent className={classes.content}>{props.component}</CardContent>
+
+        <CardContent className={classes.content}>
+          <div id="cardContent">{props.component}</div>
+        </CardContent>
       </Card>
     </React.Fragment>
   );

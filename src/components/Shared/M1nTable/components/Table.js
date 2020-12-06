@@ -315,6 +315,7 @@ var formatter = new Intl.NumberFormat("en-US", {
 });
 
 function SubTable(props) {
+
   const classes = useStyles(props);
   const customClassess = customStyles(props);
   const productionClassess = productionStyle(props);
@@ -371,6 +372,11 @@ function SubTable(props) {
   const [showExpandableCard, ShowExpandableCard] = useState(false);
   const setShowExpandableCard = (newState) => {
     setStateIfDeepEqual(ShowExpandableCard, newState);
+  };
+
+  const [multipleExpandableCard, MultipleExpandableCard] = useState(false);
+  const setMultipleExpandableCard = (newState) => {
+    setStateIfDeepEqual(MultipleExpandableCard, newState);
   };
 
   const [selectedRow, SelectedRow] = useState();
@@ -1240,6 +1246,7 @@ function SubTable(props) {
                               />
                             );
                             setTitle("CONTACT DETAILS");
+                            setMultipleExpandableCard(true);
                             setSubTitle(" ");
                             handleOpenExpandableCard();
                           } else {
@@ -1640,21 +1647,27 @@ function SubTable(props) {
     setShowExpandableCard(true);
     console.log("Expandable card opened");
   };
-  const handleCloseExpandableCard = () => {
-    setShowExpandableCard(false);
-    setTargetLabelToExpand(null);
-    setStateApp((state) => ({
-      ...state,
-      popupOpen: false,
-      expandedCard: false,
-    }));
-  };
 
+  const handleCloseExpandableCard = () => {
+    if (targetLabelToExpand === "contact") {
+      setMultipleExpandableCard(false);
+      setTargetLabelToExpand("well");
+    } else {
+      setShowExpandableCard(false);
+      setTargetLabelToExpand(null);
+      setStateApp((state) => ({
+        ...state,
+        popupOpen: false,
+        expandedCard: false,
+      }));
+    }
+    
+  };
+  
   // 'view contact' on deals modal
   const selectRowOpenContact = (contact) => {
     const rowIndex = rows.findIndex((r) => r._id === contact._id);
     const row = rows[rowIndex];
-
     setSelectedRow(rows);
     console.log("STATE APP", contact, row);
 
@@ -2026,13 +2039,14 @@ function SubTable(props) {
       }
     },
     onChangePage: (pageState) => {
-      console.log(`here: pageInd=${pageInd} pageState=${pageState}`);
       setPageInd(pageState);
     },
     customSort: (data, colIndex, order) => {
       if (props.parent === "production_WellDetails") {
-        return data.sort((a, b) => {
-          if (colIndex === 1) {
+        let temp = data.filter(item => item.data[1] != "Cumulative");
+        let temp_rows_per_page = rowsPerPage ? rowsPerPage : 25;
+        let temp_rows = temp.sort((a, b) => { if (colIndex === 1) 
+          { 
             const dateA = moment(moment(a.data[colIndex], "MM/YYYY")).valueOf();
             const dateB = moment(moment(b.data[colIndex], "MM/YYYY")).valueOf();
             return (dateA < dateB ? -1 : 1) * (order === "desc" ? 1 : -1);
@@ -2043,6 +2057,37 @@ function SubTable(props) {
             );
           }
         });
+
+        let insertInBetween = temp_rows_per_page - 1;
+        let cumulative_array = Object.values(cumulative);
+        let temp_cumulative_array = [];
+
+        for(let counter = 0; counter < cumulative_array.length; counter++) {
+          if (counter != 0 &&
+            counter != 9 &&
+            counter != 10 &&
+            counter != 11 &&
+            counter != 12) {
+              temp_cumulative_array.push(cumulative_array[counter]);
+            }
+        }
+
+        if (Object.entries(cumulative).length != 0) {
+          let multiplier = temp_rows.length / insertInBetween;
+
+          for (let counter = 1; counter <= multiplier; counter++) {
+            let insert_index = 0;
+            if (counter != 1) {
+              insert_index = counter * temp_rows_per_page;
+              temp_rows.splice(insert_index - 1, 0, {data: temp_cumulative_array});
+            } else {
+              temp_rows.splice(insertInBetween, 0, {data: temp_cumulative_array});
+            }
+          };
+        };
+
+        temp_rows.push({data: temp_cumulative_array});
+        return temp_rows;
       } else {
         return data.sort((a, b) => {
           return (
@@ -2052,19 +2097,19 @@ function SubTable(props) {
         });
       }
     },
-    // onChangeRowsPerPage: (numberOfRows) => {
-    //   console.log(numberOfRows);
-    // if (props.total === true) {
-    //   switch(props.parent) {
-    //     case "production_WellDetails":
-    //       let trimmed = rows.filter(item => item.ReportDate !== "Cumulative");
-    //       setRows(displayCumulative(trimmed, props.total, cumulative));
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    // }
-    // },
+    onChangeRowsPerPage: (numberOfRows) => {
+      if (props.total === true) {
+        switch(props.parent) {
+          case "production_WellDetails":
+            let trimmed = rows.filter(item => item.ReportDate != "Cumulative");
+            setRowsPerPage(numberOfRows);
+            setRows(displayCumulative(trimmed, props.total, cumulative, numberOfRows));
+            break;
+          default:
+            break;
+        }
+      }
+    },
     // onColumnSortChange: (column, direction) => {
     //   if (props.total === true) {
     //     switch(props.parent) {
@@ -2372,7 +2417,6 @@ function SubTable(props) {
   }
 
   if (props.header === "Contacts") {
-    console.log('props.header === "Contacts"');
     options.rowsPerPageOptions =
       props.contactsPageProps.contactsCount > 25
         ? [10, 25, 50, 100]
@@ -2390,25 +2434,25 @@ function SubTable(props) {
     history.push(route);
   };
 
-  const displayCumulative = (data, total, cumulative) => {
+  const displayCumulative = (data, total, cumulative, rowsPerPage = 25) => {
     let rows = data;
-    if (total === true && rows.length != 0) {
-      let insertInBetween = options.rowsPerPage - 1;
-      if (Object.entries(cumulative).length != 0) {
-        let multiplier = rows.length / insertInBetween;
-        for (let temp = 1; temp <= multiplier; temp++) {
-          let insert_index = 0;
-          if (temp != 1) {
-            insert_index = temp * options.rowsPerPage;
-            rows.splice(insert_index - 1, 0, cumulative);
-          } else {
-            rows.splice(insertInBetween, 0, cumulative);
-          }
+      if (total === true && rows.length != 0) {
+        let insertInBetween = rowsPerPage - 1;
+        if (Object.entries(cumulative).length != 0) {
+          let multiplier = rows.length / insertInBetween;
+          for (let temp = 1; temp <= multiplier; temp++) {
+            let insert_index = 0;
+            if (temp != 1) {
+              insert_index = temp * rowsPerPage;
+              rows.splice(insert_index - 1, 0, cumulative);
+            } else {
+              rows.splice(insertInBetween, 0, cumulative);
+            }
+          };
+          rows.push(cumulative)
         }
         rows.push(cumulative);
       }
-    }
-
     return rows;
   };
 
@@ -2731,49 +2775,88 @@ function SubTable(props) {
           </Dialog>
         )}
 
-        {showExpandableCard && targetLabelToExpand !== "well" && (
+        {multipleExpandableCard && targetLabelToExpand == "contact" && (
           <Dialog
-            className={classes.dialogExpCard}
-            fullWidth
-            maxWidth="xl"
-            open={showExpandableCard}
-            onClose={handleCloseExpandableCard}
+          className={classes.dialogExpCard}
+          fullWidth
+          maxWidth="xl"
+          open={multipleExpandableCard}
+          onClose={handleCloseExpandableCard}
           >
-            <ExpandableCardProvider
-              expanded={true}
-              handleCloseExpandableCard={handleCloseExpandableCard}
-              component={subComponent}
-              title={title}
-              subTitle={subTitle}
-              parent="table"
-              mouseX={0}
-              mouseY={0}
-              position="relative"
-              cardLeft={"0"}
-              cardTop={"0"}
-              zIndex={1201}
-              cardWidthExpanded="100%"
-              cardHeightExpanded="100%"
-              targetSourceId={
-                targetLabelToExpand === "owner" ||
-                targetLabelToExpand === "well" ||
-                (!targetLabelToExpand &&
-                  (props.targetLabel === "owner" ||
-                    props.targetLabel === "well"))
-                  ? selectedRow.id
-                  : selectedRow._id
-              }
-              targetLabel={
-                targetLabelToExpand ? targetLabelToExpand : props.targetLabel
-              }
-              noTrackAvailable={
-                targetLabelToExpand === "contact" ||
-                (!targetLabelToExpand && props.targetLabel === "contact")
-                  ? true
-                  : false
-              }
-            />
+          <ExpandableCardProvider
+            expanded={true}
+            handleCloseExpandableCard={handleCloseExpandableCard}
+            component={subComponent}
+            title={title}
+            subTitle={subTitle}
+            parent="table"
+            mouseX={0}
+            mouseY={0}
+            position="relative"
+            cardLeft={"0"}
+            cardTop={"0"}
+            zIndex={1201}
+            cardWidthExpanded="100%"
+            cardHeightExpanded="100%"
+            targetSourceId={selectedRow._id}
+            targetLabel={
+              targetLabelToExpand ? targetLabelToExpand : props.targetLabel
+            }
+            noTrackAvailable={
+              targetLabelToExpand === "contact" ||
+              (!targetLabelToExpand && props.targetLabel === "contact")
+                ? true
+                : false
+            }
+          />
           </Dialog>
+        )}
+        {showExpandableCard && 
+        targetLabelToExpand !== "well" && 
+        targetLabelToExpand !== 'contact' &&
+        multipleExpandableCard == false && (
+              <Dialog
+                className={classes.dialogExpCard}
+                fullWidth
+                maxWidth="xl"
+                open={showExpandableCard}
+                onClose={handleCloseExpandableCard}
+              > 
+                <ExpandableCardProvider
+                  expanded={true}
+                  handleCloseExpandableCard={handleCloseExpandableCard}
+                  component={subComponent}
+                  title={title}
+                  subTitle={subTitle}
+                  parent="table"
+                  mouseX={0}
+                  mouseY={0}
+                  position="relative"
+                  cardLeft={"0"}
+                  cardTop={"0"}
+                  zIndex={1201}
+                  cardWidthExpanded="100%"
+                  cardHeightExpanded="100%"
+                  targetSourceId={
+                    targetLabelToExpand === "owner" ||
+                    targetLabelToExpand === "well" ||
+                    (!targetLabelToExpand &&
+                      (props.targetLabel === "owner" ||
+                        props.targetLabel === "well" ))
+                      ? selectedRow.id
+                      : selectedRow._id
+                  }
+                  targetLabel={
+                    targetLabelToExpand ? targetLabelToExpand : props.targetLabel
+                  }
+                  noTrackAvailable={
+                    targetLabelToExpand === "contact" ||
+                    (!targetLabelToExpand && props.targetLabel === "contact")
+                      ? true
+                      : false
+                  }
+                />
+              </Dialog>
         )}
       </div>
 

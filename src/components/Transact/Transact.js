@@ -10,6 +10,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { TransactContext } from "./TransactContext";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { UPDATETRANSACTION } from "../../graphQL/useMutationUpdateTransaction";
+import { UPDATESTAGEDEALDESCRIPTORS } from "../../graphQL/useMutationUpdateStageDealDescriptors";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Button from "@material-ui/core/Button";
 import Dialog from "./components/dialog";
@@ -21,107 +22,8 @@ import "./index.css";
 import { AppBar } from "@material-ui/core";
 import TransactAppBar from "./components/TransactAppBar";
 import TransactTable from "./components/TransactTable";
-// const data_file = {
-//   lanes: [
-//     {
-//       id: "lane1",
-//       title: "Offer Preparation",
-//       cards: [
-//         {
-//           id: "Card1",
-//           title: "THORNTON, CHARLES T",
-//           description:
-//             "API: 4230130541\nWell Name: CHRISTOPHER -38- 4\nNRI: 0.017857\nTax Value: $10,860",
-//           label: "$103,100",
-//         },
-//       ],
-//     },
-//     {
-//       id: "lane2",
-//       title: "Offer Extended",
-//       cardStyle: { borderColor: "#EBC253" },
-//       cards: [
-//         // {
-//         //   id: "Card3",
-//         //   title: "SMITH, JAMES E",
-//         //   description:
-//         //     "Location: WARD, TX\nRoyalty: 20%\nAcreage: 4.83 NMA (7.728 NRA)\nPrice Per NMA: $15,000",
-//         //   label: "$115,900",
-//         // },
-//         // {
-//         //   id: "Card2",
-//         //   title: "CHRISTOPHER, EDITH",
-//         //   description:
-//         //     "API: 4230130541\nWell Name: CHRISTOPHER -38- 4\nNRI: 0.005952\nTax Value: $3,620",
-//         //   label: "$54,739",
-//         // },
-//       ],
-//     },
-//     {
-//       id: "lane3",
-//       title: "Accepted - Due Diligence",
-//       cardStyle: { borderColor: "#EBC253" },
-//       cards: [
-//         {
-//           id: "Card4",
-//           title: "JONES, MICHAEL F",
-//           description:
-//             "Location: UPTON, TX\nRoyalty: 12.5%\nAcreage: 10.2 NMA (10.2 NRA)\nPrice Per NMA: $32,000",
-//           label: "$326,400",
-//         },
-//       ],
-//     },
-//     {
-//       id: "lane4",
-//       title: "Deal - Closed",
-//       cardStyle: { borderColor: "#35DA97" },
-//       cards: [
-//         {
-//           id: "Card5",
-//           title: "MOUSSEAU, VICKI L",
-//           description:
-//             "Location: LEA, NM\nRoyalty: 18.75%\nAcreage: 6.7 NMA (10.05 NRA)\nPrice Per NMA: $18,000",
-//           label: "$180,900",
-//         },
-//         {
-//           id: "Card6",
-//           title: "CANON, MICHAEL J",
-//           description:
-//             "Location: REEVES, TX\nRoyalty: 15.625%\nAcreage: 43 NMA (53.75 NRA)\nPrice Per NMA: $32,000",
-//           label: "$571,094",
-//         },
-//       ],
-//     },
-//     {
-//       id: "lane5",
-//       title: "Offer - Rejected",
-
-//       cards: [
-//         {
-//           id: "Card7",
-//           title: "SCARBOROUGH, KATHRYN",
-//           description:
-//             "Location: LOVING, TX\nRoyalty: 12.5%\nAcreage: 3 NMA (3 NRA)\nPrice Per NMA: $19,000",
-//           label: "$57,000",
-//         },
-//         {
-//           id: "Card8",
-//           title: "TRAYLOR, MARY ELIZABETH",
-//           description:
-//             "API: 4230133032\nWell Name: PISTOL 24-24 2H\nNRI: 0.046743\nTax Value: $215,690",
-//           label: "$943,291",
-//         },
-//         {
-//           id: "Card9",
-//           title: "KING, JACOB B",
-//           description:
-//             "Location: REEVES, TX\nRoyalty: 20%\nAcreage: 150 NMA (240 NRA)\nPrice Per NMA: $9,500",
-//           label: "$2,280,000",
-//         },
-//       ],
-//     },
-//   ],
-// };
+import { useDispatch, useSelector } from "react-redux";
+import { setFlowState } from "../../actions";
 
 const transact_data = {
   lanes: [
@@ -265,130 +167,140 @@ function usePrevious(value) {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "100vh",
     backgroundColor: "#efefef",
   },
   list: {
     overflowX: "auto !important",
     height: "100%",
   },
+  boardAndTable: {
+    maxWidth: "100vw",
+    "& .react-trello-board": { height: "calc( 100vh - 188px)" },
+  },
 }));
 
-let formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
+// let formatter = new Intl.NumberFormat("en-US", {
+//   style: "currency",
+//   currency: "USD",
+// });
 
-const sumDeals = (deals) => {
-  let sum = 0;
-  deals.forEach(
-    (card) =>
-      (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
-  );
-  const formatted = formatter.format(sum);
-  return formatted.slice(0, formatted.length - 3);
-};
+// const sumDeals = (deals) => {
+//   let sum = 0;
+//   deals.forEach(
+//     (card) =>
+//       (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+//   );
+//   const formatted = formatter.format(sum);
+//   return formatted.slice(0, formatted.length - 3);
+// };
 
 export default function Transact() {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const { pipeToShow } = useSelector(({ Flow }) => Flow);
   // const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [transactData, setTransactData] = useState();
-  const [id, setId] = useState();
-  const [index, setIndex] = useState(0);
-  const [pipelines, setPipelines] = useState([]);
-  const [filteredTransactData, setFilteredTransactData] = useState(null);
-  const prevFiltertedTransactData = usePrevious(filteredTransactData);
-  const [allDeals, setAllDeals] = useState([]);
-  const [openDeals, setOpenDeals] = useState([]);
-  const [wonDeals, setWonDeals] = useState([]);
-  const [lostDeals, setLostDeals] = useState([]);
-  const [deletedDeals, setDeletedDeals] = useState([]);
+  // const [transactData, setTransactData] = useState({ lanes: [] });
+  // const [id, setId] = useState();
+  // const [index, setIndex] = useState(0);
+  // const [pipelines, setPipelines] = useState([]);
+  const [filteredTransactData, setFilteredTransactData] = useState({
+    lanes: [],
+  });
+  // const prevFiltertedTransactData = usePrevious(filteredTransactData);
+  // const [allDeals, setAllDeals] = useState([]);
+  // const [openDeals, setOpenDeals] = useState([]);
+  // const [wonDeals, setWonDeals] = useState([]);
+  // const [lostDeals, setLostDeals] = useState([]);
+  // const [deletedDeals, setDeletedDeals] = useState([]);
 
-  const [getTransactionData, { loading, data }] = useLazyQuery(TRANSACTIONDATA);
-  const [updateTransaction] = useMutation(UPDATETRANSACTION);
+  // const [getTransactionData, { loading, data }] = useLazyQuery(TRANSACTIONDATA);
+  // const [updateTransaction] = useMutation(UPDATETRANSACTION);
+  const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
 
   const [dealDisplayType, setDealDisplayType] = useState("board");
   const [dealFilter, setDealFilter] = useState("open");
-  const prevDealFilter = usePrevious(dealFilter);
+  // const prevDealFilter = usePrevious(dealFilter);
 
-  useEffect(() => {
-    if (stateApp.user && stateApp.user.mongoId) {
-      getTransactionData({
-        variables: {
-          userId: stateApp.user.mongoId,
-        },
-      });
-    }
-  }, [stateApp.user]);
+  // useEffect(() => {
+  //   if (stateApp.user && stateApp.user.mongoId) {
+  //     getTransactionData({
+  //       variables: {
+  //         userId: stateApp.user.mongoId,
+  //       },
+  //     });
+  //   }
+  // }, [stateApp.user]);
 
-  useEffect(() => {
-    if (!loading && data?.transactionData) {
-      setPipelines(
-        data?.transactionData.map((v, i) => ({
-          index: i,
-          name: v.pipeline,
-          id: v._id,
-        }))
-      );
-    }
+  // useEffect(() => {
+  //   if (!loading && data?.transactionData) {
+  //     // setPipelines(
+  //     //   data?.transactionData.map((v, i) => ({
+  //     //     index: i,
+  //     //     name: v.pipeline,
+  //     //     id: v._id,
+  //     //   }))
+  //     // );
+  //   }
 
-    if (
-      !loading &&
-      data?.transactionData[index] &&
-      data?.transactionData[index]?.allData?.lanes &&
-      data.transactionData[index].allData.lanes.length > 0
-    ) {
-      const lanes = data?.transactionData[index]?.allData?.lanes;
+  //   if (
+  //     !loading &&
+  //     data?.transactionData[index] &&
+  //     data?.transactionData[index]?.allData?.lanes &&
+  //     data.transactionData[index].allData.lanes.length > 0
+  //   ) {
+  //     const lanes = data?.transactionData[index]?.allData?.lanes;
 
-      // get all deals
-      const all = [];
-      lanes.forEach((deal) => {
-        deal.cards.forEach((card) => {
-          all.push(card);
-        });
-      });
-      setAllDeals(all);
-    }
-  }, [data, index]);
+  //     // get all deals
+  //     const all = [];
+  //     lanes.forEach((deal) => {
+  //       deal.cards.forEach((card) => {
+  //         all.push(card);
+  //       });
+  //     });
+  //     setAllDeals(all);
+  //   }
+  // }, [data, index]);
 
-  useEffect(() => {
-    let open = [];
-    let won = [];
-    let lost = [];
-    let deleted = [];
-    allDeals.forEach((card) => {
-      if (card.dealState === "won") won.push(card);
-      else if (card.dealState === "lost") lost.push(card);
-      else if (card.isDeleted) deleted.push(card);
-      else open.push(card);
-    });
+  // useEffect(() => {
+  //   if (pipeToShow?.lanes) {
+  //     let open = [];
+  //     let won = [];
+  //     let lost = [];
+  //     let deleted = [];
+  //     pipeToShow.lanes.forEach((card) => {
+  //       if (card.dealState === "won") won.push(card);
+  //       else if (card.dealState === "lost") lost.push(card);
+  //       else if (card.isDeleted) deleted.push(card);
+  //       else open.push(card);
+  //     });
 
-    setOpenDeals(open);
-    setWonDeals(won);
-    setLostDeals(lost);
-    setDeletedDeals(deleted);
-  }, [allDeals]);
+  //     setOpenDeals(open);
+  //     setWonDeals(won);
+  //     setLostDeals(lost);
+  //     setDeletedDeals(deleted);
+  //   }
+  // }, [pipeToShow]);
 
-  useEffect(() => {
-    if (transactData) {
-      let lanes = transactData.lanes;
-      let filterted = filterCards(lanes, dealFilter);
-      console.log("TRANSACT DATA", transactData.lanes);
-      console.log("FILTERED DATA", dealFilter, filterted);
+  // useEffect(() => {
+  //   if (transactData) {
+  //     let lanes = transactData.lanes;
+  //     let filterted = filterCards(lanes, dealFilter);
+  //     console.log("TRANSACT DATA", transactData.lanes);
+  //     console.log("FILTERED DATA", dealFilter, filterted);
 
-      setFilteredTransactData({ lanes: [...filterted] });
+  //     setFilteredTransactData({ lanes: [...filterted] });
 
-      updateTransaction({
-        variables: {
-          transactionId: id,
-          transaction: { allData: transactData, user: stateApp.user.mongoId },
-        },
-        refetchQueries: ["getTransactionData"],
-        awaitRefetchQueries: true,
-      });
-    }
-  }, [transactData, dealFilter]);
+  //     updateTransaction({
+  //       variables: {
+  //         transactionId: id,
+  //         transaction: { allData: transactData, user: stateApp.user.mongoId },
+  //       },
+  //       refetchQueries: ["getTransactionData"],
+  //       awaitRefetchQueries: true,
+  //     });
+  //   }
+  // }, [transactData, dealFilter]);
 
   // const didLaneChange = (current, prev) => {
   //   let changed = false;
@@ -404,166 +316,164 @@ export default function Transact() {
   //   return changed;
   // };
 
-  const getChanged = (current, prev) => {
-    let oldLane;
-    let newLane;
-    let newLaneIndex;
-    let oldLaneIndex;
-    let card;
+  // const getChanged = (current, prev) => {
+  //   let oldLane;
+  //   let newLane;
+  //   let newLaneIndex;
+  //   let oldLaneIndex;
+  //   let card;
 
-    for (let i = 0; i < current.length; i++) {
-      if (current[i].cards.length > prev[i].cards.length) {
-        newLane = current[i];
-        newLaneIndex = i;
-      } else if (current[i].cards.length < prev[i].cards.length) {
-        oldLane = current[i];
-        oldLaneIndex = i;
-      }
-    }
+  //   for (let i = 0; i < current.length; i++) {
+  //     if (current[i].cards.length > prev[i].cards.length) {
+  //       newLane = current[i];
+  //       newLaneIndex = i;
+  //     } else if (current[i].cards.length < prev[i].cards.length) {
+  //       oldLane = current[i];
+  //       oldLaneIndex = i;
+  //     }
+  //   }
 
-    console.log(current, prev, newLaneIndex, oldLaneIndex);
-    if (newLaneIndex !== undefined && oldLaneIndex !== undefined) {
-      card = current[newLaneIndex].cards.find(
-        (card) =>
-          prev[oldLaneIndex].cards.findIndex((c) => c.id === card.id) !== -1
-      );
-    }
+  //   console.log(current, prev, newLaneIndex, oldLaneIndex);
+  //   if (newLaneIndex !== undefined && oldLaneIndex !== undefined) {
+  //     card = current[newLaneIndex].cards.find(
+  //       (card) =>
+  //         prev[oldLaneIndex].cards.findIndex((c) => c.id === card.id) !== -1
+  //     );
+  //   }
 
-    return { oldLane, newLane, oldLaneIndex, newLaneIndex, card };
-  };
+  //   return { oldLane, newLane, oldLaneIndex, newLaneIndex, card };
+  // };
 
-  useEffect(() => {
-    if (
-      filteredTransactData &&
-      prevFiltertedTransactData &&
-      !isEqual(filteredTransactData, prevFiltertedTransactData)
-    ) {
-      console.log("CURRENT DATA", filteredTransactData);
-      console.log("PREV DATA", prevFiltertedTransactData);
+  // useEffect(() => {
+  //   if (
+  //     filteredTransactData &&
+  //     prevFiltertedTransactData &&
+  //     !isEqual(filteredTransactData, prevFiltertedTransactData)
+  //   ) {
+  //     console.log("CURRENT DATA", filteredTransactData);
+  //     console.log("PREV DATA", prevFiltertedTransactData);
 
-      // HANDLE LANE CHANGE HERE
-      // const {
-      //   oldLane,
-      //   newLane,
-      //   card: movedCard,
-      //   oldLaneIndex,
-      //   newLaneIndex,
-      // } = getChanged(
-      //   filteredTransactData.lanes,
-      //   prevFiltertedTransactData.lanes
-      // );
+  //     // HANDLE LANE CHANGE HERE
+  //     // const {
+  //     //   oldLane,
+  //     //   newLane,
+  //     //   card: movedCard,
+  //     //   oldLaneIndex,
+  //     //   newLaneIndex,
+  //     // } = getChanged(
+  //     //   filteredTransactData.lanes,
+  //     //   prevFiltertedTransactData.lanes
+  //     // );
 
-      // console.log(
-      //   oldLaneIndex,
-      //   newLaneIndex,
-      //   oldLane,
-      //   newLane,
-      //   movedCard,
-      //   transactData
-      // );
+  //     // console.log(
+  //     //   oldLaneIndex,
+  //     //   newLaneIndex,
+  //     //   oldLane,
+  //     //   newLane,
+  //     //   movedCard,
+  //     //   transactData
+  //     // );
 
-      // setTransactData((prev) => {
-      //   const td = { ...prev };
+  //     // setTransactData((prev) => {
+  //     //   const td = { ...prev };
 
-      //   let updatedOldLaneCards = td.lanes[oldLaneIndex].cards.filter(
-      //     (card) => card.id !== movedCard.id
-      //   );
-      //   let updatedOldLane = {
-      //     ...td.lanes[oldLaneIndex],
-      //     cards: updatedOldLaneCards,
-      //   };
+  //     //   let updatedOldLaneCards = td.lanes[oldLaneIndex].cards.filter(
+  //     //     (card) => card.id !== movedCard.id
+  //     //   );
+  //     //   let updatedOldLane = {
+  //     //     ...td.lanes[oldLaneIndex],
+  //     //     cards: updatedOldLaneCards,
+  //     //   };
 
-      //   let updatedNewLaneCards = [...td.lanes[newLaneIndex].cards, movedCard];
-      //   let updatedNewLane = {
-      //     ...td.lanes[oldLaneIndex],
-      //     cards: updatedNewLaneCards,
-      //   };
+  //     //   let updatedNewLaneCards = [...td.lanes[newLaneIndex].cards, movedCard];
+  //     //   let updatedNewLane = {
+  //     //     ...td.lanes[oldLaneIndex],
+  //     //     cards: updatedNewLaneCards,
+  //     //   };
 
-      //   const before =
-      //     oldLaneIndex < newLaneIndex ? oldLaneIndex : newLaneIndex;
-      //   const laneBefore =
-      //     oldLaneIndex < newLaneIndex ? updatedOldLane : updatedNewLane;
+  //     //   const before =
+  //     //     oldLaneIndex < newLaneIndex ? oldLaneIndex : newLaneIndex;
+  //     //   const laneBefore =
+  //     //     oldLaneIndex < newLaneIndex ? updatedOldLane : updatedNewLane;
 
-      //   const after = before === newLaneIndex ? oldLaneIndex : newLaneIndex;
-      //   const laneAfter =
-      //     before === newLaneIndex ? updatedOldLane : updatedNewLane;
+  //     //   const after = before === newLaneIndex ? oldLaneIndex : newLaneIndex;
+  //     //   const laneAfter =
+  //     //     before === newLaneIndex ? updatedOldLane : updatedNewLane;
 
-      //   console.log(td);
-      //   console.log(td, laneBefore, laneAfter, before, after);
-      //   return {
-      //     // ...td,
-      //     lanes: [
-      //       ...td.lanes.slice(0, before),
-      //       laneBefore,
-      //       ...td.lanes.slice(before + 1, after),
-      //       laneAfter,
-      //       ...td.lanes.slice(after + 1),
-      //     ],
-      //   };
-      // });
-    }
-  }, [filteredTransactData]);
+  //     //   console.log(td);
+  //     //   console.log(td, laneBefore, laneAfter, before, after);
+  //     //   return {
+  //     //     // ...td,
+  //     //     lanes: [
+  //     //       ...td.lanes.slice(0, before),
+  //     //       laneBefore,
+  //     //       ...td.lanes.slice(before + 1, after),
+  //     //       laneAfter,
+  //     //       ...td.lanes.slice(after + 1),
+  //     //     ],
+  //     //   };
+  //     // });
+  //   }
+  // }, [filteredTransactData]);
 
   const filterCards = (lanes, filter) => {
     return lanes.map((lane) => {
-      let title = getLaneTitle(lane.id);
-      let cards = [];
-      if (filter === "all") {
-        lane.cards.forEach(
-          (card) => !card.isDeleted && cards.push({ ...card })
-        ); // remove deleted cards
-      } else if (filter === "won") {
-        lane.cards.forEach(
-          (card) =>
-            !card.isDeleted &&
-            card.dealState === "won" &&
-            cards.push({ ...card })
-        ); // get won cards
-      } else if (filter === "lost") {
-        lane.cards.forEach(
-          (card) =>
-            !card.isDeleted &&
-            card.dealState === "lost" &&
-            cards.push({ ...card })
-        ); //get lost cards
-      } else if (filter === "open") {
-        lane.cards.forEach(
-          (card) =>
-            !card.isDeleted && !card.dealState && cards.push({ ...card })
-        ); // get open cards
-      } else if (filter === "deleted") {
-        lane.cards.forEach((card) => card.isDeleted && cards.push({ ...card })); // get deleted cards
-      }
-      return { ...lane, title, cards };
-    });
-  };
+      let cards = [...lane.cards];
 
-  const getLanesWithFixedTitles = (lanes) => {
-    return lanes.map((lane) => {
-      let title = getLaneTitle(lane.id);
-      let cards = [];
-      lane.cards.forEach((card) => cards.push({ ...card }));
-      return { ...lane, title, cards };
+      switch (filter) {
+        case "all":
+          cards = cards.filter((card) => !card.metadata.IsDeleted); // remove deleted cards
+          break;
+
+        case "deleted":
+          cards = cards.filter((card) => card.metadata.IsDeleted); // get deleted cards
+          break;
+
+        default:
+          cards = cards.filter(
+            (card) => card.metadata.status == filter && !card.metadata.IsDeleted
+          );
+          break;
+      }
+
+      return { ...lane, cards };
     });
   };
 
   useEffect(() => {
-    if (
-      data &&
-      data.transactionData &&
-      data.transactionData[index] &&
-      data.transactionData[index].allData &&
-      data.transactionData[index].allData.lanes
-    ) {
-      setTransactData({
-        ...data.transactionData[index].allData,
-        lanes: getLanesWithFixedTitles(
-          data.transactionData[index].allData.lanes
-        ),
+    if (pipeToShow?.lanes && dealFilter) {
+      setFilteredTransactData({
+        lanes: [...filterCards(pipeToShow.lanes, dealFilter)],
       });
-      setId(data.transactionData[index]._id);
     }
-  }, [data, index]);
+  }, [pipeToShow, dealFilter]);
+
+  // const getLanesWithFixedTitles = (lanes) => {
+  //   return lanes.map((lane) => {
+  //     let title = getLaneTitle(lane.id);
+  //     let cards = [];
+  //     lane.cards.forEach((card) => cards.push({ ...card }));
+  //     return { ...lane, title, cards };
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   if (
+  //     data &&
+  //     data.transactionData &&
+  //     data.transactionData[index] &&
+  //     data.transactionData[index].allData &&
+  //     data.transactionData[index].allData.lanes
+  //   ) {
+  //     setTransactData({
+  //       ...data.transactionData[index].allData,
+  //       lanes: getLanesWithFixedTitles(
+  //         data.transactionData[index].allData.lanes
+  //       ),
+  //     });
+  //     // setId(data.transactionData[index]._id);
+  //   }
+  // }, [data, index]);
 
   // useEffect(() => {
   //   if (transactData) {
@@ -573,7 +483,7 @@ export default function Transact() {
 
   const handleDataChange = (newData) => {
     console.log("DATA CHANGE", newData);
-    setFilteredTransactData(newData);
+    // setFilteredTransactData(newData);
     // updateTransaction({
     //   variables: {
     //     transactionId: id,
@@ -585,12 +495,19 @@ export default function Transact() {
   };
 
   const handleCardClick = (cardId, metadata, laneId) => {
+    // dispatch(
+    //   setFlowState({
+    //     selectedCard: { ...metadata, laneId },
+    //   })
+    // );
+
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: true,
       activeDeal: {
         cardId,
         laneId,
+        ...metadata,
       },
     }));
   };
@@ -602,64 +519,102 @@ export default function Transact() {
     position,
     cardDetails
   ) => {
-    if (sourceLaneId !== targetLaneId) {
-      const lanes = transactData.lanes;
-      const sourceLane = lanes.find((lane) => lane.id === sourceLaneId);
-      const targetLane = lanes.find((lane) => lane.id === targetLaneId);
-      const sourceLaneIndex = lanes.findIndex(
-        (lane) => lane.id === sourceLaneId
+    // handle drag within lanes - runs first
+    console.log(
+      `handleCardDragEnd: ${cardId}, ${sourceLaneId}, ${targetLaneId}, ${position}, ${cardDetails}`
+    );
+
+    let unfilteredSourceLane = pipeToShow.lanes.find(
+      (lane) => lane.id === sourceLaneId
+    );
+    let unfilteredTargetLane = pipeToShow.lanes.find(
+      (lane) => lane.id === targetLaneId
+    );
+
+    let filteredSourceLane = filteredTransactData.lanes.find(
+      (lane) => lane.id === sourceLaneId
+    );
+    let filteredTargetLane = filteredTransactData.lanes.find(
+      (lane) => lane.id === targetLaneId
+    );
+
+    let filteredSourcePosition = filteredSourceLane.cards.findIndex(
+      (card) => card.id === cardId
+    );
+    let filteredTargetPosition = position;
+
+    let unfilteredSourcePosition = unfilteredSourceLane.cards.findIndex(
+      (card) => card.id === cardId
+    );
+    let unfilteredTargetPosition =
+      position !== 0
+        ? unfilteredTargetLane.cards.findIndex(
+            (card) => card.id === filteredTargetLane.cards[position - 1].id
+          ) + 1
+        : 0;
+
+    // update moved card descriptor
+    let movedCardDescriptor = {
+      _id: cardDetails.metadata.descriptorId,
+      relatedObject: targetLaneId,
+      position: unfilteredTargetPosition,
+    };
+
+    // update unfilteredSourceLane descriptors
+    let sourceSliceStart = unfilteredSourcePosition + 1;
+    let sourceSliceEnd =
+      sourceLaneId === targetLaneId ? unfilteredTargetPosition + 1 : undefined;
+    let unfilteredSourceLaneDescriptors = [
+      ...unfilteredSourceLane.cards
+        .slice(sourceSliceStart, sourceSliceEnd)
+        .map((card, index) => {
+          return {
+            _id: card.metadata.descriptorId,
+            position: unfilteredSourcePosition + index,
+          };
+        }),
+    ];
+
+    // update unfilteredTargetLane descriptors
+    let targetSliceStart = unfilteredTargetPosition;
+    let targetSliceEnd =
+      sourceLaneId === targetLaneId ? unfilteredSourcePosition : undefined;
+    let unfilteredTargetLaneDescriptors = [
+      ...unfilteredTargetLane.cards
+        .slice(targetSliceStart, targetSliceEnd)
+        .map((card, index) => {
+          return {
+            _id: card.metadata.descriptorId,
+            position: unfilteredTargetPosition + index + 1,
+          };
+        }),
+    ];
+
+    updateStageDealDescriptors({
+      variables: {
+        stageDealDescriptors: [
+          movedCardDescriptor,
+          ...unfilteredSourceLaneDescriptors,
+          ...unfilteredTargetLaneDescriptors,
+        ],
+      },
+      refetchQueries: ["getPipeline"],
+      awaitRefetchQueries: true,
+    });
+  };
+
+  const onCardMoveAcrossLanes = (fromLaneId, toLaneId, cardId, addedIndex) => {
+    if (fromLaneId !== toLaneId) {
+      console.log(
+        `onCardMoveAcrossLanes: ${fromLaneId}, ${toLaneId}, ${cardId}, ${addedIndex}`
       );
-      const targetLaneIndex = lanes.findIndex(
-        (lane) => lane.id === targetLaneId
-      );
-
-      const updatedSourceLane = {
-        ...sourceLane,
-        cards: sourceLane.cards.filter((card) => card.id !== cardId),
-      };
-
-      // const updatedTargetLane = {
-      //   ...targetLane,
-      //   cards: [
-      //     ...targetLane.cards.slice(0, position),
-      //     { ...cardDetails },
-      //     ...targetLane.cards.slice(position + 1),
-      //   ],
-      // };
-
-      const updatedTargetLane = {
-        ...targetLane,
-        cards: [...targetLane.cards, { ...cardDetails }],
-      };
-
-      let updatedLanes;
-      if (sourceLaneIndex < targetLaneIndex) {
-        updatedLanes = [
-          ...lanes.slice(0, sourceLaneIndex),
-          updatedSourceLane,
-          ...lanes.slice(sourceLaneIndex + 1, targetLaneIndex),
-          updatedTargetLane,
-          ...lanes.slice(targetLaneIndex + 1),
-        ];
-      } else {
-        updatedLanes = [
-          ...lanes.slice(0, targetLaneIndex),
-          updatedTargetLane,
-          ...lanes.slice(targetLaneIndex + 1, sourceLaneIndex),
-          updatedSourceLane,
-          ...lanes.slice(sourceLaneIndex + 1),
-        ];
-      }
-
-      setTransactData({ lanes: updatedLanes });
-      console.log(cardId, sourceLaneId, targetLaneId, position, cardDetails);
     }
   };
 
-  const wonSum = sumDeals(wonDeals);
-  const openSum = sumDeals(openDeals);
+  // const wonSum = sumDeals(wonDeals);
+  // const openSum = sumDeals(openDeals);
 
-  return !loading && data && transactData ? (
+  return (
     <div className={classes.root}>
       {/* <Dialog transactData={transactData} handleDataChange={handleDataChange} /> */}
       {/* <AddDealDialog
@@ -676,10 +631,10 @@ export default function Transact() {
         open={stateApp.dealDialog ? true : false}
         width="450px"
         isTransactPage
-        pipelineId={id}
-        pipeline={transactData}
-        pipelines={pipelines}
-        index={index}
+        // pipelineId={id}
+        // pipeline={transactData}
+        // pipelines={pipelines}
+        // index={index}
         onClose={() =>
           setStateApp((stateApp) => ({
             ...stateApp,
@@ -689,65 +644,69 @@ export default function Transact() {
         }
       />
       <TransactAppBar
-        wonLength={wonDeals.length}
-        wonSum={wonSum}
-        openLength={openDeals.length}
-        openSum={openSum}
+        // wonLength={wonDeals.length}
+        // wonSum={wonSum}
+        // openLength={openDeals.length}
+        // openSum={openSum}
         dealDisplayType={dealDisplayType}
         setDealDisplayType={setDealDisplayType}
         dealFilter={dealFilter}
         setDealFilter={setDealFilter}
-        pipelines={pipelines}
-        setIndex={setIndex}
-        index={index}
       />
-      {dealDisplayType === "board" && (
-        <Board
-          className={classes.list}
-          style={{ backgroundColor: "#fff" }}
-          data={filteredTransactData || transactData}
-          handleDragEnd={handleCardDragEnd}
-          draggable={true}
-          laneDraggable={false}
-          cardDraggable={true}
-          collapsibleLanes={true}
-          editable={false}
-          canAddLanes={false}
-          editLaneTitle={false}
-          hideCardDeleteIcon={true}
-          onDataChange={handleDataChange}
-          onCardClick={handleCardClick}
-          laneStyle={{
-            backgroundColor: "#fff",
-            color: "#011133",
-            fontWeight: "bold",
-          }}
-          cardStyle={{
-            boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
-            backgroundColor: "#F2F2F2",
-          }}
+      {pipeToShow ? (
+        <div className={classes.boardAndTable}>
+          {dealDisplayType === "board" && (
+            <Board
+              className={classes.list}
+              style={{ backgroundColor: "#fff" }}
+              // data={filteredTransactData || transactData}
+              data={filteredTransactData}
+              draggable={true}
+              laneDraggable={false}
+              cardDraggable={true}
+              collapsibleLanes={true}
+              editable={false}
+              canAddLanes={false}
+              editLaneTitle={false}
+              hideCardDeleteIcon={true}
+              handleDragEnd={handleCardDragEnd}
+              onDataChange={handleDataChange}
+              onCardClick={handleCardClick}
+              onCardMoveAcrossLanes={onCardMoveAcrossLanes}
+              laneStyle={{
+                backgroundColor: "#fff",
+                color: "#011133",
+                fontWeight: "bold",
+              }}
+              cardStyle={{
+                boxShadow:
+                  "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+                backgroundColor: "#F2F2F2",
+              }}
 
-          //onCardAdd = {handleCardAdd}
-          //onCardDelete = {handleCardDelete}
-          // handleDragStart = {}
-          // handleDragEnd={}
-          // handleLaneDragStart
-          // onDataChange
-          // onCardAdd
-          // onBeforeCardDelete
-          // onCardDelete
-          // onCardMoveAcrossLanes
-          // onLaneAdd
-          // onLaneDelete
-          // onLaneUpdate
-          // onLaneClick
-          // onLaneScroll
-          //onCardMoveAcrossLanes
-        />
+              //onCardAdd = {handleCardAdd}
+              //onCardDelete = {handleCardDelete}
+              // handleDragStart = {}
+              // handleDragEnd={}
+              // handleLaneDragStart
+              // onDataChange
+              // onCardAdd
+              // onBeforeCardDelete
+              // onCardDelete
+              // onCardMoveAcrossLanes
+              // onLaneAdd
+              // onLaneDelete
+              // onLaneUpdate
+              // onLaneClick
+              // onLaneScroll
+              //onCardMoveAcrossLanes
+            />
+          )}
+          {dealDisplayType === "table" && <TransactTable />}
+        </div>
+      ) : (
+        <CircularProgress size={80} disableShrink color="secondary" />
       )}
-      {dealDisplayType === "table" && <TransactTable deals={allDeals} />}
     </div>
-  ) : (
-    <CircularProgress size={80} disableShrink color="secondary" />
   );
 }

@@ -101,12 +101,12 @@ const SetApolloClient = (props) => {
     }
   }, [stateApp.user]);
 
-  useEffect(()=> {
+  useEffect(() => {
     let draggableArea = document.getElementById("root");
-    if (window.location.pathname == "/") {
-      draggableArea.style.overflow='hidden'
+    if (window.location.pathname == "/" && stateApp.user != null) {
+      draggableArea.style.overflow = "hidden";
     } else {
-      draggableArea.style.overflow='visible'
+      draggableArea.style.overflow = "visible";
     }
   }, [stateApp]);
 
@@ -214,7 +214,7 @@ function App() {
 
   const updateApolloClient = (endpoint, token) => {
     //uncomment to run against local
-    endpoint = "http://localhost:7071/api/m1graph";
+    // endpoint = "http://localhost:7071/api/m1graph"
 
     if (!apolloClient) {
       let client = new ApolloClient({

@@ -258,6 +258,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ContactDetailCard(props) {
+
   const dispatch = useDispatch();
   const shrinkRightColumn = useSelector(
     ({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn
@@ -278,9 +279,7 @@ export default function ContactDetailCard(props) {
     null
   );
 
-  const [getContact, { loading, data }] = useLazyQuery(CONTACT, {
-    fetchPolicy: "cache-and-network",
-  });
+  const [getContact, { loading, data }] = useLazyQuery(CONTACT);
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
     TRANSACTIONDATA
   );
@@ -302,11 +301,10 @@ export default function ContactDetailCard(props) {
 
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
-    // setStateApp((state) => ({
-    //   ...state,
-    //   popupOpen: false,
-    //   expandedCard: false,
-    // }));
+    setStateApp((state) => ({
+      ...state,
+      contactUpdated: null
+    }));
   };
   const handleOpenExpandableCard = (subComponent, subComponentTitle) => {
     setExpCardSubComponent(subComponent);
@@ -317,6 +315,10 @@ export default function ContactDetailCard(props) {
     setOpenDialog(type);
   };
   const handleCloseDialog = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      contactUpdated: null,
+    }));
     setOpenDialog(false);
   };
 
@@ -341,7 +343,6 @@ export default function ContactDetailCard(props) {
   }, [stateApp.selectedContact, stateApp.contactUpdated]);
 
   useEffect(() => {
-    console.log("SET CONTACT:", data);
     if (data && data.contact) {
       setContactData(data.contact);
       setStateApp((stateApp) => ({
@@ -395,7 +396,7 @@ export default function ContactDetailCard(props) {
       setTransactId(tData.transactionData._id);
     }
   }, [tData, tLoading]);
-
+  
   return contactData ? (
     <div className={classes.mainGridContainer}>
       {/*/////////// left column //////////// */}
@@ -926,7 +927,7 @@ export default function ContactDetailCard(props) {
           fullWidth
           maxWidth="xl"
           open={showExpandableCard}
-          onClose={handleCloseExpandableCard}
+          onClose={handleCloseDialog}
         >
           <ExpandableCardProvider
             expanded={true}

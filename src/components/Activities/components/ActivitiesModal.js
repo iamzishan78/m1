@@ -284,7 +284,7 @@ export default function ActivitiesModal({
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-  const [nameAutInputValue, NameAutInputValue] = useState([]);
+  const [nameAutInputValue, NameAutInputValue] = useState("");
   const setNameAutInputValue = (newState) => {
     setStateIfDeepEqual(NameAutInputValue, newState);
   };
@@ -565,8 +565,8 @@ export default function ActivitiesModal({
           notes,
           ownerId: owner.id,
           ownerName: owner.name,
-          contactId: nameAutValue._id,
-          contactName: nameAutValue.name,
+          contactId: nameAutValue?._id,
+          contactName: nameAutValue?.name,
           dealId,
           isClosed: closed,
         },
