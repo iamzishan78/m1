@@ -39,14 +39,14 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiOutlinedInput-input": {
       color: "#ffffff",
       "&::placeholder": {
-        color: "#788092",
+        color: "##ffffffc9",
         textDecoration: "bold",
       },
       "&:-ms-input-placeholder": {
-        color: "#788092",
+        color: "##ffffffc9",
       },
       "&::-ms-input-placeholder": {
-        color: "#788092",
+        color: "##ffffffc9",
       },
     },
   },
