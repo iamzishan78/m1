@@ -3431,6 +3431,7 @@ function M1nTable(props) {
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter
     ) {
+      
       let owners = [];
       props.customLayer.owners.forEach((parcelOwner) => {
         let owner = { ...parcelOwner };

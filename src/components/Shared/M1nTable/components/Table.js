@@ -2530,6 +2530,7 @@ function SubTable(props) {
                       handleCloseExpandableCard={handleCloseExpandableCard}
                     />
                   );
+                  // HERE FOOL
                   setTitle("CONTACT DETAILS");
                   setSubTitle(" ");
                   handleCloseDialog();

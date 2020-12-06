@@ -117,6 +117,21 @@ const useStyles = makeStyles((theme) => ({
     padding: "15px",
   },
   qtrAndInputs: { "& input": { fontSize: "0.875rem" } },
+  foodText: {
+    position: "absolute",
+    bottom: "20px",
+    zIndex: "51",
+    right: "0px",
+    fontSize: "10px",
+    color: "#6e6e6e",
+    margin: "0 !important",
+    textAlign: "right",
+    height: "0",
+    paddingRight: "10px",
+    "& span": {
+      fontWeight: "bold",
+    },
+  },
 }));
 
 export default function ParcelsDetailCard(props) {
@@ -223,11 +238,6 @@ export default function ParcelsDetailCard(props) {
             )}
           </Grid>
         )}
-
-        {/* <Grid item sm={4} className={classes.gridItem}>
-          <LeftTopSummary parcelData={parcelObj} />
-        </Grid> */}
-
         <Grid item sm={6} className={classes.gridPacelDetails}>
           <Grid item sm={12} container>
             <div className={classes.calcSummary}>
@@ -242,8 +252,18 @@ export default function ParcelsDetailCard(props) {
                 onKeyDown={(e) => {
                   updateParcel(e, "shapeLabel", parcelName);
                 }}
+                onFocus={console.log("FOCUS ME")}
+                onBlur={console.log("OUT")}
+                InputProps={{
+                  endAdornment: (
+                    <p className={classes.foodText}>
+                      <span>Return</span> to save
+                    </p>
+                  )
+                }}
                 fullWidth
-              />
+              >
+              </TextField>
               <p className={classes.parcelSummmary}>Gross Acres</p>
               <TextField
                 size="small"
@@ -291,15 +311,6 @@ export default function ParcelsDetailCard(props) {
         <Grid item sm={6} className={classes.gridPortion}>
           <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
         </Grid>
-
-        {/* <Grid item sm={6} className={classes.gridItem}>
-          <Grid item sm={12} container> */}
-
-            {/* <Grid item sm={5}>
-              
-            </Grid> */}
-          {/* </Grid>
-        </Grid> */}
       </Grid>
       <Grid item sm={12}>
         <Taps
