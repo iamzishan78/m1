@@ -185,9 +185,9 @@ function AddDealDialog(props) {
   const [ownerId, setOwnerId] = useState(null);
   const [cardId, setCardId] = useState("");
   const [users, setUsers] = useState([]);
-  const [closeDate, setCloseDate] = useState(null);
+  const [closeDate, setCloseDate] = useState("");
   const [colaborators, setColaborators] = useState([]);
-  const [originationDate, setOriginationDate] = useState("");
+  const [originationDate, setOriginationDate] = useState(null);
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
@@ -523,10 +523,14 @@ function AddDealDialog(props) {
       );
       // setStageId(laneId);
       settingNewStageAndFindNextAvailablePosition(laneId, false);
-      setCloseDate(card.closeDate ? card.closeDate : null);
+      setCloseDate(
+        card.closeDate
+          ? moment.parseZone(card.closeDate).format("yyyy-MM-DD")
+          : ""
+      );
       setDealPosition(card.position ? card.position : null);
       // setColaborators(card.colaborators ? card.colaborators : []);
-      // setOriginationDate(card.createdAt ? card.createdAt : "");
+      setOriginationDate(card.ts ? card.ts : null);
       setOwnerId(
         card.owners?.length > 0
           ? card.owners[0]?.relatedObject?._id
@@ -568,9 +572,9 @@ function AddDealDialog(props) {
     setNameAutInputValue("");
     setPipelineId(null);
     setOwnerId(null);
-    setCloseDate(null);
+    setCloseDate("");
     setColaborators([]);
-    setOriginationDate("");
+    setOriginationDate(null);
     setContact({});
     setTarget({});
     setCardId("");
@@ -663,7 +667,7 @@ function AddDealDialog(props) {
         offerPrice: label ? label.trim() : null,
         notes: description ? description.trim() : null,
         status: dealState ? dealState : "open",
-        closeDate: closeDate,
+        closeDate: closeDate && closeDate !== "" ? closeDate : null,
       };
 
       if (cardId) {
