@@ -174,8 +174,6 @@ const TransactAppBar = ({
   // wonSum,
   // openLength,
   // openSum,
-  dealDisplayType,
-  setDealDisplayType,
   dealFilter,
   setDealFilter,
 }) => {
@@ -211,26 +209,6 @@ const TransactAppBar = ({
         <div className={classes.top} style={{ marginTop: 15 }}>
           <div className={classes.right}>
             <h1>DEAL FLOW</h1>
-            <ButtonGroup>
-              <IconButton
-                size="small"
-                className={`${classes.toggleBtn} ${
-                  dealDisplayType === "table" && classes.activeBtn
-                }`}
-                onClick={() => setDealDisplayType("table")}
-              >
-                <List />
-              </IconButton>
-              <IconButton
-                size="small"
-                className={`${classes.toggleBtn} ${
-                  dealDisplayType === "board" && classes.activeBtn
-                }`}
-                onClick={() => setDealDisplayType("board")}
-              >
-                <GridOn />
-              </IconButton>
-            </ButtonGroup>
           </div>
           <div className={classes.left}>
             <div className={classes.activeDeals}>

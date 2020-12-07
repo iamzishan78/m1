@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery } from "@apollo/client";
-import {
-  Grid,
-  InputAdornment,
-  TextField,
-  IconButton,
-} from "@material-ui/core";
+import { Grid, InputAdornment, TextField, IconButton } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "react-redux";
 
@@ -13,7 +8,10 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import Typography from "@material-ui/core/Typography";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
+import List from "@material-ui/icons/List";
+import GridOn from "@material-ui/icons/GridOn";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
 
 // import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 // import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
@@ -33,8 +31,28 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 
+  toggleBtn: {
+    borderRadius: 5,
+    color: "#FFFFFF",
+    transition: "200ms all",
+    "&:hover": {
+      backgroundColor: "#1CB6DA44",
+    },
+  },
+  
+  activeBtn: {
+    color: "#1CB6DA",
+    "&:hover": {
+      backgroundColor: "#1CB6DAdd",
+    },
+  },
+
   activitySearchField: {
     color: "#fff",
+
+    "& .MuiInputBase-root": {
+      paddingRight: "6px !important",
+    },
 
     "& .MuiOutlinedInput-input": {
       color: "#ffffff",
@@ -75,22 +93,22 @@ const DealSearch = () => {
   //   console.log("PIPELINES DATA: ", pipelinesData);
   // }, [pipelinesData]);
 
-  const { pipeToShow } = useSelector(
-    ({ Flow }) => Flow
-  );
+  const { pipeToShow } = useSelector(({ Flow }) => Flow);
 
   useEffect(() => {
-    if(pipeToShow){
+    if (pipeToShow) {
       let deals = [];
-      pipeToShow.lanes && pipeToShow.lanes.forEach(lane => {
-        lane.cards && lane.cards.forEach(card => {
-          deals.push(card);
-        })
-      })
+      pipeToShow.lanes &&
+        pipeToShow.lanes.forEach((lane) => {
+          lane.cards &&
+            lane.cards.forEach((card) => {
+              deals.push(card);
+            });
+        });
 
       setAllDeals(deals);
     }
-  }, [pipeToShow])
+  }, [pipeToShow]);
 
   // console.log("PIPE TO SHOW: ", pipeToShow);
 
@@ -130,7 +148,7 @@ const DealSearch = () => {
   // }, [allDeals]);
 
   const handleSelectDeal = (cardId, laneId, metadata) => {
-    if(!cardId || !laneId || !metadata) return;
+    if (!cardId || !laneId || !metadata) return;
 
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -140,6 +158,13 @@ const DealSearch = () => {
         laneId,
         ...metadata,
       },
+    }));
+  };
+
+  const setDealDisplayType = (dealDisplayType) => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      dealDisplayType,
     }));
   };
 
@@ -153,7 +178,10 @@ const DealSearch = () => {
         options={allDeals}
         onChange={(e, deal) => {
           console.log("Selected: ", deal);
-          deal && deal.id && deal.laneId && handleSelectDeal(deal.id, deal.laneId, deal.metadata);
+          deal &&
+            deal.id &&
+            deal.laneId &&
+            handleSelectDeal(deal.id, deal.laneId, deal.metadata);
         }}
         disableClearable={false}
         forcePopupIcon
@@ -195,6 +223,30 @@ const DealSearch = () => {
                     <SearchIcon htmlColor="#fff" />
                   </IconButton>
                 </InputAdornment>
+              ),
+              endAdornment: (
+                <ButtonGroup variant="text">
+                  <IconButton
+                    size="small"
+                    htmlColor="#fff"
+                    className={`${classes.toggleBtn} ${
+                      stateApp.dealDisplayType === "table" && classes.activeBtn
+                    }`}
+                    onClick={() => setDealDisplayType("table")}
+                  >
+                    <List />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    htmlColor="#fff"
+                    className={`${classes.toggleBtn} ${
+                      stateApp.dealDisplayType === "board" && classes.activeBtn
+                    }`}
+                    onClick={() => setDealDisplayType("board")}
+                  >
+                    <GridOn />
+                  </IconButton>
+                </ButtonGroup>
               ),
             }}
           />
