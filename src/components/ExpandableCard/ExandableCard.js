@@ -112,8 +112,8 @@ export default function ExpandableCard(props) {
     title: {
       fontFamily: "Poppins",
       color: "#FFFFFF",
-      fontSize: ["Contact", "Add Activity", "Activity Details"].includes(title)
-        ? "22px"
+      fontSize: ["Contact", "Contact Details", "Add Activity", "Activity Details"].includes(title)
+        ? "20px"
         : "15px",
     },
     headerIcons: {

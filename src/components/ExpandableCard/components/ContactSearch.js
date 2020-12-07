@@ -71,7 +71,7 @@ const ContactSearch = () => {
         nameAutInputValue={nameAutInputValue}
         setNameAutInputValue={setNameAutInputValue}
         variant="outlined"
-        placeholder="Search Contacts"
+        placeholder="Search by contact name"
         hasNextPage={hasNextPage}
         isNextPageLoading={isNextPageLoading}
         loadNextPage={loadNextPage}
