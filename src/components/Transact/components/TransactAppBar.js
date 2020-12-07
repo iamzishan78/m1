@@ -1,25 +1,12 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import Add from "@material-ui/icons/Add";
-import List from "@material-ui/icons/List";
-import GridOn from "@material-ui/icons/GridOn";
 import OfflineBolt from "@material-ui/icons/OfflineBolt";
 import CheckBox from "@material-ui/icons/CheckBox";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Divider from "@material-ui/core/Divider";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import AddIcon from "@material-ui/icons/Add";
-import EditIcon from "@material-ui/icons/Edit";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
 import { makeStyles } from "@material-ui/core/styles";
-import { AppContext } from "../../../AppContext";
 import Pipelines from "./Pipelines";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -179,7 +166,6 @@ const TransactAppBar = ({
 }) => {
   const classes = useStyles();
   const { pipeToShow } = useSelector(({ Flow }) => Flow);
-  const [stateApp, setStateApp] = useContext(AppContext);
   const [openDeals, setOpenDeals] = useState({ count: 0, amount: "$0" });
   const [wonDeals, setWonDeals] = useState({ count: 0, amount: "$0" });
 
@@ -189,14 +175,6 @@ const TransactAppBar = ({
       setWonDeals(sumDeals(pipeToShow.lanes, "won"));
     }
   }, [pipeToShow]);
-
-  const handleClickAddDeal = () => {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      dealDialog: true,
-      activeDeal: { cardId: null, laneId: null },
-    }));
-  };
 
   return (
     <>
@@ -230,15 +208,6 @@ const TransactAppBar = ({
             {/* <Button className={classes.import} color="default" size="small">
               IMPORT
             </Button> */}
-            <Button
-              className={classes.addDeal}
-              color="primary"
-              size="small"
-              startIcon={<Add/>}
-              onClick={handleClickAddDeal}
-            >
-              New Deal
-            </Button>
           </div>
         </div>
         {/* <div className={classes.bottom}>

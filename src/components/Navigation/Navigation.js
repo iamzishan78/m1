@@ -1146,6 +1146,14 @@ export default function Navigation(props) {
     );
   };
 
+  const handleClickAddDeal = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      dealDialog: true,
+      activeDeal: { cardId: null, laneId: null },
+    }));
+  };
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -1229,14 +1237,14 @@ export default function Navigation(props) {
             {matchTransact ? (
               <div>
                 <div ref={anchorEl} className={classes.filterTabs}>
-                  {/* <Button
+                  <Button
                     onClick={handleClickAddDeal}
                     color="secondary"
                     variant="contained"
                     startIcon={<Add />}
                   >
-                    Add Deal
-                  </Button> */}
+                    New Deal
+                  </Button>
                 </div>
               </div>
             ) : (
