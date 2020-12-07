@@ -3,6 +3,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import OfflineBolt from "@material-ui/icons/OfflineBolt";
+import NotInterested from "@material-ui/icons/NotInterested";
 import CheckBox from "@material-ui/icons/CheckBox";
 import { makeStyles } from "@material-ui/core/styles";
 import Pipelines from "./Pipelines";
@@ -101,6 +102,18 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: 4,
     },
   },
+  lostDeals: {
+    backgroundColor: "#011133",
+    borderRadius: 5,
+    padding: 6,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    "& span": {
+      marginLeft: 4,
+    },
+    marginLeft: 8
+  },
   import: {
     marginLeft: 8,
     backgroundColor: "#F0F0F0",
@@ -168,11 +181,14 @@ const TransactAppBar = ({
   const { pipeToShow } = useSelector(({ Flow }) => Flow);
   const [openDeals, setOpenDeals] = useState({ count: 0, amount: "$0" });
   const [wonDeals, setWonDeals] = useState({ count: 0, amount: "$0" });
+  const [lostDeals, setLostDeals] = useState({ count: 0, amount: "$0" });
 
   useEffect(() => {
     if (pipeToShow?.lanes) {
+      console.log(pipeToShow.lanes)
       setOpenDeals(sumDeals(pipeToShow.lanes, "open"));
       setWonDeals(sumDeals(pipeToShow.lanes, "won"));
+      setLostDeals(sumDeals(pipeToShow.lanes, "lost"));
     }
   }, [pipeToShow]);
 
@@ -253,6 +269,14 @@ const TransactAppBar = ({
                 {wonDeals.count}{" "}
                 {wonDeals.count !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
                 {wonDeals.amount}
+              </span>
+            </div>
+            <div className={classes.lostDeals}>
+              <NotInterested />
+              <span>
+                {lostDeals.count}{" "}
+                {lostDeals.count !== 1 ? "LOST DEALS" : "LOST DEAL"} |{" "}
+                {lostDeals.amount}
               </span>
             </div>
             {/* <Button className={classes.import} color="default" size="small">
