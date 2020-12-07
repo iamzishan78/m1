@@ -62,6 +62,9 @@ import debounce from "lodash/debounce";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { WELLQUERY } from "../../../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/client";
+import WellTableStyles from "../customStyles/WellTableStyle";
+import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
+import ProductionTableStyle from '../customStyles/ProductionDetailsStyle';
 import moment from 'moment';
 
 var ticksToDateString = function (ticks) {
@@ -121,48 +124,6 @@ const customStyles = makeStyles((theme) => ({
           }
         }
       },
-    },
-    "& thead": {
-      opacity: "1",
-      transition: "opacity 1s ease-out",
-      WebkitTransition: "opacity 1s ease-out",
-    },
-    "& tbody": {
-      opacity: "1",
-      transition: "opacity 1s ease-out",
-      WebkitTransition: "opacity 1s ease-out",
-    },
-  }
-}));
-
-const productionStyle = makeStyles((theme) => ({
-  table: {
-    "& .MuiTableCell-body": {
-      padding: (props) => (props.dense ? "0 !important" : "0px 16px !important")
-    },
-    "& .MuiTableCell-head": {
-      "& span": {
-        justifyContent: 'center'
-      }
-    },
-    "& .MuiTableHead-root": {
-      "& th": {
-        backgroundColor: "#F2F2F2",
-        zIndex: "auto",
-        padding: (props) => (props.dense ? "10px" : null),
-      },
-      "& .MuiTableCell-paddingCheckbox": {
-        padding: (props) => (props.dense ? "0 !important" : "16px"),
-      },
-    },
-    "& tr": {
-      paddingRight: (props) => (props.dense ? "12px" : null),
-      "& td": {
-        textAlign: 'center',
-        "& div": {
-          justifyContent: 'center'
-        }
-      }
     },
     "& thead": {
       opacity: "1",
@@ -309,12 +270,14 @@ var formatter = new Intl.NumberFormat("en-US", {
 function SubTable(props) {
 
   const classes = useStyles(props);
-  const customClassess = customStyles(props);
-  const productionClassess = productionStyle(props);
+  const wellTableClass = WellTableStyles(props);
+  const parcelTableClass = ParcelOwnershipStyles(props);
+  const productionClass = ProductionTableStyle(props);
 
   const dispatch = useDispatch();
 
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [tableStyle, setTableStyle] = useState(classes);
   const [rows, Rows] = useState([]);
   const setRows = (newState) => {
     setStateIfDeepEqual(Rows, newState);
@@ -1666,6 +1629,34 @@ function SubTable(props) {
     handleOpenExpandableCard();
   };
 
+  
+  let history = useHistory();
+
+  let routeChange = (route) => {
+    history.push(route);
+  };
+
+  useEffect(()=> {
+    if (props.targetLabel) {
+      let ret_val = null;
+      switch(props.targetLabel) {
+        case 'owner':
+          ret_val = wellTableClass.table;
+          break;
+        case 'production_detail':
+          ret_val = productionClass.table;
+          break;
+        case 'Parcel Ownership':
+          ret_val = parcelTableClass.table;
+          break;
+        default:
+          ret_val = classes.table;
+          break;
+      }
+      setTableStyle(ret_val);
+    }
+  }, [props.targetLabel])
+
   const options = {
     filterType: "dropdown",
     rowsPerPage: rowsPerPage ? rowsPerPage : 25,
@@ -2397,12 +2388,6 @@ function SubTable(props) {
     options.print = false;
   }
 
-  let history = useHistory();
-
-  let routeChange = (route) => {
-    history.push(route);
-  };
-
   const displayCumulative = (data, total, cumulative, rowsPerPage = 25) => {
     let rows = data;
       if (total === true && rows.length != 0) {
@@ -2432,7 +2417,7 @@ function SubTable(props) {
         } ${columns && columns.length > 0 ? "" : classes.emptyTable}`}
       >
         <MUIDataTable
-          className={props.targetLabel == "owner" ? customClassess.table : props.targetLabel == "production_detail"  ? productionClassess.table : classes.table}
+          className={tableStyle}
           title={props.header}
           data={rows ? rows : []}
           columns={columns ? columns : []}
