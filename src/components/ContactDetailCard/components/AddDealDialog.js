@@ -42,7 +42,12 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import { UPDATEDEAL } from "../../../graphQL/useMutationUpdateDeal";
 import { UPSERTDEALDESCRIPTOR } from "../../../graphQL/useMutationUpsertDealDescriptor";
 import { UPDATESTAGEDEALDESCRIPTOR } from "../../../graphQL/useMutationUpdateStageDealDescriptor";
-import { showErrorMessage, showSuccessMessage } from "../../../actions";
+import {
+  setFlowState,
+  showErrorMessage,
+  showSuccessMessage,
+} from "../../../actions";
+import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -206,6 +211,8 @@ function AddDealDialog(props) {
     props.transactData ? { ...props.transactData } : null
   );
 
+  const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
+
   const [
     addContact,
     {
@@ -239,6 +246,31 @@ function AddDealDialog(props) {
   ] = useLazyQuery(PAGINATEDCONTACTSQUERY);
 
   const [contact, setContact] = useState({});
+
+  useEffect(() => {
+    getPipelines();
+  }, []);
+
+  useEffect(() => {
+    if (pipelinesData?.pipelines) {
+      //// select first one as default
+      if (pipelinesData.pipelines.length > 0)
+        dispatch(
+          setFlowState({
+            selectedPipe: pipelinesData.pipelines[0],
+            pipelines: pipelinesData.pipelines,
+          })
+        );
+      else
+        dispatch(
+          setFlowState({
+            selectedPipe: null,
+            pipelines: [],
+            pipeToShow: null,
+          })
+        );
+    }
+  }, [pipelinesData]);
 
   const settingNewStageAndFindNextAvailablePosition = (
     stageId,
@@ -368,13 +400,15 @@ function AddDealDialog(props) {
   useEffect(() => {
     console.log("AUTOCOMPLETE INPUT CHANGE: ", nameAutInputValue);
 
-    //will also run during initial mount
-    setIsNextPageLoading(true);
-    getPaginatedContacts({
-      variables: {
-        search: nameAutInputValue,
-      },
-    });
+    if (props.isTransactPage) {
+      //will also run during initial mount
+      setIsNextPageLoading(true);
+      getPaginatedContacts({
+        variables: {
+          search: nameAutInputValue,
+        },
+      });
+    }
   }, [nameAutInputValue]);
 
   const loadNextPage = async (pageVariables) => {
@@ -537,12 +571,13 @@ function AddDealDialog(props) {
           : stateApp.user.mongoId
       );
 
-      if (card.contacts?.length > 0) {
+      if (card.contacts?.length > 0)
+        // setting contact
         setNameAutValue({
           name: card.contacts[0]?.relatedObject?.entity?.name,
           _id: card.contacts[0]?.relatedObject?._id,
-        }); // setting contact
-      }
+        });
+      else setNameAutValue(null);
     } else if (props.contact) {
       setNameAutValue({ name: props.contact.name, _id: props.contact._id });
     } else if (props.contactId) {
@@ -568,14 +603,13 @@ function AddDealDialog(props) {
     setDescription("");
     setStageId(null);
     setDealState(null);
-    setNameAutValue(null);
+    if (props.isTransactPage) setNameAutValue(null);
     setNameAutInputValue("");
     setPipelineId(null);
     setOwnerId(null);
     setCloseDate("");
     setColaborators([]);
     setOriginationDate(null);
-    setContact({});
     setTarget({});
     setCardId("");
     setDealPosition(null);
@@ -1316,9 +1350,13 @@ function AddDealDialog(props) {
                 {selectedPipe && (
                   <option value={selectedPipe._id}>{selectedPipe.name}</option>
                 )}
-                {sortedPipelines.map((pipeline) => {
+                {sortedPipelines.map((pipeline, i) => {
                   if (selectedPipe && selectedPipe._id === pipeline._id) return;
-                  return <option value={pipeline._id}>{pipeline.name}</option>;
+                  return (
+                    <option value={pipeline._id} key={i}>
+                      {pipeline.name}
+                    </option>
+                  );
                 })}
               </Select>
             </FormControl>
@@ -1347,8 +1385,10 @@ function AddDealDialog(props) {
                 label="Deal Stage"
               >
                 {stagesToChoose &&
-                  stagesToChoose.map((stage) => (
-                    <option value={stage._id}>{stage.name}</option>
+                  stagesToChoose.map((stage, i) => (
+                    <option value={stage._id} key={i}>
+                      {stage.name}
+                    </option>
                   ))}
               </Select>
             </FormControl>
