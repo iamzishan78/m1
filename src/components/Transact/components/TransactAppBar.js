@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: "50px",
     backgroundColor: "#fff",
-    padding: "0 16px 0px",
+    padding: "0 16px 10px",
   },
   top: {
     display: "flex",
@@ -115,7 +115,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     "& span": {
       marginleft: 2,
-      marginright:4,
+      marginright: 4,
     },
     backgroundColor: "#011133",
     color: "#fff",
@@ -186,7 +186,57 @@ const TransactAppBar = ({
       >
         <div className={classes.top} style={{ marginTop: 15 }}>
           <div className={classes.right}>
-            <h1>DEAL FLOW</h1>
+            {/* <h1>DEAL FLOW</h1> */}
+
+            <ButtonGroup style={{ minHeight: 36 }}>
+              <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "all" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("all")}
+              >
+                ALL
+              </Button>
+              <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "open" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("open")}
+              >
+                OPEN
+              </Button>
+              <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "won" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("won")}
+              >
+                Won
+              </Button>
+
+              <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "lost" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("lost")}
+              >
+                Lost
+              </Button>
+
+              <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "deleted" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("deleted")}
+              >
+                Deleted
+              </Button>
+            </ButtonGroup>
           </div>
           <div className={classes.left}>
             <div className={classes.activeDeals}>
@@ -208,6 +258,7 @@ const TransactAppBar = ({
             {/* <Button className={classes.import} color="default" size="small">
               IMPORT
             </Button> */}
+            <Pipelines />
           </div>
         </div>
         {/* <div className={classes.bottom}>
@@ -300,62 +351,13 @@ const TransactAppBar = ({
               </MenuItem>
             </Select>
           </FormControl> */}
-        <div className={classes.top} style={{ marginBottom: 4, marginTop:2 }}>
+        <div className={classes.top} style={{ marginBottom: 4, marginTop: 2 }}>
           {/* <div className={classes.right}> */}
-          <div className={classes.bottomLeft}>
-            <ButtonGroup style={{ minHeight: 36 }}>
-              <Button
-                size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "all" && classes.activeBtn
-                }`}
-                onClick={() => setDealFilter("all")}
-              >
-                ALL
-              </Button>
-              <Button
-                size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "open" && classes.activeBtn
-                }`}
-                onClick={() => setDealFilter("open")}
-              >
-                OPEN
-              </Button>
-              <Button
-                size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "won" && classes.activeBtn
-                }`}
-                onClick={() => setDealFilter("won")}
-              >
-                Won
-              </Button>
-
-              <Button
-                size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "lost" && classes.activeBtn
-                }`}
-                onClick={() => setDealFilter("lost")}
-              >
-                Lost
-              </Button>
-
-              <Button
-                size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "deleted" && classes.activeBtn
-                }`}
-                onClick={() => setDealFilter("deleted")}
-              >
-                Deleted
-              </Button>
-            </ButtonGroup>
-          </div>
-          <div className={classes.bottomRight}>
-            <Pipelines />
-          </div>
+          {/* <div className={classes.bottomLeft}>
+          </div> */}
+          {/* <div className={classes.bottomRight}>
+            
+          </div> */}
           {/* </div> */}
         </div>
       </AppBar>

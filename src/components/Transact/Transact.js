@@ -175,7 +175,7 @@ const useStyles = makeStyles((theme) => ({
   },
   boardAndTable: {
     maxWidth: "100vw",
-    "& .react-trello-board": { height: "calc( 100vh - 188px)" },
+    "& .react-trello-board": { height: "calc( 100vh - 143px)" },
   },
 }));
 

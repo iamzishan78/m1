@@ -28,7 +28,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
+import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
 import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
 import { GETPIPELINE } from "../../../graphQL/useQueryPipeline";
@@ -58,16 +58,15 @@ const useStyles = makeStyles((theme) => ({
     color: "gray",
     fontSize: "14px",
     "&:hover": {
-      color: "#008ebf"
-    }
+      color: "#008ebf",
+    },
   },
 
   removeIconButton: {
     color: "gray",
     "&:hover": {
-      color: "#454545"
-    }
-
+      color: "#454545",
+    },
   },
 
   list: {
@@ -466,10 +465,10 @@ export default function Pipelines(props) {
 
   return (
     <React.Fragment>
-      <ButtonGroup>
+      <ButtonGroup style={{ marginLeft: "15px" }}>
         <Autocomplete
           size="small"
-          style={{ minWidth: 280 }}
+          style={{ minWidth: 200 }}
           options={optionsWithHeader}
           getOptionLabel={(option) => (option?.name ? option.name : option)}
           groupBy={(option) => {
@@ -571,8 +570,12 @@ export default function Pipelines(props) {
                               <TableRow>
                                 <TableCell padding="checkbox"></TableCell>
                                 <TableCell align="left">Stage Name</TableCell>
-                                <TableCell align="left">Deal Probability(%)</TableCell>
-                                <TableCell align="left">Rotting in&nbsp;(days)</TableCell>
+                                <TableCell align="left">
+                                  Deal Probability(%)
+                                </TableCell>
+                                <TableCell align="left">
+                                  Rotting in&nbsp;(days)
+                                </TableCell>
                                 <TableCell align="left">Stage Status</TableCell>
                                 <TableCell padding="checkbox"></TableCell>
                                 {/* <TableCell padding="checkbox"></TableCell> */}
@@ -684,17 +687,19 @@ export default function Pipelines(props) {
                                           {/* {stage.dealsStatus} */}
                                         </TableCell>
 
-                                       <TableCell padding="checkbox">
-                                       <Tooltip
+                                        <TableCell padding="checkbox">
+                                          <Tooltip
                                             title="Remove Stage"
                                             placement="top"
                                           >
-                                       <RemoveCircleOutlineIcon
-                                       className={classes.removeIconButton}
-                                       // style={{ color: "gray" }}
-                                       />
-                                        </Tooltip>
-                                       </TableCell>
+                                            <RemoveCircleOutlineIcon
+                                              className={
+                                                classes.removeIconButton
+                                              }
+                                              // style={{ color: "gray" }}
+                                            />
+                                          </Tooltip>
+                                        </TableCell>
 
                                         {/* <TableCell padding="checkbox">
                                           <Tooltip
@@ -736,12 +741,10 @@ export default function Pipelines(props) {
                 <IconButton
                   className={classes.addIconButton}
                   onClick={handleAddStage}
-                  style={{ backgroundColor: 'transparent' }}
+                  style={{ backgroundColor: "transparent" }}
                 >
-                  <AddIcon  />
-                  <span>
-                    Add new stage
-                  </span>
+                  <AddIcon />
+                  <span>Add new stage</span>
                 </IconButton>
                 <p
                   style={{
