@@ -40,6 +40,7 @@ import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import ActivitiesEvent from "./ActivitiesEvent";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
+import { OPENDEALS } from "../../../graphQL/useQueryOpenDeals";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { GETMONGOUSERS as GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import Typography from "@material-ui/core/Typography";
@@ -379,8 +380,12 @@ export default function ActivitiesModal({
   }, [selectedActivity]);
 
   const [openDeals, setOpenDeals] = useState([]);
-  const [getTransactionData, { loading: tloading, data: tdata }] = useLazyQuery(
-    TRANSACTIONDATA
+  // const [getTransactionData, { loading: tloading, data: tdata }] = useLazyQuery(
+  //   TRANSACTIONDATA
+  // );
+
+  const [getOpenDeals, { loading: tloading, data: dealsData }] = useLazyQuery(
+    OPENDEALS
   );
 
   console.log("OPEN DEALS", openDeals);
@@ -388,43 +393,45 @@ export default function ActivitiesModal({
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
       console.log("OPEN DEALS GET", stateApp.user);
-      getTransactionData({
-        variables: {
-          userId: stateApp.user.mongoId,
-        },
-      });
+      getOpenDeals();
     }
   }, [stateApp.user]);
 
   useEffect(() => {
-    let open = [];
-
-    if (!tloading && tdata?.transactionData) {
-      tdata.transactionData.forEach((pipeline) => {
-        const lanes = pipeline.allData?.lanes;
-
-        // get all deals
-        const all = [];
-        lanes.forEach((deal) => {
-          deal.cards.forEach((card) => {
-            all.push(card);
-          });
-        });
-
-        all.forEach((card) => {
-          if (card.dealState === "won") {
-            // do nothing
-          } else if (card.dealState === "lost") {
-            // do nothing
-          } else if (card.isDeleted) {
-            // do nothing
-          } else open.push(card);
-        });
-      });
+    if (dealsData) {
+      setOpenDeals(dealsData?.openDeals?.deals);
     }
-    console.log("ALL", open);
-    setOpenDeals(open);
-  }, [tdata]);
+  }, [ dealsData ]);
+
+  // useEffect(() => {
+  //   let open = [];
+
+  //   if (!tloading && tdata?.transactionData) {
+  //     tdata.transactionData.forEach((pipeline) => {
+  //       const lanes = pipeline.allData?.lanes;
+
+  //       // get all deals
+  //       const all = [];
+  //       lanes.forEach((deal) => {
+  //         deal.cards.forEach((card) => {
+  //           all.push(card);
+  //         });
+  //       });
+
+  //       all.forEach((card) => {
+  //         if (card.dealState === "won") {
+  //           // do nothing
+  //         } else if (card.dealState === "lost") {
+  //           // do nothing
+  //         } else if (card.isDeleted) {
+  //           // do nothing
+  //         } else open.push(card);
+  //       });
+  //     });
+  //   }
+  //   console.log("ALL", open);
+  //   setOpenDeals(open);
+  // }, [tdata]);
 
   const onModalClose = () => {
     clearFields();
@@ -527,7 +534,7 @@ export default function ActivitiesModal({
           ownerName: owner.name,
           contactId: nameAutValue._id,
           contactName: nameAutValue.name,
-          dealId,
+          dealId: dealId,
           dateTime,
           endDateTime,
           isClosed: closed,
@@ -555,7 +562,7 @@ export default function ActivitiesModal({
           ownerName: owner.name,
           contactId: nameAutValue?._id,
           contactName: nameAutValue?.name,
-          dealId,
+          dealId: dealId,
           isClosed: closed,
         },
       },
@@ -830,18 +837,18 @@ export default function ActivitiesModal({
                     className={classes.fieldWidth}
                     options={openDeals}
                     onChange={(e, deal) => {
-                      setDealId(deal.id);
+                      setDealId(deal?._id);
                     }}
-                    value={openDeals.find((deal) => deal.id === dealId) || null}
+                    value={openDeals.find((deal) => deal._id === dealId) || null}
                     getOptionSelected={(option) => option.id === dealId}
-                    getOptionLabel={(option) => option.title}
+                    getOptionLabel={(option) => option.name}
                     renderOption={(option) => {
                       return (
                         <Grid container spacing={0}>
                           <Grid container item xs={12} alignItems="center">
                             <Grid item xs>
                               <span style={{ fontWeight: 400 }}>
-                                {option.title}
+                                {option.name}
                               </span>
 
                               <Typography variant="body2" color="textSecondary">
