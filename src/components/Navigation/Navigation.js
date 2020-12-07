@@ -1154,6 +1154,13 @@ export default function Navigation(props) {
     }));
   };
 
+  const handleClickAddActivity = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      activityDialog: true,
+    }));
+  };
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -1203,9 +1210,7 @@ export default function Navigation(props) {
             )}
 
             {/*SEARCH UI FOR DEALS */}
-            {location.pathname === "/transact" && (
-              <DealSearch />
-            )}
+            {location.pathname === "/transact" && <DealSearch />}
 
             {openDrawer ? (
               <div className={classes.toolbar}>
@@ -1236,7 +1241,11 @@ export default function Navigation(props) {
             <div className={classes.grow1} />
             {matchTransact ? (
               <div>
-                <div ref={anchorEl} className={classes.filterTabs}>
+                <div
+                  ref={anchorEl}
+                  className={classes.filterTabs}
+                  style={{ paddingRight: "10px" }}
+                >
                   <Button
                     onClick={handleClickAddDeal}
                     color="secondary"
@@ -1244,6 +1253,27 @@ export default function Navigation(props) {
                     startIcon={<Add />}
                   >
                     New Deal
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: "none" }}></div>
+            )}
+
+            {matchActivities ? (
+              <div>
+                <div
+                  ref={anchorEl}
+                  className={classes.filterTabs}
+                  style={{ paddingRight: "10px" }}
+                >
+                  <Button
+                    onClick={handleClickAddActivity}
+                    color="secondary"
+                    variant="contained"
+                    startIcon={<Add />}
+                  >
+                    Add Activity
                   </Button>
                 </div>
               </div>
