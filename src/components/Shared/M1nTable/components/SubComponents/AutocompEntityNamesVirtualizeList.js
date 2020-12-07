@@ -142,6 +142,9 @@ ListboxComponent.propTypes = {
 };
 
 const useStyles = makeStyles({
+  inputRoot: {
+    backgroundColor: "#fff",
+  },
   listbox: {
     boxSizing: "border-box",
     "& ul": {
@@ -161,6 +164,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
     setNameAutInputValue,
     variant = "standard",
     label = "",
+    placeholder = "",
     hasNextPage,
     isNextPageLoading,
     loadNextPage,
@@ -262,6 +266,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
         <TextField
           {...params}
           label={label}
+          placeholder={placeholder}
           variant={variant}
           InputProps={{
             ...params.InputProps,

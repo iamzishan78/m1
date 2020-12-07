@@ -258,6 +258,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ContactDetailCard(props) {
+
   const dispatch = useDispatch();
   const shrinkRightColumn = useSelector(
     ({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn
@@ -328,15 +329,18 @@ export default function ContactDetailCard(props) {
   }, [shrinkRightColumn]);
 
   useEffect(() => {
-    if (props.contactId) {
+    console.log("STATE APP", stateApp, stateApp.selectedContact);
+    if (stateApp.selectedContact) {
       getContact({
         variables: {
-          contactId: props.contactId
+          contactId:
+            stateApp.contactUpdated !== null
+              ? stateApp.contactUpdated
+              : stateApp.selectedContact,
         },
       });
     }
-
-  }, [props.contactId, stateApp.contactUpdated]);
+  }, [stateApp.selectedContact, stateApp.contactUpdated]);
 
   useEffect(() => {
     if (data && data.contact) {
@@ -346,18 +350,17 @@ export default function ContactDetailCard(props) {
         currentContatcAtivities: data.contact.activityLog,
       }));
     }
-    
   }, [data, stateApp.contactUpdated]);
 
   useEffect(() => {
-    if (props.contactId) {
+    if (stateApp.selectedContact) {
       getLastMelissaRecord({
         variables: {
-          contactId: props.contactId,
+          contactId: stateApp.selectedContact,
         },
       });
     }
-  }, [props.contactId]);
+  }, [stateApp.selectedContact]);
 
   useEffect(() => {
     if (mData && mData.getLastMelissaRecord.success === true) {
@@ -393,7 +396,7 @@ export default function ContactDetailCard(props) {
       setTransactId(tData.transactionData._id);
     }
   }, [tData, tLoading]);
-
+  
   return contactData ? (
     <div className={classes.mainGridContainer}>
       {/*/////////// left column //////////// */}
@@ -728,7 +731,7 @@ export default function ContactDetailCard(props) {
                 <M1nTable
                   parent="ownersPerContacts"
                   ownersIdsArray={contactData.owners}
-                  contactId={props.contactId}
+                  contactId={stateApp.selectedContact}
                 />
               </div>
             </Grid>
@@ -870,13 +873,13 @@ export default function ContactDetailCard(props) {
               updateMelissaTable={() => {
                 getLastMelissaRecord({
                   variables: {
-                    contactId: props.contactId,
+                    contactId: stateApp.selectedContact,
                   },
                 });
                 updateContact({
                   variables: {
                     contact: {
-                      _id: props.contactId,
+                      _id: stateApp.selectedContact,
                       lastUpdateBy: stateApp.user.mongoId,
                     },
                     ignoreResponse: true,
@@ -924,7 +927,7 @@ export default function ContactDetailCard(props) {
           fullWidth
           maxWidth="xl"
           open={showExpandableCard}
-          onClose={handleCloseExpandableCard}
+          onClose={handleCloseDialog}
         >
           <ExpandableCardProvider
             expanded={true}
@@ -940,7 +943,7 @@ export default function ContactDetailCard(props) {
             zIndex={1201}
             cardWidthExpanded="100%"
             cardHeightExpanded="100%"
-            targetSourceId={props.contactId}
+            targetSourceId={stateApp.selectedContact}
             targetLabel={"contact"}
             noTrackAvailable={true}
             component={
