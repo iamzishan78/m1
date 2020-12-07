@@ -30,7 +30,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
-import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
+// import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
 import { GETPIPELINE } from "../../../graphQL/useQueryPipeline";
 import { ADDPIPELINE } from "../../../graphQL/useMutationAddPipeline";
 import { UPDATEPIPELINE } from "../../../graphQL/useMutationUpdatePipeline";
@@ -61,14 +61,12 @@ const useStyles = makeStyles((theme) => ({
       color: "#008ebf",
     },
   },
-
   removeIconButton: {
     color: "gray",
     "&:hover": {
       color: "#454545",
     },
   },
-
   list: {
     padding: 0,
   },
@@ -147,41 +145,43 @@ export default function Pipelines(props) {
   const [updatePipeline] = useMutation(UPDATEPIPELINE);
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
-  const [
-    getPipelines,
-    { loading: loadingPipelines, data: pipelinesData },
-  ] = useLazyQuery(GETPIPELINES);
+  // const [
+  //   getPipelines,
+  //   { loading: loadingPipelines, data: pipelinesData },
+  // ] = useLazyQuery(GETPIPELINES);
   const [
     getPipeline,
     { loading: loadingPipeline, data: pipelineData },
-  ] = useLazyQuery(GETPIPELINE);
+  ] = useLazyQuery(GETPIPELINE, {
+    fetchPolicy: "cache-and-network",
+  });
 
   // const addingNewPipe = selectedPipe ? false : true;
 
-  useEffect(() => {
-    getPipelines();
-  }, []);
+  // useEffect(() => {
+  //   getPipelines();
+  // }, []);
 
-  useEffect(() => {
-    if (pipelinesData?.pipelines) {
-      //// select first one as default
-      if (pipelinesData.pipelines.length > 0)
-        dispatch(
-          setFlowState({
-            selectedPipe: pipelinesData.pipelines[0],
-            pipelines: pipelinesData.pipelines,
-          })
-        );
-      else
-        dispatch(
-          setFlowState({
-            selectedPipe: null,
-            pipelines: [],
-            pipeToShow: null,
-          })
-        );
-    }
-  }, [pipelinesData]);
+  // useEffect(() => {
+  //   if (pipelinesData?.pipelines) {
+  //     //// select first one as default
+  //     if (pipelinesData.pipelines.length > 0)
+  //       dispatch(
+  //         setFlowState({
+  //           selectedPipe: pipelinesData.pipelines[0],
+  //           pipelines: pipelinesData.pipelines,
+  //         })
+  //       );
+  //     else
+  //       dispatch(
+  //         setFlowState({
+  //           selectedPipe: null,
+  //           pipelines: [],
+  //           pipeToShow: null,
+  //         })
+  //       );
+  //   }
+  // }, [pipelinesData]);
 
   //// get the whole selected pipe
   useEffect(() => {

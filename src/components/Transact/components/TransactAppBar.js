@@ -26,8 +26,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
-    marginTop: "8px",
-    marginBottom: "4px",
+    marginTop: "10px",
     // padding: 20,
   },
   bottomLeft: {
@@ -35,9 +34,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    marginTop: "8px",
-    marginBottom: "4px",
-    //paddingBottom: "6px",
+    paddingBottom: "4px",
     // padding: "0 0 20 0",
   },
   right: {
@@ -46,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 
     "& h1": {
       color: "#0DBBEA",
-      margin: "0 35px 0 0",
+      margin: "0 10px 0 0",
     },
   },
 
@@ -65,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#333",
     transition: "200ms all",
     backgroundColor: "#f5f5f5",
+    width: "100%",
   },
   activeBtn: {
     borderRadius: 5,
@@ -83,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 8,
     backgroundColor: "#3DD698",
     borderRadius: 5,
-    padding: 6,
+    padding: 8,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -94,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
   activeDeals: {
     backgroundColor: "#E8C059",
     borderRadius: 5,
-    padding: 6,
+    padding: 8,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -120,8 +118,7 @@ const useStyles = makeStyles((theme) => ({
   },
   addDeal: {
     marginLeft: 8,
-    padding: 6,
-    paddingRight: 10,
+    padding: 9,
     borderRadius: 5,
     display: "flex",
     alignItems: "center",
@@ -140,8 +137,6 @@ const useStyles = makeStyles((theme) => ({
   },
   pipelineControl: {
     minWidth: 180,
-    marginBottom: 2,
-    borderRadius: 5,
   },
 }));
 
@@ -156,7 +151,7 @@ const sumDeals = (lanes, status) => {
 
   lanes.forEach((deal) => {
     deal.cards.forEach((card) => {
-      if (card.metadata.status === status) {
+      if (card.metadata.status === status && !card.metadata.IsDeleted) {
         if (card.label)
           sumAmount += parseFloat(
             card.label.split("$").join("").split(",").join("")
@@ -191,6 +186,7 @@ const TransactAppBar = ({
       setLostDeals(sumDeals(pipeToShow.lanes, "lost"));
     }
   }, [pipeToShow]);
+
 
   return (
     <>

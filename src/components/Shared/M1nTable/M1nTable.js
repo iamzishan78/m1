@@ -40,6 +40,7 @@ import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction
 import { UPDATEPARCELOWNER } from "../../../graphQL/useMutationUpdateParcelOwner";
 import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRecords";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
+import { CONTACTDEALS } from "../../../graphQL/useQueryContactDeals";
 import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelInterests";
 import { IFARECONTACTS } from "../../../graphQL/useQueryIfOwnersAreContacts";
 import { OWNER_WELLINTERESTS } from "../../../graphQL/useQueryOwner_WellInterests";
@@ -1555,23 +1556,31 @@ const DealsHeadCells = [
   },
   {
     name: "title",
-    label: "Name",
+    label: "Deal Name",
   },
   {
-    name: "contactName",
-    label: "Contact",
+    name: "offerPrice",
+    label: "Offer Price",
   },
   {
-    name: "dealStage",
+    name: "closeDate",
+    label: "Expected Close Date",
+  },
+  {
+    name: "pipelineName",
+    label: "Pipeline",
+  },
+  {
+    name: "stageName",
     label: "Deal Stage",
   },
   {
-    name: "label",
-    label: "Deal Amount",
+    name: "ownerName",
+    label: "Deal Owner",
   },
   {
-    name: "description",
-    label: "Deal Details",
+    name: "notes",
+    label: "Notes",
   },
 ];
 
@@ -2094,9 +2103,14 @@ function M1nTable(props) {
     fetchPolicy: "cache-and-network",
   });
   //////////
-  const [getTransactionData, { data: dataDeals }] = useLazyQuery(
-    TRANSACTIONDATA
+  // const [getTransactionData, { data: dataDeals }] = useLazyQuery(
+  //   TRANSACTIONDATA
+  // );
+
+  const [getContactDeals, { data: dataDeals }] = useLazyQuery(
+    CONTACTDEALS
   );
+  
   //////////
   const [removeContact] = useMutation(REMOVECONTACT);
 
@@ -3664,9 +3678,9 @@ function M1nTable(props) {
       console.log("ue mintable 22 - deals");
       setTargetLabel("deals");
       setHeader("Deals");
-      getTransactionData({
+      getContactDeals({
         variables: {
-          userId: stateApp.user.mongoId,
+          contactId: props.contact?._id,
         },
       });
       setAddAble({ type: "deals" });
@@ -3674,7 +3688,7 @@ function M1nTable(props) {
       setStartPaginationAt(25);
       setOrderByTracks(false);
     }
-  }, [props.parent, stateApp.user]);
+  }, [props.parent, props.contact]);
 
   useEffect(() => {
     if (
@@ -3684,24 +3698,24 @@ function M1nTable(props) {
       props.contact
     ) {
       console.log("DATA DEALS : ", dataDeals);
-      const lanes = dataDeals?.transactionData?.allData?.lanes;
+      // const lanes = dataDeals?.transactionData?.allData?.lanes;
 
-      const all = [];
-      console.log("ALL : ", all, lanes);
-      if (lanes) {
-        lanes.forEach((deal) => {
-          deal.cards.forEach((card) => {
-            if (props.contact?._id === card.contactId && !card.isDeleted)
-              all.push(card);
-          });
-        });
-      }
+      // const all = [];
+      // console.log("ALL : ", all, lanes);
+      // if (lanes) {
+      //   lanes.forEach((deal) => {
+      //     deal.cards.forEach((card) => {
+      //       if (props.contact?._id === card.contactId && !card.isDeleted)
+      //         all.push(card);
+      //     });
+      //   });
+      // }
 
-      const dealsRowsData = all.map((deal) => ({
-        ...deal,
-        id: deal.id,
-        dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
-      }));
+      // const dealsRowsData = all.map((deal) => ({
+      //   ...deal,
+      //   id: deal.id,
+      //   dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
+      // }));
       // all.forEach((deal) => {
       //   console.log("DEAL: ", deal)
       //   let dealData = {
@@ -3717,7 +3731,7 @@ function M1nTable(props) {
       // });
 
       setTargetLabel("deals");
-      setRows([...dealsRowsData]);
+      setRows([...dataDeals.contactDeals]);
       setColumns([...DealsHeadCells]);
       setLoading(false);
     }
@@ -3727,7 +3741,7 @@ function M1nTable(props) {
       "font-size:20px; color:green;",
       props.contact
     );
-  }, [props.parent, dataDeals, props.contact]);
+  }, [ dataDeals ]);
 
   // deals delete
   useEffect(() => {
@@ -3760,9 +3774,9 @@ function M1nTable(props) {
               transaction: { allData: newData, user: stateApp.user.mongoId },
             },
             refetchQueries: [
-              "getTransactionData",
               "getContact",
               "getPaginatedContacts",
+              "getContactDeals",
             ],
             awaitRefetchQueries: true,
           });

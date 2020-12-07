@@ -280,9 +280,14 @@ export default function ContactDetailCard(props) {
   );
 
   const [getContact, { loading, data }] = useLazyQuery(CONTACT);
+  // const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
+  //   TRANSACTIONDATA
+  // );
+
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
     TRANSACTIONDATA
   );
+
   const [getLastMelissaRecord, { data: mData }] = useLazyQuery(
     LASTMELISSARECORD,
     {
