@@ -574,7 +574,7 @@ export default function ActivitiesModal({
           ownerName: owner.name,
           contactId: nameAutValue?._id,
           contactName: nameAutValue?.name,
-          dealId: dealId,
+          dealId,
           isClosed: closed,
         },
       },
