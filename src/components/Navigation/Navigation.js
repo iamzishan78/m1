@@ -102,6 +102,7 @@ import FilterFormAI from "./components/FilterFormAI";
 
 import InputBase from "@material-ui/core/InputBase";
 import Search from "./components/Search";
+import DealSearch from "./components/DealSearch";
 import SearchBarWithToggleButton from "./components/SearchBarWithToggleButton";
 
 import Avatar from "react-avatar";
@@ -1195,26 +1196,7 @@ export default function Navigation(props) {
 
             {/*SEARCH UI FOR DEALS */}
             {location.pathname === "/transact" && (
-              <div
-                className={classes.search}
-                style={{
-                  minWidth: 500,
-                  verticalAlign: "middle",
-                  paddingTop: 4,
-                }}
-              >
-                <div className={classes.searchIcon}>
-                  <SearchIcon style={{ verticalAlign: "middle" }} />
-                </div>
-                <InputBase
-                  placeholder="Search for deals"
-                  classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput,
-                  }}
-                  inputProps={{ "aria-label": "search" }}
-                />
-              </div>
+              <DealSearch />
             )}
 
             {openDrawer ? (
