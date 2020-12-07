@@ -38,8 +38,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
-    marginTop: "8px",
-    marginBottom: "4px",
+    marginTop: "10px",
     // padding: 20,
   },
   bottomLeft: {
@@ -47,9 +46,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    marginTop: "8px",
-    marginBottom: "4px",
-    //paddingBottom: "6px",
+    paddingBottom: "4px",
     // padding: "0 0 20 0",
   },
   right: {
@@ -58,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
 
     "& h1": {
       color: "#0DBBEA",
-      margin: "0 35px 0 0",
+      margin: "0 10px 0 0",
     },
   },
 
@@ -77,6 +74,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#333",
     transition: "200ms all",
     backgroundColor: "#f5f5f5",
+    width: "100%",
   },
   activeBtn: {
     borderRadius: 5,
@@ -95,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 8,
     backgroundColor: "#3DD698",
     borderRadius: 5,
-    padding: 6,
+    padding: 8,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -106,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
   activeDeals: {
     backgroundColor: "#E8C059",
     borderRadius: 5,
-    padding: 6,
+    padding: 8,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -120,16 +118,11 @@ const useStyles = makeStyles((theme) => ({
   },
   addDeal: {
     marginLeft: 8,
-    padding: 6,
-    paddingRight: 10,
+    padding: 9,
     borderRadius: 5,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    "& span": {
-      marginleft: 2,
-      marginright:4,
-    },
     backgroundColor: "#011133",
     color: "#fff",
     transition: "200ms all",
@@ -140,8 +133,6 @@ const useStyles = makeStyles((theme) => ({
   },
   pipelineControl: {
     minWidth: 180,
-    marginBottom: 2,
-    borderRadius: 5,
   },
 }));
 
@@ -156,7 +147,7 @@ const sumDeals = (lanes, status) => {
 
   lanes.forEach((deal) => {
     deal.cards.forEach((card) => {
-      if (card.metadata.status === status) {
+      if (card.metadata.status === status && !card.metadata.IsDeleted) {
         if (card.label)
           sumAmount += parseFloat(
             card.label.split("$").join("").split(",").join("")
@@ -196,7 +187,7 @@ const TransactAppBar = ({
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: true,
-      activeDeal: { cardId: null, laneId: null },
+      activeDeal: null,
     }));
   };
 
@@ -256,10 +247,10 @@ const TransactAppBar = ({
               className={classes.addDeal}
               color="primary"
               size="small"
-              startIcon={<Add/>}
+              startIcon={<Add />}
               onClick={handleClickAddDeal}
             >
-              New Deal
+              Add Deal
             </Button>
           </div>
         </div>
@@ -353,10 +344,19 @@ const TransactAppBar = ({
               </MenuItem>
             </Select>
           </FormControl> */}
-        <div className={classes.top} style={{ marginBottom: 4, marginTop:2 }}>
+        <div className={classes.top} style={{ marginBottom: 16 }}>
           {/* <div className={classes.right}> */}
           <div className={classes.bottomLeft}>
-            <ButtonGroup style={{ minHeight: 36 }}>
+            <ButtonGroup
+              style={{
+                minHeight: 32,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                minWidth: 237,
+              }}
+            >
               <Button
                 size="small"
                 className={`${classes.filterToggleBtn} ${
@@ -395,7 +395,7 @@ const TransactAppBar = ({
                 Lost
               </Button>
 
-              <Button
+              {/* <Button
                 size="small"
                 className={`${classes.filterToggleBtn} ${
                   dealFilter === "deleted" && classes.activeBtn
@@ -403,7 +403,7 @@ const TransactAppBar = ({
                 onClick={() => setDealFilter("deleted")}
               >
                 Deleted
-              </Button>
+              </Button> */}
             </ButtonGroup>
           </div>
           <div className={classes.bottomRight}>
