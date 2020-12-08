@@ -6,6 +6,7 @@ import Grid from "@material-ui/core/Grid";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import DealDisplay from "./components/DealDisplay";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
+import { CONTACTDEALS } from "../../graphQL/useQueryContactDeals";
 
 const useStyles = makeStyles((theme) => ({
   gridWidthScroll: {
@@ -30,10 +31,11 @@ let formatter = new Intl.NumberFormat("en-US", {
 
 const sumDeals = (deals) => {
   let sum = 0;
-  deals.forEach(
-    (card) =>
-      (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
-  );
+  deals.forEach((card) => {
+    if (card.offerPrice && !isNaN(card.offerPrice))
+        sum += card.offerPrice
+    // sum += parseFloat(card.label.split("$").join("").split(",").join(""))
+  });
   const formatted = formatter.format(sum);
   return formatted.slice(0, formatted.length - 3);
 };
@@ -44,54 +46,52 @@ export default function DealsDetailCard(props) {
   const [activeDeals, setActiveDeals] = useState([]); // all other deals
   const [allDeals, setAllDeals] = useState([]); // all other deals
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [getTransactionData, { data, loading }] = useLazyQuery(TRANSACTIONDATA);
+  // const [getTransactionData, { data, loading }] = useLazyQuery(TRANSACTIONDATA);
+  const [getContactDeals, { data, loading }] = useLazyQuery(CONTACTDEALS);
 
   useEffect(() => {
-    if (stateApp.user && stateApp.user.mongoId) {
-      console.log(stateApp.user);
-      getTransactionData({
+    if (props.contact) {
+      console.log(props.contact);
+      getContactDeals({
         variables: {
-          userId: stateApp.user.mongoId,
+          contactId: props.contact._id,
         },
       });
     }
-  }, [getTransactionData, stateApp.user]);
+  }, [props.contact]);
 
   useEffect(() => {
     if (
       !loading &&
-      data?.transactionData?.allData?.lanes &&
-      data.transactionData.allData.lanes.length > 0
+      data?.contactDeals
     ) {
-      const lanes = data?.transactionData?.allData?.lanes;
-
       // get all deals
       const all = [];
-      lanes.forEach((deal) => {
-        deal.cards.forEach((card) => {
-          if (props.contact?._id === card.contactId && !card.isDeleted)
-            all.push(card);
-        });
+      data.contactDeals.forEach((card) => {
+        if (!card.isDeleted)
+          all.push(card);
       });
-      console.log("all: ", all);
       setAllDeals(all);
     }
   }, [data, loading, props.contact]);
 
   useEffect(() => {
-    let lost = [];
-    let won = [];
-    let others = [];
-    allDeals.forEach((card) => {
-      if (card.laneId === "lane5") lost.push(card);
-      else if (card.laneId === "lane4") won.push(card);
-      else others.push(card);
-    });
+    if (allDeals &&
+      allDeals.length > 0) {
+      let lost = [];
+      let won = [];
+      let others = [];
+      allDeals.forEach((card) => {
+        if (card.status === "lost") lost.push(card);
+          else if (card.status === "won") won.push(card);
+          else others.push(card);
+      });
 
-    setWonDeals(won);
-    setLostDeals(lost);
-    setActiveDeals(others);
-    console.log("ALL DEALS UPDATED: ", allDeals);
+      setWonDeals(won);
+      setLostDeals(lost);
+      setActiveDeals(others);
+      console.log("ALL DEALS UPDATED: ", allDeals);
+    }
   }, [allDeals]);
 
   const activeSum = sumDeals(activeDeals);
