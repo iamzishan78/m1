@@ -269,7 +269,7 @@ const AppProvider = (props) => {
             left: "0",
             height: "100vh",
             width: "100vw",
-            zIndex: "100000",
+            zIndex: "10000000000",
           }}
         >
           <CircularProgress
