@@ -56,7 +56,7 @@ export default function Transact() {
   const [filteredTransactData, setFilteredTransactData] = useState({
     lanes: [],
   });
-  const [dealFilter, setDealFilter] = useState("open");
+  const [dealFilter, setDealFilter] = useState("all");
 
   const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
   const [updateDeal] = useMutation(UPDATEDEAL);
@@ -122,31 +122,31 @@ export default function Transact() {
     );
 
     let unfilteredSourceLane = pipeToShow.lanes.find(
-      (lane) => lane.id === sourceLaneId
+      (lane) => lane?.id === sourceLaneId
     );
     let unfilteredTargetLane = pipeToShow.lanes.find(
-      (lane) => lane.id === targetLaneId
+      (lane) => lane?.id === targetLaneId
     );
 
     let filteredSourceLane = filteredTransactData.lanes.find(
-      (lane) => lane.id === sourceLaneId
+      (lane) => lane?.id === sourceLaneId
     );
     let filteredTargetLane = filteredTransactData.lanes.find(
-      (lane) => lane.id === targetLaneId
+      (lane) => lane?.id === targetLaneId
     );
 
     let filteredSourcePosition = filteredSourceLane.cards.findIndex(
-      (card) => card.id === cardId
+      (card) => card?.id === cardId
     );
     let filteredTargetPosition = position;
 
     let unfilteredSourcePosition = unfilteredSourceLane.cards.findIndex(
-      (card) => card.id === cardId
+      (card) => card?.id === cardId
     );
     let unfilteredTargetPosition =
       position !== 0
         ? unfilteredTargetLane.cards.findIndex(
-            (card) => card.id === filteredTargetLane.cards[position - 1].id
+            (card) => card?.id === filteredTargetLane?.cards[position - 1]?.id
           ) + 1
         : 0;
 
