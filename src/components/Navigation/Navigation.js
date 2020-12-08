@@ -102,6 +102,7 @@ import FilterFormAI from "./components/FilterFormAI";
 
 import InputBase from "@material-ui/core/InputBase";
 import Search from "./components/Search";
+import DealSearch from "./components/DealSearch";
 import SearchBarWithToggleButton from "./components/SearchBarWithToggleButton";
 
 import Avatar from "react-avatar";
@@ -1145,6 +1146,21 @@ export default function Navigation(props) {
     );
   };
 
+  const handleClickAddDeal = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      dealDialog: true,
+      activeDeal: { cardId: null, laneId: null },
+    }));
+  };
+
+  const handleClickAddActivity = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      activityDialog: true,
+    }));
+  };
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -1194,28 +1210,7 @@ export default function Navigation(props) {
             )}
 
             {/*SEARCH UI FOR DEALS */}
-            {location.pathname === "/transact" && (
-              <div
-                className={classes.search}
-                style={{
-                  minWidth: 500,
-                  verticalAlign: "middle",
-                  paddingTop: 4,
-                }}
-              >
-                <div className={classes.searchIcon}>
-                  <SearchIcon style={{ verticalAlign: "middle" }} />
-                </div>
-                <InputBase
-                  placeholder="Search for deals"
-                  classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput,
-                  }}
-                  inputProps={{ "aria-label": "search" }}
-                />
-              </div>
-            )}
+            {location.pathname === "/transact" && <DealSearch />}
 
             {openDrawer ? (
               <div className={classes.toolbar}>
@@ -1246,15 +1241,40 @@ export default function Navigation(props) {
             <div className={classes.grow1} />
             {matchTransact ? (
               <div>
-                <div ref={anchorEl} className={classes.filterTabs}>
-                  {/* <Button
+                <div
+                  ref={anchorEl}
+                  className={classes.filterTabs}
+                  style={{ paddingRight: "10px" }}
+                >
+                  <Button
                     onClick={handleClickAddDeal}
                     color="secondary"
                     variant="contained"
                     startIcon={<Add />}
                   >
-                    Add Deal
-                  </Button> */}
+                    New Deal
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: "none" }}></div>
+            )}
+
+            {matchActivities ? (
+              <div>
+                <div
+                  ref={anchorEl}
+                  className={classes.filterTabs}
+                  style={{ paddingRight: "10px" }}
+                >
+                  <Button
+                    onClick={handleClickAddActivity}
+                    color="secondary"
+                    variant="contained"
+                    startIcon={<Add />}
+                  >
+                    Add Activity
+                  </Button>
                 </div>
               </div>
             ) : (

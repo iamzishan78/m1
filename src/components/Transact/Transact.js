@@ -175,7 +175,7 @@ const useStyles = makeStyles((theme) => ({
   },
   boardAndTable: {
     maxWidth: "100vw",
-    "& .react-trello-board": { height: "calc( 100vh - 188px)" },
+    "& .react-trello-board": { height: "calc( 100vh - 143px)" },
   },
 }));
 
@@ -218,7 +218,7 @@ export default function Transact() {
   // const [updateTransaction] = useMutation(UPDATETRANSACTION);
   const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
 
-  const [dealDisplayType, setDealDisplayType] = useState("board");
+  // const [dealDisplayType, setDealDisplayType] = useState("board");
   const [dealFilter, setDealFilter] = useState("open");
   // const prevDealFilter = usePrevious(dealFilter);
 
@@ -648,14 +648,12 @@ export default function Transact() {
         // wonSum={wonSum}
         // openLength={openDeals.length}
         // openSum={openSum}
-        dealDisplayType={dealDisplayType}
-        setDealDisplayType={setDealDisplayType}
         dealFilter={dealFilter}
         setDealFilter={setDealFilter}
       />
       {pipeToShow ? (
         <div className={classes.boardAndTable}>
-          {dealDisplayType === "board" && (
+          {stateApp.dealDisplayType === "board" && (
             <Board
               className={classes.list}
               style={{ backgroundColor: "#fff" }}
@@ -702,7 +700,7 @@ export default function Transact() {
               //onCardMoveAcrossLanes
             />
           )}
-          {dealDisplayType === "table" && <TransactTable />}
+          {stateApp.dealDisplayType === "table" && <TransactTable />}
         </div>
       ) : (
         <CircularProgress size={80} disableShrink color="secondary" />
