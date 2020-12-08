@@ -698,7 +698,7 @@ function AddDealDialog(props) {
 
       const deal = {
         name: title ? title.trim() : null,
-        offerPrice: label ? label.trim() : null,
+        offerPrice: label,
         notes: description ? description.trim() : null,
         status: dealState ? dealState : "open",
         closeDate: closeDate && closeDate !== "" ? closeDate : null,
