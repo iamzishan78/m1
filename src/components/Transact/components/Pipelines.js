@@ -183,7 +183,7 @@ export default function Pipelines(props) {
       )
         dispatch(
           showWarningMessage(
-            "There are deals associated with the stage, please remove them first."
+            "There are deals associated to the stage, please remove them first."
           )
         );
       else openDeleteDialog();
