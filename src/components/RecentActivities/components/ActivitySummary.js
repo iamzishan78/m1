@@ -75,6 +75,7 @@ function SummarySection({ activity }) {
     deadline: "deadlines",
     task: "tasks",
     meeting: "meetings",
+    mailer: "mailers sent",
   };
   const typeName = typeMapping[activity.type];
 
@@ -129,7 +130,7 @@ export default function ActivitySummary({ activityLog }) {
     return activityLog.filter((act) => act.type === type).length;
   };
 
-  const types = ["call", "email", "task", "deadline", "meeting"];
+  const types = ["call", "email", "task", "deadline", "meeting", "mailer"];
 
   return (
     <div className={classes.summaryRoot}>
