@@ -43,6 +43,8 @@ import { AppContext } from "../../../AppContext";
 import { deepEqualObjects } from "../../Shared/functions";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { DEALSCOUNTINANSTAGE } from "../../../graphQL/useQueryNonDeletedDealsCountInAnStageByPipeline";
+import { DEALSCOUNTINAPIPE } from "../../../graphQL/useQueryNonDeletedDealsCountInAPipeline";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -170,6 +172,12 @@ export default function Pipelines(props) {
       fetchPolicy: "network-only",
     }
   );
+  const [
+    getDealsCountByPipeline,
+    { data: dataDealsCountByPipeline },
+  ] = useLazyQuery(DEALSCOUNTINAPIPE, {
+    fetchPolicy: "network-only",
+  });
 
   useEffect(() => {
     if (dataDealsCountByStage?.nonDeletedDealsCountInAnStageByPipeline) {
@@ -186,9 +194,30 @@ export default function Pipelines(props) {
             "There are deals associated to the stage, please remove them first."
           )
         );
-      else openDeleteDialog();
+      else {
+        // openDeleteDialog();
+        deleteFunc();
+      }
     }
   }, [dataDealsCountByStage]);
+
+  useEffect(() => {
+    if (dataDealsCountByPipeline?.nonDeletedDealsCountInAPipeline) {
+      setStateApp((state) => ({
+        ...state,
+        uniuniversalCircularLoaderAct: false,
+      }));
+      if (
+        dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0
+      )
+        dispatch(
+          showWarningMessage(
+            "There are deals associated to the pipeline, please remove them first."
+          )
+        );
+      else openDeleteDialog("pipe");
+    }
+  }, [dataDealsCountByPipeline]);
 
   //// get the whole selected pipe
   useEffect(() => {
@@ -223,33 +252,82 @@ export default function Pipelines(props) {
     }
   }, [openPipeDialog, selectedPipe]);
 
-  const removeStage = (stage, index) => {
-    if (stage?._id && selectedPipe) {
+  const handleDeletePipe = () => {
+    if (selectedPipe) {
       setStateApp((state) => ({
         ...state,
         uniuniversalCircularLoaderAct: true,
       }));
 
-      getDealsCountByStage({
+      getDealsCountByPipeline({
         variables: {
           pipelineId: selectedPipe?._id,
-          stageId: stage._id,
         },
       });
 
       setDeleteFunc(() => () => {
-        updateStage({
+        updatePipeline({
           variables: {
-            stage: { _id: stage._id, IsDeleted: true },
+            pipeline: { _id: selectedPipe._id, IsDeleted: true },
           },
           refetchQueries: ["getPipelines", "getPipeline"],
           awaitRefetchQueries: true,
         });
+
+        //// handleClose()++
+        if (error) setError(false);
+        setStages([]);
+        setName("");
+        dispatch(
+          setFlowState({
+            openPipeDialog: false,
+            selectedPipe: null,
+            pipeToShow: null,
+          })
+        );
       });
-    } else {
-      const updStages = [...stages];
-      updStages.splice(index, 1);
-      setStages(updStages);
+    }
+  };
+
+  const removeStage = (stage, index) => {
+    if (stages.length == 1)
+      dispatch(
+        showWarningMessage(
+          "The stage can't be deleted, the pipeline needs at least one stage."
+        )
+      );
+    else {
+      if (stage?._id && selectedPipe) {
+        setStateApp((state) => ({
+          ...state,
+          uniuniversalCircularLoaderAct: true,
+        }));
+
+        getDealsCountByStage({
+          variables: {
+            pipelineId: selectedPipe?._id,
+            stageId: stage._id,
+          },
+        });
+
+        setDeleteFunc(() => () => {
+          const updStages = [...stages];
+          updStages.splice(index, 1);
+          setStages(updStages);
+
+          // updateStage({
+          //   variables: {
+          //     stage: { _id: stage._id, IsDeleted: true },
+          //   },
+          //   refetchQueries: ["getPipelines", "getPipeline"],
+          //   awaitRefetchQueries: true,
+          // });
+        });
+      } else {
+        const updStages = [...stages];
+        updStages.splice(index, 1);
+        setStages(updStages);
+      }
     }
   };
 
@@ -386,6 +464,23 @@ export default function Pipelines(props) {
           }
         }
 
+        //// checking if some db stage was deleted
+        for (let j = 0; j < selectedPipe.stages.length; j++) {
+          const dbStage = { ...selectedPipe.stages[j] };
+          let found = false;
+
+          for (let i = 0; i < stages.length; i++) {
+            const frontEndStage = { ...stages[i] };
+            if (dbStage._id === frontEndStage._id) {
+              found = true;
+              break;
+            }
+          }
+
+          if (!found)
+            stagesToUpdate.push({ _id: dbStage._id, IsDeleted: true });
+        }
+
         //// pipeToUpdate ////
         //// stagesToAdd ////
         //// stagesToUpdate ////
@@ -483,8 +578,8 @@ export default function Pipelines(props) {
     setDeleteDialogOpen(false);
   };
 
-  const openDeleteDialog = () => {
-    setDeleteDialogOpen(true);
+  const openDeleteDialog = (open = true) => {
+    setDeleteDialogOpen(open);
   };
 
   // const deleteFunc = async () => {
@@ -529,13 +624,17 @@ export default function Pipelines(props) {
           maxWidth="sm"
         >
           <DeleteConfirmationDialogContent
-            header={`Delete Stage`}
+            header={
+              deleteDialogOpen === "pipe" ? `Delete Pipeline` : `Delete Stage`
+            }
             onClose={handleCloseDeleteDialog}
             deleteFunc={deleteFunc ? deleteFunc : () => {}}
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => {}}
           >
-            Do you want to delete the stage?
+            {deleteDialogOpen === "pipe"
+              ? "Are you sure you want to delete the pipeline?"
+              : "Are you sure you want to delete the stage?"}
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
@@ -617,7 +716,29 @@ export default function Pipelines(props) {
             {openPipeDialog !== "newPipe"
               ? "Edit Pipeline"
               : "Add a New Pipeline"}
-            <CloseIcon className={classes.titleClose} onClick={handleClose} />
+
+            <div className={classes.titleClose}>
+              {openPipeDialog !== "newPipe" && (
+                <Tooltip title="Remove Pipeline" placement="top">
+                  <IconButton
+                    size="small"
+                    onClick={handleDeletePipe}
+                    style={{ marginRight: 10, color: "#fff" }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+              <Tooltip title="Close" placement="top">
+                <IconButton
+                  size="small"
+                  style={{ color: "#fff" }}
+                  onClick={handleClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
           </DialogTitle>
 
           <DialogContent>
