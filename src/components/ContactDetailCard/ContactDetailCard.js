@@ -937,7 +937,7 @@ export default function ContactDetailCard(props) {
           <ExpandableCardProvider
             expanded={true}
             handleCloseExpandableCard={handleCloseExpandableCard}
-            title={"CONTACT DETAILS"}
+            title={"Contact Details"}
             subTitle={" "}
             parent="table"
             mouseX={0}

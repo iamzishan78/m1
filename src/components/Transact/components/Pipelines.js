@@ -542,7 +542,7 @@ export default function Pipelines(props) {
       <ButtonGroup>
         <Autocomplete
           size="small"
-          style={{ minWidth: 280 }}
+          style={{ minWidth: 200, marginLeft: 12 }}
           options={optionsWithHeader}
           getOptionLabel={(option) => (option?.name ? option.name : option)}
           groupBy={(option) => {

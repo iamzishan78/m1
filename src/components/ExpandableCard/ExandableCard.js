@@ -112,8 +112,8 @@ export default function ExpandableCard(props) {
     title: {
       fontFamily: "Poppins",
       color: "#FFFFFF",
-      fontSize: ["Contact", "Add Activity", "Activity Details"].includes(title)
-        ? "22px"
+      fontSize: ["Contact", "Contact Details", "Add Activity", "Activity Details"].includes(title)
+        ? "20px"
         : "15px",
     },
     headerIcons: {
@@ -471,7 +471,9 @@ export default function ExpandableCard(props) {
                       <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
                     </IconButton>
                   </Tooltip>
-                ) : isExpanded == false && targetLabel !== "activity" ? (
+                ) : isExpanded == false && targetLabel !== "activity" ?
+                    targetLabel !== "contact" ? 
+                    (
                   <Tooltip title={"Expand"} placement="top">
                     <IconButton
                       size="small"
@@ -482,7 +484,9 @@ export default function ExpandableCard(props) {
                       <ExpandIcon viewBox="0 0 64 64" color="secondary" />
                     </IconButton>
                   </Tooltip>
-                ) : (
+                ) : null
+                :
+                (
                   <Tooltip title={"Shrink"} placement="top">
                     <IconButton
                       color="secondary"

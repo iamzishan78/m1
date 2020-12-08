@@ -15,6 +15,10 @@ import Typography from "@material-ui/core/Typography";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import List from "@material-ui/icons/List";
+import GridOn from "@material-ui/icons/GridOn";
+import EventIcon from '@material-ui/icons/Event';
+import ButtonGroup from "@material-ui/core/ButtonGroup";
 
 import { GETALLACTIVITIESFORSEARCH } from "../../../graphQL/useQueryGetAllActivities";
 import { AppContext } from "../../../AppContext";
@@ -33,8 +37,28 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 
+  toggleBtn: {
+    borderRadius: 5,
+    color: "#FFFFFF",
+    transition: "200ms all",
+    "&:hover": {
+      backgroundColor: "#1CB6DA44",
+    },
+  },
+
+  activeBtn: {
+    color: "#1CB6DA",
+    // "&:hover": {
+    //   backgroundColor: "#1CB6DAdd",
+    // },
+  },
+
   activitySearchField: {
     color: "#fff",
+
+    "& .MuiInputBase-root": {
+      paddingRight: "6px !important",
+    },
 
     "& .MuiOutlinedInput-input": {
       color: "#ffffff",
@@ -85,6 +109,13 @@ const ActivitySearch = () => {
       setActivities(activitiesData?.activities);
     }
   }, [activitiesData]);
+
+  const setActivityDisplayType = (activityDisplayType) => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      activityDisplayType,
+    }));
+  };
 
   return (
     <>
@@ -137,6 +168,40 @@ const ActivitySearch = () => {
                     <SearchIcon htmlColor="#fff" />
                   </IconButton>
                 </InputAdornment>
+              ),
+
+              endAdornment: (
+                <>
+                  <ButtonGroup variant="text">
+                   <Tooltip title="List View" >
+                    <IconButton
+                      size="small"
+                      htmlColor="#fff"
+                      className={`${classes.toggleBtn} ${
+                        stateApp.activityDisplayType === "table" &&
+                        classes.activeBtn
+                      }`}
+                      //temporarily commenting out until list view exists
+                     // onClick={() => setActivityDisplayType("table")}
+                    >
+                      <List />
+                    </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Calendar" >
+                    <IconButton
+                      size="small"
+                      htmlColor="#fff"
+                      className={`${classes.toggleBtn} ${
+                        stateApp.activityDisplayType === "calendar" &&
+                        classes.activeBtn
+                      }`}
+                      onClick={() => setActivityDisplayType("calendar")}
+                    >
+                      <EventIcon />
+                    </IconButton>
+                    </Tooltip>
+                  </ButtonGroup>
+                </>
               ),
             }}
           />

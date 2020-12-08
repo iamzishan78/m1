@@ -149,6 +149,8 @@ const AppProvider = (props) => {
     activateWellDetailsFromTable: false,
     contactUpdated: null,
     currentContatcAtivities: [],
+    dealDisplayType: "board",
+    activityDisplayType: "calendar",
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;

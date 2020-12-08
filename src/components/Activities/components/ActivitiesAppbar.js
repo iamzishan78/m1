@@ -81,16 +81,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ActivitiesAppBar = ({ activityDisplayType, setActivityDisplayType }) => {
+const ActivitiesAppBar = () => {
   const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
-
-  const handleClickAddActivity = () => {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      activityDialog: true,
-    }));
-  };
 
   return (
     <>
@@ -102,27 +94,7 @@ const ActivitiesAppBar = ({ activityDisplayType, setActivityDisplayType }) => {
       >
         <div className={classes.top}>
           <div className={classes.right}>
-            <h1>ACTIVITIES</h1>
-            <ButtonGroup>
-              <IconButton
-                size="small"
-                className={`${classes.toggleBtn} ${
-                  activityDisplayType === "table" && classes.activeBtn
-                }`}
-                onClick={() => setActivityDisplayType("table")}
-              >
-                <List />
-              </IconButton>
-              <IconButton
-                size="small"
-                className={`${classes.toggleBtn} ${
-                  activityDisplayType === "calender" && classes.activeBtn
-                }`}
-                onClick={() => setActivityDisplayType("calender")}
-              >
-                <CalendarToday />
-              </IconButton>
-            </ButtonGroup>
+            {/* <h1>ACTIVITIES</h1> */}
             {/* <Select
               className={classes.selectFilter}
               variant="outlined"
@@ -135,15 +107,6 @@ const ActivitiesAppBar = ({ activityDisplayType, setActivityDisplayType }) => {
             {/* <Button className={classes.import} color="default" size="small">
               IMPORT
             </Button> */}
-            <Button
-              className={classes.addDeal}
-              color="primary"
-              size="small"
-              startIcon={<Add />}
-              onClick={handleClickAddActivity}
-            >
-              Add Activity
-            </Button>
           </div>
         </div>
         {/* <div className={classes.bottom}>

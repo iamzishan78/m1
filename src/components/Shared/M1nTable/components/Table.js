@@ -1245,7 +1245,7 @@ function SubTable(props) {
                                 }
                               />
                             );
-                            setTitle("CONTACT DETAILS");
+                            setTitle("Contact Details");
                             setMultipleExpandableCard(true);
                             setSubTitle(" ");
                             handleOpenExpandableCard();
@@ -1682,7 +1682,7 @@ function SubTable(props) {
         handleCloseExpandableCard={handleCloseExpandableCard}
       />
     );
-    setTitle("CONTACT DETAILS");
+    setTitle("Contact Details");
     setSubTitle(" ");
     handleOpenExpandableCard();
   };
@@ -2033,7 +2033,7 @@ function SubTable(props) {
             handleCloseExpandableCard={handleCloseExpandableCard}
           />
         );
-        setTitle("CONTACT DETAILS");
+        setTitle("Contact Details");
         setSubTitle(" ");
         handleOpenExpandableCard();
       }
@@ -2584,7 +2584,7 @@ function SubTable(props) {
                       handleCloseExpandableCard={handleCloseExpandableCard}
                     />
                   );
-                  setTitle("CONTACT DETAILS");
+                  setTitle("Contact Details");
                   setSubTitle(" ");
                   handleCloseDialog();
                   handleOpenExpandableCard();

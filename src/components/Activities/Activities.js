@@ -143,7 +143,6 @@ const Activities = () => {
 
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
-  const [activityDisplayType, setActivityDisplayType] = useState("calender");
   const [activityFilterByType, setActivityFilterByType] = useState("all");
   const [activityFilterByTime, setActivityFilterByTime] = useState("all");
   const [view, setView] = React.useState(Views.WEEK);
@@ -237,11 +236,9 @@ const Activities = () => {
       ) : (
         <>
           <ActivitiesAppBar
-            activityDisplayType={activityDisplayType}
-            setActivityDisplayType={setActivityDisplayType}
             onAddActivityClick={onModalOpen}
           />
-          {activityDisplayType === "calender" ? (
+          {stateApp.activityDisplayType === "calendar" ? (
             <ActivitiesCalendar
               activityFilterByType={activityFilterByType}
               setActivityFilterByType={setActivityFilterByType}
