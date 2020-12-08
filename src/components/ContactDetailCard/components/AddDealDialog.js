@@ -640,7 +640,7 @@ function AddDealDialog(props) {
         variables: {
           deal: { _id: cardId, IsDeleted: true },
         },
-        refetchQueries: ["getPipeline"],
+        refetchQueries: ["getPipeline", "getContactDeals"],
         awaitRefetchQueries: true,
       }).then((result) => {
         const {
@@ -728,7 +728,7 @@ function AddDealDialog(props) {
                   relatedObjectType: "Contact",
                   userId: stateApp.user.mongoId,
                 },
-                refetchQueries: ["getPipeline"],
+                refetchQueries: ["getPipeline", "getContactDeals"],
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
@@ -758,7 +758,7 @@ function AddDealDialog(props) {
                   relatedObjectType: "User",
                   userId: stateApp.user.mongoId,
                 },
-                refetchQueries: ["getPipeline"],
+                refetchQueries: ["getPipeline", "getContactDeals"],
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
@@ -785,7 +785,7 @@ function AddDealDialog(props) {
                   relatedObject: stageId,
                   position: dealPosition ? dealPosition.toString() : null,
                 },
-                refetchQueries: ["getPipeline"],
+                refetchQueries: ["getPipeline", "getContactDeals"],
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
@@ -816,7 +816,7 @@ function AddDealDialog(props) {
                 variables: {
                   deal,
                 },
-                refetchQueries: ["getPipeline"],
+                refetchQueries: ["getPipeline", "getContactDeals"],
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
@@ -857,7 +857,7 @@ function AddDealDialog(props) {
             position: dealPosition?.toString(),
             userId: stateApp.user.mongoId,
           },
-          refetchQueries: ["getPipeline"],
+          refetchQueries: ["getPipeline", "getContactDeals"],
           awaitRefetchQueries: true,
         });
       }
@@ -1291,6 +1291,8 @@ function AddDealDialog(props) {
               margin="dense"
               variant="outlined"
               value={label}
+              error={isNaN(label)}
+              helperText={isNaN(label) ? "Offer Price must be a valid number" : ""}
               label="Offer Price"
               fullWidth
               onChange={(e) => {
@@ -1471,7 +1473,7 @@ function AddDealDialog(props) {
                 disableElevation
                 onClick={handleUpdate}
                 className={classes.footerButton}
-                disabled={updateTransactionLoading || addContactLoading}
+                disabled={updateTransactionLoading || addContactLoading || isNaN(label)}
               >
                 {updateTransactionLoading || addContactLoading ? (
                   <CircularProgress size={14} />
