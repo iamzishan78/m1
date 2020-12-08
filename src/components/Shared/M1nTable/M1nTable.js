@@ -19,6 +19,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import { Container } from "@material-ui/core";
 import Table from "./components/Table";
+import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
@@ -1543,7 +1544,7 @@ const UserManagementHeadCells = [
 
 const DealsHeadCells = [
   {
-    name: "id",
+    name: "_id",
     options: {
       display: false,
       filter: false,
@@ -1555,7 +1556,7 @@ const DealsHeadCells = [
     },
   },
   {
-    name: "title",
+    name: "name",
     label: "Deal Name",
   },
   {
@@ -1571,7 +1572,7 @@ const DealsHeadCells = [
     label: "Pipeline",
   },
   {
-    name: "stageName",
+    name: "laneName",
     label: "Deal Stage",
   },
   {
@@ -3694,7 +3695,7 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "Deals" &&
-      dataDeals &&
+      dataDeals?.contactDeals &&
       props.contact
     ) {
       console.log("DATA DEALS : ", dataDeals);
@@ -3730,8 +3731,35 @@ function M1nTable(props) {
       //   dealsRowsData.push(dealData);
       // });
 
+      let currencyFormat = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+
+      let dateFormat = new Intl.DateTimeFormat('en-US', {
+        year: "numeric",
+        day: "numeric",
+        month: "numeric",
+      });
+
+      let contactDealRows = [
+        ...dataDeals.contactDeals.map((deal) => {
+          return {
+            ...deal,
+            offerPrice: !isNaN(deal.offerPrice)
+              ? currencyFormat.format(deal.offerPrice)
+              : deal.offerPrice,
+            closeDate: anyToDate(deal.closeDate).toLocaleString("en-US", {
+              year: "numeric",
+              day: "numeric",
+              month: "numeric",
+            })
+          }
+        })
+      ]
+
       setTargetLabel("deals");
-      setRows([...dataDeals.contactDeals]);
+      setRows(contactDealRows);
       setColumns([...DealsHeadCells]);
       setLoading(false);
     }

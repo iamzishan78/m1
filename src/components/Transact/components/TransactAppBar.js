@@ -155,10 +155,9 @@ const sumDeals = (lanes, status) => {
   lanes.forEach((deal) => {
     deal.cards.forEach((card) => {
       if (card.metadata.status === status && !card.metadata.IsDeleted) {
-        if (card.label)
-          sumAmount += parseFloat(
-            card.label.split("$").join("").split(",").join("")
-          );
+        if (card.label && !isNaN(card.label))
+          sumAmount += card.label
+          // parseFloat(card.label.split("$").join("").split(",").join(""));
         sumCount++;
       }
     });
