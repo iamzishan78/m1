@@ -112,10 +112,11 @@ export default function Deals({ contact, ...props }) {
 
   const sumWonDeals = () => {
     let sum = 0;
-    wonDeals.forEach(
-      (card) =>
-        (sum += parseFloat(card?.label?.split("$").join("").split(",").join("") || 0))
-    );
+    wonDeals.forEach((card) => {
+      if (card.offerPrice && !isNaN(card.offerPrice))
+        sum += card.offerPrice
+        // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+    });
     const formatted = formatter.format(sum);
     return formatted.slice(0, formatted.length - 3);
   };
@@ -123,10 +124,11 @@ export default function Deals({ contact, ...props }) {
 
   const sumLostDeals = () => {
     let sum = 0;
-    lostDeals.forEach(
-      (card) =>
-        (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
-    );
+    lostDeals.forEach((card) => {
+      if (card.offerPrice && !isNaN(card.offerPrice))
+        sum += card.offerPrice
+        // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+    });
     const formatted = formatter.format(sum);
     return formatted.slice(0, formatted.length - 3);
   };
