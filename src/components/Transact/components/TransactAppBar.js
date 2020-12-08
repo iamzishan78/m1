@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 8,
     backgroundColor: "#3DD698",
     borderRadius: 5,
-    padding: 8,
+    padding: 7.8,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -92,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
   activeDeals: {
     backgroundColor: "#E8C059",
     borderRadius: 5,
-    padding: 8,
+    padding: 7.8,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -103,14 +103,15 @@ const useStyles = makeStyles((theme) => ({
   lostDeals: {
     backgroundColor: "#011133",
     borderRadius: 5,
-    padding: 6,
+    padding: 7.8,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     "& span": {
       marginLeft: 4,
     },
-    marginLeft: 8
+    marginLeft: 8,
+
   },
   import: {
     marginLeft: 8,
@@ -137,6 +138,8 @@ const useStyles = makeStyles((theme) => ({
   },
   pipelineControl: {
     minWidth: 180,
+    marginBottom: 2,
+    borderRadius: 5,
   },
 }));
 
@@ -239,7 +242,7 @@ const TransactAppBar = ({
                 Lost
               </Button>
 
-              <Button
+              {/* <Button
                 size="small"
                 className={`${classes.filterToggleBtn} ${
                   dealFilter === "deleted" && classes.activeBtn
@@ -247,7 +250,7 @@ const TransactAppBar = ({
                 onClick={() => setDealFilter("deleted")}
               >
                 Deleted
-              </Button>
+              </Button> */}
             </ButtonGroup>
           </div>
           <div className={classes.left}>

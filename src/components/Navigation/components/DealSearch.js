@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery } from "@apollo/client";
-import { Grid, InputAdornment, TextField, IconButton } from "@material-ui/core";
+import { Grid, InputAdornment, TextField, IconButton, Tooltip } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "react-redux";
 
@@ -10,6 +10,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import List from "@material-ui/icons/List";
 import GridOn from "@material-ui/icons/GridOn";
+import TableChartIcon from '@material-ui/icons/TableChart';
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 
@@ -42,9 +43,9 @@ const useStyles = makeStyles((theme) => ({
   
   activeBtn: {
     color: "#1CB6DA",
-    "&:hover": {
-      backgroundColor: "#1CB6DAdd",
-    },
+    // "&:hover": {
+    //   backgroundColor: "#1CB6DAdd",
+    // },
   },
 
   activitySearchField: {
@@ -226,16 +227,20 @@ const DealSearch = () => {
               ),
               endAdornment: (
                 <ButtonGroup variant="text">
+                  <Tooltip title="List View" >
                   <IconButton
                     size="small"
                     htmlColor="#fff"
                     className={`${classes.toggleBtn} ${
                       stateApp.dealDisplayType === "table" && classes.activeBtn
                     }`}
-                    onClick={() => setDealDisplayType("table")}
+                     //temporarily commenting out until list view exists
+                    //onClick={() => setDealDisplayType("table")}
                   >
                     <List />
                   </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Board View" >
                   <IconButton
                     size="small"
                     htmlColor="#fff"
@@ -244,8 +249,9 @@ const DealSearch = () => {
                     }`}
                     onClick={() => setDealDisplayType("board")}
                   >
-                    <GridOn />
+                    <TableChartIcon />
                   </IconButton>
+                  </Tooltip>
                 </ButtonGroup>
               ),
             }}

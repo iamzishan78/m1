@@ -17,6 +17,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import List from "@material-ui/icons/List";
 import GridOn from "@material-ui/icons/GridOn";
+import EventIcon from '@material-ui/icons/Event';
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 
 import { GETALLACTIVITIESFORSEARCH } from "../../../graphQL/useQueryGetAllActivities";
@@ -47,9 +48,9 @@ const useStyles = makeStyles((theme) => ({
 
   activeBtn: {
     color: "#1CB6DA",
-    "&:hover": {
-      backgroundColor: "#1CB6DAdd",
-    },
+    // "&:hover": {
+    //   backgroundColor: "#1CB6DAdd",
+    // },
   },
 
   activitySearchField: {
@@ -172,6 +173,7 @@ const ActivitySearch = () => {
               endAdornment: (
                 <>
                   <ButtonGroup variant="text">
+                   <Tooltip title="List View" >
                     <IconButton
                       size="small"
                       htmlColor="#fff"
@@ -179,10 +181,13 @@ const ActivitySearch = () => {
                         stateApp.activityDisplayType === "table" &&
                         classes.activeBtn
                       }`}
-                      onClick={() => setActivityDisplayType("table")}
+                      //temporarily commenting out until list view exists
+                     // onClick={() => setActivityDisplayType("table")}
                     >
                       <List />
                     </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Calendar" >
                     <IconButton
                       size="small"
                       htmlColor="#fff"
@@ -192,8 +197,9 @@ const ActivitySearch = () => {
                       }`}
                       onClick={() => setActivityDisplayType("calendar")}
                     >
-                      <GridOn />
+                      <EventIcon />
                     </IconButton>
+                    </Tooltip>
                   </ButtonGroup>
                 </>
               ),
