@@ -3742,24 +3742,24 @@ function M1nTable(props) {
         month: "numeric",
       });
 
-      let contactDealRows = [
-        ...dataDeals.contactDeals.map((deal) => {
-          return {
-            ...deal,
-            offerPrice: !isNaN(deal.offerPrice)
-              ? currencyFormat.format(deal.offerPrice)
-              : deal.offerPrice,
-            closeDate: anyToDate(deal.closeDate).toLocaleString("en-US", {
-              year: "numeric",
-              day: "numeric",
-              month: "numeric",
-            })
-          }
-        })
-      ]
+      // let contactDealRows = [
+      //   ...dataDeals.contactDeals.map((deal) => {
+      //     return {
+      //       ...deal,
+      //       offerPrice: !isNaN(deal.offerPrice)
+      //         ? currencyFormat.format(deal.offerPrice)
+      //         : deal.offerPrice,
+      //       closeDate: anyToDate(deal.closeDate).toLocaleString("en-US", {
+      //         year: "numeric",
+      //         day: "numeric",
+      //         month: "numeric",
+      //       })
+      //     }
+      //   })
+      // ]
 
       setTargetLabel("deals");
-      setRows(contactDealRows);
+      setRows([...dataDeals.contactDeals]);
       setColumns([...DealsHeadCells]);
       setLoading(false);
     }

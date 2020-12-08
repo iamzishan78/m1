@@ -1513,12 +1513,23 @@ function SubTable(props) {
                     if (column.name === "appraisedValue")
                       return formatter.format(v);
 
+                    if (column.name === "offerPrice" && !!v && !isNaN(v))
+                      return formatter.format(v)
+
                     if (column.name === "lastUpdateAt")
                       return anyToDate(v).toLocaleString("en-US", {
                         year: "numeric",
                         day: "numeric",
                         month: "numeric",
                       });
+
+                    if (column.name === "closeDate" && !!v) 
+                      return anyToDate(v).toLocaleString("en-US", {
+                        year: "numeric",
+                        day: "numeric",
+                        month: "numeric",
+                      });
+
                     return v;
                   };
 
