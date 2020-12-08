@@ -646,9 +646,10 @@ function AddDealDialog(props) {
         const {
           data: { updateDeal },
         } = result;
-        if (updateDeal?.success === true)
+        if (updateDeal?.success === true) {
           dispatch(showSuccessMessage("The Deal was successfully deleted."));
-        else dispatch(showErrorMessage("An error occurred."));
+          handleClose();
+        } else dispatch(showErrorMessage("An error occurred."));
       });
 
     // if (transactData) {
