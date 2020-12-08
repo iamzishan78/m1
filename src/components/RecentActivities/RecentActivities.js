@@ -184,8 +184,11 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
       case "task":
         name = "Tasks";
         break;
+      case "mailer":
+        name = "Mailer Campaign";
+        break;
       default:
-        name = "General Updates";
+        name = "Calls";
     }
 
     return (
@@ -249,6 +252,7 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
         {getCheckboxItem("task")}
         {getCheckboxItem("email")}
         {getCheckboxItem("deadline")}
+        {getCheckboxItem("mailer")}
       </div>
     </div>
   );
@@ -270,6 +274,7 @@ function ViewActivities({
     "email",
     "task",
     "deadline",
+    "mailer"
   ]);
 
   const filteredActivities = stateApp.currentContatcAtivities.filter((act) =>

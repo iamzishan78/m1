@@ -23,6 +23,9 @@ import MeetingIcon from "@material-ui/icons/Group";
 import TaskIcon from "@material-ui/icons/WatchLater";
 import DeadlineIcon from "@material-ui/icons/Flag";
 import EmailIcon from "@material-ui/icons/Email";
+import DefaultIcon from "@material-ui/icons/Event";
+import ContactMailIcon from '@material-ui/icons/ContactMail';
+
 import DotsIcon from "@material-ui/icons/MoreHoriz";
 import DocumentIcon from "@material-ui/icons/DescriptionOutlined";
 import PersonIcon from "@material-ui/icons/Person";
@@ -81,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 16,
   },
   rowIcon: {
-    minWidth: 75,
+    minWidth: 120,
     color: "#B9C5D1",
     display: "flex",
     alignItems: "flex-start",
@@ -93,18 +96,24 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 3,
     display: "flex",
     alignItems: "center",
+
   },
   filterDisplay: {
     color: "#999",
     backgroundColor: "#f9f9f9",
     display: "flex",
     alignItems: "center",
-    padding: "4px 16px",
+    padding: "0px 8px",
     border: "1px solid #fff",
     borderRadius: 3,
     cursor: "pointer",
     userSelect: "none",
     height: 40,
+    fontSize: 14,
+
+    "& .MuiSvgIcon-root": {
+      fontSize: 16,
+    },
 
     "& span": {
       marginLeft: 8,
@@ -219,7 +228,7 @@ export default function ActivitiesModal({
   const [endTime, setEndTime] = useState("08:00");
   const [notes, setNotes] = useState("");
   const [owner, setOwner] = useState({ name: "", id: null });
-  const [dealId, setDealId] = useState("");
+  const [dealId, setDealId] = useState(null);
   const [contact, setContact] = useState({});
   const [errors, setErrors] = useState({ ...initialErrors });
   const [users, setUsers] = useState([]);
@@ -378,7 +387,7 @@ export default function ActivitiesModal({
         name: stateApp.user.fullname || stateApp.user.email,
         id: stateApp.user.mongoId,
       });
-      setDealId("");
+      setDealId(null);
       setActivityType("");
       setActivityName("");
       setStartDate(getCurrentDate());
@@ -411,7 +420,7 @@ export default function ActivitiesModal({
     if (dealsData) {
       setOpenDeals(dealsData?.openDeals?.deals);
     }
-  }, [ dealsData ]);
+  }, [dealsData]);
 
   // useEffect(() => {
   //   let open = [];
@@ -461,7 +470,7 @@ export default function ActivitiesModal({
       id: stateApp.user.mongoId,
     });
     setNameAutValue({ name: "", _id: null });
-    setDealId("");
+    setDealId(null);
     setActivityType("");
     setActivityName("");
     setClosed(false);
@@ -700,6 +709,15 @@ export default function ActivitiesModal({
                   >
                     <EmailIcon /> <span>Email</span>
                   </span>
+                  <span
+                    className={clsx(
+                      classes.filterDisplay,
+                      activityType === "mailer" && classes.active
+                    )}
+                    onClick={() => setActivityType("mailer")}
+                  >
+                    <ContactMailIcon /> <span>Mailer Campaign</span>
+                  </span>
                 </div>
               </div>
               <div className={classes.row}>
@@ -763,7 +781,7 @@ export default function ActivitiesModal({
                     value={endTime}
                     type="time"
                     variant="outlined"
-                    onChange={(e) => {                    
+                    onChange={(e) => {
                       if (e.target.value && e.target.value.length > 0) {
                         setEndTime(e.target.value);
                       }
@@ -851,7 +869,9 @@ export default function ActivitiesModal({
                     onChange={(e, deal) => {
                       setDealId(deal?._id);
                     }}
-                    value={openDeals.find((deal) => deal._id === dealId) || null}
+                    value={
+                      openDeals.find((deal) => deal._id === dealId) || null
+                    }
                     getOptionSelected={(option) => option.id === dealId}
                     getOptionLabel={(option) => option.name}
                     renderOption={(option) => {

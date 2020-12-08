@@ -7,6 +7,7 @@ import TaskIcon from "@material-ui/icons/WatchLater";
 import DeadlineIcon from "@material-ui/icons/Flag";
 import EmailIcon from "@material-ui/icons/Email";
 import DefaultIcon from "@material-ui/icons/Event";
+import ContactMailIcon from '@material-ui/icons/ContactMail';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,6 +72,9 @@ const ActivitiesEvent = ({ event }) => {
       break;
     case "email":
       icon = <EmailIcon />;
+      break;
+    case "mailer":
+      icon = <ContactMailIcon />;
       break;
   }
 
