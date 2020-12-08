@@ -196,7 +196,7 @@ export default function Transact() {
         ],
       },
       refetchQueries: ["getPipeline"],
-      awaitRefetchQueries: true,
+      // awaitRefetchQueries: true,
     });
 
     if (
@@ -213,7 +213,7 @@ export default function Transact() {
           },
         },
         refetchQueries: ["getPipeline", "getContactDeals"],
-        awaitRefetchQueries: true,
+        // awaitRefetchQueries: true,
       });
     }
   };
