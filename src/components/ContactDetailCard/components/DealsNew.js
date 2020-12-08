@@ -114,7 +114,7 @@ export default function Deals({ contact, ...props }) {
     let sum = 0;
     wonDeals.forEach(
       (card) =>
-        (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+        (sum += parseFloat(card?.label?.split("$").join("").split(",").join("") || 0))
     );
     const formatted = formatter.format(sum);
     return formatted.slice(0, formatted.length - 3);
