@@ -140,6 +140,10 @@ const reorder = (list, startPosition, endPosition) => {
   return { reorderedStages, stagesToUpdate };
 };
 
+String.prototype.capitalize = function () {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+};
+
 export default function Pipelines(props) {
   const dispatch = useDispatch();
   const { openPipeDialog, selectedPipe, pipelines, pipeToShow } = useSelector(
@@ -385,7 +389,7 @@ export default function Pipelines(props) {
         dealProbability: "",
         rotting: "",
         rotten: false,
-        dealsStatus: "Open",
+        dealsStatus: "open",
         position:
           stages.length > 0 ? stages[stages.length - 1].position + 1 : 0,
       },
@@ -859,10 +863,10 @@ export default function Pipelines(props) {
                                           <Autocomplete
                                             fullWidth
                                             style={{ minWidth: 200 }}
-                                            value={stage.dealsStatus}
+                                            value={stage.dealsStatus.capitalize()}
                                             onChange={(event, newValue) => {
                                               handleCellTextChange(
-                                                newValue,
+                                                newValue?.toLowerCase(),
                                                 "dealsStatus",
                                                 index
                                               );
