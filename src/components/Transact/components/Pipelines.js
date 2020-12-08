@@ -12,6 +12,7 @@ import {
   setFlowState,
   showErrorMessage,
   showSuccessMessage,
+  showWarningMessage,
 } from "../../../actions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -36,9 +37,12 @@ import { ADDPIPELINE } from "../../../graphQL/useMutationAddPipeline";
 import { UPDATEPIPELINE } from "../../../graphQL/useMutationUpdatePipeline";
 import { ADDSTAGES } from "../../../graphQL/useMutationAddStages";
 import { UPDATESTAGES } from "../../../graphQL/useMutationUpdateStages";
+import { UPDATESTAGE } from "../../../graphQL/useMutationUpdateStage";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../../AppContext";
 import { deepEqualObjects } from "../../Shared/functions";
+import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { DEALSCOUNTINANSTAGE } from "../../../graphQL/useQueryNonDeletedDealsCountInAnStageByPipeline";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -69,6 +73,9 @@ const useStyles = makeStyles((theme) => ({
   },
   list: {
     padding: 0,
+  },
+  dialog: {
+    zIndex: "9999999999 !important",
   },
 }));
 
@@ -136,19 +143,20 @@ export default function Pipelines(props) {
   const { openPipeDialog, selectedPipe, pipelines, pipeToShow } = useSelector(
     ({ Flow }) => Flow
   );
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
   const [name, setName] = useState("");
   const [error, setError] = useState(false);
   const [stages, setStages] = useState([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteFunc, setDeleteFunc] = useState(null);
+
   const [addPipeline] = useMutation(ADDPIPELINE);
   const [updatePipeline] = useMutation(UPDATEPIPELINE);
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
-  // const [
-  //   getPipelines,
-  //   { loading: loadingPipelines, data: pipelinesData },
-  // ] = useLazyQuery(GETPIPELINES);
+  const [updateStage] = useMutation(UPDATESTAGE);
+
   const [
     getPipeline,
     { loading: loadingPipeline, data: pipelineData },
@@ -156,32 +164,31 @@ export default function Pipelines(props) {
     fetchPolicy: "cache-and-network",
   });
 
-  // const addingNewPipe = selectedPipe ? false : true;
+  const [getDealsCountByStage, { data: dataDealsCountByStage }] = useLazyQuery(
+    DEALSCOUNTINANSTAGE,
+    {
+      fetchPolicy: "network-only",
+    }
+  );
 
-  // useEffect(() => {
-  //   getPipelines();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (pipelinesData?.pipelines) {
-  //     //// select first one as default
-  //     if (pipelinesData.pipelines.length > 0)
-  //       dispatch(
-  //         setFlowState({
-  //           selectedPipe: pipelinesData.pipelines[0],
-  //           pipelines: pipelinesData.pipelines,
-  //         })
-  //       );
-  //     else
-  //       dispatch(
-  //         setFlowState({
-  //           selectedPipe: null,
-  //           pipelines: [],
-  //           pipeToShow: null,
-  //         })
-  //       );
-  //   }
-  // }, [pipelinesData]);
+  useEffect(() => {
+    if (dataDealsCountByStage?.nonDeletedDealsCountInAnStageByPipeline) {
+      setStateApp((state) => ({
+        ...state,
+        uniuniversalCircularLoaderAct: false,
+      }));
+      if (
+        dataDealsCountByStage.nonDeletedDealsCountInAnStageByPipeline
+          .dealsCount > 0
+      )
+        dispatch(
+          showWarningMessage(
+            "There are deals associated with the stage, please remove them first."
+          )
+        );
+      else openDeleteDialog();
+    }
+  }, [dataDealsCountByStage]);
 
   //// get the whole selected pipe
   useEffect(() => {
@@ -215,6 +222,36 @@ export default function Pipelines(props) {
       if (selectedPipe.name) setName(selectedPipe.name);
     }
   }, [openPipeDialog, selectedPipe]);
+
+  const removeStage = (stage, index) => {
+    if (stage?._id && selectedPipe) {
+      setStateApp((state) => ({
+        ...state,
+        uniuniversalCircularLoaderAct: true,
+      }));
+
+      getDealsCountByStage({
+        variables: {
+          pipelineId: selectedPipe?._id,
+          stageId: stage._id,
+        },
+      });
+
+      setDeleteFunc(() => () => {
+        updateStage({
+          variables: {
+            stage: { _id: stage._id, IsDeleted: true },
+          },
+          refetchQueries: ["getPipelines", "getPipeline"],
+          awaitRefetchQueries: true,
+        });
+      });
+    } else {
+      const updStages = [...stages];
+      updStages.splice(index, 1);
+      setStages(updStages);
+    }
+  };
 
   const handleClose = () => {
     if (error) setError(false);
@@ -442,6 +479,24 @@ export default function Pipelines(props) {
     }
   };
 
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  const openDeleteDialog = () => {
+    setDeleteDialogOpen(true);
+  };
+
+  // const deleteFunc = async () => {
+  //   // try {
+  //   //   setIsDeleting(true);
+  //   //   await deleteDeal();
+  //   //   setIsDeleting(false);
+  //   // } catch {
+  //   //   setIsDeleting(false);
+  //   // }
+  // };
+
   //// checking if the something to update in the pipe or the stages
   const checkingIfEdited = () => {
     if (openPipeDialog !== "newPipe" && selectedPipe) {
@@ -465,6 +520,25 @@ export default function Pipelines(props) {
 
   return (
     <React.Fragment>
+      {deleteDialogOpen && (
+        <Dialog
+          className={classes.dialog}
+          open={deleteDialogOpen ? true : false}
+          onClose={handleCloseDeleteDialog}
+          fullWidth={false}
+          maxWidth="sm"
+        >
+          <DeleteConfirmationDialogContent
+            header={`Delete Stage`}
+            onClose={handleCloseDeleteDialog}
+            deleteFunc={deleteFunc ? deleteFunc : () => {}}
+            m1nSelectedRowsIds={null}
+            setM1nSelectedRowsIndexes={() => {}}
+          >
+            Do you want to delete the stage?
+          </DeleteConfirmationDialogContent>
+        </Dialog>
+      )}
       <ButtonGroup>
         <Autocomplete
           size="small"
@@ -693,10 +767,12 @@ export default function Pipelines(props) {
                                             placement="top"
                                           >
                                             <RemoveCircleOutlineIcon
+                                              onClick={() => {
+                                                removeStage(stage, index);
+                                              }}
                                               className={
                                                 classes.removeIconButton
                                               }
-                                              // style={{ color: "gray" }}
                                             />
                                           </Tooltip>
                                         </TableCell>
