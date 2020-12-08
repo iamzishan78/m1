@@ -148,7 +148,7 @@ function AddActivityDialog(props) {
   const [stateApp] = useContext(AppContext);
 
   const [addNew, setAddNew] = useState(true);
-  const [activityType, setActivityType] = useState("");
+  const [activityType, setActivityType] = useState("call");
   const [activityName, setActivityName] = useState("");
   const [closed, setClosed] = useState(false);
   const [startDate, setStartDate] = useState(getCurrentDate());
@@ -229,7 +229,11 @@ function AddActivityDialog(props) {
   const [addActivityMutation, { loading: addLoading }] = useMutation(
     ADDACTIVITY,
     {
-      refetchQueries: ["getContact", "getAllActivities", "getMelissaRecordsCountForContactIds"],
+      refetchQueries: [
+        "getContact",
+        "getAllActivities",
+        "getMelissaRecordsCountForContactIds",
+      ],
       awaitRefetchQueries: true,
     }
   );
@@ -237,7 +241,11 @@ function AddActivityDialog(props) {
   const [updateActivityMutation, { loading: updateLoading }] = useMutation(
     UPDATEACTIVITY,
     {
-      refetchQueries: ["getContact", "getAllActivities", "getMelissaRecordsCountForContactIds"],
+      refetchQueries: [
+        "getContact",
+        "getAllActivities",
+        "getMelissaRecordsCountForContactIds",
+      ],
       awaitRefetchQueries: true,
     }
   );
@@ -284,7 +292,7 @@ function AddActivityDialog(props) {
         id: stateApp.user.mongoId,
       });
       setDealId("");
-      setActivityType("");
+      setActivityType("call");
       setActivityName("");
       setStartDate(getCurrentDate());
       setEndDate(getCurrentDate());
@@ -301,7 +309,7 @@ function AddActivityDialog(props) {
       id: stateApp.user.mongoId,
     });
     setDealId("");
-    setActivityType("");
+    setActivityType("call");
     setActivityName("");
     setClosed(false);
     setStartDate(getCurrentDate());
@@ -456,7 +464,9 @@ function AddActivityDialog(props) {
         fullWidth
         className={clsx(
           classes.inputField,
-          (activityType === "" || !activityType) && errors.activityType && classes.error
+          (activityType === "" || !activityType) &&
+            errors.activityType &&
+            classes.error
         )}
         size="small"
       >
@@ -481,6 +491,7 @@ function AddActivityDialog(props) {
           <option value={"email"}>Email</option>
           <option value={"task"}>Task</option>
           <option value={"deadline"}>Deadline</option>
+          <option value={"mailer"}>Mailer Campaign</option>
         </Select>
       </FormControl>
       <div className={classes.dateTimeRow}>
