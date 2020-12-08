@@ -24,6 +24,7 @@ import TaskIcon from "@material-ui/icons/WatchLater";
 import DeadlineIcon from "@material-ui/icons/Flag";
 import EmailIcon from "@material-ui/icons/Email";
 import DefaultIcon from "@material-ui/icons/Event";
+import ContactMailIcon from '@material-ui/icons/ContactMail';
 
 import DotsIcon from "@material-ui/icons/MoreHoriz";
 import DocumentIcon from "@material-ui/icons/DescriptionOutlined";
@@ -83,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 16,
   },
   rowIcon: {
-    minWidth: 75,
+    minWidth: 120,
     color: "#B9C5D1",
     display: "flex",
     alignItems: "flex-start",
@@ -95,6 +96,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 3,
     display: "flex",
     alignItems: "center",
+
   },
   filterDisplay: {
     color: "#999",
@@ -714,7 +716,7 @@ export default function ActivitiesModal({
                     )}
                     onClick={() => setActivityType("mailer")}
                   >
-                    <DefaultIcon /> <span>Mailer Campaign</span>
+                    <ContactMailIcon /> <span>Mailer Campaign</span>
                   </span>
                 </div>
               </div>
