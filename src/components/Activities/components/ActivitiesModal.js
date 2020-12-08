@@ -226,7 +226,7 @@ export default function ActivitiesModal({
   const [endTime, setEndTime] = useState("08:00");
   const [notes, setNotes] = useState("");
   const [owner, setOwner] = useState({ name: "", id: null });
-  const [dealId, setDealId] = useState("");
+  const [dealId, setDealId] = useState(null);
   const [contact, setContact] = useState({});
   const [errors, setErrors] = useState({ ...initialErrors });
   const [users, setUsers] = useState([]);
@@ -385,7 +385,7 @@ export default function ActivitiesModal({
         name: stateApp.user.fullname || stateApp.user.email,
         id: stateApp.user.mongoId,
       });
-      setDealId("");
+      setDealId(null);
       setActivityType("");
       setActivityName("");
       setStartDate(getCurrentDate());
@@ -468,7 +468,7 @@ export default function ActivitiesModal({
       id: stateApp.user.mongoId,
     });
     setNameAutValue({ name: "", _id: null });
-    setDealId("");
+    setDealId(null);
     setActivityType("");
     setActivityName("");
     setClosed(false);

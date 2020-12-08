@@ -158,7 +158,7 @@ function AddActivityDialog(props) {
   const [endTime, setEndTime] = useState("08:00");
   const [notes, setNotes] = useState("");
   const [owner, setOwner] = useState({ name: "", id: null });
-  const [dealId, setDealId] = useState("");
+  const [dealId, setDealId] = useState(null);
   const [errors, setErrors] = useState({ ...initialErrors });
   const [users, setUsers] = useState([]);
 
@@ -223,6 +223,7 @@ function AddActivityDialog(props) {
         });
       });
     }
+    console.log("OPEN");
     setOpenDeals(open);
   }, [tdata]);
 
@@ -291,7 +292,7 @@ function AddActivityDialog(props) {
         name: stateApp.user.fullname || stateApp.user.email,
         id: stateApp.user.mongoId,
       });
-      setDealId("");
+      setDealId(null);
       setActivityType("call");
       setActivityName("");
       setStartDate(getCurrentDate());
@@ -308,7 +309,7 @@ function AddActivityDialog(props) {
       name: stateApp.user.fullname || stateApp.user.email,
       id: stateApp.user.mongoId,
     });
-    setDealId("");
+    setDealId(null);
     setActivityType("call");
     setActivityName("");
     setClosed(false);
