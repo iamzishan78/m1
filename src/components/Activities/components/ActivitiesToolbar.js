@@ -195,6 +195,17 @@ const ActivitiesToolbar = ({
           >
             <EmailIcon /> <span>Email</span>
           </span>
+          <span
+            className={clsx(
+              classes.filterDisplay,
+              (activityFilterByType === "all" ||
+                activityFilterByType === "mailer") &&
+                classes.active
+            )}
+            onClick={() => setActivityFilterByType("mailer")}
+          >
+            <DefaultIcon /> <span>Mailer Campaign</span>
+          </span>
         </div>
       </div>
       <div className={classes.centerNav}>

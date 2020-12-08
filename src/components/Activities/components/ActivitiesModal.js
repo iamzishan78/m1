@@ -23,6 +23,8 @@ import MeetingIcon from "@material-ui/icons/Group";
 import TaskIcon from "@material-ui/icons/WatchLater";
 import DeadlineIcon from "@material-ui/icons/Flag";
 import EmailIcon from "@material-ui/icons/Email";
+import DefaultIcon from "@material-ui/icons/Event";
+
 import DotsIcon from "@material-ui/icons/MoreHoriz";
 import DocumentIcon from "@material-ui/icons/DescriptionOutlined";
 import PersonIcon from "@material-ui/icons/Person";
@@ -99,12 +101,17 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#f9f9f9",
     display: "flex",
     alignItems: "center",
-    padding: "4px 16px",
+    padding: "0px 8px",
     border: "1px solid #fff",
     borderRadius: 3,
     cursor: "pointer",
     userSelect: "none",
     height: 40,
+    fontSize: 14,
+
+    "& .MuiSvgIcon-root": {
+      fontSize: 16,
+    },
 
     "& span": {
       marginLeft: 8,
@@ -411,7 +418,7 @@ export default function ActivitiesModal({
     if (dealsData) {
       setOpenDeals(dealsData?.openDeals?.deals);
     }
-  }, [ dealsData ]);
+  }, [dealsData]);
 
   // useEffect(() => {
   //   let open = [];
@@ -700,6 +707,15 @@ export default function ActivitiesModal({
                   >
                     <EmailIcon /> <span>Email</span>
                   </span>
+                  <span
+                    className={clsx(
+                      classes.filterDisplay,
+                      activityType === "mailer" && classes.active
+                    )}
+                    onClick={() => setActivityType("mailer")}
+                  >
+                    <DefaultIcon /> <span>Mailer Campaign</span>
+                  </span>
                 </div>
               </div>
               <div className={classes.row}>
@@ -763,7 +779,7 @@ export default function ActivitiesModal({
                     value={endTime}
                     type="time"
                     variant="outlined"
-                    onChange={(e) => {                    
+                    onChange={(e) => {
                       if (e.target.value && e.target.value.length > 0) {
                         setEndTime(e.target.value);
                       }
@@ -851,7 +867,9 @@ export default function ActivitiesModal({
                     onChange={(e, deal) => {
                       setDealId(deal?._id);
                     }}
-                    value={openDeals.find((deal) => deal._id === dealId) || null}
+                    value={
+                      openDeals.find((deal) => deal._id === dealId) || null
+                    }
                     getOptionSelected={(option) => option.id === dealId}
                     getOptionLabel={(option) => option.name}
                     renderOption={(option) => {
