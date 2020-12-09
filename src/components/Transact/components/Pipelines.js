@@ -240,7 +240,7 @@ export default function Pipelines(props) {
               cards: lane.cards?.map((card) => ({ ...card })),
             })),
           }
-        : {};
+        : false;
       dispatch(
         setFlowState({
           pipeToShow: pipe,
