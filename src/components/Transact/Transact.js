@@ -143,12 +143,17 @@ export default function Transact() {
     let unfilteredSourcePosition = unfilteredSourceLane.cards.findIndex(
       (card) => card?.id === cardId
     );
-    let unfilteredTargetPosition =
-      position !== 0
-        ? unfilteredTargetLane.cards.findIndex(
-            (card) => card?.id === filteredTargetLane?.cards[position - 1]?.id
-          ) + 1
-        : 0;
+    let unfilteredTargetPosition = (() => {
+      if (position === 0) return 0;
+      let atEnd = position >= filteredTargetLane?.cards?.length
+      let prevCardFilteredPosition = position - atEnd;
+      let prevCardAtPosition = filteredTargetLane?.cards[prevCardFilteredPosition];
+      let prevCardUnfilteredPosition = unfilteredTargetLane?.cards.findIndex((card) => {
+        return card?.id === prevCardAtPosition?.id
+      })
+
+      return prevCardUnfilteredPosition += atEnd
+    })();
 
     // update moved card descriptor
     let movedCardDescriptor = {
@@ -158,6 +163,7 @@ export default function Transact() {
     };
 
     // update unfilteredSourceLane descriptors
+    // including dragging down in same lane
     let sourceSliceStart = unfilteredSourcePosition + 1;
     let sourceSliceEnd =
       sourceLaneId === targetLaneId ? unfilteredTargetPosition + 1 : undefined;
@@ -173,6 +179,7 @@ export default function Transact() {
     ];
 
     // update unfilteredTargetLane descriptors
+    // including dragging up in same lane
     let targetSliceStart = unfilteredTargetPosition;
     let targetSliceEnd =
       sourceLaneId === targetLaneId ? unfilteredSourcePosition : undefined;
