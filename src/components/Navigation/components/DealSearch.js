@@ -103,7 +103,8 @@ const DealSearch = () => {
         pipeToShow.lanes.forEach((lane) => {
           lane.cards &&
             lane.cards.forEach((card) => {
-              deals.push(card);
+              if(!card.metadata.IsDeleted)
+                deals.push(card);
             });
         });
 

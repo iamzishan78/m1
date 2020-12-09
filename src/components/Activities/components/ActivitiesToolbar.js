@@ -16,6 +16,7 @@ import TaskIcon from "@material-ui/icons/WatchLater";
 import DeadlineIcon from "@material-ui/icons/Flag";
 import EmailIcon from "@material-ui/icons/Email";
 import DefaultIcon from "@material-ui/icons/Event";
+import ContactMailIcon from '@material-ui/icons/ContactMail';
 
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
@@ -194,6 +195,17 @@ const ActivitiesToolbar = ({
             onClick={() => setActivityFilterByType("email")}
           >
             <EmailIcon /> <span>Email</span>
+          </span>
+          <span
+            className={clsx(
+              classes.filterDisplay,
+              (activityFilterByType === "all" ||
+                activityFilterByType === "mailer") &&
+                classes.active
+            )}
+            onClick={() => setActivityFilterByType("mailer")}
+          >
+            <ContactMailIcon /> <span>Mailer Campaign</span>
           </span>
         </div>
       </div>

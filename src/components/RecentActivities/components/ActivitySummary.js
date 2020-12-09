@@ -6,6 +6,7 @@ import TaskIcon from "@material-ui/icons/WatchLater";
 import DeadlineIcon from "@material-ui/icons/Flag";
 import EmailIcon from "@material-ui/icons/Email";
 import DefaultIcon from "@material-ui/icons/Event";
+import ContactMailIcon from '@material-ui/icons/ContactMail';
 import Avatar from "@material-ui/core/Avatar";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -75,6 +76,7 @@ function SummarySection({ activity }) {
     deadline: "deadlines",
     task: "tasks",
     meeting: "meetings",
+    mailer: "mailers sent",
   };
   const typeName = typeMapping[activity.type];
 
@@ -105,7 +107,7 @@ function SummarySection({ activity }) {
         break;
       default:
         color = `red${color}`;
-        Icon = <DefaultIcon />;
+        Icon = <ContactMailIcon />;
     }
 
     return <Avatar className={classes[color]}>{Icon}</Avatar>;
@@ -129,7 +131,7 @@ export default function ActivitySummary({ activityLog }) {
     return activityLog.filter((act) => act.type === type).length;
   };
 
-  const types = ["call", "email", "task", "deadline", "meeting"];
+  const types = ["call", "email", "task", "deadline", "meeting", "mailer"];
 
   return (
     <div className={classes.summaryRoot}>

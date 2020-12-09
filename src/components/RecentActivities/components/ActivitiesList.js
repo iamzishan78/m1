@@ -12,7 +12,7 @@ import TimelineContent from "@material-ui/lab/TimelineContent";
 import TimelineDot from "@material-ui/lab/TimelineDot";
 import ChatIcon from "@material-ui/icons/Chat";
 import EventNoteIcon from "@material-ui/icons/EventNote";
-
+import ContactMailIcon from '@material-ui/icons/ContactMail';
 import CallIcon from "@material-ui/icons/Call";
 import DefaultIcon from "@material-ui/icons/Event";
 import MeetingIcon from "@material-ui/icons/Group";
@@ -120,6 +120,8 @@ export default function ActivitiesList({
         return <TaskIcon className={classes.itemIcon} color="secondary" />;
       case "deadline":
         return <DeadlineIcon className={classes.itemIcon} color="secondary" />;
+      case "mailer":
+        return <ContactMailIcon className={classes.itemIcon} color="secondary" />;
       default:
         return <DefaultIcon className={classes.itemIcon} color="secondary" />;
     }

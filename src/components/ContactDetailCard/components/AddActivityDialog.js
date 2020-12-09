@@ -25,6 +25,7 @@ import {
 import { GETMONGOUSERS as GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
+import { OPENDEALS } from "../../../graphQL/useQueryOpenDeals";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -148,7 +149,7 @@ function AddActivityDialog(props) {
   const [stateApp] = useContext(AppContext);
 
   const [addNew, setAddNew] = useState(true);
-  const [activityType, setActivityType] = useState("");
+  const [activityType, setActivityType] = useState("call");
   const [activityName, setActivityName] = useState("");
   const [closed, setClosed] = useState(false);
   const [startDate, setStartDate] = useState(getCurrentDate());
@@ -158,7 +159,7 @@ function AddActivityDialog(props) {
   const [endTime, setEndTime] = useState("08:00");
   const [notes, setNotes] = useState("");
   const [owner, setOwner] = useState({ name: "", id: null });
-  const [dealId, setDealId] = useState("");
+  const [dealId, setDealId] = useState(null);
   const [errors, setErrors] = useState({ ...initialErrors });
   const [users, setUsers] = useState([]);
 
@@ -182,54 +183,30 @@ function AddActivityDialog(props) {
   }, [userLists]);
 
   const [openDeals, setOpenDeals] = useState([]);
-  const [getTransactionData, { loading: tloading, data: tdata }] = useLazyQuery(
-    TRANSACTIONDATA
+  const [getOpenDeals, { loading: tloading, data: dealsData }] = useLazyQuery(
+    OPENDEALS
   );
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
-      console.log("OPEN DEALS GET", stateApp.user);
-      getTransactionData({
-        variables: {
-          userId: stateApp.user.mongoId,
-        },
-      });
+      getOpenDeals();
     }
   }, [stateApp.user]);
 
   useEffect(() => {
-    let open = [];
-
-    if (!tloading && tdata?.transactionData) {
-      tdata.transactionData.forEach((pipeline) => {
-        const lanes = pipeline.allData?.lanes;
-
-        // get all deals
-        const all = [];
-        lanes.forEach((deal) => {
-          deal.cards.forEach((card) => {
-            all.push(card);
-          });
-        });
-
-        all.forEach((card) => {
-          if (card.dealState === "won") {
-            // do nothing
-          } else if (card.dealState === "lost") {
-            // do nothing
-          } else if (card.isDeleted) {
-            // do nothing
-          } else open.push(card);
-        });
-      });
+    if (dealsData) {
+      setOpenDeals(dealsData?.openDeals?.deals);
     }
-    setOpenDeals(open);
-  }, [tdata]);
+  }, [dealsData]);
 
   const [addActivityMutation, { loading: addLoading }] = useMutation(
     ADDACTIVITY,
     {
-      refetchQueries: ["getContact", "getAllActivities", "getMelissaRecordsCountForContactIds"],
+      refetchQueries: [
+        "getContact",
+        "getAllActivities",
+        "getMelissaRecordsCountForContactIds",
+      ],
       awaitRefetchQueries: true,
     }
   );
@@ -237,7 +214,11 @@ function AddActivityDialog(props) {
   const [updateActivityMutation, { loading: updateLoading }] = useMutation(
     UPDATEACTIVITY,
     {
-      refetchQueries: ["getContact", "getAllActivities", "getMelissaRecordsCountForContactIds"],
+      refetchQueries: [
+        "getContact",
+        "getAllActivities",
+        "getMelissaRecordsCountForContactIds",
+      ],
       awaitRefetchQueries: true,
     }
   );
@@ -283,8 +264,8 @@ function AddActivityDialog(props) {
         name: stateApp.user.fullname || stateApp.user.email,
         id: stateApp.user.mongoId,
       });
-      setDealId("");
-      setActivityType("");
+      setDealId(null);
+      setActivityType("call");
       setActivityName("");
       setStartDate(getCurrentDate());
       setEndDate(getCurrentDate());
@@ -300,8 +281,8 @@ function AddActivityDialog(props) {
       name: stateApp.user.fullname || stateApp.user.email,
       id: stateApp.user.mongoId,
     });
-    setDealId("");
-    setActivityType("");
+    setDealId(null);
+    setActivityType("call");
     setActivityName("");
     setClosed(false);
     setStartDate(getCurrentDate());
@@ -456,7 +437,9 @@ function AddActivityDialog(props) {
         fullWidth
         className={clsx(
           classes.inputField,
-          (activityType === "" || !activityType) && errors.activityType && classes.error
+          (activityType === "" || !activityType) &&
+            errors.activityType &&
+            classes.error
         )}
         size="small"
       >
@@ -481,6 +464,7 @@ function AddActivityDialog(props) {
           <option value={"email"}>Email</option>
           <option value={"task"}>Task</option>
           <option value={"deadline"}>Deadline</option>
+          <option value={"mailer"}>Mailer Campaign</option>
         </Select>
       </FormControl>
       <div className={classes.dateTimeRow}>
@@ -566,17 +550,17 @@ function AddActivityDialog(props) {
       <Autocomplete
         options={openDeals}
         onChange={(e, deal) => {
-          setDealId(deal.id);
+          setDealId(deal?._id);
         }}
-        value={openDeals.find((deal) => deal.id === dealId) || null}
+        value={openDeals.find((deal) => deal._id === dealId) || null}
         getOptionSelected={(option) => option.id === dealId}
-        getOptionLabel={(option) => option.title}
+        getOptionLabel={(option) => option.name}
         renderOption={(option) => {
           return (
             <Grid container spacing={0}>
               <Grid container item xs={12} alignItems="center">
                 <Grid item xs>
-                  <span style={{ fontWeight: 400 }}>{option.title}</span>
+                  <span style={{ fontWeight: 400 }}>{option.name}</span>
 
                   <Typography variant="body2" color="textSecondary">
                     {option.label}
