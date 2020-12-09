@@ -12,8 +12,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
 import { AppContext } from "../../../AppContext";
-import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
-import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
 import getLaneTitle from "../../Transact/getLaneTitle";
@@ -166,7 +164,6 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "12px",
     fontSize: 12,
     letterSpacing: 2,
-    // fontWeight: "bold",
     textAlign: "center",
   },
   dialog: {
@@ -232,7 +229,6 @@ function AddDealDialog(props) {
   };
 
   const [openContactDialog, setOpenContactDialog] = useState(false);
-  // const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
 
   const [pageVariables, setPageVariables] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
@@ -256,11 +252,8 @@ function AddDealDialog(props) {
     fetchPolicy: "cache-and-network",
   });
 
-  // const [getTransactionData, { data: tdata }] = useLazyQuery(TRANSACTIONDATA);
-  const [addDeal, { data: addDealData, loading: addDealLoading }] = useMutation(
-    ADDDEAL
-  );
-  const [updateDeal] = useMutation(UPDATEDEAL);
+  const [addDeal] = useMutation(ADDDEAL);
+  const [updateDeal, { loading: updateDealLoading }] = useMutation(UPDATEDEAL);
   const [upsertDealDescriptor] = useMutation(UPSERTDEALDESCRIPTOR);
   const [updateStageDealDescriptor] = useMutation(UPDATESTAGEDEALDESCRIPTOR);
 
@@ -367,52 +360,10 @@ function AddDealDialog(props) {
       !stateApp.activeDeal?.cardId &&
       selectedPipe?._id
     )
-      // setPipelineId(selectedPipe._id);
       settingNewPipeWithDefaultStage(selectedPipe._id, true);
   }, [selectedPipe, stateApp.dealDialog, stateApp.activeDeal]);
 
-  // useEffect(() => {
-  //   if (pipelines && pipelineId) {
-  //     const i = pipelines.findIndex((pipe) => pipe._id === pipelineId);
-
-  //     if (i >= 0 && pipelines[i] && pipelines[i].stages) {
-  //       setStagesToChoose(pipelines[i].stages);
-
-  //       if (stateApp.dealDialog === "updatingDeal")
-  //         setStateApp((state) => ({ ...state, dealDialog: true }));
-  //       else {
-  //         setStageId(pipelines[i].stages[0]?._id);
-  //       }
-  //     }
-  //   }
-  // }, [pipelineId, pipelines]);
-
-  // useEffect(() => {
-  //   if (stageId)
-  //     if (pipeToShow?._id === pipelineId) {
-  //       let position = -1;
-
-  //       if (pipeToShow.lanes) {
-  //         for (let i = 0; i < pipeToShow.lanes.length; i++) {
-  //           const lane = pipeToShow.lanes[i];
-  //           if (lane.id === stageId && lane.cards) {
-  //             lane.cards.map((card) => {
-  //               if (card.metadata?.position > position)
-  //                 position = card.metadata.position;
-  //             });
-
-  //             break;
-  //           }
-  //         }
-  //       }
-  //       setDealPosition(position + 1);
-  //     } else {
-  //       setDealPosition(null);
-  //     }
-  // }, [stageId, pipeToShow]);
-
   useEffect(() => {
-    // getPaginatedContacts();
     getAllUsers();
   }, []);
 
@@ -483,22 +434,6 @@ function AddDealDialog(props) {
   }, [dataTrack]);
   // TRACK END
 
-  // useEffect(() => {
-  //   console.log("CONTACT", contact);
-  //   if (contact?.name) {
-  //     setNameAutValue(contact);
-  //   }
-  // }, [contact]);
-
-  // useEffect(() => {
-  //   console.log("TDATA : ", tdata?.transactionData[props.index]?.allData);
-  //   if (tdata?.transactionData[props.index]?.allData) {
-  //     setTransactData(
-  //       JSON.parse(JSON.stringify(tdata?.transactionData[props.index]?.allData))
-  //     );
-  //   }
-  // }, [tdata, props.index]);
-
   useEffect(() => {
     if (userLists && userLists.allUsers) {
       setUsers(
@@ -509,44 +444,6 @@ function AddDealDialog(props) {
       );
     }
   }, [userLists]);
-
-  const [
-    updateTransaction,
-    {
-      data: updateTransactionData,
-      called: updateTransactionCalled,
-      loading: updateTransactionLoading,
-    },
-  ] = useMutation(UPDATETRANSACTION);
-
-  // const openContact = () => {
-  //   handleClose();
-  //   props.selectRowOpenContact(contact);
-  // };
-
-  // const handleDataChange = async (newData) => {
-  // if (tdata?.transactionData[props.index]?._id) {
-  //   await updateTransaction({
-  //     variables: {
-  //       transactionId: tdata.transactionData[props.index]._id,
-  //       transaction: { allData: newData, user: stateApp.user.mongoId },
-  //     },
-  //     refetchQueries: ["getTransactionData"],
-  //     awaitRefetchQueries: true,
-  //   });
-  // }
-  // };
-
-  // useEffect(() => {
-  //   if (stateApp.user && stateApp.user.mongoId) {
-  //     console.log(stateApp.user);
-  //     getTransactionData({
-  //       variables: {
-  //         userId: stateApp.user.mongoId,
-  //       },
-  //     });
-  //   }
-  // }, [stateApp.user]);
 
   useEffect(() => {
     if (props.contactId) {
@@ -580,12 +477,12 @@ function AddDealDialog(props) {
       setDealState(card.status ? card.status : null);
       setLabel(card.offerPrice ? card.offerPrice : "");
       setDescription(card.notes ? card.notes : "");
-      // setPipelineId(card.pipeline ? card.pipeline : null);
+      // setPipelineId
       settingNewPipeWithDefaultStage(
         card.pipeline ? card.pipeline : null,
         false
       );
-      // setStageId(laneId);
+      // setStageId
       settingNewStageAndFindNextAvailablePosition(laneId, false);
       setCloseDate(
         card.closeDate
@@ -619,15 +516,7 @@ function AddDealDialog(props) {
     }
   }, [stateApp.activeDeal, props.contact, stateApp.dealDialog, stateApp.user]);
 
-  // old
-  // useEffect(() => {
-  //   if (contact?._id) {
-  //     setTitle(contact.name);
-  //   }
-  // }, [contact]);
-
   const handleClose = () => {
-    // if (!updateTransactionLoading && !addContactLoading) {
     setTitle("");
     setLabel("");
     setDescription("");
@@ -649,7 +538,6 @@ function AddDealDialog(props) {
       dealDialog: false,
       activeDeal: { cardId: null, laneId: null },
     }));
-    // }
   };
 
   const handleCloseContactDialog = () => {
@@ -681,40 +569,6 @@ function AddDealDialog(props) {
           handleClose();
         } else dispatch(showErrorMessage("An error occurred."));
       });
-
-    // if (transactData) {
-    //   const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
-    //   const laneId = stateApp.activeDeal?.laneId;
-    //   const laneIndex = transactData.lanes.findIndex(
-    //     (lane) => lane.id === laneId
-    //   );
-    //   const lane = transactData.lanes[laneIndex];
-    //   const cardIndex = lane.cards.findIndex((card) => card.id === cardId);
-    //   const card = lane.cards[cardIndex];
-    //   const deletedCard = {
-    //     ...card,
-    //     isDeleted: true,
-    //     style: defaultStyle,
-    //   };
-    //   let td = {
-    //     ...transactData,
-    //     lanes: [
-    //       ...transactData.lanes.slice(0, laneIndex),
-    //       {
-    //         ...lane,
-    //         cards: [
-    //           ...lane.cards.slice(0, cardIndex),
-    //           { ...deletedCard },
-    //           ...lane.cards.slice(cardIndex + 1),
-    //         ],
-    //       },
-    //       ...transactData.lanes.slice(laneIndex + 1),
-    //     ],
-    //   };
-    //   setTransactData(td);
-    //   await handleDataChange(td);
-    //   handleClose();
-    // }
   };
 
   const addUpdateDeal = async (newContact = null) => {
@@ -892,151 +746,12 @@ function AddDealDialog(props) {
           awaitRefetchQueries: true,
         });
       }
-      //////////////////////////////////////////////////////////
-      // console.log("Contact: ", newContact, contact, tempContact);
-      // let newStage = stageId ? stageId : "lane1";
-      // if (transactData) {
-      //   const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
-      //   const laneId = stateApp.activeDeal?.laneId;
-
-      //   console.log("CARD AND LANE: ", cardId, laneId, stateApp.activeDeal);
-      //   if (cardId && laneId) {
-      //     // update existing
-      //     const laneIndex = transactData.lanes.findIndex(
-      //       (lane) => lane.id === laneId
-      //     );
-      //     const lane = transactData.lanes[laneIndex];
-      //     const cardIndex = lane.cards.findIndex((card) => card.id === cardId);
-      //     const card = lane.cards[cardIndex];
-
-      //     let style;
-
-      //     if (dealState === "won") {
-      //       style = wonStyle;
-      //     } else if (dealState === "lost") {
-      //       style = lostStyle;
-      //     } else {
-      //       style = openStyle;
-      //     }
-
-      //     const updatedCard = {
-      //       // dealName: dealName.trim(),
-      //       // title: contact?.name.trim(),
-      //       ...card,
-      //       isDeleted: false,
-      //       contactName: tempContact ? tempContact.name : "",
-      //       title: title ? title.trim() : "",
-      //       contactId: tempContact ? tempContact._id : "",
-      //       label: label ? label.trim() : "",
-      //       description: description ? description.trim() : "",
-      //       laneId: newStage,
-      //       dealState: dealState,
-      //       pipelineId: pipelineId,
-      //       ownerId: ownerId,
-      //       expectedCloseDate: closeDate,
-      //       colaborators: colaborators,
-      //       style,
-      //     };
-      //     console.log("Update existing: ", updatedCard);
-
-      //     if (card.laneId !== newStage) {
-      //       if (cardIndex > -1) {
-      //         // remove card from current lane
-      //         let td = { ...transactData };
-      //         td.lanes[laneIndex].cards.splice(cardIndex, 1);
-      //         // add card to updated lane
-      //         const stageIndex = td.lanes.findIndex(
-      //           (lane) => lane.id === newStage
-      //         );
-      //         if (stageIndex === -1) {
-      //           td.lanes.push({
-      //             // create lane if doesn't exist
-      //             id: newStage,
-      //             title: getLaneTitle(newStage),
-      //             cards: [updatedCard],
-      //           });
-      //         } else {
-      //           td.lanes[stageIndex].cards.push(updatedCard);
-      //         }
-      //         setTransactData(td);
-      //         await handleDataChange(td);
-      //       }
-      //     } else {
-      //       let td = { ...transactData };
-
-      //       td.lanes[laneIndex].cards[cardIndex] = updatedCard;
-      //       setTransactData(td);
-      //       await handleDataChange(td);
-      //     }
-      //   } else if (!cardId || !laneId) {
-      //     // add new
-
-      //     let td = { ...transactData };
-      //     console.log(td, transactData, stateApp.user.mongoId);
-
-      //     // create lane if doesn't exist
-      //     if (td?.lanes.findIndex((lane) => lane.id === newStage) === -1) {
-      //       td.lanes.push({
-      //         id: newStage,
-      //         title: getLaneTitle(newStage),
-      //         cards: [],
-      //       });
-      //     }
-
-      //     td.lanes.forEach((lane) => {
-      //       if (lane.id === newStage) {
-      //         let cards = [...lane.cards];
-      //         let style;
-      //         if (dealState === "won") {
-      //           style = wonStyle;
-      //         } else if (dealState === "lost") {
-      //           style = lostStyle;
-      //         } else {
-      //           style = openStyle;
-      //         }
-      //         // CARD STRUCTURE
-      //         const newCard = {
-      //           // dealName: dealName.trim(),
-      //           // title: contact?.name,
-      //           isDeleted: false,
-      //           contactName: tempContact ? tempContact.name : "",
-      //           title: title ? title.trim() : "",
-      //           label: label ? label.trim() : "",
-      //           description: description ? description.trim() : "",
-      //           dealState: dealState,
-      //           id: uuid(),
-      //           contactId: tempContact ? tempContact._id : "",
-      //           laneId: newStage,
-      //           // VALUES TO SET
-      //           createdAt: new Date().toISOString(),
-      //           pipelineId: pipelineId,
-      //           ownerId: ownerId,
-      //           expectedCloseDate: closeDate,
-      //           colaborators: colaborators,
-      //           style,
-      //         };
-
-      //         console.log("Add new: ", newCard);
-      //         cards.push(newCard);
-      //         lane.cards = cards;
-      //       }
-      //     });
-
-      //     setTransactData(td);
-      //     await handleDataChange(td);
-      //   }
 
       handleClose();
     }
-    // }
   };
 
-  // console.log("LOADING", addContactLoading, updateTransactionLoading);
-
   const handleUpdate = async () => {
-    // if (title.trim() !== "" && description.trim() !== "") {
-
-    // if (transactData) {
     if (transactData && contact && contact._id === "newEntity") {
       await addContact({
         variables: {
@@ -1057,16 +772,7 @@ function AddDealDialog(props) {
     } else {
       await addUpdateDeal();
     }
-    // }
   };
-
-  // useEffect(() => {
-  //   if (tdata?.transactionData?.allData) {
-  //     handleDataChange(transactData);
-  //   }
-  // }, [transactData]);
-
-  // console.log("USERS", users);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -1097,12 +803,6 @@ function AddDealDialog(props) {
     return comparison;
   });
 
-  // const locallySelectedPipe =
-  //   pipelines && pipelineId
-  //     ? pipelines.filter((pipe) => pipe._id === pipelineId)[0]
-  //     : null;
-  // const stagesToChoose = locallySelectedPipe?.stages;
-
   return (
     <>
       {deleteDialogOpen && (
@@ -1127,7 +827,7 @@ function AddDealDialog(props) {
       <RightDialog
         open={props.open}
         handleClickDialogClose={() => {
-          if (!updateTransactionLoading && !addContactLoading) {
+          if (!updateDealLoading && !addContactLoading) {
             setStateApp((stateApp) => ({
               ...stateApp,
               dealDialog: false,
@@ -1174,7 +874,7 @@ function AddDealDialog(props) {
                       dark={true}
                     /> */}
                     <IconButton
-                      disabled={updateTransactionLoading || addContactLoading}
+                      disabled={updateDealLoading || addContactLoading}
                       onClick={openConfirmationDialog}
                       size="small"
                       style={{ margin: "0 8px" }}
@@ -1192,7 +892,7 @@ function AddDealDialog(props) {
                 )}
 
               <IconButton
-                disabled={updateTransactionLoading || addContactLoading}
+                disabled={updateDealLoading || addContactLoading}
                 onClick={handleClose}
                 size="small"
               >
@@ -1484,11 +1184,11 @@ function AddDealDialog(props) {
                 size="medium"
                 disableElevation
                 onClick={() => {
-                  if (!updateTransactionLoading && !addContactLoading) {
+                  if (!updateDealLoading && !addContactLoading) {
                     handleClose();
                   }
                 }}
-                disabled={updateTransactionLoading || addContactLoading}
+                disabled={updateDealLoading || addContactLoading}
                 className={classes.footerButton}
                 style={{
                   margin: "0px 15px 0px 0px",
@@ -1505,10 +1205,10 @@ function AddDealDialog(props) {
                 onClick={handleUpdate}
                 className={classes.footerButton}
                 disabled={
-                  updateTransactionLoading || addContactLoading || isNaN(label)
+                  updateDealLoading || addContactLoading || isNaN(label)
                 }
               >
-                {updateTransactionLoading || addContactLoading ? (
+                {updateDealLoading || addContactLoading ? (
                   <CircularProgress size={14} />
                 ) : (
                   "Save"
