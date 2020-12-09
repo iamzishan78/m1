@@ -200,12 +200,10 @@ const openStyle = { borderColor: "#EBC253" };
 function AddDealDialog(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
-  // const { transactData, handleDataChange } = props;
   const { selectedPipe, pipelines, pipeToShow } = useSelector(
     ({ Flow }) => Flow
   );
   const [stateApp, setStateApp] = useContext(AppContext);
-  // const [title, setTitle] = useState(props.contact ? props.contact.name : ""); // title change from contact.name to dealName
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [label, setLabel] = useState("");
   const [stageId, setStageId] = useState(null);
@@ -793,6 +791,7 @@ function AddDealDialog(props) {
       setIsDeleting(false);
     }
   };
+
   const sortedPipelines = [...pipelines].sort((a, b) => {
     let comparison = 0;
     if (a.name.toUpperCase() > b.name.toUpperCase()) {

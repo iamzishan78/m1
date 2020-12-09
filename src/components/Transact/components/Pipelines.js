@@ -274,7 +274,7 @@ export default function Pipelines(props) {
           variables: {
             pipeline: { _id: selectedPipe._id, IsDeleted: true },
           },
-          refetchQueries: ["getPipelines", "getPipeline"],
+          refetchQueries: ["getPipelines"],
           awaitRefetchQueries: true,
         });
 
@@ -318,14 +318,6 @@ export default function Pipelines(props) {
           const updStages = [...stages];
           updStages.splice(index, 1);
           setStages(updStages);
-
-          // updateStage({
-          //   variables: {
-          //     stage: { _id: stage._id, IsDeleted: true },
-          //   },
-          //   refetchQueries: ["getPipelines", "getPipeline"],
-          //   awaitRefetchQueries: true,
-          // });
         });
       } else {
         const updStages = [...stages];

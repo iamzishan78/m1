@@ -315,7 +315,6 @@ var formatter = new Intl.NumberFormat("en-US", {
 });
 
 function SubTable(props) {
-
   const classes = useStyles(props);
   const customClassess = customStyles(props);
   const productionClassess = productionStyle(props);
@@ -1514,7 +1513,7 @@ function SubTable(props) {
                       return formatter.format(v);
 
                     if (column.name === "offerPrice" && !!v && !isNaN(v))
-                      return formatter.format(v)
+                      return formatter.format(v);
 
                     if (column.name === "lastUpdateAt")
                       return anyToDate(v).toLocaleString("en-US", {
@@ -1523,12 +1522,14 @@ function SubTable(props) {
                         month: "numeric",
                       });
 
-                    if (column.name === "closeDate" && !!v) 
-                      return anyToDate(v).toLocaleString("en-US", {
-                        year: "numeric",
-                        day: "numeric",
-                        month: "numeric",
-                      });
+                    if (column.name === "closeDate" && !!v)
+                      return moment.parseZone(v).format("MM/DD/yyyy");
+
+                    // anyToDate(v).toLocaleString("en-US", {
+                    //   year: "numeric",
+                    //   day: "numeric",
+                    //   month: "numeric",
+                    // });
 
                     return v;
                   };
@@ -1672,9 +1673,8 @@ function SubTable(props) {
         expandedCard: false,
       }));
     }
-    
   };
-  
+
   // 'view contact' on deals modal
   const selectRowOpenContact = (contact) => {
     const rowIndex = rows.findIndex((r) => r._id === contact._id);
@@ -2054,10 +2054,10 @@ function SubTable(props) {
     },
     customSort: (data, colIndex, order) => {
       if (props.parent === "production_WellDetails") {
-        let temp = data.filter(item => item.data[1] != "Cumulative");
+        let temp = data.filter((item) => item.data[1] != "Cumulative");
         let temp_rows_per_page = rowsPerPage ? rowsPerPage : 25;
-        let temp_rows = temp.sort((a, b) => { if (colIndex === 1) 
-          { 
+        let temp_rows = temp.sort((a, b) => {
+          if (colIndex === 1) {
             const dateA = moment(moment(a.data[colIndex], "MM/YYYY")).valueOf();
             const dateB = moment(moment(b.data[colIndex], "MM/YYYY")).valueOf();
             return (dateA < dateB ? -1 : 1) * (order === "desc" ? 1 : -1);
@@ -2073,14 +2073,16 @@ function SubTable(props) {
         let cumulative_array = Object.values(cumulative);
         let temp_cumulative_array = [];
 
-        for(let counter = 0; counter < cumulative_array.length; counter++) {
-          if (counter != 0 &&
+        for (let counter = 0; counter < cumulative_array.length; counter++) {
+          if (
+            counter != 0 &&
             counter != 9 &&
             counter != 10 &&
             counter != 11 &&
-            counter != 12) {
-              temp_cumulative_array.push(cumulative_array[counter]);
-            }
+            counter != 12
+          ) {
+            temp_cumulative_array.push(cumulative_array[counter]);
+          }
         }
 
         if (Object.entries(cumulative).length != 0) {
@@ -2090,14 +2092,18 @@ function SubTable(props) {
             let insert_index = 0;
             if (counter != 1) {
               insert_index = counter * temp_rows_per_page;
-              temp_rows.splice(insert_index - 1, 0, {data: temp_cumulative_array});
+              temp_rows.splice(insert_index - 1, 0, {
+                data: temp_cumulative_array,
+              });
             } else {
-              temp_rows.splice(insertInBetween, 0, {data: temp_cumulative_array});
+              temp_rows.splice(insertInBetween, 0, {
+                data: temp_cumulative_array,
+              });
             }
-          };
-        };
+          }
+        }
 
-        temp_rows.push({data: temp_cumulative_array});
+        temp_rows.push({ data: temp_cumulative_array });
         return temp_rows;
       } else {
         return data.sort((a, b) => {
@@ -2110,11 +2116,15 @@ function SubTable(props) {
     },
     onChangeRowsPerPage: (numberOfRows) => {
       if (props.total === true) {
-        switch(props.parent) {
+        switch (props.parent) {
           case "production_WellDetails":
-            let trimmed = rows.filter(item => item.ReportDate != "Cumulative");
+            let trimmed = rows.filter(
+              (item) => item.ReportDate != "Cumulative"
+            );
             setRowsPerPage(numberOfRows);
-            setRows(displayCumulative(trimmed, props.total, cumulative, numberOfRows));
+            setRows(
+              displayCumulative(trimmed, props.total, cumulative, numberOfRows)
+            );
             break;
           default:
             break;
@@ -2447,23 +2457,23 @@ function SubTable(props) {
 
   const displayCumulative = (data, total, cumulative, rowsPerPage = 25) => {
     let rows = data;
-      if (total === true && rows.length != 0) {
-        let insertInBetween = rowsPerPage - 1;
-        if (Object.entries(cumulative).length != 0) {
-          let multiplier = rows.length / insertInBetween;
-          for (let temp = 1; temp <= multiplier; temp++) {
-            let insert_index = 0;
-            if (temp != 1) {
-              insert_index = temp * rowsPerPage;
-              rows.splice(insert_index - 1, 0, cumulative);
-            } else {
-              rows.splice(insertInBetween, 0, cumulative);
-            }
-          };
-          rows.push(cumulative)
+    if (total === true && rows.length != 0) {
+      let insertInBetween = rowsPerPage - 1;
+      if (Object.entries(cumulative).length != 0) {
+        let multiplier = rows.length / insertInBetween;
+        for (let temp = 1; temp <= multiplier; temp++) {
+          let insert_index = 0;
+          if (temp != 1) {
+            insert_index = temp * rowsPerPage;
+            rows.splice(insert_index - 1, 0, cumulative);
+          } else {
+            rows.splice(insertInBetween, 0, cumulative);
+          }
         }
         rows.push(cumulative);
       }
+      rows.push(cumulative);
+    }
     return rows;
   };
 
@@ -2788,87 +2798,87 @@ function SubTable(props) {
 
         {multipleExpandableCard && targetLabelToExpand == "contact" && (
           <Dialog
-          className={classes.dialogExpCard}
-          fullWidth
-          maxWidth="xl"
-          open={multipleExpandableCard}
-          onClose={handleCloseExpandableCard}
+            className={classes.dialogExpCard}
+            fullWidth
+            maxWidth="xl"
+            open={multipleExpandableCard}
+            onClose={handleCloseExpandableCard}
           >
-          <ExpandableCardProvider
-            expanded={true}
-            handleCloseExpandableCard={handleCloseExpandableCard}
-            component={subComponent}
-            title={title}
-            subTitle={subTitle}
-            parent="table"
-            mouseX={0}
-            mouseY={0}
-            position="relative"
-            cardLeft={"0"}
-            cardTop={"0"}
-            zIndex={1201}
-            cardWidthExpanded="100%"
-            cardHeightExpanded="100%"
-            targetSourceId={selectedRow._id}
-            targetLabel={
-              targetLabelToExpand ? targetLabelToExpand : props.targetLabel
-            }
-            noTrackAvailable={
-              targetLabelToExpand === "contact" ||
-              (!targetLabelToExpand && props.targetLabel === "contact")
-                ? true
-                : false
-            }
-          />
+            <ExpandableCardProvider
+              expanded={true}
+              handleCloseExpandableCard={handleCloseExpandableCard}
+              component={subComponent}
+              title={title}
+              subTitle={subTitle}
+              parent="table"
+              mouseX={0}
+              mouseY={0}
+              position="relative"
+              cardLeft={"0"}
+              cardTop={"0"}
+              zIndex={1201}
+              cardWidthExpanded="100%"
+              cardHeightExpanded="100%"
+              targetSourceId={selectedRow._id}
+              targetLabel={
+                targetLabelToExpand ? targetLabelToExpand : props.targetLabel
+              }
+              noTrackAvailable={
+                targetLabelToExpand === "contact" ||
+                (!targetLabelToExpand && props.targetLabel === "contact")
+                  ? true
+                  : false
+              }
+            />
           </Dialog>
         )}
-        {showExpandableCard && 
-        targetLabelToExpand !== "well" && 
-        targetLabelToExpand !== 'contact' &&
-        multipleExpandableCard == false && (
-              <Dialog
-                className={classes.dialogExpCard}
-                fullWidth
-                maxWidth="xl"
-                open={showExpandableCard}
-                onClose={handleCloseExpandableCard}
-              > 
-                <ExpandableCardProvider
-                  expanded={true}
-                  handleCloseExpandableCard={handleCloseExpandableCard}
-                  component={subComponent}
-                  title={title}
-                  subTitle={subTitle}
-                  parent="table"
-                  mouseX={0}
-                  mouseY={0}
-                  position="relative"
-                  cardLeft={"0"}
-                  cardTop={"0"}
-                  zIndex={1201}
-                  cardWidthExpanded="100%"
-                  cardHeightExpanded="100%"
-                  targetSourceId={
-                    targetLabelToExpand === "owner" ||
-                    targetLabelToExpand === "well" ||
-                    (!targetLabelToExpand &&
-                      (props.targetLabel === "owner" ||
-                        props.targetLabel === "well" ))
-                      ? selectedRow.id
-                      : selectedRow._id
-                  }
-                  targetLabel={
-                    targetLabelToExpand ? targetLabelToExpand : props.targetLabel
-                  }
-                  noTrackAvailable={
-                    targetLabelToExpand === "contact" ||
-                    (!targetLabelToExpand && props.targetLabel === "contact")
-                      ? true
-                      : false
-                  }
-                />
-              </Dialog>
-        )}
+        {showExpandableCard &&
+          targetLabelToExpand !== "well" &&
+          targetLabelToExpand !== "contact" &&
+          multipleExpandableCard == false && (
+            <Dialog
+              className={classes.dialogExpCard}
+              fullWidth
+              maxWidth="xl"
+              open={showExpandableCard}
+              onClose={handleCloseExpandableCard}
+            >
+              <ExpandableCardProvider
+                expanded={true}
+                handleCloseExpandableCard={handleCloseExpandableCard}
+                component={subComponent}
+                title={title}
+                subTitle={subTitle}
+                parent="table"
+                mouseX={0}
+                mouseY={0}
+                position="relative"
+                cardLeft={"0"}
+                cardTop={"0"}
+                zIndex={1201}
+                cardWidthExpanded="100%"
+                cardHeightExpanded="100%"
+                targetSourceId={
+                  targetLabelToExpand === "owner" ||
+                  targetLabelToExpand === "well" ||
+                  (!targetLabelToExpand &&
+                    (props.targetLabel === "owner" ||
+                      props.targetLabel === "well"))
+                    ? selectedRow.id
+                    : selectedRow._id
+                }
+                targetLabel={
+                  targetLabelToExpand ? targetLabelToExpand : props.targetLabel
+                }
+                noTrackAvailable={
+                  targetLabelToExpand === "contact" ||
+                  (!targetLabelToExpand && props.targetLabel === "contact")
+                    ? true
+                    : false
+                }
+              />
+            </Dialog>
+          )}
       </div>
 
       {props.loading && (
