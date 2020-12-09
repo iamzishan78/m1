@@ -48,6 +48,36 @@ import {
   showSuccessMessage,
 } from "../../../actions";
 import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
+import PropTypes from "prop-types";
+import NumberFormat from "react-number-format";
+
+function NumberFormatCustom(props) {
+  const { inputRef, onChange, ...other } = props;
+
+  return (
+    <NumberFormat
+      {...other}
+      getInputRef={inputRef}
+      onValueChange={(values) => {
+        onChange({
+          target: {
+            name: props.name,
+            value: values.value,
+          },
+        });
+      }}
+      thousandSeparator
+      isNumericString
+      prefix="$"
+    />
+  );
+}
+
+NumberFormatCustom.propTypes = {
+  inputRef: PropTypes.func.isRequired,
+  name: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -252,9 +282,9 @@ function AddDealDialog(props) {
   }, []);
 
   useEffect(() => {
-    if (pipelinesData?.pipelines) {
+    if (pipelinesData) {
       //// select first one as default
-      if (pipelinesData.pipelines.length > 0)
+      if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0)
         dispatch(
           setFlowState({
             selectedPipe: pipelinesData.pipelines[0],
@@ -266,7 +296,7 @@ function AddDealDialog(props) {
           setFlowState({
             selectedPipe: null,
             pipelines: [],
-            pipeToShow: null,
+            pipeToShow: false,
           })
         );
     }
@@ -1293,7 +1323,9 @@ function AddDealDialog(props) {
               variant="outlined"
               value={label}
               error={isNaN(label)}
-              helperText={isNaN(label) ? "Offer Price must be a valid number" : ""}
+              helperText={
+                isNaN(label) ? "Offer Price must be a valid number" : ""
+              }
               label="Offer Price"
               fullWidth
               onChange={(e) => {
@@ -1301,9 +1333,7 @@ function AddDealDialog(props) {
               }}
               className={classes.inputField}
               InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">$</InputAdornment>
-                ),
+                inputComponent: NumberFormatCustom,
               }}
             />
 
@@ -1474,7 +1504,9 @@ function AddDealDialog(props) {
                 disableElevation
                 onClick={handleUpdate}
                 className={classes.footerButton}
-                disabled={updateTransactionLoading || addContactLoading || isNaN(label)}
+                disabled={
+                  updateTransactionLoading || addContactLoading || isNaN(label)
+                }
               >
                 {updateTransactionLoading || addContactLoading ? (
                   <CircularProgress size={14} />
