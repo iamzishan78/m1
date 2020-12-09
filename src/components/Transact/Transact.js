@@ -252,7 +252,7 @@ export default function Transact() {
               draggable={true}
               laneDraggable={false}
               cardDraggable={true}
-              collapsibleLanes={true}
+              collapsibleLanes={false}
               editable={false}
               canAddLanes={false}
               editLaneTitle={false}
