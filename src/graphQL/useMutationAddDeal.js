@@ -6,7 +6,9 @@ export const ADDDEAL = gql`
     $stageId: ID
     $pipelineId: ID
     $ownerId: ID
+    $ownerName: String
     $contactId: ID
+    $contactName: String
     $position: String
     $userId: ID
   ) {
@@ -15,7 +17,9 @@ export const ADDDEAL = gql`
       stageId: $stageId
       pipelineId: $pipelineId
       ownerId: $ownerId
+      ownerName: $ownerName
       contactId: $contactId
+      contactName: $contactName
       position: $position
       userId: $userId
     ) {

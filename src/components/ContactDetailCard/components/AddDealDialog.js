@@ -733,17 +733,40 @@ function AddDealDialog(props) {
             });
       } else {
         //// add a new deal
+        let variables = {
+          deal,
+          stageId,
+          pipelineId,
+          // ownerId,
+          // ownerName,
+          // contactId,
+          // contactName,
+          position: dealPosition?.toString(),
+          userId: stateApp.user.mongoId,
+        };
+
+        if (ownerId) {
+          let user = users.find((user) => user.value === ownerId);
+          variables = user?.text
+            ? { ...variables, ownerId, ownerName: user.text }
+            : { ...variables, ownerId };
+        }
+
+        if (contactId) {
+          variables = tempContact?.name
+            ? { ...variables, contactId, contactName: tempContact.name }
+            : { ...variables, contactId };
+        }
+
         addDeal({
-          variables: {
-            deal,
-            stageId,
-            pipelineId,
-            ownerId,
-            contactId,
-            position: dealPosition?.toString(),
-            userId: stateApp.user.mongoId,
-          },
-          refetchQueries: ["getPipeline", "getContactDeals"],
+          variables,
+          refetchQueries: [
+            "getPipeline",
+            "getContactDeals",
+            "getContact",
+            "getAllActivities",
+            "getMelissaRecordsCountForContactIds",
+          ],
           awaitRefetchQueries: true,
         });
       }
