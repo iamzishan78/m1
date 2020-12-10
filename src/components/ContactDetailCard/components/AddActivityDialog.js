@@ -184,7 +184,10 @@ function AddActivityDialog(props) {
 
   const [openDeals, setOpenDeals] = useState([]);
   const [getOpenDeals, { loading: tloading, data: dealsData }] = useLazyQuery(
-    OPENDEALS
+    OPENDEALS,
+    {
+      fetchPolicy: "network-only",
+    }
   );
 
   useEffect(() => {

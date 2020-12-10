@@ -24,7 +24,7 @@ import TaskIcon from "@material-ui/icons/WatchLater";
 import DeadlineIcon from "@material-ui/icons/Flag";
 import EmailIcon from "@material-ui/icons/Email";
 import DefaultIcon from "@material-ui/icons/Event";
-import ContactMailIcon from '@material-ui/icons/ContactMail';
+import ContactMailIcon from "@material-ui/icons/ContactMail";
 
 import DotsIcon from "@material-ui/icons/MoreHoriz";
 import DocumentIcon from "@material-ui/icons/DescriptionOutlined";
@@ -96,7 +96,6 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 3,
     display: "flex",
     alignItems: "center",
-
   },
   filterDisplay: {
     color: "#999",
@@ -405,7 +404,10 @@ export default function ActivitiesModal({
   // );
 
   const [getOpenDeals, { loading: tloading, data: dealsData }] = useLazyQuery(
-    OPENDEALS
+    OPENDEALS,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
 
   console.log("OPEN DEALS", openDeals);

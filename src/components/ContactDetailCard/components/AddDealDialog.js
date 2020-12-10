@@ -765,7 +765,9 @@ function AddDealDialog(props) {
             "getContactDeals",
             "getContact",
             "getAllActivities",
-            "getMelissaRecordsCountForContactIds",
+            "getAllActivitiesForSearch",
+            "getOpenDeals",
+            "openDeals",
           ],
           awaitRefetchQueries: true,
         });
