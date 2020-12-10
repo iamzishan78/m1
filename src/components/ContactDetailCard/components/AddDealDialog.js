@@ -264,7 +264,10 @@ function AddDealDialog(props) {
   const [
     getPaginatedContacts,
     { data: allContacts, loading, fetchMore: fetchMorePaginatedContacts },
-  ] = useLazyQuery(PAGINATEDCONTACTSQUERY);
+  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+  });
 
   const [contact, setContact] = useState({});
 

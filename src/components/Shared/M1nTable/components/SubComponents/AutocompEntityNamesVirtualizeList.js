@@ -264,6 +264,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       }}
       renderInput={(params) => (
         <TextField
+          margin="dense"
           {...params}
           label={label}
           placeholder={placeholder}
@@ -280,7 +281,6 @@ export default function AutocompEntityNamesVirtualizeList(props) {
             ),
           }}
           size="small"
-          multiline
           // placeholder="E.g. Jacob"
         />
       )}

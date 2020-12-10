@@ -2092,11 +2092,9 @@ function M1nTable(props) {
   //////////
 
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+    PAGINATEDCONTACTSQUERY, {
+      fetchPolicy: "no-cache",
+    });
   const [
     getContactsFilterOptions,
     { data: dataContactsFilterOptions },
