@@ -722,6 +722,7 @@ export default function Navigation(props) {
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
   );
+  const { pipelines } = useSelector(({ Flow }) => Flow);
   const theme = useTheme();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -1239,7 +1240,7 @@ export default function Navigation(props) {
             ) : null}
 
             <div className={classes.grow1} />
-            {matchTransact ? (
+            {matchTransact && pipelines && pipelines.length > 0 ? (
               <div>
                 <div
                   ref={anchorEl}

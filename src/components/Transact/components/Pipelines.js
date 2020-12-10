@@ -240,7 +240,7 @@ export default function Pipelines(props) {
               cards: lane.cards?.map((card) => ({ ...card })),
             })),
           }
-        : {};
+        : false;
       dispatch(
         setFlowState({
           pipeToShow: pipe,
@@ -274,7 +274,7 @@ export default function Pipelines(props) {
           variables: {
             pipeline: { _id: selectedPipe._id, IsDeleted: true },
           },
-          refetchQueries: ["getPipelines", "getPipeline"],
+          refetchQueries: ["getPipelines"],
           awaitRefetchQueries: true,
         });
 
@@ -318,14 +318,6 @@ export default function Pipelines(props) {
           const updStages = [...stages];
           updStages.splice(index, 1);
           setStages(updStages);
-
-          // updateStage({
-          //   variables: {
-          //     stage: { _id: stage._id, IsDeleted: true },
-          //   },
-          //   refetchQueries: ["getPipelines", "getPipeline"],
-          //   awaitRefetchQueries: true,
-          // });
         });
       } else {
         const updStages = [...stages];
@@ -645,7 +637,7 @@ export default function Pipelines(props) {
       <ButtonGroup>
         <Autocomplete
           size="small"
-          style={{ minWidth: 200, marginLeft: 12 }}
+          style={{ minWidth: 210, marginLeft: 12 }}
           options={optionsWithHeader}
           getOptionLabel={(option) => (option?.name ? option.name : option)}
           groupBy={(option) => {

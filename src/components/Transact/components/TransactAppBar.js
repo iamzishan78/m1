@@ -81,6 +81,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 8,
     backgroundColor: "#3DD698",
     borderRadius: 5,
+    minWidth: 220,
     padding: 7.8,
     display: "flex",
     alignItems: "center",
@@ -92,6 +93,7 @@ const useStyles = makeStyles((theme) => ({
   activeDeals: {
     backgroundColor: "#E8C059",
     borderRadius: 5,
+    minWidth: 220,
     padding: 7.8,
     display: "flex",
     alignItems: "center",
@@ -103,6 +105,7 @@ const useStyles = makeStyles((theme) => ({
   lostDeals: {
     backgroundColor: "#011133",
     borderRadius: 5,
+    minWidth: 220,
     padding: 7.8,
     display: "flex",
     alignItems: "center",
@@ -137,7 +140,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   pipelineControl: {
-    minWidth: 180,
+    minWidth: 200,
     marginBottom: 2,
     borderRadius: 5,
   },

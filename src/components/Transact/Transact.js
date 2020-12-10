@@ -25,6 +25,7 @@ import TransactTable from "./components/TransactTable";
 import { useDispatch, useSelector } from "react-redux";
 import { setFlowState } from "../../actions";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
+import CallMadeIcon from "@material-ui/icons/CallMade";
 
 function usePrevious(value) {
   const ref = useRef();
@@ -36,7 +37,7 @@ function usePrevious(value) {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: "#efefef",
+    textAlign: "center",
   },
   list: {
     overflowX: "auto !important",
@@ -44,7 +45,19 @@ const useStyles = makeStyles((theme) => ({
   },
   boardAndTable: {
     maxWidth: "100vw",
-    "& .react-trello-board": { height: "calc( 100vh - 143px)" },
+    "& .react-trello-board": {
+      height: "calc( 100vh - 143px)",
+      "& >div": {
+        height: "100%",
+        "& .smooth-dnd-container": {
+          height: "100%",
+          "& section": {
+            height: "100%",
+            minHeight: "100%",
+          },
+        },
+      },
+    },
   },
 }));
 
@@ -259,7 +272,7 @@ export default function Transact() {
               draggable={true}
               laneDraggable={false}
               cardDraggable={true}
-              collapsibleLanes={true}
+              collapsibleLanes={false}
               editable={false}
               canAddLanes={false}
               editLaneTitle={false}
@@ -299,6 +312,11 @@ export default function Transact() {
           )}
           {stateApp.dealDisplayType === "table" && <TransactTable />}
         </div>
+      ) : pipeToShow === false ? (
+        <h1 style={{ marginTop: 80 }}>
+          There are no Pipelines to show. You can create one from the upper
+          right corner of the screen.
+        </h1>
       ) : (
         <CircularProgress size={80} disableShrink color="secondary" />
       )}
