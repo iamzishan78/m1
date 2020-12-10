@@ -290,6 +290,7 @@ export default function ActivitiesModal({
     { data: allContacts, fetchMore: fetchMorePaginatedContacts },
   ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
   });
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });

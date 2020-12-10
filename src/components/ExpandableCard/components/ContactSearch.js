@@ -11,6 +11,7 @@ const ContactSearch = () => {
     { data: allContacts, fetchMore: fetchMorePaginatedContacts },
   ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
   });
 
   const [stateApp, setStateApp] = useContext(AppContext);

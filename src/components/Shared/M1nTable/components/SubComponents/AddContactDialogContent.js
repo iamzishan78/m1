@@ -82,6 +82,7 @@ export default function AddContactDialogContent(props) {
     { loading: loadingContacts, data: dataContacts },
   ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
   });
 
   const [
