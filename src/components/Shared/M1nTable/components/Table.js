@@ -1889,23 +1889,23 @@ function SubTable(props) {
               );
             }
 
-            //// if Parcel Ownership set the multi selection top bar: ////
-            if (props.targetLabel === "deals") {
-              return (
-                <Tooltip title={"Delete"}>
-                  <IconButton
-                    size="medium"
-                    style={{ margin: "0 5px" }}
-                    onClick={(e) => {
-                      handleExpandClick(null, null, null, "deleteDeal");
-                    }}
-                    aria-label="delete"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Tooltip>
-              );
-            }
+            //// if deals set the multi selection top bar: ////
+            // if (props.targetLabel === "deals") {
+            //   return (
+            //     <Tooltip title={"Delete"}>
+            //       <IconButton
+            //         size="medium"
+            //         style={{ margin: "0 5px" }}
+            //         onClick={(e) => {
+            //           handleExpandClick(null, null, null, "deleteDeal");
+            //         }}
+            //         aria-label="delete"
+            //       >
+            //         <DeleteIcon />
+            //       </IconButton>
+            //     </Tooltip>
+            //   );
+            // }
 
             //// default empty top bar ////
             return (
