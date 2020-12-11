@@ -847,7 +847,7 @@ function AddDealDialog(props) {
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => {}}
           >
-            Do you want to delete deal?
+            Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}

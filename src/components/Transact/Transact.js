@@ -314,8 +314,7 @@ export default function Transact() {
         </div>
       ) : pipeToShow === false ? (
         <h1 style={{ marginTop: 80 }}>
-          There are no Pipelines to show. You can create one from the upper
-          right corner of the screen.
+          No pipelines currently exist - please setup a new pipeline and corresponding stages.
         </h1>
       ) : (
         <CircularProgress size={80} disableShrink color="secondary" />
