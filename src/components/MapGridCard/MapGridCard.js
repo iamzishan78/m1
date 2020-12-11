@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../AppContext";
 import Draggable from "react-draggable";
@@ -333,6 +333,7 @@ function MapGridCard(props) {
       setMapGridCardState({
         mapGridCardActiveTap: newValue,
         selectedOwner: null,
+        selectedOwnerWellIntsSummary: null,
       })
     );
   };
@@ -442,8 +443,6 @@ function MapGridCard(props) {
               className="cancelDraggableEffect"
               onClick={(e) => {
                 e.stopPropagation();
-                e.preventDefault();
-
                 dispatch(
                   setMapGridCardState({
                     mapGridCardActivated:
@@ -453,25 +452,25 @@ function MapGridCard(props) {
               }}
             >
               {mapGridCardActivated === "exp" ? (
-                <ShrinkIcon viewBox="0 0 64 64" htmlColor="#fff" />
+                <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
               ) : (
-                <ExpandIcon viewBox="0 0 64 64" htmlColor="#fff" />
+                <ExpandIcon viewBox="0 0 64 64" color="secondary"  />
               )}
             </IconButton>
             <IconButton
               className="cancelDraggableEffect"
               onClick={(e) => {
                 e.stopPropagation();
-                e.preventDefault();
                 dispatch(
                   setMapGridCardState({
                     mapGridCardActivated: false,
                     selectedOwner: null,
+                    selectedOwnerWellIntsSummary: null,
                   })
                 );
               }}
             >
-              <CloseIcon htmlColor="#fff" />
+              <CloseIcon color="secondary"  />
             </IconButton>
           </Toolbar>
         </AppBar>
@@ -650,8 +649,8 @@ function MapGridCard(props) {
                       />
 
                       <h6 id="minimumZoomRequired">
-                        Please zoom in to leverage this feature (min zoom level = {" "}
-                        {stateApp.minZoomToQueryViewport})
+                        Please zoom in to leverage this feature (min zoom level
+                        = {stateApp.minZoomToQueryViewport})
                       </h6>
                     </div>,
                   ]}
@@ -696,9 +695,9 @@ function MapGridCard(props) {
 }
 
 function areEqual(prevProps, nextProps) {
-  console.log(
-    `${prevProps.mapGridCardActivated} ... ${nextProps.mapGridCardActivated}`
-  );
+  // console.log(
+  //   `${prevProps.mapGridCardActivated} ... ${nextProps.mapGridCardActivated}`
+  // );
   return Object.is(
     prevProps.mapGridCardActivated,
     nextProps.mapGridCardActivated

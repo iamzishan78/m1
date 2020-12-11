@@ -1,4 +1,10 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useRef,
+  Fragment,
+} from "react";
 import { useHistory } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
@@ -62,6 +68,8 @@ import debounce from "lodash/debounce";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { WELLQUERY } from "../../../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/client";
+import moment from "moment";
+
 var ticksToDateString = function (ticks) {
   var epochTicks = 621355968000000000;
   var ticksPerMillisecond = 10000; // whoa!
@@ -81,6 +89,101 @@ var ticksToDateString = function (ticks) {
   var date = new Date(millisecondsSinceEpoch);
   return date.toISOString();
 };
+
+const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
+
+const customStyles = makeStyles((theme) => ({
+  table: {
+    "& .MuiTableCell-body": {
+      padding: (props) =>
+        props.dense ? "0 !important" : "0px 16px !important",
+    },
+    "& .MuiTableHead-root": {
+      "& th": {
+        backgroundColor: "#F2F2F2",
+        zIndex: "auto",
+        padding: (props) => (props.dense ? "10px" : null),
+      },
+      "& .MuiTableCell-paddingCheckbox": {
+        padding: (props) => (props.dense ? "0 !important" : "16px"),
+      },
+    },
+    "& tr": {
+      paddingRight: (props) => (props.dense ? "12px" : null),
+      "& td": {
+        "& div": {
+          padding: 0,
+        },
+      },
+      "& td:nth-child(3)": {
+        "& div": {
+          width: 300,
+        },
+      },
+      "& td:nth-child(13)": {
+        "& div": {
+          width: 300,
+          "& span": {
+            maxWidth: 300,
+          },
+        },
+      },
+    },
+    "& thead": {
+      opacity: "1",
+      transition: "opacity 1s ease-out",
+      WebkitTransition: "opacity 1s ease-out",
+    },
+    "& tbody": {
+      opacity: "1",
+      transition: "opacity 1s ease-out",
+      WebkitTransition: "opacity 1s ease-out",
+    },
+  },
+}));
+
+const productionStyle = makeStyles((theme) => ({
+  table: {
+    "& .MuiTableCell-body": {
+      padding: (props) =>
+        props.dense ? "0 !important" : "0px 16px !important",
+    },
+    "& .MuiTableCell-head": {
+      "& span": {
+        justifyContent: "center",
+      },
+    },
+    "& .MuiTableHead-root": {
+      "& th": {
+        backgroundColor: "#F2F2F2",
+        zIndex: "auto",
+        padding: (props) => (props.dense ? "10px" : null),
+      },
+      "& .MuiTableCell-paddingCheckbox": {
+        padding: (props) => (props.dense ? "0 !important" : "16px"),
+      },
+    },
+    "& tr": {
+      paddingRight: (props) => (props.dense ? "12px" : null),
+      "& td": {
+        textAlign: "center",
+        "& div": {
+          justifyContent: "center",
+        },
+      },
+    },
+    "& thead": {
+      opacity: "1",
+      transition: "opacity 1s ease-out",
+      WebkitTransition: "opacity 1s ease-out",
+    },
+    "& tbody": {
+      opacity: "1",
+      transition: "opacity 1s ease-out",
+      WebkitTransition: "opacity 1s ease-out",
+    },
+  },
+}));
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -213,12 +316,25 @@ var formatter = new Intl.NumberFormat("en-US", {
 
 function SubTable(props) {
   const classes = useStyles(props);
+  const customClassess = customStyles(props);
+  const productionClassess = productionStyle(props);
+
   const dispatch = useDispatch();
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const [rows, Rows] = useState([]);
   const setRows = (newState) => {
     setStateIfDeepEqual(Rows, newState);
+  };
+
+  const [total, Total] = useState(false);
+  const setTotal = (newState) => {
+    setStateIfDeepEqual(Total, newState);
+  };
+
+  const [cumulative, Cumulative] = useState({});
+  const setCumulative = (newState) => {
+    setStateIfDeepEqual(Cumulative, newState);
   };
 
   const [columns, setColumns] = useState([]);
@@ -255,6 +371,11 @@ function SubTable(props) {
   const [showExpandableCard, ShowExpandableCard] = useState(false);
   const setShowExpandableCard = (newState) => {
     setStateIfDeepEqual(ShowExpandableCard, newState);
+  };
+
+  const [multipleExpandableCard, MultipleExpandableCard] = useState(false);
+  const setMultipleExpandableCard = (newState) => {
+    setStateIfDeepEqual(MultipleExpandableCard, newState);
   };
 
   const [selectedRow, SelectedRow] = useState();
@@ -304,6 +425,12 @@ function SubTable(props) {
   const setRowsPerPage = (newState) => {
     setStateIfDeepEqual(RowsPerPage, newState);
   };
+
+  const [firstMount, FirstMount] = useState(true);
+  const setFirstMount = (newState) => {
+    setStateIfDeepEqual(FirstMount, newState);
+  };
+
   const [getWell, { data: dataWell }] = useLazyQuery(WELLQUERY);
 
   //// opening the well detail card after fetch the extra well data needed
@@ -316,8 +443,8 @@ function SubTable(props) {
       dataWell.well
     ) {
       let selectedWell = props.rows.find((row) => {
-        if (row.id) return row.id == dataWell.well.id;
-        return row.Id == dataWell.well;
+        if (row.id) return row.id === dataWell.well.id;
+        return row.Id === dataWell.well;
       });
 
       selectedWell = { ...selectedWell, ...dataWell.well };
@@ -343,7 +470,6 @@ function SubTable(props) {
           selectedWell.firstProductionDate
         );
       //// temporary end
-
       if (selectedWell) {
         setSelectedRow(selectedWell);
         setStateApp((state) => ({
@@ -370,15 +496,92 @@ function SubTable(props) {
 
   useEffect(() => {
     if (props.rows) {
-      if (props.orderByTracks)
-        setRows([
-          ...props.rows.sort((a, b) => {
-            return b.isTracked - a.isTracked;
-          }),
-        ]);
-      else setRows([...props.rows]);
+      const updInSameOrder = (commingRows) => {
+        if (!rows || rows.length == 0) return commingRows;
+
+        let updatedRows = [];
+        let newRows = [];
+
+        commingRows.forEach((updRow) => {
+          const position = rows.findIndex(
+            (row) =>
+              (row.id && row.id === updRow.id) ||
+              (row.Id && row.Id === updRow.Id) ||
+              (row._id && row._id === updRow._id)
+          );
+
+          if (position > -1) updatedRows[position] = updRow;
+          else newRows.push(updRow);
+        });
+
+        return [...newRows, ...updatedRows.filter((r) => r)];
+      };
+
+      if (props.rows.length > 0 && props.orderByTracks) {
+        if (firstMount) {
+          setRows([
+            ...props.rows.sort((a, b) => {
+              return b.isTracked - a.isTracked;
+            }),
+          ]);
+          setFirstMount(false);
+        } else setRows(updInSameOrder([...props.rows]));
+      } else setRows([...props.rows]);
+
+      if (props.total == true) {
+        let temp = {};
+        let calc_keys = [
+          "oil",
+          "gas",
+          "water",
+          "allocatedOil",
+          "allocatedWater",
+          "allocatedGas",
+        ];
+        let current_keys = [];
+        if ([...props.rows].length != 0) {
+          let keys = Object.keys([...props.rows][0]);
+          current_keys = calc_keys.filter((value) => keys.includes(value));
+        }
+        temp = computeCumulative(current_keys, [...props.rows]);
+        switch (props.parent) {
+          case "production_WellDetails":
+            let reconstruct_row = {
+              ...props.rows[0],
+              ...temp,
+            };
+            Object.keys(reconstruct_row).forEach((key) => {
+              if (!calc_keys.includes(key)) {
+                reconstruct_row[key] = "";
+              }
+            });
+            reconstruct_row["ReportDate"] = "Cumulative";
+            setRows(
+              displayCumulative([...props.rows], props.total, reconstruct_row)
+            );
+            setCumulative(reconstruct_row);
+            break;
+          default:
+            break;
+        }
+      }
+      setTotal(props.total);
     }
   }, [props.rows, props.orderByTracks]);
+
+  const computeCumulative = (keys, data) => {
+    let ret_val = {};
+    data.forEach((row) => {
+      keys.forEach((key) => {
+        if (ret_val[key]) {
+          ret_val[key] = ret_val[key] + parseFloat(row[key]);
+        } else {
+          ret_val[key] = parseFloat(row[key]);
+        }
+      });
+    });
+    return ret_val;
+  };
 
   useEffect(() => {
     if (rows && m1nSelectedRowsIndexes) {
@@ -488,7 +691,7 @@ function SubTable(props) {
     e.tableState.page = 0;
     e.tableState.count = 0;
     setPageInd(e.tableState.page);
-    e.getContacts(e.pageVariables);
+    e.getPaginatedContacts(e.pageVariables);
     e.getContactsFilterOptions(e.pageVariables);
   };
 
@@ -505,76 +708,84 @@ function SubTable(props) {
       props.columns.forEach((column) => {
         switch (column.name) {
           case "detailCard":
-            {
-              column.options = {
-                ...column.options,
-                customBodyRender: (value, tableMeta, updateValue) => {
-                  let id = props.targetLabel + tableMeta.columnIndex;
+            column.options = {
+              ...column.options,
+              customBodyRender: (value, tableMeta, updateValue) => {
+                let id = props.targetLabel + tableMeta.columnIndex;
+                return (
+                  <Tooltip title={"Detail Card"} placement="top">
+                    <IconButton
+                      id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                      size={props.dense ? "small" : "medium"}
+                      color="secondary"
+                      className={`${classes.icons} ${
+                        colInd === tableMeta.columnIndex &&
+                        rowInd === tableMeta.rowIndex
+                          ? classes.iconSelected
+                          : ""
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
 
-                  return (
-                    <Tooltip title={"Detail Card"} placement="top">
-                      <IconButton
-                        id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
-                        size={props.dense ? "small" : "medium"}
-                        color="secondary"
-                        className={`${classes.icons} ${
-                          colInd === tableMeta.columnIndex &&
-                          rowInd === tableMeta.rowIndex
-                            ? classes.iconSelected
-                            : ""
-                        }`}
-                        onClick={(e) => {
-                          e.stopPropagation();
+                        if (value) {
+                          setStateApp((state) => ({
+                            ...state,
+                            popupOpen: false,
+                            selectedWell: null,
+                            selectedParcel: null,
+                          }));
+                          getWell({
+                            variables: { wellId: value },
+                          });
+                        } else {
+                          let selectedWell = props.rows.find((row) => {
+                            if (row.id) return row.id == tableMeta.rowData[0];
+                            return row.Id == tableMeta.rowData[0];
+                          });
 
-                          if (value) {
-                            getWell({
-                              variables: { wellId: value },
-                            });
-                          } else {
-                            let selectedObj = props.rows.find((row) => {
-                              if (row.id) return row.id == tableMeta.rowData[0];
-                              return row.Id == tableMeta.rowData[0];
-                            });
-
-                            if (selectedObj) {
-                              if (props.targetLabel === "well") {
-                                setSelectedRow(selectedObj);
-                                setStateApp((state) => ({
-                                  ...state,
-                                  selectedWellId: tableMeta.rowData[0],
-                                  selectedWell: selectedObj,
-                                }));
-                                setSubComponent(<WellCardProvider />);
-                                setTitle(
-                                  selectedObj.wellName
-                                    ? selectedObj.wellName
-                                    : selectedObj.WellName
-                                );
-                                setSubTitle(
-                                  selectedObj.operator
-                                    ? selectedObj.operator
-                                    : selectedObj.Operator
-                                );
-                                handleOpenExpandableCard();
-                              } else if (props.targetLabel === "owner") {
-                                dispatch(
-                                  setMapGridCardState({
-                                    selectedOwner: selectedObj,
-                                  })
-                                );
+                          if (selectedWell) {
+                            if (props.targetLabel === "well") {
+                              setSelectedRow(selectedWell);
+                              setStateApp((state) => ({
+                                ...state,
+                                selectedWellId: tableMeta.rowData[0],
+                                selectedWell: selectedWell,
+                              }));
+                              setSubComponent(<WellCardProvider />);
+                              setTitle(
+                                selectedWell.wellName
+                                  ? selectedWell.wellName
+                                  : selectedWell.WellName
+                              );
+                              setSubTitle(
+                                selectedWell.operator
+                                  ? selectedWell.operator
+                                  : selectedWell.Operator
+                              );
+                              handleOpenExpandableCard();
+                            } else if (props.targetLabel === "owner") {
+                              if (props.parent === "OwnersPerWell") {
+                                selectedWell.id = selectedWell.globalOwnerId;
+                                delete selectedWell.globalOwnerId;
                               }
+
+                              dispatch(
+                                setMapGridCardState({
+                                  selectedOwner: selectedWell,
+                                })
+                              );
                             }
                           }
-                        }}
-                        aria-label="Detail Card"
-                      >
-                        <AssessmentIcon />
-                      </IconButton>
-                    </Tooltip>
-                  );
-                },
-              };
-            }
+                        }
+                      }}
+                      aria-label="Detail Card"
+                    >
+                      <AssessmentIcon />
+                    </IconButton>
+                  </Tooltip>
+                );
+              },
+            };
             break;
           case "actions":
             {
@@ -612,7 +823,6 @@ function SubTable(props) {
             }
 
             break;
-
           case "adminAccess":
             {
               column.options = {
@@ -674,7 +884,6 @@ function SubTable(props) {
               };
             }
             break;
-
           case "coordinates": //// fly to the map icon
             {
               column.options = {
@@ -732,6 +941,7 @@ function SubTable(props) {
                                   ...state,
                                   popupOpen: false,
                                   selectedWell: null,
+                                  activateWellDetailsFromTable: false,
                                   selectedWellId:
                                     props.targetLabel == "well"
                                       ? tableMeta.rowData[0]
@@ -769,7 +979,6 @@ function SubTable(props) {
               };
             }
             break;
-
           case "isTracked":
             {
               column.options = {
@@ -778,14 +987,19 @@ function SubTable(props) {
                   let id =
                     (trueTargetLabel ? trueTargetLabel : props.targetLabel) +
                     tableMeta.columnIndex;
+
+                  let targetSourceId =
+                    props.parent === "OwnersPerWell"
+                      ? tableMeta.rowData[2]
+                      : tableMeta.rowData[0];
                   return (
                     <TrackToggleButton
-                      id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                      id={id + targetSourceId + tableMeta.rowIndex}
                       target={{ isTracked: value }}
                       targetLabel={
                         trueTargetLabel ? trueTargetLabel : props.targetLabel
                       }
-                      targetSourceId={tableMeta.rowData[0]}
+                      targetSourceId={targetSourceId}
                       dark
                       multipleIds={
                         m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !==
@@ -820,6 +1034,10 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
+                  let targetSourceId =
+                    props.parent === "OwnersPerWell"
+                      ? tableMeta.rowData[2]
+                      : tableMeta.rowData[0];
 
                   return (
                     <Tooltip
@@ -834,7 +1052,7 @@ function SubTable(props) {
                         color="secondary"
                       >
                         <IconButton
-                          id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                          id={id + targetSourceId + tableMeta.rowIndex}
                           size={props.dense ? "small" : "medium"}
                           color="primary"
                           className={`${classes.icons} ${
@@ -850,7 +1068,7 @@ function SubTable(props) {
                             handleExpandClick(
                               tableMeta.columnIndex,
                               tableMeta.rowIndex,
-                              tableMeta.rowData[0],
+                              targetSourceId,
                               "comment"
                             );
                           }}
@@ -1021,13 +1239,13 @@ function SubTable(props) {
                             setSubComponent(
                               <ContactDetailCard
                                 selectRowOpenContact={selectRowOpenContact}
-                                contactId={value}
                                 handleCloseExpandableCard={
                                   handleCloseExpandableCard
                                 }
                               />
                             );
-                            setTitle("CONTACT DETAILS");
+                            setTitle("Contact Details");
+                            setMultipleExpandableCard(true);
                             setSubTitle(" ");
                             handleOpenExpandableCard();
                           } else {
@@ -1036,7 +1254,10 @@ function SubTable(props) {
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
                                 {
-                                  globalOwner: tableMeta.rowData[0],
+                                  globalOwner:
+                                    props.parent === "OwnersPerWell"
+                                      ? tableMeta.rowData[2]
+                                      : tableMeta.rowData[0],
                                   entity: tableMeta.rowData[1],
                                 },
                                 "makeOwnerAContact"
@@ -1045,7 +1266,7 @@ function SubTable(props) {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
-                                tableMeta.rowData[1],
+                                tableMeta.rowData[0],
                                 "makeOwnerAContact"
                               );
                           }
@@ -1064,7 +1285,6 @@ function SubTable(props) {
               };
             }
             break;
-
           case "ownerCount":
             {
               column.options = {
@@ -1113,7 +1333,6 @@ function SubTable(props) {
               };
             }
             break;
-
           case "owners": //ownerPerContactCount
             {
               column.options = {
@@ -1164,13 +1383,17 @@ function SubTable(props) {
               };
             }
             break;
-
           case "tags":
             {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
+                  let targetSourceId =
+                    props.parent === "OwnersPerWell"
+                      ? tableMeta.rowData[2]
+                      : tableMeta.rowData[0];
+
                   return (
                     <div style={{ marginRight: "10px" }}>
                       <Tooltip
@@ -1178,7 +1401,7 @@ function SubTable(props) {
                         placement="top"
                       >
                         <Badge
-                          id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                          id={id + targetSourceId + tableMeta.rowIndex}
                           className={`${classes.TagSample} ${
                             colInd === tableMeta.columnIndex &&
                             rowInd === tableMeta.rowIndex
@@ -1193,7 +1416,7 @@ function SubTable(props) {
                             handleExpandClick(
                               tableMeta.columnIndex,
                               tableMeta.rowIndex,
-                              tableMeta.rowData[0],
+                              targetSourceId,
                               "tag"
                             );
                           }}
@@ -1232,7 +1455,6 @@ function SubTable(props) {
               };
             }
             break;
-
           case "fullContactAddress":
             {
               column.options = {
@@ -1258,7 +1480,29 @@ function SubTable(props) {
               };
             }
             break;
-
+          case "oil":
+          case "gas":
+          case "water":
+          case "allocatedWater":
+          case "allocatedGas":
+          case "allocatedOil":
+            column.options = {
+              ...column.options,
+              customBodyRender: (value, tableMeta, updateValue) => {
+                if (value) {
+                  return (
+                    <span style={{ paddingLeft: 10, paddingRight: 10 }}>
+                      {value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                    </span>
+                  );
+                } else {
+                  return (
+                    <span style={{ paddingLeft: 10, paddingRight: 10 }}>0</span>
+                  );
+                }
+              },
+            };
+            break;
           default:
             {
               column.options = {
@@ -1268,12 +1512,24 @@ function SubTable(props) {
                     if (column.name === "appraisedValue")
                       return formatter.format(v);
 
+                    if (column.name === "offerPrice" && !!v && !isNaN(v))
+                      return formatter.format(v);
+
                     if (column.name === "lastUpdateAt")
                       return anyToDate(v).toLocaleString("en-US", {
                         year: "numeric",
                         day: "numeric",
                         month: "numeric",
                       });
+
+                    if (column.name === "closeDate" && !!v)
+                      return moment.parseZone(v).format("MM/DD/yyyy");
+
+                    // anyToDate(v).toLocaleString("en-US", {
+                    //   year: "numeric",
+                    //   day: "numeric",
+                    //   month: "numeric",
+                    // });
 
                     return v;
                   };
@@ -1401,37 +1657,43 @@ function SubTable(props) {
 
   const handleOpenExpandableCard = () => {
     setShowExpandableCard(true);
+    console.log("Expandable card opened");
   };
+
   const handleCloseExpandableCard = () => {
-    setShowExpandableCard(false);
-    setTargetLabelToExpand(null);
-    setStateApp((state) => ({
-      ...state,
-      popupOpen: false,
-      expandedCard: false,
-    }));
+    if (targetLabelToExpand === "contact") {
+      setMultipleExpandableCard(false);
+      setTargetLabelToExpand("well");
+    } else {
+      setShowExpandableCard(false);
+      setTargetLabelToExpand(null);
+      setStateApp((state) => ({
+        ...state,
+        popupOpen: false,
+        expandedCard: false,
+      }));
+    }
   };
 
   // 'view contact' on deals modal
   const selectRowOpenContact = (contact) => {
     const rowIndex = rows.findIndex((r) => r._id === contact._id);
     const row = rows[rowIndex];
-
     setSelectedRow(rows);
+    console.log("STATE APP", contact, row);
 
     setStateApp((stateApp) => ({
       ...stateApp,
-      selectedContact: row.id,
+      selectedContact: row._id,
     }));
 
     setSubComponent(
       <ContactDetailCard
         selectRowOpenContact={selectRowOpenContact}
-        contactId={row._id}
         handleCloseExpandableCard={handleCloseExpandableCard}
       />
     );
-    setTitle("CONTACT DETAILS");
+    setTitle("Contact Details");
     setSubTitle(" ");
     handleOpenExpandableCard();
   };
@@ -1445,9 +1707,13 @@ function SubTable(props) {
         : props.rows && props.rows.length > 10
         ? [10, 25]
         : [],
-    selectableRows: "multiple",
+    selectableRows:
+      props.targetLabel == "production_detail" ? false : "multiple",
     print:
-      props.targetLabel !== "deals" && props.targetLabel !== "usermanagement",
+      props.targetLabel !== "deals" &&
+      props.targetLabel !== "usermanagement" &&
+      props.targetLabel !== "owner" &&
+      props.targetLabel !== "production_detail",
     viewColumns: props.targetLabel !== "usermanagement",
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
@@ -1463,6 +1729,7 @@ function SubTable(props) {
               (row, index) => indexArray.indexOf(index) !== -1
             );
             let selectedRowsIds = selectedRows.map((row) => {
+              if (props.parent === "OwnersPerWell") return row.globalOwnerId;
               if (row.id) return row.id;
               if (row.Id) return row.Id;
               if (row._id) return row._id;
@@ -1622,23 +1889,23 @@ function SubTable(props) {
               );
             }
 
-            //// if Parcel Ownership set the multi selection top bar: ////
-            if (props.targetLabel === "deals") {
-              return (
-                <Tooltip title={"Delete"}>
-                  <IconButton
-                    size="medium"
-                    style={{ margin: "0 5px" }}
-                    onClick={(e) => {
-                      handleExpandClick(null, null, null, "deleteDeal");
-                    }}
-                    aria-label="delete"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Tooltip>
-              );
-            }
+            //// if deals set the multi selection top bar: ////
+            // if (props.targetLabel === "deals") {
+            //   return (
+            //     <Tooltip title={"Delete"}>
+            //       <IconButton
+            //         size="medium"
+            //         style={{ margin: "0 5px" }}
+            //         onClick={(e) => {
+            //           handleExpandClick(null, null, null, "deleteDeal");
+            //         }}
+            //         aria-label="delete"
+            //       >
+            //         <DeleteIcon />
+            //       </IconButton>
+            //     </Tooltip>
+            //   );
+            // }
 
             //// default empty top bar ////
             return (
@@ -1768,28 +2035,115 @@ function SubTable(props) {
       if (props.targetLabel === "contact") {
         setStateApp((stateApp) => ({
           ...stateApp,
-          selectedContact: rows[dataIndex].id,
+          selectedContact: rows[dataIndex]._id,
         }));
 
         setSubComponent(
           <ContactDetailCard
             selectRowOpenContact={selectRowOpenContact}
-            contactId={rows[dataIndex]._id}
             handleCloseExpandableCard={handleCloseExpandableCard}
           />
         );
-        setTitle("CONTACT DETAILS");
+        setTitle("Contact Details");
         setSubTitle(" ");
         handleOpenExpandableCard();
       }
     },
     onChangePage: (pageState) => {
-      console.log(`here: pageInd=${pageInd} pageState=${pageState}`);
       setPageInd(pageState);
     },
+    customSort: (data, colIndex, order) => {
+      if (props.parent === "production_WellDetails") {
+        let temp = data.filter((item) => item.data[1] != "Cumulative");
+        let temp_rows_per_page = rowsPerPage ? rowsPerPage : 25;
+        let temp_rows = temp.sort((a, b) => {
+          if (colIndex === 1) {
+            const dateA = moment(moment(a.data[colIndex], "MM/YYYY")).valueOf();
+            const dateB = moment(moment(b.data[colIndex], "MM/YYYY")).valueOf();
+            return (dateA < dateB ? -1 : 1) * (order === "desc" ? 1 : -1);
+          } else {
+            return (
+              (a.data[colIndex] < b.data[colIndex] ? -1 : 1) *
+              (order === "desc" ? 1 : -1)
+            );
+          }
+        });
+
+        let insertInBetween = temp_rows_per_page - 1;
+        let cumulative_array = Object.values(cumulative);
+        let temp_cumulative_array = [];
+
+        for (let counter = 0; counter < cumulative_array.length; counter++) {
+          if (
+            counter != 0 &&
+            counter != 9 &&
+            counter != 10 &&
+            counter != 11 &&
+            counter != 12
+          ) {
+            temp_cumulative_array.push(cumulative_array[counter]);
+          }
+        }
+
+        if (Object.entries(cumulative).length != 0) {
+          let multiplier = temp_rows.length / insertInBetween;
+
+          for (let counter = 1; counter <= multiplier; counter++) {
+            let insert_index = 0;
+            if (counter != 1) {
+              insert_index = counter * temp_rows_per_page;
+              temp_rows.splice(insert_index - 1, 0, {
+                data: temp_cumulative_array,
+              });
+            } else {
+              temp_rows.splice(insertInBetween, 0, {
+                data: temp_cumulative_array,
+              });
+            }
+          }
+        }
+
+        temp_rows.push({ data: temp_cumulative_array });
+        return temp_rows;
+      } else {
+        return data.sort((a, b) => {
+          return (
+            (a.data[colIndex] < b.data[colIndex] ? -1 : 1) *
+            (order === "desc" ? 1 : -1)
+          );
+        });
+      }
+    },
+    onChangeRowsPerPage: (numberOfRows) => {
+      if (props.total === true) {
+        switch (props.parent) {
+          case "production_WellDetails":
+            let trimmed = rows.filter(
+              (item) => item.ReportDate != "Cumulative"
+            );
+            setRowsPerPage(numberOfRows);
+            setRows(
+              displayCumulative(trimmed, props.total, cumulative, numberOfRows)
+            );
+            break;
+          default:
+            break;
+        }
+      }
+    },
+    // onColumnSortChange: (column, direction) => {
+    //   if (props.total === true) {
+    //     switch(props.parent) {
+    //       case "production_WellDetails":
+    //         let trimmed = rows.filter(item => item.ReportDate !== "Cumulative");
+    //         setRows(trimmed);
+    //         break;
+    //       default:
+    //         break;
+    //     }
+    //   }
+    // },
     onTableChange: (action, tableState) => {
-      console.log("onTableChange");
-      console.log(action, tableState);
       if (props.header === "Contacts") {
         let filters = [];
         const leadSourceIndex = tableState.columns.findIndex(
@@ -1846,7 +2200,6 @@ function SubTable(props) {
             search: tableState.searchText,
           },
         };
-
         switch (action) {
           case "changeRowsPerPage":
             console.log("changeRowsPerPage");
@@ -1854,11 +2207,11 @@ function SubTable(props) {
             tableState.page = 0;
             setPageInd(tableState.page);
             setRowsPerPage(tableState.rowsPerPage);
-            props.contactsPageProps.getContacts(pageVariables);
+            props.contactsPageProps.getPaginatedContacts(pageVariables);
             break;
           case "changePage":
             props.contactsPageProps.setLoading(true);
-            props.contactsPageProps.getContacts({
+            props.contactsPageProps.getPaginatedContacts({
               ...pageVariables,
               variables: {
                 ...pageVariables.variables,
@@ -1873,6 +2226,7 @@ function SubTable(props) {
                       ? props.rows[props.rows.length - 1]?._id
                       : null,
                 },
+                pageOverride: tableState.page,
               },
             });
             break;
@@ -1880,15 +2234,17 @@ function SubTable(props) {
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
             setPageInd(tableState.page);
-            props.contactsPageProps.getContacts(pageVariables);
+            props.contactsPageProps.getPaginatedContacts(pageVariables);
             break;
           case "search":
             delayedSearchRequest({
               tableState: tableState,
               setLoading: props.contactsPageProps.setLoading,
-              getContacts: props.contactsPageProps.getContacts,
-              getContactsFilterOptions: props.contactsPageProps.getContactsFilterOptions,
-              pageVariables
+              getPaginatedContacts:
+                props.contactsPageProps.getPaginatedContacts,
+              getContactsFilterOptions:
+                props.contactsPageProps.getContactsFilterOptions,
+              pageVariables,
             });
             break;
           case "onSearchClose":
@@ -1896,7 +2252,7 @@ function SubTable(props) {
             tableState.page = 0;
             tableState.count = 0;
             setPageInd(tableState.page);
-            props.contactsPageProps.getContacts(pageVariables);
+            props.contactsPageProps.getPaginatedContacts(pageVariables);
             props.contactsPageProps.getContactsFilterOptions();
             break;
           case "propsUpdate":
@@ -1906,23 +2262,182 @@ function SubTable(props) {
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
             setPageInd(tableState.page);
-            props.contactsPageProps.getContacts(pageVariables);
+            props.contactsPageProps.getPaginatedContacts(pageVariables);
             break;
           case "resetFilters":
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
             setPageInd(tableState.page);
-            props.contactsPageProps.getContacts(pageVariables);
+            props.contactsPageProps.getPaginatedContacts(pageVariables);
             break;
           default:
             console.log("action not handled.");
         }
       }
+
+      if (props.header === "Well Interests") {
+        // let filters = [];
+        // const leadSourceIndex = tableState.columns.findIndex(
+        //   (i) => i.name === "leadSource"
+        // );
+        // const lastUpdateByIndex = tableState.columns.findIndex(
+        //   (i) => i.name === "lastUpdateBy.name"
+        // );
+        // const tagsIndex = tableState.columns.findIndex(
+        //   (i) => i.name === "tags"
+        // );
+
+        // if (tableState.filterList[leadSourceIndex]?.length !== 0) {
+        //   filters.push({
+        //     field: "leadSource",
+        //     value: tableState.filterList[leadSourceIndex],
+        //   });
+        // }
+        // if (tableState.filterList[lastUpdateByIndex]?.length !== 0) {
+        //   filters.push({
+        //     field: "lastUpdateBy.name",
+        //     value: tableState.filterList[lastUpdateByIndex],
+        //   });
+        // }
+        // if (tableState.filterList[tagsIndex]?.length !== 0) {
+        //   filters.push({
+        //     field: "tag.tag",
+        //     value: tableState.filterList[tagsIndex],
+        //   });
+        // }
+
+        const pageVariables = {
+          variables: {
+            pagination: {
+              first: tableState.rowsPerPage,
+              after: null,
+            },
+            sort: tableState.activeColumn
+              ? {
+                  field:
+                    tableState.columns[tableState.activeColumn]?.name ===
+                    "fullContactAddress"
+                      ? "address1"
+                      : tableState.columns[tableState.activeColumn]?.name,
+                  order:
+                    tableState.columns[tableState.activeColumn]
+                      ?.sortDirection === "asc"
+                      ? 1
+                      : -1,
+                }
+              : [],
+
+            filters: {
+              field: "id",
+              value: props.wellInterestsPageProps.ownerId,
+            },
+            // search: tableState.searchText,
+          },
+        };
+
+        switch (action) {
+          case "changeRowsPerPage":
+            console.log("changeRowsPerPage");
+            props.wellInterestsPageProps.setLoading(true);
+            tableState.page = 0;
+            setPageInd(tableState.page);
+            setRowsPerPage(tableState.rowsPerPage);
+            props.wellInterestsPageProps.getPaginatedWellInterests(
+              pageVariables
+            );
+            break;
+          case "changePage":
+            props.wellInterestsPageProps.setLoading(true);
+            props.wellInterestsPageProps.getPaginatedWellInterests({
+              ...pageVariables,
+              variables: {
+                ...pageVariables.variables,
+                pagination: {
+                  ...pageVariables.variables.pagination,
+                  before:
+                    props.rows && tableState.page < pageInd
+                      ? props.rows[0]?.cursor
+                      : null,
+                  after:
+                    props.rows && tableState.page > pageInd
+                      ? props.rows[props.rows.length - 1]?.cursor
+                      : null,
+                },
+              },
+            });
+            break;
+          case "sort":
+            props.wellInterestsPageProps.setLoading(true);
+            tableState.page = 0;
+            setPageInd(tableState.page);
+            props.wellInterestsPageProps.getPaginatedWellInterests(
+              pageVariables
+            );
+            break;
+          case "search":
+            // delayedSearchRequest({
+            //   tableState: tableState,
+            //   setLoading: props.wellInterestsPageProps.setLoading,
+            //   getPaginatedWellInterests:
+            //     props.wellInterestsPageProps.getPaginatedWellInterests,
+            //   getContactsFilterOptions:
+            //     props.wellInterestsPageProps.getContactsFilterOptions,
+            //   pageVariables,
+            // });
+            break;
+          case "onSearchClose":
+            // props.wellInterestsPageProps.setLoading(true);
+            // tableState.page = 0;
+            // tableState.count = 0;
+            // setPageInd(tableState.page);
+            // props.wellInterestsPageProps.getPaginatedWellInterests(pageVariables);
+            // props.wellInterestsPageProps.getContactsFilterOptions();
+            break;
+          case "propsUpdate":
+            console.log("work propsUpdate");
+            break;
+          case "filterChange":
+            // props.wellInterestsPageProps.setLoading(true);
+            // tableState.page = 0;
+            // setPageInd(tableState.page);
+            // props.wellInterestsPageProps.getPaginatedWellInterests(pageVariables);
+            break;
+          case "resetFilters":
+            // props.wellInterestsPageProps.setLoading(true);
+            // tableState.page = 0;
+            // setPageInd(tableState.page);
+            // props.wellInterestsPageProps.getPaginatedWellInterests(pageVariables);
+            break;
+          default:
+            console.log("action not handled.");
+        }
+      }
+
+      // else if (props.header === "Monthly Production") {
+      //   switch(action) {
+      //     case "propsUpdate":
+      //       console.log(tableState.data);
+      //       break;
+      //     default:
+      //       break;
+      //   }
+      // }
     },
   };
 
+  if (props.header === "Well Interests") {
+    console.log('props.header === "Well Interests"');
+    options.rowsPerPageOptions =
+      props.wellInterestsPageProps.wellInterestsCount > 25
+        ? [10, 25, 50, 100]
+        : props.wellInterestsPageProps.wellInterestsCount > 10
+        ? [10, 25]
+        : [];
+    options.count = props.wellInterestsPageProps.wellInterestsCount;
+    options.serverSide = true;
+  }
+
   if (props.header === "Contacts") {
-    console.log('props.header === "Contacts"');
     options.rowsPerPageOptions =
       props.contactsPageProps.contactsCount > 25
         ? [10, 25, 50, 100]
@@ -1931,14 +2446,35 @@ function SubTable(props) {
         : [];
     options.count = props.contactsPageProps.contactsCount;
     options.serverSide = true;
+    options.print = false;
   }
-
-  console.log("ROWSSS : ", rows);
 
   let history = useHistory();
 
   let routeChange = (route) => {
     history.push(route);
+  };
+
+  const displayCumulative = (data, total, cumulative, rowsPerPage = 25) => {
+    let rows = data;
+    if (total === true && rows.length != 0) {
+      let insertInBetween = rowsPerPage - 1;
+      if (Object.entries(cumulative).length != 0) {
+        let multiplier = rows.length / insertInBetween;
+        for (let temp = 1; temp <= multiplier; temp++) {
+          let insert_index = 0;
+          if (temp != 1) {
+            insert_index = temp * rowsPerPage;
+            rows.splice(insert_index - 1, 0, cumulative);
+          } else {
+            rows.splice(insertInBetween, 0, cumulative);
+          }
+        }
+        rows.push(cumulative);
+      }
+      rows.push(cumulative);
+    }
+    return rows;
   };
 
   return (
@@ -1949,7 +2485,13 @@ function SubTable(props) {
         } ${columns && columns.length > 0 ? "" : classes.emptyTable}`}
       >
         <MUIDataTable
-          className={classes.table}
+          className={
+            props.targetLabel == "owner"
+              ? customClassess.table
+              : props.targetLabel == "production_detail"
+              ? productionClassess.table
+              : classes.table
+          }
           title={props.header}
           data={rows ? rows : []}
           columns={columns ? columns : []}
@@ -1960,7 +2502,6 @@ function SubTable(props) {
               //   :
               false,
             ...options,
-            print: false,
           }}
         />
 
@@ -1968,7 +2509,6 @@ function SubTable(props) {
           selectRowOpenContact={selectRowOpenContact}
           contactId={props.contactId}
         /> */}
-
         {openDialog && openDialog !== "addDeals" && (
           <Dialog
             className={classes.dialog}
@@ -2017,7 +2557,7 @@ function SubTable(props) {
                 multipleIds={
                   m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
                   m1nSelectedRowsIndexes.length > 1
-                    ? m1nSelectedRowsIds
+                    ? removeDuplicatesIds(m1nSelectedRowsIds)
                     : null
                 }
               />
@@ -2032,7 +2572,7 @@ function SubTable(props) {
                   multipleIds={
                     m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
                     m1nSelectedRowsIndexes.length > 1
-                      ? m1nSelectedRowsIds
+                      ? removeDuplicatesIds(m1nSelectedRowsIds)
                       : null
                   }
                 />
@@ -2055,14 +2595,17 @@ function SubTable(props) {
                 openContactDetailCard={(contactId) => {
                   setTargetLabelToExpand("contact");
                   setSelectedRow({ _id: contactId });
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    selectedContact: contactId,
+                  }));
                   setSubComponent(
                     <ContactDetailCard
                       selectRowOpenContact={selectRowOpenContact}
-                      contactId={contactId}
                       handleCloseExpandableCard={handleCloseExpandableCard}
                     />
                   );
-                  setTitle("CONTACT DETAILS");
+                  setTitle("Contact Details");
                   setSubTitle(" ");
                   handleCloseDialog();
                   handleOpenExpandableCard();
@@ -2096,11 +2639,15 @@ function SubTable(props) {
                 header="Delete Owner(s)"
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIds}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to permanently delete the owner${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                  m1nSelectedRowsIds &&
+                  m1nSelectedRowsIds.length > 1 &&
+                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                 } from  this contact?`}
               </DeleteConfirmationDialogContent>
             )}
@@ -2109,19 +2656,23 @@ function SubTable(props) {
                 header="Delete Contact(s)"
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIds}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {props.header === "Owner's Contacts" &&
                   `Do you want to remove the contact${
-                    m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
+                    m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                       ? "s"
                       : ""
                   } from this owner?`}
 
                 {props.header === "Contacts" &&
                   `Do you want to delete the selected contact${
-                    m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
+                    m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                       ? "s"
                       : ""
                   }?`}
@@ -2130,15 +2681,23 @@ function SubTable(props) {
             {openDialog === "deleteParcelOwnership" && (
               <DeleteConfirmationDialogContent
                 header={`Delete Owner${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                  m1nSelectedRowsIds &&
+                  m1nSelectedRowsIds.length > 1 &&
+                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                 }`}
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIds}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to delete the owner${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                  m1nSelectedRowsIds &&
+                  m1nSelectedRowsIds.length > 1 &&
+                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                 }?`}
               </DeleteConfirmationDialogContent>
             )}
@@ -2149,7 +2708,7 @@ function SubTable(props) {
                 }`}
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIds}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to delete the Parcel Interest${
@@ -2165,7 +2724,7 @@ function SubTable(props) {
                 }`}
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
-                m1nSelectedRowsIds={m1nSelectedRowsIds}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to delete the selected deal${
@@ -2222,7 +2781,7 @@ function SubTable(props) {
                   props.deleteFunc(selectedUser.id);
                   closeMenu();
                 }}
-                m1nSelectedRowsIds={m1nSelectedRowsIds}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {selectedUser !== null
@@ -2237,12 +2796,12 @@ function SubTable(props) {
           </Dialog>
         )}
 
-        {showExpandableCard && (
+        {multipleExpandableCard && targetLabelToExpand == "contact" && (
           <Dialog
             className={classes.dialogExpCard}
             fullWidth
             maxWidth="xl"
-            open={showExpandableCard}
+            open={multipleExpandableCard}
             onClose={handleCloseExpandableCard}
           >
             <ExpandableCardProvider
@@ -2260,15 +2819,7 @@ function SubTable(props) {
               zIndex={1201}
               cardWidthExpanded="100%"
               cardHeightExpanded="100%"
-              targetSourceId={
-                targetLabelToExpand === "owner" ||
-                targetLabelToExpand === "well" ||
-                (!targetLabelToExpand &&
-                  (props.targetLabel === "owner" ||
-                    props.targetLabel === "well"))
-                  ? selectedRow.id
-                  : selectedRow._id
-              }
+              targetSourceId={selectedRow._id}
               targetLabel={
                 targetLabelToExpand ? targetLabelToExpand : props.targetLabel
               }
@@ -2281,6 +2832,53 @@ function SubTable(props) {
             />
           </Dialog>
         )}
+        {showExpandableCard &&
+          targetLabelToExpand !== "well" &&
+          targetLabelToExpand !== "contact" &&
+          multipleExpandableCard == false && (
+            <Dialog
+              className={classes.dialogExpCard}
+              fullWidth
+              maxWidth="xl"
+              open={showExpandableCard}
+              onClose={handleCloseExpandableCard}
+            >
+              <ExpandableCardProvider
+                expanded={true}
+                handleCloseExpandableCard={handleCloseExpandableCard}
+                component={subComponent}
+                title={title}
+                subTitle={subTitle}
+                parent="table"
+                mouseX={0}
+                mouseY={0}
+                position="relative"
+                cardLeft={"0"}
+                cardTop={"0"}
+                zIndex={1201}
+                cardWidthExpanded="100%"
+                cardHeightExpanded="100%"
+                targetSourceId={
+                  targetLabelToExpand === "owner" ||
+                  targetLabelToExpand === "well" ||
+                  (!targetLabelToExpand &&
+                    (props.targetLabel === "owner" ||
+                      props.targetLabel === "well"))
+                    ? selectedRow.id
+                    : selectedRow._id
+                }
+                targetLabel={
+                  targetLabelToExpand ? targetLabelToExpand : props.targetLabel
+                }
+                noTrackAvailable={
+                  targetLabelToExpand === "contact" ||
+                  (!targetLabelToExpand && props.targetLabel === "contact")
+                    ? true
+                    : false
+                }
+              />
+            </Dialog>
+          )}
       </div>
 
       {props.loading && (

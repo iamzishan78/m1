@@ -1,9 +1,12 @@
 import React, { useEffect } from "react";
 import Typography from "@material-ui/core/Typography";
+import CallIcon from "@material-ui/icons/Call";
+import MeetingIcon from "@material-ui/icons/Group";
+import TaskIcon from "@material-ui/icons/WatchLater";
+import DeadlineIcon from "@material-ui/icons/Flag";
 import EmailIcon from "@material-ui/icons/Email";
-import EventNoteIcon from "@material-ui/icons/EventNote";
-import PhoneIcon from "@material-ui/icons/Phone";
-import ChatIcon from "@material-ui/icons/Chat";
+import DefaultIcon from "@material-ui/icons/Event";
+import ContactMailIcon from '@material-ui/icons/ContactMail';
 import Avatar from "@material-ui/core/Avatar";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -68,10 +71,12 @@ function SummarySection({ activity }) {
   const classes = useStyles();
 
   const typeMapping = {
-    sms: "sms",
-    phone: "calls",
-    campaign: "campaigns",
-    email: "emails",
+    email: "email",
+    call: "calls",
+    deadline: "deadlines",
+    task: "tasks",
+    meeting: "meetings",
+    mailer: "mailers sent",
   };
   const typeName = typeMapping[activity.type];
 
@@ -84,21 +89,25 @@ function SummarySection({ activity }) {
         color = `blue${color}`;
         Icon = <EmailIcon />;
         break;
-      case "campaign":
+      case "task":
         color = `red${color}`;
-        Icon = <EventNoteIcon />;
+        Icon = <TaskIcon />;
         break;
-      case "phone":
+      case "call":
         color = `green${color}`;
-        Icon = <PhoneIcon />;
+        Icon = <CallIcon />;
         break;
-      case "sms":
+      case "deadline":
         color = `purple${color}`;
-        Icon = <ChatIcon />;
+        Icon = <DeadlineIcon />;
+        break;
+      case "meeting":
+        color = `blue${color}`;
+        Icon = <MeetingIcon />;
         break;
       default:
-        color = `blue${color}`;
-        Icon = <EmailIcon />;
+        color = `red${color}`;
+        Icon = <ContactMailIcon />;
     }
 
     return <Avatar className={classes[color]}>{Icon}</Avatar>;
@@ -122,7 +131,7 @@ export default function ActivitySummary({ activityLog }) {
     return activityLog.filter((act) => act.type === type).length;
   };
 
-  const types = ["email", "campaign", "phone", "sms"];
+  const types = ["call", "email", "task", "deadline", "meeting", "mailer"];
 
   return (
     <div className={classes.summaryRoot}>

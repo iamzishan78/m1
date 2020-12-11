@@ -320,7 +320,7 @@ export default function CellContentEdition({
           variables: {
             contact: trimmedEditContent,
           },
-          refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
+          refetchQueries: ["getPaginatedContacts", "getContact", "getCustomLayer"],
           awaitRefetchQueries: true,
         });
       }
@@ -507,7 +507,7 @@ export default function CellContentEdition({
               ? children
               : ""
             : textArray.join(", ")
-          : `${name ? name + " " : ""} N/A`}
+          : `${name ? name + " " : ""} ${targetLabel == "production_detail" ? ' - ': 'N/A'}`}
         {!nonEditable && (
           <PencilEditIcon
             handleUpdating={handleUpdating}

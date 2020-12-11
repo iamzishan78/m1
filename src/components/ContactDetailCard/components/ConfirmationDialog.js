@@ -29,7 +29,7 @@ export default function ConfirmationDialog(props) {
         },
       },
       refetchQueries: [
-        "getContacts",
+        "getPaginatedContacts",
         // "getContact",
         "getCustomLayer",
       ],

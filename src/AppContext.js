@@ -46,6 +46,7 @@ const AppProvider = (props) => {
     signUpUserType: null,
     wellCount: 500,
     wells: null,
+    wellDetailCardOpen: null,
     trackedwells: null,
     trackedOwnerWells: null,
     selectedWell: null,
@@ -59,7 +60,6 @@ const AppProvider = (props) => {
     owners: null,
     popupOpen: false, //map used in flyto
     expandedCard: false,
-    abstractPopupOpen: false,
     flyTo: null, //map used in flyto
     fitBounds: null, //map used in fitBounds
     selectedTitleOpinionId: null,
@@ -146,6 +146,11 @@ const AppProvider = (props) => {
     mappedHeadersFromCSV: [],
     viewportWells: null,
     minZoomToQueryViewport: 12.5,
+    activateWellDetailsFromTable: false,
+    contactUpdated: null,
+    currentContatcAtivities: [],
+    dealDisplayType: "board",
+    activityDisplayType: "calendar",
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;
@@ -184,8 +189,8 @@ const AppProvider = (props) => {
             return {
               ...stateApp,
               layers: [...currentLayers],
-              popupOpen: false,
-              selectedWell: null,
+              // popupOpen: false,
+              // selectedWell: null,
               mapCircularLoaderAct: false,
             };
           }
@@ -266,7 +271,7 @@ const AppProvider = (props) => {
             left: "0",
             height: "100vh",
             width: "100vw",
-            zIndex: "100000",
+            zIndex: "10000000000",
           }}
         >
           <CircularProgress

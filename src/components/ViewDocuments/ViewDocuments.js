@@ -214,9 +214,7 @@ export default function ViewDocuments(props) {
                   <h4 className={classes.uploadTitle}>{doc.fileName}</h4>
                   <h5 className={classes.uploadSubtext}>{doc.userName}</h5>
                   <h5 className={classes.uploadSubtext}>
-                    {moment(new Date(Number(doc.dateTime))).format(
-                      "MMM DD, YYYY"
-                    )}
+                    {moment.utc(doc.dateTime).format("MMM DD, YYYY")}
                   </h5>
                 </div>
               </div>

@@ -19,12 +19,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import { Container } from "@material-ui/core";
 import Table from "./components/Table";
+import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
 import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
-// import { CONTACTSQUERY } from "../../../graphQL/useQueryContacts";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { CONTACTSFILTEROPTIONS } from "../../../graphQL/useQueryContactsFilterOptions";
 import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType";
@@ -41,9 +41,12 @@ import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction
 import { UPDATEPARCELOWNER } from "../../../graphQL/useMutationUpdateParcelOwner";
 import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRecords";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
+import { CONTACTDEALS } from "../../../graphQL/useQueryContactDeals";
 import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelInterests";
 import { IFARECONTACTS } from "../../../graphQL/useQueryIfOwnersAreContacts";
 import { OWNER_WELLINTERESTS } from "../../../graphQL/useQueryOwner_WellInterests";
+import { PAGINATEDWELLINTERESTSQUERY } from "../../../graphQL/useQueryPaginatedWellInterests.js";
+import { WELLINTERESTSFILTEROPTIONS } from "../../../graphQL/useQueryWellInterestsFilterOptions";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -216,19 +219,18 @@ const TrackedOwnersHeadCells = [
       viewColumns: false,
     },
   },
-  //temporarily comment out until release of owner summary card
-  // {
-  //   name: "detailCard",
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     sort: false,
-  //     searchable: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
+  {
+    name: "detailCard",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
   {
     name: "coordinates",
     label: " ",
@@ -360,6 +362,19 @@ const OwnersPerWellHeadCells = [
       viewColumns: false,
     },
   },
+  {
+    name: "globalOwnerId",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+
   { name: "name", label: "Name" },
   {
     name: "ownershipType",
@@ -1529,7 +1544,7 @@ const UserManagementHeadCells = [
 
 const DealsHeadCells = [
   {
-    name: "id",
+    name: "_id",
     options: {
       display: false,
       filter: false,
@@ -1541,24 +1556,32 @@ const DealsHeadCells = [
     },
   },
   {
-    name: "title",
-    label: "Name",
+    name: "name",
+    label: "Deal Name",
   },
   {
-    name: "contactName",
-    label: "Contact",
+    name: "offerPrice",
+    label: "Offer Price",
   },
   {
-    name: "dealStage",
+    name: "closeDate",
+    label: "Expected Close Date",
+  },
+  {
+    name: "pipelineName",
+    label: "Pipeline",
+  },
+  {
+    name: "laneName",
     label: "Deal Stage",
   },
   {
-    name: "label",
-    label: "Deal Amount",
+    name: "ownerName",
+    label: "Deal Owner",
   },
   {
-    name: "description",
-    label: "Deal Details",
+    name: "notes",
+    label: "Notes",
   },
 ];
 
@@ -1673,22 +1696,53 @@ const WellInterests = [
       viewColumns: false,
     },
   },
-  { name: "wellName", label: "Well" },
-  { name: "apiNumber", label: "API" },
-  { name: "operator", label: "Operator" },
-  { name: "interestType", label: "Type" },
+  {
+    name: "wellName",
+    label: "Well",
+    options: {
+      filter: false,
+    },
+  },
+  {
+    name: "apiNumber",
+    label: "API",
+    options: {
+      filter: false,
+    },
+  },
+  {
+    name: "operator",
+    label: "Operator",
+    options: {
+      filter: false,
+    },
+  },
+  {
+    name: "interestType",
+    label: "Type",
+    options: {
+      filter: false,
+    },
+  },
   {
     name: "ownershipPercentage",
     label: "Interest",
+    options: {
+      filter: false,
+    },
   },
   {
     name: "appraisedValue",
     label: "Appraised Value",
+    options: {
+      filter: false,
+    },
   },
   {
     name: "tags",
     label: "Tags ",
     options: {
+      filter: false,
       sort: false,
       download: false,
       print: false,
@@ -1756,6 +1810,131 @@ const WellInterests = [
   },
 ];
 
+////////////PRODUCTION DETAILS//////////////////////////////////////////
+const ProductionDetailsHeaders = [
+  {
+    name: "Id",
+    editable: false,
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: true,
+      // sort: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "ReportDate",
+    label: "Date",
+    editable: false,
+    options: {
+      filter: false,
+      sort: true,
+      // sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "oil",
+    label: "Oil (BBL)",
+    editable: false,
+    options: {
+      filter: false,
+      sort: true,
+      // sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "gas",
+    label: "Gas (MCF)",
+    editable: false,
+    options: {
+      filter: false,
+      sort: true,
+      // sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "water",
+    label: "H2O (BBL)",
+    editable: false,
+    options: {
+      filter: false,
+      sort: true,
+      // sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "allocatedOil",
+    label: "Allocated Oil (BBL)",
+    editable: false,
+    options: {
+      filter: false,
+      sort: true,
+      // sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "allocatedGas",
+    label: "Allocated Gas (MCF)",
+    editable: false,
+    options: {
+      filter: false,
+      sort: true,
+      // sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+  {
+    name: "allocatedWater",
+    label: "Allocated Water (BBL)",
+    editable: false,
+    options: {
+      filter: false,
+      sort: true,
+      // sort: false,
+      searchable: false,
+      download: false,
+      print: true,
+      viewColumns: false,
+      selectableRows: false,
+    },
+  },
+];
+////////////PRODUCTION DETAILS end//////////////////////////////////////
+
 ////////////HeadCells end///////////////////////////////////////////////
 
 const capitalizeFirstLetter = (string) => {
@@ -1797,6 +1976,12 @@ function M1nTable(props) {
   const setRows = (newState) => {
     setStateIfDeepEqual(Rows, newState);
   };
+
+  const [total, Total] = useState(false);
+  const setTotal = (newState) => {
+    setStateIfDeepEqual(Total, newState);
+  };
+
   const [header, Header] = useState("");
   const setHeader = (newState) => {
     setStateIfDeepEqual(Header, newState);
@@ -1821,6 +2006,11 @@ function M1nTable(props) {
   const setTargetLabel = (newState) => {
     setStateIfDeepEqual(TargetLabel, newState);
   };
+  const [targetLabelToExpand, TargetLabelToExpand] = useState(null);
+  const setTargetLabelToExpand = (newState) => {
+    setStateIfDeepEqual(TargetLabelToExpand, newState);
+  };
+
   const [deleteFunc, setDeleteFunc] = useState(null);
   // const setDeleteFunc = (newState) => {
   //   setStateIfDeepEqual(DeleteFunc, newState);
@@ -1845,13 +2035,20 @@ function M1nTable(props) {
   const setWarningShowed = (newState) => {
     setStateIfDeepEqual(WarningShowed, newState);
   };
-  const { searchloading, searchResultData } = useSelector(
-    ({ MapGridCard }) => MapGridCard
-  );
+  const {
+    searchloading,
+    searchResultData,
+    selectedOwnerWellIntsSummary,
+  } = useSelector(({ MapGridCard }) => MapGridCard);
 
   const [dataContacts, DataContacts] = useState(null);
   const setDataContacts = (newState) => {
     setStateIfDeepEqual(DataContacts, newState);
+  };
+
+  const [dataWellInterests, DataWellInterests] = useState(null);
+  const setDataWellInterests = (newState) => {
+    setStateIfDeepEqual(DataWellInterests, newState);
   };
 
   ////////////Queries begin///////////////////////////////////////////////
@@ -1894,12 +2091,10 @@ function M1nTable(props) {
   const [removeUser] = useMutation(REMOVEUSER);
   //////////
 
-  const [getContacts, { data: constDataContacts }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY, {
+      fetchPolicy: "no-cache",
+    });
   const [
     getContactsFilterOptions,
     { data: dataContactsFilterOptions },
@@ -1907,9 +2102,14 @@ function M1nTable(props) {
     fetchPolicy: "cache-and-network",
   });
   //////////
-  const [getTransactionData, { data: dataDeals }] = useLazyQuery(
-    TRANSACTIONDATA
+  // const [getTransactionData, { data: dataDeals }] = useLazyQuery(
+  //   TRANSACTIONDATA
+  // );
+
+  const [getContactDeals, { data: dataDeals }] = useLazyQuery(
+    CONTACTDEALS
   );
+  
   //////////
   const [removeContact] = useMutation(REMOVECONTACT);
 
@@ -1946,6 +2146,20 @@ function M1nTable(props) {
     getOwner_WellInterests,
     { data: dataOwner_WellInterests },
   ] = useLazyQuery(OWNER_WELLINTERESTS);
+
+  const [
+    getPaginatedWellInterests,
+    { data: constDataWellInterests },
+  ] = useLazyQuery(PAGINATEDWELLINTERESTSQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
+
+  const [
+    getWellInterestsFilterOptions,
+    { data: dataWellInterestsFilterOptions },
+  ] = useLazyQuery(WELLINTERESTSFILTEROPTIONS, {
+    fetchPolicy: "cache-and-network",
+  });
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
@@ -2508,7 +2722,7 @@ function M1nTable(props) {
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
         setLoading(true);
         const objectsIdsArray = dataWellOwners.wellOwners.map(
-          (wellOwner) => wellOwner.id
+          (wellOwner) => wellOwner.globalOwnerId
         );
 
         // getOwnersWells({
@@ -2558,7 +2772,7 @@ function M1nTable(props) {
 
         // if (dataOwnersWells.ownersWells) {
         //   for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
-        //     if (wellOwner.id === dataOwnersWells.ownersWells[i].ownerId) {
+        //     if (wellOwner.globalOwnerId === dataOwnersWells.ownersWells[i].ownerId) {
         //       wellOwner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
         //         (well) => well.wellId
         //       );
@@ -2573,7 +2787,7 @@ function M1nTable(props) {
           i++
         ) {
           if (
-            wellOwner.id ===
+            wellOwner.globalOwnerId ===
             checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
           ) {
             wellOwner.isContact =
@@ -2586,7 +2800,10 @@ function M1nTable(props) {
         }
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-          if (wellOwner.id === dataCommentsCounter.commentsCounter[i]._id) {
+          if (
+            wellOwner.globalOwnerId ===
+            dataCommentsCounter.commentsCounter[i]._id
+          ) {
             wellOwner.commentsCounter =
               dataCommentsCounter.commentsCounter[i].total;
             break;
@@ -2594,7 +2811,7 @@ function M1nTable(props) {
         }
 
         for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-          if (wellOwner.id === dataTagSamples.tagSamples[i]._id) {
+          if (wellOwner.globalOwnerId === dataTagSamples.tagSamples[i]._id) {
             wellOwner.tags = [
               dataTagSamples.tagSamples[i].tags,
               dataTagSamples.tagSamples[i].total,
@@ -2605,7 +2822,9 @@ function M1nTable(props) {
         }
 
         for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-          if (wellOwner.id === dataTracks.tracksByObjectType[i].trackOn) {
+          if (
+            wellOwner.globalOwnerId === dataTracks.tracksByObjectType[i].trackOn
+          ) {
             wellOwner.isTracked = true;
             break;
           }
@@ -2671,15 +2890,12 @@ function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "Contacts") {
       setLoading(true);
-      console.log("ue mintable 22");
+      console.log("ue mintable 22- contact");
       setTargetLabel("contact");
       setHeader("Contacts");
+      setOrderByTracks(false);
       setAddAble({ parent: false, type: "contact" });
-      getContacts({
-        variables: {
-          userId: stateApp.user.mongoId
-        },
-      });
+      getPaginatedContacts();
       getContactsFilterOptions();
       setUploadIcon(false);
       setStartPaginationAt(25);
@@ -2939,7 +3155,11 @@ function M1nTable(props) {
                   IsDeleted: true,
                 },
               },
-              refetchQueries: ["getContacts", "getContact", "getCustomLayer"],
+              refetchQueries: [
+                "getPaginatedContacts",
+                "getContact",
+                "getCustomLayer",
+              ],
               awaitRefetchQueries: true,
             });
           }
@@ -3149,10 +3369,7 @@ function M1nTable(props) {
         if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
         if (
           props.targetLabel &&
-          props.targetLabel == "well"
-          //temporarily remove until we release the owner summary card
-          // ||
-          // props.targetLabel == "owner"
+          (props.targetLabel == "well" || props.targetLabel == "owner")
         )
           //would only set the detail card icon for wells & owners
           buildingColumns.push(SearchsHeadCells[5]);
@@ -3455,50 +3672,49 @@ function M1nTable(props) {
   ////////////Deals start////////////////////////////////////////////////
 
   useEffect(() => {
-    console.log("DEALS CHECK : ", props.parent, props.contact, stateApp.user);
     if (props.parent && props.parent === "Deals" && stateApp.user) {
       setLoading(true);
-      console.log("ue mintable 22");
+      console.log("ue mintable 22 - deals");
       setTargetLabel("deals");
       setHeader("Deals");
-      getTransactionData({
+      getContactDeals({
         variables: {
-          userId: stateApp.user.mongoId,
+          contactId: props.contact?._id,
         },
       });
       setAddAble({ type: "deals" });
       setUploadIcon(false);
       setStartPaginationAt(25);
+      setOrderByTracks(false);
     }
-  }, [props.parent, stateApp.user]);
+  }, [props.parent, props.contact]);
 
   useEffect(() => {
-    console.log("DEALS m1n : ", props.parent, dataDeals);
     if (
       props.parent &&
       props.parent === "Deals" &&
-      dataDeals &&
+      dataDeals?.contactDeals &&
       props.contact
     ) {
       console.log("DATA DEALS : ", dataDeals);
-      const lanes = dataDeals?.transactionData?.allData?.lanes;
+      // const lanes = dataDeals?.transactionData?.allData?.lanes;
 
-      const all = [];
-      console.log("ALL : ", all, lanes);
-      if (lanes) {
-        lanes.forEach((deal) => {
-          deal.cards.forEach((card) => {
-            if (props.contact?._id === card.contactId && !card.isDeleted)
-              all.push(card);
-          });
-        });
-      }
+      // const all = [];
+      // console.log("ALL : ", all, lanes);
+      // if (lanes) {
+      //   lanes.forEach((deal) => {
+      //     deal.cards.forEach((card) => {
+      //       if (props.contact?._id === card.contactId && !card.isDeleted)
+      //         all.push(card);
+      //     });
+      //   });
+      // }
 
-      const dealsRowsData = all.map((deal) => ({
-        ...deal,
-        id: deal.id,
-        dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
-      }));
+      // const dealsRowsData = all.map((deal) => ({
+      //   ...deal,
+      //   id: deal.id,
+      //   dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
+      // }));
       // all.forEach((deal) => {
       //   console.log("DEAL: ", deal)
       //   let dealData = {
@@ -3512,8 +3728,36 @@ function M1nTable(props) {
 
       //   dealsRowsData.push(dealData);
       // });
+
+      let currencyFormat = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+
+      let dateFormat = new Intl.DateTimeFormat('en-US', {
+        year: "numeric",
+        day: "numeric",
+        month: "numeric",
+      });
+
+      // let contactDealRows = [
+      //   ...dataDeals.contactDeals.map((deal) => {
+      //     return {
+      //       ...deal,
+      //       offerPrice: !isNaN(deal.offerPrice)
+      //         ? currencyFormat.format(deal.offerPrice)
+      //         : deal.offerPrice,
+      //       closeDate: anyToDate(deal.closeDate).toLocaleString("en-US", {
+      //         year: "numeric",
+      //         day: "numeric",
+      //         month: "numeric",
+      //       })
+      //     }
+      //   })
+      // ]
+
       setTargetLabel("deals");
-      setRows(dealsRowsData);
+      setRows([...dataDeals.contactDeals]);
       setColumns([...DealsHeadCells]);
       setLoading(false);
     }
@@ -3523,7 +3767,7 @@ function M1nTable(props) {
       "font-size:20px; color:green;",
       props.contact
     );
-  }, [props.parent, dataDeals, props.contact]);
+  }, [ dataDeals ]);
 
   // deals delete
   useEffect(() => {
@@ -3555,7 +3799,11 @@ function M1nTable(props) {
               transactionId: dataDeals.transactionData._id,
               transaction: { allData: newData, user: stateApp.user.mongoId },
             },
-            refetchQueries: ["getTransactionData", "getContact", "getContacts"],
+            refetchQueries: [
+              "getContact",
+              "getPaginatedContacts",
+              "getContactDeals",
+            ],
             awaitRefetchQueries: true,
           });
         }
@@ -3756,11 +4004,24 @@ function M1nTable(props) {
       setTargetLabel("well");
       setHeader("Well Interests");
       setAddAble(false);
-      getOwner_WellInterests({
+      getPaginatedWellInterests({
         variables: {
-          id: props.id,
+          filters: {
+            field: "id",
+            value: props.id,
+          },
         },
       });
+
+      // to populate the search layer
+      dispatch(
+        setMapGridCardState({
+          objToPopulateSearchLayer: {
+            objectId: props.id,
+            objectType: "owner",
+          },
+        })
+      );
     }
   }, [props.id, stateApp.user]);
 
@@ -3768,13 +4029,36 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "owner_WellInterests" &&
-      dataOwner_WellInterests &&
-      dataOwner_WellInterests.owner_WellInterests &&
+      constDataWellInterests
+    ) {
+      console.log("ue mintable 23");
+      if (
+        constDataWellInterests?.paginatedWellInterests?.edges &&
+        constDataWellInterests.paginatedWellInterests.edges.length > 0
+      ) {
+        setDataWellInterests([
+          ...constDataWellInterests.paginatedWellInterests.edges.map(
+            (el) => el.node
+          ),
+        ]);
+        setLoading(false);
+      } else {
+        setLoading(false);
+        setRows([]);
+      }
+    }
+  }, [constDataWellInterests]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "owner_WellInterests" &&
+      dataWellInterests &&
       stateApp.user &&
       stateApp.user.mongoId
     ) {
       const IdsArray = [];
-      dataOwner_WellInterests.owner_WellInterests.forEach((well) => {
+      dataWellInterests.forEach((well) => {
         if (well && well.id) {
           IdsArray.push(well.id);
         }
@@ -3798,17 +4082,16 @@ function M1nTable(props) {
         setLoading(false);
       }
     }
-  }, [dataOwner_WellInterests, stateApp.user]);
+  }, [dataWellInterests, stateApp.user]);
 
   useEffect(() => {
     if (
       props.parent &&
       props.parent === "owner_WellInterests" &&
-      dataOwner_WellInterests &&
-      dataOwner_WellInterests.owner_WellInterests
+      dataWellInterests
     ) {
       if (
-        dataOwner_WellInterests.owner_WellInterests.length > 0 &&
+        dataWellInterests.length > 0 &&
         dataCommentsCounter &&
         dataCommentsCounter.commentsCounter &&
         dataTagSamples &&
@@ -3816,7 +4099,7 @@ function M1nTable(props) {
         dataTracks &&
         dataTracks.tracksByObjectType
       ) {
-        let wells = dataOwner_WellInterests.owner_WellInterests.map((w) => {
+        let wells = dataWellInterests.map((w) => {
           let well = { ...w };
 
           well.isTracked = false;
@@ -3894,15 +4177,6 @@ function M1nTable(props) {
         );
 
         setRows(wells);
-        //// to populate the search layer
-        dispatch(
-          setMapGridCardState({
-            objToPopulateSearchLayer: {
-              objectType: "wells",
-              wells,
-            },
-          })
-        );
         setLoading(false);
       }
       // else {
@@ -3911,14 +4185,25 @@ function M1nTable(props) {
 
       // setLoading(false);
     }
-  }, [
-    dataOwner_WellInterests,
-    dataTagSamples,
-    dataCommentsCounter,
-    dataTracks,
-  ]);
+  }, [dataWellInterests, dataTagSamples, dataCommentsCounter, dataTracks]);
 
   //////////// Owner_WellInterests end///////////////////////////////////////////////
+
+  /////////// PRODUCTION DETAILS ////////////////////////////////////////
+  useEffect(() => {
+    setLoading(true);
+    if (props.parent && props.parent === "production_WellDetails") {
+      setTargetLabel("production_detail");
+      setHeader("Monthly Production");
+      setColumns(ProductionDetailsHeaders);
+      setLoading(false);
+      setAddAble(false);
+      setRows(props.productionDetails);
+      setOrderByTracks(false);
+      setTotal(true);
+    }
+  }, [props.props]);
+  /////////// PRODUCTION DETAILS ////////////////////////////////////////
 
   ////////////-----Add your code section here-----///////////////////////
   return (
@@ -3941,11 +4226,13 @@ function M1nTable(props) {
           contactId={props.contact?._id}
         />
       )}
+
       <Table
         style={{ backgroundColor: "#fff" }}
         header={header}
         columns={columns}
         rows={rows}
+        total={total}
         loading={loading}
         addAble={addAble}
         targetLabel={targetLabel}
@@ -3956,10 +4243,21 @@ function M1nTable(props) {
         startPaginationAt={startPaginationAt}
         contactId={props.contact?._id}
         contactsPageProps={{
-          getContacts,
+          getPaginatedContacts,
           getContactsFilterOptions,
-          contactsCount: dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
-            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]?.totalCount
+          contactsCount: dataContactsFilterOptions?.contactsFilterOptions
+            ?.totalCount[0]
+            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
+                ?.totalCount
+            : 0,
+          setLoading,
+        }}
+        wellInterestsPageProps={{
+          ownerId: props.id,
+          getPaginatedWellInterests,
+          getWellInterestsFilterOptions,
+          wellInterestsCount: selectedOwnerWellIntsSummary?.interestsCount
+            ? selectedOwnerWellIntsSummary.interestsCount
             : 0,
           setLoading,
         }}

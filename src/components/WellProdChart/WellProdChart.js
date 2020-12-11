@@ -64,8 +64,8 @@ export default function WellProdChart(props) {
   //const {data,loading,error} = useQueryWellProdHistory(stateApp.selectedWellApi)
 
   useEffect(() => {
-    if (stateWellProdChart.wellProdHistory) {
-      //console.log('wellprodhistory',stateWellProdChart.wellProdHistory)
+    if (!loading && stateWellProdChart.wellProdHistory) {
+      //console.log('wellprodhistory',stateWellProdChart.wellProdHistory);
       let chart = am4core.create("chartDiv", am4charts.XYChart);
 
       chart.dateFormatter.inputDateFormat = "yyyy-MM-dd";
@@ -107,8 +107,8 @@ export default function WellProdChart(props) {
         series.stroke = am4core.color("#e57373");
         series.minBulletDistance = 15;
         series.showOnInit = true;
-        series.name = "Gas";
-        series.tooltipText = "Gas: [bold]{valueY}[/]";
+        series.name = "Allocated Gas";
+        series.tooltipText = "Allocated Gas: [bold]{valueY}[/]";
 
         if (stateWellCard.chartToggleMultiAxis) {
           series.yAxis = valueAxis;
@@ -150,8 +150,8 @@ export default function WellProdChart(props) {
         seriesOil.stroke = am4core.color("#81c784");
         seriesOil.minBulletDistance = 15;
         seriesOil.showOnInit = true;
-        seriesOil.name = "Oil";
-        seriesOil.tooltipText = "Oil: [bold]{valueY}[/]";
+        seriesOil.name = "Allocated Oil";
+        seriesOil.tooltipText = "Allocated Oil: [bold]{valueY}[/]";
 
         if (stateWellCard.chartToggleMultiAxis) {
           seriesOil.yAxis = valueAxis;
@@ -193,8 +193,8 @@ export default function WellProdChart(props) {
         seriesWater.stroke = am4core.color("#64b5f6");
         seriesWater.minBulletDistance = 15;
         seriesWater.showOnInit = true;
-        seriesWater.name = "Water";
-        seriesWater.tooltipText = "Water: [bold]{valueY}[/]";
+        seriesWater.name = "Allocated Water";
+        seriesWater.tooltipText = "Allocated Water: [bold]{valueY}[/]";
 
         if (stateWellCard.chartToggleMultiAxis) {
           seriesWater.yAxis = valueAxis;
@@ -287,9 +287,9 @@ export default function WellProdChart(props) {
     }
 
     return () => {
-      console.log("will unmount");
-      if (chart) {
+      if (am4core) {
         am4core.disposeAllCharts();
+        // chart.dispose();
       }
     };
   }, [
