@@ -172,7 +172,7 @@ export default function BuyContactsInfoDialogContent(props) {
       </DialogTitle>
       <DialogContent>
         <Grid container spacing={1}>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <h3 style={{ padding: 0, marginTop: "20px", marginBottom: 0 }}>
               Credits
             </h3>
@@ -185,7 +185,7 @@ export default function BuyContactsInfoDialogContent(props) {
               {currentCredits} Credit
               {currentCredits && currentCredits > 1 ? "s" : ""}
             </FormLabel>
-          </Grid>
+          </Grid> */}
           <Grid item xs={12} style={{ marginTop: "15px" }}>
             <h3 style={{ margin: "0" }}>Contact To Purchase</h3>
           </Grid>
