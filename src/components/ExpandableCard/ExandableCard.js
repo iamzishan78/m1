@@ -465,61 +465,6 @@ export default function ExpandableCard(props) {
                 )
               )}
 
-              {stateExpandableCard.expanded && targetLabel !== "activity" ? (
-                parent !== "table" && targetLabel !== "expandedWell" ? (
-                  <Tooltip title={"Shrink"} placement="top">
-                    <IconButton
-                      color="secondary"
-                      onClick={handleShrink}
-                      aria-label="shrink"
-                      className={classes.icons}
-                    >
-                      <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
-                    </IconButton>
-                  </Tooltip>
-                ) : isExpanded == false && targetLabel !== "activity" ?
-                    targetLabel !== "contact" ? 
-                    (
-                  <Tooltip title={"Expand"} placement="top">
-                    <IconButton
-                      size="small"
-                      onClick={handleExpand}
-                      aria-label="expand"
-                      className={classes.icons}
-                    >
-                      <ExpandIcon viewBox="0 0 64 64" color="secondary" />
-                    </IconButton>
-                  </Tooltip>
-                ) : null
-                :
-                (
-                  <Tooltip title={"Shrink"} placement="top">
-                    <IconButton
-                      color="secondary"
-                      onClick={handleExpand}
-                      aria-label="shrink"
-                      className={classes.icons}
-                    >
-                      <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
-                    </IconButton>
-                  </Tooltip>
-                )
-              ) : (
-                parent !== "table" &&
-                targetLabel !== "activity" && (
-                  <Tooltip title={"Expand"} placement="top">
-                    <IconButton
-                      size="small"
-                      onClick={handleExpand}
-                      aria-label="expand"
-                      className={classes.icons}
-                    >
-                      <ExpandIcon viewBox="0 0 64 64" color="secondary" />
-                    </IconButton>
-                  </Tooltip>
-                )
-              )}
-
               <Tooltip title={"Close"} placement="top">
                 <IconButton
                   size={stateExpandableCard.expanded ? "medium" : "small"}

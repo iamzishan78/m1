@@ -126,10 +126,12 @@ export default (props) => {
         expandedCard: true
       }));
       props.onClickExpand();
-      setStateApp((state) => ({
-        ...state,
-        selectedAbstracts: []
-      }));
+      if (stateApp.selectedAbstracts.length > 0) {
+        setStateApp((state) => ({
+          ...state,
+          selectedAbstracts: []
+        }));
+      }
     }
     if (customLayerInsertedData.upsertCustomLayer  && customLayerInsertedData.upsertCustomLayer.customLayer && !customLayerInsertedData.upsertCustomLayer.success) {
       setError(true);
@@ -207,6 +209,25 @@ export default (props) => {
     upsertCustomLayer({
       variables: { customLayer: customLayerData }
     });
+
+    setTimeout(()=> {
+      setStateApp((state) => ({
+        ...state,
+        selectedParcel: {
+          "originalProperties": JSON.stringify(abstractShape.properties),
+          "sdType": "parcel",
+          "shapeLabel": parcelName,
+          "projectName": "",
+          "sdNotes": "",
+          "sdGrossAcres": "",
+          "shapeArea": calculateLandArea(abstractShape),
+          "shapeCenter": calculateShapeCenter(abstractShape.geometry.coordinates),
+          "shapeLabelLayer": "",
+          "id": featureId
+        },
+        expandedCard: true
+      }));
+    }, 1000)
   }
 
   const handleClose = function () {

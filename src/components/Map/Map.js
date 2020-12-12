@@ -3314,8 +3314,6 @@ export default function Map() {
   };
 
   const onAbstactLayerClick = function (feature, action) {
-    console.log("feature, action", feature, action);
-
     if (!feature) {
       setStateApp((state) => ({
         ...state,
@@ -3344,6 +3342,7 @@ export default function Map() {
   };
 
   useEffect(() => {
+    // HERE FOOL
     if (map) {
       map.on("click", "abstract_geo_fill_layer", function (e) {
         if (!e.features.length) {
@@ -3358,6 +3357,7 @@ export default function Map() {
           .features;
 
         if (window.event.ctrlKey || window.event.metaKey) {
+          console.log("1");
           if (featureState && featureState.click) {
             // Unselect feature
             map.setFeatureState(
@@ -3366,12 +3366,15 @@ export default function Map() {
             );
             onAbstactLayerClick(currentFeature, "remove");
           } else {
-            // Select feature
-            map.setFeatureState(
-              { source: "abstract_geo_source", id: e.features[0].id },
-              { click: true }
-            );
-            onAbstactLayerClick(currentFeature, "add");
+            console.log("2");
+            let isExisting = stateApp.customLayers.find(x => x.shape.includes(currentFeature.id));
+            if (!isExisting) {
+              map.setFeatureState(
+                { source: "abstract_geo_source", id: e.features[0].id },
+                { click: true }
+              );
+              onAbstactLayerClick(currentFeature, "add");
+            }
           }
         } else {
           // Clear all selected features
@@ -4580,6 +4583,7 @@ export default function Map() {
   //   stateApp.abstractPopupOpen,
   //   stateApp.selectedAbstracts
   // );
+
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
@@ -4634,7 +4638,7 @@ export default function Map() {
           )
         }
 
-        {stateApp.selectedParcel !== null && showExpandableCard &&
+        {stateApp.selectedParcel !== null &&
           stateApp.expandedCard && (
             <Draggable handle=".MuiCardHeader-root" cancel={".MuiCardHeader-content"} >
               <div className={classes.draggable}>

@@ -2440,7 +2440,6 @@ function M1nTable(props) {
   }, [dataTracks]);
 
   useEffect(() => {
-    console.log('-----------------------')
     if (props.parent && props.parent === "trackWells" && dataWells) {
       console.log("ue mintable 7");
       if (
