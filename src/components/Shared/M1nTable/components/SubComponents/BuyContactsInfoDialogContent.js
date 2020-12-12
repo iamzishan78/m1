@@ -187,12 +187,12 @@ export default function BuyContactsInfoDialogContent(props) {
             </FormLabel>
           </Grid> */}
           <Grid item xs={12} style={{ marginTop: "15px" }}>
-            <h3 style={{ margin: "0" }}>Contact To Purchase</h3>
+            <h3 style={{ margin: "0" }}>Contact information to purchase</h3>
           </Grid>
           <Grid item xs={12} style={{ margin: 0, paddingTop: 0 }}>
             <FormLabel>
               {props.rows && props.rows.length ? props.rows.length : ""}{" "}
-              selected at 1 Credit each
+              selected at 1 credit each
             </FormLabel>
           </Grid>
           {props.rows &&
