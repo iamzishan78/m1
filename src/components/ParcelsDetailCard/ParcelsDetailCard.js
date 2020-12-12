@@ -333,8 +333,8 @@ export default function ParcelsDetailCard(props) {
         <Taps
           tabLabels={["Owners", "Wells"]}
           tabPanels={[
-            <M1nTable parent="ownersPerParcel" customLayer={parcelObj} />,
-            "Wells Table Coming Soon!",
+            <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense />,
+            <M1nTable parent="ownersPerParcelWells" dense />
           ]}
         />
       </Grid>
